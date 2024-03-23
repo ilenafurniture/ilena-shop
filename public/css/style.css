@@ -1,0 +1,47 @@
+@import url("https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+    font-family: "Kanit", sans-serif;
+    --merah: #e84a49;
+}
+
+/* ESSENSIAL */
+.show-flex-ke-hide {
+    display: flex;
+}
+.show-block-ke-hide {
+    display: block;
+}
+.hide-ke-show-flex {
+    display: none;
+}
+.hide-ke-show-block {
+    display: none;
+}
+.limapuluh-ke-seratus {
+    width: 50%;
+}
+.garis {
+    display: block;
+    height: 2px;
+    background-color: whitesmoke;
+}
+
+@media (max-width: 600px) {
+    /* ESSENSIAL */
+    .hide-ke-show-flex {
+        display: flex;
+    }
+    .hide-ke-show-block {
+        display: block;
+    }
+    .show-block-ke-hide {
+        display: none;
+    }
+    .show-flex-ke-hide {
+        display: none;
+    }
+    .limapuluh-ke-seratus {
+        width: 100%;
+    }
+}
