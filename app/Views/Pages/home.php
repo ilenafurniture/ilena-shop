@@ -95,8 +95,28 @@
         <h1 class="teks-besar text-center">Produk Kami</h1>
     </div>
 
-    <div>
-
+    <div class="container mb-5">
+        <div class="container-card1">
+            <div class="card1">
+                <div style="position: relative;">
+                    <div class="card1-content-img">
+                        <span>50%</span>
+                        <div class="d-flex flex-column gap-2">
+                            <a class="card1-btn-img" href="/wishlist"><i class="material-icons">favorite_border</i></a>
+                            <a class="card1-btn-img" href="/cart"><i class="material-icons">shopping_cart</i></a>
+                        </div>
+                    </div>
+                    <a href="">
+                        <img src="img/contoh.webp" alt="">
+                    </a>
+                </div>
+                <h5>Rak Serbguna</h5>
+                <div class="d-flex gap-2">
+                    <p class="harga">Rp 50,000.000</p>
+                    <p class="harga-diskon">Rp 100,000.000</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
