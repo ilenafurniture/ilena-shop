@@ -38,8 +38,8 @@
                     <a class="text-light" href="#">Site Index</a>
                     <a class="text-light" href="#">Ad Choices</a>
                     <p class="text-light">
-                        If you are using a screen reader and are having problems using this website, please call (800)
-                        967-6696 for assistance.
+                        If you are using a screen reader and are having problems using this website, please call (62)
+                        XXX-XXXX for assistance.
                     </p>
                 </div>
             </div>
