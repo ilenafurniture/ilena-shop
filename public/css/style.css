@@ -16,6 +16,10 @@
 }
 
 /* ESSENSIAL */
+.baris-ke-kolom {
+  display: flex;
+  gap: 2em;
+}
 .show-flex-ke-hide {
   display: flex;
 }
@@ -234,12 +238,12 @@
   padding-bottom: 1em;
   border-radius: 0.5em;
 }
-.card1 .harga {
+.harga {
   margin: 0;
   font-weight: 600;
   letter-spacing: -1px;
 }
-.card1 .harga-diskon {
+.harga-diskon {
   margin: 0;
   font-weight: 300;
   letter-spacing: -1px;
@@ -320,6 +324,32 @@
   border: 2px solid black;
 }
 
+.container-img-detail-select {
+  display: flex;
+  gap: 1em;
+}
+.container-img-detail-select input {
+  display: none;
+}
+.container-img-detail-select img {
+  display: block;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 1em;
+}
+.container-img-detail-select label {
+  display: block;
+  width: 100px;
+  height: 100px;
+  border: 2px solid rgb(207, 207, 207);
+  padding: 2px;
+  border-radius: 1em;
+}
+.container-img-detail-select input:checked + label {
+  border: 2px solid black;
+}
+
 .btn-lonjong {
   display: block;
   background-color: black;
@@ -336,6 +366,90 @@
   background-color: whitesmoke;
   color: black;
   transition: 0.5s;
+}
+
+.btn-default {
+  display: block;
+  background-color: black;
+  color: white;
+  font-weight: 500;
+  letter-spacing: -1px;
+  text-decoration: none;
+  width: fit-content;
+  padding: 0.5em 1em;
+  border-radius: 0.5em;
+  transition: 0.5s;
+  border: 0;
+}
+.btn-default:hover {
+  background-color: whitesmoke;
+  color: black;
+  transition: 0.5s;
+}
+.btn-default-merah {
+  border: 1px solid rgba(0, 0, 0, 0);
+  display: block;
+  background-color: var(--merah);
+  color: white;
+  font-weight: 500;
+  letter-spacing: -1px;
+  text-decoration: none;
+  width: fit-content;
+  padding: 0.5em 1em;
+  border-radius: 0.5em;
+  transition: 0.5s;
+}
+.btn-default-merah:hover {
+  border: 1px solid black;
+  background-color: whitesmoke;
+  color: black;
+  transition: 0.5s;
+}
+
+.btn-teks-aja {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-block: 2em;
+  width: fit-content;
+  text-decoration: none;
+  color: var(--merah);
+  font-weight: 700;
+  transition: 0.5s;
+}
+.btn-teks-aja:hover {
+  color: black;
+  transition: 0.5s;
+}
+
+.marketplace {
+  border: 1px solid #ddd;
+  padding: 0.6rem;
+  height: 45px;
+  border-radius: 5px;
+}
+
+.img-detail-prev {
+  width: 100%;
+}
+.accordion .accordion-item {
+  margin-bottom: 5px;
+}
+.accordion .accordion-button {
+  background-color: whitesmoke;
+  font-size: 13px;
+  color: black;
+}
+.accordion .accordion-button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.item-keranjang {
+  display: flex;
+  background-color: aqua;
+}
+.item-keranjang img {
 }
 
 /*FOOTER*/
@@ -462,6 +576,47 @@
   }
 }
 
+.number-control {
+  display: flex;
+  align-items: center;
+  border: 1px solid grey;
+  width: fit-content;
+  border-radius: 0.5em;
+}
+
+.number-left::before,
+.number-right::after {
+  content: attr(data-content);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  transition: background-color 0.3s;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.number-left::before {
+  content: "-";
+}
+
+.number-right::after {
+  content: "+";
+}
+
+.number-quantity {
+  padding: 0.25rem;
+  border: 0;
+  width: 50px;
+  -moz-appearance: textfield;
+  text-align: center;
+  font-weight: bold;
+}
+.number-quantity::-webkit-outer-spin-button,
+.number-quantity::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
 /*END EKTERNAL ELEMENT*/
 
 @media (max-width: 600px) {
@@ -480,5 +635,9 @@
   }
   .limapuluh-ke-seratus {
     width: 100%;
+  }
+  .baris-ke-kolom {
+    flex-direction: column;
+    gap: 1em;
   }
 }

@@ -34,7 +34,7 @@ class Pages extends BaseController
         if($id){
             $product = $this->barangModel->getBarang($id);
             $data = [
-                'title' => $product['nama'],
+                'title' => 'produk',
                 'produk' => $product
             ];
             return view('pages/product', $data);
@@ -45,5 +45,12 @@ class Pages extends BaseController
             ];
             return view('pages/all', $data);
         }
+    }
+    public function cart()
+    {
+        $data = [
+            'title' => 'Keranjang',
+        ];
+        return view('pages/cart', $data);
     }
 }
