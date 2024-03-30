@@ -3,8 +3,7 @@
 
 <div class="container d-flex konten gap-5">
     <div style="width: 200px;">
-        <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample" aria-expanded="false"
-            aria-controls="collapseExample">
+        <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
             Kategori
         </div>
         <div class="collapse py-2" id="collapseExample">
@@ -28,8 +27,7 @@
             </div>
         </div>
 
-        <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample1" aria-expanded="false"
-            aria-controls="collapseExample1">
+        <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample1" aria-expanded="false" aria-controls="collapseExample1">
             Varian
         </div>
         <div class="collapse py-2" id="collapseExample1">
@@ -73,7 +71,7 @@
                             <a class="card1-btn-img" href="/cart"><i class="material-icons">shopping_cart</i></a>
                         </div>
                     </div>
-                    <a href="#">
+                    <a href="/product/1">
                         <img src="img/contoh.webp" alt="">
                     </a>
                 </div>
@@ -101,8 +99,7 @@
                             <a class="card1-btn-img" href="/cart"><i class="material-icons">shopping_cart</i></a>
                         </div>
                     </div>
-                    <a href="#"><img src="https://i.ibb.co/86L9vkV/DTV-706-MAHONI-DEPAN.webp" alt="DTV-706-MAHONI-DEPAN"
-                            border="0"></a>
+                    <a href="#"><img src="https://i.ibb.co/86L9vkV/DTV-706-MAHONI-DEPAN.webp" alt="DTV-706-MAHONI-DEPAN" border="0"></a>
                 </div>
                 <div class="container-varian mb-1">
                     <input id="varian-2-1" type="radio" name="varian">
@@ -128,8 +125,7 @@
                             <a class="card1-btn-img" href="/cart"><i class="material-icons">shopping_cart</i></a>
                         </div>
                     </div>
-                    <a href="#"><img src="https://i.ibb.co/VgDyQz7/ALA-859-WINGE-PUTIH.webp"
-                            alt="ALA-859-WINGE-PUTIH"></a>
+                    <a href="#"><img src="https://i.ibb.co/VgDyQz7/ALA-859-WINGE-PUTIH.webp" alt="ALA-859-WINGE-PUTIH"></a>
                 </div>
                 <div class="container-varian mb-1">
                     <input id="varian-3-1" type="radio" name="varian">

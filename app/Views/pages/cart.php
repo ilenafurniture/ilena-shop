@@ -106,7 +106,7 @@
                     Rp 5,500.000
                 </p>
             </div>
-            <a href="#" class="btn-default-merah w-100 mt-4 text-center">Checkout</a>
+            <a href="/address" class="btn-default-merah w-100 mt-4 text-center">Checkout</a>
         </div>
     </div>
 </div>

@@ -26,7 +26,7 @@
                 <input id="varian-1-3" type="radio" name="varian">
                 <label for="varian-1-3"><span style="background-color: grey;"></span></label>
             </div>
-            <div class="d-flex gap-4">
+            <div class="d-flex gap-3">
                 <div class="number-control">
                     <div class="number-left"></div>
                     <input type="number" name="number" class="number-quantity" value="1">
@@ -35,25 +35,22 @@
                 <button class="btn-default-merah">Keranjang</button>
             </div>
             <?php if ($produk['tokped'] || $produk['shopee'] || $produk['tiktok']) { ?>
-            <div class="mt-4">
-                <p class="mb-2">
-                    Produk ini juga tersedia di
-                </p>
-                <div>
-                    <?php if ($produk['tokped']) { ?>
-                    <a href="<?= $produk['tokped']; ?>" title="Tokopedia" target="blank"><img
-                            src="/img/logo/tokopedia.png" class="marketplace"></a>
-                    <?php } ?>
-                    <?php if ($produk['shopee']) { ?>
-                    <a href="<?= $produk['shopee']; ?>" title="Shopee" target="blank"><img src="/img/logo/shopee.png"
-                            class="marketplace"></a>
-                    <?php } ?>
-                    <?php if ($produk['tiktok']) { ?>
-                    <a href="<?= $produk['tiktok']; ?>" title="Tiktok" target="blank"><img
-                            src="/img/logo/tiktokshop.svg" class="marketplace"></a>
-                    <?php } ?>
+                <div class="mt-4">
+                    <p class="mb-2">
+                        Produk ini juga tersedia di
+                    </p>
+                    <div>
+                        <?php if ($produk['tokped']) { ?>
+                            <a href="<?= $produk['tokped']; ?>" title="Tokopedia" target="blank"><img src="/img/logo/tokopedia.png" class="marketplace"></a>
+                        <?php } ?>
+                        <?php if ($produk['shopee']) { ?>
+                            <a href="<?= $produk['shopee']; ?>" title="Shopee" target="blank"><img src="/img/logo/shopee.png" class="marketplace"></a>
+                        <?php } ?>
+                        <?php if ($produk['tiktok']) { ?>
+                            <a href="<?= $produk['tiktok']; ?>" title="Tiktok" target="blank"><img src="/img/logo/tiktokshop.svg" class="marketplace"></a>
+                        <?php } ?>
+                    </div>
                 </div>
-            </div>
             <?php } ?>
             <a class="btn-teks-aja my-3" href="/wishlist"><i class="material-icons">bookmark_border</i> Tambah ke
                 wishlist</a>
@@ -61,13 +58,11 @@
             <div class="accordion accordion-flush" id="accordionFlushExample">
                 <div class="accordion-item">
                     <h2 class="accordion-header">
-                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#flush-collapse1" aria-expanded="false" aria-controls="flush-collapse1">
+                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse1" aria-expanded="false" aria-controls="flush-collapse1">
                             DIMENSI
                         </button>
                     </h2>
-                    <div id="flush-collapse1" class="accordion-collapse collapse"
-                        data-bs-parent="#accordionFlushExample">
+                    <div id="flush-collapse1" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                         <div class="accordion-body">
                             <p class="mb-0 fw-bold">Bagaimana cara mengetahui barang ready?</p>
                             <ul>
@@ -104,13 +99,11 @@
 
                 <div class="accordion-item">
                     <h2 class="accordion-header">
-                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#flush-collapse2" aria-expanded="false" aria-controls="flush-collapse2">
+                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse2" aria-expanded="false" aria-controls="flush-collapse2">
                             PERAWATAN
                         </button>
                     </h2>
-                    <div id="flush-collapse2" class="accordion-collapse collapse"
-                        data-bs-parent="#accordionFlushExample">
+                    <div id="flush-collapse2" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                         <div class="accordion-body">
                             <p class="mb-0 fw-bold">Bagaimana cara mengetahui barang ready?</p>
                             <ul>
@@ -169,15 +162,13 @@
             </div>
             <div class="container-img-detail-select mb-3 mt-3">
                 <input id="gambar-1-1" type="radio" name="gambar">
-                <label class="img-detail-select" for="gambar-1-1"><img class="img-detail-prev"
-                        src="/img/contoh.webp"></label>
+                <label class="img-detail-select" for="gambar-1-1"><img class="img-detail-prev" src="/img/contoh.webp"></label>
                 <input id="gambar-1-2" type="radio" name="gambar">
                 <label class="img-detail-select" for="gambar-1-2">
                     <img class="img-detail-prev" src="/img/contoh.webp">
                 </label>
                 <input id="gambar-1-3" type="radio" name="gambar">
-                <label class="img-detail-select" for="gambar-1-3"><img class="img-detail-prev"
-                        src="/img/contoh.webp"></label>
+                <label class="img-detail-select" for="gambar-1-3"><img class="img-detail-prev" src="/img/contoh.webp"></label>
             </div>
         </div>
     </div>
