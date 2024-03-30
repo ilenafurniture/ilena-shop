@@ -35,6 +35,9 @@
 .limapuluh-ke-seratus {
   width: 50%;
 }
+.tigapuluh-ke-seratus {
+  width: 30%;
+}
 .garis {
   display: block;
   height: 2px;
@@ -61,6 +64,7 @@
   font-weight: 500;
   font-size: 30px;
   margin: 0;
+  letter-spacing: -1px;
 }
 .konten {
   max-width: 1200px;
@@ -410,12 +414,14 @@
   display: flex;
   align-items: center;
   gap: 0.5em;
-  margin-block: 2em;
   width: fit-content;
   text-decoration: none;
   color: var(--merah);
   font-weight: 700;
   transition: 0.5s;
+  border: none;
+  background: none;
+  letter-spacing: -1px;
 }
 .btn-teks-aja:hover {
   color: black;
@@ -447,9 +453,55 @@
 
 .item-keranjang {
   display: flex;
-  background-color: aqua;
+  gap: 2em;
+  /* height: 150px; */
+  /* background-color: aqua; */
+  border-bottom: 1px solid rgb(206, 206, 206);
+  padding-block: 2em;
 }
 .item-keranjang img {
+  width: 100%;
+}
+.item-keranjang .nama-barang {
+  font-size: larger;
+  margin: 0;
+  letter-spacing: -1px;
+  font-weight: 500;
+}
+
+.container-address {
+  width: 100%;
+  border-bottom: 1px solid rgb(197, 197, 197);
+}
+.container-address input {
+  display: none;
+}
+.container-address .item-address {
+  display: flex;
+  gap: 1em;
+  width: 100%;
+  padding-block: 1em;
+}
+.container-address .item-address .nama {
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: -1px;
+}
+.container-address .item-address::before {
+  content: "";
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 40px;
+  border: 2px solid grey;
+  margin-top: 7px;
+}
+.container-address input:checked + .item-address::before {
+  outline: 5px solid var(--merah);
+  border: 3px solid white;
+  background-color: var(--merah);
+  transition: all 0.6s ease;
+  transform: scale(0.5);
 }
 
 /*FOOTER*/
@@ -582,6 +634,7 @@
   border: 1px solid grey;
   width: fit-content;
   border-radius: 0.5em;
+  height: 41px;
 }
 
 .number-left::before,
@@ -616,7 +669,6 @@
 .number-quantity::-webkit-inner-spin-button {
   -webkit-appearance: none;
 }
-
 /*END EKTERNAL ELEMENT*/
 
 @media (max-width: 600px) {
@@ -634,6 +686,9 @@
     display: none;
   }
   .limapuluh-ke-seratus {
+    width: 100%;
+  }
+  .tigapuluh-ke-seratus {
     width: 100%;
   }
   .baris-ke-kolom {

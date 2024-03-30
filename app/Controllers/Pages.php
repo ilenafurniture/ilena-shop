@@ -53,4 +53,11 @@ class Pages extends BaseController
         ];
         return view('pages/cart', $data);
     }
+    public function address()
+    {
+        $data =[
+            'title' => 'Alamat',
+        ];
+        return view('pages/address',$data);
+    }
 }
