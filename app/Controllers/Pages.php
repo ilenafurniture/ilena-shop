@@ -25,8 +25,10 @@ class Pages extends BaseController
     }
     public function index()
     {
+        $produk  = $this->barangModel->getBarang();
         $data = [
             'title' => 'Home',
+            'produk' => $produk,
         ];
         return view('pages/home', $data);
     }
@@ -98,5 +100,22 @@ class Pages extends BaseController
             'title' => 'Pembayaran',
         ];
         return view('pages/payment', $data);
+    }
+    
+    public  function progressPay()
+    {
+        $data = [
+            'title' => 'Peroses Pembayaran',
+        ];
+        return view('pages/progresspay', $data);
+        
+    }
+    public function wishlist()
+    {
+        $data = [
+            'title' => 'Menu Favorite',
+        ];
+        return view('pages/wishlist', $data);
+
     }
 }
