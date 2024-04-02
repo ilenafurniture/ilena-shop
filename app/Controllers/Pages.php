@@ -15,6 +15,7 @@ class Pages extends BaseController
     protected $userModel;
     protected $pembeliModel;
     protected $pemesananModel;
+    protected $session;
     public function __construct()
     {
         $this->barangModel = new BarangModel();
@@ -22,6 +23,7 @@ class Pages extends BaseController
         $this->userModel = new UserModel();
         $this->pembeliModel = new PembeliModel();
         $this->pemesananModel = new PemesananModel();
+        $this->session = \Config\Services::session();
     }
     public function index()
     {
@@ -36,6 +38,8 @@ class Pages extends BaseController
     {
         if ($id) {
             $product = $this->barangModel->getBarang($id);
+            $product['deskripsi'] = json_decode($product['deskripsi'], true);
+            $product['varian'] = json_decode($product['varian'], true);
             $data = [
                 'title' => 'produk',
                 'produk' => $product
@@ -51,11 +55,67 @@ class Pages extends BaseController
     }
     public function cart()
     {
+        // $strukturKeranjang = [
+        //     [
+        //         'id_barang' => '001',
+        //         'varian' => 'winge',
+        //         'jumlah' => 1
+        //     ],
+        //     [
+        //         'id_barang' => '002',
+        //         'varian' => 'winge',
+        //         'jumlah' => 1
+        //     ],
+        //     [
+        //         'id_barang' => '003',
+        //         'varian' => 'winge',
+        //         'jumlah' => 1
+        //     ],
+        // ];
+        $keranjang = $this->session->get('keranjang');
+        foreach ($keranjang as $index => $k) {
+            $produk = $this->barangModel->getBarang($k['id_barang']);
+            foreach (json_decode($produk['varian'], true) as $v) {
+                if($v['nama'] == $k['varian'] ) {
+                    $keranjang[$index]['src_gambar'] = "/viewvar/".$k['id_barang']."/".explode(',', $v['urutan_gambar'])[0];
+                    
+                }
+            }
+            $keranjang[$index]['detail'] = $produk;
+        }
+        
         $data = [
             'title' => 'Keranjang',
+            'keranjang' => $keranjang,
         ];
         return view('pages/cart', $data);
     }
+    public function addCart($idbarang, $varian, $jumlah)
+    {
+        $keranjang = $this->session->get('keranjang');
+        if(!isset($keranjang)){
+            $keranjang = [];
+        }
+        $ketemu = false;
+        foreach ($keranjang as $index => $k) {
+            if($k['id_barang'] == $idbarang && $k['varian'] == $varian) {
+                $keranjang[$index]['jumlah']++;
+                $ketemu = true; 
+            }
+        }
+        if(!$ketemu){
+            array_push($keranjang, [
+                'id_barang' => $idbarang,
+                'varian' => $varian,
+                'jumlah' => $jumlah
+            ]);
+        }
+        $this->session->set([
+            'keranjang' => $keranjang
+        ]);
+        return redirect()->to('/cart');
+    }
+
     public function address()
     {
         //Dapatkan data provinsi

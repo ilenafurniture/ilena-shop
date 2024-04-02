@@ -7,18 +7,19 @@
             <p style="color: grey;">2 barang</p>
         </div>
         <div class="container-keranjang">
+            <?php foreach ($keranjang as $index => $k) { ?>
             <div class="item-keranjang">
                 <div style="width: 150px;">
-                    <img src="/img/contoh.webp" alt="">
+                    <img src="<?= $k['src_gambar'] ?>" alt="">
                 </div>
                 <div style="flex: 1;" class="d-flex flex-column">
-                    <h1 class="nama-barang">Nama Barang</h1>
-                    <p class="my-2">Varian</p>
+                    <h1 class="nama-barang"><?= $k['detail']['nama'] ?></h1>
+                    <p class="my-2">Varian: <?= ucfirst($k['varian']) ?></p>
                     <div class="d-flex align-items-end flex-grow-1">
                         <div class="d-flex align-items-center gap-4">
                             <div class="number-control">
                                 <div class="number-left"></div>
-                                <input type="number" name="number" class="number-quantity" value="1">
+                                <input type="number" name="number" class="number-quantity" value="<?= $k['jumlah'] ?>">
                                 <div class="number-right"></div>
                             </div>
                             <a href="#" class="btn-teks-aja m-0">Hapus</a>
@@ -26,56 +27,12 @@
                     </div>
                 </div>
                 <div style="width: 150px;">
-                    <p style="font-weight:bold; font-size: 18px; letter-spacing: -1px; text-align: right;">Rp 500,000.00
+                    <p style="font-weight:bold; font-size: 18px; letter-spacing: -1px; text-align: right;">
+                        Rp <?= number_format($k['detail']['harga'], 0, ',', '.'); ?>
                     </p>
                 </div>
             </div>
-            <div class="item-keranjang">
-                <div style="width: 150px;">
-                    <img src="/img/contoh.webp" alt="">
-                </div>
-                <div style="flex: 1;" class="d-flex flex-column">
-                    <h1 class="nama-barang">Nama Barang</h1>
-                    <p class="my-2">Varian</p>
-                    <div class="d-flex align-items-end flex-grow-1">
-                        <div class="d-flex align-items-center gap-4">
-                            <div class="number-control">
-                                <div class="number-left"></div>
-                                <input type="number" name="number" class="number-quantity" value="1">
-                                <div class="number-right"></div>
-                            </div>
-                            <a href="#" class="btn-teks-aja m-0">Hapus</a>
-                        </div>
-                    </div>
-                </div>
-                <div style="width: 150px;">
-                    <p style="font-weight:bold; font-size: 18px; letter-spacing: -1px; text-align: right;">Rp 500,000.00
-                    </p>
-                </div>
-            </div>
-            <div class="item-keranjang">
-                <div style="width: 150px;">
-                    <img src="/img/contoh.webp" alt="">
-                </div>
-                <div style="flex: 1;" class="d-flex flex-column">
-                    <h1 class="nama-barang">Nama Barang</h1>
-                    <p class="my-2">Varian</p>
-                    <div class="d-flex align-items-end flex-grow-1">
-                        <div class="d-flex align-items-center gap-4">
-                            <div class="number-control">
-                                <div class="number-left"></div>
-                                <input type="number" name="number" class="number-quantity" value="1">
-                                <div class="number-right"></div>
-                            </div>
-                            <a href="#" class="btn-teks-aja m-0">Hapus</a>
-                        </div>
-                    </div>
-                </div>
-                <div style="width: 150px;">
-                    <p style="font-weight:bold; font-size: 18px; letter-spacing: -1px; text-align: right;">Rp 500,000.00
-                    </p>
-                </div>
-            </div>
+            <?php } ?>
         </div>
     </div>
     <div class="tigapuluh-ke-seratus">
