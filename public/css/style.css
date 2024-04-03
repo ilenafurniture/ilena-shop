@@ -724,6 +724,8 @@
   transition: background-color 0.3s;
   cursor: pointer;
   font-weight: bold;
+  text-decoration: none;
+  color: black;
 }
 
 .number-left::before {

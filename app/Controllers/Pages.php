@@ -34,6 +34,13 @@ class Pages extends BaseController
         ];
         return view('pages/home', $data);
     }
+
+    public function find()
+    {
+        $data = [
+            'title' => 'find',
+        ];
+    }
     public function product($id = false)
     {
         if ($id) {
@@ -49,6 +56,7 @@ class Pages extends BaseController
             $product = $this->barangModel->getBarang();
             $data = [
                 'title' => 'Produk Kami',
+                'produk' => $product,
             ];
             return view('pages/all', $data);
         }
@@ -72,21 +80,27 @@ class Pages extends BaseController
         //         'jumlah' => 1
         //     ],
         // ];
+        $hargaTotal = 0;
         $keranjang = $this->session->get('keranjang');
+        if(!isset($keranjang)){
+            $keranjang = [];
+        }
         foreach ($keranjang as $index => $k) {
             $produk = $this->barangModel->getBarang($k['id_barang']);
             foreach (json_decode($produk['varian'], true) as $v) {
                 if($v['nama'] == $k['varian'] ) {
-                    $keranjang[$index]['src_gambar'] = "/viewvar/".$k['id_barang']."/".explode(',', $v['urutan_gambar'])[0];
-                    
+                    $keranjang[$index]['src_gambar'] = "/viewvar/".$k['id_barang']."/".explode(',', $v['urutan_gambar'])[0];    
                 }
             }
             $keranjang[$index]['detail'] = $produk;
+            $hargaTotal += $produk['harga'] * $k['jumlah'] * (100 - $produk['diskon']) / 100;
         }
         
         $data = [
             'title' => 'Keranjang',
             'keranjang' => $keranjang,
+            'hargaTotal' => $hargaTotal,
+            'hargaKeseluruhan' => $hargaTotal + 5000
         ];
         return view('pages/cart', $data);
     }
@@ -116,6 +130,31 @@ class Pages extends BaseController
         return redirect()->to('/cart');
     }
 
+    public function reduceCart($index_cart)
+    {
+        $keranjang = $this->session->get('keranjang');
+        $keranjang[$index_cart]['jumlah'] -= 1;
+        if($keranjang[$index_cart]['jumlah'] == 0 )
+        {
+            unset($keranjang[$index_cart]);
+            $keranjangBaru = array_values($keranjang);
+            $this->session->set(['keranjang' => $keranjangBaru]);
+            return redirect()->to('/cart');
+        }
+        $this->session->set(['keranjang' => $keranjang]);
+        return redirect()->to('/cart');
+    }
+
+    public function deleteCart($index_cart)
+    {
+        $keranjang = $this->session->get('keranjang');
+        unset($keranjang[$index_cart]);
+
+        $keranjangBaru = array_values($keranjang);
+        $this->session->set(['keranjang'=> $keranjangBaru]);
+        return redirect()->to('/cart');
+
+    }
     public function address()
     {
         //Dapatkan data provinsi

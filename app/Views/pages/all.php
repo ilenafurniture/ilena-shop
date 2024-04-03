@@ -3,7 +3,8 @@
 
 <div class="container d-flex konten gap-5">
     <div style="width: 200px;">
-        <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+        <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample" aria-expanded="false"
+            aria-controls="collapseExample">
             Kategori
         </div>
         <div class="collapse py-2" id="collapseExample">
@@ -27,7 +28,8 @@
             </div>
         </div>
 
-        <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample1" aria-expanded="false" aria-controls="collapseExample1">
+        <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample1" aria-expanded="false"
+            aria-controls="collapseExample1">
             Varian
         </div>
         <div class="collapse py-2" id="collapseExample1">
@@ -62,163 +64,54 @@
             </ol>
         </nav>
         <div class="container-card1">
+            <?php foreach ($produk as $ind_p => $p) { ?>
             <div class="card1">
                 <div style="position: relative;">
                     <div class="card1-content-img">
-                        <span>50%</span>
+                        <span><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
                         <div class="d-flex flex-column gap-2">
                             <a class="card1-btn-img" href="/wishlist"><i class="material-icons">bookmark_border</i></a>
-                            <a class="card1-btn-img" href="/cart"><i class="material-icons">shopping_cart</i></a>
+                            <a id="card<?= $ind_p ?>" class="card1-btn-img"
+                                href="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'],true)[0]['nama'] ?>/1"><i
+                                    class="material-icons">shopping_cart</i></a>
                         </div>
                     </div>
-                    <a href="/product/1">
-                        <img src="img/contoh.webp" alt="">
+                    <a href="/product/<?= $p['id']; ?>">
+                        <img id="img<?= $ind_p ?>" src="/viewpic/<?= $p['id']; ?>" alt="">
                     </a>
                 </div>
                 <div class="container-varian mb-1">
-                    <input id="varian-1-1" type="radio" name="varian">
-                    <label for="varian-1-1"><span style="background-color: brown;"></span></label>
-                    <input id="varian-1-2" type="radio" name="varian">
-                    <label for="varian-1-2"><span style="background-color: aqua;"></span></label>
-                    <input id="varian-1-3" type="radio" name="varian">
-                    <label for="varian-1-3"><span style="background-color: grey;"></span></label>
-                </div>
-                <h5>Rak Serbaguna</h5>
-                <div class="d-flex gap-2">
-                    <p class="harga">Rp 50,000.000</p>
-                    <p class="harga-diskon">Rp 100,000.000</p>
-                </div>
-            </div>
+                    <?php foreach (json_decode($p['varian'], true) as $ind_v => $v) { ?>
+                    <input id="varian-<?= $ind_p ?>-<?= $ind_v ?>" value="<?= $v['urutan_gambar'] ?>-<?= $v['nama'] ?>"
+                        type="radio" name="varian<?= $ind_p ?>">
+                    <label for="varian-<?= $ind_p ?>-<?= $ind_v ?>"><span
+                            style="background-color: <?= $v['kode'] ?>"></span></label>
+                    <?php } ?>
+                    <script>
+                    const btnKeranjang<?= $ind_p ?>Elm = document.getElementById("card<?= $ind_p ?>");
+                    const varian<?= $ind_p ?>Elm = document.querySelectorAll('input[name="varian<?= $ind_p ?>"]');
+                    varian<?= $ind_p ?>Elm.forEach(elm => {
+                        elm.addEventListener('change', (e) => {
+                            console.log(e.target.value)
+                            const img<?= $ind_p ?>Elm = document.getElementById("img<?= $ind_p ?>");
+                            img<?= $ind_p ?>Elm.src =
+                                "/viewvar/<?= $p['id']; ?>/" + e.target.value.split("-")[0].split(",")[
+                                    0];
 
-            <div class="card1">
-                <div style="position: relative;">
-                    <div class="card1-content-img">
-                        <span>50%</span>
-                        <div class="d-flex flex-column gap-2">
-                            <a class="card1-btn-img" href="/wishlist"><i class="material-icons">bookmark_border</i></a>
-                            <a class="card1-btn-img" href="/cart"><i class="material-icons">shopping_cart</i></a>
-                        </div>
-                    </div>
-                    <a href="#"><img src="https://i.ibb.co/86L9vkV/DTV-706-MAHONI-DEPAN.webp" alt="DTV-706-MAHONI-DEPAN" border="0"></a>
+                            btnKeranjang<?= $ind_p ?>Elm.href = "/addcart/<?= $p['id'] ?>/" + e.target
+                                .value.split("-")[1] + "/1";
+                        })
+                    });
+                    </script>
                 </div>
-                <div class="container-varian mb-1">
-                    <input id="varian-2-1" type="radio" name="varian">
-                    <label for="varian-2-1"><span style="background-color: brown;"></span></label>
-                    <input id="varian-2-2" type="radio" name="varian">
-                    <label for="varian-2-2"><span style="background-color: aqua;"></span></label>
-                    <input id="varian-2-3" type="radio" name="varian">
-                    <label for="varian-2-3"><span style="background-color: grey;"></span></label>
-                </div>
-                <h5>Lemari TV</h5>
+                <h5><?= $p['nama']; ?></h5>
                 <div class="d-flex gap-2">
-                    <p class="harga">Rp 50,000.000</p>
-                    <p class="harga-diskon">Rp 100,000.000</p>
+                    <p class="harga">Rp <?= number_format($p['harga'] * (100 - $p['diskon']) / 100, 0, ',', '.'); ?></p>
+                    <p class="harga-diskon">Rp <?= number_format($p['harga'], 0, ',', '.') ?>
+                    </p>
                 </div>
             </div>
-
-            <div class="card1">
-                <div style="position: relative;">
-                    <div class="card1-content-img">
-                        <span>50%</span>
-                        <div class="d-flex flex-column gap-2">
-                            <a class="card1-btn-img" href="/wishlist"><i class="material-icons">bookmark_border</i></a>
-                            <a class="card1-btn-img" href="/cart"><i class="material-icons">shopping_cart</i></a>
-                        </div>
-                    </div>
-                    <a href="#"><img src="https://i.ibb.co/VgDyQz7/ALA-859-WINGE-PUTIH.webp" alt="ALA-859-WINGE-PUTIH"></a>
-                </div>
-                <div class="container-varian mb-1">
-                    <input id="varian-3-1" type="radio" name="varian">
-                    <label for="varian-3-1"><span style="background-color: brown;"></span></label>
-                    <input id="varian-3-2" type="radio" name="varian">
-                    <label for="varian-3-2"><span style="background-color: aqua;"></span></label>
-                    <input id="varian-3-3" type="radio" name="varian">
-                    <label for="varian-3-3"><span style="background-color: grey;"></span></label>
-                </div>
-                <h5>Lemari Anak</h5>
-                <div class="d-flex gap-2">
-                    <p class="harga">Rp 50,000.000</p>
-                    <p class="harga-diskon">Rp 100,000.000</p>
-                </div>
-            </div>
-
-            <div class="card1">
-                <div style="position: relative;">
-                    <div class="card1-content-img">
-                        <span>50%</span>
-                        <div class="d-flex flex-column gap-2">
-                            <a class="card1-btn-img" href="/wishlist"><i class="material-icons">bookmark_border</i></a>
-                            <a class="card1-btn-img" href="/cart"><i class="material-icons">shopping_cart</i></a>
-                        </div>
-                    </div>
-                    <a href="#"><img src="https://i.ibb.co/TmjCjsZ/RB-6180-P-DEPAN.webp" alt="RB-6180-P-DEPAN"></a>
-                </div>
-                <div class="container-varian mb-1">
-                    <input id="varian-4-1" type="radio" name="varian">
-                    <label for="varian-4-1"><span style="background-color: brown;"></span></label>
-                    <input id="varian-4-2" type="radio" name="varian">
-                    <label for="varian-4-2"><span style="background-color: aqua;"></span></label>
-                    <input id="varian-4-3" type="radio" name="varian">
-                    <label for="varian-4-3"><span style="background-color: grey;"></span></label>
-                </div>
-                <h5>Rak Serbaguna</h5>
-                <div class="d-flex gap-2">
-                    <p class="harga">Rp 50,000.000</p>
-                    <p class="harga-diskon">Rp 100,000.000</p>
-                </div>
-            </div>
-
-            <div class="card1">
-                <div style="position: relative;">
-                    <div class="card1-content-img">
-                        <span>50%</span>
-                        <div class="d-flex flex-column gap-2">
-                            <a class="card1-btn-img" href="/wishlist"><i class="material-icons">bookmark_border</i></a>
-                            <a class="card1-btn-img" href="/cart"><i class="material-icons">shopping_cart</i></a>
-                        </div>
-                    </div>
-                    <a href="#"><img src="https://i.ibb.co/TmjCjsZ/RB-6180-P-DEPAN.webp" alt="RB-6180-P-DEPAN"></a>
-                </div>
-                <div class="container-varian mb-1">
-                    <input id="varian-4-1" type="radio" name="varian">
-                    <label for="varian-4-1"><span style="background-color: brown;"></span></label>
-                    <input id="varian-4-2" type="radio" name="varian">
-                    <label for="varian-4-2"><span style="background-color: aqua;"></span></label>
-                    <input id="varian-4-3" type="radio" name="varian">
-                    <label for="varian-4-3"><span style="background-color: grey;"></span></label>
-                </div>
-                <h5>Rak Serbaguna</h5>
-                <div class="d-flex gap-2">
-                    <p class="harga">Rp 50,000.000</p>
-                    <p class="harga-diskon">Rp 100,000.000</p>
-                </div>
-            </div>
-
-            <div class="card1">
-                <div style="position: relative;">
-                    <div class="card1-content-img">
-                        <span>50%</span>
-                        <div class="d-flex flex-column gap-2">
-                            <a class="card1-btn-img" href="/wishlist"><i class="material-icons">bookmark_border</i></a>
-                            <a class="card1-btn-img" href="/cart"><i class="material-icons">shopping_cart</i></a>
-                        </div>
-                    </div>
-                    <a href="#"><img src="https://i.ibb.co/TmjCjsZ/RB-6180-P-DEPAN.webp" alt="RB-6180-P-DEPAN"></a>
-                </div>
-                <div class="container-varian mb-1">
-                    <input id="varian-4-1" type="radio" name="varian">
-                    <label for="varian-4-1"><span style="background-color: brown;"></span></label>
-                    <input id="varian-4-2" type="radio" name="varian">
-                    <label for="varian-4-2"><span style="background-color: aqua;"></span></label>
-                    <input id="varian-4-3" type="radio" name="varian">
-                    <label for="varian-4-3"><span style="background-color: grey;"></span></label>
-                </div>
-                <h5>Rak Serbaguna</h5>
-                <div class="d-flex gap-2">
-                    <p class="harga">Rp 50,000.000</p>
-                    <p class="harga-diskon">Rp 100,000.000</p>
-                </div>
-            </div>
+            <?php } ?>
         </div>
     </div>
 </div>

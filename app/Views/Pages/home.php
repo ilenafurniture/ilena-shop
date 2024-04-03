@@ -104,7 +104,9 @@
                         <span><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
                         <div class="d-flex flex-column gap-2">
                             <a class="card1-btn-img" href="/wishlist"><i class="material-icons">bookmark_border</i></a>
-                            <a class="card1-btn-img" href="/cart"><i class="material-icons">shopping_cart</i></a>
+                            <a id="card<?= $ind_p ?>" class="card1-btn-img"
+                                href="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'],true)[0]['nama'] ?>/1"><i
+                                    class="material-icons">shopping_cart</i></a>
                         </div>
                     </div>
                     <a href="/product/<?= $p['id']; ?>">
@@ -113,20 +115,24 @@
                 </div>
                 <div class="container-varian mb-1">
                     <?php foreach (json_decode($p['varian'], true) as $ind_v => $v) { ?>
-                    <input id="varian-<?= $ind_p ?>-<?= $ind_v ?>" value="<?= $v['urutan_gambar'] ?>" type="radio"
-                        name="varian<?= $ind_p ?>">
+                    <input id="varian-<?= $ind_p ?>-<?= $ind_v ?>" value="<?= $v['urutan_gambar'] ?>-<?= $v['nama'] ?>"
+                        type="radio" name="varian<?= $ind_p ?>">
                     <label for="varian-<?= $ind_p ?>-<?= $ind_v ?>"><span
                             style="background-color: <?= $v['kode'] ?>"></span></label>
                     <?php } ?>
                     <script>
+                    const btnKeranjang<?= $ind_p ?>Elm = document.getElementById("card<?= $ind_p ?>");
                     const varian<?= $ind_p ?>Elm = document.querySelectorAll('input[name="varian<?= $ind_p ?>"]');
                     varian<?= $ind_p ?>Elm.forEach(elm => {
                         elm.addEventListener('change', (e) => {
                             console.log(e.target.value)
                             const img<?= $ind_p ?>Elm = document.getElementById("img<?= $ind_p ?>");
                             img<?= $ind_p ?>Elm.src =
-                                "/viewvar/<?= $p['id']; ?>/" + e.target.value
-                                .split(",")[0];
+                                "/viewvar/<?= $p['id']; ?>/" + e.target.value.split("-")[0].split(",")[
+                                    0];
+
+                            btnKeranjang<?= $ind_p ?>Elm.href = "/addcart/<?= $p['id'] ?>/" + e.target
+                                .value.split("-")[1] + "/1";
                         })
                     });
                     </script>
@@ -147,4 +153,5 @@
     </div>
 
 </div>
+
 <?= $this->endSection(); ?>

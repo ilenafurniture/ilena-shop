@@ -20,7 +20,8 @@
             <p><?= $produk['deskripsi']['deskripsi'] ?></p>
             <div class="container-varian mb-3">
                 <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
-                <input id="varian<?= $ind_v ?>" value="<?= $v['urutan_gambar'] ?>" type="radio" name="varian">
+                <input id="varian<?= $ind_v ?>" value="<?= $v['urutan_gambar'] ?>-<?= $v['nama'] ?>" type="radio"
+                    name="varian">
                 <label for="varian<?= $ind_v ?>"><span style="background-color: <?= $v['kode'] ?>"></span></label>
                 <?php } ?>
             </div>
@@ -190,15 +191,17 @@ const btnKeranjangElm = document.getElementById('btn-keranjang');
 const radioVarianElm = document.querySelectorAll('input[name="varian"]');
 const varian = JSON.parse('<?= json_encode($produk['varian']) ?>');
 console.log(varian)
+let varianSelected = "<?= $produk['varian'][0]['nama'] ?>";
+let jumlahSelected = "1";
 radioVarianElm.forEach(elm => {
     elm.addEventListener('change', (e) => {
         const imgElm = document.querySelector(".img-detail-prev");
         imgElm.src =
-            "/viewvar/<?= $produk['id']; ?>/" + e.target.value.split(",")[0];
+            "/viewvar/<?= $produk['id']; ?>/" + e.target.value.split("-")[0].split(",")[0];
 
         const containerImgDetailElm = document.querySelector(".container-img-detail-select");
         containerImgDetailElm.innerHTML = "";
-        const urutanGambar = e.target.value.split(",");
+        const urutanGambar = e.target.value.split("-")[0].split(",");
         urutanGambar.forEach((urutan, ind_x) => {
             containerImgDetailElm.innerHTML += '<input id="gambar' + ind_x +
                 '" type="radio" name="gambar" value="' + urutan +
@@ -206,16 +209,17 @@ radioVarianElm.forEach(elm => {
                 '"><img src="/viewvar/<?= $produk['id'] ?>/' + urutan + '"></label>'
         })
 
-        btnKeranjangElm.href = "/addcart/<?= $produk['id'] ?>/" + e.target.value + "/1"
-        cari tahu siapa yg punya e target value(urutan gambar) yg ada di varian
+        btnKeranjangElm.href = "/addcart/<?= $produk['id'] ?>/" + e.target.value.split("-")[1] + "/" +
+            jumlahSelected;
+        varianSelected = e.target.value.split("-")[1];
 
         const radioImgElm = document.querySelectorAll('input[name="gambar"]');
         radioImgElm.forEach(elm1 => {
             elm1.addEventListener('change', (elmVar) => {
                 const imgElm = document.querySelector(".img-detail-prev");
                 imgElm.src =
-                    "/viewvar/<?= $produk['id']; ?>/" + elmVar.target.value
-                    .split("-")[0];
+                    "/viewvar/<?= $produk['id']; ?>/" + elmVar.target.value.split("-")[
+                        0].split(",")[0];
             })
         });
     })
@@ -225,11 +229,17 @@ const jumlahBarangElm = document.querySelector('input[name="jumlah"]');
 function kurangJumlah() {
     if (Number(jumlahBarangElm.value) > 1) {
         jumlahBarangElm.value--
+        btnKeranjangElm.href = "/addcart/<?= $produk['id'] ?>/" + varianSelected + "/" +
+            jumlahBarangElm.value;
+        jumlahSelected = jumlahBarangElm.value;
     }
 }
 
 function tambahJumlah() {
-    jumlahBarangElm.value++
+    jumlahBarangElm.value++;
+    btnKeranjangElm.href = "/addcart/<?= $produk['id'] ?>/" + varianSelected + "/" +
+        jumlahBarangElm.value;
+    jumlahSelected = jumlahBarangElm.value;
 }
 </script>
 
