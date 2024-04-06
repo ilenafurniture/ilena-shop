@@ -28,9 +28,14 @@ class Pages extends BaseController
     public function index()
     {
         $produk  = $this->barangModel->getBarang();
+        $wishlist = $this->session->get('wishlist');
+        if (!isset($wishlist)){
+            $wishlist = [];
+        }
         $data = [
             'title' => 'Home',
             'produk' => $produk,
+            'wishlist' => $wishlist
         ];
         return view('pages/home', $data);
     }
@@ -43,13 +48,18 @@ class Pages extends BaseController
     }
     public function product($id = false)
     {
+        $wishlist = $this->session->get('wishlist');
+        if (!isset($wishlist)){
+            $wishlist = [];
+        }
         if ($id) {
             $product = $this->barangModel->getBarang($id);
             $product['deskripsi'] = json_decode($product['deskripsi'], true);
             $product['varian'] = json_decode($product['varian'], true);
             $data = [
                 'title' => 'produk',
-                'produk' => $product
+                'produk' => $product,
+                'wishlist' => $wishlist
             ];
             return view('pages/product', $data);
         } else {
@@ -57,6 +67,7 @@ class Pages extends BaseController
             $data = [
                 'title' => 'Produk Kami',
                 'produk' => $product,
+                'wishlist' => $wishlist
             ];
             return view('pages/all', $data);
         }
@@ -211,10 +222,33 @@ class Pages extends BaseController
     }
     public function wishlist()
     {
+        $wishlist = $this->session->get('wishlist');
+        $produk = [];
+        if(!isset($wishlist))
+        {
+            $wishlist = [];    
+        }
+        foreach ($wishlist as $w) {
+            array_push($produk, $this->barangModel->getBarang($w));
+
+        }
         $data = [
             'title' => 'Menu Favorite',
+            'produk' => $produk,
+            'wishlist'=> $wishlist
         ];
         return view('pages/wishlist', $data);
 
+    }
+    public function addWishlist($id_barang)
+    {
+        $wishlist = $this->session->get('wishlist');
+        if(!isset($wishlist))
+        {
+            $wishlist = [];    
+        }
+        array_push($wishlist,$id_barang);
+        $this->session->set(['wishlist'=> $wishlist]);
+        return redirect()->to('/wishlist');
     }
 }

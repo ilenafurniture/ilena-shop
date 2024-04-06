@@ -55,8 +55,8 @@
                 </div>
             </div>
             <?php } ?>
-            <a class="btn-teks-aja my-3" href="/wishlist"><i class="material-icons">bookmark_border</i> Tambah ke
-                wishlist</a>
+            <a class="btn-teks-aja my-3" href="/addwishlist/<?= $produk['id']?>">
+                <?= in_array($produk['id'], $wishlist) ? '<i class="material-icons">bookmark</i> Hapus dari wishlist' : '<i class="material-icons">bookmark_border</i> Tambah ke wishlist' ?></a>
 
             <div class="accordion accordion-flush" id="accordionFlushExample">
                 <div class="accordion-item">

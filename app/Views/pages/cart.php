@@ -4,7 +4,7 @@
     <div style="flex:1;">
         <div class="mb-4">
             <h1 class="teks-sedang">Keranjang</h1>
-            <p style="color: grey;">2 barang</p>
+            <p style="color: grey;"><?= count($keranjang) <= 0 ?'Tidak Ada': count($keranjang) ?> Produk</p>
         </div>
         <div class="container-keranjang">
             <?php foreach ($keranjang as $index => $k) { ?>

@@ -70,7 +70,8 @@
                     <div class="card1-content-img">
                         <span><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
                         <div class="d-flex flex-column gap-2">
-                            <a class="card1-btn-img" href="/wishlist"><i class="material-icons">bookmark_border</i></a>
+                            <a class="card1-btn-img" href="/addwishlist/<?= $p['id']?>"><i
+                                    class="material-icons"><?= in_array($p['id'], $wishlist) ? 'bookmark' : 'bookmark_border' ?></i></a>
                             <a id="card<?= $ind_p ?>" class="card1-btn-img"
                                 href="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'],true)[0]['nama'] ?>/1"><i
                                     class="material-icons">shopping_cart</i></a>

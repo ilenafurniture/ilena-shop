@@ -23,7 +23,9 @@ $routes->get('/shipping', 'Pages::shipping');
 
 $routes->get('/payment', 'Pages::payment');
 $routes->get('/progresspay', 'Pages::progressPay');
+
 $routes->get('/wishlist', 'Pages::wishlist');
+$routes->get('/addwishlist/(:any)', 'Pages::addWishlist/$1');
 
 
 
