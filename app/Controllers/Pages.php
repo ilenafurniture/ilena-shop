@@ -191,9 +191,59 @@ class Pages extends BaseController
             return "cURL Error #:" . $err;
         }
         $provinsi = json_decode($response, true);
+
+        $hargaTotal = 0;
+        $keranjang = $this->session->get('keranjang');
+        if(!isset($keranjang)){
+            return redirect()->to('/product');
+        }
+        foreach ($keranjang as $index => $k) {
+            $produk = $this->barangModel->getBarang($k['id_barang']);
+            foreach (json_decode($produk['varian'], true) as $v) {
+                if($v['nama'] == $k['varian'] ) {
+                    $keranjang[$index]['src_gambar'] = "/viewvar/".$k['id_barang']."/".explode(',', $v['urutan_gambar'])[0];    
+                }
+            }
+            $keranjang[$index]['detail'] = $produk;
+            $hargaTotal += $produk['harga'] * $k['jumlah'] * (100 - $produk['diskon']) / 100;
+        }
+
+        // $alamat = $this->session->get('alamat');
+        // if(!isset($alamat)){
+        //     $alamat = [];
+        // }
+        $alamat = [
+            [
+                'email_pemesan' => 'galihsuks@gmail.com',
+                'nama_penerima' => 'Sukma Mukti',
+                'nohp_penerima' => '0812345678',
+                'prov' => 'Jawa Tengah',
+                'kab' => 'Klaten',
+                'kec' => 'Klaten Utara',
+                'kel' => 'Jonggrangan',
+                'alamat_tambahan' => 'Jl.Manahan No.123',
+                'alamat_lengkap' => 'Jl.Manahan No.123 Jonggrangan, Klaten Utara, Klaten, Jawa Tengah'
+            ],
+            [
+                'email_pemesan' => 'emaoildqwd@gmail.com',
+                'nama_penerima' => 'Hidayatullah',
+                'nohp_penerima' => '081445353',
+                'prov' => 'Jawa Timur',
+                'kab' => 'Surabaya',
+                'kec' => 'Sukolilo',
+                'kel' => 'Keputih',
+                'alamat_tambahan' => 'Jl.Keputih Gang III',
+                'alamat_lengkap' => 'Jl.Keputih Gang III Keputih, Sukolilo, Surabaya, Jawa Timur'
+            ]
+        ];
+
         $data = [
             'title' => 'Alamat',
             'provinsi' => $provinsi["rajaongkir"]["results"],
+            'keranjang' => $keranjang,
+            'hargaTotal' => $hargaTotal,
+            'hargaKeseluruhan' => $hargaTotal + 5000,
+            'alamat' => $alamat
         ];
         return view('pages/address', $data);
     }

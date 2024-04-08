@@ -9,12 +9,14 @@
         <div class="container-keranjang">
             <?php foreach ($keranjang as $index => $k) { ?>
             <div class="item-keranjang">
-                <div style="width: 150px;">
+                <a href="/product/<?= $k['detail']['id'] ?>" style="width: 150px; display:block;">
                     <img src="<?= $k['src_gambar'] ?>" alt="Gambar Keranjang">
-                </div>
+                </a>
                 <div style="flex: 1;" class="d-flex flex-column">
-                    <h1 class="nama-barang"><?= $k['detail']['nama'] ?></h1>
-                    <p class="my-2">Varian: <?= ucfirst($k['varian']) ?></p>
+                    <a href="/product/<?= $k['detail']['id'] ?>" style="text-decoration:none; color: black;">
+                        <h1 class="nama-barang"><?= $k['detail']['nama'] ?></h1>
+                        <p class="my-2">Varian: <?= ucfirst($k['varian']) ?></p>
+                    </a>
                     <div class="d-flex align-items-end flex-grow-1">
                         <div class="d-flex align-items-center gap-4">
                             <div class="number-control">

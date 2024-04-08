@@ -472,10 +472,10 @@
   width: 100%;
 }
 .item-keranjang .nama-barang {
-  font-size: larger;
+  font-size: 24px;
   margin: 0;
   letter-spacing: -1px;
-  font-weight: 500;
+  font-weight: 700;
 }
 
 .container-address {
