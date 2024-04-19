@@ -2,27 +2,25 @@
 <?= $this->section("content"); ?>
 <div class="container konten baris-ke-kolom">
     <div style="flex:1;">
-        <h5 style="letter-spacing: -1px; font-weight:100;"><a class="me-3 text-dark fw-bold"
-                style="text-decoration: none;">Alamat</a> >
-            <a class="mx-3 text-secondary" style="text-decoration: none;">Kurir</a> > <a class="mx-3 text-secondary"
-                style="text-decoration: none;">
+        <h5 style="letter-spacing: -1px; font-weight:100;"><a class="me-3 text-dark fw-bold" style="text-decoration: none;">Alamat</a> >
+            <a class="mx-3 text-secondary" style="text-decoration: none;">Kurir</a> > <a class="mx-3 text-secondary" style="text-decoration: none;">
                 Pembayaran</a>
         </h5>
         <div class="container-address my-4">
             <?php foreach ($alamat as $ind_a => $a) { ?>
-            <input type="radio" name="address" id="address<?= $ind_a ?>">
-            <label for="address<?= $ind_a ?>" class="item-address">
-                <div style="flex: 1;">
-                    <p class="mb-1 nama"><?= $a['nama_penerima'] ?></p>
-                    <p class="mb-1"><?= $a['alamat_lengkap'] ?></p>
-                    <p class="mb-1"><?= $a['nohp_penerima'] ?></p>
-                    <p class="mb-1"><b style="font-weight: 600;">Pemesan</b> : <?= $a['email_pemesan'] ?></p>
-                </div>
-                <div style="width: 100px" class="d-flex gap-3 justify-content-end align-items-start">
-                    <a href="#" class="btn-teks-aja text-dark">Edit</a>
-                    <a href="#" class="btn-teks-aja">Hapus</a>
-                </div>
-            </label>
+                <input type="radio" name="address" id="address<?= $ind_a ?>">
+                <label for="address<?= $ind_a ?>" class="item-address">
+                    <div style="flex: 1;">
+                        <p class="mb-1 nama"><?= $a['nama_penerima'] ?></p>
+                        <p class="mb-1"><?= $a['alamat_lengkap'] ?></p>
+                        <p class="mb-1"><?= $a['nohp_penerima'] ?></p>
+                        <p class="mb-1"><b style="font-weight: 600;">Pemesan</b> : <?= $a['email_pemesan'] ?></p>
+                    </div>
+                    <div style="width: 100px" class="d-flex gap-3 justify-content-end align-items-start">
+                        <a href="#" class="btn-teks-aja text-dark">Edit</a>
+                        <a href="#" class="btn-teks-aja">Hapus</a>
+                    </div>
+                </label>
             <?php } ?>
 
             <!-- <input type="radio" name="address" id="address2">
@@ -39,83 +37,82 @@
                 </div>
             </label> -->
         </div>
-        <button type="button" class="btn-teks-aja" data-bs-toggle="modal" data-bs-target="#exampleModal"><i
-                class="material-icons">add</i> Tambah Alamat</button>
+        <button type="button" class="btn-teks-aja" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="material-icons">add</i> Tambah Alamat</button>
 
         <!-- Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title" id="exampleModalLabel">Alamat Baru</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="pb-3 border-bottom">
-                            <h5 class="mb-2">Informasi Pemesan</h5>
-                            <div class="form-floating mb-1">
-                                <input type="email" class="form-control" placeholder="Email" name="emailPem" required
-                                    value="<?= session()->getFlashdata('emailPem') ? session()->getFlashdata('emailPem') : ''; ?>">
-                                <label for="floatingInput">Email</label>
+            <form action="/addaddress" method="post">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title" id="exampleModalLabel">Alamat Baru</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="pb-3 border-bottom">
+                                <h5 class="mb-2">Informasi Pemesan</h5>
+                                <div class="form-floating mb-1">
+                                    <input type="email" class="form-control" placeholder="Email" name="emailPem" required>
+                                    <label for="floatingInput">Email</label>
+                                </div>
+                            </div>
+                            <div class="py-3">
+                                <h5 class="mb-2">Informasi Penerima</h5>
+                                <div class="form-floating mb-1">
+                                    <input type="text" class="form-control" placeholder="Email" name="nama" required>
+                                    <label for="floatingInput">Nama Lengkap</label>
+                                </div>
+                                <div class="form-floating mb-1">
+                                    <input type="number" class="form-control" placeholder="Nomor Handphone" name="nohp" required>
+                                    <label for="floatingInput">No. HP</label>
+                                </div>
+                                <div class="form-alamat d-flex mb-1 gap-1">
+                                    <div class="form-floating w-50">
+                                        <select class="form-select" aria-label="Default select example" name="provinsi" required>
+                                            <option value="">-- Pilih provinsi --</option>
+                                            <?php foreach ($provinsi as $p) { ?>
+                                                <option value="<?= $p['province_id']; ?>-<?= $p['province']; ?>">
+                                                    <?= $p['province']; ?>
+                                                </option>
+                                            <?php } ?>
+                                        </select>
+                                        <label for="floatingProvinsi">Provinsi</label>
+                                    </div>
+                                    <div class="form-floating w-50">
+                                        <select class="form-select" aria-label="Default select example" name="kota" required>
+                                            <option value="">-- Pilih kota --</option>
+                                        </select>
+                                        <label for="floatingProvinsi">Kabupaten/Kota</label>
+                                    </div>
+                                </div>
+                                <div class="form-alamat d-flex mb-1 gap-1">
+                                    <div class="form-floating w-50">
+                                        <select class="form-select" aria-label="Default select example" name="kecamatan" required>
+                                            <option value="">-- Pilih kecamatan --</option>
+                                        </select>
+                                        <label for="floatingProvinsi">Kecamatan</label>
+                                    </div>
+                                    <div class="form-floating w-50">
+                                        <select class="form-select" aria-label="Default select example" name="kodepos" required>
+                                            <option value="">-- Pilih Desa --</option>
+                                        </select>
+                                        <label for="floatingProvinsi">Desa/Kelurahan</label>
+                                    </div>
+                                </div>
+                                <div class="form-alamat form-floating mb-1">
+                                    <input type="text" class="form-control" placeholder="Email" name="alamat_add" required>
+                                    <label for="floatingInput">Jalan, Nomor Rumah, RT-RW</label>
+                                    <div class="invalid-feedback">Tidak boleh mengandung karakter /</div>
+                                </div>
                             </div>
                         </div>
-                        <div class="py-3">
-                            <h5 class="mb-2">Informasi Penerima</h5>
-                            <div class="form-floating mb-1">
-                                <input type="text" class="form-control" placeholder="Email" name="nama" required>
-                                <label for="floatingInput">Nama Lengkap</label>
-                            </div>
-                            <div class="form-floating mb-1">
-                                <input type="number" class="form-control" placeholder="Nomor Handphone" name="nohp"
-                                    required>
-                                <label for="floatingInput">No. HP</label>
-                            </div>
-                            <div class="form-alamat d-flex mb-1 gap-1">
-                                <div class="form-floating w-50">
-                                    <select class="form-select" aria-label="Default select example" name="provinsi">
-                                        <option value="-1">-- Pilih provinsi --</option>
-                                        <?php foreach ($provinsi as $p) { ?>
-                                        <option value="<?= $p['province_id']; ?>-<?= $p['province']; ?>">
-                                            <?= $p['province']; ?>
-                                        </option>
-                                        <?php } ?>
-                                    </select>
-                                    <label for="floatingProvinsi">Provinsi</label>
-                                </div>
-                                <div class="form-floating w-50">
-                                    <select class="form-select" aria-label="Default select example" name="kota">
-                                        <option value="-1">-- Pilih kota --</option>
-                                    </select>
-                                    <label for="floatingProvinsi">Kabupaten/Kota</label>
-                                </div>
-                            </div>
-                            <div class="form-alamat d-flex mb-1 gap-1">
-                                <div class="form-floating w-50">
-                                    <select class="form-select" aria-label="Default select example" name="kecamatan">
-                                        <option selected value="-1">-- Pilih kecamatan --</option>
-                                    </select>
-                                    <label for="floatingProvinsi">Kecamatan</label>
-                                </div>
-                                <div class="form-floating w-50">
-                                    <select class="form-select" aria-label="Default select example" name="kodepos">
-                                        <option value="-1">-- Pilih Desa --</option>
-                                    </select>
-                                    <label for="floatingProvinsi">Desa/Kelurahan</label>
-                                </div>
-                            </div>
-                            <div class="form-alamat form-floating mb-1">
-                                <input type="text" class="form-control" placeholder="Email" name="alamat_add" required>
-                                <label for="floatingInput">Jalan, Nomor Rumah, RT-RW</label>
-                                <div class="invalid-feedback">Tidak boleh mengandung karakter /</div>
-                            </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-teks-aja" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-lonjong">Tambah</button>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-teks-aja" data-bs-dismiss="modal">Batal</button>
-                        <button type="button" class="btn btn-lonjong">Tambah</button>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
     <div class="tigapuluh-ke-seratus">

@@ -29,7 +29,7 @@ class Pages extends BaseController
     {
         $produk  = $this->barangModel->getBarang();
         $wishlist = $this->session->get('wishlist');
-        if (!isset($wishlist)){
+        if (!isset($wishlist)) {
             $wishlist = [];
         }
         $data = [
@@ -49,7 +49,7 @@ class Pages extends BaseController
     public function product($id = false)
     {
         $wishlist = $this->session->get('wishlist');
-        if (!isset($wishlist)){
+        if (!isset($wishlist)) {
             $wishlist = [];
         }
         if ($id) {
@@ -93,20 +93,20 @@ class Pages extends BaseController
         // ];
         $hargaTotal = 0;
         $keranjang = $this->session->get('keranjang');
-        if(!isset($keranjang)){
+        if (!isset($keranjang)) {
             $keranjang = [];
         }
         foreach ($keranjang as $index => $k) {
             $produk = $this->barangModel->getBarang($k['id_barang']);
             foreach (json_decode($produk['varian'], true) as $v) {
-                if($v['nama'] == $k['varian'] ) {
-                    $keranjang[$index]['src_gambar'] = "/viewvar/".$k['id_barang']."/".explode(',', $v['urutan_gambar'])[0];    
+                if ($v['nama'] == $k['varian']) {
+                    $keranjang[$index]['src_gambar'] = "/viewvar/" . $k['id_barang'] . "/" . explode(',', $v['urutan_gambar'])[0];
                 }
             }
             $keranjang[$index]['detail'] = $produk;
             $hargaTotal += $produk['harga'] * $k['jumlah'] * (100 - $produk['diskon']) / 100;
         }
-        
+
         $data = [
             'title' => 'Keranjang',
             'keranjang' => $keranjang,
@@ -118,17 +118,17 @@ class Pages extends BaseController
     public function addCart($idbarang, $varian, $jumlah)
     {
         $keranjang = $this->session->get('keranjang');
-        if(!isset($keranjang)){
+        if (!isset($keranjang)) {
             $keranjang = [];
         }
         $ketemu = false;
         foreach ($keranjang as $index => $k) {
-            if($k['id_barang'] == $idbarang && $k['varian'] == $varian) {
-                $keranjang[$index]['jumlah']++;
-                $ketemu = true; 
+            if ($k['id_barang'] == $idbarang && $k['varian'] == $varian) {
+                $keranjang[$index]['jumlah'] += $jumlah;
+                $ketemu = true;
             }
         }
-        if(!$ketemu){
+        if (!$ketemu) {
             array_push($keranjang, [
                 'id_barang' => $idbarang,
                 'varian' => $varian,
@@ -145,8 +145,7 @@ class Pages extends BaseController
     {
         $keranjang = $this->session->get('keranjang');
         $keranjang[$index_cart]['jumlah'] -= 1;
-        if($keranjang[$index_cart]['jumlah'] == 0 )
-        {
+        if ($keranjang[$index_cart]['jumlah'] == 0) {
             unset($keranjang[$index_cart]);
             $keranjangBaru = array_values($keranjang);
             $this->session->set(['keranjang' => $keranjangBaru]);
@@ -162,9 +161,8 @@ class Pages extends BaseController
         unset($keranjang[$index_cart]);
 
         $keranjangBaru = array_values($keranjang);
-        $this->session->set(['keranjang'=> $keranjangBaru]);
+        $this->session->set(['keranjang' => $keranjangBaru]);
         return redirect()->to('/cart');
-
     }
     public function address()
     {
@@ -194,48 +192,48 @@ class Pages extends BaseController
 
         $hargaTotal = 0;
         $keranjang = $this->session->get('keranjang');
-        if(!isset($keranjang)){
+        if (!isset($keranjang)) {
             return redirect()->to('/product');
         }
         foreach ($keranjang as $index => $k) {
             $produk = $this->barangModel->getBarang($k['id_barang']);
             foreach (json_decode($produk['varian'], true) as $v) {
-                if($v['nama'] == $k['varian'] ) {
-                    $keranjang[$index]['src_gambar'] = "/viewvar/".$k['id_barang']."/".explode(',', $v['urutan_gambar'])[0];    
+                if ($v['nama'] == $k['varian']) {
+                    $keranjang[$index]['src_gambar'] = "/viewvar/" . $k['id_barang'] . "/" . explode(',', $v['urutan_gambar'])[0];
                 }
             }
             $keranjang[$index]['detail'] = $produk;
             $hargaTotal += $produk['harga'] * $k['jumlah'] * (100 - $produk['diskon']) / 100;
         }
 
-        // $alamat = $this->session->get('alamat');
-        // if(!isset($alamat)){
-        //     $alamat = [];
-        // }
-        $alamat = [
-            [
-                'email_pemesan' => 'galihsuks@gmail.com',
-                'nama_penerima' => 'Sukma Mukti',
-                'nohp_penerima' => '0812345678',
-                'prov' => 'Jawa Tengah',
-                'kab' => 'Klaten',
-                'kec' => 'Klaten Utara',
-                'kel' => 'Jonggrangan',
-                'alamat_tambahan' => 'Jl.Manahan No.123',
-                'alamat_lengkap' => 'Jl.Manahan No.123 Jonggrangan, Klaten Utara, Klaten, Jawa Tengah'
-            ],
-            [
-                'email_pemesan' => 'emaoildqwd@gmail.com',
-                'nama_penerima' => 'Hidayatullah',
-                'nohp_penerima' => '081445353',
-                'prov' => 'Jawa Timur',
-                'kab' => 'Surabaya',
-                'kec' => 'Sukolilo',
-                'kel' => 'Keputih',
-                'alamat_tambahan' => 'Jl.Keputih Gang III',
-                'alamat_lengkap' => 'Jl.Keputih Gang III Keputih, Sukolilo, Surabaya, Jawa Timur'
-            ]
-        ];
+        $alamat = $this->session->get('alamat');
+        if (!isset($alamat)) {
+            $alamat = [];
+        }
+        // $alamat = [
+        //     [
+        //         'email_pemesan' => 'galihsuks@gmail.com',
+        //         'nama_penerima' => 'Sukma Mukti',
+        //         'nohp_penerima' => '0812345678',
+        //         'prov' => 'Jawa Tengah',
+        //         'kab' => 'Klaten',
+        //         'kec' => 'Klaten Utara',
+        //         'kel' => 'Jonggrangan',
+        //         'alamat_tambahan' => 'Jl.Manahan No.123',
+        //         'alamat_lengkap' => 'Jl.Manahan No.123 Jonggrangan, Klaten Utara, Klaten, Jawa Tengah'
+        //     ],
+        //     [
+        //         'email_pemesan' => 'emaoildqwd@gmail.com',
+        //         'nama_penerima' => 'Hidayatullah',
+        //         'nohp_penerima' => '081445353',
+        //         'prov' => 'Jawa Timur',
+        //         'kab' => 'Surabaya',
+        //         'kec' => 'Sukolilo',
+        //         'kel' => 'Keputih',
+        //         'alamat_tambahan' => 'Jl.Keputih Gang III',
+        //         'alamat_lengkap' => 'Jl.Keputih Gang III Keputih, Sukolilo, Surabaya, Jawa Timur'
+        //     ]
+        // ];
 
         $data = [
             'title' => 'Alamat',
@@ -246,6 +244,39 @@ class Pages extends BaseController
             'alamat' => $alamat
         ];
         return view('pages/address', $data);
+    }
+    public function addAddress()
+    {
+        $emailPem = $this->request->getVar('emailPem');
+        $nama = $this->request->getVar('nama');
+        $nohp = $this->request->getVar('nohp');
+        $provinsi = explode("-", $this->request->getVar('provinsi'));
+        $kota = explode("-", $this->request->getVar('kota'));
+        $kecamatan = explode("-", $this->request->getVar('kecamatan'));
+        $kodepos = explode("-", $this->request->getVar('kodepos'));
+        $alamatAdd = $this->request->getVar('alamat_add');
+
+        $alamat = $this->session->get('alamat');
+        if (!isset($alamat)) {
+            $alamat = [];
+        }
+        array_push($alamat, [
+            'email_pemesan' => $emailPem,
+            'nama_penerima' => $nama,
+            'nohp_penerima' => $nohp,
+            'prov_id' => $provinsi[0],
+            'prov' => $provinsi[1],
+            'kab_id' => $kota[0],
+            'kab' => $kota[1],
+            'kec_id' => $kecamatan[0],
+            'kec' => $kecamatan[1],
+            'desa' => $kodepos[0],
+            'kodepos' => $kodepos[1],
+            'alamat_tambahan' => $alamatAdd,
+            'alamat_lengkap' => $alamatAdd . " " . $kodepos[0] . ", " . $kecamatan[1] . ", " . $kota[1] . ", " . $provinsi[1] . " " . $kodepos[1]
+        ]);
+        $this->session->set(['alamat' => $alamat]);
+        return redirect()->to('/address');
     }
     public function shipping()
     {
@@ -261,44 +292,93 @@ class Pages extends BaseController
         ];
         return view('pages/payment', $data);
     }
-    
+
     public  function progressPay()
     {
         $data = [
             'title' => 'Peroses Pembayaran',
         ];
         return view('pages/progresspay', $data);
-        
     }
     public function wishlist()
     {
         $wishlist = $this->session->get('wishlist');
         $produk = [];
-        if(!isset($wishlist))
-        {
-            $wishlist = [];    
+        if (!isset($wishlist)) {
+            $wishlist = [];
         }
         foreach ($wishlist as $w) {
             array_push($produk, $this->barangModel->getBarang($w));
-
         }
         $data = [
             'title' => 'Menu Favorite',
             'produk' => $produk,
-            'wishlist'=> $wishlist
+            'wishlist' => $wishlist
         ];
         return view('pages/wishlist', $data);
-
     }
     public function addWishlist($id_barang)
     {
         $wishlist = $this->session->get('wishlist');
-        if(!isset($wishlist))
-        {
-            $wishlist = [];    
+        if (!isset($wishlist)) {
+            $wishlist = [];
         }
-        array_push($wishlist,$id_barang);
-        $this->session->set(['wishlist'=> $wishlist]);
+        array_push($wishlist, $id_barang);
+        $this->session->set(['wishlist' => $wishlist]);
         return redirect()->to('/wishlist');
+    }
+    public function delWishlist($id_barang)
+    {
+        $wishlist = session()->get('wishlist');
+        if (($key = array_search($id_barang, $wishlist)) !== false) {
+            unset($wishlist[$key]);
+        }
+        session()->set(['wishlist' => $wishlist]);
+        return redirect()->to('/wishlist');
+    }
+    public function wishlistToCart()
+    {
+        $wishlist = $this->session->get('wishlist');
+        $keranjang = $this->session->get('keranjang');
+        if (!isset($keranjang)) {
+            $keranjang = [];
+        }
+        foreach ($wishlist as $id_barang) {
+            $produknya = $this->barangModel->getBarang($id_barang);
+            $varian = json_decode($produknya['varian'], true)[0]['nama'];
+            // $ketemu = false;
+            // foreach ($keranjang as $index => $element) {
+            //     if ($element['id'] == $id_barang && $element['varian'] == $varian) {
+            //         $keranjang[$index]['jumlah'] += 1;
+            //         $ketemu = true;
+            //     }
+            // }
+            // if (!$ketemu) {
+            //     $keranjangBaru = array(
+            //         'id' => $id_barang,
+            //         'jumlah' => 1,
+            //         'varian' => $varian,
+            //         'index_gambar' => 0
+            //     );
+            //     array_push($keranjang, $keranjangBaru);
+            // }
+
+            $ketemu = false;
+            foreach ($keranjang as $index => $k) {
+                if ($k['id_barang'] == $id_barang && $k['varian'] == $varian) {
+                    $keranjang[$index]['jumlah']++;
+                    $ketemu = true;
+                }
+            }
+            if (!$ketemu) {
+                array_push($keranjang, [
+                    'id_barang' => $id_barang,
+                    'varian' => $varian,
+                    'jumlah' => 1
+                ]);
+            }
+        }
+        $this->session->set(['keranjang' => $keranjang]);
+        return redirect()->to('/cart');
     }
 }

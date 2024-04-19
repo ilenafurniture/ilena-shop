@@ -18,6 +18,8 @@ $routes->get('/reducecart/(:any)', 'Pages::reduceCart/$1');
 
 
 $routes->get('/address', 'Pages::address');
+$routes->post('/addaddress', 'Pages::addAddress');
+$routes->post('/deleteaddress/(:any)', 'Pages::deleteAddress/$1');
 
 $routes->get('/shipping', 'Pages::shipping');
 
@@ -26,6 +28,8 @@ $routes->get('/progresspay', 'Pages::progressPay');
 
 $routes->get('/wishlist', 'Pages::wishlist');
 $routes->get('/addwishlist/(:any)', 'Pages::addWishlist/$1');
+$routes->get('/delwishlist/(:any)', 'Pages::delWishlist/$1');
+$routes->get('/wishlisttocart', 'Pages::wishlistToCart');
 
 
 
