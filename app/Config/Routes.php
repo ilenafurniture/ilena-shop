@@ -17,11 +17,13 @@ $routes->get('/deletecart/(:any)', 'Pages::deleteCart/$1');
 $routes->get('/reducecart/(:any)', 'Pages::reduceCart/$1');
 
 
+$routes->get('/getkota/(:any)', 'Pages::getKota/$1');
+$routes->get('/getkec/(:any)', 'Pages::getKec/$1');
 $routes->get('/address', 'Pages::address');
 $routes->post('/addaddress', 'Pages::addAddress');
-$routes->post('/deleteaddress/(:any)', 'Pages::deleteAddress/$1');
+$routes->get('/deleteaddress/(:any)', 'Pages::deleteAddress/$1');
 
-$routes->get('/shipping', 'Pages::shipping');
+$routes->get('/shipping/(:any)', 'Pages::shipping/$1');
 
 $routes->get('/payment', 'Pages::payment');
 $routes->get('/progresspay', 'Pages::progressPay');

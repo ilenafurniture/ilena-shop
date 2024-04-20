@@ -164,6 +164,60 @@ class Pages extends BaseController
         $this->session->set(['keranjang' => $keranjangBaru]);
         return redirect()->to('/cart');
     }
+
+    public function getKota($id_prov)
+    {
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://pro.rajaongkir.com/api/city?province=" . $id_prov,
+            CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_SSL_VERIFYPEER => 0,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => array(
+                "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
+            ),
+        ));
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        if ($err) {
+            return "cURL Error #:" . $err;
+        }
+        $kota = json_decode($response, true);
+        return $this->response->setJSON($kota, false);
+    }
+    public function getKec($id_kota)
+    {
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://pro.rajaongkir.com/api/subdistrict?city=" . $id_kota,
+            CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_SSL_VERIFYPEER => 0,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => array(
+                "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
+            ),
+        ));
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        if ($err) {
+            return "cURL Error #:" . $err;
+        }
+        $kec = json_decode($response, true);
+        return $this->response->setJSON($kec, false);
+    }
+
     public function address()
     {
         //Dapatkan data provinsi
@@ -210,30 +264,6 @@ class Pages extends BaseController
         if (!isset($alamat)) {
             $alamat = [];
         }
-        // $alamat = [
-        //     [
-        //         'email_pemesan' => 'galihsuks@gmail.com',
-        //         'nama_penerima' => 'Sukma Mukti',
-        //         'nohp_penerima' => '0812345678',
-        //         'prov' => 'Jawa Tengah',
-        //         'kab' => 'Klaten',
-        //         'kec' => 'Klaten Utara',
-        //         'kel' => 'Jonggrangan',
-        //         'alamat_tambahan' => 'Jl.Manahan No.123',
-        //         'alamat_lengkap' => 'Jl.Manahan No.123 Jonggrangan, Klaten Utara, Klaten, Jawa Tengah'
-        //     ],
-        //     [
-        //         'email_pemesan' => 'emaoildqwd@gmail.com',
-        //         'nama_penerima' => 'Hidayatullah',
-        //         'nohp_penerima' => '081445353',
-        //         'prov' => 'Jawa Timur',
-        //         'kab' => 'Surabaya',
-        //         'kec' => 'Sukolilo',
-        //         'kel' => 'Keputih',
-        //         'alamat_tambahan' => 'Jl.Keputih Gang III',
-        //         'alamat_lengkap' => 'Jl.Keputih Gang III Keputih, Sukolilo, Surabaya, Jawa Timur'
-        //     ]
-        // ];
 
         $data = [
             'title' => 'Alamat',
@@ -278,10 +308,21 @@ class Pages extends BaseController
         $this->session->set(['alamat' => $alamat]);
         return redirect()->to('/address');
     }
-    public function shipping()
+    public function deleteAddress($ind_add)
     {
+        $alamat = $this->session->get('alamat');
+        unset($alamat[$ind_add]);
+        $alamatBaru = array_values($alamat);
+        $this->session->set(['alamat' => $alamatBaru]);
+        return redirect()->to('/address');
+    }
+    public function shipping($ind_add)
+    {
+        $alamat = $this->session->get('alamat');
+        if (!isset($alamat)) return redirect()->to('/address');
         $data = [
             'title' => 'Pengiriman',
+            'alamat' => $alamat[$ind_add]
         ];
         return view('pages/shipping', $data);
     }

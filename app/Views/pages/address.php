@@ -8,7 +8,7 @@
         </h5>
         <div class="container-address my-4">
             <?php foreach ($alamat as $ind_a => $a) { ?>
-                <input type="radio" name="address" id="address<?= $ind_a ?>">
+                <input type="radio" name="address" id="address<?= $ind_a ?>" <?= $ind_a <= 0 ? 'checked' : '' ?>>
                 <label for="address<?= $ind_a ?>" class="item-address">
                     <div style="flex: 1;">
                         <p class="mb-1 nama"><?= $a['nama_penerima'] ?></p>
@@ -18,7 +18,7 @@
                     </div>
                     <div style="width: 100px" class="d-flex gap-3 justify-content-end align-items-start">
                         <a href="#" class="btn-teks-aja text-dark">Edit</a>
-                        <a href="#" class="btn-teks-aja">Hapus</a>
+                        <a href="/deleteaddress/<?= $ind_a; ?>" class="btn-teks-aja">Hapus</a>
                     </div>
                 </label>
             <?php } ?>
@@ -143,10 +143,100 @@
                     Rp <?= number_format($hargaKeseluruhan, 0, ',', '.'); ?>
                 </p>
             </div>
-            <a href="/address" class="btn-default-merah w-100 mt-4 text-center">Checkout</a>
+            <a id="btn-shipping" <?= count($alamat) > 0 ? 'href="/shipping/0"' : '' ?> class="btn-default-merah <?= count($alamat) > 0 ? '' : 'disabled' ?> w-100 mt-4 text-center">Checkout</a>
         </div>
     </div>
 </div>
 
+<script>
+    const provElm = document.querySelector('select[name="provinsi"]');
+    const kotaElm = document.querySelector('select[name="kota"]');
+    const kecElm = document.querySelector('select[name="kecamatan"]');
+    const kodeElm = document.querySelector('select[name="kodepos"]');
+    const radioAddressElm = document.querySelectorAll('input[name="address"]');
+    const btnShippingElm = document.getElementById("btn-shipping");
 
+    radioAddressElm.forEach((elm, ind_radio) => {
+        elm.addEventListener('change', (e) => {
+            btnShippingElm.href = "/shipping/" + ind_radio
+        })
+    })
+
+    function titleCase(str) {
+        var splitStr = str.toLowerCase().split(' ');
+        for (var i = 0; i < splitStr.length; i++) {
+            splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+        }
+        return splitStr.join(' ');
+    }
+
+    async function getKota(idprov) {
+        const response = await fetch("getkota/" + idprov);
+        const kota = await response.json();
+        const hasil = kota.rajaongkir.results;
+        // console.log(hasil)
+        kotaElm.innerHTML = '<option value="">-- Pilih kota --</option>';
+        hasil.forEach(element => {
+            const optElm = document.createElement("option");
+            optElm.value = element.city_id + "-" + element.city_name.split("/")[0]
+            optElm.innerHTML = element.type == 'Kota' ? `${element.city_name} Kota` : element.city_name
+            kotaElm.appendChild(optElm);
+        });
+    }
+    async function getKec(idkota) {
+        const response = await fetch("getkec/" + idkota);
+        const kecamatan = await response.json();
+        const hasil = kecamatan.rajaongkir.results;
+        // console.log(hasil)
+        kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
+        kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        hasil.forEach(element => {
+            const optElm = document.createElement("option");
+            optElm.value = element.subdistrict_id + "-" + element.subdistrict_name.split("/")[0]
+            optElm.innerHTML = element.subdistrict_name
+            kecElm.appendChild(optElm);
+        });
+    }
+    async function getKode(kec) {
+        const response = await fetch("https://api.jasminefurniture.co.id/getkode/" + kec);
+        const kode = await response.json();
+        const hasil = kode.data;
+        // console.log(hasil)
+        kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        hasil.forEach(element => {
+            const optElm = document.createElement("option");
+            optElm.value = titleCase(element.DesaKelurahan).split("/")[0] + "-" + element.KodePos
+            optElm.innerHTML = titleCase(element.DesaKelurahan)
+            kodeElm.appendChild(optElm);
+        });
+    }
+
+    provElm.addEventListener("change", (e) => {
+        kotaElm.innerHTML = '<option value="">Loading..</option>'
+        kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
+        kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        const valuenya = e.target.value.split("-");
+        const idprov = Number(valuenya[0]);
+        if (idprov > 0) {
+            getKota(idprov)
+        }
+    })
+    kotaElm.addEventListener("change", (e) => {
+        kecElm.innerHTML = '<option value="">Loading..</option>'
+        kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        const value = e.target.value.split("-")
+        const idkota = Number(value[0])
+        if (idkota > 0) {
+            getKec(idkota)
+        }
+    })
+    kecElm.addEventListener("change", (e) => {
+        kodeElm.innerHTML = '<option value="">Loading..</option>'
+        const value = e.target.value.split("-")
+        const idkec = Number(value[0])
+        if (idkec > 0) {
+            getKode(value[1])
+        }
+    })
+</script>
 <?= $this->endSection(); ?>
