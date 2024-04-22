@@ -277,6 +277,7 @@ class Pages extends BaseController
     }
     public function addAddress()
     {
+        
         $emailPem = $this->request->getVar('emailPem');
         $nama = $this->request->getVar('nama');
         $nohp = $this->request->getVar('nohp');
@@ -320,20 +321,152 @@ class Pages extends BaseController
     {
         $alamat = $this->session->get('alamat');
         if (!isset($alamat)) return redirect()->to('/address');
+        $alamatselected = $alamat[$ind_add]; 
+        $beratAkhir = 0;
+        $hargaTotal = 0;
+        $keranjang = $this->session->get('keranjang');
+        if (!isset($keranjang)) {
+            return redirect()->to('/product');
+        }
+        foreach ($keranjang as $index => $k) {
+            $produk = $this->barangModel->getBarang($k['id_barang']);
+            foreach (json_decode($produk['varian'], true) as $v) {
+                if ($v['nama'] == $k['varian']) {
+                    $keranjang[$index]['src_gambar'] = "/viewvar/" . $k['id_barang'] . "/" . explode(',', $v['urutan_gambar'])[0];
+                }
+            }
+            $keranjang[$index]['detail'] = $produk;
+            $hargaTotal += $produk['harga'] * $k['jumlah'] * (100 - $produk['diskon']) / 100;
+            $beratAkhir += json_decode($produk['deskripsi'] , true)['dimensi']['paket']['berat'];
+            
+        }
+        // dd($alamatselected);
+        $kurir = [];
+        $listKurir = ['jne','pos','tiki','wahana','sicepat','jnt','ninja','lion','anteraja'];
+        foreach ($listKurir as $l) {
+            $curl_jne = curl_init();
+            curl_setopt_array($curl_jne, array(
+                CURLOPT_URL => "https://pro.rajaongkir.com/api/cost",
+                CURLOPT_SSL_VERIFYHOST => 0,
+                CURLOPT_SSL_VERIFYPEER => 0,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "POST",
+                CURLOPT_POSTFIELDS => "origin=5504&originType=subdistrict&destination=" . $alamatselected['kec_id'] . "&destinationType=subdistrict&weight=" . $beratAkhir * 1000 . "&courier=".$l,
+                CURLOPT_HTTPHEADER => array(
+                    "content-type: application/x-www-form-urlencoded",
+                    "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
+                ),
+            ));
+            $response = curl_exec($curl_jne);
+            $err = curl_error($curl_jne);
+            curl_close($curl_jne);
+            if ($err) {
+                return "cURL Error #:" . $err;
+            }
+            $jne = json_decode($response, true);
+            if(isset($jne)){
+                foreach ($jne['rajaongkir']['results'][0]['costs'] as $j) {
+                    $item_kurir = [ 
+                        'nama' => $jne['rajaongkir']['results'][0]['code'],
+                        'deskripsi' => $j['description'],
+                        'harga' => $j['cost'][0]['value'],
+                        'estimasi' => $j['cost'][0]['etd'],
+                    ];
+                    array_push($kurir, $item_kurir);
+                }
+            }
+        }
+
+        $curl_dakota = curl_init();
+        $data_dakota = [
+            'prov' => $alamatselected['prov'],
+            'kab' => $alamatselected['kab'],
+            'kec' => $alamatselected['kec'],
+        ];
+        curl_setopt_array($curl_dakota, array(
+            CURLOPT_URL => "https://api.jasminefurniture.co.id/dakota",
+            CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_SSL_VERIFYPEER => 0,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => json_encode($data_dakota),
+            CURLOPT_HTTPHEADER => array(
+                "content-type: application/json"
+            ),
+        ));
+        $response = curl_exec($curl_dakota);
+        $err = curl_error($curl_dakota);
+        curl_close($curl_dakota);
+        if ($err) {
+            return "cURL Error #:" . $err;
+        }
+        $dakota = json_decode($response, true);
+        foreach ($dakota['data'] as $deskripsi => $value_dakota) {
+            if ($deskripsi != 'UNIT') {
+                $item_kurir = [ 
+                    'nama' => 'dakota',
+                    'deskripsi' => ucwords($deskripsi),
+                    'harga' => $beratAkhir > (int)$value_dakota[0]['minkg'] ? (int)$value_dakota[0]['kgnext'] * $beratAkhir : (int)$value_dakota[0]['pokok'],
+                    'estimasi' => $value_dakota[0]['LT'],
+                ];
+                array_push($kurir, $item_kurir);
+            }
+        }
+
         $data = [
             'title' => 'Pengiriman',
-            'alamat' => $alamat[$ind_add]
+            'alamat' => $alamat[$ind_add],
+            'keranjang' => $keranjang,
+            'hargaTotal' => $hargaTotal,
+            'hargaKeseluruhan' => $hargaTotal + 5000 + $kurir[0]['harga'],
+            'kurir' => $kurir,
         ];
+
+        $this->session->set(['kurir'=> $kurir]);  
         return view('pages/shipping', $data);
     }
-    public function payment()
+    
+    public function payment($index_kurir)
     {
+        $hargaTotal = 0;
+        $keranjang = $this->session->get('keranjang');
+        if (!isset($keranjang)) {
+            return redirect()->to('/product');
+        }
+        foreach ($keranjang as $index => $k) {
+            $produk = $this->barangModel->getBarang($k['id_barang']);
+            foreach (json_decode($produk['varian'], true) as $v) {
+                if ($v['nama'] == $k['varian']) {
+                    $keranjang[$index]['src_gambar'] = "/viewvar/" . $k['id_barang'] . "/" . explode(',', $v['urutan_gambar'])[0];
+                }
+            }
+            $keranjang[$index]['detail'] = $produk;
+            $hargaTotal += $produk['harga'] * $k['jumlah'] * (100 - $produk['diskon']) / 100;
+        }
+
+        $kurir = $this->session->get('kurir');
         $data = [
             'title' => 'Pembayaran',
+            'hargaTotal' => $hargaTotal,
+            'hargaOngkir' => $kurir[$index_kurir]['harga'],
+            'hargaKeseluruhan' => $hargaTotal + 5000 + $kurir[$index_kurir]['harga'],
         ];
+
+        $this->session->set(['hargaKeseluruhan' => $hargaTotal + 5000 + $kurir[$index_kurir]['harga']]);
         return view('pages/payment', $data);
     }
-
+    public function actionPay($metode)
+    {
+        // lanjut Besok
+    }
     public  function progressPay()
     {
         $data = [
