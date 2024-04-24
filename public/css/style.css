@@ -585,6 +585,34 @@
     letter-spacing: -1px;
 }
 
+.container-table .header-table {
+    display: flex;
+    border-bottom: 1px solid whitesmoke;
+    padding-bottom: 0.5em;
+}
+.container-table .header-table > div {
+    flex: 1;
+    display: flex;
+    /* justify-content: center; */
+    align-items: center;
+    color: #9098a9;
+    font-size: small;
+    letter-spacing: -1px;
+}
+.container-table .isi-table {
+    display: flex;
+    border-bottom: 1px solid whitesmoke;
+    padding-block: 0.7em;
+}
+.container-table .isi-table > div {
+    flex: 1;
+    display: flex;
+    /* justify-content: center; */
+    align-items: center;
+    font-size: small;
+    letter-spacing: -1px;
+}
+
 /*FOOTER*/
 .footer-div {
     flex: 2;

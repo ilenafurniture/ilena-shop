@@ -802,8 +802,14 @@ class Pages extends BaseController
         ];
         return view('pages/progresspay', $data);
     }
-    public function actionCheckPay($id_midtrans)
+    public function order()
     {
+        $pesanan = $this->pemesananModel->getPemesanan();
+        $data = [
+            'title' => 'Menu Favorite',
+            'pesanan' => $pesanan
+        ];
+        return view('pages/order', $data);
     }
     public function wishlist()
     {
