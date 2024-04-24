@@ -27,7 +27,8 @@ $routes->get('/shipping/(:any)', 'Pages::shipping/$1');
 
 $routes->get('/payment/(:any)', 'Pages::payment/$1');
 $routes->get('/actionpay/(:any)', 'Pages::actionPay/$1');
-$routes->get('/progresspay', 'Pages::progressPay');
+$routes->post('/updatetransaction', 'Pages::updateTransaction');
+$routes->get('/progresspay/(:any)', 'Pages::progressPay/$1');
 
 $routes->get('/wishlist', 'Pages::wishlist');
 $routes->get('/addwishlist/(:any)', 'Pages::addWishlist/$1');

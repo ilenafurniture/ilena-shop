@@ -8,12 +8,10 @@ class PemesananModel extends Model
 {
     protected $table = 'pemesanan';
     protected $allowedFields = [
-        'nama_cus',
-        'email_cus',
-        'hp_cus',
-        'nama_pen',
-        'hp_pen',
-        'alamat_pen',
+        'nama',
+        'email',
+        'nohp',
+        'alamat',
         'resi',
         'id_midtrans',
         'items',

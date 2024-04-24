@@ -3,29 +3,29 @@
 <h1 class="teks-besar text-center mb-3 mt-4">Menunggu Pembayaran</h1>
 <div class="py-1 text-light w-100 text-center" style="background-color: var(--dark); letter-spacing: -1px;">ID
     Pesanan :
-    <b>0000001</b>
+    <b><?= $pemesanan['id_midtrans']; ?></b>
 </div>
 <div class="konten mx-auto" style="width: calc(100% - 500px)">
     <div class="baris-ke-kolom justify-content-between mb-2 W-100 mb-3 border-bottom pb-3">
         <div>
             <p class="m-0">Jumlah Tagihan</p>
             <div class="d-flex align-items-end gap-2">
-                <h3 class="m-0" style="font-size: 40px; letter-spacing: -3px; font-weight:600;">Rp 5.000.000</h3>
+                <h3 class="m-0" style="font-size: 40px; letter-spacing: -3px; font-weight:600;">Rp <?= number_format($dataMid['gross_amount'], 0, ',', '.'); ?></h3>
                 <button class="btn-teks-aja hitam mb-1"><i class="material-icons">content_copy</i></button>
             </div>
         </div>
         <div class="d-flex flex-column align-items-end">
             <p class="m-0">Waktu Pembayaran</p>
-            <h3 class="m-0" style="font-size: 40px; letter-spacing: -3px; font-weight:600;">14:13:05</h3>
+            <h3 class="m-0" style="font-size: 40px; letter-spacing: -3px; font-weight:600;" id="waktu"><?= $waktu; ?></h3>
             <p class="m-0">Selesaikan pembayaran Anda sebelum</p>
             <p class="m-0">23 Maret 2024, 08:00 WIB</p>
         </div>
     </div>
-    <img class="mb-2" src="/img/pembayaran/mandiri.png" alt="">
+    <img class="mb-2" src="/img/pembayaran/<?= $bank; ?>.png" alt="">
     <div>
         <p class="m-0">Nomor Virtual Account</p>
         <div class="d-flex align-items-end gap-2">
-            <h3 class="m-0" style="font-size: 40px; letter-spacing: -3px; font-weight:600;">836749123412</h3>
+            <h3 class="m-0" style="font-size: 40px; letter-spacing: -3px; font-weight:600;"><?= $va_number; ?></h3>
             <button class="btn-teks-aja hitam mb-1"><i class="material-icons">content_copy</i></button>
         </div>
     </div>
@@ -34,8 +34,7 @@
     <div class="accordion accordion-flush" id="accordionFlushExample">
         <div class="accordion-item">
             <h2 class="accordion-header">
-                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#flush-collapse1" aria-expanded="false" aria-controls="flush-collapse1">
+                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse1" aria-expanded="false" aria-controls="flush-collapse1">
                     ATM Mandiri
                 </button>
             </h2>
@@ -76,8 +75,7 @@
 
         <div class="accordion-item">
             <h2 class="accordion-header">
-                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#flush-collapse2" aria-expanded="false" aria-controls="flush-collapse2">
+                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse2" aria-expanded="false" aria-controls="flush-collapse2">
                     Mobile Banking Mandiri
                 </button>
             </h2>
@@ -117,8 +115,7 @@
         </div>
         <div class="accordion-item">
             <h2 class="accordion-header">
-                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#flush-collapse3" aria-expanded="false" aria-controls="flush-collapse3">
+                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse3" aria-expanded="false" aria-controls="flush-collapse3">
                     Teller Mandiri
                 </button>
             </h2>
@@ -158,4 +155,18 @@
         </div>
     </div>
 </div>
+<script>
+    const expiryTimeElm = document.getElementById("waktu");
+    const de = new Date('<?= $dataMid['expiry_time']; ?>');
+    const expireTime = de.getTime();
+    const dc = new Date();
+    const currTime = dc.getTime();
+    let dselisih = currTime - expireTime;
+
+    setInterval(() => {
+        const dselisihDate = new Date(dselisih);
+        console.log(`${dselisihDate.getHours()}:${dselisihDate.getMinutes()}:${dselisihDate.getSeconds()}`);
+        dselisih -= 1000;
+    }, 1000);
+</script>
 <?= $this->endSection(); ?>
