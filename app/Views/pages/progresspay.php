@@ -11,14 +11,14 @@
             <p class="m-0">Jumlah Tagihan</p>
             <div class="d-flex align-items-end gap-2">
                 <h3 class="m-0" style="font-size: 40px; letter-spacing: -3px; font-weight:600;">Rp <?= number_format($dataMid['gross_amount'], 0, ',', '.'); ?></h3>
-                <button class="btn-teks-aja hitam mb-1"><i class="material-icons">content_copy</i></button>
+                <button class="btn-teks-aja hitam mb-1" onclick="copytext('<?= (int)$dataMid['gross_amount']; ?>')"><i class="material-icons">content_copy</i></button>
             </div>
         </div>
         <div class="d-flex flex-column align-items-end">
             <p class="m-0">Waktu Pembayaran</p>
             <h3 class="m-0" style="font-size: 40px; letter-spacing: -3px; font-weight:600;" id="waktu"><?= $waktu; ?></h3>
             <p class="m-0">Selesaikan pembayaran Anda sebelum</p>
-            <p class="m-0">23 Maret 2024, 08:00 WIB</p>
+            <p class="m-0"><?= $waktuExpire; ?> WIB</p>
         </div>
     </div>
     <img class="mb-2" src="/img/pembayaran/<?= $bank; ?>.png" alt="">
@@ -26,7 +26,7 @@
         <p class="m-0">Nomor Virtual Account</p>
         <div class="d-flex align-items-end gap-2">
             <h3 class="m-0" style="font-size: 40px; letter-spacing: -3px; font-weight:600;"><?= $va_number; ?></h3>
-            <button class="btn-teks-aja hitam mb-1"><i class="material-icons">content_copy</i></button>
+            <button class="btn-teks-aja hitam mb-1" onclick="copytext('<?= $va_number; ?>')"><i class="material-icons">content_copy</i></button>
         </div>
     </div>
     <p class="mb-3">Simpan nomor virtual account diatas untuk melakukan pembayaran sesuai bank yang telah dipilih</p>
@@ -154,19 +154,31 @@
             </div>
         </div>
     </div>
+    <div class="w-100 d-flex justify-content-center mt-4">
+        <a href="" class="btn-default-merah">Saya telah membayar</a>
+    </div>
 </div>
 <script>
     const expiryTimeElm = document.getElementById("waktu");
     const de = new Date('<?= $dataMid['expiry_time']; ?>');
     const expireTime = de.getTime();
     const dc = new Date();
-    const currTime = dc.getTime();
-    let dselisih = currTime - expireTime;
 
     setInterval(() => {
-        const dselisihDate = new Date(dselisih);
-        console.log(`${dselisihDate.getHours()}:${dselisihDate.getMinutes()}:${dselisihDate.getSeconds()}`);
-        dselisih -= 1000;
+        const currTime = new Date().getTime();
+        let dselisih = expireTime - currTime;
+
+        const hours = String(Math.floor(dselisih / (1000 * 60 * 60))).padStart(2, '0');
+        dselisih %= (1000 * 60 * 60);
+        const minutes = String(Math.floor(dselisih / (1000 * 60))).padStart(2, '0');
+        dselisih %= (1000 * 60);
+        const seconds = String(Math.floor(dselisih / 1000)).padStart(2, '0');
+
+        expiryTimeElm.innerHTML = `${hours}: ${minutes}: ${seconds}`;
     }, 1000);
+
+    function copytext(teks) {
+        navigator.clipboard.writeText(teks);
+    }
 </script>
 <?= $this->endSection(); ?>

@@ -434,13 +434,15 @@ class Pages extends BaseController
         return view('pages/shipping', $data);
     }
 
-    public function succesPay(){
+    public function succesPay()
+    {
         $data = [
             'title' => 'Pembayaran Sukes',
         ];
         return view('pages/succespay', $data);
     }
-    public function cencelPay(){
+    public function cencelPay()
+    {
         $data = [
             'title' => 'Pembayaran batal',
         ];
@@ -787,6 +789,7 @@ class Pages extends BaseController
         $waktuSelisih = $waktuExpire - $waktuCurr;
         $waktu = date("H:i:s", $waktuSelisih);
 
+        $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
         $data = [
             'title' => 'Peroses Pembayaran',
             'pemesanan' => $pemesanan,
@@ -794,9 +797,13 @@ class Pages extends BaseController
             'va_number' => $va_number,
             'biller_code' => $biller_code,
             'bank' => $bank,
-            'waktu' => $waktu
+            'waktu' => $waktu,
+            'waktuExpire' => date("d", $waktuExpire) . " " . $bulan[(int)date("m", $waktuExpire) - 1] . " " . date("Y H:i:s", $waktuExpire)
         ];
         return view('pages/progresspay', $data);
+    }
+    public function actionCheckPay($id_midtrans)
+    {
     }
     public function wishlist()
     {
