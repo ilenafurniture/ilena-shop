@@ -434,6 +434,19 @@ class Pages extends BaseController
         return view('pages/shipping', $data);
     }
 
+    public function succesPay(){
+        $data = [
+            'title' => 'Pembayaran Sukes',
+        ];
+        return view('pages/succespay', $data);
+    }
+    public function cencelPay(){
+        $data = [
+            'title' => 'Pembayaran batal',
+        ];
+        return view('pages/cencelpay', $data);
+    }
+
     public function payment($index_kurir)
     {
         $hargaTotal = 0;
