@@ -391,6 +391,24 @@
     color: black;
     transition: 0.5s;
 }
+.btn-default-abu {
+    display: block;
+    background-color: whitesmoke;
+    color: black;
+    font-weight: 500;
+    letter-spacing: -1px;
+    text-decoration: none;
+    width: fit-content;
+    padding: 0.5em 1em;
+    border-radius: 0.5em;
+    transition: 0.5s;
+    border: 1px solid rgba(0, 0, 0, 0);
+}
+.btn-default-abu:hover {
+    background-color: white;
+    border: 1px solid black;
+    transition: 0.5s;
+}
 .btn-default-merah {
     border: 1px solid rgba(0, 0, 0, 0);
     display: block;
@@ -604,6 +622,10 @@
     border-bottom: 1px solid whitesmoke;
     padding-block: 0.7em;
 }
+.container-table .isi-table:hover {
+    background-color: whitesmoke;
+    cursor: pointer;
+}
 .container-table .isi-table > div {
     flex: 1;
     display: flex;
@@ -611,6 +633,22 @@
     align-items: center;
     font-size: small;
     letter-spacing: -1px;
+}
+
+.container-offcanvas {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    height: 100svh;
+    width: 40%;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    padding: 1em;
+}
+.container-offcanvas.show {
+    display: block;
 }
 
 /*FOOTER*/

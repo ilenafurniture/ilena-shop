@@ -433,22 +433,6 @@ class Pages extends BaseController
         $this->session->set(['alamatTerpilih' => $alamatselected]);
         return view('pages/shipping', $data);
     }
-
-    public function succesPay()
-    {
-        $data = [
-            'title' => 'Pembayaran Sukes',
-        ];
-        return view('pages/succespay', $data);
-    }
-    public function cencelPay()
-    {
-        $data = [
-            'title' => 'Pembayaran batal',
-        ];
-        return view('pages/cencelpay', $data);
-    }
-
     public function payment($index_kurir)
     {
         $hargaTotal = 0;
@@ -673,7 +657,7 @@ class Pages extends BaseController
             'alamat' => json_encode($alamatselected),
             'resi' => "Menunggu pengiriman " . strtoupper($kurirselected['nama']),
             'items' => json_encode($itemDetails),
-            'kurir' => $kurirselected['nama'],
+            'kurir' => json_encode($kurirselected),
             'data_mid' => $response,
             'id_midtrans' => $hasil['order_id'],
             'status' => $status,
@@ -802,12 +786,54 @@ class Pages extends BaseController
         ];
         return view('pages/progresspay', $data);
     }
+    public function successPay($id_midtrans)
+    {
+        $pemesanan = $this->pemesananModel->getPemesanan($id_midtrans);
+        $dataMid = json_decode($pemesanan['data_mid'], true);
+        $kurir = json_decode($pemesanan['kurir'], true);
+        $items = json_decode($pemesanan['items'], true);
+        $bank = "";
+        switch ($dataMid['payment_type']) {
+            case 'bank_transfer':
+                if (isset($dataMid['permata_va_number'])) {
+                    $bank = "permata";
+                } else {
+                    $bank = $dataMid['va_numbers'][0]['bank'];
+                }
+                break;
+            case 'echannel':
+                $bank = "mandiri";
+                break;
+        }
+        $data = [
+            'title' => 'Pembayaran Sukes',
+            'pemesanan' => $pemesanan,
+            'dataMid' => $dataMid,
+            'kurir' => $kurir,
+            'items' => $items,
+            'bank' => $bank,
+        ];
+        return view('pages/successpay', $data);
+    }
+    public function cencelPay()
+    {
+        $data = [
+            'title' => 'Pembayaran batal',
+        ];
+        return view('pages/cencelpay', $data);
+    }
     public function order()
     {
         $pesanan = $this->pemesananModel->getPemesanan();
+        foreach ($pesanan as $ind_p => $p) {
+            $pesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
+            $pesanan[$ind_p]['items'] = json_decode($p['items'], true);
+            $pesanan[$ind_p]['alamat'] = json_decode($p['alamat'], true);
+        }
         $data = [
-            'title' => 'Menu Favorite',
-            'pesanan' => $pesanan
+            'title' => 'Pesanan',
+            'pesanan' => $pesanan,
+            'pesananJson' => json_encode($pesanan)
         ];
         return view('pages/order', $data);
     }

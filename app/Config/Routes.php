@@ -29,7 +29,7 @@ $routes->get('/payment/(:any)', 'Pages::payment/$1');
 $routes->get('/actionpay/(:any)', 'Pages::actionPay/$1');
 $routes->post('/updatetransaction', 'Pages::updateTransaction');
 $routes->get('/progresspay/(:any)', 'Pages::progressPay/$1');
-$routes->get('/succespay', 'Pages::succesPay');
+$routes->get('/successpay/(:any)', 'Pages::successPay/$1');
 $routes->get('/cencelpay', 'Pages::cencelPay');
 
 $routes->get('/wishlist', 'Pages::wishlist');
