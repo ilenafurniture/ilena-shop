@@ -35,7 +35,7 @@
                 </div>
             </div>
             <p class="mb-2">Status Pesanan</p>
-            <p></p>
+            <p class="v"></p>
         </div>
         <div style="flex: 1">
             <div id="item">
