@@ -8,7 +8,7 @@
         </div>
         <div class="collapse py-2" id="collapseExample">
             <div class="checkbox-wrapper-46">
-                <input type="checkbox" id="checkbox-filter-1" class="inp-cbx" name="kategori-" />
+                <input type="checkbox" id="checkbox-filter-1" class="inp-cbx filter" value="kategori-meja" />
                 <label for="checkbox-filter-1" class="cbx"><span>
                         <svg viewBox="0 0 12 10" height="10px" width="12px">
                             <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
@@ -17,7 +17,7 @@
                 </label>
             </div>
             <div class="checkbox-wrapper-46">
-                <input type="checkbox" id="checkbox-filter-2" class="inp-cbx" />
+                <input type="checkbox" id="checkbox-filter-2" class="inp-cbx filter" value="kategori-lemari" />
                 <label for="checkbox-filter-2" class="cbx"><span>
                         <svg viewBox="0 0 12 10" height="10px" width="12px">
                             <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
@@ -32,7 +32,7 @@
         </div>
         <div class="collapse py-2" id="collapseExample1">
             <div class="checkbox-wrapper-46">
-                <input type="checkbox" id="checkbox-filter-3" class="inp-cbx" />
+                <input type="checkbox" id="checkbox-filter-3" class="inp-cbx filter" value="varian-winge" />
                 <label for="checkbox-filter-3" class="cbx"><span>
                         <svg viewBox="0 0 12 10" height="10px" width="12px">
                             <polyline points="3.5 6 4.5 9 10.5 3"></polyline>
@@ -41,7 +41,7 @@
                 </label>
             </div>
             <div class="checkbox-wrapper-46">
-                <input type="checkbox" id="checkbox-filter-4" class="inp-cbx" />
+                <input type="checkbox" id="checkbox-filter-4" class="inp-cbx filter" value="varian-mahoni" />
                 <label for="checkbox-filter-4" class="cbx"><span>
                         <svg viewBox="0 0 12 10" height="10px" width="12px">
                             <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
@@ -51,13 +51,13 @@
             </div>
         </div>
 
-        <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample1" aria-expanded="false" aria-controls="collapseExample2">
+        <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample2" aria-expanded="false" aria-controls="collapseExample2">
             Harga
         </div>
         <div class="collapse py-2" id="collapseExample2">
             <div class="checkbox-wrapper-46">
-                <input type="checkbox" id="checkbox-filter-3" class="inp-cbx" />
-                <label for="checkbox-filter-3" class="cbx"><span>
+                <input type="checkbox" id="checkbox-filter-5" class="inp-cbx filter" value="harga-0" />
+                <label for="checkbox-filter-5" class="cbx"><span>
                         <svg viewBox="0 0 12 10" height="10px" width="12px">
                             <polyline points="3.5 6 4.5 9 10.5 3"></polyline>
                         </svg></span>
@@ -66,16 +66,25 @@
                 </label>
             </div>
             <div class="checkbox-wrapper-46">
-                <input type="checkbox" id="checkbox-filter-4" class="inp-cbx" />
-                <label for="checkbox-filter-4" class="cbx"><span>
+                <input type="checkbox" id="checkbox-filter-6" class="inp-cbx filter" value="harga-1" />
+                <label for="checkbox-filter-6" class="cbx"><span>
                         <svg viewBox="0 0 12 10" height="10px" width="12px">
                             <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                         </svg></span>
-                    <p>Mahoni</p>
+                    <p>Rp 500.000 - Rp 1.000.000</p>
+                </label>
+            </div>
+            <div class="checkbox-wrapper-46">
+                <input type="checkbox" id="checkbox-filter-7" class="inp-cbx filter" value="harga-2" />
+                <label for="checkbox-filter-7" class="cbx"><span>
+                        <svg viewBox="0 0 12 10" height="10px" width="12px">
+                            <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                        </svg></span>
+                    <p>Rp 1.000.000 - Rp 2.000.000</p>
                 </label>
             </div>
         </div>
-        <a href="" class="mt-2 btn-lonjong">Terapkan</a>
+        <a id="btn-filter" class="mt-2 btn-lonjong">Terapkan</a>
     </div>
     <div class="flex-grow-1">
         <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
@@ -86,6 +95,35 @@
                 </li>
             </ol>
         </nav>
+        <?php
+        if (isset($_GET['kategori'])) {
+            $kategori = explode("-", $_GET['kategori']);
+            $produkLama = $produk;
+            $produk = [];
+            foreach ($kategori as $k) {
+                foreach ($produkLama as $p) {
+                    if ($k == $p['kategori']) {
+                        array_push($produk, $p);
+                    }
+                }
+            }
+        }
+        if (isset($_GET['varian'])) {
+            $varian = explode("-", $_GET['varian']);
+            $produkLama = $produk;
+            $produk = [];
+            foreach ($varian as $k) {
+                foreach ($produkLama as $p) {
+                    $varianProdukSelected = json_decode($p['varian'], true);
+                    foreach ($varianProdukSelected as $vp) {
+                        if ($k == $vp['nama']) {
+                            array_push($produk, $p);
+                        }
+                    }
+                }
+            }
+        }
+        ?>
         <div class="container-card1">
             <?php foreach ($produk as $ind_p => $p) { ?>
                 <div class="card1">
@@ -134,6 +172,15 @@
         </div>
     </div>
 </div>
-
+<script>
+    const btnFilterElm = document.getElementById('btn-filter');
+    // btnFilterElm.addEventListener('click', () => {
+    //     const filterInputElm = document.querySelectorAll(".filter:checked");
+    //     filterInputElm.forEach(filterinp => {
+    //         console.log(filterinp.value);
+    //         const 
+    //     });
+    // })
+</script>
 
 <?= $this->endSection(); ?>
