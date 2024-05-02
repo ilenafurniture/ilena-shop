@@ -8,8 +8,8 @@
         </div>
         <div class="collapse py-2" id="collapseExample">
             <div class="checkbox-wrapper-46">
-                <input type="checkbox" id="kategori-1" class="inp-cbx" />
-                <label for="kategori-1" class="cbx"><span>
+                <input type="checkbox" id="checkbox-filter-1" class="inp-cbx" name="kategori-" />
+                <label for="checkbox-filter-1" class="cbx"><span>
                         <svg viewBox="0 0 12 10" height="10px" width="12px">
                             <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                         </svg></span>
@@ -17,8 +17,8 @@
                 </label>
             </div>
             <div class="checkbox-wrapper-46">
-                <input type="checkbox" id="kategori-2" class="inp-cbx" />
-                <label for="kategori-2" class="cbx"><span>
+                <input type="checkbox" id="checkbox-filter-2" class="inp-cbx" />
+                <label for="checkbox-filter-2" class="cbx"><span>
                         <svg viewBox="0 0 12 10" height="10px" width="12px">
                             <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                         </svg></span>
@@ -32,8 +32,8 @@
         </div>
         <div class="collapse py-2" id="collapseExample1">
             <div class="checkbox-wrapper-46">
-                <input type="checkbox" id="kategori-3" class="inp-cbx" />
-                <label for="kategori-3" class="cbx"><span>
+                <input type="checkbox" id="checkbox-filter-3" class="inp-cbx" />
+                <label for="checkbox-filter-3" class="cbx"><span>
                         <svg viewBox="0 0 12 10" height="10px" width="12px">
                             <polyline points="3.5 6 4.5 9 10.5 3"></polyline>
                         </svg></span>
@@ -41,8 +41,33 @@
                 </label>
             </div>
             <div class="checkbox-wrapper-46">
-                <input type="checkbox" id="kategori-4" class="inp-cbx" />
-                <label for="kategori-4" class="cbx"><span>
+                <input type="checkbox" id="checkbox-filter-4" class="inp-cbx" />
+                <label for="checkbox-filter-4" class="cbx"><span>
+                        <svg viewBox="0 0 12 10" height="10px" width="12px">
+                            <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                        </svg></span>
+                    <p>Mahoni</p>
+                </label>
+            </div>
+        </div>
+
+        <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample1" aria-expanded="false" aria-controls="collapseExample2">
+            Harga
+        </div>
+        <div class="collapse py-2" id="collapseExample2">
+            <div class="checkbox-wrapper-46">
+                <input type="checkbox" id="checkbox-filter-3" class="inp-cbx" />
+                <label for="checkbox-filter-3" class="cbx"><span>
+                        <svg viewBox="0 0 12 10" height="10px" width="12px">
+                            <polyline points="3.5 6 4.5 9 10.5 3"></polyline>
+                        </svg></span>
+                    <p>
+                        < Rp 500.000</p>
+                </label>
+            </div>
+            <div class="checkbox-wrapper-46">
+                <input type="checkbox" id="checkbox-filter-4" class="inp-cbx" />
+                <label for="checkbox-filter-4" class="cbx"><span>
                         <svg viewBox="0 0 12 10" height="10px" width="12px">
                             <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                         </svg></span>

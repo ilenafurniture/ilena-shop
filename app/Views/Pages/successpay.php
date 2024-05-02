@@ -18,7 +18,7 @@
             </div>
         </div>
         <div class="d-flex flex-column align-items-end">
-            <p class="m-0">Metode Pembayaran</p>
+            <p class="mb-1">Metode Pembayaran</p>
             <img class="mb-2" src="/img/pembayaran/<?= $bank; ?>.png" alt="">
         </div>
     </div>
@@ -34,8 +34,33 @@
                     <?php } ?>
                 </div>
             </div>
-            <p class="mb-2">Status Pesanan</p>
-            <p class="v"></p>
+            <p class="mb-0 mt-3">Status Pesanan</p>
+            <!-- <p class="m-0 fw-bold">Proses</p> -->
+            <span class="badge rounded-pill <?php
+                                            switch ($pemesanan['status']) {
+                                                case 'Menunggu Pembayaran':
+                                                    echo "text-bg-primary";
+                                                    break;
+                                                case 'Proses':
+                                                    echo "text-bg-warning";
+                                                    break;
+                                                case 'Dikirim':
+                                                    echo "text-bg-info";
+                                                    break;
+                                                case 'Selesai':
+                                                    echo "text-bg-success";
+                                                    break;
+                                                case 'Dibatalkan':
+                                                    echo "text-bg-danger";
+                                                    break;
+                                                case 'Gagal':
+                                                    echo "text-bg-danger";
+                                                    break;
+                                                default:
+                                                    echo "text-bg-dark";
+                                                    break;
+                                            }
+                                            ?>"><?= ucfirst($pemesanan['status']); ?></span>
         </div>
         <div style="flex: 1">
             <div id="item">
