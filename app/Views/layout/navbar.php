@@ -15,7 +15,12 @@
             <div style="width: calc(100% / 3)" class="d-flex justify-content-end">
                 <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
                 <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
+                <?php if(session()->get('isLogin')) {?>
                 <a href="/account" class="btn"><i class="material-icons text-light">person_outline</i></a>
+                <?php } else{ ?>
+                <a href="/login" class="btn"><i class="material-icons text-light">person_outline</i></a>
+                <?php } ?>
+
             </div>
         </div>
     </div>

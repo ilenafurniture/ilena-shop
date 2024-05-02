@@ -39,6 +39,10 @@ $routes->get('/wishlisttocart', 'Pages::wishlistToCart');
 
 $routes->get('/order', 'Pages::order');
 
+$routes->get('/login', 'Pages::login');
+$routes->get('/register', 'Pages::register');
+
+
 
 $routes->get('/viewpic/(:any)', 'GambarController::tampilGambarBarang/$1');
 $routes->get('/viewvar/(:any)/(:any)', 'GambarController::tampilGambarVarian/$1/$2');

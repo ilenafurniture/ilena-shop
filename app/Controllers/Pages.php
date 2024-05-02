@@ -918,4 +918,20 @@ class Pages extends BaseController
         $this->session->set(['keranjang' => $keranjang]);
         return redirect()->to('/cart');
     }
+
+    public function login()
+    {
+        $data = [
+            'title' => 'Masuk Akun',
+        ];
+        return view('pages/login', $data);
+    }
+
+    public function register()
+    {
+        $data = [
+            'title' => 'Membuat Akun',
+        ];
+        return view('pages/register', $data);
+    }
 }
