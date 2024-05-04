@@ -277,7 +277,7 @@ class Pages extends BaseController
     }
     public function addAddress()
     {
-
+        $checkPage = $this->request->getVar('checkpage');
         $emailPem = $this->request->getVar('emailPem');
         $nama = $this->request->getVar('nama');
         $nohp = $this->request->getVar('nohp');
@@ -307,7 +307,7 @@ class Pages extends BaseController
             'alamat_lengkap' => $alamatAdd . " " . $kodepos[0] . ", " . $kecamatan[1] . ", " . $kota[1] . ", " . $provinsi[1] . " " . $kodepos[1]
         ]);
         $this->session->set(['alamat' => $alamat]);
-        return redirect()->to('/address');
+        return redirect()->to($checkPage == 'address' ? '/address' : '/account');
     }
     public function deleteAddress($ind_add)
     {
@@ -936,6 +936,30 @@ class Pages extends BaseController
     }
     public function account()
     {
+        //Dapatkan data provinsi
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://pro.rajaongkir.com/api/province",
+            CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_SSL_VERIFYPEER => 0,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => array(
+                "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
+            ),
+        ));
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        if ($err) {
+            return "cURL Error #:" . $err;
+        }
+        $provinsi = json_decode($response, true);
+
         $alamat = $this->session->get('alamat');
         if (!isset($alamat)) {
             $alamat = [];
@@ -943,7 +967,8 @@ class Pages extends BaseController
 
         $data = [
             'title' => 'Akun Saya',
-            'alamat' => $alamat
+            'alamat' => $alamat,
+            'provinsi' => $provinsi["rajaongkir"]["results"],
         ];
         return view('pages/account', $data);
     }
