@@ -934,4 +934,17 @@ class Pages extends BaseController
         ];
         return view('pages/register', $data);
     }
+    public function account()
+    {
+        $alamat = $this->session->get('alamat');
+        if (!isset($alamat)) {
+            $alamat = [];
+        }
+
+        $data = [
+            'title' => 'Akun Saya',
+            'alamat' => $alamat
+        ];
+        return view('pages/account', $data);
+    }
 }

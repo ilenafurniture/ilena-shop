@@ -38,7 +38,7 @@ $routes->get('/delwishlist/(:any)', 'Pages::delWishlist/$1');
 $routes->get('/wishlisttocart', 'Pages::wishlistToCart');
 
 $routes->get('/order', 'Pages::order');
-$routes->get('/account', 'Pages::order');
+$routes->get('/account', 'Pages::account');
 
 $routes->get('/login', 'Pages::login');
 $routes->get('/register', 'Pages::register');
