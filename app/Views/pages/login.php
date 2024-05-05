@@ -4,16 +4,21 @@
     <div class="row justify-content-center m-5">
         <div class="col-md-6">
             <div class="card p-4">
-                <h5 class="mb-4">Login Akun</h5>
-                <form id="loginForm">
+                <h5 class="mb-3 teks-sedang">Login Akun</h5>
+                <?php if ($val['msg']) { ?>
+                    <div class="pemberitahuan my-1" role="alert">
+                        <?= $val['msg']; ?>
+                    </div>
+                <?php } ?>
+                <form id="loginForm" action="/actionlogin" method="post">
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" placeholder="Masukkan Email">
+                        <input name="email" type="email" class="form-control <?= ($val['val_email']) ? "is-invalid" : ""; ?>" placeholder="Masukkan Email" value="<?= old('email'); ?>">
                         <div class="invalid-feedback">Mohon masukkan alamat email yang valid.</div>
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Kata Sandi</label>
-                        <input type="password" class="form-control" id="password" placeholder="Masukkan Kata Sandi">
+                        <input name="sandi" type="password" class="form-control <?= ($val['val_sandi']) ? "is-invalid" : ""; ?>" placeholder="Masukkan Kata Sandi">
                         <div class="invalid-feedback">Mohon masukkan kata sandi.</div>
                     </div>
                     <div class="mb-3">
@@ -25,7 +30,7 @@
                         <button type="submit" class="btn btn-default btn-block">Login</button>
                     </div>
                     <div>
-                        <p class="text-center">Belum punya akun? <a href="/register">Buat sekarang</a></p>
+                        <p class="text-center">Belum punya akun? <a href="/register" class="btn-teks-aja" style="display: inline;">Buat sekarang</a></p>
                     </div>
                 </form>
                 <div class="text-center mb-1">
@@ -33,7 +38,7 @@
                     <!-- <span class="fw-small">Atau</span> -->
                 </div>
                 <div class="mb-2 d-flex w-100 justify-content-center">
-                    <button type="button" class="btn btn-default btn-block ">Login sebagai
+                    <button type="button" class="btn btn-default-merah btn-block ">Login sebagai
                         Tamu</button>
                 </div>
 
@@ -42,37 +47,13 @@
     </div>
 </div>
 <script>
-function togglePassword() {
-    var passwordField = document.getElementById("password");
-    if (passwordField.type === "password") {
-        passwordField.type = "text";
-    } else {
-        passwordField.type = "password";
+    function togglePassword() {
+        var passwordField = document.querySelector('input[name="sandi"]');
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+        } else {
+            passwordField.type = "password";
+        }
     }
-}
-
-document.getElementById("loginForm").addEventListener("submit", function(event) {
-    var email = document.getElementById("email").value;
-    var password = document.getElementById("password").value;
-
-    if (!email || !validateEmail(email)) {
-        document.getElementById("email").classList.add("is-invalid");
-        event.preventDefault();
-    } else {
-        document.getElementById("email").classList.remove("is-invalid");
-    }
-
-    if (!password) {
-        document.getElementById("password").classList.add("is-invalid");
-        event.preventDefault();
-    } else {
-        document.getElementById("password").classList.remove("is-invalid");
-    }
-});
-
-function validateEmail(email) {
-    var re = /\S+@\S+\.\S+/;
-    return re.test(email);
-}
 </script>
 <?= $this->endSection(); ?>

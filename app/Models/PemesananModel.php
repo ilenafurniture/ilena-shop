@@ -29,7 +29,7 @@ class PemesananModel extends Model
     }
     public function getPemesananCus($emailCus)
     {
-        return $this->where(['email_cus' => $emailCus])->orderBy('id', 'desc')->findAll();
+        return $this->where(['email' => $emailCus])->orderBy('id', 'desc')->findAll();
     }
     public function getPemesananPage($page)
     {

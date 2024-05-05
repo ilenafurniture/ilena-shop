@@ -40,8 +40,14 @@ $routes->get('/wishlisttocart', 'Pages::wishlistToCart');
 $routes->get('/order', 'Pages::order');
 $routes->get('/account', 'Pages::account');
 
-$routes->get('/login', 'Pages::login');
 $routes->get('/register', 'Pages::register');
+$routes->post('/actionregister', 'Pages::actionRegister');
+$routes->get('/verify', 'Pages::verify');
+$routes->post('/actionverify', 'Pages::actionVerify');
+$routes->get('/login', 'Pages::login');
+$routes->post('/actionlogin', 'Pages::actionLogin');
+$routes->post('/kirimotp', 'Pages::kirimOTP');
+$routes->get('/logout', 'Pages::actionLogout');
 
 
 

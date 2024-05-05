@@ -337,43 +337,45 @@ class Pages extends BaseController
             }
             $keranjang[$index]['detail'] = $produk;
             $hargaTotal += $produk['harga'] * $k['jumlah'] * (100 - $produk['diskon']) / 100;
-            $beratAkhir += json_decode($produk['deskripsi'], true)['dimensi']['paket']['berat'];
+            $dimensiPaket = json_decode($produk['deskripsi'], true)['dimensi']['paket'];
+            $beratVolume = ceil((float)$dimensiPaket['panjang'] * (float)$dimensiPaket['lebar'] * (float)$dimensiPaket['tinggi'] / 3500); //kg
+            $beratAsli = (float)$dimensiPaket['berat'];
+            $beratAkhir += ($beratVolume > $beratAsli ? $beratVolume : $beratAsli) * $k['jumlah'];
         }
-        // dd($alamatselected);
+
         $kurir = [];
-        $listKurir = ['jne', 'pos', 'tiki', 'wahana', 'sicepat', 'jnt', 'ninja', 'lion', 'anteraja'];
-        foreach ($listKurir as $l) {
-            $curl_jne = curl_init();
-            curl_setopt_array($curl_jne, array(
-                CURLOPT_URL => "https://pro.rajaongkir.com/api/cost",
-                CURLOPT_SSL_VERIFYHOST => 0,
-                CURLOPT_SSL_VERIFYPEER => 0,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => "",
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 30,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => "POST",
-                CURLOPT_POSTFIELDS => "origin=5504&originType=subdistrict&destination=" . $alamatselected['kec_id'] . "&destinationType=subdistrict&weight=" . $beratAkhir * 1000 . "&courier=" . $l,
-                CURLOPT_HTTPHEADER => array(
-                    "content-type: application/x-www-form-urlencoded",
-                    "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
-                ),
-            ));
-            $response = curl_exec($curl_jne);
-            $err = curl_error($curl_jne);
-            curl_close($curl_jne);
-            if ($err) {
-                return "cURL Error #:" . $err;
-            }
-            $jne = json_decode($response, true);
-            if (isset($jne)) {
-                foreach ($jne['rajaongkir']['results'][0]['costs'] as $j) {
+        $curl_kurir = curl_init();
+        curl_setopt_array($curl_kurir, array(
+            CURLOPT_URL => "https://pro.rajaongkir.com/api/cost",
+            CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_SSL_VERIFYPEER => 0,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => "origin=5504&originType=subdistrict&destination=" . $alamatselected['kec_id'] . "&destinationType=subdistrict&weight=" . $beratAkhir * 1000 . "&courier=jne:jnt:wahana:sentral",
+            CURLOPT_HTTPHEADER => array(
+                "content-type: application/x-www-form-urlencoded",
+                "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
+            ),
+        ));
+        $response = curl_exec($curl_kurir);
+        $err = curl_error($curl_kurir);
+        curl_close($curl_kurir);
+        if ($err) {
+            return "cURL Error #:" . $err;
+        }
+        $rajaOngkirCost = json_decode($response, true);
+        if (isset($rajaOngkirCost)) {
+            foreach ($rajaOngkirCost['rajaongkir']['results'] as $k) {
+                foreach ($k['costs'] as $c) {
                     $item_kurir = [
-                        'nama' => $jne['rajaongkir']['results'][0]['code'],
-                        'deskripsi' => $j['description'],
-                        'harga' => $j['cost'][0]['value'],
-                        'estimasi' => $j['cost'][0]['etd'],
+                        'nama' => $k['code'],
+                        'deskripsi' => $c['description'],
+                        'harga' => $c['cost'][0]['value'],
+                        'estimasi' => $c['cost'][0]['etd'],
                     ];
                     array_push($kurir, $item_kurir);
                 }
@@ -824,11 +826,13 @@ class Pages extends BaseController
     }
     public function order()
     {
-        $pesanan = $this->pemesananModel->getPemesanan();
+        $email = session()->get('email');
+        $pesanan = $this->pemesananModel->getPemesananCus($email);
         foreach ($pesanan as $ind_p => $p) {
             $pesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
             $pesanan[$ind_p]['items'] = json_decode($p['items'], true);
             $pesanan[$ind_p]['alamat'] = json_decode($p['alamat'], true);
+            $pesanan[$ind_p]['kurir'] = json_decode($p['kurir'], true);
         }
         $data = [
             'title' => 'Pesanan',
@@ -883,22 +887,6 @@ class Pages extends BaseController
         foreach ($wishlist as $id_barang) {
             $produknya = $this->barangModel->getBarang($id_barang);
             $varian = json_decode($produknya['varian'], true)[0]['nama'];
-            // $ketemu = false;
-            // foreach ($keranjang as $index => $element) {
-            //     if ($element['id'] == $id_barang && $element['varian'] == $varian) {
-            //         $keranjang[$index]['jumlah'] += 1;
-            //         $ketemu = true;
-            //     }
-            // }
-            // if (!$ketemu) {
-            //     $keranjangBaru = array(
-            //         'id' => $id_barang,
-            //         'jumlah' => 1,
-            //         'varian' => $varian,
-            //         'index_gambar' => 0
-            //     );
-            //     array_push($keranjang, $keranjangBaru);
-            // }
 
             $ketemu = false;
             foreach ($keranjang as $index => $k) {
@@ -923,16 +911,270 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Masuk Akun',
+            'val' => [
+                'msg' => session()->getFlashdata('msg'),
+                'val_email' => session()->getFlashdata('val-email'),
+                'val_sandi' => session()->getFlashdata('val-sandi'),
+                'isiEmail' => session()->getFlashdata('isiEmail'),
+            ]
         ];
         return view('pages/login', $data);
     }
+    public function actionLogin()
+    {
+        if (!$this->validate([
+            'email' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Email harus diisi'
+                ]
+            ],
+            'sandi' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Sandi harus diisi'
+                ]
+            ]
+        ])) {
+            $validation = \Config\Services::validation();
+            session()->setFlashdata('val-email', $validation->getError('email'));
+            session()->setFlashdata('val-sandi', $validation->getError('sandi'));
+            return redirect()->to('/login')->withInput();
+        }
 
+        $email = $this->request->getVar('email');
+        $sandi = $this->request->getVar('sandi');
+        $getUser = $this->userModel->getUser($email);
+        if (!$getUser) {
+            session()->setFlashdata('msg', 'Email tidak terdaftar');
+            return redirect()->to('/login');
+        }
+        $authSandi = password_verify($sandi, $getUser['sandi']);
+        if (!$authSandi) {
+            session()->setFlashdata('msg', 'Sandi salah');
+            return redirect()->to('/login');
+        }
+        if ($getUser['active'] == '0') {
+            $ses_data = [
+                'email' => $getUser['email'],
+                'active' => '0',
+                'isLogin' => true
+            ];
+            session()->set($ses_data);
+            session()->setFlashdata('msg', "Email " . $email . " perlu diverifikasi");
+            return redirect()->to('/verify');
+        }
+        if ($getUser['role'] == '0') {
+            $getPembeli = $this->pembeliModel->getPembeli($email);
+            $ses_data = [
+                'active' => '1',
+                'email' => $getUser['email'],
+                'role' => $getUser['role'],
+                'nama' => $getPembeli['nama'],
+                'alamat' => json_decode($getPembeli['alamat'], true),
+                'nohp' => $getPembeli['nohp'],
+                'wishlist' => json_decode($getPembeli['wishlist'], true),
+                'keranjang' => json_decode($getPembeli['keranjang'], true),
+                'transaksi' => json_decode($getPembeli['transaksi'], true),
+                'isLogin' => true
+            ];
+            session()->set($ses_data);
+            return redirect()->to(site_url('/'));
+        } else {
+            $ses_data = [
+                'active' => '1',
+                'email' => $getUser['email'],
+                'role' => $getUser['role'],
+                'isLogin' => true
+            ];
+            session()->set($ses_data);
+            return redirect()->to('/');
+        }
+    }
     public function register()
     {
         $data = [
             'title' => 'Membuat Akun',
+            'val' => [
+                'val_nama' => session()->getFlashdata('val-nama'),
+                'val_email' => session()->getFlashdata('val-email'),
+                'val_sandi' => session()->getFlashdata('val-sandi'),
+                'val_nohp' => session()->getFlashdata('val-nohp'),
+                'msg' => session()->getFlashdata('msg'),
+                // 'val_alamat' => session()->getFlashdata('val-alamat'),
+            ]
         ];
         return view('pages/register', $data);
+    }
+    public function actionRegister()
+    {
+        if (!$this->validate([
+            'nama' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Nama lengkap harus diisi',
+                ]
+            ],
+            'email' => [
+                'rules' => 'required|is_unique[user.email]',
+                'errors' => [
+                    'required' => 'Email harus diisi',
+                    'is_unique' => 'Email sudah terdaftar',
+                ]
+            ],
+            'sandi' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Sandi harus diisi'
+                ]
+            ],
+            'nohp' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Nomor handphone harus diisi'
+                ]
+            ],
+        ])) {
+            $validation = \Config\Services::validation();
+            session()->setFlashdata('val-nama', $validation->getError('nama'));
+            session()->setFlashdata('val-email', $validation->getError('email'));
+            session()->setFlashdata('val-sandi', $validation->getError('sandi'));
+            session()->setFlashdata('val-nohp', $validation->getError('nohp'));
+            return redirect()->to('/register')->withInput();
+        }
+
+        $otp_number = rand(100000, 999999);
+        $waktu_otp = time() + 300;
+        $d = strtotime("+425 Minutes");
+        $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+        $waktu_otp_tanggal = date("d", $d) . " " . $bulan[date("m", $d) - 1] . " " . date("Y H:i:s", $d);
+
+        $email = \Config\Services::email();
+        $email->setFrom('no-reply@ilenafurniture.com', 'Ilena Furniture');
+        $email->setTo($this->request->getVar('email'));
+        $email->setSubject('ILENA Store - Verifikasi OTP');
+        $email->setMessage("<p>Berikut kode OTP verifikasi</p><h1>" . $otp_number . "</h1><p>Kode ini berlaku hingga " . $waktu_otp_tanggal . "</p>");
+        $email->send();
+
+        $this->userModel->insert([
+            'email' => $this->request->getVar('email'),
+            'sandi' => password_hash($this->request->getVar('sandi'), PASSWORD_DEFAULT),
+            'role' => '0',
+            'otp' => $otp_number,
+            'active' => '0',
+            'waktu_otp' => $waktu_otp
+        ]);
+        $this->pembeliModel->insert([
+            'nama' => $this->request->getVar('nama'),
+            'email_user' => $this->request->getVar('email'),
+            'nohp' => $this->request->getVar('nohp'),
+            'alamat' => json_encode([]),
+            'wishlist' => json_encode([]),
+            'keranjang' => json_encode([])
+        ]);
+
+        $emailUser = $this->request->getVar('email');
+        $getUser = $this->userModel->getUser($emailUser);
+        $ses_data = [
+            'email' => $getUser['email'],
+            'active' => '0',
+            'isLogin' => true
+        ];
+        session()->set($ses_data);
+        session()->setFlashdata('msg', "OTP telah dikirim ke email " . $emailUser . " dan berlaku hingga " . $waktu_otp_tanggal);
+        return redirect()->to('/verify');
+    }
+    public function verify()
+    {
+        $data = [
+            'title' => 'Verifikasi',
+            'val' => [
+                'msg' => session()->getFlashdata('msg'),
+                'val_verify' => session()->getFlashdata('val_verify')
+            ]
+        ];
+        return view('pages/verify', $data);
+    }
+    public function actionVerify()
+    {
+        $otp = $this->request->getVar("otp");
+        $email = session()->get("email");
+        $getUser = $this->userModel->getUser($email);
+        if ($otp != $getUser['otp']) {
+            session()->setFlashdata('val_verify', "OTP salah");
+            return redirect()->to("/verify");
+        }
+        $waktu_otp = time();
+        if ($waktu_otp > (int)$getUser['waktu_otp']) {
+            $otp_number = rand(100000, 999999);
+            $waktu_otp = time() + 300;
+            $d = strtotime("+425 Minutes");
+            $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+            $waktu_otp_tanggal = date("d", $d) . " " . $bulan[date("m", $d) - 1] . " " . date("Y H:i:s", $d);
+
+            $sendemail = \Config\Services::email();
+            $sendemail->setFrom('no-reply@ilenafurniture.com', 'Ilena Furniture');
+            $sendemail->setTo($email);
+            $sendemail->setSubject('ILENA Store - Verifikasi OTP');
+            $sendemail->setMessage("<p>Berikut kode OTP verifikasi</p><h1>" . $otp_number . "</h1><p>Kode ini berlaku hingga " . $waktu_otp_tanggal . "</p>");
+            $sendemail->send();
+
+            $this->userModel->where('email', $email)->set([
+                'otp' => $otp_number,
+                'waktu_otp' => $waktu_otp
+            ])->update();
+            session()->setFlashdata('msg', "OTP telah diperbarui dan sudah dikirim kembali ke email " . $email);
+            return redirect()->to("/verify");
+        }
+
+        $getPembeli = $this->pembeliModel->getPembeli($email);
+        $ses_data = [
+            'active' => '1',
+            'role' => $getUser['role'],
+            'nama' => $getPembeli['nama'],
+            'alamat' => json_decode($getPembeli['alamat'], true),
+            'nohp' => $getPembeli['nohp'],
+            'wishlist' => json_decode($getPembeli['wishlist'], true),
+            'keranjang' => json_decode($getPembeli['keranjang'], true)
+        ];
+        $this->userModel->where('email', $email)->set([
+            'active' => '1',
+            'otp' => '0',
+            'waktu_otp' => '0'
+        ])->update();
+        session()->set($ses_data);
+        return redirect()->to(site_url('/'));
+    }
+    public function kirimOTP()
+    {
+        $emailUser = session()->get('email');
+        $otp_number = rand(100000, 999999);
+        $waktu_otp = time() + 300;
+        $d = strtotime("+425 Minutes");
+        $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+        $waktu_otp_tanggal = date("d", $d) . " " . $bulan[date("m", $d) - 1] . " " . date("Y H:i:s", $d);
+
+        $email = \Config\Services::email();
+        $email->setFrom('no-reply@ilenafurniture.com', 'Ilena Furniture');
+        $email->setTo($emailUser);
+        $email->setSubject('ILENA Store - Verifikasi OTP');
+        $email->setMessage("<p>Berikut kode OTP verifikasi</p><h1>" . $otp_number . "</h1><p>Kode ini berlaku hingga " . $waktu_otp_tanggal . "</p>");
+        $email->send();
+
+        $this->userModel->where('email', $emailUser)->set([
+            'otp' => $otp_number,
+            'waktu_otp' => $waktu_otp
+        ])->update();
+
+        session()->setFlashdata('msg', "OTP telah dikirim ke email " . $emailUser . " dan berlaku hingga " . $waktu_otp_tanggal);
+        return redirect()->to('/verify');
+    }
+    public function actionLogout()
+    {
+        // $ses_data = ['email', 'role', 'alamat', 'wishlist', 'keranjang', 'isLogin', 'active', 'transaksi', 'nama', 'nohp'];
+        session()->destroy();
+        session()->setFlashdata('msg', 'Kamu telah keluar');
+        return redirect()->to('/login');
     }
     public function account()
     {

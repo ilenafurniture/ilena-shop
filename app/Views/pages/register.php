@@ -1,39 +1,41 @@
-<!-- register.php -->
-
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <div class="container">
     <div class="row justify-content-center m-5">
         <div class="col-md-6">
             <div class="card p-4">
-                <h5 class="mb-4">Register Akun</h5>
-                <form id="registerForm">
+                <h1 class="mb-3 teks-sedang">Register Akun</h1>
+                <?php if ($val['msg']) { ?>
+                    <div class="pemberitahuan my-1" role="alert">
+                        <?= $val['msg']; ?>
+                    </div>
+                <?php } ?>
+                <form id="registerForm" action="/actionregister" method="post">
                     <div class="mb-3">
                         <label for="fullname" class="form-label">Nama Lengkap</label>
-                        <input type="text" class="form-control" id="fullname" placeholder="Masukkan Nama Lengkap">
+                        <input name="nama" type="text" class="form-control <?= ($val['val_nama']) ? "is-invalid" : ""; ?>" placeholder="Masukkan Nama Lengkap" value="<?= old('nama'); ?>">
                         <div class="invalid-feedback">Mohon masukkan nama lengkap.</div>
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" placeholder="Masukkan Email">
+                        <input name="email" type="email" class="form-control <?= ($val['val_email']) ? "is-invalid" : ""; ?>" placeholder="Masukkan Email" value="<?= old('email'); ?>">
                         <div class="invalid-feedback">Mohon masukkan alamat email yang valid.</div>
                     </div>
                     <div class="mb-3">
-                        <label for="phone" class="form-label">Nomor Telepon</label>
-                        <input type="text" class="form-control" id="phone" placeholder="Masukkan Nomor Telepon">
+                        <label for="nohp" class="form-label">Nomor Telepon</label>
+                        <input name="nohp" type="text" class="form-control <?= ($val['val_nohp']) ? "is-invalid" : ""; ?>" placeholder="Masukkan Nomor Telepon" value="<?= old('nohp'); ?>">
                         <div class="invalid-feedback">Mohon masukkan nomor telepon yang valid.</div>
                     </div>
                     <div class="mb-3">
-                        <label for="password" class="form-label">Kata Sandi</label>
-                        <input type="password" class="form-control" id="password" placeholder="Masukkan Kata Sandi">
+                        <label for="sandi" class="form-label">Kata Sandi</label>
+                        <input name="sandi" type="password" class="form-control <?= ($val['val_sandi']) ? "is-invalid" : ""; ?>" id="password" placeholder="Masukkan Kata Sandi">
                         <div class="invalid-feedback">Mohon masukkan kata sandi.</div>
                     </div>
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="confirmPassword" class="form-label">Konfirmasi Kata Sandi</label>
-                        <input type="password" class="form-control" id="confirmPassword"
-                            placeholder="Konfirmasi Kata Sandi">
-                        <div class="invalid-feedback">Mohon konfirmasi kata sandi.</div>
-                    </div>
+                        <input type="password" class="form-control" id="confirmPassword" placeholder="Konfirmasi Kata Sandi">
+                        <div class="invalid-feedback">Sandi tidak sesuai</div>
+                    </div> -->
                     <div class="mb-3">
                         <input type="checkbox" onclick="togglePassword()" id="showPassword">
                         <label for="showPassword" class="form-label" style="font-size:small;">Tampilkan Kata
@@ -43,7 +45,7 @@
                         <button type="submit" class="btn btn-default btn-block">Register</button>
                     </div>
                     <div>
-                        <p class="text-center">Sudah punya akun? <a href="/login">Masuk sekarang</a></p>
+                        <p class="text-center">Sudah punya akun? <a href="/login" class="btn-teks-aja" style="display: inline;">Masuk sekarang</a></p>
                     </div>
                 </form>
             </div>
@@ -51,65 +53,28 @@
     </div>
 </div>
 <script>
-function togglePassword() {
-    var passwordField = document.getElementById("password");
-    var confirmPasswordField = document.getElementById("confirmPassword");
+    function togglePassword() {
+        var passwordField = document.querySelector('input[name="sandi"]');
+        // var confirmPasswordField = document.getElementById("confirmPassword");
 
-    if (passwordField.type === "password") {
-        passwordField.type = "text";
-        confirmPasswordField.type = "text";
-    } else {
-        passwordField.type = "password";
-        confirmPasswordField.type = "password";
-    }
-}
-
-document.getElementById("registerForm").addEventListener("submit", function(event) {
-    var fullname = document.getElementById("fullname").value;
-    var email = document.getElementById("email").value;
-    var phone = document.getElementById("phone").value;
-    var password = document.getElementById("password").value;
-    var confirmPassword = document.getElementById("confirmPassword").value;
-
-    if (!fullname || !email || !phone || !password || !confirmPassword) {
-        event.preventDefault();
-        alert("Mohon isi semua bidang.");
-        return;
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            // confirmPasswordField.type = "text";
+        } else {
+            passwordField.type = "password";
+            // confirmPasswordField.type = "password";
+        }
     }
 
-    if (!validateEmail(email)) {
-        document.getElementById("email").classList.add("is-invalid");
-        event.preventDefault();
-        return;
-    } else {
-        document.getElementById("email").classList.remove("is-invalid");
-    }
-
-    if (!validatePhone(phone)) {
-        document.getElementById("phone").classList.add("is-invalid");
-        event.preventDefault();
-        return;
-    } else {
-        document.getElementById("phone").classList.remove("is-invalid");
-    }
-
-    if (password !== confirmPassword) {
-        document.getElementById("confirmPassword").classList.add("is-invalid");
-        event.preventDefault();
-        return;
-    } else {
-        document.getElementById("confirmPassword").classList.remove("is-invalid");
-    }
-});
-
-function validateEmail(email) {
-    var re = /\S+@\S+\.\S+/;
-    return re.test(email);
-}
-
-function validatePhone(phone) {
-    var re = /^\d{10,12}$/;
-    return re.test(phone);
-}
+    // const passwordElm = document.getElementById("password")
+    // const confirmPasswordElm = document.getElementById("confirmPassword")
+    // confirmPasswordElm.addEventListener("input", () => {
+    //     console.log("cekcek")
+    //     if (confirmPasswordElm.value != passwordElm.value) {
+    //         confirmPasswordElm.classList.add("is-invalid")
+    //     } else {
+    //         confirmPasswordElm.classList.remove("is-invalid")
+    //     }
+    // })
 </script>
 <?= $this->endSection(); ?>

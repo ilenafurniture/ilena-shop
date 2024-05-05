@@ -62,7 +62,7 @@
         <span class="garis"></span>
         <div class="my-4">
             <h1 class="teks-sedang">Alamat</h1>
-            <p style="color: grey;">2 Tujuan yang dapat dipilih</p>
+            <p style="color: grey;"><?= count($alamat) <= 0 ? 'Tidak Ada' : count($alamat) ?> tujuan yang dapat dipilih</p>
         </div>
         <div class="container-address my-4">
             <?php foreach ($alamat as $ind_a => $a) { ?>
