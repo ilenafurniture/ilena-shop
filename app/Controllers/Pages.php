@@ -135,9 +135,10 @@ class Pages extends BaseController
                 'jumlah' => $jumlah
             ]);
         }
-        $this->session->set([
-            'keranjang' => $keranjang
-        ]);
+        $this->session->set(['keranjang' => $keranjang]);
+        $email = session()->get('email');
+        if ($email)
+            $this->pembeliModel->where('email', $email)->set(['keranjang' => json_encode($keranjang)])->update();
         return redirect()->to('/cart');
     }
 
@@ -152,6 +153,9 @@ class Pages extends BaseController
             return redirect()->to('/cart');
         }
         $this->session->set(['keranjang' => $keranjang]);
+        $email = session()->get('email');
+        if ($email)
+            $this->pembeliModel->where('email', $email)->set(['keranjang' => json_encode($keranjang)])->update();
         return redirect()->to('/cart');
     }
 
@@ -162,6 +166,9 @@ class Pages extends BaseController
 
         $keranjangBaru = array_values($keranjang);
         $this->session->set(['keranjang' => $keranjangBaru]);
+        $email = session()->get('email');
+        if ($email)
+            $this->pembeliModel->where('email', $email)->set(['keranjang' => json_encode($keranjangBaru)])->update();
         return redirect()->to('/cart');
     }
 
@@ -911,6 +918,10 @@ class Pages extends BaseController
         }
         array_push($wishlist, $id_barang);
         $this->session->set(['wishlist' => $wishlist]);
+
+        $email = session()->get('email');
+        if ($email)
+            $this->pembeliModel->where('email', $email)->set(['wishlist' => json_encode($wishlist)])->update();
         return redirect()->to('/wishlist');
     }
     public function delWishlist($id_barang)
@@ -920,6 +931,9 @@ class Pages extends BaseController
             unset($wishlist[$key]);
         }
         session()->set(['wishlist' => $wishlist]);
+        $email = session()->get('email');
+        if ($email)
+            $this->pembeliModel->where('email', $email)->set(['wishlist' => json_encode($wishlist)])->update();
         return redirect()->to('/wishlist');
     }
     public function wishlistToCart()
@@ -949,6 +963,9 @@ class Pages extends BaseController
             }
         }
         $this->session->set(['keranjang' => $keranjang]);
+        $email = session()->get('email');
+        if ($email)
+            $this->pembeliModel->where('email', $email)->set(['keranjang' => json_encode($keranjang)])->update();
         return redirect()->to('/cart');
     }
 

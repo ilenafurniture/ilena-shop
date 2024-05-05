@@ -9,7 +9,7 @@
         <div class="container-keranjang">
             <?php foreach ($keranjang as $index => $k) { ?>
                 <div class="item-keranjang">
-                    <a href="/product/<?= $k['detail']['id'] ?>" style="width: 150px; display:block;">
+                    <a href="/product/<?= $k['detail']['id'] ?>" style="display:block;">
                         <img src="<?= $k['src_gambar'] ?>" alt="Gambar Keranjang">
                     </a>
                     <div style="flex: 1;" class="d-flex flex-column">

@@ -33,15 +33,6 @@
                         <p class="text-center">Belum punya akun? <a href="/register" class="btn-teks-aja" style="display: inline;">Buat sekarang</a></p>
                     </div>
                 </form>
-                <div class="text-center mb-1">
-                    <hr class="my-4">
-                    <!-- <span class="fw-small">Atau</span> -->
-                </div>
-                <div class="mb-2 d-flex w-100 justify-content-center">
-                    <button type="button" class="btn btn-default-merah btn-block ">Login sebagai
-                        Tamu</button>
-                </div>
-
             </div>
         </div>
     </div>
