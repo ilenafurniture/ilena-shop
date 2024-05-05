@@ -16,26 +16,12 @@
                         <p class="mb-1"><?= $a['nohp_penerima'] ?></p>
                         <p class="mb-1"><b style="font-weight: 600;">Pemesan</b> : <?= $a['email_pemesan'] ?></p>
                     </div>
-                    <div style="width: 100px" class="d-flex gap-3 justify-content-end align-items-start">
+                    <!-- <div style="width: 100px" class="d-flex gap-3 justify-content-end align-items-start">
                         <a href="#" class="btn-teks-aja text-dark">Edit</a>
                         <a href="/deleteaddress/<?= $ind_a; ?>" class="btn-teks-aja">Hapus</a>
-                    </div>
+                    </div> -->
                 </label>
             <?php } ?>
-
-            <!-- <input type="radio" name="address" id="address2">
-            <label for="address2" class="item-address">
-                <div style="flex: 1;">
-                    <p class="mb-1 nama">Nama Penerima</p>
-                    <p class="mb-1">Alamat Penerima</p>
-                    <p class="mb-1">0812313512361</p>
-                    <p class="mb-1"><b style="font-weight: 600;">Pemesan</b> : galihsuks@gmail.com</p>
-                </div>
-                <div style="width: 100px" class="d-flex gap-3 justify-content-end align-items-start">
-                    <a href="#" class="btn-teks-aja text-dark">Edit</a>
-                    <a href="#" class="btn-teks-aja">Hapus</a>
-                </div>
-            </label> -->
         </div>
         <button type="button" class="btn-teks-aja" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="material-icons">add</i> Tambah Alamat</button>
 
@@ -53,18 +39,18 @@
                             <div class="pb-3 border-bottom">
                                 <h5 class="mb-2">Informasi Pemesan</h5>
                                 <div class="form-floating mb-1">
-                                    <input type="email" class="form-control" placeholder="Email" name="emailPem" required>
+                                    <input type="email" class="form-control" placeholder="Email" name="emailPem" required value="<?= $email; ?>">
                                     <label for="floatingInput">Email</label>
                                 </div>
                             </div>
                             <div class="py-3">
                                 <h5 class="mb-2">Informasi Penerima</h5>
                                 <div class="form-floating mb-1">
-                                    <input type="text" class="form-control" placeholder="Email" name="nama" required>
+                                    <input type="text" class="form-control" placeholder="Email" name="nama" required value="<?= $nama; ?>">
                                     <label for="floatingInput">Nama Lengkap</label>
                                 </div>
                                 <div class="form-floating mb-1">
-                                    <input type="number" class="form-control" placeholder="Nomor Handphone" name="nohp" required>
+                                    <input type="number" class="form-control" placeholder="Nomor Handphone" name="nohp" required value="<?= $nohp; ?>">
                                     <label for="floatingInput">No. HP</label>
                                 </div>
                                 <div class="form-alamat d-flex mb-1 gap-1">

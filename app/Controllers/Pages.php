@@ -271,7 +271,10 @@ class Pages extends BaseController
             'keranjang' => $keranjang,
             'hargaTotal' => $hargaTotal,
             'hargaKeseluruhan' => $hargaTotal + 5000,
-            'alamat' => $alamat
+            'alamat' => $alamat,
+            'email' => session()->get('email') ? session()->get('email') : '',
+            'nama' => session()->get('nama') ? session()->get('nama') : '',
+            'nohp' => session()->get('nohp') ? session()->get('nohp') : '',
         ];
         return view('pages/address', $data);
     }
@@ -307,6 +310,10 @@ class Pages extends BaseController
             'alamat_lengkap' => $alamatAdd . " " . $kodepos[0] . ", " . $kecamatan[1] . ", " . $kota[1] . ", " . $provinsi[1] . " " . $kodepos[1]
         ]);
         $this->session->set(['alamat' => $alamat]);
+
+        $email = session()->get('email');
+        if ($email)
+            $this->pembeliModel->where('email', $email)->set(['alamat' => json_encode($alamat)])->update();
         return redirect()->to($checkPage == 'address' ? '/address' : '/account');
     }
     public function deleteAddress($ind_add)
@@ -315,7 +322,45 @@ class Pages extends BaseController
         unset($alamat[$ind_add]);
         $alamatBaru = array_values($alamat);
         $this->session->set(['alamat' => $alamatBaru]);
-        return redirect()->to('/address');
+
+        $email = session()->get('email');
+        if ($email)
+            $this->pembeliModel->where('email', $email)->set(['alamat' => json_encode($alamatBaru)])->update();
+        return redirect()->to('/account');
+    }
+    public function editAddress($ind_add)
+    {
+        $emailPem = $this->request->getVar('emailPem');
+        $nama = $this->request->getVar('nama');
+        $nohp = $this->request->getVar('nohp');
+        $provinsi = explode("-", $this->request->getVar('provinsiEdit'));
+        $kota = explode("-", $this->request->getVar('kotaEdit'));
+        $kecamatan = explode("-", $this->request->getVar('kecamatanEdit'));
+        $kodepos = explode("-", $this->request->getVar('kodeposEdit'));
+        $alamatAdd = $this->request->getVar('alamat_add');
+
+        $alamat = $this->session->get('alamat');
+        $alamat[$ind_add] = [
+            'email_pemesan' => $emailPem,
+            'nama_penerima' => $nama,
+            'nohp_penerima' => $nohp,
+            'prov_id' => $provinsi[0],
+            'prov' => $provinsi[1],
+            'kab_id' => $kota[0],
+            'kab' => $kota[1],
+            'kec_id' => $kecamatan[0],
+            'kec' => $kecamatan[1],
+            'desa' => $kodepos[0],
+            'kodepos' => $kodepos[1],
+            'alamat_tambahan' => $alamatAdd,
+            'alamat_lengkap' => $alamatAdd . " " . $kodepos[0] . ", " . $kecamatan[1] . ", " . $kota[1] . ", " . $provinsi[1] . " " . $kodepos[1]
+        ];
+        $this->session->set(['alamat' => $alamat]);
+
+        $email = session()->get('email');
+        if ($email)
+            $this->pembeliModel->where('email', $email)->set(['alamat' => json_encode($alamat)])->update();
+        return redirect()->to('/account');
     }
     public function shipping($ind_add)
     {
@@ -954,6 +999,7 @@ class Pages extends BaseController
             session()->setFlashdata('msg', 'Sandi salah');
             return redirect()->to('/login');
         }
+        session()->destroy();
         if ($getUser['active'] == '0') {
             $ses_data = [
                 'email' => $getUser['email'],
@@ -1075,6 +1121,7 @@ class Pages extends BaseController
 
         $emailUser = $this->request->getVar('email');
         $getUser = $this->userModel->getUser($emailUser);
+        session()->destroy();
         $ses_data = [
             'email' => $getUser['email'],
             'active' => '0',
@@ -1210,6 +1257,10 @@ class Pages extends BaseController
         $data = [
             'title' => 'Akun Saya',
             'alamat' => $alamat,
+            'alamatJson' => json_encode($alamat),
+            'email' => session()->get('email'),
+            'nama' => session()->get('nama'),
+            'nohp' => session()->get('nohp'),
             'provinsi' => $provinsi["rajaongkir"]["results"],
         ];
         return view('pages/account', $data);

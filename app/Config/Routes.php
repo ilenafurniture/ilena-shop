@@ -22,6 +22,7 @@ $routes->get('/getkec/(:any)', 'Pages::getKec/$1');
 $routes->get('/address', 'Pages::address');
 $routes->post('/addaddress', 'Pages::addAddress');
 $routes->get('/deleteaddress/(:any)', 'Pages::deleteAddress/$1');
+$routes->post('/editaddress/(:any)', 'Pages::editAddress/$1');
 
 $routes->get('/shipping/(:any)', 'Pages::shipping/$1');
 

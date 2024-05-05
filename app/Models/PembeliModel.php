@@ -8,7 +8,7 @@ class PembeliModel extends Model
 {
     protected $table = 'pembeli';
     protected $allowedFields = [
-        'email_user',
+        'email',
         'nama',
         'nohp',
         'alamat',
@@ -18,6 +18,6 @@ class PembeliModel extends Model
 
     public function getPembeli($email = false)
     {
-        return $this->where(['email_user' => $email])->first();
+        return $this->where(['email' => $email])->first();
     }
 }
