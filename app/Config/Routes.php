@@ -38,8 +38,8 @@ $routes->get('/addwishlist/(:any)', 'Pages::addWishlist/$1');
 $routes->get('/delwishlist/(:any)', 'Pages::delWishlist/$1');
 $routes->get('/wishlisttocart', 'Pages::wishlistToCart');
 
-$routes->get('/order', 'Pages::order');
-$routes->get('/account', 'Pages::account');
+$routes->get('/order', 'Pages::order', ['filter' => 'harusLogin']);
+$routes->get('/account', 'Pages::account', ['filter' => 'harusLogin']);
 
 $routes->get('/register', 'Pages::register');
 $routes->post('/actionregister', 'Pages::actionRegister');
