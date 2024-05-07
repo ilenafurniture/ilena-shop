@@ -74,23 +74,6 @@ class Pages extends BaseController
     }
     public function cart()
     {
-        // $strukturKeranjang = [
-        //     [
-        //         'id_barang' => '001',
-        //         'varian' => 'winge',
-        //         'jumlah' => 1
-        //     ],
-        //     [
-        //         'id_barang' => '002',
-        //         'varian' => 'winge',
-        //         'jumlah' => 1
-        //     ],
-        //     [
-        //         'id_barang' => '003',
-        //         'varian' => 'winge',
-        //         'jumlah' => 1
-        //     ],
-        // ];
         $hargaTotal = 0;
         $keranjang = $this->session->get('keranjang');
         if (!isset($keranjang)) {
@@ -1055,7 +1038,9 @@ class Pages extends BaseController
             session()->setFlashdata('msg', 'Sandi salah');
             return redirect()->to('/login');
         }
-        session()->destroy();
+
+        $ses_data = ['alamat', 'wishlist', 'keranjang'];
+        session()->remove($ses_data);
         if ($getUser['active'] == '0') {
             $ses_data = [
                 'email' => $getUser['email'],
@@ -1177,7 +1162,8 @@ class Pages extends BaseController
 
         $emailUser = $this->request->getVar('email');
         $getUser = $this->userModel->getUser($emailUser);
-        session()->destroy();
+        $ses_data = ['alamat', 'wishlist', 'keranjang'];
+        session()->remove($ses_data);
         $ses_data = [
             'email' => $getUser['email'],
             'active' => '0',

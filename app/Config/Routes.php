@@ -1,5 +1,6 @@
 <?php
 
+use App\Controllers\GambarController;
 use CodeIgniter\Router\RouteCollection;
 
 /**
@@ -15,7 +16,6 @@ $routes->get('/cart', 'Pages::cart', ['filter' => 'keamananRoute']);
 $routes->get('/addcart/(:any)/(:any)/(:any)', 'Pages::addCart/$1/$2/$3');
 $routes->get('/deletecart/(:any)', 'Pages::deleteCart/$1');
 $routes->get('/reducecart/(:any)', 'Pages::reduceCart/$1');
-
 
 $routes->get('/getkota/(:any)', 'Pages::getKota/$1');
 $routes->get('/getkec/(:any)', 'Pages::getKec/$1');
@@ -56,6 +56,12 @@ $routes->get('/syarat', 'Pages::syarat');
 $routes->get('/kebijakan', 'Pages::kebijakan');
 
 
-
+// GambarController
 $routes->get('/viewpic/(:any)', 'GambarController::tampilGambarBarang/$1');
 $routes->get('/viewvar/(:any)/(:any)', 'GambarController::tampilGambarVarian/$1/$2');
+
+
+// Admin Controller
+$routes->get('/customer', 'AdminController::customer');
+$routes->get('/addproduct', 'AdminController::addProduct');
+$routes->get('/editproduct/(:any)', 'AdminController::editProduct/$1');

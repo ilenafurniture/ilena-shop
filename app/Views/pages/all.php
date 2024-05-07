@@ -105,6 +105,12 @@
         <a id="btn-filter" class="mt-2 btn-lonjong">Terapkan</a>
     </div>
     <div class="flex-grow-1">
+        <?php if (session()->get('role') == '1') { ?>
+            <div class="d-flex justify-content-between">
+                <h1 class="teks-sedang">List Product</h1>
+                <a href="/addproduct" class="btn-default-merah">Tambah Produk</a>
+            </div>
+        <?php } ?>
         <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">Produk Kami</a></li>
@@ -179,6 +185,7 @@
                         <div class="card1-content-img">
                             <span><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
                             <div class="d-flex flex-column gap-2">
+                                <?= session()->get('role') == '1' ? '<a class="card1-btn-img" href="/editproduct/' . $p['id'] . '"><i class="material-icons">edit</i></a>' : '' ?>
                                 <?= in_array($p['id'], $wishlist) ? '<a class="card1-btn-img" href="/delwishlist/' . $p['id'] . '"><i class="material-icons">bookmark</i></a>' : '<a class="card1-btn-img" href="/addwishlist/' . $p['id'] . '"><i class="material-icons">bookmark_border</i></a>' ?>
                                 <a id="card<?= $ind_p ?>" class="card1-btn-img" href="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'], true)[0]['nama'] ?>/1"><i class="material-icons">shopping_cart</i></a>
                             </div>
