@@ -10,6 +10,8 @@ class LoginFilter implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
+        $ses_data = ["kurir", "alamatTerpilih", "hargaKeseluruhan", "kurirTerpilih"];
+        session()->remove($ses_data);
         if (!session("isLogin")) {
             return redirect()->to(site_url('login'));
         }

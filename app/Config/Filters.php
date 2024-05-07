@@ -25,6 +25,7 @@ class Filters extends BaseConfig
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
         'harusLogin'    => \App\Filters\LoginFilter::class,
+        'keamananRoute' => \App\Filters\KeamananRoute::class,
     ];
 
     /**

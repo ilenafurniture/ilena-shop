@@ -10,9 +10,8 @@ class KeamananRoute implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        if (!session("isLogin")) {
-            return redirect()->to(site_url('login'));
-        }
+        $ses_data = ["kurir", "alamatTerpilih", "hargaKeseluruhan", "kurirTerpilih"];
+        session()->remove($ses_data);
     }
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {

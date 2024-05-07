@@ -227,6 +227,15 @@ class Pages extends BaseController
 
     public function address()
     {
+        $keranjang = session()->get('keranjang');
+        if (!isset($keranjang)) {
+            return redirect()->to('/cart');
+        } else {
+            if (count($keranjang) <= 0) {
+                return redirect()->to('/cart');
+            }
+        }
+
         //Dapatkan data provinsi
         $curl = curl_init();
         curl_setopt_array($curl, array(
@@ -372,7 +381,17 @@ class Pages extends BaseController
     public function shipping($ind_add)
     {
         $alamat = $this->session->get('alamat');
-        if (!isset($alamat)) return redirect()->to('/address');
+        if (!array_key_exists($ind_add, $alamat)) {
+            return redirect()->to('/address');
+        }
+        if (!isset($alamat)) {
+            return redirect()->to('/address');
+        } else {
+            if (count($alamat) == 0) {
+                return redirect()->to('/address');
+            }
+        }
+
         $alamatselected = $alamat[$ind_add];
         $beratAkhir = 0;
         $hargaTotal = 0;
@@ -491,8 +510,21 @@ class Pages extends BaseController
     {
         $hargaTotal = 0;
         $keranjang = $this->session->get('keranjang');
-        if (!isset($keranjang)) {
-            return redirect()->to('/product');
+        $kurir = $this->session->get('kurir');
+        $alamatTerpilih = session()->get('alamatTerpilih');
+        if (!isset($alamatTerpilih)) {
+            return redirect()->to('/address');
+        } else {
+            if (count($alamatTerpilih) <= 0) {
+                return redirect()->to('/address');
+            }
+        }
+        if (!isset($kurir)) {
+            return redirect()->to('/address');
+        } else {
+            if (count($kurir) <= 0) {
+                return redirect()->to('/address');
+            }
         }
         foreach ($keranjang as $index => $k) {
             $produk = $this->barangModel->getBarang($k['id_barang']);
@@ -505,12 +537,12 @@ class Pages extends BaseController
             $hargaTotal += $produk['harga'] * $k['jumlah'] * (100 - $produk['diskon']) / 100;
         }
 
-        $kurir = $this->session->get('kurir');
         $data = [
             'title' => 'Pembayaran',
             'hargaTotal' => $hargaTotal,
             'hargaOngkir' => $kurir[$index_kurir]['harga'],
-            'hargaKeseluruhan' => $hargaTotal + 5000 + $kurir[$index_kurir]['harga'],
+            'hargaKeseluruhan' => ($hargaTotal + 5000 + $kurir[$index_kurir]['harga']),
+            'indKurir' => $index_kurir
         ];
 
         $this->session->set([
@@ -529,6 +561,13 @@ class Pages extends BaseController
         $randomId = rand();
         $alamatselected = $this->session->get('alamatTerpilih');
         $kurirselected = $this->session->get('kurirTerpilih');
+        if (!isset($alamatselected) || !isset($kurirselected)) {
+            return redirect()->to('/address');
+        } else {
+            if (count($alamatselected) <= 0 || count($kurirselected) <= 0) {
+                return redirect()->to('/address');
+            }
+        }
 
         $keranjang = $this->session->get('keranjang');
         foreach ($keranjang as $index => $k) {
@@ -1281,5 +1320,33 @@ class Pages extends BaseController
             'provinsi' => $provinsi["rajaongkir"]["results"],
         ];
         return view('pages/account', $data);
+    }
+    public function faq()
+    {
+        $data = [
+            'title' => 'FAQ'
+        ];
+        return view('pages/faq', $data);
+    }
+    public function tentang()
+    {
+        $data = [
+            'title' => 'Tentang Kami'
+        ];
+        return view('pages/tentang', $data);
+    }
+    public function syarat()
+    {
+        $data = [
+            'title' => 'Syarat & Ketentuan'
+        ];
+        return view('pages/syarat', $data);
+    }
+    public function kebijakan()
+    {
+        $data = [
+            'title' => 'Kebijakan Privasi'
+        ];
+        return view('pages/kebijakan', $data);
     }
 }
