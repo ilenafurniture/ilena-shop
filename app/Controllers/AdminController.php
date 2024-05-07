@@ -25,7 +25,7 @@ class AdminController extends BaseController
         $this->pemesananModel = new PemesananModel();
         $this->session = \Config\Services::session();
     }
-    public function index()
+    public function listProduct()
     {
         $product = $this->barangModel->getBarang();
         $data = [
@@ -43,5 +43,27 @@ class AdminController extends BaseController
             'title' => 'Tambah Produk'
         ];
         return view('admin/add', $data);
+    }
+    public function activeProduct($id_product)
+    {
+        $product = $this->barangModel->getBarang($id_product);
+        $this->barangModel->where(['id' => $id_product])->set(['status' => !$product['status']])->update();
+        //lanjut nanti
+    }
+    public function order()
+    {
+        $pesanan = $this->pemesananModel->getPemesanan();
+        foreach ($pesanan as $ind_p => $p) {
+            $pesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
+            $pesanan[$ind_p]['items'] = json_decode($p['items'], true);
+            $pesanan[$ind_p]['alamat'] = json_decode($p['alamat'], true);
+            $pesanan[$ind_p]['kurir'] = json_decode($p['kurir'], true);
+        }
+        $data = [
+            'title' => 'Pesanan',
+            'pesanan' => $pesanan,
+            'pesananJson' => json_encode($pesanan)
+        ];
+        return view('admin/order', $data);
     }
 }

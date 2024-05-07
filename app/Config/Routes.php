@@ -62,6 +62,9 @@ $routes->get('/viewvar/(:any)/(:any)', 'GambarController::tampilGambarVarian/$1/
 
 
 // Admin Controller
+$routes->get('/listproduct', 'AdminController::listProduct');
 $routes->get('/customer', 'AdminController::customer');
 $routes->get('/addproduct', 'AdminController::addProduct');
 $routes->get('/editproduct/(:any)', 'AdminController::editProduct/$1');
+$routes->get('/activeproduct/(:any)', 'AdminController::activeProduct/$1');
+$routes->get('/orderadmin', 'AdminController::order');
