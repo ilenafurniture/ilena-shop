@@ -3,12 +3,14 @@
         <div>
             <div class="d-flex pb-4 footer__left-menu">
                 <div class="footer-div">
-                    <h5>Our Company</h5>
-                    <a href="">About Us</a>
+                    <h5>Perusahaan</h5>
+                    <a href="/tentang">Tentang Kami</a><br>
+                    <a href="/kebijakan">Kebijakan & Privasi</a><br>
+                    <a href="/faq">F&Q</a>
                     <p></p>
                 </div>
                 <div class="footer-div">
-                    <h5>Resources</h5>
+                    <h5>Layanan</h5>
                     <a href="">Customer Service</a>
                 </div>
                 <div class="footer-div">
@@ -33,13 +35,12 @@
                 </div>
                 <div style="flex:3;" class="footer__left-menu">
                     <strong class="text-light">©<?= date("Y"); ?> | I L E N A. All rights reserved.</strong>
-                    <a class="text-light" href="#">Terms of Use</a>
-                    <a class="text-light" href="#">Privacy</a>
-                    <a class="text-light" href="#">Site Index</a>
-                    <a class="text-light" href="#">Ad Choices</a>
+                    <a class="text-light" href="/tentang">Tentang Kami</a>
+                    <a class="text-light" href="/kebijakan">Kebijakan & Privasi</a>
+                    <a class="text-light" href="/faq">F&Q</a>
                     <p class="text-light">
-                        If you are using a screen reader and are having problems using this website, please call (62)
-                        XXX-XXXX for assistance.
+                        Jika Anda menggunakan pembaca layar dan mengalami masalah dalam menggunakan situs web ini,
+                        hubungi (62)XXX-XXXX untuk bantuan.
                     </p>
                 </div>
             </div>
