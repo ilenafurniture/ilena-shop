@@ -1,12 +1,12 @@
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
 <div style="padding: 2em;">
-    <div class="d-flex justify-content-between">
+    <div class="mb-4">
         <h1 class="teks-sedang">Pesanan Pelanggan</h1>
         <p style="color: grey;"><?= count($pesanan) <= 0 ? 'Tidak Ada' : count($pesanan) ?> Pesanan</p>
     </div>
     <div class="container-table">
-        <div class="header-table">
+        <div class="header-table border-buttom border-dark">
             <div>ID Pesanan</div>
             <div>Tanggal</div>
             <div>Penerima</div>

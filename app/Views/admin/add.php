@@ -1,6 +1,6 @@
-<?= $this->extend("layout/template"); ?>
+<?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
-<div class="container konten">
+<div style="padding: 2em;">
     <h1 class="teks-sedang">Tambah Produk</h1>
 
 </div>
