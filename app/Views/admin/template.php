@@ -15,7 +15,7 @@
     </script>
     <div class="d-flex w-100" style="height: 100svh;">
         <?= $this->include('admin/navbar'); ?>
-        <div style="background-color: whitesmoke;" class="d-flex flex-column flex-grow-1">
+        <div style="background-color: whitesmoke; overflow:scroll;" class="d-flex flex-column flex-grow-1">
             <?= $this->renderSection('content'); ?>
         </div>
     </div>

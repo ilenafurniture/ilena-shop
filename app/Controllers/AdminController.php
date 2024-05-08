@@ -44,6 +44,26 @@ class AdminController extends BaseController
         ];
         return view('admin/add', $data);
     }
+    public function actionAddProduct()
+    {
+        
+        $data = [
+            'title' => 'Tambah Produk'
+        ];
+        return view('admin/add', $data);
+    }
+    public function editProduct($id_product)
+    {
+        $product = $this->barangModel->getBarang($id_product);
+        // $product['pencarian'] = json_decode($product['pencarian'],true);  
+        $product['deskripsi'] = json_decode($product['deskripsi'],true);  
+        $product['varian'] = json_decode($product['varian'],true);  
+        $data = [
+            'title' => 'Tambah Produk',
+            'produk' => $product
+        ];
+        return view('admin/editproduct', $data);
+    }
     public function activeProduct($id_product)
     {
         $product = $this->barangModel->getBarang($id_product);
