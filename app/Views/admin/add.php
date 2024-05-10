@@ -55,20 +55,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>Varian</td>
-                            <td>
-                                <div class="baris"><input type="text" class="form-control" name="varian" required>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Jumlah Varian</td>
-                            <td>
-                                <div class="baris"><input type="text" class="form-control" name="jml_varian" required>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
                             <td>Link Shopee</td>
                             <td>
                                 <div class="baris"><input type="text" class="form-control" name="shopee"></div>
@@ -84,6 +70,13 @@
                             <td>Deskripsi</td>
                             <td>
                                 <div class="baris"><textarea type="text" class="form-control" name="deskripsi"
+                                        required></textarea></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Perawatan</td>
+                            <td>
+                                <div class="baris"><textarea type="text" class="form-control" name="perawatan"
                                         required></textarea></div>
                             </td>
                         </tr>
@@ -153,7 +146,6 @@
                                 </div>
                             </td>
                         </tr>
-
                     </tbody>
                 </table>
                 <div class=" show-flex-ke-hide mt-4 justify-content-center gap-2">
@@ -161,104 +153,68 @@
                 </div>
             </div>
             <div class="limapuluh-ke-seratus">
-                <h5 class="jdl-section">Gambar Produk</h5>
-                <div class="add-gambar mb-1">
-                    <p
-                        style="position: relative; transform: translate(15px, 10px); color: rgba(0, 0, 0, 0.5); margin-bottom: -20px;">
-                        Preview</p>
-                    <img src="/img/nopic.jpg" id="addProduct_PreviewUtama" class="border border-dark">
+                <h5 class="jdl-section">Varian</h5>
+                <div id="container-varian">
+                    <div class="item-varian">
+                        <div class="container-gambar">
+                            <div class="item-gambar">
+                                <p>X</p>
+                                <img src="https://plus.unsplash.com/premium_photo-1669048776605-28ea2e52ae66?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                                    alt="">
+                            </div>
+                            <div class="item-gambar">
+                                <p>X</p>
+                                <img src="https://plus.unsplash.com/premium_photo-1669048776605-28ea2e52ae66?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                                    alt="">
+                            </div>
+                            <div id="container-input-gambar">
+                                <input type="file" id="gambar1-1" style="display: none;"
+                                    onchange="fileTerupload(event)">
+                                <label for="gambar1-1" class="btn-default">+</label>
+                            </div>
+                        </div>
+                        <table class="table-input w-100 mt-2">
+                            <tbody>
+                                <tr>
+                                    <td>Nama</td>
+                                    <td>
+                                        <div class="baris"><input type="text" class="form-control" name="nama-var1"
+                                                required>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Kode Warna</td>
+                                    <td>
+                                        <div class="baris"><input type="text" class="form-control" name="kode-var1"
+                                                required>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Stok</td>
+                                    <td>
+                                        <div class="baris"><input type="text" class="form-control" name="stok-var1"
+                                                required>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="d-flex gap-2" id="foto-varian" style="overflow-y: auto;">
-                </div>
+                <button class="btn-default-merah mt-2" type="button">Tambah Varian</button>
             </div>
         </div>
         <div class="hide-ke-show-flex justify-content-center mt-3">
             <button class="btn-default" type="submit">Simpan</button>
         </div>
     </form>
-
-
 </div>
 <script>
-const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-const elmFotoVarian = document.getElementById('foto-varian');
-const elmVarian = document.querySelector('input[name="varian"]');
-const elmJmlvarian = document.querySelector('input[name="jml_varian"]');
-let varian = 1
-let jmlVarian = 1
-let hasilVarian = 1
+function fileTerupload() {
 
-elmVarian.addEventListener("change", (e) => {
-    const varianArray = e.target.value.split(",");
-    console.log(varianArray);
-    varian = varianArray.length;
-    console.log(varian);
-    hasilVarian = jmlVarian + varian - 1;
-    console.log(hasilVarian);
-    inputElement(hasilVarian);
-});
-
-elmJmlvarian.addEventListener("change", (e) => {
-    jmlVarian = Number(e.target.value);
-    hasilVarian = jmlVarian + varian - 1;
-    console.log(hasilVarian);
-    inputElement(hasilVarian);
-});
-
-function inputElement(hasilVarian) {
-    elmFotoVarian.innerHTML = "";
-    for (let i = 1; i <= hasilVarian; i++) {
-        const cardVarian = document.createElement('div');
-        cardVarian.classList.add('input-group-gambar');
-        const cardAnkvarian = document.createElement('div');
-        cardAnkvarian.classList.add('addProduct_Input');
-        cardAnkvarian.setAttribute('id', 'addProduct_Input' + i);
-        cardAnkvarian.setAttribute('data-bs-toggle', 'tooltip');
-        cardAnkvarian.setAttribute('data-bs-placement', 'top');
-        cardAnkvarian.setAttribute('data-bs-title', 'Wajib diisi');
-        const cardlabel = document.createElement('label');
-        cardlabel.classList.add('input-gambar-label');
-        cardlabel.setAttribute('for', 'addProduct_InputGambar' + i);
-        const cardIlabel = document.createElement('i');
-        cardIlabel.classList.add('material-icons');
-        cardIlabel.innerHTML = "add";
-        const cardinput = document.createElement('input');
-        cardinput.classList.add('input-gambar');
-        cardinput.setAttribute('type', 'file');
-        cardinput.setAttribute('id', 'addProduct_InputGambar' + i);
-        cardinput.setAttribute('name', 'gambar' + i);
-        cardinput.setAttribute('required', '');
-        const cardImg = document.createElement('img');
-        cardImg.src = "img/nopic.jpg";
-        cardImg.setAttribute('id', 'addProduct_PreviewGambar' + i);
-        cardImg.classList.add('addProduct_Preview');
-        cardlabel.appendChild(cardIlabel);
-        cardAnkvarian.appendChild(cardlabel);
-        cardAnkvarian.appendChild(cardinput);
-        cardVarian.appendChild(cardAnkvarian);
-        cardVarian.appendChild(cardImg);
-        elmFotoVarian.appendChild(cardVarian);
-    }
-    const addProduct_inputGambar = document.querySelectorAll(".input-gambar");
-    const addProduct_previewGambar = document.querySelectorAll(".addProduct_Preview");
-    const addProduct_labelInput = document.querySelectorAll(".input-gambar-label");
-    const addProduct_input = document.querySelectorAll(".addProduct_Input");
-    const addProduct_previewUtama = document.getElementById("addProduct_PreviewUtama");
-    const addProduct_form = document.querySelector("form");
-    addProduct_inputGambar.forEach((item, index) => {
-        item.addEventListener("change", () => {
-            const file = addProduct_inputGambar[index].files[0];
-            const blobFile = new Blob([file], {
-                type: file.type
-            });
-            var blobUrl = URL.createObjectURL(blobFile);
-            addProduct_previewGambar[index].src = blobUrl;
-            addProduct_previewUtama.src = blobUrl;
-            addProduct_previewGambar[index].style.display = "block";
-            addProduct_input[index].style.display = 'none';
-        })
-    })
 }
 </script>
+
 <?= $this->endSection(); ?>

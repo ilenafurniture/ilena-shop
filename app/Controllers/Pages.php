@@ -1075,7 +1075,7 @@ class Pages extends BaseController
                 'isLogin' => true
             ];
             session()->set($ses_data);
-            return redirect()->to('/');
+            return redirect()->to('/listproduct');
         }
     }
     public function register()
