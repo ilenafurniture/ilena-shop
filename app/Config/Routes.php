@@ -25,6 +25,7 @@ $routes->get('/deleteaddress/(:any)', 'Pages::deleteAddress/$1');
 $routes->post('/editaddress/(:any)', 'Pages::editAddress/$1');
 
 $routes->get('/shipping/(:any)', 'Pages::shipping/$1');
+$routes->get('/tracking', 'Pages::tracking');
 
 $routes->get('/payment/(:any)', 'Pages::payment/$1');
 $routes->get('/actionpay/(:any)', 'Pages::actionPay/$1');
