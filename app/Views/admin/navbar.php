@@ -18,15 +18,15 @@
         <span class="garis my-2"></span>
     </div>
     <div>
-        <a class="item-nav active" href="/listproduct">
+        <a class="item-nav <?= $title == 'Produk Kami' ? 'active' : ''; ?>" href="/listproduct">
             <i class="material-icons">people</i>
             <p class="m-0">Produk</p>
         </a>
-        <a class="item-nav" href="/orderadmin">
+        <a class="item-nav <?= $title == 'Pesanan' ? 'active' : ''; ?>" href="/orderadmin">
             <i class="material-icons">shopping_cart</i>
             <p class="m-0">Pesanan</p>
         </a>
-        <a class="item-nav">
+        <a class="item-nav" href="/logout">
             <i class="material-icons">exit_to_app</i>
             <p class="m-0">Keluar</p>
         </a>

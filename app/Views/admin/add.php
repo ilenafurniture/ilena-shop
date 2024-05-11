@@ -34,13 +34,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>Stok</td>
-                            <td>
-                                <div class="baris"><input type="number" class="form-control" name="stok" required>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
                             <td>Kategori</td>
                             <td>
                                 <div class="baris"><input type="text" class="form-control" name="kategori" required>
@@ -86,27 +79,27 @@
                         <tr>
                             <td>Dimensi Panjang (cm)</td>
                             <td>
-                                <div class="baris"><input type="text" class="form-control" name="dimensi" required>
+                                <div class="baris"><input type="text" class="form-control" name="panjang-paket" required>
                                 </div>
                             </td>
                         </tr>
                         <td>Dimensi Lebar (cm)</td>
                         <td>
-                            <div class="baris"><input type="text" class="form-control" name="dimensi" required>
+                            <div class="baris"><input type="text" class="form-control" name="lebar-paket" required>
                             </div>
                         </td>
                         </tr>
                         <tr>
                             <td>Dimensi Tinggi (cm)</td>
                             <td>
-                                <div class="baris"><input type="text" class="form-control" name="dimensi" required>
+                                <div class="baris"><input type="text" class="form-control" name="tinggi-paket" required>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>Berat (kg)</td>
                             <td>
-                                <div class="baris"><input type="number" class="form-control" name="berat" step="any" required>
+                                <div class="baris"><input type="number" class="form-control" name="berat-paket" step="any" required>
                                 </div>
                             </td>
                         </tr>
@@ -118,27 +111,27 @@
                         <tr>
                             <td>Dimensi Panjang (cm)</td>
                             <td>
-                                <div class="baris"><input type="text" class="form-control" name="dimensi" required>
+                                <div class="baris"><input type="text" class="form-control" name="panjang-asli" required>
                                 </div>
                             </td>
                         </tr>
                         <td>Dimensi Lebar (cm)</td>
                         <td>
-                            <div class="baris"><input type="text" class="form-control" name="dimensi" required>
+                            <div class="baris"><input type="text" class="form-control" name="lebar-asli" required>
                             </div>
                         </td>
                         </tr>
                         <tr>
                             <td>Dimensi Tinggi (cm)</td>
                             <td>
-                                <div class="baris"><input type="text" class="form-control" name="dimensi" required>
+                                <div class="baris"><input type="text" class="form-control" name="tinggi-asli" required>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>Berat (kg)</td>
                             <td>
-                                <div class="baris"><input type="number" class="form-control" name="berat" step="any" required>
+                                <div class="baris"><input type="number" class="form-control" name="berat-asli" step="any" required>
                                 </div>
                             </td>
                         </tr>
@@ -189,6 +182,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                        <button type="button" class="btn-teks-aja m-0 ms-auto mt-1" onclick="deleteVarian(event)">Hapus</button>
                     </div>
                 </div>
                 <button class="btn-default-merah mt-2" type="button" onclick="addVarian()">Tambah Varian</button>
@@ -197,9 +191,13 @@
         <div class="hide-ke-show-flex justify-content-center mt-3">
             <button class="btn-default" type="submit">Simpan</button>
         </div>
+        <input type="text" name="hitung-varian" style="display: none;" value="1">
     </form>
 </div>
 <script>
+    let counterJmlVarian = 1;
+    const hitungVarianInputElm = document.querySelector('input[name="hitung-varian"]')
+
     function buatElementDariHTML(htmlString) {
         var div = document.createElement('div');
         div.innerHTML = htmlString.trim();
@@ -211,7 +209,7 @@
         const varianNum = event.target.id.split("-")[2]
         const subVarianNum = event.target.id.split("-")[3]
 
-        const inputBaru = '<div><input onchange="uploadFile(event)" type="file" id="input-gambar-' + varianNum + '-' + (Number(subVarianNum) + 1) + '" style="display: none;"><label for="input-gambar-' + varianNum + '-' + (Number(subVarianNum) + 1) + '" class="btn-default">+</label></div>'
+        const inputBaru = '<div><input onchange="uploadFile(event)" type="file" id="input-gambar-' + varianNum + '-' + (Number(subVarianNum) + 1) + '" name="gambar-' + varianNum + '-' + (Number(subVarianNum) + 1) + '" style="display: none;"><label for="input-gambar-' + varianNum + '-' + (Number(subVarianNum) + 1) + '" class="btn-default">+</label></div>'
         const inputBaruElm = buatElementDariHTML(inputBaru);
         const containerInputGambar = document.getElementById("container-input-gambar" + varianNum)
         containerInputGambar.append(inputBaruElm);
@@ -236,20 +234,36 @@
         var blobUrl = URL.createObjectURL(blobFile);
         const itemGambar = '<div class="item-gambar"><p>X</p><img src="' + blobUrl + '" alt=""></div>'
         const itemGambarElm = buatElementDariHTML(itemGambar)
+        const containerGambar = document.getElementById("container-gambar" + varianNum)
         itemGambarElm.addEventListener("click", () => {
             console.log(varianNum, subVarianNum)
             containerGambar.removeChild(itemGambarElm)
             containerInputGambar.removeChild(parentNode)
         })
-        const containerGambar = document.getElementById("container-gambar" + varianNum)
         containerGambar.append(itemGambarElm);
     }
 
     function addVarian() {
         const containerVarian = document.getElementById("container-varian");
-        const jumlahVarian = document.querySelectorAll(".item-varian").length;
-        const itemVarianBaru = '<div class="item-varian"><div class="container-gambar" id="container-gambar' + (Number(jumlahVarian) + 1) + '"><div id="container-input-gambar' + (Number(jumlahVarian) + 1) + '"><div><input type="file" id="input-gambar-' + (Number(jumlahVarian) + 1) + '-1" style="display: none;" onchange="uploadFile(event)"><label for="input-gambar-' + (Number(jumlahVarian) + 1) + '-1" class="btn-default">+</label></div></div></div><table class="table-input w-100 mt-2"><tbody><tr><td>Nama</td><td><div class="baris"><input type="text" class="form-control" name="nama-var' + (Number(jumlahVarian) + 1) + '" required></div></td></tr><tr><td>Kode Warna</td><td><div class="baris"><input type="text" class="form-control" name="kode-var' + (Number(jumlahVarian) + 1) + '" required></div></td></tr><tr><td>Stok</td><td><div class="baris"><input type="text" class="form-control" name="stok-var' + (Number(jumlahVarian) + 1) + '" required></div></td></tr></tbody></table></div>'
+        const jumlahVarian = counterJmlVarian;
+        const itemVarianBaru = '<div class="item-varian"><div class="container-gambar" id="container-gambar' + (Number(jumlahVarian) + 1) + '"><div id="container-input-gambar' + (Number(jumlahVarian) + 1) + '"><div><input type="file" id="input-gambar-' + (Number(jumlahVarian) + 1) + '-1" name="gambar-' + (Number(jumlahVarian) + 1) + '-1" style="display: none;" onchange="uploadFile(event)"><label for="input-gambar-' + (Number(jumlahVarian) + 1) + '-1" class="btn-default">+</label></div></div></div><table class="table-input w-100 mt-2"><tbody><tr><td>Nama</td><td><div class="baris"><input type="text" class="form-control" name="nama-var' + (Number(jumlahVarian) + 1) + '" required></div></td></tr><tr><td>Kode Warna</td><td><div class="baris"><input type="text" class="form-control" name="kode-var' + (Number(jumlahVarian) + 1) + '" required></div></td></tr><tr><td>Stok</td><td><div class="baris"><input type="text" class="form-control" name="stok-var' + (Number(jumlahVarian) + 1) + '" required></div></td></tr></tbody></table><button type="button" class="btn-teks-aja m-0 ms-auto mt-1" onclick="deleteVarian(event)">Hapus</button></div>'
         containerVarian.innerHTML += itemVarianBaru
+        counterJmlVarian++;
+        hitungVarianInputElm.value += "," + (Number(jumlahVarian) + 1);
+        console.log(hitungVarianInputElm.value)
+    }
+
+    function deleteVarian(event) {
+        const parentNodeElm = event.target.parentNode;
+        const urutanVarianKe = parentNodeElm.children[0].id.substring(16);
+        const containerVarian = document.getElementById("container-varian");
+        containerVarian.removeChild(parentNodeElm);
+
+        let varianArr = hitungVarianInputElm.value.split(",")
+        const index = varianArr.indexOf(urutanVarianKe)
+        varianArr.splice(index, 1)
+        hitungVarianInputElm.value = varianArr.join(",")
+        console.log(hitungVarianInputElm.value)
     }
 </script>
 

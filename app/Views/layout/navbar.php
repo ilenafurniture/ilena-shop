@@ -18,7 +18,7 @@
                         <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
                         <a href="/account" class="btn"><i class="material-icons text-light">person_outline</i></a>
                     <?php } else { ?>
-                        <a href="/admin" class="btn"><i class="material-icons text-light">people</i></a>
+                        <a href="/listproduct" class="btn"><i class="material-icons text-light">people</i></a>
                         <a href="/logout" class="btn" style="padding-right: 0"><i class="material-icons text-light">exit_to_app</i></a>
                     <?php } ?>
                 <?php } else { ?>
