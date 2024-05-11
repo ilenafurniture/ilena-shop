@@ -141,6 +141,10 @@ body {
     transition: 0.3s;
 }
 
+.cursor-pointer:hover {
+    cursor: pointer;
+}
+
 .item-filter {
     width: 100%;
     text-align: start;

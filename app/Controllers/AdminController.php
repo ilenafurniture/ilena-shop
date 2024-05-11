@@ -27,7 +27,7 @@ class AdminController extends BaseController
     }
     public function listProduct()
     {
-        $product = $this->barangModel->getBarang();
+        $product = $this->barangModel->getBarangAdmin();
         $data = [
             'title' => 'Produk Kami',
             'produk' => $product
@@ -49,7 +49,11 @@ class AdminController extends BaseController
         $d = strtotime("+7 Hours");
         $tanggal = "B" . date("YmdHis", $d);
         $data = $this->request->getVar();
-        $data_gambar = $this->request->getFiles();
+        $data_gambar_mentah = $this->request->getFiles();
+        $data_gambar = [];
+        foreach ($data_gambar_mentah as $key => $g) {
+            if ($g->isValid()) $data_gambar[$key] = $g;
+        }
         $jumlahVarian = explode(",", $this->request->getVar('hitung-varian'));
 
         $insertGambarBarang = [
@@ -73,11 +77,11 @@ class AdminController extends BaseController
             ];
             array_push($varianData, $itemVarian);
         }
-        $this->barangModel->insert([
+        $insertDataBarang = [
             'id' => $tanggal,
             'nama' => $data['nama'],
             'harga' => $data['harga'],
-            'pencarian' => $data['pencarian'],
+            'pencarian' => '',
             'rate' => '0',
             'deskripsi' => json_encode([
                 'deskripsi' => $data['deskripsi'],
@@ -103,22 +107,20 @@ class AdminController extends BaseController
             'varian' => json_encode($varianData),
             'shopee' => $data['shopee'],
             'tokped' => $data['tokped'],
-            'tiktok' => $data['tiktok'],
+            'tiktok' => '',
             'active' => '1',
-        ]);
-
-        foreach ($data_gambar as $ind_dg => $dG) {
-            $insertGambarBarang['gambar' . ($ind_dg + 1)] = file_get_contents($dG);
-        }
-        $this->gambarBarangModel->insert($insertGambarBarang);
-        $data = [
-            'title' => 'Tambah Produk'
         ];
-        return view('admin/add', $data);
+        $index_data_gambar = array_flip(array_keys($data_gambar));
+        foreach ($data_gambar as $key_dg => $dG) {
+            $insertGambarBarang['gambar' . ((int)$index_data_gambar[$key_dg] + 1)] = file_get_contents($dG);
+        }
+        $this->barangModel->insert($insertDataBarang);
+        $this->gambarBarangModel->insert($insertGambarBarang);
+        return redirect()->to('/listproduct');
     }
     public function editProduct($id_product)
     {
-        $product = $this->barangModel->getBarang($id_product);
+        $product = $this->barangModel->getBarangAdmin($id_product);
         // $product['pencarian'] = json_decode($product['pencarian'],true);  
         $product['deskripsi'] = json_decode($product['deskripsi'], true);
         $product['varian'] = json_decode($product['varian'], true);
@@ -126,13 +128,22 @@ class AdminController extends BaseController
             'title' => 'Tambah Produk',
             'produk' => $product
         ];
-        return view('admin/editproduct', $data);
+        return view('admin/edit', $data);
     }
     public function activeProduct($id_product)
     {
-        $product = $this->barangModel->getBarang($id_product);
-        $this->barangModel->where(['id' => $id_product])->set(['status' => !$product['status']])->update();
-        //lanjut nanti
+        $product = $this->barangModel->getBarangAdmin($id_product);
+        $this->barangModel->where(['id' => $id_product])->set(['active' => $product['active'] == '0' ? '1' : '0'])->update();
+        $arr = [
+            'pesan' => 'Ok',
+        ];
+        return $this->response->setJSON($arr, false);
+    }
+    public function deleteProduct($id_product)
+    {
+        $produk = $this->barangModel->where('id', $id_product)->delete();
+        $gambar = $this->gambarBarangModel->where('id', $id_product)->delete();
+        return redirect()->to('/listproduct');
     }
     public function order()
     {

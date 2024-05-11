@@ -21,9 +21,17 @@ class BarangModel extends Model
         'shopee',
         'tokped',
         'tiktok',
+        'active'
     ];
 
     public function getBarang($id = false)
+    {
+        if ($id == false) {
+            return $this->orderBy('nama', 'asc')->where(['active' => '1'])->findAll();
+        }
+        return $this->where(['id' => $id, 'active' => '1'])->first();
+    }
+    public function getBarangAdmin($id = false)
     {
         if ($id == false) {
             return $this->orderBy('nama', 'asc')->findAll();

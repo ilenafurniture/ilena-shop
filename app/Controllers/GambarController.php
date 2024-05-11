@@ -24,12 +24,11 @@ class GambarController extends BaseController
         $this->response->setHeader('Content-Type', 'image/webp');
         echo $gambar;
     }
-    
+
     public function tampilGambarVarian($idBarang, $urutan)
     {
-        
         $gambar = $this->gambarBarangModel->getGambar($idBarang);
-        $gambarSelected = $gambar['gambar'.$urutan];
+        $gambarSelected = $gambar['gambar' . $urutan];
         $this->response->setHeader('Content-Type', 'image/webp');
         echo $gambarSelected;
     }

@@ -181,7 +181,7 @@
         <div class="container-card1">
             <?php foreach ($produk as $ind_p => $p) { ?>
                 <div class="card1">
-                    <div style="position: relative;">
+                    <div style="position: relative;" onclick="pergiKeProduct('<?= $p['id']; ?>')" class="cursor-pointer">
                         <div class="card1-content-img">
                             <span><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
                             <div class="d-flex flex-column gap-2">
@@ -251,6 +251,10 @@
         console.log(strUrl)
         window.location.href = strUrl
     })
+
+    function pergiKeProduct(id_produk) {
+        window.location.href = "/product/" + id_produk
+    }
 </script>
 
 <?= $this->endSection(); ?>

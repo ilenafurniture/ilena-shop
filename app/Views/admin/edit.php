@@ -1,8 +1,8 @@
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
 <div style="padding: 2em;">
-    <h1 class="teks-sedang mb-3">Tambah Produk</h1>
-    <form method="post" action="/addproduct" enctype="multipart/form-data">
+    <h1 class="teks-sedang mb-3">Edit Produk</h1>
+    <form method="post" action="/editproduct" enctype="multipart/form-data">
         <?= csrf_field(); ?>
         <div class="baris-ke-kolom">
             <div class="limapuluh-ke-seratus">
@@ -11,14 +11,14 @@
                         <tr>
                             <td>Nama Produk</td>
                             <td>
-                                <div class="baris"><input type="text" class="form-control" name="nama" required>
+                                <div class="baris"><input type="text" class="form-control" name="nama" required value="<?= $produk['nama']; ?>">
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>Harga Produk</td>
                             <td>
-                                <div class="baris"><input type="number" class="form-control" name="harga" required>
+                                <div class="baris"><input type="number" class="form-control" name="harga" required value="<?= $produk['harga']; ?>">
                                 </div>
                             </td>
                         </tr>
@@ -27,7 +27,7 @@
                             <td>
                                 <div class="baris">
                                     <div class="input-group">
-                                        <input type="number" class="form-control" name="diskon" step="any" required>
+                                        <input type="number" class="form-control" name="diskon" step="any" required value="<?= $produk['diskon']; ?>">
                                         <span class="input-group-text">%</span>
                                     </div>
                                 </div>
@@ -36,39 +36,39 @@
                         <tr>
                             <td>Kategori</td>
                             <td>
-                                <div class="baris"><input type="text" class="form-control" name="kategori" required>
+                                <div class="baris"><input type="text" class="form-control" name="kategori" required value="<?= $produk['kategori']; ?>">
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>Sub Kategori</td>
                             <td>
-                                <div class="baris"><input type="text" class="form-control" name="subkategori" required>
+                                <div class="baris"><input type="text" class="form-control" name="subkategori" required value="<?= $produk['subkategori']; ?>">
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>Link Shopee</td>
                             <td>
-                                <div class="baris"><input type="text" class="form-control" name="shopee"></div>
+                                <div class="baris"><input type="text" class="form-control" name="shopee" value="<?= $produk['shopee']; ?>"></div>
                             </td>
                         </tr>
                         <tr>
                             <td>Link Tokopedia</td>
                             <td>
-                                <div class="baris"><input type="text" class="form-control" name="tokped"></div>
+                                <div class="baris"><input type="text" class="form-control" name="tokped" value="<?= $produk['tokped']; ?>"></div>
                             </td>
                         </tr>
                         <tr>
                             <td>Deskripsi</td>
                             <td>
-                                <div class="baris"><textarea type="text" class="form-control" name="deskripsi" required></textarea></div>
+                                <div class="baris"><textarea type="text" class="form-control" name="deskripsi" required><?= $produk['deskripsi']['deskripsi']; ?></textarea></div>
                             </td>
                         </tr>
                         <tr>
                             <td>Perawatan</td>
                             <td>
-                                <div class="baris"><textarea type="text" class="form-control" name="perawatan" required></textarea></div>
+                                <div class="baris"><textarea type="text" class="form-control" name="perawatan" required><?= $produk['deskripsi']['perawatan']; ?></textarea></div>
                             </td>
                         </tr>
                         <tr>
@@ -79,27 +79,27 @@
                         <tr>
                             <td>Dimensi Panjang (cm)</td>
                             <td>
-                                <div class="baris"><input type="text" class="form-control" name="panjang-paket" required>
+                                <div class="baris"><input type="text" class="form-control" name="panjang-paket" required value="<?= $produk['deskripsi']['dimensi']['paket']['panjang']; ?>">
                                 </div>
                             </td>
                         </tr>
                         <td>Dimensi Lebar (cm)</td>
                         <td>
-                            <div class="baris"><input type="text" class="form-control" name="lebar-paket" required>
+                            <div class="baris"><input type="text" class="form-control" name="lebar-paket" required value="<?= $produk['deskripsi']['dimensi']['paket']['lebar']; ?>">
                             </div>
                         </td>
                         </tr>
                         <tr>
                             <td>Dimensi Tinggi (cm)</td>
                             <td>
-                                <div class="baris"><input type="text" class="form-control" name="tinggi-paket" required>
+                                <div class="baris"><input type="text" class="form-control" name="tinggi-paket" required value="<?= $produk['deskripsi']['dimensi']['paket']['tinggi']; ?>">
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>Berat (kg)</td>
                             <td>
-                                <div class="baris"><input type="number" class="form-control" name="berat-paket" step="any" required>
+                                <div class="baris"><input type="number" class="form-control" name="berat-paket" step="any" required value="<?= $produk['deskripsi']['dimensi']['paket']['berat']; ?>">
                                 </div>
                             </td>
                         </tr>
@@ -111,27 +111,27 @@
                         <tr>
                             <td>Dimensi Panjang (cm)</td>
                             <td>
-                                <div class="baris"><input type="text" class="form-control" name="panjang-asli" required>
+                                <div class="baris"><input type="text" class="form-control" name="panjang-asli" required value="<?= $produk['deskripsi']['dimensi']['asli']['panjang']; ?>">
                                 </div>
                             </td>
                         </tr>
                         <td>Dimensi Lebar (cm)</td>
                         <td>
-                            <div class="baris"><input type="text" class="form-control" name="lebar-asli" required>
+                            <div class="baris"><input type="text" class="form-control" name="lebar-asli" required value="<?= $produk['deskripsi']['dimensi']['asli']['lebar']; ?>">
                             </div>
                         </td>
                         </tr>
                         <tr>
                             <td>Dimensi Tinggi (cm)</td>
                             <td>
-                                <div class="baris"><input type="text" class="form-control" name="tinggi-asli" required>
+                                <div class="baris"><input type="text" class="form-control" name="tinggi-asli" required value="<?= $produk['deskripsi']['dimensi']['asli']['tinggi']; ?>">
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>Berat (kg)</td>
                             <td>
-                                <div class="baris"><input type="number" class="form-control" name="berat-asli" step="any" required>
+                                <div class="baris"><input type="number" class="form-control" name="berat-asli" step="any" required value="<?= $produk['deskripsi']['dimensi']['asli']['berat']; ?>">
                                 </div>
                             </td>
                         </tr>
@@ -144,46 +144,50 @@
             <div class="limapuluh-ke-seratus">
                 <h5 class="jdl-section">Varian</h5>
                 <div id="container-varian">
-                    <div class="item-varian">
-                        <div class="container-gambar" id="container-gambar1">
-                            <!-- <div class="item-gambar">
-                                <p>X</p>
-                                <img src="https://plus.unsplash.com/premium_photo-1669048776605-28ea2e52ae66?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="">
-                            </div> -->
-                            <div id="container-input-gambar1">
-                                <div>
-                                    <input type="file" id="input-gambar-1-1" name="gambar-1-1" style="display: none;" onchange="uploadFile(event)">
-                                    <label for="input-gambar-1-1" class="btn-default">+</label>
+                    <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
+                        <div class="item-varian">
+                            <div class="container-gambar" id="container-gambar<?= $ind_v + 1; ?>">
+                                <div id="container-input-gambar<?= $ind_v + 1; ?>">
+                                    <div>
+                                        <input type="file" id="input-gambar-<?= $ind_v + 1; ?>-1" name="gambar-<?= $ind_v + 1; ?>-1" style="display: none;" onchange="uploadFile(event)">
+                                        <label for="input-gambar-<?= $ind_v + 1; ?>-1" class="btn-default">+</label>
+                                    </div>
                                 </div>
+                                <?php foreach (explode(",", $v['urutan_gambar']) as $u) { ?>
+                                    <div class="item-gambar">
+                                        <p>X</p>
+                                        <img src="/viewvar/<?= $produk['id'] ?>/<?= $u; ?>" alt="">
+                                    </div>
+                                <?php } ?>
                             </div>
+                            <table class="table-input w-100 mt-2">
+                                <tbody>
+                                    <tr>
+                                        <td>Nama</td>
+                                        <td>
+                                            <div class="baris"><input type="text" class="form-control" name="nama-var<?= $ind_v + 1; ?>" required value="<?= $v['nama']; ?>">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Kode Warna</td>
+                                        <td>
+                                            <div class="baris"><input type="text" class="form-control" name="kode-var<?= $ind_v + 1; ?>" required value="<?= $v['kode']; ?>">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Stok</td>
+                                        <td>
+                                            <div class="baris"><input type="text" class="form-control" name="stok-var<?= $ind_v + 1; ?>" required value="<?= $v['stok']; ?>">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn-teks-aja m-0 ms-auto mt-1" onclick="deleteVarian(event)">Hapus</button>
                         </div>
-                        <table class="table-input w-100 mt-2">
-                            <tbody>
-                                <tr>
-                                    <td>Nama</td>
-                                    <td>
-                                        <div class="baris"><input type="text" class="form-control" name="nama-var1" required>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Kode Warna</td>
-                                    <td>
-                                        <div class="baris"><input type="text" class="form-control" name="kode-var1" required>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Stok</td>
-                                    <td>
-                                        <div class="baris"><input type="text" class="form-control" name="stok-var1" required>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <button type="button" class="btn-teks-aja m-0 ms-auto mt-1" onclick="deleteVarian(event)">Hapus</button>
-                    </div>
+                    <?php } ?>
                 </div>
                 <button class="btn-default-merah mt-2" type="button" onclick="addVarian()">Tambah Varian</button>
             </div>
