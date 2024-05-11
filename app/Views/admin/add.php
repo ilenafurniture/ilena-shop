@@ -69,15 +69,13 @@
                         <tr>
                             <td>Deskripsi</td>
                             <td>
-                                <div class="baris"><textarea type="text" class="form-control" name="deskripsi"
-                                        required></textarea></div>
+                                <div class="baris"><textarea type="text" class="form-control" name="deskripsi" required></textarea></div>
                             </td>
                         </tr>
                         <tr>
                             <td>Perawatan</td>
                             <td>
-                                <div class="baris"><textarea type="text" class="form-control" name="perawatan"
-                                        required></textarea></div>
+                                <div class="baris"><textarea type="text" class="form-control" name="perawatan" required></textarea></div>
                             </td>
                         </tr>
                         <tr>
@@ -108,8 +106,7 @@
                         <tr>
                             <td>Berat (kg)</td>
                             <td>
-                                <div class="baris"><input type="number" class="form-control" name="berat" step="any"
-                                        required>
+                                <div class="baris"><input type="number" class="form-control" name="berat" step="any" required>
                                 </div>
                             </td>
                         </tr>
@@ -141,8 +138,7 @@
                         <tr>
                             <td>Berat (kg)</td>
                             <td>
-                                <div class="baris"><input type="number" class="form-control" name="berat" step="any"
-                                        required>
+                                <div class="baris"><input type="number" class="form-control" name="berat" step="any" required>
                                 </div>
                             </td>
                         </tr>
@@ -156,21 +152,16 @@
                 <h5 class="jdl-section">Varian</h5>
                 <div id="container-varian">
                     <div class="item-varian">
-                        <div class="container-gambar">
-                            <div class="item-gambar">
+                        <div class="container-gambar" id="container-gambar1">
+                            <!-- <div class="item-gambar">
                                 <p>X</p>
-                                <img src="https://plus.unsplash.com/premium_photo-1669048776605-28ea2e52ae66?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                    alt="">
-                            </div>
-                            <div class="item-gambar">
-                                <p>X</p>
-                                <img src="https://plus.unsplash.com/premium_photo-1669048776605-28ea2e52ae66?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                    alt="">
-                            </div>
-                            <div id="container-input-gambar">
-                                <input type="file" id="gambar1-1" style="display: none;"
-                                    onchange="fileTerupload(event)">
-                                <label for="gambar1-1" class="btn-default">+</label>
+                                <img src="https://plus.unsplash.com/premium_photo-1669048776605-28ea2e52ae66?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="">
+                            </div> -->
+                            <div id="container-input-gambar1">
+                                <div>
+                                    <input type="file" id="input-gambar-1-1" name="gambar-1-1" style="display: none;" onchange="uploadFile(event)">
+                                    <label for="input-gambar-1-1" class="btn-default">+</label>
+                                </div>
                             </div>
                         </div>
                         <table class="table-input w-100 mt-2">
@@ -178,24 +169,21 @@
                                 <tr>
                                     <td>Nama</td>
                                     <td>
-                                        <div class="baris"><input type="text" class="form-control" name="nama-var1"
-                                                required>
+                                        <div class="baris"><input type="text" class="form-control" name="nama-var1" required>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Kode Warna</td>
                                     <td>
-                                        <div class="baris"><input type="text" class="form-control" name="kode-var1"
-                                                required>
+                                        <div class="baris"><input type="text" class="form-control" name="kode-var1" required>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Stok</td>
                                     <td>
-                                        <div class="baris"><input type="text" class="form-control" name="stok-var1"
-                                                required>
+                                        <div class="baris"><input type="text" class="form-control" name="stok-var1" required>
                                         </div>
                                     </td>
                                 </tr>
@@ -203,7 +191,7 @@
                         </table>
                     </div>
                 </div>
-                <button class="btn-default-merah mt-2" type="button">Tambah Varian</button>
+                <button class="btn-default-merah mt-2" type="button" onclick="addVarian()">Tambah Varian</button>
             </div>
         </div>
         <div class="hide-ke-show-flex justify-content-center mt-3">
@@ -212,9 +200,57 @@
     </form>
 </div>
 <script>
-function fileTerupload() {
+    function buatElementDariHTML(htmlString) {
+        var div = document.createElement('div');
+        div.innerHTML = htmlString.trim();
+        return div.firstChild;
+    }
 
-}
+    function uploadFile(event) {
+        const eventTargetElm = event.target
+        const varianNum = event.target.id.split("-")[2]
+        const subVarianNum = event.target.id.split("-")[3]
+
+        const inputBaru = '<div><input onchange="uploadFile(event)" type="file" id="input-gambar-' + varianNum + '-' + (Number(subVarianNum) + 1) + '" style="display: none;"><label for="input-gambar-' + varianNum + '-' + (Number(subVarianNum) + 1) + '" class="btn-default">+</label></div>'
+        const inputBaruElm = buatElementDariHTML(inputBaru);
+        const containerInputGambar = document.getElementById("container-input-gambar" + varianNum)
+        containerInputGambar.append(inputBaruElm);
+        const parentNode = event.target.parentNode;
+        console.log(parentNode)
+
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+        parentNode.style.padding = "5px";
+        parentNode.style.backgroundColor = getRandomColor();
+
+        const file = eventTargetElm.files[0];
+        const blobFile = new Blob([file], {
+            type: file.type
+        });
+        var blobUrl = URL.createObjectURL(blobFile);
+        const itemGambar = '<div class="item-gambar"><p>X</p><img src="' + blobUrl + '" alt=""></div>'
+        const itemGambarElm = buatElementDariHTML(itemGambar)
+        itemGambarElm.addEventListener("click", () => {
+            console.log(varianNum, subVarianNum)
+            containerGambar.removeChild(itemGambarElm)
+            containerInputGambar.removeChild(parentNode)
+        })
+        const containerGambar = document.getElementById("container-gambar" + varianNum)
+        containerGambar.append(itemGambarElm);
+    }
+
+    function addVarian() {
+        const containerVarian = document.getElementById("container-varian");
+        const jumlahVarian = document.querySelectorAll(".item-varian").length;
+        const itemVarianBaru = '<div class="item-varian"><div class="container-gambar" id="container-gambar' + (Number(jumlahVarian) + 1) + '"><div id="container-input-gambar' + (Number(jumlahVarian) + 1) + '"><div><input type="file" id="input-gambar-' + (Number(jumlahVarian) + 1) + '-1" style="display: none;" onchange="uploadFile(event)"><label for="input-gambar-' + (Number(jumlahVarian) + 1) + '-1" class="btn-default">+</label></div></div></div><table class="table-input w-100 mt-2"><tbody><tr><td>Nama</td><td><div class="baris"><input type="text" class="form-control" name="nama-var' + (Number(jumlahVarian) + 1) + '" required></div></td></tr><tr><td>Kode Warna</td><td><div class="baris"><input type="text" class="form-control" name="kode-var' + (Number(jumlahVarian) + 1) + '" required></div></td></tr><tr><td>Stok</td><td><div class="baris"><input type="text" class="form-control" name="stok-var' + (Number(jumlahVarian) + 1) + '" required></div></td></tr></tbody></table></div>'
+        containerVarian.innerHTML += itemVarianBaru
+    }
 </script>
 
 <?= $this->endSection(); ?>
