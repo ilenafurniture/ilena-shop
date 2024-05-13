@@ -2,6 +2,11 @@
 <?= $this->section("content"); ?>
 <div style="padding: 2em;">
     <h1 class="teks-sedang mb-3">Tambah Produk</h1>
+    <?php if ($val['msg']) { ?>
+        <div class="pemberitahuan my-1" role="alert">
+            <?= $val['msg']; ?>
+        </div>
+    <?php } ?>
     <form method="post" action="/addproduct" enctype="multipart/form-data">
         <?= csrf_field(); ?>
         <div class="baris-ke-kolom">
@@ -34,16 +39,35 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>Kategori</td>
+                            <td>Koleksi</td>
                             <td>
-                                <div class="baris"><input type="text" class="form-control" name="kategori" required>
+                                <div class="baris">
+                                    <!-- <input type="text" class="form-control" name="kategori" required> -->
+                                    <select name="kategori" onchange="generateId(event)">
+                                        <?php foreach ($koleksi as $ind_k => $k) { ?>
+                                            <option value="<?= $k['id']; ?>" <?= $ind_k == '0' ? 'selected' : ''; ?>><?= $k['nama']; ?></option>
+                                        <?php } ?>
+                                    </select>
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <td>Sub Kategori</td>
+                            <td>Jenis</td>
                             <td>
-                                <div class="baris"><input type="text" class="form-control" name="subkategori" required>
+                                <div class="baris">
+                                    <!-- <input type="text" class="form-control" name="subkategori" required> -->
+                                    <select name="subkategori" onchange="generateId(event)">
+                                        <?php foreach ($jenis as $ind_k => $k) { ?>
+                                            <option value="<?= $k['id']; ?>" <?= $ind_k == '0' ? 'selected' : ''; ?>><?= $k['nama']; ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>ID Produk</td>
+                            <td>
+                                <div class="baris"><input type="text" class="form-control" name="id" required placeholder="akan tergenerate">
                                 </div>
                             </td>
                         </tr>
@@ -196,6 +220,7 @@
 </div>
 <script>
     let counterJmlVarian = 1;
+    let idStr = "1-0-0-01"
     const hitungVarianInputElm = document.querySelector('input[name="hitung-varian"]')
 
     function buatElementDariHTML(htmlString) {
@@ -265,6 +290,25 @@
         varianArr.splice(index, 1)
         hitungVarianInputElm.value = varianArr.join(",")
         console.log(hitungVarianInputElm.value)
+    }
+
+    function generateId(event) {
+        const name = event.target.name;
+        const value = event.target.value;
+        const idInputElm = document.querySelector('input[name="id"]');
+        let idStrArr = idStr.split("-");
+        switch (name) {
+            case 'kategori':
+                idStrArr[1] = value.toString().padStart(2, '0');
+                idStr = idStrArr.join("-");
+                idInputElm.value = idStrArr.join("")
+                break;
+            case 'subkategori':
+                idStrArr[2] = value.toString().padStart(3, '0');
+                idStr = idStrArr.join("-");
+                idInputElm.value = idStrArr.join("")
+                break;
+        }
     }
 </script>
 

@@ -7,6 +7,8 @@ use App\Models\GambarBarangModel;
 use App\Models\PembeliModel;
 use App\Models\PemesananModel;
 use App\Models\UserModel;
+use App\Models\KoleksiModel;
+use App\Models\JenisModel;
 
 class AdminController extends BaseController
 {
@@ -15,6 +17,8 @@ class AdminController extends BaseController
     protected $userModel;
     protected $pembeliModel;
     protected $pemesananModel;
+    protected $koleksiModel;
+    protected $jenisModel;
     protected $session;
     public function __construct()
     {
@@ -23,6 +27,8 @@ class AdminController extends BaseController
         $this->userModel = new UserModel();
         $this->pembeliModel = new PembeliModel();
         $this->pemesananModel = new PemesananModel();
+        $this->koleksiModel = new KoleksiModel();
+        $this->jenisModel = new JenisModel();
         $this->session = \Config\Services::session();
     }
     public function listProduct()
@@ -39,15 +45,41 @@ class AdminController extends BaseController
     }
     public function addProduct()
     {
+        $koleksi = $this->koleksiModel->getKoleksi();
+        $jenis = $this->jenisModel->getJenis();
         $data = [
-            'title' => 'Tambah Produk'
+            'title' => 'Tambah Produk',
+            'koleksi' => $koleksi,
+            'koleksiJson' => json_encode($koleksi),
+            'jenis' => $jenis,
+            'jenisJson' => json_encode($jenis),
+            'val' => [
+                'msg' => session()->getFlashdata('val-id'),
+            ]
         ];
         return view('admin/add', $data);
     }
     public function actionAddProduct()
     {
-        $d = strtotime("+7 Hours");
-        $tanggal = "B" . date("YmdHis", $d);
+        if (!$this->validate([
+            'id' => [
+                'rules' => 'required|is_unique[barang.id]',
+                'errors' => [
+                    'required' => 'Id harus diisi',
+                    'is_unique' => 'Id sudah terdaftar',
+                ]
+            ]
+        ])) {
+            $validation = \Config\Services::validation();
+            session()->setFlashdata('val-id', $validation->getError('id'));
+            return redirect()->to('/addproduct')->withInput();
+        }
+
+        $koleksi = $this->koleksiModel->getKoleksi();
+        $jenis = $this->jenisModel->getJenis();
+
+        // $d = strtotime("+7 Hours");
+        // $tanggal = "B" . date("YmdHis", $d);
         $data = $this->request->getVar();
         $data_gambar_mentah = $this->request->getFiles();
         $data_gambar = [];
@@ -57,7 +89,7 @@ class AdminController extends BaseController
         $jumlahVarian = explode(",", $this->request->getVar('hitung-varian'));
 
         $insertGambarBarang = [
-            'id' => $tanggal
+            'id' => $data['id']
         ];
         $varianData = [];
         $counterGambar = 0;
@@ -77,8 +109,22 @@ class AdminController extends BaseController
             ];
             array_push($varianData, $itemVarian);
         }
+
+        $dataKategori = $data['kategori'];
+        $koleksiSelected = array_values(array_filter($koleksi, function ($var) use ($dataKategori) {
+            return ($var['id'] == $dataKategori);
+        }))[0]['nama'];
+        $dataSubkategori = $data['subkategori'];
+        $jenisSelected = array_values(array_filter($jenis, function ($var) use ($dataSubkategori) {
+            return ($var['id'] == $dataSubkategori);
+        }))[0]['nama'];
+
+        $index_data_gambar = array_flip(array_keys($data_gambar));
+        foreach ($data_gambar as $key_dg => $dG) {
+            $insertGambarBarang['gambar' . ((int)$index_data_gambar[$key_dg] + 1)] = file_get_contents($dG);
+        }
         $insertDataBarang = [
-            'id' => $tanggal,
+            'id' => $data['id'],
             'nama' => $data['nama'],
             'harga' => $data['harga'],
             'pencarian' => '',
@@ -101,19 +147,16 @@ class AdminController extends BaseController
                 ],
                 'perawatan' => $data['perawatan']
             ]),
-            'kategori' => $data['kategori'],
-            'subkategori' => $data['subkategori'],
+            'kategori' => $koleksiSelected,
+            'subkategori' => $jenisSelected,
             'diskon' => $data['diskon'],
             'varian' => json_encode($varianData),
             'shopee' => $data['shopee'],
             'tokped' => $data['tokped'],
             'tiktok' => '',
             'active' => '1',
+            'gambar' => $insertGambarBarang['gambar1']
         ];
-        $index_data_gambar = array_flip(array_keys($data_gambar));
-        foreach ($data_gambar as $key_dg => $dG) {
-            $insertGambarBarang['gambar' . ((int)$index_data_gambar[$key_dg] + 1)] = file_get_contents($dG);
-        }
         $this->barangModel->insert($insertDataBarang);
         $this->gambarBarangModel->insert($insertGambarBarang);
         return redirect()->to('/listproduct');

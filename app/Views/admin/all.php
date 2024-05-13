@@ -4,7 +4,7 @@
     <div class="d-flex justify-content-between">
         <div>
             <h1 class="teks-sedang">Produk Saya</h1>
-            <p style="color: grey;">115 Produk</p>
+            <p style="color: grey;"><?= count($produk); ?> Produk</p>
         </div>
         <div>
             <a href="/addproduct" class="btn-default-merah">Tambah Produk</a>

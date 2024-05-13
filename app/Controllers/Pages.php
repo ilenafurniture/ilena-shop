@@ -738,7 +738,7 @@ class Pages extends BaseController
             'id_midtrans' => $hasil['order_id'],
             'status' => $status,
         ]);
-        return redirect()->to('/progresspay/' . $hasil['order_id']);
+        return redirect()->to('/order/' . $hasil['order_id']);
     }
     public function updateTransaction()
     {
@@ -898,22 +898,111 @@ class Pages extends BaseController
         ];
         return view('pages/cencelpay', $data);
     }
-    public function order()
+    public function order($id_order = false)
     {
-        $email = session()->get('email');
-        $pesanan = $this->pemesananModel->getPemesananCus($email);
-        foreach ($pesanan as $ind_p => $p) {
-            $pesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
-            $pesanan[$ind_p]['items'] = json_decode($p['items'], true);
-            $pesanan[$ind_p]['alamat'] = json_decode($p['alamat'], true);
-            $pesanan[$ind_p]['kurir'] = json_decode($p['kurir'], true);
+        if ($id_order) {
+            $pemesanan = $this->pemesananModel->getPemesanan($id_order);
+            $dataMid = json_decode($pemesanan['data_mid'], true);
+            $kurir = json_decode($pemesanan['kurir'], true);
+            $items = json_decode($pemesanan['items'], true);
+            switch ($pemesanan['status']) {
+                case 'Menunggu Pembayaran':
+                    $biller_code = "";
+                    $bank = "";
+                    switch ($dataMid['payment_type']) {
+                        case 'bank_transfer':
+                            if (isset($dataMid['permata_va_number'])) {
+                                $va_number = $dataMid['permata_va_number'];
+                                $bank = "permata";
+                            } else {
+                                $va_number = $dataMid['va_numbers'][0]['va_number'];
+                                $bank = $dataMid['va_numbers'][0]['bank'];
+                            }
+                            break;
+                        case 'echannel':
+                            $va_number = $dataMid['bill_key'];
+                            $biller_code = $dataMid['biller_code'];
+                            $bank = "mandiri";
+                            break;
+                    }
+
+                    $waktuExpire = strtotime($dataMid['expiry_time']);
+                    $waktuCurr = strtotime("+7 Hours");
+                    $waktuSelisih = $waktuExpire - $waktuCurr;
+                    $waktu = date("H:i:s", $waktuSelisih);
+
+                    $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+                    $data = [
+                        'title' => 'Peroses Pembayaran',
+                        'pemesanan' => $pemesanan,
+                        'dataMid' => $dataMid,
+                        'va_number' => $va_number,
+                        'biller_code' => $biller_code,
+                        'bank' => $bank,
+                        'waktu' => $waktu,
+                        'waktuExpire' => date("d", $waktuExpire) . " " . $bulan[(int)date("m", $waktuExpire) - 1] . " " . date("Y H:i:s", $waktuExpire)
+                    ];
+                    return view('pages/progresspay', $data);
+                    break;
+                case 'Proses':
+                    $bank = "";
+                    switch ($dataMid['payment_type']) {
+                        case 'bank_transfer':
+                            if (isset($dataMid['permata_va_number'])) {
+                                $bank = "permata";
+                            } else {
+                                $bank = $dataMid['va_numbers'][0]['bank'];
+                            }
+                            break;
+                        case 'echannel':
+                            $bank = "mandiri";
+                            break;
+                    }
+                    $data = [
+                        'title' => 'Pembayaran Sukes',
+                        'pemesanan' => $pemesanan,
+                        'dataMid' => $dataMid,
+                        'kurir' => $kurir,
+                        'items' => $items,
+                        'bank' => $bank,
+                    ];
+                    return view('pages/successpay', $data);
+                    break;
+                case 'Kadaluarsa':
+                    $status = "Kadaluarsa";
+                    break;
+                case 'Ditolak':
+                    $status = "Ditolak";
+                    break;
+                case 'Gagal':
+                    $status = "Gagal";
+                    break;
+                case 'Refund':
+                    $status = "Refund";
+                    break;
+                case 'Partial Refund':
+                    $status = "Partial Refund";
+                    break;
+                case 'Dibatalkan':
+                    $status = "Dibatalkan";
+                    break;
+            }
+        } else {
+            $email = session()->get('email');
+            $pesanan = $this->pemesananModel->getPemesananCus($email);
+            foreach ($pesanan as $ind_p => $p) {
+                $pesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
+                $pesanan[$ind_p]['items'] = json_decode($p['items'], true);
+                $pesanan[$ind_p]['alamat'] = json_decode($p['alamat'], true);
+                $pesanan[$ind_p]['kurir'] = json_decode($p['kurir'], true);
+            }
+            $data = [
+                'title' => 'Pesanan',
+                'pesanan' => $pesanan,
+                'pesananJson' => json_encode($pesanan)
+            ];
+            return view('pages/order', $data);
         }
-        $data = [
-            'title' => 'Pesanan',
-            'pesanan' => $pesanan,
-            'pesananJson' => json_encode($pesanan)
-        ];
-        return view('pages/order', $data);
     }
     public function wishlist()
     {
@@ -1067,7 +1156,7 @@ class Pages extends BaseController
             ];
             session()->set($ses_data);
             return redirect()->to(site_url('/'));
-        } else {
+        } else if ($getUser['role'] == '1') {
             $ses_data = [
                 'active' => '1',
                 'email' => $getUser['email'],
@@ -1076,6 +1165,15 @@ class Pages extends BaseController
             ];
             session()->set($ses_data);
             return redirect()->to('/listproduct');
+        } else if ($getUser['role'] == '2') {
+            $ses_data = [
+                'active' => '1',
+                'email' => $getUser['email'],
+                'role' => $getUser['role'],
+                'isLogin' => true
+            ];
+            session()->set($ses_data);
+            return redirect()->to('/g/order');
         }
     }
     public function register()
