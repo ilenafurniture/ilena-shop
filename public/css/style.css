@@ -387,6 +387,10 @@ body {
     border: 2px solid black;
 }
 
+.badge {
+    font-size: 12px;
+}
+
 .btn-lonjong {
     display: flex;
     gap: 0.5em;

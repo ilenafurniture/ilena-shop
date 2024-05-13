@@ -12,10 +12,10 @@
             <div style="flex: 2;">Penerima</div>
             <div style="flex: 2;">Harga</div>
             <div style="flex: 2;">Status</div>
-            <div style="flex: 2;">Action</div>
+            <div style="flex: 2;" class="d-flex justify-content-center">Action</div>
         </div>
         <?php foreach ($pesanan as $ind_p => $p) { ?>
-            <div class="isi-table" onclick="openDetail(<?= $ind_p; ?>)">
+            <div class="isi-table" onclick="openDetail(<?= $ind_p; ?>, event)">
                 <div style="flex: 1;"><?= $p['id_midtrans']; ?></div>
                 <?php
                 $transactionTime = strtotime($p['data_mid']['transaction_time']);
@@ -25,11 +25,41 @@
                 <div style="flex: 2;"><?= $tgl; ?></div>
                 <div style="flex: 2;"><?= $p['nama']; ?></div>
                 <div style="flex: 2;">Rp <?= number_format((int)$p['data_mid']['gross_amount'], 0, ',', '.'); ?></div>
-                <div style="flex: 2;"><?= $p['status']; ?></div>
                 <div style="flex: 2;">
+                    <span class="badge rounded-pill <?php
+                                                    switch ($p['status']) {
+                                                        case 'Menunggu Pembayaran':
+                                                            echo "text-bg-primary";
+                                                            break;
+                                                        case 'Proses':
+                                                            echo "text-bg-warning";
+                                                            break;
+                                                        case 'Dikirim':
+                                                            echo "text-bg-info";
+                                                            break;
+                                                        case 'Selesai':
+                                                            echo "text-bg-success";
+                                                            break;
+                                                        case 'Dibatalkan':
+                                                            echo "text-bg-danger";
+                                                            break;
+                                                        case 'Gagal':
+                                                            echo "text-bg-danger";
+                                                            break;
+                                                        default:
+                                                            echo "text-bg-dark";
+                                                            break;
+                                                    }
+                                                    ?>"><?= ucfirst($p['status']); ?></span>
+                </div>
+                <div style="flex: 2;" class="d-flex justify-content-center">
                     <a class="btn" href="/invoice/<?= $p['id_midtrans']; ?>"><i class="material-icons">description</i></a>
-                    <a class="btn" href="/editresi/<?= $p['id_midtrans']; ?>"><i class="material-icons">edit</i></a>
-                    <a class="btn" href="/cancelorder/<?= $p['id_midtrans']; ?>"><i class="material-icons" style="color: var(--merah);">cancel</i></a>
+                    <?php if ($p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
+                        <a class="btn" href="/editresi/<?= $p['id_midtrans']; ?>"><i class="material-icons">edit</i></a>
+                    <?php } ?>
+                    <?php if ($p['status'] == 'Menunggu Pembayaran' || $p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
+                        <a class="btn" href="/cancelorder/<?= $p['id_midtrans']; ?>"><i class="material-icons" style="color: var(--merah);">cancel</i></a>
+                    <?php } ?>
                 </div>
             </div>
         <?php } ?>
@@ -93,9 +123,10 @@
     </div>
 
     <div class="d-flex gap-1 mt-3 justify-content-center">
-        <a href="" class="btn-default">Invoice</a>
-        <a href="" class="btn-default">Edit resi</a>
-        <a href="" class="btn-default-merah">Cancel Pesanan</a>
+        <a href="" class="btn-default btnBawah">Invoice</a>
+        <a href="" class="btn-default btnBawah">Edit resi</a>
+        <a href="" class="btn-default-merah btnBawah">Cancel Pesanan</a>
+        <a href="" class="btn-default btnBawah">Detail</a>
     </div>
 </div>
 
@@ -109,8 +140,9 @@
     const emailElm = document.getElementById("email");
     const itemElm = document.getElementById("item");
     const containerOffcanvasElm = document.querySelector(".container-offcanvas");
+    const btnBawahElm = document.querySelectorAll(".btnBawah");
 
-    function openDetail(indP) {
+    function openDetail(indP, event) {
         const pesananSelected = pesanan[indP];
         console.log(pesananSelected)
         idElm.innerHTML = pesananSelected.id_midtrans
@@ -118,12 +150,16 @@
         nohpElm.innerHTML = pesananSelected.nohp
         alamatElm.innerHTML = pesananSelected.alamat.alamat_lengkap
         emailElm.innerHTML = pesananSelected.email
-        itemElm.innerHTML = '<div class="d-flex mb-1 border-bottom pb-1"><p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;">Nama</p><p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;">Jumlah</p><p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;">Harga</p></div>';
+        itemElm.innerHTML = '<div class="d-flex mb-1 border-bottom pb-1"><p class="d-block fw-bold m-0 text-secondary" style="flex: 1; letter-spacing: -1px;">Nama</p><p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;">Jumlah</p><p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;">Harga</p></div>';
         pesananSelected.items.forEach(element => {
-            itemElm.innerHTML += '<div class="d-flex py-1"><p class="d-block fw-bold m-0 text-center" style="flex: 1; letter-spacing: -1px;">' + element.name + '</p><p class="d-block fw-bold m-0 text-center" style="flex: 1; letter-spacing: -1px;">' + element.quantity + '</p><p class="d-block fw-bold m-0 text-center" style="flex: 1; letter-spacing: -1px;">Rp ' + element.price + '</p></div>'
+            itemElm.innerHTML += '<div class="d-flex py-1"><p class="d-block fw-bold m-0" style="flex: 1; letter-spacing: -1px;">' + element.name + '</p><p class="d-block fw-bold m-0 text-center" style="flex: 1; letter-spacing: -1px;">' + element.quantity + '</p><p class="d-block fw-bold m-0 text-center" style="flex: 1; letter-spacing: -1px;">Rp ' + element.price + '</p></div>'
             // if (element.name != 'Biaya Ongkir' && element.name != 'Biaya Admin') {
             // }
         });
+        btnBawahElm[0].href = "/invoice/" + pesananSelected.id_midtrans
+        btnBawahElm[1].href = "/editresi/" + pesananSelected.id_midtrans
+        btnBawahElm[2].href = "/cancelorder/" + pesananSelected.id_midtrans
+        btnBawahElm[3].href = "/order/" + pesananSelected.id_midtrans
         containerOffcanvasElm.classList.add("show")
     }
 

@@ -821,6 +821,35 @@ class Pages extends BaseController
         ];
         return $this->response->setJSON($arr, false);
     }
+    public function cancelOrder($id_midtrans)
+    {
+        $auth = base64_encode("SB-Mid-server-3M67g25LgovNPlwdS4WfiMsh" . ":");
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://api.sandbox.midtrans.com/v2/" . $id_midtrans . "/cancel",
+            CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_SSL_VERIFYPEER => 0,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_HTTPHEADER => array(
+                "Accept: application/json",
+                "Content-Type: application/json",
+                "Authorization: Basic " . $auth,
+            ),
+        ));
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        if ($err) {
+            return "cURL Error #:" . $err;
+        }
+        $hasil = json_decode($response, true);
+        return redirect()->to('/orderadmin');
+    }
     public function progressPay($id_midtrans)
     {
         $pemesanan = $this->pemesananModel->getPemesanan($id_midtrans);
@@ -1003,6 +1032,32 @@ class Pages extends BaseController
             ];
             return view('pages/order', $data);
         }
+    }
+    public function invoice($id_mid)
+    {
+        $transaksi = $this->pemesananModel->getPemesanan($id_mid);
+        // dd($transaksi);
+        $arr = [
+            'id' => $transaksi['id'],
+            'nama' => $transaksi['nama'],
+            'email' => $transaksi['email'],
+            'nohp' => $transaksi['nohp'],
+            'alamat' => json_decode($transaksi['alamat'], true),
+            'resi' => $transaksi['resi'],
+            'id_midtrans' => $transaksi['id_midtrans'],
+            'items' => json_decode($transaksi['items'], true),
+            'status' => $transaksi['status'],
+            'kurir' => json_decode($transaksi['kurir'], true),
+            'data_mid' => json_decode($transaksi['data_mid'], true),
+        ];
+        $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+        $data = [
+            'title' => 'Print Preview',
+            'transaksi' => $arr,
+            'transaksiJson' => json_encode($arr),
+            'bulan' => $bulan
+        ];
+        return view('pages/invoice', $data);
     }
     public function wishlist()
     {
