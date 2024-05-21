@@ -1,6 +1,6 @@
 <div class="admin-nav">
     <div style="padding: 2em;">
-        <h1 class="teks-sedang mb-4">Admin Ilena</h1>
+        <h1 class="teks-sedang mb-4">Gudang Ilena</h1>
         <div class="mt-2 d-flex justify-content-between py-1">
             <p class="m-0">
                 Email

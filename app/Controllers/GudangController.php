@@ -34,17 +34,40 @@ class GudangController extends BaseController
 
     public function listOrder()
     {
+        $pesanan = $this->pemesananModel->getPemesanan();
+        foreach ($pesanan as $ind_p => $p) {
+            $pesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
+            $pesanan[$ind_p]['items'] = json_decode($p['items'], true);
+            $pesanan[$ind_p]['alamat'] = json_decode($p['alamat'], true);
+            $pesanan[$ind_p]['kurir'] = json_decode($p['kurir'], true);
+        }
         $data = [
-            'title' => 'Pesanan'
+            'title' => 'Pesanan',
+            'pesanan' => $pesanan,
         ];
         return view('gudang/listOrder', $data);
     }
-    
+
     public function scanOrder()
     {
         $data = [
             'title' => 'Scan'
         ];
-        return view('gudang/scanOrder',$data);
+        return view('gudang/scanOrder', $data);
+    }
+    public function actionScan()
+    {
+        $id_barang = $this->request->getVar('id_produk');
+        $produk = $this->barangModel->getBarang($id_barang);
+        $produk['varian'] = json_decode($produk['varian'], true);
+        $data = [
+            'title' => 'Pilih Varian',
+            'produk' => $produk
+        ];
+        if (count($produk['varian']) > 1) {
+            return view('gudang/pilihVarian', $data);
+        } else {
+            echo 'ini harunya langsung ngurang karena hanya punya 1 varian yaitu varian ' . $produk['varian'][0]['nama'];
+        }
     }
 }

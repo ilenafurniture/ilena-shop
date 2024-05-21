@@ -7,6 +7,8 @@
     <title><?= $title; ?> | I L E N A</title>
     <link href="<?= base_url('css/bootstrap.min.css'); ?>" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js" crossorigin="anonymous"></script>
+
     <link rel="stylesheet" href="<?= base_url('css/style.css'); ?>">
 </head>
 

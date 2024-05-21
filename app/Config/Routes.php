@@ -78,3 +78,4 @@ $routes->get('/orderadmin', 'AdminController::order');
 //GUDANG Controller
 $routes->get('/gudang/listorder', 'GudangController::listOrder');
 $routes->get('/gudang/scanorder', 'GudangController::scanOrder');
+$routes->post('/gudang/actionscan', 'GudangController::actionScan');
