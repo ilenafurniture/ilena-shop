@@ -74,3 +74,7 @@ $routes->get('/editproduct/(:any)', 'AdminController::editProduct/$1');
 $routes->get('/deleteproduct/(:any)', 'AdminController::deleteProduct/$1');
 $routes->get('/activeproduct/(:any)', 'AdminController::activeProduct/$1');
 $routes->get('/orderadmin', 'AdminController::order');
+
+//GUDANG Controller
+$routes->get('/gudang/listorder', 'GudangController::listOrder');
+$routes->get('/gudang/scanorder', 'GudangController::scanOrder');
