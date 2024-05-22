@@ -6,6 +6,7 @@ use App\Models\BarangModel;
 use App\Models\GambarBarangModel;
 use App\Models\PembeliModel;
 use App\Models\PemesananModel;
+use App\Models\PemesananGudangModel;
 use App\Models\UserModel;
 
 class Pages extends BaseController
@@ -15,6 +16,7 @@ class Pages extends BaseController
     protected $userModel;
     protected $pembeliModel;
     protected $pemesananModel;
+    protected $pemesananGudangModel;
     protected $session;
     public function __construct()
     {
@@ -23,6 +25,7 @@ class Pages extends BaseController
         $this->userModel = new UserModel();
         $this->pembeliModel = new PembeliModel();
         $this->pemesananModel = new PemesananModel();
+        $this->pemesananGudangModel = new PemesananGudangModel();
         $this->session = \Config\Services::session();
     }
     public function index()
@@ -574,6 +577,7 @@ class Pages extends BaseController
                 'price' => $hasil,
                 'quantity' => $element['jumlah'],
                 'name' => $produknya["nama"] . " (" . ucfirst($element['varian']) . ")",
+                'packed' => false
             );
             array_push($itemDetails, $item);
         }
@@ -801,6 +805,21 @@ class Pages extends BaseController
                     $this->barangModel->where('nama', rtrim(explode("(", $item['name'])[0]))->set([
                         'stok' => $barangCurr['stok'] + $item['quantity']
                     ])->update();
+                }
+            }
+
+            //insert pesanan gudang
+            $items_curr = json_decode($dataTransaksi_curr['items'], true);
+            foreach ($items_curr as $i) {
+                if ($i['name'] != "Biaya Ongkir" && $i['name'] != "Biaya Admin") {
+                    $this->pemesananGudangModel->insert([
+                        'id_pesanan' => $order_id,
+                        'tanggal' => $dataMid_curr['transaction_time'],
+                        'nama' => $i['name'],
+                        'id_barang' => $i['id'],
+                        'jumlah' => $i['quantity'],
+                        'packed' => false
+                    ]);
                 }
             }
         } else {

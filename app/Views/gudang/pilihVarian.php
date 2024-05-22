@@ -7,10 +7,10 @@
     <title>Document</title>
 </head>
 
-<body>
+<body class="d-block d-flex flex-column justify-content-center align-items-center" style="width: 100vw; height: 100svh;">
     <h1>Pilih Varian</h1>
-    <?php foreach ($produk['varian'] as $v) { ?>
-        <button><?= $v['nama']; ?></button>
+    <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
+        <a href="/gudang/actionpilihvarian/<?= $produk['id']; ?>/<?= $ind_v; ?>" class="btn-default"><?= $v['nama']; ?></a>
     <?php } ?>
 </body>
 
