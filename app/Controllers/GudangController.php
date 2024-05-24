@@ -39,13 +39,16 @@ class GudangController extends BaseController
     public function scanOrder()
     {
         $data = [
-            'title' => 'Scan'
+            'title' => 'Scan',
+            'val' => [
+                'msg' => session()->getFlashdata('msg')
+            ]
         ];
         return view('gudang/scanOrder', $data);
     }
-    public function actionScan()
+    public function actionScan($id_barang)
     {
-        $id_barang = $this->request->getVar('id_produk');
+        // $id_barang = $this->request->getVar('id_produk');
         $produk = $this->barangModel->getBarang($id_barang);
         $produk['varian'] = json_decode($produk['varian'], true);
         $data = [
@@ -58,15 +61,21 @@ class GudangController extends BaseController
             //ganti packed menjadi true
             $namaSelected = $produk['nama'] . " (" . $produk['varian'][0]['nama'] . ")";
             $pesanan = $this->pemesananGudangModel->getPemesananGudang($namaSelected);
-            $this->pemesananGudangModel->where([
-                'nama' => $namaSelected,
-                'id_pesanan' => $pesanan['id_pesanan']
-            ])->set(['packed' => true])->update();
+            if ($pesanan) {
+                $this->pemesananGudangModel->where([
+                    'nama' => $namaSelected,
+                    'id_pesanan' => $pesanan['id_pesanan']
+                ])->set(['packed' => true])->update();
 
-            //kurangi stok di varian produk
-            $produk['varian'][0]['stok'] = (int)$produk['varian'][0]['stok'] - 1;
-            $this->barangModel->where(['id' => $id_barang])->set(['varian' => json_encode($produk['varian'])])->update();
-            return redirect()->to('/gudang/listorder');
+                //kurangi stok di varian produk
+                $produk['varian'][0]['stok'] = (int)$produk['varian'][0]['stok'] - 1;
+                $this->barangModel->where(['id' => $id_barang])->set(['varian' => json_encode($produk['varian'])])->update();
+                session()->setFlashdata('msg', 'Barang sudah diupdate');
+                return redirect()->to('/gudang/scanorder');
+            } else {
+                session()->setFlashdata('msg', 'Barang tidak dalam antrian');
+                return redirect()->to('/gudang/scanorder');
+            }
         }
     }
     public function actionPilihVarian($id_produk, $ind_varian)
@@ -76,14 +85,20 @@ class GudangController extends BaseController
         //ganti packed menjadi true
         $namaSelected = $produk['nama'] . " (" . $produk['varian'][$ind_varian]['nama'] . ")";
         $pesanan = $this->pemesananGudangModel->getPemesananGudang($namaSelected);
-        $this->pemesananGudangModel->where([
-            'nama' => $namaSelected,
-            'id_pesanan' => $pesanan['id_pesanan']
-        ])->set(['packed' => true])->update();
+        if ($pesanan) {
+            $this->pemesananGudangModel->where([
+                'nama' => $namaSelected,
+                'id_pesanan' => $pesanan['id_pesanan']
+            ])->set(['packed' => true])->update();
 
-        //kurangi stok di varian produk
-        $produk['varian'][$ind_varian]['stok'] = (int)$produk['varian'][$ind_varian]['stok'] - 1;
-        $this->barangModel->where(['id' => $id_produk])->set(['varian' => json_encode($produk['varian'])])->update();
-        return redirect()->to('/gudang/listorder');
+            //kurangi stok di varian produk
+            $produk['varian'][$ind_varian]['stok'] = (int)$produk['varian'][$ind_varian]['stok'] - 1;
+            $this->barangModel->where(['id' => $id_produk])->set(['varian' => json_encode($produk['varian'])])->update();
+            session()->setFlashdata('msg', 'Barang sudah diupdate');
+            return redirect()->to('/gudang/scanorder');
+        } else {
+            session()->setFlashdata('msg', 'Barang tidak dalam antrian');
+            return redirect()->to('/gudang/scanorder');
+        }
     }
 }

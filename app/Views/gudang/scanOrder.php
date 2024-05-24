@@ -3,40 +3,28 @@
 <div style="padding: 2em;" class="d-flex justify-content-center align-items-center">
     <div>
         <h6 class="text-center">Scan barang yang telah di packing disini:</h6>
-        <div class="bg-secondary" style="width: 1000px; height: 300px;">
-            <video id="camera-web" style="width: 1000px; height: 300px;" autoplay loop muted>
-                Browser tidak mendukung camera
-            </video>
+        <?php if ($val['msg']) { ?>
+            <div class="pemberitahuan my-1" role="alert">
+                <?= $val['msg']; ?>
+            </div>
+        <?php } ?>
+        <div class="d-flex flex-column justify-content-center align-items-center">
+            <div style="width: 500px" id="reader"></div>
         </div>
-        <form action="/gudang/actionscan" method="post">
-            <input type="text" name="id_produk">
-            <button type="submit">submit</button>
-        </form>
     </div>
 </div>
 <script>
-    // const Quagga = require('quagga').default;
-    // const Quagga = window.Quagga;
-    // const cameraElm = document.getElementById("camera-web");
-    // navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
+    function onScanSuccess(decodedText, decodedResult) {
+        console.log(`Scan result: ${decodedText}`, decodedResult);
+        html5QrcodeScanner.clear();
+        window.location.href = "/gudang/actionscan/" + decodedText;
+    }
 
-    // console.log(navigator)
-    // if (navigator.mediaDevices) {
-    //     console.log('ada')
-    //     navigator.mediaDevices.getUserMedia({
-    //         video: true
-    //     }).then((stream) => {
-    //         console.log(stream)
-    //         console.log('berhasil')
-    //         cameraElm.srcObject = stream;
-    //         cameraElm.play();
-    //     })
-    // }
-
-
-    // function videoEror(e) {
-    //     alert('nggk bisa nyetel video');
-    // }
+    var html5QrcodeScanner = new Html5QrcodeScanner("reader", {
+        fps: 10,
+        qrbox: 250,
+    });
+    html5QrcodeScanner.render(onScanSuccess);
 </script>
 
 

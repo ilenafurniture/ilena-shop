@@ -6,7 +6,7 @@
                 Email
             </p>
             <p class="fw-bold m-0">
-                adminilena@gmail.com
+                gudangilena@gmail.com
             </p>
         </div>
         <div class="d-flex justify-content-between py-1">
