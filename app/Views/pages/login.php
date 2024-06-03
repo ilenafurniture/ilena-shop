@@ -1,7 +1,7 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
-<div class="container">
-    <div class="row justify-content-center m-5">
+<div class="container konten">
+    <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card p-4">
                 <h5 class="mb-3 teks-sedang">Login Akun</h5>
