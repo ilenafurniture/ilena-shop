@@ -64,6 +64,14 @@ class GudangController extends BaseController
         return view('gudang/listOrderAfter', $data);
     }
 
+    public function mutasi()
+    {
+        $data = [
+            'title' => 'Mutasi',
+        ];
+        return view('gudang/mutasi',$data);
+    }
+
     public function scanOrder()
     {
         $data = [

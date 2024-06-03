@@ -30,6 +30,10 @@
             <i class="material-icons">local_shipping</i>
             <p class="m-0">Pesanan Selesai</p>
         </a>
+        <a class="item-nav <?= $title == 'Mutasi' ? 'active' : ''; ?>" href="/gudang/mutasi">
+            <i class="material-icons">library_books</i>
+            <p class="m-0">Mutasi</p>
+        </a>
 
         <a class="item-nav " href="/logout">
             <i class="material-icons">exit_to_app</i>
