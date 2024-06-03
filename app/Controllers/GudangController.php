@@ -36,6 +36,16 @@ class GudangController extends BaseController
         return view('gudang/listOrder', $data);
     }
 
+    public function listOrderAfter()
+    {
+        $pesanan = $this->pemesananGudangModel->getPemesananGudang();
+        $data = [
+            'title' => 'Pesanan Selesai',
+            'pesanan' => $pesanan,
+        ];
+        return view('gudang/listOrderAfter', $data);
+    }
+
     public function scanOrder()
     {
         $data = [

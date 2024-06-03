@@ -3,10 +3,10 @@
         <h1 class="teks-sedang mb-4">Gudang Ilena</h1>
         <div class="mt-2 d-flex justify-content-between py-1">
             <p class="m-0">
-                Email
+                Nama
             </p>
             <p class="fw-bold m-0">
-                gudangilena@gmail.com
+                Imanuel Ahmat
             </p>
         </div>
         <div class="d-flex justify-content-between py-1">
@@ -25,6 +25,10 @@
         <a class="item-nav <?= $title == 'Scan' ? 'active' : ''; ?>" href="/gudang/scanorder">
             <i class="material-icons">book</i>
             <p class="m-0">Scan Barang</p>
+        </a>
+        <a class="item-nav <?= $title == 'Pesanan Selesai' ? 'active' : ''; ?>" href="/gudang/listorderafter">
+            <i class="material-icons">local_shipping</i>
+            <p class="m-0">Pesanan Selesai</p>
         </a>
 
         <a class="item-nav " href="/logout">

@@ -2,8 +2,8 @@
 <?= $this->section("content"); ?>
 <div style="padding: 2em;">
     <div class="d-flex justify-content-between gap-4">
-        <div style="flex:1;">
-            <h6 class="text-center mb-2">Pesanan belum diproses</h6>
+        <div style="flex:1">
+            <h6 class="text-center mb-2">Pesanan Telah Selesai</h6>
             <div class="container-table">
                 <div class="header-table border-buttom border-dark">
                     <div style="flex: 1;">No</div>
@@ -17,7 +17,7 @@
                 <?php
                 $no = 1;
                 foreach ($pesanan as $p) {
-                    if (!$p['packed']) {
+                    if ($p['packed']) {
                 ?>
                 <div class="isi-table">
                     <div style="flex: 1;"><?= $no; ?></div>
