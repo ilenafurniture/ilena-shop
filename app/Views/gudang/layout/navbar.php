@@ -22,17 +22,21 @@
             <i class="material-icons">people</i>
             <p class="m-0">Pesanan</p>
         </a>
-        <a class="item-nav <?= $title == 'Scan' ? 'active' : ''; ?>" href="/gudang/scanorder">
-            <i class="material-icons">book</i>
-            <p class="m-0">Scan Barang</p>
-        </a>
         <a class="item-nav <?= $title == 'Pesanan Selesai' ? 'active' : ''; ?>" href="/gudang/listorderafter">
             <i class="material-icons">local_shipping</i>
             <p class="m-0">Pesanan Selesai</p>
         </a>
+        <a class="item-nav <?= $title == 'Scan' ? 'active' : ''; ?>" href="/gudang/scanorder">
+            <i class="material-icons">book</i>
+            <p class="m-0">Scan Barang</p>
+        </a>
         <a class="item-nav <?= $title == 'Mutasi' ? 'active' : ''; ?>" href="/gudang/mutasi">
             <i class="material-icons">library_books</i>
             <p class="m-0">Mutasi</p>
+        </a>
+        <a class="item-nav <?= $title == 'Produk' ? 'active' : ''; ?>" href="/gudang/product">
+            <i class="material-icons">layers</i>
+            <p class="m-0">Update Stok</p>
         </a>
 
         <a class="item-nav " href="/logout">

@@ -80,6 +80,7 @@ $routes->get('/gudang/listorder', 'GudangController::listOrder');
 $routes->get('/gudang/listorderafter', 'GudangController::listOrderAfter');
 $routes->get('/gudang/scanorder', 'GudangController::scanOrder');
 $routes->get('/gudang/mutasi', 'GudangController::mutasi');
+$routes->get('/gudang/product', 'GudangController::product');
 $routes->get('/gudang/actionscan/(:any)', 'GudangController::actionScan/$1');
 // $routes->post('/gudang/actionscan', 'GudangController::actionScan');
 $routes->post('/gudang/actionpilihvarian/(:any)/(:any)', 'GudangController::actionPilihVarian/$1/$2');

@@ -69,7 +69,29 @@ class GudangController extends BaseController
         $data = [
             'title' => 'Mutasi',
         ];
-        return view('gudang/mutasi',$data);
+        return view('gudang/mutasi', $data);
+    }
+
+    public function product()
+    {
+        $product = $this->barangModel->getBarang();
+        $productAll = [];
+        foreach ($product as $p) {
+            foreach (json_decode($p['varian'], true) as $v) {
+                $item = [
+                    'id' => $p['id'],
+                    'nama' => $p['nama'],
+                    'varian' => $v['nama'],
+                    'stok' => $v['stok'],
+                ];
+                array_push($productAll, $item);
+            }
+        }
+        $data = [
+            'title' => 'Produk',
+            'produk' => $productAll
+        ];
+        return view('gudang/product', $data);
     }
 
     public function scanOrder()

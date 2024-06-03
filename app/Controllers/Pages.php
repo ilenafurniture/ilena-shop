@@ -1248,7 +1248,16 @@ class Pages extends BaseController
                 'isLogin' => true
             ];
             session()->set($ses_data);
-            return redirect()->to('/g/order');
+            return redirect()->to('/gudang/listorder');
+        } else if ($getUser['role'] == '3') {
+            $ses_data = [
+                'active' => '1',
+                'email' => $getUser['email'],
+                'role' => $getUser['role'],
+                'isLogin' => true
+            ];
+            session()->set($ses_data);
+            return redirect()->to('/market/listorder');
         }
     }
     public function register()
