@@ -812,14 +812,15 @@ class Pages extends BaseController
             $items_curr = json_decode($dataTransaksi_curr['items'], true);
             foreach ($items_curr as $i) {
                 if ($i['name'] != "Biaya Ongkir" && $i['name'] != "Biaya Admin") {
-                    $this->pemesananGudangModel->insert([
-                        'id_pesanan' => $order_id,
-                        'tanggal' => $dataMid_curr['transaction_time'],
-                        'nama' => $i['name'],
-                        'id_barang' => $i['id'],
-                        'jumlah' => $i['quantity'],
-                        'packed' => false
-                    ]);
+                    for ($i = 1; $i <= (int)$i['quantity']; $i++) {
+                        $this->pemesananGudangModel->insert([
+                            'id_pesanan' => $order_id,
+                            'tanggal' => $dataMid_curr['transaction_time'],
+                            'nama' => $i['name'],
+                            'id_barang' => $i['id'],
+                            'packed' => false
+                        ]);
+                    }
                 }
             }
         } else {

@@ -28,17 +28,35 @@ class GudangController extends BaseController
 
     public function listOrder()
     {
-        $pesanan = $this->pemesananGudangModel->getPemesananGudang();
+        $pesananGudang = $this->pemesananGudangModel->getPemesananGudang();
+        foreach ($pesananGudang as $ind_p => $p) {
+            $barang = $this->barangModel->getBarang($p['id_barang']);
+            foreach (json_decode($barang['varian'], true) as $v) {
+                if ($v['nama'] == rtrim(explode("(", $p['nama'])[1], ")")) {
+                    $pesananGudang[$ind_p]['stok'] = $v['stok'];
+                    $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+                    $tanggal = strtotime($p['tanggal']);
+                    if ((int)date("H", $tanggal) > 12) {
+                        $tanggal = strtotime($p['tanggal'] . " +1 day");
+                        $targetSelesai = date("d", $tanggal) . " " . $bulan[(int)date("m", $tanggal) - 1] . " " . date("Y", $tanggal) . " 08:00:00";
+                    } else {
+                        $tanggal = strtotime($p['tanggal'] . " +3 hours");
+                        $targetSelesai = date("d", $tanggal) . " " . $bulan[(int)date("m", $tanggal) - 1] . " " . date("Y H:i:s", $tanggal);;
+                    }
+                    $pesananGudang[$ind_p]['target_selesai'] = $targetSelesai;
+                }
+            }
+        }
         $data = [
             'title' => 'Pesanan',
-            'pesanan' => $pesanan,
+            'pesanan' => $pesananGudang,
         ];
         return view('gudang/listOrder', $data);
     }
 
     public function listOrderAfter()
     {
-        $pesanan = $this->pemesananGudangModel->getPemesananGudang();
+        $pesanan = $this->pemesananGudangModel->getPemesananGudang(true);
         $data = [
             'title' => 'Pesanan Selesai',
             'pesanan' => $pesanan,

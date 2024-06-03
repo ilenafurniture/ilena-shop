@@ -12,17 +12,16 @@ class PemesananGudangModel extends Model
         'tanggal',
         'nama',
         'id_barang',
-        'jumlah',
         'packed'
     ];
-    public function getPemesananGudang($nama_barang = false)
+    public function getPemesananGudang($packed = false, $nama_barang = false)
     {
         if (!$nama_barang) {
             return $this->findAll();
         }
         return $this->where([
             'nama' => $nama_barang,
-            'packed' => false
+            'packed' => $packed
         ])->first();
     }
 }
