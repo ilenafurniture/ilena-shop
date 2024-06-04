@@ -50,6 +50,9 @@ class GudangController extends BaseController
         $data = [
             'title' => 'Pesanan',
             'pesanan' => $pesananGudang,
+            'val' => [
+                'msg' => session()->getFlashdata('msg')
+            ]
         ];
         return view('gudang/listOrder', $data);
     }
@@ -94,16 +97,6 @@ class GudangController extends BaseController
         return view('gudang/product', $data);
     }
 
-    public function scanOrder()
-    {
-        $data = [
-            'title' => 'Scan',
-            'val' => [
-                'msg' => session()->getFlashdata('msg')
-            ]
-        ];
-        return view('gudang/scanOrder', $data);
-    }
     public function actionScan($id_barang, $varian)
     {
         $produk = $this->barangModel->getBarang($id_barang);

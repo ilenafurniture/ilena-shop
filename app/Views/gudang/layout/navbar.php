@@ -26,10 +26,6 @@
             <i class="material-icons">local_shipping</i>
             <p class="m-0">Pesanan Selesai</p>
         </a>
-        <a class="item-nav <?= $title == 'Scan' ? 'active' : ''; ?>" href="/gudang/scanorder">
-            <i class="material-icons">book</i>
-            <p class="m-0">Scan Barang</p>
-        </a>
         <a class="item-nav <?= $title == 'Mutasi' ? 'active' : ''; ?>" href="/gudang/mutasi">
             <i class="material-icons">library_books</i>
             <p class="m-0">Mutasi</p>
