@@ -41,7 +41,7 @@ class GudangController extends BaseController
                         $targetSelesai = date("d", $tanggal) . " " . $bulan[(int)date("m", $tanggal) - 1] . " " . date("Y", $tanggal) . " 08:00:00";
                     } else {
                         $tanggal = strtotime($p['tanggal'] . " +3 hours");
-                        $targetSelesai = date("d", $tanggal) . " " . $bulan[(int)date("m", $tanggal) - 1] . " " . date("Y H:i:s", $tanggal);;
+                        $targetSelesai = date("d", $tanggal) . " " . $bulan[(int)date("m", $tanggal) - 1] . " " . date("Y H:i:s", $tanggal);
                     }
                     $pesananGudang[$ind_p]['target_selesai'] = $targetSelesai;
                 }
@@ -104,59 +104,30 @@ class GudangController extends BaseController
         ];
         return view('gudang/scanOrder', $data);
     }
-    public function actionScan($id_barang)
+    public function actionScan($id_barang, $varian)
     {
-        // $id_barang = $this->request->getVar('id_produk');
         $produk = $this->barangModel->getBarang($id_barang);
-        $produk['varian'] = json_decode($produk['varian'], true);
-        $data = [
-            'title' => 'Pilih Varian',
-            'produk' => $produk
-        ];
-        if (count($produk['varian']) > 1) {
-            return view('gudang/pilihVarian', $data);
-        } else {
-            //ganti packed menjadi true
-            $namaSelected = $produk['nama'] . " (" . $produk['varian'][0]['nama'] . ")";
-            $pesanan = $this->pemesananGudangModel->getPemesananGudang($namaSelected);
-            if ($pesanan) {
-                $this->pemesananGudangModel->where([
-                    'nama' => $namaSelected,
-                    'id_pesanan' => $pesanan['id_pesanan']
-                ])->set(['packed' => true])->update();
-
-                //kurangi stok di varian produk
-                $produk['varian'][0]['stok'] = (int)$produk['varian'][0]['stok'] - 1;
-                $this->barangModel->where(['id' => $id_barang])->set(['varian' => json_encode($produk['varian'])])->update();
-                session()->setFlashdata('msg', 'Barang sudah diupdate');
-                return redirect()->to('/gudang/scanorder');
-            } else {
-                session()->setFlashdata('msg', 'Barang tidak dalam antrian');
-                return redirect()->to('/gudang/scanorder');
+        $varianArr = json_decode($produk['varian'], true);
+        foreach ($varianArr as $ind_v => $v) {
+            if ($v['nama'] == $varian) {
+                $varianArr[$ind_v]['stok'] = (int)$v['stok'] - 1;
             }
         }
-    }
-    public function actionPilihVarian($id_produk, $ind_varian)
-    {
-        $produk = $this->barangModel->getBarang($id_produk);
-        $produk['varian'] = json_decode($produk['varian'], true);
-        //ganti packed menjadi true
-        $namaSelected = $produk['nama'] . " (" . $produk['varian'][$ind_varian]['nama'] . ")";
-        $pesanan = $this->pemesananGudangModel->getPemesananGudang($namaSelected);
+        $namaSelected = $produk['nama'] . " (" . $varian . ")";
+        $pesanan = $this->pemesananGudangModel->getPemesananGudang(false, $namaSelected);
         if ($pesanan) {
             $this->pemesananGudangModel->where([
                 'nama' => $namaSelected,
-                'id_pesanan' => $pesanan['id_pesanan']
+                'id' => $pesanan['id']
             ])->set(['packed' => true])->update();
 
             //kurangi stok di varian produk
-            $produk['varian'][$ind_varian]['stok'] = (int)$produk['varian'][$ind_varian]['stok'] - 1;
-            $this->barangModel->where(['id' => $id_produk])->set(['varian' => json_encode($produk['varian'])])->update();
+            $this->barangModel->where(['id' => $id_barang])->set(['varian' => json_encode($varianArr)])->update();
             session()->setFlashdata('msg', 'Barang sudah diupdate');
-            return redirect()->to('/gudang/scanorder');
+            return redirect()->to('/gudang/listorder');
         } else {
             session()->setFlashdata('msg', 'Barang tidak dalam antrian');
-            return redirect()->to('/gudang/scanorder');
+            return redirect()->to('/gudang/listorder');
         }
     }
 }
