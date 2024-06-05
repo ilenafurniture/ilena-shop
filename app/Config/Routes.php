@@ -84,3 +84,6 @@ $routes->get('/gudang/mutasi', 'GudangController::mutasi');
 $routes->get('/gudang/product', 'GudangController::product');
 $routes->get('/gudang/actionscan/(:any)/(:any)', 'GudangController::actionScan/$1/$2');
 $routes->get('/gudang/actionaddmutasi', 'GudangController::actionAddMutasi');
+
+// Marketplace Controller
+$routes->get('/market/product', 'MarketplaceController::product');
