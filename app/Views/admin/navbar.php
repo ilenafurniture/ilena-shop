@@ -27,11 +27,11 @@
             <p class="m-0">Pesanan</p>
         </a>
         <a class="item-nav <?= $title == 'Pengajuan Print Ulang' ? 'active' : ''; ?>" href="/admin/reprint">
-            <i class="material-icons">shopping_cart</i>
+            <i class="material-icons">assignment</i>
             <p class="m-0">Pengajuan Print</p>
         </a>
         <a class="item-nav <?= $title == 'Konfirmasi Marketplace' ? 'active' : ''; ?>" href="/admin/marketplace">
-            <i class="material-icons">shopping_cart</i>
+            <i class="material-icons">assignment_turned_in</i>
             <p class="m-0">Konfirmasi Marketplace</p>
         </a>
         <a class="item-nav" href="/logout">
