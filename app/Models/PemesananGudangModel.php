@@ -12,7 +12,8 @@ class PemesananGudangModel extends Model
         'tanggal',
         'nama',
         'id_barang',
-        'packed'
+        'packed',
+        'printed'
     ];
     public function getPemesananGudang($packed = false, $nama_barang = false)
     {

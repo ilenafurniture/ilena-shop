@@ -50,7 +50,7 @@ class GudangController extends BaseController
                 }
             }
         }
-        dd($pesananGudang);
+        // dd($pesananGudang);
         $data = [
             'title' => 'Pesanan',
             'pesanan' => $pesananGudang,
@@ -71,11 +71,18 @@ class GudangController extends BaseController
         return view('gudang/listOrderAfter', $data);
     }
 
-    public function mutasi($id_barang)
+    public function mutasi($id_barang = false)
     {
+        $product = $this->barangModel->getBarang();
+        if (!$id_barang) {
+            $id_barang = $product[0]['id'];
+        }
         $mutasi = $this->kartuStokModel->getKartu($id_barang);
         $data = [
             'title' => 'Mutasi',
+            'mutasi' => $mutasi,
+            'product' => $product,
+            'idBarang' => $id_barang
         ];
         return view('gudang/mutasi', $data);
     }

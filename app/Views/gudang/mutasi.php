@@ -4,7 +4,7 @@
     <div class="bg-white" style="width:fit-content; border: 0.5px solid black; border-radius: 1em; box-shadow:1em;">
         <div style="padding: 2em;" class="d-flex justify-content-center align-items-center flex-column gap-4">
             <form action="/gudang/actionaddmutasi" method="post">
-                <div class="mb-5">
+                <div class="mb-2">
                     <div class="form-floating mb-1">
                         <input type="date" class="form-control" id="floatingInput" placeholder="name@example.com" name="tanggal">
                         <label for="floatingInput">Tanggal</label>
@@ -38,15 +38,14 @@
 <div style="padding: 2em;">
     <div class="d-flex justify-content-between gap-4">
         <div style="flex:1">
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between align-items-start mb-3">
                 <div>
                     <h6 class="mb-2">Kartu Stok</h6>
                     <div>
-                        <select name="barang" class="form-select">
-                            <option value="id">id_barang1</option>
-                            <option value="id">id_barang2</option>
-                            <option value="id">namabarang1</option>
-                            <option value="id">namabarang2</option>
+                        <select name="barang" class="form-select" onchange="gantiBarang(event)">
+                            <?php foreach ($product as $p) { ?>
+                                <option value="<?= $p['id']; ?>" <?= $idBarang == $p['id'] ? 'selected' : ''; ?>><?= $p['id']; ?></option>
+                            <?php } ?>
                         </select>
                     </div>
                 </div>
@@ -61,22 +60,19 @@
                     <div style="flex: 2;">Kredit</div>
                     <div style="flex: 2;">Saldo</div>
                 </div>
-                <div class="isi-table">
-                    <div style="flex: 1;">1</div>
-                    <div style="flex: 2;">31 Mei 2024</div>
-                    <div style="flex: 3;">ISI_NYA ID PESANAN</div>
-                    <div style="flex: 2;">6</div>
-                    <div style="flex: 2;">4</div>
-                    <div style="flex: 2;">6</div>
-                </div>
-                <div class="isi-table">
-                    <div style="flex: 1;">2</div>
-                    <div style="flex: 2;">3 Juni 2024</div>
-                    <div style="flex: 3;">ISI_NYA ID PESANAN</div>
-                    <div style="flex: 2;">9</div>
-                    <div style="flex: 2;">5</div>
-                    <div style="flex: 2;">4</div>
-                </div>
+                <?php
+                $no = 1;
+                foreach ($mutasi as $m) { ?>
+                    <div class="isi-table">
+                        <div style="flex: 1;"><?= $no; ?></div>
+                        <div style="flex: 2;"><?= $m['tanggal']; ?></div>
+                        <div style="flex: 3;"><?= $m['keterangan']; ?></div>
+                        <div style="flex: 2;"><?= $m['debit']; ?></div>
+                        <div style="flex: 2;"><?= $m['kredit']; ?></div>
+                        <div style="flex: 2;"><?= $m['saldo']; ?></div>
+                    </div>
+                <?php $no++;
+                } ?>
             </div>
         </div>
     </div>
@@ -92,6 +88,11 @@
     function closeModal() {
         modalElm.classList.remove("d-flex");
         modalElm.classList.add("d-none");
+    }
+
+    function gantiBarang(e) {
+        const id = e.target.value
+        window.location.href = '/gudang/mutasi/' + id
     }
 </script>
 <?= $this->endSection(); ?>
