@@ -208,7 +208,7 @@ class AdminController extends BaseController
     public function reprint()
     {
         $data = [
-            'title' => 'Ajuan Print Ulang'
+            'title' => 'Pengajuan Print Ulang'
         ];
         return view('admin/reprint', $data);
     }
