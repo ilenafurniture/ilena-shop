@@ -6,6 +6,7 @@ use App\Models\BarangModel;
 use App\Models\PemesananModel;
 use App\Models\KoleksiModel;
 use App\Models\JenisModel;
+use App\Models\KartuStokModel;
 use App\Models\PemesananGudangModel;
 
 class GudangController extends BaseController
@@ -15,6 +16,7 @@ class GudangController extends BaseController
     protected $pemesananGudangModel;
     protected $koleksiModel;
     protected $jenisModel;
+    protected $kartuStokModel;
     protected $session;
     public function __construct()
     {
@@ -23,6 +25,7 @@ class GudangController extends BaseController
         $this->pemesananGudangModel = new PemesananGudangModel();
         $this->koleksiModel = new KoleksiModel();
         $this->jenisModel = new JenisModel();
+        $this->kartuStokModel = new KartuStokModel();
         $this->session = \Config\Services::session();
     }
 
@@ -68,12 +71,20 @@ class GudangController extends BaseController
         return view('gudang/listOrderAfter', $data);
     }
 
-    public function mutasi()
+    public function mutasi($id_barang)
     {
+        $mutasi = $this->kartuStokModel->getKartu($id_barang);
         $data = [
             'title' => 'Mutasi',
         ];
         return view('gudang/mutasi', $data);
+    }
+    public function actionAddMutasi()
+    {
+        $tanggal = $this->request->getVar('tanggal');
+        $keterangan = $this->request->getVar('keterangan');
+        $jenis = $this->request->getVar('jenis');
+        $nominal = $this->request->getVar('nominal');
     }
 
     public function product()
@@ -103,7 +114,7 @@ class GudangController extends BaseController
         $produk = $this->barangModel->getBarang($id_barang);
         $varianArr = json_decode($produk['varian'], true);
         foreach ($varianArr as $ind_v => $v) {
-            if ($v['nama'] == strtolower($varian)) {
+            if ($v['nama'] == $varian) {
                 $varianArr[$ind_v]['stok'] = (int)$v['stok'] - 1;
             }
         }

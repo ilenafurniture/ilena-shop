@@ -1,35 +1,34 @@
 <?= $this->extend("gudang/layout/template"); ?>
 <?= $this->section("content"); ?>
-<div class="d-none justify-content-center align-items-center w-100" id="modal-add"
-    style="background-color: rgba(0,0,0,0.5); position:fixed; top: 0; left: 0; width: 100vw; height: 100svh;">
+<div class="d-none justify-content-center align-items-center w-100" id="modal-add" style="background-color: rgba(0,0,0,0.5); position:fixed; top: 0; left: 0; width: 100vw; height: 100svh;">
     <div class="bg-white" style="width:fit-content; border: 0.5px solid black; border-radius: 1em; box-shadow:1em;">
         <div style="padding: 2em;" class="d-flex justify-content-center align-items-center flex-column gap-4">
-            <form action="/actionaddmutasi" method="post">
+            <form action="/gudang/actionaddmutasi" method="post">
                 <div class="mb-5">
-                    <div class="form-floating mb-3">
-                        <input type="date" class="form-control" id="floatingInput" placeholder="name@example.com">
+                    <div class="form-floating mb-1">
+                        <input type="date" class="form-control" id="floatingInput" placeholder="name@example.com" name="tanggal">
                         <label for="floatingInput">Tanggal</label>
                     </div>
-                    <div class="form-floating mb-3">
-                        <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+                    <div class="form-floating mb-1">
+                        <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="keterangan">
                         <label for="floatingInput">Keterangan</label>
                     </div>
                     <div class="d-flex gap-2">
                         <div class="form-floating flex-grow-1">
-                            <select name="" id="" class="form-select">
+                            <select name="jenis" id="" class="form-select">
                                 <option value="debit">Debit</option>
                                 <option value="kredit">Kredit</option>
                             </select>
                             <label for="floatingInput">Jenis</label>
                         </div>
                         <div class="form-floating flex-grow-1">
-                            <input type="number" class="form-control" id="floatingPassword" placeholder="Password">
+                            <input type="number" class="form-control" id="floatingPassword" name="nominal">
                             <label for="floatingPassword">Nominal</label>
                         </div>
                     </div>
                 </div>
                 <div class="d-flex gap-1">
-                    <button type="submit" class="btn-default">Tambahs</button>
+                    <button type="submit" class="btn-default">Tambah</button>
                     <button type="button" class="btn-default-merah" onclick="closeModal()">Batal</button>
                 </div>
             </form>
@@ -83,16 +82,16 @@
     </div>
 </div>
 <script>
-const modalElm = document.getElementById('modal-add');
+    const modalElm = document.getElementById('modal-add');
 
-function openModal(idBarang, nama) {
-    modalElm.classList.add("d-flex");
-    modalElm.classList.remove("d-none");
-}
+    function openModal(idBarang, nama) {
+        modalElm.classList.add("d-flex");
+        modalElm.classList.remove("d-none");
+    }
 
-function closeModal() {
-    modalElm.classList.remove("d-flex");
-    modalElm.classList.add("d-none");
-}
+    function closeModal() {
+        modalElm.classList.remove("d-flex");
+        modalElm.classList.add("d-none");
+    }
 </script>
 <?= $this->endSection(); ?>
