@@ -29,7 +29,7 @@
                     </div>
                 </div>
                 <div class="d-flex gap-1">
-                    <button type="submit" class="btn-default">Tambah</button>
+                    <button type="submit" class="btn-default">Tambahs</button>
                     <button type="button" class="btn-default-merah" onclick="closeModal()">Batal</button>
                 </div>
             </form>
