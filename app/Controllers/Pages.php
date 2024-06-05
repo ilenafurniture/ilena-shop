@@ -544,7 +544,7 @@ class Pages extends BaseController
     {
         $pesananke = $this->pemesananModel->orderBy('id', 'desc')->first();
         $idFix = "IContoh" . (sprintf("%08d", $pesananke ? ((int)$pesananke['id'] + 1) : 1));
-        $randomId = rand();
+        $randomId = "I" . rand();
         $alamatselected = $this->session->get('alamatTerpilih');
         $kurirselected = $this->session->get('kurirTerpilih');
         if (!isset($alamatselected) || !isset($kurirselected)) {
@@ -812,7 +812,7 @@ class Pages extends BaseController
             $items_curr = json_decode($dataTransaksi_curr['items'], true);
             foreach ($items_curr as $i) {
                 if ($i['name'] != "Biaya Ongkir" && $i['name'] != "Biaya Admin") {
-                    for ($i = 1; $i <= (int)$i['quantity']; $i++) {
+                    for ($x = 1; $x <= (int)$i['quantity']; $x++) {
                         $this->pemesananGudangModel->insert([
                             'id_pesanan' => $order_id,
                             'tanggal' => $dataMid_curr['transaction_time'],
@@ -1226,7 +1226,6 @@ class Pages extends BaseController
                 'nohp' => $getPembeli['nohp'],
                 'wishlist' => json_decode($getPembeli['wishlist'], true),
                 'keranjang' => json_decode($getPembeli['keranjang'], true),
-                'transaksi' => json_decode($getPembeli['transaksi'], true),
                 'isLogin' => true
             ];
             session()->set($ses_data);
@@ -1335,7 +1334,7 @@ class Pages extends BaseController
         ]);
         $this->pembeliModel->insert([
             'nama' => $this->request->getVar('nama'),
-            'email_user' => $this->request->getVar('email'),
+            'email' => $this->request->getVar('email'),
             'nohp' => $this->request->getVar('nohp'),
             'alamat' => json_encode([]),
             'wishlist' => json_encode([]),

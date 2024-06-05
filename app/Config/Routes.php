@@ -66,14 +66,16 @@ $routes->get('/viewvar/(:any)/(:any)', 'GambarController::tampilGambarVarian/$1/
 
 
 // Admin Controller
-$routes->get('/listproduct', 'AdminController::listProduct');
-$routes->get('/customer', 'AdminController::customer');
-$routes->get('/addproduct', 'AdminController::addProduct');
-$routes->post('/addproduct', 'AdminController::actionAddProduct');
-$routes->get('/editproduct/(:any)', 'AdminController::editProduct/$1');
-$routes->get('/deleteproduct/(:any)', 'AdminController::deleteProduct/$1');
-$routes->get('/activeproduct/(:any)', 'AdminController::activeProduct/$1');
-$routes->get('/orderadmin', 'AdminController::order');
+$routes->get('/admin/product', 'AdminController::listProduct');
+$routes->get('/admin/customer', 'AdminController::customer');
+$routes->get('/admin/addproduct', 'AdminController::addProduct');
+$routes->post('/admin/addproduct', 'AdminController::actionAddProduct');
+$routes->get('/admin/editproduct/(:any)', 'AdminController::editProduct/$1');
+$routes->get('/admin/deleteproduct/(:any)', 'AdminController::deleteProduct/$1');
+$routes->get('/admin/activeproduct/(:any)', 'AdminController::activeProduct/$1');
+$routes->get('/admin/order', 'AdminController::order');
+$routes->get('/admin/reprint', 'AdminController::reprint');
+$routes->get('/admin/marketplace', 'AdminController::marketplace');
 
 //GUDANG Controller
 $routes->get('/gudang/listorder', 'GudangController::listOrder');

@@ -204,4 +204,19 @@ class AdminController extends BaseController
         ];
         return view('admin/order', $data);
     }
+
+    public function reprint()
+    {
+        $data = [
+            'title' => 'Ajuan Print Ulang'
+        ];
+        return view('admin/reprint', $data);
+    }
+    public function marketplace()
+    {
+        $data = [
+            'title' => 'Konfirmasi Marketplace'
+        ];
+        return view('admin/marketplace', $data);
+    }
 }

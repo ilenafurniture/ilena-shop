@@ -32,7 +32,7 @@ class GudangController extends BaseController
         foreach ($pesananGudang as $ind_p => $p) {
             $barang = $this->barangModel->getBarang($p['id_barang']);
             foreach (json_decode($barang['varian'], true) as $v) {
-                if ($v['nama'] == rtrim(explode("(", $p['nama'])[1], ")")) {
+                if ($v['nama'] == strtolower(rtrim(explode("(", $p['nama'])[1], ")"))) {
                     $pesananGudang[$ind_p]['stok'] = $v['stok'];
                     $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
                     $tanggal = strtotime($p['tanggal']);
@@ -47,6 +47,7 @@ class GudangController extends BaseController
                 }
             }
         }
+        dd($pesananGudang);
         $data = [
             'title' => 'Pesanan',
             'pesanan' => $pesananGudang,
@@ -102,12 +103,16 @@ class GudangController extends BaseController
         $produk = $this->barangModel->getBarang($id_barang);
         $varianArr = json_decode($produk['varian'], true);
         foreach ($varianArr as $ind_v => $v) {
-            if ($v['nama'] == $varian) {
+            if ($v['nama'] == strtolower($varian)) {
                 $varianArr[$ind_v]['stok'] = (int)$v['stok'] - 1;
             }
         }
         $namaSelected = $produk['nama'] . " (" . $varian . ")";
         $pesanan = $this->pemesananGudangModel->getPemesananGudang(false, $namaSelected);
+        dd([
+            'varianArr' => $varianArr,
+            'pesanan' => $pesanan
+        ]);
         if ($pesanan) {
             $this->pemesananGudangModel->where([
                 'nama' => $namaSelected,
