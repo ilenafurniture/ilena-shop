@@ -215,7 +215,10 @@ class AdminController extends BaseController
     public function marketplace()
     {
         $data = [
-            'title' => 'Konfirmasi Marketplace'
+            'title' => 'Konfirmasi Marketplace',
+            'val' => [
+                'msg' => session()->getFlashdata('msg')
+            ]
         ];
         return view('admin/marketplace', $data);
     }

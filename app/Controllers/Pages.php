@@ -1238,7 +1238,7 @@ class Pages extends BaseController
                 'isLogin' => true
             ];
             session()->set($ses_data);
-            return redirect()->to('/listproduct');
+            return redirect()->to('/admin/product');
         } else if ($getUser['role'] == '2') {
             $ses_data = [
                 'active' => '1',
