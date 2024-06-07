@@ -5,24 +5,38 @@
         <div style="flex:1;">
             <h6 class="text-center mb-2">List Produk</h6>
             <div class="container-table">
-                <div class="header-table border-buttom border-dark">
-                    <div style="flex: 1;">No</div>
-                    <div style="flex: 2;">ID Produk</div>
+                <div class="header-table">
+                    <div style="flex: 1;">Gambar Produk</div>
                     <div style="flex: 2;">Nama Produk</div>
-                    <div style="flex: 2;">Varian Produk</div>
-                    <div style="flex: 3;">Action</div>
+                    <div style="flex: 2;">Harga Produk</div>
+                    <div style="flex: 1;">Action</div>
                 </div>
-
+                <?php foreach ($produk as $ind_p => $p) { ?>
                 <div class="isi-table">
-                    <div style="flex: 1;">1</div>
-                    <div style="flex: 2;">MTR00021</div>
-                    <div style="flex: 2;">MTV 100</div>
-                    <div style="flex: 2;">Putih</div>
-                    <div style="flex: 3;" class="gap-2">
-                        <a class="btn-default" href="/editproduct/" <i class=" material-icons">Konfirmasi</i></a>
-                        <a class="btn-default-merah" href="/editproduct" /<i class=" material-icons">Tolak</i></a>
+                    <div style="flex: 1;" onclick="pergiKeProduct('')"><img
+                            style="width: 50px; height: 50px; object-fit:cover;" id="img<?= $ind_p ?>" src="/viewpic/"
+                            alt=""></div>
+                    <div style="flex: 2;" class="d-flex flex-column align-items-start justify-content-center"
+                        onclick="pergiKeProduct('')">
+                        <p class="fw-bold m-0" style="font-size: 20px;"><?= $p['nama']; ?></p>
+                        <p class="m-0" style="color: grey; font-size: 13px;">#####</p>
+                    </div>
+                    <div style="flex: 2;">Rp <?= number_format($p['harga'], 0, ',', '.'); ?></div>
+                    <div style="flex: 1;">
+                        <a class="btn-default-merah" id="beli" href="">Beli</a>
+                        <div style="flex: 1;">
+                            <div style="display:flex; border: 1px solid grey; border-radius: 0.5em;">
+                                <div style="width: 30px; height: 30px;" class="number-left" onclick="kurangJumlah()">
+                                </div>
+                                <input type="number" style="height: 30px;" name="jumlah" class="number-quantity"
+                                    value="1">
+                                <div style="width: 30px; height: 30px;" class="number-right" onclick="tambahJumlah()">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                <?php } ?>
             </div>
         </div>
     </div>
