@@ -22,6 +22,10 @@
             <i class="material-icons">people</i>
             <p class="m-0">Pesanan</p>
         </a>
+        <a class="item-nav <?= $title == 'Keranjang Produk' ? 'active' : ''; ?>" href="/market/cart">
+            <i class="material-icons">shopping_cart</i>
+            <p class="m-0">Keranjang</p>
+        </a>
 
         <a class="item-nav " href="/logout">
             <i class="material-icons">exit_to_app</i>

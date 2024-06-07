@@ -9,6 +9,7 @@ use App\Models\PemesananModel;
 use App\Models\UserModel;
 use App\Models\KoleksiModel;
 use App\Models\JenisModel;
+use App\Models\KeranjangMarketModel;
 
 class MarketplaceController extends BaseController
 {
@@ -19,6 +20,7 @@ class MarketplaceController extends BaseController
     protected $pemesananModel;
     protected $koleksiModel;
     protected $jenisModel;
+    protected $keranjangMarketModel;
     protected $session;
     public function __construct()
     {
@@ -29,6 +31,7 @@ class MarketplaceController extends BaseController
         $this->pemesananModel = new PemesananModel();
         $this->koleksiModel = new KoleksiModel();
         $this->jenisModel = new JenisModel();
+        $this->keranjangMarketModel = new KeranjangMarketModel();
         $this->session = \Config\Services::session();
     }
     public function product()
@@ -39,5 +42,15 @@ class MarketplaceController extends BaseController
             'produk' => $product
         ];
         return view('market/product', $data);
+    }
+
+    public function cart()
+    {
+        $cart = $this->keranjangMarketModel->getKeranjang();
+        $data = [
+            'title' => 'Keranjang Produk',
+            'cart' => $cart
+        ];
+        return view('market/cart', $data);
     }
 }
