@@ -56,10 +56,12 @@
                     <div style="flex:3;">Items</div>
                     <div style="flex:1;">Jumlah</div>
                 </div>
-                <div class="isi-table">
-                    <div style="flex:3;">ALD 6001</div>
-                    <div style="flex:1;">1</div>
-                </div>
+                <?php foreach ($keranjang as $k) { ?>
+                    <div class="isi-table">
+                        <div style="flex:3;"><?= $k['nama'] ?> (<?= $k['varian'] ?>)</div>
+                        <div style="flex:1;"><?= $k['jumlah'] ?></div>
+                    </div>
+                <?php } ?>
             </div>
         </div>
     </div>
