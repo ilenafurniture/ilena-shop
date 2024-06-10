@@ -76,6 +76,7 @@ $routes->get('/admin/activeproduct/(:any)', 'AdminController::activeProduct/$1')
 $routes->get('/admin/order', 'AdminController::order');
 $routes->get('/admin/reprint', 'AdminController::reprint');
 $routes->get('/admin/marketplace', 'AdminController::marketplace');
+$routes->get('/admin/confirm-mp/(:any)', 'AdminController::confirmMarketplace/$1');
 
 //GUDANG Controller
 $routes->get('/gudang/listorder', 'GudangController::listOrder');
@@ -91,3 +92,4 @@ $routes->get('/market/product', 'MarketplaceController::product');
 $routes->get('/market/cart', 'MarketplaceController::cart');
 $routes->get('/market/addcart/(:any)/(:any)', 'MarketplaceController::addCart/$1/$2');
 $routes->get('/market/reducecart/(:any)', 'MarketplaceController::reduceCart/$1');
+$routes->post('/maket/submitorder', 'MarketplaceController::submitOrder');

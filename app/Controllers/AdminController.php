@@ -6,6 +6,7 @@ use App\Models\BarangModel;
 use App\Models\GambarBarangModel;
 use App\Models\PembeliModel;
 use App\Models\PemesananModel;
+use App\Models\PemesananGudangModel;
 use App\Models\UserModel;
 use App\Models\KoleksiModel;
 use App\Models\JenisModel;
@@ -17,6 +18,7 @@ class AdminController extends BaseController
     protected $userModel;
     protected $pembeliModel;
     protected $pemesananModel;
+    protected $pemesananGudangModel;
     protected $koleksiModel;
     protected $jenisModel;
     protected $session;
@@ -27,6 +29,7 @@ class AdminController extends BaseController
         $this->userModel = new UserModel();
         $this->pembeliModel = new PembeliModel();
         $this->pemesananModel = new PemesananModel();
+        $this->pemesananGudangModel = new PemesananGudangModel();
         $this->koleksiModel = new KoleksiModel();
         $this->jenisModel = new JenisModel();
         $this->session = \Config\Services::session();
@@ -214,12 +217,45 @@ class AdminController extends BaseController
     }
     public function marketplace()
     {
+        $pemesanan = $this->pemesananModel->getPemesananMarket();
+        $pemesananBelumKonfirmasi = [];
+        foreach ($pemesanan as $p) {
+            $pemesananGudang = $this->pemesananGudangModel->where([
+                'id_pesanan' => $p['id_midtrans'],
+            ])->first();
+            if(!$pemesananGudang){
+                array_push($pemesananBelumKonfirmasi,$p);
+            }
+        }
+        
         $data = [
             'title' => 'Konfirmasi Marketplace',
             'val' => [
                 'msg' => session()->getFlashdata('msg')
-            ]
+            ],
+            'pemesanan' => $pemesananBelumKonfirmasi 
         ];
         return view('admin/marketplace', $data);
+    }
+
+    public function confirmMarketplace($id){
+        $pemesanan = $this->pemesananModel->where([
+            'id' => $id,
+        ])->first();
+        $items_curr = json_decode($pemesanan['items'], true);
+        foreach ($items_curr as $i) {
+            if ($i['name'] != "Biaya Ongkir" && $i['name'] != "Biaya Admin") {
+                for ($x = 1; $x <= (int)$i['quantity']; $x++) {
+                    $this->pemesananGudangModel->insert([
+                        'id_pesanan' => $pemesanan['id_midtrans'],
+                        'tanggal' => json_decode($pemesanan['data_mid'],true)['transaction_time'],
+                        'nama' => $i['name'],
+                        'id_barang' => $i['id'],
+                        'packed' => false
+                    ]);
+                }
+            }
+        }
+        return redirect()->to('/admin/marketplace');
     }
 }
