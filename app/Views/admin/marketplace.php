@@ -28,7 +28,8 @@
             <div style="flex: 2;" class="gap-2">
                 <a class="btn-default" href="/admin/confirm-mp/<?= $p['id'] ?>">Konfim</a>
                 <a class="btn-default-merah" href="/admin/edit-mp/<?= $p['id'] ?>">Edit</a>
-                <button class="btn btn-light" onclick="openDetail()"><i class=" material-icons">more_vert</i></button>
+                <button class="btn btn-light" onclick="openDetail(<?= $indx_p ?>)"><i
+                        class=" material-icons">more_vert</i></button>
             </div>
         </div>
         <?php } ?>
@@ -43,7 +44,7 @@
         </div> -->
     </div>
 </div>
-<div class="d-none justify-content-center align-items-center w-100" id="isi-tabel"
+<div class="d-none justify-content-center align-items-center w-100" id="container-detail"
     style="background-color: rgba(0,0,0,0.5); position:fixed; top: 0; left: 0; width: 100vw; height: 100svh;">
     <div class="bg-white p-4" style="width: 50%; border: 0.5px solid black; border-radius: 1em; box-shadow:1em;">
         <div class=" gap-2">
@@ -57,27 +58,27 @@
                         <p class="m-0 fw-bold">No Resi:</p>
                     </div>
                     <div>
-                        <p class="m-0">Udin</p>
-                        <p class="m-0">Jl. Salaman</p>
-                        <p class="m-0">08132426632</p>
-                        <p class="m-0">SPG00033</p>
+                        <p class="m-0" id="nama">Udin</p>
+                        <p class="m-0" id="alamat">Jl. Salaman</p>
+                        <p class="m-0" id="nohp">08132426632</p>
+                        <p class="m-0" id="noresi">SPG00033</p>
                     </div>
                 </div>
                 <div>
                     <div>
-                        <p>Tanggal: 10 Oktober 2024</p>
+                        <p id="tanggal">Tanggal: 10 Oktober 2024</p>
                     </div>
                 </div>
             </div>
             <hr>
-            <div class="container-table">
+            <div class="container-table detaill">
                 <div class="header-table">
                     <div style="flex: 2;">Nama Barang</div>
                     <div style="flex: 2;">Jumlah Barang</div>
                 </div>
                 <div class="isi-table">
                     <div style="flex: 2;">36365252</div>
-                    <div style="flex: 2;">ALD Besi </div>
+                    <div style="flex: 2;">1 </div>
                 </div>
             </div>
         </div>
@@ -88,11 +89,39 @@
 </div>
 
 <script>
-const isiTabelElm = document.getElementById('isi-tabel');
+const pemesanan = JSON.parse('<?= $pemesananJson ?>')
+const namaElm = document.getElementById('nama');
+const alamatElm = document.getElementById('alamat');
+const nohpElm = document.getElementById('nohp');
+const noresiElm = document.getElementById('noresi');
+const tanggalElm = document.getElementById('tanggal');
+const tabelitemsELm = document.querySelector('.detaill');
 
-function openDetail() {
+const isiTabelElm = document.getElementById('container-detail');
+
+
+
+function openDetail(index_pemesanan) {
+    console.log(pemesanan[index_pemesanan]);
+    const pemesanancurr = pemesanan[index_pemesanan];
+
+    namaElm.innerHTML = pemesanancurr.nama
+    alamatElm.innerHTML = pemesanancurr.alamat
+    nohpElm.innerHTML = pemesanancurr.nohp
+    noresiElm.innerHTML = pemesanancurr.resi
+    tanggalElm.innerHTML = pemesanancurr.data_mid.transaction_time
+
+    tabelitemsELm.innerHTML =
+        '<div class="header-table"><div style="flex: 2;">Nama Barang</div><div style="flex: 2;">Jumlah Barang</div></div>'
+
+    pemesanancurr.items.forEach(element => {
+        tabelitemsELm.innerHTML += '<div class="isi-table"><div style="flex: 2;">' + element.name +
+            '</div><div style="flex: 2;">' + element.quantity + '</div></div>'
+    });
     isiTabelElm.classList.add("d-flex");
     isiTabelElm.classList.remove("d-none");
+
+
 }
 
 function closemodal() {

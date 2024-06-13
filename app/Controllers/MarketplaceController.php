@@ -96,7 +96,7 @@ class MarketplaceController extends BaseController
                 'id' => $k['id_barang'],
                 'price' => $produk['harga'],
                 'quantity' => $k['jumlah'],
-                'name' => $produk['nama'],
+                'name' => $produk['nama'].' ('.$k['varian'].')',
                 'packed' => false,
             ];
             array_push($items,$item);

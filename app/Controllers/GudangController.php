@@ -127,10 +127,10 @@ class GudangController extends BaseController
         }
         $namaSelected = $produk['nama'] . " (" . $varian . ")";
         $pesanan = $this->pemesananGudangModel->getPemesananGudang(false, $namaSelected);
-        dd([
-            'varianArr' => $varianArr,
-            'pesanan' => $pesanan
-        ]);
+        // dd([
+        //     'varianArr' => $varianArr,
+        //     'pesanan' => $pesanan
+        // ]);
         if ($pesanan) {
             $this->pemesananGudangModel->where([
                 'nama' => $namaSelected,
@@ -145,5 +145,13 @@ class GudangController extends BaseController
             session()->setFlashdata('msg', 'Barang tidak dalam antrian');
             return redirect()->to('/gudang/listorder');
         }
+    }
+
+    public function suratJalan(){
+        $data = [
+            'title' => 'Surat Jalan',
+        ];
+        
+        return view('gudang/suratJalan',$data);
     }
 }

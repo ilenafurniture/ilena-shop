@@ -6,12 +6,12 @@
             <div class="limapuluh-ke-seratus">
                 <h1 class="teks-sedang mb-3">Informasi Pesanan</h1>
                 <div class="form-floating mb-1">
-                    <input type="date" class="form-control" id="floatingInput6" placeholder="" name="tanggal">
+                    <input type="date" class="form-control" id="floatingInput6" placeholder="" name="tanggal" required>
                     <label for="floatingInput6">tanggal pembelian</label>
                 </div>
                 <div class="form-floating mb-3">
                     <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com"
-                        name="email">
+                        name="email" required>
                     <label for="floatingInput">Email</label>
                 </div>
                 <hr>
@@ -27,23 +27,26 @@
                     <label for="floatingInput4">Kurir</label>
                 </div>
                 <div class="form-floating mb-1">
-                    <input type="text" class="form-control" id="floatingInput5" placeholder="" name="jenis_kurir">
+                    <input type="text" class="form-control" id="floatingInput5" placeholder="" name="jenis_kurir"
+                        required>
                     <label for="floatingInput5">Jenis Kurir</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="floatingInput6" placeholder="" name="no_resi">
+                    <input type="text" class="form-control" id="floatingInput6" placeholder="" name="no_resi" required>
                     <label for="floatingInput6">No resi</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="floatingInput6" placeholder="" name="harga_pengiriman">
+                    <input type="text" class="form-control" id="floatingInput6" placeholder="" name="harga_pengiriman"
+                        required>
                     <label for="floatingInput6">Harga Pengiriman</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="floatingInput6" placeholder="" name="estimasi">
+                    <input type="text" class="form-control" id="floatingInput6" placeholder="" name="estimasi" required>
                     <label for="floatingInput6">Estimasi</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="floatingInput6" placeholder="" name="id_marketplace">
+                    <input type="text" class="form-control" id="floatingInput6" placeholder="" name="id_marketplace"
+                        required>
                     <label for="floatingInput6">Id Marketplace</label>
                 </div>
             </div>
@@ -52,16 +55,17 @@
                 <h1 class="teks-sedang mb-3">Informasi Penerima</h1>
                 <div class="form-floating mb-1">
                     <input type="text" class="form-control" id="floatingInput1" placeholder="Nama Lengkap"
-                        name="nama_lengkap">
+                        name="nama_lengkap" required>
                     <label for="floatingInput1">Nama Lengkap</label>
                 </div>
                 <div class="form-floating mb-1">
-                    <input type="number" class="form-control" id="floatingInput2" placeholder="No Hp" name="no_hp">
+                    <input type="number" class="form-control" id="floatingInput2" placeholder="No Hp" name="no_hp"
+                        required>
                     <label for="floatingInput2">No hp</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <textarea type="text" class="form-control" id="floatingInput3" placeholder=""
-                        name="alamat_lengkap"></textarea>
+                    <textarea type="text" class="form-control" id="floatingInput3" placeholder="" name="alamat_lengkap"
+                        required></textarea>
                     <label for="floatingInput3">Alamat Lengkap</label>
                 </div>
                 <hr>

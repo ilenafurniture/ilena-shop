@@ -36,18 +36,7 @@
                     <div style="flex: 2;">Action</div>
                 </div>
 
-                <div class="isi-table">
-                    <div style="flex: 1;">2</div>
-                    <div style="flex: 2;">99999999</div>
-                    <div style="flex: 2;">6 Juni 2024</div>
-                    <div style="flex: 4;">ALd Jari Rasa</div>
-                    <div style="flex: 3;">3624248253842</div>
-                    <div style="flex: 2;">46</div>
-                    <div style="flex: 2;">3 Jam</div>
-                    <div style="flex: 2;">
-                        <button class="btn-default" onclick="openScan('3624248253842', 'ALd Jari Rasa')">Scan</button>
-                    </div>
-                </div>
+
                 <?php
                         $no = 1;
                         if (count($pesanan) > 0) {

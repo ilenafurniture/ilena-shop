@@ -224,7 +224,18 @@ class AdminController extends BaseController
                 'id_pesanan' => $p['id_midtrans'],
             ])->first();
             if(!$pemesananGudang){
-                array_push($pemesananBelumKonfirmasi,$p);
+                $items = json_decode($p['items'],true);
+                $bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
+                $data_mid = json_decode($p['data_mid'],true);
+                $data_mid['transaction_time'] = date('d',strtotime($data_mid['transaction_time'])).' '.$bulan[date('m',strtotime($data_mid['transaction_time'])) - 1].' '.date('Y',strtotime($data_mid['transaction_time']));
+                $kurir = json_decode($p['kurir'],true);
+
+                $pemesanan_curr = $p;
+                $pemesanan_curr['items'] = $items;
+                $pemesanan_curr['data_mid'] = $data_mid;
+                $pemesanan_curr['kurir'] = $kurir;
+
+                array_push($pemesananBelumKonfirmasi,$pemesanan_curr);
             }
         }
         
@@ -233,7 +244,8 @@ class AdminController extends BaseController
             'val' => [
                 'msg' => session()->getFlashdata('msg')
             ],
-            'pemesanan' => $pemesananBelumKonfirmasi 
+            'pemesanan' => $pemesananBelumKonfirmasi,
+            'pemesananJson' => json_encode($pemesananBelumKonfirmasi),
         ];
         return view('admin/marketplace', $data);
     }
