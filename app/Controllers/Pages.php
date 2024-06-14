@@ -543,6 +543,130 @@ class Pages extends BaseController
         $this->session->set(['kurirTerpilih' => $kurir[$index_kurir]]);
         return view('pages/payment', $data);
     }
+    public function actionPaySnap()
+    {
+        $bodyJson = $this->request->getBody();
+        $body = json_decode(base64_decode(json_decode($bodyJson, true)['content']), true);
+        if ($body['code'] != ':ilenafur') {
+            return $this->response->setJSON([
+                'token' => 'gagal'
+            ], false);
+        }
+        $email = $body['email'];
+        $nama = $body['nama'];
+        $nohp = $body['nohp'];
+        $alamatLengkap = $body['alamat'];
+        $keranjang = $body['keranjang'];
+        $kurir = $body['kurir'];
+
+        $subtotal = 0;
+        $itemDetails = [];
+        if (!empty($keranjang)) {
+            foreach ($keranjang as $ind => $element) {
+                $produknya = $this->barangModel->getBarang($element['id']);
+                $persen = (100 - $produknya['diskon']) / 100;
+                $hasil = round($persen * $produknya['harga']);
+                $subtotal += $hasil * (int)$element['jumlah'];
+
+                $item = array(
+                    'id' => $produknya["id"],
+                    'price' => $hasil,
+                    'quantity' => (int)$element['jumlah'],
+                    'name' => substr($produknya["nama"] . " (" . ucfirst($element['varian']) . ")", 0, 50),
+                );
+                array_push($itemDetails, $item);
+            }
+        }
+
+        $biayaadmin = array(
+            'id' => 'Biaya Admin',
+            'price' => 5000,
+            'quantity' => 1,
+            'name' => 'Biaya Admin',
+        );
+        array_push($itemDetails, $biayaadmin);
+        $biayaongkir = array(
+            'id' => 'Biaya Ongkir',
+            'price' => $kurir['harga'],
+            'quantity' => 1,
+            'name' => 'Biaya Ongkir',
+        );
+        array_push($itemDetails, $biayaongkir);
+
+        $total = $subtotal + 5000 + $kurir['harga'];
+
+        $auth = base64_encode("SB-Mid-server-3M67g25LgovNPlwdS4WfiMsh" . ":");
+        $pesananke = $this->pemesananModel->orderBy('id', 'desc')->first();
+        $idFix = "ILContoh" . (sprintf("%08d", $pesananke ? ((int)$pesananke['id'] + 1) : 1));
+        $randomId = "ILContoh" . rand();
+        $customField = json_encode([
+            'e' => $email,
+            'n' => $nama,
+            'h' => $nohp,
+            'a' => $alamatLengkap,
+            'i' => $keranjang,
+            'k' => $kurir
+        ]);
+        $arrPostField = [
+            "transaction_details" => [
+                "order_id" => $randomId,
+                "gross_amount" => $total,
+            ],
+            'customer_details' => array(
+                'email' => $email,
+                'first_name' => $nama,
+                'phone' => $nohp,
+                'billing_address' => array(
+                    'email' => $email,
+                    'first_name' => $nama,
+                    'phone' => $nohp,
+                    'address' => $alamatLengkap,
+                ),
+                'shipping_address' => array(
+                    'email' => $email,
+                    'first_name' => $nama,
+                    'phone' => $nohp,
+                    'address' => $alamatLengkap,
+                )
+            ),
+            'callbacks' => array(
+                'finish' => "https://ilenafurniture.com/order/" . $randomId,
+            ),
+            'item_details' => $itemDetails,
+            "custom_field1" => substr($customField, 0, 255),
+            "custom_field2" => substr($customField, 255, 255),
+            "custom_field3" => substr($customField, 510, 255),
+        ];
+
+        // $snapToken = \Midtrans\Snap::getSnapToken($arrPostField);
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            // CURLOPT_URL => "https://app.midtrans.com/snap/v1/transactions",
+            CURLOPT_URL => "https://app.sandbox.midtrans.com/snap/v1/transactions",
+            CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_SSL_VERIFYPEER => 0,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => json_encode($arrPostField),
+            CURLOPT_HTTPHEADER => array(
+                "Accept: application/json",
+                "Content-Type: application/json",
+                "Authorization: Basic " . $auth,
+            ),
+        ));
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        if ($err) {
+            return "cURL Error #:" . $err;
+        }
+        $hasilMidtrans = json_decode($response, true);
+        return $this->response->setJSON($hasilMidtrans, false);
+    }
     public function actionPay($metode)
     {
         $pesananke = $this->pemesananModel->orderBy('id', 'desc')->first();

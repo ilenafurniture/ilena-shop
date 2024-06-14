@@ -29,6 +29,7 @@ $routes->get('/tracking', 'Pages::tracking');
 
 $routes->get('/payment/(:any)', 'Pages::payment/$1');
 $routes->get('/actionpay/(:any)', 'Pages::actionPay/$1');
+$routes->post('/actionpaysnap', 'Pages::actionPaySnap');
 $routes->post('/updatetransaction', 'Pages::updateTransaction');
 $routes->get('/progresspay/(:any)', 'Pages::progressPay/$1');
 $routes->get('/successpay/(:any)', 'Pages::successPay/$1');
