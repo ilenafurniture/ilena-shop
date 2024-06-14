@@ -18,7 +18,8 @@ class PemesananModel extends Model
         'status',
         'kurir',
         'data_mid',
-        'id_marketplace'
+        'id_marketplace',
+        'status_print'
     ];
 
     public function getPemesanan($id_midtrans = false)
@@ -43,9 +44,10 @@ class PemesananModel extends Model
         }
     }
 
-    public function getPemesananMarket($id_midtrans = false){
+    public function getPemesananMarket($id_midtrans = false)
+    {
         if (!$id_midtrans) {
-            return $this->like('id_midtrans', 'MP','both')->orderBy('id','desc')->findAll();
+            return $this->like('id_midtrans', 'MP', 'both')->orderBy('id', 'desc')->findAll();
         }
         return $this->where([
             'id_midtrans' => $id_midtrans,

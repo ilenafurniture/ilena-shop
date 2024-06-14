@@ -561,12 +561,15 @@ class Pages extends BaseController
         $keranjang = $this->session->get('keranjang');
         foreach ($keranjang as $index => $k) {
             $produk = $this->barangModel->getBarang($k['id_barang']);
-            foreach (json_decode($produk['varian'], true) as $v) {
+            $varianArr = json_decode($produk['varian'], true);
+            foreach ($varianArr as $ind_v => $v) {
                 if ($v['nama'] == $k['varian']) {
                     $keranjang[$index]['src_gambar'] = "/viewvar/" . $k['id_barang'] . "/" . explode(',', $v['urutan_gambar'])[0];
+                    $varianArr[$ind_v]['stok'] = (int)$v['stok'] - 1;
                 }
             }
             $keranjang[$index]['detail'] = $produk;
+            $this->barangModel->where(['id' => $k['id_barang']])->set(['varian' => json_encode($varianArr)])->update();
         }
 
         $itemDetails = [];
@@ -813,7 +816,7 @@ class Pages extends BaseController
 
             //insert pesanan gudang
             $items_curr = json_decode($dataTransaksi_curr['items'], true);
-            if($status == 'Proses'){
+            if ($status == 'Proses') {
                 foreach ($items_curr as $i) {
                     if ($i['name'] != "Biaya Ongkir" && $i['name'] != "Biaya Admin") {
                         for ($x = 1; $x <= (int)$i['quantity']; $x++) {

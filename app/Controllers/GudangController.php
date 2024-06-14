@@ -63,10 +63,17 @@ class GudangController extends BaseController
 
     public function listOrderAfter()
     {
-        $pesanan = $this->pemesananGudangModel->getPemesananGudang(true);
+        $pesanan = $this->pemesananModel->where(['status_print' => 'siap'])->findAll();
+        foreach ($pesanan as $ind_p => $p) {
+            $pesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
+            $pesanan[$ind_p]['items'] = json_decode($p['items'], true);
+            $pesanan[$ind_p]['alamat'] = json_decode($p['alamat'], true);
+            $pesanan[$ind_p]['kurir'] = json_decode($p['kurir'], true);
+        }
         $data = [
             'title' => 'Pesanan Selesai',
             'pesanan' => $pesanan,
+            'pesananJson' => json_encode($pesanan),
         ];
         return view('gudang/listOrderAfter', $data);
     }
@@ -119,26 +126,25 @@ class GudangController extends BaseController
     public function actionScan($id_barang, $varian)
     {
         $produk = $this->barangModel->getBarang($id_barang);
-        $varianArr = json_decode($produk['varian'], true);
-        foreach ($varianArr as $ind_v => $v) {
-            if ($v['nama'] == $varian) {
-                $varianArr[$ind_v]['stok'] = (int)$v['stok'] - 1;
-            }
-        }
         $namaSelected = $produk['nama'] . " (" . $varian . ")";
         $pesanan = $this->pemesananGudangModel->getPemesananGudang(false, $namaSelected);
-        // dd([
-        //     'varianArr' => $varianArr,
-        //     'pesanan' => $pesanan
-        // ]);
         if ($pesanan) {
             $this->pemesananGudangModel->where([
                 'nama' => $namaSelected,
                 'id' => $pesanan['id']
             ])->set(['packed' => true])->update();
 
-            //kurangi stok di varian produk
-            $this->barangModel->where(['id' => $id_barang])->set(['varian' => json_encode($varianArr)])->update();
+            $pemesananGudangCurr = $this->pemesananGudangModel->where([
+                'id_pesanan' => $pesanan['id_pesanan']
+            ])->findAll();
+            $pemesananGudangCurr_packed = $this->pemesananGudangModel->where([
+                'id_pesanan' => $pesanan['id_pesanan'],
+                'packed' => true
+            ])->findAll();
+            if (count($pemesananGudangCurr) == count($pemesananGudangCurr_packed)) {
+                $this->pemesananModel->where(['id_midtrans' => $pesanan['id_pesanan']])->set(['status_print' => 'siap'])->update();
+            }
+
             session()->setFlashdata('msg', 'Barang sudah diupdate');
             return redirect()->to('/gudang/listorder');
         } else {
@@ -147,11 +153,12 @@ class GudangController extends BaseController
         }
     }
 
-    public function suratJalan(){
+    public function suratJalan()
+    {
         $data = [
             'title' => 'Surat Jalan',
         ];
-        
-        return view('gudang/suratJalan',$data);
+
+        return view('gudang/suratJalan', $data);
     }
 }
