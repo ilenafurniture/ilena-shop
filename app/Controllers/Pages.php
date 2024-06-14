@@ -531,7 +531,16 @@ class Pages extends BaseController
             'hargaTotal' => $hargaTotal,
             'hargaOngkir' => $kurir[$index_kurir]['harga'],
             'hargaKeseluruhan' => ($hargaTotal + 5000 + $kurir[$index_kurir]['harga']),
-            'indKurir' => $index_kurir
+            'indKurir' => $index_kurir,
+            'user' => [
+                'email' => $alamatTerpilih['email_pemesan'],
+                'nama' => $alamatTerpilih['nama_penerima'],
+                'no_hp' => $alamatTerpilih['nohp_penerima'],
+                'alamat' => $alamatTerpilih['alamat_lengkap'],
+                
+            ],
+            'keranjang'=> $keranjang,
+            'kurir'=> $kurir[$index_kurir]
         ];
 
         $this->session->set([
