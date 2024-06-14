@@ -894,10 +894,16 @@ class Pages extends BaseController
     }
     public function updateTransaction()
     {
+        $arr = [
+            'success' => true,
+        ];
         $bodyJson = $this->request->getBody();
         $body = json_decode($bodyJson, true);
         $order_id = $body['order_id'];
         $fraud = $body['fraud_status'];
+        if (isset($body['custom_field1'])) {
+            $customField = json_decode($body['custom_field1'] . (isset($body['custom_field2']) ? $body['custom_field2'] : '') . (isset($body['custom_field3']) ? $body['custom_field3'] : ''), true);
+        }
         if ($fraud == "accept") {
             switch ($body['transaction_status']) {
                 case 'settlement':
@@ -949,9 +955,15 @@ class Pages extends BaseController
                 $dataTransaksiFulDariDatabase = $this->pemesananModel->where('id_midtrans', $order_id)->first();
                 $dataTransaksiFulDariDatabase_items = json_decode($dataTransaksiFulDariDatabase['items'], true);
                 foreach ($dataTransaksiFulDariDatabase_items as $item) {
-                    $barangCurr = $this->barangModel->where('nama', rtrim(explode("(", $item['name'])[0]))->first();
-                    $this->barangModel->where('nama', rtrim(explode("(", $item['name'])[0]))->set([
-                        'stok' => $barangCurr['stok'] + $item['quantity']
+                    $barangCurr = $this->barangModel->where('id', $item['id'])->first();
+                    $varianBarangCurr = json_decode($barangCurr['varian'], true);
+                    foreach ($varianBarangCurr as $ind_v => $v) {
+                        if ($v['nama'] == rtrim(explode("(", $item['name'])[1], ")")) {
+                            $varianBarangCurr[$ind_v]['stok'] = (int)$v['stok'] + $item['quantity'];
+                        }
+                    }
+                    $this->barangModel->where('id', $item['id'])->set([
+                        'varian' => json_encode($varianBarangCurr)
                     ])->update();
                 }
             }
@@ -974,21 +986,65 @@ class Pages extends BaseController
                 }
             }
         } else {
+            $keranjang = $customField['i'];
+            $itemDetails = [];
+            foreach ($keranjang as $element) {
+                $produknya = $this->barangModel->getBarang($element['id_barang']);
+                $persen = (100 - $produknya['diskon']) / 100;
+                $hasil = round($persen * $produknya['harga']);
+
+                $item = array(
+                    'id' => $produknya["id"],
+                    'price' => $hasil,
+                    'quantity' => (int)$element['jumlah'],
+                    'name' => substr($produknya["nama"] . " (" . ucfirst($element['varian']) . ")", 0, 50),
+                );
+                array_push($itemDetails, $item);
+            }
+            $biayaadmin = array(
+                'id' => 'Biaya Admin',
+                'price' => 5000,
+                'quantity' => 1,
+                'name' => 'Biaya Admin',
+            );
+            array_push($itemDetails, $biayaadmin);
+            $biayaongkir = array(
+                'id' => 'Biaya Ongkir',
+                'price' => $customField['k']['harga'],
+                'quantity' => 1,
+                'name' => 'Biaya Ongkir',
+            );
+            array_push($itemDetails, $biayaongkir);
+
             $this->pemesananModel->insert([
-                'nama' => '',
-                'email' => '',
-                'nohp' => '',
-                'alamat' => json_encode([]),
-                'resi' => '',
-                'items' => json_encode([]),
-                'kurir' => '',
+                'nama' => $customField['n'],
+                'email' => $customField['e'],
+                'nohp' => $customField['h'],
+                'alamat' => $customField['a'],
+                'resi' => 'Menunggu pengiriman',
+                'items' => json_encode($itemDetails),
+                'kurir' => json_encode($customField['k']),
                 'id_midtrans' => $order_id,
                 'status' => $status,
+                'data_mid' => json_encode($body),
             ]);
+
+            //pengurangan stok
+            $dataTransaksiFulDariDatabase = $this->pemesananModel->where('id_midtrans', $order_id)->first();
+            $dataTransaksiFulDariDatabase_items = json_decode($dataTransaksiFulDariDatabase['items'], true);
+            foreach ($dataTransaksiFulDariDatabase_items as $item) {
+                $barangCurr = $this->barangModel->where('id', $item['id'])->first();
+                $varianBarangCurr = json_decode($barangCurr['varian'], true);
+                foreach ($varianBarangCurr as $ind_v => $v) {
+                    if ($v['nama'] == rtrim(explode("(", $item['name'])[1], ")")) {
+                        $varianBarangCurr[$ind_v]['stok'] = (int)$v['stok'] - $item['quantity'];
+                    }
+                }
+                $this->barangModel->where('id', $item['id'])->set([
+                    'varian' => json_encode($varianBarangCurr)
+                ])->update();
+            }
         }
-        $arr = [
-            'success' => true,
-        ];
         return $this->response->setJSON($arr, false);
     }
     public function cancelOrder($id_midtrans)
