@@ -537,10 +537,19 @@ class Pages extends BaseController
                 'nama' => $alamatTerpilih['nama_penerima'],
                 'no_hp' => $alamatTerpilih['nohp_penerima'],
                 'alamat' => $alamatTerpilih['alamat_lengkap'],
-                
+
             ],
-            'keranjang'=> $keranjang,
-            'kurir'=> $kurir[$index_kurir]
+            'keranjang' => $keranjang,
+            'kurir' => $kurir[$index_kurir],
+            'dataMidJson' => base64_encode(json_encode([
+                'code' => ':ilenafur',
+                'email' => $alamatTerpilih['email_pemesan'],
+                'nama' => $alamatTerpilih['nama_penerima'],
+                'nohp' => $alamatTerpilih['nohp_penerima'],
+                'alamat' => $alamatTerpilih['alamat_lengkap'],
+                'keranjang' => $this->session->get('keranjang'),
+                'kurir' => $kurir[$index_kurir],
+            ]))
         ];
 
         $this->session->set([
