@@ -6,7 +6,7 @@
                 style="text-decoration: none;">Alamat</a> >
             <a class="mx-3 text-secondary" style="text-decoration: none;">Kurir</a> > <a class="mx-3 text-secondary"
                 style="text-decoration: none;">
-                Pembayaran</a>
+                Rincian Pembayaran</a>
         </h5>
         <div class="container-address my-4">
             <?php foreach ($alamat as $ind_a => $a) { ?>

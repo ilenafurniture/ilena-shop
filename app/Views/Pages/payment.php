@@ -12,7 +12,7 @@
             <div class="container-pembayaran mb-1">
                 <div class="item-pembayaran" data-bs-toggle="collapse" href="#collapseExample3" aria-expanded="true"
                     aria-controls="collapseExample3">
-                    Informasi barang
+                    Informasi Pembeli
                 </div>
                 <div class="collapse py-2 show" id="collapseExample3">
                     <hr>
@@ -37,7 +37,7 @@
             <div class="container-pembayaran mb-1">
                 <div class="item-pembayaran" data-bs-toggle="collapse" href="#collapseExample2" aria-expanded="true"
                     aria-controls="collapseExample2">
-                    Informasi barang
+                    Informasi Barang
                 </div>
                 <div class="collapse py-2 show" id="collapseExample2">
                     <hr>
@@ -45,16 +45,20 @@
                     <div class="d-flex gap-3 m-2">
                         <img src="<?= $k['src_gambar'] ?>" style="width:100px; height:100px; border-radius:8px;"
                             alt=" gambar-produk">
-                        <div class="d-flex gap-2">
+                        <div class="d-flex gap-3">
                             <div class="my-2">
                                 <p class="m-0 fw-normal">Nama</p>
                                 <p class="m-0 fw-normal">Varian</p>
                                 <p class="m-0 fw-normal">Jumlah</p>
+                                <p class="m-0 fw-normal">Harga Satuan</p>
                             </div>
                             <div class="my-2">
                                 <p class="m-0 fw-bold">: <?= $k['detail']['nama'] ?></p>
                                 <p class="m-0 fw-bold">: <?= $k['varian'] ?></p>
                                 <p class="m-0 fw-bold">: <?= $k['jumlah'] ?> Buah</p>
+                                <p class="m-0 fw-bold">: Rp
+                                    <?= number_format((int)$k['detail']['harga'] * (100 - (float)$k['detail']['diskon'])/100, 0, ',', '.'); ?>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -125,21 +129,31 @@
                     Rp <?= number_format($hargaKeseluruhan, 0, ',', '.'); ?>
                 </p>
             </div>
-            <a id="btn-bayar" class="btn-default-merah disabled w-100 mt-4 text-center">Bayar</a>
+            <button onclick="bayar(event)" class="btn-default-merah  w-100 mt-4 text-center">Bayar</button>
         </div>
     </div>
 </div>
 
 <script>
-const radioPembayaranElm = document.querySelectorAll('input[name="pembayaran"]');
-const btnBayarElm = document.getElementById('btn-bayar');
-
-radioPembayaranElm.forEach(element => {
-    element.addEventListener('change', (e) => {
-        btnBayarElm.href = "/actionpay/" + e.target.value;
-        btnBayarElm.classList.remove('disabled');
-    })
-});
+function bayar(e) {
+    // console.log(e.target);
+    e.target.innerHTML = "Loading";
+    async function getToken() {
+        const res = await fetch('../actionpaysnap', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                content: '<?= $dataMidJson ?>'
+            })
+        })
+        const snapToken = await res.json();
+        console.log(snapToken);
+        window.snap.pay(snapToken.token);
+    }
+    getToken();
+}
 </script>
 
 <?= $this->endSection(); ?>
