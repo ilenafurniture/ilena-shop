@@ -565,6 +565,7 @@ class Pages extends BaseController
     {
         $bodyJson = $this->request->getBody();
         $body = json_decode(base64_decode(json_decode($bodyJson, true)['content']), true);
+        // return $this->response->setJSON($body, false);
         if ($body['code'] != ':ilenafur') {
             return $this->response->setJSON([
                 'token' => 'gagal'
@@ -581,7 +582,7 @@ class Pages extends BaseController
         $itemDetails = [];
         if (!empty($keranjang)) {
             foreach ($keranjang as $ind => $element) {
-                $produknya = $this->barangModel->getBarang($element['id']);
+                $produknya = $this->barangModel->getBarang($element['id_barang']);
                 $persen = (100 - $produknya['diskon']) / 100;
                 $hasil = round($persen * $produknya['harga']);
                 $subtotal += $hasil * (int)$element['jumlah'];
