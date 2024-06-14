@@ -9,60 +9,84 @@
                 Rincian Pembayaran</a>
         </h5>
         <div class="my-4">
-            <h4 style="letter-spacing: -1px">Informasi pembeli</h4>
-            <hr>
-            <div class="d-flex">
-                <div style="flex:1" class="my-2">
-                    <p class="fw-normal">Nama</p>
-                    <p class="fw-normal">No Handphone</p>
-                    <p class="fw-normal">Email</p>
-                    <p class="fw-normal">Alamat</p>
+            <div class="container-pembayaran mb-1">
+                <div class="item-pembayaran" data-bs-toggle="collapse" href="#collapseExample3" aria-expanded="true"
+                    aria-controls="collapseExample3">
+                    Informasi barang
                 </div>
-                <div style="flex:4" class="my-2">
-                    <p class="fw-bold">: <?= $user['nama'] ?></p>
-                    <p class="fw-bold">: <?= $user['no_hp'] ?></p>
-                    <p class="fw-bold">: <?= $user['email'] ?></p>
-                    <p class="fw-bold">: <?= $user['alamat'] ?></p>
+                <div class="collapse py-2 show" id="collapseExample3">
+                    <hr>
+                    <div class="d-flex">
+                        <div style="flex:1" class="my-2">
+                            <p class="fw-normal">Nama</p>
+                            <p class="fw-normal">No Handphone</p>
+                            <p class="fw-normal">Email</p>
+                            <p class="fw-normal">Alamat</p>
+                        </div>
+                        <div style="flex:4" class="my-2">
+                            <p class="fw-bold">: <?= $user['nama'] ?></p>
+                            <p class="fw-bold">: <?= $user['no_hp'] ?></p>
+                            <p class="fw-bold">: <?= $user['email'] ?></p>
+                            <p class="fw-bold">: <?= $user['alamat'] ?></p>
+                        </div>
+                    </div>
+                    <hr>
                 </div>
             </div>
-            <hr>
-            <h4 style="letter-spacing: -1px">Informasi barang</h4>
-            <hr>
-            <?php foreach ($keranjang as $index_k => $k) { ?>
-            <div class="d-flex gap-3 m-2">
-                <img src="<?= $k['src_gambar'] ?>" style="width:100px; height:100px; border-radius:8px;"
-                    alt=" gambar-produk">
-                <div class="d-flex gap-2">
-                    <div class="my-2">
-                        <p class="m-0 fw-normal">Nama</p>
-                        <p class="m-0 fw-normal">Varian</p>
-                        <p class="m-0 fw-normal">Jumlah</p>
-                    </div>
-                    <div class="my-2">
-                        <p class="m-0 fw-bold">: <?= $k['detail']['nama'] ?></p>
-                        <p class="m-0 fw-bold">: <?= $k['varian'] ?></p>
-                        <p class="m-0 fw-bold">: <?= $k['jumlah'] ?> Buah</p>
-                    </div>
-                </div>
-            </div>
-            <?php } ?>
 
-            <hr>
-            <h4 style="letter-spacing: -1px">Informasi kurir</h4>
-            <hr>
-            <div class="d-flex">
-                <div style="flex:1" class="my-2">
-                    <p class="fw-normal">Expedisi</p>
-                    <p class="fw-normal">Paket kurir</p>
-                    <p class="fw-normal">Estimasi</p>
+            <div class="container-pembayaran mb-1">
+                <div class="item-pembayaran" data-bs-toggle="collapse" href="#collapseExample2" aria-expanded="true"
+                    aria-controls="collapseExample2">
+                    Informasi barang
                 </div>
-                <div style="flex:4" class="my-2">
-                    <p class="fw-bold">: <?= strtoupper($kurir['nama']) ?></p>
-                    <p class="fw-bold">: <?= $kurir['deskripsi'] ?></p>
-                    <p class="fw-bold">: <?= $kurir['estimasi'] ?> Hari</p>
+                <div class="collapse py-2 show" id="collapseExample2">
+                    <hr>
+                    <?php foreach ($keranjang as $index_k => $k) { ?>
+                    <div class="d-flex gap-3 m-2">
+                        <img src="<?= $k['src_gambar'] ?>" style="width:100px; height:100px; border-radius:8px;"
+                            alt=" gambar-produk">
+                        <div class="d-flex gap-2">
+                            <div class="my-2">
+                                <p class="m-0 fw-normal">Nama</p>
+                                <p class="m-0 fw-normal">Varian</p>
+                                <p class="m-0 fw-normal">Jumlah</p>
+                            </div>
+                            <div class="my-2">
+                                <p class="m-0 fw-bold">: <?= $k['detail']['nama'] ?></p>
+                                <p class="m-0 fw-bold">: <?= $k['varian'] ?></p>
+                                <p class="m-0 fw-bold">: <?= $k['jumlah'] ?> Buah</p>
+                            </div>
+                        </div>
+                    </div>
+                    <?php } ?>
+
+                    <hr>
                 </div>
             </div>
-            <hr>
+
+            <div class="container-pembayaran mb-1">
+                <div class="item-pembayaran" data-bs-toggle="collapse" href="#collapseExample1" aria-expanded="true"
+                    aria-controls="collapseExample1">
+                    Informasi Kurir
+                </div>
+                <div class="collapse py-2 show" id="collapseExample1">
+                    <hr>
+                    <div class="d-flex">
+                        <div style="flex:1" class="my-2">
+                            <p class="fw-normal">Expedisi</p>
+                            <p class="fw-normal">Paket kurir</p>
+                            <p class="fw-normal">Estimasi</p>
+                        </div>
+                        <div style="flex:4" class="my-2">
+                            <p class="fw-bold">: <?= strtoupper($kurir['nama']) ?></p>
+                            <p class="fw-bold">: <?= $kurir['deskripsi'] ?></p>
+                            <p class="fw-bold">: <?= $kurir['estimasi'] ?> Hari</p>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+
         </div>
     </div>
     <div class="tigapuluh-ke-seratus">
