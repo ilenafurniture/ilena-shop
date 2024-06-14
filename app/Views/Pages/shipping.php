@@ -6,7 +6,7 @@
                 style="text-decoration: none;">Alamat</a> >
             <a class="mx-3 text-dark fw-bold" style="text-decoration: none;">Kurir</a> > <a class="mx-3 text-secondary"
                 style="text-decoration: none;">
-                Pembayaran</a>
+                Rincian Pembayaran</a>
         </h5>
         <div class="container-kurir my-4">
             <?php foreach ($kurir as $index_k => $k) { ?>
@@ -64,7 +64,7 @@
                 </p>
             </div>
             <a id="btn-payment" <?= count($alamat) > 0 ? 'href="/payment/0"' : '' ?>
-                class="btn-default-merah <?= count($alamat) > 0 ? '' : 'disabled' ?> w-100 mt-4 text-center">Pilih
+                class="btn-default-merah <?= count($alamat) > 0 ? '' : 'disabled' ?> w-100 mt-4 text-center">Rincian
                 Pembayaran</a>
         </div>
     </div>
