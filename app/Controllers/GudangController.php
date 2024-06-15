@@ -67,7 +67,6 @@ class GudangController extends BaseController
         foreach ($pesanan as $ind_p => $p) {
             $pesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
             $pesanan[$ind_p]['items'] = json_decode($p['items'], true);
-            $pesanan[$ind_p]['alamat'] = json_decode($p['alamat'], true);
             $pesanan[$ind_p]['kurir'] = json_decode($p['kurir'], true);
         }
         $data = [
@@ -153,12 +152,17 @@ class GudangController extends BaseController
         }
     }
 
-    public function suratJalan()
+    public function suratJalan($id_midtrans)
     {
+        $pemesanan = $this->pemesananModel->getPemesanan($id_midtrans);
+        if ($pemesanan['status_print'] != 'siap') {
+            session()->setFlashdata('msg_status_print', 'Surat belum bisa atau sudah di cetak');
+            return redirect()->to('/gudang/listorder');
+        }
         $data = [
             'title' => 'Surat Jalan',
+            'pemesanan' => $pemesanan
         ];
-
         return view('gudang/suratJalan', $data);
     }
 }

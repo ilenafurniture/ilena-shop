@@ -6,7 +6,7 @@
                 Nama
             </p>
             <p class="fw-bold m-0">
-                Imanuel Ahmat
+                <?= ucwords(str_replace("_", " ", substr(session()->get('email'), 0, -10))); ?>
             </p>
         </div>
         <div class="d-flex justify-content-between py-1">

@@ -17,8 +17,23 @@
                         <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
                         <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
                         <a href="/account" class="btn"><i class="material-icons text-light">person_outline</i></a>
-                    <?php } else { ?>
-                        <a href="/listproduct" class="btn"><i class="material-icons text-light">people</i></a>
+                    <?php } else if (session()->get('role') == '1') { ?>
+                        <a href="/admin/product" class="btn d-flex align-items-center">
+                            <i class="material-icons text-light">chevron_left</i>
+                            <p class="m-0 text-light">Admin</p>
+                        </a>
+                        <a href="/logout" class="btn" style="padding-right: 0"><i class="material-icons text-light">exit_to_app</i></a>
+                    <?php } else if (session()->get('role') == '2') { ?>
+                        <a href="/gudang/listorder" class="btn d-flex align-items-center">
+                            <i class="material-icons text-light">chevron_left</i>
+                            <p class="m-0 text-light">Gudang</p>
+                        </a>
+                        <a href="/logout" class="btn" style="padding-right: 0"><i class="material-icons text-light">exit_to_app</i></a>
+                    <?php } else if (session()->get('role') == '3') { ?>
+                        <a href="/market/product" class="btn d-flex align-items-center">
+                            <i class="material-icons text-light">chevron_left</i>
+                            <p class="m-0 text-light">Marketplace</p>
+                        </a>
                         <a href="/logout" class="btn" style="padding-right: 0"><i class="material-icons text-light">exit_to_app</i></a>
                     <?php } ?>
                 <?php } else { ?>

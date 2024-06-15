@@ -7,7 +7,7 @@
             <p style="color: grey;"><?= count($produk); ?> Produk</p>
         </div>
         <div>
-            <a href="/addproduct" class="btn-default-merah">Tambah Produk</a>
+            <a href="/admin/addproduct" class="btn-default-merah">Tambah Produk</a>
         </div>
     </div>
     <div class="container-table">
@@ -33,8 +33,8 @@
                     </div>
                 </div>
                 <div style="flex: 1;">
-                    <a class="btn" href="/editproduct/<?= $p['id']; ?>"><i class="material-icons">edit</i></a>
-                    <a class="btn" href="/deleteproduct/<?= $p['id']; ?>"><i class="material-icons" style="color: var(--merah);">delete</i></a>
+                    <a class="btn" href="/admin/editproduct/<?= $p['id']; ?>"><i class="material-icons">edit</i></a>
+                    <a class="btn" href="/admin/deleteproduct/<?= $p['id']; ?>"><i class="material-icons" style="color: var(--merah);">delete</i></a>
                 </div>
             </div>
         <?php } ?>
@@ -44,7 +44,7 @@
     function ubahStatus(id_produk) {
         console.log(id_produk)
         async function fetchUpdate() {
-            const updateStatus = await fetch('/activeproduct/' + id_produk);
+            const updateStatus = await fetch('/admin/activeproduct/' + id_produk);
         }
         fetchUpdate();
     }

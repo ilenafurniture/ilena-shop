@@ -20,7 +20,7 @@ class GambarController extends BaseController
 
     public function tampilGambarBarang($idBarang)
     {
-        $gambar = $this->barangModel->getBarang($idBarang)['gambar'];
+        $gambar = $this->barangModel->getBarangAdmin($idBarang)['gambar'];
         $this->response->setHeader('Content-Type', 'image/webp');
         echo $gambar;
     }
