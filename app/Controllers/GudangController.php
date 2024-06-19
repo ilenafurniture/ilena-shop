@@ -63,7 +63,7 @@ class GudangController extends BaseController
 
     public function listOrderAfter()
     {
-        $pesanan = $this->pemesananModel->where(['status_print' => 'siap'])->findAll();
+        $pesanan = $this->pemesananModel->where(['status_print' => 'siap'])->orWhere(['status_print' => 'sudah print'])->findAll();
         foreach ($pesanan as $ind_p => $p) {
             $pesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
             $pesanan[$ind_p]['items'] = json_decode($p['items'], true);
@@ -159,9 +159,46 @@ class GudangController extends BaseController
             session()->setFlashdata('msg_status_print', 'Surat belum bisa atau sudah di cetak');
             return redirect()->to('/gudang/listorder');
         }
+
+        $this->pemesananModel->where(['id_midtrans' => $id_midtrans])->set(['status_print' => 'sudah print'])->update();
+        $d = strtotime("+7 hours");
+        $tanggal = date("Y-m-d H:i:s", $d);
+        $tanggalNoStrip = date("YmdHis", $d);
+        $items = [];
+        foreach (json_decode($pemesanan['items'], true) as $p) {
+            if ($p['name'] != 'Biaya Ongkir' && $p['name'] != 'Biaya Admin') {
+                $kartuStok_Curr = $this->kartuStokModel->getKartu($p['id'], $pemesanan['id_midtrans'] . $p['id'] . $tanggalNoStrip);
+                if (!$kartuStok_Curr) $saldo = 0;
+                else $saldo = $kartuStok_Curr['saldo'];
+                $this->kartuStokModel->insert([
+                    'id_barang' => $p['id'],
+                    'tanggal' => $tanggal,
+                    'keterangan' => $pemesanan['id_midtrans'] . $p['id'] . $tanggalNoStrip,
+                    'debit' => 0,
+                    'kredit' => $p['quantity'],
+                    'saldo' => (int)$saldo - (int)$p['quantity'],
+                ]);
+                array_push($items, $p);
+            }
+        }
+
+        $pemesanan['items'] = json_decode($pemesanan['items'], true);
+        $pemesanan['kurir'] = json_decode($pemesanan['kurir'], true);
+        $pemesanan['data_mid'] = json_decode($pemesanan['data_mid'], true);
+        foreach ($pemesanan['items'] as $ind_i => $item) {
+            if ($item['name'] != 'Biaya Ongkir' && $item['name'] != 'Biaya Admin') {
+                $varianItem = rtrim(explode("(", $item['name'])[1], ")");
+                $produkCurr = $this->barangModel->getBarang($item['id']);
+                $dimensi = json_decode($produkCurr['deskripsi'], true)['dimensi']['asli'];
+                $pemesanan['items'][$ind_i]['name'] = $produkCurr['nama'] . ", " . $dimensi['panjang'] . "x" . $dimensi['lebar'] . "x" . $dimensi['tinggi'] . "<br>" . $varianItem;
+            }
+        }
+        $bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
         $data = [
             'title' => 'Surat Jalan',
-            'pemesanan' => $pemesanan
+            'pemesanan' => $pemesanan,
+            'tanggal' => date("d", $d) . " " . $bulan[(int)date("m", $d)] . " " . date("Y", $d),
+            'items' => $items
         ];
         return view('gudang/suratJalan', $data);
     }

@@ -19,7 +19,7 @@
                 <div style="flex: 2;"><?= $tgl; ?></div>
                 <div style="flex: 2;"><?= $p['nama']; ?></div>
                 <div style="flex: 1;">
-                    <a class="btn-default" href="/gudang/suratjalan/<?= $p['id_midtrans']; ?>">Print</a>
+                    <a class="btn-default" href="/gudang/suratjalan/<?= $p['id_midtrans']; ?>"><?= $p['status_print'] == 'siap' ? 'Print' : 'Ajukan print'; ?></a>
                 </div>
             </div>
         <?php } ?>

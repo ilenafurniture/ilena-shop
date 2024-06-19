@@ -196,8 +196,13 @@ class AdminController extends BaseController
         $pesanan = $this->pemesananModel->getPemesanan();
         foreach ($pesanan as $ind_p => $p) {
             $pesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
+            if (isset($pesanan[$ind_p]['data_mid']['custom_field1']))
+                $pesanan[$ind_p]['data_mid']['custom_field1'] = base64_encode($pesanan[$ind_p]['data_mid']['custom_field1']);
+            if (isset($pesanan[$ind_p]['data_mid']['custom_field2']))
+                $pesanan[$ind_p]['data_mid']['custom_field2'] = base64_encode($pesanan[$ind_p]['data_mid']['custom_field2']);
+            if (isset($pesanan[$ind_p]['data_mid']['custom_field3']))
+                $pesanan[$ind_p]['data_mid']['custom_field3'] = base64_encode($pesanan[$ind_p]['data_mid']['custom_field3']);
             $pesanan[$ind_p]['items'] = json_decode($p['items'], true);
-            $pesanan[$ind_p]['alamat'] = json_decode($p['alamat'], true);
             $pesanan[$ind_p]['kurir'] = json_decode($p['kurir'], true);
         }
         $data = [
@@ -223,22 +228,22 @@ class AdminController extends BaseController
             $pemesananGudang = $this->pemesananGudangModel->where([
                 'id_pesanan' => $p['id_midtrans'],
             ])->first();
-            if(!$pemesananGudang){
-                $items = json_decode($p['items'],true);
-                $bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
-                $data_mid = json_decode($p['data_mid'],true);
-                $data_mid['transaction_time'] = date('d',strtotime($data_mid['transaction_time'])).' '.$bulan[date('m',strtotime($data_mid['transaction_time'])) - 1].' '.date('Y',strtotime($data_mid['transaction_time']));
-                $kurir = json_decode($p['kurir'],true);
+            if (!$pemesananGudang) {
+                $items = json_decode($p['items'], true);
+                $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+                $data_mid = json_decode($p['data_mid'], true);
+                $data_mid['transaction_time'] = date('d', strtotime($data_mid['transaction_time'])) . ' ' . $bulan[date('m', strtotime($data_mid['transaction_time'])) - 1] . ' ' . date('Y', strtotime($data_mid['transaction_time']));
+                $kurir = json_decode($p['kurir'], true);
 
                 $pemesanan_curr = $p;
                 $pemesanan_curr['items'] = $items;
                 $pemesanan_curr['data_mid'] = $data_mid;
                 $pemesanan_curr['kurir'] = $kurir;
 
-                array_push($pemesananBelumKonfirmasi,$pemesanan_curr);
+                array_push($pemesananBelumKonfirmasi, $pemesanan_curr);
             }
         }
-        
+
         $data = [
             'title' => 'Konfirmasi Marketplace',
             'val' => [
@@ -250,7 +255,8 @@ class AdminController extends BaseController
         return view('admin/marketplace', $data);
     }
 
-    public function confirmMarketplace($id){
+    public function confirmMarketplace($id)
+    {
         $pemesanan = $this->pemesananModel->where([
             'id' => $id,
         ])->first();
@@ -260,7 +266,7 @@ class AdminController extends BaseController
                 for ($x = 1; $x <= (int)$i['quantity']; $x++) {
                     $this->pemesananGudangModel->insert([
                         'id_pesanan' => $pemesanan['id_midtrans'],
-                        'tanggal' => json_decode($pemesanan['data_mid'],true)['transaction_time'],
+                        'tanggal' => json_decode($pemesanan['data_mid'], true)['transaction_time'],
                         'nama' => $i['name'],
                         'id_barang' => $i['id'],
                         'packed' => false

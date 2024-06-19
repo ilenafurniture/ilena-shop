@@ -82,7 +82,7 @@
                         </div>
                         <div style="flex: 5">
                             <p class="mb-0">
-                                <?= $transaksi['alamat']['alamat_lengkap']; ?>
+                                <?= $transaksi['alamat']; ?>
                             </p>
                         </div>
                     </div>

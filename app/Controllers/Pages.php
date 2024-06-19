@@ -1447,11 +1447,13 @@ class Pages extends BaseController
             session()->set($ses_data);
             return redirect()->to('/admin/product');
         } else if ($getUser['role'] == '2') {
+            $nama = ucwords(str_replace("_", " ", substr($getUser['email'], 0, -10)));
             $ses_data = [
                 'active' => '1',
                 'email' => $getUser['email'],
                 'role' => $getUser['role'],
-                'isLogin' => true
+                'isLogin' => true,
+                'nama' => $nama
             ];
             session()->set($ses_data);
             return redirect()->to('/gudang/listorder');

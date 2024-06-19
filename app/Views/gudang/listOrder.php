@@ -6,11 +6,6 @@
             <div>
                 <h6 class="text-center">Scan barang yang telah di packing disini:</h6>
                 <div class="pemberitahuan my-1 d-none" role="alert" id="alert-no-correct">Code tidak sesuai</div>
-                <?php if ($val['msg']) { ?>
-                    <div class="pemberitahuan my-1" role="alert">
-                        <?= $val['msg']; ?>
-                    </div>
-                <?php } ?>
                 <div class="d-flex flex-column justify-content-center align-items-center">
                     <div style="width: 500px" id="reader"></div>
                 </div>
@@ -23,6 +18,11 @@
     <div class="d-flex justify-content-between gap-4">
         <div style="flex:1;">
             <h6 class="text-center mb-2">Pesanan belum diproses</h6>
+            <?php if ($val['msg']) { ?>
+                <div class="pemberitahuan my-1" role="alert">
+                    <?= $val['msg']; ?>
+                </div>
+            <?php } ?>
             <div class="container-table">
                 <div class="header-table border-buttom border-dark">
                     <div style="flex: 1;">No</div>

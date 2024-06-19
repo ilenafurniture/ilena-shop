@@ -16,16 +16,17 @@
     <div class="print">
         <div class="d-flex justify-content-between">
             <div>
-                <img src="<?= base_url('img/LogoIlena.png'); ?>" alt="Logo CBM" style="width:80mm; height:fit-content">
+                <img src="<?= base_url('img/Logo CBM.png'); ?>" alt="Logo CBM" style="width:20mm; height:fit-content">
             </div>
             <div>
                 <img src="<?= base_url('img/LogoIlena.png'); ?>" alt="logo Ilena" style="width:80mm; height:fit-content">
                 <p class="m-0">Kepadad Yth.</p>
-                <p class="m-0">Nama:</p>
-                <p class="m-0">Jl. mawar, kedung pank,brigin</p>
+                <p class="m-0">Nama: <?= $pemesanan['nama']; ?></p>
+                <p class="m-0"><?= $pemesanan['alamat']; ?></p>
             </div>
         </div>
-        <p class="m-0">SURAT JALAN NO. 0001/06/2024</p>
+        <?php $tglNoSrtJln = date("/m/Y", strtotime($pemesanan['data_mid']['transaction_time'])); ?>
+        <p class="m-0">SURAT JALAN NO. <?= $pemesanan['id_midtrans']; ?><?= $tglNoSrtJln; ?></p>
         <div class="w-100 border-bottom pb-2">
             <div class="w-100 d-flex border-bottom border-top border-dark py-2">
                 <div style="flex:1;">
@@ -41,24 +42,25 @@
                     <p class="m-0">Jumlah</p>
                 </div>
             </div>
-            <div class="w-100 d-flex">
-                <div style="flex:1;">
-                    <p class="m-0">1</p>
+            <?php foreach ($pemesanan['items'] as $ind_i => $i) { ?>
+                <div class="w-100 d-flex">
+                    <div style="flex:1;">
+                        <p class="m-0"><?= $ind_i + 1; ?></p>
+                    </div>
+                    <div style="flex:2;">
+                        <p class="m-0"><?= $i['id']; ?></p>
+                    </div>
+                    <div style="flex:4;">
+                        <p class="m-0"><?= $i['name']; ?></p>
+                    </div>
+                    <div style="flex:1;">
+                        <p class="m-0"><?= $i['quantity']; ?> Unit</p>
+                    </div>
                 </div>
-                <div style="flex:2;">
-                    <p class="m-0">000011111</p>
-                </div>
-                <div style="flex:4;">
-                    <p class="m-0">Anak ayam uk, 140x50x40</p>
-                    <p class="m-0">Putih</p>
-                </div>
-                <div style="flex:1;">
-                    <p class="m-0">1 Unit</p>
-                </div>
-            </div>
+            <?php } ?>
         </div>
         <p class="mb-3">Keterangan: permintaan harus selesai di pukul 17:00 Wib</p>
-        <p class="m-0">Kendal, 17 Juni 2024</p>
+        <p class="m-0">Kendal, <?= $tanggal; ?></p>
         <div class="d-flex mb-5">
             <div style="flex:1;">
                 <p class="m-0">Dibuat Oleh</p>
@@ -73,22 +75,19 @@
         </div>
         <div class="d-flex">
             <div style="flex:1;">
-                <p class="m-0">galih Suks</p>
+                <p class="m-0"><?= session()->get('nama'); ?></p>
                 <p class="m-0">Nama Terang</p>
             </div>
             <div style="flex:1;">
-                <p class="m-0">Udin</p>
+                <p class="m-0">‎ </p>
                 <p class="m-0">Nama terang</p>
             </div>
             <div style="flex:1;">
-                <p class="m-0">Aditya</p>
+                <p class="m-0"><?= $pemesanan['nama']; ?></p>
                 <p class="m-0">Nama Terang</p>
             </div>
         </div>
     </div>
-    <script>
-        window.print();
-    </script>
 </body>
 
 </html>
