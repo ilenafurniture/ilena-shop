@@ -8,6 +8,7 @@ use App\Models\KoleksiModel;
 use App\Models\JenisModel;
 use App\Models\KartuStokModel;
 use App\Models\PemesananGudangModel;
+use App\Models\AjukanPrintModel;
 
 class GudangController extends BaseController
 {
@@ -17,6 +18,7 @@ class GudangController extends BaseController
     protected $koleksiModel;
     protected $jenisModel;
     protected $kartuStokModel;
+    protected $ajukanPrint;
     protected $session;
     public function __construct()
     {
@@ -26,6 +28,7 @@ class GudangController extends BaseController
         $this->koleksiModel = new KoleksiModel();
         $this->jenisModel = new JenisModel();
         $this->kartuStokModel = new KartuStokModel();
+        $this->ajukanPrint = new AjukanPrintModel();
         $this->session = \Config\Services::session();
     }
 
@@ -63,7 +66,7 @@ class GudangController extends BaseController
 
     public function listOrderAfter()
     {
-        $pesanan = $this->pemesananModel->where(['status_print' => 'siap'])->orWhere(['status_print' => 'sudah print'])->findAll();
+        $pesanan = $this->pemesananModel->where(['status_print' => 'siap'])->orWhere(['status_print' => 'sudah print'])->orWhere(['status_print' => 'ajukan'])->findAll();
         foreach ($pesanan as $ind_p => $p) {
             $pesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
             $pesanan[$ind_p]['items'] = json_decode($p['items'], true);
@@ -142,6 +145,9 @@ class GudangController extends BaseController
             ])->findAll();
             if (count($pemesananGudangCurr) == count($pemesananGudangCurr_packed)) {
                 $this->pemesananModel->where(['id_midtrans' => $pesanan['id_pesanan']])->set(['status_print' => 'siap'])->update();
+                $this->pemesananGudangModel->where([
+                    'id_pesanan' => $pesanan['id_pesanan']
+                ])->delete();
             }
 
             session()->setFlashdata('msg', 'Barang sudah diupdate');
@@ -201,5 +207,20 @@ class GudangController extends BaseController
             'items' => $items
         ];
         return view('gudang/suratJalan', $data);
+    }
+
+    public function ajukanPrint()
+    {
+        $id_midtrans = $this->request->getVar('id_midtrans');
+        $this->pemesananModel->where(['id_midtrans' => $id_midtrans])->set(['status_print' => 'ajukan'])->update();
+        $d = strtotime('+7 hours');
+        $this->ajukanPrint->insert([
+            'tanggal' => date("Y-m-d", $d),
+            'atas_nama' => session()->get('nama'),
+            'kendala' => $this->request->getVar('kendala'),
+            'id_midtrans' => $id_midtrans
+        ]);
+        session()->setFlashdata('msg', 'Pengajuan print ulang pemesanan ' . $id_midtrans . ' telah dibuat');
+        return redirect()->to('/gudang/listorderafter');
     }
 }

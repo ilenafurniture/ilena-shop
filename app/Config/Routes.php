@@ -78,6 +78,8 @@ $routes->get('/admin/order', 'AdminController::order');
 $routes->get('/admin/reprint', 'AdminController::reprint');
 $routes->get('/admin/marketplace', 'AdminController::marketplace');
 $routes->get('/admin/confirm-mp/(:any)', 'AdminController::confirmMarketplace/$1');
+$routes->get('/admin/accreprint/(:any)', 'AdminController::accReprint/$1');
+$routes->get('/admin/denyreprint/(:any)', 'AdminController::denyReprint/$1');
 
 //GUDANG Controller
 $routes->get('/gudang/listorder', 'GudangController::listOrder');
@@ -88,6 +90,7 @@ $routes->get('/gudang/product', 'GudangController::product');
 $routes->get('/gudang/actionscan/(:any)/(:any)', 'GudangController::actionScan/$1/$2');
 $routes->get('/gudang/actionaddmutasi', 'GudangController::actionAddMutasi');
 $routes->get('/gudang/suratjalan/(:any)', 'GudangController::suratJalan/$1');
+$routes->post('/gudang/ajukanprint', 'GudangController::ajukanPrint');
 
 
 

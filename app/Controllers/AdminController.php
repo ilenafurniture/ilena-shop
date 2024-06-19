@@ -10,6 +10,7 @@ use App\Models\PemesananGudangModel;
 use App\Models\UserModel;
 use App\Models\KoleksiModel;
 use App\Models\JenisModel;
+use App\Models\AjukanPrintModel;
 
 class AdminController extends BaseController
 {
@@ -21,6 +22,7 @@ class AdminController extends BaseController
     protected $pemesananGudangModel;
     protected $koleksiModel;
     protected $jenisModel;
+    protected $ajukanPrintModel;
     protected $session;
     public function __construct()
     {
@@ -32,6 +34,7 @@ class AdminController extends BaseController
         $this->pemesananGudangModel = new PemesananGudangModel();
         $this->koleksiModel = new KoleksiModel();
         $this->jenisModel = new JenisModel();
+        $this->ajukanPrintModel = new AjukanPrintModel();
         $this->session = \Config\Services::session();
     }
     public function listProduct()
@@ -215,10 +218,23 @@ class AdminController extends BaseController
 
     public function reprint()
     {
+        $ajukanPrint = $this->ajukanPrintModel->findAll();
+        $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+        foreach ($ajukanPrint as $ind_a => $a) {
+            $d = strtotime($a['tanggal']);
+            $ajukanPrint[$ind_a]['tanggal'] = date("d", $d) . " " . $bulan[(int)date("m", $d) - 1] . " " . date("Y", $d);
+        }
         $data = [
-            'title' => 'Pengajuan Print Ulang'
+            'title' => 'Pengajuan Print Ulang',
+            'ajukan' => $ajukanPrint
         ];
         return view('admin/reprint', $data);
+    }
+    public function accReprint($id_midtrans)
+    {
+        $this->pemesananModel->where(['id_midtrans' => $id_midtrans])->set(['status_print' => 'siap'])->update();
+        $this->ajukanPrintModel->where(['id_midtrans' => $id_midtrans])->delete();
+        return redirect()->to('/admin/reprint');
     }
     public function marketplace()
     {

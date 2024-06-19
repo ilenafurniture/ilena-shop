@@ -1,5 +1,21 @@
 <?= $this->extend("gudang/layout/template"); ?>
 <?= $this->section("content"); ?>
+<div id="form-ajukan" style="background-color: rgba(0,0,0,0.5); position: fixed; top: 0; left:0; width: 100vw; height: 100svh; z-index: 3;" class="d-none justify-content-center align-items-center">
+    <div class="bg-light p-4" style="border-radius: 1em;">
+        <form action="ajukanprint" method="post">
+            <h1 class="teks-sedangmb-3">Ajuan Print Ulang</h1>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="floatingInput" name="kendala" required>
+                <label for="floatingInput">Kendala</label>
+            </div>
+            <input type="text" class="d-none" name="id_midtrans">
+            <div class="d-flex gap-1">
+                <button class="btn-default" type="submit">Ajukan</button>
+                <button class="btn-default-merah" type="button" onclick="closeAjukan()">Batal</button>
+            </div>
+        </form>
+    </div>
+</div>
 <div style="padding: 2em;">
     <div class="container-table">
         <div class="header-table border-buttom border-dark">
@@ -19,14 +35,20 @@
                 <div style="flex: 2;"><?= $tgl; ?></div>
                 <div style="flex: 2;"><?= $p['nama']; ?></div>
                 <div style="flex: 1;">
-                    <a class="btn-default" href="/gudang/suratjalan/<?= $p['id_midtrans']; ?>"><?= $p['status_print'] == 'siap' ? 'Print' : 'Ajukan print'; ?></a>
+                    <?php if ($p['status_print'] == 'siap') { ?>
+                        <button class="btn-default" onclick="printSuratJalan('<?= $p['id_midtrans']; ?>')">Print</button>
+                    <?php } else if ($p['status_print'] == 'sudah print') { ?>
+                        <button class="btn-default" onclick="openAjukan('<?= $p['id_midtrans']; ?>')">Ajukan print</button>
+                    <?php } else if ($p['status_print'] == 'ajukan') { ?>
+                        <p class="m-0 text-secondary">Proses pengajuaan</p>
+                    <?php } ?>
                 </div>
             </div>
         <?php } ?>
     </div>
 </div>
 
-<div class="container-offcanvas">
+<div class="container-offcanvas" style="z-index: 2;">
     <div class="d-flex justify-content-end mb-2"><button class="btn btn-light" onclick="closeDetail()"><i class="material-icons">close</i></button></div>
     <div style="border-radius: 10px; padding: 1em 1.5em; background-color: whitesmoke;" class="mb-2">
         <h3 style="letter-spacing: -1px;" class="mb-2">Customer</h3>
@@ -90,6 +112,7 @@
     const emailElm = document.getElementById("email");
     const itemElm = document.getElementById("item");
     const containerOffcanvasElm = document.querySelector(".container-offcanvas");
+    const formAjukanElm = document.getElementById('form-ajukan')
 
     function openDetail(indP, event) {
         const pesananSelected = pesanan[indP];
@@ -109,14 +132,35 @@
                 .quantity +
                 '</p><p class="d-block fw-bold m-0 text-center" style="flex: 1; letter-spacing: -1px;">Rp ' +
                 element.price + '</p></div>'
-            // if (element.name != 'Biaya Ongkir' && element.name != 'Biaya Admin') {
-            // }
         });
         containerOffcanvasElm.classList.add("show")
     }
 
     function closeDetail() {
         containerOffcanvasElm.classList.remove("show")
+    }
+
+    function printSuratJalan(idMid) {
+        console.log(idMid);
+        var printWindow = window.open('https://ilenafurniture.com/gudang/suratjalan/'.idMid, '_blank');
+        printWindow.addEventListener('load', function() {
+            printWindow.print();
+            printWindow.onafterprint = function() {
+                printWindow.close();
+            };
+        });
+    }
+
+    function openAjukan(idMid) {
+        console.log(idMid)
+        document.querySelector('input[name="id_midtrans"]').value = idMid
+        formAjukanElm.classList.remove('d-none');
+        formAjukanElm.classList.add('d-flex');
+    }
+
+    function closeAjukan() {
+        formAjukanElm.classList.add('d-none');
+        formAjukanElm.classList.remove('d-flex');
     }
 </script>
 
