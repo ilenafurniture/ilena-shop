@@ -616,8 +616,8 @@ class Pages extends BaseController
 
         $auth = base64_encode("SB-Mid-server-3M67g25LgovNPlwdS4WfiMsh" . ":");
         $pesananke = $this->pemesananModel->orderBy('id', 'desc')->first();
-        $idFix = "ILContoh" . (sprintf("%08d", $pesananke ? ((int)$pesananke['id'] + 1) : 1));
-        $randomId = "ILContoh" . rand();
+        $idFix = "IL" . (sprintf("%08d", $pesananke ? ((int)$pesananke['id'] + 1) : 1));
+        $randomId = "ILCon" . rand();
         $customField = json_encode([
             'e' => $email,
             'n' => $nama,
@@ -1156,6 +1156,149 @@ class Pages extends BaseController
     }
     public function order($id_order = false)
     {
+        $pemesanan = $this->pemesananModel->getPemesanan($id_order);
+        $carapembayaran = [
+            'mandiri' => [
+                [
+                    'nama' => 'Livin by Mandiri',
+                    'isi' => '1. Pilih bayar pada menu utama.<br>
+                                2. Pilih Ecommerce.<br>
+                                3. Pilih Midtrans di bagian penyedia jasa.<br>
+                                4. Masukkan nomor virtual account pada bagian kode bayar.<br>
+                                5. Klik lanjutkan untuk konfirmasi.<br>
+                                6. Pembayaran selesai.'
+                ],
+                [
+                    'nama' => 'ATM Mandiri',
+                    'isi' => '1. Pilih bayar/beli pada menu utama.<br>
+                                2. Pilih lainnya.<br>
+                                3. Pilih multi payment.<br>
+                                4. Masukkan kode perusahaan Midtrans 70012.<br>
+                                5. Masukkan kode pembayaran, lalu konfirmasi.<br>
+                                6. Pembayaran selesai.'
+                ],
+                [
+                    'nama' => 'Mandiri Internet Banking',
+                    'isi' => '1. Pilih bayar pada menu utama.<br>
+                                2. Pilih multi payment.<br>
+                                3. Pilih dari rekening.<br>
+                                4. Pilih Midtrans di bagian penyedia jasa.<br>
+                                5. Masukkan kode pembayaran, lalu konfirmasi.<br>
+                                6. Pembayaran selesai.'
+                ],
+            ],
+            'bni' => [
+                [
+                    'nama' => 'ATM BNI',
+                    'isi' => '1. Pilih menu lain pada menu utama.<br>
+                                2. Pilih transfer.<br>
+                                3. Pilih ke rekening BNI.<br>
+                                4. Masukkan nomor rekening pembayaran.<br>
+                                5. Masukkan jumlah yang akan dibayar, lalu konfirmasi.<br>
+                                6. Pembayaran berhasil.<br>
+                                7. Internet Banking'
+                ],
+                [
+                    'nama' => 'BNI Internet Banking',
+                    'isi' => '1. Pilih transaksi, lalu info & administrasi transfer.<br>
+                                2. Pilih atur rekening tujuan.<br>
+                                3. Masukkan informasi rekening, lalu konfirmasi.<br>
+                                4. Pilih transfer, lalu transfer ke rekening BNI.<br>
+                                5. Masukkan detail pembayaran, lalu konfirmasi.<br>
+                                6. Pembayaran berhasil.'
+                ],
+                [
+                    'nama' => 'BNI Mobile Banking',
+                    'isi' => '1. Pilih transfer.<br>
+                                2. Pilih virtual account billing.<br>
+                                3. Pilih rekening debit yang akan digunakan.<br>
+                                4. Masukkan nomor virtual account, lalu konfirmasi.<br>
+                                5. Pembayaran berhasil.'
+                ],
+            ],
+            'bri' => [
+                [
+                    'nama' => 'ATM BRI',
+                    'isi' => '1. Pilih transaksi lainnya pada menu utama.<br>
+                                2. Pilih pembayaran.<br>
+                                3. Pilih lainnya.<br>
+                                4. Pilih BRIVA.<br>
+                                5. Masukkan nomor BRIVA, lalu konfirmasi.<br>
+                                6. Pembayaran berhasil.'
+                ],
+                [
+                    'nama' => 'IB BRI',
+                    'isi' => '1. Pilih pembayaran & pembelian.<br>
+                                2. Pilih BRIVA.<br>
+                                3. Masukkan nomor BRIVA, lalu konfirmasi.<br>
+                                4. Pembayaran berhasil.'
+                ],
+                [
+                    'nama' => 'BRImo',
+                    'isi' => '1. Pilih pembayaran.<br>
+                                2. Pilih BRIVA.<br>
+                                3. Masukkan nomor BRIVA, lalu konfirmasi.<br>
+                                4. Pembayaran berhasil.'
+                ],
+            ],
+            'permata' => [
+                [
+                    'nama' => 'ATM Permata/ALTO',
+                    'isi' => '1. Pilih transaksi lainnya pada menu utama.<br>
+                                2. Pilih pembayaran.<br>
+                                3. Pilih pembayaran lainnya.<br>
+                                4. Pilih virtual account.<br>
+                                5. Masukkan nomor virtual account Permata, lalu konfirmasi.<br>
+                                6. Pembayaran berhasil.'
+                ],
+            ],
+            'cimb' => [
+                [
+                    'nama' => 'ATM CIMB Niaga',
+                    'isi' => '1. Pilih pembayaran pada menu utama.<br>
+                                2. Pilih virtual account.<br>
+                                3. Masukkan nomor virtual account, lalu konfirmasi.<br>
+                                4. Pembayaran selesai.'
+                ],
+                [
+                    'nama' => 'OCTO Clicks',
+                    'isi' => '1. Pilih pembayaran tagihan pada menu utama.<br>
+                                2. Pilih mobile rekening virtual.<br>
+                                3. Masukkan nomor virtual account, lalu klik lanjut untuk verifikasi detail.<br>
+                                4. Pilih kirim OTP untuk lanjut.<br>
+                                5. Masukkan OTP yang dikirimkan ke nomor HP Anda, lalu konfirmasi.<br>
+                                6. Pembayaran selesai.'
+                ],
+                [
+                    'nama' => 'OCTO Mobile',
+                    'isi' => '1. Pilih menu transfer.<br>
+                                2. Pilih transfer to other CIMB Niaga account.<br>
+                                3. Pilih sumber dana: CASA atau rekening ponsel.<br>
+                                4. Masukkan nomor virtual account.<br>
+                                5. Masukkan jumlah yang akan dibayar.<br>
+                                6. Ikuti instruksi untuk menyelesaikan pembayaran.<br>
+                                7. Pembayaran selesai.'
+                ],
+            ],
+            'qris' => [
+                [
+                    'nama' => 'QRIS',
+                    'isi' => '1. Buka aplikasi yang mendukung pembayaran dengan QRIS.<br>
+                                2. Download atau pindai QRIS pada layar.<br>
+                                3. Konfirmasi pembayaran pada aplikasi.<br>
+                                4. Pembayaran berhasil.'
+                ],
+            ],
+            'gopay' => [
+                [
+                    'nama' => 'GoPay',
+                    'isi' => '1. Klik Bayar sekarang.<br>
+                                2. Aplikasi Gojek atau GoPay akan terbuka.<br>
+                                3. Konfirmasi pembayaran di aplikasi Gojek atau GoPay.<br>
+                                4. Pembayaran berhasil.'
+                ],
+            ],
+        ];
         if ($id_order) {
             $pemesanan = $this->pemesananModel->getPemesanan($id_order);
             $dataMid = json_decode($pemesanan['data_mid'], true);
@@ -1180,6 +1323,13 @@ class Pages extends BaseController
                             $biller_code = $dataMid['biller_code'];
                             $bank = "mandiri";
                             break;
+                        case 'qris':
+                            $va_number = 'https://api.midtrans.com/v2/qris/' . $dataMid['transaction_id'] . '/qr-code';
+                            $bank = "qris";
+                            break;
+                        default:
+                            $va_number = "";
+                            break;
                     }
 
                     $waktuExpire = strtotime($dataMid['expiry_time']);
@@ -1195,25 +1345,40 @@ class Pages extends BaseController
                         'va_number' => $va_number,
                         'biller_code' => $biller_code,
                         'bank' => $bank,
+                        'items' => $items,
                         'waktu' => $waktu,
+                        'caraPembayaran' => $carapembayaran[$bank],
                         'waktuExpire' => date("d", $waktuExpire) . " " . $bulan[(int)date("m", $waktuExpire) - 1] . " " . date("Y H:i:s", $waktuExpire)
                     ];
                     return view('pages/progresspay', $data);
                     break;
                 case 'Proses':
+                    $biller_code = "";
                     $bank = "";
                     switch ($dataMid['payment_type']) {
                         case 'bank_transfer':
                             if (isset($dataMid['permata_va_number'])) {
+                                $va_number = $dataMid['permata_va_number'];
                                 $bank = "permata";
                             } else {
+                                $va_number = $dataMid['va_numbers'][0]['va_number'];
                                 $bank = $dataMid['va_numbers'][0]['bank'];
                             }
                             break;
                         case 'echannel':
+                            $va_number = $dataMid['bill_key'];
+                            $biller_code = $dataMid['biller_code'];
                             $bank = "mandiri";
                             break;
+                        case 'qris':
+                            $va_number = 'https://api.midtrans.com/v2/qris/' . $dataMid['transaction_id'] . '/qr-code';
+                            $bank = "qris";
+                            break;
+                        default:
+                            $va_number = "";
+                            break;
                     }
+
                     $data = [
                         'title' => 'Pembayaran Sukes',
                         'pemesanan' => $pemesanan,
@@ -1221,11 +1386,92 @@ class Pages extends BaseController
                         'kurir' => $kurir,
                         'items' => $items,
                         'bank' => $bank,
+                        'va_number' => $va_number,
+                        'biller_code' => $biller_code,
+                        'caraPembayaran' => $carapembayaran[$bank],
                     ];
                     return view('pages/successpay', $data);
                     break;
+                case 'Dikirim':
+                    $biller_code = "";
+                    $bank = "";
+                    switch ($dataMid['payment_type']) {
+                        case 'bank_transfer':
+                            if (isset($dataMid['permata_va_number'])) {
+                                $va_number = $dataMid['permata_va_number'];
+                                $bank = "permata";
+                            } else {
+                                $va_number = $dataMid['va_numbers'][0]['va_number'];
+                                $bank = $dataMid['va_numbers'][0]['bank'];
+                            }
+                            break;
+                        case 'echannel':
+                            $va_number = $dataMid['bill_key'];
+                            $biller_code = $dataMid['biller_code'];
+                            $bank = "mandiri";
+                            break;
+                        case 'qris':
+                            $va_number = 'https://api.midtrans.com/v2/qris/' . $dataMid['transaction_id'] . '/qr-code';
+                            $bank = "qris";
+                            break;
+                        default:
+                            $va_number = "";
+                            break;
+                    }
+
+                    $data = [
+                        'title' => 'Pembayaran Sukes',
+                        'pemesanan' => $pemesanan,
+                        'dataMid' => $dataMid,
+                        'kurir' => $kurir,
+                        'items' => $items,
+                        'bank' => $bank,
+                        'va_number' => $va_number,
+                        'biller_code' => $biller_code,
+                        'caraPembayaran' => $carapembayaran[$bank],
+                    ];
+                    return view('pages/orderShipping', $data);
+                    break;
                 case 'Kadaluarsa':
-                    $status = "Kadaluarsa";
+                    $biller_code = "";
+                    $bank = "";
+                    switch ($dataMid['payment_type']) {
+                        case 'bank_transfer':
+                            if (isset($dataMid['permata_va_number'])) {
+                                $va_number = $dataMid['permata_va_number'];
+                                $bank = "permata";
+                            } else {
+                                $va_number = $dataMid['va_numbers'][0]['va_number'];
+                                $bank = $dataMid['va_numbers'][0]['bank'];
+                            }
+                            break;
+                        case 'echannel':
+                            $va_number = $dataMid['bill_key'];
+                            $biller_code = $dataMid['biller_code'];
+                            $bank = "mandiri";
+                            break;
+                        case 'qris':
+                            $va_number = 'https://api.midtrans.com/v2/qris/' . $dataMid['transaction_id'] . '/qr-code';
+                            $bank = "qris";
+                            break;
+                        default:
+                            $va_number = "";
+                            break;
+                    }
+
+                    $waktuExpire = strtotime($dataMid['expiry_time']);
+                    $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+                    $data = [
+                        'title' => 'Peroses Pembayaran',
+                        'pemesanan' => $pemesanan,
+                        'dataMid' => $dataMid,
+                        'va_number' => $va_number,
+                        'biller_code' => $biller_code,
+                        'bank' => $bank,
+                        'caraPembayaran' => $carapembayaran[$bank],
+                        'waktuExpire' => date("d", $waktuExpire) . " " . $bulan[(int)date("m", $waktuExpire) - 1] . " " . date("Y H:i:s", $waktuExpire)
+                    ];
+                    return view('pages/orderExpire', $data);
                     break;
                 case 'Ditolak':
                     $status = "Ditolak";
@@ -1447,7 +1693,7 @@ class Pages extends BaseController
             session()->set($ses_data);
             return redirect()->to('/admin/product');
         } else if ($getUser['role'] == '2') {
-            $nama = ucwords(str_replace("_", " ", substr($getUser['email'], 0, -10)));
+            $nama = ucwords(str_replace("_", " ", substr($getUser['email'], 0, -4)));
             $ses_data = [
                 'active' => '1',
                 'email' => $getUser['email'],

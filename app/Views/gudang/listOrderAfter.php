@@ -36,7 +36,7 @@
                 <div style="flex: 2;"><?= $p['nama']; ?></div>
                 <div style="flex: 1;">
                     <?php if ($p['status_print'] == 'siap') { ?>
-                        <button class="btn-default" onclick="printSuratJalan('<?= $p['id_midtrans']; ?>')">Print</button>
+                        <a class="btn-default" href="/gudang/suratjalan/<?= $p['id_midtrans']; ?>">Print</a>
                     <?php } else if ($p['status_print'] == 'sudah print') { ?>
                         <button class="btn-default" onclick="openAjukan('<?= $p['id_midtrans']; ?>')">Ajukan print</button>
                     <?php } else if ($p['status_print'] == 'ajukan') { ?>

@@ -3,7 +3,7 @@
 <div style="padding: 2em;">
     <div class="d-flex justify-content-between">
         <div>
-            <h1 class="teks-sedang">List Konfirmasi Ulang</h1>
+            <h1 class="teks-sedang">List Konfirmasi Print Ulang</h1>
         </div>
     </div>
     <div class="container-table mt-4">

@@ -71,6 +71,9 @@ class GudangController extends BaseController
             $pesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
             $pesanan[$ind_p]['items'] = json_decode($p['items'], true);
             $pesanan[$ind_p]['kurir'] = json_decode($p['kurir'], true);
+            $pesanan[$ind_p]['data_mid']['custom_field1'] = '';
+            $pesanan[$ind_p]['data_mid']['custom_field2'] = '';
+            $pesanan[$ind_p]['data_mid']['custom_field3'] = '';
         }
         $data = [
             'title' => 'Pesanan Selesai',
@@ -86,6 +89,10 @@ class GudangController extends BaseController
         if (!$id_barang) {
             $id_barang = $product[0]['id'];
         }
+        foreach ($product as $ind_p => $p) {
+            $product[$ind_p]['varian'] = json_decode($p['varian'], true);
+            $product[$ind_p]['deskripsi'] = json_decode($p['deskripsi'], true);
+        }
         $mutasi = $this->kartuStokModel->getKartu($id_barang);
         $data = [
             'title' => 'Mutasi',
@@ -98,9 +105,44 @@ class GudangController extends BaseController
     public function actionAddMutasi()
     {
         $tanggal = $this->request->getVar('tanggal');
-        $keterangan = $this->request->getVar('keterangan');
+        $barang = explode("-", $this->request->getVar('barang'));
         $jenis = $this->request->getVar('jenis');
         $nominal = $this->request->getVar('nominal');
+
+        $d = strtotime($tanggal);
+        $keterangan = date("Ymd", $d) . date("His") . "-" . $barang[0] . "-" . strtoupper($barang[1]) . "-MANUALLY";
+
+        $produk = $this->barangModel->getBarang($barang[0]);
+        $saldoSkrg = json_decode($produk['varian'], true)[(int)$barang[2]]['stok'];
+        $debit = 0;
+        $kredit = 0;
+        if ($jenis == 'debit') {
+            $debit = $nominal;
+            $saldo = (int)$saldoSkrg + (int)$nominal;
+        } else if ($jenis == 'kredit') {
+            $kredit = $nominal;
+            $saldo = (int)$saldoSkrg - (int)$nominal;
+        }
+        // dd([
+        //     'id_barang' => $barang[0],
+        //     'tanggal' => date("Y-m-d", $d) . ' ' . date("H:i:s"),
+        //     'keterangan' => $keterangan,
+        //     'debit' => $debit,
+        //     'kredit' => $kredit,
+        //     'saldo' => $saldo,
+        // ]);
+        $this->kartuStokModel->insert([
+            'id_barang' => $barang[0],
+            'tanggal' => date("Y-m-d", $d) . ' ' . date("H:i:s"),
+            'keterangan' => $keterangan,
+            'debit' => $debit,
+            'kredit' => $kredit,
+            'saldo' => $saldo,
+        ]);
+        $varianCurr = json_decode($produk['varian'], true);
+        $varianCurr[(int)$barang[2]]['stok'] = $saldo;
+        $this->barangModel->where(['id' => $barang[0]])->set(['varian' => json_encode($varianCurr)])->update();
+        return redirect()->to('/gudang/mutasi');
     }
 
     public function product()
@@ -173,13 +215,21 @@ class GudangController extends BaseController
         $items = [];
         foreach (json_decode($pemesanan['items'], true) as $p) {
             if ($p['name'] != 'Biaya Ongkir' && $p['name'] != 'Biaya Admin') {
-                $kartuStok_Curr = $this->kartuStokModel->getKartu($p['id'], $pemesanan['id_midtrans'] . $p['id'] . $tanggalNoStrip);
-                if (!$kartuStok_Curr) $saldo = 0;
-                else $saldo = $kartuStok_Curr['saldo'];
+                // $kartuStok_Curr = $this->kartuStokModel->getKartu($p['id'], $pemesanan['id_midtrans'] . $p['id'] . $tanggalNoStrip);
+                $produknya = $this->barangModel->getBarang($p['id']);
+                $varian = json_decode($produknya['varian'], true);
+                $saldo = 0;
+                foreach ($varian as $ind_v => $v) {
+                    if (strtolower($v['nama']) == strtolower(rtrim(explode("(", $p['name'])[1], ")"))) {
+                        $saldo = (int)$v['stok'];
+                    }
+                }
+                // if (!$kartuStok_Curr) $saldo = 0;
+                // else $saldo = $kartuStok_Curr['saldo'];
                 $this->kartuStokModel->insert([
                     'id_barang' => $p['id'],
                     'tanggal' => $tanggal,
-                    'keterangan' => $pemesanan['id_midtrans'] . $p['id'] . $tanggalNoStrip,
+                    'keterangan' => $tanggalNoStrip . "-" . $p['id'] . "-" . strtoupper(rtrim(explode("(", $p['name'])[1], ")")) . "-" . $pemesanan['id_midtrans'],
                     'debit' => 0,
                     'kredit' => $p['quantity'],
                     'saldo' => (int)$saldo - (int)$p['quantity'],

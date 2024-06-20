@@ -1,38 +1,40 @@
 <?= $this->extend("gudang/layout/template"); ?>
 <?= $this->section("content"); ?>
 <div class="d-none justify-content-center align-items-center w-100" id="modal-add" style="background-color: rgba(0,0,0,0.5); position:fixed; top: 0; left: 0; width: 100vw; height: 100svh;">
-    <div class="bg-white" style="width:fit-content; border: 0.5px solid black; border-radius: 1em; box-shadow:1em;">
-        <div style="padding: 2em;" class="d-flex justify-content-center align-items-center flex-column gap-4">
-            <form action="/gudang/actionaddmutasi" method="post">
-                <div class="mb-2">
-                    <div class="form-floating mb-1">
-                        <input type="date" class="form-control" id="floatingInput" placeholder="name@example.com" name="tanggal">
-                        <label for="floatingInput">Tanggal</label>
-                    </div>
-                    <div class="form-floating mb-1">
-                        <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="keterangan">
-                        <label for="floatingInput">Keterangan</label>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <div class="form-floating flex-grow-1">
-                            <select name="jenis" id="" class="form-select">
-                                <option value="debit">Debit</option>
-                                <option value="kredit">Kredit</option>
-                            </select>
-                            <label for="floatingInput">Jenis</label>
-                        </div>
-                        <div class="form-floating flex-grow-1">
-                            <input type="number" class="form-control" id="floatingPassword" name="nominal">
-                            <label for="floatingPassword">Nominal</label>
-                        </div>
-                    </div>
+    <div class="bg-white p-4" style="width:fit-content; border: 0.5px solid black; border-radius: 1em; box-shadow:1em;">
+        <form action="/gudang/actionaddmutasi" method="post">
+            <div class="form-floating mb-1">
+                <input type="date" class="form-control" id="floatingInput" placeholder="name@example.com" name="tanggal">
+                <label for="floatingInput">Tanggal</label>
+            </div>
+            <div class="form-floating mb-1">
+                <select type="text" class="form-select" id="floatingInput1" placeholder="name@example.com" name="barang">
+                    <?php foreach ($product as $p) {
+                        foreach ($p['varian'] as $ind_v => $v) { ?>
+                            <option value="<?= $p['id']; ?>-<?= strtoupper($v['nama']); ?>-<?= $ind_v; ?>"><?= $p['kategori']; ?> - <?= $p['subkategori']; ?> - <?= $p['deskripsi']['dimensi']['asli']['panjang']; ?>x<?= $p['deskripsi']['dimensi']['asli']['lebar']; ?>x<?= $p['deskripsi']['dimensi']['asli']['tinggi']; ?> - <?= $v['nama']; ?></option>
+                    <?php }
+                    } ?>
+                </select>
+                <label for="floatingInput1">Barang</label>
+            </div>
+            <div class="d-flex gap-1 mb-2">
+                <div class="form-floating flex-grow-1">
+                    <select name="jenis" id="" class="form-select">
+                        <option value="debit">Debit</option>
+                        <option value="kredit">Kredit</option>
+                    </select>
+                    <label for="floatingInput3">Jenis</label>
                 </div>
-                <div class="d-flex gap-1">
-                    <button type="submit" class="btn-default">Tambah</button>
-                    <button type="button" class="btn-default-merah" onclick="closeModal()">Batal</button>
+                <div class="form-floating flex-grow-1">
+                    <input type="number" class="form-control" id="floatingPassword" name="nominal">
+                    <label for="floatingPassword">Nominal</label>
                 </div>
-            </form>
-        </div>
+            </div>
+            <div class="d-flex gap-1">
+                <button type="submit" class="btn-default">Tambah</button>
+                <button type="button" class="btn-default-merah" onclick="closeModal()">Batal</button>
+            </div>
+        </form>
     </div>
 </div>
 <div style="padding: 2em;">
@@ -56,9 +58,9 @@
                     <div style="flex: 1;">No</div>
                     <div style="flex: 2;">Tanggal</div>
                     <div style="flex: 3;">Keterangan</div>
-                    <div style="flex: 2;">Debit</div>
-                    <div style="flex: 2;">Kredit</div>
-                    <div style="flex: 2;">Saldo</div>
+                    <div style="flex: 1;">Debit</div>
+                    <div style="flex: 1;">Kredit</div>
+                    <div style="flex: 1;">Saldo</div>
                 </div>
                 <?php
                 $no = 1;
@@ -67,9 +69,9 @@
                         <div style="flex: 1;"><?= $no; ?></div>
                         <div style="flex: 2;"><?= $m['tanggal']; ?></div>
                         <div style="flex: 3;"><?= $m['keterangan']; ?></div>
-                        <div style="flex: 2;"><?= $m['debit']; ?></div>
-                        <div style="flex: 2;"><?= $m['kredit']; ?></div>
-                        <div style="flex: 2;"><?= $m['saldo']; ?></div>
+                        <div style="flex: 1;"><?= $m['debit']; ?></div>
+                        <div style="flex: 1;"><?= $m['kredit']; ?></div>
+                        <div style="flex: 1;"><?= $m['saldo']; ?></div>
                     </div>
                 <?php $no++;
                 } ?>
