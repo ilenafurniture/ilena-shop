@@ -1,82 +1,26 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
-<div class="container konten">
-    <div class="container mb-3">
-        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Tentang</li>
-            </ol>
-        </nav>
-        <h1>
-            Sejarah Perusahaan
-        </h1>
-        <h5 class="mb-5">Ilena Furniture</h5>
-        <div class="baris-ke-kolom-reverse align-items-center justify-content-between">
-            <div style="height: fit-content; flex: 2;">
-                <p>
-                    Ilena Furniture hadir sejak tahun 1989 sebagai produsen sekaligus distributor aneka perabotan
-                    rumah yang berpengalaman. Selama lebih dari tiga puluhan tahun yang lalu hingga sekarang, Jasmine
-                    Furniture dengan konsisten memproduksi perabotan mulai dari meja, kursi, lemari dan rak dengan
-                    kualitas terbaik yang terbuat dari material terbaik yang dikerjakan secara professional oleh tim
-                    terbaik kami.
-                </p>
-                <p>
-                    Saat ini kami telah memiliki ratusan distributor dan toko ternama, yang tersebar di seluruh penjuru
-                    kota di Indonesia.
-                </p>
-                <p>
-                    Untuk semakin memudahkan aktivitas belanja konsumen, kami melakukan pengembangan dan hadir di
-                    berbagai platform marketplace ternama di Indonesia.
-                </p>
-                <p>
-                    Temukan produk furniture kebutuhan Anda dengan harga terbaik dan desain stylish masa kini, di toko
-                    terdekat Anda bersama dengan Ilena Furniture.
-                </p>
-                <p class="fw-bold" style="color: var(--hijau)">
-                    Ilena Furniture, Always your choice, always your furniture
-                </p>
-            </div>
-            <div class="show-ke-hide align-items-center justify-content-end" style="height: 350px; flex: 1;">
-                <div style="
-                        height: 100%;
-                        width: 100%;
-                        display: grid;
-                        gap: 1em;
-                        grid-template-areas: 'gmbr1 gmbr3' 'gmbr2 gmbr3' 'gmbr2 gmbr4';
-                    ">
-                    <div style="
-                            grid-area: gmbr1;
-                            border-radius: 1em;
-                            overflow: hidden;
-                        ">
-                        <img style="height: 100%; width: 100%; object-fit: cover" src="/img/header/header_comp3.webp" />
-                    </div>
-                    <div style="
-                            grid-area: gmbr2;
-                            border-radius: 1em;
-                            overflow: hidden;
-                        ">
-                        <img style="height: 100%; width: 100%; object-fit: cover" src="/img/header/header_comp1.webp" />
-                    </div>
-                    <div style="
-                            grid-area: gmbr3;
-                            border-radius: 1em;
-                            overflow: hidden;
-                        ">
-                        <img style="height: 100%; width: 100%; object-fit: cover" src="/img" />
-                    </div>
-                    <div style="
-                            grid-area: gmbr4;
-                            border-radius: 1em;
-                            overflow: hidden;
-                        ">
-                        <img style="height: 100%; width: 100%; object-fit: cover" src="/img/header/header_comp4.webp" />
-                    </div>
-                </div>
-            </div>
-
+<div>
+    <img style="width: 100%; height: 50svh; object-fit: cover;" src="https://images.unsplash.com/photo-1631679706909-1844bbd07221?q=80&w=1992&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="">
+    <div class="container konten">
+        <p style="color: grey;" class="m-0">CERITA KAMI</p>
+        <h1 class="teks-besar mb-3">Tentang Kami</h1>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga repellat officia necessitatibus fugiat praesentium rem impedit aliquid, reiciendis, quae libero voluptates nesciunt assumenda saepe veritatis inventore? Voluptatem architecto quo at ab laudantium cum ratione rerum enim. Ipsum cupiditate iusto veniam ipsam excepturi, aliquid nam, vitae amet corporis tempore aspernatur ab non. Perspiciatis, veniam et? Totam ullam velit eos aliquam labore repellat, porro iure excepturi perspiciatis illum esse reiciendis unde sapiente nulla omnis ea asperiores ratione culpa quas quasi vel blanditiis impedit ipsam? Repellat distinctio voluptate odio nobis placeat eaque commodi culpa obcaecati odit reprehenderit officiis ea, aliquam ullam labore rerum.</p>
+    </div>
+    <img style="width: 100%; height: 80svh; object-fit: cover;" src="https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="">
+    <div class="my-5 d-flex">
+        <div style="flex: 1;">
+            <img style="width: 100%; aspect-ratio: 16/9; object-fit:cover;" src="https://images.unsplash.com/photo-1492371451031-f0830e91b3d9?q=80&w=1900&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="">
+        </div>
+        <div style="flex: 1;" class="p-5">
+            <h1 class="teks-besar">#FurniturBerkualitas</h1>
+            <p style="color: grey;" class="mb-3">ILENA FURNITURE</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga repellat officia necessitatibus fugiat praesentium rem impedit aliquid, reiciendis, quae libero voluptates nesciunt assumenda saepe veritatis inventore? Voluptatem architecto quo at ab laudantium cum ratione rerum enim. Ipsum cupiditate iusto veniam ipsam excepturi, aliquid nam, vitae amet corporis tempore aspernatur ab non. Perspiciatis, veniam et? Totam ullam velit eos aliquam labore repellat, porro iure excepturi perspiciatis illum esse reiciendis unde sapiente nulla omnis ea asperiores ratione culpa quas quasi vel blanditiis impedit ipsam? Repellat distinctio voluptate odio nobis placeat eaque commodi culpa obcaecati odit reprehenderit officiis ea, aliquam ullam labore rerum.</p>
         </div>
     </div>
+    <div style="width: 100%; height: 80svh; position: absolute; background-color: rgba(0,0,0,0.5)" class="d-flex justify-content-center align-items-center">
+        <h1 class="teks-sedang mb-3 text-center text-light">Bersama kami menciptakan nuansa elegan minimalis untuk ruangan Anda</h1>
+    </div>
+    <img style="width: 100%; height: 80svh; object-fit: cover; " src="https://images.unsplash.com/photo-1503423571797-2d2bb372094a?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="">
 </div>
 <?= $this->endSection(); ?>

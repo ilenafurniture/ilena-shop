@@ -191,7 +191,7 @@ body {
 
 .img-besar {
     width: 100%;
-    height: calc(100vh - 99.6px);
+    height: calc(80svh);
     object-fit: cover;
 }
 .img-teks {
