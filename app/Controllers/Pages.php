@@ -1543,7 +1543,7 @@ class Pages extends BaseController
             array_push($produk, $this->barangModel->getBarang($w));
         }
         $data = [
-            'title' => 'Menu Favorite',
+            'title' => 'Favorite',
             'produk' => $produk,
             'wishlist' => $wishlist
         ];
@@ -1611,7 +1611,7 @@ class Pages extends BaseController
     public function login()
     {
         $data = [
-            'title' => 'Masuk Akun',
+            'title' => 'Akun',
             'val' => [
                 'msg' => session()->getFlashdata('msg'),
                 'val_email' => session()->getFlashdata('val-email'),

@@ -1,9 +1,9 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <div class="container konten">
-    <div class="baris-ke-kolom">
+    <div class="baris-ke-kolom-reverse">
         <div class="limapuluh-ke-seratus">
-            <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
+            <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb" class="show-block-ke-hide">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/">Produk Kami</a></li>
                     <li class="breadcrumb-item"><a href="/">Meja</a></li>
@@ -18,10 +18,11 @@
                 <p class="harga-diskon">Rp <?= number_format($produk['harga'], 0, ',', '.') ?></p>
             </div>
             <p><?= $produk['deskripsi']['deskripsi'] ?></p>
-            <div class="container-varian mb-3">
+            <div class="container-varian mb-3 show-flex-ke-hide">
                 <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
-                    <input id="varian<?= $ind_v ?>" value="<?= $v['urutan_gambar'] ?>-<?= $v['nama'] ?>" type="radio" name="varian">
-                    <label for="varian<?= $ind_v ?>"><span style="background-color: <?= $v['kode'] ?>"></span></label>
+                <input id="varian<?= $ind_v ?>" value="<?= $v['urutan_gambar'] ?>-<?= $v['nama'] ?>" type="radio"
+                    name="varian">
+                <label for="varian<?= $ind_v ?>"><span style="background-color: <?= $v['kode'] ?>"></span></label>
                 <?php } ?>
             </div>
             <div class="d-flex gap-3 align-items-center">
@@ -30,35 +31,62 @@
                     <input type="number" name="jumlah" class="number-quantity" value="1">
                     <div class="number-right" onclick="tambahJumlah()"></div>
                 </div>
-                <a id="btn-keranjang" href="/addcart/<?= $produk['id'] ?>/<?= $produk['varian'][0]['nama'] ?>/1" class="btn-default-merah">Keranjang</a>
+                <a id="btn-keranjang" href="/addcart/<?= $produk['id'] ?>/<?= $produk['varian'][0]['nama'] ?>/1"
+                    class="btn-default-merah">Keranjang</a>
             </div>
             <?php if ($produk['tokped'] || $produk['shopee'] || $produk['tiktok']) { ?>
-                <div class="mt-4">
-                    <p class="mb-2">
-                        Produk ini juga tersedia di
-                    </p>
-                    <div>
-                        <?php if ($produk['tokped']) { ?>
-                            <a href="<?= $produk['tokped']; ?>" title="Tokopedia" target="blank"><img src="/img/logo/tokopedia.png" class="marketplace"></a>
-                        <?php } ?>
-                        <?php if ($produk['shopee']) { ?>
-                            <a href="<?= $produk['shopee']; ?>" title="Shopee" target="blank"><img src="/img/logo/shopee.png" class="marketplace"></a>
-                        <?php } ?>
-                        <?php if ($produk['tiktok']) { ?>
-                            <a href="<?= $produk['tiktok']; ?>" title="Tiktok" target="blank"><img src="/img/logo/tiktokshop.svg" class="marketplace"></a>
-                        <?php } ?>
-                    </div>
+            <div class="mt-4">
+                <p class="mb-2">
+                    Produk ini juga tersedia di
+                </p>
+                <div>
+                    <?php if ($produk['tokped']) { ?>
+                    <a href="<?= $produk['tokped']; ?>" title="Tokopedia" target="blank"><img
+                            src="/img/logo/tokopedia.png" class="marketplace"></a>
+                    <?php } ?>
+                    <?php if ($produk['shopee']) { ?>
+                    <a href="<?= $produk['shopee']; ?>" title="Shopee" target="blank"><img src="/img/logo/shopee.png"
+                            class="marketplace"></a>
+                    <?php } ?>
+                    <?php if ($produk['tiktok']) { ?>
+                    <a href="<?= $produk['tiktok']; ?>" title="Tiktok" target="blank"><img
+                            src="/img/logo/tiktokshop.svg" class="marketplace"></a>
+                    <?php } ?>
                 </div>
+            </div>
             <?php } ?>
             <?= in_array($produk['id'], $wishlist) ? '<a class="btn-teks-aja my-3" href="/delwishlist/' . $produk['id'] . '"><i class="material-icons">bookmark</i> Hapus dari wishlist</a>' : '<a class="btn-teks-aja my-3" href="/addwishlist/' . $produk['id'] . '"><i class="material-icons">bookmark_border</i> Tambah ke wishlist</a>' ?>
             <div class="accordion accordion-flush" id="accordionFlushExample">
                 <div class="accordion-item">
                     <h2 class="accordion-header">
-                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse1" aria-expanded="false" aria-controls="flush-collapse1">
+                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#flush-collapse2" aria-expanded="false" aria-controls="flush-collapse2">
+                            SPESIFIKASI PRODUK
+                        </button>
+                    </h2>
+                    <div id="flush-collapse2" class="accordion-collapse collapse"
+                        data-bs-parent="#accordionFlushExample">
+                        <div class="accordion-body">
+                            <p class="mb-0 fw-bold">Bagaimana cara merawat barang ini?</p>
+                            <ul>
+                                <li>
+                                    <p class="mb-0">
+                                        <?= $produk['deskripsi']['perawatan'] ?>
+                                    </p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#flush-collapse1" aria-expanded="false" aria-controls="flush-collapse1">
                             DIMENSI
                         </button>
                     </h2>
-                    <div id="flush-collapse1" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                    <div id="flush-collapse1" class="accordion-collapse collapse"
+                        data-bs-parent="#accordionFlushExample">
                         <div class="accordion-body">
                             <p class="mb-0 fw-bold">Dimensi Asli</p>
                             <ul>
@@ -112,11 +140,13 @@
 
                 <div class="accordion-item">
                     <h2 class="accordion-header">
-                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse2" aria-expanded="false" aria-controls="flush-collapse2">
+                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#flush-collapse2" aria-expanded="false" aria-controls="flush-collapse2">
                             PERAWATAN
                         </button>
                     </h2>
-                    <div id="flush-collapse2" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                    <div id="flush-collapse2" class="accordion-collapse collapse"
+                        data-bs-parent="#accordionFlushExample">
                         <div class="accordion-body">
                             <p class="mb-0 fw-bold">Bagaimana cara merawat barang ini?</p>
                             <ul>
@@ -129,6 +159,8 @@
                         </div>
                     </div>
                 </div>
+
+
             </div>
         </div>
         <div class="limapuluh-ke-seratus">
@@ -155,79 +187,88 @@
             </div>
             <div class="container-img-detail-select mb-3 mt-3">
                 <?php foreach (explode(",", $produk['varian'][0]['urutan_gambar']) as $indx => $p_v) { ?>
-                    <input <?= $indx == 0 ? 'checked' : '' ?> id="gambar<?= $indx ?>" type="radio" name="gambar" value="<?= $p_v ?>">
-                    <label class="img-detail-select" for="gambar<?= $indx ?>"><img src="/viewvar/<?= $produk['id'] ?>/<?= $p_v ?>"></label>
+                <input <?= $indx == 0 ? 'checked' : '' ?> id="gambar<?= $indx ?>" type="radio" name="gambar"
+                    value="<?= $p_v ?>">
+                <label class="img-detail-select" for="gambar<?= $indx ?>"><img
+                        src="/viewvar/<?= $produk['id'] ?>/<?= $p_v ?>"></label>
                 <?php } ?>
                 <script>
-                    const radioImgElm = document.querySelectorAll('input[name="gambar"]');
-                    radioImgElm.forEach(elm => {
-                        elm.addEventListener('change', (e) => {
-                            const imgElm = document.querySelector(".img-detail-prev");
-                            imgElm.src =
-                                "/viewvar/<?= $produk['id']; ?>/" + e.target.value
-                                .split("-")[0];
-                        })
-                    });
+                const radioImgElm = document.querySelectorAll('input[name="gambar"]');
+                radioImgElm.forEach(elm => {
+                    elm.addEventListener('change', (e) => {
+                        const imgElm = document.querySelector(".img-detail-prev");
+                        imgElm.src =
+                            "/viewvar/<?= $produk['id']; ?>/" + e.target.value
+                            .split("-")[0];
+                    })
+                });
                 </script>
+            </div>
+            <div class="container-varian mb-3 hide-ke-show-flex">
+                <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
+                <input id="varian<?= $ind_v ?>" value="<?= $v['urutan_gambar'] ?>-<?= $v['nama'] ?>" type="radio"
+                    name="varian">
+                <label for="varian<?= $ind_v ?>"><span style="background-color: <?= $v['kode'] ?>"></span></label>
+                <?php } ?>
             </div>
         </div>
     </div>
 </div>
 <script>
-    const btnKeranjangElm = document.getElementById('btn-keranjang');
-    const radioVarianElm = document.querySelectorAll('input[name="varian"]');
-    const varian = JSON.parse('<?= json_encode($produk['varian']) ?>');
-    console.log(varian)
-    let varianSelected = "<?= $produk['varian'][0]['nama'] ?>";
-    let jumlahSelected = "1";
-    radioVarianElm.forEach(elm => {
-        elm.addEventListener('change', (e) => {
-            const imgElm = document.querySelector(".img-detail-prev");
-            imgElm.src =
-                "/viewvar/<?= $produk['id']; ?>/" + e.target.value.split("-")[0].split(",")[0];
+const btnKeranjangElm = document.getElementById('btn-keranjang');
+const radioVarianElm = document.querySelectorAll('input[name="varian"]');
+const varian = JSON.parse('<?= json_encode($produk['varian']) ?>');
+console.log(varian)
+let varianSelected = "<?= $produk['varian'][0]['nama'] ?>";
+let jumlahSelected = "1";
+radioVarianElm.forEach(elm => {
+    elm.addEventListener('change', (e) => {
+        const imgElm = document.querySelector(".img-detail-prev");
+        imgElm.src =
+            "/viewvar/<?= $produk['id']; ?>/" + e.target.value.split("-")[0].split(",")[0];
 
-            const containerImgDetailElm = document.querySelector(".container-img-detail-select");
-            containerImgDetailElm.innerHTML = "";
-            const urutanGambar = e.target.value.split("-")[0].split(",");
-            urutanGambar.forEach((urutan, ind_x) => {
-                containerImgDetailElm.innerHTML += '<input id="gambar' + ind_x +
-                    '" type="radio" name="gambar" value="' + urutan +
-                    '"><label class="img-detail-select" for="gambar' + ind_x +
-                    '"><img src="/viewvar/<?= $produk['id'] ?>/' + urutan + '"></label>'
-            })
-
-            btnKeranjangElm.href = "/addcart/<?= $produk['id'] ?>/" + e.target.value.split("-")[1] + "/" +
-                jumlahSelected;
-            varianSelected = e.target.value.split("-")[1];
-
-            const radioImgElm = document.querySelectorAll('input[name="gambar"]');
-            radioImgElm.forEach(elm1 => {
-                elm1.addEventListener('change', (elmVar) => {
-                    const imgElm = document.querySelector(".img-detail-prev");
-                    imgElm.src =
-                        "/viewvar/<?= $produk['id']; ?>/" + elmVar.target.value.split("-")[
-                            0].split(",")[0];
-                })
-            });
+        const containerImgDetailElm = document.querySelector(".container-img-detail-select");
+        containerImgDetailElm.innerHTML = "";
+        const urutanGambar = e.target.value.split("-")[0].split(",");
+        urutanGambar.forEach((urutan, ind_x) => {
+            containerImgDetailElm.innerHTML += '<input id="gambar' + ind_x +
+                '" type="radio" name="gambar" value="' + urutan +
+                '"><label class="img-detail-select" for="gambar' + ind_x +
+                '"><img src="/viewvar/<?= $produk['id'] ?>/' + urutan + '"></label>'
         })
-    });
-    const jumlahBarangElm = document.querySelector('input[name="jumlah"]');
 
-    function kurangJumlah() {
-        if (Number(jumlahBarangElm.value) > 1) {
-            jumlahBarangElm.value--
-            btnKeranjangElm.href = "/addcart/<?= $produk['id'] ?>/" + varianSelected + "/" +
-                jumlahBarangElm.value;
-            jumlahSelected = jumlahBarangElm.value;
-        }
-    }
+        btnKeranjangElm.href = "/addcart/<?= $produk['id'] ?>/" + e.target.value.split("-")[1] + "/" +
+            jumlahSelected;
+        varianSelected = e.target.value.split("-")[1];
 
-    function tambahJumlah() {
-        jumlahBarangElm.value++;
+        const radioImgElm = document.querySelectorAll('input[name="gambar"]');
+        radioImgElm.forEach(elm1 => {
+            elm1.addEventListener('change', (elmVar) => {
+                const imgElm = document.querySelector(".img-detail-prev");
+                imgElm.src =
+                    "/viewvar/<?= $produk['id']; ?>/" + elmVar.target.value.split("-")[
+                        0].split(",")[0];
+            })
+        });
+    })
+});
+const jumlahBarangElm = document.querySelector('input[name="jumlah"]');
+
+function kurangJumlah() {
+    if (Number(jumlahBarangElm.value) > 1) {
+        jumlahBarangElm.value--
         btnKeranjangElm.href = "/addcart/<?= $produk['id'] ?>/" + varianSelected + "/" +
             jumlahBarangElm.value;
         jumlahSelected = jumlahBarangElm.value;
     }
+}
+
+function tambahJumlah() {
+    jumlahBarangElm.value++;
+    btnKeranjangElm.href = "/addcart/<?= $produk['id'] ?>/" + varianSelected + "/" +
+        jumlahBarangElm.value;
+    jumlahSelected = jumlahBarangElm.value;
+}
 </script>
 
 

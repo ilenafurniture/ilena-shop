@@ -16,6 +16,7 @@
     <script src="<?= base_url('js/bootstrap.bundle.min.js'); ?>">
     </script>
     <?= $this->include('layout/navbar'); ?>
+    <?= $this->include('layout/navbarHp'); ?>
     <?= $this->renderSection('content'); ?>
     <?= $this->include('layout/footer'); ?>
 </body>
