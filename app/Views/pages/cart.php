@@ -6,44 +6,91 @@
             <h1 class="teks-sedang">Keranjang</h1>
             <p style="color: grey;"><?= count($keranjang) <= 0 ? 'Tidak Ada' : count($keranjang) ?> Produk</p>
         </div>
-        <div class="container-keranjang">
+        <div class="container-keranjang show-block-ke-hide">
             <?php foreach ($keranjang as $index => $k) { ?>
-                <div class="item-keranjang">
-                    <a href="/product/<?= $k['detail']['id'] ?>" style="display:block;">
-                        <img src="<?= $k['src_gambar'] ?>" alt="Gambar Keranjang">
+            <div class="item-keranjang">
+                <a href="/product/<?= $k['detail']['id'] ?>" style="display:block;">
+                    <img src="<?= $k['src_gambar'] ?>" alt="Gambar Keranjang">
+                </a>
+                <div style="flex: 1;" class="d-flex flex-column">
+                    <a href="/product/<?= $k['detail']['id'] ?>" style="text-decoration:none; color: black;">
+                        <h1 class="nama-barang"><?= $k['detail']['nama'] ?></h1>
+                        <p class="my-2">Varian: <?= ucfirst($k['varian']) ?></p>
                     </a>
-                    <div style="flex: 1;" class="d-flex flex-column">
-                        <a href="/product/<?= $k['detail']['id'] ?>" style="text-decoration:none; color: black;">
-                            <h1 class="nama-barang"><?= $k['detail']['nama'] ?></h1>
-                            <p class="my-2">Varian: <?= ucfirst($k['varian']) ?></p>
-                        </a>
-                        <div class="d-flex align-items-end flex-grow-1">
-                            <div class="d-flex align-items-center gap-4">
-                                <div class="number-control">
-                                    <a style="text-decoration: none; color: black;" href="/reducecart/<?= $index ?>">
-                                        <div class="number-left"></div>
-                                    </a>
-                                    <input type="number" name="number" class="number-quantity" disabled value="<?= $k['jumlah'] ?>">
-                                    <a style="text-decoration: none; color: black;" href="/addcart/<?= $k['id_barang'] ?>/<?= $k['varian'] ?>/1">
-                                        <div class="number-right"></div>
-                                    </a>
-                                </div>
-                                <a href="/deletecart/<?= $index ?>" class="btn-teks-aja m-0">Hapus</a>
+                    <div class="d-flex align-items-end flex-grow-1">
+                        <div class="d-flex align-items-center gap-4">
+                            <div class="number-control">
+                                <a style="text-decoration: none; color: black;" href="/reducecart/<?= $index ?>">
+                                    <div class="number-left"></div>
+                                </a>
+                                <input type="number" name="number" class="number-quantity" disabled
+                                    value="<?= $k['jumlah'] ?>">
+                                <a style="text-decoration: none; color: black;"
+                                    href="/addcart/<?= $k['id_barang'] ?>/<?= $k['varian'] ?>/1">
+                                    <div class="number-right"></div>
+                                </a>
                             </div>
+                            <a href="/deletecart/<?= $index ?>" class="btn-teks-aja m-0">Hapus</a>
                         </div>
                     </div>
-                    <div style="width: 150px;">
-                        <p class="m-0 text-end">Harga Satuan</p>
-                        <p style="font-weight:bold; font-size: 18px; letter-spacing: -1px; text-align: right;" class="harga">Rp
+                </div>
+                <div style="width: 150px;">
+                    <p class="m-0 text-end">Harga Satuan</p>
+                    <p style="font-weight:bold; font-size: 18px; letter-spacing: -1px; text-align: right;"
+                        class="harga">Rp
+                        <?= number_format($k['detail']['harga'] * (100 - $k['detail']['diskon']) / 100, 0, ',', '.'); ?>
+                    </p>
+                    <p class="harga-diskon text-end">
+                        Rp <?= number_format($k['detail']['harga'], 0, ',', '.'); ?>
+                    </p>
+                </div>
+            </div>
+            <?php } ?>
+        </div>
+
+        <div class="hide-ke-show-block">
+            <?php foreach ($keranjang as $index => $k) { ?>
+            <div class="item-keranjang-hp">
+                <a href="/product/<?= $k['detail']['id'] ?>" style="display:block;">
+                    <img src="<?= $k['src_gambar'] ?>" alt="Gambar Keranjang">
+                </a>
+                <div style="flex: 1;" class="d-flex flex-column">
+                    <div class="d-flex gap-1">
+                        <p class="harga-hp">
+                            Rp
                             <?= number_format($k['detail']['harga'] * (100 - $k['detail']['diskon']) / 100, 0, ',', '.'); ?>
                         </p>
-                        <p class="harga-diskon text-end">
+                        <p class="harga-diskon-hp text-start">
                             Rp <?= number_format($k['detail']['harga'], 0, ',', '.'); ?>
                         </p>
                     </div>
+                    <a href="/product/<?= $k['detail']['id'] ?>" style="text-decoration:none; color: black;">
+                        <h1 class="nama-barang"><?= $k['detail']['nama'] ?></h1>
+                        <p>Varian : <?= ucfirst($k['varian']) ?></p>
+                    </a>
+
                 </div>
+
+                <div class="d-flex flex-column gap-2 align-items-end justify-content-between">
+                    <a href="/deletecart/<?= $index ?>" class="btn-teks-aja m-0">Hapus</a>
+                    <div class="number-control-hp">
+                        <a style="text-decoration: none; color: black;" href="/reducecart/<?= $index ?>">
+                            <div class="number-left"></div>
+                        </a>
+                        <div class="number-quantity-hp">
+                            <?= $k['jumlah'] ?>
+                        </div>
+                        <!-- <input type="number" name="number" class="number-quantity" disabled value="<?= $k['jumlah'] ?>"> -->
+                        <a style="text-decoration: none; color: black;"
+                            href="/addcart/<?= $k['id_barang'] ?>/<?= $k['varian'] ?>/1">
+                            <div class="number-right"></div>
+                        </a>
+                    </div>
+                </div>
+            </div>
             <?php } ?>
         </div>
+
     </div>
     <div class="tigapuluh-ke-seratus">
         <div class="card p-4">
@@ -73,7 +120,8 @@
                     Rp <?= number_format($hargaKeseluruhan, 0, ',', '.'); ?>
                 </p>
             </div>
-            <a <?= count($keranjang) > 0 ? 'href="/address"' : '' ?> class="btn-default-merah <?= count($keranjang) > 0 ? '' : 'disabled' ?> w-100 mt-4 text-center">Checkout</a>
+            <a <?= count($keranjang) > 0 ? 'href="/address"' : '' ?>
+                class="btn-default-merah <?= count($keranjang) > 0 ? '' : 'disabled' ?> w-100 mt-4 text-center">Checkout</a>
         </div>
     </div>
 </div>

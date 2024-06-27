@@ -140,13 +140,13 @@
                 <h5><?= $p['nama']; ?></h5>
                 <div class="d-flex gap-2">
                     <p class="harga">Rp <?= number_format($p['harga'] * (100 - $p['diskon']) / 100, 0, ',', '.'); ?></p>
-                    <p class="harga-diskon">Rp <?= number_format($p['harga'], 0, ',', '.') ?>
-                    </p>
+                    <p class="harga-diskon">Rp <?= number_format($p['harga'], 0, ',', '.') ?></p>
                 </div>
             </div>
             <?php } ?>
         </div>
     </div>
+
 
     <div class="container mb-5 d-flex justify-content-center">
         <a href="/product" class="btn-lonjong">Lihat Semua Produk <i class="material-icons">arrow_forward</i></a>

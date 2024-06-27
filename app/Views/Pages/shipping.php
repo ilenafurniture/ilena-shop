@@ -2,11 +2,10 @@
 <?= $this->section("content"); ?>
 <div class="container konten baris-ke-kolom">
     <div style="flex:1;">
-        <h5 style="letter-spacing: -1px; font-weight:100;"><a href="/address" class="me-3 text-secondary"
-                style="text-decoration: none;">Alamat</a> >
-            <a class="mx-3 text-dark fw-bold" style="text-decoration: none;">Kurir</a> > <a class="mx-3 text-secondary"
-                style="text-decoration: none;">
-                Rincian Pembayaran</a>
+        <h5 style="letter-spacing: -1px; font-weight:100;" class="path">
+            <a href="/address" class="me-3 text-secondary" style="text-decoration: none;">Alamat</a> >
+            <a class="mx-3 text-dark fw-bold" style="text-decoration: none;">Kurir</a> >
+            <a class="mx-3 text-secondary" style="text-decoration: none;">Rincian Pembayaran</a>
         </h5>
         <div class="container-kurir my-4">
             <?php foreach ($kurir as $index_k => $k) { ?>
@@ -20,7 +19,7 @@
                     <?php } ?>
                     <p class="mb-1" style="font-weight: 600;">Rp <?= number_format($k['harga'], 0, ',', '.'); ?></p>
                 </div>
-                <div style="width:fit-content">
+                <div style="width:fit-content" class="show-block-ke-hide">
                     <img src="/img/kurir/<?= $k['nama'] ?>.png" alt="">
                 </div>
             </label>

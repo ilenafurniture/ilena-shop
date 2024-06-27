@@ -7,7 +7,7 @@
         <?= $val['msg']; ?>
     </div>
     <?php } ?>
-    <form method="post" action="/addproduct" enctype="multipart/form-data">
+    <form method="post" action="/admin/addproduct" enctype="multipart/form-data">
         <?= csrf_field(); ?>
         <div class="baris-ke-kolom">
             <div class="limapuluh-ke-seratus">

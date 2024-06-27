@@ -165,7 +165,7 @@ class AdminController extends BaseController
         ];
         $this->barangModel->insert($insertDataBarang);
         $this->gambarBarangModel->insert($insertGambarBarang);
-        return redirect()->to('/listproduct');
+        return redirect()->to('admin/product');
     }
     public function editProduct($id_product)
     {
@@ -192,7 +192,7 @@ class AdminController extends BaseController
     {
         $produk = $this->barangModel->where('id', $id_product)->delete();
         $gambar = $this->gambarBarangModel->where('id', $id_product)->delete();
-        return redirect()->to('/listproduct');
+        return redirect()->to('admin/product');
     }
     public function order()
     {

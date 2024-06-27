@@ -2,7 +2,7 @@
 <?= $this->section("content"); ?>
 <div class="container konten baris-ke-kolom">
     <div style="flex:1;">
-        <h5 style="letter-spacing: -1px; font-weight:100;"><a href="/address" class="me-3 text-secondary"
+        <h5 style="letter-spacing: -1px; font-weight:100;" class="path"><a href="/address" class="me-3 text-secondary"
                 style="text-decoration: none;">Alamat</a> >
             <a href="/shipping/<?= $indKurir; ?>" class="mx-3 text-secondary" style="text-decoration: none;">Kurir</a> >
             <a class="mx-3 text-dark fw-bold" style="text-decoration: none;">
