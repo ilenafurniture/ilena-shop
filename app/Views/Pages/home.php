@@ -15,12 +15,12 @@
             alt="Gambar Hero">
     </div>
 
-    <div class="container my-5">
+    <div class="container my-5 show-block-ke-hide">
         <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <div class="d-flex gap-3">
-                        <a href="https://google.com" class="img-kategori">
+                    <div class="d-flex gap-3 h-100">
+                        <a href="" class="img-kategori ">
                             <img src="https://images.unsplash.com/photo-1675485470862-9af548e93466?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                                 alt="">
                         </a>
@@ -35,7 +35,7 @@
                     </div>
                 </div>
                 <div class="carousel-item">
-                    <div class="d-flex gap-3">
+                    <div class="d-flex gap-3 h-100">
                         <a href="" class="img-kategori">
                             <img src="https://images.unsplash.com/photo-1437419764061-2473afe69fc2?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                                 alt="">
@@ -51,7 +51,7 @@
                     </div>
                 </div>
                 <div class="carousel-item">
-                    <div class="d-flex gap-3">
+                    <div class="d-flex gap-3 h-100">
                         <a href="" class="img-kategori">
                             <img src="https://images.unsplash.com/photo-1511389026070-a14ae610a1be?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                                 alt="">
@@ -80,7 +80,52 @@
         </div>
     </div>
 
-    <div class="container d-flex justify-content-between mb-5 align-items-end">
+    <div class="container mt-5 mb-4 hide-ke-show-block">
+        <div id="carouselExampleAutoplaying1" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="d-flex gap-3 h-100">
+                        <a href="" class="img-kategori ">
+                            <img src="https://images.unsplash.com/photo-1675485470862-9af548e93466?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                                alt="">
+                        </a>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="d-flex gap-3 h-100">
+                        <a href="" class="img-kategori">
+                            <img src="https://images.unsplash.com/photo-1437419764061-2473afe69fc2?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                                alt="">
+                        </a>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="d-flex gap-3 h-100">
+                        <a href="" class="img-kategori">
+                            <img src="https://images.unsplash.com/photo-1511389026070-a14ae610a1be?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                                alt="">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying1"
+                data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying1"
+                data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="container justify-content-between mb-5 align-items-end show-flex-ke-hide">
+        <h1 class="teks-besar">Ilena<br>Furniture</h1>
+        <h1 class="teks-sedang mb-1">Desain Pilihan<br>Indonesia.</h1>
+    </div>
+    <div class="container justify-content-between align-items-end hide-ke-show-flex mb-4">
         <h1 class="teks-besar">Ilena<br>Furniture</h1>
         <h1 class="teks-sedang mb-1">Desain Pilihan<br>Indonesia.</h1>
     </div>
@@ -90,8 +135,14 @@
             <source src="img/iphone.mp4" type="video/mp4">
         </video>
     </div>
+    <div class="container">
+        <hr>
+    </div>
+    <div class="container mb-5 show-block-ke-hide">
+        <h1 class="teks-besar text-center">Produk Kami</h1>
+    </div>
 
-    <div class="container mb-5">
+    <div class="hide-ke-show-block mb-4">
         <h1 class="teks-besar text-center">Produk Kami</h1>
     </div>
 

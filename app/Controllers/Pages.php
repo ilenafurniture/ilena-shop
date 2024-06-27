@@ -617,7 +617,7 @@ class Pages extends BaseController
         $auth = base64_encode("SB-Mid-server-3M67g25LgovNPlwdS4WfiMsh" . ":");
         $pesananke = $this->pemesananModel->orderBy('id', 'desc')->first();
         $idFix = "IL" . (sprintf("%08d", $pesananke ? ((int)$pesananke['id'] + 1) : 1));
-        $randomId = "ILCon" . rand();
+        $randomId = "IL" . rand();
         $customField = json_encode([
             'e' => $email,
             'n' => $nama,

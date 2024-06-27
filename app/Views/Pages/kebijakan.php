@@ -1,7 +1,7 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
-<div class="container konten">
-    <div class="container">
+<div class="container">
+    <div class="konten">
         <div class="row">
             <div class="col">
                 <h3>Kebijakan Privasi</h3>

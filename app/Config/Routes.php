@@ -86,7 +86,6 @@ $routes->get('/gudang/listorder', 'GudangController::listOrder');
 $routes->get('/gudang/listorderafter', 'GudangController::listOrderAfter');
 $routes->get('/gudang/mutasi', 'GudangController::mutasi');
 $routes->get('/gudang/mutasi/(:any)', 'GudangController::mutasi/$1');
-$routes->get('/gudang/product', 'GudangController::product');
 $routes->get('/gudang/actionscan/(:any)/(:any)', 'GudangController::actionScan/$1/$2');
 $routes->post('/gudang/actionaddmutasi', 'GudangController::actionAddMutasi');
 $routes->get('/gudang/suratjalan/(:any)', 'GudangController::suratJalan/$1');

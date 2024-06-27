@@ -1,7 +1,7 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
-<div class="container konten">
-    <div class="container">
+<div class="container">
+    <div class="konten">
         <h3 class="mb-1">Syarat Dan Ketentuan</h3>
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">

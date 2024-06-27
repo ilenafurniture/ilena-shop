@@ -7,7 +7,8 @@
     <title><?= $title; ?> | I L E N A</title>
     <link href="<?= base_url('css/bootstrap.min.css'); ?>" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js" crossorigin="anonymous">
+    </script>
 
     <link rel="stylesheet" href="<?= base_url('css/style.css'); ?>">
 </head>
@@ -15,8 +16,13 @@
 <body>
     <script src="<?= base_url('js/bootstrap.bundle.min.js'); ?>">
     </script>
-    <div class="d-flex w-100" style="height: 100svh;">
-        <?= $this->include('gudang/layout/navbar'); ?>
+    <div class="baris-ke-kolom gap-0 w-100" style="height: 100svh;">
+        <div class="show-block-ke-hide">
+            <?= $this->include('gudang/layout/navbar'); ?>
+        </div>
+        <div class="hide-ke-show-block">
+            <?= $this->include('gudang/layout/navbarHpGudang'); ?>
+        </div>
         <div style="background-color: whitesmoke; overflow:scroll;" class="d-flex flex-column flex-grow-1">
             <?= $this->renderSection('content'); ?>
         </div>
