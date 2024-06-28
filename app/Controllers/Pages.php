@@ -1241,6 +1241,33 @@ class Pages extends BaseController
                                 4. Pembayaran berhasil.'
                 ],
             ],
+            'bca' => [
+                [
+                    'nama' => 'ATM BCA',
+                    'isi' => '1. Pilih transaksi lainnya pada menu utama.<br>
+                                2. Pilih transfer.<br>
+                                3. Pilih ke rekening BCA virtual account.<br>
+                                4. Masukan Nomor BCA virtual account.<br>
+                                5. Masukan jumlah yang akan dibayar, lalu konfirmasi.<br>
+                                6. Pembayaran berhasil.'
+                ],
+                [
+                    'nama' => 'Klik BCA',
+                    'isi' => '1. Pilih Transfer Dana.<br>
+                                2. Pilih Transfer ke BCA virtual account.<br>
+                                3. Masukkan nomor BCA virtual account.<br>
+                                4. Masukan jumlah yang akan dibayar, lalu konfirmasi.<br>
+                                5. Pembayaran berhasil.'
+                ],
+                [
+                    'nama' => 'M-BCA',
+                    'isi' => '1. Pilih m-Transfer.<br>
+                                2. Pilih BCA virtual account.<br>
+                                3. Masukkan nomor BCA virtual account.<br>
+                                4. Masukan jumlah yang akan dibayar, lalu konfirmasi<br>
+                                5. Pembayaran berhasil.'
+                ],
+            ],
             'permata' => [
                 [
                     'nama' => 'ATM Permata/ALTO',
