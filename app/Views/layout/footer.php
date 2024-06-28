@@ -1,7 +1,7 @@
 <footer style="background-color: black;">
-    <div class="container p-5">
-        <div class="d-flex pb-4 footer__left-menu baris-ke-kolom">
-            <div class="d-flex">
+    <div class="container py-5">
+        <div class="pb-4 footer__left-menu baris-ke-kolom">
+            <div class="d-flex w-100">
                 <div class="footer-div" style="flex:1;">
                     <h5>Perusahaan</h5>
                     <a href="/tentang">Tentang Kami</a><br>
@@ -14,7 +14,7 @@
                     <a href="">Customer Service</a>
                 </div>
             </div>
-            <div class=" d-flex">
+            <div class="d-flex w-100">
                 <div class="footer-div" style="flex:1;">
                     <h5>Shopping App</h5>
                     <ul class=" footer__left-menu">
@@ -43,8 +43,6 @@
             </p>
         </div>
 
-        <div style="height:70px;">
-
-        </div>
+        <div style="height:70px;" class="hide-ke-show-block"></div>
     </div>
 </footer>

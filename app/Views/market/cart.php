@@ -2,7 +2,7 @@
 <?= $this->section("content"); ?>
 <div style="padding: 2em;">
     <form action="/maket/submitorder" method="post">
-        <div class="d-flex gap-4">
+        <div class="baris-ke-kolom">
             <div class="limapuluh-ke-seratus">
                 <h1 class="teks-sedang mb-3">Informasi Pesanan</h1>
                 <div class="form-floating mb-1">
@@ -31,20 +31,20 @@
                         required>
                     <label for="floatingInput5">Jenis Kurir</label>
                 </div>
-                <div class="form-floating mb-3">
+                <div class="form-floating mb-1">
                     <input type="text" class="form-control" id="floatingInput6" placeholder="" name="no_resi" required>
                     <label for="floatingInput6">No resi</label>
                 </div>
-                <div class="form-floating mb-3">
+                <div class="form-floating mb-1">
                     <input type="text" class="form-control" id="floatingInput6" placeholder="" name="harga_pengiriman"
                         required>
                     <label for="floatingInput6">Harga Pengiriman</label>
                 </div>
-                <div class="form-floating mb-3">
+                <div class="form-floating mb-1">
                     <input type="text" class="form-control" id="floatingInput6" placeholder="" name="estimasi" required>
                     <label for="floatingInput6">Estimasi</label>
                 </div>
-                <div class="form-floating mb-3">
+                <div class="form-floating mb-1">
                     <input type="text" class="form-control" id="floatingInput6" placeholder="" name="id_marketplace"
                         required>
                     <label for="floatingInput6">Id Marketplace</label>
@@ -71,14 +71,14 @@
                 <hr>
 
                 <h1 class="teks-sedang mb-3">Produk yang dipesan</h1>
-                <div class="container-table">
-                    <div class="header-table ">
-                        <div style="flex:3;">Items</div>
+                <div>
+                    <div class="d-flex">
+                        <div style="flex:4;">Items</div>
                         <div style="flex:1;">Jumlah</div>
                     </div>
                     <?php foreach ($keranjang as $k) { ?>
-                    <div class="isi-table">
-                        <div style="flex:3;"><?= $k['nama'] ?> (<?= $k['varian'] ?>)</div>
+                    <div class="d-flex">
+                        <div style="flex:4;"><?= $k['nama'] ?> (<?= $k['varian'] ?>)</div>
                         <div style="flex:1;"><?= $k['jumlah'] ?></div>
                     </div>
                     <?php } ?>
@@ -87,6 +87,9 @@
         </div>
         <button class="btn-default-merah mt-2" type="submit">Kirim</button>
     </form>
+    <div style="height:70px">
+    </div>
 </div>
+
 
 <?= $this->endSection(); ?>

@@ -12,7 +12,7 @@
         <div class="baris-ke-kolom">
             <div class="limapuluh-ke-seratus">
                 <table class="table-input w-100">
-                    <tbody>ti
+                    <tbody>
                         <tr>
                             <td>Nama Produk</td>
                             <td>

@@ -1738,7 +1738,7 @@ class Pages extends BaseController
                 'isLogin' => true
             ];
             session()->set($ses_data);
-            return redirect()->to('/market/listorder');
+            return redirect()->to('/market/product');
         }
     }
     public function register()

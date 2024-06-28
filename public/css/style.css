@@ -798,9 +798,10 @@ body {
   position: fixed;
   width: 100vw;
   height: 70px;
-  background-color: white;
+  background-color: black;
   z-index: 99;
   bottom: 0;
+  box-shadow: 0 0 2px rgba(255, 255, 255, 0.4);
 }
 
 .navbar-hp .item-navhp {
@@ -808,7 +809,7 @@ body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  color: #9098a9;
+  color: rgb(53, 53, 53);
   text-decoration: none;
 }
 .navbar-hp .item-navhp p {
@@ -816,7 +817,7 @@ body {
   font-size: 12px;
 }
 .navbar-hp .item-navhp.active {
-  color: black;
+  color: white;
 }
 .navbar-hp .item-navhp.active p {
   font-weight: 600;
@@ -1285,23 +1286,6 @@ body {
     align-content: center;
     justify-content: space-between;
   }
-  .menu-hp {
-    position: fixed;
-    bottom: 0;
-    padding-block: 1em;
-    position: fixed;
-    width: 100vw;
-    height: 70px;
-    background-color: white;
-    z-index: 99;
-    bottom: 0;
-  }
-  .menu-hp a {
-    text-decoration: none;
-    display: block;
-    justify-content: center;
-    color: #070707;
-  }
 
   .btn-teks-aja {
     display: flex;
@@ -1338,25 +1322,40 @@ body {
   }
 
   /*Gudang*/
+  .container-table {
+    width: 1000px;
+  }
   .container-table .header-table {
     display: flex;
     border-bottom: 1px solid whitesmoke;
     padding-bottom: 0.5em;
-    width: 1000px;
+    /* min-width: max-content; */
+    width: 100%;
   }
   .container-table .header-table > div {
-    flex: 1;
     display: flex;
-    /* justify-content: center; */
+    justify-content: center;
     align-items: center;
     color: #9098a9;
     font-size: small;
     letter-spacing: -1px;
+    min-width: fit-content;
   }
   .container-table .isi-table {
     display: flex;
     border-bottom: 1px solid whitesmoke;
     padding-block: 0.7em;
+    min-width: max-content;
+    width: 100%;
+  }
+  .container-table .isi-table > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #9098a9;
+    font-size: small;
+    letter-spacing: -1px;
+    min-width: fit-content;
   }
   .container-table .isi-table:hover {
     background-color: whitesmoke;

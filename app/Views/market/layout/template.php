@@ -16,8 +16,13 @@
 <body>
     <script src="<?= base_url('js/bootstrap.bundle.min.js'); ?>">
     </script>
-    <div class="d-flex w-100" style="height: 100svh;">
-        <?= $this->include('market/layout/navbar'); ?>
+    <div class="baris-ke-kolom gap-0 w-100" style="height: 100svh;">
+        <div class="show-block-ke-hide">
+            <?= $this->include('market/layout/navbar'); ?>
+        </div>
+        <div class="hide-ke-show-block">
+            <?= $this->include('market/layout/navbarHpMarket'); ?>
+        </div>
         <div style="background-color: whitesmoke; overflow:scroll;" class="d-flex flex-column flex-grow-1">
             <?= $this->renderSection('content'); ?>
         </div>

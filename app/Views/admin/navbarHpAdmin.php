@@ -21,35 +21,35 @@
 </div>
 
 
-<div class="menu-hp d-flex align-content-center justify-content-center">
+<div class="navbar-hp hide-ke-show-flex">
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
-        <a class="item-nav <?= $title == 'Produk Kami' ? 'active' : ''; ?>" href="/admin/product">
+        <a class="item-navhp <?= $title == 'Produk Kami' ? 'active' : ''; ?>" href="/admin/product">
             <i class="material-icons">people</i>
-            <p class="m-0">Produk</p>
+            <!-- <p class="m-0">Produk</p> -->
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
-        <a class="item-nav <?= $title == 'Pesanan' ? 'active' : ''; ?>" href="/admin/order">
+        <a class="item-navhp <?= $title == 'Pesanan' ? 'active' : ''; ?>" href="/admin/order">
             <i class="material-icons">shopping_cart</i>
-            <p class="m-0">Pesanan</p>
+            <!-- <p class="m-0">Pesanan</p> -->
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
-        <a class="item-nav <?= $title == 'Pengajuan Print Ulang' ? 'active' : ''; ?>" href="/admin/reprint">
+        <a class="item-navhp <?= $title == 'Pengajuan Print Ulang' ? 'active' : ''; ?>" href="/admin/reprint">
             <i class="material-icons">assignment</i>
-            <p class="m-0">Pengajuan Print</p>
+            <!-- <p class="m-0">Pengajuan Print</p> -->
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
-        <a class="item-nav <?= $title == 'Konfirmasi Marketplace' ? 'active' : ''; ?>" href="/admin/marketplace">
+        <a class="item-navhp <?= $title == 'Konfirmasi Marketplace' ? 'active' : ''; ?>" href="/admin/marketplace">
             <i class="material-icons">assignment_turned_in</i>
-            <p class="m-0">Konfirmasi Marketplace</p>
+            <!-- <p class="m-0">Konfirmasi Marketplace</p> -->
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
-        <a class="item-nav" href="/logout">
+        <a class="item-navhp" href="/logout">
             <i class="material-icons">exit_to_app</i>
-            <p class="m-0">Keluar</p>
+            <!-- <p class="m-0">Keluar</p> -->
         </a>
     </div>
 </div>

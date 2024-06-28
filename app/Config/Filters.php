@@ -26,6 +26,12 @@ class Filters extends BaseConfig
         'secureheaders' => SecureHeaders::class,
         'harusLogin'    => \App\Filters\LoginFilter::class,
         'keamananRoute' => \App\Filters\KeamananRoute::class,
+        'customerFilter'=> \App\Filters\CustomerFilter::class,
+        'customerLoginFilter'=> \App\Filters\CustomerLoginFilter::class,
+        'customerLogoutFilter'=> \App\Filters\CustomerLogoutFilter::class,
+        'adminFilter'   => \App\Filters\AdminFilter::class,
+        'gudangFilter'   => \App\Filters\GudangFilter::class,
+        'marketFilter'   => \App\Filters\MarketFilter::class,
     ];
 
     /**

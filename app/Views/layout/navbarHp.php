@@ -24,26 +24,26 @@
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
         <a class="item-navhp <?= $title == 'Home' ? 'active' : ''; ?>" href="/">
             <i class="material-icons">home</i>
-            <p class="m-0 ">Home</p>
+            <!-- <p class="m-0 ">Home</p> -->
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
         <a class="item-navhp <?= $title == 'Favorite' ? 'active' : ''; ?>" href="/wishlist">
             <i class="material-icons">bookmark_border</i>
-            <p class="m-0">Tersimpan</p>
+            <!-- <p class="m-0">Tersimpan</p> -->
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
         <a class="item-navhp <?= $title == 'Keranjang' ? 'active' : ''; ?>" href="/cart">
             <i class="material-icons">shopping_cart</i>
-            <p class="m-0">Keranjang</p>
+            <!-- <p class="m-0">Keranjang</p> -->
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
         <a class="item-navhp <?= $title == 'Akun' ? 'active' : ''; ?>"
             href="<?= session()->get('isLogin') ? '/account': '/login' ?>">
             <i class="material-icons">person_outline</i>
-            <p class="m-0"><?= session()->get('isLogin') ? 'Akun': 'Masuk' ?></p>
+            <!-- <p class="m-0"><?= session()->get('isLogin') ? 'Akun': 'Masuk' ?></p> -->
         </a>
     </div>
 

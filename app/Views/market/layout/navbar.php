@@ -3,10 +3,10 @@
         <h1 class="teks-sedang mb-4">Market Ilena</h1>
         <div class="mt-2 d-flex justify-content-between py-1">
             <p class="m-0">
-                Nama
+                Email
             </p>
             <p class="fw-bold m-0">
-                Saiful Ahmat
+                <?= session()->get("email"); ?>
             </p>
         </div>
         <div class="d-flex justify-content-between py-1">

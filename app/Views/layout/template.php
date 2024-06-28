@@ -17,7 +17,9 @@
     </script>
     <?= $this->include('layout/navbar'); ?>
     <?= $this->include('layout/navbarHp'); ?>
-    <?= $this->renderSection('content'); ?>
+    <div style="flex: 1">
+        <?= $this->renderSection('content'); ?>
+    </div>
     <?= $this->include('layout/footer'); ?>
 </body>
 

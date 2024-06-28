@@ -35,12 +35,12 @@ class GudangController extends BaseController
     public function listOrder()
     {
         $pesananGudang = $this->pemesananGudangModel->getPemesananGudang();
+        $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
         foreach ($pesananGudang as $ind_p => $p) {
             $barang = $this->barangModel->getBarang($p['id_barang']);
             foreach (json_decode($barang['varian'], true) as $v) {
                 if ($v['nama'] == strtolower(rtrim(explode("(", $p['nama'])[1], ")"))) {
                     $pesananGudang[$ind_p]['stok'] = $v['stok'];
-                    $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
                     $tanggal = strtotime($p['tanggal']);
                     if ((int)date("H", $tanggal) > 12) {
                         $tanggal = strtotime($p['tanggal'] . " +1 day");
@@ -52,6 +52,7 @@ class GudangController extends BaseController
                     $pesananGudang[$ind_p]['target_selesai'] = $targetSelesai;
                 }
             }
+            $pesananGudang[$ind_p]['tanggal'] = date('d',strtotime($p['tanggal'])).' '.$bulan[(int)date('m',strtotime($p['tanggal'])) - 1].' '.date('Y',strtotime($p['tanggal']));
         }
         // dd($pesananGudang);
         $data = [
@@ -185,7 +186,7 @@ class GudangController extends BaseController
         $pemesanan = $this->pemesananModel->getPemesanan($id_midtrans);
         if ($pemesanan['status_print'] != 'siap') {
             session()->setFlashdata('msg_status_print', 'Surat belum bisa atau sudah di cetak');
-            return redirect()->to('/gudang/listorder');
+            return redirect()->to('/gudang/listorderafter');
         }
 
         $this->pemesananModel->where(['id_midtrans' => $id_midtrans])->set(['status_print' => 'sudah print'])->update();

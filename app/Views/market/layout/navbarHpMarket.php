@@ -1,11 +1,11 @@
 <div class="header-hp w-100 hide-ke-show-block">
-    <h1 class="teks-sedang text-center pt-1">Gudang Ilena</h1>
+    <h1 class="teks-sedang text-center pt-1">Market Ilena</h1>
     <div class="mt-2 d-flex justify-content-between">
         <p class="m-0">
-            Nama
+            Email
         </p>
         <p class="fw-bold m-0">
-            <?= session()->get("nama"); ?>
+            <?= session()->get("email"); ?>
         </p>
     </div>
     <div class="d-flex mb-2">
@@ -25,21 +25,15 @@
 
 <div class="navbar-hp hide-ke-show-flex">
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
-        <a class="item-navhp <?= $title == 'Pesanan' ? 'active' : ''; ?>" href="/gudang/listorder">
+        <a class="item-navhp <?= $title == 'Semua Produk' ? 'active' : ''; ?>" href="/market/product">
             <i class="material-icons">people</i>
-            <p class="m-0 ">Pesanan</p>
+            <p class="m-0">Pesanan</p>
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
-        <a class="item-navhp <?= $title == 'Pesanan Selesai' ? 'active' : ''; ?>" href="/gudang/listorderafter">
-            <i class="material-icons">local_shipping</i>
-            <p class="m-0">Pesanan Selesai</p>
-        </a>
-    </div>
-    <div style="flex:1;" class="d-flex justify-content-center align-content-center">
-        <a class="item-navhp <?= $title == 'Mutasi' ? 'active' : ''; ?>" href="/gudang/mutasi">
-            <i class="material-icons">library_books</i>
-            <p class="m-0">Mutasi</p>
+        <a class="item-navhp <?= $title == 'Keranjang Produk' ? 'active' : ''; ?>" href="/market/cart">
+            <i class="material-icons">shopping_cart</i>
+            <p class="m-0">Keranjang</p>
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
