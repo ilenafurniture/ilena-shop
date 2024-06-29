@@ -47,6 +47,23 @@ class MarketplaceController extends BaseController
         ];
         return view('market/product', $data);
     }
+    public function actionFind() {
+        $cari = str_replace(" ", "-",$this->request->getVar('cari'));
+        return redirect()->to('/market/find/'.$cari);
+    }
+    public function find($teks)
+    {
+        $cari = str_replace("-"," ",$teks);
+        $cart = $this->keranjangMarketModel->getKeranjang();
+        $produk = $this->barangModel->like('nama', $cari, 'both')->where(['active' => '1'])->findAll();
+        $data = [
+            'title' => 'Cari Produk',
+            'produk' => $produk,
+            'keranjang' => $cart,
+            'find' => $cari
+        ];
+        return view('market/product', $data);
+    }
 
     public function cart()
     {

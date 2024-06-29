@@ -45,12 +45,26 @@ class Pages extends BaseController
         ];
         return view('pages/home', $data);
     }
-
-    public function find()
+    
+    public function actionFind() {
+        $cari = str_replace(" ", "-",$this->request->getVar('cari'));
+        return redirect()->to('/find/'.$cari);
+    }
+    public function find($teks)
     {
+        $cari = str_replace("-"," ",$teks);
+        $produk = $this->barangModel->like('nama', $cari, 'both')->where(['active' => '1'])->findAll();
+        $wishlist = $this->session->get('wishlist');
+        if (!isset($wishlist)) {
+            $wishlist = [];
+        }
         $data = [
-            'title' => 'find',
+            'title' => 'Cari Produk',
+            'produk' => $produk,
+            'wishlist' => $wishlist,
+            'find' => $cari
         ];
+        return view('pages/all', $data);
     }
     public function product($id = false)
     {
@@ -60,6 +74,7 @@ class Pages extends BaseController
         }
         if ($id) {
             $product = $this->barangModel->getBarang($id);
+            dd($product);
             $product['deskripsi'] = json_decode($product['deskripsi'], true);
             $product['varian'] = json_decode($product['varian'], true);
             $data = [

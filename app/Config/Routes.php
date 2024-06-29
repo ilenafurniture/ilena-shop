@@ -15,6 +15,7 @@ $routes->get('/', 'Pages::index', ['filter' => 'customerFilter']);
 $routes->get('/product', 'Pages::product', ['filter' => 'customerFilter']);
 $routes->get('/product/(:any)', 'Pages::product/$1', ['filter' => 'customerFilter']);
 
+$routes->post('/actionfind', 'Pages::actionFind', ['filter' => 'customerFilter']);
 $routes->get('/find/(:any)', 'Pages::find/$1', ['filter' => 'customerFilter']);
 
 $routes->get('/cart', 'Pages::cart', ['filter' => 'customerFilter']);
@@ -97,6 +98,8 @@ $routes->post('/gudang/ajukanprint', 'GudangController::ajukanPrint', ['filter' 
 
 // Marketplace Controller
 $routes->get('/market/product', 'MarketplaceController::product', ['filter' => 'marketFilter']);
+$routes->post('/market/actionfind', 'MarketplaceController::actionFind', ['filter' => 'marketFilter']);
+$routes->get('/market/find/(:any)', 'MarketplaceController::find/$1', ['filter' => 'marketFilter']);
 $routes->get('/market/cart', 'MarketplaceController::cart', ['filter' => 'marketFilter']);
 $routes->get('/market/addcart/(:any)/(:any)', 'MarketplaceController::addCart/$1/$2', ['filter' => 'marketFilter']);
 $routes->get('/market/reducecart/(:any)', 'MarketplaceController::reduceCart/$1', ['filter' => 'marketFilter']);

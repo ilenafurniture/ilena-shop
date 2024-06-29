@@ -125,9 +125,9 @@
         <div class="hide-ke-show-block">
             <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Produk Kami</a></li>
-                    <li class="breadcrumb-item"><a href="/">Meja</a></li>
-                    <li class="breadcrumb-item">Meja TV</li>
+                    <li class="breadcrumb-item"><a href="/">Beranda</a></li>
+                    <li class="breadcrumb-item"><a href="/product">Produk</a></li>
+                    <!-- <li class="breadcrumb-item">Meja TV</li> -->
                     </li>
                 </ol>
             </nav>
@@ -288,13 +288,16 @@
             <?php } ?>
             <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb" class="show-block-ke-hide">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Produk Kami</a></li>
-                    <li class="breadcrumb-item"><a href="/">Meja</a></li>
-                    <li class="breadcrumb-item">Meja TV</li>
+                    <li class="breadcrumb-item"><a href="/">Beranda</a></li>
+                    <li class="breadcrumb-item"><a href="/product">Produk</a></li>
+                    <!-- <li class="breadcrumb-item">Meja TV</li> -->
                     </li>
                 </ol>
             </nav>
-            <?php
+            <?php if(isset($find)) { ?>
+            <p>Anda mencari "<?= $find ?>"</p>
+            <?php }
+            
         if (isset($_GET['kategori'])) {
             $kategori = explode("-", $_GET['kategori']);
             $produkLama = $produk;
@@ -431,7 +434,8 @@ btnFilterElm.forEach(element => {
         });
         console.log(arrFilter)
         console.log(valueFilter)
-        let strUrl = '/product?'
+        const pathUrl = window.location.pathname
+        let strUrl = pathUrl + '?'
         arrFilter.forEach((fil, ind_fil) => {
             strUrl += "&" + fil + "=" + valueFilter[ind_fil]
         })

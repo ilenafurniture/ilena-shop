@@ -4,8 +4,8 @@
     <div style="flex:1;">
         <div class="d-flex justify-content-between">
             <h1 class="teks-sedang mb-2">List Produk</h1>
-            <form action="">
-                <input placeholder="Cari produk" style="text-transform: capitalize;" class="input" name="text"
+            <form action="/market/actionfind" method="post">
+                <input placeholder="Cari produk" style="text-transform: capitalize;" class="input text-dark" name="cari"
                     type="text">
             </form>
         </div>

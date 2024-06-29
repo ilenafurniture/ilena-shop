@@ -2,8 +2,8 @@
     <div class="container py-3">
         <div class="d-flex w-100 justify-content-between align-items-center">
             <div style="width: calc(100% / 3)">
-                <form action="">
-                    <input placeholder="Cari produk" style="text-transform: capitalize;" class="input" name="text"
+                <form action="/actionfind" method="post">
+                    <input placeholder="Cari produk" style="text-transform: capitalize;" class="input" name="cari"
                         type="text">
                 </form>
             </div>
