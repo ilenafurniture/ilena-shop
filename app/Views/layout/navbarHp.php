@@ -1,8 +1,7 @@
 <div class="navbar-hp-atas hide-ke-show-flex">
     <div style="flex:1;">
-        <form action="" class="w-100">
-            <input placeholder="Cari produk" style="text-transform: capitalize;" class="input w-100" name="text"
-                type="text">
+        <form action="/actionfind" method="post" class="w-100">
+            <input placeholder="Cari produk" style="text-transform: capitalize;" class="input w-100" name="cari" type="text">
         </form>
     </div>
     <div style="width: fit-content">
@@ -40,10 +39,9 @@
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
-        <a class="item-navhp <?= $title == 'Akun' ? 'active' : ''; ?>"
-            href="<?= session()->get('isLogin') ? '/account': '/login' ?>">
+        <a class="item-navhp <?= $title == 'Akun' ? 'active' : ''; ?>" href="<?= session()->get('isLogin') ? '/account' : '/login' ?>">
             <i class="material-icons">person_outline</i>
-            <!-- <p class="m-0"><?= session()->get('isLogin') ? 'Akun': 'Masuk' ?></p> -->
+            <!-- <p class="m-0"><?= session()->get('isLogin') ? 'Akun' : 'Masuk' ?></p> -->
         </a>
     </div>
 

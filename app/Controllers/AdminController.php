@@ -46,9 +46,6 @@ class AdminController extends BaseController
         ];
         return view('admin/all', $data);
     }
-    public function customer()
-    {
-    }
     public function addProduct()
     {
         $koleksi = $this->koleksiModel->getKoleksi();
@@ -78,7 +75,7 @@ class AdminController extends BaseController
         ])) {
             $validation = \Config\Services::validation();
             session()->setFlashdata('val-id', $validation->getError('id'));
-            return redirect()->to('/addproduct')->withInput();
+            return redirect()->to('/admin/addproduct')->withInput();
         }
 
         $koleksi = $this->koleksiModel->getKoleksi();
@@ -173,11 +170,121 @@ class AdminController extends BaseController
         // $product['pencarian'] = json_decode($product['pencarian'],true);  
         $product['deskripsi'] = json_decode($product['deskripsi'], true);
         $product['varian'] = json_decode($product['varian'], true);
+        $koleksi = $this->koleksiModel->getKoleksi();
+        $jenis = $this->jenisModel->getJenis();
+        $hitungVarian = '';
+        foreach ($product['varian'] as $ind => $v) {
+            if ($ind == 0) {
+                $hitungVarian = $hitungVarian . ($ind + 1);
+            } else {
+                $hitungVarian = $hitungVarian . "," . ($ind + 1);
+            }
+        }
         $data = [
             'title' => 'Tambah Produk',
-            'produk' => $product
+            'koleksi' => $koleksi,
+            'jenis' => $jenis,
+            'produk' => $product,
+            'hitungVarian' => $hitungVarian
         ];
         return view('admin/edit', $data);
+    }
+    public function actionEditProduct()
+    {
+        $idBarang = $this->request->getVar('id');
+        $barangCur = $this->barangModel->getBarangAdmin($idBarang);
+        $gambarBarangCur = $this->gambarBarangModel->getGambar($idBarang);
+        if (!$barangCur) {
+            session()->setFlashdata('val-id', 'ID barang tidak ditemukan');
+            return redirect()->to('/admin/editproduct')->withInput();
+        }
+
+        $koleksi = $this->koleksiModel->getKoleksi();
+        $jenis = $this->jenisModel->getJenis();
+        $data = $this->request->getVar();
+        $data_gambar_mentah = $this->request->getFiles();
+
+        $data_gambar = [];
+        foreach ($data_gambar_mentah as $key => $g) {
+            if ($g->isValid()) {
+                $data_gambar[$key] = file_get_contents($g);
+            } else {
+                if ($gambarBarangCur['gambar' . explode("-", $key)[2]] != null) {
+                    $data_gambar[$key] = $gambarBarangCur['gambar' . explode("-", $key)[2]];
+                }
+            }
+        }
+        $jumlahVarian = explode(",", $this->request->getVar('hitung-varian')); //nilai indeks/urutan varian yg masuk ke backend
+
+        $insertGambarBarang = [];
+        $varianData = json_decode($barangCur['varian'], true);
+
+        $counterGambar = 0;
+        $varianDataBaru = [];
+        foreach ($jumlahVarian as $j) {
+            $urutanGambar = [];
+            foreach ($data_gambar as $ind_g => $g) {
+                if (explode("-", $ind_g)[1] == $j) {
+                    $counterGambar++;
+                    array_push($urutanGambar, $counterGambar);
+                    $insertGambarBarang['gambar' . $counterGambar] = $g;
+                }
+            }
+            $itemVarianBaru = [
+                'nama' => $data['nama-var' . $j],
+                'kode' => $data['kode-var' . $j],
+                'stok' => $data['stok-var' . $j],
+                'urutan_gambar' => implode(",", $urutanGambar),
+            ];
+            array_push($varianDataBaru, $itemVarianBaru);
+        }
+
+        $dataKategori = $data['kategori'];
+        $koleksiSelected = array_values(array_filter($koleksi, function ($var) use ($dataKategori) {
+            return ($var['id'] == $dataKategori);
+        }))[0]['nama'];
+        $dataSubkategori = $data['subkategori'];
+        $jenisSelected = array_values(array_filter($jenis, function ($var) use ($dataSubkategori) {
+            return ($var['id'] == $dataSubkategori);
+        }))[0]['nama'];
+
+        // $index_data_gambar = array_flip(array_keys($data_gambar));
+        // foreach ($data_gambar as $key_dg => $dG) {
+        //     $insertGambarBarang['gambar' . ((int)$index_data_gambar[$key_dg] + 1)] = file_get_contents($dG);
+        // }
+        $insertDataBarang = [
+            'nama' => $data['nama'],
+            'harga' => $data['harga'],
+            'deskripsi' => json_encode([
+                'deskripsi' => $data['deskripsi'],
+                'dimensi' => [
+                    'asli' => [
+                        'panjang' => $data['panjang-asli'],
+                        'lebar' => $data['lebar-asli'],
+                        'tinggi' => $data['tinggi-asli'],
+                        'berat' => $data['berat-asli'],
+                    ],
+                    'paket' => [
+                        'panjang' => $data['panjang-paket'],
+                        'lebar' => $data['lebar-paket'],
+                        'tinggi' => $data['tinggi-paket'],
+                        'berat' => $data['berat-paket'],
+                    ]
+                ],
+                'perawatan' => $data['perawatan']
+            ]),
+            'kategori' => $koleksiSelected,
+            'subkategori' => $jenisSelected,
+            'diskon' => $data['diskon'],
+            'varian' => json_encode($varianDataBaru),
+            'shopee' => $data['shopee'],
+            'tokped' => $data['tokped'],
+            'gambar' => $insertGambarBarang['gambar1']
+        ];
+
+        $this->barangModel->where(['id' => $idBarang])->set($insertDataBarang)->update();
+        $this->gambarBarangModel->where(['id' => $idBarang])->set($insertGambarBarang)->update();
+        return redirect()->to('admin/product');
     }
     public function activeProduct($id_product)
     {

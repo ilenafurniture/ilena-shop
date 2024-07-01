@@ -45,14 +45,15 @@ class Pages extends BaseController
         ];
         return view('pages/home', $data);
     }
-    
-    public function actionFind() {
-        $cari = str_replace(" ", "-",$this->request->getVar('cari'));
-        return redirect()->to('/find/'.$cari);
+
+    public function actionFind()
+    {
+        $cari = str_replace(" ", "-", $this->request->getVar('cari'));
+        return redirect()->to('/find/' . $cari);
     }
     public function find($teks)
     {
-        $cari = str_replace("-"," ",$teks);
+        $cari = str_replace("-", " ", $teks);
         $produk = $this->barangModel->like('nama', $cari, 'both')->where(['active' => '1'])->findAll();
         $wishlist = $this->session->get('wishlist');
         if (!isset($wishlist)) {
@@ -74,7 +75,7 @@ class Pages extends BaseController
         }
         if ($id) {
             $product = $this->barangModel->getBarang($id);
-            dd($product);
+            // dd($product);
             $product['deskripsi'] = json_decode($product['deskripsi'], true);
             $product['varian'] = json_decode($product['varian'], true);
             $data = [
@@ -1603,7 +1604,7 @@ class Pages extends BaseController
         $email = session()->get('email');
         if ($email)
             $this->pembeliModel->where('email', $email)->set(['wishlist' => json_encode($wishlist)])->update();
-        return redirect()->to('/wishlist');
+        return redirect()->to('/product/' . $id_barang);
     }
     public function delWishlist($id_barang)
     {
@@ -1615,7 +1616,7 @@ class Pages extends BaseController
         $email = session()->get('email');
         if ($email)
             $this->pembeliModel->where('email', $email)->set(['wishlist' => json_encode($wishlist)])->update();
-        return redirect()->to('/wishlist');
+        return redirect()->to('/product/' . $id_barang);
     }
     public function wishlistToCart()
     {
