@@ -283,6 +283,13 @@ class AdminController extends BaseController
         ];
 
         $this->barangModel->where(['id' => $idBarang])->set($insertDataBarang)->update();
+
+        //kosongin semua gambar di db gambar barang
+        foreach ($gambarBarangCur as $ind_g => $g) {
+            if ($g != null && $ind_g != 'id') {
+                $this->gambarBarangModel->where(['id' => $idBarang])->set([$ind_g => null])->update();
+            }
+        }
         $this->gambarBarangModel->where(['id' => $idBarang])->set($insertGambarBarang)->update();
         return redirect()->to('admin/product');
     }
