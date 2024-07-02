@@ -93,17 +93,17 @@
                                 <ul>
                                     <li>
                                         <p class="mb-0">
-                                            Panjang : <?= $produk['deskripsi']['dimensi']['asli']['panjang'] ?> cm
+                                            Panjang : <?= $produk['deskripsi']['dimensi']['asli']['panjang'] ?> mm
                                         </p>
                                     </li>
                                     <li>
                                         <p class="mb-0">
-                                            Lebar : <?= $produk['deskripsi']['dimensi']['asli']['lebar'] ?> cm
+                                            Lebar : <?= $produk['deskripsi']['dimensi']['asli']['lebar'] ?> mm
                                         </p>
                                     </li>
                                     <li>
                                         <p class="mb-0">
-                                            Tinggi : <?= $produk['deskripsi']['dimensi']['asli']['tinggi'] ?> cm
+                                            Tinggi : <?= $produk['deskripsi']['dimensi']['asli']['tinggi'] ?> mm
                                         </p>
                                     </li>
                                     <li>
@@ -116,17 +116,17 @@
                                 <ul>
                                     <li>
                                         <p class="mb-0">
-                                            Panjang : <?= $produk['deskripsi']['dimensi']['paket']['panjang'] ?> cm
+                                            Panjang : <?= $produk['deskripsi']['dimensi']['paket']['panjang'] ?> mm
                                         </p>
                                     </li>
                                     <li>
                                         <p class="mb-0">
-                                            Lebar : <?= $produk['deskripsi']['dimensi']['paket']['lebar'] ?> cm
+                                            Lebar : <?= $produk['deskripsi']['dimensi']['paket']['lebar'] ?> mm
                                         </p>
                                     </li>
                                     <li>
                                         <p class="mb-0">
-                                            Tinggi : <?= $produk['deskripsi']['dimensi']['paket']['tinggi'] ?> cm
+                                            Tinggi : <?= $produk['deskripsi']['dimensi']['paket']['tinggi'] ?> mm
                                         </p>
                                     </li>
                                     <li>

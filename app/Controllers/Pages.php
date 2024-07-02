@@ -414,7 +414,7 @@ class Pages extends BaseController
             $keranjang[$index]['detail'] = $produk;
             $hargaTotal += $produk['harga'] * $k['jumlah'] * (100 - $produk['diskon']) / 100;
             $dimensiPaket = json_decode($produk['deskripsi'], true)['dimensi']['paket'];
-            $beratVolume = ceil((float)$dimensiPaket['panjang'] * (float)$dimensiPaket['lebar'] * (float)$dimensiPaket['tinggi'] / 3500); //kg
+            $beratVolume = ceil((float)$dimensiPaket['panjang'] / 10 * (float)$dimensiPaket['lebar'] / 10 * (float)$dimensiPaket['tinggi'] / 10 / 3500); //kg
             $beratAsli = (float)$dimensiPaket['berat'];
             $beratAkhir += ($beratVolume > $beratAsli ? $beratVolume : $beratAsli) * $k['jumlah'];
         }

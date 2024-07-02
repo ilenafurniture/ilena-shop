@@ -30,13 +30,13 @@ $routes->post('/addaddress', 'Pages::addAddress');
 $routes->get('/deleteaddress/(:any)', 'Pages::deleteAddress/$1', ['filter' => 'customerFilter']);
 $routes->post('/editaddress/(:any)', 'Pages::editAddress/$1', ['filter' => 'customerFilter']);
 
-$routes->get('/shipping/(:any)', 'Pages::shipping/$1', ['filter' => 'customerFilter']);
+$routes->get('/shipping/(:any)', 'Pages::shipping/$1', ['filter' => 'customerShippingFilter']);
 $routes->get('/tracking', 'Pages::tracking', ['filter' => 'customerFilter']);
 
-$routes->get('/payment/(:any)', 'Pages::payment/$1', ['filter' => 'customerFilter']);
-$routes->get('/actionpay/(:any)', 'Pages::actionPay/$1', ['filter' => 'customerFilter']);
-$routes->post('/actionpaysnap', 'Pages::actionPaySnap', ['filter' => 'customerFilter']);
-$routes->post('/updatetransaction', 'Pages::updateTransaction', ['filter' => 'customerFilter']);
+$routes->get('/payment/(:any)', 'Pages::payment/$1', ['filter' => 'customerShippingFilter']);
+$routes->get('/actionpay/(:any)', 'Pages::actionPay/$1');
+$routes->post('/actionpaysnap', 'Pages::actionPaySnap');
+$routes->post('/updatetransaction', 'Pages::updateTransaction');
 $routes->get('/progresspay/(:any)', 'Pages::progressPay/$1', ['filter' => 'customerFilter']);
 $routes->get('/successpay/(:any)', 'Pages::successPay/$1', ['filter' => 'customerFilter']);
 $routes->get('/cencelpay', 'Pages::cencelPay', ['filter' => 'customerFilter']);
