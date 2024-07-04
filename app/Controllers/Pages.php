@@ -101,6 +101,24 @@ class Pages extends BaseController
         if (!isset($keranjang)) {
             $keranjang = [];
         }
+        $ketemuProdukNull = [];
+        foreach ($keranjang as $index => $k) {
+            $produk = $this->barangModel->getBarang($k['id_barang']);
+            if (!$produk) {
+                array_push($ketemuProdukNull, $index);
+            }
+        }
+        if (count($ketemuProdukNull) > 0) {
+            foreach ($ketemuProdukNull as $k) {
+                unset($keranjang[$k]);
+                $keranjangBaru = array_values($keranjang);
+                $this->session->set(['keranjang' => $keranjangBaru]);
+                $email = session()->get('email');
+                if ($email)
+                    $this->pembeliModel->where('email', $email)->set(['keranjang' => json_encode($keranjangBaru)])->update();
+            }
+            return redirect()->to('/cart');
+        }
         foreach ($keranjang as $index => $k) {
             $produk = $this->barangModel->getBarang($k['id_barang']);
             foreach (json_decode($produk['varian'], true) as $v) {
@@ -1536,9 +1554,11 @@ class Pages extends BaseController
             $email = session()->get('email');
             $pesanan = $this->pemesananModel->getPemesananCus($email);
             foreach ($pesanan as $ind_p => $p) {
-                $pesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
+                $pesanan[$ind_p]['data_mid'] = [
+                    'transaction_time' => json_decode($p['data_mid'], true)['transaction_time'],
+                    'gross_amount' => json_decode($p['data_mid'], true)['gross_amount'],
+                ];
                 $pesanan[$ind_p]['items'] = json_decode($p['items'], true);
-                $pesanan[$ind_p]['alamat'] = json_decode($p['alamat'], true);
                 $pesanan[$ind_p]['kurir'] = json_decode($p['kurir'], true);
             }
             $data = [
@@ -1581,6 +1601,24 @@ class Pages extends BaseController
         $produk = [];
         if (!isset($wishlist)) {
             $wishlist = [];
+        }
+        $ketemuProdukNull = [];
+        foreach ($wishlist as $index => $w) {
+            $produkCek = $this->barangModel->getBarang($w);
+            if (!$produkCek) {
+                array_push($ketemuProdukNull, $index);
+            }
+        }
+        if (count($ketemuProdukNull) > 0) {
+            foreach ($ketemuProdukNull as $k) {
+                unset($wishlist[$k]);
+                $wishlistBaru = array_values($wishlist);
+                $this->session->set(['wishlist' => $wishlistBaru]);
+                $email = session()->get('email');
+                if ($email)
+                    $this->pembeliModel->where('email', $email)->set(['wishlist' => json_encode($wishlistBaru)])->update();
+            }
+            return redirect()->to('/wishlist');
         }
         foreach ($wishlist as $w) {
             array_push($produk, $this->barangModel->getBarang($w));

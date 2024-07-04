@@ -37,28 +37,55 @@
             <h1 class="teks-sedang">Pesanan</h1>
             <p style="color: grey;"><?= count($pesanan) <= 0 ? 'Tidak Ada' : count($pesanan) ?> Pemesanan</p>
         </div>
-        <div class="container-table">
-            <div class="header-table">
-                <div>ID Pesanan</div>
-                <div>Tanggal</div>
-                <div>Penerima</div>
-                <div>Harga</div>
-                <div>Status</div>
-            </div>
-            <?php foreach ($pesanan as $ind_p => $p) { ?>
-                <div class="isi-table" onclick="openDetail(<?= $ind_p; ?>)">
-                    <div><?= $p['id_midtrans']; ?></div>
-                    <?php
-                    $transactionTime = strtotime($p['data_mid']['transaction_time']);
-                    $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
-                    $tgl = date("d", $transactionTime) . " " . $bulan[(int)date("m", $transactionTime) - 1] . " " . date("Y H:i:s", $transactionTime);
-                    ?>
-                    <div><?= $tgl; ?></div>
-                    <div><?= $p['nama']; ?></div>
-                    <div>Rp <?= number_format((int)$p['data_mid']['gross_amount'], 0, ',', '.'); ?></div>
-                    <div><?= $p['status']; ?></div>
+        <div style="overflow-x: auto;" class="show-block-ke-hide">
+            <div class="container-table">
+                <div class="header-table">
+                    <div>ID Pesanan</div>
+                    <div>Tanggal</div>
+                    <div>Penerima</div>
+                    <div>Harga</div>
+                    <div>Status</div>
                 </div>
-            <?php } ?>
+                <?php foreach ($pesanan as $ind_p => $p) { ?>
+                    <div class="isi-table" onclick="openDetail(<?= $ind_p; ?>)">
+                        <div><?= $p['id_midtrans']; ?></div>
+                        <?php
+                        $transactionTime = strtotime($p['data_mid']['transaction_time']);
+                        $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+                        $tgl = date("d", $transactionTime) . " " . $bulan[(int)date("m", $transactionTime) - 1] . " " . date("Y H:i:s", $transactionTime);
+                        ?>
+                        <div><?= $tgl; ?></div>
+                        <div><?= $p['nama']; ?></div>
+                        <div>Rp <?= number_format((int)$p['data_mid']['gross_amount'], 0, ',', '.'); ?></div>
+                        <div><?= $p['status']; ?></div>
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
+        <div style="overflow-x: auto;" class="hide-ke-show-block">
+            <div class="container-table" style="width: 600px;">
+                <div class="header-table">
+                    <div>ID Pesanan</div>
+                    <div>Tanggal</div>
+                    <div>Penerima</div>
+                    <div>Harga</div>
+                    <div>Status</div>
+                </div>
+                <?php foreach ($pesanan as $ind_p => $p) { ?>
+                    <div class="isi-table" onclick="openDetail(<?= $ind_p; ?>)">
+                        <div><?= $p['id_midtrans']; ?></div>
+                        <?php
+                        $transactionTime = strtotime($p['data_mid']['transaction_time']);
+                        $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+                        $tgl = date("d", $transactionTime) . " " . $bulan[(int)date("m", $transactionTime) - 1] . " " . date("Y H:i:s", $transactionTime);
+                        ?>
+                        <div><?= $tgl; ?></div>
+                        <div><?= $p['nama']; ?></div>
+                        <div>Rp <?= number_format((int)$p['data_mid']['gross_amount'], 0, ',', '.'); ?></div>
+                        <div><?= $p['status']; ?></div>
+                    </div>
+                <?php } ?>
+            </div>
         </div>
     </div>
 </div>
@@ -133,7 +160,7 @@
         idElm.innerHTML = pesananSelected.id_midtrans
         namaElm.innerHTML = pesananSelected.nama
         nohpElm.innerHTML = pesananSelected.nohp
-        alamatElm.innerHTML = pesananSelected.alamat.alamat_lengkap
+        alamatElm.innerHTML = pesananSelected.alamat
         emailElm.innerHTML = pesananSelected.email
         itemElm.innerHTML = '<div class="d-flex mb-1 border-bottom pb-1"><p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;">Nama</p><p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;">Jumlah</p><p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;">Harga</p></div>';
         pesananSelected.items.forEach(element => {

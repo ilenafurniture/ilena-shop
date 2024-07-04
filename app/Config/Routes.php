@@ -87,6 +87,7 @@ $routes->get('/admin/denyreprint/(:any)', 'AdminController::denyReprint/$1', ['f
 
 //GUDANG Controller
 $routes->get('/gudang/listorder', 'GudangController::listOrder', ['filter' => 'gudangFilter']);
+$routes->get('/gudang/listordertable', 'GudangController::listOrderTable');
 $routes->get('/gudang/listorderafter', 'GudangController::listOrderAfter', ['filter' => 'gudangFilter']);
 $routes->get('/gudang/mutasi', 'GudangController::mutasi', ['filter' => 'gudangFilter']);
 $routes->get('/gudang/mutasi/(:any)', 'GudangController::mutasi/$1', ['filter' => 'gudangFilter']);

@@ -1,6 +1,6 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
-<div class="container">
+<div class="container d-flex justify-content-center align-items-center">
     <div class="konten baris-ke-kolom">
         <div style="flex:1;">
             <div class="mb-4">

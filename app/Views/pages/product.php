@@ -4,9 +4,9 @@
     <div class="konten">
         <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb" class="show-block-ke-hide">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Produk Kami</a></li>
-                <li class="breadcrumb-item"><a href="/">Meja</a></li>
-                <li class="breadcrumb-item">Meja TV</li>
+                <li class="breadcrumb-item"><a href="/product">Produk Kami</a></li>
+                <li class="breadcrumb-item"><a href="/product?col=<?= ucfirst($produk['kategori']); ?>"><?= ucfirst($produk['kategori']); ?></a></li>
+                <li class="breadcrumb-item"><a href="/product?type=<?= ucfirst($produk['subkategori']); ?>"><?= ucfirst($produk['subkategori']); ?></a></li>
                 </li>
             </ol>
         </nav>
@@ -16,7 +16,9 @@
                 <div class="d-flex gap-2 mb-3">
                     <p class="harga">Rp
                         <?= number_format($produk['harga'] * (100 - $produk['diskon']) / 100, 0, ',', '.'); ?></p>
-                    <p class="harga-diskon">Rp <?= number_format($produk['harga'], 0, ',', '.') ?></p>
+                    <?php if ($produk['diskon'] > 0) { ?>
+                        <p class="harga-diskon">Rp <?= number_format($produk['harga'], 0, ',', '.') ?></p>
+                    <?php } ?>
                 </div>
                 <p><?= $produk['deskripsi']['deskripsi'] ?></p>
                 <div class="container-varian mb-3 show-flex-ke-hide">
@@ -37,7 +39,7 @@
                         </a>
                     </div>
                 <?php } else { ?>
-                    <div class="d-flex gap-2 align-items-center">
+                    <div class="d-flex gap-2 align-items-stretch">
                         <div class="number-control">
                             <div class="number-left" onclick="kurangJumlah()"></div>
                             <input type="number" name="jumlah" class="number-quantity" value="1">

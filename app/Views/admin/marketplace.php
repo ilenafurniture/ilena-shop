@@ -7,7 +7,7 @@
             <h1 class="teks-sedang">List Konfirmasi Marketplace</h1>
         </div>
     </div>
-    <div class="container-table mt-4">
+    <div class="container-table mt-4 show-block-ke-hide">
         <div class="header-table">
             <div style="flex: 1;">No</div>
             <div style="flex: 2;">Id Ilena</div>
@@ -32,15 +32,32 @@
                 </div>
             </div>
         <?php } ?>
+    </div>
+    <div class="container-table mt-4 hide-ke-show-block" style="width: 500px;">
+        <div class="header-table">
+            <div style="flex: 1;">No</div>
+            <div style="flex: 2;">Id Ilena</div>
+            <div style="flex: 2;">Id Marketplace</div>
+            <div style="flex: 2;">Nama Pembeli</div>
+            <div style="flex: 2;">Alamat Pembeli</div>
+            <div style="flex: 2;">Action</div>
+        </div>
 
-        <!-- <div class="isi-table">
-            <div style="flex: 1;">2</div>
-            <div style="flex: 2;">TILN0001</div>
-            <div style="flex: 2;">MTV 100 - Putih</div>
-            <div style="flex: 2;">bali,indonesia</div>
-            <div style="flex: 2;">1</div>
-            <div style="flex: 2; color:green;">Selesai</div>
-        </div> -->
+        <?php foreach ($pemesanan as $indx_p => $p) { ?>
+            <div class="isi-table">
+                <div style="flex: 1;">
+                    <?= $indx_p + 1 ?></div>
+                <div style="flex: 2;"><?= $p['id_midtrans'] ?></div>
+                <div style="flex: 2;"><?= $p['id_marketplace'] ?></div>
+                <div style="flex: 2;"><?= $p['nama'] ?></div>
+                <div style="flex: 2;"><?= $p['alamat'] ?></div>
+                <div style="flex: 2;" class="gap-2">
+                    <a class="btn-default" href="/admin/confirm-mp/<?= $p['id'] ?>">Konfim</a>
+                    <a class="btn-default-merah" href="/admin/edit-mp/<?= $p['id'] ?>">Edit</a>
+                    <button class="btn btn-light" onclick="openDetail(<?= $indx_p ?>)"><i class=" material-icons">more_vert</i></button>
+                </div>
+            </div>
+        <?php } ?>
     </div>
 </div>
 <div class="d-none justify-content-center align-items-center w-100" id="container-detail" style="background-color: rgba(0,0,0,0.5); position:fixed; top: 0; left: 0; width: 100vw; height: 100svh;">

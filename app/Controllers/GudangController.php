@@ -39,7 +39,7 @@ class GudangController extends BaseController
         foreach ($pesananGudang as $ind_p => $p) {
             $barang = $this->barangModel->getBarang($p['id_barang']);
             foreach (json_decode($barang['varian'], true) as $v) {
-                if ($v['nama'] == strtolower(rtrim(explode("(", $p['nama'])[1], ")"))) {
+                if (strtolower($v['nama']) == strtolower(rtrim(explode("(", $p['nama'])[1], ")"))) {
                     $pesananGudang[$ind_p]['stok'] = $v['stok'];
                     $tanggal = strtotime($p['tanggal']);
                     if ((int)date("H", $tanggal) > 12) {
@@ -52,7 +52,7 @@ class GudangController extends BaseController
                     $pesananGudang[$ind_p]['target_selesai'] = $targetSelesai;
                 }
             }
-            $pesananGudang[$ind_p]['tanggal'] = date('d',strtotime($p['tanggal'])).' '.$bulan[(int)date('m',strtotime($p['tanggal'])) - 1].' '.date('Y',strtotime($p['tanggal']));
+            $pesananGudang[$ind_p]['tanggal'] = date('d', strtotime($p['tanggal'])) . ' ' . $bulan[(int)date('m', strtotime($p['tanggal'])) - 1] . ' ' . date('Y', strtotime($p['tanggal']));
         }
         // dd($pesananGudang);
         $data = [
@@ -63,6 +63,33 @@ class GudangController extends BaseController
             ]
         ];
         return view('gudang/listOrder', $data);
+    }
+    public function listOrderTable()
+    {
+        $pesananGudang = $this->pemesananGudangModel->getPemesananGudang();
+        $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+        foreach ($pesananGudang as $ind_p => $p) {
+            $barang = $this->barangModel->getBarang($p['id_barang']);
+            foreach (json_decode($barang['varian'], true) as $v) {
+                if (strtolower($v['nama']) == strtolower(rtrim(explode("(", $p['nama'])[1], ")"))) {
+                    $pesananGudang[$ind_p]['stok'] = $v['stok'];
+                    $tanggal = strtotime($p['tanggal']);
+                    if ((int)date("H", $tanggal) > 12) {
+                        $tanggal = strtotime($p['tanggal'] . " +1 day");
+                        $targetSelesai = date("d", $tanggal) . " " . $bulan[(int)date("m", $tanggal) - 1] . " " . date("Y", $tanggal) . " 08:00:00";
+                    } else {
+                        $tanggal = strtotime($p['tanggal'] . " +3 hours");
+                        $targetSelesai = date("d", $tanggal) . " " . $bulan[(int)date("m", $tanggal) - 1] . " " . date("Y H:i:s", $tanggal);
+                    }
+                    $pesananGudang[$ind_p]['target_selesai'] = $targetSelesai;
+                }
+            }
+            $pesananGudang[$ind_p]['tanggal'] = date('d', strtotime($p['tanggal'])) . ' ' . $bulan[(int)date('m', strtotime($p['tanggal'])) - 1] . ' ' . date('Y', strtotime($p['tanggal']));
+        }
+        $data = [
+            'pesanan' => $pesananGudang
+        ];
+        return view('gudang/listOrderTable', $data);
     }
 
     public function listOrderAfter()
@@ -146,7 +173,7 @@ class GudangController extends BaseController
         return redirect()->to('/gudang/mutasi');
     }
 
-    
+
 
     public function actionScan($id_barang, $varian)
     {

@@ -5,28 +5,28 @@
         <h1 class="teks-sedang">Pesanan Pelanggan</h1>
         <p style="color: grey;"><?= count($pesanan) <= 0 ? 'Tidak Ada' : count($pesanan) ?> Pesanan</p>
     </div>
-    <div class="container-table">
+    <div class="container-table show-block-ke-hide">
         <div class="header-table border-buttom border-dark">
             <div style="flex: 1;">ID Pesanan</div>
             <div style="flex: 2;">Tanggal</div>
             <div style="flex: 2;">Penerima</div>
             <div style="flex: 2;">Harga</div>
-            <div style="flex: 2;">Status</div>
+            <div style="flex: 1;">Status</div>
             <div style="flex: 2;" class="d-flex justify-content-center">Action</div>
         </div>
         <?php foreach ($pesanan as $ind_p => $p) { ?>
-        <div class="isi-table" onclick="openDetail(<?= $ind_p; ?>, event)">
-            <div style="flex: 1;"><?= $p['id_midtrans']; ?></div>
-            <?php
+            <div class="isi-table" onclick="openDetail(<?= $ind_p; ?>, event)">
+                <div style="flex: 1;"><?= $p['id_midtrans']; ?></div>
+                <?php
                 $transactionTime = strtotime($p['data_mid']['transaction_time']);
                 $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
                 $tgl = date("d", $transactionTime) . " " . $bulan[(int)date("m", $transactionTime) - 1] . " " . date("Y H:i:s", $transactionTime);
                 ?>
-            <div style="flex: 2;"><?= $tgl; ?></div>
-            <div style="flex: 2;"><?= $p['nama']; ?></div>
-            <div style="flex: 2;">Rp <?= number_format((int)$p['data_mid']['gross_amount'], 0, ',', '.'); ?></div>
-            <div style="flex: 2;">
-                <span class="badge rounded-pill <?php
+                <div style="flex: 2;"><?= $tgl; ?></div>
+                <div style="flex: 2;"><?= $p['nama']; ?></div>
+                <div style="flex: 2;">Rp <?= number_format((int)$p['data_mid']['gross_amount'], 0, ',', '.'); ?></div>
+                <div style="flex: 1;">
+                    <span class="badge rounded-pill <?php
                                                     switch ($p['status']) {
                                                         case 'Menunggu Pembayaran':
                                                             echo "text-bg-primary";
@@ -51,25 +51,84 @@
                                                             break;
                                                     }
                                                     ?>"><?= ucfirst($p['status']); ?></span>
+                </div>
+                <div style="flex: 2;" class="d-flex justify-content-center">
+                    <a class="btn" href="/invoice/<?= $p['id_midtrans']; ?>"><i class="material-icons">description</i></a>
+                    <?php if ($p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
+                        <a class="btn" href="/editresi/<?= $p['id_midtrans']; ?>"><i class="material-icons">edit</i></a>
+                    <?php } ?>
+                    <?php if ($p['status'] == 'Menunggu Pembayaran' || $p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
+                        <a class="btn" href="/cancelorder/<?= $p['id_midtrans']; ?>"><i class="material-icons" style="color: var(--merah);">cancel</i></a>
+                    <?php } ?>
+                </div>
             </div>
-            <div style="flex: 2;" class="d-flex justify-content-center">
-                <a class="btn" href="/invoice/<?= $p['id_midtrans']; ?>"><i class="material-icons">description</i></a>
-                <?php if ($p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
-                <a class="btn" href="/editresi/<?= $p['id_midtrans']; ?>"><i class="material-icons">edit</i></a>
-                <?php } ?>
-                <?php if ($p['status'] == 'Menunggu Pembayaran' || $p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
-                <a class="btn" href="/cancelorder/<?= $p['id_midtrans']; ?>"><i class="material-icons"
-                        style="color: var(--merah);">cancel</i></a>
-                <?php } ?>
-            </div>
-        </div>
         <?php } ?>
+    </div>
+    <div class="hide-ke-show-block">
+        <div class="container-table" style="width: 700px; overflow-x: auto;">
+            <div class="header-table border-buttom border-dark">
+                <div style="flex: 1;">ID Pesanan</div>
+                <div style="flex: 2;">Tanggal</div>
+                <div style="flex: 2;">Penerima</div>
+                <div style="flex: 2;">Harga</div>
+                <div style="flex: 1;">Status</div>
+                <div style="flex: 2;" class="d-flex justify-content-center">Action</div>
+            </div>
+            <?php foreach ($pesanan as $ind_p => $p) { ?>
+                <div class="isi-table" onclick="openDetail(<?= $ind_p; ?>, event)">
+                    <div style="flex: 1;"><?= $p['id_midtrans']; ?></div>
+                    <?php
+                    $transactionTime = strtotime($p['data_mid']['transaction_time']);
+                    $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+                    $tgl = date("d", $transactionTime) . " " . $bulan[(int)date("m", $transactionTime) - 1] . " " . date("Y H:i:s", $transactionTime);
+                    ?>
+                    <div style="flex: 2;"><?= $tgl; ?></div>
+                    <div style="flex: 2;"><?= $p['nama']; ?></div>
+                    <div style="flex: 2;">Rp <?= number_format((int)$p['data_mid']['gross_amount'], 0, ',', '.'); ?></div>
+                    <div style="flex: 1;">
+                        <span class="badge rounded-pill <?php
+                                                        switch ($p['status']) {
+                                                            case 'Menunggu Pembayaran':
+                                                                echo "text-bg-primary";
+                                                                break;
+                                                            case 'Proses':
+                                                                echo "text-bg-warning";
+                                                                break;
+                                                            case 'Dikirim':
+                                                                echo "text-bg-info";
+                                                                break;
+                                                            case 'Selesai':
+                                                                echo "text-bg-success";
+                                                                break;
+                                                            case 'Dibatalkan':
+                                                                echo "text-bg-danger";
+                                                                break;
+                                                            case 'Gagal':
+                                                                echo "text-bg-danger";
+                                                                break;
+                                                            default:
+                                                                echo "text-bg-dark";
+                                                                break;
+                                                        }
+                                                        ?>"><?= ucfirst($p['status']); ?></span>
+                    </div>
+                    <div style="flex: 2;" class="d-flex justify-content-center">
+                        <a class="btn" href="/invoice/<?= $p['id_midtrans']; ?>"><i class="material-icons">description</i></a>
+                        <?php if ($p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
+                            <a class="btn" href="/editresi/<?= $p['id_midtrans']; ?>"><i class="material-icons">edit</i></a>
+                        <?php } ?>
+                        <?php if ($p['status'] == 'Menunggu Pembayaran' || $p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
+                            <a class="btn" href="/cancelorder/<?= $p['id_midtrans']; ?>"><i class="material-icons" style="color: var(--merah);">cancel</i></a>
+                        <?php } ?>
+                    </div>
+                </div>
+            <?php } ?>
+        </div>
     </div>
 </div>
 
 <div class="container-offcanvas">
-    <div class="d-flex justify-content-end mb-2"><button class="btn btn-light" onclick="closeDetail()"><i
-                class="material-icons">close</i></button></div>
+    <div class="d-flex justify-content-end mb-2"><button class="btn btn-light" onclick="closeDetail()"><i class="material-icons">close</i></button></div>
     <div style="border-radius: 10px; padding: 1em 1.5em; background-color: whitesmoke;" class="mb-2">
         <h3 style="letter-spacing: -1px;" class="mb-2">Customer</h3>
         <div class="mt-2 d-flex justify-content-between pb-1">
@@ -136,48 +195,48 @@
 </div>
 
 <script>
-const pesanan = JSON.parse('<?= $pesananJson; ?>');
-console.log(pesanan);
-const idElm = document.getElementById("id");
-const namaElm = document.getElementById("nama");
-const nohpElm = document.getElementById("nohp");
-const alamatElm = document.getElementById("alamat");
-const emailElm = document.getElementById("email");
-const itemElm = document.getElementById("item");
-const containerOffcanvasElm = document.querySelector(".container-offcanvas");
-const btnBawahElm = document.querySelectorAll(".btnBawah");
+    const pesanan = JSON.parse('<?= $pesananJson; ?>');
+    console.log(pesanan);
+    const idElm = document.getElementById("id");
+    const namaElm = document.getElementById("nama");
+    const nohpElm = document.getElementById("nohp");
+    const alamatElm = document.getElementById("alamat");
+    const emailElm = document.getElementById("email");
+    const itemElm = document.getElementById("item");
+    const containerOffcanvasElm = document.querySelector(".container-offcanvas");
+    const btnBawahElm = document.querySelectorAll(".btnBawah");
 
-function openDetail(indP, event) {
-    const pesananSelected = pesanan[indP];
-    console.log(pesananSelected)
-    idElm.innerHTML = pesananSelected.id_midtrans
-    namaElm.innerHTML = pesananSelected.nama
-    nohpElm.innerHTML = pesananSelected.nohp
-    alamatElm.innerHTML = pesananSelected.alamat.alamat_lengkap
-    emailElm.innerHTML = pesananSelected.email
-    itemElm.innerHTML =
-        '<div class="d-flex mb-1 border-bottom pb-1"><p class="d-block fw-bold m-0 text-secondary" style="flex: 1; letter-spacing: -1px;">Nama</p><p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;">Jumlah</p><p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;">Harga</p></div>';
-    pesananSelected.items.forEach(element => {
-        itemElm.innerHTML +=
-            '<div class="d-flex py-1"><p class="d-block fw-bold m-0" style="flex: 1; letter-spacing: -1px;">' +
-            element.name +
-            '</p><p class="d-block fw-bold m-0 text-center" style="flex: 1; letter-spacing: -1px;">' + element
-            .quantity +
-            '</p><p class="d-block fw-bold m-0 text-center" style="flex: 1; letter-spacing: -1px;">Rp ' +
-            element.price + '</p></div>'
-        // if (element.name != 'Biaya Ongkir' && element.name != 'Biaya Admin') {
-        // }
-    });
-    btnBawahElm[0].href = "/invoice/" + pesananSelected.id_midtrans
-    btnBawahElm[1].href = "/editresi/" + pesananSelected.id_midtrans
-    btnBawahElm[2].href = "/cancelorder/" + pesananSelected.id_midtrans
-    btnBawahElm[3].href = "/order/" + pesananSelected.id_midtrans
-    containerOffcanvasElm.classList.add("show")
-}
+    function openDetail(indP, event) {
+        const pesananSelected = pesanan[indP];
+        console.log(pesananSelected)
+        idElm.innerHTML = pesananSelected.id_midtrans
+        namaElm.innerHTML = pesananSelected.nama
+        nohpElm.innerHTML = pesananSelected.nohp
+        alamatElm.innerHTML = pesananSelected.alamat.alamat_lengkap
+        emailElm.innerHTML = pesananSelected.email
+        itemElm.innerHTML =
+            '<div class="d-flex mb-1 border-bottom pb-1"><p class="d-block fw-bold m-0 text-secondary" style="flex: 1; letter-spacing: -1px;">Nama</p><p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;">Jumlah</p><p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;">Harga</p></div>';
+        pesananSelected.items.forEach(element => {
+            itemElm.innerHTML +=
+                '<div class="d-flex py-1"><p class="d-block fw-bold m-0" style="flex: 1; letter-spacing: -1px;">' +
+                element.name +
+                '</p><p class="d-block fw-bold m-0 text-center" style="flex: 1; letter-spacing: -1px;">' + element
+                .quantity +
+                '</p><p class="d-block fw-bold m-0 text-center" style="flex: 1; letter-spacing: -1px;">Rp ' +
+                element.price + '</p></div>'
+            // if (element.name != 'Biaya Ongkir' && element.name != 'Biaya Admin') {
+            // }
+        });
+        btnBawahElm[0].href = "/invoice/" + pesananSelected.id_midtrans
+        btnBawahElm[1].href = "/editresi/" + pesananSelected.id_midtrans
+        btnBawahElm[2].href = "/cancelorder/" + pesananSelected.id_midtrans
+        btnBawahElm[3].href = "/order/" + pesananSelected.id_midtrans
+        containerOffcanvasElm.classList.add("show")
+    }
 
-function closeDetail() {
-    containerOffcanvasElm.classList.remove("show")
-}
+    function closeDetail() {
+        containerOffcanvasElm.classList.remove("show")
+    }
 </script>
 
 <?= $this->endSection(); ?>
