@@ -9,6 +9,8 @@ use App\Models\PemesananModel;
 use App\Models\PemesananGudangModel;
 use App\Models\KartuStokModel;
 use App\Models\UserModel;
+use App\Models\KoleksiModel;
+use App\Models\JenisModel;
 
 class Pages extends BaseController
 {
@@ -19,6 +21,8 @@ class Pages extends BaseController
     protected $pemesananModel;
     protected $pemesananGudangModel;
     protected $kartuStokModel;
+    protected $koleksiModel;
+    protected $jenisModel;
     protected $session;
     public function __construct()
     {
@@ -29,6 +33,8 @@ class Pages extends BaseController
         $this->pemesananModel = new PemesananModel();
         $this->pemesananGudangModel = new PemesananGudangModel();
         $this->kartuStokModel = new KartuStokModel();
+        $this->koleksiModel = new KoleksiModel();
+        $this->jenisModel = new JenisModel();
         $this->session = \Config\Services::session();
     }
     public function index()
@@ -40,6 +46,10 @@ class Pages extends BaseController
         }
         $data = [
             'title' => 'Home',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
             'produk' => $produk,
             'wishlist' => $wishlist
         ];
@@ -61,6 +71,10 @@ class Pages extends BaseController
         }
         $data = [
             'title' => 'Cari Produk',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
             'produk' => $produk,
             'wishlist' => $wishlist,
             'find' => $cari
@@ -70,6 +84,8 @@ class Pages extends BaseController
     public function product($id = false)
     {
         $wishlist = $this->session->get('wishlist');
+        $koleksi = $this->koleksiModel->findAll();
+        $jenis = $this->jenisModel->findAll();
         if (!isset($wishlist)) {
             $wishlist = [];
         }
@@ -80,16 +96,28 @@ class Pages extends BaseController
             $product['varian'] = json_decode($product['varian'], true);
             $data = [
                 'title' => 'produk',
+                'navbar' => [
+                    'koleksi' => $this->koleksiModel->findAll(),
+                    'jenis' => $this->jenisModel->findAll(),
+                ],
                 'produk' => $product,
-                'wishlist' => $wishlist
+                'wishlist' => $wishlist,
+                'koleksi' => $koleksi,
+                'jenis' => $jenis,
             ];
             return view('pages/product', $data);
         } else {
             $product = $this->barangModel->getBarang();
             $data = [
                 'title' => 'Produk Kami',
+                'navbar' => [
+                    'koleksi' => $this->koleksiModel->findAll(),
+                    'jenis' => $this->jenisModel->findAll(),
+                ],
                 'produk' => $product,
-                'wishlist' => $wishlist
+                'wishlist' => $wishlist,
+                'koleksi' => $koleksi,
+                'jenis' => $jenis,
             ];
             return view('pages/all', $data);
         }
@@ -132,6 +160,10 @@ class Pages extends BaseController
 
         $data = [
             'title' => 'Keranjang',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
             'keranjang' => $keranjang,
             'hargaTotal' => $hargaTotal,
             'hargaKeseluruhan' => $hargaTotal + 5000
@@ -306,6 +338,10 @@ class Pages extends BaseController
 
         $data = [
             'title' => 'Alamat',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
             'provinsi' => $provinsi["rajaongkir"]["results"],
             'keranjang' => $keranjang,
             'hargaTotal' => $hargaTotal,
@@ -518,6 +554,10 @@ class Pages extends BaseController
 
         $data = [
             'title' => 'Pengiriman',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
             'alamat' => $alamat[$ind_add],
             'keranjang' => $keranjang,
             'hargaTotal' => $hargaTotal,
@@ -562,6 +602,10 @@ class Pages extends BaseController
 
         $data = [
             'title' => 'Pembayaran',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
             'hargaTotal' => $hargaTotal,
             'hargaOngkir' => $kurir[$index_kurir]['harga'],
             'hargaKeseluruhan' => ($hargaTotal + 5000 + $kurir[$index_kurir]['harga']),
@@ -1142,6 +1186,10 @@ class Pages extends BaseController
         $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
         $data = [
             'title' => 'Peroses Pembayaran',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
             'pemesanan' => $pemesanan,
             'dataMid' => $dataMid,
             'va_number' => $va_number,
@@ -1173,6 +1221,10 @@ class Pages extends BaseController
         }
         $data = [
             'title' => 'Pembayaran Sukes',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
             'pemesanan' => $pemesanan,
             'dataMid' => $dataMid,
             'kurir' => $kurir,
@@ -1185,6 +1237,10 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Pembayaran batal',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
         ];
         return view('pages/cencelpay', $data);
     }
@@ -1401,6 +1457,10 @@ class Pages extends BaseController
                     $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
                     $data = [
                         'title' => 'Peroses Pembayaran',
+                        'navbar' => [
+                            'koleksi' => $this->koleksiModel->findAll(),
+                            'jenis' => $this->jenisModel->findAll(),
+                        ],
                         'pemesanan' => $pemesanan,
                         'dataMid' => $dataMid,
                         'va_number' => $va_number,
@@ -1442,6 +1502,10 @@ class Pages extends BaseController
 
                     $data = [
                         'title' => 'Pembayaran Sukes',
+                        'navbar' => [
+                            'koleksi' => $this->koleksiModel->findAll(),
+                            'jenis' => $this->jenisModel->findAll(),
+                        ],
                         'pemesanan' => $pemesanan,
                         'dataMid' => $dataMid,
                         'kurir' => $kurir,
@@ -1482,6 +1546,10 @@ class Pages extends BaseController
 
                     $data = [
                         'title' => 'Pembayaran Sukes',
+                        'navbar' => [
+                            'koleksi' => $this->koleksiModel->findAll(),
+                            'jenis' => $this->jenisModel->findAll(),
+                        ],
                         'pemesanan' => $pemesanan,
                         'dataMid' => $dataMid,
                         'kurir' => $kurir,
@@ -1524,6 +1592,10 @@ class Pages extends BaseController
                     $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
                     $data = [
                         'title' => 'Peroses Pembayaran',
+                        'navbar' => [
+                            'koleksi' => $this->koleksiModel->findAll(),
+                            'jenis' => $this->jenisModel->findAll(),
+                        ],
                         'pemesanan' => $pemesanan,
                         'dataMid' => $dataMid,
                         'va_number' => $va_number,
@@ -1563,6 +1635,10 @@ class Pages extends BaseController
             }
             $data = [
                 'title' => 'Pesanan',
+                'navbar' => [
+                    'koleksi' => $this->koleksiModel->findAll(),
+                    'jenis' => $this->jenisModel->findAll(),
+                ],
                 'pesanan' => $pesanan,
                 'pesananJson' => json_encode($pesanan)
             ];
@@ -1589,6 +1665,10 @@ class Pages extends BaseController
         $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
         $data = [
             'title' => 'Print Preview',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
             'transaksi' => $arr,
             'transaksiJson' => json_encode($arr),
             'bulan' => $bulan
@@ -1625,6 +1705,10 @@ class Pages extends BaseController
         }
         $data = [
             'title' => 'Favorite',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
             'produk' => $produk,
             'wishlist' => $wishlist
         ];
@@ -1693,6 +1777,10 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Akun',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
             'val' => [
                 'msg' => session()->getFlashdata('msg'),
                 'val_email' => session()->getFlashdata('val-email'),
@@ -1799,6 +1887,10 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Membuat Akun',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
             'val' => [
                 'val_nama' => session()->getFlashdata('val-nama'),
                 'val_email' => session()->getFlashdata('val-email'),
@@ -1894,6 +1986,10 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Verifikasi',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
             'val' => [
                 'msg' => session()->getFlashdata('msg'),
                 'val_verify' => session()->getFlashdata('val_verify')
@@ -2015,6 +2111,10 @@ class Pages extends BaseController
 
         $data = [
             'title' => 'Akun Saya',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
             'alamat' => $alamat,
             'alamatJson' => json_encode($alamat),
             'email' => session()->get('email'),
@@ -2027,28 +2127,44 @@ class Pages extends BaseController
     public function faq()
     {
         $data = [
-            'title' => 'FAQ'
+            'title' => 'FAQ',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
         ];
         return view('pages/faq', $data);
     }
     public function tentang()
     {
         $data = [
-            'title' => 'Tentang Kami'
+            'title' => 'Tentang Kami',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
         ];
         return view('pages/tentang', $data);
     }
     public function syarat()
     {
         $data = [
-            'title' => 'Syarat & Ketentuan'
+            'title' => 'Syarat & Ketentuan',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
         ];
         return view('pages/syarat', $data);
     }
     public function kebijakan()
     {
         $data = [
-            'title' => 'Kebijakan Privasi'
+            'title' => 'Kebijakan Privasi',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
         ];
         return view('pages/kebijakan', $data);
     }

@@ -67,6 +67,9 @@ $routes->get('/logout', 'Pages::actionLogout');
 // GambarController
 $routes->get('/viewpic/(:any)', 'GambarController::tampilGambarBarang/$1');
 $routes->get('/viewvar/(:any)/(:any)', 'GambarController::tampilGambarVarian/$1/$2');
+$routes->get('/changepic/(:any)/(:any)', 'GambarController::gantiResolusiGambar/$1/$2');
+// $routes->get('/cobainput', 'GambarController::formCobaInput');
+$routes->get('/cobainput', 'GambarController::actionCobaInput');
 
 
 // Admin Controller
@@ -84,6 +87,7 @@ $routes->get('/admin/marketplace', 'AdminController::marketplace', ['filter' => 
 $routes->get('/admin/confirm-mp/(:any)', 'AdminController::confirmMarketplace/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/accreprint/(:any)', 'AdminController::accReprint/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/denyreprint/(:any)', 'AdminController::denyReprint/$1', ['filter' => 'adminFilter']);
+$routes->get('/gantiukuran', 'AdminController::gantiUkuran');
 
 //GUDANG Controller
 $routes->get('/gudang/listorder', 'GudangController::listOrder', ['filter' => 'gudangFilter']);

@@ -123,9 +123,28 @@ class AdminController extends BaseController
         }))[0]['nama'];
 
         $index_data_gambar = array_flip(array_keys($data_gambar));
+        $iterasi = 0;
         foreach ($data_gambar as $key_dg => $dG) {
-            $insertGambarBarang['gambar' . ((int)$index_data_gambar[$key_dg] + 1)] = file_get_contents($dG);
+            $dG->move('imgdum');
+            \Config\Services::image()
+                ->withFile('imgdum/' . $dG->getName())
+                ->resize(1000, 1000, true, 'height')->save('imgdum/1' . $dG->getName());
+
+            $insertGambarBarang['gambar' . ((int)$index_data_gambar[$key_dg] + 1)] = file_get_contents('imgdum/1' . $dG->getName());
+            unlink('imgdum/1' . $dG->getName());
+
+            if ($iterasi <= 0) {
+                \Config\Services::image()
+                    ->withFile('imgdum/' . $dG->getName())
+                    ->resize(300, 300, true, 'height')->save('imgdum/1' . $dG->getName());
+
+                $insertGambarBarang300 = file_get_contents('imgdum/1' . $dG->getName());
+                unlink('imgdum/1' . $dG->getName());
+            }
+            unlink('imgdum/' . $dG->getName());
+            $iterasi++;
         }
+
         $insertDataBarang = [
             'id' => $data['id'],
             'nama' => $data['nama'],
@@ -158,7 +177,7 @@ class AdminController extends BaseController
             'tokped' => $data['tokped'],
             'tiktok' => '',
             'active' => '1',
-            'gambar' => $insertGambarBarang['gambar1']
+            'gambar' => $insertGambarBarang300
         ];
         $this->barangModel->insert($insertDataBarang);
         $this->gambarBarangModel->insert($insertGambarBarang);
@@ -292,6 +311,68 @@ class AdminController extends BaseController
         }
         $this->gambarBarangModel->where(['id' => $idBarang])->set($insertGambarBarang)->update();
         return redirect()->to('admin/product');
+    }
+    public function gantiUkuran()
+    {
+        $barangLama = $this->barangModel->findAll();
+        function file_get_contents_curl($url)
+        {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_URL, $url);
+            $data = curl_exec($ch);
+            curl_close($ch);
+            return $data;
+        }
+
+        foreach ($barangLama as $b) {
+            $varian = json_decode($b['varian'], true);
+            $insertGambarBarang = [];
+            $insertGambarBarang300 = '';
+            foreach ($varian as $v) {
+                $urutanGambar = explode(",", $v['urutan_gambar']);
+                // dd([
+                //     'urutan gambar' => $urutanGambar,
+                //     'barang' => $b
+                // ]);
+                foreach ($urutanGambar as $u) {
+                    $dataGambar = file_get_contents_curl(
+                        'https://ilenafurniture.com/viewvar/' . $b['id'] . '/' . $u
+                    );
+                    $fp = 'imgdum/' . $b['id'] . '-' . $u . '.webp';
+                    file_put_contents($fp, $dataGambar);
+
+                    \Config\Services::image()
+                        ->withFile($fp)
+                        ->resize(1000, 1000, true, 'height')->save('imgdum/1' . $b['id'] . '-' . $u . '.webp');
+                    $insertGambarBarang['gambar' . $u] = file_get_contents('imgdum/1' . $b['id'] . '-' . $u . '.webp');
+
+                    unlink($fp);
+                    unlink('imgdum/1' . $b['id'] . '-' . $u . '.webp');
+                }
+            }
+
+            $dataGambar = file_get_contents_curl(
+                'https://ilenafurniture.com/viewpic/' . $b['id']
+            );
+            $fp = 'imgdum/' . $b['id'] . '.webp';
+            file_put_contents($fp, $dataGambar);
+
+            \Config\Services::image()
+                ->withFile($fp)
+                ->resize(300, 300, true, 'height')->save('imgdum/1' . $b['id']  . '.webp');
+            $insertGambarBarang300 = file_get_contents('imgdum/1' . $b['id']  . '.webp');
+
+            unlink($fp);
+            unlink('imgdum/1' . $b['id']  . '.webp');
+
+            $this->barangModel->where(['id' => $b['id']])->set(['gambar' => $insertGambarBarang300])->update();
+            $this->gambarBarangModel->where(['id' => $b['id']])->set($insertGambarBarang)->update();
+        }
+        return $this->response->setJSON([
+            'success' => true
+        ], false);
     }
     public function activeProduct($id_product)
     {

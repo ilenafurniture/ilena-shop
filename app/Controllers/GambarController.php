@@ -7,6 +7,7 @@ use App\Models\GambarBarangModel;
 use App\Models\PembeliModel;
 use App\Models\PemesananModel;
 use App\Models\UserModel;
+use CodeIgniter\Images\Handlers\GDHandler;
 
 class GambarController extends BaseController
 {
@@ -31,5 +32,51 @@ class GambarController extends BaseController
         $gambarSelected = $gambar['gambar' . $urutan];
         $this->response->setHeader('Content-Type', 'image/webp');
         echo $gambarSelected;
+    }
+
+    public function formCobaInput()
+    {
+        return view('cobainput');
+    }
+    public function actionCobaInput()
+    {
+        // $gambarnya = $this->request->getFile('gambar');
+        // $gambarnya->move('imgdum');
+
+        // \Config\Services::image()
+        //     ->withFile('imgdum/' . $gambarnya->getName())
+        //     ->resize(300, 300, true, 'height')->save('imgdum/1' . $gambarnya->getName());
+        // $this->response->setHeader('Content-Type', 'image/webp');
+        // echo file_get_contents('imgdum/1' . $gambarnya->getName());
+
+        // unlink('imgdum/' . $gambarnya->getName());
+        // unlink('imgdum/1' . $gambarnya->getName());
+
+
+
+        function file_get_contents_curl($url)
+        {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_URL, $url);
+            $data = curl_exec($ch);
+            curl_close($ch);
+            return $data;
+        }
+        $data = file_get_contents_curl(
+            'https://ilenafurniture.com/viewpic/1000801'
+        );
+        $fp = 'imgdum/logo-1.webp';
+        file_put_contents($fp, $data);
+
+        \Config\Services::image()
+            ->withFile($fp)
+            ->resize(300, 300, true, 'height')->save('imgdum/1logo-1.webp');
+        $this->response->setHeader('Content-Type', 'image/webp');
+        echo file_get_contents('imgdum/1logo-1.webp');
+
+        unlink($fp);
+        unlink('imgdum/1logo-1.webp');
     }
 }

@@ -14,7 +14,7 @@
         </div>
     </div>
 </div>
-<div style="padding: 2em;">
+<div style="padding: 2em;" onload="tabel()">
     <!-- <div class="d-flex justify-content-between gap-4"> -->
     <div>
         <h6 class="text-center mb-3">Pesanan belum diproses</h6>
@@ -110,6 +110,7 @@
     <!-- </div> -->
 </div>
 <script>
+    const containerTable = document.querySelectorAll('.container-table');
     const modelScanElm = document.getElementById('model-scan');
     const alertNoCorrectElm = document.getElementById('alert-no-correct');
     let idSelected = ''
@@ -144,6 +145,21 @@
         modelScanElm.classList.remove("d-flex");
         modelScanElm.classList.add("d-none");
     }
+
+    function tabel() {
+        const xhttp = new XMLHttpRequest();
+        xhttp.onload = function() {
+            containerTable.forEach(container => {
+                container.innerHTML = this.responseText;
+            })
+        }
+        xhttp.open("GET", "/gudang/listordertable");
+        xhttp.send();
+    }
+
+    setInterval(() => {
+        tabel();
+    }, 1);
 </script>
 
 <?= $this->endSection(); ?>

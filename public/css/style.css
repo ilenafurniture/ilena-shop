@@ -362,8 +362,9 @@ body {
     transition: 0.5s;
 }
 #container-filter:checked ~ .container-filter {
-    max-height: 100svh;
+    max-height: 50svh;
     transition: 0.5s;
+    overflow-y: auto;
 }
 
 .container-varian {
