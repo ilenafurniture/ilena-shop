@@ -25,14 +25,28 @@
     <div class="baris-ke-kolom justify-content-between W-100 mb-3 pb-3">
         <div style="flex: 1">
             <p class="mb-2">Ekspedisi</p>
-            <div class="d-flex justify-content-between gap-2">
-                <img src="/img/kurir/<?= $kurir['nama'] ?>.png" alt="" style="width: 100px; object-fit:contain">
-                <div style="flex: 1;">
-                    <p class="mb-0 fw-bold" style="letter-spacing: -1px; font-size: 20px;"><?= strtoupper($kurir['nama']) ?> <?= $kurir['deskripsi'] ?></p>
-                    <?php if ($kurir['estimasi']) { ?>
-                        <p class="m-0" style="letter-spacing: -1px;">Estimasi pengiriman <?= $kurir['estimasi'] ?> Hari</p>
-                    <?php } ?>
+            <?php if ($pemesanan['resi'] != 'Menunggu pengiriman') { ?>
+                <div class="d-flex justify-content-between gap-2">
+                    <img src="/img/kurir/<?= strtolower(explode(" ", $kurir['nama'])[0]); ?>.png" alt="" style="width: 100px; object-fit:contain">
+                    <div style="flex: 1;">
+                        <p class="mb-0 fw-bold" style="letter-spacing: -1px; font-size: 20px;"><?= strtoupper($kurir['nama']) ?> <?= $kurir['deskripsi'] ?></p>
+                        <?php if (isset($kurir['estimasi'])) { ?>
+                            <p class="m-0" style="letter-spacing: -1px;">Estimasi pengiriman <?= $kurir['estimasi'] ?> Hari</p>
+                        <?php } ?>
+                    </div>
                 </div>
+            <?php } else { ?>
+                <div>
+                    <p class="m-0">Barang masih kami proses untuk pengiriman</p>
+                    <p class="m-0 text-secondary">*Jika pemesanan lebih dari jam 12:00 akan kami proses di esok harinya</p>
+                </div>
+            <?php } ?>
+            <p class="mb-0 mt-3">Resi</p>
+            <div class="d-flex gap-1">
+                <p class="teks-sedang"><?= $pemesanan['resi']; ?></p>
+                <?php if ($pemesanan['resi'] != 'Menunggu pengiriman') { ?>
+                    <button class="btn-teks-aja hitam mb-1" onclick="copytext('<?= $pemesanan['resi']; ?>')"><i class="material-icons">content_copy</i></button>
+                <?php } ?>
             </div>
             <p class="mb-0 mt-3">Status Pesanan</p>
             <!-- <p class="m-0 fw-bold">Proses</p> -->

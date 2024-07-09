@@ -1,5 +1,29 @@
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
+<div id="edit-resi" class="d-none justify-content-center align-items-center" style="position: fixed; top: 0; left: 0; height: 100svh; width: 100vw; background-color: rgba(0,0,0,0.8); z-index: 101;">
+    <div class="p-4" style="background-color: white; border-radius: 1em">
+        <form action="/admin/actioneditresi" method="post">
+            <h5 class="teks-sedang mb-2">Edit resi</h5>
+            <div class="mb-1">
+                <label for="">Nama</label>
+                <input type="text" name="nama" class="form-control">
+            </div>
+            <div class="mb-1">
+                <label for="">Deskripsi</label>
+                <input type="text" name="deskripsi" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label for="">Resi</label>
+                <input type="text" name="resi" class="form-control">
+            </div>
+            <div class="d-flex gap-1 justify-content-end">
+                <button type="submit" class="btn-default">Simpan</button>
+                <button type="button" class="btn-teks-aja" onclick="closeEditResi()">Batal</button>
+            </div>
+            <input type="text" name="idMid" class="d-none">
+        </form>
+    </div>
+</div>
 <div style="padding: 2em;">
     <div class="mb-4">
         <h1 class="teks-sedang">Pesanan Pelanggan</h1>
@@ -55,7 +79,7 @@
                 <div style="flex: 2;" class="d-flex justify-content-center">
                     <a class="btn" href="/invoice/<?= $p['id_midtrans']; ?>"><i class="material-icons">description</i></a>
                     <?php if ($p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
-                        <a class="btn" href="/editresi/<?= $p['id_midtrans']; ?>"><i class="material-icons">edit</i></a>
+                        <a class="btn" onclick="openEditResi('<?= $p['id_midtrans']; ?>')"><i class="material-icons">edit</i></a>
                     <?php } ?>
                     <?php if ($p['status'] == 'Menunggu Pembayaran' || $p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
                         <a class="btn" href="/cancelorder/<?= $p['id_midtrans']; ?>"><i class="material-icons" style="color: var(--merah);">cancel</i></a>
@@ -205,6 +229,18 @@
     const itemElm = document.getElementById("item");
     const containerOffcanvasElm = document.querySelector(".container-offcanvas");
     const btnBawahElm = document.querySelectorAll(".btnBawah");
+    const editResiElm = document.getElementById('edit-resi');
+
+    function openEditResi(idMid) {
+        editResiElm.classList.remove('d-none')
+        editResiElm.classList.add('d-flex')
+        document.querySelector('input[name="idMid"]').value = idMid
+    }
+
+    function closeEditResi() {
+        editResiElm.classList.add('d-none')
+        editResiElm.classList.remove('d-flex')
+    }
 
     function openDetail(indP, event) {
         const pesananSelected = pesanan[indP];

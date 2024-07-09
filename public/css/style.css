@@ -829,6 +829,30 @@ body {
     padding-bottom: 2px;
 }
 
+.container-pag {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+}
+.item-pag {
+    text-decoration: none;
+    color: #b3b3b3;
+    cursor: pointer;
+    /* background-color: aqua; */
+    width: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.item-pag.active {
+    color: var(--merah);
+    font-weight: bold;
+}
+.item-pag:hover {
+    color: black;
+}
+
 /* ADMIN */
 .admin-nav {
     width: 300px;

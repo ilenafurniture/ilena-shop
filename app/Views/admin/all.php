@@ -1,5 +1,16 @@
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
+<?php
+$hitungPag = ceil(count($produk) / 10);
+$pag = 1;
+if (isset($_GET['pag'])) $pag = (int)$_GET['pag'];
+$produkLama = array_slice($produk, ($pag - 1) * 10);
+$produk = [];
+for ($i = 0; $i < 10; $i++) {
+    if (isset($produkLama[$i]))
+        array_push($produk, $produkLama[$i]);
+}
+?>
 <div style="padding: 2em;">
     <div class="d-flex justify-content-between">
         <div>
@@ -69,6 +80,17 @@
                 </div>
             <?php } ?>
         </div>
+    </div>
+    <div class="container-pag">
+        <?php if ($pag > 1) { ?>
+            <a class="item-pag" href="/admin/product?pag=<?= $pag - 1; ?>"><i class="material-icons">chevron_left</i></a>
+        <?php } ?>
+        <?php for ($i = 0; $i < $hitungPag; $i++) { ?>
+            <a class="item-pag <?= $pag == ($i + 1) ? 'active' : ''; ?>" href="/admin/product?pag=<?= $i + 1; ?>"><?= $i + 1; ?></a>
+        <?php } ?>
+        <?php if ($pag < $hitungPag) { ?>
+            <a class="item-pag" href="/admin/product?pag=<?= $pag + 1; ?>"><i class="material-icons">chevron_right</i></a>
+        <?php } ?>
     </div>
 </div>
 <script>

@@ -1,5 +1,82 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
+<?php
+if (isset($_GET['koleksi'])) {
+    if ($_GET['koleksi'] != '') {
+        $koleksi = explode(" ", $_GET['koleksi']);
+        $produkLama = $produk;
+        $produk = [];
+        foreach ($koleksi as $k) {
+            foreach ($produkLama as $p) {
+                if (strtolower(str_replace("-", " ", $k)) == strtolower($p['kategori'])) {
+                    array_push($produk, $p);
+                }
+            }
+        }
+    }
+}
+if (isset($_GET['jenis'])) {
+    if ($_GET['jenis'] != '') {
+        $jenis = explode(" ", $_GET['jenis']);
+        $produkLama = $produk;
+        $produk = [];
+        foreach ($jenis as $k) {
+            foreach ($produkLama as $p) {
+                $varianProdukSelected = json_decode($p['varian'], true);
+                foreach ($varianProdukSelected as $vp) {
+                    if (strtolower(str_replace("-", " ", $k)) == strtolower($vp['nama'])) {
+                        if (!in_array($p, $produk))
+                            array_push($produk, $p);
+                    }
+                }
+            }
+        }
+    }
+}
+if (isset($_GET['harga'])) {
+    if ($_GET['harga'] != '') {
+        $produkLama = $produk;
+        $produk = [];
+        foreach ($produkLama as $p) {
+            $hargaDiskon = (int)$p['harga'] * (100 - $p['diskon']) / 100;
+            switch ($_GET['harga']) {
+                case '0':
+                    if ($hargaDiskon < 5000000)
+                        array_push($produk, $p);
+                    break;
+                case '1':
+                    if (5000000 <= $hargaDiskon && $hargaDiskon < 10000000) {
+                        array_push($produk, $p);
+                    }
+                    break;
+                case '2':
+                    if (10000000 <= $hargaDiskon && $hargaDiskon < 15000000)
+                        array_push($produk, $p);
+                    break;
+                case '3':
+                    if (15000000 <= $hargaDiskon && $hargaDiskon < 20000000)
+                        array_push($produk, $p);
+                    break;
+                default:
+                    if (20000000 <= $hargaDiskon)
+                        array_push($produk, $p);
+                    break;
+            }
+        }
+    }
+}
+
+$hitungPag = ceil(count($produk) / 10);
+$pag = 1;
+if (isset($_GET['pag'])) $pag = (int)$_GET['pag'];
+$produkLama = array_slice($produk, ($pag - 1) * 10);
+$produk = [];
+for ($i = 0; $i < 10; $i++) {
+    if (isset($produkLama[$i]))
+        array_push($produk, $produkLama[$i]);
+}
+
+?>
 <div class="container">
     <div class="konten baris-ke-kolom">
         <div style="width: 200px;" class="show-block-ke-hide">
@@ -7,7 +84,7 @@
                 Koleksi
             </div>
             <div class="collapse py-2" id="collapseExample">
-                <?php foreach ($koleksi as $ind_k => $k) { ?>
+                <?php foreach ($navbar['koleksi'] as $ind_k => $k) { ?>
                     <div class="checkbox-wrapper-46">
                         <input type="checkbox" id="checkbox-filter-1-<?= $ind_k ?>" class="inp-cbx filter" name="koleksi" value="<?= str_replace(" ", "-", strtolower($k['nama'])); ?>" <?= isset($_GET['koleksi']) ? (in_array(str_replace(" ", "-", strtolower($k['nama'])), explode(" ", $_GET['koleksi'])) ? 'checked' : '') : ''; ?> />
                         <label for="checkbox-filter-1-<?= $ind_k ?>" class="cbx"><span>
@@ -24,7 +101,7 @@
                 Jenis
             </div>
             <div class="collapse py-2" id="collapseExample1">
-                <?php foreach ($jenis as $ind_j => $j) { ?>
+                <?php foreach ($navbar['jenis'] as $ind_j => $j) { ?>
                     <div class="checkbox-wrapper-46">
                         <input type="checkbox" id="checkbox-filter-2-<?= $ind_j ?>" class="inp-cbx filter" name="jenis" value="<?= str_replace(" ", "-", strtolower($j['nama'])); ?>" <?= isset($_GET['jenis']) ? (in_array(str_replace(" ", "-", strtolower($j['nama'])), explode(" ", $_GET['jenis'])) ? 'checked' : '') : ''; ?> />
                         <label for="checkbox-filter-2-<?= $ind_j ?>" class="cbx"><span>
@@ -88,7 +165,12 @@
                     </label>
                 </div>
             </div>
-            <a class="btn-filter mt-2 btn-lonjong">Terapkan</a>
+            <div class="d-flex gap-3 mt-2">
+                <a class="btn-filter btn-lonjong">Terapkan</a>
+                <?php if (!empty($_GET['koleksi']) || !empty($_GET['jenis']) || !empty($_GET['harga'])) { ?>
+                    <a class="btn-teks-aja" href="/product">Hapus Filter</a>
+                <?php } ?>
+            </div>
         </div>
         <div class="hide-ke-show-block">
             <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
@@ -111,7 +193,7 @@
                     Koleksi
                 </div>
                 <div class="collapse py-2" id="collapseExample">
-                    <?php foreach ($koleksi as $ind_k => $k) { ?>
+                    <?php foreach ($navbar['koleksi'] as $ind_k => $k) { ?>
                         <div class="checkbox-wrapper-46">
                             <input type="checkbox" id="checkbox-filter-1-<?= $ind_k ?>-hp" class="inp-cbx filter" name="koleksi1" value="<?= str_replace(" ", "-", strtolower($k['nama'])); ?>" <?= isset($_GET['koleksi']) ? (in_array(str_replace(" ", "-", strtolower($k['nama'])), explode(" ", $_GET['koleksi'])) ? 'checked' : '') : ''; ?> />
                             <label for="checkbox-filter-1-<?= $ind_k ?>-hp" class="cbx"><span>
@@ -128,7 +210,7 @@
                     Jenis
                 </div>
                 <div class="collapse py-2" id="collapseExample1">
-                    <?php foreach ($jenis as $ind_j => $j) { ?>
+                    <?php foreach ($navbar['jenis'] as $ind_j => $j) { ?>
                         <div class="checkbox-wrapper-46">
                             <input type="checkbox" id="checkbox-filter-2-<?= $ind_j ?>-hp" class="inp-cbx filter" name="jenis1" value="<?= str_replace(" ", "-", strtolower($j['nama'])); ?>" <?= isset($_GET['jenis']) ? (in_array(str_replace(" ", "-", strtolower($j['nama'])), explode(" ", $_GET['jenis'])) ? 'checked' : '') : ''; ?> />
                             <label for="checkbox-filter-2-<?= $ind_j ?>-hp" class="cbx"><span>
@@ -192,7 +274,12 @@
                         </label>
                     </div>
                 </div>
-                <a class="btn-filter mt-2 btn-lonjong">Terapkan</a>
+                <div class="d-flex gap-3 mt-2">
+                    <a class="btn-filter btn-lonjong">Terapkan</a>
+                    <?php if (!empty($_GET['koleksi']) || !empty($_GET['jenis']) || !empty($_GET['harga'])) { ?>
+                        <a class="btn-teks-aja" href="/product">Hapus Filter</a>
+                    <?php } ?>
+                </div>
             </div>
         </div>
 
@@ -200,7 +287,7 @@
             <?php if (session()->get('role') == '1') { ?>
                 <div class="d-flex justify-content-between">
                     <h1 class="teks-sedang">List Product</h1>
-                    <a href="/addproduct" class="btn-default-merah">Tambah Produk</a>
+                    <a href="/admin/addproduct" class="btn-default-merah">Tambah Produk</a>
                 </div>
             <?php } ?>
             <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb" class="show-block-ke-hide">
@@ -213,67 +300,7 @@
             </nav>
             <?php if (isset($find)) { ?>
                 <p>Anda mencari "<?= $find ?>"</p>
-            <?php }
-
-            if (isset($_GET['koleksi'])) {
-                $koleksi = explode(" ", $_GET['koleksi']);
-                $produkLama = $produk;
-                $produk = [];
-                foreach ($koleksi as $k) {
-                    foreach ($produkLama as $p) {
-                        if (strtolower(str_replace("-", " ", $k)) == strtolower($p['kategori'])) {
-                            array_push($produk, $p);
-                        }
-                    }
-                }
-            }
-            if (isset($_GET['jenis'])) {
-                $jenis = explode(" ", $_GET['jenis']);
-                $produkLama = $produk;
-                $produk = [];
-                foreach ($jenis as $k) {
-                    foreach ($produkLama as $p) {
-                        $varianProdukSelected = json_decode($p['varian'], true);
-                        foreach ($varianProdukSelected as $vp) {
-                            if (strtolower(str_replace("-", " ", $k)) == strtolower($vp['nama'])) {
-                                if (!in_array($p, $produk))
-                                    array_push($produk, $p);
-                            }
-                        }
-                    }
-                }
-            }
-            if (isset($_GET['harga'])) {
-                $produkLama = $produk;
-                $produk = [];
-                foreach ($produkLama as $p) {
-                    $hargaDiskon = (int)$p['harga'] * (100 - $p['diskon']) / 100;
-                    switch ($_GET['harga']) {
-                        case '0':
-                            if ($hargaDiskon < 5000000)
-                                array_push($produk, $p);
-                            break;
-                        case '1':
-                            if (5000000 <= $hargaDiskon && $hargaDiskon < 10000000) {
-                                array_push($produk, $p);
-                            }
-                            break;
-                        case '2':
-                            if (10000000 <= $hargaDiskon && $hargaDiskon < 15000000)
-                                array_push($produk, $p);
-                            break;
-                        case '3':
-                            if (15000000 <= $hargaDiskon && $hargaDiskon < 20000000)
-                                array_push($produk, $p);
-                            break;
-                        default:
-                            if (20000000 <= $hargaDiskon)
-                                array_push($produk, $p);
-                            break;
-                    }
-                }
-            }
-            ?>
+            <?php } ?>
             <div class="container-card1">
                 <?php foreach ($produk as $ind_p => $p) { ?>
                     <div class="card1">
@@ -281,7 +308,7 @@
                             <div class="card1-content-img">
                                 <span <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
                                 <div class="d-flex flex-column gap-2">
-                                    <?= session()->get('role') == '1' ? '<a class="card1-btn-img" href="/editproduct/' . $p['id'] . '"><i class="material-icons">edit</i></a>' : '' ?>
+                                    <?= session()->get('role') == '1' ? '<a class="card1-btn-img" href="/admin/editproduct/' . $p['id'] . '"><i class="material-icons">edit</i></a>' : '' ?>
                                     <?= in_array($p['id'], $wishlist) ? '<a class="card1-btn-img" href="/delwishlist/' . $p['id'] . '"><i class="material-icons">bookmark</i></a>' : '<a class="card1-btn-img" href="/addwishlist/' . $p['id'] . '"><i class="material-icons">bookmark_border</i></a>' ?>
                                     <a id="card<?= $ind_p ?>" class="card1-btn-img" href="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'], true)[0]['nama'] ?>/1"><i class="material-icons">shopping_cart</i></a>
                                 </div>
@@ -314,6 +341,7 @@
                                 });
                             </script>
                         </div>
+                        <p class="text-secondary text-sm-start m-0"><?= ucwords($p['kategori']); ?></p>
                         <h5><?= $p['nama']; ?></h5>
                         <div class="d-flex gap-2">
                             <p class="harga">Rp <?= number_format($p['harga'] * (100 - $p['diskon']) / 100, 0, ',', '.'); ?></p>
@@ -322,6 +350,17 @@
                             <?php } ?>
                         </div>
                     </div>
+                <?php } ?>
+            </div>
+            <div class="container-pag">
+                <?php if ($pag > 1) { ?>
+                    <a class="item-pag" href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&pag=<?= $pag - 1; ?>"><i class="material-icons">chevron_left</i></a>
+                <?php } ?>
+                <?php for ($i = 0; $i < $hitungPag; $i++) { ?>
+                    <a class="item-pag <?= $pag == ($i + 1) ? 'active' : ''; ?>" href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&pag=<?= $i + 1; ?>"><?= $i + 1; ?></a>
+                <?php } ?>
+                <?php if ($pag < $hitungPag) { ?>
+                    <a class="item-pag" href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&pag=<?= $pag + 1; ?>"><i class="material-icons">chevron_right</i></a>
                 <?php } ?>
             </div>
         </div>

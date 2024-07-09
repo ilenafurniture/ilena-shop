@@ -34,6 +34,26 @@ class GambarController extends BaseController
         echo $gambarSelected;
     }
 
+    public function tampilGambarVarWM($idBarang, $urutan)
+    {
+        $data = file_get_contents_curl(
+            base_url('viewvar/' . $idBarang . '/' . $urutan)
+        );
+        $fp = 'imgdum/logo-1.webp';
+        file_put_contents($fp, $data);
+
+        // $gambarnya = imagecreatefromstring();
+
+        // \Config\Services::image()
+        //     ->withFile($fp)
+        //     ->resize(300, 300, true, 'height')->save('imgdum/1logo-1.webp');
+        // $this->response->setHeader('Content-Type', 'image/webp');
+        // echo file_get_contents('imgdum/1logo-1.webp');
+
+        // unlink($fp);
+        // unlink('imgdum/1logo-1.webp');
+    }
+
     public function formCobaInput()
     {
         return view('cobainput');

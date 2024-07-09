@@ -166,6 +166,7 @@
                             });
                         </script>
                     </div>
+                    <p class="text-secondary text-sm-start m-0"><?= ucwords($p['kategori']); ?></p>
                     <h5><?= $p['nama']; ?></h5>
                     <div class="d-flex gap-2">
                         <p class="harga">Rp <?= number_format($p['harga'] * (100 - $p['diskon']) / 100, 0, ',', '.'); ?></p>

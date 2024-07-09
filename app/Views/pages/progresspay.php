@@ -110,9 +110,5 @@
             elm.innerHTML = `${hours}: ${minutes}: ${seconds}`;
         })
     }, 1000);
-
-    function copytext(teks) {
-        navigator.clipboard.writeText(teks);
-    }
 </script>
 <?= $this->endSection(); ?>

@@ -70,6 +70,7 @@ $routes->get('/viewvar/(:any)/(:any)', 'GambarController::tampilGambarVarian/$1/
 $routes->get('/changepic/(:any)/(:any)', 'GambarController::gantiResolusiGambar/$1/$2');
 // $routes->get('/cobainput', 'GambarController::formCobaInput');
 $routes->get('/cobainput', 'GambarController::actionCobaInput');
+$routes->get('/gamwm', 'GambarController::tampilGambarVarWM');
 
 
 // Admin Controller
@@ -82,6 +83,7 @@ $routes->post('/admin/editproduct', 'AdminController::actionEditProduct', ['filt
 $routes->get('/admin/deleteproduct/(:any)', 'AdminController::deleteProduct/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/activeproduct/(:any)', 'AdminController::activeProduct/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/order', 'AdminController::order', ['filter' => 'adminFilter']);
+$routes->post('/admin/actioneditresi', 'AdminController::actionEditResi', ['filter' => 'adminFilter']);
 $routes->get('/admin/reprint', 'AdminController::reprint', ['filter' => 'adminFilter']);
 $routes->get('/admin/marketplace', 'AdminController::marketplace', ['filter' => 'adminFilter']);
 $routes->get('/admin/confirm-mp/(:any)', 'AdminController::confirmMarketplace/$1', ['filter' => 'adminFilter']);

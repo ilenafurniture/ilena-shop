@@ -39,7 +39,7 @@ class Pages extends BaseController
     }
     public function index()
     {
-        $produk  = $this->barangModel->getBarang();
+        $produk  = $this->barangModel->orderBy('pengunjung', 'desc')->findAll(8, 0);
         $wishlist = $this->session->get('wishlist');
         if (!isset($wishlist)) {
             $wishlist = [];
@@ -94,6 +94,7 @@ class Pages extends BaseController
             // dd($product);
             $product['deskripsi'] = json_decode($product['deskripsi'], true);
             $product['varian'] = json_decode($product['varian'], true);
+            $produkSejenis = $this->barangModel->where(['subkategori' => $product['subkategori']])->orderBy('pengunjung', 'desc')->findAll(8, 0);
             $data = [
                 'title' => 'produk',
                 'navbar' => [
@@ -104,7 +105,12 @@ class Pages extends BaseController
                 'wishlist' => $wishlist,
                 'koleksi' => $koleksi,
                 'jenis' => $jenis,
+                'produkSejenis' => $produkSejenis
             ];
+
+            //menambah pengunjung
+            $this->barangModel->where(['id' => $product['id']])->set(['pengunjung' => (int)$product['pengunjung'] + 1])->update();
+
             return view('pages/product', $data);
         } else {
             $product = $this->barangModel->getBarang();
@@ -1559,7 +1565,7 @@ class Pages extends BaseController
                         'biller_code' => $biller_code,
                         'caraPembayaran' => $carapembayaran[$bank],
                     ];
-                    return view('pages/orderShipping', $data);
+                    return view('pages/successpay', $data);
                     break;
                 case 'Kadaluarsa':
                     $biller_code = "";

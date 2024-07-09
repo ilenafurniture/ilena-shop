@@ -223,6 +223,26 @@ class AdminController extends BaseController
         $data = $this->request->getVar();
         $data_gambar_mentah = $this->request->getFiles();
 
+        // difilter data gambar mentah krn ada input yg hanya sebagai penambah saja
+        reset($data_gambar_mentah);
+        $cekInputTerakhir = explode("-", key($data_gambar_mentah))[0] . "-" . explode("-", key($data_gambar_mentah))[1];
+        $simpanInd = '';
+        $arrIndLast = [];
+        foreach ($data_gambar_mentah as $ind_dgm => $dgm) {
+            if (explode("-", $ind_dgm)[0] . "-" . explode("-", $ind_dgm)[1] != $cekInputTerakhir) {
+                array_push($arrIndLast, $simpanInd);
+                $cekInputTerakhir = explode("-", $ind_dgm)[0] . "-" . explode("-", $ind_dgm)[1];
+            }
+            $simpanInd = $ind_dgm;
+        }
+
+        end($data_gambar_mentah);
+        array_push($arrIndLast, key($data_gambar_mentah));
+        foreach ($arrIndLast as $ai) {
+            unset($data_gambar_mentah[$ai]);
+        }
+        // dd($data_gambar_mentah);
+
         $data_gambar = [];
         foreach ($data_gambar_mentah as $key => $g) {
             if ($g->isValid()) {
@@ -237,6 +257,8 @@ class AdminController extends BaseController
 
         $insertGambarBarang = [];
         $varianData = json_decode($barangCur['varian'], true);
+
+        // dd($data_gambar);
 
         $counterGambar = 0;
         $varianDataBaru = [];
@@ -409,6 +431,22 @@ class AdminController extends BaseController
             'pesananJson' => json_encode($pesanan)
         ];
         return view('admin/order', $data);
+    }
+    public function actionEditResi()
+    {
+        $nama = $this->request->getVar('nama');
+        $deskripsi = $this->request->getVar('deskripsi');
+        $resi = $this->request->getVar('resi');
+        $idMid = $this->request->getVar('idMid');
+        $this->pemesananModel->where(['id_midtrans' => $idMid])->set([
+            'kurir' => json_encode([
+                'nama' => $nama,
+                'deskripsi' => $deskripsi,
+            ]),
+            'resi' => $resi,
+            'status' => 'Dikirim'
+        ])->update();
+        return redirect()->to('/admin/order');
     }
 
     public function reprint()

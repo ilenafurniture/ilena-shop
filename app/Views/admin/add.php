@@ -291,7 +291,10 @@
             '" required></div></td></tr></tbody></table><button type="button" class="btn-teks-aja m-0 ms-auto mt-1" onclick="deleteVarian(event)">Hapus</button></div>'
         containerVarian.innerHTML += itemVarianBaru
         counterJmlVarian++;
-        hitungVarianInputElm.value += "," + (Number(jumlahVarian) + 1);
+        if (hitungVarianInputElm.value == '')
+            hitungVarianInputElm.value += (Number(jumlahVarian) + 1);
+        else
+            hitungVarianInputElm.value += "," + (Number(jumlahVarian) + 1);
         console.log(hitungVarianInputElm.value)
     }
 
