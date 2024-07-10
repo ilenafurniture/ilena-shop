@@ -86,6 +86,12 @@
                             </td>
                         </tr>
                         <tr>
+                            <td>Link Tiktok</td>
+                            <td>
+                                <div class="baris"><input type="text" class="form-control" name="tiktok"></div>
+                            </td>
+                        </tr>
+                        <tr>
                             <td>Deskripsi</td>
                             <td>
                                 <div class="baris"><textarea type="text" class="form-control" name="deskripsi" required></textarea></div>

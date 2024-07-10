@@ -162,7 +162,8 @@
                     </div>
                 </div> -->
                 <div>
-                    <img class="img-detail-prev" src="/viewvar/<?= $produk['id'] ?>/1">
+                    <!-- <img class="img-detail-prev" src="/viewvar/<?= $produk['id'] ?>/1"> -->
+                    <figure class="img-detail-prev" onmousemove="zoom(event)" onmouseleave="mouseoff(event)" style="background-image: url('/viewvar/<?= $produk['id'] ?>/1'); background-size: cover;"></figure>
                 </div>
                 <div class="mb-3 mt-3" style="overflow: auto">
                     <div class="container-img-detail-select">
@@ -175,9 +176,9 @@
                             radioImgElm.forEach(elm => {
                                 elm.addEventListener('change', (e) => {
                                     const imgElm = document.querySelector(".img-detail-prev");
-                                    imgElm.src =
-                                        "/viewvar/<?= $produk['id']; ?>/" + e.target.value
-                                        .split("-")[0];
+                                    imgElm.style =
+                                        "background-image: url('" + "/viewvar/<?= $produk['id']; ?>/" + e.target.value
+                                        .split("-")[0] + "'); background-size: cover;"
                                 })
                             });
                         </script>
@@ -249,6 +250,7 @@
     </div>
 </div>
 <script>
+    const figureElm = document.querySelector('figure');
     const btnKeranjangElm = document.getElementById('btn-keranjang');
     const radioVarianElm = document.querySelectorAll('input[name="varian"]');
     const varian = JSON.parse('<?= json_encode($produk['varian']) ?>');
@@ -258,8 +260,8 @@
     radioVarianElm.forEach(elm => {
         elm.addEventListener('change', (e) => {
             const imgElm = document.querySelector(".img-detail-prev");
-            imgElm.src =
-                "/viewvar/<?= $produk['id']; ?>/" + e.target.value.split("-")[0].split(",")[0];
+            imgElm.style =
+                "background-image: url('" + "/viewvar/<?= $produk['id']; ?>/" + e.target.value.split("-")[0].split(",")[0] + "'); background-size: cover;"
 
             const containerImgDetailElm = document.querySelector(".container-img-detail-select");
             containerImgDetailElm.innerHTML = "";
@@ -271,17 +273,18 @@
                     '"><img src="/viewvar/<?= $produk['id'] ?>/' + urutan + '"></label>'
             })
 
-            btnKeranjangElm.href = "/addcart/<?= $produk['id'] ?>/" + e.target.value.split("-")[1] + "/" +
-                jumlahSelected;
+            if (btnKeranjangElm) {
+                btnKeranjangElm.href = "/addcart/<?= $produk['id'] ?>/" + e.target.value.split("-")[1] + "/" +
+                    jumlahSelected;
+            }
             varianSelected = e.target.value.split("-")[1];
 
             const radioImgElm = document.querySelectorAll('input[name="gambar"]');
             radioImgElm.forEach(elm1 => {
                 elm1.addEventListener('change', (elmVar) => {
                     const imgElm = document.querySelector(".img-detail-prev");
-                    imgElm.src =
-                        "/viewvar/<?= $produk['id']; ?>/" + elmVar.target.value.split("-")[
-                            0].split(",")[0];
+                    imgElm.style =
+                        "background-image: url('" + "/viewvar/<?= $produk['id']; ?>/" + elmVar.target.value.split("-")[0].split(",")[0] + "'); background-size: cover;"
                 })
             });
         })
@@ -302,6 +305,21 @@
         btnKeranjangElm.href = "/addcart/<?= $produk['id'] ?>/" + varianSelected + "/" +
             jumlahBarangElm.value;
         jumlahSelected = jumlahBarangElm.value;
+    }
+
+    function zoom(e) {
+        figureElm.style.backgroundSize = "auto"
+        const widthGambar = e.target.offsetWidth;
+        const gmbrPosition = [
+            (e.offsetX / widthGambar) * 100,
+            (e.offsetY / widthGambar) * 100,
+        ];
+        figureElm.style.backgroundPosition =
+            gmbrPosition[0] + "% " + gmbrPosition[1] + "%";
+    }
+
+    function mouseoff(e) {
+        figureElm.style.backgroundSize = "cover"
     }
 </script>
 

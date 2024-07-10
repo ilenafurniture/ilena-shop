@@ -81,6 +81,12 @@
                             </td>
                         </tr>
                         <tr>
+                            <td>Link Tiktok</td>
+                            <td>
+                                <div class="baris"><input type="text" class="form-control" name="tiktok" value="<?= $produk['tiktok']; ?>"></div>
+                            </td>
+                        </tr>
+                        <tr>
                             <td>Deskripsi</td>
                             <td>
                                 <div class="baris"><textarea type="text" class="form-control" name="deskripsi" required><?= $produk['deskripsi']['deskripsi']; ?></textarea></div>

@@ -175,7 +175,7 @@ class AdminController extends BaseController
             'varian' => json_encode($varianData),
             'shopee' => $data['shopee'],
             'tokped' => $data['tokped'],
-            'tiktok' => '',
+            'tiktok' => $data['tiktok'],
             'active' => '1',
             'gambar' => $insertGambarBarang300
         ];
@@ -320,6 +320,7 @@ class AdminController extends BaseController
             'varian' => json_encode($varianDataBaru),
             'shopee' => $data['shopee'],
             'tokped' => $data['tokped'],
+            'tiktok' => $data['tiktok'],
             'gambar' => $insertGambarBarang['gambar1']
         ];
 
