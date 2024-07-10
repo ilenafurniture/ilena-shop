@@ -55,10 +55,10 @@
                         </p>
                         <div>
                             <?php if ($produk['tokped']) { ?>
-                                <a href="<?= $produk['tokped']; ?>" title="Tokopedia" target="_blank"><img src="/img/logo/tokopedia.png" class="marketplace"></a>
+                                <a href="<?= $produk['tokped']; ?>" title="Tokopedia" target="_blank"><img src="/img/logo/tokped_logo.webp" class="marketplace"></a>
                             <?php } ?>
                             <?php if ($produk['shopee']) { ?>
-                                <a href="<?= $produk['shopee']; ?>" title="Shopee" target="_blank"><img src="/img/logo/shopee.png" class="marketplace"></a>
+                                <a href="<?= $produk['shopee']; ?>" title="Shopee" target="_blank"><img src="/img/logo/shopee_logo.webp" class="marketplace"></a>
                             <?php } ?>
                             <?php if ($produk['tiktok']) { ?>
                                 <a href="<?= $produk['tiktok']; ?>" title="Tiktok" target="_blank"><img src="/img/logo/tiktokshop.svg" class="marketplace"></a>
