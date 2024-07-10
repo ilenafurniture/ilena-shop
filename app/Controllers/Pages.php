@@ -94,7 +94,7 @@ class Pages extends BaseController
             // dd($product);
             $product['deskripsi'] = json_decode($product['deskripsi'], true);
             $product['varian'] = json_decode($product['varian'], true);
-            $produkSejenis = $this->barangModel->where(['subkategori' => $product['subkategori']])->orderBy('pengunjung', 'desc')->findAll(8, 0);
+            $produkSejenis = $this->barangModel->where(['subkategori' => $product['subkategori']])->where('id !=', $product['id'])->orderBy('pengunjung', 'desc')->findAll(8, 0);
             $data = [
                 'title' => 'produk',
                 'navbar' => [
