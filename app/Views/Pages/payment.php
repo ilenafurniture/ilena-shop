@@ -3,7 +3,7 @@
 <div class="container konten baris-ke-kolom">
     <div style="flex:1;">
         <h5 style="letter-spacing: -1px; font-weight:100;" class="path"><a href="/address" class="me-3 text-secondary" style="text-decoration: none;">Alamat</a> >
-            <a href="/shipping/<?= $indKurir; ?>" class="mx-3 text-secondary" style="text-decoration: none;">Kurir</a> >
+            <!-- <a href="/shipping/<?= $indKurir; ?>" class="mx-3 text-secondary" style="text-decoration: none;">Kurir</a> > -->
             <a class="mx-3 text-dark fw-bold" style="text-decoration: none;">
                 Rincian Pembayaran</a>
         </h5>
@@ -64,7 +64,7 @@
                 </div>
             </div>
 
-            <div class="container-pembayaran mb-1">
+            <!-- <div class="container-pembayaran mb-1">
                 <div class="item-pembayaran" data-bs-toggle="collapse" href="#collapseExample1" aria-expanded="true" aria-controls="collapseExample1">
                     Informasi Kurir
                 </div>
@@ -84,7 +84,7 @@
                     </div>
                     <hr>
                 </div>
-            </div>
+            </div> -->
 
         </div>
     </div>
@@ -107,21 +107,21 @@
                     Rp 5,000
                 </p>
             </div>
-            <div class="d-flex justify-content-between py-1">
+            <!-- <div class="d-flex justify-content-between py-1">
                 <p class="m-0">
                     Biaya Ongkir
                 </p>
                 <p class="fw-bold m-0">
                     Rp <?= number_format($hargaOngkir, 0, ',', '.'); ?>
                 </p>
-            </div>
+            </div> -->
             <span class="garis my-2"></span>
             <div class="d-flex justify-content-between py-1">
                 <p class="m-0">
                     TOTAL
                 </p>
                 <p class="fw-bold m-0">
-                    Rp <?= number_format($hargaKeseluruhan, 0, ',', '.'); ?>
+                    Rp <?= number_format($hargaTotal + 5000, 0, ',', '.'); ?>
                 </p>
             </div>
             <button onclick="bayar(event)" class="btn-default-merah  w-100 mt-4 text-center">Bayar</button>

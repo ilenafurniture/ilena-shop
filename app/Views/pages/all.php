@@ -20,11 +20,25 @@ if (isset($_GET['jenis'])) {
         $jenis = explode(" ", $_GET['jenis']);
         $produkLama = $produk;
         $produk = [];
-        foreach ($jenis as $k) {
+        foreach ($jenis as $j) {
+            foreach ($produkLama as $p) {
+                if (strtolower(str_replace("-", " ", $j)) == strtolower($p['subkategori'])) {
+                    array_push($produk, $p);
+                }
+            }
+        }
+    }
+}
+if (isset($_GET['varian'])) {
+    if ($_GET['varian'] != '') {
+        $varian = explode(" ", $_GET['varian']);
+        $produkLama = $produk;
+        $produk = [];
+        foreach ($varian as $v) {
             foreach ($produkLama as $p) {
                 $varianProdukSelected = json_decode($p['varian'], true);
                 foreach ($varianProdukSelected as $vp) {
-                    if (strtolower(str_replace("-", " ", $k)) == strtolower($vp['nama'])) {
+                    if (strtolower(str_replace("-", " ", $v)) == strtolower($vp['nama'])) {
                         if (!in_array($p, $produk))
                             array_push($produk, $p);
                     }

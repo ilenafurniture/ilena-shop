@@ -15,6 +15,7 @@
                         </a>
                         <div style="flex: 1;" class="d-flex flex-column">
                             <a href="/product/<?= $k['detail']['id'] ?>" style="text-decoration:none; color: black;">
+                                <p class="m-0"><?= ucfirst($k['detail']['kategori']) ?></p>
                                 <h1 class="nama-barang"><?= $k['detail']['nama'] ?></h1>
                                 <p class="my-2">Varian: <?= ucfirst($k['varian']) ?></p>
                             </a>
@@ -55,22 +56,17 @@
                             <img src="<?= $k['src_gambar'] ?>" alt="Gambar Keranjang">
                         </a>
                         <div style="flex: 1;" class="d-flex flex-column justify-content-between">
-                            <!-- <div class="d-flex gap-1 align-items-end">
-                            </div> -->
-                            <a href="/product/<?= $k['detail']['id'] ?>" style="text-decoration:none; color: black;">
+                            <a href="/product/<?= $k['detail']['id'] ?>" style="text-decoration:none; color: black;" class="d-flex flex-column h-100">
+                                <div style="flex: 1">
+                                    <p class="m-0" style="letter-spacing: -1px;"><?= ucwords($k['detail']['kategori']); ?></p>
+                                    <h1 class="nama-barang"><?= $k['detail']['nama'] ?></h1>
+                                </div>
                                 <p class="harga-hp">
                                     Rp
                                     <?= number_format($k['detail']['harga'] * (100 - $k['detail']['diskon']) / 100, 0, ',', '.'); ?>
                                 </p>
-                                <?php if ($k['detail']['diskon'] > 0) { ?>
-                                    <p class="harga-diskon-hp text-start">
-                                        Rp <?= number_format($k['detail']['harga'], 0, ',', '.'); ?>
-                                    </p>
-                                <?php } ?>
-                                <h1 class="nama-barang"><?= $k['detail']['nama'] ?></h1>
-                                <p class="m-0">Varian : <?= ucfirst($k['varian']) ?></p>
+                                <p class="m-0" style="font-size: 10px;">Varian : <?= ucfirst($k['varian']) ?></p>
                             </a>
-
                         </div>
 
                         <div class="d-flex flex-column gap-2 align-items-end justify-content-between">

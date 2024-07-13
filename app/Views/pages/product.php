@@ -23,7 +23,7 @@
                 <p><?= $produk['deskripsi']['deskripsi'] ?></p>
                 <div class="container-varian mb-3 show-flex-ke-hide">
                     <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
-                        <input id="varian<?= $ind_v ?>" value="<?= $v['urutan_gambar'] ?>-<?= $v['nama'] ?>" type="radio" name="varian">
+                        <input id="varian<?= $ind_v ?>" value="<?= $v['urutan_gambar'] ?>-<?= $v['nama'] ?>-<?= $ind_v ?>" type="radio" name="varian">
                         <label for="varian<?= $ind_v ?>"><span style="background-color: <?= $v['kode'] ?>"></span></label>
                     <?php } ?>
                 </div>
@@ -45,7 +45,7 @@
                             <input type="number" name="jumlah" class="number-quantity" value="1">
                             <div class="number-right" onclick="tambahJumlah()"></div>
                         </div>
-                        <a id="btn-keranjang" href="/addcart/<?= $produk['id'] ?>/<?= $produk['varian'][0]['nama'] ?>/1" class="btn-default-merah">Keranjang</a>
+                        <a id="btn-keranjang" href="<?= $produk['varian'][0]['stok'] > 0 ? '/addcart/' . $produk['id'] . '/' . $produk['varian'][0]['nama'] . '/1' : ''; ?>" class="btn-default-merah <?= $produk['varian'][0]['stok'] > 0 ? '' : 'disabled'; ?>"><?= $produk['varian'][0]['stok'] > 0 ? 'Keranjang' : 'Stok habis'; ?></a>
                     </div>
                 <?php } ?>
                 <?php if ($produk['tokped'] || $produk['shopee'] || $produk['tiktok']) { ?>
@@ -274,8 +274,16 @@
             })
 
             if (btnKeranjangElm) {
-                btnKeranjangElm.href = "/addcart/<?= $produk['id'] ?>/" + e.target.value.split("-")[1] + "/" +
-                    jumlahSelected;
+                const varianFullSelected = varian[Number(e.target.value.split("-")[2])];
+                if (Number(varianFullSelected.stok) > 0) {
+                    btnKeranjangElm.innerHTML = 'Keranjang'
+                    btnKeranjangElm.href = "/addcart/<?= $produk['id'] ?>/" + e.target.value.split("-")[1] + "/" + jumlahSelected;
+                    btnKeranjangElm.classList.remove('disabled')
+                } else {
+                    btnKeranjangElm.innerHTML = 'Stok habis'
+                    btnKeranjangElm.href = ''
+                    btnKeranjangElm.classList.add('disabled')
+                }
             }
             varianSelected = e.target.value.split("-")[1];
 

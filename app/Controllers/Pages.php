@@ -136,9 +136,27 @@ class Pages extends BaseController
             $keranjang = [];
         }
         $ketemuProdukNull = [];
+        $ketemuProdukKurang = [];
         foreach ($keranjang as $index => $k) {
             $produk = $this->barangModel->getBarang($k['id_barang']);
             if (!$produk) {
+                array_push($ketemuProdukNull, $index);
+            }
+            $varianProduk = json_decode($produk['varian'], true);
+            $cekVarianExist = false;
+            foreach ($varianProduk as $vp) {
+                if (strtolower($vp['nama']) == strtolower($k['varian'])) {
+                    if ($vp['stok'] < $k['jumlah']) {
+                        if ($vp['stok'] == 0) {
+                            array_push($ketemuProdukNull, $index);
+                        } else {
+                            array_push($ketemuProdukKurang, $index . '-' . $vp['stok']);
+                        }
+                    }
+                    $cekVarianExist = true;
+                }
+            }
+            if (!$cekVarianExist) {
                 array_push($ketemuProdukNull, $index);
             }
         }
@@ -150,6 +168,18 @@ class Pages extends BaseController
                 $email = session()->get('email');
                 if ($email)
                     $this->pembeliModel->where('email', $email)->set(['keranjang' => json_encode($keranjangBaru)])->update();
+            }
+            return redirect()->to('/cart');
+        }
+        if (count($ketemuProdukKurang) > 0) {
+            foreach ($ketemuProdukKurang as $k) {
+                $index = explode("-", $k)[0];
+                $stokCur = explode("-", $k)[1];
+                $keranjang[$index]['jumlah'] = $stokCur;
+                $this->session->set(['keranjang' => $keranjang]);
+                $email = session()->get('email');
+                if ($email)
+                    $this->pembeliModel->where('email', $email)->set(['keranjang' => json_encode($keranjang)])->update();
             }
             return redirect()->to('/cart');
         }
@@ -575,7 +605,7 @@ class Pages extends BaseController
         $this->session->set(['alamatTerpilih' => $alamatselected]);
         return view('pages/shipping', $data);
     }
-    public function payment($index_kurir)
+    public function paymentlama($index_kurir)
     {
         $hargaTotal = 0;
         $keranjang = $this->session->get('keranjang');
@@ -645,6 +675,63 @@ class Pages extends BaseController
         $this->session->set(['kurirTerpilih' => $kurir[$index_kurir]]);
         return view('pages/payment', $data);
     }
+    public function payment($ind_add)
+    {
+        $hargaTotal = 0;
+        $keranjang = $this->session->get('keranjang');
+        $alamat = $this->session->get('alamat');
+        if (!array_key_exists($ind_add, $alamat)) {
+            return redirect()->to('/address');
+        }
+        if (!isset($alamat)) {
+            return redirect()->to('/address');
+        } else {
+            if (count($alamat) == 0) {
+                return redirect()->to('/address');
+            }
+        }
+
+        $alamatselected = $alamat[$ind_add];
+        foreach ($keranjang as $index => $k) {
+            $produk = $this->barangModel->getBarang($k['id_barang']);
+            foreach (json_decode($produk['varian'], true) as $v) {
+                if ($v['nama'] == $k['varian']) {
+                    $keranjang[$index]['src_gambar'] = "/viewvar/" . $k['id_barang'] . "/" . explode(',', $v['urutan_gambar'])[0];
+                }
+            }
+            $keranjang[$index]['detail'] = $produk;
+            $hargaTotal += $produk['harga'] * $k['jumlah'] * (100 - $produk['diskon']) / 100;
+        }
+
+        $data = [
+            'title' => 'Pembayaran',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
+            'hargaTotal' => $hargaTotal,
+            'user' => [
+                'email' => $alamatselected['email_pemesan'],
+                'nama' => $alamatselected['nama_penerima'],
+                'no_hp' => $alamatselected['nohp_penerima'],
+                'alamat' => $alamatselected['alamat_lengkap'],
+
+            ],
+            'keranjang' => $keranjang,
+            'dataMidJson' => base64_encode(json_encode([
+                'code' => ':ilenafur',
+                'email' => $alamatselected['email_pemesan'],
+                'nama' => $alamatselected['nama_penerima'],
+                'nohp' => $alamatselected['nohp_penerima'],
+                'alamat' => $alamatselected['alamat_lengkap'],
+                'keranjang' => $this->session->get('keranjang'),
+                // 'kurir' => $kurir[$index_kurir],
+            ]))
+        ];
+
+        $this->session->set(['alamatTerpilih' => $alamatselected]);
+        return view('pages/payment', $data);
+    }
     public function actionPaySnap()
     {
         $bodyJson = $this->request->getBody();
@@ -660,7 +747,7 @@ class Pages extends BaseController
         $nohp = $body['nohp'];
         $alamatLengkap = $body['alamat'];
         $keranjang = $body['keranjang'];
-        $kurir = $body['kurir'];
+        // $kurir = $body['kurir'];
 
         $subtotal = 0;
         $itemDetails = [];
@@ -688,15 +775,15 @@ class Pages extends BaseController
             'name' => 'Biaya Admin',
         );
         array_push($itemDetails, $biayaadmin);
-        $biayaongkir = array(
-            'id' => 'Biaya Ongkir',
-            'price' => $kurir['harga'],
-            'quantity' => 1,
-            'name' => 'Biaya Ongkir',
-        );
-        array_push($itemDetails, $biayaongkir);
+        // $biayaongkir = array(
+        //     'id' => 'Biaya Ongkir',
+        //     'price' => $kurir['harga'],
+        //     'quantity' => 1,
+        //     'name' => 'Biaya Ongkir',
+        // );
+        // array_push($itemDetails, $biayaongkir);
 
-        $total = $subtotal + 5000 + $kurir['harga'];
+        $total = $subtotal + 5000;
 
         $auth = base64_encode("SB-Mid-server-3M67g25LgovNPlwdS4WfiMsh" . ":");
         $pesananke = $this->pemesananModel->orderBy('id', 'desc')->first();
@@ -708,8 +795,9 @@ class Pages extends BaseController
             'h' => $nohp,
             'a' => $alamatLengkap,
             'i' => $keranjang,
-            'k' => $kurir
+            // 'k' => $kurir
         ]);
+        $emailUjiCoba = ['galihsuks123@gmail.com', 'lunareafurniture@gmail.com', 'galih8.4.2001@gmail.com'];
         $arrPostField = [
             "transaction_details" => [
                 "order_id" => $randomId,
@@ -741,7 +829,6 @@ class Pages extends BaseController
             "custom_field3" => substr($customField, 510, 255),
         ];
 
-        // $snapToken = \Midtrans\Snap::getSnapToken($arrPostField);
         $curl = curl_init();
         curl_setopt_array($curl, array(
             // CURLOPT_URL => "https://app.midtrans.com/snap/v1/transactions",
@@ -1036,7 +1123,7 @@ class Pages extends BaseController
             ])->update();
 
             //reset jumlah produk
-            if ($status == 'Kadaluarsa' || $status == 'Ditolak' || $status == 'Gagal') {
+            if ($status == 'Kadaluarsa' || $status == 'Ditolak' || $status == 'Gagal' || $status == 'Dibatalkan') {
                 $dataTransaksiFulDariDatabase = $this->pemesananModel->where('id_midtrans', $order_id)->first();
                 $dataTransaksiFulDariDatabase_items = json_decode($dataTransaksiFulDariDatabase['items'], true);
                 foreach ($dataTransaksiFulDariDatabase_items as $item) {
@@ -1093,13 +1180,13 @@ class Pages extends BaseController
                 'name' => 'Biaya Admin',
             );
             array_push($itemDetails, $biayaadmin);
-            $biayaongkir = array(
-                'id' => 'Biaya Ongkir',
-                'price' => $customField['k']['harga'],
-                'quantity' => 1,
-                'name' => 'Biaya Ongkir',
-            );
-            array_push($itemDetails, $biayaongkir);
+            // $biayaongkir = array(
+            //     'id' => 'Biaya Ongkir',
+            //     'price' => $customField['k']['harga'],
+            //     'quantity' => 1,
+            //     'name' => 'Biaya Ongkir',
+            // );
+            // array_push($itemDetails, $biayaongkir);
 
             $this->pemesananModel->insert([
                 'nama' => $customField['n'],
@@ -1108,7 +1195,7 @@ class Pages extends BaseController
                 'alamat' => $customField['a'],
                 'resi' => 'Menunggu pengiriman',
                 'items' => json_encode($itemDetails),
-                'kurir' => json_encode($customField['k']),
+                'kurir' => json_encode([]),
                 'id_midtrans' => $order_id,
                 'status' => $status,
                 'data_mid' => json_encode($body),
@@ -1607,10 +1694,11 @@ class Pages extends BaseController
                         'va_number' => $va_number,
                         'biller_code' => $biller_code,
                         'bank' => $bank,
+                        'items' => $items,
                         'caraPembayaran' => $carapembayaran[$bank],
                         'waktuExpire' => date("d", $waktuExpire) . " " . $bulan[(int)date("m", $waktuExpire) - 1] . " " . date("Y H:i:s", $waktuExpire)
                     ];
-                    return view('pages/orderExpire', $data);
+                    return view('pages/expirepay', $data);
                     break;
                 case 'Ditolak':
                     $status = "Ditolak";
