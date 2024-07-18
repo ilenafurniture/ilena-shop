@@ -48,8 +48,9 @@
                         <a id="btn-keranjang" href="<?= $produk['varian'][0]['stok'] > 0 ? '/addcart/' . $produk['id'] . '/' . $produk['varian'][0]['nama'] . '/1' : ''; ?>" class="btn-default-merah <?= $produk['varian'][0]['stok'] > 0 ? '' : 'disabled'; ?>"><?= $produk['varian'][0]['stok'] > 0 ? 'Keranjang' : 'Stok habis'; ?></a>
                     </div>
                 <?php } ?>
+                <p id="info-habis" class="mt-2 <?= $produk['varian'][0]['stok'] <= 0 ? '' : 'd-none'; ?>" style="font-size: 10px;">*Produk ini bisa di pre-order dengan menghubungi <a href="" class="btn-teks-aja" style="display: inline;">Customer Service</a> kami</p>
                 <?php if ($produk['tokped'] || $produk['shopee'] || $produk['tiktok']) { ?>
-                    <div class="mt-4">
+                    <div class="mt-4 <?= $produk['varian'][0]['stok'] <= 0 ? 'd-none' : ''; ?>" id="container-market">
                         <p class="mb-2">
                             Produk ini juga tersedia di
                         </p>
@@ -143,30 +144,12 @@
                 </div>
             </div>
             <div class="limapuluh-ke-seratus">
-                <!-- <div class="d-flex justify-content-end">
-                    <div class="d-flex align-items-start flex-column gap-2">
-                        <div class="d-flex align-items-end gap-2">
-                        <p id="urutan-skrg" class="m-0 fw-bold" style="font-size:24px; line-height: 24px">
-                            01
-                        </p>
-                        <p class="m-0" id="jumlah-urutan">
-                            / 0
-                        </p>
-                    </div>
-                    <div>
-                        <button style="background-color:white; border: 0;">
-                            < </button>
-                                <button class="ms-5" style="background-color:white; border: 0;"
-                                    onclick="nextGambar()">></button>
-                    </div>
-                    </div>
-                </div> -->
                 <div>
-                    <figure class="img-detail-prev d-none" style="background-image: url('/viewvar/<?= $produk['id'] ?>/1'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"></figure>
-                    <img class="img-detail-prev" src="/viewvar/<?= $produk['id'] ?>/1" onmousemove="zoom(event)" onmouseleave="mouseoff(event)">
+                    <figure class="img-detail-prev d-none" style="background-image: url('/viewvar3000/<?= $produk['id'] ?>/1'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"></figure>
+                    <img class="img-detail-prev" <?= $produk['varian'][0]['stok'] <= 0 ? 'style="filter: grayscale(90%)"' : ''; ?> src="/viewvar/<?= $produk['id'] ?>/1" onmousemove="zoom(event)" onmouseleave="mouseoff(event)">
                 </div>
                 <div class="mb-3 mt-3" style="overflow: auto">
-                    <div class="container-img-detail-select">
+                    <div class="container-img-detail-select" <?= $produk['varian'][0]['stok'] <= 0 ? 'style="filter: grayscale(90%)"' : ''; ?>>
                         <?php foreach (explode(",", $produk['varian'][0]['urutan_gambar']) as $indx => $p_v) { ?>
                             <input <?= $indx == 0 ? 'checked' : '' ?> id="gambar<?= $indx ?>" type="radio" name="gambar" value="<?= $p_v ?>">
                             <label class="img-detail-select" for="gambar<?= $indx ?>"><img src="/viewvar/<?= $produk['id'] ?>/<?= $p_v ?>"></label>
@@ -178,7 +161,7 @@
                                     const imgElm = document.querySelector("figure.img-detail-prev");
                                     const imgFixElm = document.querySelector("img.img-detail-prev");
                                     imgElm.style =
-                                        "background-image: url('" + "/viewvar/<?= $produk['id']; ?>/" + e.target.value
+                                        "background-image: url('" + "/viewvar3000/<?= $produk['id']; ?>/" + e.target.value
                                         .split("-")[0] + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
                                     imgFixElm.src = "/viewvar/<?= $produk['id']; ?>/" + e.target.value.split("-")[0];
                                 })
@@ -256,15 +239,18 @@
     const btnKeranjangElm = document.getElementById('btn-keranjang');
     const radioVarianElm = document.querySelectorAll('input[name="varian"]');
     const varian = JSON.parse('<?= json_encode($produk['varian']) ?>');
+    const teksInfoHabisElm = document.getElementById('info-habis');
+    const containerMarketElm = document.getElementById('container-market');
     console.log(varian)
     let varianSelected = "<?= $produk['varian'][0]['nama'] ?>";
     let jumlahSelected = "1";
     radioVarianElm.forEach(elm => {
         elm.addEventListener('change', (e) => {
+            const varianFullSelected = varian[Number(e.target.value.split("-")[2])];
             const imgElm = document.querySelector("figure.img-detail-prev");
             const imgFixElm = document.querySelector("img.img-detail-prev");
             imgElm.style =
-                "background-image: url('" + "/viewvar/<?= $produk['id']; ?>/" + e.target.value.split("-")[0].split(",")[0] + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
+                "background-image: url('" + "/viewvar3000/<?= $produk['id']; ?>/" + e.target.value.split("-")[0].split(",")[0] + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
             imgFixElm.src = "/viewvar/<?= $produk['id']; ?>/" + e.target.value.split("-")[0].split(",")[0];
 
             const containerImgDetailElm = document.querySelector(".container-img-detail-select");
@@ -277,16 +263,27 @@
                     '"><img src="/viewvar/<?= $produk['id'] ?>/' + urutan + '"></label>'
             })
 
+            if (Number(varianFullSelected.stok) <= 0) {
+                imgFixElm.style = 'filter: grayscale(90%)';
+                containerImgDetailElm.style = 'filter: grayscale(90%)';
+                containerMarketElm.classList.add('d-none')
+            } else {
+                imgFixElm.style = 'filter: grayscale(0%)';
+                containerImgDetailElm.style = 'filter: grayscale(0%)';
+                containerMarketElm.classList.remove('d-none')
+            }
+
             if (btnKeranjangElm) {
-                const varianFullSelected = varian[Number(e.target.value.split("-")[2])];
                 if (Number(varianFullSelected.stok) > 0) {
                     btnKeranjangElm.innerHTML = 'Keranjang'
                     btnKeranjangElm.href = "/addcart/<?= $produk['id'] ?>/" + e.target.value.split("-")[1] + "/" + jumlahSelected;
                     btnKeranjangElm.classList.remove('disabled')
+                    teksInfoHabisElm.classList.add('d-none')
                 } else {
                     btnKeranjangElm.innerHTML = 'Stok habis'
                     btnKeranjangElm.href = ''
                     btnKeranjangElm.classList.add('disabled')
+                    teksInfoHabisElm.classList.remove('d-none')
                 }
             }
             varianSelected = e.target.value.split("-")[1];
@@ -297,7 +294,7 @@
                     const imgElm = document.querySelector("figure.img-detail-prev");
                     const imgFixElm = document.querySelector("img.img-detail-prev");
                     imgElm.style =
-                        "background-image: url('" + "/viewvar/<?= $produk['id']; ?>/" + elmVar.target.value.split("-")[0].split(",")[0] + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
+                        "background-image: url('" + "/viewvar3000/<?= $produk['id']; ?>/" + elmVar.target.value.split("-")[0].split(",")[0] + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
                     imgFixElm.src = "/viewvar/<?= $produk['id']; ?>/" + elmVar.target.value.split("-")[0].split(",")[0]
                 })
             });
@@ -342,7 +339,5 @@
         }
     }
 </script>
-
-
 
 <?= $this->endSection(); ?>adioIm

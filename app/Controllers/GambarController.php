@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\BarangModel;
 use App\Models\GambarBarangModel;
+use App\Models\GambarBarang3000Model;
 use App\Models\PembeliModel;
 use App\Models\PemesananModel;
 use App\Models\UserModel;
@@ -13,10 +14,12 @@ class GambarController extends BaseController
 {
     protected $barangModel;
     protected $gambarBarangModel;
+    protected $gambarBarang3000Model;
     public function __construct()
     {
         $this->barangModel = new BarangModel();
         $this->gambarBarangModel = new GambarBarangModel();
+        $this->gambarBarang3000Model = new GambarBarang3000Model();
     }
 
     public function tampilGambarBarang($idBarang)
@@ -29,6 +32,13 @@ class GambarController extends BaseController
     public function tampilGambarVarian($idBarang, $urutan)
     {
         $gambar = $this->gambarBarangModel->getGambar($idBarang);
+        $gambarSelected = $gambar['gambar' . $urutan];
+        $this->response->setHeader('Content-Type', 'image/webp');
+        echo $gambarSelected;
+    }
+    public function tampilGambarVarian3000($idBarang, $urutan)
+    {
+        $gambar = $this->gambarBarang3000Model->getGambar($idBarang);
         $gambarSelected = $gambar['gambar' . $urutan];
         $this->response->setHeader('Content-Type', 'image/webp');
         echo $gambarSelected;
