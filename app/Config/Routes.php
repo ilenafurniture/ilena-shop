@@ -27,7 +27,7 @@ $routes->get('/getkota/(:any)', 'Pages::getKota/$1', ['filter' => 'customerFilte
 $routes->get('/getkec/(:any)', 'Pages::getKec/$1', ['filter' => 'customerFilter']);
 $routes->get('/address', 'Pages::address', ['filter' => 'customerFilter']);
 $routes->post('/addaddress', 'Pages::addAddress');
-$routes->get('/deleteaddress/(:any)', 'Pages::deleteAddress/$1', ['filter' => 'customerFilter']);
+$routes->get('/deleteaddress/(:any)/(:any)', 'Pages::deleteAddress/$1/$2', ['filter' => 'customerFilter']);
 $routes->post('/editaddress/(:any)', 'Pages::editAddress/$1', ['filter' => 'customerFilter']);
 
 $routes->get('/shipping/(:any)', 'Pages::shipping/$1', ['filter' => 'customerShippingFilter']);
@@ -59,6 +59,7 @@ $routes->post('/actionverify', 'Pages::actionVerify', ['filter' => 'customerFilt
 $routes->get('/login', 'Pages::login', ['filter' => 'customerLogoutFilter']);
 $routes->post('/actionlogin', 'Pages::actionLogin', ['filter' => 'customerFilter']);
 $routes->post('/kirimotp', 'Pages::kirimOTP', ['filter' => 'customerFilter']);
+$routes->post('/editsandi/(:any)', 'Pages::editSandi/$1', ['filter' => 'customerFilter']);
 $routes->get('/logout', 'Pages::actionLogout');
 
 
@@ -90,6 +91,7 @@ $routes->get('/admin/confirm-mp/(:any)', 'AdminController::confirmMarketplace/$1
 $routes->get('/admin/accreprint/(:any)', 'AdminController::accReprint/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/denyreprint/(:any)', 'AdminController::denyReprint/$1', ['filter' => 'adminFilter']);
 $routes->get('/gantiukuran', 'AdminController::gantiUkuran');
+$routes->get('/admin/ordertoko/(:any)', 'AdminController::orderToko/$1', ['filter' => 'loginToko']);
 
 //GUDANG Controller
 $routes->get('/gudang/listorder', 'GudangController::listOrder', ['filter' => 'gudangFilter']);

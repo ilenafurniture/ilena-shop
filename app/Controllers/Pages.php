@@ -130,6 +130,7 @@ class Pages extends BaseController
     }
     public function cart()
     {
+        if (session()->get('active') == '0') return redirect()->to('/verify');
         $hargaTotal = 0;
         $keranjang = $this->session->get('keranjang');
         if (!isset($keranjang)) {
@@ -141,23 +142,24 @@ class Pages extends BaseController
             $produk = $this->barangModel->getBarang($k['id_barang']);
             if (!$produk) {
                 array_push($ketemuProdukNull, $index);
-            }
-            $varianProduk = json_decode($produk['varian'], true);
-            $cekVarianExist = false;
-            foreach ($varianProduk as $vp) {
-                if (strtolower($vp['nama']) == strtolower($k['varian'])) {
-                    if ($vp['stok'] < $k['jumlah']) {
-                        if ($vp['stok'] == 0) {
-                            array_push($ketemuProdukNull, $index);
-                        } else {
-                            array_push($ketemuProdukKurang, $index . '-' . $vp['stok']);
+            } else {
+                $varianProduk = json_decode($produk['varian'], true);
+                $cekVarianExist = false;
+                foreach ($varianProduk as $vp) {
+                    if (strtolower($vp['nama']) == strtolower($k['varian'])) {
+                        if ($vp['stok'] < $k['jumlah']) {
+                            if ($vp['stok'] == 0) {
+                                array_push($ketemuProdukNull, $index);
+                            } else {
+                                array_push($ketemuProdukKurang, $index . '-' . $vp['stok']);
+                            }
                         }
+                        $cekVarianExist = true;
                     }
-                    $cekVarianExist = true;
                 }
-            }
-            if (!$cekVarianExist) {
-                array_push($ketemuProdukNull, $index);
+                if (!$cekVarianExist) {
+                    array_push($ketemuProdukNull, $index);
+                }
             }
         }
         if (count($ketemuProdukNull) > 0) {
@@ -318,6 +320,7 @@ class Pages extends BaseController
 
     public function address()
     {
+        if (session()->get('active') == '0') return redirect()->to('/verify');
         $keranjang = session()->get('keranjang');
         if (!isset($keranjang)) {
             return redirect()->to('/cart');
@@ -383,6 +386,7 @@ class Pages extends BaseController
             'hargaTotal' => $hargaTotal,
             'hargaKeseluruhan' => $hargaTotal + 5000,
             'alamat' => $alamat,
+            'alamatJson' => json_encode($alamat),
             'email' => session()->get('email') ? session()->get('email') : '',
             'nama' => session()->get('nama') ? session()->get('nama') : '',
             'nohp' => session()->get('nohp') ? session()->get('nohp') : '',
@@ -427,7 +431,7 @@ class Pages extends BaseController
             $this->pembeliModel->where('email', $email)->set(['alamat' => json_encode($alamat)])->update();
         return redirect()->to($checkPage == 'address' ? '/address' : '/account');
     }
-    public function deleteAddress($ind_add)
+    public function deleteAddress($ind_add, $pathname)
     {
         $alamat = $this->session->get('alamat');
         unset($alamat[$ind_add]);
@@ -437,7 +441,7 @@ class Pages extends BaseController
         $email = session()->get('email');
         if ($email)
             $this->pembeliModel->where('email', $email)->set(['alamat' => json_encode($alamatBaru)])->update();
-        return redirect()->to('/account');
+        return redirect()->to($pathname);
     }
     public function editAddress($ind_add)
     {
@@ -449,6 +453,7 @@ class Pages extends BaseController
         $kecamatan = explode("-", $this->request->getVar('kecamatanEdit'));
         $kodepos = explode("-", $this->request->getVar('kodeposEdit'));
         $alamatAdd = $this->request->getVar('alamat_add');
+        $pathnameUrl = $this->request->getVar('url');
 
         $alamat = $this->session->get('alamat');
         $alamat[$ind_add] = [
@@ -471,7 +476,7 @@ class Pages extends BaseController
         $email = session()->get('email');
         if ($email)
             $this->pembeliModel->where('email', $email)->set(['alamat' => json_encode($alamat)])->update();
-        return redirect()->to('/account');
+        return redirect()->to($pathnameUrl);
     }
     public function shipping($ind_add)
     {
@@ -677,6 +682,7 @@ class Pages extends BaseController
     }
     public function payment($ind_add)
     {
+        if (session()->get('active') == '0') return redirect()->to('/verify');
         $hargaTotal = 0;
         $keranjang = $this->session->get('keranjang');
         $alamat = $this->session->get('alamat');
@@ -726,7 +732,8 @@ class Pages extends BaseController
                 'alamat' => $alamatselected['alamat_lengkap'],
                 'keranjang' => $this->session->get('keranjang'),
                 // 'kurir' => $kurir[$index_kurir],
-            ]))
+            ])),
+            'indexAddress' => $ind_add
         ];
 
         $this->session->set(['alamatTerpilih' => $alamatselected]);
@@ -797,6 +804,7 @@ class Pages extends BaseController
             'i' => $keranjang,
             // 'k' => $kurir
         ]);
+
         $emailUjiCoba = ['galihsuks123@gmail.com', 'lunareafurniture@gmail.com', 'galih8.4.2001@gmail.com'];
         $arrPostField = [
             "transaction_details" => [
@@ -1508,6 +1516,12 @@ class Pages extends BaseController
                                 4. Pembayaran berhasil.'
                 ],
             ],
+            'toko' => [
+                [
+                    'nama' => 'Pemesanan Gudang',
+                    'isi' => '-'
+                ],
+            ]
         ];
         if ($id_order) {
             $pemesanan = $this->pemesananModel->getPemesanan($id_order);
@@ -1588,6 +1602,10 @@ class Pages extends BaseController
                             $va_number = 'https://api.midtrans.com/v2/qris/' . $dataMid['transaction_id'] . '/qr-code';
                             $bank = "qris";
                             break;
+                        case 'toko':
+                            $va_number = 'PEMBAYARAN TOKO';
+                            $bank = "toko";
+                            break;
                         default:
                             $va_number = "";
                             break;
@@ -1631,6 +1649,10 @@ class Pages extends BaseController
                         case 'qris':
                             $va_number = 'https://api.midtrans.com/v2/qris/' . $dataMid['transaction_id'] . '/qr-code';
                             $bank = "qris";
+                            break;
+                        case 'toko':
+                            $va_number = 'PEMBAYARAN TOKO';
+                            $bank = "toko";
                             break;
                         default:
                             $va_number = "";
@@ -1734,7 +1756,11 @@ class Pages extends BaseController
                     'jenis' => $this->jenisModel->findAll(),
                 ],
                 'pesanan' => $pesanan,
-                'pesananJson' => json_encode($pesanan)
+                'email' => session()->get('email'),
+                'nama' => session()->get('nama'),
+                'nohp' => session()->get('nohp'),
+                'pesananJson' => json_encode($pesanan),
+                'msgSandi' => session()->get('msg-sandi') ? session()->get('msg-sandi') : false,
             ];
             return view('pages/order', $data);
         }
@@ -1753,7 +1779,10 @@ class Pages extends BaseController
             'id_midtrans' => $transaksi['id_midtrans'],
             'items' => json_decode($transaksi['items'], true),
             'status' => $transaksi['status'],
-            'kurir' => json_decode($transaksi['kurir'], true),
+            'kurir' => count(json_decode($transaksi['kurir'], true)) > 0 ? json_decode($transaksi['kurir'], true) : [
+                'nama' => 'Menunggu pengiriman',
+                'deskripsi' => 'Kosong',
+            ],
             'data_mid' => json_decode($transaksi['data_mid'], true),
         ];
         $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
@@ -1925,13 +1954,14 @@ class Pages extends BaseController
             $ses_data = [
                 'email' => $getUser['email'],
                 'active' => '0',
+                'role' => $getUser['role'],
                 'isLogin' => true
             ];
             session()->set($ses_data);
             session()->setFlashdata('msg', "Email " . $email . " perlu diverifikasi");
             return redirect()->to('/verify');
         }
-        if ($getUser['role'] == '0') {
+        if ($getUser['role'] == '0' || $getUser['role'] == '4') {
             $getPembeli = $this->pembeliModel->getPembeli($email);
             $ses_data = [
                 'active' => '1',
@@ -1976,6 +2006,21 @@ class Pages extends BaseController
             session()->set($ses_data);
             return redirect()->to('/market/product');
         }
+    }
+    public function editSandi($path)
+    {
+        $sandi = $this->request->getVar('sandi');
+        $sandiKonfirm = $this->request->getVar('sandiKonfirm');
+        $email = session()->get('email');
+        if ($sandi != $sandiKonfirm) {
+            session()->setFlashdata('msg-sandi', 'Sandi yang terkonfirmasi tidak cocok');
+            return redirect()->to('/' . $path);
+        }
+        $this->userModel->where(['email' => $email])->set([
+            'sandi' => password_hash($sandi, PASSWORD_DEFAULT),
+        ])->update();
+        session()->setFlashdata('msg-sandi', 'Sandi Anda berhasil diubah');
+        return redirect()->to('/' . $path);
     }
     public function register()
     {
@@ -2215,6 +2260,7 @@ class Pages extends BaseController
             'nama' => session()->get('nama'),
             'nohp' => session()->get('nohp'),
             'provinsi' => $provinsi["rajaongkir"]["results"],
+            'msgSandi' => session()->get('msg-sandi') ? session()->get('msg-sandi') : false
         ];
         return view('pages/account', $data);
     }

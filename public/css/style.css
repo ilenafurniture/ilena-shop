@@ -513,6 +513,7 @@ body {
     border: none;
     background: none;
     letter-spacing: -1px;
+    cursor: pointer;
 }
 .btn-teks-aja:hover {
     color: black;

@@ -124,7 +124,11 @@
                     Rp <?= number_format($hargaTotal + 5000, 0, ',', '.'); ?>
                 </p>
             </div>
-            <button onclick="bayar(event)" class="btn-default-merah  w-100 mt-4 text-center">Bayar</button>
+            <?php if (session()->get('role') == '4') { ?>
+                <a href="/admin/ordertoko/<?= $indexAddress; ?>" class="btn-default-merah">Pesankan</a>
+            <?php } else { ?>
+                <button onclick="bayar(event)" class="btn-default-merah  w-100 mt-4 text-center">Bayar</button>
+            <?php } ?>
         </div>
     </div>
 </div>

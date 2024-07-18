@@ -13,7 +13,7 @@
             </div>
             <div style="width: calc(100% / 3)" class="d-flex justify-content-end">
                 <?php if (session()->get('isLogin')) { ?>
-                    <?php if (session()->get('role') == '0') { ?>
+                    <?php if (session()->get('role') == '0' || session()->get('role') == '4') { ?>
                         <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
                         <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
                         <a href="/account" class="btn"><i class="material-icons text-light">person_outline</i></a>

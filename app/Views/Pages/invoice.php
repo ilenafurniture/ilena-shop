@@ -180,7 +180,11 @@
         <div class="w-100 d-flex py-2">
             <div class="w-100">
                 <p class="mb-0 text-black-50">Kurir :</p>
-                <p class="mb-0 fw-bold"><?= strtoupper($transaksi['kurir']['nama']) . " " . $transaksi['kurir']['deskripsi']; ?></p>
+                <?php if ($transaksi['kurir']['nama'] == 'Menunggu pengiriman') { ?>
+                    <p class="mb-0 fw-bold">Menunggu pengiriman</p>
+                <?php } else { ?>
+                    <p class="mb-0 fw-bold"><?= strtoupper($transaksi['kurir']['nama']) . " " . $transaksi['kurir']['deskripsi']; ?></p>
+                <?php } ?>
             </div>
             <div class="w-100">
                 <p class="mb-0 text-black-50">Metode Pembayaran</p>

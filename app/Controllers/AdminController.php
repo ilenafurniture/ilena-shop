@@ -128,7 +128,7 @@ class AdminController extends BaseController
             $dG->move('imgdum');
             \Config\Services::image()
                 ->withFile('imgdum/' . $dG->getName())
-                ->resize(1000, 1000, true, 'height')->save('imgdum/1' . $dG->getName());
+                ->resize(3000, 3000, true, 'height')->save('imgdum/1' . $dG->getName());
 
             $insertGambarBarang['gambar' . ((int)$index_data_gambar[$key_dg] + 1)] = file_get_contents('imgdum/1' . $dG->getName());
             unlink('imgdum/1' . $dG->getName());
@@ -368,7 +368,7 @@ class AdminController extends BaseController
 
                     \Config\Services::image()
                         ->withFile($fp)
-                        ->resize(1000, 1000, true, 'height')->save('imgdum/1' . $b['id'] . '-' . $u . '.webp');
+                        ->resize(3000, 3000, true, 'height')->save('imgdum/1' . $b['id'] . '-' . $u . '.webp');
                     $insertGambarBarang['gambar' . $u] = file_get_contents('imgdum/1' . $b['id'] . '-' . $u . '.webp');
 
                     unlink($fp);
@@ -525,5 +525,93 @@ class AdminController extends BaseController
             }
         }
         return redirect()->to('/admin/marketplace');
+    }
+
+    public function orderToko($ind_add)
+    {
+        $email = session()->get('email');
+        $nama = session()->get('nama');
+        $nohp = session()->get('nohp');
+        $keranjang = session()->get('keranjang');
+        $alamat = session()->get('alamat')[$ind_add];
+
+        $hargaTotal = 0;
+        $items = [];
+        foreach ($keranjang as $index => $k) {
+            $produk = $this->barangModel->getBarang($k['id_barang']);
+            foreach (json_decode($produk['varian'], true) as $v) {
+                if ($v['nama'] == $k['varian']) {
+                    $keranjang[$index]['src_gambar'] = "/viewvar/" . $k['id_barang'] . "/" . explode(',', $v['urutan_gambar'])[0];
+                }
+            }
+            $keranjang[$index]['detail'] = $produk;
+            $hargaTotal += $produk['harga'] * $k['jumlah'] * (100 - $produk['diskon']) / 100;
+
+            $item = [
+                'id' => $k['id_barang'],
+                'price' => $produk['harga'],
+                'quantity' => $k['jumlah'],
+                'name' => $produk['nama'] . ' (' . $k['varian'] . ')',
+            ];
+            array_push($items, $item);
+        }
+
+        $pesananke = $this->pemesananModel->orderBy('id', 'desc')->first();
+        $idFix = "TOKO" . (sprintf("%08d", $pesananke ? ((int)$pesananke['id'] + 1) : 1));
+        $randomId = "TOKO" . rand();
+        $tanggal = date('Y-m-d H:i:s', strtotime('+7 hours'));
+        $data = [
+            'data_mid'          => json_encode([
+                'transaction_time'  => $tanggal,
+                'order_id'          => $idFix,
+                'gross_amount'      => $hargaTotal,
+                'payment_type'      => 'toko'
+            ]),
+            'id_midtrans'       => $idFix,
+            'email'             => $email,
+            'kurir'             => json_encode([]),
+            'resi'              => 'Menunggu pengiriman',
+            'harga'             => $hargaTotal,
+            'nama'              => $nama,
+            'nohp'              => $nohp,
+            'alamat'            => $alamat['alamat_lengkap'],
+            'status'            => 'Proses',
+            'id_marketplace'    => '',
+            'items'             => json_encode($items),
+        ];
+        $this->pemesananModel->insert($data);
+
+        //insert pesanan gudang
+        foreach ($items as $i) {
+            if ($i['name'] != "Biaya Ongkir" && $i['name'] != "Biaya Admin") {
+                for ($x = 1; $x <= (int)$i['quantity']; $x++) {
+                    $this->pemesananGudangModel->insert([
+                        'id_pesanan' => $idFix,
+                        'tanggal' => $tanggal,
+                        'nama' => $i['name'],
+                        'id_barang' => $i['id'],
+                        'packed' => false
+                    ]);
+                }
+            }
+        }
+
+        //pengurangan stok
+        $dataTransaksiFulDariDatabase = $this->pemesananModel->where('id_midtrans', $idFix)->first();
+        $dataTransaksiFulDariDatabase_items = json_decode($dataTransaksiFulDariDatabase['items'], true);
+        foreach ($dataTransaksiFulDariDatabase_items as $item) {
+            $barangCurr = $this->barangModel->where('id', $item['id'])->first();
+            $varianBarangCurr = json_decode($barangCurr['varian'], true);
+            foreach ($varianBarangCurr as $ind_v => $v) {
+                if ($v['nama'] == rtrim(explode("(", $item['name'])[1], ")")) {
+                    $varianBarangCurr[$ind_v]['stok'] = (int)$v['stok'] - $item['quantity'];
+                }
+            }
+            $this->barangModel->where('id', $item['id'])->set([
+                'varian' => json_encode($varianBarangCurr)
+            ])->update();
+        }
+
+        return redirect()->to('/order');
     }
 }

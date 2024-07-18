@@ -1,7 +1,7 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <div class="container d-flex flex-column align-items-center">
-    <div class="konten">
+    <div class="konten w-100">
         <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb" class="show-block-ke-hide">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/product">Produk Kami</a></li>
@@ -10,7 +10,7 @@
                 </li>
             </ol>
         </nav>
-        <div class="baris-ke-kolom-reverse">
+        <div class="baris-ke-kolom-reverse w-100">
             <div class="limapuluh-ke-seratus">
                 <h1 class="teks-besar mb-2"><?= $produk['nama'] ?></h1>
                 <div class="d-flex gap-2 mb-3">
@@ -162,8 +162,8 @@
                     </div>
                 </div> -->
                 <div>
-                    <!-- <img class="img-detail-prev" src="/viewvar/<?= $produk['id'] ?>/1"> -->
-                    <figure class="img-detail-prev" onmousemove="zoom(event)" onmouseleave="mouseoff(event)" style="background-image: url('/viewvar/<?= $produk['id'] ?>/1'); background-size: cover;"></figure>
+                    <figure class="img-detail-prev d-none" style="background-image: url('/viewvar/<?= $produk['id'] ?>/1'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"></figure>
+                    <img class="img-detail-prev" src="/viewvar/<?= $produk['id'] ?>/1" onmousemove="zoom(event)" onmouseleave="mouseoff(event)">
                 </div>
                 <div class="mb-3 mt-3" style="overflow: auto">
                     <div class="container-img-detail-select">
@@ -175,10 +175,12 @@
                             const radioImgElm = document.querySelectorAll('input[name="gambar"]');
                             radioImgElm.forEach(elm => {
                                 elm.addEventListener('change', (e) => {
-                                    const imgElm = document.querySelector(".img-detail-prev");
+                                    const imgElm = document.querySelector("figure.img-detail-prev");
+                                    const imgFixElm = document.querySelector("img.img-detail-prev");
                                     imgElm.style =
                                         "background-image: url('" + "/viewvar/<?= $produk['id']; ?>/" + e.target.value
-                                        .split("-")[0] + "'); background-size: cover;"
+                                        .split("-")[0] + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
+                                    imgFixElm.src = "/viewvar/<?= $produk['id']; ?>/" + e.target.value.split("-")[0];
                                 })
                             });
                         </script>
@@ -259,9 +261,11 @@
     let jumlahSelected = "1";
     radioVarianElm.forEach(elm => {
         elm.addEventListener('change', (e) => {
-            const imgElm = document.querySelector(".img-detail-prev");
+            const imgElm = document.querySelector("figure.img-detail-prev");
+            const imgFixElm = document.querySelector("img.img-detail-prev");
             imgElm.style =
-                "background-image: url('" + "/viewvar/<?= $produk['id']; ?>/" + e.target.value.split("-")[0].split(",")[0] + "'); background-size: cover;"
+                "background-image: url('" + "/viewvar/<?= $produk['id']; ?>/" + e.target.value.split("-")[0].split(",")[0] + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
+            imgFixElm.src = "/viewvar/<?= $produk['id']; ?>/" + e.target.value.split("-")[0].split(",")[0];
 
             const containerImgDetailElm = document.querySelector(".container-img-detail-select");
             containerImgDetailElm.innerHTML = "";
@@ -290,9 +294,11 @@
             const radioImgElm = document.querySelectorAll('input[name="gambar"]');
             radioImgElm.forEach(elm1 => {
                 elm1.addEventListener('change', (elmVar) => {
-                    const imgElm = document.querySelector(".img-detail-prev");
+                    const imgElm = document.querySelector("figure.img-detail-prev");
+                    const imgFixElm = document.querySelector("img.img-detail-prev");
                     imgElm.style =
-                        "background-image: url('" + "/viewvar/<?= $produk['id']; ?>/" + elmVar.target.value.split("-")[0].split(",")[0] + "'); background-size: cover;"
+                        "background-image: url('" + "/viewvar/<?= $produk['id']; ?>/" + elmVar.target.value.split("-")[0].split(",")[0] + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
+                    imgFixElm.src = "/viewvar/<?= $produk['id']; ?>/" + elmVar.target.value.split("-")[0].split(",")[0]
                 })
             });
         })
@@ -316,18 +322,24 @@
     }
 
     function zoom(e) {
-        figureElm.style.backgroundSize = "auto"
-        const widthGambar = e.target.offsetWidth;
-        const gmbrPosition = [
-            (e.offsetX / widthGambar) * 100,
-            (e.offsetY / widthGambar) * 100,
-        ];
-        figureElm.style.backgroundPosition =
-            gmbrPosition[0] + "% " + gmbrPosition[1] + "%";
+        if (window.innerWidth > 600) {
+            figureElm.classList.remove('d-none')
+            figureElm.style.backgroundSize = "auto"
+            const widthGambar = e.target.offsetWidth;
+            const gmbrPosition = [
+                (e.offsetX / widthGambar) * 100,
+                (e.offsetY / widthGambar) * 100,
+            ];
+            figureElm.style.backgroundPosition =
+                gmbrPosition[0] + "% " + gmbrPosition[1] + "%";
+        }
     }
 
     function mouseoff(e) {
-        figureElm.style.backgroundSize = "cover"
+        if (window.innerWidth > 600) {
+            figureElm.classList.add('d-none')
+            figureElm.style.backgroundSize = "cover"
+        }
     }
 </script>
 

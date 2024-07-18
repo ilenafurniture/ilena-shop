@@ -33,6 +33,7 @@ class Filters extends BaseConfig
         'adminFilter'   => \App\Filters\AdminFilter::class,
         'gudangFilter'   => \App\Filters\GudangFilter::class,
         'marketFilter'   => \App\Filters\MarketFilter::class,
+        'loginToko'   => \App\Filters\LoginToko::class,
     ];
 
     /**
