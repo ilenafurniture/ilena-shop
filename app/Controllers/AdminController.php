@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\BarangModel;
 use App\Models\GambarBarangModel;
+use App\Models\GambarBarang3000Model;
 use App\Models\PembeliModel;
 use App\Models\PemesananModel;
 use App\Models\PemesananGudangModel;
@@ -16,6 +17,7 @@ class AdminController extends BaseController
 {
     protected $barangModel;
     protected $gambarBarangModel;
+    protected $gambarBarang3000Model;
     protected $userModel;
     protected $pembeliModel;
     protected $pemesananModel;
@@ -28,6 +30,7 @@ class AdminController extends BaseController
     {
         $this->barangModel = new BarangModel();
         $this->gambarBarangModel = new GambarBarangModel();
+        $this->gambarBarang3000Model = new GambarBarang3000Model();
         $this->userModel = new UserModel();
         $this->pembeliModel = new PembeliModel();
         $this->pemesananModel = new PemesananModel();
@@ -81,8 +84,6 @@ class AdminController extends BaseController
         $koleksi = $this->koleksiModel->getKoleksi();
         $jenis = $this->jenisModel->getJenis();
 
-        // $d = strtotime("+7 Hours");
-        // $tanggal = "B" . date("YmdHis", $d);
         $data = $this->request->getVar();
         $data_gambar_mentah = $this->request->getFiles();
         $data_gambar = [];
@@ -92,6 +93,9 @@ class AdminController extends BaseController
         $jumlahVarian = explode(",", $this->request->getVar('hitung-varian'));
 
         $insertGambarBarang = [
+            'id' => $data['id']
+        ];
+        $insertGambarBarang3000 = [
             'id' => $data['id']
         ];
         $varianData = [];
@@ -129,7 +133,12 @@ class AdminController extends BaseController
             \Config\Services::image()
                 ->withFile('imgdum/' . $dG->getName())
                 ->resize(3000, 3000, true, 'height')->save('imgdum/1' . $dG->getName());
+            $insertGambarBarang3000['gambar' . ((int)$index_data_gambar[$key_dg] + 1)] = file_get_contents('imgdum/1' . $dG->getName());
+            unlink('imgdum/1' . $dG->getName());
 
+            \Config\Services::image()
+                ->withFile('imgdum/' . $dG->getName())
+                ->resize(1000, 1000, true, 'height')->save('imgdum/1' . $dG->getName());
             $insertGambarBarang['gambar' . ((int)$index_data_gambar[$key_dg] + 1)] = file_get_contents('imgdum/1' . $dG->getName());
             unlink('imgdum/1' . $dG->getName());
 
@@ -137,7 +146,6 @@ class AdminController extends BaseController
                 \Config\Services::image()
                     ->withFile('imgdum/' . $dG->getName())
                     ->resize(300, 300, true, 'height')->save('imgdum/1' . $dG->getName());
-
                 $insertGambarBarang300 = file_get_contents('imgdum/1' . $dG->getName());
                 unlink('imgdum/1' . $dG->getName());
             }
@@ -181,6 +189,7 @@ class AdminController extends BaseController
         ];
         $this->barangModel->insert($insertDataBarang);
         $this->gambarBarangModel->insert($insertGambarBarang);
+        $this->gambarBarang3000Model->insert($insertGambarBarang3000);
         return redirect()->to('admin/product');
     }
     public function editProduct($id_product)
@@ -330,9 +339,11 @@ class AdminController extends BaseController
         foreach ($gambarBarangCur as $ind_g => $g) {
             if ($g != null && $ind_g != 'id') {
                 $this->gambarBarangModel->where(['id' => $idBarang])->set([$ind_g => null])->update();
+                $this->gambarBarang3000Model->where(['id' => $idBarang])->set([$ind_g => null])->update();
             }
         }
         $this->gambarBarangModel->where(['id' => $idBarang])->set($insertGambarBarang)->update();
+        $this->gambarBarang3000Model->where(['id' => $idBarang])->set($insertGambarBarang)->update();
         return redirect()->to('admin/product');
     }
     public function gantiUkuran()
@@ -352,16 +363,13 @@ class AdminController extends BaseController
         foreach ($barangLama as $b) {
             $varian = json_decode($b['varian'], true);
             $insertGambarBarang = [];
+            $insertGambarBarang3000 = [];
             $insertGambarBarang300 = '';
             foreach ($varian as $v) {
                 $urutanGambar = explode(",", $v['urutan_gambar']);
-                // dd([
-                //     'urutan gambar' => $urutanGambar,
-                //     'barang' => $b
-                // ]);
                 foreach ($urutanGambar as $u) {
                     $dataGambar = file_get_contents_curl(
-                        'https://ilenafurniture.com/viewvar/' . $b['id'] . '/' . $u
+                        'https://ilenafurniture.com/viewvar3000/' . $b['id'] . '/' . $u
                     );
                     $fp = 'imgdum/' . $b['id'] . '-' . $u . '.webp';
                     file_put_contents($fp, $dataGambar);
@@ -369,10 +377,16 @@ class AdminController extends BaseController
                     \Config\Services::image()
                         ->withFile($fp)
                         ->resize(3000, 3000, true, 'height')->save('imgdum/1' . $b['id'] . '-' . $u . '.webp');
+                    $insertGambarBarang3000['gambar' . $u] = file_get_contents('imgdum/1' . $b['id'] . '-' . $u . '.webp');
+                    unlink('imgdum/1' . $b['id'] . '-' . $u . '.webp');
+
+                    \Config\Services::image()
+                        ->withFile($fp)
+                        ->resize(1000, 1000, true, 'height')->save('imgdum/1' . $b['id'] . '-' . $u . '.webp');
                     $insertGambarBarang['gambar' . $u] = file_get_contents('imgdum/1' . $b['id'] . '-' . $u . '.webp');
+                    unlink('imgdum/1' . $b['id'] . '-' . $u . '.webp');
 
                     unlink($fp);
-                    unlink('imgdum/1' . $b['id'] . '-' . $u . '.webp');
                 }
             }
 
@@ -392,6 +406,7 @@ class AdminController extends BaseController
 
             $this->barangModel->where(['id' => $b['id']])->set(['gambar' => $insertGambarBarang300])->update();
             $this->gambarBarangModel->where(['id' => $b['id']])->set($insertGambarBarang)->update();
+            $this->gambarBarang3000Model->where(['id' => $b['id']])->set($insertGambarBarang3000)->update();
         }
         return $this->response->setJSON([
             'success' => true
