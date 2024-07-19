@@ -11,6 +11,7 @@ use App\Models\KartuStokModel;
 use App\Models\UserModel;
 use App\Models\KoleksiModel;
 use App\Models\JenisModel;
+use App\Models\VoucherModel;
 
 class Pages extends BaseController
 {
@@ -23,6 +24,7 @@ class Pages extends BaseController
     protected $kartuStokModel;
     protected $koleksiModel;
     protected $jenisModel;
+    protected $voucherModel;
     protected $session;
     public function __construct()
     {
@@ -35,6 +37,7 @@ class Pages extends BaseController
         $this->kartuStokModel = new KartuStokModel();
         $this->koleksiModel = new KoleksiModel();
         $this->jenisModel = new JenisModel();
+        $this->voucherModel = new VoucherModel();
         $this->session = \Config\Services::session();
     }
     public function index()
@@ -709,6 +712,27 @@ class Pages extends BaseController
             $hargaTotal += $produk['harga'] * $k['jumlah'] * (100 - $produk['diskon']) / 100;
         }
 
+        //voucher
+        $voucher = [];
+        $emailUjiCoba = ['galihsuks123@gmail.com', 'ilenafurniture@gmail.com', 'galih8.4.2001@gmail.com'];
+        if (session()->get('isLogin') && in_array($alamatselected['email_pemesan'], $emailUjiCoba)) {
+            //voucher member baru
+            $voucherMemberBaru = $this->voucherModel->where(['id' => 1])->first();
+            if (!in_array($alamatselected['email_pemesan'], json_decode($voucherMemberBaru['list_email'], true))) {
+                array_push($voucher, $voucherMemberBaru);
+            }
+        }
+        $diskonVoucher = 0; //satuannya rupiah
+        $voucherSelected = false;
+        if (session()->get('voucher')) {
+            $voucherDetail = $this->voucherModel->where(['id' => session()->get('voucher')])->first();
+            if ($voucherDetail['satuan'] == 'persen') {
+                $diskonVoucher = round($voucherDetail['nominal'] / 100 * $hargaTotal);
+            }
+            $voucherSelected = $voucherDetail;
+            $voucherSelected['rupiah'] = $diskonVoucher;
+        }
+
         $data = [
             'title' => 'Pembayaran',
             'navbar' => [
@@ -731,13 +755,32 @@ class Pages extends BaseController
                 'nohp' => $alamatselected['nohp_penerima'],
                 'alamat' => $alamatselected['alamat_lengkap'],
                 'keranjang' => $this->session->get('keranjang'),
+                'voucher' => $voucherSelected ? $diskonVoucher : false
                 // 'kurir' => $kurir[$index_kurir],
             ])),
-            'indexAddress' => $ind_add
+            'indexAddress' => $ind_add,
+            'voucher' => [
+                'list' => $voucher,
+                'selected' => $voucherSelected,
+            ]
         ];
 
         $this->session->set(['alamatTerpilih' => $alamatselected]);
         return view('pages/payment', $data);
+    }
+    public function useVoucher($data)
+    {
+        $ind_voucher = explode('-', $data)[0];
+        $ind_address = explode('-', $data)[1];
+        session()->set('voucher', $ind_voucher);
+        return redirect()->to('/payment/' . $ind_address);
+    }
+    public function cancelVoucher($data)
+    {
+        $ind_voucher = explode('-', $data)[0];
+        $ind_address = explode('-', $data)[1];
+        session()->remove('voucher');
+        return redirect()->to('/payment/' . $ind_address);
     }
     public function actionPaySnap()
     {
@@ -754,6 +797,7 @@ class Pages extends BaseController
         $nohp = $body['nohp'];
         $alamatLengkap = $body['alamat'];
         $keranjang = $body['keranjang'];
+        $voucher = $body['voucher'];
         // $kurir = $body['kurir'];
 
         $subtotal = 0;
@@ -774,7 +818,18 @@ class Pages extends BaseController
                 array_push($itemDetails, $item);
             }
         }
+        $total = $subtotal + 5000;
 
+        if ($voucher) {
+            $item = array(
+                'id' => 'Voucher',
+                'price' => -$voucher,
+                'quantity' => 1,
+                'name' => 'Voucher',
+            );
+            array_push($itemDetails, $item);
+            $total -= $voucher;
+        }
         $biayaadmin = array(
             'id' => 'Biaya Admin',
             'price' => 5000,
@@ -782,15 +837,6 @@ class Pages extends BaseController
             'name' => 'Biaya Admin',
         );
         array_push($itemDetails, $biayaadmin);
-        // $biayaongkir = array(
-        //     'id' => 'Biaya Ongkir',
-        //     'price' => $kurir['harga'],
-        //     'quantity' => 1,
-        //     'name' => 'Biaya Ongkir',
-        // );
-        // array_push($itemDetails, $biayaongkir);
-
-        $total = $subtotal + 5000;
 
         $auth = base64_encode("SB-Mid-server-3M67g25LgovNPlwdS4WfiMsh" . ":");
         $pesananke = $this->pemesananModel->orderBy('id', 'desc')->first();

@@ -3,7 +3,6 @@
 <div class="container konten baris-ke-kolom">
     <div style="flex:1;">
         <h5 style="letter-spacing: -1px; font-weight:100;" class="path"><a href="/address" class="me-3 text-secondary" style="text-decoration: none;">Alamat</a> >
-            <!-- <a href="/shipping/<?= $indKurir; ?>" class="mx-3 text-secondary" style="text-decoration: none;">Kurir</a> > -->
             <a class="mx-3 text-dark fw-bold" style="text-decoration: none;">
                 Rincian Pembayaran</a>
         </h5>
@@ -59,36 +58,55 @@
                             </div>
                         </div>
                     <?php } ?>
-
                     <hr>
                 </div>
             </div>
-
-            <!-- <div class="container-pembayaran mb-1">
-                <div class="item-pembayaran" data-bs-toggle="collapse" href="#collapseExample1" aria-expanded="true" aria-controls="collapseExample1">
-                    Informasi Kurir
-                </div>
-                <div class="collapse py-2 show" id="collapseExample1">
-                    <hr>
-                    <div class="d-flex">
-                        <div style="flex:1" class="my-2">
-                            <p class="m-0 fw-normal">Expedisi</p>
-                            <p class="m-0 fw-normal">Paket kurir</p>
-                            <p class="m-0 fw-normal">Estimasi</p>
-                        </div>
-                        <div style="flex:4" class="my-2">
-                            <p class="m-0 fw-bold">: <?= strtoupper($kurir['nama']) ?></p>
-                            <p class="m-0 fw-bold">: <?= $kurir['deskripsi'] ?></p>
-                            <p class="m-0 fw-bold">: <?= $kurir['estimasi'] ?> Hari</p>
-                        </div>
-                    </div>
-                    <hr>
-                </div>
-            </div> -->
-
         </div>
     </div>
     <div class="tigapuluh-ke-seratus">
+        <?php if (count($voucher['list']) > 0) { ?>
+            <div class="btn-voucher mb-2" onclick="openVoucher()">
+                <?php if ($voucher['selected']) { ?>
+                    <p class="m-0" style="color: var(--merah)"><?= ucwords($voucher['selected']['nama']); ?></p>
+                <?php } else { ?>
+                    <p class="m-0">Pilih voucher</p>
+                <?php } ?>
+                <i class="material-icons">chevron_right</i>
+            </div>
+            <div class="container-voucher">
+                <?php foreach ($voucher['list'] as $v) {
+                    if ($voucher['selected']) {
+                        if ($voucher['selected']['id'] == $v['id']) { ?>
+                            <div class="item-voucher active">
+                                <div>
+                                    <p class="m-0 fw-bold" style="color: var(--merah);">Active</p>
+                                    <p class="m-0 fw-bold"><?= ucwords($v['nama']); ?></p>
+                                    <p class="m-0">Potongan sebesar <?= $v['nominal']; ?> <?= $v['satuan']; ?></p>
+                                </div>
+                                <a href="/cancelvoucher/<?= $v['id'] . "-" . $indexAddress; ?>">Lepas</a>
+                            </div>
+                        <?php } else { ?>
+                            <div class="item-voucher">
+                                <div>
+                                    <p class="m-0 fw-bold"><?= ucwords($v['nama']); ?></p>
+                                    <p class="m-0">Potongan sebesar <?= $v['nominal']; ?> <?= $v['satuan']; ?></p>
+                                </div>
+                                <a href="/usevoucher<?= $v['id'] . "-" . $indexAddress; ?>">Pakai</a>
+                            </div>
+                        <?php   }
+                    } else { ?>
+                        <div class="item-voucher">
+                            <div>
+                                <p class="m-0 fw-bold"><?= ucwords($v['nama']); ?></p>
+                                <p class="m-0">Potongan sebesar <?= $v['nominal']; ?> <?= $v['satuan']; ?></p>
+                            </div>
+                            <a href="/usevoucher/<?= $v['id'] . "-" . $indexAddress; ?>">Pakai</a>
+                        </div>
+                <?php }
+                } ?>
+                <hr>
+            </div>
+        <?php } ?>
         <div class="card p-4">
             <h4 style="letter-spacing: -1px">Pesanan</h4>
             <div class="mt-2 d-flex justify-content-between py-1">
@@ -99,6 +117,16 @@
                     Rp <?= number_format($hargaTotal, 0, ',', '.'); ?>
                 </p>
             </div>
+            <?php if ($voucher['selected']) { ?>
+                <div class="d-flex justify-content-between py-1">
+                    <p class="m-0">
+                        Potongan Voucher
+                    </p>
+                    <p class="fw-bold m-0">
+                        - Rp <?= number_format($voucher['selected']['rupiah'], 0, ',', '.'); ?>
+                    </p>
+                </div>
+            <?php } ?>
             <div class="d-flex justify-content-between py-1">
                 <p class="m-0">
                     Biaya Admin
@@ -107,21 +135,13 @@
                     Rp 5,000
                 </p>
             </div>
-            <!-- <div class="d-flex justify-content-between py-1">
-                <p class="m-0">
-                    Biaya Ongkir
-                </p>
-                <p class="fw-bold m-0">
-                    Rp <?= number_format($hargaOngkir, 0, ',', '.'); ?>
-                </p>
-            </div> -->
             <span class="garis my-2"></span>
             <div class="d-flex justify-content-between py-1">
                 <p class="m-0">
                     TOTAL
                 </p>
                 <p class="fw-bold m-0">
-                    Rp <?= number_format($hargaTotal + 5000, 0, ',', '.'); ?>
+                    Rp <?= number_format(($voucher['selected'] ? $hargaTotal + 5000 - $voucher['selected']['rupiah'] : $hargaTotal + 5000), 0, ',', '.'); ?>
                 </p>
             </div>
             <?php if (session()->get('role') == '4') { ?>
@@ -152,6 +172,19 @@
             window.snap.pay(snapToken.token);
         }
         getToken();
+    }
+
+    let voucherDibuka = false;
+
+    function openVoucher() {
+        const containerVoucherElm = document.querySelector('.container-voucher');
+        if (voucherDibuka) {
+            containerVoucherElm.classList.remove('show')
+            voucherDibuka = false
+        } else {
+            containerVoucherElm.classList.add('show')
+            voucherDibuka = true
+        }
     }
 </script>
 

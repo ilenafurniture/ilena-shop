@@ -906,6 +906,58 @@ body {
 #container-varian .container-gambar .item-gambar p:hover {
     color: white;
 }
+
+.btn-voucher {
+    border: 1px solid rgb(212, 212, 212);
+    width: 100%;
+    padding: 1em 2em;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.btn-voucher:hover {
+    border: 1px solid var(--merah);
+}
+.btn-voucher p {
+    font-weight: bold;
+}
+.container-voucher {
+    max-height: 0;
+    overflow-y: auto;
+    transition: 0.5s;
+}
+.container-voucher.show {
+    max-height: 300px;
+    transition: 0.5s;
+}
+.container-voucher .item-voucher {
+    background-color: white;
+    padding: 1em 2em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 6px;
+}
+.container-voucher .item-voucher.active {
+    border: 1px solid var(--merah);
+}
+.container-voucher .item-voucher a {
+    cursor: pointer;
+    text-decoration: none;
+    padding: 2px 10px;
+    border-radius: 1em;
+    border: 1px solid var(--merah);
+    color: var(--merah);
+    font-size: 10px;
+    font-weight: bold;
+}
+.container-voucher .item-voucher a:hover {
+    background-color: var(--merah);
+    color: white;
+}
+
 /*FOOTER*/
 .footer-div {
     flex: 2;

@@ -30,7 +30,7 @@
                 </div>
                 <div class="form-floating flex-grow-1">
                     <input type="number" class="form-control" id="floatingPassword" name="nominal">
-                    <label for="floatingPassword">Nominal</label>
+                    <label for="floatingPassword">Jumlah barang</label>
                 </div>
             </div>
             <div class="d-flex gap-1">
@@ -128,7 +128,7 @@
 
     function gantiBarang(e) {
         const id = e.target.value
-        window.location.href = '/gudang/mutasi/' + id
+        window.location.href = '/gudang/mutasi/' + id.split('-')[0]
     }
 </script>
 <?= $this->endSection(); ?>

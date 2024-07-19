@@ -5,16 +5,16 @@
         <form action="/admin/actioneditresi" method="post">
             <h5 class="teks-sedang mb-2">Edit resi</h5>
             <div class="mb-1">
-                <label for="">Nama</label>
-                <input type="text" name="nama" class="form-control">
+                <label for="">Nama Ekspedisi</label>
+                <input type="text" name="nama" class="form-control" required>
             </div>
             <div class="mb-1">
-                <label for="">Deskripsi</label>
-                <input type="text" name="deskripsi" class="form-control">
+                <label for="">Layanan Ekspedisi</label>
+                <input type="text" name="deskripsi" class="form-control" required>
             </div>
             <div class="mb-3">
                 <label for="">Resi</label>
-                <input type="text" name="resi" class="form-control">
+                <input type="text" name="resi" class="form-control" required>
             </div>
             <div class="d-flex gap-1 justify-content-end">
                 <button type="submit" class="btn-default">Simpan</button>

@@ -33,6 +33,8 @@ $routes->post('/editaddress/(:any)', 'Pages::editAddress/$1', ['filter' => 'cust
 $routes->get('/shipping/(:any)', 'Pages::shipping/$1', ['filter' => 'customerShippingFilter']);
 $routes->get('/tracking', 'Pages::tracking', ['filter' => 'customerFilter']);
 
+$routes->get('/usevoucher/(:any)', 'Pages::useVoucher/$1');
+$routes->get('/cancelvoucher/(:any)', 'Pages::cancelVoucher/$1');
 $routes->get('/payment/(:any)', 'Pages::payment/$1', ['filter' => 'customerShippingFilter']);
 $routes->get('/actionpay/(:any)', 'Pages::actionPay/$1');
 $routes->post('/actionpaysnap', 'Pages::actionPaySnap');
