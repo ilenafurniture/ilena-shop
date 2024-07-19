@@ -27,12 +27,13 @@
                             <li>
                                 <p class="mb-0">
                                     Anda dapat mengunjungi website kami di <a href="http://ilenafurniture.com"
-                                        style="text-decoration:none; color:red; font-size:14px;">Ilena Furniture</a>,
+                                        target="_blank" style="text-decoration:none; color:red; font-size:13px;">Ilena
+                                        Furniture</a>,
                                     lalu pilih produk yang Anda
                                     inginkan. Pada page ini akan ditampilkan jumlah produk yang masih tersedia di bagian
                                     bawah deskripsi produk. Anda juga dapat menghubungi kami <a
-                                        href="http://ilenafurniture.com"
-                                        style="text-decoration:none; color:red; font-size:14px;">Customer Service
+                                        href="https://wa.me/+628112938158" target="_blank"
+                                        style="text-decoration:none; color:red; font-size:13px;">Customer Service
                                         Kami</a>
                                     untuk
                                     pertanyaan lebih lanjut.
@@ -44,10 +45,10 @@
                             <li>
                                 <p class="mb-0">
                                     Terkait informasi promo dan diskon, Anda dapat kunjungi website kami di <a
-                                        href="http://ilenafurniture.com"
-                                        style="text-decoration:none; color:red; font-size:14px;">Ilena Furniture</a>
-                                    atau hubungi <a href="http://ilenafurniture.com"
-                                        style="text-decoration:none; color:red; font-size:14px;">Customer Service
+                                        href="http://ilenafurniture.com" target="_blank"
+                                        style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>
+                                    atau hubungi <a href="https://wa.me/+628112938158" target="_blank"
+                                        style="text-decoration:none; color:red; font-size:13px;">Customer Service
                                         Kami</a>.
                                 </p>
                             </li>
@@ -56,7 +57,11 @@
                         <ul>
                             <li>
                                 <p class="mb-0">
-                                    Pengiriman produk Ilena dari Kaliwungu, Kabupaten Kendal, Jawa Tengah</p>
+                                    Pengiriman produk Ilena dari <a href="https://maps.app.goo.gl/xCWm2mquuVgyp9GU9"
+                                        style="text-decoration:none; color:red; font-size:13px;"
+                                        target="_blank">Kaliwungu, Kabupaten Kendal, Jawa Tengah</a>
+
+                                </p>
                             </li>
                         </ul>
                     </div>
@@ -75,7 +80,7 @@
                         <ul>
                             <li>
                                 <p class="mb-0"><a href="#"
-                                        style="text-decoration:none; color:red; font-size:14px;">Katalog Ilena</a> hadir
+                                        style="text-decoration:none; color:red; font-size:13px;">Katalog Ilena</a> hadir
                                     untuk menjawab kebutuhan furniture Anda. Katalog
                                     menawarkan lebih dari hanya gambaran sekilas beragam produk Ilena. Kami akan selalu
                                     melakukan update yang tentunya menghadirkan trend desain masa kini dalam setiap
@@ -87,8 +92,8 @@
                         <ul>
                             <li>
                                 <p class="mb-0">Katalog terbaru Ilena bisa didapatkan secara gratis di website <a
-                                        href="http://ilenafurniture.com"
-                                        style="text-decoration:none; color:red; font-size:14px;">Ilena Furniture</a>.
+                                        href="http://ilenafurniture.com" target="_blank"
+                                        style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>.
                                 </p>
                             </li>
                         </ul>
@@ -106,8 +111,8 @@
                             <li>
                                 <p class="mb-0">SKami menyediakan katalog fisik yang bisa Anda dapatkan melalui toko
                                     offline yang telah bekerja sama dengan kami. Info daftar toko dapat Anda lihat
-                                    melalui website kami di <a href="http://ilenafurniture.com"
-                                        style="text-decoration:none; color:red; font-size:14px;">Ilena Furniture</a>.
+                                    melalui website kami di <a href="http://ilenafurniture.com" target="_blank"
+                                        style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>.
                                 </p>
                             </li>
                         </ul>
@@ -125,9 +130,9 @@
                             <li>
                                 <p class="mb-0">Informasi promo dan diskon yang sedang berlangsung dapat Anda peroleh
                                     secara terbatas dengan mengunjungi website <a href="http://ilenafurniture.com"
-                                        style="text-decoration:none; color:red; font-size:14px;">Ilena Furniture</a>
-                                    atau hubungi <a href="#"
-                                        style="text-decoration:none; color:red; font-size:14px;">Customer Service
+                                        style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>
+                                    atau hubungi <a href="https://wa.me/+628112938158" target="_blank"
+                                        style="text-decoration:none; color:red; font-size:13px;">Customer Service
                                         Kami</a>.</p>
                             </li>
                         </ul>
@@ -145,7 +150,7 @@
                             <li>
                                 <p class="mb-0">Tidak. Anda dapat dengan mudah mengakses katalog Ilena dengan
                                     mengunjungi website <a href="http://ilenafurniture.com"
-                                        style="text-decoration:none; color:red; font-size:14px;">Ilena Furniture</a>
+                                        style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>
                                     atau menghubungi melalui WhatsApp customer
                                     service.</p>
                             </li>
@@ -168,7 +173,8 @@
                         <ul>
                             <p class="mb-0 fw-bold">Tanpa login</p>
                             <li>
-                                <p class="mb-0">Membuka website Ilena furniture</p>
+                                <p class="mb-0">Membuka website <a href="https://ilenafurniture.com/"
+                                        style="text-decoration:none; color:red; font-size:13px;">Ilena furniture</a></p>
                             </li>
                             <li>
                                 <p class="mb-0">Pilih produk yang akan dibeli</p>
@@ -308,8 +314,8 @@
                         <p class="mb-0 mt-1 fw-bold">Apakah saat ini tersedia toko offline?</p>
                         <ul>
                             <p>Saat ini produk ILENA hanya dapat dipesan melalui website dan platform e-commerce
-                                (<a href="" style="text-decoration:none; color:red; font-size:14px;">Tiktok</a>, <a
-                                    href="" style="text-decoration:none; color:red; font-size:14px;">Shopee</a>
+                                (<a href="" style="text-decoration:none; color:red; font-size:13px;">Tiktok</a>, <a
+                                    href="" style="text-decoration:none; color:red; font-size:13px;">Shopee</a>
                                 dll)</p>
                         </ul>
                         <p class="mb-0 mt-1 fw-bold">Apakah saat ini pemesanan hanya dapat dilakukan secara online?</p>
@@ -331,55 +337,76 @@
                     <div class="accordion-body">
                         <p class="mb-0 fw-bold">Apa metode pembayaran yang bisa digunakan?</p>
                         <ul>
-                            <p class="mb-0">kami menerima pembayaran melalui transfer bank (BCA, Mandiri, BNI, BRI,
-                                Permata, dan CIMB Niaga) serta kartu kredit (Visa, JCB, dan Master Card)</p>
+                            <li>
+                                <p class="mb-0">kami menerima pembayaran melalui transfer bank (BCA, Mandiri, BNI, BRI,
+                                    Permata, dan CIMB Niaga) serta kartu kredit (Visa, JCB, dan Master Card)</p>
+                            </li>
                         </ul>
                         <p class="mb-0 mt-1 fw-bold">Kapan batas waktu pembayaran dilakukan?
                         </p>
                         <ul>
-                            <p class="mb-0">Jika Anda memilih melakukan pembayaran via transfer bank, maka Anda
-                                memiliki waktu selama 1 jam untuk menyelesaikan tagihan pembayaran produk yang
-                                dipesan.</p>
+                            <li>
+                                <p class="mb-0">Jika Anda memilih melakukan pembayaran via transfer bank, maka Anda
+                                    memiliki waktu selama 1 jam untuk menyelesaikan tagihan pembayaran produk yang
+                                    dipesan.</p>
+                            </li>
                         </ul>
                         <p class="mb-0 mt-1 fw-bold">Apakah aman melakukan transaksi di website Ilena?</p>
                         <ul>
-                            <p class="mb-0">Kami bekerja sama dengan Midtrans sebagai penjamin keamanan keuangan,
-                                sehingga seluruh aktivitas customer di website <a href="http://ilenafurniture.com"
-                                    style="text-decoration:none; color:red; font-size:14px;">Ilena Furniture</a> dijamin
-                                keamanannya.
-                            </p>
+                            <li>
+                                <p class="mb-0">Kami bekerja sama dengan Midtrans sebagai penjamin keamanan keuangan,
+                                    sehingga seluruh aktivitas customer di website <a href="http://ilenafurniture.com"
+                                        style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>
+                                    dijamin
+                                    keamanannya.
+                                </p>
+                            </li>
                         </ul>
                         <p class="mb-0 mt-1 fw-bold">Apakah website Ilena menyimpan data kartu yang digunakan untuk
                             transaksi?
                         </p>
                         <ul>
-                            <p class="mb-0">Seluruh data kartu customer yang ada dalam website kami saat bertransaksi
-                                tidak dikumpulkan.</p>
+                            <li>
+                                <p class="mb-0">Seluruh data kartu customer yang ada dalam website kami saat
+                                    bertransaksi
+                                    tidak dikumpulkan.</p>
+                            </li>
                         </ul>
                         <p class="mb-0 mt-1 fw-bold">Apakah bisa melakukan pembayaran dengan metode COD?
                         </p>
                         <ul>
-                            <p class="mb-0">Saat ini kami hanya menerima metode pembayaran via transfer bank dan kartu
-                                kredit.</p>
+                            <li>
+                                <p class="mb-0">Saat ini kami hanya menerima metode pembayaran via transfer bank dan
+                                    kartu
+                                    kredit.</p>
+                            </li>
                         </ul>
                         <p class="mb-0 mt-1 fw-bold">Bagaimana jika pembayaran kartu kredit yang saya lakukan gagal?
                         </p>
                         <ul>
-                            <p class="mb-0">Pastikan informasi kartu kredit yang Anda masukan telah sesuai. Apabila
-                                diperlukan, Anda dapat menghubungi bank penerbit kartu kredit Anda.</p>
+                            <li>
+                                <p class="mb-0">Pastikan informasi kartu kredit yang Anda masukan telah sesuai. Apabila
+                                    diperlukan, Anda dapat menghubungi bank penerbit kartu kredit Anda.</p>
+                            </li>
                         </ul>
                         <p class="mb-0 mt-1 fw-bold">Bagaimana caranya melakukan pembayaran melalui website?
                         </p>
                         <ul>
-                            <p class="mb-0">Anda dapat memilih metode pembayaran yang kami sediakan di laman pembayaran.
-                            </p>
+                            <li>
+                                <p class="mb-0">Anda dapat memilih metode pembayaran yang kami sediakan di laman
+                                    pembayaran.
+                                </p>
+                            </li>
                         </ul>
                         <p class="mb-0 mt-1 fw-bold">Bagaimana caranya saya tahu bahwa pembayaran yang saya lakukan
                             berhasil?
                         </p>
                         <ul>
-                            <p class="mb-0">Kami akan mengirimkan email pemberitahuan bahwa transaksi telah berhasil
-                                dilakukan dan Anda bisa langsung memeriksa di page riwayat pesanan pada akun Anda.</p>
+                            <li>
+                                <p class="mb-0">Kami akan mengirimkan email pemberitahuan bahwa transaksi telah berhasil
+                                    dilakukan dan Anda bisa langsung memeriksa di page riwayat pesanan pada akun Anda.
+                                </p>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -409,8 +436,9 @@
                             <li>
                                 <p class="mb-0">Pengiriman berlangsung dengan estimasi 7 hari kerja sejak tanggal
                                     pemesanan namun
-                                <p class="mb-0 fw-bold">tidak menutup kemungkinan dapat lebih cepat</p> dari estimasi
-                                waktu sesuai dengan tujuan Anda. </p>
+                                    <B><I>tidak menutup kemungkinan dapat lebih cepat</I></B> dari estimasi
+                                    waktu sesuai dengan tujuan Anda.
+                                </p>
                             </li>
                         </ul>
                         <p class="mb-0 mt-1 fw-bold">Apakah dapat melakukan tracking pada pesanan saya?</p>
@@ -419,9 +447,9 @@
                                 <p class="mb-0">Ya, saat sudah membayar tagihan produk pesanan, Anda dapat melihat resi
                                     yang ada di page pemesanan. Jika ingin melakukan tracking, Anda cukup dengan
                                     menyalin nomor resi tersebut ke website mitra logistik Kami atau dengan cara
-                                    menghubungi <a href="http://ilenafurniture.com"
-                                        style="text-decoration:none; color:red; font-size:14px;">Customer Service</a>
-                                    Kami yang akan membantu tracking produk tersebut.
+                                    menghubungi <a href="https://wa.me/+628112938158"
+                                        style="text-decoration:none; color:red; font-size:13px;">Customer Service
+                                        Kami</a> yang akan membantu tracking produk tersebut.
                                 </p>
                             </li>
                         </ul>
@@ -447,8 +475,8 @@
                                 <p class="mb-0">Tentu. Untuk pengiriman produk sudah dalam bentuk rakitan. Namun tidak
                                     menutup kemungkinan terdapat beberapa produk yang masih memerlukan proses perakitan.
                                     Untuk informasi lebih lanjut, Anda dapat menghubungi <a
-                                        href="http://ilenafurniture.com"
-                                        style="text-decoration:none; color:red; font-size:14px;">Customer Service
+                                        href="https://wa.me/+628112938158"
+                                        style="text-decoration:none; color:red; font-size:13px;">Customer Service
                                         Kami.</a>
                                 </p>
                             </li>
@@ -459,7 +487,11 @@
                         <ul>
                             <li>
                                 <p class="mb-0">Saat ini Kami belum memiliki jasa perakitan. Anda tidak perlu khawatir,
-                                    untuk produk yang memerlukan perakitan kami akan membagikan link Youtube Ilena
+                                    untuk produk yang memerlukan perakitan kami akan membagikan <a
+                                        style="text-decoration:none; color: black; font-size:13px;"
+                                        class="fw-bold link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                                        href="https://www.youtube.com/channel/UCc2vGsX2R8CNoZXv7lxJ2qw">link Youtube
+                                        Ilena</a>
                                     Furniture sebagai petunjuk perakitan untuk customer.
                                 </p>
                             </li>
@@ -470,7 +502,9 @@
                         <ul>
                             <li>
                                 <p class="mb-0">Apabila produk belum diterima setelah melewati batas waktu pengiriman
-                                    Anda dapat menghubungi Customer Service Kami untuk informasi lebih lanjut.
+                                    Anda dapat menghubungi <a href="https://wa.me/+628112938158"
+                                        style="text-decoration:none; color:red; font-size:13px;">Customer Service
+                                        Kami</a> untuk informasi lebih lanjut.
                                 </p>
                             </li>
                         </ul>
@@ -496,12 +530,25 @@
                 <div id="flush-collapse6" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                     <div class="accordion-body">
                         <p class="mb-0 fw-bold">Bagaimana kebijakan pembatalan pemesanan?</p>
-                        <p class="mb-0">Selama status Anda belum melakukan pembayaran sesuai dengan batas waktu, maka
-                            pesanan secara otomatis dibatalkan oleh sistem.</p>
-                        <p class="mb-0 fw-bold">Bagaimana jika saya ingin membatalkan transaksi yang telah dilakukan?
-                        </p>
-                        <p class="mb-0">Silakan dapat menghubungi Customer Service kami untuk informasi lebih lanjut.
-                        </p>
+                        <ul>
+                            <li>
+                                <p class="mb-0">Selama status Anda belum melakukan pembayaran sesuai dengan batas waktu,
+                                    maka
+                                    pesanan secara otomatis dibatalkan oleh sistem.</p>
+                            </li>
+                            <li>
+                                <p class="mb-0">Bagaimana jika saya ingin membatalkan transaksi yang telah
+                                    dilakukan?
+                                </p>
+                            </li>
+                            <li>
+                                <p class="mb-0">Silakan dapat menghubungi <a href="https://wa.me/+628112938158"
+                                        style="text-decoration:none; color:red; font-size:13px;">Customer Service
+                                        Kami</a> untuk informasi lebih
+                                    lanjut.
+                                </p>
+                            </li>
+                        </ul>
 
                     </div>
                 </div>
@@ -518,45 +565,64 @@
                         <p class="mb-0 fw-bold">Bagaimana kebijakan pembatalan pemesanan apabila terdapat kesalahan
                             dalam pemesanan barang?</p>
                         <ul>
-                            <p class="mb-0">Untuk barang yang sudah terkirim tidak bisa dilakukan pembatalan kecuali
-                                kondisi barang rusak/ cacat dan kami tidak memiliki stok barang yang sama sebagai
-                                penggantinya. Jika pihak kami melakukan kesalahan pengiriman barang, maka tanggung jawab
-                                adalah 100% dari <a href="http://ilenafurniture.com"
-                                    style="text-decoration:none; color:red; font-size:14px;">Ilena Furniture.</a></p>
+                            <li>
+                                <p class="mb-0">Untuk barang yang sudah terkirim tidak bisa dilakukan pembatalan kecuali
+                                    kondisi barang rusak/ cacat dan kami tidak memiliki stok barang yang sama sebagai
+                                    penggantinya. Jika pihak kami melakukan kesalahan pengiriman barang, maka tanggung
+                                    jawab
+                                    adalah 100% dari <a href="http://ilenafurniture.com"
+                                        style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture.</a>
+                                </p>
+                            </li>
                         </ul>
                         </p>
                         <p class="mb-0 mt-1 fw-bold">Bagaimana apabila terdapat kesalahan pemesanan ?
                         <ul>
-                            <p class="mb-0">Apabila terdapat kesalahan dalam pemesanan maka akan kami ganti dengan unit
-                                baru sesuai dengan unit yang ingin dipilih. </p>
+                            <li>
+                                <p class="mb-0">Apabila terdapat kesalahan dalam pemesanan maka akan kami ganti dengan
+                                    unit
+                                    baru sesuai dengan unit yang ingin dipilih. </p>
+                            </li>
                         </ul>
                         </p>
                         <p class="mb-0 mt-1 fw-bold">Jika ada penukaran barang, siapakah yang menanggung biaya
                             pengirimannya?
                         <ul>
-                            <p class="mb-0">Apabila Anda menerima barang yang cacat, kami akan tukar dengan unit baru.
-                                Untuk pengiriman unit lama biaya pengiriman akan ditanggung oleh Customer terlebih
-                                dahulu untuk selanjutnya akan kami reimburse 100% (dengan melampirkan nota pengiriman)
-                                sedangkan untuk pengiriman ulang, biaya pengiriman akan kami tanggung. </p>
+                            <li>
+                                <p class="mb-0">Apabila Anda menerima barang yang cacat, kami akan tukar dengan unit
+                                    baru.
+                                    Untuk pengiriman unit lama biaya pengiriman akan ditanggung oleh Customer terlebih
+                                    dahulu untuk selanjutnya akan kami reimburse 100% (dengan melampirkan nota
+                                    pengiriman)
+                                    sedangkan untuk pengiriman ulang, biaya pengiriman akan kami tanggung. </p>
+                            </li>
                         </ul>
                         </p>
                         <p class="mb-0 mt-1 fw-bold">Apa syarat melakukan penukaran unit yang cacat?
                         <ul>
-                            <p class="mb-0">Anda dapat menghubungi <a
-                                    style="text-decoration:none; color:red; font-size:14px;">Customer Service Kami</a>
-                                maksimal 1x24 jam sejak barang
-                                diterima dengan menyertakan nomor pemesanan, bukti foto yang memperlihatkan letak
-                                cacatnya serta video yang terlihat jelas pada saat melakukan unboxing. Maka dari itu,
-                                pastikan Anda selalu melakukan video ketika melakukan unboxing. </p>
+                            <li>
+                                <p class="mb-0">Anda dapat menghubungi <a href="https://wa.me/+628112938158"
+                                        style="text-decoration:none; color:red; font-size:13px;">Customer Service
+                                        Kami</a>
+                                    maksimal 1x24 jam sejak barang
+                                    diterima dengan menyertakan nomor pemesanan, bukti foto yang memperlihatkan letak
+                                    cacatnya serta video yang terlihat jelas pada saat melakukan unboxing. Maka dari
+                                    itu,
+                                    pastikan Anda selalu melakukan video ketika melakukan unboxing. </p>
+                            </li>
                         </ul>
                         </p>
                         <p class="mb-0 mt-1 fw-bold">Berapa lama proses penukaran unit jika ada kerusakan barang?
                         <ul>
-                            <p class="mb-0">Apabila bukti kerusakan (berupa foto/video) telah kami terima, tim kami akan
-                                segera melakukan investigasi, sebagai tindak lanjut kami akan melakukan penukaran unit
-                                sesegera mungkin. Tim kami akan menghubungi Anda apabila proses investigasi telah
-                                selesai dilakukan. Pastikan nomor Anda selalu aktif jika sewaktu-waktu tim kami
-                                menghubungi Anda.</p>
+                            <li>
+                                <p class="mb-0">Apabila bukti kerusakan (berupa foto/video) telah kami terima, tim kami
+                                    akan
+                                    segera melakukan investigasi, sebagai tindak lanjut kami akan melakukan penukaran
+                                    unit
+                                    sesegera mungkin. Tim kami akan menghubungi Anda apabila proses investigasi telah
+                                    selesai dilakukan. Pastikan nomor Anda selalu aktif jika sewaktu-waktu tim kami
+                                    menghubungi Anda.</p>
+                            </li>
                         </ul>
                         </p>
                     </div>
@@ -566,11 +632,11 @@
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#flush-collapse6" aria-expanded="false" aria-controls="flush-collapse6">
+                        data-bs-target="#flush-collapse8" aria-expanded="false" aria-controls="flush-collapse8">
                         PERAWATAN
                     </button>
                 </h2>
-                <div id="flush-collapse6" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                <div id="flush-collapse8" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                     <div class="accordion-body">
                         <p class="mb-0 fw-bold">Bagaimana cara merawat produk Ilena?</p>
                         <p class="mb-0">Melakukan perawatan furniture dari kayu dapat dilakukan dengan beberapa
@@ -587,18 +653,18 @@
                                     langsung tanpa alas
                                 </p>
                             </li>
-                            <p class="mb-0">Jauhkan furniture Anda dari sinar matahari langsung secara terus
-                                menerus. Sinar matahari langsung dapat menyebabkan menjadi kering dan mudah retak
-                            </p>
+                            <li>
+                                <p class="mb-0">Jauhkan furniture Anda dari sinar matahari langsung secara terus
+                                    menerus. Sinar matahari langsung dapat menyebabkan menjadi kering dan mudah retak
+                                </p>
+                            </li>
                             <li>
                                 <p class="mb-0">Usahakan untuk menempatkan furniture produk Ilena pada ruangan dengan
                                     sirkulasi udara yang cukup.
                                 </p>
                             </li>
                         </ul>
-                        <a style="color: var(--hijau);"
-                            class="fw-bold link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
-                            href="https://www.youtube.com/channel/UCc2vGsX2R8CNoZXv7lxJ2qw">Menuju video</a>
+
                     </div>
                 </div>
             </div>
