@@ -48,15 +48,13 @@
 <div class="justify-content-center w-100 show-flex-ke-hide" style="background-color:whitesmoke; position: sticky; top:-1px; z-index: 99;">
     <div class="d-flex align-items-center py-2" style="width:300px">
         <div class="list-nav">
-            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;">Kursi</a>
+            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;">Side Table</a>
             <div class="child-list-nav">
                 <div class="container py-3 d-flex">
                     <div style="flex: 1;">
                         <p class="m-0">Jelajahi Kursi</p>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;" href="#">Kursi
-                            Belajar</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;" href="#">Kursi
-                            TV</a>
+                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;" href="#">Kursi Belajar</a>
+                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;" href="#">Kursi TV</a>
                     </div>
                     <div style="width: 233px">
                         <a href="#" class="container-produk-nav">

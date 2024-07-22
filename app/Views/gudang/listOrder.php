@@ -76,7 +76,6 @@
                     <div style="flex: 2;">Action</div>
                 </div>
 
-
                 <?php
                 $no = 1;
                 if (count($pesanan) > 0) {
@@ -118,7 +117,7 @@
     var html5QrcodeScanner;
 
     function openScan(idBarang, nama) {
-        console.log(idBarang, nama);
+        // console.log(idBarang, nama);
         idSelected = idBarang;
         namaSelected = nama;
         modelScanElm.classList.add("d-flex");
@@ -129,14 +128,16 @@
             qrbox: 250,
         });
         html5QrcodeScanner.render((decodedText, decodedResult) => {
-            console.log(`Scan result: ${decodedText}`, decodedResult);
+            // console.log(`Scan result: ${decodedText}`, decodedResult);
             html5QrcodeScanner.clear();
-            if (decodedText = idSelected) {
-                window.location.href = "/gudang/actionscan/" + decodedText + "/" + namaSelected.split("(")[1].slice(
-                    0, -1);
+            console.log(idSelected, namaSelected)
+            if (decodedText == idSelected) {
+                window.location.href = "/gudang/actionscan/" + decodedText + "/" + namaSelected.split("(")[1].slice(0, -1);
             } else {
                 alertNoCorrectElm.classList.remove('d-none');
             }
+            idSelected = ''
+            namaSelected = ''
         });
     }
 
