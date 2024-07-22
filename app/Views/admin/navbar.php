@@ -6,7 +6,7 @@
                 Email
             </p>
             <p class="fw-bold m-0">
-                <?= session()->get("nama"); ?>
+                <?= session()->get("email"); ?>
             </p>
         </div>
         <div class="d-flex justify-content-between py-1">

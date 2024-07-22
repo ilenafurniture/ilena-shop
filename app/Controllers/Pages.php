@@ -755,7 +755,10 @@ class Pages extends BaseController
                 'nohp' => $alamatselected['nohp_penerima'],
                 'alamat' => $alamatselected['alamat_lengkap'],
                 'keranjang' => $this->session->get('keranjang'),
-                'voucher' => $voucherSelected ? $diskonVoucher : false
+                'voucher' => $voucherSelected ? [
+                    'd' => $diskonVoucher,
+                    'id' => $voucherSelected['id']
+                ] : false
                 // 'kurir' => $kurir[$index_kurir],
             ])),
             'indexAddress' => $ind_add,
@@ -823,12 +826,12 @@ class Pages extends BaseController
         if ($voucher) {
             $item = array(
                 'id' => 'Voucher',
-                'price' => -$voucher,
+                'price' => -$voucher['d'],
                 'quantity' => 1,
                 'name' => 'Voucher',
             );
             array_push($itemDetails, $item);
-            $total -= $voucher;
+            $total -= $voucher['d'];
         }
         $biayaadmin = array(
             'id' => 'Biaya Admin',
@@ -848,7 +851,7 @@ class Pages extends BaseController
             'h' => $nohp,
             'a' => $alamatLengkap,
             'i' => $keranjang,
-            // 'k' => $kurir
+            'v' => $voucher
         ]);
 
         $emailUjiCoba = ['galihsuks123@gmail.com', 'lunareafurniture@gmail.com', 'galih8.4.2001@gmail.com'];
@@ -1234,6 +1237,22 @@ class Pages extends BaseController
                 'name' => 'Biaya Admin',
             );
             array_push($itemDetails, $biayaadmin);
+            if ($customField['v']) {
+                $item = array(
+                    'id' => 'Voucher',
+                    'price' => -$customField['v']['d'],
+                    'quantity' => 1,
+                    'name' => 'Voucher',
+                );
+                array_push($itemDetails, $item);
+
+                //masukin email customer ke tabel voucher
+                $voucherSelected = $this->voucherModel->where(['id' => $customField['v']['id']])->first();
+                $voucherSelected_email = json_decode($voucherSelected['list_email'], true);
+                array_push($voucherSelected_email, $customField['e']);
+                $this->voucherModel->where(['id' => $customField['v']['id']])->set(['list_email' => json_encode($voucherSelected_email)])->update();
+            }
+
             // $biayaongkir = array(
             //     'id' => 'Biaya Ongkir',
             //     'price' => $customField['k']['harga'],
