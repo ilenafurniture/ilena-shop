@@ -19,7 +19,7 @@ if (count($pesanan) > 0) {
                 <div style="flex: 1;"><?= $no; ?></div>
                 <div style="flex: 2;"><?= $p['id_pesanan']; ?></div>
                 <div style="flex: 2;"><?= $p['tanggal']; ?></div>
-                <div style="flex: 4;"><?= $p['nama']; ?></div>
+                <div style="flex: 4;"><?= strtoupper($p['detail_barang']['kategori']); ?> <?= $p['nama']; ?></div>
                 <div style="flex: 2;"><?= $p['id_barang']; ?></div>
                 <div style="flex: 1;"><?= $p['stok']; ?></div>
                 <div style="flex: 3;"><?= $p['target_selesai']; ?></div>

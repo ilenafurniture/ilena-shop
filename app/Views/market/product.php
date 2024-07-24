@@ -25,6 +25,7 @@ for ($i = 0; $i < 10; $i++) {
                 <div style="flex: 2;">Nama Produk</div>
                 <div style="flex: 2;">Varian Produk</div>
                 <div style="flex: 2;">Harga Produk</div>
+                <div style="flex: 1;">Stok</div>
                 <div style="flex: 1;">Action</div>
             </div>
             <?php foreach ($produk as $ind_p => $p) { ?>
@@ -39,6 +40,7 @@ for ($i = 0; $i < 10; $i++) {
                         </div>
                         <div style="flex: 2;"><?= $v['nama'] ?></div>
                         <div style="flex: 2;">Rp <?= number_format($p['harga'], 0, ',', '.'); ?></div>
+                        <div style="flex: 1;"><?= $v['stok']; ?></div>
                         <div style="flex: 1;">
                             <?php
                             $ketemu = false;

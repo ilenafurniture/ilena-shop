@@ -10,10 +10,12 @@ class KartuStokModel extends Model
     protected $allowedFields = [
         'id_barang',
         'tanggal',
+        'id_pesanan',
         'keterangan',
         'debit',
         'kredit',
-        'saldo'
+        'saldo',
+        'pending'
     ];
 
     public function getKartu($id_barang, $keterangan = false)

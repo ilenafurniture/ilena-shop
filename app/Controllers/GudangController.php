@@ -38,6 +38,7 @@ class GudangController extends BaseController
         $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
         foreach ($pesananGudang as $ind_p => $p) {
             $barang = $this->barangModel->getBarang($p['id_barang']);
+            $pesananGudang[$ind_p]['detail_barang'] = $barang;
             foreach (json_decode($barang['varian'], true) as $v) {
                 if (strtolower($v['nama']) == strtolower(rtrim(explode("(", $p['nama'])[1], ")"))) {
                     $pesananGudang[$ind_p]['stok'] = $v['stok'];
@@ -70,6 +71,7 @@ class GudangController extends BaseController
         $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
         foreach ($pesananGudang as $ind_p => $p) {
             $barang = $this->barangModel->getBarang($p['id_barang']);
+            $pesananGudang[$ind_p]['detail_barang'] = $barang;
             foreach (json_decode($barang['varian'], true) as $v) {
                 if (strtolower($v['nama']) == strtolower(rtrim(explode("(", $p['nama'])[1], ")"))) {
                     $pesananGudang[$ind_p]['stok'] = $v['stok'];
@@ -97,7 +99,12 @@ class GudangController extends BaseController
         $pesanan = $this->pemesananModel->where(['status_print' => 'siap'])->orWhere(['status_print' => 'sudah print'])->orWhere(['status_print' => 'ajukan'])->findAll();
         foreach ($pesanan as $ind_p => $p) {
             $pesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
-            $pesanan[$ind_p]['items'] = json_decode($p['items'], true);
+            $itemsnya = json_decode($p['items'], true);
+            foreach ($itemsnya as $ind_i => $i) {
+                $barangnya = $this->barangModel->getBarang($i['id']);
+                $itemsnya[$ind_i]['name'] = strtoupper($barangnya['kategori']) . ' ' . $i['name'];
+            }
+            $pesanan[$ind_p]['items'] = $itemsnya;
             $pesanan[$ind_p]['kurir'] = json_decode($p['kurir'], true);
             $pesanan[$ind_p]['data_mid']['custom_field1'] = '';
             $pesanan[$ind_p]['data_mid']['custom_field2'] = '';
@@ -122,16 +129,43 @@ class GudangController extends BaseController
             $product[$ind_p]['deskripsi'] = json_decode($p['deskripsi'], true);
         }
         $mutasi = $this->kartuStokModel->getKartu($id_barang);
+        // $pemesananBelumPrint = $this->pemesananModel->where('status_print !=', 'sudah print')->findAll();
+
+        // $mutasiDanPemesanan = $mutasi;
+        // foreach ($pemesananBelumPrint as $p) {
+        //     foreach (json_decode($pemesananBelumPrint['items'], true) as $i) {
+        //         if($i['id'] == $id_barang) {
+        //             $itemMP = [
+        //                 'id_barang' => $id_barang,
+        //                 'tanggal' => json_decode($pemesananBelumPrint['data_mid'], true)['transaction_time'],
+        //                 'keterangan' => 'Masih menunggu surat jalan di print',
+        //                 'debit' => 0,
+        //                 'kredit' => $i['quantity'],
+        //                 'saldo' => 'Menyesuaikan'
+        //             ];
+        //             array_push($mutasiDanPemesanan, )
+        //         }
+        //     }
+        // }
+        $msg = session()->getFlashdata('msg');
         $data = [
             'title' => 'Mutasi',
             'mutasi' => $mutasi,
             'product' => $product,
-            'idBarang' => $id_barang
+            'idBarang' => $id_barang,
+            'msg' => $msg ? $msg : false
         ];
         return view('gudang/mutasi', $data);
     }
     public function actionAddMutasi()
     {
+        //cek apakah ada pesanan yg masuh menunggu pembayaran
+        $pesanan = $this->pemesananModel->where(['status' => 'Menunggu Pembayaran'])->findAll();
+        if (count($pesanan) > 0) {
+            session()->setFlashdata('msg', 'Ada pesanan dengan status Menunggu Pembayaran sehingga belum bisa melakukan perubahan data stok');
+            return redirect()->to('/gudang/mutasi');
+        }
+
         $tanggal = $this->request->getVar('tanggal');
         $barang = explode("-", $this->request->getVar('barang'));
         $jenis = $this->request->getVar('jenis');
@@ -172,8 +206,6 @@ class GudangController extends BaseController
         $this->barangModel->where(['id' => $barang[0]])->set(['varian' => json_encode($varianCurr)])->update();
         return redirect()->to('/gudang/mutasi');
     }
-
-
 
     public function actionScan($id_barang, $varian)
     {
@@ -222,26 +254,26 @@ class GudangController extends BaseController
         $tanggalNoStrip = date("YmdHis", $d);
         $items = [];
         foreach (json_decode($pemesanan['items'], true) as $p) {
-            if ($p['name'] != 'Biaya Ongkir' && $p['name'] != 'Biaya Admin') {
-                // $kartuStok_Curr = $this->kartuStokModel->getKartu($p['id'], $pemesanan['id_midtrans'] . $p['id'] . $tanggalNoStrip);
-                $produknya = $this->barangModel->getBarang($p['id']);
-                $varian = json_decode($produknya['varian'], true);
-                $saldo = 0;
-                foreach ($varian as $ind_v => $v) {
-                    if (strtolower($v['nama']) == strtolower(rtrim(explode("(", $p['name'])[1], ")"))) {
-                        $saldo = (int)$v['stok'];
-                    }
-                }
-                // if (!$kartuStok_Curr) $saldo = 0;
-                // else $saldo = $kartuStok_Curr['saldo'];
-                $this->kartuStokModel->insert([
-                    'id_barang' => $p['id'],
-                    'tanggal' => $tanggal,
-                    'keterangan' => $tanggalNoStrip . "-" . $p['id'] . "-" . strtoupper(rtrim(explode("(", $p['name'])[1], ")")) . "-" . $pemesanan['id_midtrans'],
-                    'debit' => 0,
-                    'kredit' => $p['quantity'],
-                    'saldo' => (int)$saldo - (int)$p['quantity'],
-                ]);
+            if ($p['name'] != 'Biaya Ongkir' && $p['name'] != 'Biaya Admin' && $p['name'] != 'Voucher') {
+                // $produknya = $this->barangModel->getBarang($p['id']);
+                // $varian = json_decode($produknya['varian'], true);
+                // $saldo = 0;
+                // foreach ($varian as $ind_v => $v) {
+                //     if (strtolower($v['nama']) == strtolower(rtrim(explode("(", $p['name'])[1], ")"))) {
+                //         $saldo = (int)$v['stok'];
+                //     }
+                // }
+                // $this->kartuStokModel->insert([
+                //     'id_barang' => $p['id'],
+                //     'tanggal' => $tanggal,
+                //     'keterangan' => $tanggalNoStrip . "-" . $p['id'] . "-" . strtoupper(rtrim(explode("(", $p['name'])[1], ")")) . "-" . $pemesanan['id_midtrans'],
+                //     'debit' => 0,
+                //     'kredit' => $p['quantity'],
+                //     'saldo' => (int)$saldo - (int)$p['quantity'],
+                // ]);
+                $this->kartuStokModel->where(['id_barang' => $p['id'], 'tanggal' => json_decode($pemesanan['data_mid'], true)['transaction_time']])->set([
+                    'pending' => false
+                ])->update();
                 array_push($items, $p);
             }
         }

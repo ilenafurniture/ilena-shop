@@ -12,6 +12,7 @@ use App\Models\UserModel;
 use App\Models\KoleksiModel;
 use App\Models\JenisModel;
 use App\Models\AjukanPrintModel;
+use App\Models\KartuStokModel;
 
 class AdminController extends BaseController
 {
@@ -25,6 +26,7 @@ class AdminController extends BaseController
     protected $koleksiModel;
     protected $jenisModel;
     protected $ajukanPrintModel;
+    protected $kartuStokModel;
     protected $session;
     public function __construct()
     {
@@ -38,6 +40,7 @@ class AdminController extends BaseController
         $this->koleksiModel = new KoleksiModel();
         $this->jenisModel = new JenisModel();
         $this->ajukanPrintModel = new AjukanPrintModel();
+        $this->kartuStokModel = new KartuStokModel();
         $this->session = \Config\Services::session();
     }
     public function listProduct()
@@ -483,6 +486,7 @@ class AdminController extends BaseController
     {
         $this->pemesananModel->where(['id_midtrans' => $id_midtrans])->set(['status_print' => 'siap'])->update();
         $this->ajukanPrintModel->where(['id_midtrans' => $id_midtrans])->delete();
+        $this->kartuStokModel->where(['id_pesanan' => $id_midtrans])->set(['pending' => true])->update();
         return redirect()->to('/admin/reprint');
     }
     public function marketplace()

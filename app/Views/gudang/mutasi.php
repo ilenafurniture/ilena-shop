@@ -64,6 +64,11 @@
             <button onclick="openModal()" class="btn-default"><i class="material-icons">add</i></button>
         </div>
     </div>
+    <?php if ($msg) { ?>
+        <div class="pemberitahuan my-1" role="alert">
+            <?= $msg; ?>
+        </div>
+    <?php } ?>
     <div class="container-table show-block-ke-hide">
         <div class="header-table border-buttom border-dark">
             <div style="flex: 1;">No</div>
@@ -76,7 +81,7 @@
         <?php
         $no = 1;
         foreach ($mutasi as $m) { ?>
-            <div class="isi-table">
+            <div class="isi-table" <?= $m['pending'] ? 'style="color: var(--merah)"' : ''; ?>>
                 <div style="flex: 1;"><?= $no; ?></div>
                 <div style="flex: 2;"><?= $m['tanggal']; ?></div>
                 <div style="flex: 3;"><?= $m['keterangan']; ?></div>
@@ -100,7 +105,7 @@
             <?php
             $no = 1;
             foreach ($mutasi as $m) { ?>
-                <div class="isi-table">
+                <div class="isi-table" <?= $m['pending'] ? 'style="color: var(--merah)"' : ''; ?>>
                     <div style="flex: 1;"><?= $no; ?></div>
                     <div style="flex: 2;"><?= $m['tanggal']; ?></div>
                     <div style="flex: 3;"><?= $m['keterangan']; ?></div>

@@ -1211,6 +1211,25 @@ class Pages extends BaseController
                                 'packed' => false
                             ]);
                         }
+
+                        $produknya = $this->barangModel->getBarang($i['id']);
+                        $varian = json_decode($produknya['varian'], true);
+                        $saldo = 0;
+                        foreach ($varian as $ind_v => $v) {
+                            if (strtolower($v['nama']) == strtolower(rtrim(explode("(", $i['name'])[1], ")"))) {
+                                $saldo = (int)$v['stok'];
+                            }
+                        }
+                        $tanggalNoStrip = date("YmdHis", strtotime($dataMid_curr['transaction_time']));
+                        $this->kartuStokModel->insert([
+                            'id_barang' => $i['id'],
+                            'tanggal' => $dataMid_curr['transaction_time'],
+                            'keterangan' => $tanggalNoStrip . "-" . $i['id'] . "-" . strtoupper(rtrim(explode("(", $i['name'])[1], ")")) . "-" . $dataTransaksi_curr['id_midtrans'],
+                            'debit' => 0,
+                            'kredit' => $i['quantity'],
+                            'saldo' => $saldo,
+                            'pending' => true,
+                        ]);
                     }
                 }
             }
@@ -1586,7 +1605,13 @@ class Pages extends BaseController
                     'nama' => 'Pemesanan Gudang',
                     'isi' => '-'
                 ],
-            ]
+            ],
+            'market' => [
+                [
+                    'nama' => 'Pemesanan Marketplace',
+                    'isi' => '-'
+                ],
+            ],
         ];
         if ($id_order) {
             $pemesanan = $this->pemesananModel->getPemesanan($id_order);
@@ -1670,6 +1695,10 @@ class Pages extends BaseController
                         case 'toko':
                             $va_number = 'PEMBAYARAN TOKO';
                             $bank = "toko";
+                            break;
+                        case 'market':
+                            $va_number = 'PEMBAYARAN MARKETPLACE';
+                            $bank = "market";
                             break;
                         default:
                             $va_number = "";
@@ -1839,7 +1868,7 @@ class Pages extends BaseController
             'nama' => $transaksi['nama'],
             'email' => $transaksi['email'],
             'nohp' => $transaksi['nohp'],
-            'alamat' => json_decode($transaksi['alamat'], true),
+            'alamat' => $transaksi['alamat'],
             'resi' => $transaksi['resi'],
             'id_midtrans' => $transaksi['id_midtrans'],
             'items' => json_decode($transaksi['items'], true),
