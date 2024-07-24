@@ -24,7 +24,7 @@ if (count($pesanan) > 0) {
                 <div style="flex: 1;"><?= $p['stok']; ?></div>
                 <div style="flex: 3;"><?= $p['target_selesai']; ?></div>
                 <div style="flex: 2;">
-                    <button class="btn-default" onclick="openScan('<?= $p['id_barang'] ?>','<?= $p['nama'] ?>')">Scan</button>
+                    <button class="btn-default" onclick="openScan('<?= $p['id_barang'] ?>','<?= $p['nama'] ?>','<?= base64_encode($p['detail_barang']['varian']) ?>')">Scan</button>
                 </div>
             </div>
     <?php

@@ -46,28 +46,36 @@
     </div>
 </nav>
 <div class="justify-content-center w-100 show-flex-ke-hide" style="background-color:whitesmoke; position: sticky; top:-1px; z-index: 99;">
-    <div class="d-flex align-items-center py-2" style="width:300px">
+    <div class="d-flex align-items-center py-2 gap-5">
         <div class="list-nav">
-            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;">Side Table</a>
+            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;">Sorely</a>
             <div class="child-list-nav">
                 <div class="container py-3 d-flex">
                     <div style="flex: 1;">
-                        <p class="m-0">Jelajahi Kursi</p>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;" href="#">Kursi Belajar</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;" href="#">Kursi TV</a>
+                        <p class="m-0">Jelajahi Sorely</p>
+                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;" href="#">Dresser Tall Cabinet</a>
+                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;" href="#">Dresser 3 Drawer</a>
+                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;" href="#">Bookshelf</a>
+                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;" href="#">Media TV</a>
+                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;" href="#">Side Table</a>
+                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;" href="#">Stool</a>
+                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;" href="#">Coffee Table</a>
+                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;" href="#">Console Table</a>
+                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;" href="#">Wardrobe</a>
+                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;" href="#">Queen Bed</a>
                     </div>
                     <div style="width: 233px">
-                        <a href="#" class="container-produk-nav">
+                        <!-- <a href="#" class="container-produk-nav">
                             <img class="mb-3" src="https://images.unsplash.com/photo-1467043153537-a4fba2cd39ef?q=80&w=1919&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="">
                             <h5>New! Modern, Organic Stripes</h5>
                             <p>Kursi Sofa Luar Angkasa High Class KS001</p>
-                        </a>
+                        </a> -->
                     </div>
                 </div>
             </div>
         </div>
         <div class="list-nav">
-            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;">Rak</a>
+            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;">Cabana</a>
             <div class="child-list-nav">
                 <div class="container py-3 d-flex">
                     <div style="flex: 1">
@@ -88,7 +96,7 @@
             </div>
         </div>
         <div class="list-nav">
-            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;">Lemari</a>
+            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;">Orca</a>
             <div class="child-list-nav">
                 <div class="container py-3 d-flex">
                     <div style="flex: 1">
@@ -109,7 +117,49 @@
             </div>
         </div>
         <div class="list-nav">
-            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;">Meja</a>
+            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;">Water Case</a>
+            <div class="child-list-nav">
+                <div class="container py-3 d-flex">
+                    <div style="flex: 1">
+                        <p class="m-0">Jelajahi Meja</p>
+                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;" href="#">Meja
+                            Belajar</a>
+                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;" href="#">Meja
+                            TV</a>
+                    </div>
+                    <div style="width: 233px">
+                        <a href="#" class="container-produk-nav">
+                            <img class="mb-3" src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="">
+                            <h5>New! Modern, Organic Stripes</h5>
+                            <p>Meja Sofa Luar Angkasa High Class KS001</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="list-nav">
+            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;">Plint Base</a>
+            <div class="child-list-nav">
+                <div class="container py-3 d-flex">
+                    <div style="flex: 1">
+                        <p class="m-0">Jelajahi Meja</p>
+                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;" href="#">Meja
+                            Belajar</a>
+                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;" href="#">Meja
+                            TV</a>
+                    </div>
+                    <div style="width: 233px">
+                        <a href="#" class="container-produk-nav">
+                            <img class="mb-3" src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="">
+                            <h5>New! Modern, Organic Stripes</h5>
+                            <p>Meja Sofa Luar Angkasa High Class KS001</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="list-nav">
+            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;">Cut Out</a>
             <div class="child-list-nav">
                 <div class="container py-3 d-flex">
                     <div style="flex: 1">

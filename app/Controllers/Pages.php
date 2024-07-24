@@ -1229,6 +1229,8 @@ class Pages extends BaseController
                             'kredit' => $i['quantity'],
                             'saldo' => $saldo,
                             'pending' => true,
+                            'id_pesanan' => $dataTransaksi_curr['id_midtrans'],
+                            'varian' => strtoupper(rtrim(explode("(", $i['name'])[1], ")"))
                         ]);
                     }
                 }

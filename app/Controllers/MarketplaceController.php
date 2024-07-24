@@ -145,6 +145,8 @@ class MarketplaceController extends BaseController
                 'kredit' => $k['jumlah'],
                 'saldo' => $saldo,
                 'pending' => true,
+                'id_pesanan' => $idFix,
+                'varian' => strtoupper($k['varian'])
             ]);
         }
         $data = [

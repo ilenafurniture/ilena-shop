@@ -48,7 +48,7 @@
                 <select name="barang" class="form-select" onchange="gantiBarang(event)">
                     <?php foreach ($product as $p) {
                         foreach ($p['varian'] as $ind_v => $v) { ?>
-                            <option value="<?= $p['id']; ?>-<?= strtoupper($v['nama']); ?>-<?= $ind_v; ?>">
+                            <option value="<?= $p['id']; ?>-<?= strtoupper($v['nama']); ?>-<?= $ind_v; ?>" <?= $data == $p['id'] . '-' . strtoupper($v['nama']) ? 'selected' : ''; ?>>
                                 <?= $p['kategori']; ?> - <?= $p['subkategori']; ?> -
                                 <?= $p['deskripsi']['dimensi']['asli']['panjang']; ?>x<?= $p['deskripsi']['dimensi']['asli']['lebar']; ?>x<?= $p['deskripsi']['dimensi']['asli']['tinggi']; ?>
                                 - <?= $v['nama']; ?></option>
@@ -133,7 +133,8 @@
 
     function gantiBarang(e) {
         const id = e.target.value
-        window.location.href = '/gudang/mutasi/' + id.split('-')[0]
+        console.log(id)
+        window.location.href = '/gudang/mutasi/' + id.split('-')[0] + '-' + id.split('-')[1]
     }
 </script>
 <?= $this->endSection(); ?>

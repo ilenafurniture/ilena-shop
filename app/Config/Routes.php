@@ -107,6 +107,7 @@ $routes->post('/gudang/actionaddmutasi', 'GudangController::actionAddMutasi', ['
 $routes->get('/gudang/suratjalan/(:any)', 'GudangController::suratJalan/$1', ['filter' => 'gudangFilter']);
 $routes->post('/gudang/ajukanprint', 'GudangController::ajukanPrint', ['filter' => 'gudangFilter']);
 
+$routes->get('/fixmutasi', 'GudangController::fixMutasi');
 
 
 // Marketplace Controller

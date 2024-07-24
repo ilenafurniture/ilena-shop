@@ -118,6 +118,19 @@ class AdminController extends BaseController
                 'urutan_gambar' => implode(",", $urutanGambar),
             ];
             array_push($varianData, $itemVarian);
+
+            $tanggalNoStrip = date("YmdHis", strtotime("+7 Hours"));
+            $this->kartuStokModel->insert([
+                'id_barang' => $data['id'],
+                'tanggal' => date("Y-m-d H:i:s", strtotime("+7 Hours")),
+                'keterangan' => $tanggalNoStrip . "-" . $data['id'] . "-" . strtoupper($data['nama-var' . $j]) . "-ADDPRODUCT",
+                'debit' => $data['stok-var' . $j],
+                'kredit' => 0,
+                'saldo' => $data['stok-var' . $j],
+                'pending' => false,
+                'id_pesanan' => 'ADDPRODUCT',
+                'varian' => strtoupper($data['nama-var' . $j])
+            ]);
         }
 
         $dataKategori = $data['kategori'];
@@ -193,6 +206,7 @@ class AdminController extends BaseController
         $this->barangModel->insert($insertDataBarang);
         $this->gambarBarangModel->insert($insertGambarBarang);
         $this->gambarBarang3000Model->insert($insertGambarBarang3000);
+
         return redirect()->to('admin/product');
     }
     public function editProduct($id_product)
@@ -351,7 +365,7 @@ class AdminController extends BaseController
     }
     public function gantiUkuran()
     {
-        $barangLama = $this->barangModel->findAll();
+        $barangLama = $this->barangModel->findAll(10, 0);
         function file_get_contents_curl($url)
         {
             $ch = curl_init();

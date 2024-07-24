@@ -118,17 +118,21 @@ class GudangController extends BaseController
         return view('gudang/listOrderAfter', $data);
     }
 
-    public function mutasi($id_barang = false)
+    public function mutasi($data = false)
     {
         $product = $this->barangModel->getBarang();
-        if (!$id_barang) {
+        if (!$data) {
             $id_barang = $product[0]['id'];
+            $varian = json_decode($product[0]['varian'], true)[0]['nama'];
+        } else {
+            $id_barang = explode('-', $data)[0];
+            $varian = explode('-', $data)[1];
         }
         foreach ($product as $ind_p => $p) {
             $product[$ind_p]['varian'] = json_decode($p['varian'], true);
             $product[$ind_p]['deskripsi'] = json_decode($p['deskripsi'], true);
         }
-        $mutasi = $this->kartuStokModel->getKartu($id_barang);
+        $mutasi = $this->kartuStokModel->where(['id_barang' => $id_barang, 'varian' => $varian])->findAll();
         // $pemesananBelumPrint = $this->pemesananModel->where('status_print !=', 'sudah print')->findAll();
 
         // $mutasiDanPemesanan = $mutasi;
@@ -156,6 +160,21 @@ class GudangController extends BaseController
             'msg' => $msg ? $msg : false
         ];
         return view('gudang/mutasi', $data);
+    }
+    public function fixMutasi()
+    {
+        $mutasi = $this->kartuStokModel->findAll();
+        foreach ($mutasi as $m) {
+            $idPesanan = explode('-', $m['keterangan'])[3];
+            $varian = explode('-', $m['keterangan'])[2];
+            $this->kartuStokModel->where(['id' => $m['id']])->set([
+                'id_pesanan' => $idPesanan,
+                'varian' => $varian
+            ])->update();
+        }
+        return $this->response->setJSON([
+            'success' => true
+        ], false);
     }
     public function actionAddMutasi()
     {
@@ -200,6 +219,8 @@ class GudangController extends BaseController
             'debit' => $debit,
             'kredit' => $kredit,
             'saldo' => $saldo,
+            'id_pesanan' => 'MANUALLY',
+            'varian' => strtoupper($barang[1])
         ]);
         $varianCurr = json_decode($produk['varian'], true);
         $varianCurr[(int)$barang[2]]['stok'] = $saldo;
