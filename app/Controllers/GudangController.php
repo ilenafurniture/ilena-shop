@@ -157,6 +157,7 @@ class GudangController extends BaseController
             'mutasi' => $mutasi,
             'product' => $product,
             'idBarang' => $id_barang,
+            'data' => $data,
             'msg' => $msg ? $msg : false
         ];
         return view('gudang/mutasi', $data);
