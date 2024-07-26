@@ -228,7 +228,7 @@
 </div>
 <script>
     let counterJmlVarian = 1;
-    let idStr = "1-0-0-01"
+    let idStr = "1-00-000-XX"
     const hitungVarianInputElm = document.querySelector('input[name="hitung-varian"]')
 
     function buatElementDariHTML(htmlString) {

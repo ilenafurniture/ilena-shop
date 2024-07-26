@@ -200,10 +200,8 @@ class GudangController extends BaseController
         $kredit = 0;
         if ($jenis == 'debit') {
             $debit = $nominal;
-            $saldo = (int)$saldoSkrg + (int)$nominal;
         } else if ($jenis == 'kredit') {
             $kredit = $nominal;
-            $saldo = (int)$saldoSkrg - (int)$nominal;
         }
         // dd([
         //     'id_barang' => $barang[0],
@@ -219,13 +217,14 @@ class GudangController extends BaseController
             'keterangan' => $keterangan,
             'debit' => $debit,
             'kredit' => $kredit,
-            'saldo' => $saldo,
             'id_pesanan' => 'MANUALLY',
-            'varian' => strtoupper($barang[1])
+            'varian' => strtoupper($barang[1]),
+            'alasan' => $this->request->getVar('alasan'),
+            'pending' => true
         ]);
-        $varianCurr = json_decode($produk['varian'], true);
-        $varianCurr[(int)$barang[2]]['stok'] = $saldo;
-        $this->barangModel->where(['id' => $barang[0]])->set(['varian' => json_encode($varianCurr)])->update();
+        // $varianCurr = json_decode($produk['varian'], true);
+        // $varianCurr[(int)$barang[2]]['stok'] = $saldo;
+        // $this->barangModel->where(['id' => $barang[0]])->set(['varian' => json_encode($varianCurr)])->update();
         return redirect()->to('/gudang/mutasi');
     }
 

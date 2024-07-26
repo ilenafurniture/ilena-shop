@@ -6,6 +6,7 @@
                     <h5>Perusahaan</h5>
                     <a href="/tentang">Tentang Kami</a><br>
                     <a href="/kebijakan">Kebijakan & Privasi</a><br>
+                    <a href="/syarat">Syarat & Ketentuan</a><br>
                     <a href="/faq">F&Q</a>
                     <p></p>
                 </div>

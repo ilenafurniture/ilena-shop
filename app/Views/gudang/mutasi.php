@@ -20,7 +20,7 @@
                 </select>
                 <label for="floatingInput1">Barang</label>
             </div>
-            <div class="d-flex gap-1 mb-2">
+            <div class="d-flex gap-1 mb-1">
                 <div class="form-floating flex-grow-1">
                     <select name="jenis" id="" class="form-select">
                         <option value="debit">Debit</option>
@@ -29,9 +29,13 @@
                     <label for="floatingInput3">Jenis</label>
                 </div>
                 <div class="form-floating flex-grow-1">
-                    <input type="number" class="form-control" id="floatingPassword" name="nominal">
+                    <input type="number" class="form-control" id="floatingPassword" name="nominal" required>
                     <label for="floatingPassword">Jumlah barang</label>
                 </div>
+            </div>
+            <div class="form-floating mb-2">
+                <input type="text" class="form-control" id="floatingInput3" name="alasan" required>
+                <label for="floatingInput3">Alasan</label>
             </div>
             <div class="d-flex gap-1">
                 <button type="submit" class="btn-default">Tambah</button>
@@ -77,6 +81,7 @@
             <div style="flex: 1;">Debit</div>
             <div style="flex: 1;">Kredit</div>
             <div style="flex: 1;">Saldo</div>
+            <div style="flex: 2;">Status</div>
         </div>
         <?php
         $no = 1;
@@ -87,7 +92,8 @@
                 <div style="flex: 3;"><?= $m['keterangan']; ?></div>
                 <div style="flex: 1;"><?= $m['debit']; ?></div>
                 <div style="flex: 1;"><?= $m['kredit']; ?></div>
-                <div style="flex: 1;"><?= $m['saldo']; ?></div>
+                <div style="flex: 1;"><?= $m['pending'] ? ($m['id_pesanan'] == 'MANUALLY' ? '?' : $m['saldo']) : $m['saldo']; ?></div>
+                <div style="flex: 2;"><?= $m['pending'] ? ($m['id_pesanan'] == 'MANUALLY' ? 'Menunggu konfirm' : 'Surat jalan belum print') : 'Success'; ?></div>
             </div>
         <?php $no++;
         } ?>
@@ -101,6 +107,7 @@
                 <div style="flex: 1;">Debit</div>
                 <div style="flex: 1;">Kredit</div>
                 <div style="flex: 1;">Saldo</div>
+                <div style="flex: 2;">Status</div>
             </div>
             <?php
             $no = 1;
@@ -111,7 +118,8 @@
                     <div style="flex: 3;"><?= $m['keterangan']; ?></div>
                     <div style="flex: 1;"><?= $m['debit']; ?></div>
                     <div style="flex: 1;"><?= $m['kredit']; ?></div>
-                    <div style="flex: 1;"><?= $m['saldo']; ?></div>
+                    <div style="flex: 1;"><?= $m['pending'] ? ($m['id_pesanan'] == 'MANUALLY' ? '?' : $m['saldo']) : $m['saldo']; ?></div>
+                    <div style="flex: 2;"><?= $m['pending'] ? ($m['id_pesanan'] == 'MANUALLY' ? 'Menunggu konfirm' : 'Surat jalan belum print') : 'Success'; ?></div>
                 </div>
             <?php $no++;
             } ?>
