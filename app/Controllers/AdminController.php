@@ -363,6 +363,61 @@ class AdminController extends BaseController
         $this->gambarBarang3000Model->where(['id' => $idBarang])->set($insertGambarBarang)->update();
         return redirect()->to('admin/product');
     }
+
+    public function mutasiConfirm()
+    {
+        $mutasi = $this->kartuStokModel->where('alasan !=', '')->findAll();
+        foreach ($mutasi as $ind_m => $m) {
+            $produk  = $this->barangModel->where(['id' => $m['id_barang']])->first();
+            $mutasi[$ind_m]['detail'] = $produk;
+            if ($produk) {
+                foreach (json_decode($produk['varian'], true) as $v) {
+                    if (strtoupper($v['nama']) == strtoupper($m['varian'])) {
+                        $mutasi[$ind_m]['stok'] = $v['stok'];
+                    }
+                }
+            } else {
+                $mutasi[$ind_m]['stok'] = 0;
+            }
+        }
+        $data = [
+            'title' => 'Konfirm Mutasi',
+            'mutasi' => $mutasi,
+            'msg' => session()->getFlashdata('msg')
+        ];
+        return view('admin/mutasiConfirm', $data);
+    }
+    public function accMutasi($id)
+    {
+        $getMutasi  = $this->kartuStokModel->where(['id' => $id])->first();
+        $produk = $this->barangModel->getBarang($getMutasi['id_barang']);
+        $varianCurr = json_decode($produk['varian'], true);
+        $saldoFix = 0;
+        foreach ($varianCurr as $ind_v => $v) {
+            if (strtoupper($v['nama']) == strtoupper($getMutasi['varian'])) {
+                $saldoSkrg = $v['stok'];
+                $saldoFix = $saldoSkrg + ($getMutasi['debit'] ? $getMutasi['debit'] : -$getMutasi['kredit']);
+                $varianCurr[$ind_v]['stok'] = $saldoFix;
+            }
+        }
+        if ($saldoFix < 0) {
+            session()->setFlashdata('msg', 'Saldo melebihi batas minimal');
+            return redirect()->to('/admin/mutasiconfirm');
+        }
+        $this->kartuStokModel->where(['id' => $id])->set([
+            'saldo' => $saldoFix,
+            'alasan' => '',
+            'pending' => false
+        ])->update();
+        $this->barangModel->where(['id' => $getMutasi['id_barang']])->set(['varian' => json_encode($varianCurr)])->update();
+        return redirect()->to('admin/mutasiconfirm');
+    }
+    public function denyMutasi($id)
+    {
+        $this->kartuStokModel->where(['id' => $id])->delete();
+        return redirect()->to('admin/mutasiconfirm');
+    }
+
     public function gantiUkuran()
     {
         $barangLama = $this->barangModel->findAll(10, 0);

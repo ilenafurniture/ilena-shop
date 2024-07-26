@@ -34,6 +34,10 @@
             <i class="material-icons">assignment_turned_in</i>
             <p class="m-0">Konfirmasi Marketplace</p>
         </a>
+        <a class="item-nav <?= $title == 'Konfirm Mutasi' ? 'active' : ''; ?>" href="/admin/mutasiconfirm">
+            <i class="material-icons">description</i>
+            <p class="m-0">Konfirm Mutasi</p>
+        </a>
         <a class="item-nav" href="/logout">
             <i class="material-icons">exit_to_app</i>
             <p class="m-0">Keluar</p>

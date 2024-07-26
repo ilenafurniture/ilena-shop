@@ -12,6 +12,7 @@ class KartuStokModel extends Model
         'tanggal',
         'id_pesanan',
         'varian',
+        'alasan',
         'keterangan',
         'debit',
         'kredit',

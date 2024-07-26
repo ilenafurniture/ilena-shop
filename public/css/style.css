@@ -510,6 +510,7 @@ body {
   text-decoration: none;
   color: var(--merah);
   font-weight: 700;
+  font-size: 13px;
   transition: 0.5s;
   border: none;
   background: none;
@@ -1392,10 +1393,11 @@ body {
     text-decoration: none;
     color: var(--merah);
     font-weight: 700;
+    font-size: 13px;
     transition: 0.5s;
     border: none;
     background: none;
-    letter-spacing: -1px;
+    /* letter-spacing: -1px; */
   }
   .material-icons {
     display: flex;

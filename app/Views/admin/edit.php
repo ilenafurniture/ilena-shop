@@ -233,7 +233,7 @@
 </div>
 <script>
     let counterJmlVarian = <?= count($produk['varian']); ?>;
-    let idStr = "1-0-0-01"
+    let idStr = "1-00-000-XX"
     const hitungVarianInputElm = document.querySelector('input[name="hitung-varian"]')
     const cobaInput = document.getElementById('coba-input');
 

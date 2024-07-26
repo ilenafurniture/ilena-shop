@@ -95,6 +95,9 @@ $routes->get('/admin/accreprint/(:any)', 'AdminController::accReprint/$1', ['fil
 $routes->get('/admin/denyreprint/(:any)', 'AdminController::denyReprint/$1', ['filter' => 'adminFilter']);
 $routes->get('/gantiukuran', 'AdminController::gantiUkuran');
 $routes->get('/admin/ordertoko/(:any)', 'AdminController::orderToko/$1', ['filter' => 'loginToko']);
+$routes->get('/admin/mutasiconfirm', 'AdminController::mutasiConfirm', ['filter' => 'adminFilter']);
+$routes->get('/admin/accmutasi/(:any)', 'AdminController::accMutasi/$1', ['filter' => 'adminFilter']);
+$routes->get('/admin/denymutasi/(:any)', 'AdminController::denyMutasi/$1', ['filter' => 'adminFilter']);
 
 //GUDANG Controller
 $routes->get('/gudang/listorder', 'GudangController::listOrder', ['filter' => 'gudangFilter']);
