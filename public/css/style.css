@@ -752,6 +752,20 @@ body {
     outline: none;
 }
 
+.item-collection {
+    display: none;
+}
+.container-collection {
+    max-height: 0px;
+    overflow-y: hidden;
+    transition: 0.6s;
+    padding-left: 10px;
+}
+.item-collection:checked + .container-collection {
+    max-height: 100svh;
+    transition: 0.6s;
+}
+
 .navbar-hp-atas {
     padding: 1em;
     position: sticky;
