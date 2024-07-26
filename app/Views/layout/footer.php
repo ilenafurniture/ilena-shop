@@ -11,17 +11,21 @@
                     <p></p>
                 </div>
                 <div class="footer-div" style="flex:1;">
-                    <h5>Layanan</h5>
-                    <a href="">Customer Service</a>
+                    <h5>Delivery Support</h5>
+                    <div class="d-flex gap-2">
+                        <a href=""><img src="../img/logo/Logo JNT.png" style="height: 13px"></a>
+                        <a href=""><img src="../img/logo/Logo JNE.png" style="height: 13px"></a>
+                        <a href=""><img src="../img/logo/Logo Indah.png" style="height: 20px"></a>
+                    </div>
                 </div>
             </div>
             <div class="d-flex w-100">
                 <div class="footer-div" style="flex:1;">
-                    <h5>Shopping App</h5>
-                    <ul class=" footer__left-menu">
-                        <p style="width: 80%;">Coba fitur Lihat di Kamar Anda, kelola registrasi, dan simpan info
-                            pembayaran.</p>
-                    </ul>
+                    <h5>Find Us On</h5>
+                    <div class="d-flex gap-2">
+                        <a href=""><img src="../img/logo/Logo Tokped.png" style="height: 30px"></a>
+                        <a href=""><img src="../img/logo/Logo Shopee.png" style="height: 30px"></a>
+                    </div>
                 </div>
                 <div class="footer-div" style="flex:1;">
                     <h5>Social Media</h5>
@@ -29,6 +33,7 @@
                         <li><a href="https://www.instagram.com/">Instagram</a></li>
                         <li><a href="https://www.tiktok.com/">Tiktok</a></li>
                         <li><a href="https://www.youtube.com/">Youtube</a></li>
+                        <li><a href="https://www.facebook.com/">Facebook</a></li>
                     </ul>
                 </div>
             </div>
