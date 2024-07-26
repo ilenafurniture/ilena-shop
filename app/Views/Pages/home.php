@@ -4,14 +4,14 @@
     <div>
         <div class="img-teks">
             <h1 class="teks-besar mb-2" style="color:#f3e9a8;">Modern & Stylish Furniture</h1>
-            <h5 class="teks-sedang mb-2 show-block-ke-hide">Be Yourself With The Best Choice</h5>
+            <h5 class="teks-sedang mb-2 show-block-ke-hide" style="color:#4e2700;">Be Yourself With The Best Choice</h5>
             <div class="gap-4 anak-img-teks show-flex-ke-hide">
-                <a href="/product" style="color:red;" class="fw-bold">Selengkapnya ></a>
-                <a href="/product" style="color:red;" class="fw-bold">Beli Sekarang ></a>
+                <a href="/product" style="color:white;" class="fw-bold">Selengkapnya ></a>
+                <a href="/product" style="color:white;" class="fw-bold">Beli Sekarang ></a>
             </div>
         </div>
         <!-- <img class="img-besar" src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Gambar Hero"> -->
-        <img class="img-besar" src="https://i.ibb.co.com/bRMCSsY/DSC02437.jpg" alt="Gambar Hero">
+        <img class="img-besar" src="../img/foto/gambar-hero.webp" alt="Gambar Hero">
         <!-- <img class="img-besar" src="https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Gambar Hero"> -->
     </div>
 
@@ -139,16 +139,17 @@
         <h1 class="teks-sedang mb-1">Hasil Sebuah<br>Proses</h1>
     </div>
 
-    <!-- <div class="container mb-4">
-        <video class="video-besar" autoplay muted loop>
-            <source src="img/iphone.mp4" type="video/mp4">
-        </video>
-    </div> -->
+    <div class="container mb-4">
+        <!-- <video class="video-besar" autoplay muted loop>
+            <source src="../img/video1.gif" type="image/gif">
+        </video> -->
+        <img src="../img/video1.gif" alt="">
+    </div>
     <div>
         <!-- <img class="img-besar"
             src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt="Gambar Hero"> -->
-        <img class="img-besar" src="https://i.ibb.co.com/rcYVfqK/DSC02376.jpg" alt="Gambar Hero">
+        <!-- <img class="img-besar" src="../img/foto/gambar-hero2.webp" alt="Gambar Hero"> -->
     </div>
     <div class="container">
         <hr>

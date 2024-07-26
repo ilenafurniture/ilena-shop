@@ -798,6 +798,7 @@ body {
   overflow: hidden;
   background-color: black;
   transition: 0.3s;
+  color: #4e2700;
 }
 .expend-hp a {
   font-size: 26px;
