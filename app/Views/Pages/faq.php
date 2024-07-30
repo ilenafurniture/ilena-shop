@@ -1,6 +1,6 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
-<div class="container">
+<div class="container d-flex justify-content-center">
     <div class="konten">
         <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
             <ol class="breadcrumb">
@@ -15,8 +15,7 @@
         <div class="accordion accordion-flush" id="accordionFlushExample">
             <div class="accordion-item">
                 <h2 class="accordion-header">
-                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#flush-collapse1" aria-expanded="false" aria-controls="flush-collapse1">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse1" aria-expanded="false" aria-controls="flush-collapse1">
                         PRODUK
                     </button>
                 </h2>
@@ -26,14 +25,11 @@
                         <ul>
                             <li>
                                 <p class="mb-0">
-                                    Anda dapat mengunjungi website kami di <a href="http://ilenafurniture.com"
-                                        target="_blank" style="text-decoration:none; color:red; font-size:13px;">Ilena
+                                    Anda dapat mengunjungi website kami di <a href="http://ilenafurniture.com" target="_blank" style="text-decoration:none; color:red; font-size:13px;">Ilena
                                         Furniture</a>,
                                     lalu pilih produk yang Anda
                                     inginkan. Pada page ini akan ditampilkan jumlah produk yang masih tersedia di bagian
-                                    bawah deskripsi produk. Anda juga dapat menghubungi kami <a
-                                        href="https://wa.me/+628112938158" target="_blank"
-                                        style="text-decoration:none; color:red; font-size:13px;">Customer Service
+                                    bawah deskripsi produk. Anda juga dapat menghubungi kami <a href="https://wa.me/+628112938158" target="_blank" style="text-decoration:none; color:red; font-size:13px;">Customer Service
                                         Kami</a>
                                     untuk
                                     pertanyaan lebih lanjut.
@@ -44,11 +40,8 @@
                         <ul>
                             <li>
                                 <p class="mb-0">
-                                    Terkait informasi promo dan diskon, Anda dapat kunjungi website kami di <a
-                                        href="http://ilenafurniture.com" target="_blank"
-                                        style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>
-                                    atau hubungi <a href="https://wa.me/+628112938158" target="_blank"
-                                        style="text-decoration:none; color:red; font-size:13px;">Customer Service
+                                    Terkait informasi promo dan diskon, Anda dapat kunjungi website kami di <a href="http://ilenafurniture.com" target="_blank" style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>
+                                    atau hubungi <a href="https://wa.me/+628112938158" target="_blank" style="text-decoration:none; color:red; font-size:13px;">Customer Service
                                         Kami</a>.
                                 </p>
                             </li>
@@ -57,10 +50,7 @@
                         <ul>
                             <li>
                                 <p class="mb-0">
-                                    Pengiriman produk Ilena dari <a href="https://maps.app.goo.gl/xCWm2mquuVgyp9GU9"
-                                        style="text-decoration:none; color:red; font-size:13px;"
-                                        target="_blank">Kaliwungu, Kabupaten Kendal, Jawa Tengah</a>
-
+                                    Pengiriman produk Ilena dari <a href="https://maps.app.goo.gl/6U6PgEHAxx9nA39R7" style="text-decoration:none; color:red; font-size:13px;" target="_blank">Jalan Lingkar Taman Industri, Jatibarang, Mijen, Kota Semarang, Jawa Tengah</a>
                                 </p>
                             </li>
                         </ul>
@@ -69,8 +59,7 @@
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header">
-                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#flush-collapse2" aria-expanded="false" aria-controls="flush-collapse2">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse2" aria-expanded="false" aria-controls="flush-collapse2">
                         KATALOG
                     </button>
                 </h2>
@@ -79,8 +68,7 @@
                         <p class="mb-0 fw-bold">Apa itu katalog Ilena?</p>
                         <ul>
                             <li>
-                                <p class="mb-0"><a href="#"
-                                        style="text-decoration:none; color:red; font-size:13px;">Katalog Ilena</a> hadir
+                                <p class="mb-0"><a href="#" style="text-decoration:none; color:red; font-size:13px;">Katalog Ilena</a> hadir
                                     untuk menjawab kebutuhan furniture Anda. Katalog
                                     menawarkan lebih dari hanya gambaran sekilas beragam produk Ilena. Kami akan selalu
                                     melakukan update yang tentunya menghadirkan trend desain masa kini dalam setiap
@@ -91,9 +79,7 @@
                         </p>
                         <ul>
                             <li>
-                                <p class="mb-0">Katalog terbaru Ilena bisa didapatkan secara gratis di website <a
-                                        href="http://ilenafurniture.com" target="_blank"
-                                        style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>.
+                                <p class="mb-0">Katalog terbaru Ilena bisa didapatkan secara gratis di website <a href="http://ilenafurniture.com" target="_blank" style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>.
                                 </p>
                             </li>
                         </ul>
@@ -111,8 +97,7 @@
                             <li>
                                 <p class="mb-0">SKami menyediakan katalog fisik yang bisa Anda dapatkan melalui toko
                                     offline yang telah bekerja sama dengan kami. Info daftar toko dapat Anda lihat
-                                    melalui website kami di <a href="http://ilenafurniture.com" target="_blank"
-                                        style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>.
+                                    melalui website kami di <a href="http://ilenafurniture.com" target="_blank" style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>.
                                 </p>
                             </li>
                         </ul>
@@ -129,10 +114,8 @@
                         <ul>
                             <li>
                                 <p class="mb-0">Informasi promo dan diskon yang sedang berlangsung dapat Anda peroleh
-                                    secara terbatas dengan mengunjungi website <a href="http://ilenafurniture.com"
-                                        style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>
-                                    atau hubungi <a href="https://wa.me/+628112938158" target="_blank"
-                                        style="text-decoration:none; color:red; font-size:13px;">Customer Service
+                                    secara terbatas dengan mengunjungi website <a href="http://ilenafurniture.com" style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>
+                                    atau hubungi <a href="https://wa.me/+628112938158" target="_blank" style="text-decoration:none; color:red; font-size:13px;">Customer Service
                                         Kami</a>.</p>
                             </li>
                         </ul>
@@ -149,8 +132,7 @@
                         <ul>
                             <li>
                                 <p class="mb-0">Tidak. Anda dapat dengan mudah mengakses katalog Ilena dengan
-                                    mengunjungi website <a href="http://ilenafurniture.com"
-                                        style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>
+                                    mengunjungi website <a href="http://ilenafurniture.com" style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>
                                     atau menghubungi melalui WhatsApp customer
                                     service.</p>
                             </li>
@@ -160,8 +142,7 @@
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header">
-                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#flush-collapse3" aria-expanded="false" aria-controls="flush-collapse3">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse3" aria-expanded="false" aria-controls="flush-collapse3">
                         PEMESANAN & PEMBELIAN
                     </button>
                 </h2>
@@ -173,8 +154,7 @@
                         <ul>
                             <p class="mb-0 fw-bold">Tanpa login</p>
                             <li>
-                                <p class="mb-0">Membuka website <a href="https://ilenafurniture.com/"
-                                        style="text-decoration:none; color:red; font-size:13px;">Ilena furniture</a></p>
+                                <p class="mb-0">Membuka website <a href="https://ilenafurniture.com/" style="text-decoration:none; color:red; font-size:13px;">Ilena furniture</a></p>
                             </li>
                             <li>
                                 <p class="mb-0">Pilih produk yang akan dibeli</p>
@@ -314,8 +294,7 @@
                         <p class="mb-0 mt-1 fw-bold">Apakah saat ini tersedia toko offline?</p>
                         <ul>
                             <p>Saat ini produk ILENA hanya dapat dipesan melalui website dan platform e-commerce
-                                (<a href="" style="text-decoration:none; color:red; font-size:13px;">Tiktok</a>, <a
-                                    href="" style="text-decoration:none; color:red; font-size:13px;">Shopee</a>
+                                (<a href="" style="text-decoration:none; color:red; font-size:13px;">Tiktok</a>, <a href="" style="text-decoration:none; color:red; font-size:13px;">Shopee</a>
                                 dll)</p>
                         </ul>
                         <p class="mb-0 mt-1 fw-bold">Apakah saat ini pemesanan hanya dapat dilakukan secara online?</p>
@@ -328,8 +307,7 @@
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header">
-                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#flush-collapse4" aria-expanded="false" aria-controls="flush-collapse4">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse4" aria-expanded="false" aria-controls="flush-collapse4">
                         PEMBAYARAN
                     </button>
                 </h2>
@@ -355,8 +333,7 @@
                         <ul>
                             <li>
                                 <p class="mb-0">Kami bekerja sama dengan Midtrans sebagai penjamin keamanan keuangan,
-                                    sehingga seluruh aktivitas customer di website <a href="http://ilenafurniture.com"
-                                        style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>
+                                    sehingga seluruh aktivitas customer di website <a href="http://ilenafurniture.com" style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>
                                     dijamin
                                     keamanannya.
                                 </p>
@@ -413,8 +390,7 @@
             </div>
             <div class=" accordion-item">
                 <h2 class="accordion-header">
-                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#flush-collapse5" aria-expanded="false" aria-controls="flush-collapse5">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse5" aria-expanded="false" aria-controls="flush-collapse5">
                         PENGIRIMAN
                     </button>
                 </h2>
@@ -447,8 +423,7 @@
                                 <p class="mb-0">Ya, saat sudah membayar tagihan produk pesanan, Anda dapat melihat resi
                                     yang ada di page pemesanan. Jika ingin melakukan tracking, Anda cukup dengan
                                     menyalin nomor resi tersebut ke website mitra logistik Kami atau dengan cara
-                                    menghubungi <a href="https://wa.me/+628112938158"
-                                        style="text-decoration:none; color:red; font-size:13px;">Customer Service
+                                    menghubungi <a href="https://wa.me/+628112938158" style="text-decoration:none; color:red; font-size:13px;">Customer Service
                                         Kami</a> yang akan membantu tracking produk tersebut.
                                 </p>
                             </li>
@@ -474,9 +449,7 @@
                             <li>
                                 <p class="mb-0">Tentu. Untuk pengiriman produk sudah dalam bentuk rakitan. Namun tidak
                                     menutup kemungkinan terdapat beberapa produk yang masih memerlukan proses perakitan.
-                                    Untuk informasi lebih lanjut, Anda dapat menghubungi <a
-                                        href="https://wa.me/+628112938158"
-                                        style="text-decoration:none; color:red; font-size:13px;">Customer Service
+                                    Untuk informasi lebih lanjut, Anda dapat menghubungi <a href="https://wa.me/+628112938158" style="text-decoration:none; color:red; font-size:13px;">Customer Service
                                         Kami.</a>
                                 </p>
                             </li>
@@ -487,10 +460,7 @@
                         <ul>
                             <li>
                                 <p class="mb-0">Saat ini Kami belum memiliki jasa perakitan. Anda tidak perlu khawatir,
-                                    untuk produk yang memerlukan perakitan kami akan membagikan <a
-                                        style="text-decoration:none; color: black; font-size:13px;"
-                                        class="fw-bold link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
-                                        href="https://www.youtube.com/channel/UCc2vGsX2R8CNoZXv7lxJ2qw">link Youtube
+                                    untuk produk yang memerlukan perakitan kami akan membagikan <a style="text-decoration:none; color: black; font-size:13px;" class="fw-bold link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="https://www.youtube.com/channel/UCc2vGsX2R8CNoZXv7lxJ2qw">link Youtube
                                         Ilena</a>
                                     Furniture sebagai petunjuk perakitan untuk customer.
                                 </p>
@@ -502,8 +472,7 @@
                         <ul>
                             <li>
                                 <p class="mb-0">Apabila produk belum diterima setelah melewati batas waktu pengiriman
-                                    Anda dapat menghubungi <a href="https://wa.me/+628112938158"
-                                        style="text-decoration:none; color:red; font-size:13px;">Customer Service
+                                    Anda dapat menghubungi <a href="https://wa.me/+628112938158" style="text-decoration:none; color:red; font-size:13px;">Customer Service
                                         Kami</a> untuk informasi lebih lanjut.
                                 </p>
                             </li>
@@ -522,8 +491,7 @@
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header">
-                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#flush-collapse6" aria-expanded="false" aria-controls="flush-collapse6">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse6" aria-expanded="false" aria-controls="flush-collapse6">
                         PEMBATALAN PESANAN
                     </button>
                 </h2>
@@ -542,8 +510,7 @@
                                 </p>
                             </li>
                             <li>
-                                <p class="mb-0">Silakan dapat menghubungi <a href="https://wa.me/+628112938158"
-                                        style="text-decoration:none; color:red; font-size:13px;">Customer Service
+                                <p class="mb-0">Silakan dapat menghubungi <a href="https://wa.me/+628112938158" style="text-decoration:none; color:red; font-size:13px;">Customer Service
                                         Kami</a> untuk informasi lebih
                                     lanjut.
                                 </p>
@@ -555,8 +522,7 @@
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header">
-                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#flush-collapse7" aria-expanded="false" aria-controls="flush-collapse7">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse7" aria-expanded="false" aria-controls="flush-collapse7">
                         GARANSI PRODUK
                     </button>
                 </h2>
@@ -570,8 +536,7 @@
                                     kondisi barang rusak/ cacat dan kami tidak memiliki stok barang yang sama sebagai
                                     penggantinya. Jika pihak kami melakukan kesalahan pengiriman barang, maka tanggung
                                     jawab
-                                    adalah 100% dari <a href="http://ilenafurniture.com"
-                                        style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture.</a>
+                                    adalah 100% dari <a href="http://ilenafurniture.com" style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture.</a>
                                 </p>
                             </li>
                         </ul>
@@ -601,8 +566,7 @@
                         <p class="mb-0 mt-1 fw-bold">Apa syarat melakukan penukaran unit yang cacat?
                         <ul>
                             <li>
-                                <p class="mb-0">Anda dapat menghubungi <a href="https://wa.me/+628112938158"
-                                        style="text-decoration:none; color:red; font-size:13px;">Customer Service
+                                <p class="mb-0">Anda dapat menghubungi <a href="https://wa.me/+628112938158" style="text-decoration:none; color:red; font-size:13px;">Customer Service
                                         Kami</a>
                                     maksimal 1x24 jam sejak barang
                                     diterima dengan menyertakan nomor pemesanan, bukti foto yang memperlihatkan letak
@@ -631,8 +595,7 @@
 
             <div class="accordion-item">
                 <h2 class="accordion-header">
-                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#flush-collapse8" aria-expanded="false" aria-controls="flush-collapse8">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse8" aria-expanded="false" aria-controls="flush-collapse8">
                         PERAWATAN
                     </button>
                 </h2>
