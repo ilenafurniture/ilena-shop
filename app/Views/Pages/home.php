@@ -95,24 +95,21 @@
                 <div class="carousel-item active">
                     <div class="d-flex gap-3 h-100">
                         <a href="" class="img-kategori ">
-                            <img src="https://images.unsplash.com/photo-1675485470862-9af548e93466?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                alt="">
+                            <img src="https://i.ibb.co.com/qWbQK9D/DSC02221.jpg" alt="">
                         </a>
                     </div>
                 </div>
                 <div class="carousel-item">
                     <div class="d-flex gap-3 h-100">
                         <a href="" class="img-kategori">
-                            <img src="https://images.unsplash.com/photo-1437419764061-2473afe69fc2?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                alt="">
+                            <img src="https://i.ibb.co.com/WfvBDck/DSC02674.jpg" alt="">
                         </a>
                     </div>
                 </div>
                 <div class="carousel-item">
                     <div class="d-flex gap-3 h-100">
                         <a href="" class="img-kategori">
-                            <img src="https://images.unsplash.com/photo-1511389026070-a14ae610a1be?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                alt="">
+                            <img src="https://i.ibb.co.com/9t2fnn5/DSC02897.jpg" alt="">
                         </a>
                     </div>
                 </div>
