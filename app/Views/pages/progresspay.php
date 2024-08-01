@@ -30,9 +30,9 @@
         </div>
         <div class="baris-ke-kolom mb-2 W-100 mb-3 border-bottom pb-3">
             <div style="flex: 1">
-                <img src="/img/pembayaran/<?= $bank; ?>.png" alt="">
                 <div>
                     <p class="m-0">Nomor Virtual Account</p>
+                    <img src="/img/pembayaran/<?= $bank; ?>.webp" alt="">
                     <div class="d-flex align-items-end gap-2">
                         <h3 class="m-0" style="font-size: 40px; letter-spacing: -3px; font-weight:600;"><?= $va_number; ?></h3>
                         <button class="btn-teks-aja hitam mb-1" onclick="copytext('<?= $va_number; ?>')"><i class="material-icons">content_copy</i></button>
@@ -109,6 +109,9 @@
         expiryTimeElm.forEach(elm => {
             elm.innerHTML = `${hours}: ${minutes}: ${seconds}`;
         })
+        if (Number(hours) < 0 && Number(minutes) < 0 && Number(seconds) < 0) {
+            window.location.reload();
+        }
     }, 1000);
 </script>
 <?= $this->endSection(); ?>

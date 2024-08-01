@@ -765,7 +765,8 @@ class Pages extends BaseController
             'voucher' => [
                 'list' => $voucher,
                 'selected' => $voucherSelected,
-            ]
+            ],
+            'emailUji' => in_array($alamatselected['email_pemesan'], $emailUjiCoba)
         ];
 
         $this->session->set(['alamatTerpilih' => $alamatselected]);
@@ -854,7 +855,7 @@ class Pages extends BaseController
             'v' => $voucher
         ]);
 
-        $emailUjiCoba = ['galihsuks123@gmail.com', 'lunareafurniture@gmail.com', 'galih8.4.2001@gmail.com'];
+        $emailUjiCoba = ['galihsuks123@gmail.com', 'ilenafurniture@gmail.com', 'galih8.4.2001@gmail.com'];
         $arrPostField = [
             "transaction_details" => [
                 "order_id" => $randomId,
@@ -913,6 +914,305 @@ class Pages extends BaseController
         }
         $hasilMidtrans = json_decode($response, true);
         return $this->response->setJSON($hasilMidtrans, false);
+    }
+    public function actionPayCore()
+    {
+        $pembayaran = $this->request->getVar('pembayaran');
+        $alamatselected = session()->get('alamatTerpilih');
+        $email = $alamatselected['email_pemesan'];
+        $nama = $alamatselected['nama_penerima'];
+        $nohp = $alamatselected['nohp_penerima'];
+        $alamatLengkap = $alamatselected['alamat_lengkap'];
+        $keranjang = session()->get('keranjang');
+
+        if ($pembayaran == 'card') {
+            if (!$this->validate([
+                'tokencc' => ['rules' => 'required'],
+            ])) {
+                $validation = \Config\Services::validation();
+                session()->setFlashdata('msg', 'Terdapat data yang masih kosong');
+                return redirect()->to('/checkout')->withInput();
+            }
+        }
+        $tokencc = session()->get('tokencc');
+        $emailUjiCoba = ['galihsuks123@gmail.com', 'ilenafurniture@gmail.com', 'galih8.4.2001@gmail.com'];
+
+        $subtotal = 0;
+        $itemDetails = [];
+        if (!empty($keranjang)) {
+            foreach ($keranjang as $ind => $element) {
+                $produknya = $this->barangModel->getBarang($element['id_barang']);
+                $persen = (100 - $produknya['diskon']) / 100;
+                $hasil = round($persen * $produknya['harga']);
+                $subtotal += $hasil * (int)$element['jumlah'];
+
+                $item = array(
+                    'id' => $produknya["id"],
+                    'price' => $hasil,
+                    'quantity' => (int)$element['jumlah'],
+                    'name' => substr($produknya["nama"] . " (" . ucfirst($element['varian']) . ")", 0, 50),
+                );
+                array_push($itemDetails, $item);
+            }
+        }
+
+        $diskonVoucher = 0; //satuannya rupiah
+        $voucherSelected = false;
+        if (session()->get('voucher')) {
+            $voucherDetail = $this->voucherModel->where(['id' => session()->get('voucher')])->first();
+            if ($voucherDetail['satuan'] == 'persen') {
+                $diskonVoucher = round($voucherDetail['nominal'] / 100 * $subtotal);
+            }
+            $voucherSelected = $voucherDetail;
+            $voucherSelected['rupiah'] = $diskonVoucher;
+        }
+
+        $voucher = $voucherSelected ? [
+            'd' => $diskonVoucher,
+            'id' => $voucherSelected['id']
+        ] : false;
+        // $kurir = $body['kurir'];
+
+        $total = $subtotal + 5000;
+        if ($voucher) {
+            $item = array(
+                'id' => 'Voucher',
+                'price' => -$voucher['d'],
+                'quantity' => 1,
+                'name' => 'Voucher',
+            );
+            array_push($itemDetails, $item);
+            $total -= $voucher['d'];
+        }
+        $biayaadmin = array(
+            'id' => 'Biaya Admin',
+            'price' => 5000,
+            'quantity' => 1,
+            'name' => 'Biaya Admin',
+        );
+        array_push($itemDetails, $biayaadmin);
+
+        if (in_array($email, $emailUjiCoba))
+            $auth = base64_encode("SB-Mid-server-3M67g25LgovNPlwdS4WfiMsh" . ":");
+        else
+            $auth = base64_encode("" . ":");
+        $pesananke = $this->pemesananModel->orderBy('id', 'desc')->first();
+        $idAsli = "IL" . (sprintf("%08d", $pesananke ? ((int)$pesananke['id'] + 1) : 1));
+        $randomId = "IL" . rand();
+        $idFix = in_array($email, $emailUjiCoba) ? $randomId : $idAsli;
+        $customField = json_encode([
+            'e' => $email,
+            'n' => $nama,
+            'h' => $nohp,
+            'a' => $alamatLengkap,
+            'i' => $keranjang,
+            'v' => $voucher
+        ]);
+
+        $arrPostField = [
+            "transaction_details" => [
+                "order_id" => $idFix,
+                "gross_amount" => $total,
+            ],
+            'customer_details' => array(
+                'email' => $email,
+                'phone' => $nohp,
+                'first_name' => $nama,
+            ),
+            'item_details' => $itemDetails,
+            "custom_field1" => substr($customField, 0, 255),
+            "custom_field2" => substr($customField, 255, 255),
+            "custom_field3" => substr($customField, 510, 255),
+        ];
+        switch ($pembayaran) {
+            case 'bca':
+                $arrPostField["payment_type"] = "bank_transfer";
+                $arrPostField["bank_transfer"] = ["bank" => "bca"];
+                $arrPostField['custom_expiry'] = [
+                    "expiry_duration" => 60,
+                    "unit" => "minute"
+                ];
+                break;
+            case 'bri':
+                $arrPostField["payment_type"] = "bank_transfer";
+                $arrPostField["bank_transfer"] = ["bank" => "bri"];
+                $arrPostField['custom_expiry'] = [
+                    "expiry_duration" => 60,
+                    "unit" => "minute"
+                ];
+                break;
+            case 'bni':
+                $arrPostField["payment_type"] = "bank_transfer";
+                $arrPostField["bank_transfer"] = ["bank" => "bni"];
+                $arrPostField['custom_expiry'] = [
+                    "expiry_duration" => 60,
+                    "unit" => "minute"
+                ];
+                break;
+            case 'cimb':
+                $arrPostField["payment_type"] = "bank_transfer";
+                $arrPostField["bank_transfer"] = ["bank" => "cimb"];
+                $arrPostField['custom_expiry'] = [
+                    "expiry_duration" => 60,
+                    "unit" => "minute"
+                ];
+                break;
+            case 'permata':
+                $arrPostField["payment_type"] = "permata";
+                $arrPostField['custom_expiry'] = [
+                    "expiry_duration" => 60,
+                    "unit" => "minute"
+                ];
+                break;
+            case 'mandiri':
+                $arrPostField["payment_type"] = "echannel";
+                $arrPostField["echannel"] = [
+                    "bill_info1" => "Payment:",
+                    "bill_info2" => "Online purchase"
+                ];
+                $arrPostField['custom_expiry'] = [
+                    "expiry_duration" => 60,
+                    "unit" => "minute"
+                ];
+                break;
+            case 'qris':
+                $arrPostField["payment_type"] = "qris";
+                $arrPostField["qris"] = ["acquirer" => "gopay"];
+                $arrPostField['custom_expiry'] = [
+                    "expiry_duration" => 15,
+                    "unit" => "minute"
+                ];
+                break;
+            case 'gopay':
+                $arrPostField["payment_type"] = "gopay";
+                $arrPostField["gopay"] = [
+                    "enable_callback" => true,
+                    "callback_url" => "https://ilenafurniture.com/order/" . $arrPostField['transaction_details']['order_id']
+                ];
+                $arrPostField['custom_expiry'] = [
+                    "expiry_duration" => 15,
+                    "unit" => "minute"
+                ];
+                break;
+            case 'shopeepay':
+                $arrPostField["payment_type"] = "shopeepay";
+                $arrPostField["shopeepay"] = ["callback_url" => "https://ilenafurniture.com/order/" . $arrPostField['transaction_details']['order_id']];
+                $arrPostField['custom_expiry'] = [
+                    "expiry_duration" => 15,
+                    "unit" => "minute"
+                ];
+                break;
+            case 'card':
+                $arrPostField["payment_type"] = "credit_card";
+                $arrPostField["credit_card"] = [
+                    "token_id" => $tokencc
+                ];
+                break;
+            default:
+                return redirect()->to('/cart');
+                break;
+        }
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => in_array($email, $emailUjiCoba) ? "https://api.sandbox.midtrans.com/v2/charge" : "https://api.midtrans.com/v2/charge",
+            CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_SSL_VERIFYPEER => 0,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => json_encode($arrPostField),
+            CURLOPT_HTTPHEADER => array(
+                "Accept: application/json",
+                "Content-Type: application/json",
+                "Authorization: Basic " . $auth,
+            ),
+        ));
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        if ($err) {
+            return "cURL Error #:" . $err;
+        }
+        $hasilMidtrans = json_decode($response, true);
+
+        if (substr($hasilMidtrans['status_code'], 0, 1) != '4') {
+            //dari update transaction =============================
+            switch ($hasilMidtrans['transaction_status']) {
+                case 'settlement':
+                    $status = "Proses";
+                    break;
+                case 'capture':
+                    $status = "Proses";
+                    break;
+                case 'pending':
+                    $status = "Menunggu Pembayaran";
+                    break;
+                case 'expire':
+                    $status = "Kadaluarsa";
+                    break;
+                case 'deny':
+                    $status = "Ditolak";
+                    break;
+                case 'failure':
+                    $status = "Gagal";
+                    break;
+                case 'refund':
+                    $status = "Refund";
+                    break;
+                case 'partial_refund':
+                    $status = "Partial Refund";
+                    break;
+                case 'cancel':
+                    $status = "Dibatalkan";
+                    break;
+                default:
+                    $status = "No Status";
+                    break;
+            }
+        }
+
+        if ($voucher) {
+            $voucherSelected = $this->voucherModel->where(['id' => $voucher['id']])->first();
+            $voucherSelected_email = json_decode($voucherSelected['list_email'], true);
+            array_push($voucherSelected_email, $email);
+            $this->voucherModel->where(['id' => $voucher['id']])->set(['list_email' => json_encode($voucherSelected_email)])->update();
+        }
+
+        $this->pemesananModel->insert([
+            'nama' => $nama,
+            'email' => $email,
+            'nohp' => $nohp,
+            'alamat' => $alamatLengkap,
+            'resi' => 'Menunggu pengiriman',
+            'items' => json_encode($itemDetails),
+            'kurir' => json_encode([]),
+            'id_midtrans' => $idFix,
+            'status' => $status,
+            'data_mid' => json_encode($hasilMidtrans),
+        ]);
+
+        //pengurangan stok
+        $dataTransaksiFulDariDatabase = $this->pemesananModel->where('id_midtrans', $idFix)->first();
+        $dataTransaksiFulDariDatabase_items = json_decode($dataTransaksiFulDariDatabase['items'], true);
+        foreach ($dataTransaksiFulDariDatabase_items as $item) {
+            if ($item['id'] != 'Biaya Admin' && $item['id'] != 'Voucher') {
+                $barangCurr = $this->barangModel->where('id', $item['id'])->first();
+                $varianBarangCurr = json_decode($barangCurr['varian'], true);
+                foreach ($varianBarangCurr as $ind_v => $v) {
+                    if ($v['nama'] == rtrim(explode("(", $item['name'])[1], ")")) {
+                        $varianBarangCurr[$ind_v]['stok'] = (int)$v['stok'] - $item['quantity'];
+                    }
+                }
+                $this->barangModel->where('id', $item['id'])->set([
+                    'varian' => json_encode($varianBarangCurr)
+                ])->update();
+            }
+        }
+        return redirect()->to('/order/' . $idFix);
     }
     public function actionPay($metode)
     {
@@ -1235,82 +1535,83 @@ class Pages extends BaseController
                     }
                 }
             }
-        } else {
-            $keranjang = $customField['i'];
-            $itemDetails = [];
-            foreach ($keranjang as $element) {
-                $produknya = $this->barangModel->getBarang($element['id_barang']);
-                $persen = (100 - $produknya['diskon']) / 100;
-                $hasil = round($persen * $produknya['harga']);
-
-                $item = array(
-                    'id' => $produknya["id"],
-                    'price' => $hasil,
-                    'quantity' => (int)$element['jumlah'],
-                    'name' => substr($produknya["nama"] . " (" . ucfirst($element['varian']) . ")", 0, 50),
-                );
-                array_push($itemDetails, $item);
-            }
-            $biayaadmin = array(
-                'id' => 'Biaya Admin',
-                'price' => 5000,
-                'quantity' => 1,
-                'name' => 'Biaya Admin',
-            );
-            array_push($itemDetails, $biayaadmin);
-            if ($customField['v']) {
-                $item = array(
-                    'id' => 'Voucher',
-                    'price' => -$customField['v']['d'],
-                    'quantity' => 1,
-                    'name' => 'Voucher',
-                );
-                array_push($itemDetails, $item);
-
-                //masukin email customer ke tabel voucher
-                $voucherSelected = $this->voucherModel->where(['id' => $customField['v']['id']])->first();
-                $voucherSelected_email = json_decode($voucherSelected['list_email'], true);
-                array_push($voucherSelected_email, $customField['e']);
-                $this->voucherModel->where(['id' => $customField['v']['id']])->set(['list_email' => json_encode($voucherSelected_email)])->update();
-            }
-
-            // $biayaongkir = array(
-            //     'id' => 'Biaya Ongkir',
-            //     'price' => $customField['k']['harga'],
-            //     'quantity' => 1,
-            //     'name' => 'Biaya Ongkir',
-            // );
-            // array_push($itemDetails, $biayaongkir);
-
-            $this->pemesananModel->insert([
-                'nama' => $customField['n'],
-                'email' => $customField['e'],
-                'nohp' => $customField['h'],
-                'alamat' => $customField['a'],
-                'resi' => 'Menunggu pengiriman',
-                'items' => json_encode($itemDetails),
-                'kurir' => json_encode([]),
-                'id_midtrans' => $order_id,
-                'status' => $status,
-                'data_mid' => json_encode($body),
-            ]);
-
-            //pengurangan stok
-            $dataTransaksiFulDariDatabase = $this->pemesananModel->where('id_midtrans', $order_id)->first();
-            $dataTransaksiFulDariDatabase_items = json_decode($dataTransaksiFulDariDatabase['items'], true);
-            foreach ($dataTransaksiFulDariDatabase_items as $item) {
-                $barangCurr = $this->barangModel->where('id', $item['id'])->first();
-                $varianBarangCurr = json_decode($barangCurr['varian'], true);
-                foreach ($varianBarangCurr as $ind_v => $v) {
-                    if ($v['nama'] == rtrim(explode("(", $item['name'])[1], ")")) {
-                        $varianBarangCurr[$ind_v]['stok'] = (int)$v['stok'] - $item['quantity'];
-                    }
-                }
-                $this->barangModel->where('id', $item['id'])->set([
-                    'varian' => json_encode($varianBarangCurr)
-                ])->update();
-            }
         }
+        // else {
+        //     $keranjang = $customField['i'];
+        //     $itemDetails = [];
+        //     foreach ($keranjang as $element) {
+        //         $produknya = $this->barangModel->getBarang($element['id_barang']);
+        //         $persen = (100 - $produknya['diskon']) / 100;
+        //         $hasil = round($persen * $produknya['harga']);
+
+        //         $item = array(
+        //             'id' => $produknya["id"],
+        //             'price' => $hasil,
+        //             'quantity' => (int)$element['jumlah'],
+        //             'name' => substr($produknya["nama"] . " (" . ucfirst($element['varian']) . ")", 0, 50),
+        //         );
+        //         array_push($itemDetails, $item);
+        //     }
+        //     $biayaadmin = array(
+        //         'id' => 'Biaya Admin',
+        //         'price' => 5000,
+        //         'quantity' => 1,
+        //         'name' => 'Biaya Admin',
+        //     );
+        //     array_push($itemDetails, $biayaadmin);
+        //     if ($customField['v']) {
+        //         $item = array(
+        //             'id' => 'Voucher',
+        //             'price' => -$customField['v']['d'],
+        //             'quantity' => 1,
+        //             'name' => 'Voucher',
+        //         );
+        //         array_push($itemDetails, $item);
+
+        //         //masukin email customer ke tabel voucher
+        //         $voucherSelected = $this->voucherModel->where(['id' => $customField['v']['id']])->first();
+        //         $voucherSelected_email = json_decode($voucherSelected['list_email'], true);
+        //         array_push($voucherSelected_email, $customField['e']);
+        //         $this->voucherModel->where(['id' => $customField['v']['id']])->set(['list_email' => json_encode($voucherSelected_email)])->update();
+        //     }
+
+        //     // $biayaongkir = array(
+        //     //     'id' => 'Biaya Ongkir',
+        //     //     'price' => $customField['k']['harga'],
+        //     //     'quantity' => 1,
+        //     //     'name' => 'Biaya Ongkir',
+        //     // );
+        //     // array_push($itemDetails, $biayaongkir);
+
+        //     $this->pemesananModel->insert([
+        //         'nama' => $customField['n'],
+        //         'email' => $customField['e'],
+        //         'nohp' => $customField['h'],
+        //         'alamat' => $customField['a'],
+        //         'resi' => 'Menunggu pengiriman',
+        //         'items' => json_encode($itemDetails),
+        //         'kurir' => json_encode([]),
+        //         'id_midtrans' => $order_id,
+        //         'status' => $status,
+        //         'data_mid' => json_encode($body),
+        //     ]);
+
+        //     //pengurangan stok
+        //     $dataTransaksiFulDariDatabase = $this->pemesananModel->where('id_midtrans', $order_id)->first();
+        //     $dataTransaksiFulDariDatabase_items = json_decode($dataTransaksiFulDariDatabase['items'], true);
+        //     foreach ($dataTransaksiFulDariDatabase_items as $item) {
+        //         $barangCurr = $this->barangModel->where('id', $item['id'])->first();
+        //         $varianBarangCurr = json_decode($barangCurr['varian'], true);
+        //         foreach ($varianBarangCurr as $ind_v => $v) {
+        //             if ($v['nama'] == rtrim(explode("(", $item['name'])[1], ")")) {
+        //                 $varianBarangCurr[$ind_v]['stok'] = (int)$v['stok'] - $item['quantity'];
+        //             }
+        //         }
+        //         $this->barangModel->where('id', $item['id'])->set([
+        //             'varian' => json_encode($varianBarangCurr)
+        //         ])->update();
+        //     }
+        // }
         return $this->response->setJSON($arr, false);
     }
     public function cancelOrder($id_midtrans)

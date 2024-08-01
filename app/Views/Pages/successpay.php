@@ -19,7 +19,7 @@
         </div>
         <div class="d-flex flex-column align-items-end">
             <p class="mb-1">Metode Pembayaran</p>
-            <img class="mb-2" src="/img/pembayaran/<?= $bank; ?>.png" alt="">
+            <img class="mb-2" src="/img/pembayaran/<?= $bank; ?>.webp" alt="">
         </div>
     </div>
     <div class="baris-ke-kolom justify-content-between W-100 mb-3 pb-3">
