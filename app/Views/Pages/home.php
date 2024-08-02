@@ -43,38 +43,6 @@
                         </a> -->
                     </div>
                 </div>
-                <div class="carousel-item">
-                    <div class="d-flex gap-3 h-100">
-                        <a href="" class="img-kategori">
-                            <img src="https://images.unsplash.com/photo-1437419764061-2473afe69fc2?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                alt="">
-                        </a>
-                        <a href="" class="img-kategori">
-                            <img src="https://plus.unsplash.com/premium_photo-1667355489924-0ce0b2bd9961?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                alt="">
-                        </a>
-                        <a href="" class="img-kategori">
-                            <img src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                alt="">
-                        </a>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="d-flex gap-3 h-100">
-                        <a href="" class="img-kategori">
-                            <img src="https://images.unsplash.com/photo-1511389026070-a14ae610a1be?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                alt="">
-                        </a>
-                        <a href="" class="img-kategori">
-                            <img src="https://images.unsplash.com/photo-1573104049264-5324ea0027d5?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                alt="">
-                        </a>
-                        <a href="" class="img-kategori">
-                            <img src="https://images.unsplash.com/photo-1493934558415-9d19f0b2b4d2?q=80&w=2054&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                alt="">
-                        </a>
-                    </div>
-                </div>
             </div>
             <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying"
                 data-bs-slide="prev">
@@ -137,16 +105,15 @@
     </div>
 
     <div class="container mb-4">
-        <!-- <video class="video-besar" autoplay muted loop>
-            <source src="../img/video1.gif" type="image/gif">
-        </video> -->
-        <img src="../img/video1.gif" alt="">
+        <video class="video-besar" autoplay muted loop>
+            <source src="../img/video.mp4" type="video/mp4">
+        </video>
     </div>
     <div>
         <!-- <img class="img-besar"
             src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt="Gambar Hero"> -->
-        <!-- <img class="img-besar" src="../img/foto/gambar-hero2.webp" alt="Gambar Hero"> -->
+        <img class="img-besar" src="../img/foto/gambar-hero2.webp" alt="Gambar Hero">
     </div>
     <div class="container">
         <hr>

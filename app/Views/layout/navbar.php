@@ -42,7 +42,7 @@
                 <?php } ?>
                 <?php } else { ?>
                 <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
-                <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
+                <a href="/cart" class="btn"><i class="material-icons text-light">shoppi ng_cart</i></a>
                 <a href="/login" class="btn"><i class="material-icons text-light">person_outline</i></a>
                 <?php } ?>
             </div>
@@ -53,13 +53,14 @@
     style="background-color:whitesmoke; position: sticky; top:-1px; z-index: 99;">
     <div class="d-flex align-items-center py-2 gap-5">
         <div class="list-nav">
-            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;">Sorely</a>
+            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
+                href="https://ilenafurniture.com/product?koleksi=sorely">Sorely</a>
             <div class="child-list-nav">
                 <div class="container py-3 d-flex">
                     <div style="flex: 1;">
                         <p class="m-0">Jelajahi Sorely</p>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
-                            href="https://ilenafurniture.com/product?koleksi=sorely&jenis=armoir">Armoir</a>
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                            href="https://ilenafurniture.com/product?koleksi=sorely&jenis=armoir">Armoir</a> -->
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=sorely&jenis=bookshelf">Bookshelf</a>
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
@@ -75,9 +76,9 @@
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=sorely&jenis=dresser-5-drawer">Dresser 5
                             Drawer</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=sorely&jenis=dresser-6-drawer">Dresser 6
-                            Drawer</a>
+                            Drawer</a> -->
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=sorely&jenis=dresser-6-drawer">Dresser Tall
                             Cabinet
@@ -100,31 +101,31 @@
                     </div>
                     <div style="width: 233px">
                         <a href="#" class="container-produk-nav">
-                            <img class="mb-3"
-                                src="https://images.unsplash.com/photo-1467043153537-a4fba2cd39ef?q=80&w=1919&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                alt="">
-                            <h5>New! Modern, Organic Stripes</h5>
-                            <p>Kursi Sofa Luar Angkasa High Class KS001</p>
+                            <img class="mb-3" src="https://i.ibb.co.com/ZSNH3wC/DSC04063.webp" alt="dresser-3-drawer">
+                            <h5>Lemari laci 3 tingkat</h5>
+                            <p>Kayu solid mahoni,engineered wood, rangka besi, dilapisi vinir jati dengan finishing
+                                white or black wash.</p>
                         </a>
                     </div>
                 </div>
             </div>
         </div>
         <div class="list-nav">
-            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;">Cabana</a>
+            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
+                href="https://ilenafurniture.com/product?koleksi=cabana">Cabana</a>
             <div class="child-list-nav">
                 <div class="container py-3 d-flex">
                     <div style="flex: 1">
                         <p class="m-0">Jelajahi Cabana</p>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
-                            href="https://ilenafurniture.com/product?koleksi=cabana&jenis=armoir">Armoir</a>
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                            href="https://ilenafurniture.com/product?koleksi=cabana&jenis=armoir">Armoir</a> -->
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=cabana&jenis=bookshelf">Bookshelf</a>
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=cabana&jenis=coffee-table">Coffee Table</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=cabana&jenis=console-table">Console
-                            Table</a>
+                            Table</a> -->
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=cabana&jenis=credenza">Credenza</a>
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
@@ -136,119 +137,119 @@
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=cabana&jenis=dresser-6-drawer">Dresser 6
                             Drawer</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=cabana&jenis=dresser-6-drawer">Dresser Tall
                             Cabinet
-                        </a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                        </a> -->
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=cabana&jenis=king-bed">King
-                            Bed</a>
+                            Bed</a> -->
                     </div>
                     <div style="flex: 3" class="mt-4">
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=cabana&jenis=tv-media">Media TV</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
-                            href="https://ilenafurniture.com/product?koleksi=cabana&jenis=queen-bed">Queen Bed</a>
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                            href="https://ilenafurniture.com/product?koleksi=cabana&jenis=queen-bed">Queen Bed</a> -->
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=cabana&jenis=side-table">Side
                             Table</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=cabana&jenis=single-bed">Single Bed
-                            Cabana</a>
+                            Cabana</a> -->
                     </div>
                     <div style="width: 233px">
-                        <a href="#" class="container-produk-nav">
-                            <img class="mb-3"
-                                src="https://images.unsplash.com/photo-1551232864-3f0890e580d9?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                alt="">
-                            <h5>New! Modern, Organic Stripes</h5>
-                            <p>Rak Belajar Luar Angkasa High Class RS001</p>
+                        <a class="container-produk-nav">
+                            <img class="mb-3" src="https://i.ibb.co.com/r2dTdf0/DSC07357.webp" alt="">
+                            <h5>Rak buku</h5>
+                            <p>kayu solid mahoni, engineered wood, dilapisi vinir jati dengan finishing white atau
+                                black wash</p>
                         </a>
                     </div>
                 </div>
             </div>
         </div>
         <div class="list-nav">
-            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;">Orca</a>
+            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
+                href="https://ilenafurniture.com/product?koleksi=orca">Orca</a>
             <div class="child-list-nav">
                 <div class="container py-3 d-flex">
                     <div style="flex: 1;">
                         <p class="m-0">Jelajahi Orca</p>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
-                            href="https://ilenafurniture.com/product?koleksi=orca&jenis=armoir">Armoir</a>
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                            href="https://ilenafurniture.com/product?koleksi=orca&jenis=armoir">Armoir</a> -->
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=orca&jenis=bookshelf">Bookshelf</a>
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=orca&jenis=coffee-table">Coffee
                             Table</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=orca&jenis=console-table">Console
-                            Table</a>
+                            Table</a> -->
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=orca&jenis=credenza">Credenza</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=orca&jenis=dresser-3-drawer">Dresser
                             3
-                            Drawer</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                            Drawer</a> -->
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=orca&jenis=dresser-5-drawer">Dresser
                             5
-                            Drawer</a>
+                            Drawer</a> -->
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=orca&jenis=dresser-6-drawer">Dresser
                             6
                             Drawer</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=orca&jenis=dresser-6-drawer">Dresser
                             Tall
                             Cabinet
-                        </a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                        </a> -->
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=orca&jenis=king-bed">King
-                            Bed</a>
+                            Bed</a> -->
                     </div>
                     <div style="flex: 3" class="mt-4">
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=orca&jenis=tv-media">Media TV</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
-                            href="https://ilenafurniture.com/product?koleksi=orca&jenis=queen-bed">Queen Bed</a>
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                            href="https://ilenafurniture.com/product?koleksi=orca&jenis=queen-bed">Queen Bed</a> -->
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=orca&jenis=side-table">Side
                             Table</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=orca&jenis=single-bed">Single Bed
-                            Orca</a>
+                            Orca</a> -->
                     </div>
                     <div style="width: 233px">
                         <a href="#" class="container-produk-nav">
-                            <img class="mb-3"
-                                src="https://images.unsplash.com/photo-1595515106864-077d30192c56?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                alt="">
-                            <h5>New! Modern, Organic Stripes</h5>
-                            <p>Lemari Sofa Luar Angkasa High Class LS001</p>
+                            <img class="mb-3" src="https://ilenafurniture.com/viewvar/10601401/4" alt="">
+                            <h5>Side table</h5>
+                            <p>Kayu solid mahoni, engineered wood, dilapisi vinir jati dengan finishing satin white &
+                                black wash.</p>
                         </a>
                     </div>
                 </div>
             </div>
         </div>
         <div class="list-nav">
-            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;">Water Case</a>
+            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
+                href="https://ilenafurniture.com/product?koleksi=water-case">Water Case</a>
             <div class="child-list-nav">
                 <div class="container py-3 d-flex">
                     <div style="flex: 1;">
                         <p class="m-0">Jelajahi Water Case</p>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=water-case&jenis=armoir">Armoir</a>
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
-                            href="https://ilenafurniture.com/product?koleksi=water-case&jenis=bookshelf">Bookshelf</a>
+                            href="https://ilenafurniture.com/product?koleksi=water-case&jenis=bookshelf">Bookshelf</a> -->
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=water-case&jenis=coffee-table">Coffee
                             Table</a>
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=water-case&jenis=console-table">Console
                             Table</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
-                            href="https://ilenafurniture.com/product?koleksi=water-case&jenis=credenza">Credenza</a>
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                            href="https://ilenafurniture.com/product?koleksi=water-case&jenis=credenza">Credenza</a> -->
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=water-case&jenis=dresser-3-drawer">Dresser
                             3
@@ -266,115 +267,113 @@
                             Tall
                             Cabinet
                         </a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=water-case&jenis=king-bed">King
-                            Bed</a>
+                            Bed</a> -->
                     </div>
                     <div style="flex: 3" class="mt-4">
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=water-case&jenis=tv-media">Media TV</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
-                            href="https://ilenafurniture.com/product?koleksi=water-case&jenis=queen-bed">Queen Bed</a>
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                            href="https://ilenafurniture.com/product?koleksi=water-case&jenis=queen-bed">Queen Bed</a> -->
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=water-case&jenis=side-table">Side
                             Table</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=water-case&jenis=single-bed">Single Bed
-                            Water Case</a>
+                            Water Case</a> -->
                     </div>
                     <div style="width: 233px">
                         <a href="#" class="container-produk-nav">
-                            <img class="mb-3"
-                                src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                alt="">
-                            <h5>New! Modern, Organic Stripes</h5>
-                            <p>Meja Sofa Luar Angkasa High Class KS001</p>
+                            <img class="mb-3" src="https://ilenafurniture.com/viewvar/11000901/2" alt="">
+                            <h5>Lemari laci 6</h5>
+                            <p>Kayu solid mahoni,engineered wood, dilapisi vinir jati dengan finishing whitewash.</p>
                         </a>
                     </div>
                 </div>
             </div>
         </div>
         <div class="list-nav">
-            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;">Plint Base</a>
+            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
+                href="https://ilenafurniture.com/product?koleksi=plint-base">Plint Base</a>
             <div class="child-list-nav">
                 <div class="container py-3 d-flex">
                     <div style="flex: 1;">
                         <p class="m-0">Jelajahi Plint Base</p>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
-                            href="https://ilenafurniture.com/product?koleksi=plint-base&jenis=armoir">Armoir</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
-                            href="https://ilenafurniture.com/product?koleksi=plint-base&jenis=bookshelf">Bookshelf</a>
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                            href="https://ilenafurniture.com/product?koleksi=plint-base&jenis=armoir">Armoir</a> -->
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                            href="https://ilenafurniture.com/product?koleksi=plint-base&jenis=bookshelf">Bookshelf</a> -->
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=plint-base&jenis=coffee-table">Coffee
                             Table</a>
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=plint-base&jenis=console-table">Console
                             Table</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
-                            href="https://ilenafurniture.com/product?koleksi=plint-base&jenis=credenza">Credenza</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                            href="https://ilenafurniture.com/product?koleksi=plint-base&jenis=credenza">Credenza</a> -->
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=plint-base&jenis=dresser-3-drawer">Dresser
                             3
-                            Drawer</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                            Drawer</a> -->
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=plint-base&jenis=dresser-5-drawer">Dresser
                             5
-                            Drawer</a>
+                            Drawer</a> -->
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=plint-base&jenis=dresser-6-drawer">Dresser
                             6
                             Drawer</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=plint-base&jenis=dresser-6-drawer">Dresser
                             Tall
                             Cabinet
-                        </a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                        </a> -->
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=plint-base&jenis=king-bed">King
-                            Bed</a>
+                            Bed</a> -->
                     </div>
                     <div style="flex: 3" class="mt-4">
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=plint-base&jenis=tv-media">Media TV</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
-                            href="https://ilenafurniture.com/product?koleksi=plint-base&jenis=queen-bed">Queen Bed</a>
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                            href="https://ilenafurniture.com/product?koleksi=plint-base&jenis=queen-bed">Queen Bed</a> -->
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=plint-base&jenis=side-table">Side
                             Table</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=plint-base&jenis=single-bed">Single Bed
-                            Plint base</a>
+                            Plint base</a> -->
                     </div>
                     <div style="width: 233px">
                         <a href="#" class="container-produk-nav">
-                            <img class="mb-3"
-                                src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                alt="">
-                            <h5>New! Modern, Organic Stripes</h5>
-                            <p>Meja Sofa Luar Angkasa High Class KS001</p>
+                            <img class="mb-3" src="https://ilenafurniture.com/viewvar/10701402/1" alt="">
+                            <h5>Nakas atau meja samping multifungsi</h5>
+                            <p>kayu solid mahoni, engineered wood, finishing vinir jati white & black wash</p>
                         </a>
                     </div>
                 </div>
             </div>
         </div>
         <div class="list-nav">
-            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;">Cut Out</a>
+            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
+                href="https://ilenafurniture.com/product?koleksi=cutout">Cut Out</a>
             <div class="child-list-nav">
                 <div class="container py-3 d-flex">
                     <div style="flex: 1;">
                         <p class="m-0">Jelajahi Cut Out</p>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
-                            href="https://ilenafurniture.com/product?koleksi=cut-out&jenis=armoir">Armoir</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
-                            href="https://ilenafurniture.com/product?koleksi=cut-out&jenis=bookshelf">Bookshelf</a>
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                            href="https://ilenafurniture.com/product?koleksi=cut-out&jenis=armoir">Armoir</a> -->
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                            href="https://ilenafurniture.com/product?koleksi=cut-out&jenis=bookshelf">Bookshelf</a> -->
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=cut-out&jenis=coffee-table">Coffee
                             Table</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=cut-out&jenis=console-table">Console
-                            Table</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
-                            href="https://ilenafurniture.com/product?koleksi=cut-out&jenis=credenza">Credenza</a>
+                            Table</a> -->
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                            href="https://ilenafurniture.com/product?koleksi=cut-out&jenis=credenza">Credenza</a> -->
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=cut-out&jenis=dresser-3-drawer">Dresser
                             3
@@ -392,29 +391,27 @@
                             Tall
                             Cabinet
                         </a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=cut-out&jenis=king-bed">King
-                            Bed</a>
+                            Bed</a> -->
                     </div>
                     <div style="flex: 3" class="mt-4">
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=cut-out&jenis=tv-media">Media TV</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
-                            href="https://ilenafurniture.com/product?koleksi=cut-out&jenis=queen-bed">Queen Bed</a>
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                            href="https://ilenafurniture.com/product?koleksi=cut-out&jenis=queen-bed">Queen Bed</a> -->
                         <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=cut-out&jenis=side-table">Side
                             Table</a>
-                        <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
+                        <!-- <a class="text-dark w-100 d-block" style="text-decoration: none; font-weight:500;"
                             href="https://ilenafurniture.com/product?koleksi=cut-out&jenis=single-bed">Single Bed
-                            Cut Out</a>
+                            Cut Out</a> -->
                     </div>
                     <div style="width: 233px">
                         <a href="#" class="container-produk-nav">
-                            <img class="mb-3"
-                                src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                alt="">
-                            <h5>New! Modern, Organic Stripes</h5>
-                            <p>Meja Sofa Luar Angkasa High Class KS001</p>
+                            <img class="mb-3" src="https://ilenafurniture.com/viewvar/10301601/1" alt="">
+                            <h5>Credenza TV minimalis</h5>
+                            <p>Kayu solid mahoni, engineered wood, dilapisi vinir jati dengan finishing white</p>
                         </a>
                     </div>
                 </div>
