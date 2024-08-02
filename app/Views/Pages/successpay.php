@@ -19,7 +19,11 @@
         </div>
         <div class="d-flex flex-column align-items-end">
             <p class="mb-1">Metode Pembayaran</p>
-            <img class="mb-2" src="/img/pembayaran/<?= $bank; ?>.webp" alt="">
+            <?php if ($dataMid['payment_type'] == 'credit_card') { ?>
+                <h3 class="m-0" style="font-size: 40px; letter-spacing: -3px; font-weight:600;">Kartu Kredit</h3>
+            <?php } else { ?>
+                <img class="mb-2" src="/img/pembayaran/<?= $bank; ?>.webp" alt="">
+            <?php } ?>
         </div>
     </div>
     <div class="baris-ke-kolom justify-content-between W-100 mb-3 pb-3">

@@ -151,7 +151,7 @@
                             <p class="text-end mb-0">Rp 5.000</p>
                         </div>
                     </div>
-                    <div class="w-100 d-flex">
+                    <!-- <div class="w-100 d-flex">
                         <div style="flex: 2">
                             <p class="mb-0">Ongkos Kirim</p>
                         </div>
@@ -161,7 +161,7 @@
                                                         echo number_format($ongkir, 0, ",", ".");
                                                         ?></p>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="w-100 d-flex">
                         <div style="flex: 2">
                             <p class="mb-0 fw-bold">TOTAL TAGIHAN</p>

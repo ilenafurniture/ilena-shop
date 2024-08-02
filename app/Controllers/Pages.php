@@ -766,7 +766,8 @@ class Pages extends BaseController
                 'list' => $voucher,
                 'selected' => $voucherSelected,
             ],
-            'emailUji' => in_array($alamatselected['email_pemesan'], $emailUjiCoba)
+            'emailUji' => in_array($alamatselected['email_pemesan'], $emailUjiCoba),
+            'msg' => session()->getFlashdata('msg')
         ];
 
         $this->session->set(['alamatTerpilih' => $alamatselected]);
@@ -915,7 +916,7 @@ class Pages extends BaseController
         $hasilMidtrans = json_decode($response, true);
         return $this->response->setJSON($hasilMidtrans, false);
     }
-    public function actionPayCore()
+    public function actionPayCore($ind_add)
     {
         $pembayaran = $this->request->getVar('pembayaran');
         $alamatselected = session()->get('alamatTerpilih');
@@ -931,10 +932,10 @@ class Pages extends BaseController
             ])) {
                 $validation = \Config\Services::validation();
                 session()->setFlashdata('msg', 'Terdapat data yang masih kosong');
-                return redirect()->to('/checkout')->withInput();
+                return redirect()->to('/payment/' . $ind_add)->withInput();
             }
         }
-        $tokencc = session()->get('tokencc');
+        $tokencc = $this->request->getVar('tokencc');
         $emailUjiCoba = ['galihsuks123@gmail.com', 'ilenafurniture@gmail.com', 'galih8.4.2001@gmail.com'];
 
         $subtotal = 0;
@@ -1109,7 +1110,7 @@ class Pages extends BaseController
                 ];
                 break;
             default:
-                return redirect()->to('/cart');
+                return redirect()->to('/payment/' . $ind_add);
                 break;
         }
 
@@ -1139,40 +1140,43 @@ class Pages extends BaseController
         }
         $hasilMidtrans = json_decode($response, true);
 
-        if (substr($hasilMidtrans['status_code'], 0, 1) != '4') {
-            //dari update transaction =============================
-            switch ($hasilMidtrans['transaction_status']) {
-                case 'settlement':
-                    $status = "Proses";
-                    break;
-                case 'capture':
-                    $status = "Proses";
-                    break;
-                case 'pending':
-                    $status = "Menunggu Pembayaran";
-                    break;
-                case 'expire':
-                    $status = "Kadaluarsa";
-                    break;
-                case 'deny':
-                    $status = "Ditolak";
-                    break;
-                case 'failure':
-                    $status = "Gagal";
-                    break;
-                case 'refund':
-                    $status = "Refund";
-                    break;
-                case 'partial_refund':
-                    $status = "Partial Refund";
-                    break;
-                case 'cancel':
-                    $status = "Dibatalkan";
-                    break;
-                default:
-                    $status = "No Status";
-                    break;
-            }
+        if (substr($hasilMidtrans['status_code'], 0, 1) != '2') {
+            session()->setFlashdata('msg', $hasilMidtrans['status_message']);
+            return redirect()->to('/payment/' . $ind_add);
+        }
+
+        //dari update transaction =============================
+        switch ($hasilMidtrans['transaction_status']) {
+            case 'settlement':
+                $status = "Proses";
+                break;
+            case 'capture':
+                $status = "Proses";
+                break;
+            case 'pending':
+                $status = "Menunggu Pembayaran";
+                break;
+            case 'expire':
+                $status = "Kadaluarsa";
+                break;
+            case 'deny':
+                $status = "Ditolak";
+                break;
+            case 'failure':
+                $status = "Gagal";
+                break;
+            case 'refund':
+                $status = "Refund";
+                break;
+            case 'partial_refund':
+                $status = "Partial Refund";
+                break;
+            case 'cancel':
+                $status = "Dibatalkan";
+                break;
+            default:
+                $status = "No Status";
+                break;
         }
 
         if ($voucher) {
@@ -1736,6 +1740,47 @@ class Pages extends BaseController
     {
         $pemesanan = $this->pemesananModel->getPemesanan($id_order);
         $carapembayaran = [
+            'bca' => [
+                [
+                    'nama' => 'myBCA',
+                    'isi' => '1. Login ke myBCA<br>
+                                2. Pilih Transfer dan pilih Virtual Account<br>
+                                3. Pilih Transfer ke tujuan baru<br>
+                                4. Masukkan nomor Virtual Account dari e-commerce dan klik Lanjut<br>
+                                5. Pilih rekening sumber dana (jika memiliki lebih dari satu), masukkan nominal dan klik Lanjut<br>
+                                6. Cek detail transaksi, klik Lanjut<br>
+                                7. Masukkan PIN dan transaksi berhasil'
+                ],
+                [
+                    'nama' => 'BCA Mobile',
+                    'isi' => '1. Login ke BCA mobile<br>
+                                2. Pilih m-Transfer dan pilih BCA Virtual Account<br>
+                                3. Masukkan nomor BCA Virtual Account dari e-commerce dan klik Send<br>
+                                4. Masukkan nominal<br>
+                                5. Cek detail transaksi, klik OK<br>
+                                6. Masukkan PIN dan transaksi berhasil'
+                ],
+                [
+                    'nama' => 'KlikBCA',
+                    'isi' => '1. Login ke KlikBCA<br>
+                                2. Pilih Transfer Dana dan pilih Transfer ke BCA Virtual Account<br>
+                                3. Masukkan nomor BCA Virtual Account dari e-commerce dan klik Lanjutkan<br>
+                                4. Masukkan nominal dan klik Lanjutkan<br>
+                                5. Masukkan Respon KeyBCA Appli 1 dan klik Kirim<br>
+                                6. Transaksi berhasil dilakukan'
+                ],
+                [
+                    'nama' => 'ATM BCA',
+                    'isi' => '1. Masukkan Kartu ATM dan PIN di ATM BCA<br>
+                                2. Pilih Penarikan Tunai/Transaksi Lainnya<br>
+                                3. Pilih Transaksi Lainnya<br>
+                                4. Pilih Transfer<br>
+                                5. Pilih menu Ke Rek BCA Virtual Account<br>
+                                6. Masukkan nomor BCA Virtual Account dan klik Benar<br>
+                                7. Cek detail transaksi dan pilih Ya<br>
+                                8. Transaksi berhasil'
+                ]
+            ],
             'mandiri' => [
                 [
                     'nama' => 'Livin by Mandiri',
@@ -1915,6 +1960,7 @@ class Pages extends BaseController
                     'isi' => '-'
                 ],
             ],
+            'card' => 'Always Success'
         ];
         if ($id_order) {
             $pemesanan = $this->pemesananModel->getPemesanan($id_order);
@@ -1943,6 +1989,10 @@ class Pages extends BaseController
                         case 'qris':
                             $va_number = 'https://api.midtrans.com/v2/qris/' . $dataMid['transaction_id'] . '/qr-code';
                             $bank = "qris";
+                            break;
+                        case 'credit_card':
+                            $va_number = '';
+                            $bank = "card";
                             break;
                         default:
                             $va_number = "";
@@ -2003,6 +2053,10 @@ class Pages extends BaseController
                             $va_number = 'PEMBAYARAN MARKETPLACE';
                             $bank = "market";
                             break;
+                        case 'credit_card':
+                            $va_number = '';
+                            $bank = "card";
+                            break;
                         default:
                             $va_number = "";
                             break;
@@ -2051,6 +2105,10 @@ class Pages extends BaseController
                             $va_number = 'PEMBAYARAN TOKO';
                             $bank = "toko";
                             break;
+                        case 'credit_card':
+                            $va_number = '';
+                            $bank = "card";
+                            break;
                         default:
                             $va_number = "";
                             break;
@@ -2094,6 +2152,10 @@ class Pages extends BaseController
                         case 'qris':
                             $va_number = 'https://api.midtrans.com/v2/qris/' . $dataMid['transaction_id'] . '/qr-code';
                             $bank = "qris";
+                            break;
+                        case 'credit_card':
+                            $va_number = '';
+                            $bank = "card";
                             break;
                         default:
                             $va_number = "";
