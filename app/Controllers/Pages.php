@@ -2182,6 +2182,11 @@ class Pages extends BaseController
             ],
             'data_mid' => json_decode($transaksi['data_mid'], true),
         ];
+        foreach ($arr['items'] as $ind_i => $i) {
+            if($i['id'] != 'Voucher' && $i['id'] != 'Biaya Admin') {
+                $arr['items'][$ind_i]['collection'] = $this->barangModel->getBarang($i['id'])['kategori'];
+            }
+        }
         $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
         $data = [
             'title' => 'Print Preview',

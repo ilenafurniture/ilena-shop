@@ -600,7 +600,7 @@ class AdminController extends BaseController
         ])->first();
         $items_curr = json_decode($pemesanan['items'], true);
         foreach ($items_curr as $i) {
-            if ($i['name'] != "Biaya Ongkir" && $i['name'] != "Biaya Admin") {
+            if ($i['name'] != "Voucher" && $i['name'] != "Biaya Admin") {
                 for ($x = 1; $x <= (int)$i['quantity']; $x++) {
                     $this->pemesananGudangModel->insert([
                         'id_pesanan' => $pemesanan['id_midtrans'],

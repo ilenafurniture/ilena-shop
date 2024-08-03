@@ -5,8 +5,10 @@
     <meta charset="UTF-8" />
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
     <title><?= $title; ?> | Ilena Furniture</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
     </script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <link rel="stylesheet" href="/css/style_pdf.css" />
@@ -19,7 +21,8 @@
                 <img src="<?= base_url('img/Logo CBM.png'); ?>" alt="Logo CBM" style="width:20mm; height:fit-content">
             </div>
             <div>
-                <img src="<?= base_url('img/LogoIlena.png'); ?>" alt="logo Ilena" style="width:80mm; height:fit-content">
+                <img src="<?= base_url('img/LogoIlena.png'); ?>" alt="logo Ilena"
+                    style="width:80mm; height:fit-content">
                 <p class="m-0">Kepadad Yth.</p>
                 <p class="m-0">Nama: <?= $pemesanan['nama']; ?></p>
                 <p class="m-0"><?= $pemesanan['alamat']; ?></p>
@@ -43,21 +46,21 @@
                 </div>
             </div>
             <?php foreach ($pemesanan['items'] as $ind_i => $i) {
-                if ($i['name'] != 'Biaya Admin' && $i['name'] != 'Biaya Ongkir') { ?>
-                    <div class="w-100 d-flex">
-                        <div style="flex:1;">
-                            <p class="m-0"><?= $ind_i + 1; ?></p>
-                        </div>
-                        <div style="flex:2;">
-                            <p class="m-0"><?= $i['id']; ?></p>
-                        </div>
-                        <div style="flex:4;">
-                            <p class="m-0"><?= $i['name']; ?></p>
-                        </div>
-                        <div style="flex:1;">
-                            <p class="m-0"><?= $i['quantity']; ?> Unit</p>
-                        </div>
-                    </div>
+                if ($i['name'] != 'Biaya Admin' && $i['name'] != 'Voucher') { ?>
+            <div class="w-100 d-flex">
+                <div style="flex:1;">
+                    <p class="m-0"><?= $ind_i + 1; ?></p>
+                </div>
+                <div style="flex:2;">
+                    <p class="m-0"><?= $i['id']; ?></p>
+                </div>
+                <div style="flex:4;">
+                    <p class="m-0"><?= $i['name']; ?></p>
+                </div>
+                <div style="flex:1;">
+                    <p class="m-0"><?= $i['quantity']; ?> Unit</p>
+                </div>
+            </div>
             <?php }
             } ?>
         </div>
@@ -91,7 +94,7 @@
         </div>
     </div>
     <script>
-        window.print();
+    window.print();
     </script>
 </body>
 

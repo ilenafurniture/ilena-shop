@@ -101,8 +101,10 @@ class GudangController extends BaseController
             $pesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
             $itemsnya = json_decode($p['items'], true);
             foreach ($itemsnya as $ind_i => $i) {
-                $barangnya = $this->barangModel->getBarang($i['id']);
-                $itemsnya[$ind_i]['name'] = strtoupper($barangnya['kategori']) . ' ' . $i['name'];
+                if($i['id'] != 'Biaya Admin' && $i['id'] != 'Voucher' ){
+                    $barangnya = $this->barangModel->getBarang($i['id']);
+                    $itemsnya[$ind_i]['name'] = strtoupper($barangnya['kategori']) . ' ' . $i['name'];
+                }
             }
             $pesanan[$ind_p]['items'] = $itemsnya;
             $pesanan[$ind_p]['kurir'] = json_decode($p['kurir'], true);
@@ -303,18 +305,19 @@ class GudangController extends BaseController
         $pemesanan['kurir'] = json_decode($pemesanan['kurir'], true);
         $pemesanan['data_mid'] = json_decode($pemesanan['data_mid'], true);
         foreach ($pemesanan['items'] as $ind_i => $item) {
-            if ($item['name'] != 'Biaya Ongkir' && $item['name'] != 'Biaya Admin') {
+            if ($item['name'] != 'Voucher' && $item['name'] != 'Biaya Admin') {
                 $varianItem = rtrim(explode("(", $item['name'])[1], ")");
                 $produkCurr = $this->barangModel->getBarang($item['id']);
                 $dimensi = json_decode($produkCurr['deskripsi'], true)['dimensi']['asli'];
                 $pemesanan['items'][$ind_i]['name'] = $produkCurr['nama'] . ", " . $dimensi['panjang'] . "x" . $dimensi['lebar'] . "x" . $dimensi['tinggi'] . "<br>" . $varianItem;
+                array_push($items, $item);
             }
         }
         $bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
         $data = [
             'title' => 'Surat Jalan',
             'pemesanan' => $pemesanan,
-            'tanggal' => date("d", $d) . " " . $bulan[(int)date("m", $d)] . " " . date("Y", $d),
+            'tanggal' => date("d", $d) . " " . $bulan[(int)date("m", $d) - 1] . " " . date("Y", $d),
             'items' => $items
         ];
         return view('gudang/suratJalan', $data);

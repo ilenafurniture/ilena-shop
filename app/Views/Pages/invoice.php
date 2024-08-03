@@ -5,15 +5,19 @@
     <meta charset="UTF-8" />
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
     <title><?= $title; ?> | Ilena Furniture</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
+    </script>
     <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <!-- <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" /> -->
     <!-- icon google -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
     <link rel="stylesheet" href="/css/style_pdf.css" />
 </head>
@@ -21,14 +25,14 @@
 <body>
     <div class="print">
         <?php if ($transaksi['status'] == 'Proses' || $transaksi['status'] == 'Dikirim' || $transaksi['status'] == 'Selesai') { ?>
-            <div class="print-lunas">
-                <p>L U N A S</p>
-            </div>
+        <div class="print-lunas">
+            <p>L U N A S</p>
+        </div>
         <?php } else if ($transaksi['status'] == 'Menunggu Pembayaran') {
         } else { ?>
-            <div class="print-lunas">
-                <p>G A G A L</p>
-            </div>
+        <div class="print-lunas">
+            <p>G A G A L</p>
+        </div>
         <?php } ?>
         <div class="d-flex justify-content-between mb-2">
             <img src="<?= base_url('img/LogoIlena.png'); ?>" class="logo" />
@@ -110,22 +114,24 @@
             $totalHarga = 0;
             foreach ($transaksi['items'] as $item) {
                 $totalHarga += $item['price'] * $item['quantity'];
+                if($item['id'] != 'Voucher' && $item['id'] != 'Biaya Admin') {
             ?>
-                <div class="w-100 d-flex">
-                    <div style="flex: 3">
-                        <p class="mb-0"><?= $item['name']; ?></p>
-                    </div>
-                    <div style="flex: 1">
-                        <p class="text-center mb-0"><?= $item['quantity']; ?></p>
-                    </div>
-                    <div style="flex: 1">
-                        <p class="text-center mb-0">Rp <?= number_format($item['price'], 0, ",", "."); ?></p>
-                    </div>
-                    <div style="flex: 1">
-                        <p class="text-end mb-0">Rp <?= number_format($item['price'] * $item['quantity'], 0, ",", "."); ?></p>
-                    </div>
+            <div class="w-100 d-flex">
+                <div style="flex: 3">
+                    <p class="mb-0">| <?= strtoupper($item['collection']) ?> | <?= $item['name']; ?></p>
                 </div>
-            <?php } ?>
+                <div style="flex: 1">
+                    <p class="text-center mb-0"><?= $item['quantity']; ?></p>
+                </div>
+                <div style="flex: 1">
+                    <p class="text-center mb-0">Rp <?= number_format($item['price'], 0, ",", "."); ?></p>
+                </div>
+                <div style="flex: 1">
+                    <p class="text-end mb-0">Rp <?= number_format($item['price'] * $item['quantity'], 0, ",", "."); ?>
+                    </p>
+                </div>
+            </div>
+            <?php } } ?>
         </div>
 
         <!-- Container perhitungan -->
@@ -143,6 +149,7 @@
                             </p>
                         </div>
                     </div>
+                    <?php if(substr($transaksi['id_midtrans'],-2) != 'MP' ){ ?>
                     <div class="w-100 d-flex">
                         <div style="flex: 2">
                             <p class="mb-0">Biaya Admin</p>
@@ -151,6 +158,8 @@
                             <p class="text-end mb-0">Rp 5.000</p>
                         </div>
                     </div>
+                    <?php } ?>
+
                     <div class="w-100 d-flex">
                         <div style="flex: 2">
                             <p class="mb-0">Ongkos Kirim</p>
@@ -181,9 +190,10 @@
             <div class="w-100">
                 <p class="mb-0 text-black-50">Kurir :</p>
                 <?php if ($transaksi['kurir']['nama'] == 'Menunggu pengiriman') { ?>
-                    <p class="mb-0 fw-bold">Menunggu pengiriman</p>
+                <p class="mb-0 fw-bold">Menunggu pengiriman</p>
                 <?php } else { ?>
-                    <p class="mb-0 fw-bold"><?= strtoupper($transaksi['kurir']['nama']) . " " . $transaksi['kurir']['deskripsi']; ?></p>
+                <p class="mb-0 fw-bold">
+                    <?= strtoupper($transaksi['kurir']['nama']) . " " . $transaksi['kurir']['deskripsi']; ?></p>
                 <?php } ?>
             </div>
             <div class="w-100">
@@ -230,7 +240,9 @@
                 <p class="mb-0">
                     Invoice ini sah dan diproses oleh sistem<br />
                     Silakan hubungi
-                    <a style="color: var(--merahLogo)" class="link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">Ilena Furniture CS</a>
+                    <a style="color: var(--merahLogo)"
+                        class="link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">Ilena Furniture
+                        CS</a>
                     apabila kamu membutuhkan bantuan.
                 </p>
             </div>
@@ -246,9 +258,9 @@
     </div>
 </body>
 <?php if ($transaksi['status'] == 'Proses' || $transaksi['status'] == 'Dikirim' || $transaksi['status'] == 'Selesai' || $transaksi['status'] == 'Menunggu Pembayaran') { ?>
-    <script>
-        window.print();
-    </script>
+<script>
+window.print();
+</script>
 <?php } ?>
 
 </html>
