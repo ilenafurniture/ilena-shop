@@ -1,14 +1,19 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
-<form action="/actionpaycore" method="post">
+<form action="/actionpaycore/<?= $indexAddress; ?>" method="post">
     <div class="container konten baris-ke-kolom">
         <div style="flex:1;">
             <h5 style="letter-spacing: -1px; font-weight:100;" class="path"><a href="/address" class="me-3 text-secondary" style="text-decoration: none;">Alamat</a> >
                 <a class="mx-3 text-dark fw-bold" style="text-decoration: none;">
                     Rincian Pembayaran</a>
             </h5>
+            <?php if ($msg) { ?>
+                <div class="pemberitahuan my-1 w-100" style="width: fit-content;" role="alert">
+                    <?= $msg; ?>
+                </div>
+            <?php } ?>
             <div class="my-4">
-                <div class="container-pembayaran mb-1">
+                <div class="mb-1">
                     <div class="item-pembayaran" data-bs-toggle="collapse" href="#collapseExample3" aria-expanded="true" aria-controls="collapseExample3">
                         Informasi Pembeli
                     </div>
@@ -32,7 +37,7 @@
                     </div>
                 </div>
 
-                <div class="container-pembayaran mb-1">
+                <div class="mb-1">
                     <div class="item-pembayaran" data-bs-toggle="collapse" href="#collapseExample2" aria-expanded="true" aria-controls="collapseExample2">
                         Informasi Barang
                     </div>
@@ -63,17 +68,16 @@
                     </div>
                 </div>
 
-                <!-- <?php if ($user['email'] == 'galih8.4.2001@gmail.com') { ?> -->
                 <div class="container-pembayaran mb-1">
                     <div class="item-pembayaran" data-bs-toggle="collapse" href="#collapseExample4" aria-expanded="true" aria-controls="collapseExample4">
                         Metode Pembayaran
                     </div>
+                    <div class="pemberitahuan my-1 d-none" id="alert-cc" role="alert">cek</div>
                     <div class="collapse py-2 show" id="collapseExample4">
-                        <div class="alert d-none" role="alert" id="alert-cc"></div>
                         <div class="container-pembayaran mb-1">
-                            <!-- <input type="radio" checked name="pembayaran" id="pembayaran1" value="bca">
-                            <label for="pembayaran1" class="item-logo-pembayaran"><img src="/img/pembayaran/bca.webp" alt=""></label> -->
-                            <input type="radio" name="pembayaran" checked id="pembayaran2" value="bni">
+                            <input type="radio" checked name="pembayaran" id="pembayaran1" value="bca">
+                            <label for="pembayaran1" class="item-logo-pembayaran"><img src="/img/pembayaran/bca.webp" alt=""></label>
+                            <input type="radio" name="pembayaran" id="pembayaran2" value="bni">
                             <label for="pembayaran2" class="item-logo-pembayaran"><img src="/img/pembayaran/bni.webp" alt=""></label>
                             <input type="radio" name="pembayaran" id="pembayaran3" value="bri">
                             <label for="pembayaran3" class="item-logo-pembayaran"><img src="/img/pembayaran/bri.webp" alt=""></label>
@@ -83,12 +87,13 @@
                             <label for="pembayaran5" class="item-logo-pembayaran"><img src="/img/pembayaran/permatabank.webp" alt=""></label>
                             <input type="radio" name="pembayaran" id="pembayaran6" value="cimb">
                             <label for="pembayaran6" class="item-logo-pembayaran"><img src="/img/pembayaran/cimb.webp" alt=""></label>
-                            <!-- <input type="radio" name="pembayaran" id="pembayaran7" value="qris">
+                            <input type="radio" name="pembayaran" id="pembayaran7" value="qris">
                             <label for="pembayaran7" class="item-logo-pembayaran"><img src="/img/pembayaran/qris.webp" alt=""></label>
                             <input type="radio" name="pembayaran" id="pembayaran8" value="gopay">
-                            <label for="pembayaran8" class="item-logo-pembayaran"><img src="/img/pembayaran/gopay.webp" alt=""></label> -->
+                            <label for="pembayaran8" class="item-logo-pembayaran"><img src="/img/pembayaran/gopay.webp" alt=""></label>
                             <!-- <input type="radio" name="pembayaran" id="pembayaran9" value="shopeepay">
                             <label for="pembayaran9" class="item-logo-pembayaran"><img src="/img/pembayaran/shopeepay.webp" alt=""></label> -->
+                            <!-- <?php if ($user['email'] == 'galih8.4.2001@gmail.com') { ?> -->
                             <input type="radio" name="pembayaran" id="pembayaran10" value="card">
                             <label for="pembayaran10" class="item-logo-pembayaran"><img src="/img/pembayaran/mastercard.webp" alt=""></label>
                             <script>
@@ -107,110 +112,109 @@
                                     })
                                 })
                             </script>
+                            <!-- <?php } ?> -->
                         </div>
-                        <div class="pt-3 border-top d-none" id="container-form-cc">
-                            <h5 class="mb-2">Informasi Kredit Card</h5>
-                            <div class="form-floating mb-1">
-                                <input type="number" class="form-control" placeholder="ccNumber" name="ccNumber">
-                                <label for="floatingInput">Card Number</label>
-                            </div>
-                            <div class="form-floating mb-1">
-                                <input type="number" class="form-control" placeholder="ccCvv" name="ccCvv">
-                                <label for="floatingInput">Card CVV</label>
-                            </div>
-                            <div class="d-flex gap-1 w-100">
-                                <div class="form-floating mb-1">
-                                    <select class="form-control" name="ccMonth">
-                                        <option value="01">Januari</option>
-                                        <option value="02">Februari</option>
-                                        <option value="03">Maret</option>
-                                        <option value="04">April</option>
-                                        <option value="05">Mei</option>
-                                        <option value="06">Juni</option>
-                                        <option value="07">Juli</option>
-                                        <option value="08">Agustus</option>
-                                        <option value="09">September</option>
-                                        <option value="10">Oktober</option>
-                                        <option value="11">Nopember</option>
-                                        <option value="12">Desember</option>
-                                    </select>
-                                    <label for="floatingInput">Expire Month</label>
-                                </div>
-                                <div class="form-floating mb-1">
-                                    <input type="number" class="form-control" placeholder="ccCvv" name="ccYear">
-                                    <label for="floatingInput">Expire Year</label>
-                                </div>
-                            </div>
-                            <input type="text" name="tokencc" class="d-none">
-                            <button type="button" class="btn btn-primary1" onclick="verifKartu(event)">Verifikasi Kartu</button>
-                        </div>
-                        <script>
-                            const tokenCCElm = document.querySelector('input[name="tokencc"]');
-                            const ccNumber = document.querySelector('input[name="ccNumber"]');
-                            const ccCvv = document.querySelector('input[name="ccCvv"]');
-                            const ccMonth = document.querySelector('select[name="ccMonth"]');
-                            const ccYear = document.querySelector('input[name="ccYear"]');
-
-                            function verifKartu(e) {
-                                var card = {
-                                    card_number: ccNumber.value,
-                                    card_cvv: ccCvv.value,
-                                    card_exp_month: ccMonth.value,
-                                    card_exp_year: ccYear.value,
-                                }
-                                var options = {
-                                    onSuccess: function(response) {
-                                        alertCcElm.classList.remove('d-none')
-                                        alertCcElm.classList.add('alert-success')
-                                        alertCcElm.classList.remove('alert-danger')
-                                        alertCcElm.innerHTML = response.status_message
-
-                                        e.target.innerHTML = 'Ubah'
-                                        e.target.setAttribute('onclick', "reloadPage(event)")
-
-                                        ccNumber.setAttribute('disabled', true);
-                                        ccCvv.setAttribute('disabled', true);
-                                        ccMonth.setAttribute('disabled', true);
-                                        ccYear.setAttribute('disabled', true);
-                                        tokenCCElm.value = response.token_id;
-                                        console.log(response)
-                                    },
-                                    onFailure: function(response) {
-                                        alertCcElm.classList.remove('d-none')
-                                        alertCcElm.classList.remove('alert-success')
-                                        alertCcElm.classList.add('alert-danger')
-                                        alertCcElm.innerHTML = response.status_message
-
-                                        e.target.innerHTML = 'Ubah'
-                                        e.target.setAttribute('onclick', "reloadPage(event)")
-
-                                        ccNumber.setAttribute('disabled', true);
-                                        ccCvv.setAttribute('disabled', true);
-                                        ccMonth.setAttribute('disabled', true);
-                                        ccYear.setAttribute('disabled', true);
-                                        console.log(response)
-                                    }
-                                }
-
-                                MidtransNew3ds.getCardToken(card, options);
-                            }
-
-                            function reloadPage(e) {
-                                alertCcElm.classList.add('d-none')
-
-                                e.target.innerHTML = 'Verifikasi Kartu'
-                                e.target.setAttribute('onclick', "verifKartu(event)")
-
-                                ccNumber.removeAttribute('disabled');
-                                ccCvv.removeAttribute('disabled');
-                                ccMonth.removeAttribute('disabled');
-                                ccYear.removeAttribute('disabled');
-                                tokenCCElm.value = '';
-                            }
-                        </script>
                     </div>
+                    <!-- <?php if ($user['email'] == 'galih8.4.2001@gmail.com') { ?> -->
+                    <div class="pt-3 border-top d-none" id="container-form-cc">
+                        <h5 class="mb-2">Informasi Kredit Card</h5>
+                        <div class="form-floating mb-1">
+                            <input type="number" class="form-control d-block" placeholder="ccNumber" name="ccNumber" id="floatingInput1">
+                            <label for="floatingInput1">Card Number</label>
+                        </div>
+                        <div class="form-floating mb-1">
+                            <input type="number" class="form-control d-block" placeholder="ccCvv" name="ccCvv" id="floatingInput2">
+                            <label for="floatingInput2">Card CVV</label>
+                        </div>
+                        <div class="d-flex gap-1 w-100">
+                            <div class="form-floating mb-1">
+                                <select class="form-control" name="ccMonth" id="floatingInput3">
+                                    <option value="01">Januari</option>
+                                    <option value="02">Februari</option>
+                                    <option value="03">Maret</option>
+                                    <option value="04">April</option>
+                                    <option value="05">Mei</option>
+                                    <option value="06">Juni</option>
+                                    <option value="07">Juli</option>
+                                    <option value="08">Agustus</option>
+                                    <option value="09">September</option>
+                                    <option value="10">Oktober</option>
+                                    <option value="11">Nopember</option>
+                                    <option value="12">Desember</option>
+                                </select>
+                                <label for="floatingInput3">Expire Month</label>
+                            </div>
+                            <div class="form-floating mb-1">
+                                <input type="number" class="form-control d-block" placeholder="ccCvv" name="ccYear" id="floatingInput4">
+                                <label for="floatingInput4">Expire Year</label>
+                            </div>
+                        </div>
+                        <input type="text" name="tokencc" class="d-none">
+                        <button type="button" class="btn-default" onclick="verifKartu(event)">Verifikasi Kartu</button>
+                    </div>
+                    <script>
+                        const tokenCCElm = document.querySelector('input[name="tokencc"]');
+                        const ccNumber = document.querySelector('input[name="ccNumber"]');
+                        const ccCvv = document.querySelector('input[name="ccCvv"]');
+                        const ccMonth = document.querySelector('select[name="ccMonth"]');
+                        const ccYear = document.querySelector('input[name="ccYear"]');
+
+                        function verifKartu(e) {
+                            var card = {
+                                card_number: ccNumber.value,
+                                card_cvv: ccCvv.value,
+                                card_exp_month: ccMonth.value,
+                                card_exp_year: ccYear.value,
+                            }
+                            var options = {
+                                onSuccess: function(response) {
+                                    alertCcElm.classList.remove('d-none')
+                                    alertCcElm.classList.add('hijau')
+                                    alertCcElm.innerHTML = response.status_message
+
+                                    e.target.innerHTML = 'Ubah'
+                                    e.target.setAttribute('onclick', "reloadPage(event)")
+
+                                    ccNumber.setAttribute('disabled', true);
+                                    ccCvv.setAttribute('disabled', true);
+                                    ccMonth.setAttribute('disabled', true);
+                                    ccYear.setAttribute('disabled', true);
+                                    tokenCCElm.value = response.token_id;
+                                    console.log(response)
+                                },
+                                onFailure: function(response) {
+                                    alertCcElm.classList.remove('d-none')
+                                    alertCcElm.classList.remove('hijau')
+                                    alertCcElm.innerHTML = response.status_message
+
+                                    e.target.innerHTML = 'Ubah'
+                                    e.target.setAttribute('onclick', "reloadPage(event)")
+
+                                    ccNumber.setAttribute('disabled', true);
+                                    ccCvv.setAttribute('disabled', true);
+                                    ccMonth.setAttribute('disabled', true);
+                                    ccYear.setAttribute('disabled', true);
+                                    console.log(response)
+                                }
+                            }
+                            MidtransNew3ds.getCardToken(card, options);
+                        }
+
+                        function reloadPage(e) {
+                            alertCcElm.classList.add('d-none')
+
+                            e.target.innerHTML = 'Verifikasi Kartu'
+                            e.target.setAttribute('onclick', "verifKartu(event)")
+
+                            ccNumber.removeAttribute('disabled');
+                            ccCvv.removeAttribute('disabled');
+                            ccMonth.removeAttribute('disabled');
+                            ccYear.removeAttribute('disabled');
+                            tokenCCElm.value = '';
+                        }
+                    </script>
+                    <!-- <?php } ?> -->
                 </div>
-                <!-- <?php } ?> -->
             </div>
         </div>
         <div class="tigapuluh-ke-seratus">
