@@ -157,53 +157,48 @@
                         <div style="flex: 1">
                             <p class="text-end mb-0">Rp 5.000</p>
                         </div>
-                    </div>
-<<<<<<< HEAD
-                    <?php } ?>
-
-                    <div class="w-100 d-flex">
-=======
-                    <!-- <div class="w-100 d-flex">
->>>>>>> a64ed7b8a6c1b7e53bef14a335e46654502d6f60
+                    </div><?php } ?> <div class="w-100 d-flex">
+                        <!-- <div class="w-100 d-flex">
                         <div style="flex: 2">
                             <p class="mb-0">Ongkos Kirim</p>
                         </div>
                         <div style="flex: 1">
-                            <p class="text-end mb-0">Rp <?php
-                                                        $ongkir = (int)$transaksi['data_mid']['gross_amount'] - 5000 - $totalHarga;
-                                                        echo number_format($ongkir, 0, ",", ".");
-                                                        ?></p>
+                            <p class="text-end mb-0">Rp     
+                            <?php
+                                $ongkir = (int)$transaksi['data_mid']['gross_amount'] - 5000 - $totalHarga;
+                                echo number_format($ongkir, 0, ",", ".");
+                            ?></p>
                         </div>
                     </div> -->
-                    <div class="w-100 d-flex">
-                        <div style="flex: 2">
-                            <p class="mb-0 fw-bold">TOTAL TAGIHAN</p>
-                        </div>
-                        <div style="flex: 1">
-                            <p class="text-end mb-0 fw-bold">
-                                Rp <?= number_format($transaksi['data_mid']['gross_amount'], 0, ",", "."); ?>
-                            </p>
+                        <div class="w-100 d-flex">
+                            <div style="flex: 2">
+                                <p class="mb-0 fw-bold">TOTAL TAGIHAN</p>
+                            </div>
+                            <div style="flex: 1">
+                                <p class="text-end mb-0 fw-bold">
+                                    Rp <?= number_format($transaksi['data_mid']['gross_amount'], 0, ",", "."); ?>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Container footer -->
-        <div class="w-100 d-flex py-2">
-            <div class="w-100">
-                <p class="mb-0 text-black-50">Kurir :</p>
-                <?php if ($transaksi['kurir']['nama'] == 'Menunggu pengiriman') { ?>
-                <p class="mb-0 fw-bold">Menunggu pengiriman</p>
-                <?php } else { ?>
-                <p class="mb-0 fw-bold">
-                    <?= strtoupper($transaksi['kurir']['nama']) . " " . $transaksi['kurir']['deskripsi']; ?></p>
-                <?php } ?>
-            </div>
-            <div class="w-100">
-                <p class="mb-0 text-black-50">Metode Pembayaran</p>
-                <p class="mb-0">
-                    <?php
+            <!-- Container footer -->
+            <div class="w-100 d-flex py-2">
+                <div class="w-100">
+                    <p class="mb-0 text-black-50">Kurir :</p>
+                    <?php if ($transaksi['kurir']['nama'] == 'Menunggu pengiriman') { ?>
+                    <p class="mb-0 fw-bold">Menunggu pengiriman</p>
+                    <?php } else { ?>
+                    <p class="mb-0 fw-bold">
+                        <?= strtoupper($transaksi['kurir']['nama']) . " " . $transaksi['kurir']['deskripsi']; ?></p>
+                    <?php } ?>
+                </div>
+                <div class="w-100">
+                    <p class="mb-0 text-black-50">Metode Pembayaran</p>
+                    <p class="mb-0">
+                        <?php
                     switch ($transaksi['data_mid']['payment_type']) {
                         case 'credit_card':
                             echo "Credit Card<br>" . strtoupper($transaksi['data_mid']['bank']) . " " . ucfirst($transaksi['data_mid']['card_type']);
@@ -237,29 +232,30 @@
                             break;
                     }
                     ?></p>
+                </div>
             </div>
-        </div>
-        <div class="w-100 d-flex py-2 justify-content-between align-items-end">
-            <div style="width: 50%">
-                <p class="mb-0">
-                    Invoice ini sah dan diproses oleh sistem<br />
-                    Silakan hubungi
-                    <a style="color: var(--merahLogo)"
-                        class="link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">Ilena Furniture
-                        CS</a>
-                    apabila kamu membutuhkan bantuan.
-                </p>
-            </div>
-            <div>
-                <p class="mb-0 text-black-50">
-                    Terakhir diupdate: <?php
+            <div class="w-100 d-flex py-2 justify-content-between align-items-end">
+                <div style="width: 50%">
+                    <p class="mb-0">
+                        Invoice ini sah dan diproses oleh sistem<br />
+                        Silakan hubungi
+                        <a style="color: var(--merahLogo)"
+                            class="link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">Ilena
+                            Furniture
+                            CS</a>
+                        apabila kamu membutuhkan bantuan.
+                    </p>
+                </div>
+                <div>
+                    <p class="mb-0 text-black-50">
+                        Terakhir diupdate: <?php
                                         $d = strtotime($transaksi['data_mid']['transaction_time']);
                                         echo date("d", $d) . " " . $bulan[(int)date("m", $d) - 1] . " " . date("Y", $d) . " " . date("H:i:s", $d)
                                         ?> WIB
-                </p>
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
 </body>
 <?php if ($transaksi['status'] == 'Proses' || $transaksi['status'] == 'Dikirim' || $transaksi['status'] == 'Selesai' || $transaksi['status'] == 'Menunggu Pembayaran') { ?>
 <script>
