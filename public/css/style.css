@@ -31,7 +31,7 @@ body {
 .wrapper {
   /* border: 1px solid black; */
   width: 90%;
-  max-width: 1536px;
+  /* max-width: 1536px; */
   margin-inline: auto;
   position: relative;
   height: 150px;
@@ -52,11 +52,11 @@ body {
   }
 }
 .item {
-  width: 200px;
+  width: 180px;
   height: 100px;
   border-radius: 6px;
   position: absolute;
-  left: 100%;
+  left: max(calc(180px * 5), 100%);
   animation-name: scrollLeft;
   animation-duration: 30s;
   animation-timing-function: linear;
@@ -86,12 +86,6 @@ body {
 .item5 {
   animation-delay: calc(30s / 5 * (5 - 5) * -1);
 }
-/* .item6 {
-  animation-delay: calc(30s / 5 * (7 - 6) * -1);
-}
-.item7 {
-  animation-delay: calc(30s / 5 * (7 - 7) * -1);
-} */
 
 .baris-ke-kolom {
   display: flex;
@@ -1052,6 +1046,15 @@ body {
 }
 
 /*FOOTER*/
+.socialSvg {
+  width: 15px;
+  height: 17px;
+  margin-right: 0.5em;
+}
+
+.socialSvg path {
+  fill: #ffffff;
+}
 .footer-div {
   flex: 2;
   color: whitesmoke;

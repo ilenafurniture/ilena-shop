@@ -1,6 +1,21 @@
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
 <?php
+$koleksiterpilih = '';
+if (isset($_GET['koleksi'])) {
+    if ($_GET['koleksi'] != '') {
+        $koleksiselect = $_GET['koleksi'];
+        $produkLama = $produk;
+        $produk = [];
+        foreach ($produkLama as $p) {
+            if (strtolower(str_replace("-", " ", $koleksiselect)) == strtolower($p['kategori'])) {
+                array_push($produk, $p);
+            }
+        }
+        $koleksiterpilih = $koleksiselect;
+    }
+}
+
 $hitungPag = ceil(count($produk) / 10);
 $pag = 1;
 if (isset($_GET['pag'])) $pag = (int)$_GET['pag'];
@@ -15,12 +30,24 @@ for ($i = 0; $i < 10; $i++) {
     <div class="d-flex justify-content-between">
         <div>
             <h1 class="teks-sedang">Produk Saya</h1>
-            <p style="color: grey;"><?= count($produk); ?> Produk</p>
+            <p style="color: black;"><?= count($produk); ?> Produk</p>
         </div>
         <div>
             <a href="/admin/addproduct" class="btn-default-merah">Tambah Produk</a>
         </div>
     </div>
+    <div>
+        <!-- Selected adalah atribud yang altif -->
+        <select name="" class="form-select w-50" onchange="gantikoleksi(event)">
+            <option value="semua" <?= $koleksiterpilih == ''? 'selected':'' ?>>Semua</option>
+            <?php foreach ($koleksi as $k) { ?>
+            <option value="<?= str_replace(' ','-',$k['nama']) ?>"
+                <?= $koleksiterpilih == str_replace(' ','-',$k['nama']) ? 'selected':'' ?>>
+                <?= $k['nama'] ?></option>
+            <?php } ?>
+        </select>
+    </div>
+    <hr>
     <div class="container-table show-block-ke-hide">
         <div class="header-table">
             <div style="flex: 1;">Gambar</div>
@@ -29,26 +56,30 @@ for ($i = 0; $i < 10; $i++) {
             <div style="flex: 2;">Status</div>
             <div style="flex: 1;">Action</div>
         </div>
-        <?php foreach ($produk as $ind_p => $p) { ?>
-            <div class="isi-table">
-                <div style="flex: 1;" onclick="pergiKeProduct('<?= $p['id']; ?>')"><img style="width: 50px; height: 50px; object-fit:cover;" id="img<?= $ind_p ?>" src="/viewpic/<?= $p['id']; ?>" alt=""></div>
-                <div style="flex: 2;" class="d-flex flex-column align-items-start justify-content-center" onclick="pergiKeProduct('<?= $p['id']; ?>')">
-                    <p class="m-0"><?= ucfirst($p['kategori']); ?></p>
-                    <p class="fw-bold m-0" style="font-size: 20px;"><?= $p['nama']; ?></p>
-                    <p class="m-0" style="color: grey; font-size: 13px;">#<?= $p['id']; ?></p>
-                </div>
-                <div style="flex: 2;">Rp <?= number_format($p['harga'], 0, ',', '.'); ?></div>
-                <div style="flex: 2;">
-                    <div class="checkbox-apple">
-                        <input onchange="ubahStatus('<?= $p['id']; ?>')" class="yep" id="check-apple<?= $ind_p ?>" type="checkbox" <?= $p['active'] ? 'checked' : ''; ?>>
-                        <label for="check-apple<?= $ind_p ?>"></label>
-                    </div>
-                </div>
-                <div style="flex: 1;">
-                    <a class="btn" href="/admin/editproduct/<?= $p['id']; ?>"><i class="material-icons">edit</i></a>
-                    <a class="btn" href="/admin/deleteproduct/<?= $p['id']; ?>"><i class="material-icons" style="color: var(--merah);">delete</i></a>
+        <?php foreach ($produk as $ind_p => $p) { ?> <div class="isi-table">
+            <div style="flex: 1;" onclick="pergiKeProduct('<?= $p['id']; ?>')"><img
+                    style="width: 50px; height: 50px; object-fit:cover;" id="img<?= $ind_p ?>"
+                    src="/viewpic/<?= $p['id']; ?>" alt=""></div>
+            <div style="flex: 2;" class="d-flex flex-column align-items-start justify-content-center"
+                onclick="pergiKeProduct('<?= $p['id']; ?>')">
+                <p class="m-0"><?= ucfirst($p['kategori']); ?></p>
+                <p class="fw-bold m-0" style="font-size: 20px;"><?= $p['nama']; ?></p>
+                <p class="m-0" style="color: grey; font-size: 13px;">#<?= $p['id']; ?></p>
+            </div>
+            <div style="flex: 2;">Rp <?= number_format($p['harga'], 0, ',', '.'); ?></div>
+            <div style="flex: 2;">
+                <div class="checkbox-apple">
+                    <input onchange="ubahStatus('<?= $p['id']; ?>')" class="yep" id="check-apple<?= $ind_p ?>"
+                        type="checkbox" <?= $p['active'] ? 'checked' : ''; ?>>
+                    <label for="check-apple<?= $ind_p ?>"></label>
                 </div>
             </div>
+            <div style="flex: 1;">
+                <a class="btn" href="/admin/editproduct/<?= $p['id']; ?>"><i class="material-icons">edit</i></a>
+                <a class="btn" href="/admin/deleteproduct/<?= $p['id']; ?>"><i class="material-icons"
+                        style="color: var(--merah);">delete</i></a>
+            </div>
+        </div>
         <?php } ?>
     </div>
     <div class="hide-ke-show-block">
@@ -61,51 +92,66 @@ for ($i = 0; $i < 10; $i++) {
                 <div style="flex: 1;">Action</div>
             </div>
             <?php foreach ($produk as $ind_p => $p) { ?>
-                <div class="isi-table">
-                    <div style="flex: 1;" onclick="pergiKeProduct('<?= $p['id']; ?>')"><img style="width: 50px; height: 50px; object-fit:cover;" id="img<?= $ind_p ?>" src="/viewpic/<?= $p['id']; ?>" alt=""></div>
-                    <div style="flex: 2;" class="d-flex flex-column align-items-start justify-content-center" onclick="pergiKeProduct('<?= $p['id']; ?>')">
-                        <p class="m-0"><?= ucfirst($p['kategori']); ?></p>
-                        <p class="fw-bold m-0" style="font-size: 20px;"><?= $p['nama']; ?></p>
-                        <p class="m-0" style="color: grey; font-size: 13px;">#<?= $p['id']; ?></p>
-                    </div>
-                    <div style="flex: 2;">Rp <?= number_format($p['harga'], 0, ',', '.'); ?></div>
-                    <div style="flex: 2;">
-                        <div class="checkbox-apple">
-                            <input onchange="ubahStatus('<?= $p['id']; ?>')" class="yep" id="check-apple<?= $ind_p ?>" type="checkbox" <?= $p['active'] ? 'checked' : ''; ?>>
-                            <label for="check-apple<?= $ind_p ?>"></label>
-                        </div>
-                    </div>
-                    <div style="flex: 1;">
-                        <a class="btn" href="/admin/editproduct/<?= $p['id']; ?>"><i class="material-icons">edit</i></a>
-                        <a class="btn" href="/admin/deleteproduct/<?= $p['id']; ?>"><i class="material-icons" style="color: var(--merah);">delete</i></a>
+            <div class="isi-table">
+                <div style="flex: 1;" onclick="pergiKeProduct('<?= $p['id']; ?>')"><img
+                        style="width: 50px; height: 50px; object-fit:cover;" id="img<?= $ind_p ?>"
+                        src="/viewpic/<?= $p['id']; ?>" alt=""></div>
+                <div style="flex: 2;" class="d-flex flex-column align-items-start justify-content-center"
+                    onclick="pergiKeProduct('<?= $p['id']; ?>')">
+                    <p class="m-0"><?= ucfirst($p['kategori']); ?></p>
+                    <p class="fw-bold m-0" style="font-size: 20px;"><?= $p['nama']; ?></p>
+                    <p class="m-0" style="color: grey; font-size: 13px;">#<?= $p['id']; ?></p>
+                </div>
+                <div style="flex: 2;">Rp <?= number_format($p['harga'], 0, ',', '.'); ?></div>
+                <div style="flex: 2;">
+                    <div class="checkbox-apple">
+                        <input onchange="ubahStatus('<?= $p['id']; ?>')" class="yep" id="check-apple<?= $ind_p ?>"
+                            type="checkbox" <?= $p['active'] ? 'checked' : ''; ?>>
+                        <label for="check-apple<?= $ind_p ?>"></label>
                     </div>
                 </div>
+                <div style="flex: 1;">
+                    <a class="btn" href="/admin/editproduct/<?= $p['id']; ?>"><i class="material-icons">edit</i></a>
+                    <a class="btn" href="/admin/deleteproduct/<?= $p['id']; ?>"><i class="material-icons"
+                            style="color: var(--merah);">delete</i></a>
+                </div>
+            </div>
             <?php } ?>
         </div>
     </div>
     <div class="container-pag">
         <?php if ($pag > 1) { ?>
-            <a class="item-pag" href="/admin/product?pag=<?= $pag - 1; ?>"><i class="material-icons">chevron_left</i></a>
+        <a class="item-pag" href="/admin/product?pag=<?= $pag - 1; ?>"><i class="material-icons">chevron_left</i></a>
         <?php } ?>
         <?php for ($i = 0; $i < $hitungPag; $i++) { ?>
-            <a class="item-pag <?= $pag == ($i + 1) ? 'active' : ''; ?>" href="/admin/product?pag=<?= $i + 1; ?>"><?= $i + 1; ?></a>
+        <a class="item-pag <?= $pag == ($i + 1) ? 'active' : ''; ?>"
+            href="/admin/product?pag=<?= $i + 1; ?>"><?= $i + 1; ?></a>
         <?php } ?>
         <?php if ($pag < $hitungPag) { ?>
-            <a class="item-pag" href="/admin/product?pag=<?= $pag + 1; ?>"><i class="material-icons">chevron_right</i></a>
+        <a class="item-pag" href="/admin/product?pag=<?= $pag + 1; ?>"><i class="material-icons">chevron_right</i></a>
         <?php } ?>
     </div>
 </div>
 <script>
-    function ubahStatus(id_produk) {
-        console.log(id_produk)
-        async function fetchUpdate() {
-            const updateStatus = await fetch('/admin/activeproduct/' + id_produk);
-        }
-        fetchUpdate();
+function gantikoleksi(e) {
+    console.log(e.target.value);
+    if (e.target.value == 'semua') {
+        window.location.href = window.location.pathname;
+    } else {
+        window.location.href = window.location.pathname + '?koleksi=' + e.target.value;
     }
+}
 
-    function pergiKeProduct(id_produk) {
-        window.location.href = "/product/" + id_produk
+function ubahStatus(id_produk) {
+    console.log(id_produk)
+    async function fetchUpdate() {
+        const updateStatus = await fetch('/admin/activeproduct/' + id_produk);
     }
+    fetchUpdate();
+}
+
+function pergiKeProduct(id_produk) {
+    window.location.href = "/product/" + id_produk
+}
 </script>
 <?= $this->endSection(); ?>

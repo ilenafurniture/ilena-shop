@@ -46,9 +46,11 @@ class AdminController extends BaseController
     public function listProduct()
     {
         $product = $this->barangModel->getBarangAdmin();
+        $koleksi = $this->koleksiModel->findAll();
         $data = [
             'title' => 'Produk Kami',
-            'produk' => $product
+            'produk' => $product,
+            'koleksi'=> $koleksi
         ];
         return view('admin/all', $data);
     }

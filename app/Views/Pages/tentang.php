@@ -54,7 +54,7 @@
         src="https://images.unsplash.com/photo-1617325247661-675ab4b64ae2?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         alt=""> -->
 
-    <div style="flex: 1;" class="p-5">
+    <div style="flex: 1;" class="p-5 show-block-ke-hide">
         <hr>
         <h1 class="text-center mb-0 p-1" style="font-size:42px; font-weight: 600;">Our Partners</h1>
         <div class="d-flex">
