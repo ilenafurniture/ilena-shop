@@ -243,7 +243,7 @@ class AdminController extends BaseController
         $gambarBarangCur = $this->gambarBarangModel->getGambar($idBarang);
         if (!$barangCur) {
             session()->setFlashdata('val-id', 'ID barang tidak ditemukan');
-            return redirect()->to('/admin/editproduct')->withInput();
+            return redirect()->to('/admin/editproduct/' . $idBarang)->withInput();
         }
 
         $koleksi = $this->koleksiModel->getKoleksi();
@@ -270,7 +270,7 @@ class AdminController extends BaseController
         foreach ($arrIndLast as $ai) {
             unset($data_gambar_mentah[$ai]);
         }
-        dd($data_gambar_mentah);
+        // dd($data_gambar_mentah);
 
         $data_gambar = [];
         $jmlUrutanGambar = [];
@@ -279,6 +279,7 @@ class AdminController extends BaseController
             $sumJml += count(explode(',', $v['urutan_gambar']));
             array_push($jmlUrutanGambar, $sumJml);
         }
+        $cekcekek = [];
         foreach ($data_gambar_mentah as $key => $g) {
             if ($g->isValid()) {
                 $data_gambar[$key] = file_get_contents($g);
@@ -286,19 +287,26 @@ class AdminController extends BaseController
                 // if ($gambarBarangCur['gambar' . explode("-", $key)[2]] != null) {
                 //     $data_gambar[$key] = $gambarBarangCur['gambar' . explode("-", $key)[2]];
                 // }
-                if ((int)explode("-", $key)[1] <= 1) {
+                if ((int)explode("-", $key)[1] == 1) {
                     if ($gambarBarangCur['gambar' . explode("-", $key)[2]] != null) {
+                        array_push($cekcekek, 'gambar' . explode("-", $key)[2]);
                         $data_gambar[$key] = $gambarBarangCur['gambar' . explode("-", $key)[2]];
                     }
                 } else {
-                    if ($gambarBarangCur['gambar' . ((int)explode("-", $key)[2] + $jmlUrutanGambar[(int)explode("-", $key)[1] - 1])] != null) {
-                        $data_gambar[$key] = $gambarBarangCur['gambar' . ((int)explode("-", $key)[2] + $jmlUrutanGambar[(int)explode("-", $key)[1] - 1])];
+                    array_push($cekcekek, 'gambar' . ((int)explode("-", $key)[2] + $jmlUrutanGambar[(int)explode("-", $key)[1] - 2]));
+                    if ($gambarBarangCur['gambar' . ((int)explode("-", $key)[2] + $jmlUrutanGambar[(int)explode("-", $key)[1] - 2])] != null) {
+                        $data_gambar[$key] = $gambarBarangCur['gambar' . ((int)explode("-", $key)[2] + $jmlUrutanGambar[(int)explode("-", $key)[1] - 2])];
                     }
                 }
             }
         }
         $jumlahVarian = explode(",", $this->request->getVar('hitung-varian')); //nilai indeks/urutan varian yg masuk ke backend
-
+        dd([
+            'jmlUrutan' => $jmlUrutanGambar,
+            'dataGambar' => $data_gambar,
+            'getvar' => $data_gambar_mentah,
+            'cekcekcek' => $cekcekek
+        ]);
         $insertGambarBarang = [];
         $varianData = json_decode($barangCur['varian'], true);
 

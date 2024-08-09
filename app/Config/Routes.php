@@ -85,6 +85,7 @@ $routes->get('/admin/customer', 'AdminController::customer', ['filter' => 'admin
 $routes->get('/admin/addproduct', 'AdminController::addProduct', ['filter' => 'adminFilter']);
 $routes->post('/admin/addproduct', 'AdminController::actionAddProduct', ['filter' => 'adminFilter']);
 $routes->get('/admin/editproduct/(:any)', 'AdminController::editProduct/$1', ['filter' => 'adminFilter']);
+$routes->post('/admin/editproduct', 'AdminController::actionEditProduct', ['filter' => 'adminFilter']);
 $routes->post('/admin/editproduct/(:any)', 'AdminController::actionEditProduct/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/deleteproduct/(:any)', 'AdminController::deleteProduct/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/activeproduct/(:any)', 'AdminController::activeProduct/$1', ['filter' => 'adminFilter']);
