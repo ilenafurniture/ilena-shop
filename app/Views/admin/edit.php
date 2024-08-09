@@ -2,7 +2,7 @@
 <?= $this->section("content"); ?>
 <div style="padding: 2em;">
     <h1 class="teks-sedang mb-3">Edit Produk</h1>
-    <form method="post" action="/admin/editproduct" enctype="multipart/form-data">
+    <form method="post" action="/admin/editproduct/<?= isset($_GET['sblm']) ? $_GET['sblm'] : ''; ?>" enctype="multipart/form-data">
         <?= csrf_field(); ?>
         <div class="baris-ke-kolom">
             <div class="limapuluh-ke-seratus">

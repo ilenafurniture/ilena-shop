@@ -50,7 +50,7 @@ class AdminController extends BaseController
         $data = [
             'title' => 'Produk Kami',
             'produk' => $product,
-            'koleksi'=> $koleksi
+            'koleksi' => $koleksi
         ];
         return view('admin/all', $data);
     }
@@ -236,7 +236,7 @@ class AdminController extends BaseController
         ];
         return view('admin/edit', $data);
     }
-    public function actionEditProduct()
+    public function actionEditProduct($pathname = false)
     {
         $idBarang = $this->request->getVar('id');
         $barangCur = $this->barangModel->getBarangAdmin($idBarang);
@@ -254,6 +254,7 @@ class AdminController extends BaseController
         // difilter data gambar mentah krn ada input yg hanya sebagai penambah saja
         reset($data_gambar_mentah);
         $cekInputTerakhir = explode("-", key($data_gambar_mentah))[0] . "-" . explode("-", key($data_gambar_mentah))[1];
+        // dd($cekInputTerakhir);
         $simpanInd = '';
         $arrIndLast = [];
         foreach ($data_gambar_mentah as $ind_dgm => $dgm) {
@@ -269,15 +270,30 @@ class AdminController extends BaseController
         foreach ($arrIndLast as $ai) {
             unset($data_gambar_mentah[$ai]);
         }
-        // dd($data_gambar_mentah);
+        dd($data_gambar_mentah);
 
         $data_gambar = [];
+        $jmlUrutanGambar = [];
+        $sumJml = 0;
+        foreach (json_decode($barangCur['varian'], true) as $v) {
+            $sumJml += count(explode(',', $v['urutan_gambar']));
+            array_push($jmlUrutanGambar, $sumJml);
+        }
         foreach ($data_gambar_mentah as $key => $g) {
             if ($g->isValid()) {
                 $data_gambar[$key] = file_get_contents($g);
             } else {
-                if ($gambarBarangCur['gambar' . explode("-", $key)[2]] != null) {
-                    $data_gambar[$key] = $gambarBarangCur['gambar' . explode("-", $key)[2]];
+                // if ($gambarBarangCur['gambar' . explode("-", $key)[2]] != null) {
+                //     $data_gambar[$key] = $gambarBarangCur['gambar' . explode("-", $key)[2]];
+                // }
+                if ((int)explode("-", $key)[1] <= 1) {
+                    if ($gambarBarangCur['gambar' . explode("-", $key)[2]] != null) {
+                        $data_gambar[$key] = $gambarBarangCur['gambar' . explode("-", $key)[2]];
+                    }
+                } else {
+                    if ($gambarBarangCur['gambar' . ((int)explode("-", $key)[2] + $jmlUrutanGambar[(int)explode("-", $key)[1] - 1])] != null) {
+                        $data_gambar[$key] = $gambarBarangCur['gambar' . ((int)explode("-", $key)[2] + $jmlUrutanGambar[(int)explode("-", $key)[1] - 1])];
+                    }
                 }
             }
         }
@@ -363,7 +379,7 @@ class AdminController extends BaseController
         }
         $this->gambarBarangModel->where(['id' => $idBarang])->set($insertGambarBarang)->update();
         $this->gambarBarang3000Model->where(['id' => $idBarang])->set($insertGambarBarang)->update();
-        return redirect()->to('admin/product');
+        return redirect()->to($pathname ? str_replace('@', '/', $pathname) : 'admin/product');
     }
 
     public function mutasiConfirm()
