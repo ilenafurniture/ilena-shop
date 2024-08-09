@@ -13,9 +13,9 @@
                 <div class="footer-div" style="flex:1;">
                     <h5>Delivery Support</h5>
                     <div class="d-flex gap-2">
-                        <a><img src="../img/logo/Logo JNT.png" style="height: 13px"></a>
-                        <a><img src="../img/logo/Logo JNE.png" style="height: 13px"></a>
-                        <a><img src="../img/logo/Logo Indah.png" style="height: 20px"></a>
+                        <a><img src="<?= base_url('img/logo/Logo JNT.png') ?>" style="height: 13px"></a>
+                        <a><img src="<?= base_url('img/logo/Logo JNE.png') ?>" style="height: 13px"></a>
+                        <a><img src="<?= base_url('img/logo/Logo Indah.png') ?>" style="height: 20px"></a>
                     </div>
                 </div>
             </div>
@@ -23,10 +23,10 @@
                 <div class="footer-div" style="flex:1;">
                     <h5>Find Us On</h5>
                     <div class="d-flex gap-2">
-                        <a href="https://tokopedia.link/GNcLHtigJLb"><img src="../img/logo/Logo Tokped.png"
-                                style="height: 30px"></a>
-                        <a href="https://s.shopee.co.id/1qI8YxbdwR"><img src="../img/logo/Logo Shopee.png"
-                                style="height: 30px"></a>
+                        <a href="https://tokopedia.link/GNcLHtigJLb"><img
+                                src="<?= base_url('img/logo/Logo Tokped.png') ?>" style="height: 30px"></a>
+                        <a href="https://s.shopee.co.id/1qI8YxbdwR"><img
+                                src="<?= base_url('img/logo/Logo Shopee.png') ?>" style="height: 30px"></a>
                     </div>
                 </div>
                 <div class="footer-div" style="flex:1;">

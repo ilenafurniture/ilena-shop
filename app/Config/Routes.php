@@ -14,6 +14,7 @@ $routes->get('/kebijakan', 'Pages::kebijakan', ['filter' => 'customerFilter']);
 $routes->get('/', 'Pages::index', ['filter' => 'customerFilter']);
 $routes->get('/product', 'Pages::product', ['filter' => 'customerFilter']);
 $routes->get('/product/(:any)', 'Pages::product/$1', ['filter' => 'customerFilter']);
+$routes->get('/product/(:any)/(:any)', 'Pages::product/$1/$2', ['filter' => 'customerFilter']);
 
 $routes->post('/actionfind', 'Pages::actionFind', ['filter' => 'customerFilter']);
 $routes->get('/find/(:any)', 'Pages::find/$1', ['filter' => 'customerFilter']);
@@ -112,6 +113,7 @@ $routes->get('/gudang/suratjalan/(:any)', 'GudangController::suratJalan/$1', ['f
 $routes->post('/gudang/ajukanprint', 'GudangController::ajukanPrint', ['filter' => 'gudangFilter']);
 
 $routes->get('/fixmutasi', 'GudangController::fixMutasi');
+$routes->get('/fixnama', 'Pages::fixNama');
 
 
 // Marketplace Controller

@@ -57,13 +57,13 @@ for ($i = 0; $i < 10; $i++) {
             <div style="flex: 1;">Action</div>
         </div>
         <?php foreach ($produk as $ind_p => $p) { ?> <div class="isi-table">
-            <div style="flex: 1;" onclick="pergiKeProduct('<?= $p['id']; ?>')"><img
+            <div style="flex: 1;" onclick="pergiKeProduct('<?= str_replace(' ','-',$p['nama']); ?>')"><img
                     style="width: 50px; height: 50px; object-fit:cover;" id="img<?= $ind_p ?>"
                     src="/viewpic/<?= $p['id']; ?>" alt=""></div>
             <div style="flex: 2;" class="d-flex flex-column align-items-start justify-content-center"
-                onclick="pergiKeProduct('<?= $p['id']; ?>')">
+                onclick="pergiKeProduct('<?= str_replace(' ','-',$p['nama']); ?>')">
                 <p class="m-0"><?= ucfirst($p['kategori']); ?></p>
-                <p class="fw-bold m-0" style="font-size: 20px;"><?= $p['nama']; ?></p>
+                <p class="fw-bold m-0" style="font-size: 20px;"><?= strtoupper($p['nama']); ?></p>
                 <p class="m-0" style="color: grey; font-size: 13px;">#<?= $p['id']; ?></p>
             </div>
             <div style="flex: 2;">Rp <?= number_format($p['harga'], 0, ',', '.'); ?></div>
@@ -150,8 +150,8 @@ function ubahStatus(id_produk) {
     fetchUpdate();
 }
 
-function pergiKeProduct(id_produk) {
-    window.location.href = "/product/" + id_produk
+function pergiKeProduct(nama_produk) {
+    window.location.href = "/product/" + nama_produk
 }
 </script>
 <?= $this->endSection(); ?>
