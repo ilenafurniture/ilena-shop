@@ -84,16 +84,29 @@ class Pages extends BaseController
         ];
         return view('pages/all', $data);
     }
-    public function product($id = false)
+    public function fixNama(){
+        $seluruhBarang = $this->barangModel->findAll();
+        foreach ($seluruhBarang as $sb) {
+            $this->barangModel->where([
+                'id'=> $sb['id']
+            ])->set([
+                'nama' => $sb['subkategori'].' '.$sb['kategori']
+            ])->update();
+        }
+        return $this->response->setJSON(['Sucess' => 'OK'], false);
+    }
+    public function product($nama = false,$ind_nama = false)
     {
         $wishlist = $this->session->get('wishlist');
         $koleksi = $this->koleksiModel->findAll();
         $jenis = $this->jenisModel->findAll();
+        $nama = str_replace('-',' ',$nama);
         if (!isset($wishlist)) {
             $wishlist = [];
         }
-        if ($id) {
-            $product = $this->barangModel->getBarang($id);
+        if ($nama) {
+            $productsemua = $this->barangModel->where(['nama'=>$nama])->findAll();
+            $product = $productsemua[$ind_nama];
             // dd($product);
             $product['deskripsi'] = json_decode($product['deskripsi'], true);
             $product['varian'] = json_decode($product['varian'], true);
@@ -108,7 +121,9 @@ class Pages extends BaseController
                 'wishlist' => $wishlist,
                 'koleksi' => $koleksi,
                 'jenis' => $jenis,
-                'produkSejenis' => $produkSejenis
+                'produkSejenis' => $produkSejenis,
+                'produkSemua' => $productsemua,
+                'indexNama' => $ind_nama
             ];
 
             //menambah pengunjung
@@ -116,7 +131,7 @@ class Pages extends BaseController
 
             return view('pages/product', $data);
         } else {
-            $product = $this->barangModel->getBarang();
+            $product = $this->barangModel->getBarangNama();
             $data = [
                 'title' => 'Produk Kami',
                 'navbar' => [

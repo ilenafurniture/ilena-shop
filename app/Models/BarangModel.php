@@ -32,6 +32,22 @@ class BarangModel extends Model
         }
         return $this->where(['id' => $id, 'active' => '1'])->first();
     }
+    public function getBarangNama($nama = false)
+    {
+        if ($nama == false) {
+            $seluruhBrang = $this->orderBy('nama', 'asc')->where(['active' => '1'])->findAll();
+            $seluruhBarangFilter = [];
+            $seluruhNama =  [];
+            foreach ($seluruhBrang as $s) {
+                if(!in_array($s['nama'],$seluruhNama)){
+                    array_push($seluruhBarangFilter,$s);
+                    array_push($seluruhNama, $s['nama']);
+                }
+            }
+            return $seluruhBarangFilter;
+        }
+        return $this->where(['id' => $nama, 'active' => '1'])->first();
+    }
     public function getBarangAdmin($id = false)
     {
         if ($id == false) {

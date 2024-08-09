@@ -141,7 +141,7 @@
                                     class="material-icons">shopping_cart</i></a>
                         </div>
                     </div>
-                    <a href="/product/<?= $p['id']; ?>">
+                    <a href="/product/<?= str_replace(' ','-',$p['nama']); ?>">
                         <img id="img<?= $ind_p ?>" src="/viewpic/<?= $p['id']; ?>" alt="">
                     </a>
                 </div>
@@ -170,7 +170,7 @@
                     </script>
                 </div>
                 <p class="text-secondary text-sm-start m-0"><?= ucwords($p['kategori']); ?></p>
-                <h5><?= $p['nama']; ?></h5>
+                <h5><?= strtoupper($p['nama']); ?></h5>
                 <div class="d-flex gap-2">
                     <p class="harga">Rp <?= number_format($p['harga'] * (100 - $p['diskon']) / 100, 0, ',', '.'); ?></p>
                     <?php if ($p['diskon'] > 0) { ?>

@@ -28,6 +28,65 @@ body {
   flex-direction: column;
 }
 
+.wrapper {
+  /* border: 1px solid black; */
+  width: 90%;
+  /* max-width: 1536px; */
+  margin-inline: auto;
+  position: relative;
+  height: 150px;
+  margin-top: 5rem;
+  overflow: hidden;
+  mask-image: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 1) 20%,
+    rgba(0, 0, 0, 1) 80%,
+    rgba(0, 0, 0, 0)
+  );
+}
+
+@keyframes scrollLeft {
+  to {
+    left: -200px;
+  }
+}
+.item {
+  width: 180px;
+  height: 100px;
+  border-radius: 6px;
+  position: absolute;
+  left: max(calc(180px * 5), 100%);
+  animation-name: scrollLeft;
+  animation-duration: 30s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  display: block;
+}
+
+.item img {
+  height: 100px;
+  width: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.item1 {
+  animation-delay: calc(30s / 5 * (5 - 1) * -1);
+}
+.item2 {
+  animation-delay: calc(30s / 5 * (5 - 2) * -1);
+}
+.item3 {
+  animation-delay: calc(30s / 5 * (5 - 3) * -1);
+}
+.item4 {
+  animation-delay: calc(30s / 5 * (5 - 4) * -1);
+}
+.item5 {
+  animation-delay: calc(30s / 5 * (5 - 5) * -1);
+}
+
 .baris-ke-kolom {
   display: flex;
   gap: 2em;
@@ -101,8 +160,8 @@ body {
   /* margin-inline: auto; */
 }
 .pemberitahuan.hijau {
-    color: #0a961d;
-    background-color: #1ece3623;
+  color: #0a961d;
+  background-color: #1ece3623;
 }
 
 .list-nav {
@@ -987,6 +1046,15 @@ body {
 }
 
 /*FOOTER*/
+.socialSvg {
+  width: 15px;
+  height: 17px;
+  margin-right: 0.5em;
+}
+
+.socialSvg path {
+  fill: #ffffff;
+}
 .footer-div {
   flex: 2;
   color: whitesmoke;
