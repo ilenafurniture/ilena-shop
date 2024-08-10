@@ -352,7 +352,7 @@ for ($i = 0; $i < 10; $i++) {
             <div class="container-card1">
                 <?php foreach ($produk as $ind_p => $p) { ?>
                 <div class="card1">
-                    <div style="position: relative;" onclick="pergiKeProduct('<?= $p['id']; ?>')"
+                    <div style="position: relative;" onclick="pergiKeProduct('<?= str_replace(' ','-',$p['nama']); ?>')"
                         class="cursor-pointer">
                         <div class="card1-content-img">
                             <span
@@ -396,8 +396,8 @@ for ($i = 0; $i < 10; $i++) {
                         });
                         </script>
                     </div>
-                    <p class="text-secondary text-sm-start m-0"><?= ucwords($p['kategori']); ?></p>
-                    <h5><?= strtoupper($p['nama']); ?></h5>
+                    <p class="text-secondary text-sm-start m-0"><?= strtolower($p['kategori']); ?></p>
+                    <h5 style="font-size:18px;"><?= str_replace('Tv','TV',ucwords($p['nama'])); ?></h5>
                     <div class="d-flex gap-2">
                         <p class="harga">Rp <?= number_format($p['harga'] * (100 - $p['diskon']) / 100, 0, ',', '.'); ?>
                         </p>
