@@ -118,11 +118,11 @@
         <hr>
     </div>
     <div class="container mb-5 show-block-ke-hide">
-        <h1 class="teks-besar text-center">Produk Kami</h1>
+        <h1 class="teks-besar justify-content-between">Produk Populer</h1>
     </div>
 
     <div class="hide-ke-show-block mb-4">
-        <h1 class="teks-besar text-center">Produk Kami</h1>
+        <h1 class="teks-besar justify-content-between">Produk Populer</h1>
     </div>
 
     <div class="container mb-5">
@@ -169,7 +169,7 @@
                     </script>
                 </div>
                 <p class="text-secondary text-sm-start m-0"><?= ucwords($p['kategori']); ?></p>
-                <h5><?= strtoupper($p['nama']); ?></h5>
+                <h5 style="font-size:18px;"><?= str_replace('Tv','TV',ucwords($p['nama'])); ?></h5>
                 <div class="d-flex gap-2">
                     <p class="harga">Rp <?= number_format($p['harga'] * (100 - $p['diskon']) / 100, 0, ',', '.'); ?></p>
                     <?php if ($p['diskon'] > 0) { ?>

@@ -16,7 +16,7 @@
         </nav>
         <div class="baris-ke-kolom-reverse w-100">
             <div class="limapuluh-ke-seratus">
-                <h1 class="teks-besar mb-2"><?= ucwords($produk['nama']) ?></h1>
+                <h1 class="teks-besar mb-2"><?= str_replace('Tv','TV',ucwords($produk['nama'])) ?></h1>
                 <div class="d-flex gap-2 mb-3">
                     <p class="harga">Rp
                         <?= number_format($produk['harga'] * (100 - $produk['diskon']) / 100, 0, ',', '.'); ?></p>
@@ -233,7 +233,8 @@
         <div class="container-card1">
             <?php foreach ($produkSejenis as $ind_p => $p) { ?>
             <div class="card1">
-                <div style="position: relative;" onclick="pergiKeProduct('<?= $p['id']; ?>')" class="cursor-pointer">
+                <div style="position: relative;" onclick="pergiKeProduct('<?= str_replace(' ','-',$p['nama']); ?>')"
+                    class="cursor-pointer">
                     <div class="card1-content-img">
                         <span
                             <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
@@ -276,7 +277,7 @@
                     </script>
                 </div>
                 <p class="text-secondary text-sm-start m-0"><?= ucwords($p['kategori']); ?></p>
-                <h5><?= strtoupper($p['nama']); ?></h5>
+                <h5 style="font-size:18px;"><?= str_replace('Tv','TV',ucwords($p['nama'])); ?></h5>
                 <div class="d-flex gap-2">
                     <p class="harga">Rp <?= number_format($p['harga'] * (100 - $p['diskon']) / 100, 0, ',', '.'); ?></p>
                     <?php if ($p['diskon'] > 0) { ?>

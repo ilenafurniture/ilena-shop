@@ -116,6 +116,7 @@ $routes->post('/gudang/ajukanprint', 'GudangController::ajukanPrint', ['filter' 
 
 $routes->get('/fixmutasi', 'GudangController::fixMutasi');
 $routes->get('/fixnama', 'Pages::fixNama');
+$routes->get('/gantijenis/(:any)/(:any)', 'Pages::gantiJenis/$1/$2');
 
 
 // Marketplace Controller

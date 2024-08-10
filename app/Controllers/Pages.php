@@ -95,6 +95,21 @@ class Pages extends BaseController
         }
         return $this->response->setJSON(['Sucess' => 'OK'], false);
     }
+
+    public function gantiJenis($nama_lama,$nama_baru){
+        $this->jenisModel->where(['nama' => $nama_lama])->set(['nama' => $nama_baru])->update();
+        $seluruhBarang = $this->barangModel->findAll();
+        foreach ($seluruhBarang as $sb ) {
+            if(strtolower($sb['subkategori']) == $nama_lama){
+                $this->barangModel->where([
+                    'id'=> $sb['id']
+                ])->set([
+                    'subkategori' => $nama_baru 
+                ])->update();
+            }
+        }
+        return $this->response->setJSON(['Sucess' => 'OK'], false);
+    }
     public function product($nama = false,$ind_nama = false)
     {
         $wishlist = $this->session->get('wishlist');
