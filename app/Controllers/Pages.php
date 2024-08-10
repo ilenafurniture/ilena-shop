@@ -96,9 +96,6 @@ class Pages extends BaseController
         }
         return $this->response->setJSON(['Sucess' => 'OK'], false);
     }
-<<<<<<< HEAD
-    public function product($nama = false, $ind_nama = false)
-=======
 
     public function gantiJenis($nama_lama,$nama_baru){
         $this->jenisModel->where(['nama' => $nama_lama])->set(['nama' => $nama_baru])->update();
@@ -114,8 +111,8 @@ class Pages extends BaseController
         }
         return $this->response->setJSON(['Sucess' => 'OK'], false);
     }
-    public function product($nama = false,$ind_nama = false)
->>>>>>> 24b42e37cef83b70daf21f10bcf483eb2ee7a172
+
+    public function product($nama = false, $ind_nama = false)
     {
         $wishlist = $this->session->get('wishlist');
         $koleksi = $this->koleksiModel->findAll();
