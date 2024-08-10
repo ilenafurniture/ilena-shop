@@ -84,28 +84,29 @@ class Pages extends BaseController
         ];
         return view('pages/all', $data);
     }
-    public function fixNama(){
+    public function fixNama()
+    {
         $seluruhBarang = $this->barangModel->findAll();
         foreach ($seluruhBarang as $sb) {
             $this->barangModel->where([
-                'id'=> $sb['id']
+                'id' => $sb['id']
             ])->set([
-                'nama' => $sb['subkategori'].' '.$sb['kategori']
+                'nama' => $sb['subkategori'] . ' ' . $sb['kategori']
             ])->update();
         }
         return $this->response->setJSON(['Sucess' => 'OK'], false);
     }
-    public function product($nama = false,$ind_nama = false)
+    public function product($nama = false, $ind_nama = false)
     {
         $wishlist = $this->session->get('wishlist');
         $koleksi = $this->koleksiModel->findAll();
         $jenis = $this->jenisModel->findAll();
-        $nama = str_replace('-',' ',$nama);
+        $nama = str_replace('-', ' ', $nama);
         if (!isset($wishlist)) {
             $wishlist = [];
         }
         if ($nama) {
-            $productsemua = $this->barangModel->where(['nama'=>$nama])->findAll();
+            $productsemua = $this->barangModel->where(['nama' => $nama])->findAll();
             $product = $productsemua[$ind_nama];
             // dd($product);
             $product['deskripsi'] = json_decode($product['deskripsi'], true);
@@ -2260,7 +2261,7 @@ class Pages extends BaseController
             'data_mid' => json_decode($transaksi['data_mid'], true),
         ];
         foreach ($arr['items'] as $ind_i => $i) {
-            if($i['id'] != 'Voucher' && $i['id'] != 'Biaya Admin') {
+            if ($i['id'] != 'Voucher' && $i['id'] != 'Biaya Admin') {
                 $arr['items'][$ind_i]['collection'] = $this->barangModel->getBarang($i['id'])['kategori'];
             }
         }
@@ -2329,7 +2330,7 @@ class Pages extends BaseController
         if ($email)
             $this->pembeliModel->where('email', $email)->set(['wishlist' => json_encode($wishlist)])->update();
         $barang = $this->barangModel->getBarang($id_barang);
-        return redirect()->to('/product/' . str_replace(' ','-',$barang['nama']));
+        return redirect()->to('/product/' . str_replace(' ', '-', $barang['nama']));
     }
     public function delWishlist($id_barang)
     {
@@ -2342,7 +2343,7 @@ class Pages extends BaseController
         if ($email)
             $this->pembeliModel->where('email', $email)->set(['wishlist' => json_encode($wishlist)])->update();
         $barang = $this->barangModel->getBarang($id_barang);
-        return redirect()->to('/product/' . str_replace(' ','-',$barang['nama']));
+        return redirect()->to('/product/' . str_replace(' ', '-', $barang['nama']));
     }
     public function wishlistToCart()
     {
@@ -2754,7 +2755,7 @@ class Pages extends BaseController
                 'jenis' => $this->jenisModel->findAll(),
             ],
         ];
-        return view('pages/faq', $data);
+        return view('pages/faq1', $data);
     }
     public function tentang()
     {
