@@ -8,11 +8,11 @@
     <link href="<?= base_url('css/bootstrap.min.css'); ?>" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <?php if ($title == 'Pembayaran') { ?>
-    <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
-        data-client-key="SB-Mid-client-aGWfdxs2btRH4xSd"></script>
-    <script id="midtrans-script" src="https://api.midtrans.com/v2/assets/js/midtrans-new-3ds.min.js"
-        data-environment="<?= $emailUji ? 'sandbox' : 'production'; ?>"
-        data-client-key="<?= $emailUji ? 'SB-Mid-client-aGWfdxs2btRH4xSd' : ''; ?>" type="text/javascript"></script>
+        <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
+            data-client-key="SB-Mid-client-aGWfdxs2btRH4xSd"></script>
+        <script id="midtrans-script" src="https://api.midtrans.com/v2/assets/js/midtrans-new-3ds.min.js"
+            data-environment="<?= $emailUji ? 'sandbox' : 'production'; ?>"
+            data-client-key="<?= $emailUji ? 'SB-Mid-client-aGWfdxs2btRH4xSd' : ''; ?>" type="text/javascript"></script>
     <?php } ?>
     <link rel="stylesheet" href="<?= base_url('css/style.css'); ?>">
     <link rel="icon" href="<?= base_url('logo icon.png'); ?>" type="image/png">
@@ -36,9 +36,9 @@
         </div>
         <div class="d-flex flex-column gap-2">
             <a class="btn-circle" href="/form"><i class="material-icons">insert_comment</i></a>
-            <a class="btn-circle hijau" id="btn-wa"
-                href="https://api.whatsapp.com/send?phone=628112938160&text=Hallo%20CS%20*Lunarea*%2C%20saya%20ingin%20membeli%20furniture.....">
-                <i class="material-icons text-light">phone</i>
+            <a class="btn-circle" id="btn-wa"
+                href="https://api.whatsapp.com/send?phone=628112938160&text=Hallo%20CS%20*Ilena*%2C%20saya%20ingin%20membeli%20furniture.....">
+                <i class="material-icons">phone</i>
             </a>
         </div>
     </div>
@@ -51,9 +51,9 @@
     </div>
     <?= $this->include('layout/footer'); ?>
     <script>
-    function copytext(teks) {
-        navigator.clipboard.writeText(teks);
-    }
+        function copytext(teks) {
+            navigator.clipboard.writeText(teks);
+        }
     </script>
 </body>
 

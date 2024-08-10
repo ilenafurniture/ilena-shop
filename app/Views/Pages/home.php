@@ -128,65 +128,119 @@
     <div class="container mb-5">
         <div class="container-card1">
             <?php foreach ($produk as $ind_p => $p) { ?>
-            <div class="card1">
-                <div style="position: relative;">
-                    <div class="card1-content-img">
-                        <span
-                            <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
-                        <div class="d-flex flex-column gap-2">
-                            <?= in_array($p['id'], $wishlist) ? '<a class="card1-btn-img" href="/delwishlist/' . $p['id'] . '"><i class="material-icons">bookmark</i></a>' : '<a class="card1-btn-img" href="/addwishlist/' . $p['id'] . '"><i class="material-icons">bookmark_border</i></a>' ?>
-                            <a id="card<?= $ind_p ?>" class="card1-btn-img"
-                                href="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'], true)[0]['nama'] ?>/1"><i
-                                    class="material-icons">shopping_cart</i></a>
+                <div class="card1">
+                    <div style="position: relative;">
+                        <div class="card1-content-img">
+                            <span
+                                <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
+                            <div class="d-flex flex-column gap-2">
+                                <?= in_array($p['id'], $wishlist) ? '<a class="card1-btn-img" href="/delwishlist/' . $p['id'] . '"><i class="material-icons">bookmark</i></a>' : '<a class="card1-btn-img" href="/addwishlist/' . $p['id'] . '"><i class="material-icons">bookmark_border</i></a>' ?>
+                                <a id="card<?= $ind_p ?>" class="card1-btn-img"
+                                    href="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'], true)[0]['nama'] ?>/1"><i
+                                        class="material-icons">shopping_cart</i></a>
+                            </div>
                         </div>
+                        <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>">
+                            <img id="img<?= $ind_p ?>" src="/viewpic/<?= $p['id']; ?>" alt="">
+                        </a>
                     </div>
-                    <a href="/product/<?= str_replace(' ','-',$p['nama']); ?>">
-                        <img id="img<?= $ind_p ?>" src="/viewpic/<?= $p['id']; ?>" alt="">
-                    </a>
-                </div>
-                <div class="container-varian mb-1 d-flex">
-                    <?php foreach (json_decode($p['varian'], true) as $ind_v => $v) { ?>
-                    <input id="varian-<?= $ind_p ?>-<?= $ind_v ?>" value="<?= $v['urutan_gambar'] ?>-<?= $v['nama'] ?>"
-                        type="radio" name="varian<?= $ind_p ?>">
-                    <label for="varian-<?= $ind_p ?>-<?= $ind_v ?>"><span
-                            style="background-color: <?= $v['kode'] ?>"></span></label>
-                    <?php } ?>
-                    <script>
-                    const btnKeranjang<?= $ind_p ?>Elm = document.getElementById("card<?= $ind_p ?>");
-                    const varian<?= $ind_p ?>Elm = document.querySelectorAll('input[name="varian<?= $ind_p ?>"]');
-                    varian<?= $ind_p ?>Elm.forEach(elm => {
-                        elm.addEventListener('change', (e) => {
-                            console.log(e.target.value)
-                            const img<?= $ind_p ?>Elm = document.getElementById("img<?= $ind_p ?>");
-                            img<?= $ind_p ?>Elm.src =
-                                "/viewvar/<?= $p['id']; ?>/" + e.target.value.split("-")[0].split(",")[
-                                    0];
+                    <div class="container-varian mb-1 d-flex">
+                        <?php foreach (json_decode($p['varian'], true) as $ind_v => $v) { ?>
+                            <input id="varian-<?= $ind_p ?>-<?= $ind_v ?>" value="<?= $v['urutan_gambar'] ?>-<?= $v['nama'] ?>"
+                                type="radio" name="varian<?= $ind_p ?>">
+                            <label for="varian-<?= $ind_p ?>-<?= $ind_v ?>"><span
+                                    style="background-color: <?= $v['kode'] ?>"></span></label>
+                        <?php } ?>
+                        <script>
+                            const btnKeranjang<?= $ind_p ?>Elm = document.getElementById("card<?= $ind_p ?>");
+                            const varian<?= $ind_p ?>Elm = document.querySelectorAll('input[name="varian<?= $ind_p ?>"]');
+                            varian<?= $ind_p ?>Elm.forEach(elm => {
+                                elm.addEventListener('change', (e) => {
+                                    console.log(e.target.value)
+                                    const img<?= $ind_p ?>Elm = document.getElementById("img<?= $ind_p ?>");
+                                    img<?= $ind_p ?>Elm.src =
+                                        "/viewvar/<?= $p['id']; ?>/" + e.target.value.split("-")[0].split(",")[
+                                            0];
 
-                            btnKeranjang<?= $ind_p ?>Elm.href = "/addcart/<?= $p['id'] ?>/" + e.target
-                                .value.split("-")[1] + "/1";
-                        })
-                    });
-                    </script>
+                                    btnKeranjang<?= $ind_p ?>Elm.href = "/addcart/<?= $p['id'] ?>/" + e.target
+                                        .value.split("-")[1] + "/1";
+                                })
+                            });
+                        </script>
+                    </div>
+                    <p class="text-secondary text-sm-start m-0"><?= ucwords($p['kategori']); ?></p>
+                    <h5 style="font-size:18px;"><?= str_replace('Tv', 'TV', ucwords($p['nama'])); ?></h5>
+                    <div class="d-flex gap-2">
+                        <p class="harga">Rp <?= number_format($p['harga'] * (100 - $p['diskon']) / 100, 0, ',', '.'); ?></p>
+                        <?php if ($p['diskon'] > 0) { ?>
+                            <p class="harga-diskon">Rp <?= number_format($p['harga'], 0, ',', '.') ?></p>
+                        <?php } ?>
+                    </div>
                 </div>
-                <p class="text-secondary text-sm-start m-0"><?= ucwords($p['kategori']); ?></p>
-                <h5 style="font-size:18px;"><?= str_replace('Tv','TV',ucwords($p['nama'])); ?></h5>
-                <div class="d-flex gap-2">
-                    <p class="harga">Rp <?= number_format($p['harga'] * (100 - $p['diskon']) / 100, 0, ',', '.'); ?></p>
-                    <?php if ($p['diskon'] > 0) { ?>
-                    <p class="harga-diskon">Rp <?= number_format($p['harga'], 0, ',', '.') ?></p>
-                    <?php } ?>
-                </div>
-            </div>
             <?php } ?>
         </div>
     </div>
-
-
     <div class="container mb-5 d-flex justify-content-center">
         <a href="/product" class="btn-lonjong">Lihat Semua Produk <i class="material-icons">arrow_forward</i></a>
     </div>
 
-    <div></div>
+    <div style="background-image: url('../img/foto/gambar-hero2 edit.webp');
+    background-size: cover; background-position: center; background-repeat: no-repeat; color: white; background-color: rgba(0, 0, 0, 0.5); background-blend-mode: color;" class="py-5 d-none">
+        <!-- <div class="img-teks" style="height: 100%; color: white; background-color: rgba(0, 0, 0, 0.5);"> -->
+        <div class="container baris-ke-kolom gap-5">
+            <div style="flex: 1" class="d-flex justify-content-start gap-4">
+                <img src="../img/gratis ongkir.png" alt="" style="width: 70px; height: 40px">
+                <div>
+                    <p class="fw-bold mb-1" style="font-size: 20px;">Free Ongkir 100%</p>
+                    <p class="m-0">Dapatkan keuntungan gratis pengiriman 100% untuk wilayah Jawa, Madura, & Bali tanpa minimum belanja</p>
+                </div>
+            </div>
+            <div style="flex: 1" class="d-flex justify-content-start gap-4">
+                <img src="../img/eco friendly.png" alt="" style="width: 50px; height: 50px">
+                <div>
+                    <p class="fw-bold mb-1" style="font-size: 20px;">Eco Friendly</p>
+                    <p class="m-0">Dibuat dari bahan ramah lingkungan yang tidak berbahaya bagi kelangsungan manusia, bumi, dan lingkungan</p>
+                </div>
+            </div>
+            <div style="flex: 1" class="d-flex justify-content-start gap-4">
+                <img src="../img/seluruh indo.png" alt="" style="width: 70px; height: 60px">
+                <div>
+                    <p class="fw-bold mb-1" style="font-size: 20px;">Bebas kirim seluruh Indonesia</p>
+                    <p class="m-0">Bekerjasama dengan mitra ekspedisi yang telah menjangkau pengiriman aman & terpercaya ke seluruh Indonesia</p>
+                </div>
+            </div>
+        </div>
+        <!-- </div> -->
+        <!-- <img class="img-besar" style="height: 300px;" src="../img/foto/gambar-hero2 edit.webp" alt="Gambar Hero"> -->
+    </div>
+    <div style="background-color: whitesmoke;" class="py-5">
+        <!-- <div class="img-teks" style="height: 100%; color: white; background-color: rgba(0, 0, 0, 0.5);"> -->
+        <div class="container baris-ke-kolom gap-5">
+            <div style="flex: 1" class="d-flex justify-content-start gap-4">
+                <img src="../img/gratis ongkir oren.png" alt="" style="width: 70px; height: 40px;">
+                <div>
+                    <p class="fw-bold mb-1" style="font-size: 20px;">Free Ongkir 100%</p>
+                    <p class="m-0">Dapatkan keuntungan gratis pengiriman 100% untuk wilayah Jawa, Madura, & Bali tanpa minimum belanja</p>
+                </div>
+            </div>
+            <div style="flex: 1" class="d-flex justify-content-start gap-4">
+                <img src="../img/eco friendly oren.png" alt="" style="width: 50px; height: 50px">
+                <div>
+                    <p class="fw-bold mb-1" style="font-size: 20px;">Eco Friendly</p>
+                    <p class="m-0">Dibuat dari bahan ramah lingkungan yang tidak berbahaya bagi kelangsungan manusia, bumi, dan lingkungan</p>
+                </div>
+            </div>
+            <div style="flex: 1" class="d-flex justify-content-start gap-4">
+                <img src="../img/seluruh indo oren.png" alt="" style="width: 70px; height: 60px">
+                <div>
+                    <p class="fw-bold mb-1" style="font-size: 20px;">Bebas kirim seluruh Indonesia</p>
+                    <p class="m-0">Bekerjasama dengan mitra ekspedisi yang telah menjangkau pengiriman aman & terpercaya ke seluruh Indonesia</p>
+                </div>
+            </div>
+        </div>
+        <!-- </div> -->
+        <!-- <img class="img-besar" style="height: 300px;" src="../img/foto/gambar-hero2 edit.webp" alt="Gambar Hero"> -->
+    </div>
 
 </div>
 
