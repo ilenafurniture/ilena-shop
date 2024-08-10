@@ -2328,7 +2328,8 @@ class Pages extends BaseController
         $email = session()->get('email');
         if ($email)
             $this->pembeliModel->where('email', $email)->set(['wishlist' => json_encode($wishlist)])->update();
-        return redirect()->to('/product/' . $id_barang);
+        $barang = $this->barangModel->getBarang($id_barang);
+        return redirect()->to('/product/' . str_replace(' ','-',$barang['nama']));
     }
     public function delWishlist($id_barang)
     {
@@ -2340,7 +2341,8 @@ class Pages extends BaseController
         $email = session()->get('email');
         if ($email)
             $this->pembeliModel->where('email', $email)->set(['wishlist' => json_encode($wishlist)])->update();
-        return redirect()->to('/product/' . $id_barang);
+        $barang = $this->barangModel->getBarang($id_barang);
+        return redirect()->to('/product/' . str_replace(' ','-',$barang['nama']));
     }
     public function wishlistToCart()
     {
@@ -2764,6 +2766,17 @@ class Pages extends BaseController
             ],
         ];
         return view('pages/tentang', $data);
+    }
+    public function contact()
+    {
+        $data = [
+            'title' => 'Kontak Kami',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
+        ];
+        return view('pages/contact', $data);
     }
     public function syarat()
     {

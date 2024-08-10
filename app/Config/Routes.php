@@ -8,6 +8,7 @@ use CodeIgniter\Router\RouteCollection;
  */
 $routes->get('/faq', 'Pages::faq', ['filter' => 'customerFilter']);
 $routes->get('/tentang', 'Pages::tentang', ['filter' => 'customerFilter']);
+$routes->get('/contact', 'Pages::contact', ['filter' => 'customerFilter']);
 $routes->get('/syarat', 'Pages::syarat', ['filter' => 'customerFilter']);
 $routes->get('/kebijakan', 'Pages::kebijakan', ['filter' => 'customerFilter']);
 

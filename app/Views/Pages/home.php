@@ -113,7 +113,6 @@
         <!-- <img class="img-besar"
             src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt="Gambar Hero"> -->
-        <img class="img-besar" src="../img/foto/gambar-hero2.webp" alt="Gambar Hero">
     </div>
     <div class="container">
         <hr>
@@ -186,6 +185,8 @@
     <div class="container mb-5 d-flex justify-content-center">
         <a href="/product" class="btn-lonjong">Lihat Semua Produk <i class="material-icons">arrow_forward</i></a>
     </div>
+
+    <div></div>
 
 </div>
 

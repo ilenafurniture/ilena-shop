@@ -1,36 +1,18 @@
 <footer style="background-color: black;">
-    <div class="container py-5">
+    <div class="container py-4" style="display:80%;">
         <div class="pb-4 footer__left-menu baris-ke-kolom">
             <div class="d-flex w-100">
                 <div class="footer-div" style="flex:1;">
-                    <h5>Perusahaan</h5>
+                    <h5><strong>Ilena Furniture</strong></h5>
                     <a href="/tentang">Tentang Kami</a><br>
+                    <a href="/contact">Kontak Kami</a><br>
                     <a href="/kebijakan">Kebijakan & Privasi</a><br>
                     <a href="/syarat">Syarat & Ketentuan</a><br>
-                    <a href="/faq">F&Q</a>
-                    <p></p>
+                    <a href="/login">Masuk</a><br>
+                    <a href="/faq">FAQ</a>
                 </div>
                 <div class="footer-div" style="flex:1;">
-                    <h5>Delivery Support</h5>
-                    <div class="d-flex gap-2">
-                        <a><img src="<?= base_url('img/logo/Logo JNT.png') ?>" style="height: 13px"></a>
-                        <a><img src="<?= base_url('img/logo/Logo JNE.png') ?>" style="height: 13px"></a>
-                        <a><img src="<?= base_url('img/logo/Logo Indah.png') ?>" style="height: 20px"></a>
-                    </div>
-                </div>
-            </div>
-            <div class="d-flex w-100">
-                <div class="footer-div" style="flex:1;">
-                    <h5>Find Us On</h5>
-                    <div class="d-flex gap-2">
-                        <a href="https://tokopedia.link/GNcLHtigJLb"><img
-                                src="<?= base_url('img/logo/Logo Tokped.png') ?>" style="height: 30px"></a>
-                        <a href="https://s.shopee.co.id/1qI8YxbdwR"><img
-                                src="<?= base_url('img/logo/Logo Shopee.png') ?>" style="height: 30px"></a>
-                    </div>
-                </div>
-                <div class="footer-div" style="flex:1;">
-                    <h5>Social Media</h5>
+                    <h5><strong>Social Media</strong></h5>
                     <ul class=" footer__left-menu">
                         <li>
                             <svg class="socialSvg" viewBox="0 0 17 17">
@@ -62,9 +44,114 @@
                     </ul>
                 </div>
             </div>
+            <div class="d-flex w-100">
+                <div class="footer-div kolom-ke-baris" style="flex:1;">
+                    <div style="flex:1;">
+                        <h5><strong>Find Us On</strong></h5>
+                        <div class="gap-2">
+                            <a href=" https://tokopedia.link/GNcLHtigJLb"><img
+                                    src="<?= base_url('img/logo/Logo Tokped.png') ?>" style="height: 27px"></a>
+                            <a href="https://s.shopee.co.id/1qI8YxbdwR"><img
+                                    src="<?= base_url('img/logo/Logo Shopee.png') ?>" style="height: 27px"></a>
+                            <a href="https://www.tiktok.com/@ilenafurnitureofficial"><img
+                                    src="<?= base_url('img/logo/tiktok.png') ?>" style="height: 27px"></a>
+                        </div>
+                    </div>
+                    <div style="flex:1;">
+                        <h5><strong>Delivery Support</strong></h5>
+                        <div class="gap-2">
+                            <a><img src="<?= base_url('img/logo/Logo JNT.png') ?>" style="height: 13px"></a>
+                            <a><img src="<?= base_url('img/logo/Logo JNE.png') ?>" style="height: 13px"></a>
+                            <a><img src="<?= base_url('img/logo/Logo Indah.png') ?>" style="height: 20px"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-div show-block-ke-hide" style="flex:1;">
+                    <h5><strong>Metode pembayaran</strong></h5>
+                    <div class="footer__partner__payment">
+                        <div class="footer__partner__img">
+                            <img src="<?= base_url('img/pembayaran/bca.webp') ?>" width="43.4" height="13.78" />
+                        </div>
+                        <div class="footer__partner__img">
+                            <img src="<?= base_url('img/pembayaran/bni.webp') ?>" width="43" height="16" />
+                        </div>
+                        <div class="footer__partner__img">
+                            <img src="<?= base_url('img/pembayaran/bri.webp') ?>" width="43" height="10" />
+                        </div>
+                        <div class="footer__partner__img">
+                            <img src="<?= base_url('img/pembayaran/mandiri.webp') ?>" width="43" height="13" />
+                        </div>
+                        <div class="footer__partner__img">
+                            <img src="<?= base_url('img/pembayaran/permatabank.webp') ?>" width="43" height="11" />
+                        </div>
+                        <div class="footer__partner__img">
+                            <img src="<?= base_url('img/pembayaran/mastercard.webp') ?>" width="30" height="23" />
+                        </div>
+                        <div class="footer__partner__img">
+                            <img src="<?= base_url('img/pembayaran/visa.webp') ?>" width="43" height="14" />
+                        </div>
+                        <div class="footer__partner__img">
+                            <img src="<?= base_url('img/pembayaran/qris.webp') ?>" width="43" height="16" />
+                        </div>
+                        <div class="footer__partner__img">
+                            <img src="<?= base_url('img/pembayaran/shopeepay.webp') ?>" width="43" height="20" />
+                        </div>
+                        <div class="footer__partner__img">
+                            <img src="<?= base_url('img/pembayaran/gopay.webp') ?>" width="43" height="9" />
+                        </div>
+                    </div>
+                    <div class="d-flex gap-1 align-items-center">
+                        <p class="m-0">Pembayaran dilindungi oleh</p>
+                        <a href="https://midtrans.com" target="_blank"><img
+                                src="<?= base_url('img/logo/midtrans 2.png') ?>" style="width: 100px" /></a>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <div class="footer-div hide-ke-show-block" style="flex:1;">
+            <h5><strong>Metode pembayaran</strong></h5>
+            <div class="footer__partner__payment">
+                <div class="footer__partner__img">
+                    <img src="<?= base_url('img/pembayaran/bca.webp') ?>" width="43.4" height="13.78" />
+                </div>
+                <div class="footer__partner__img">
+                    <img src="<?= base_url('img/pembayaran/bni.webp') ?>" width="43" height="16" />
+                </div>
+                <div class="footer__partner__img">
+                    <img src="<?= base_url('img/pembayaran/bri.webp') ?>" width="43" height="10" />
+                </div>
+                <div class="footer__partner__img">
+                    <img src="<?= base_url('img/pembayaran/mandiri.webp') ?>" width="43" height="13" />
+                </div>
+                <div class="footer__partner__img">
+                    <img src="<?= base_url('img/pembayaran/permatabank.webp') ?>" width="43" height="11" />
+                </div>
+                <div class="footer__partner__img">
+                    <img src="<?= base_url('img/pembayaran/mastercard.webp') ?>" width="30" height="23" />
+                </div>
+                <div class="footer__partner__img">
+                    <img src="<?= base_url('img/pembayaran/visa.webp') ?>" width="43" height="14" />
+                </div>
+                <div class="footer__partner__img">
+                    <img src="<?= base_url('img/pembayaran/qris.webp') ?>" width="43" height="16" />
+                </div>
+                <div class="footer__partner__img">
+                    <img src="<?= base_url('img/pembayaran/shopeepay.webp') ?>" width="43" height="20" />
+                </div>
+                <div class="footer__partner__img">
+                    <img src="<?= base_url('img/pembayaran/gopay.webp') ?>" width="43" height="9" />
+                </div>
+            </div>
+            <div class="d-flex gap-1 align-items-center">
+                <p class="m-0">Pembayaran dilindungi oleh</p>
+                <a href="https://midtrans.com" target="_blank"><img src="<?= base_url('img/logo/midtrans 2.png') ?>"
+                        style="width: 100px" /></a>
+            </div>
+        </div>
+
         <div class="border-top border-secondary pt-4 mb-3 ">
-            <img src="../img/logoilenawhite.png" style="width:12em;" alt="">
+            <img src="<?= base_url('img/logoilenawhite.png') ?>" style="width:12em;" alt="">
         </div>
         <div style="flex:3;" class="footer__left-menu">
             <strong class="text-light">©<?= date("Y"); ?> | I L E N A. All rights reserved.</strong>
