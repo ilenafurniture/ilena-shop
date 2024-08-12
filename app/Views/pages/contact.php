@@ -1,46 +1,23 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 
-<div class="container">
-    <!-- <h1 class="my-3">Hubungi Kami</h1>
-        <div class="baris-ke-kolom mb-4">
-            <div class="empatpuluh-ke-seratus">
-                <img style="width: 100%; object-fit: cover;" src="<?= base_url('img/foto/tt.jpg') ?>" alt="">
-            </div>
-            <div style="flex: 1;">
-                <div class="h-100 d-flex justify-content-between flex-column">
-                    <div>
-                        <h3>Customer Service Lunarea</h3>
-                        <p>Ajukan pertanyaan Anda dengan menghubungi layanan pelanggan Lunarea Furniture atau dapatkan
-                            jawabannya di bawah ini.</p>
-                        <h3>Temukan jawabannya sekarang:</h3>
-                        <a href="/faq?a=5#flush-collapse5" class="text-dark d-block"
-                            style="text-decoration: underline;">Apakah saya bisa mendapatkan diskon gratis ongkir?</a>
-                        <a href="/faq?a=6#flush-collapse6" class="text-dark d-block"
-                            style="text-decoration: underline;">Apakah saya bisa mengembalikan produk yang tidak sesuai
-                            dengan pesanan?</a>
-                        <a href="/faq" style="color: var(--hijau);"
-                            class="d-block link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Lihat
-                            semua FAQ</a>
-                    </div>
-                    <div class="mt-3">
-                        <p class="fw-bold mb-1">Layanan Pelanggan Lunarea</p>
-                        <a href="https://api.whatsapp.com/send?phone=628112938160&text=Halo%20CS%20*Lunarea*%2C%20saya%20mau%20membeli%20furniture....."
-                            style="text-decoration: none; color: black">
-                            <p class="m-0">Telephone : 08112938160</p>
-                        </a>
-                        <a href="mailto:cs@ilenafurniture.com" style="text-decoration: none; color: black">
-                            <p class=" m-0">Email : cs@Ilenafurniture.com</p>
-                        </a>
-                        <a class="m-0" style="text-decoration: none; color: black">
-                            <p class=" m-0">Senin sampai Sabtu di jam kerja</p>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div> -->
-    <hr>
+<div class="p-5 gap-4 baris-ke-kolom">
+    <div style="flex:1;" class="google-maps">
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3959.687866383162!2d110.32868959999999!3d-7.0459182!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7061e23055c8ed%3A0xa875b119e04372d4!2sCV.Catur%20Bhakti%20Mandiri!5e0!3m2!1sen!2sid!4v1723450895314!5m2!1sen!2sid"
+            width="600" height="450" style="border:0; border-rarius:8px;" allowfullscreen="" loading="lazy" zoom="80"
+            allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+            referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+    </div>
+    <div style="flex:1;">
+        <h3 class="">Customer Servis Kami:</h3>
+        <p>Email</p>
+        <p>WhatsApp</p>
+        <p></p>
+    </div>
 </div>
+
 
 
 <?= $this->endSection(); ?>
