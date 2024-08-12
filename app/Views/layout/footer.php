@@ -6,7 +6,7 @@
                     <h5><strong>Ilena Furniture</strong></h5>
                     <a href="/tentang">Tentang Kami</a><br>
                     <a href="/contact">Kontak Kami</a><br>
-                    <a href="/kebijakan">Kebijakan & Privasi</a><br>
+                    <a href="/kebijakan">Kebijakan Privasi</a><br>
                     <a href="/syarat">Syarat & Ketentuan</a><br>
                     <a href="/login">Masuk</a><br>
                     <a href="/faq">FAQ</a>
@@ -101,7 +101,7 @@
                         </div>
                     </div>
                     <div class="d-flex gap-1 align-items-center">
-                        <p class="m-0">Pembayaran dilindungi oleh</p>
+                        <p class="m-0">Pembayaran aman dengan</p>
                         <a href="https://midtrans.com" target="_blank"><img
                                 src="<?= base_url('img/logo/midtrans 2.png') ?>" style="width: 100px" /></a>
                     </div>
@@ -150,17 +150,11 @@
             </div>
         </div>
 
-        <div class="border-top border-secondary pt-4 mb-3 ">
-            <img src="<?= base_url('img/logoilenawhite.png') ?>" style="width:12em;" alt="">
+        <div class="border-top border-secondary pt-4 mb-3 d-flex gap-4 align-items-center">
+            <img src="<?= base_url('img/logoilenawhite.png') ?>" style="width:120px; height: 18px" alt="">
+            <span style="display: block; height: 20px; width: 1px; background-color: white;"></span>
+            <p class="m-0" style="color:whitesmoke;">©<?= date("Y"); ?> All rights reserved</p>
         </div>
-        <div style="flex:3;" class="footer__left-menu">
-            <strong class="text-light">©<?= date("Y"); ?> | I L E N A. All rights reserved.</strong>
-            <p class="text-light">
-                Jika anda mengalami masalah dalam menggunakan situs web ini,
-                hubungi <a href="tel:08112938158" style="color:red;">+628112938158</a> untuk bantuan.
-            </p>
-        </div>
-
         <div style="height:70px;" class="hide-ke-show-block"></div>
     </div>
 </footer>

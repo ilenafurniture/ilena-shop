@@ -56,8 +56,7 @@
     style="background-color:whitesmoke; position: sticky; top:-1px; z-index: 99;">
     <div class="d-flex align-items-center py-2 gap-5">
         <div class="list-nav">
-            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
-                href="/product?koleksi=sorely">Sorely</a>
+            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;" href="/product?koleksi=sorely">Sorely</a>
             <div class="child-list-nav">
                 <div class="container py-3 d-flex">
                     <div style="flex: 1;">
