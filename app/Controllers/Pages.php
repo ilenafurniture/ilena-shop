@@ -54,7 +54,9 @@ class Pages extends BaseController
                 'jenis' => $this->jenisModel->findAll(),
             ],
             'produk' => $produk,
-            'wishlist' => $wishlist
+            'wishlist' => $wishlist,
+            'msg_active' => session()->getFlashdata('msg_active') ? session()->getFlashdata('msg_active') : false,
+            'isLogin' => session()->get('isLogin') ? true : false
         ];
         return view('pages/home', $data);
     }
@@ -97,15 +99,16 @@ class Pages extends BaseController
         return $this->response->setJSON(['Sucess' => 'OK'], false);
     }
 
-    public function gantiJenis($nama_lama,$nama_baru){
+    public function gantiJenis($nama_lama, $nama_baru)
+    {
         $this->jenisModel->where(['nama' => $nama_lama])->set(['nama' => $nama_baru])->update();
         $seluruhBarang = $this->barangModel->findAll();
-        foreach ($seluruhBarang as $sb ) {
-            if(strtolower($sb['subkategori']) == $nama_lama){
+        foreach ($seluruhBarang as $sb) {
+            if (strtolower($sb['subkategori']) == $nama_lama) {
                 $this->barangModel->where([
-                    'id'=> $sb['id']
+                    'id' => $sb['id']
                 ])->set([
-                    'subkategori' => $nama_baru 
+                    'subkategori' => $nama_baru
                 ])->update();
             }
         }
@@ -2682,6 +2685,7 @@ class Pages extends BaseController
             'waktu_otp' => '0'
         ])->update();
         session()->set($ses_data);
+        session()->setFlashdata('msg_active', true);
         return redirect()->to(site_url('/'));
     }
     public function kirimOTP()
@@ -2771,7 +2775,7 @@ class Pages extends BaseController
                 'jenis' => $this->jenisModel->findAll(),
             ],
         ];
-        return view('pages/faq1', $data);
+        return view('pages/faq', $data);
     }
     public function tentang()
     {

@@ -1,5 +1,122 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
+<?php if ($msg_active) { ?>
+    <div id="modal-voucher" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;" class="d-flex justify-content-center align-items-center">
+        <div style="border-radius: 10px; overflow: hidden; background-color: white; width: 80%; max-width: 500px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);" class="p-5">
+            <h1 class="teks-sedang mb-3">Klaim voucher diskon 5% Anda sekarang juga</h1>
+            <p class="text-secondary">*S&K diskon ini hanya berlaku 1 bulan sejak menjadi member kami</p>
+            <a href="/product" class="btn-default w-100 text-center mb-2">Beli Produk</a>
+            <button class="btn-teks-aja mx-auto" onclick="closeModalVoucher()">Nanti</button>
+        </div>
+    </div>
+    <script>
+        function closeModalVoucher() {
+            document.getElementById('modal-voucher').classList.add('d-none')
+            document.getElementById('modal-voucher').classList.remove('d-flex')
+        }
+    </script>
+<?php } ?>
+<div id="login-modal" style="position: fixed; background-color: rgba(0, 0, 0, 0.5); top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;" class="d-none justify-content-center align-items-center">
+    <div class="d-flex" style="width: 70%; height: 80%; border-radius: 1em; overflow: hidden">
+        <div class="show-block-ke-hide w-50" style="position: relative;">
+            <div style="position: absolute;" class="p-5">
+                <div style="height: 30px;"></div>
+                <h1 class="text-light teks-besar mb-3">JOIN OUR<br>MEMBERSHIP</h1>
+                <p class="text-light" style="font-size: 20px; width: 70%;">Daftarkan diri Anda sekarang dan jadilah yang pertama tahu beragam produk baru, promo eksklusif, event terdekat, inspirasi, tips & trik serta masih banyak lagi manfaat lainnya!</p>
+                <span class="d-block mt-4" style="height: 1px; width: 40%; background-color: white;"></span>
+            </div>
+            <img src="../img/foto/gambar-hero.webp" class="w-100 h-100" style="object-fit: cover;" alt="">
+        </div>
+        <div class="limapuluh-ke-seratus d-flex flex-column" style="background-color: white;">
+            <div class="d-flex justify-content-end align-items-center px-3" style="height: 30px;">
+                <p class="m-0 d-block" style="cursor: pointer;" onclick="closeLoginModel()">X</p>
+            </div>
+            <div class="d-flex flex-column align-items-center px-5 gap-2 pt-5" style="flex: 1;">
+                <img src="<?php echo base_url('/img/LogoIlena.png'); ?>" alt="logo ilena" style="height: 25px; aspec-ratio: 2/12;">
+                <p style="text-align: center;">Bergabunglah menjadi member berharga Kami dan dapatkan keuntungan pada pembelanjaan pertama!</p>
+                <div class="w-100">
+                    <form id="registerForm" action="/actionregister" method="post">
+                        <div class="mb-3">
+                            <label for="fullname" class="form-label">Nama Lengkap</label>
+                            <input name="nama" type="text" class="form-control"
+                                placeholder="Masukkan Nama Lengkap">
+                            <div class="invalid-feedback">Mohon masukkan nama lengkap.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input name="email" type="email"
+                                class="form-control"
+                                placeholder="Masukkan Email">
+                            <div class="invalid-feedback">Mohon masukkan alamat email yang valid.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nohp" class="form-label">Nomor Telepon</label>
+                            <input name="nohp" type="text" class="form-control"
+                                placeholder="Masukkan Nomor Telepon">
+                            <div class="invalid-feedback">Mohon masukkan nomor telepon yang valid.</div>
+                        </div>
+                        <label for="sandi" class="form-label">Kata Sandi</label>
+                        <div class="input-group mb-3">
+                            <input name="sandi" type="password" class="form-control" id="password" placeholder="Masukkan Kata Sandi">
+                            <span class="input-group-text d-flex justify-content-center align-items-center" onclick="togglePassword(event)">
+                                <i class="material-icons">remove_red_eye</i>
+                            </span>
+                        </div>
+                        <div class="d-flex gap-2 mb-3">
+                            <input type="checkbox" id="validation-syarat" name="validasi-syarat">
+                            <label for="validation-syarat">
+                                <p class="m-0">Dengan ini Anda menyetujui syarat dan ketentuan pendaftaran.</p>
+                            </label>
+                        </div>
+                        <div class="mb-3 d-flex w-100 justify-content-center">
+                            <button type="submit" class="btn btn-default btn-block">Daftar Sekarang</button>
+                        </div>
+                        <div>
+                            <p class="text-center">Sudah punya akun? <a href="/login" class="btn-teks-aja"
+                                    style="display: inline;">Login akun</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php if (!session()->get('isLogin')) { ?>
+    <script>
+        const loginModalElm = document.getElementById('login-modal')
+        let opened = false;
+        document.body.onscroll = (e) => {
+            const sessionCloseLoginModal = window.sessionStorage.getItem('close-login-modal') ? true : false;
+            if (!sessionCloseLoginModal) {
+                const scrollingElm = e.target.scrollingElement;
+                const hasil = Math.round(
+                    (scrollingElm.scrollTop /
+                        (scrollingElm.scrollHeight -
+                            scrollingElm.clientHeight)) *
+                    100
+                );
+                if (hasil > 50 && !opened) {
+                    loginModalElm.classList.add("d-flex")
+                    loginModalElm.classList.remove("d-none")
+                    opened = true
+                }
+            }
+        };
+
+        function closeLoginModel() {
+            loginModalElm.classList.remove("d-flex")
+            loginModalElm.classList.add("d-none")
+            window.sessionStorage.setItem('close-login-modal', true)
+            // opened = false
+        }
+
+        console.log(window.innerWidth)
+        if (window.innerWidth <= 600) {
+            loginModalElm.children[0].style.width = '95%'
+            loginModalElm.children[0].style.height = '95%'
+        }
+    </script>
+<?php } ?>
 <div>
     <div>
         <div class="img-teks">
@@ -121,7 +238,7 @@
         <h1 class="teks-besar justify-content-between">Produk Populer</h1>
     </div>
 
-    <div class="hide-ke-show-block mb-4">
+    <div class="container hide-ke-show-block mb-4">
         <h1 class="teks-besar justify-content-between">Produk Populer</h1>
     </div>
 
@@ -130,15 +247,12 @@
             <?php foreach ($produk as $ind_p => $p) { ?>
                 <div class="card1">
                     <div style="position: relative;">
-                        <div class="card1-content-img">
-                            <span
-                                <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
-                            <div class="d-flex flex-column gap-2">
-                                <?= in_array($p['id'], $wishlist) ? '<a class="card1-btn-img" href="/delwishlist/' . $p['id'] . '"><i class="material-icons">bookmark</i></a>' : '<a class="card1-btn-img" href="/addwishlist/' . $p['id'] . '"><i class="material-icons">bookmark_border</i></a>' ?>
-                                <a id="card<?= $ind_p ?>" class="card1-btn-img"
-                                    href="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'], true)[0]['nama'] ?>/1"><i
-                                        class="material-icons">shopping_cart</i></a>
-                            </div>
+                        <span class="card1-content-img-kiri" <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
+                        <div class="d-flex flex-column gap-2 card1-content-img-kanan">
+                            <?= in_array($p['id'], $wishlist) ? '<a class="card1-btn-img" href="/delwishlist/' . $p['id'] . '"><i class="material-icons">bookmark</i></a>' : '<a class="card1-btn-img" href="/addwishlist/' . $p['id'] . '"><i class="material-icons">bookmark_border</i></a>' ?>
+                            <a id="card<?= $ind_p ?>" class="card1-btn-img"
+                                href="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'], true)[0]['nama'] ?>/1"><i
+                                    class="material-icons">shopping_cart</i></a>
                         </div>
                         <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>">
                             <img id="img<?= $ind_p ?>" src="/viewpic/<?= $p['id']; ?>" alt="">
@@ -168,14 +282,16 @@
                             });
                         </script>
                     </div>
-                    <p class="text-secondary text-sm-start m-0"><?= ucwords($p['kategori']); ?></p>
-                    <h5 style="font-size:18px;"><?= str_replace('Tv', 'TV', ucwords($p['nama'])); ?></h5>
-                    <div class="d-flex gap-2">
-                        <p class="harga">Rp <?= number_format($p['harga'] * (100 - $p['diskon']) / 100, 0, ',', '.'); ?></p>
-                        <?php if ($p['diskon'] > 0) { ?>
-                            <p class="harga-diskon">Rp <?= number_format($p['harga'], 0, ',', '.') ?></p>
-                        <?php } ?>
-                    </div>
+                    <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="text-dark">
+                        <p class="text-secondary text-sm-start m-0"><?= ucwords($p['kategori']); ?></p>
+                        <h5 style="font-size:18px;"><?= str_replace('Tv', 'TV', ucwords($p['nama'])); ?></h5>
+                        <div class="d-flex gap-2">
+                            <p class="harga">Rp <?= number_format($p['harga'] * (100 - $p['diskon']) / 100, 0, ',', '.'); ?></p>
+                            <?php if ($p['diskon'] > 0) { ?>
+                                <p class="harga-diskon">Rp <?= number_format($p['harga'], 0, ',', '.') ?></p>
+                            <?php } ?>
+                        </div>
+                    </a>
                 </div>
             <?php } ?>
         </div>
@@ -220,7 +336,7 @@
                 <img src="../img/gratis ongkir oren.png" alt="" style="width: 70px; height: 40px;">
                 <div>
                     <p class="fw-bold mb-1" style="font-size: 20px;">Free Ongkir 100%</p>
-                    <p class="m-0">Dapatkan keuntungan gratis pengiriman 100% untuk wilayah Jawa, Madura, & Bali tanpa minimum belanja</p>
+                    <p class="m-0">Dapatkan keuntungan gratis pengiriman untuk wilayah Jawa, Madura, & Bali tanpa minimum belanja</p>
                 </div>
             </div>
             <div style="flex: 1" class="d-flex justify-content-start gap-4">
@@ -241,7 +357,17 @@
         <!-- </div> -->
         <!-- <img class="img-besar" style="height: 300px;" src="../img/foto/gambar-hero2 edit.webp" alt="Gambar Hero"> -->
     </div>
-
 </div>
-
+<script>
+    function togglePassword(e) {
+        var passwordField = document.querySelector('input[name="sandi"]');
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            e.target.style.color = 'var(--merah)'
+        } else {
+            passwordField.type = "password";
+            e.target.style.color = 'black'
+        }
+    }
+</script>
 <?= $this->endSection(); ?>

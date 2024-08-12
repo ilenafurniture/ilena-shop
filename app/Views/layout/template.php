@@ -36,9 +36,8 @@
         </div>
         <div class="d-flex flex-column gap-2">
             <a class="btn-circle" href="/form"><i class="material-icons">insert_comment</i></a>
-            <a class="btn-circle" id="btn-wa"
-                href="https://api.whatsapp.com/send?phone=628112938160&text=Hallo%20CS%20*Ilena*%2C%20saya%20ingin%20membeli%20furniture.....">
-                <i class="material-icons">phone</i>
+            <a class="btn-circle hitam" id="btn-wa" href="https://api.whatsapp.com/send?phone=628112938160&text=Hi%2C%20CS%20Ilena%21%0D%0ASaya%20tertarik%20untuk%20beli%3A%0D%0ANama%20produk%3A%0D%0AVarian%20%3A%0D%0AJumlah%20%3A%0D%0ABantu%20saya%20untuk%20melakukan%20proses%20checkout%20nya%21">
+                <i class="material-icons text-light">phone</i>
             </a>
         </div>
     </div>
@@ -53,6 +52,10 @@
     <script>
         function copytext(teks) {
             navigator.clipboard.writeText(teks);
+        }
+
+        function pergiKeProduk(namaProduk) {
+            window.location.href = '/product/' + namaProduk
         }
     </script>
 </body>

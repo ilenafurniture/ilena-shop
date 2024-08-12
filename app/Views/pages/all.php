@@ -352,18 +352,14 @@ for ($i = 0; $i < 10; $i++) {
             <div class="container-card1">
                 <?php foreach ($produk as $ind_p => $p) { ?>
                     <div class="card1">
-                        <div style="position: relative;" onclick="pergiKeProduct('<?= str_replace(' ', '-', $p['nama']); ?>')"
-                            class="cursor-pointer">
-                            <div class="card1-content-img">
-                                <span
-                                    <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
-                                <div class="d-flex flex-column gap-2">
-                                    <?= session()->get('role') == '1' ? '<a class="card1-btn-img" href="/admin/editproduct/' . $p['id'] . '"><i class="material-icons">edit</i></a>' : '' ?>
-                                    <?= in_array($p['id'], $wishlist) ? '<a class="card1-btn-img" href="/delwishlist/' . $p['id'] . '"><i class="material-icons">bookmark</i></a>' : '<a class="card1-btn-img" href="/addwishlist/' . $p['id'] . '"><i class="material-icons">bookmark_border</i></a>' ?>
-                                    <a id="card<?= $ind_p ?>" class="card1-btn-img"
-                                        href="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'], true)[0]['nama'] ?>/1"><i
-                                            class="material-icons">shopping_cart</i></a>
-                                </div>
+                        <div style="position: relative;">
+                            <span class="card1-content-img-kiri" <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
+                            <div class="d-flex flex-column gap-2 card1-content-img-kanan">
+                                <?= session()->get('role') == '1' ? '<a class="card1-btn-img" href="/admin/editproduct/' . $p['id'] . '"><i class="material-icons">edit</i></a>' : '' ?>
+                                <?= in_array($p['id'], $wishlist) ? '<a class="card1-btn-img" href="/delwishlist/' . $p['id'] . '"><i class="material-icons">bookmark</i></a>' : '<a class="card1-btn-img" href="/addwishlist/' . $p['id'] . '"><i class="material-icons">bookmark_border</i></a>' ?>
+                                <a id="card<?= $ind_p ?>" class="card1-btn-img"
+                                    href="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'], true)[0]['nama'] ?>/1"><i
+                                        class="material-icons">shopping_cart</i></a>
                             </div>
                             <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>">
                                 <img id="img<?= $ind_p ?>" src="/viewpic/<?= $p['id']; ?>" alt="">
@@ -396,15 +392,16 @@ for ($i = 0; $i < 10; $i++) {
                                 });
                             </script>
                         </div>
-                        <p class="text-secondary text-sm-start m-0"><?= strtolower($p['kategori']); ?></p>
-                        <h5 style="font-size:18px;"><?= str_replace('Tv', 'TV', ucwords($p['nama'])); ?></h5>
-                        <div class="d-flex gap-2">
-                            <p class="harga">Rp <?= number_format($p['harga'] * (100 - $p['diskon']) / 100, 0, ',', '.'); ?>
-                            </p>
-                            <?php if ($p['diskon'] > 0) { ?>
-                                <p class="harga-diskon">Rp <?= number_format($p['harga'], 0, ',', '.') ?></p>
-                            <?php } ?>
-                        </div>
+                        <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="text-dark">
+                            <p class="text-secondary text-sm-start m-0"><?= strtolower($p['kategori']); ?></p>
+                            <h5 style="font-size:18px;"><?= str_replace('Tv', 'TV', ucwords($p['nama'])); ?></h5>
+                            <div class="d-flex gap-2">
+                                <p class="harga">Rp <?= number_format($p['harga'] * (100 - $p['diskon']) / 100, 0, ',', '.'); ?></p>
+                                <?php if ($p['diskon'] > 0) { ?>
+                                    <p class="harga-diskon">Rp <?= number_format($p['harga'], 0, ',', '.') ?></p>
+                                <?php } ?>
+                            </div>
+                        </a>
                     </div>
                 <?php } ?>
             </div>

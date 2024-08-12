@@ -13,9 +13,9 @@
     <!-- <img style="width: 100%; height: 80svh; object-fit: cover;"
         src="https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         alt=""> -->
-    <div class="my-5 baris-ke-kolom-reverse">
-        <div style="flex: 1;" class="show-block-ke-hide">
-            <img style="border-radius:8px; width: 100%; aspect-ratio: 16/9; object-fit:cover; background-position: bottom;"
+    <div class="mb-5 baris-ke-kolom">
+        <div style="flex: 1;" class="">
+            <img style="width: 100%; aspect-ratio: 16/9; object-fit:cover; background-position: bottom;"
                 src="../img/foto/tt.jpg" alt="">
         </div>
         <div style="flex: 1;" class="p-5">
@@ -29,7 +29,7 @@
                 keindahan interior ruang impian.</p>
         </div>
     </div>
-    <div class="my-5 baris-ke-kolom-reverse">
+    <div class="baris-ke-kolom-reverse">
         <div style="flex: 1;" class="p-5">
             <h1 class="teks-besar mb-3">Profil Perusahaan</h1>
             <p style="text-align: justify;">CV Catur Bhakti Mandiri merupakan produsen kayu ternama Indonesia yang
@@ -39,8 +39,8 @@
                 terdiri dari beragam furniture untuk mewujudkan interior ruang rumah tangga, perkantoran & perhotelan
                 berbahan dasar kayu yang telah bersertifikasi serta bersumber dari hutan berkelanjutan.</p>
         </div>
-        <div style="flex: 1;" class="show-block-ke-hide">
-            <img style="border-radius:8px; width: 100%; aspect-ratio: 16/9; object-fit:cover;"
+        <div style="flex: 1;" class="">
+            <img style="width: 100%; aspect-ratio: 16/9; object-fit:cover;"
                 src="../img/foto/Tentangperusahaan.JPG" alt="">
         </div>
     </div>
@@ -84,30 +84,7 @@
                     <p class="m-1 fw-bold" style="font-size:14px;">PT.Tri Cahya Purnama</p>
                     <p class="m-1  fw-medium" style="font-size:14px;">Semarang</p>
                 </a>
-                <!-- <a class="item item6" style="text-decoration:none; color:black;">
-                    <img src="../img/foto/gambar-hero2.webp" alt="">
-                    <p class="m-1 fw-bold" style="font-size:14px;">Toko Serbaguna</p>
-                    <p class="m-1  fw-medium" style="font-size:14px;">Semarang</p>
-                </a>
-                <a class="item item7" style="text-decoration:none; color:black;">
-                    <img src="../img/foto/gambar-hero2.webp" alt="">
-                    <p class="m-1 fw-bold" style="font-size:14px;">Toko Serbaguna</p>
-                    <p class="m-1  fw-medium" style="font-size:14px;">Semarang</p>
-                </a> -->
             </div>
-            <!-- <div style="flex:1;">
-                <p>Our Partnership engages a vibrant international, multi-stakeholder ecosystem of over 90 entities
-                    across
-                    transport sectors associations, knowledge and academia, governments, multilateral organisations,
-                    NGOs,
-                    philanthropy and industry; as well as a large community of world-class experts and change-makers.
-                </p>
-                <p>
-                    By going there where others do not or cannot go individually, our inclusive, multi-stakeholder
-                    Partnership is leveraged to set ambitious global agendas and catalyse new thinking and solutions for
-                    the
-                    urgent transformation of transport and mobility systems.</p>
-            </div> -->
         </div>
     </div>
 </div>

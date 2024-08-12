@@ -5,9 +5,9 @@
         <div class="card p-4 limapuluh-ke-seratus">
             <h1 class="mb-3 teks-sedang">Register Akun</h1>
             <?php if ($val['msg']) { ?>
-            <div class="pemberitahuan my-1" role="alert">
-                <?= $val['msg']; ?>
-            </div>
+                <div class="pemberitahuan my-1" role="alert">
+                    <?= $val['msg']; ?>
+                </div>
             <?php } ?>
             <form id="registerForm" action="/actionregister" method="post">
                 <div class="mb-3">
@@ -29,23 +29,21 @@
                         placeholder="Masukkan Nomor Telepon" value="<?= old('nohp'); ?>">
                     <div class="invalid-feedback">Mohon masukkan nomor telepon yang valid.</div>
                 </div>
-                <div class="mb-3">
-                    <label for="sandi" class="form-label">Kata Sandi</label>
+                <label for="sandi" class="form-label">Kata Sandi</label>
+                <div class="input-group mb-3 has-validation">
                     <input name="sandi" type="password"
                         class="form-control <?= ($val['val_sandi']) ? "is-invalid" : ""; ?>" id="password"
                         placeholder="Masukkan Kata Sandi">
+                    <span class="input-group-text d-flex justify-content-center align-items-center" onclick="togglePassword(event)">
+                        <i class="material-icons">remove_red_eye</i>
+                    </span>
                     <div class="invalid-feedback">Mohon masukkan kata sandi.</div>
                 </div>
                 <!-- <div class="mb-3">
-                        <label for="confirmPassword" class="form-label">Konfirmasi Kata Sandi</label>
-                        <input type="password" class="form-control" id="confirmPassword" placeholder="Konfirmasi Kata Sandi">
-                        <div class="invalid-feedback">Sandi tidak sesuai</div>
-                    </div> -->
-                <div class="mb-3">
                     <input type="checkbox" onclick="togglePassword()" id="showPassword">
                     <label for="showPassword" class="form-label" style="font-size:small;">Tampilkan Kata
                         Sandi</label>
-                </div>
+                </div> -->
                 <div class="mb-3 d-flex w-100 justify-content-center">
                     <button type="submit" class="btn btn-default btn-block">Register</button>
                 </div>
@@ -58,28 +56,15 @@
     </div>
 </div>
 <script>
-function togglePassword() {
-    var passwordField = document.querySelector('input[name="sandi"]');
-    // var confirmPasswordField = document.getElementById("confirmPassword");
-
-    if (passwordField.type === "password") {
-        passwordField.type = "text";
-        // confirmPasswordField.type = "text";
-    } else {
-        passwordField.type = "password";
-        // confirmPasswordField.type = "password";
+    function togglePassword(e) {
+        var passwordField = document.querySelector('input[name="sandi"]');
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            e.target.style.color = 'var(--merah)'
+        } else {
+            passwordField.type = "password";
+            e.target.style.color = 'black'
+        }
     }
-}
-
-// const passwordElm = document.getElementById("password")
-// const confirmPasswordElm = document.getElementById("confirmPassword")
-// confirmPasswordElm.addEventListener("input", () => {
-//     console.log("cekcek")
-//     if (confirmPasswordElm.value != passwordElm.value) {
-//         confirmPasswordElm.classList.add("is-invalid")
-//     } else {
-//         confirmPasswordElm.classList.remove("is-invalid")
-//     }
-// })
 </script>
 <?= $this->endSection(); ?>

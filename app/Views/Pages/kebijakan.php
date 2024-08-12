@@ -2,9 +2,18 @@
 <?= $this->section("content"); ?>
 <div class="container d-flex justify-content-center">
     <div class="konten">
-        <h3>Kebijakan Privasi</h3>
+        <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    Kebijakan Privasi
+                </li>
+            </ol>
+        </nav>
         <!-- <p><strong>Terakhir Diperbarui:</strong> Mei 2024</p> -->
-
+        <h1 class="text-center">Kebijakan Privasi</h1>
+        <h5 class="mb-4 text-center" style="color: var(--hijau)">Ilena Furniture</h5>
+        <hr class="my-5">
         <p>Ilena Furniture selalu mengedepankan kepercayaan yang telah pelanggan berikan dengan cara menjaga
             dan melindungi informasi serta data pribadi pelanggan sebagai pengguna situs website Ilena Furniture.
             Kebijakan privasi ini disusun dengan seksama sebagai wujud komitmen Kami melindungi dan menjaga segala
@@ -16,11 +25,11 @@
             informasi rahasia ini kepada pihak ketiga tanpa izin dari pemilik informasi tersebut. Akan tetapi,
             terdapat pengecualian apabila dikemudian hari terdapat informasi tertentu yang perlu dilaporkan untuk
             keperluan hukum yang berlaku di Indonesia.</p>
-        <p>Dengan mengunjungi dan menggunakan situs ini, Anda dianggap telah setuju dengan persyaratan yang tercantum
+        <p class="mb-5">Dengan mengunjungi dan menggunakan situs ini, Anda dianggap telah setuju dengan persyaratan yang tercantum
             dalam kebijakan privasi. Dengan ini, dimohon kepada pelanggan untuk membaca dan menelaah kebijakan privasi
             ini dengan seksama.</p>
 
-        <h5>Informasi yang Kami Kumpulkan</h5>
+        <h3 style="letter-spacing: -1px;">Informasi yang Kami Kumpulkan</h3>
         <p>Saat pengunjung situs Ilena Furniture melakukan registrasi akun, maka berikut ini adalah informasi yang
             akan Kami peroleh:</p>
         <div class="d-flex">
@@ -56,28 +65,28 @@
                 <p class="m-0">:</p>
             </div>
         </div>
-        <p>Ilena Furniture hanya akan mengumpulkan informasi tersebut jika pengguna dalam hal ini pemilik akun tersebut
+        <p class="mb-5">Ilena Furniture hanya akan mengumpulkan informasi tersebut jika pengguna dalam hal ini pemilik akun tersebut
             bersedia menyerahkan informasinya kepada Kami. Apabila memilih untuk tidak memberikan informasi diatas, maka
             Kami tidak dapat melayani atau melakukan kesepakatan apapun bersama dengan Anda. Kami tidak akan menjual
             atau menyebarluaskan informasi pribadi pelanggan kepada pihak manapun. Informasi yang dikumpulkan secara
             online hanya akan digunakan secara internal dalam Perusahaan untuk melayani Anda sebagai konsumen dengan
             maksimal.</p>
 
-        <h5>Promosi</h5>
-        <p>Setelah terjadi pembelian barang dan berlangganan newsletter dari situs Ilena Furniture, maka Anda akan
+        <h3 style="letter-spacing: -1px;">Promosi</h3>
+        <p class="mb-5">Setelah terjadi pembelian barang dan berlangganan newsletter dari situs Ilena Furniture, maka Anda akan
             terus mendapatkan update produk terbaru, berita, dan penawaran spesial melalui email. Anda memiliki hak
             untuk menerima atau menolak materi promosi yang telah dikirimkan tersebut. Apabila dirasa ingin berhenti
             untuk berlangganan newsletter, maka cukup dengan melakukan klik unsubscribe pada bagian bawah setiap
             newsletter atau email promosi yang Kami berikan secara khusus kepada Anda sebagai pelanggan.</p>
 
-        <h5>Pembaruan Kebijakan Privasi</h5>
-        <p>Kebijakan privasi ini akan mengalami pembaharuan secara berkala pada kurun waktu tertentu sebagai upaya
+        <h3 style="letter-spacing: -1px;">Pembaruan Kebijakan Privasi</h3>
+        <p class="mb-5">Kebijakan privasi ini akan mengalami pembaharuan secara berkala pada kurun waktu tertentu sebagai upaya
             pengembangan serta kemajuan situs Ilena Furniture dalam melakukan pelayanan terbaik kepada Pelanggan.
             Diharapkan agar melakukan pemeriksaan secara berkala pada halaman ini untuk mengetahui perubahan-perubahan
             tersebut. Kebijakan privasi ini berlaku untuk semua informasi tentang Anda dan akun Anda yang telah ada di
             website Kami.</p>
 
-        <h5>Kontak Kami</h5>
+        <h3 style="letter-spacing: -1px;">Kontak Kami</h3>
         <p>Dengan senang hati Kami menerima segala kritik dan saran yang membangun dari para pelanggan sebagai bentuk
             pengembangan dan evaluasi menjadi yang lebih baik lagi dari sekarang. Masukan Anda adalah bentuk penghargaan
             kepada Kami untuk terus berbenah dan mendapatkan versi terbaik dari produk, pelayanan, hingga pengalaman
@@ -93,7 +102,7 @@
                 <p class="m-0">cs@ilenafurniture.com</p>
             </div>
         </div>
-        <div class="d-flex mb-3">
+        <div class="d-flex mb-5">
             <div style="width: 100px;">
                 <p class="m-0">No.WhatsApp</p>
             </div>
@@ -105,7 +114,7 @@
             </div>
         </div>
 
-        <h5>Produk & Layanan Kami</h5>
+        <h3 style="letter-spacing: -1px;">Produk & Layanan Kami</h3>
         <p>Ilena Furniture menyediakan berbagai macam furniture mulai dari Tempat tidur, Side table, Dresser, Console table, TV media, lemari pakaian dan Coffee table.</p>
         <p>Untuk memastikan produk sampai di alamat tujuan dengan aman dan tepat sesuai waktu yang telah direncanakan, maka Kami juga akan melayani:</p>
         <ul>
@@ -116,10 +125,10 @@
                 <p class="m-0">Perakitan barang di alamat tujuan dengan menghubungi customer service Kami</p>
             </li>
         </ul>
-        <p>Apabila Anda ingin mendapatkan informasi produk Kami, Anda dapat memilih untuk berlangganan dengan katalog serta penawaran
+        <p class="mb-5">Apabila Anda ingin mendapatkan informasi produk Kami, Anda dapat memilih untuk berlangganan dengan katalog serta penawaran
             khusus yang Kami kirimkan melalui email atau WhatsApp Anda.</p>
 
-        <h5>Sistem Pengiriman & Pengembalian</h5>
+        <h3 style="letter-spacing: -1px;" class="mb-3">Sistem Pengiriman & Pengembalian</h3>
         <h6>Kebijakan Pengiriman</h6>
         <p>Website Kami dapat melayani pengiriman pesanan ke seluruh Indonesia. Pesanan bisa dikirim setelah adanya konfirmasi
             validasi pembayaran yang telah Anda lakukan.</p>
