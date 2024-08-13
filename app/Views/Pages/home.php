@@ -65,7 +65,7 @@
                                 placeholder="Masukkan Kata Sandi">
                             <span class="input-group-text d-flex justify-content-center align-items-center"
                                 onclick="togglePassword(event)">
-                                <i class="material-icons">remove_red_eye</i>
+                                <i class="material-icons" style="cursor: default; -webkit-user-select: none; -ms-user-select: none; user-select: none;">remove_red_eye</i>
                             </span>
                         </div>
                         <div class="d-flex gap-2 mb-3">
@@ -92,31 +92,31 @@
         const loginModalElm = document.getElementById('login-modal')
         let opened = false;
         document.body.onscroll = (e) => {
-            const sessionCloseLoginModal = window.sessionStorage.getItem('close-login-modal') ? true : false;
-            if (!sessionCloseLoginModal) {
-                const scrollingElm = e.target.scrollingElement;
-                const hasil = Math.round(
-                    (scrollingElm.scrollTop /
-                        (scrollingElm.scrollHeight -
-                            scrollingElm.clientHeight)) *
-                    100
-                );
-                if (hasil > 50 && !opened) {
-                    loginModalElm.classList.add("d-flex")
-                    loginModalElm.classList.remove("d-none")
-                    opened = true
-                }
+            const scrollingElm = e.target.scrollingElement;
+            const hasil = Math.round(
+                (scrollingElm.scrollTop /
+                    (scrollingElm.scrollHeight -
+                        scrollingElm.clientHeight)) *
+                100
+            );
+            if (hasil > 50 && !opened) {
+                loginModalElm.classList.add("d-flex")
+                loginModalElm.classList.remove("d-none")
+                opened = true
             }
         };
 
         function closeLoginModel() {
             loginModalElm.classList.remove("d-flex")
             loginModalElm.classList.add("d-none")
-            window.sessionStorage.setItem('close-login-modal', true)
+            // window.sessionStorage.setItem('close-login-modal', true)
             // opened = false
+            setTimeout(() => {
+                loginModalElm.classList.add("d-flex")
+                loginModalElm.classList.remove("d-none")
+            }, 15000);
         }
 
-        console.log(window.innerWidth)
         if (window.innerWidth <= 600) {
             loginModalElm.children[0].style.width = '95%'
             loginModalElm.children[0].style.height = '95%'

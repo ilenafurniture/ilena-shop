@@ -77,6 +77,7 @@
                                                     ?>"><?= ucfirst($p['status']); ?></span>
                 </div>
                 <div style="flex: 2;" class="d-flex justify-content-center">
+                    <a class="btn" href="/admin/labelbarang/<?= $p['id_midtrans']; ?>" target="_blank"><i class="material-icons">label_outline</i></a>
                     <a class="btn" href="/invoice/<?= $p['id_midtrans']; ?>"><i class="material-icons">description</i></a>
                     <?php if ($p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
                         <a class="btn" onclick="openEditResi('<?= $p['id_midtrans']; ?>')"><i class="material-icons">edit</i></a>
@@ -137,6 +138,7 @@
                                                         ?>"><?= ucfirst($p['status']); ?></span>
                     </div>
                     <div style="flex: 2;" class="d-flex justify-content-center">
+                        <a class="btn" href="/admin/labelbarang/<?= $p['id_midtrans']; ?>" target="_blank"><i class="material-icons">label_outline</i></a>
                         <a class="btn" href="/invoice/<?= $p['id_midtrans']; ?>"><i class="material-icons">description</i></a>
                         <?php if ($p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
                             <a class="btn" href="/editresi/<?= $p['id_midtrans']; ?>"><i class="material-icons">edit</i></a>

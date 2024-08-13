@@ -35,7 +35,7 @@
                         class="form-control <?= ($val['val_sandi']) ? "is-invalid" : ""; ?>" id="password"
                         placeholder="Masukkan Kata Sandi">
                     <span class="input-group-text d-flex justify-content-center align-items-center" onclick="togglePassword(event)">
-                        <i class="material-icons">remove_red_eye</i>
+                        <i class="material-icons" style="cursor: default; -webkit-user-select: none; -ms-user-select: none; user-select: none;">remove_red_eye</i>
                     </span>
                     <div class="invalid-feedback">Mohon masukkan kata sandi.</div>
                 </div>

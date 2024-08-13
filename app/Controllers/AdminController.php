@@ -728,4 +728,15 @@ class AdminController extends BaseController
 
         return redirect()->to('/order');
     }
+
+    public function labelBarang($id)
+    {
+        $pemesanan = $this->pemesananModel->where(['id_midtrans' => $id])->first();
+        $pemesanan['items'] = json_decode($pemesanan['items'], true);
+        $data = [
+            'title' => 'Label Barang',
+            'pemesanan' => $pemesanan
+        ];
+        return view('admin/labelBarang', $data);
+    }
 }
