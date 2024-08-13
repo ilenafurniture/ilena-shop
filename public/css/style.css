@@ -251,11 +251,19 @@ body {
     transition: 0.3s;
     display: none;
 }
+.list-nav:hover a {
+    font-weight: bold;
+}
 .list-nav:hover .child-list-nav {
     height: 455px;
     transition: 0.3s;
 }
-
+.list-nav .child-list-nav a {
+    color: black;
+}
+.list-nav .child-list-nav a:hover {
+    color: var(--oren);
+}
 .list-nav:hover ~ .bg-list-nav {
     display: block;
     background-color: rgba(0, 0, 0, 0.5);

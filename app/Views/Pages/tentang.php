@@ -37,7 +37,7 @@
                 Selama 30 tahun lamanya berkomitmen untuk selalu memberikan kualitas dan terintegrasi terhadap
                 keseimbangan kebutuhan konsumen dan kesediaan sumber daya selama puluhan tahun lamanya. Produk kami
                 terdiri dari beragam furniture untuk mewujudkan interior ruang rumah tangga, perkantoran & perhotelan
-                berbahan dasar kayu yang telah bersertifikasi serta bersumber dari hutan berkelanjutan.</p>
+                berbahan dasar kayu yang bersumber dari hutan berkelanjutan.</p>
         </div>
         <div style="flex: 1;" class="">
             <img style="width: 100%; aspect-ratio: 16/9; object-fit:cover;"

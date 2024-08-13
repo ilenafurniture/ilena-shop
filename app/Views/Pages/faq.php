@@ -294,7 +294,7 @@
                         icon
                         bergambar orang, lalu pilih pesanan. Di page ini, seluruh riwayat transaksi yang pernah
                         Anda
-                        lakukan di ILENA Furniture akan tercantum di dalam akun Anda. Akan tetapi, jika Anda
+                        lakukan di Ilena Furniture akan tercantum di dalam akun Anda. Akan tetapi, jika Anda
                         melakukan pembelian tanpa login akun, maka Anda perlu menyimpan link pesanan.
                         Misal:ilenafurniture.com/order/ILxxxxxxx
                     </p>
@@ -306,10 +306,10 @@
                 </div>
                 <p class="sub-sub-faq">Apakah saat ini tersedia toko offline?</p>
                 <div class="isinya">
-                    <p>Saat ini produk ILENA hanya dapat dipesan melalui website dan platform e-commerce
+                    <p>Saat ini produk Ilena hanya dapat dipesan melalui website dan platform e-commerce
                         (<a href="" style="text-decoration:none; color:red; font-size:13px;">Tiktok</a>, <a href=""
-                            style="text-decoration:none; color:red; font-size:13px;">Shopee</a>
-                        dll)</p>
+                            style="text-decoration:none; color:red; font-size:13px;">Shopee</a>, dan <a href=""
+                            style="text-decoration:none; color:red; font-size:13px;">Tokopedia</a>)</p>
                 </div>
                 <p class="sub-sub-faq">Apakah saat ini pemesanan hanya dapat dilakukan secara online?</p>
                 <div class="isinya">
