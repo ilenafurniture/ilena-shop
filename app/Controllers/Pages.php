@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\BarangModel;
 use App\Models\GambarBarangModel;
+use App\Models\GambarBarang3000Model;
 use App\Models\PembeliModel;
 use App\Models\PemesananModel;
 use App\Models\PemesananGudangModel;
@@ -17,6 +18,7 @@ class Pages extends BaseController
 {
     protected $barangModel;
     protected $gambarBarangModel;
+    protected $gambarBarang3000Model;
     protected $userModel;
     protected $pembeliModel;
     protected $pemesananModel;
@@ -30,6 +32,7 @@ class Pages extends BaseController
     {
         $this->barangModel = new BarangModel();
         $this->gambarBarangModel = new GambarBarangModel();
+        $this->gambarBarang3000Model = new GambarBarang3000Model();
         $this->userModel = new UserModel();
         $this->pembeliModel = new PembeliModel();
         $this->pemesananModel = new PemesananModel();
@@ -85,6 +88,26 @@ class Pages extends BaseController
             'find' => $cari
         ];
         return view('pages/all', $data);
+    }
+
+    public function fixId()
+    {
+        $seluruhBarang = $this->barangModel->findAll();
+        foreach ($seluruhBarang as $sb) {
+            $koleksi = $this->koleksiModel->where(['nama' => $sb['kategori']])->first();
+            $jenis = $this->jenisModel->where(['nama' => $sb['subkategori']])->first();
+            $idBaru = '1'. sprintf("%02d", $koleksi['id']) . sprintf("%03d", $jenis['id']) . substr($sb['id'], -2);
+            $this->barangModel->where(['id' => $sb['id']])->set([
+                'id' => $idBaru
+            ])->update();
+            $this->gambarBarangModel->where(['id' => $sb['id']])->set([
+                'id' => $idBaru
+            ])->update();
+            $this->gambarBarang3000Model->where(['id' => $sb['id']])->set([
+                'id' => $idBaru
+            ])->update();
+        }
+        return $this->response->setJSON(['Sucess' => 'OK'], false);
     }
     public function fixNama()
     {

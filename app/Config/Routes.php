@@ -117,6 +117,7 @@ $routes->post('/gudang/ajukanprint', 'GudangController::ajukanPrint', ['filter' 
 
 $routes->get('/fixmutasi', 'GudangController::fixMutasi');
 $routes->get('/fixnama', 'Pages::fixNama');
+$routes->get('/fixid', 'Pages::fixId');
 $routes->get('/gantijenis/(:any)/(:any)', 'Pages::gantiJenis/$1/$2');
 
 
