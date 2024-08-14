@@ -49,9 +49,9 @@
         </div>
     </div>
 </nav>
-<div style="background-color: var(--oren);" class="py-1 show-block-ke-hide">
+<div style="background-color: rgb(211, 211, 211);" class="py-1 show-block-ke-hide">
     <!-- <p class="m-0 text-center" style="color: #844709;">Lebih hemat dengan Free Ongkir hingga 100%</p> -->
-    <p class="m-0 text-center" style="color: white;">Lebih hemat dengan Free Ongkir hingga 100%</p>
+    <p class="m-0 text-center" style="color: black;">Lebih hemat dengan Free Ongkir hingga 100%</p>
 </div>
 <div class="justify-content-center w-100 show-flex-ke-hide"
     style="background-color:whitesmoke; position: sticky; top:-1px; z-index: 99;">
