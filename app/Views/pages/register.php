@@ -44,6 +44,12 @@
                     <label for="showPassword" class="form-label" style="font-size:small;">Tampilkan Kata
                         Sandi</label>
                 </div> -->
+                <div class="d-flex gap-2 mb-3">
+                    <input type="checkbox" id="validation-syarat" name="validasi-syarat" required>
+                    <label for="validation-syarat">
+                        <p class="m-0">Dengan ini Anda menyetujui syarat dan ketentuan pendaftaran.</p>
+                    </label>
+                </div>
                 <div class="mb-3 d-flex w-100 justify-content-center">
                     <button type="submit" class="btn btn-default btn-block">Register</button>
                 </div>

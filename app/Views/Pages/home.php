@@ -70,7 +70,7 @@
                             </span>
                         </div>
                         <div class="d-flex gap-2 mb-3">
-                            <input type="checkbox" id="validation-syarat" name="validasi-syarat">
+                            <input type="checkbox" id="validation-syarat" name="validasi-syarat" required>
                             <label for="validation-syarat">
                                 <p class="m-0">Dengan ini Anda menyetujui syarat dan ketentuan pendaftaran.</p>
                             </label>
@@ -92,36 +92,36 @@
     <script>
         const loginModalElm = document.getElementById('login-modal')
         let opened = false;
-        document.body.onscroll = (e) => {
-            const scrollingElm = e.target.scrollingElement;
-            const hasil = Math.round(
-                (scrollingElm.scrollTop /
-                    (scrollingElm.scrollHeight -
-                        scrollingElm.clientHeight)) *
-                100
-            );
-            if (hasil > 50 && !opened) {
-                loginModalElm.classList.add("d-flex")
-                loginModalElm.classList.remove("d-none")
-                opened = true
-            }
-        };
+        // document.body.onscroll = (e) => {
+        //     const scrollingElm = e.target.scrollingElement;
+        //     const hasil = Math.round(
+        //         (scrollingElm.scrollTop /
+        //             (scrollingElm.scrollHeight -
+        //                 scrollingElm.clientHeight)) *
+        //         100
+        //     );
+        //     if (hasil > 50 && !opened) {
+        //         loginModalElm.classList.add("d-flex")
+        //         loginModalElm.classList.remove("d-none")
+        //         opened = true
+        //     }
+        // };
 
-        function closeLoginModel() {
-            loginModalElm.classList.remove("d-flex")
-            loginModalElm.classList.add("d-none")
-            // window.sessionStorage.setItem('close-login-modal', true)
-            // opened = false
-            setTimeout(() => {
-                loginModalElm.classList.add("d-flex")
-                loginModalElm.classList.remove("d-none")
-            }, 15000);
-        }
+        // function closeLoginModel() {
+        //     loginModalElm.classList.remove("d-flex")
+        //     loginModalElm.classList.add("d-none")
+        //     // window.sessionStorage.setItem('close-login-modal', true)
+        //     // opened = false
+        //     setTimeout(() => {
+        //         loginModalElm.classList.add("d-flex")
+        //         loginModalElm.classList.remove("d-none")
+        //     }, 15000);
+        // }
 
-        if (window.innerWidth <= 600) {
-            loginModalElm.children[0].style.width = '95%'
-            loginModalElm.children[0].style.height = '95%'
-        }
+        // if (window.innerWidth <= 600) {
+        //     loginModalElm.children[0].style.width = '95%'
+        //     loginModalElm.children[0].style.height = '95%'
+        // }
     </script>
 <?php } ?>
 <div>
@@ -345,24 +345,24 @@
     <div style="background-color: whitesmoke;" class="py-5">
         <!-- <div class="img-teks" style="height: 100%; color: white; background-color: rgba(0, 0, 0, 0.5);"> -->
         <div class="container baris-ke-kolom gap-5">
-            <div style="flex: 1" class="d-flex justify-content-start gap-4">
-                <img src="../img/gratis ongkir oren.png" alt="" style="width: 70px; height: 40px;">
+            <div style="flex: 1" class="d-flex gap-4 align-items-center">
+                <img src="../img/gratis ongkir oren1.png" alt="" style="width: 70px;">
                 <div>
                     <p class="fw-bold mb-1" style="font-size: 20px;">Free Ongkir 100%</p>
                     <p class="m-0">Dapatkan keuntungan gratis pengiriman untuk wilayah Jawa, Madura, & Bali tanpa
                         minimum belanja</p>
                 </div>
             </div>
-            <div style="flex: 1" class="d-flex justify-content-start gap-4">
-                <img src="../img/eco friendly oren.png" alt="" style="width: 70px; height: 70px">
+            <div style="flex: 1" class="d-flex gap-4 align-items-center">
+                <img src="../img/svlk oren.png" alt="" style="width: 70px;">
                 <div>
                     <p class="fw-bold mb-1" style="font-size: 20px;">Eco Friendly</p>
                     <p class="m-0">Dibuat dari bahan ramah lingkungan yang tidak berbahaya bagi kelangsungan manusia,
                         bumi, dan lingkungan</p>
                 </div>
             </div>
-            <div style="flex: 1" class="d-flex justify-content-start gap-4">
-                <img src="../img/seluruh indo oren.png" alt="" style="width: 70px; height: 60px">
+            <div style="flex: 1" class="d-flex gap-4 align-items-center">
+                <img src="../img/seluruh indo oren1.png" alt="" style="width: 70px;">
                 <div>
                     <p class="fw-bold mb-1" style="font-size: 20px;">Bebas kirim seluruh Indonesia</p>
                     <p class="m-0">Bekerjasama dengan mitra ekspedisi yang telah menjangkau pengiriman aman & terpercaya

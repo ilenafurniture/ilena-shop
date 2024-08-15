@@ -96,7 +96,7 @@ class Pages extends BaseController
         foreach ($seluruhBarang as $sb) {
             $koleksi = $this->koleksiModel->where(['nama' => $sb['kategori']])->first();
             $jenis = $this->jenisModel->where(['nama' => $sb['subkategori']])->first();
-            $idBaru = '1'. sprintf("%02d", $koleksi['id']) . sprintf("%03d", $jenis['id']) . substr($sb['id'], -2);
+            $idBaru = '1' . sprintf("%02d", $koleksi['id']) . sprintf("%03d", $jenis['id']) . substr($sb['id'], -2);
             $this->barangModel->where(['id' => $sb['id']])->set([
                 'id' => $idBaru
             ])->update();
@@ -2593,12 +2593,19 @@ class Pages extends BaseController
                     'required' => 'Nomor handphone harus diisi'
                 ]
             ],
+            'validasi-syarat' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Anda belum menyetujui syarat dan ketentuan pendaftaran'
+                ]
+            ],
         ])) {
             $validation = \Config\Services::validation();
             session()->setFlashdata('val-nama', $validation->getError('nama'));
             session()->setFlashdata('val-email', $validation->getError('email'));
             session()->setFlashdata('val-sandi', $validation->getError('sandi'));
             session()->setFlashdata('val-nohp', $validation->getError('nohp'));
+            session()->setFlashdata('val-syarat', $validation->getError('validasi-syarat'));
             return redirect()->to('/register')->withInput();
         }
 
