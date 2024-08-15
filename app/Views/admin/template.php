@@ -23,6 +23,7 @@
         <div style="background-color: whitesmoke; overflow:scroll;" class="d-flex flex-column flex-grow-1">
             <?= $this->renderSection('content'); ?>
         </div>
+        <div class="hide-ke-show-block" style="height:100px; width:10px; background-color: red; "></div>
     </div>
 </body>
 

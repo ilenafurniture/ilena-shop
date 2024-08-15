@@ -20,7 +20,6 @@
     </div>
 </div>
 
-
 <div class="navbar-hp hide-ke-show-flex">
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
         <a class="item-navhp <?= $title == 'Produk Kami' ? 'active' : ''; ?>" href="/admin/product">
