@@ -47,6 +47,15 @@ class AdminController extends BaseController
     {
         $product = $this->barangModel->getBarangAdmin();
         $koleksi = $this->koleksiModel->findAll();
+        foreach ($product as $index_p => $p) {
+            $product[$index_p]['varian'] = json_decode($p['varian'],true);
+            $product[$index_p]['allstok'] = '';
+            foreach ($product[$index_p]['varian'] as $ind_v => $v) {
+                // $product[$index_p]['allstok'] = $product[$index_p]['allstok'] . $v['stok'];
+                if($ind_v == 0) $product[$index_p]['allstok'] .= $v['nama'] .' : ' .$v['stok'];
+                else $product[$index_p]['allstok'] .= "<br>".$v['nama'] .' : ' .$v['stok'];
+            }
+        }
         $data = [
             'title' => 'Produk Kami',
             'produk' => $product,
