@@ -25,7 +25,8 @@
         <div class="show-block-ke-hide w-50" style="position: relative;">
             <div style="position: absolute;" class="p-5">
                 <div style="height: 30px;"></div>
-                <h1 class="text-light teks-besar mb-3">JOIN OUR<br>MEMBERSHIP</h1>
+                <h1 class="text-light teks-besar mb-3 hide-di-1350">JOIN OUR<br>MEMBERSHIP</h1>
+                <h1 class="text-light mb-3 show-di-1350" style="font-weight: 700;">JOIN OUR<br>MEMBERSHIP</h1>
                 <p class="text-light" style="font-size: 20px; width: 70%;">Daftarkan diri Anda sekarang dan jadilah yang
                     pertama tahu beragam produk baru, promo eksklusif, event terdekat, inspirasi, tips & trik serta
                     masih banyak lagi manfaat lainnya!</p>

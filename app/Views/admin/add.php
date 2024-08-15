@@ -42,10 +42,10 @@
                             <td>Koleksi</td>
                             <td>
                                 <div class="baris">
-                                    <!-- <input type="text" class="form-control" name="kategori" required> -->
                                     <select name="kategori" onchange="generateId(event)">
+                                        <option value="">-- Pilih koleksi --</option>
                                         <?php foreach ($koleksi as $ind_k => $k) { ?>
-                                            <option value="<?= $k['id']; ?>" <?= $ind_k == '0' ? 'selected' : ''; ?>>
+                                            <option value="<?= $k['id']; ?>">
                                                 <?= $k['nama']; ?></option>
                                         <?php } ?>
                                     </select>
@@ -56,10 +56,10 @@
                             <td>Jenis</td>
                             <td>
                                 <div class="baris">
-                                    <!-- <input type="text" class="form-control" name="subkategori" required> -->
                                     <select name="subkategori" onchange="generateId(event)">
+                                        <option value="">-- Pilih jenis --</option>
                                         <?php foreach ($jenis as $ind_k => $k) { ?>
-                                            <option value="<?= $k['id']; ?>" <?= $ind_k == '0' ? 'selected' : ''; ?>>
+                                            <option value="<?= $k['id']; ?>">
                                                 <?= $k['nama']; ?></option>
                                         <?php } ?>
                                     </select>

@@ -1773,3 +1773,18 @@ body {
         width: 100vw;
     }
 }
+
+.show-di-1350 {
+    display: none;
+}
+.hide-di-1350 {
+    display: block;
+}
+@media (max-width: 1350px) and (min-width: 600px) {
+    .show-di-1350 {
+        display: block;
+    }
+    .hide-di-1350 {
+        display: none;
+    }
+}
