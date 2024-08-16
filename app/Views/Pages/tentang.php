@@ -21,7 +21,7 @@
             </div>
             <div style="flex: 1;">
                 <h1 class="teks-besar mb-3">Crafted to Urban Design</h1>
-                <!-- <p style="color: grey;" class="mb-3">ILENA FURNITURE</p> -->
+                <!-- <p style="color: grey;" a class="mb-3">ILENA FURNITURE</p> -->
                 <p style="text-align: justify;">Ilena hadir menjadi teman untuk menciptakan banyak kesan dan pesan dalam
                     setiap sudut ruang yang menjadi
                     indah dalam kenangan. keberhasilan Ilena merupakan usaha menghadirkan furniture khas masyarakat
