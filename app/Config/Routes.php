@@ -27,6 +27,7 @@ $routes->get('/reducecart/(:any)', 'Pages::reduceCart/$1', ['filter' => 'custome
 
 $routes->get('/getkota/(:any)', 'Pages::getKota/$1', ['filter' => 'customerFilter']);
 $routes->get('/getkec/(:any)', 'Pages::getKec/$1', ['filter' => 'customerFilter']);
+$routes->get('/getkode/(:any)', 'Pages::getKode/$1', ['filter' => 'customerFilter']);
 $routes->get('/address', 'Pages::address', ['filter' => 'customerFilter']);
 $routes->post('/addaddress', 'Pages::addAddress');
 $routes->get('/deleteaddress/(:any)/(:any)', 'Pages::deleteAddress/$1/$2', ['filter' => 'customerFilter']);

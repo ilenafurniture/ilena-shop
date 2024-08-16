@@ -271,9 +271,9 @@
         });
     }
     async function getKode(kec) {
-        const response = await fetch("https://api.jasminefurniture.co.id/getkode/" + kec);
+        const response = await fetch("getkode/" + kec);
         const kode = await response.json();
-        const hasil = kode.data;
+        const hasil = kode;
         // console.log(hasil)
         kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
         hasil.forEach(element => {
@@ -342,9 +342,9 @@
         });
     }
     async function getKodeEdit(kec) {
-        const response = await fetch("https://api.jasminefurniture.co.id/getkode/" + kec);
+        const response = await fetch("getkode/" + kec);
         const kode = await response.json();
-        const hasil = kode.data;
+        const hasil = kode;
         // console.log(hasil)
         kodeElmEdit.innerHTML = '<option value="">-- Pilih Desa --</option>';
         hasil.forEach(element => {
