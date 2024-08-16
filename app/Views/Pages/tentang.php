@@ -2,7 +2,7 @@
 <?= $this->section("content"); ?>
 <div>
     <img style="width: 100%; height: 50svh; object-fit: cover;" src="../img/foto/gambar-hero2.webp" alt="">
-    <div class="container konten">
+    <div class="container py-4">
         <h1 class="teks-besar mb-3">Cerita Kami</h1>
         <p style="text-align: justify;">Cerita lahirnya Ilena bermula pada tahun 2024 di bawah naungan CV Catur Bhakti
             Mandiri yang telah berdiri
@@ -13,35 +13,43 @@
     <!-- <img style="width: 100%; height: 80svh; object-fit: cover;"
         src="https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         alt=""> -->
-    <div class="mb-5 baris-ke-kolom">
-        <div style="flex: 1;" class="">
-            <img style="width: 100%; aspect-ratio: 16/9; object-fit:cover; background-position: bottom;"
-                src="../img/foto/tt.jpg" alt="">
-        </div>
-        <div style="flex: 1;" class="p-5">
-            <h1 class="teks-besar mb-3">Crafted to Urban Design</h1>
-            <!-- <p style="color: grey;" class="mb-3">ILENA FURNITURE</p> -->
-            <p style="text-align: justify;">Ilena hadir menjadi teman untuk menciptakan banyak kesan dan pesan dalam
-                setiap sudut ruang yang menjadi
-                indah dalam kenangan. keberhasilan Ilena merupakan usaha menghadirkan furniture khas masyarakat urban
-                yang cocok untuk segala suasana. kami percaya bahwa setiap ruang kosong memiliki cerita yang diukir
-                indah oleh individu dan relasinya sebagai bentuk representasi tersendiri. bersama Ilena wujudkan
-                keindahan interior ruang impian.</p>
+    <div class="container py-4 mt-2">
+        <div class="baris-ke-kolom">
+            <div style="flex: 1;">
+                <img style="width: 100%; aspect-ratio: 16/9; object-fit:cover; background-position: bottom; border-radius:8px;"
+                    src="<?= base_url('/img/foto/tt.jpg') ?>" alt="">
+            </div>
+            <div style="flex: 1;">
+                <h1 class="teks-besar mb-3">Crafted to Urban Design</h1>
+                <!-- <p style="color: grey;" class="mb-3">ILENA FURNITURE</p> -->
+                <p style="text-align: justify;">Ilena hadir menjadi teman untuk menciptakan banyak kesan dan pesan dalam
+                    setiap sudut ruang yang menjadi
+                    indah dalam kenangan. keberhasilan Ilena merupakan usaha menghadirkan furniture khas masyarakat
+                    urban
+                    yang cocok untuk segala suasana. kami percaya bahwa setiap ruang kosong memiliki cerita yang diukir
+                    indah oleh individu dan relasinya sebagai bentuk representasi tersendiri. bersama Ilena wujudkan
+                    keindahan interior ruang impian.
+                </p>
+            </div>
         </div>
     </div>
-    <div class="baris-ke-kolom-reverse">
-        <div style="flex: 1;" class="p-5">
-            <h1 class="teks-besar mb-3">Profil Perusahaan</h1>
-            <p style="text-align: justify;">CV Catur Bhakti Mandiri merupakan produsen kayu ternama Indonesia yang
-                berada di Semarang, Jawa Tengah.
-                Selama 30 tahun lamanya berkomitmen untuk selalu memberikan kualitas dan terintegrasi terhadap
-                keseimbangan kebutuhan konsumen dan kesediaan sumber daya selama puluhan tahun lamanya. Produk kami
-                terdiri dari beragam furniture untuk mewujudkan interior ruang rumah tangga, perkantoran & perhotelan
-                berbahan dasar kayu yang bersumber dari hutan berkelanjutan.</p>
-        </div>
-        <div style="flex: 1;" class="">
-            <img style="width: 100%; aspect-ratio: 16/9; object-fit:cover;"
-                src="../img/foto/Tentangperusahaan.JPG" alt="">
+    <div class="container py-4 mt-2">
+        <div class="baris-ke-kolom-reverse">
+            <div style="flex: 1;">
+                <h1 class="teks-besar mb-3">Profil Perusahaan</h1>
+                <p style="text-align: justify;">CV Catur Bhakti Mandiri merupakan produsen kayu ternama Indonesia yang
+                    berada di Semarang, Jawa Tengah.
+                    Selama 30 tahun lamanya berkomitmen untuk selalu memberikan kualitas dan terintegrasi terhadap
+                    keseimbangan kebutuhan konsumen dan kesediaan sumber daya selama puluhan tahun lamanya. Produk kami
+                    terdiri dari beragam furniture untuk mewujudkan interior ruang rumah tangga, perkantoran &
+                    perhotelan
+                    berbahan dasar kayu yang bersumber dari hutan berkelanjutan.
+                </p>
+            </div>
+            <div style="flex: 1;">
+                <img style="width: 100%; aspect-ratio: 16/9; object-fit:cover; border-radius:8px;"
+                    src="<?= base_url('/img/foto/Tentangperusahaan.JPG') ?>" alt="">
+            </div>
         </div>
     </div>
 

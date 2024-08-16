@@ -240,13 +240,17 @@ body {
   font-size: 24px;
   margin: 0;
 }
+.child-list-nav p {
+  font-size: 10px;
+  margin: 0;
+}
 .bg-list-nav {
   background-color: rgba(0, 0, 0, 0);
   position: absolute;
   left: 0;
   top: 99.6px;
   width: 100%;
-  height: calc(100vh - 99.6px);
+  height: calc(100svh - 100px);
   backdrop-filter: blur(0px);
   transition: 0.3s;
   display: none;
@@ -1778,16 +1782,16 @@ body {
 }
 
 .show-di-1350 {
-    display: none;
+  display: none;
 }
 .hide-di-1350 {
-    display: block;
+  display: block;
 }
 @media (max-width: 1350px) and (min-width: 600px) {
-    .show-di-1350 {
-        display: block;
-    }
-    .hide-di-1350 {
-        display: none;
-    }
+  .show-di-1350 {
+    display: block;
+  }
+  .hide-di-1350 {
+    display: none;
+  }
 }
