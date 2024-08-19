@@ -20,7 +20,7 @@
 <?php } ?>
 <div id="login-modal"
     style="position: fixed; background-color: rgba(0, 0, 0, 0.5); top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
-    class="d-none justify-content-center align-items-center">
+    class="d-flex justify-content-center align-items-center">
     <div class="d-flex" style="width: 70%; height: 80%; border-radius: 1em; overflow: hidden">
         <div class="show-block-ke-hide w-50" style="position: relative;">
             <div style="position: absolute;" class="p-5">
@@ -34,7 +34,7 @@
             </div>
             <img src="../img/foto/gambar-hero.webp" class="w-100 h-100" style="object-fit: cover;" alt="">
         </div>
-        <div class="limapuluh-ke-seratus d-flex flex-column" style="background-color: white;">
+        <div class="limapuluh-ke-seratus d-flex flex-column" style="background-color: white; overflow-y: auto">
             <div class="d-flex justify-content-end align-items-center px-3" style="height: 30px;">
                 <p class="m-0 d-block" style="cursor: pointer;" onclick="closeLoginModel()">X</p>
             </div>

@@ -2819,6 +2819,17 @@ class Pages extends BaseController
         ];
         return view('pages/account', $data);
     }
+    public function visiMisi()
+    {
+        $data = [
+            'title' => 'Visi dan Misi',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
+        ];
+        return view('pages/visiMisi', $data);
+    }
     public function faq()
     {
         $data = [
