@@ -67,7 +67,7 @@
                     </div>
                 </div>
                 <div class="footer-div show-block-ke-hide" style="flex:1;">
-                    <h5><strong>Metode pembayaran</strong></h5>
+                    <h5><strong>Metode Pembayaran</strong></h5>
                     <div class="footer__partner__payment">
                         <div class="footer__partner__img">
                             <img src="<?= base_url('img/pembayaran/bca.webp') ?>" width="43.4" height="13.78" />

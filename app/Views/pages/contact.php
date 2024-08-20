@@ -47,7 +47,7 @@
                     </div>
                 </div>
 
-                <h5><strong>Temukan jawaban cepat sekarang</strong></h5>
+                <h5><strong>Temukan Jawaban Cepat</strong></h5>
 
                 <div>
                     <a style="color:black; font-size: 14px;" href="<?= base_url('/faq#faqkedua') ?>"><strong>Apa metode

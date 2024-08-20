@@ -22,7 +22,7 @@
     style="position: fixed; background-color: rgba(0, 0, 0, 0.5); top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
     class="d-flex justify-content-center align-items-center">
     <div class="d-flex" style="width: 70%; height: 80%; border-radius: 1em; overflow: hidden">
-        <div class="show-block-ke-hide w-50" style="position: relative;">
+        <div class="limapuluh-ke-seratus" style="position: relative;">
             <div style="position: absolute;" class="p-5">
                 <div style="height: 30px;"></div>
                 <h1 class="text-light teks-besar mb-3 hide-di-1350">JOIN OUR<br>MEMBERSHIP</h1>
@@ -30,17 +30,20 @@
                 <p class="text-light" style="font-size: 20px; width: 70%;">Daftarkan diri Anda sekarang dan jadilah yang
                     pertama tahu beragam produk baru, promo eksklusif, event terdekat, inspirasi, tips & trik serta
                     masih banyak lagi manfaat lainnya!</p>
-                <span class="d-block mt-4" style="height: 1px; width: 40%; background-color: white;"></span>
+                <span class="d-block mt-4 mb-5" style="height: 1px; width: 40%; background-color: white;"></span>
+                <a href="/register" class="hide-ke-show-block mb-3">Daftar Sekarang</a>
+                <p class="text-light hide-ke-show-block">Sudah punya akun? <a href="/login" class="btn-teks-aja"
+                        style="display: inline;">Login akun</a></p>
             </div>
             <img src="../img/foto/gambar-hero.webp" class="w-100 h-100" style="object-fit: cover;" alt="">
         </div>
-        <div class="limapuluh-ke-seratus d-flex flex-column" style="background-color: white; overflow-y: auto">
+        <div class="show-flex-ke-hide flex-column w-50" style="background-color: white; overflow-y: auto">
             <div class="d-flex justify-content-end align-items-center px-3" style="height: 30px;">
                 <p class="m-0 d-block" style="cursor: pointer;" onclick="closeLoginModel()">X</p>
             </div>
             <div class="d-flex flex-column align-items-center px-5 gap-2 pt-5" style="flex: 1;">
                 <img src="<?php echo base_url('/img/LogoIlena.png'); ?>" alt="logo ilena"
-                    style="height: 25px; aspect-ratio: 2/12;">
+                    style="height: 25px;">
                 <p style="text-align: center;">Bergabunglah menjadi member berharga Kami dan dapatkan keuntungan pada
                     pembelanjaan pertama!</p>
                 <div class="w-100">
@@ -92,31 +95,33 @@
     <script>
         const loginModalElm = document.getElementById('login-modal')
         let opened = false;
-        // document.body.onscroll = (e) => {
-        //     const scrollingElm = e.target.scrollingElement;
-        //     const hasil = Math.round(
-        //         (scrollingElm.scrollTop /
-        //             (scrollingElm.scrollHeight -
-        //                 scrollingElm.clientHeight)) *
-        //         100
-        //     );
-        //     if (hasil > 50 && !opened) {
-        //         loginModalElm.classList.add("d-flex")
-        //         loginModalElm.classList.remove("d-none")
-        //         opened = true
-        //     }
-        // };
+        document.body.onscroll = (e) => {
+            if (!window.sessionStorage.getItem('close-login-modal')) {
+                const scrollingElm = e.target.scrollingElement;
+                const hasil = Math.round(
+                    (scrollingElm.scrollTop /
+                        (scrollingElm.scrollHeight -
+                            scrollingElm.clientHeight)) *
+                    100
+                );
+                if (hasil > 50 && !opened) {
+                    loginModalElm.classList.add("d-flex")
+                    loginModalElm.classList.remove("d-none")
+                    opened = true
+                }
+            }
+        };
 
-        // function closeLoginModel() {
-        //     loginModalElm.classList.remove("d-flex")
-        //     loginModalElm.classList.add("d-none")
-        //     // window.sessionStorage.setItem('close-login-modal', true)
-        //     // opened = false
-        //     setTimeout(() => {
-        //         loginModalElm.classList.add("d-flex")
-        //         loginModalElm.classList.remove("d-none")
-        //     }, 15000);
-        // }
+        function closeLoginModel() {
+            loginModalElm.classList.remove("d-flex")
+            loginModalElm.classList.add("d-none")
+            window.sessionStorage.setItem('close-login-modal', true)
+            opened = false
+            // setTimeout(() => {
+            //     loginModalElm.classList.add("d-flex")
+            //     loginModalElm.classList.remove("d-none")
+            // }, 15000);
+        }
 
         // if (window.innerWidth <= 600) {
         //     loginModalElm.children[0].style.width = '95%'
@@ -309,39 +314,39 @@
         <a href="/product" class="btn-lonjong">Lihat Semua Produk <i class="material-icons">arrow_forward</i></a>
     </div>
 
-    <div style="background-image: url('../img/foto/gambar-hero2 edit.webp');
+    <!-- <div style="background-image: url('../img/foto/gambar-hero2 edit.webp');
     background-size: cover; background-position: center; background-repeat: no-repeat; color: white; background-color: rgba(0, 0, 0, 0.5); background-blend-mode: color;"
         class="py-5 d-none">
-        <!-- <div class="img-teks" style="height: 100%; color: white; background-color: rgba(0, 0, 0, 0.5);"> -->
-        <div class="container baris-ke-kolom gap-5">
-            <div style="flex: 1" class="d-flex justify-content-start gap-4">
-                <img src="../img/gratis ongkir.png" alt="" style="width: 70px; height: 40px">
-                <div>
-                    <p class="fw-bold mb-1" style="font-size: 20px;">Free Ongkir 100%</p>
-                    <p class="m-0">Dapatkan keuntungan gratis pengiriman 100% untuk wilayah Jawa, Madura, & Bali tanpa
-                        minimum belanja</p>
+        <div class="img-teks" style="height: 100%; color: white; background-color: rgba(0, 0, 0, 0.5);">
+            <div class="container baris-ke-kolom gap-5">
+                <div style="flex: 1" class="d-flex justify-content-start gap-4">
+                    <img src="../img/gratis ongkir.png" alt="" style="width: 70px; height: 40px">
+                    <div>
+                        <p class="fw-bold mb-1" style="font-size: 20px;">Free Ongkir 100%</p>
+                        <p class="m-0">Dapatkan keuntungan gratis pengiriman 100% untuk wilayah Jawa, Madura, & Bali tanpa
+                            minimum belanja</p>
+                    </div>
                 </div>
-            </div>
-            <div style="flex: 1" class="d-flex justify-content-start gap-4">
-                <img src="../img/eco friendly.png" alt="" style="width: 50px; height: 50px">
-                <div>
-                    <p class="fw-bold mb-1" style="font-size: 20px;">Eco Friendly</p>
-                    <p class="m-0">Dibuat dari bahan ramah lingkungan yang tidak berbahaya bagi kelangsungan manusia,
-                        bumi, dan lingkungan</p>
+                <div style="flex: 1" class="d-flex justify-content-start gap-4">
+                    <img src="../img/eco friendly.png" alt="" style="width: 50px; height: 50px">
+                    <div>
+                        <p class="fw-bold mb-1" style="font-size: 20px;">Eco Friendly</p>
+                        <p class="m-0">Dibuat dari bahan ramah lingkungan yang tidak berbahaya bagi kelangsungan manusia,
+                            bumi, dan lingkungan</p>
+                    </div>
                 </div>
-            </div>
-            <div style="flex: 1" class="d-flex justify-content-start gap-4">
-                <img src="../img/seluruh indo.png" alt="" style="width: 70px; height: 60px">
-                <div>
-                    <p class="fw-bold mb-1" style="font-size: 20px;">Bebas kirim seluruh Indonesia</p>
-                    <p class="m-0">Bekerjasama dengan mitra ekspedisi yang telah menjangkau pengiriman aman & terpercaya
-                        ke seluruh Indonesia</p>
+                <div style="flex: 1" class="d-flex justify-content-start gap-4">
+                    <img src="../img/seluruh indo.png" alt="" style="width: 70px; height: 60px">
+                    <div>
+                        <p class="fw-bold mb-1" style="font-size: 20px;">Bebas kirim seluruh Indonesia</p>
+                        <p class="m-0">Bekerjasama dengan mitra ekspedisi yang telah menjangkau pengiriman aman & terpercaya
+                            ke seluruh Indonesia</p>
+                    </div>
                 </div>
             </div>
         </div>
-        <!-- </div> -->
-        <!-- <img class="img-besar" style="height: 300px;" src="../img/foto/gambar-hero2 edit.webp" alt="Gambar Hero"> -->
-    </div>
+        <img class="img-besar" style="height: 300px;" src="../img/foto/gambar-hero2 edit.webp" alt="Gambar Hero">
+    </div> -->
     <div style="background-color: whitesmoke;" class="py-5">
         <!-- <div class="img-teks" style="height: 100%; color: white; background-color: rgba(0, 0, 0, 0.5);"> -->
         <div class="container baris-ke-kolom gap-5">
@@ -362,7 +367,7 @@
                 </div>
             </div>
             <div style="flex: 1" class="d-flex gap-4 align-items-center">
-                <img src="../img/seluruh indo oren1.png" alt="" style="width: 70px;">
+                <img src="../img/seluruh indo oren1.png" alt="" style="width: 50px;">
                 <div>
                     <p class="fw-bold mb-1" style="font-size: 20px;">Bebas kirim seluruh Indonesia</p>
                     <p class="m-0">Bekerjasama dengan mitra ekspedisi yang telah menjangkau pengiriman aman & terpercaya
