@@ -20,7 +20,7 @@
 <?php } ?>
 <div id="login-modal"
     style="position: fixed; background-color: rgba(0, 0, 0, 0.5); top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
-    class="d-flex justify-content-center align-items-center">
+    class="d-none justify-content-center align-items-center">
     <div class="d-flex" style="width: 70%; height: 80%; border-radius: 1em; overflow: hidden">
         <div class="limapuluh-ke-seratus" style="position: relative;">
             <div style="position: absolute;" class="p-5">
