@@ -9,7 +9,8 @@
                     <a href="/kebijakan">Kebijakan Privasi</a><br>
                     <a href="/syarat">Syarat & Ketentuan</a><br>
                     <a href="/login">Masuk</a><br>
-                    <a href="/faq">FAQ</a>
+                    <a href="/faq">FAQ</a><br>
+                    <a href="/visimisi">Visi dan Misi</a>
                 </div>
                 <div class="footer-div" style="flex:1;">
                     <h5><strong>Social Media</strong></h5>
