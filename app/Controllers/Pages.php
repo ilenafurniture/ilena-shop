@@ -45,7 +45,7 @@ class Pages extends BaseController
     }
     public function index()
     {
-        $produk  = $this->barangModel->orderBy('pengunjung', 'desc')->findAll(8, 0);
+        $produk  = $this->barangModel->orderBy('pengunjung', 'desc')->findAll(4, 0);
         $wishlist = $this->session->get('wishlist');
         if (!isset($wishlist)) {
             $wishlist = [];
