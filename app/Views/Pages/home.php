@@ -349,7 +349,9 @@ if (window.innerWidth <= 600) {
     <div style="background-color: whitesmoke;" class="py-5">
         <div class="container baris-ke-kolom gap-5">
             <div style="flex: 1" class="d-flex gap-4 align-items-center">
+
                 <img src="../img/gratis ongkir oren1.png" alt="" style="width: 70px;">
+
                 <div>
                     <p class="fw-bold mb-1" style="font-size: 20px;">Free Ongkir 100%</p>
                     <p class="m-0">Dapatkan keuntungan gratis pengiriman untuk wilayah Jawa, Madura, & Bali tanpa
@@ -357,7 +359,9 @@ if (window.innerWidth <= 600) {
                 </div>
             </div>
             <div style="flex: 1" class="d-flex gap-4 align-items-center">
+
                 <img src="../img/svlk oren.png" alt="" style="width: 70px;">
+
                 <div>
                     <p class="fw-bold mb-1" style="font-size: 20px;">Eco Friendly</p>
                     <p class="m-0">Dibuat dari bahan ramah lingkungan yang tidak berbahaya bagi kelangsungan manusia,
@@ -365,8 +369,10 @@ if (window.innerWidth <= 600) {
                 </div>
             </div>
             <div style="flex: 1" class="d-flex gap-4 align-items-center">
-                <img src="../img/seluruh indo oren1.png" alt="" style="width: 50px;">
-                <div>
+                <div style="width: 70px;" class="d-flex justify-content-center">
+                    <img src="../img/seluruh indo oren1.png" alt="" style="width: 50px;">
+                </div>
+                <div style="flex:1;">
                     <p class="fw-bold mb-1" style="font-size: 20px;">Bebas kirim seluruh Indonesia</p>
                     <p class="m-0">Bekerjasama dengan mitra ekspedisi yang telah menjangkau pengiriman aman & terpercaya
                         ke seluruh Indonesia</p>
