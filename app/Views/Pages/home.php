@@ -23,7 +23,7 @@ function closeModalVoucher() {
 <div id="login-modal"
     style="position: fixed; background-color: rgba(0, 0, 0, 0.5); top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
     class="d-none justify-content-center align-items-center">
-    <div style="width: fit-content; height: fit-content; border-radius: 1em; overflow: hidden; position:relative;">
+    <div style="width: fit-content; height: fit-content;  overflow: hidden; position:relative;">
         <div style="position: absolute;"
             class="w-100 h-100 d-flex flex-column justify-content-between align-items-center">
             <div class="d-flex justify-content-end w-100 py-1 px-3">
@@ -45,22 +45,22 @@ function closeModalVoucher() {
 <script>
 const loginModalElm = document.getElementById('login-modal')
 let opened = false;
-// document.body.onscroll = (e) => {
-//     if (!window.sessionStorage.getItem('close-login-modal')) {
-//         const scrollingElm = e.target.scrollingElement;
-//         const hasil = Math.round(
-//             (scrollingElm.scrollTop /
-//                 (scrollingElm.scrollHeight -
-//                     scrollingElm.clientHeight)) *
-//             100
-//         );
-//         if (hasil > 50 && !opened) {
-//             loginModalElm.classList.add("d-flex")
-//             loginModalElm.classList.remove("d-none")
-//             opened = true
-//         }
-//     }
-// };
+document.body.onscroll = (e) => {
+    if (!window.sessionStorage.getItem('close-login-modal')) {
+        const scrollingElm = e.target.scrollingElement;
+        const hasil = Math.round(
+            (scrollingElm.scrollTop /
+                (scrollingElm.scrollHeight -
+                    scrollingElm.clientHeight)) *
+            100
+        );
+        if (hasil > 50 && !opened) {
+            loginModalElm.classList.add("d-flex")
+            loginModalElm.classList.remove("d-none")
+            opened = true
+        }
+    }
+};
 
 function closeLoginModel() {
     loginModalElm.classList.remove("d-flex")
@@ -73,10 +73,9 @@ function closeLoginModel() {
     // }, 15000);
 }
 
-// if (window.innerWidth <= 600) {
-//     loginModalElm.children[0].style.width = '95%'
-//     loginModalElm.children[0].style.height = '95%'
-// }
+if (window.innerWidth <= 600) {
+    loginModalElm.classList.add('p-3');
+}
 </script>
 <?php } ?>
 <div>
@@ -142,17 +141,17 @@ function closeLoginModel() {
         <div class="d-flex gap-1 h-100 w-100">
             <a class="img-kategori">
                 <video autoplay muted loop>
-                    <source src="../img/v1.mp4" type="video/mp4">
+                    <source src="<?= base_url('/img/v1.mp4') ?>" type="video/mp4">
                 </video>
             </a>
             <a class="img-kategori">
                 <video autoplay muted loop>
-                    <source src="../img/v2.mp4" type="video/mp4">
+                    <source src="<?= base_url('/img/v2.mp4') ?>" type="video/mp4">
                 </video>
             </a>
             <a class="img-kategori">
                 <video autoplay muted loop>
-                    <source src="../img/v3.mp4" type="video/mp4">
+                    <source src="<?= base_url('/img/v3.mp4') ?>" type="video/mp4">
                 </video>
             </a>
         </div>
@@ -207,47 +206,29 @@ function closeLoginModel() {
     </div>
     <div class="container show-block-ke-hide">
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap:1px;">
-            <img src="https://img.freepik.com/free-photo/interior-design-with-photoframes-plants_23-2149385437.jpg?t=st=1724302550~exp=1724306150~hmac=85833115591c6b2dbafd958825952954083ef5930df2ab301efdc5baef25656c&w=1060"
-                style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="https://img.freepik.com/free-photo/living-room-mid-century-style-with-warm-colors-ai-generative_123827-23931.jpg?t=st=1724302742~exp=1724306342~hmac=54ee9da2a4c81f788a184650f4938efef42e80ed32f61f63a054bf735fb82e1a&w=1060"
-                style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="https://img.freepik.com/free-photo/interior-design-with-photoframes-grey-couch_23-2149385445.jpg?t=st=1724302299~exp=1724305899~hmac=298c29415848bc6f33a06c493e3ff323cad4f8320b0d4ad06309b6770b3524ef&w=1060"
-                style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="https://img.freepik.com/free-psd/contemporary-living-room-mockup-psd-interior-design_53876-129130.jpg?t=st=1724313788~exp=1724317388~hmac=0c4a4792041046a2262cf12e43362a8c906c070ccd5750f4d8f2c9a8be631da3&w=1060"
-                style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="https://img.freepik.com/free-photo/sofa-living-room-decorated-with-brazilian-folklore-design_23-2150794089.jpg?t=st=1724313839~exp=1724317439~hmac=d37ae06d65cac4d289be66ed8b3e9a1d03eb5e8c416f8eb4284264981d934401&w=1480"
-                style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="https://img.freepik.com/free-photo/interior-design-with-photoframe-table_23-2149385433.jpg?t=st=1724313889~exp=1724317489~hmac=b8e5d6da254b1ff291ffd0ec104bbe1537cd77e7dc16cf1b4acfb37fb728097a&w=1060"
-                style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="https://img.freepik.com/free-photo/gray-sofa-white-living-room_43614-796.jpg?t=st=1724313924~exp=1724317524~hmac=5b8c8a9fc9fad5d2a7b5746fed08ed827989a4d1fcc9e3e58ec13dc42e42ab17&w=1060"
-                style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="https://img.freepik.com/free-photo/minimalist-interior-design_23-2150870794.jpg?t=st=1724313960~exp=1724317560~hmac=09cb2492e7c9427c6774224b2cfe6f7dc9b2fe45bc1646e3e4ce5667a6aa48a9&w=1380"
-                style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="https://img.freepik.com/free-photo/modern-styled-entryway_23-2150695907.jpg?t=st=1724313994~exp=1724317594~hmac=4a5c341369c88f348137e47cc9ac8a8c2350c24f607c483c6f5f4dcab335381f&w=1060"
-                style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
+            <img src="<?= base_url('/img/foto/1.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
+            <img src="<?= base_url('/img/foto/2.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
+            <img src="<?= base_url('/img/foto/3.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
+            <img src="<?= base_url('/img/foto/4.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
+            <img src="<?= base_url('/img/foto/5.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
+            <img src="<?= base_url('/img/foto/6.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
+            <img src="<?= base_url('/img/foto/7.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
+            <img src="<?= base_url('/img/foto/8.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
+            <img src="<?= base_url('/img/foto/9.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
         </div>
     </div>
 
     <div class="container hide-ke-show-block">
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap:1px;">
-            <img src="https://img.freepik.com/free-photo/interior-design-with-photoframes-plants_23-2149385437.jpg?t=st=1724302550~exp=1724306150~hmac=85833115591c6b2dbafd958825952954083ef5930df2ab301efdc5baef25656c&w=1060"
-                style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="https://img.freepik.com/free-photo/living-room-mid-century-style-with-warm-colors-ai-generative_123827-23931.jpg?t=st=1724302742~exp=1724306342~hmac=54ee9da2a4c81f788a184650f4938efef42e80ed32f61f63a054bf735fb82e1a&w=1060"
-                style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="https://img.freepik.com/free-photo/interior-design-with-photoframes-grey-couch_23-2149385445.jpg?t=st=1724302299~exp=1724305899~hmac=298c29415848bc6f33a06c493e3ff323cad4f8320b0d4ad06309b6770b3524ef&w=1060"
-                style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="https://img.freepik.com/free-psd/contemporary-living-room-mockup-psd-interior-design_53876-129130.jpg?t=st=1724313788~exp=1724317388~hmac=0c4a4792041046a2262cf12e43362a8c906c070ccd5750f4d8f2c9a8be631da3&w=1060"
-                style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="https://img.freepik.com/free-photo/sofa-living-room-decorated-with-brazilian-folklore-design_23-2150794089.jpg?t=st=1724313839~exp=1724317439~hmac=d37ae06d65cac4d289be66ed8b3e9a1d03eb5e8c416f8eb4284264981d934401&w=1480"
-                style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="https://img.freepik.com/free-photo/interior-design-with-photoframe-table_23-2149385433.jpg?t=st=1724313889~exp=1724317489~hmac=b8e5d6da254b1ff291ffd0ec104bbe1537cd77e7dc16cf1b4acfb37fb728097a&w=1060"
-                style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="https://img.freepik.com/free-photo/gray-sofa-white-living-room_43614-796.jpg?t=st=1724313924~exp=1724317524~hmac=5b8c8a9fc9fad5d2a7b5746fed08ed827989a4d1fcc9e3e58ec13dc42e42ab17&w=1060"
-                style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="https://img.freepik.com/free-photo/minimalist-interior-design_23-2150870794.jpg?t=st=1724313960~exp=1724317560~hmac=09cb2492e7c9427c6774224b2cfe6f7dc9b2fe45bc1646e3e4ce5667a6aa48a9&w=1380"
-                style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="https://img.freepik.com/free-photo/modern-styled-entryway_23-2150695907.jpg?t=st=1724313994~exp=1724317594~hmac=4a5c341369c88f348137e47cc9ac8a8c2350c24f607c483c6f5f4dcab335381f&w=1060"
-                style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
+            <img src="<?= base_url('/img/foto/1.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
+            <img src="<?= base_url('/img/foto/2.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
+            <img src="<?= base_url('/img/foto/3.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
+            <img src="<?= base_url('/img/foto/4.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
+            <img src="<?= base_url('/img/foto/5.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
+            <img src="<?= base_url('/img/foto/6.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
+            <img src="<?= base_url('/img/foto/7.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
+            <img src="<?= base_url('/img/foto/8.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
+            <img src="<?= base_url('/img/foto/9.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
         </div>
     </div>
 
