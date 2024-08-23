@@ -272,61 +272,180 @@
                         <p class="m-0" style="font-size:14px;">Jelajahi Cabana</p>
                         <div class="ms-2">
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cabana&jenis=bookshelf">Bookshelf</a>
+                                href="/product?koleksi=cabana&jenis=bookshelf" onmouseover="hoverListNav('cabana-bookshelf')">Bookshelf</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cabana&jenis=bufet-tv">Bufet TV</a>
+                                href="/product?koleksi=cabana&jenis=bufet-tv" onmouseover="hoverListNav('cabana-bufet')">Bufet TV</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cabana&jenis=coffee-table">Coffee Table</a>
+                                href="/product?koleksi=cabana&jenis=coffee-table" onmouseover="hoverListNav('cabana-coffee')">Coffee Table</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cabana&jenis=console-table">Console
+                                href="/product?koleksi=cabana&jenis=console-table" onmouseover="hoverListNav('cabana-console')">Console
                                 Table</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cabana&jenis=dresser-3-drawer">Dresser 3
+                                href="/product?koleksi=cabana&jenis=dresser-3-drawer" onmouseover="hoverListNav('cabana-3drawer')">Dresser 3
                                 Drawer</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cabana&jenis=dresser-5-drawer">Dresser 5
+                                href="/product?koleksi=cabana&jenis=dresser-5-drawer" onmouseover="hoverListNav('cabana-5drawer')">Dresser 5
                                 Drawer</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cabana&jenis=dresser-6-drawer">Dresser 6
+                                href="/product?koleksi=cabana&jenis=dresser-6-drawer" onmouseover="hoverListNav('cabana-6drawer')">Dresser 6
                                 Drawer
                             </a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cabana&jenis=king-bed">King
+                                href="/product?koleksi=cabana&jenis=king-bed" onmouseover="hoverListNav('cabana-king')">King
                                 Bed</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cabana&jenis=queen-bed">Queen Bed</a>
+                                href="/product?koleksi=cabana&jenis=queen-bed" onmouseover="hoverListNav('cabana-queen')">Queen Bed</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cabana&jenis=side-table">Side
-                                Table</a>
+                                href="/product?koleksi=cabana&jenis=side-table" onmouseover="hoverListNav('cabana-side')">Side Table</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cabana&jenis=single-bed">Single Bed</a>
+                                href="/product?koleksi=cabana&jenis=single-bed" onmouseover="hoverListNav('cabana-single')">Single Bed</a>
                         </div>
                     </div>
-                    <div style="flex:1;" class="d-flex gap-4 mt-3">
-                        <div style="flex: 1;">
-                            <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                src="https://ilenafurniture.com/viewvar/10101401/1" alt="dresser-3-drawer">
+                    <div style="flex:1;">
+                        <div class="d-flex gap-4 mb-3 cabana-penjelasan" id="cabana-bookshelf">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10100201" alt="cabana-bookshelf">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Bookshelf</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dengan konstruksi bahan kayu solid yang kuat, rak buku dengan ukuran yang cukup besar ini bisa difungsikan juga sebagai partisi ruang untuk percantik interior Anda.</p>
+                                <a href="<?= base_url('/product/bookshelf-ilena-cabana') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
                         </div>
-                        <div style="flex: 1;">
-                            <h3 class="teks-sedang mb-3">Side Table</h3>
-                            <p style="text-align: justify" class="mb-2">Nakas/ meja samping multifungsi dengan
-                                desain
-                                modern & minimalis yang stylish . Cocok digunakan sebagai tempat buku, hp, hingga
-                                lampu
-                                tidur. Side table ini bisa diletakkan pada samping kasur atau sudut ruangan lain
-                                sesuai
-                                kebutuhan. Dengan handle mushroom yang pas digenggam tangan dengan frame besi yang
-                                menambah ketahanan.
-                            </p>
-                            <p style="text-align: justify" class="mb-2">Koleksi Ilena Furniture series Sorely didesain
-                                eksklusif dengan material pembuatan
-                                berkualitas premium</p>
-                            <p style="text-align: justify;">Kayu solid mahoni,engineered wood, rangka besi, dilapisi
-                                vinir jati dengan finishing white or black wash.</p>
-                            <a href="<?= base_url('/product/Side-Table-Ilena-Cabana') ?>"
-                                style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
-                                selengkapnya..</a>
+                        <div class="d-none gap-4 mb-3 cabana-penjelasan" id="cabana-bufet">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10101601" alt="cabana-bufet">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Bufet TV</h3>
+                                <p style="text-align: justify" class="mb-2">Koleksi Ilena Furniture series Cabana didesain eksklusif dengan material pembuatan berkualitas premium.</p>
+                                <a href="<?= base_url('/product/bufet-tv-ilena-cabana') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
                         </div>
+                        <div class="d-none gap-4 mb-3 cabana-penjelasan" id="cabana-coffee">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10100301" alt="cabana-coffee-table">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Coffee Table</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dengan model modern minimalis yang menawan dan praktis. Perpaduan warna coklat dan hitam yang harmonis membuat tampilan meja kopi ini lebih tegas dan elegan. furniture ini cocok ditempatkan pada ruang tamu, ruang keluarga, hingga lobby kantor yang memaksimalkan spot berkumpul jadi lebih nyaman dan menyenangkan.</p>
+                                <a href="<?= base_url('/product/coffee-table-ilena-cabana') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 cabana-penjelasan" id="cabana-console">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10100401" alt="cabana-console-table">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Console Table</h3>
+                                <p style="text-align: justify" class="mb-2">Sebuah meja konsol dengan model sederhana yang difungsikan untuk memaksimalkan tampilan ruang kosong di belakang sofa, atau dinding menjadi lebih menarik. Agar lebih sempurna, Anda bisa menambahkan aksesoris sesuai dengan preferensi pribadi.</p>
+                                <a href="<?= base_url('/product/Console-Table-Ilena-Cabana') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 cabana-penjelasan" id="cabana-3drawer">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10100601" alt="cabana-dresser-3-drawer">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Dresser 3 Drawer</h3>
+                                <p style="text-align: justify" class="mb-2">Dresser 3 tingkat makin banyak diminati dengan desain modern minimalis yang tetap stylish. Dengan desain yang multifungsi ini, Anda bisa menyimpan berbagai macam pakaian, dan barang-barang lain sesuai dengan kebutuhan. Dilengkapi dengan 3 laci tingkat vertikal yang dengan handle mushroom yang semakin mempertegas kesan elegan.</p>
+                                <a href="<?= base_url('/product/dresser-3-drawer-ilena-cabana') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 cabana-penjelasan" id="cabana-5drawer">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10100801" alt="cabana-dresser-5-drawer">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Dresser 5 Drawer</h3>
+                                <p style="text-align: justify" class="mb-2">Dresser 5 tingkat makin banyak diminati dengan desain modern minimalis yang tetap stylish. Dengan desain yang multifungsi ini, Anda bisa menyimpan berbagai macam pakaian, dan barang-barang lain sesuai dengan kebutuhan. Dilengkapi dengan 5 laci tingkat vertikal yang dengan handle mushroom warna hitam yang semakin mempertegas kesan elegan.</p>
+                                <a href="<?= base_url('/product/dresser-5-drawer-ilena-cabana') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 cabana-penjelasan" id="cabana-6drawer">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10100901" alt="cabana-dresser-6-drawer">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Dresser 6 Drawer</h3>
+                                <p style="text-align: justify" class="mb-2">Dresser 6 tingkat makin banyak diminati dengan desain modern minimalis yang tetap stylish. Dengan desain yang multifungsi ini, Anda bisa menyimpan berbagai macam pakaian, dan barang-barang lain sesuai dengan kebutuhan. Dilengkapi dengan 6 laci tingkat vertikal yang dengan handle mushroom warna hitam yang semakin mempertegas kesan elegan.</p>
+                                <a href="<?= base_url('/product/dresser-6-drawer-ilena-cabana') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 cabana-penjelasan" id="cabana-king">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10101201" alt="cabana-king-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">King Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang secara khusus dengan gaya modern minimalis. Dengan paduan warna kontras yang selaras, menjadikan king bed ini lebih menarik dan unik.</p>
+                                <a href="<?= base_url('/product/king-bed-ilena-water-case') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 cabana-penjelasan" id="cabana-queen">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10101301" alt="cabana-queen-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Queen Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang secara khusus dengan gaya modern minimalis. Dengan paduan warna kontras yang selaras, menjadikan queen bed ini lebih menarik dan unik.</p>
+                                <a href="<?= base_url('/product/Queen-Bed-Ilena-Cabana') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 cabana-penjelasan" id="cabana-side">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10101401" alt="cabana-side-table">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Side Table</h3>
+                                <p style="text-align: justify" class="mb-2">Nakas/ meja samping multifungsi dengan desain modern & minimalis yang stylish . Cocok digunakan sebagai tempat buku, hp, hingga lampu tidur. Side table ini bisa diletakkan pada samping kasur atau sudut ruangan lain sesuai kebutuhan. Dengan handle mushroom yang pas digenggam tangan dengan frame besi yang menambah ketahanan.</p>
+                                <a href="<?= base_url('/product/Side-Table-Ilena-Cabana') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 cabana-penjelasan" id="cabana-single">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10101801" alt="cabana-single-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Single Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Tempat tidur single bed ini di desain dengan gaya modern klasik dengan menonjolkan ciri khas dari tekstur kayu jati. Ranjang tidur ini dirancang dengan model sederhana dengan mempertimbangkan kenyamanan. Cocok untuk mengisi ruang tidur tamu atau anak.</p>
+                                <a href="<?= base_url('/product/single-bed-ilena-cabana') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <p class="text-secondary">Modern ala Ilena hadir dengan berbagai model menawan yang akan membuat interior ruang jadi lebih sempurna. Dengan warna coklat serat kayu yang khas serta finishing satin yang menjadi highlight pada series Cabana. Material kayu masih jadi primadona dengan berbagai inovasi sentuhan modern yang membuat tampilan tidak lekang oleh waktu.</p>
                     </div>
                 </div>
             </div>
@@ -340,50 +459,149 @@
                         <p class="m-0" style="font-size:14px;">Jelajahi Orca</p>
                         <div class="ms-2">
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=orca&jenis=bookshelf">Bookshelf</a>
+                                href="/product?koleksi=orca&jenis=bookshelf" onmouseover="hoverListNav('orca-bookshelf')">Bookshelf</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=orca&jenis=bufet-tv">Bufet TV</a>
+                                href="/product?koleksi=orca&jenis=bufet-tv" onmouseover="hoverListNav('orca-bufet')">Bufet TV</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=orca&jenis=coffee-table">Coffee Table</a>
+                                href="/product?koleksi=orca&jenis=coffee-table" onmouseover="hoverListNav('orca-coffee')">Coffee Table</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=orca&jenis=console-table">Console
+                                href="/product?koleksi=orca&jenis=console-table" onmouseover="hoverListNav('orca-console')">Console
                                 Table</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=orca&jenis=dresser-6-drawer">Dresser 6
+                                href="/product?koleksi=orca&jenis=dresser-6-drawer" onmouseover="hoverListNav('orca-6drawer')">Dresser 6
                                 Drawer
                             </a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=orca&jenis=king-bed">King
+                                href="/product?koleksi=orca&jenis=king-bed" onmouseover="hoverListNav('orca-king')">King
                                 Bed</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=orca&jenis=queen-bed">Queen Bed</a>
+                                href="/product?koleksi=orca&jenis=queen-bed" onmouseover="hoverListNav('orca-queen')">Queen Bed</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=orca&jenis=side-table">Side
+                                href="/product?koleksi=orca&jenis=side-table" onmouseover="hoverListNav('orca-side')">Side
                                 Table</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=orca&jenis=single-bed">Single Bed</a>
+                                href="/product?koleksi=orca&jenis=single-bed" onmouseover="hoverListNav('orca-single')">Single Bed</a>
                         </div>
                     </div>
-                    <div style="flex:1;" class="d-flex gap-4 mt-3">
-                        <div style="flex: 1;">
-                            <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                src="https://ilenafurniture.com/viewvar/10601401/4" alt="dresser-3-drawer">
+                    <div style="flex: 1;">
+                        <div class="d-flex gap-4 mb-3 orca-penjelasan" id="orca-bookshelf">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10600201" alt="orca-bookshelf">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Bookshelf</h3>
+                                <p style="text-align: justify" class="mb-2">Rak buku dari series Orca hadir dengan desain modern minimalis yang stylish. Terbuat dari material kayu premium yang tentunya kuat dan kokoh untuk waktu yang lama. Aksen warna putih atau hitam mempertegas kesan elegan dan tegas dengan tetap mempertahankan suasana hangat dari elemen kayu.</p>
+                                <a href="<?= base_url('/product/bookshelf-ilena-orca') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
                         </div>
-                        <div style="flex: 1;">
-                            <h3 class="teks-sedang mb-3">Side Table</h3>
-                            <p style="text-align: justify" class="mb-2">Side table minimalis dengan paduan corak warna
-                                hitam/putih dan coklat kayu yang kontras memberikan sentuhan cantik & unik. Dengan
-                                desain minimalisnya, meja ini mampu menyempurnakan interior di ruang tamu, kamar tidur,
-                                kantor, dan sudut ruang lain jadi lebih lengkap dan elegan.
-                            </p>
-                            <p style="text-align: justify" class="mb-2">Koleksi Ilena Furniture series Orca didesain
-                                eksklusif dengan material pembuatan berkualitas premium.</p>
-                            <p style="text-align: justify;">Kayu solid mahoni, engineered wood, dilapisi vinir jati
-                                dengan finishing satin white & black wash.</p>
-                            <a href="<?= base_url('/product/side-table-ilena-orca') ?>"
-                                style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
-                                selengkapnya..</a>
+                        <div class="d-none gap-4 mb-3 orca-penjelasan" id="orca-bufet">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10601601" alt="orca-bufet">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Bufet TV</h3>
+                                <p style="text-align: justify" class="mb-2">Credenza TV dengan series Orca menawarkan furnitur dengan desain modern minimalis yang sangat praktis dan cocok untuk masyarakat urban. Terbuat dari kayu yang kokoh dengan warna yang hangat ditambah akses warna putih atau hitam membuat tampilan lebih tegas dan elegan.</p>
+                                <a href="<?= base_url('/product/bufet-tv-ilena-orca') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
                         </div>
+                        <div class="d-none gap-4 mb-3 orca-penjelasan" id="orca-coffee">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10600301" alt="orca-coffee">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Coffee Table</h3>
+                                <p style="text-align: justify" class="mb-2">Dibuat dengan menggabungkan 2 warna yang menghasilkan sebuah meja kopi elegan dan unik. Warna hitam/putih jadi aksen simbol ketegasan yang membuat setiap mata terpanah untuk memandang ke arah meja ini. Cocok digunakan pada area berkumpul dalam ruangan.</p>
+                                <a href="<?= base_url('/product/coffee-table-ilena-orca') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 orca-penjelasan" id="orca-console">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10600401" alt="orca-console">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Console Table</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang secara khusus sebagai furniture tambahan yang melengkapi keindahan interior ruang. Meja konsol ini terbuat dari material kayu dengan gaya sederhana dan unik khas modern minimalis dari series Orca ala Ilena Furniture.</p>
+                                <a href="<?= base_url('/product/console-table-ilena-orca') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 orca-penjelasan" id="orca-6drawer">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10600901" alt="orca-dresser-6-drawer">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Dresser 6 Drawer</h3>
+                                <p style="text-align: justify" class="mb-2">Dresser 6 laci dari Series Orca hadir dengan desain modern minimalis yang tetap stylish dan praktis. Warna kayu yang hangat dan dikombinasikan warna putih yang jadi highlight tampilan furnitur dresser ini. Terbuat dari bahan kayu premium yang pastinya kokoh dan kuat untuk waktu yang lama. Cocok untuk berbagai kebutuhan penyimpanan barang Anda.</p>
+                                <a href="<?= base_url('/product/dresser-6-drawer-ilena-orca') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 orca-penjelasan" id="orca-king">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10601201" alt="orca-king-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">King Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dari bahan kayu, King Bed ini merupakan pilihan yang tepat untuk Anda yang menyukai model edgy dengan aksen yang on point. Warna kayu dan hitam/ putih pada ranjang tidur ini dihasilkan dari proses finishing sempurna yang tidak mudah pudar.</p>
+                                <a href="<?= base_url('/product/King-Bed-Ilena-Orca') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 orca-penjelasan" id="orca-queen">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10601301" alt="orca-queen-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Queen Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dari bahan kayu, Queen Bed ini merupakan pilihan yang tepat untuk Anda yang menyukai model edgy dengan aksen yang on point. Warna kayu dan hitam/ putih pada ranjang tidur ini dihasilkan dari proses finishing sempurna yang tidak mudah pudar.</p>
+                                <a href="<?= base_url('/product/queen-bed-ilena-orca') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 orca-penjelasan" id="orca-side">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10601401" alt="orca-side-table">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Side Table</h3>
+                                <p style="text-align: justify" class="mb-2">Side table minimalis dengan paduan corak warna hitam/putih dan coklat kayu yang kontras memberikan sentuhan cantik & unik. Dengan desain minimalisnya, meja ini mampu menyempurnakan interior di ruang tamu, kamar tidur, kantor, dan sudut ruang lain jadi lebih lengkap dan elegan.</p>
+                                <a href="<?= base_url('/product/side-table-ilena-orca') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 orca-penjelasan" id="orca-single">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10601801" alt="orca-single-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Single Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dengan menonjolkan warna hitam/putih yang menjadi highlight dari rajang tidur single bed series Orca. Dengan tetap menggunakan kayu yang kokoh dan nyaman digunakan untuk waktu yang lama.</p>
+                                <a href="<?= base_url('/product/single-bed-ilena-orca') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <p class="text-secondary">Modern ala Ilena hadir dengan berbagai model menawan yang akan membuat interior ruang jadi lebih sempurna. Dengan warna coklat serat kayu yang khas serta finishing satin yang menjadi highlight pada series Cabana. Material kayu masih jadi primadona dengan berbagai inovasi sentuhan modern yang membuat tampilan tidak lekang oleh waktu.</p>
                     </div>
                 </div>
             </div>
