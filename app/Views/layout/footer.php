@@ -71,34 +71,34 @@
                     <h5><strong>Metode Pembayaran</strong></h5>
                     <div class="footer__partner__payment">
                         <div class="footer__partner__img">
-                            <img src="<?= base_url('img/pembayaran/bca.webp') ?>" width="43.4" height="13.78" />
+                            <img src="<?= base_url('img/pembayaran/bca.png') ?>" />
                         </div>
                         <div class="footer__partner__img">
-                            <img src="<?= base_url('img/pembayaran/bni.webp') ?>" width="43" height="16" />
+                            <img src="<?= base_url('img/pembayaran/bni.png') ?>" />
                         </div>
                         <div class="footer__partner__img">
-                            <img src="<?= base_url('img/pembayaran/bri.webp') ?>" width="43" height="10" />
+                            <img src="<?= base_url('img/pembayaran/bri.png') ?>" />
                         </div>
                         <div class="footer__partner__img">
-                            <img src="<?= base_url('img/pembayaran/mandiri.webp') ?>" width="43" height="13" />
+                            <img src="<?= base_url('img/pembayaran/mandiri.png') ?>" />
                         </div>
                         <div class="footer__partner__img">
-                            <img src="<?= base_url('img/pembayaran/permatabank.webp') ?>" width="43" height="11" />
+                            <img src="<?= base_url('img/pembayaran/permata.png') ?>" />
                         </div>
                         <div class="footer__partner__img">
-                            <img src="<?= base_url('img/pembayaran/mastercard.webp') ?>" width="30" height="23" />
+                            <img src="<?= base_url('img/pembayaran/mastercard.png') ?>" />
                         </div>
                         <div class="footer__partner__img">
-                            <img src="<?= base_url('img/pembayaran/visa.webp') ?>" width="43" height="14" />
+                            <img src="<?= base_url('img/pembayaran/visa.png') ?>" />
                         </div>
                         <div class="footer__partner__img">
-                            <img src="<?= base_url('img/pembayaran/qris.webp') ?>" width="43" height="16" />
+                            <img src="<?= base_url('img/pembayaran/qris.png') ?>" />
                         </div>
                         <div class="footer__partner__img">
-                            <img src="<?= base_url('img/pembayaran/shopeepay.webp') ?>" width="43" height="20" />
+                            <img src="<?= base_url('img/pembayaran/shopeepay.png') ?>" />
                         </div>
                         <div class="footer__partner__img">
-                            <img src="<?= base_url('img/pembayaran/gopay.webp') ?>" width="43" height="9" />
+                            <img src="<?= base_url('img/pembayaran/gopay.png') ?>" />
                         </div>
                     </div>
                     <div class="d-flex gap-1 align-items-center">
