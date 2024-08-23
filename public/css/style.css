@@ -204,6 +204,7 @@ body {
   flex: 1;
   gap: 4em;
 }
+
 .pemberitahuan {
   display: block;
   /* width: fit-content; */
