@@ -27,7 +27,8 @@ function closeModalVoucher() {
         <div style="position: absolute;"
             class="w-100 h-100 d-flex flex-column justify-content-between align-items-center">
             <div class="d-flex justify-content-end w-100 py-1 px-3">
-                <p class="m-0 d-block text-dark" style="cursor: pointer;" onclick="closeLoginModel()">X</p>
+                <p class="m-0 d-block" style="cursor: pointer; font-size:18px; font-weight:bold; color:white;"
+                    onclick="closeLoginModel()">X</p>
             </div>
             <div class="d-flex flex-column align-items-center">
                 <a href="/register" class="btn-lonjong putih mb-2">Daftar Sekarang</a>
