@@ -10,57 +10,99 @@
             didorong oleh kebutuhan konsumen, kami melakukan berbagai inovasi, keberlanjutan serta keinginan untuk terus
             konsisten berada di dekat hati konsumen dengan furniture berkualitas.</p>
     </div>
-    <!-- <img style="width: 100%; height: 80svh; object-fit: cover;"
-        src="https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        alt=""> -->
-    <div class="container py-4 mt-2">
-        <div class="baris-ke-kolom">
+
+
+    <!-- Bagian Windows -->
+    <div class="container show-block-ke-hide">
+        <div class="d-flex align-items-center">
             <div style="flex: 1;">
-                <img style="width: 100%; aspect-ratio: 16/9; object-fit:cover; background-position: bottom; border-radius:8px;"
+                <img style="width: 100%; aspect-ratio: 16/9; object-fit:cover; background-position: bottom; "
                     src="<?= base_url('/img/foto/tt.jpg') ?>" alt="">
             </div>
             <div style="flex: 1;">
-                <h1 class="teks-besar mb-3">Crafted to Urban Design</h1>
-                <!-- <p style="color: grey;" a class="mb-3">ILENA FURNITURE</p> -->
-                <p style="text-align: justify;">Ilena hadir menjadi teman untuk menciptakan banyak kesan dan pesan dalam
-                    setiap sudut ruang yang menjadi
-                    indah dalam kenangan. keberhasilan Ilena merupakan usaha menghadirkan furniture khas masyarakat
-                    urban
-                    yang cocok untuk segala suasana. kami percaya bahwa setiap ruang kosong memiliki cerita yang diukir
-                    indah oleh individu dan relasinya sebagai bentuk representasi tersendiri. bersama Ilena wujudkan
-                    keindahan interior ruang impian.
-                </p>
+                <div style="padding-left: 3em;">
+                    <h1 class="teks-besar mb-3">Crafted to Urban Design</h1>
+                    <p style="text-align: justify;">Ilena hadir menjadi teman untuk menciptakan banyak kesan dan pesan
+                        dalam
+                        setiap sudut ruang yang menjadi
+                        indah dalam kenangan. keberhasilan Ilena merupakan usaha menghadirkan furniture khas masyarakat
+                        urban
+                        yang cocok untuk segala suasana. kami percaya bahwa setiap ruang kosong memiliki cerita yang
+                        diukir
+                        indah oleh individu dan relasinya sebagai bentuk representasi tersendiri. bersama Ilena wujudkan
+                        keindahan interior ruang impian.
+                    </p>
+                </div>
             </div>
         </div>
     </div>
-    <div class="container py-4 mt-2">
-        <div class="baris-ke-kolom-reverse">
+    <div class="container show-block-ke-hide">
+        <div class="d-flex align-items-center">
             <div style="flex: 1;">
-                <h1 class="teks-besar mb-3">Profil Perusahaan</h1>
-                <p style="text-align: justify;">CV Catur Bhakti Mandiri merupakan produsen kayu ternama Indonesia yang
-                    berada di Semarang, Jawa Tengah.
-                    Selama 30 tahun lamanya berkomitmen untuk selalu memberikan kualitas dan terintegrasi terhadap
-                    keseimbangan kebutuhan konsumen dan kesediaan sumber daya selama puluhan tahun lamanya. Produk kami
-                    terdiri dari beragam furniture untuk mewujudkan interior ruang rumah tangga, perkantoran &
-                    perhotelan
-                    berbahan dasar kayu yang bersumber dari hutan berkelanjutan.
-                </p>
+                <div style="padding-right: 3em;">
+                    <h1 class="teks-besar mb-3">Profil Perusahaan</h1>
+                    <p style="text-align: justify;">CV Catur Bhakti Mandiri merupakan produsen kayu ternama Indonesia
+                        yang
+                        berada di Semarang, Jawa Tengah.
+                        Selama 30 tahun lamanya berkomitmen untuk selalu memberikan kualitas dan terintegrasi terhadap
+                        keseimbangan kebutuhan konsumen dan kesediaan sumber daya selama puluhan tahun lamanya. Produk
+                        kami
+                        terdiri dari beragam furniture untuk mewujudkan interior ruang rumah tangga, perkantoran &
+                        perhotelan
+                        berbahan dasar kayu yang bersumber dari hutan berkelanjutan.
+                    </p>
+                </div>
             </div>
             <div style="flex: 1;">
-                <img style="width: 100%; aspect-ratio: 16/9; object-fit:cover; border-radius:8px;"
+                <img style="width: 100%; aspect-ratio: 16/9; object-fit:cover; filter: grayscale(1)"
                     src="<?= base_url('/img/foto/Tentangperusahaan.JPG') ?>" alt="">
             </div>
         </div>
     </div>
+    <!-- ENd Bagian Windows -->
 
-    <!-- <div style="width: 100%; height: 80svh; position: absolute; background-color: rgba(0,0,0,0.7)"
-        class="d-flex flex-column justify-content-center align-items-center">
-        <h1 class="teks-sedang mb-3 text-center text-light">#FindOutMore</h1>
-        <a href="/product" class="btn btn-outline-light">Ilena Furniture</a>
+    <!-- bagian HP -->
+    <div class="container hide-ke-show-block mb-4">
+        <div style="flex: 1;" class="mb-2">
+            <img style="width: 100%; aspect-ratio: 16/9; object-fit:cover; background-position: bottom; border-radius:4px; "
+                src="<?= base_url('/img/foto/tt.jpg') ?>" alt="">
+        </div>
+        <div style="flex: 1;">
+            <h1 class="teks-besar mb-3">Crafted to Urban Design</h1>
+            <p style="text-align: justify;">Ilena hadir menjadi teman untuk menciptakan banyak kesan dan pesan
+                dalam
+                setiap sudut ruang yang menjadi
+                indah dalam kenangan. keberhasilan Ilena merupakan usaha menghadirkan furniture khas masyarakat
+                urban
+                yang cocok untuk segala suasana. kami percaya bahwa setiap ruang kosong memiliki cerita yang
+                diukir
+                indah oleh individu dan relasinya sebagai bentuk representasi tersendiri. bersama Ilena wujudkan
+                keindahan interior ruang impian.
+            </p>
+        </div>
     </div>
-    <img style="width: 100%; height: 80svh; object-fit: cover; object-position: bottom;"
-        src="https://images.unsplash.com/photo-1617325247661-675ab4b64ae2?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        alt=""> -->
+    <div class="container hide-ke-show-block">
+        <div style="flex: 1;" class="mb-2">
+            <img style="width: 100%; aspect-ratio: 16/9; object-fit:cover; filter: grayscale(1); border-radius:4px;"
+                src="<?= base_url('/img/foto/Tentangperusahaan.JPG') ?>" alt="">
+        </div>
+        <div style="flex: 1;">
+            <h3 class="teks-besar mb-3">Profil Perusahaan</h3>
+            <p style="text-align: justify;">CV Catur Bhakti Mandiri merupakan produsen kayu ternama Indonesia
+                yang
+                berada di Semarang, Jawa Tengah.
+                Selama 30 tahun lamanya berkomitmen untuk selalu memberikan kualitas dan terintegrasi terhadap
+                keseimbangan kebutuhan konsumen dan kesediaan sumber daya selama puluhan tahun lamanya. Produk
+                kami
+                terdiri dari beragam furniture untuk mewujudkan interior ruang rumah tangga, perkantoran &
+                perhotelan
+                berbahan dasar kayu yang bersumber dari hutan berkelanjutadiv
+            </p>
+        </div>
+    </div>
+    <!-- END Bagian HP -->
+
+
 
     <div style="flex: 1;" class="p-5 show-block-ke-hide">
         <hr>
