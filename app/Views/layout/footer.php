@@ -1,5 +1,5 @@
 <footer style="background-color: black;">
-    <div class="container py-4" style="display:80%;">
+    <div class="container pt-5 pb-4" style="display:80%;">
         <div class="pb-4 footer__left-menu baris-ke-kolom">
             <div class="d-flex w-100">
                 <div class="footer-div" style="flex:1;">
@@ -10,7 +10,7 @@
                     <a href="/syarat">Syarat & Ketentuan</a><br>
                     <a href="/login">Masuk</a><br>
                     <a href="/faq">FAQ</a><br>
-                    <a href="/visimisi">Visi dan Misi</a>
+                    <a href="/visimisi">Visi, Misi, dan Nilai Budaya</a>
                 </div>
                 <div class="footer-div" style="flex:1;">
                     <h5><strong>Social Media</strong></h5>
@@ -49,13 +49,13 @@
                 <div class="footer-div kolom-ke-baris" style="flex:1;">
                     <div style="flex:1;">
                         <h5><strong>Find Us On</strong></h5>
-                        <div class="gap-2">
+                        <div class="d-flex gap-2">
                             <a href=" https://tokopedia.link/GNcLHtigJLb"><img
-                                    src="<?= base_url('img/logo/Logo Tokped.png') ?>" style="height: 27px"></a>
+                                    src="<?= base_url('img/logo/Logo Tokped.png') ?>" style="height: 23px"></a>
                             <a href="https://s.shopee.co.id/1qI8YxbdwR"><img
-                                    src="<?= base_url('img/logo/Logo Shopee.png') ?>" style="height: 27px"></a>
+                                    src="<?= base_url('img/logo/Logo Shopee.png') ?>" style="height: 23px"></a>
                             <a href="https://www.tiktok.com/@ilenafurnitureofficial"><img
-                                    src="<?= base_url('img/logo/tiktok.png') ?>" style="height: 27px"></a>
+                                    src="<?= base_url('img/logo/tiktok.png') ?>" style="height: 23px"></a>
                         </div>
                     </div>
                     <div style="flex:1;">
@@ -86,6 +86,9 @@
                             <img src="<?= base_url('img/pembayaran/permata.png') ?>" />
                         </div>
                         <div class="footer__partner__img">
+                            <img src="<?= base_url('img/pembayaran/cimb1.png') ?>" />
+                        </div>
+                        <div class="footer__partner__img">
                             <img src="<?= base_url('img/pembayaran/mastercard.png') ?>" />
                         </div>
                         <div class="footer__partner__img">
@@ -114,34 +117,37 @@
             <h5><strong>Metode pembayaran</strong></h5>
             <div class="footer__partner__payment">
                 <div class="footer__partner__img">
-                    <img src="<?= base_url('img/pembayaran/bca.webp') ?>" width="43.4" height="13.78" />
+                    <img src="<?= base_url('img/pembayaran/bca.png') ?>" />
                 </div>
                 <div class="footer__partner__img">
-                    <img src="<?= base_url('img/pembayaran/bni.webp') ?>" width="43" height="16" />
+                    <img src="<?= base_url('img/pembayaran/bni.png') ?>" />
                 </div>
                 <div class="footer__partner__img">
-                    <img src="<?= base_url('img/pembayaran/bri.webp') ?>" width="43" height="10" />
+                    <img src="<?= base_url('img/pembayaran/bri.png') ?>" />
                 </div>
                 <div class="footer__partner__img">
-                    <img src="<?= base_url('img/pembayaran/mandiri.webp') ?>" width="43" height="13" />
+                    <img src="<?= base_url('img/pembayaran/mandiri.png') ?>" />
                 </div>
                 <div class="footer__partner__img">
-                    <img src="<?= base_url('img/pembayaran/permatabank.webp') ?>" width="43" height="11" />
+                    <img src="<?= base_url('img/pembayaran/permata.png') ?>" />
                 </div>
                 <div class="footer__partner__img">
-                    <img src="<?= base_url('img/pembayaran/mastercard.webp') ?>" width="30" height="23" />
+                    <img src="<?= base_url('img/pembayaran/cimb1.png') ?>" />
                 </div>
                 <div class="footer__partner__img">
-                    <img src="<?= base_url('img/pembayaran/visa.webp') ?>" width="43" height="14" />
+                    <img src="<?= base_url('img/pembayaran/mastercard.png') ?>" />
                 </div>
                 <div class="footer__partner__img">
-                    <img src="<?= base_url('img/pembayaran/qris.webp') ?>" width="43" height="16" />
+                    <img src="<?= base_url('img/pembayaran/visa.png') ?>" />
                 </div>
                 <div class="footer__partner__img">
-                    <img src="<?= base_url('img/pembayaran/shopeepay.webp') ?>" width="43" height="20" />
+                    <img src="<?= base_url('img/pembayaran/qris.png') ?>" />
                 </div>
                 <div class="footer__partner__img">
-                    <img src="<?= base_url('img/pembayaran/gopay.webp') ?>" width="43" height="9" />
+                    <img src="<?= base_url('img/pembayaran/shopeepay.png') ?>" />
+                </div>
+                <div class="footer__partner__img">
+                    <img src="<?= base_url('img/pembayaran/gopay.png') ?>" />
                 </div>
             </div>
             <div class="d-flex gap-1 align-items-center">
