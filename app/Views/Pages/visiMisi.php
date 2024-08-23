@@ -120,7 +120,7 @@
     @keyframes teksramah {
         to {
             gap: 1em;
-            max-height: 20svh;
+            max-height: 400px;
             margin-top: 4em;
         }
     }
@@ -262,7 +262,7 @@
         <!-- <p class="text-center mt-2 teks-sedang">Mulai dari <b>Rumah</b>, Tercipta senyum <b>ramah</b></p> -->
         <!-- <hr class="my-4"> -->
         <p style="margin-bottom: 4em;">Ilena hadir di tengah-tengah masyarakat Indonesia dengan mengusung visi: mulai dari rumah, tercipta senyum ramah. Satu kalimat ini menjadi representasi bahwa Ilena dengan tangan terbuka akan selalu ada bagi masyarakat Indonesia melalui produk unggulan yang jadi solusi tepat melengkapi interior jadi lebih sempurna.</p>
-        <h1 class="text-center teks-besar">Our Culture</h1>
+        <h1 class="text-center teks-besar">Nilai Budaya</h1>
         <hr>
         <p>Kami berkomitmen untuk terus berkembang dan berinovasi dalam menghasilkan produk unggulan dengan penuh <b style="color: var(--merah); font-weight:700;">RAMAH</b>, sebagai pilar utama yang tersampaikan pada rangkaian berikut ini:</p>
         <div class="container-coorporate" style="margin-bottom: 4em;">
