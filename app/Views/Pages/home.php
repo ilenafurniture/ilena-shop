@@ -79,7 +79,7 @@ if (window.innerWidth <= 600) {
 }
 </script>
 <?php } ?>
-<div>
+<div style="background-color:#f6e9dd;">
     <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
             <div class="carousel-item active">
@@ -173,29 +173,38 @@ if (window.innerWidth <= 600) {
         height: 80%;
         object-fit: cover;
         ">
-            <source src="../img/video.mp4" type="video/mp4">
+            <source src="<?= base_url('/img/video.mp4') ?>" type="video/mp4">
         </video>
     </div>
 
     <div class="mt-5 mb-3 show-block-ke-hide">
         <div class="d-flex">
             <div style="flex:1; position:relative;">
-                <div style="position:absolute" class="p-5 d-flex flex-column align-items-center w-100">
-                    <h4 class="teks-besar" style="color:black;">Up to 5%</h4>
-                    <p>Segera claim diskon anda sebelum berakhir</p>
-                    <a href="/product" class="btn-default">SHOP THE SALE</a>
+                <div
+                    style="position:absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); backdrop-filter: blur(0.5px);">
                 </div>
-                <img src="https://img.freepik.com/free-photo/wood-sideboard-living-room-interior-with-copy-space_43614-828.jpg?t=st=1724302607~exp=1724306207~hmac=d6a6e0f30ee60990e92bf02a38e0a773a58c93a9c0bd7ff9ae39dcb80a67ac8f&w=1060"
-                    style="width: 100%; height:100%; object-fit:cover;">
+                <div
+                    style="position:absolute; top:0; left:0; right:0; bottom:0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1;">
+                    <h4 class="teks-besar" style="color:white;">Up to 5%</h4>
+                    <p style="color:white;">Segera claim diskon anda sebelum berakhir</p>
+                    <a href="/product" class="btn-default-hitam">SHOP THE SALE</a>
+                </div>
+                <img src="<?= base_url('/img/foto/l1.webp') ?>"
+                    style="width:100%; height:100%; object-fit:cover; background-size: cover; background-color: rgba(0,0,0,0.5); background-repeat:no-repeat; background-blend-mode: color;">
             </div>
+
             <div style="flex:1; position:relative;">
-                <div style="position:absolute" class="p-5 d-flex flex-column align-items-center w-100">
-                    <h4 class="teks-besar" style="color:black;">Up to 5%</h4>
-                    <p>Segera claim diskon anda sebelum berakhir</p>
-                    <a href="/product" class="btn-default">SHOP THE SALE</a>
+                <div
+                    style="position:absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); backdrop-filter: blur(0.5px);">
                 </div>
-                <img src="https://img.freepik.com/free-photo/gray-sofa-living-room-with-free-space_43614-893.jpg?t=st=1724312854~exp=1724316454~hmac=0609a9b9c14db4e5be001537f82af45d74c4a421e6f751ab000bd38a229c9e20&w=1060"
-                    style="width: 100%; height:100%; object-fit:cover;;">
+                <div
+                    style="position:absolute; top:0; left:0; right:0; bottom:0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1;">
+                    <h4 class="teks-besar" style="color:white;">Up to 5%</h4>
+                    <p style="color:white;">Segera claim diskon anda sebelum berakhir</p>
+                    <a href="/product" class="btn-default-hitam">SHOP THE SALE</a>
+                </div>
+                <img src="<?= base_url('/img/foto/home1.webp') ?>"
+                    style="width:100%; height:100%; object-fit:cover; background-size: cover; background-color: rgba(0,0,0,0.5); background-repeat:no-repeat; background-blend-mode: color;">
             </div>
         </div>
     </div>
@@ -207,17 +216,69 @@ if (window.innerWidth <= 600) {
     </div>
     <div class="container show-block-ke-hide">
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap:1px;">
-            <img src="<?= base_url('/img/foto/1.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="<?= base_url('/img/foto/2.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="<?= base_url('/img/foto/3.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="<?= base_url('/img/foto/4.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="<?= base_url('/img/foto/5.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="<?= base_url('/img/foto/6.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="<?= base_url('/img/foto/7.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="<?= base_url('/img/foto/8.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="<?= base_url('/img/foto/9.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
+            <div style="position: relative;">
+                <img src="<?= base_url('/img/foto/1.webp') ?>"
+                    style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;">
+            </div>
+            <div style="position: relative;">
+                <img src="<?= base_url('/img/foto/2.webp') ?>"
+                    style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;">
+            </div>
+            <div style="position: relative;">
+                <img src="<?= base_url('/img/foto/3.webp') ?>"
+                    style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;">
+                <div
+                    style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); color: white;">
+                    <h4>Special Offer</h4>
+                    <p>Grab it now!</p>
+                    <a href="/product"
+                        style="color: white; background-color: black; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Learn
+                        More</a>
+                </div>
+            </div>
+            <div style="position: relative;">
+                <img src="<?= base_url('/img/foto/4.webp') ?>"
+                    style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;">
+            </div>
+            <div style="position: relative;">
+                <img src="<?= base_url('/img/foto/5.webp') ?>"
+                    style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;">
+            </div>
+            <div style="position: relative;">
+                <img src="<?= base_url('/img/foto/6.webp') ?>"
+                    style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;">
+                <div
+                    style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); color: white;">
+                    <h4>Special Offer</h4>
+                    <p>Grab it now!</p>
+                    <a href="/product"
+                        style="color: white; background-color: black; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Learn
+                        More</a>
+                </div>
+            </div>
+            <div style="position: relative;">
+                <img src="<?= base_url('/img/foto/7.webp') ?>"
+                    style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;">
+                <div
+                    style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); color: white;">
+                    <h4>Special Offer</h4>
+                    <p>Grab it now!</p>
+                    <a href="/product"
+                        style="color: white; background-color: black; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Learn
+                        More</a>
+                </div>
+            </div>
+            <div style="position: relative;">
+                <img src="<?= base_url('/img/foto/8.webp') ?>"
+                    style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;">
+            </div>
+            <div style="position: relative;">
+                <img src="<?= base_url('/img/foto/9.webp') ?>"
+                    style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;">
+            </div>
         </div>
     </div>
+
 
     <div class="container hide-ke-show-block">
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap:1px;">
@@ -237,11 +298,11 @@ if (window.innerWidth <= 600) {
         <div style="position:absolute"
             class="p-5 d-flex flex-column w-100 h-100 justify-content-center align-items-center">
             <!-- <h4 class="teks-besar" style="color:brown;">Up to 5%</h4> -->
-            <h3 style="color:black;">Find Out More</h3>
-            <a href="/product" class="btn-default-putih">Click Here</a>
+            <h3 style="color:white;">Find Out More</h3>
+            <a href="/product" class="btn-default-hitam">Click Here</a>
         </div>
-        <img src="https://img.freepik.com/free-photo/wood-sideboard-living-room-interior-with-copy-space_43614-828.jpg?t=st=1724302607~exp=1724306207~hmac=d6a6e0f30ee60990e92bf02a38e0a773a58c93a9c0bd7ff9ae39dcb80a67ac8f&w=1060"
-            style="width: 100%; height:50svh; object-fit: cover;">
+        <img src="<?= base_url('/img/foto/home1.webp') ?>" style="width: 100%; height:50svh; object-fit: cover; background-color: rgba(0,0,0, 0.5);
+  background-repeat:no-repeat; background-blend-mode: color;">
     </div>
 
     <div class="container mt-5 mb-3 show-block-ke-hide">
