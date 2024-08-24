@@ -53,8 +53,7 @@
     <!-- <p class="m-0 text-center" style="color: #844709;">Lebih hemat dengan Free Ongkir hingga 100%</p> -->
     <p class="m-0 text-center" style="color: black;">Lebih hemat dengan Free Ongkir hingga 100%</p>
 </div>
-<div class="justify-content-center w-100 show-flex-ke-hide"
-    style="background-color:whitesmoke; position: sticky; top:-1px; z-index: 99;">
+<div class="justify-content-center w-100 show-flex-ke-hide" style="background-color:whitesmoke; position: sticky; top:-1px; z-index: 99;">
     <div class="d-flex align-items-center py-2 gap-5">
         <div class="list-nav">
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
@@ -601,7 +600,7 @@
                                     selengkapnya..</a>
                             </div>
                         </div>
-                        <p class="text-secondary">Modern ala Ilena hadir dengan berbagai model menawan yang akan membuat interior ruang jadi lebih sempurna. Dengan warna coklat serat kayu yang khas serta finishing satin yang menjadi highlight pada series Cabana. Material kayu masih jadi primadona dengan berbagai inovasi sentuhan modern yang membuat tampilan tidak lekang oleh waktu.</p>
+                        <p class="text-secondary">Merancang dengan sepenuh hati furniture bertemakan modern dengan sentuhan warna basic yang menjadi aksen menonjol jadi ciri khas dari series Orca. Hadir dengan menonjolkan teksture khas kayu yang unik dipadukan dengan finishing satin yang solid. Desain ini dipersembahkan untuk Anda yang menyukai perabotan kayu dengan sentuhan modern masa kini.</p>
                     </div>
                 </div>
             </div>
@@ -610,55 +609,141 @@
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
                 href="/product?koleksi=water-case">Water Case</a>
             <div class="child-list-nav">
-                <div class="container d-flex align-items-start">
+                <div class="container d-flex align-items-stretch py-4">
                     <div style="flex: 1;">
                         <p class="m-0" style="font-size:14px;">Jelajahi Water Case</p>
                         <div class="ms-2">
+                            <!-- <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=water-case&jenis=bookshelf" onmouseover="hoverListNav('water-bookshelf')">Bookshelf</a> -->
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=water-case&jenis=bookshelf">Bookshelf</a>
+                                href="/product?koleksi=water-case&jenis=bufet-tv" onmouseover="hoverListNav('water-bufet')">Bufet TV</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=water-case&jenis=bufet-tv">Bufet TV</a>
+                                href="/product?koleksi=water-case&jenis=coffee-table" onmouseover="hoverListNav('water-coffee')">Coffee Table</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=water-case&jenis=coffee-table">Coffee Table</a>
-                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=water-case&jenis=console-table">Console
+                                href="/product?koleksi=water-case&jenis=console-table" onmouseover="hoverListNav('water-console')">Console
                                 Table</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=water-case&jenis=dresser-6-drawer">Dresser 6
+                                href="/product?koleksi=water-case&jenis=dresser-6-drawer" onmouseover="hoverListNav('water-6drawer')">Dresser 6
                                 Drawer
                             </a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=water-case&jenis=king-bed">King
+                                href="/product?koleksi=water-case&jenis=king-bed" onmouseover="hoverListNav('water-king')">King
                                 Bed</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=water-case&jenis=queen-bed">Queen Bed</a>
+                                href="/product?koleksi=water-case&jenis=queen-bed" onmouseover="hoverListNav('water-queen')">Queen Bed</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=water-case&jenis=side-table">Side
+                                href="/product?koleksi=water-case&jenis=side-table" onmouseover="hoverListNav('water-side')">Side
                                 Table</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=water-case&jenis=single-bed">Single Bed</a>
+                                href="/product?koleksi=water-case&jenis=single-bed" onmouseover="hoverListNav('water-single')">Single Bed</a>
                         </div>
                     </div>
-                    <div style="flex:1;" class="d-flex gap-4 mt-3">
-                        <div style="flex: 1;">
-                            <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                src="https://ilenafurniture.com/viewvar/11000301/4" alt="dresser-3-drawer">
+                    <div style="flex:1;">
+                        <div class="d-flex gap-4 mb-3 water-penjelasan" id="water-bufet">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/11001601" alt="water-case-bufet-tv">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Bufet TV</h3>
+                                <p style="text-align: justify" class="mb-2">Credenza TV ini dirancang sebagai tempat TV dan perangkat nonton lainnya. Dilengkapi juga dengan kabinet laci dengan handle frameless yang tidak hanya menambah estetika tetapi juga menambah ruang penyimpanan serbaguna di ruang keluarga.</p>
+                                <a href="<?= base_url('/product/bufet-tv-ilena-water-case') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
                         </div>
-                        <div style="flex: 1;">
-                            <h3 class="teks-sedang mb-3">Coffee Table</h3>
-                            <p style="text-align: justify" class="mb-2">Dibuat dengan memadukan unsur modern dan
-                                minimalis yang stylish untuk menyempurnakan keindahan interior ruang. Menempatkan coffee
-                                table ini di area ruang tamu, ruang keluarga, hingga kantor akan menambah kesan elegan
-                                dan hangat dalam ruangan.
-                                Koleksi Ilena Furniture series Water Case didesain eksklusif dengan material pembuatan
-                                berkualitas premium.
-                            </p>
-                            <p style="text-align: justify;">Kayu solid mahoni,engineered wood, dilapisi vinir jati
-                                dengan finishing whitewash.</p>
-                            <a href="<?= base_url('/product/coffee-table-ilena-water-case') ?>"
-                                style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
-                                selengkapnya..</a>
+                        <div class="d-none gap-4 mb-3 water-penjelasan" id="water-coffee">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/11000301" alt="water-case-coffee-table">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Coffee Table</h3>
+                                <p style="text-align: justify" class="mb-2">Dibuat dengan memadukan unsur modern dan minimalis yang stylish untuk menyempurnakan keindahan interior ruang. Menempatkan coffee table ini di area ruang tamu, ruang keluarga, hingga kantor akan menambah kesan elegan dan hangat dalam ruangan.</p>
+                                <a href="<?= base_url('/product/coffee-table-ilena-water-case') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
                         </div>
+                        <div class="d-none gap-4 mb-3 water-penjelasan" id="water-console">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/11000401" alt="water-case-console-table">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Console Table</h3>
+                                <p style="text-align: justify" class="mb-2">Meja tambahan dengan model modern minimalis yang praktis ini membuat interior rumah terlihat lebih lengkap dan menarik. warna natural dari kayu jati menambah kesan sederhana namun tegas.</p>
+                                <a href="<?= base_url('/product/console-table-ilena-water-case') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 water-penjelasan" id="water-6drawer">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/11000901" alt="water-case-dresser-6-drawer">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Dresser 6 Drawer</h3>
+                                <p style="text-align: justify" class="mb-2">Lemari laci 6 tingkat ini merupakan salah satu tempat penyimpanan dengan banyak kegunaan mulai dari penyimpanan aneka barang hingga pakaian. Desain minimalis dengan 6 tingkat kabinet laci yang dibekali handle frameless yang nyaman di genggaman.</p>
+                                <a href="<?= base_url('/product/dresser-6-drawer-ilena-water-case') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 water-penjelasan" id="water-king">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/11001201" alt="water-case-king-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">King Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang secara khusus dengan gaya modern minimalis. Dengan paduan warna kontras yang selaras, menjadikan king bed ini lebih menarik dan unik.</p>
+                                <a href="<?= base_url('/product/king-bed-ilena-water-case') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 water-penjelasan" id="water-queen">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/11001301" alt="water-case-queen-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Queen Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dari kayu kokoh dengan desain minimalis yang menonjolkan serat whitewash untuk mempertegas visual khas furniture kontemporer yang cantik dan longlasting.</p>
+                                <a href="<?= base_url('/product/queen-bed-ilena-water-case') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 water-penjelasan" id="water-side">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/11001401" alt="water-case-side-table">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Side Table</h3>
+                                <p style="text-align: justify" class="mb-2">Desain modern dan minimalis yang tentunya praktis, dilengkapi dengan sebuah laci handle frameless. Cocok untuk mengisi ruangan kamar tidur atau sudut ruangan lain tanpa harus khawatir memakan banyak space.</p>
+                                <a href="<?= base_url('/product/side-table-ilena-water-case') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 water-penjelasan" id="water-single">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/11001801" alt="water-case-single-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Single Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dari bahan kayu dengan gaya modern klasik yang sederhana dan menawan. Mengekspos serat kayu dari finishing white wash yang menjadi ciri khas modern klasik ala Ilena.</p>
+                                <a href="<?= base_url('/product/single-bed-ilena-water-case') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <p class="text-secondary">Secara spesial dirancang untuk memberikan kehangatan dan kenyamanan pada hunian rumah. water case series hadir dengan menunjukkan kesederhanaan sebuah desain yang memiliki fungsi sesuai dengan kebutuhan dan memperindah rumah dengan sentuhan interior yang bersahaja dalam balutan gaya modern klasik ala Ilena Furniture.</p>
                     </div>
                 </div>
             </div>
@@ -667,52 +752,139 @@
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
                 href="/product?koleksi=plint-base">Plint Base</a>
             <div class="child-list-nav">
-                <div class="container d-flex align-items-start">
+                <div class="container d-flex align-items-stretch py-4">
                     <div style="flex: 1;">
                         <p class="m-0" style="font-size:14px;">Jelajahi Plint Base</p>
                         <div class="ms-2">
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=plint-base&jenis=bufet-tv">Bufet TV</a>
+                                href="/product?koleksi=plint-base&jenis=bufet-tv" onmouseover="hoverListNav('plint-bufet')">Bufet TV</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=plint-base&jenis=coffee-table">Coffee Table</a>
+                                href="/product?koleksi=plint-base&jenis=coffee-table" onmouseover="hoverListNav('plint-coffee')">Coffee Table</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=plint-base&jenis=console-table">Console
+                                href="/product?koleksi=plint-base&jenis=console-table" onmouseover="hoverListNav('plint-console')">Console
                                 Table</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=plint-base&jenis=dresser-6-drawer">Dresser 6
+                                href="/product?koleksi=plint-base&jenis=dresser-6-drawer" onmouseover="hoverListNav('plint-6drawer')">Dresser 6
                                 Drawer
                             </a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=plint-base&jenis=king-bed">King
+                                href="/product?koleksi=plint-base&jenis=king-bed" onmouseover="hoverListNav('plint-king')">King
                                 Bed</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=plint-base&jenis=queen-bed">Queen Bed</a>
+                                href="/product?koleksi=plint-base&jenis=queen-bed" onmouseover="hoverListNav('plint-queen')">Queen Bed</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=plint-base&jenis=side-table">Side
+                                href="/product?koleksi=plint-base&jenis=side-table" onmouseover="hoverListNav('plint-side')">Side
                                 Table</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=plint-base&jenis=single-bed">Single Bed</a>
+                                href="/product?koleksi=plint-base&jenis=single-bed" onmouseover="hoverListNav('plint-single')">Single Bed</a>
                         </div>
                     </div>
-                    <div style="flex:1;" class="d-flex gap-4 mt-3">
-                        <div style="flex: 1;">
-                            <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                src="https://ilenafurniture.com/viewvar/10700301/3" alt="dresser-3-drawer">
+                    <div style="flex:1;">
+                        <div class="d-flex gap-4 mb-3 plint-penjelasan" id="plint-bufet">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10701601" alt="plint-bufet-tv">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Bufet TV</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang sebagai tempat TV dan perangkat pelengkap lainnya. Warna natural dari jati membuat tampilan credenza TV ini membangkitkan suasana hangat dan nyaman dalam ruang keluarga.</p>
+                                <a href="<?= base_url('/product/bufet-tv-ilena-plint-base') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
                         </div>
-                        <div style="flex: 1;">
-                            <h3 class="teks-sedang mb-3">Coffee Table</h3>
-                            <p style="text-align: justify" class="mb-2">Dirancang dengan model modern minimalis dari
-                                kayu mahoni dengan finishing satin yang artistik. Meja ini sangat cocok ditempatkan pada
-                                ruang tamu atau kantor yang memberikan sentuhan sempurna pada interior ruang. Koleksi
-                                Ilena Furniture series Plint base didesain eksklusif dengan material pembuatan
-                                berkualitas premium.
-                            </p>
-                            <p style="text-align: justify;">Kayu solid mahoni, engineered wood, finishing vinir jati
-                                white wash</p>
-                            <a href="<?= base_url('/product/coffee-table-ilena-plint-base') ?>"
-                                style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
-                                selengkapnya..</a>
+                        <div class="d-none gap-4 mb-3 plint-penjelasan" id="plint-coffee">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10700301" alt="plint-coffee">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Coffee Table</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dengan model modern minimalis dari kayu mahoni dengan finishing satin yang artistik. Meja ini sangat cocok ditempatkan pada ruang tamu atau kantor yang memberikan sentuhan sempurna pada interior ruang.</p>
+                                <a href="<?= base_url('/product/coffee-table-ilena-plint-base') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
                         </div>
+                        <div class="d-none gap-4 mb-3 plint-penjelasan" id="plint-console">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10700401" alt="plint-console">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Console Table</h3>
+                                <p style="text-align: justify" class="mb-2">Meja tambahan dengan model modern minimalis yang praktis ini membuat interior rumah terlihat lebih lengkap dan menarik. warna natural dari kayu jati menambah kesan sederhana namun tegas.</p>
+                                <a href="<?= base_url('/product/console-table-ilena-plint-base') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 plint-penjelasan" id="plint-6drawer">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10700901" alt="plint-dresser-6-drawer">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Dresser 6 Drawer</h3>
+                                <p style="text-align: justify" class="mb-2">Lemari laci 6 tingkat ini merupakan salah satu tempat penyimpanan dengan banyak kegunaan mulai dari penyimpanan aneka barang hingga pakaian. Desain minimalis dengan 6 tingkat kabinet laci yang dibekali handle yang nyaman di genggaman.</p>
+                                <a href="<?= base_url('/product/dresser-6-drawer-ilena-plint-base') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 plint-penjelasan" id="plint-king">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10701201" alt="plint-king-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">King Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dengan model desain minimalis dengan aksen serat kayu finishing whitewash cantik long lasting. Cocok digunakan pada kamar tidur dengan konsep minimalis maupun tradisional klasik.</p>
+                                <a href="<?= base_url('/product/king-bed-ilena-plint-base') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 plint-penjelasan" id="plint-queen">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10701301" alt="plint-queen-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Queen Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dengan model desain minimalis dengan aksen serat kayu finishing whitewash cantik long lasting. Cocok digunakan pada kamar tidur dengan konsep minimalis maupun tradisional klasik.</p>
+                                <a href="<?= base_url('/product/queen-bed-ilena-plint-base') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 plint-penjelasan" id="plint-side">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10701401" alt="plint-side-table">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Side Table</h3>
+                                <p style="text-align: justify" class="mb-2">Nakas/ meja samping multifungsi dengan desain stylish dan minimalis yang cocok digunakan sebagai tempat buku, hp, hingga lampu tidur sehingga memudahkan Anda saat hendak membutuhkannya. Side table ini tak hanya difungsikan pada samping kasur, tetapi juga di sudut ruangan lain sesuai kebutuhan.</p>
+                                <a href="<?= base_url('/product/side-table-ilena-plint-base') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 plint-penjelasan" id="plint-single">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10701801" alt="plint-single-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Single Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dari bahan kayu dengan gaya modern klasik yang sederhana dan menawan. Mengekspos serat kayu dari finishing white wash yang menjadi ciri khas modern klasik ala Ilena.</p>
+                                <a href="<?= base_url('/product/single-bed-ilena-plint-base') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <p class="text-secondary">Ilena memaknai minimalis sebagai mahakarya indah yang dibalut dalam kesederhanaan. Dengan kepraktisan fungsinya, plint base menjawab kebutuhan furniture secara menyeluruh dan relevan hingga dalam waktu berdekade lamanya. Inilah Classic modern yang Anda butuhkan!</p>
                     </div>
                 </div>
             </div>
@@ -721,60 +893,173 @@
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
                 href="/product?koleksi=cutout">CutOut</a>
             <div class="child-list-nav">
-                <div class="container d-flex align-items-start">
+                <div class="container d-flex align-items-stretch py-4">
                     <div style="flex: 1;">
                         <p class="m-0" style="font-size:14px;">Jelajahi CutOut</p>
                         <div class="ms-2">
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cutout&jenis=bufet-tv">Bufet TV</a>
+                                href="/product?koleksi=cutout&jenis=bufet-tv" onmouseover="hoverListNav('cutout-bufet')">Bufet TV</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cutout&jenis=coffee-table">Coffee Table</a>
+                                href="/product?koleksi=cutout&jenis=coffee-table" onmouseover="hoverListNav('cutout-coffee')">Coffee Table</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cutout&jenis=console-table">Console
+                                href="/product?koleksi=cutout&jenis=console-table" onmouseover="hoverListNav('cutout-console')">Console
                                 Table</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cutout&jenis=dresser-3-drawer">Dresser 3
+                                href="/product?koleksi=cutout&jenis=dresser-3-drawer" onmouseover="hoverListNav('cutout-3drawer')">Dresser 3
                                 Drawer
                             </a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cutout&jenis=dresser-5-drawer">Dresser 5
+                                href="/product?koleksi=cutout&jenis=dresser-5-drawer" onmouseover="hoverListNav('cutout-5drawer')">Dresser 5
                                 Drawer
                             </a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cutout&jenis=dresser-6-drawer">Dresser 6
+                                href="/product?koleksi=cutout&jenis=dresser-6-drawer" onmouseover="hoverListNav('cutout-6drawer')">Dresser 6
                                 Drawer
                             </a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cutout&jenis=king-bed">King
+                                href="/product?koleksi=cutout&jenis=king-bed" onmouseover="hoverListNav('cutout-king')">King
                                 Bed</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cutout&jenis=queen-bed">Queen Bed</a>
+                                href="/product?koleksi=cutout&jenis=queen-bed" onmouseover="hoverListNav('cutout-queen')">Queen Bed</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cutout&jenis=side-table">Side
+                                href="/product?koleksi=cutout&jenis=side-table" onmouseover="hoverListNav('cutout-side')">Side
                                 Table</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cutout&jenis=single-bed">Single Bed</a>
+                                href="/product?koleksi=cutout&jenis=single-bed" onmouseover="hoverListNav('cutout-single')">Single Bed</a>
                         </div>
                     </div>
-                    <div style="flex:1;" class="d-flex gap-4 mt-3">
-                        <div style="flex: 1;">
-                            <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                src="https://ilenafurniture.com/viewvar/10301401/4" alt="dresser-3-drawer">
+                    <div style="flex: 1;">
+                        <div class="d-flex gap-4 mb-3 cutout-penjelasan" id="cutout-bufet">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10301601" alt="cutout-bufet-tv">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Bufet TV</h3>
+                                <p style="text-align: justify" class="mb-2">Credenza TV minimalis ini terinspirasi dari budaya Jepang yang mengedepankan fungsi dan kepraktisan. Warna kayu natural dengan finishing whitewash ditambah sedikit aksen cantik dari handle pintu kabinet yang menjadi ciri khas Japanese style ala Ilena.</p>
+                                <a href="<?= base_url('/product/bufet-tv-ilena-cutout') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
                         </div>
-                        <div style="flex: 1;">
-                            <h3 class="teks-sedang mb-3">Coffee Table</h3>
-                            <p style="text-align: justify" class="mb-2">Side table minimalis ini merupakan furniture
-                                tambahan untuk ruang tamu, kamar tidur, dan kantor yang akan melengkapi interior rumah
-                                jadi lebih aesthetic.
-                                Koleksi Ilena Furniture series Cutout didesain eksklusif dengan material pembuatan
-                                berkualitas premium.
-                            </p>
-                            <p style="text-align: justify;">Kayu solid mahoni, engineered wood, dilapisi vinir jati
-                                dengan finishing whitewash</p>
-                            <a href="<?= base_url('/product/side-table-ilena-cutout') ?>"
-                                style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
-                                selengkapnya..</a>
+                        <div class="d-none gap-4 mb-3 cutout-penjelasan" id="cutout-coffee">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10300301" alt="cutout-coffee-table">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Coffee Table</h3>
+                                <p style="text-align: justify" class="mb-2">Meja coffee modern minimalis ini terinspirasi dari gaya japanese yang menonjolkan fungsionalitas dan kepraktisan dengan sedikit aksen sebagai highlight produk ini. Tambahkan meja ini di ruang tamu atau kantor untuk melengkapi keindahan interior ruang Anda.</p>
+                                <a href="<?= base_url('/product/coffee-table-ilena-cutout') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
                         </div>
+                        <div class="d-none gap-4 mb-3 cutout-penjelasan" id="cutout-console">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10300401" alt="cutout-console-table">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Console Table</h3>
+                                <p style="text-align: justify" class="mb-2">Meja konsul merupakan furniture tambahan untuk berbagai sudut ruang yang akan melengkapi interior rumah jadi lebih aesthetic. Dengan model yang sederhana, meja konsol ini menonjolkan ciri khas kayu corak whitewash yang unik, cantik, dan menawan.</p>
+                                <a href="<?= base_url('/product/console-table-ilena-cutout') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 cutout-penjelasan" id="cutout-3drawer">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10300601" alt="cutout-dresser-3-drawer">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Dresser 3 Drawer</h3>
+                                <p style="text-align: justify" class="mb-2">Dresser 3 laci corak kayu yang unik tampil dengan gaya modern & minimalis. Tambahan yang cocok sebagai tempat penyimpanan barang di kamar tidur atau di ruang lain sesuai kebutuhan Anda.</p>
+                                <a href="<?= base_url('/product/dresser-3-drawer-ilena-cutout') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 cutout-penjelasan" id="cutout-5drawer">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10300801" alt="cutout-dresser-5-drawer">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Dresser 5 Drawer</h3>
+                                <p style="text-align: justify" class="mb-2">Dresser 5 laci corak kayu yang unik tampil dengan gaya modern & minimalis. Tambahan yang cocok sebagai tempat penyimpanan barang di kamar tidur atau di ruang lain sesuai kebutuhan Anda.</p>
+                                <a href="<?= base_url('/product/dresser-5-drawer-ilena-cutout') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 cutout-penjelasan" id="cutout-6drawer">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10300901" alt="cutout-dresser-6-drawer">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Dresser 6 Drawer</h3>
+                                <p style="text-align: justify" class="mb-2">Dresser 6 laci corak kayu yang unik tampil dengan sentuhan modern & minimalis sedikit aksen untuk menonjolkan gaya japanese ala Ilena. Tambahan yang cocok sebagai tempat penyimpanan barang di kamar tidur atau di ruang lain sesuai kebutuhan Anda.</p>
+                                <a href="<?= base_url('/product/dresser-6-drawer-ilena-cutout') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 cutout-penjelasan" id="cutout-king">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10301201" alt="cutout-king-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">King Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Ranjang tidur model klasik ini dirancang dengan menonjolkan serat kayu finishing whitewash yang menjadi ciri khas dari series cut out. Modelnya yang simpel membuatnya tak lekang oleh waktu walau digunakan hingga puluhan tahun lamanya.</p>
+                                <a href="<?= base_url('/product/king-bed-ilena-cutout') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 cutout-penjelasan" id="cutout-queen">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10301301" alt="cutout-queen-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Queen Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Ranjang tidur model klasik ini dirancang dengan menonjolkan serat kayu finishing whitewash yang menjadi ciri khas dari series cut out. Modelnya yang simpel membuatnya tak lekang oleh waktu walau digunakan hingga puluhan tahun lamanya.</p>
+                                <a href="<?= base_url('/product/queen-bed-ilena-cutout') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 cutout-penjelasan" id="cutout-side">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10301401" alt="cutout-side-table">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Side Table</h3>
+                                <p style="text-align: justify" class="mb-2">Side table minimalis ini merupakan furniture tambahan untuk ruang tamu, kamar tidur, dan kantor yang akan melengkapi interior rumah jadi lebih aesthetic.</p>
+                                <a href="<?= base_url('/product/side-table-ilena-cutout') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 cutout-penjelasan" id="cutout-single">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10301801" alt="cutout-single-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Single Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dari bahan kayu dengan warna coklat natural yang menampilkan kesan hangat dan sederhana. Cocok untuk furniture tambahan di kamar tidur, ruang tamu, kantor, dan ruang lainnya.</p>
+                                <a href="<?= base_url('/product/single-bed-ilena-cutout') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <p class="text-secondary">Kami percaya bahwa sebuah ruangan didesain dengan sepenuh hati akan memberikan energi positif bagi setiap penghuninya. Bekal inilah yang membuat Ilena terus melakukan inovasi untuk menghadirkan furniture terbaik bagi Anda. Cut Out hadir dengan series dalam balutan gaya minimalis dengan mengadopsi budaya Jepang yang terkenal mengutamakan fungsi dan kepraktisan. Desainnya yang sederhana dengan sedikit aksen memudahkan Anda untuk merawat dan menempatkan dalam segala konsep ruang menjadi lebih sempurna dengan Cut Out series dari Ilena.</p>
                     </div>
                 </div>
             </div>
