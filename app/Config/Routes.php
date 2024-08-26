@@ -14,6 +14,7 @@ $routes->get('/kebijakan', 'Pages::kebijakan', ['filter' => 'customerFilter']);
 $routes->get('/visimisi', 'Pages::visiMisi', ['filter' => 'customerFilter']);
 
 $routes->get('/', 'Pages::index', ['filter' => 'customerFilter']);
+$routes->get('/indexgalih', 'Pages::indexGalih', ['filter' => 'customerFilter']);
 $routes->get('/product', 'Pages::product', ['filter' => 'customerFilter']);
 $routes->get('/product/(:any)', 'Pages::product/$1', ['filter' => 'customerFilter']);
 $routes->get('/product/(:any)/(:any)', 'Pages::product/$1/$2', ['filter' => 'customerFilter']);

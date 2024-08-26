@@ -63,6 +63,26 @@ class Pages extends BaseController
         ];
         return view('pages/home', $data);
     }
+    public function indexGalih()
+    {
+        $produk  = $this->barangModel->orderBy('pengunjung', 'desc')->findAll(4, 0);
+        $wishlist = $this->session->get('wishlist');
+        if (!isset($wishlist)) {
+            $wishlist = [];
+        }
+        $data = [
+            'title' => 'Home',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
+            'produk' => $produk,
+            'wishlist' => $wishlist,
+            'msg_active' => session()->getFlashdata('msg_active') ? session()->getFlashdata('msg_active') : false,
+            'isLogin' => session()->get('isLogin') ? true : false
+        ];
+        return view('pages/homeGalih', $data);
+    }
 
     public function actionFind()
     {
