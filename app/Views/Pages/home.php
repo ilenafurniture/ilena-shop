@@ -115,7 +115,7 @@ function closeLoginModel() {
 
     <div class="container baris-ke-kolom py-5">
         <div style="flex: 1">
-            <img src="./img/foto/ly1.webp" alt="" class="w-100"
+            <img src="<?= base_url('/img/foto/ly1.webp') ?>" alt="" class="w-100"
                 style="height: 100%; object-fit: cover; border-radius:4px;">
         </div>
         <div style="flex: 1" class="d-flex flex-column">
@@ -147,13 +147,13 @@ function closeLoginModel() {
         </div>
     </div>
     <div>
-        <img src="./img/foto/layer2.webp" alt="" class="w-100" style="object-fit:cover; height:60svh;">
+        <img src="<?=base_url('/img/foto/layer2.webp') ?>" alt="" class="w-100" style="object-fit:cover; height:60svh;">
     </div>
     <div class="container py-5">
         <h1 class="teks-besar d-flex justify-content-center py-4">Unification Process</h1>
         <div class="d-flex" style="display: flex; flex-wrap: wrap;">
             <div class="d-flex" style="flex: 1;">
-                <img src="./img/foto/layer2.webp" alt="" class="w-100"
+                <img src="<?=base_url('') ?>/img/foto/layer2.webp" alt="" class="w-100"
                     style="object-fit: cover; height: 60svh; width: 100%; border-radius:4px;">
             </div>
             <div style="flex: 1;" class="d-flex flex-column px-4">
@@ -183,7 +183,7 @@ function closeLoginModel() {
 
     </div>
     <div>
-        <img src="./img/foto/gambar-hero2 edit.webp" alt="" class="w-100"
+        <img src="<?=base_url('/img/foto/l1.webp') ?>" alt="" class="w-100"
             style="height: 60svh; object-fit: cover; border-radius:4px;">
     </div>
     <div class="container baris-ke-kolom align-items-stretch py-5" style="display: flex; flex-wrap: wrap;">
@@ -192,12 +192,12 @@ function closeLoginModel() {
             <p style="margin-bottom: 20px;">Begin at home, a friendly smile blossoms<br>Mulai dari Rumah, Tercipta
                 senyum ramah</p>
             <div class="w-100" style="flex: 1; position: relative; overflow: hidden;">
-                <img src="./img/foto/ly1.webp" alt=""
+                <img src="<?=base_url('') ?>/img/foto/ly1.webp" alt=""
                     style="object-fit: cover; position: absolute; width: 100%; height: 100%;">
             </div>
         </div>
         <div class="limapuluh-ke-seratus" style="flex: 1; padding-left: 10px;">
-            <img src="./img/foto/gambar-hero2 edit.webp" alt=""
+            <img src="<?=base_url('/img/foto/gambar-hero2 edit.webp') ?>" alt=""
                 style="object-fit: cover; width:100%; border-radius:4px;">
             <h1 class="teks-besar-home pt-2">Mission</h1>
             <p style="font-weight: bold;">Developing & sustaining customer loyalty</p>
@@ -219,7 +219,7 @@ function closeLoginModel() {
     </div>
 
     <div
-        style="background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('./img/foto/lbg.webp'); background-size: cover; background-position: center; color: white; padding: 50px;">
+        style="background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/img/foto/lbg.webp'); background-size: cover; background-position: center; color: white; padding: 50px;">
         <div class="container">
             <h1 class="teks-besar" style="font-size: 2.5rem; font-weight: bold;">Corporate Values</h1>
             <p>We are dedicated to continuous growth and innovation in creating exceptional products,
@@ -245,7 +245,8 @@ function closeLoginModel() {
 
 
     <div class="py-5" style="padding: 50px 0;">
-        <h1 class="teks-besar text-center" style="font-size: 2.5rem; font-weight: bold; margin-bottom: 30px;">Clients
+        <h1 class="teks-besar-home text-center" style="font-size: 2.5rem; font-weight: bold; margin-bottom: 30px;">
+            Clients
         </h1>
         <div class="text-center">
             <img src="./img/logo/crateandbarrel.webp" alt="Crate & Barrel" style="max-width: 200px; margin: 10px;">
@@ -260,7 +261,7 @@ function closeLoginModel() {
             <div class="flex-column">
                 <div class="d-flex px-5 gap-4">
                     <div style="flex:1;">
-                        <img src="./img/foto/ly1.webp" alt=""
+                        <img src="<?=base_url('/img/foto/ly1.webp') ?>" alt=""
                             style="object-fit: cover; width: 100%; height: 60svh; border-radius:4px;">
                     </div>
                     <div style="flex:1;">
@@ -314,7 +315,7 @@ function closeLoginModel() {
 
                     </div>
                     <div style="flex:1;">
-                        <img src="./img/foto/ly1.webp" alt=""
+                        <img src="<?=base_url('/img/foto/ly1.webp') ?>" alt=""
                             style="object-fit: cover; width: 100%; height: 60svh; border-radius:4px;">
                     </div>
 
@@ -324,9 +325,10 @@ function closeLoginModel() {
     </div>
     <hr>
 
-    <div style="background-image: url('./img/foto/gambar-hero2 edit.webp'); height: 80svh; background-size: cover; background-position: center;"
+    <div style="background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),url('/img/foto/home1.webp'); height: 80svh; background-size: cover; background-position: center;"
         class="text-light d-flex justify-content-center align-items-center w-100">
-        <a href="#" class="m-0" style="font-size: 1.5rem;  text-decoration: underline; color:white; ">#FindOutMore</a>
+        <a href="/product" class="m-0"
+            style="font-size: 1.5rem;  text-decoration: underline; color:white; ">#FindOutMore</a>
     </div>
 
 
@@ -369,7 +371,7 @@ function closeLoginModel() {
             </div>
         </div>
         <!-- </div> -->
-        <!-- <img class="img-besar" style="height: 300px;" src="../img/foto/gambar-hero2 edit.webp" alt="Gambar Hero"> -->
+        <!-- <img class="img-besar" style="height: 300px;" src=".<?=base_url('') ?>/img/foto/gambar-hero2 edit.webp" alt="Gambar Hero"> -->
     </div>
 </div>
 
