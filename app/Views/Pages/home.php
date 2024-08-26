@@ -79,15 +79,10 @@ if (window.innerWidth <= 600) {
 }
 </script>
 <?php } ?>
-<div style="background-color:#f6e9dd;">
+<div style="background-color: whitesmoke;">
     <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <div class="img-teks">
-                    <h1 class="teks-besar mb-2" style="color:#f3e9a8;">Modern & Stylish Furniture</h1>
-                    <h5 class="teks-sedang mb-2 show-block-ke-hide" style="color:#4e2700;">Be Yourself With The Best
-                        Choice</h5>
-                </div>
                 <img src="<?= base_url('/img/foto/gambar-hero.webp') ?>" alt="Gambar Hero" class="d-block w-100" style="
                 height: 100%;
                 object-fit: cover;">
@@ -407,6 +402,117 @@ if (window.innerWidth <= 600) {
         </div>
         <img class="img-besar" style="height: 300px;" src="../img/foto/gambar-hero2 edit.webp" alt="Gambar Hero">
     </div> -->
+
+    <div>
+        <img src="./img/foto/gambar-hero2 edit.webp" alt="" class="w-100" style="height: 60svh; object-fit: cover;">
+    </div>
+    <div class="container baris-ke-kolom py-5">
+        <div style="flex: 1">
+            <img src="./img/foto/gambar-hero2 edit.webp" alt="" class="w-100" style="height: 60svh; object-fit: cover;">
+        </div>
+        <div style="flex: 1">
+            <h1 class="teks-besar">About Ilena</h1>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid eaque nobis iusto?</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore nesciunt accusamus debitis molestiae
+                cumque impedit cum iure nisi ipsam dicta?</p>
+            <h1 class="teks-sedang">Crafted to urban Design</h1>
+            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nihil consequatur delectus perspiciatis illum
+                totam labore magni, dolor ab aut voluptatum facilis eius dignissimos, placeat repellendus, vero fugit
+                exercitationem sint quo atque accusamus ipsam voluptates error! Commodi, similique quod? Mollitia
+                necessitatibus incidunt corrupti nostrum voluptatum quibusdam, officiis odio dicta, doloremque
+                laudantium accusamus qui, aliquid eligendi repellendus magnam ab quis dolores velit earum quae sequi
+                nobis officia? Corrupti, laboriosam reprehenderit enim fugit nisi, sint omnis corporis officia vero
+                facilis nesciunt tempora rerum ea eaque quam ab, harum atque placeat architecto provident nulla? Odit,
+                esse. Ullam aliquam amet voluptate maiores porro esse cumque.</p>
+        </div>
+    </div>
+    <div>
+        <img src="./img/foto/gambar-hero2 edit.webp" alt="" class="w-100" style="height: 60svh; object-fit: cover;">
+    </div>
+    <div class="container py-5">
+        <h1 class="teks-besar">Unification Process</h1>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae qui vero placeat quia beatae adipisci
+            aperiam quas! Aut deserunt excepturi distinctio corrupti fuga voluptates eaque. Sapiente, delectus. Itaque
+            dignissimos odit facere, vel sit doloremque mollitia, voluptatem illo nobis debitis animi voluptates modi
+            similique autem. Illo voluptatum fugiat porro sequi ullam vel reiciendis quos deserunt, facere magni
+            exercitationem architecto iusto culpa doloremque repellendus ad quas dolore nisi nam! Quod nam quia sunt
+            veritatis accusantium atque tempore sequi labore earum mollitia possimus inventore unde, placeat, explicabo
+            voluptatum eos reprehenderit minus exercitationem blanditiis hic praesentium! Aliquam inventore illum
+            repellendus amet expedita ducimus. Perspiciatis, fugit commodi dolore perferendis dolor quibusdam magnam
+            adipisci? Atque, dignissimos molestiae optio facilis error perferendis dolore. Inventore minus quo accusamus
+            voluptates corrupti voluptatibus hic, quidem, enim animi esse eveniet veniam quas consectetur deleniti. At
+            accusamus laborum ad provident omnis facere repellendus optio laudantium sequi voluptatibus explicabo
+            dignissimos, molestias, eius blanditiis accusantium est itaque! Quasi rerum molestiae consectetur sit, at
+            non? Aspernatur officia cumque corporis soluta similique quae culpa sunt voluptatibus, veniam magnam
+            mollitia quo consequatur labore doloremque aliquam maxime quasi omnis enim incidunt fugit excepturi alias
+            minus. Saepe iure quasi magnam vero aperiam, sunt rem tempore? Commodi dolorum ullam aliquam?</p>
+    </div>
+    <div>
+        <img src="./img/foto/gambar-hero2 edit.webp" alt="" class="w-100" style="height: 60svh; object-fit: cover;">
+    </div>
+    <div class="container baris-ke-kolom align-items-stretch py-5">
+        <div class="limapuluh-ke-seratus d-flex flex-column">
+            <h1 class="teks-besar">Visi</h1>
+            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Perferendis, sed quasi? Hic?</p>
+            <div class="w-100" style="flex: 1; position: relative; overflow: hidden;">
+                <img src="./img/foto/gambar-hero2 edit.webp" alt="" style="object-fit: cover; position: absolute"
+                    class="w-100 h-100">
+            </div>
+        </div>
+        <div class="limapuluh-ke-seratus">
+            <h1 class="teks-besar">Misi</h1>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis quo, perferendis culpa quis maiores
+                fugit in pariatur quae, aliquid, laborum minus provident ullam recusandae sit quisquam laudantium optio
+                delectus. Quidem, enim accusantium perferendis itaque veniam vel doloribus necessitatibus qui adipisci,
+                libero modi reiciendis corrupti cumque assumenda. Nesciunt magnam repellendus architecto molestiae!
+                Molestias eaque officia reiciendis dolorem minus cumque voluptatibus voluptatem dolores voluptas libero!
+                Officia perferendis, molestias quibusdam quo blanditiis adipisci ducimus labore asperiores corrupti
+                voluptates, possimus magnam harum! Beatae repudiandae porro dolore asperiores veniam? Repellat laborum
+                deserunt consequatur veniam, sunt ut molestias ullam aperiam esse ipsum, enim sequi saepe nesciunt.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis quo, perferendis culpa quis maiores
+                fugit in pariatur quae, aliquid, labor</p>
+        </div>
+    </div>
+    <div style="background-image: url('./img/foto/gambar-hero2 edit.webp')" class="py-5 text-light">
+        <div class="container">
+            <h1 class="teks-besar">Corporate Values</h1>
+            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Id sed ullam quod! Lorem ipsum, dolor sit amet
+                consectetur adipisicing elit. Quis, dicta, eligendi incidunt minus officia doloribus ipsam iure sunt
+                amet
+                vitae, pariatur maiores cum voluptas at veniam ut rem quam iste atque modi dignissimos nobis optio quasi
+                molestias! Facere, nisi exercitationem ratione et ipsam reprehenderit laborum quisquam dolorum, velit a
+                similique.</p>
+        </div>
+    </div>
+    <div class="py-5">
+        <h1 class="teks-besar text-center">Clients</h1>
+    </div>
+    <hr>
+    <div class="py-5 container">
+        <h1 class="teks-besar">About Us</h1>
+        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quibusdam animi fuga nostrum rerum eum impedit sit
+            perferendis facere saepe dolorum. Aliquid molestiae voluptatem ad at doloremque suscipit, eligendi libero
+            autem fugiat consequatur hic! Fugit, molestias. Rerum repellat atque perspiciatis dignissimos, at tenetur
+            magnam repudiandae velit cupiditate reprehenderit, neque totam et, eaque voluptas excepturi laboriosam. Eum
+            tempora nostrum fuga rem praesentium, doloribus at minima natus et non libero blanditiis officia eligendi
+            quia temporibus ratione omnis, quaerat ipsam similique itaque aspernatur doloremque repudiandae velit
+            facilis! Ullam non illo ipsum commodi obcaecati repudiandae animi esse repellendus iusto porro! Illo quos
+            provident exercitationem inventore.</p>
+        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quibusdam animi fuga nostrum rerum eum impedit sit
+            perferendis facere saepe dolorum. Aliquid molestiae voluptatem ad at doloremque suscipit, eligendi libero
+            autem fugiat consequatur hic! Fugit, molestias. Rerum repellat atque perspiciatis dignissimos, at tenetur
+            magnam repudiandae velit cupiditate reprehenderit, neque totam et, eaque voluptas excepturi laboriosam. Eum
+            tempora nostrum fuga rem praesentium, doloribus at minima natus et non libero blanditiis officia eligendi
+            quia temporibus ratione omnis, quaerat ipsam similique itaque aspernatur doloremque repudiandae velit
+            facilis! Ullam non illo ipsum commodi obcaecati repudiandae animi esse repellendus iusto porro! Illo quos
+            provident exercitationem inventore.</p>
+    </div>
+
+    <div style="background-image: url('./img/foto/gambar-hero2 edit.webp'); height: 60svh;"
+        class="text-light d-flex justify-content-center align-items-center w-100">
+        <p class="m-0">#FindOutMore</p>
+    </div>
+
     <div style="background-color: whitesmoke;" class="py-5">
         <div class="container baris-ke-kolom gap-5">
             <div style="flex: 1" class="d-flex gap-4 align-items-center">
