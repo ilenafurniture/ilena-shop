@@ -19,28 +19,36 @@ function closeModalVoucher() {
 </script>
 <?php } ?>
 
-
-<div id="login-modal"
-    style="position: fixed; background-color: rgba(0, 0, 0, 0.5); top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
-    class="d-none justify-content-center align-items-center">
-    <div style="width: fit-content; height: fit-content;  overflow: hidden; position:relative;">
-        <div style="position: absolute;"
-            class="w-100 h-100 d-flex flex-column justify-content-between align-items-center">
-            <div class="d-flex justify-content-end w-100 py-1 px-3">
-                <p class="m-0 d-block" style="cursor: pointer; font-size:18px; font-weight:bold; color:white;"
-                    onclick="closeLoginModel()">X</p>
+<div id="login-modal">
+    <div style="position: fixed; background-color: rgba(0, 0, 0, 0.5); top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
+        class="show-flex-ke-hide justify-content-center align-items-center">
+        <div style="width: fit-content; height: fit-content;  overflow: hidden; position:relative;">
+            <div style="position: absolute;"
+                class="w-100 h-100 d-flex flex-column justify-content-between align-items-center">
+                <div class="d-flex justify-content-end w-100 py-1 px-3">
+                    <p class="m-0 d-block" style="cursor: pointer; font-size:18px; font-weight:bold; color:white;"
+                        onclick="closeLoginModel()">X</p>
+                </div>
+                <div class="d-flex flex-column align-items-center">
+                    <a href="/register" class="btn-lonjong putih mb-2">Daftar Sekarang</a>
+                    <p class="text-center" style="color:#fcf7da;">Sudah punya akun? <a href="/login"
+                            class="btn-teks-aja" style="display: inline; color: white">Login akun</a></p>
+                </div>
             </div>
-            <div class="d-flex flex-column align-items-center">
-                <a href="/register" class="btn-lonjong putih mb-2">Daftar Sekarang</a>
-                <p class="text-center" style="color:#fcf7da;">Sudah punya akun? <a href="/login" class="btn-teks-aja"
-                        style="display: inline; color: white">Login akun</a></p>
-            </div>
+            <img src="<?= base_url('/img/foto/diskon.webp') ?>" style="width: 400px; height: 400px; object-fit: cover"
+                alt="">
         </div>
-        <img src="<?= base_url('/img/foto/diskon.webp') ?>" style="width: 400px; height: 400px; object-fit: cover"
-            alt="">
+    </div>
+    <div style="position: fixed; background-color: white; bottom: 0; left: 0; width: 100%; height: fit-content; z-index: 99;"
+        class="hide-ke-show-flex flex-column justify-content-center align-items-center p-4">
+        <div class="d-flex justify-content-end w-100" style="position: relative; margin-bottom: -10px;">
+            <button class="btn-teks-aja" onclick="closeModalVoucher()">X</button>
+        </div>
+        <h1 class="teks-sedang">Klaim diskon 5%</h1>
+        <p class="text-secondary">Untuk pembelian pertama</p>
+        <a href="/register" class="btn-default w-100 text-center mb-2">Join Our Membership</a>
     </div>
 </div>
-
 
 <?php if (!session()->get('isLogin')) { ?>
 <script>
@@ -56,7 +64,6 @@ document.body.onscroll = (e) => {
             100
         );
         if (hasil > 50 && !opened) {
-            loginModalElm.classList.add("d-flex")
             loginModalElm.classList.remove("d-none")
             opened = true
         }
@@ -64,40 +71,33 @@ document.body.onscroll = (e) => {
 };
 
 function closeLoginModel() {
-    loginModalElm.classList.remove("d-flex")
     loginModalElm.classList.add("d-none")
     window.sessionStorage.setItem('close-login-modal', true)
     opened = false
-    // setTimeout(() => {
-    //     loginModalElm.classList.add("d-flex")
-    //     loginModalElm.classList.remove("d-none")
-    // }, 15000);
-}
-
-if (window.innerWidth <= 600) {
-    loginModalElm.classList.add('p-3');
 }
 </script>
 <?php } ?>
-<div style="background-color: whitesmoke;">
+
+<!--Tampilan Home Baru -->
+<div style="background-color: #f5f5f5;">
     <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
             <div class="carousel-item active">
                 <img src="<?= base_url('/img/foto/gambar-hero.webp') ?>" alt="Gambar Hero" class="d-block w-100" style="
-                height: 100%;
+                height: 60svh;
                 object-fit: cover;">
             </div>
             <div class="carousel-item">
                 <img src="<?= base_url('/img/foto/gambar-hero2 edit.webp') ?>" alt="Gambar Hero" class="d-block w-100"
                     style="
                 
-                height: 100%;
+                height: 60svh;
                 object-fit: cover;">
             </div>
             <div class="carousel-item">
                 <img src="<?= base_url('/img/foto/Tentangperusahaan.JPG') ?>" alt="Gambar Hero" class="d-block w-100"
                     style="
-                height: 100%;
+                height: 60svh;
                 object-fit: cover;">
             </div>
         </div>
@@ -113,405 +113,225 @@ if (window.innerWidth <= 600) {
         </button>
     </div>
 
-    <div class="container mt-5 mb-3 show-block-ke-hide">
-        <div class="d-flex gap-4 h-100 w-100">
-            <a class="img-kategori">
-                <video autoplay muted loop>
-                    <source src="<?= base_url('/img/v1.mp4') ?>" type="video/mp4">
-                </video>
-            </a>
-            <a class="img-kategori">
-                <video autoplay muted loop>
-                    <source src="<?= base_url('/img/v2.mp4') ?>" type="video/mp4">
-                </video>
-            </a>
-            <a class="img-kategori">
-                <video autoplay muted loop>
-                    <source src="<?= base_url('/img/v3.mp4') ?>" type="video/mp4">
-                </video>
-            </a>
-        </div>
-    </div>
-
-    <div class="container my-4 hide-ke-show-block">
-        <div class="d-flex gap-1 h-100 w-100">
-            <a class="img-kategori">
-                <video autoplay muted loop>
-                    <source src="<?= base_url('/img/v1.mp4') ?>" type="video/mp4">
-                </video>
-            </a>
-            <a class="img-kategori">
-                <video autoplay muted loop>
-                    <source src="<?= base_url('/img/v2.mp4') ?>" type="video/mp4">
-                </video>
-            </a>
-            <a class="img-kategori">
-                <video autoplay muted loop>
-                    <source src="<?= base_url('/img/v3.mp4') ?>" type="video/mp4">
-                </video>
-            </a>
-        </div>
-    </div>
-
-    <div class="container justify-content-between mb-4 align-items-end show-flex-ke-hide">
-        <h1 class="teks-besar">Ilena<br>Furniture</h1>
-        <h1 class="teks-sedang mb-1">Hasil Sebuah<br>Proses</h1>
-    </div>
-    <div class="container justify-content-between align-items-end hide-ke-show-flex mb-3">
-        <h1 class="teks-besar">Ilena<br>Furniture</h1>
-        <h1 class="teks-sedang mb-1">Hasil Sebuah<br>Proses</h1>
-    </div>
-
-    <div class="container">
-        <video autoplay muted loop style="
-        width: 100%;
-        height: 80%;
-        object-fit: cover;
-        ">
-            <source src="<?= base_url('/img/video.mp4') ?>" type="video/mp4">
-        </video>
-    </div>
-
-    <div class="mt-5 mb-3 show-block-ke-hide">
-        <div class="d-flex">
-            <div style="flex:1; position:relative;">
-                <div
-                    style="position:absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); backdrop-filter: blur(0.5px);">
-                </div>
-                <div
-                    style="position:absolute; top:0; left:0; right:0; bottom:0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1;">
-                    <h4 class="teks-besar" style="color:white;">Up to 5%</h4>
-                    <p style="color:white;">Segera claim diskon anda sebelum berakhir</p>
-                    <a href="/product" class="btn-default-hitam">SHOP THE SALE</a>
-                </div>
-                <img src="<?= base_url('/img/foto/l1.webp') ?>"
-                    style="width:100%; height:100%; object-fit:cover; background-size: cover; background-color: rgba(0,0,0,0.5); background-repeat:no-repeat; background-blend-mode: color;">
-            </div>
-
-            <div style="flex:1; position:relative;">
-                <div
-                    style="position:absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); backdrop-filter: blur(0.5px);">
-                </div>
-                <div
-                    style="position:absolute; top:0; left:0; right:0; bottom:0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1;">
-                    <h4 class="teks-besar" style="color:white;">Up to 5%</h4>
-                    <p style="color:white;">Segera claim diskon anda sebelum berakhir</p>
-                    <a href="/product" class="btn-default-hitam">SHOP THE SALE</a>
-                </div>
-                <img src="<?= base_url('/img/foto/home1.webp') ?>"
-                    style="width:100%; height:100%; object-fit:cover; background-size: cover; background-color: rgba(0,0,0,0.5); background-repeat:no-repeat; background-blend-mode: color;">
-            </div>
-        </div>
-    </div>
-
-
-
-    <div class="container justify-content-center mb-4 align-items-end d-flex">
-        <h1 class="teks-besar">Our Gallery</h1>
-    </div>
-    <div class="container show-block-ke-hide">
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap:1px;">
-            <div style="position: relative;">
-                <img src="<?= base_url('/img/foto/1.webp') ?>"
-                    style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;">
-            </div>
-            <div style="position: relative;">
-                <img src="<?= base_url('/img/foto/2.webp') ?>"
-                    style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;">
-            </div>
-            <div style="position: relative;">
-                <img src="<?= base_url('/img/foto/3.webp') ?>"
-                    style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;">
-                <div
-                    style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); color: white;">
-                    <h4>Special Offer</h4>
-                    <p>Grab it now!</p>
-                    <a href="/product"
-                        style="color: white; background-color: black; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Learn
-                        More</a>
-                </div>
-            </div>
-            <div style="position: relative;">
-                <img src="<?= base_url('/img/foto/4.webp') ?>"
-                    style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;">
-            </div>
-            <div style="position: relative;">
-                <img src="<?= base_url('/img/foto/5.webp') ?>"
-                    style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;">
-            </div>
-            <div style="position: relative;">
-                <img src="<?= base_url('/img/foto/6.webp') ?>"
-                    style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;">
-                <div
-                    style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); color: white;">
-                    <h4>Special Offer</h4>
-                    <p>Grab it now!</p>
-                    <a href="/product"
-                        style="color: white; background-color: black; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Learn
-                        More</a>
-                </div>
-            </div>
-            <div style="position: relative;">
-                <img src="<?= base_url('/img/foto/7.webp') ?>"
-                    style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;">
-                <div
-                    style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); color: white;">
-                    <h4>Special Offer</h4>
-                    <p>Grab it now!</p>
-                    <a href="/product"
-                        style="color: white; background-color: black; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Learn
-                        More</a>
-                </div>
-            </div>
-            <div style="position: relative;">
-                <img src="<?= base_url('/img/foto/8.webp') ?>"
-                    style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;">
-            </div>
-            <div style="position: relative;">
-                <img src="<?= base_url('/img/foto/9.webp') ?>"
-                    style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;">
-            </div>
-        </div>
-    </div>
-
-
-    <div class="container hide-ke-show-block">
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap:1px;">
-            <img src="<?= base_url('/img/foto/1.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="<?= base_url('/img/foto/2.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="<?= base_url('/img/foto/3.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="<?= base_url('/img/foto/4.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="<?= base_url('/img/foto/5.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="<?= base_url('/img/foto/6.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="<?= base_url('/img/foto/7.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="<?= base_url('/img/foto/8.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-            <img src="<?= base_url('/img/foto/9.webp') ?>" style="width: 100%; aspect-ratio: 1 /1; object-fit:cover;;">
-        </div>
-    </div>
-
-    <div class="mt-5 mb-3" style="position:relative;">
-        <div style="position:absolute"
-            class="p-5 d-flex flex-column w-100 h-100 justify-content-center align-items-center">
-            <!-- <h4 class="teks-besar" style="color:brown;">Up to 5%</h4> -->
-            <h3 style="color:white;">Find Out More</h3>
-            <a href="/product" class="btn-default-hitam">Click Here</a>
-        </div>
-        <img src="<?= base_url('/img/foto/home1.webp') ?>" style="width: 100%; height:50svh; object-fit: cover; background-color: rgba(0,0,0, 0.5);
-  background-repeat:no-repeat; background-blend-mode: color;">
-    </div>
-
-    <div class="container mt-5 mb-3 show-block-ke-hide">
-        <h1 class="teks-sedang justify-content-between" style="font-weight:600; letter-spacing:-1px;">Produk Populer
-        </h1>
-    </div>
-
-    <div class="container hide-ke-show-block mt-5 mb-3">
-        <h1 class="teks-besar justify-content-between">Produk Populer</h1>
-    </div>
-
-    <div class="container mb-4">
-        <div class="container-card1">
-            <?php foreach ($produk as $ind_p => $p) { ?>
-            <div class="card1">
-                <div style="position: relative;">
-                    <span class="card1-content-img-kiri"
-                        <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
-                    <div class="d-flex flex-column gap-2 card1-content-img-kanan">
-                        <?= in_array($p['id'], $wishlist) ? '<a class="card1-btn-img" href="/delwishlist/' . $p['id'] . '"><i class="material-icons">bookmark</i></a>' : '<a class="card1-btn-img" href="/addwishlist/' . $p['id'] . '"><i class="material-icons">bookmark_border</i></a>' ?>
-                        <a id="card<?= $ind_p ?>" class="card1-btn-img"
-                            href="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'], true)[0]['nama'] ?>/1"><i
-                                class="material-icons">shopping_cart</i></a>
-                    </div>
-                    <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>">
-                        <img id="img<?= $ind_p ?>" src="/viewpic/<?= $p['id']; ?>" alt="">
-                    </a>
-                </div>
-                <div class="container-varian mb-1 d-flex">
-                    <?php foreach (json_decode($p['varian'], true) as $ind_v => $v) { ?>
-                    <input id="varian-<?= $ind_p ?>-<?= $ind_v ?>" value="<?= $v['urutan_gambar'] ?>-<?= $v['nama'] ?>"
-                        type="radio" name="varian<?= $ind_p ?>">
-                    <label for="varian-<?= $ind_p ?>-<?= $ind_v ?>"><span
-                            style="background-color: <?= $v['kode'] ?>"></span></label>
-                    <?php } ?>
-                    <script>
-                    const btnKeranjang<?= $ind_p ?>Elm = document.getElementById("card<?= $ind_p ?>");
-                    const varian<?= $ind_p ?>Elm = document.querySelectorAll('input[name="varian<?= $ind_p ?>"]');
-                    varian<?= $ind_p ?>Elm.forEach(elm => {
-                        elm.addEventListener('change', (e) => {
-                            console.log(e.target.value)
-                            const img<?= $ind_p ?>Elm = document.getElementById("img<?= $ind_p ?>");
-                            img<?= $ind_p ?>Elm.src =
-                                "/viewvar/<?= $p['id']; ?>/" + e.target.value.split("-")[0].split(",")[
-                                    0];
-
-                            btnKeranjang<?= $ind_p ?>Elm.href = "/addcart/<?= $p['id'] ?>/" + e.target
-                                .value.split("-")[1] + "/1";
-                        })
-                    });
-                    </script>
-                </div>
-                <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="text-dark">
-                    <p class="text-secondary text-sm-start m-0"><?= ucwords($p['kategori']); ?></p>
-                    <h5 style="font-size:18px;"><?= str_replace('Tv', 'TV', ucwords($p['nama'])); ?></h5>
-                    <div class="d-flex gap-2">
-                        <p class="harga">Rp <?= number_format($p['harga'] * (100 - $p['diskon']) / 100, 0, ',', '.'); ?>
-                        </p>
-                        <?php if ($p['diskon'] > 0) { ?>
-                        <p class="harga-diskon">Rp <?= number_format($p['harga'], 0, ',', '.') ?></p>
-                        <?php } ?>
-                    </div>
-                </a>
-            </div>
-            <?php } ?>
-        </div>
-    </div>
-    <div class="container mb-5 d-flex justify-content-center">
-        <a href="/product" class="btn-lonjong">Lihat Semua Produk <i class="material-icons">arrow_forward</i></a>
-    </div>
-
-    <!-- <div style="background-image: url('../img/foto/gambar-hero2 edit.webp');
-    background-size: cover; background-position: center; background-repeat: no-repeat; color: white; background-color: rgba(0, 0, 0, 0.5); background-blend-mode: color;"
-        class="py-5 d-none">
-        <div class="img-teks" style="height: 100%; color: white; background-color: rgba(0, 0, 0, 0.5);">
-            <div class="container baris-ke-kolom gap-5">
-                <div style="flex: 1" class="d-flex justify-content-start gap-4">
-                    <img src="../img/gratis ongkir.png" alt="" style="width: 70px; height: 40px">
-                    <div>
-                        <p class="fw-bold mb-1" style="font-size: 20px;">Free Ongkir 100%</p>
-                        <p class="m-0">Dapatkan keuntungan gratis pengiriman 100% untuk wilayah Jawa, Madura, & Bali tanpa
-                            minimum belanja</p>
-                    </div>
-                </div>
-                <div style="flex: 1" class="d-flex justify-content-start gap-4">
-                    <img src="../img/eco friendly.png" alt="" style="width: 50px; height: 50px">
-                    <div>
-                        <p class="fw-bold mb-1" style="font-size: 20px;">Eco Friendly</p>
-                        <p class="m-0">Dibuat dari bahan ramah lingkungan yang tidak berbahaya bagi kelangsungan manusia,
-                            bumi, dan lingkungan</p>
-                    </div>
-                </div>
-                <div style="flex: 1" class="d-flex justify-content-start gap-4">
-                    <img src="../img/seluruh indo.png" alt="" style="width: 70px; height: 60px">
-                    <div>
-                        <p class="fw-bold mb-1" style="font-size: 20px;">Bebas kirim seluruh Indonesia</p>
-                        <p class="m-0">Bekerjasama dengan mitra ekspedisi yang telah menjangkau pengiriman aman & terpercaya
-                            ke seluruh Indonesia</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <img class="img-besar" style="height: 300px;" src="../img/foto/gambar-hero2 edit.webp" alt="Gambar Hero">
-    </div> -->
-
-    <div>
-        <img src="./img/foto/gambar-hero2 edit.webp" alt="" class="w-100" style="height: 60svh; object-fit: cover;">
-    </div>
     <div class="container baris-ke-kolom py-5">
         <div style="flex: 1">
-            <img src="./img/foto/gambar-hero2 edit.webp" alt="" class="w-100" style="height: 60svh; object-fit: cover;">
+            <img src="./img/foto/ly1.webp" alt="" class="w-100"
+                style="height: 100%; object-fit: cover; border-radius:4px;">
         </div>
-        <div style="flex: 1">
-            <h1 class="teks-besar">About Ilena</h1>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid eaque nobis iusto?</p>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore nesciunt accusamus debitis molestiae
-                cumque impedit cum iure nisi ipsam dicta?</p>
-            <h1 class="teks-sedang">Crafted to urban Design</h1>
-            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nihil consequatur delectus perspiciatis illum
-                totam labore magni, dolor ab aut voluptatum facilis eius dignissimos, placeat repellendus, vero fugit
-                exercitationem sint quo atque accusamus ipsam voluptates error! Commodi, similique quod? Mollitia
-                necessitatibus incidunt corrupti nostrum voluptatum quibusdam, officiis odio dicta, doloremque
-                laudantium accusamus qui, aliquid eligendi repellendus magnam ab quis dolores velit earum quae sequi
-                nobis officia? Corrupti, laboriosam reprehenderit enim fugit nisi, sint omnis corporis officia vero
-                facilis nesciunt tempora rerum ea eaque quam ab, harum atque placeat architecto provident nulla? Odit,
-                esse. Ullam aliquam amet voluptate maiores porro esse cumque.</p>
-        </div>
-    </div>
-    <div>
-        <img src="./img/foto/gambar-hero2 edit.webp" alt="" class="w-100" style="height: 60svh; object-fit: cover;">
-    </div>
-    <div class="container py-5">
-        <h1 class="teks-besar">Unification Process</h1>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae qui vero placeat quia beatae adipisci
-            aperiam quas! Aut deserunt excepturi distinctio corrupti fuga voluptates eaque. Sapiente, delectus. Itaque
-            dignissimos odit facere, vel sit doloremque mollitia, voluptatem illo nobis debitis animi voluptates modi
-            similique autem. Illo voluptatum fugiat porro sequi ullam vel reiciendis quos deserunt, facere magni
-            exercitationem architecto iusto culpa doloremque repellendus ad quas dolore nisi nam! Quod nam quia sunt
-            veritatis accusantium atque tempore sequi labore earum mollitia possimus inventore unde, placeat, explicabo
-            voluptatum eos reprehenderit minus exercitationem blanditiis hic praesentium! Aliquam inventore illum
-            repellendus amet expedita ducimus. Perspiciatis, fugit commodi dolore perferendis dolor quibusdam magnam
-            adipisci? Atque, dignissimos molestiae optio facilis error perferendis dolore. Inventore minus quo accusamus
-            voluptates corrupti voluptatibus hic, quidem, enim animi esse eveniet veniam quas consectetur deleniti. At
-            accusamus laborum ad provident omnis facere repellendus optio laudantium sequi voluptatibus explicabo
-            dignissimos, molestias, eius blanditiis accusantium est itaque! Quasi rerum molestiae consectetur sit, at
-            non? Aspernatur officia cumque corporis soluta similique quae culpa sunt voluptatibus, veniam magnam
-            mollitia quo consequatur labore doloremque aliquam maxime quasi omnis enim incidunt fugit excepturi alias
-            minus. Saepe iure quasi magnam vero aperiam, sunt rem tempore? Commodi dolorum ullam aliquam?</p>
-    </div>
-    <div>
-        <img src="./img/foto/gambar-hero2 edit.webp" alt="" class="w-100" style="height: 60svh; object-fit: cover;">
-    </div>
-    <div class="container baris-ke-kolom align-items-stretch py-5">
-        <div class="limapuluh-ke-seratus d-flex flex-column">
-            <h1 class="teks-besar">Visi</h1>
-            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Perferendis, sed quasi? Hic?</p>
-            <div class="w-100" style="flex: 1; position: relative; overflow: hidden;">
-                <img src="./img/foto/gambar-hero2 edit.webp" alt="" style="object-fit: cover; position: absolute"
-                    class="w-100 h-100">
+        <div style="flex: 1" class="d-flex flex-column">
+            <div style="flex:1;" class="px-2">
+                <h1 class="teks-besar">About Ilena</h1>
+                <p>With decades of experience in the exceptional
+                    wooden furniture industry
+                </p>
+                <p>selama berdekade lamanya telah berkecimpung di
+                    bidang furniture kayu berkualitas
+                </p>
+            </div>
+            <div class="py-4 px-2"
+                style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('./img/foto/gambar-hero2 edit.webp'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; border-radius:4px; width:100%; height:100%;">
+                <div class="ps-4">
+                    <h1 class=" teks-sedang" style="color:white;">Crafted to urban Design</h1>
+                    <p style="color:white;">Creating memorable impressions and messages
+                        in every corner of your space, turning it into a
+                        beautiful memory. Our success comes from
+                        providing furniture that perfectly fits urban
+                        lifestyles and is suitable for any setting.</p>
+                    <p style="color:white;">Menciptakan banyak kesan dan pesan dalam
+                        setiap sudut ruang yang menjadi indah dalam
+                        kenangan. Keberhasilan Kami merupakan usaha
+                        menghadirkan furniture khas masyarakat urban
+                        yang cocok untuk segala suasana.</p>
+                </div>
             </div>
         </div>
-        <div class="limapuluh-ke-seratus">
-            <h1 class="teks-besar">Misi</h1>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis quo, perferendis culpa quis maiores
-                fugit in pariatur quae, aliquid, laborum minus provident ullam recusandae sit quisquam laudantium optio
-                delectus. Quidem, enim accusantium perferendis itaque veniam vel doloribus necessitatibus qui adipisci,
-                libero modi reiciendis corrupti cumque assumenda. Nesciunt magnam repellendus architecto molestiae!
-                Molestias eaque officia reiciendis dolorem minus cumque voluptatibus voluptatem dolores voluptas libero!
-                Officia perferendis, molestias quibusdam quo blanditiis adipisci ducimus labore asperiores corrupti
-                voluptates, possimus magnam harum! Beatae repudiandae porro dolore asperiores veniam? Repellat laborum
-                deserunt consequatur veniam, sunt ut molestias ullam aperiam esse ipsum, enim sequi saepe nesciunt.</p>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis quo, perferendis culpa quis maiores
-                fugit in pariatur quae, aliquid, labor</p>
+    </div>
+    <div>
+        <img src="./img/foto/layer2.webp" alt="" class="w-100" style="object-fit:cover; height:60svh;">
+    </div>
+    <div class="container py-5">
+        <h1 class="teks-besar d-flex justify-content-center py-4">Unification Process</h1>
+        <div class="d-flex" style="display: flex; flex-wrap: wrap;">
+            <div class="d-flex" style="flex: 1;">
+                <img src="./img/foto/layer2.webp" alt="" class="w-100"
+                    style="object-fit: cover; height: 60svh; width: 100%; border-radius:4px;">
+            </div>
+            <div style="flex: 1;" class="d-flex flex-column px-4">
+                <p style="text-align: justify;">Our production facilities are spread across Central Java,
+                    Indonesia. The main site is located in Gedung Pani, covering
+                    an area of 9,000 m². Additionally, we have another facility in
+                    the BSB area, also spanning 9,000 m². To further enhance
+                    our production capacity, we've expanded to a 12,000 m²
+                    area in Kaliwungu. This strategic distribution is supported by
+                    the trust of local residents, who join us in creating premium
+                    furniture. With a team of 300 dedicated employees, we are
+                    committed to bringing our shared vision to life at Ilena.</p>
+
+                <p style="text-align: justify;">Lokasi produksi kami tersebar di Jawa Tengah, Indonesia.
+                    Tempat produksi utama berada di Gedung Pani, Jawa
+                    tengah dengan luas area 9000 m². Kemudian ditunjang juga
+                    dengan tempat produksi lain di kawasan BSB seluas 9000
+                    m². Untuk memaksimalkan produksi, kami merambah ke
+                    daerah lain tepatnya di Kaliwungu dengan area seluas
+                    12.000 m². Persebaran lokasi produksi ini juga dibarengi
+                    dengan kepercayaan masyarakat sekitar kepada kami untuk
+                    bergerak bersama menghasilkan furniture unggulan.
+                    Sebanyak 300 karyawan telah bersama kami mewujudkan
+                    mimpi bersama Ilena.</p>
+            </div>
         </div>
+
     </div>
-    <div style="background-image: url('./img/foto/gambar-hero2 edit.webp')" class="py-5 text-light">
-        <div class="container">
-            <h1 class="teks-besar">Corporate Values</h1>
-            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Id sed ullam quod! Lorem ipsum, dolor sit amet
-                consectetur adipisicing elit. Quis, dicta, eligendi incidunt minus officia doloribus ipsam iure sunt
-                amet
-                vitae, pariatur maiores cum voluptas at veniam ut rem quam iste atque modi dignissimos nobis optio quasi
-                molestias! Facere, nisi exercitationem ratione et ipsam reprehenderit laborum quisquam dolorum, velit a
-                similique.</p>
+    <div>
+        <img src="./img/foto/gambar-hero2 edit.webp" alt="" class="w-100"
+            style="height: 60svh; object-fit: cover; border-radius:4px;">
+    </div>
+    <div class="container baris-ke-kolom align-items-stretch py-5" style="display: flex; flex-wrap: wrap;">
+        <div class="limapuluh-ke-seratus d-flex flex-column" style="flex: 1; padding-right: 10px;">
+            <h1 class="teks-besar-home">Vision</h1>
+            <p style="margin-bottom: 20px;">Begin at home, a friendly smile blossoms<br>Mulai dari Rumah, Tercipta
+                senyum ramah</p>
+            <div class="w-100" style="flex: 1; position: relative; overflow: hidden;">
+                <img src="./img/foto/ly1.webp" alt=""
+                    style="object-fit: cover; position: absolute; width: 100%; height: 100%;">
+            </div>
         </div>
-    </div>
-    <div class="py-5">
-        <h1 class="teks-besar text-center">Clients</h1>
-    </div>
-    <hr>
-    <div class="py-5 container">
-        <h1 class="teks-besar">About Us</h1>
-        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quibusdam animi fuga nostrum rerum eum impedit sit
-            perferendis facere saepe dolorum. Aliquid molestiae voluptatem ad at doloremque suscipit, eligendi libero
-            autem fugiat consequatur hic! Fugit, molestias. Rerum repellat atque perspiciatis dignissimos, at tenetur
-            magnam repudiandae velit cupiditate reprehenderit, neque totam et, eaque voluptas excepturi laboriosam. Eum
-            tempora nostrum fuga rem praesentium, doloribus at minima natus et non libero blanditiis officia eligendi
-            quia temporibus ratione omnis, quaerat ipsam similique itaque aspernatur doloremque repudiandae velit
-            facilis! Ullam non illo ipsum commodi obcaecati repudiandae animi esse repellendus iusto porro! Illo quos
-            provident exercitationem inventore.</p>
-        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quibusdam animi fuga nostrum rerum eum impedit sit
-            perferendis facere saepe dolorum. Aliquid molestiae voluptatem ad at doloremque suscipit, eligendi libero
-            autem fugiat consequatur hic! Fugit, molestias. Rerum repellat atque perspiciatis dignissimos, at tenetur
-            magnam repudiandae velit cupiditate reprehenderit, neque totam et, eaque voluptas excepturi laboriosam. Eum
-            tempora nostrum fuga rem praesentium, doloribus at minima natus et non libero blanditiis officia eligendi
-            quia temporibus ratione omnis, quaerat ipsam similique itaque aspernatur doloremque repudiandae velit
-            facilis! Ullam non illo ipsum commodi obcaecati repudiandae animi esse repellendus iusto porro! Illo quos
-            provident exercitationem inventore.</p>
+        <div class="limapuluh-ke-seratus" style="flex: 1; padding-left: 10px;">
+            <img src="./img/foto/gambar-hero2 edit.webp" alt=""
+                style="object-fit: cover; width:100%; border-radius:4px;">
+            <h1 class="teks-besar-home pt-2">Mission</h1>
+            <p style="font-weight: bold;">Developing & sustaining customer loyalty</p>
+            <p>Committing to customer satisfaction with exceptional service and premium products</p>
+            <p>Menjadikan kepuasan konsumen sebagai prioritas melalui pelayanan prima dan produk unggulan</p>
+
+            <p style="font-weight: bold;">Supporting the balance of environmental ecosystems</p>
+            <p>Preserving the environment and supporting forest ecosystem sustainability by using materials with fully
+                traceable origins.</p>
+            <p>Menjaga lingkungan dan kelanjutan ekosistem hutan dengan hanya menggunakan material bahan yang jelas
+                asal-usulnya.</p>
+
+            <p style="font-weight: bold;">United by a common purpose</p>
+            <p>Developing a unified and collaborative team that reflects company values to foster growth and achieve a
+                common goal.</p>
+            <p>Membangun tim yang solid dan bersinergi sesuai dengan nilai perusahaan untuk terus berkembang dan
+                mencapai satu tujuan bersama.</p>
+        </div>
     </div>
 
-    <div style="background-image: url('./img/foto/gambar-hero2 edit.webp'); height: 60svh;"
-        class="text-light d-flex justify-content-center align-items-center w-100">
-        <p class="m-0">#FindOutMore</p>
+    <div
+        style="background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('./img/foto/lbg.webp'); background-size: cover; background-position: center; color: white; padding: 50px;">
+        <div class="container">
+            <h1 class="teks-besar" style="font-size: 2.5rem; font-weight: bold;">Corporate Values</h1>
+            <p>We are dedicated to continuous growth and innovation in creating exceptional products,
+                with a core focus on being 'sustainable', as detailed in the following pillars:</p>
+            <ul style="padding-left: 0;">
+                <li><strong>Diversity</strong><br>Embracing all forms of differences and leveraging them as
+                    inspiration to achieve common goals.<br>Toleransi terhadap segala bentuk perbedaan dan menjadikannya
+                    sebagai
+                    semangat dalam mencapai tujuan bersama.</li>
+                <li><strong>Trustworthiness</strong><br>Maintaining the highest standards in both product quality and
+                    customer service.<br>Menjaga kualitas produk dan pelayanan terhadap konsumen secara maksimal.</li>
+                <li><strong>Modernity</strong><br>Pursuing modernization to enhance product efficiency.<br>Terus pada
+                    modernisasi dengan menciptakan efisiensi terhadap produk.</li>
+                <li><strong>Adaptability</strong><br>Integrating developments in science and technology that impact the
+                    company's needs.<br>Terlibat dalam perkembangan zaman dan teknologi yang mempengaruhi perubahan
+                    kebutuhan serta keinginan manusia.</li>
+                <li><strong>Harmony</strong><br>Fostering a healthy and cohesive relationship between employees and the
+                    company as an integral whole.<br>Menciptakan relasi yang sehat antara karyawan dan perusahaan
+                    sebagai satu kesatuan yang tidak bisa terpisahkan.</li>
+            </ul>
+        </div>
     </div>
+
+
+    <div class="py-5" style="padding: 50px 0;">
+        <h1 class="teks-besar text-center" style="font-size: 2.5rem; font-weight: bold; margin-bottom: 30px;">Clients
+        </h1>
+        <div class="text-center">
+            <img src="./img/logo/crateandbarrel.webp" alt="Crate & Barrel" style="max-width: 200px; margin: 10px;">
+            <img src="./img/logo/thelandofnod.webp" alt="The Land of Nod" style="max-width: 200px; margin: 10px;">
+            <img src="./img/logo/westelm.webp" alt="West Elm" style="max-width: 200px; margin: 10px;">
+            <img src="./img/logo/williamssonoma.webp" alt="Williams Sonoma" style="max-width: 200px; margin: 10px;">
+        </div>
+    </div>
+    <hr>
+    <div class="gap-2">
+        <div class="container py-3">
+            <div class="flex-column">
+                <div class="d-flex px-5 gap-4">
+                    <div style="flex:1;">
+                        <img src="./img/foto/ly1.webp" alt=""
+                            style="object-fit: cover; width: 100%; height: 60svh; border-radius:4px;">
+                    </div>
+                    <div style="flex:1;">
+                        <h1 class="teks-besar-home mb-3" style="font-size: 2rem; font-weight: bold;">About Us</h1>
+                        <p style="text-align: justify;"> The story of Ilena began in 2024 under the umbrella of CV Catur
+                            Bhakti Mandiri, a company established 30 years ago. Ilena marks the
+                            company's entry into the retail and interior design business. As the
+                            industry expands to meet consumer demands, we are committed to
+                            innovation, sustainability, and maintaining a close connection with our
+                            customers through high-quality furniture.
+                        </p>
+                        <p style="text-align: justify;">Cerita lahirnya Ilena bermula pada tahun 2024 di bawah naungan
+                            CV
+                            Catur Bhakti Mandiri yang telah berdiri sejak 30 tahun. Ilena menandai
+                            dimulainya bisnis ritel dan interior. Dengan melebarnya industri yang
+                            didorong oleh kebutuhan konsumen, kami melakukan berbagai
+                            inovasi, keberlanjutan serta keinginan untuk terus konsisten berada di
+                            dekat hati konsumen dengan furniture berkualitas.</p>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="container py-3">
+            <div class="flex-column">
+                <div class="d-flex px-5 gap-4">
+                    <div style="flex:1;">
+                        <h1 class="teks-besar-home mb-3" style="font-size: 2rem; font-weight: bold;">Company Profile
+                        </h1>
+                        <p style="text-align: justify;"> CV Catur Bhakti Mandiri is a leading wood manufacturer based in
+                            Semarang,
+                            Central Java, Indonesia. With 30 years of experience, we are committed to
+                            delivering outstanding products while balancing consumer needs with
+                            sustainable resource practices. Our extensive collection of wood-based
+                            furniture is crafted for residential, office, and hospitality settings, all sourced
+                            from certified sustainable forests
+                            #Find Out More
+                        </p>
+                        <p style="text-align: justify;">CV Catur Bhakti Mandiri merupakan produsen kayu ternama
+                            Indonesia
+                            yang
+                            berada di Semarang, Jawa Tengah. Selama 30 tahun lamanya berkomitmen
+                            untuk selalu memberikan kualitas dan terintegrasi terhadap keseimbangan
+                            kebutuhan konsumen dan kesediaan sumber daya selama puluhan tahun
+                            lamanya. Produk kami terdiri dari beragam furniture untuk mewujudkan
+                            interior ruang rumah tangga, perkantoran & perhotelan berbahan dasar kayu
+                            yang telah bersertifikasi serta bersumber dari hutan berkelanjutan.
+                            #Find Out More</p>
+
+                    </div>
+                    <div style="flex:1;">
+                        <img src="./img/foto/ly1.webp" alt=""
+                            style="object-fit: cover; width: 100%; height: 60svh; border-radius:4px;">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+
+    <div style="background-image: url('./img/foto/gambar-hero2 edit.webp'); height: 80svh; background-size: cover; background-position: center;"
+        class="text-light d-flex justify-content-center align-items-center w-100">
+        <a href="#" class="m-0" style="font-size: 1.5rem;  text-decoration: underline; color:white; ">#FindOutMore</a>
+    </div>
+
+
+
+
 
     <div style="background-color: whitesmoke;" class="py-5">
         <div class="container baris-ke-kolom gap-5">
@@ -531,7 +351,8 @@ if (window.innerWidth <= 600) {
 
                 <div>
                     <p class="fw-bold mb-1" style="font-size: 20px;">Eco Friendly</p>
-                    <p class="m-0">Dibuat dari bahan ramah lingkungan yang tidak berbahaya bagi kelangsungan manusia,
+                    <p class="m-0">Dibuat dari bahan ramah lingkungan yang tidak berbahaya bagi kelangsungan
+                        manusia,
                         bumi, dan lingkungan</p>
                 </div>
             </div>
@@ -541,7 +362,8 @@ if (window.innerWidth <= 600) {
                 </div>
                 <div style="flex:1;">
                     <p class="fw-bold mb-1" style="font-size: 20px;">Bebas kirim seluruh Indonesia</p>
-                    <p class="m-0">Bekerjasama dengan mitra ekspedisi yang telah menjangkau pengiriman aman & terpercaya
+                    <p class="m-0">Bekerjasama dengan mitra ekspedisi yang telah menjangkau pengiriman aman &
+                        terpercaya
                         ke seluruh Indonesia</p>
                 </div>
             </div>

@@ -192,6 +192,19 @@ body {
     letter-spacing: -5px;
     margin: 0;
 }
+.teks-besar-home {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+    
+    
+    transition: text-decoration 0.3s ease; 
+}
+
+.teks-besar-home:hover {
+    text-decoration: underline;
+}
+
 .teks-sedang {
     font-weight: 500;
     font-size: 30px;
