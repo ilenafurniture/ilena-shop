@@ -19,7 +19,7 @@ function closeModalVoucher() {
 </script>
 <?php } ?>
 
-<div id="login-modal">
+<div id="login-modal" class="d-none">
     <div style="position: fixed; background-color: rgba(0, 0, 0, 0.5); top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
         class="show-flex-ke-hide justify-content-center align-items-center">
         <div style="width: fit-content; height: fit-content;  overflow: hidden; position:relative;">
@@ -42,7 +42,7 @@ function closeModalVoucher() {
     <div style="position: fixed; background-color: white; bottom: 0; left: 0; width: 100%; height: fit-content; z-index: 99;"
         class="hide-ke-show-flex flex-column justify-content-center align-items-center p-4">
         <div class="d-flex justify-content-end w-100" style="position: relative; margin-bottom: -10px;">
-            <button class="btn-teks-aja" onclick="closeModalVoucher()">X</button>
+            <button class="btn-teks-aja" onclick="closeLoginModel()">X</button>
         </div>
         <h1 class="teks-sedang">Klaim diskon 5%</h1>
         <p class="text-secondary">Untuk pembelian pertama</p>
@@ -52,34 +52,369 @@ function closeModalVoucher() {
 
 <?php if (!session()->get('isLogin')) { ?>
 <script>
-const loginModalElm = document.getElementById('login-modal')
-let opened = false;
-document.body.onscroll = (e) => {
-    if (!window.sessionStorage.getItem('close-login-modal')) {
-        const scrollingElm = e.target.scrollingElement;
-        const hasil = Math.round(
-            (scrollingElm.scrollTop /
-                (scrollingElm.scrollHeight -
-                    scrollingElm.clientHeight)) *
-            100
-        );
-        if (hasil > 50 && !opened) {
-            loginModalElm.classList.remove("d-none")
-            opened = true
-        }
-    }
-};
+// const loginModalElm = document.getElementById('login-modal')
+// let opened = false;
+// document.body.onscroll = (e) => {
+//     if (!window.sessionStorage.getItem('close-login-modal')) {
+//         const scrollingElm = e.target.scrollingElement;
+//         const hasil = Math.round(
+//             (scrollingElm.scrollTop /
+//                 (scrollingElm.scrollHeight -
+//                     scrollingElm.clientHeight)) *
+//             100
+//         );
+//         if (hasil > 50 && !opened) {
+//             loginModalElm.classList.remove("d-none")
+//             opened = true
+//         }
+//     }
+// };
 
-function closeLoginModel() {
-    loginModalElm.classList.add("d-none")
-    window.sessionStorage.setItem('close-login-modal', true)
-    opened = false
-}
+// function closeLoginModel() {
+//     loginModalElm.classList.add("d-none")
+//     window.sessionStorage.setItem('close-login-modal', true)
+//     opened = false
+// }
 </script>
 <?php } ?>
 
 <!--Tampilan Home Baru -->
-<div style="background-color: #f5f5f5;">
+<div class="d-flex p-5"
+    style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1.JPG'); background-size: 130vw 130vh; width:100%; height:80svh;">
+    <div>
+        <h1 class="teks-besar mb-2">Modern & Stylish<br>Furniture</h1>
+        <p class="teks-sedang py-2 px-3" style="color: white; background-color: black">Be Yourself With The Best Choice
+        </p>
+        <div style="width:200px; height:20px; background-color:white;"></div>
+    </div>
+</div>
+<div class="d-flex align-items-stretch" style="width:100%; height:80svh;">
+    <div class="d-flex align-items-center ps-5"
+        style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/1.webp'); background-size: cover; background-position:center;">
+        <div>
+            <p class="text-light">Make you feel</p>
+            <h1 class="teks-besar text-light mb-5">Elegant</h1>
+            <div style="width:120px; height:2px; background-color:white;"></div>
+        </div>
+    </div>
+    <div style="flex:1;" class=" d-flex flex-column">
+        <div class="d-flex align-items-center ps-5"
+            style="flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/5.webp'); background-size: cover; background-position:center;">
+            <div>
+                <h1 class="teks-besar text-light mb-3">Luxury</h1>
+                <div class="d-flex gap-3">
+                    <div style="width:20px; height:20px; background-color:white;"></div>
+                    <div style="width:20px; height:20px; border: 2px solid white;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex" style="flex: 1">
+            <!-- <div
+                style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/3.webp'); background-size: cover; background-position:center;">
+
+            </div> -->
+            <div class="d-flex align-items-center ps-5"
+                style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/7.webp'); background-size: cover; background-position:center;">
+                <div>
+                    <h1 class="teks-besar text-light mb-3">Simply</h1>
+                    <div class="d-flex gap-3">
+                        <div style="width:20px; height:20px; border: 2px solid white;"></div>
+                        <div style="width:20px; height:20px; background-color:white;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="position: absolute; background-color: rgba(255, 0, 0, 0.5); height: 0px;" class="w-100" id="counter-slide">
+    <div class="container" style="height: 0px;">
+        <div class="d-flex flex-column align-items-center gap-2 pt-5" style="width:20px;">
+            <p class="m-0 fw-bold" style="font-size:10px;">01</p>
+            <div style="height:30px; width:2px; background-color:black;"></div>
+            <p class="m-0 fw-bold" style="font-size:10px;">02</p>
+        </div>
+    </div>
+</div>
+<div class="scroll-home">
+    <div class="scroll-home-item">
+        <div class="container d-flex py-5 gap-5" style="flex: 1">
+            <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
+            <div style="flex:6;">
+                <h1 class="teks-besar m-0">Industrial</h1>
+                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <p class="m-0">Menjadi diri sendiri dengan berkreasi sesuai kata hati masihkah terasa sulit? Mari mulai
+                    dengan berbenah ruang yang merefleksikan karakter diri. Industrial Series hadir untuk menjadi teman
+                    yang tepat untuk berdiri tegak tanpa takut menjadi beda, unik, menawan dengan elegan.<Br>Mari mulai
+                    dari sekarang, bersama Ilena.</p>
+            </div>
+            <div class="d-flex gap-4" style="flex:4;">
+                <div
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/industrial/3.webp'); background-size: 240px 240px; background-position:center;">
+                </div>
+                <div
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/industrial/2.webp'); background-size: cover; background-position:center;">
+                </div>
+            </div>
+        </div>
+        <div class="w-100"
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/industrial/1.webp'); background-size: cover; background-position:center; height:100%; background-repeat: no-repeat;">
+        </div>
+    </div>
+    <div class="scroll-home-item">
+        <div class="container d-flex py-5 gap-5" style="flex: 1">
+            <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
+            <div style="flex:6;">
+                <h1 class="teks-besar m-0" style="letter-spacing: 12px;">Sorely</h1>
+                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <p class="m-0">Terinspirasi oleh keindahan perpaduan dua material: kayu hangat dan logam tebal. Dibuat
+                    dengan sungguh-sungguh untuk melengkapi interior estetis, menghadirkan kenyamanan dan ketenangan
+                    bagi setiap penghuninya. Kami berbagi semangat kami dengan nama Ilena.</p>
+            </div>
+            <div class="d-flex gap-4" style="flex:4;">
+                <div
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/sorely/3.webp'); background-size: cover; background-position:center;">
+                </div>
+                <div
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/sorely/2.webp'); background-size: cover; background-position:center;">
+                </div>
+            </div>
+        </div>
+        <div class="w-100"
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/sorely/1.webp'); background-size: cover; background-position:center; ">
+        </div>
+    </div>
+    <div class="scroll-home-item">
+        <div class="container d-flex py-5 gap-5" style="flex: 1">
+            <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
+            <div style="flex:6;">
+                <h1 class="teks-besar m-0" style="letter-spacing: 1px;">Water Case</h1>
+                <h1 style=" font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <p class="m-0">Secara spesial dirancang untuk memberikan kehangatan dan kenyamanan pada hunian rumah.
+                    water case series hadir dengan menunjukkan kesederhanaan sebuah desain yang memiliki fungsi sesuai
+                    dengan kebutuhan dan memperindah rumah dengan sentuhan interior yang bersahaja dalam balutan gaya
+                    modern klasik ala Ilena Furniture.</p>
+            </div>
+            <div class="d-flex gap-4" style="flex:4;">
+                <div
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/8.webp'); background-size: cover; background-position:center;">
+                </div>
+                <div
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/6.webp'); background-size: cover; background-position:center;">
+                </div>
+            </div>
+        </div>
+        <div class="w-100"
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1.JPG'); background-size: cover; background-position:center; ">
+        </div>
+    </div>
+    <div class="scroll-home-item">
+        <div class="container d-flex py-5 gap-5" style="flex: 1">
+            <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
+            <div style="flex:6;">
+                <h1 class="teks-besar m-0" style="letter-spacing: 1px;">Plint Base</h1>
+                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <p class="m-0">Ilena memaknai minimalis sebagai mahakarya indah yang dibalut dalam kesederhanaan. Dengan
+                    kepraktisan fungsinya, plint base menjawab kebutuhan furniture secara menyeluruh dan relevan hingga
+                    dalam waktu berdekade lamanya. Inilah Classic modern yang Anda butuhkan</p>
+            </div>
+            <div class="d-flex gap-4" style="flex:4;">
+                <div
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/8.webp'); background-size: cover; background-position:center;">
+                </div>
+                <div
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/6.webp'); background-size: cover; background-position:center;">
+                </div>
+            </div>
+        </div>
+        <div class="w-100"
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1.JPG'); background-size: cover; background-position:center; ">
+        </div>
+    </div>
+    <div class="scroll-home-item">
+        <div class="container d-flex py-5 gap-5" style="flex: 1">
+            <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
+            <div style="flex:6;">
+                <h1 class="teks-besar m-0" style="letter-spacing: 1px;">Cut Out</h1>
+                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <p class="m-0">Kami percaya bahwa sebuah ruangan didesain dengan sepenuh hati akan memberikan energi
+                    positif bagi setiap penghuninya. Bekal inilah yang membuat Ilena terus melakukan inovasi untuk
+                    menghadirkan furniture terbaik bagi Anda. Cut Out hadir dengan series dalam balutan gaya minimalis
+                    dengan mengadopsi budaya Jepang yang terkenal mengutamakan fungsi dan kepraktisan. Desainnya yang
+                    sederhana dengan sedikit aksen memudahkan Anda untuk merawat dan menempatkan dalam segala konsep
+                    ruang menjadi lebih sempurna dengan Cut Out series dari Ilena.</p>
+            </div>
+            <div class="d-flex gap-4" style="flex:4;">
+                <div
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/8.webp'); background-size: cover; background-position:center;">
+                </div>
+                <div
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/6.webp'); background-size: cover; background-position:center;">
+                </div>
+            </div>
+        </div>
+        <div class="w-100"
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1.JPG'); background-size: cover; background-position:center; ">
+        </div>
+    </div>
+
+    <div class="scroll-home-item">
+        <div class="container d-flex py-5 gap-5" style="flex: 1">
+            <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
+            <div style="flex:6;">
+                <h1 class="teks-besar m-0" style="letter-spacing: 1px;">Orca</h1>
+                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <p class="m-0">Merancang dengan sepenuh hati furniture bertemakan modern dengan sentuhan warna basic
+                    yang menjadi aksen menonjol jadi ciri khas dari series Orca. Hadir dengan menonjolkan teksture khas
+                    kayu yang unik dipadukan dengan finishing satin yang solid. Desain ini dipersembahkan untuk Anda
+                    yang menyukai perabotan kayu dengan sentuhan modern masa kini.</p>
+            </div>
+            <div class="d-flex gap-4" style="flex:4;">
+                <div
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/8.webp'); background-size: cover; background-position:center;">
+                </div>
+                <div
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/6.webp'); background-size: cover; background-position:center;">
+                </div>
+            </div>
+        </div>
+        <div class="w-100"
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1.JPG'); background-size: cover; background-position:center; ">
+        </div>
+    </div>
+</div>
+<div class="scroll-home-input">
+    <div>
+        <input id="scrollhome1" type="radio" name="scrollHome" checked>
+        <label for="scrollhome1"></label>
+        <input id="scrollhome2" type="radio" name="scrollHome">
+        <label for="scrollhome2"></label>
+        <input id="scrollhome3" type="radio" name="scrollHome">
+        <label for="scrollhome3"></label>
+        <input id="scrollhome4" type="radio" name="scrollHome">
+        <label for="scrollhome4"></label>
+        <input id="scrollhome5" type="radio" name="scrollHome">
+        <label for="scrollhome5"></label>
+        <input id="scrollhome6" type="radio" name="scrollHome">
+        <label for="scrollhome6"></label>
+    </div>
+</div>
+
+<script>
+const scrollHomeElm = document.querySelector('.scroll-home');
+const counterSlideElm = document.getElementById('counter-slide');
+const inputScrollHomeElm = document.querySelectorAll('input[name="scrollHome"]');
+// console.log(scrollHomeElm.children);
+scrollHomeElm.onscroll = () => {
+    let x = scrollHomeElm.scrollLeft;
+    // console.log(x);
+    const widthInnerStg = window.innerWidth / 2;
+    if (x % window.innerWidth < widthInnerStg)
+        counterSlideElm.style.opacity = 1 - ((x % widthInnerStg) / widthInnerStg) / 1;
+    else counterSlideElm.style.opacity = ((x % widthInnerStg) / widthInnerStg) / 1;
+
+    console.log(Math.floor(x / (window.innerWidth * 90 / 100)))
+    inputScrollHomeElm.forEach(inputnya => {
+        inputnya.removeAttribute('checked');
+    });
+    inputScrollHomeElm[Math.floor(x / (window.innerWidth * 90 / 100))].setAttribute('checked', true);
+}
+inputScrollHomeElm.forEach(inputnya => {
+    inputnya.removeAttribute('checked');
+});
+</script>
+
+<div class="d-flex align-items-stretch" style="width:100%; height:80svh; position:relative;">
+    <div style="width:100px; position:absolute;" class=" h-100 d-flex align-items-end justify-content-center pb-5">
+        <p class="m-0 fw-bold" style="writing-mode: vertical-lr; letter-spacing:1em;">ILENA</p>
+    </div>
+    <div class="d-flex align-items-center" style="flex:1;">
+        <div class="p-5">
+            <p class="mb-2 ps-1">Lab House</p>
+            <h1 class="teks-besar">Most exlusive<br>goods are not<br>things</h1>
+        </div>
+    </div>
+    <div
+        style="flex:2; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/1.webp'); background-size: cover; background-position:center;">
+    </div>
+</div>
+<div class="d-flex align-items-stretch" style="width:100%; height:40svh;">
+    <div style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/4.webp');
+    background-size: cover; background-position:center;">
+    </div>
+    <div style="flex:1; background-color:#7B441c; position:relative;">
+        <div class="d-flex p-5 h-100 w-100 text-light" style="flex:1; position:absolute;">
+            <div style="flex:1;" class="h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <h3 class="mb-3 teks-sedang">Mose exlusive goods</h3>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit molestiae expedita
+                        quod, ad
+                        consequuntur exercitationem.</p>
+                </div>
+                <a style="color:white; text-decoration:none; width:fit-content;" href="#"
+                    class="border-bottom gap-2 d-flex align-items-center">
+                    <p class="m-0">Find Out More</p><i class="material-icons text-light">arrow_forward</i>
+                </a>
+            </div>
+            <div class="d-flex h-100 align-items-end justify-content-end" style="width:100px;">
+                <p class="teks-besar m-0" style="line-height:60px;">01</p>
+            </div>
+        </div>
+    </div>
+    <div style="flex:1; background-color:white;" class="d-flex flex-column justify-content-center align-items-center">
+        <p class="teks-sedang">EST</p>
+        <h1 class=" mb-4 teks-besar" style="text-weight:600px; font-size:100px; color:  #7B441c;">2024</h1>
+        <div style="width:30px; height:2px; background-color:black;"></div>
+    </div>
+</div>
+
+<div class="container d-flex gap-5 pb-5 pt-3" style="width:100%; height:60svh;">
+    <div style="flex:1;" class="d-flex align-items-center flex-column">
+        <div class="d-flex align-items-center" style="flex:1;">
+            <h3 class="mb-3 teks-besar">Brinkk<br>Sideboard</h3>
+        </div>
+        <div class="w-100" style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/4.webp');
+    background-size: cover; background-position:center; flex:1;">
+        </div>
+    </div>
+    <div class="d-flex flex-column">
+        <div class="d-flex gap-5" style="flex:1;">
+            <div style="flex:2;" class="d-flex flex-column justify-content-center">
+                <div style="flex;1;">
+                    <h1>Sorely</h1>
+                </div>
+                <div style="flex;1;" class="d-flex gap-2">
+                    <div style="flex:1;">
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus placeat, veniam quae
+                            perferendis
+                            explicabo cumque?</p>
+                    </div>
+                    <div style="flex:1;">
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus placeat, veniam quae
+                            perferendis
+                            explicabo cumque?</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="w-100" style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/4.webp');
+    background-size: cover; background-position:center; flex:1;">
+        </div>
+    </div>
+</div>
+
+<div style="position:relative;">
+    <div style="position:absolute" class="p-5 d-flex flex-column w-100 h-100 justify-content-center align-items-center">
+        <!-- <h4 class="teks-besar" style="color:brown;">Up to 5%</h4> -->
+        <a href="/product" class="findout">Find Out More</a>
+        <!-- <a href=" /product" class="btn-default-hitam">Click Here</a> -->
+    </div>
+    <img src="<?= base_url('/img/foto/home1.webp') ?>" style="width: 100%; height:50svh; object-fit: cover; background-color: rgba(0,0,0, 0.5);
+  background-repeat:no-repeat; background-blend-mode: color;">
+</div>
+
+
+<!-- <div style="background-color: #f5f5f5;">
     <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
             <div class="carousel-item active">
@@ -114,35 +449,33 @@ function closeLoginModel() {
     </div>
 
     <div class="container baris-ke-kolom py-5">
-        <div style="flex: 1">
-            <img src="<?= base_url('/img/foto/ly1.webp') ?>" alt="" class="w-100"
-                style="height: 100%; object-fit: cover; border-radius:4px;">
+        <div style="flex: 1; position: relative;">
+            <img src="<?= base_url('/img/foto/ly1.webp') ?>" alt="" class="w-100 h-100"
+                style="object-fit: cover; border-radius:4px; position: absolute;">
         </div>
-        <div style="flex: 1" class="d-flex flex-column">
-            <div style="flex:1;" class="px-2">
+        <div style="flex: 1">
+            <div class="mb-3">
                 <h1 class="teks-besar">About Ilena</h1>
-                <p>With decades of experience in the exceptional
+                <p class="m-0">With decades of experience in the exceptional
                     wooden furniture industry
                 </p>
-                <p>selama berdekade lamanya telah berkecimpung di
+                <p class="m-0">selama berdekade lamanya telah berkecimpung di
                     bidang furniture kayu berkualitas
                 </p>
             </div>
-            <div class="py-4 px-2"
-                style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('./img/foto/gambar-hero2 edit.webp'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; border-radius:4px; width:100%; height:100%;">
-                <div class="ps-4">
-                    <h1 class=" teks-sedang" style="color:white;">Crafted to urban Design</h1>
-                    <p style="color:white;">Creating memorable impressions and messages
-                        in every corner of your space, turning it into a
-                        beautiful memory. Our success comes from
-                        providing furniture that perfectly fits urban
-                        lifestyles and is suitable for any setting.</p>
-                    <p style="color:white;">Menciptakan banyak kesan dan pesan dalam
-                        setiap sudut ruang yang menjadi indah dalam
-                        kenangan. Keberhasilan Kami merupakan usaha
-                        menghadirkan furniture khas masyarakat urban
-                        yang cocok untuk segala suasana.</p>
-                </div>
+            <div class="p-4"
+                style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('./img/foto/gambar-hero2 edit.webp'); background-size: cover; background-position: center; border-radius:4px; width:100%; height:fit-content;">
+                <h1 class="teks-sedang mb-3" style="color:white;">Crafted to urban Design</h1>
+                <p style="color:white;">Creating memorable impressions and messages
+                    in every corner of your space, turning it into a
+                    beautiful memory. Our success comes from
+                    providing furniture that perfectly fits urban
+                    lifestyles and is suitable for any setting.</p>
+                <p style="color:white;" class="m-0">Menciptakan banyak kesan dan pesan dalam
+                    setiap sudut ruang yang menjadi indah dalam
+                    kenangan. Keberhasilan Kami merupakan usaha
+                    menghadirkan furniture khas masyarakat urban
+                    yang cocok untuk segala suasana.</p>
             </div>
         </div>
     </div>
@@ -151,10 +484,10 @@ function closeLoginModel() {
     </div>
     <div class="container py-5">
         <h1 class="teks-besar d-flex justify-content-center py-4">Unification Process</h1>
-        <div class="d-flex" style="display: flex; flex-wrap: wrap;">
-            <div class="d-flex" style="flex: 1;">
-                <img src="<?=base_url('') ?>/img/foto/layer2.webp" alt="" class="w-100"
-                    style="object-fit: cover; height: 60svh; width: 100%; border-radius:4px;">
+        <div class="d-flex">
+            <div class="d-flex" style="flex: 1; position: relative;">
+                <img src="<?=base_url('') ?>/img/foto/layer2.webp" alt="" class="w-100 h-100"
+                    style="object-fit: cover; border-radius:4px; position: absolute;">
             </div>
             <div style="flex: 1;" class="d-flex flex-column px-4">
                 <p style="text-align: justify;">Our production facilities are spread across Central Java,
@@ -259,28 +592,30 @@ function closeLoginModel() {
     <div class="gap-2">
         <div class="container py-3">
             <div class="flex-column">
-                <div class="d-flex px-5 gap-4">
-                    <div style="flex:1;">
+                <div class="d-flex px-5 gap-4 align-items-stretch">
+                    <div style="flex:1; position: relative;">
                         <img src="<?=base_url('/img/foto/ly1.webp') ?>" alt=""
-                            style="object-fit: cover; width: 100%; height: 60svh; border-radius:4px;">
+                            style="object-fit: cover; border-radius:4px; position: absolute;" class="w-100 h-100">
                     </div>
                     <div style="flex:1;">
                         <h1 class="teks-besar-home mb-3" style="font-size: 2rem; font-weight: bold;">About Us</h1>
-                        <p style="text-align: justify;"> The story of Ilena began in 2024 under the umbrella of CV Catur
+
+                        <p style="text-align: justify;"> The story of Ilena began in 2024 under the umbrella of CV
+                            Catur
                             Bhakti Mandiri, a company established 30 years ago. Ilena marks the
                             company's entry into the retail and interior design business. As the
                             industry expands to meet consumer demands, we are committed to
                             innovation, sustainability, and maintaining a close connection with our
                             customers through high-quality furniture.
                         </p>
-                        <p style="text-align: justify;">Cerita lahirnya Ilena bermula pada tahun 2024 di bawah naungan
+                        <p style="text-align: justify;">Cerita lahirnya Ilena bermula pada tahun 2024 di bawah
+                            naungan
                             CV
                             Catur Bhakti Mandiri yang telah berdiri sejak 30 tahun. Ilena menandai
                             dimulainya bisnis ritel dan interior. Dengan melebarnya industri yang
                             didorong oleh kebutuhan konsumen, kami melakukan berbagai
                             inovasi, keberlanjutan serta keinginan untuk terus konsisten berada di
                             dekat hati konsumen dengan furniture berkualitas.</p>
-
                     </div>
 
                 </div>
@@ -289,8 +624,8 @@ function closeLoginModel() {
 
         <div class="container py-3">
             <div class="flex-column">
-                <div class="d-flex px-5 gap-4">
-                    <div style="flex:1;">
+                <div class="d-flex px-5 gap-4 align-items-stretch">
+                    <div style="flex:1; ">
                         <h1 class="teks-besar-home mb-3" style="font-size: 2rem; font-weight: bold;">Company Profile
                         </h1>
                         <p style="text-align: justify;"> CV Catur Bhakti Mandiri is a leading wood manufacturer based in
@@ -314,9 +649,9 @@ function closeLoginModel() {
                             #Find Out More</p>
 
                     </div>
-                    <div style="flex:1;">
+                    <div style="flex:1;  position: relative;">
                         <img src="<?=base_url('/img/foto/ly1.webp') ?>" alt=""
-                            style="object-fit: cover; width: 100%; height: 60svh; border-radius:4px;">
+                            style="object-fit: cover;  border-radius:4px; position: absolute;" class="w-100 h-100">
                     </div>
 
                 </div>
@@ -370,8 +705,6 @@ function closeLoginModel() {
                 </div>
             </div>
         </div>
-        <!-- </div> -->
-        <!-- <img class="img-besar" style="height: 300px;" src=".<?=base_url('') ?>/img/foto/gambar-hero2 edit.webp" alt="Gambar Hero"> -->
     </div>
 </div>
 
@@ -386,5 +719,5 @@ function togglePassword(e) {
         e.target.style.color = 'black'
     }
 }
-</script>
+</script> -->
 <?= $this->endSection(); ?>
