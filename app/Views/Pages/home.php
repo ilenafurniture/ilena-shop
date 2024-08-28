@@ -1,22 +1,22 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <?php if ($msg_active) { ?>
-<div id="modal-voucher" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
-    class="d-flex justify-content-center align-items-center">
-    <div style="border-radius: 10px; overflow: hidden; background-color: white; width: 80%; max-width: 500px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);"
-        class="p-5">
-        <h1 class="teks-sedang mb-3">Klaim voucher diskon 5% Anda sekarang juga</h1>
-        <p class="text-secondary">*S&K diskon ini hanya berlaku 1 bulan sejak menjadi member kami</p>
-        <a href="/product" class="btn-default w-100 text-center mb-2">Beli Produk</a>
-        <button class="btn-teks-aja mx-auto" onclick="closeModalVoucher()">Nanti</button>
+    <div id="modal-voucher" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
+        class="d-flex justify-content-center align-items-center">
+        <div style="border-radius: 10px; overflow: hidden; background-color: white; width: 80%; max-width: 500px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);"
+            class="p-5">
+            <h1 class="teks-sedang mb-3">Klaim voucher diskon 5% Anda sekarang juga</h1>
+            <p class="text-secondary">*S&K diskon ini hanya berlaku 1 bulan sejak menjadi member kami</p>
+            <a href="/product" class="btn-default w-100 text-center mb-2">Beli Produk</a>
+            <button class="btn-teks-aja mx-auto" onclick="closeModalVoucher()">Nanti</button>
+        </div>
     </div>
-</div>
-<script>
-function closeModalVoucher() {
-    document.getElementById('modal-voucher').classList.add('d-none')
-    document.getElementById('modal-voucher').classList.remove('d-flex')
-}
-</script>
+    <script>
+        function closeModalVoucher() {
+            document.getElementById('modal-voucher').classList.add('d-none')
+            document.getElementById('modal-voucher').classList.remove('d-flex')
+        }
+    </script>
 <?php } ?>
 
 <div id="login-modal" class="d-none">
@@ -51,31 +51,31 @@ function closeModalVoucher() {
 </div>
 
 <?php if (!session()->get('isLogin')) { ?>
-<script>
-// const loginModalElm = document.getElementById('login-modal')
-// let opened = false;
-// document.body.onscroll = (e) => {
-//     if (!window.sessionStorage.getItem('close-login-modal')) {
-//         const scrollingElm = e.target.scrollingElement;
-//         const hasil = Math.round(
-//             (scrollingElm.scrollTop /
-//                 (scrollingElm.scrollHeight -
-//                     scrollingElm.clientHeight)) *
-//             100
-//         );
-//         if (hasil > 50 && !opened) {
-//             loginModalElm.classList.remove("d-none")
-//             opened = true
-//         }
-//     }
-// };
+    <script>
+        // const loginModalElm = document.getElementById('login-modal')
+        // let opened = false;
+        // document.body.onscroll = (e) => {
+        //     if (!window.sessionStorage.getItem('close-login-modal')) {
+        //         const scrollingElm = e.target.scrollingElement;
+        //         const hasil = Math.round(
+        //             (scrollingElm.scrollTop /
+        //                 (scrollingElm.scrollHeight -
+        //                     scrollingElm.clientHeight)) *
+        //             100
+        //         );
+        //         if (hasil > 50 && !opened) {
+        //             loginModalElm.classList.remove("d-none")
+        //             opened = true
+        //         }
+        //     }
+        // };
 
-// function closeLoginModel() {
-//     loginModalElm.classList.add("d-none")
-//     window.sessionStorage.setItem('close-login-modal', true)
-//     opened = false
-// }
-</script>
+        // function closeLoginModel() {
+        //     loginModalElm.classList.add("d-none")
+        //     window.sessionStorage.setItem('close-login-modal', true)
+        //     opened = false
+        // }
+    </script>
 <?php } ?>
 
 <!--Tampilan Home Baru -->
@@ -130,13 +130,13 @@ function closeModalVoucher() {
 <div style="position: absolute; background-color: rgba(255, 0, 0, 0.5); height: 0px;" class="w-100" id="counter-slide">
     <div class="container" style="height: 0px;">
         <div class="d-flex flex-column align-items-center gap-2 pt-5" style="width:20px;">
-            <p class="m-0 fw-bold" style="font-size:10px;">01</p>
+            <p class="m-0 fw-bold" style="font-size:10px;">00</p>
             <div style="height:30px; width:2px; background-color:black;"></div>
-            <p class="m-0 fw-bold" style="font-size:10px;">02</p>
+            <p class="m-0 fw-bold" style="font-size:10px;">01</p>
         </div>
     </div>
 </div>
-<div class="scroll-home">
+<div class="scroll-home go1">
     <div class="scroll-home-item">
         <div class="container d-flex py-5 gap-5" style="flex: 1">
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
@@ -165,7 +165,7 @@ function closeModalVoucher() {
         <div class="container d-flex py-5 gap-5" style="flex: 1">
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
-                <h1 class="teks-besar m-0" style="letter-spacing: 12px;">Sorely</h1>
+                <h1 class="teks-besar m-0">Sorely</h1>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
                 <p class="m-0">Terinspirasi oleh keindahan perpaduan dua material: kayu hangat dan logam tebal. Dibuat
                     dengan sungguh-sungguh untuk melengkapi interior estetis, menghadirkan kenyamanan dan ketenangan
@@ -188,7 +188,7 @@ function closeModalVoucher() {
         <div class="container d-flex py-5 gap-5" style="flex: 1">
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
-                <h1 class="teks-besar m-0" style="letter-spacing: 1px;">Water Case</h1>
+                <h1 class="teks-besar m-0">Water Case</h1>
                 <h1 style=" font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
                 <p class="m-0">Secara spesial dirancang untuk memberikan kehangatan dan kenyamanan pada hunian rumah.
                     water case series hadir dengan menunjukkan kesederhanaan sebuah desain yang memiliki fungsi sesuai
@@ -212,7 +212,7 @@ function closeModalVoucher() {
         <div class="container d-flex py-5 gap-5" style="flex: 1">
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
-                <h1 class="teks-besar m-0" style="letter-spacing: 1px;">Plint Base</h1>
+                <h1 class="teks-besar m-0">Plint Base</h1>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
                 <p class="m-0">Ilena memaknai minimalis sebagai mahakarya indah yang dibalut dalam kesederhanaan. Dengan
                     kepraktisan fungsinya, plint base menjawab kebutuhan furniture secara menyeluruh dan relevan hingga
@@ -235,7 +235,7 @@ function closeModalVoucher() {
         <div class="container d-flex py-5 gap-5" style="flex: 1">
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
-                <h1 class="teks-besar m-0" style="letter-spacing: 1px;">Cut Out</h1>
+                <h1 class="teks-besar m-0">Cut Out</h1>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
                 <p class="m-0">Kami percaya bahwa sebuah ruangan didesain dengan sepenuh hati akan memberikan energi
                     positif bagi setiap penghuninya. Bekal inilah yang membuat Ilena terus melakukan inovasi untuk
@@ -262,7 +262,7 @@ function closeModalVoucher() {
         <div class="container d-flex py-5 gap-5" style="flex: 1">
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
-                <h1 class="teks-besar m-0" style="letter-spacing: 1px;">Orca</h1>
+                <h1 class="teks-besar m-0">Orca</h1>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
                 <p class="m-0">Merancang dengan sepenuh hati furniture bertemakan modern dengan sentuhan warna basic
                     yang menjadi aksen menonjol jadi ciri khas dari series Orca. Hadir dengan menonjolkan teksture khas
@@ -301,27 +301,42 @@ function closeModalVoucher() {
 </div>
 
 <script>
-const scrollHomeElm = document.querySelector('.scroll-home');
-const counterSlideElm = document.getElementById('counter-slide');
-const inputScrollHomeElm = document.querySelectorAll('input[name="scrollHome"]');
-// console.log(scrollHomeElm.children);
-scrollHomeElm.onscroll = () => {
-    let x = scrollHomeElm.scrollLeft;
-    // console.log(x);
-    const widthInnerStg = window.innerWidth / 2;
-    if (x % window.innerWidth < widthInnerStg)
-        counterSlideElm.style.opacity = 1 - ((x % widthInnerStg) / widthInnerStg) / 1;
-    else counterSlideElm.style.opacity = ((x % widthInnerStg) / widthInnerStg) / 1;
+    const scrollHomeElm = document.querySelector('.scroll-home');
+    const counterSlideElm = document.getElementById('counter-slide');
+    const numCounterSlideElm = document.querySelectorAll('#counter-slide p');
+    // console.log(numCounterSlideElm)
+    const inputScrollHomeElm = document.querySelectorAll('input[name="scrollHome"]');
+    // console.log(scrollHomeElm.children);
+    scrollHomeElm.onscroll = () => {
+        let x = scrollHomeElm.scrollLeft;
+        // console.log(x);
+        const widthInnerStg = window.innerWidth / 2;
+        if (x % window.innerWidth < widthInnerStg) {
+            counterSlideElm.style.opacity = 1 - ((x % widthInnerStg) / widthInnerStg) / 1;
+            counterSlideElm.style.transform = 'translateX(-' + (x % widthInnerStg) + 'px)';
+            console.log('translateX(-' + (x % widthInnerStg) + ')')
+        } else {
+            counterSlideElm.style.opacity = ((x % widthInnerStg) / widthInnerStg) / 1;
+            counterSlideElm.style.transform = 'translateX(-' + (widthInnerStg - (x % widthInnerStg)) + 'px)';
+            console.log('translateX(-' + (widthInnerStg - (x % widthInnerStg)) + ')')
+        }
 
-    console.log(Math.floor(x / (window.innerWidth * 90 / 100)))
-    inputScrollHomeElm.forEach(inputnya => {
-        inputnya.removeAttribute('checked');
+        // console.log(Math.floor(x / (window.innerWidth * 90 / 100)))
+        inputScrollHomeElm.forEach(inputnya => {
+            inputnya.removeAttribute('checked');
+        });
+        inputScrollHomeElm[Math.floor(x / (window.innerWidth * 90 / 100))].setAttribute('checked', '');
+
+        numCounterSlideElm[0].innerHTML = '0' + Math.floor(x / (window.innerWidth * 90 / 100))
+        numCounterSlideElm[1].innerHTML = '0' + (Math.floor(x / (window.innerWidth * 90 / 100)) + 1)
+    }
+    inputScrollHomeElm.forEach((inputnya, indInput) => {
+        inputnya.addEventListener('change', () => {
+            // console.log('input ' + indInput + ' berubah')
+            scrollHomeElm.scrollLeft = window.innerWidth * indInput
+        });
+
     });
-    inputScrollHomeElm[Math.floor(x / (window.innerWidth * 90 / 100))].setAttribute('checked', true);
-}
-inputScrollHomeElm.forEach(inputnya => {
-    inputnya.removeAttribute('checked');
-});
 </script>
 
 <div class="d-flex align-items-stretch" style="width:100%; height:80svh; position:relative;">
@@ -380,10 +395,10 @@ inputScrollHomeElm.forEach(inputnya => {
     <div class="d-flex flex-column">
         <div class="d-flex gap-5" style="flex:1;">
             <div style="flex:2;" class="d-flex flex-column justify-content-center">
-                <div style="flex;1;">
+                <div style="flex: 1;">
                     <h1>Sorely</h1>
                 </div>
-                <div style="flex;1;" class="d-flex gap-2">
+                <div style="flex: 1;" class="d-flex gap-2">
                     <div style="flex:1;">
                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus placeat, veniam quae
                             perferendis
@@ -480,13 +495,13 @@ inputScrollHomeElm.forEach(inputnya => {
         </div>
     </div>
     <div>
-        <img src="<?=base_url('/img/foto/layer2.webp') ?>" alt="" class="w-100" style="object-fit:cover; height:60svh;">
+        <img src="<?= base_url('/img/foto/layer2.webp') ?>" alt="" class="w-100" style="object-fit:cover; height:60svh;">
     </div>
     <div class="container py-5">
         <h1 class="teks-besar d-flex justify-content-center py-4">Unification Process</h1>
         <div class="d-flex">
             <div class="d-flex" style="flex: 1; position: relative;">
-                <img src="<?=base_url('') ?>/img/foto/layer2.webp" alt="" class="w-100 h-100"
+                <img src="<?= base_url('') ?>/img/foto/layer2.webp" alt="" class="w-100 h-100"
                     style="object-fit: cover; border-radius:4px; position: absolute;">
             </div>
             <div style="flex: 1;" class="d-flex flex-column px-4">
@@ -516,7 +531,7 @@ inputScrollHomeElm.forEach(inputnya => {
 
     </div>
     <div>
-        <img src="<?=base_url('/img/foto/l1.webp') ?>" alt="" class="w-100"
+        <img src="<?= base_url('/img/foto/l1.webp') ?>" alt="" class="w-100"
             style="height: 60svh; object-fit: cover; border-radius:4px;">
     </div>
     <div class="container baris-ke-kolom align-items-stretch py-5" style="display: flex; flex-wrap: wrap;">
@@ -525,12 +540,12 @@ inputScrollHomeElm.forEach(inputnya => {
             <p style="margin-bottom: 20px;">Begin at home, a friendly smile blossoms<br>Mulai dari Rumah, Tercipta
                 senyum ramah</p>
             <div class="w-100" style="flex: 1; position: relative; overflow: hidden;">
-                <img src="<?=base_url('') ?>/img/foto/ly1.webp" alt=""
+                <img src="<?= base_url('') ?>/img/foto/ly1.webp" alt=""
                     style="object-fit: cover; position: absolute; width: 100%; height: 100%;">
             </div>
         </div>
         <div class="limapuluh-ke-seratus" style="flex: 1; padding-left: 10px;">
-            <img src="<?=base_url('/img/foto/gambar-hero2 edit.webp') ?>" alt=""
+            <img src="<?= base_url('/img/foto/gambar-hero2 edit.webp') ?>" alt=""
                 style="object-fit: cover; width:100%; border-radius:4px;">
             <h1 class="teks-besar-home pt-2">Mission</h1>
             <p style="font-weight: bold;">Developing & sustaining customer loyalty</p>
@@ -594,7 +609,7 @@ inputScrollHomeElm.forEach(inputnya => {
             <div class="flex-column">
                 <div class="d-flex px-5 gap-4 align-items-stretch">
                     <div style="flex:1; position: relative;">
-                        <img src="<?=base_url('/img/foto/ly1.webp') ?>" alt=""
+                        <img src="<?= base_url('/img/foto/ly1.webp') ?>" alt=""
                             style="object-fit: cover; border-radius:4px; position: absolute;" class="w-100 h-100">
                     </div>
                     <div style="flex:1;">
@@ -650,7 +665,7 @@ inputScrollHomeElm.forEach(inputnya => {
 
                     </div>
                     <div style="flex:1;  position: relative;">
-                        <img src="<?=base_url('/img/foto/ly1.webp') ?>" alt=""
+                        <img src="<?= base_url('/img/foto/ly1.webp') ?>" alt=""
                             style="object-fit: cover;  border-radius:4px; position: absolute;" class="w-100 h-100">
                     </div>
 
