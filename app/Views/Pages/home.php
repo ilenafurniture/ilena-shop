@@ -19,7 +19,7 @@ function closeModalVoucher() {
 </script>
 <?php } ?>
 
-<div id="login-modal" class="d-none">
+<div id="login-modal">
     <div style="position: fixed; background-color: rgba(0, 0, 0, 0.5); top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
         class="show-flex-ke-hide justify-content-center align-items-center">
         <div style="width: fit-content; height: fit-content;  overflow: hidden; position:relative;">
@@ -52,35 +52,35 @@ function closeModalVoucher() {
 
 <?php if (!session()->get('isLogin')) { ?>
 <script>
-// const loginModalElm = document.getElementById('login-modal')
-// let opened = false;
-// document.body.onscroll = (e) => {
-//     if (!window.sessionStorage.getItem('close-login-modal')) {
-//         const scrollingElm = e.target.scrollingElement;
-//         const hasil = Math.round(
-//             (scrollingElm.scrollTop /
-//                 (scrollingElm.scrollHeight -
-//                     scrollingElm.clientHeight)) *
-//             100
-//         );
-//         if (hasil > 50 && !opened) {
-//             loginModalElm.classList.remove("d-none")
-//             opened = true
-//         }
-//     }
-// };
+const loginModalElm = document.getElementById('login-modal')
+let opened = false;
+document.body.onscroll = (e) => {
+    if (!window.sessionStorage.getItem('close-login-modal')) {
+        const scrollingElm = e.target.scrollingElement;
+        const hasil = Math.round(
+            (scrollingElm.scrollTop /
+                (scrollingElm.scrollHeight -
+                    scrollingElm.clientHeight)) *
+            100
+        );
+        if (hasil > 50 && !opened) {
+            loginModalElm.classList.remove("d-none")
+            opened = true
+        }
+    }
+};
 
-// function closeLoginModel() {
-//     loginModalElm.classList.add("d-none")
-//     window.sessionStorage.setItem('close-login-modal', true)
-//     opened = false
-// }
+function closeLoginModel() {
+    loginModalElm.classList.add("d-none")
+    window.sessionStorage.setItem('close-login-modal', true)
+    opened = false
+}
 </script>
 <?php } ?>
 
 <!--Tampilan Home Baru -->
 <div class="d-flex p-5"
-    style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1.JPG'); background-size: 130vw 130vh; width:100%; height:80svh;">
+    style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1.webp'); background-size: 130vw 130vh; width:100%; height:80svh;">
     <div>
         <h1 class="teks-besar mb-2">Modern & Stylish<br>Furniture</h1>
         <p class="teks-sedang py-2 px-3" style="color: white; background-color: black">Be Yourself With The Best Choice
@@ -130,9 +130,9 @@ function closeModalVoucher() {
 <div style="position: absolute; background-color: rgba(255, 0, 0, 0.5); height: 0px;" class="w-100" id="counter-slide">
     <div class="container" style="height: 0px;">
         <div class="d-flex flex-column align-items-center gap-2 pt-5" style="width:20px;">
-            <p class="m-0 fw-bold" style="font-size:10px;">00</p>
-            <div style="height:30px; width:2px; background-color:black;"></div>
             <p class="m-0 fw-bold" style="font-size:10px;">01</p>
+            <div style="height:30px; width:2px; background-color:black;"></div>
+            <p class="m-0 fw-bold" style="font-size:10px;">06</p>
         </div>
     </div>
 </div>
@@ -150,7 +150,7 @@ function closeModalVoucher() {
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/industrial/3.webp'); background-size: 240px 240px; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/industrial/3.webp'); background-size: cover; background-position:center;">
                 </div>
                 <div
                     style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/industrial/2.webp'); background-size: cover; background-position:center;">
@@ -327,8 +327,8 @@ scrollHomeElm.onscroll = () => {
     });
     inputScrollHomeElm[Math.floor(x / (window.innerWidth * 90 / 100))].setAttribute('checked', '');
 
-    numCounterSlideElm[0].innerHTML = '0' + Math.floor(x / (window.innerWidth * 90 / 100))
-    numCounterSlideElm[1].innerHTML = '0' + (Math.floor(x / (window.innerWidth * 90 / 100)) + 1)
+    numCounterSlideElm[0].innerHTML = '0' + (Math.floor(x / (window.innerWidth * 90 / 100)) + 1)
+    numCounterSlideElm[1].innerHTML = '0' + inputScrollHomeElm.length;
 }
 inputScrollHomeElm.forEach((inputnya, indInput) => {
     inputnya.addEventListener('change', () => {
@@ -340,13 +340,15 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
 </script>
 
 <div class="d-flex align-items-stretch" style="width:100%; height:80svh; position:relative;">
-    <div style="width:100px; position:absolute;" class=" h-100 d-flex align-items-end justify-content-center pb-5">
+    <!-- <div style="width:100px; position:absolute;" class=" h-100 d-flex align-items-end justify-content-center pb-5">
         <p class="m-0 fw-bold" style="writing-mode: vertical-lr; letter-spacing:1em;">ILENA</p>
-    </div>
+    </div> -->
     <div class="d-flex align-items-center" style="flex:1;">
         <div class="p-5">
-            <p class="mb-2 ps-1">Lab House</p>
-            <h1 class="teks-besar">Most exlusive<br>goods are not<br>things</h1>
+            <p class="mb-1" style="letter-spacing:1em;">ILENA</p>
+            <h1 class="teks-besar" style="font-size:80px;">On The Fance,</h1>
+            <h1 style="color:#7B441c; font-size:80px;" class="teks-besar">Let's Look New Arrival
+            </h1>
         </div>
     </div>
     <div
@@ -361,29 +363,85 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
         <div class="d-flex p-5 h-100 w-100 text-light" style="flex:1; position:absolute;">
             <div style="flex:1;" class="h-100 d-flex flex-column justify-content-between">
                 <div>
-                    <h3 class="mb-3 teks-sedang">Mose exlusive goods</h3>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit molestiae expedita
-                        quod, ad
-                        consequuntur exercitationem.</p>
+                    <h3 class="mb-3 teks-sedang fw-bold">Maiden Season</h3>
+                    <p>Ilena hadir pertama kali dengan memperkenalkan 6 series terbaik. Terinspirasi dari berbagai hal
+                        baik dengan harapan dapat membawa kebaikan dalam setiap furniture Kami, untuk Anda.</p>
                 </div>
-                <a style="color:white; text-decoration:none; width:fit-content;" href="#"
-                    class="border-bottom gap-2 d-flex align-items-center">
-                    <p class="m-0">Find Out More</p><i class="material-icons text-light">arrow_forward</i>
-                </a>
+
             </div>
             <div class="d-flex h-100 align-items-end justify-content-end" style="width:100px;">
-                <p class="teks-besar m-0" style="line-height:60px;">01</p>
+                <a onclick="modalseries()" class="border-bottom gap-2 d-flex align-items-center kesana"
+                    style="cursor: pointer;">
+                    <p class="m-0">Lihat series</p><i class="material-icons text-light">arrow_forward</i>
+                </a>
             </div>
         </div>
     </div>
+    <!-- <div style="width:100px; position:absolute;" class=" h-100 d-flex align-items-end justify-content-center pb-5">
+
+    </div> -->
+
+
     <div style="flex:1; background-color:white;" class="d-flex flex-column justify-content-center align-items-center">
         <p class="teks-sedang">EST</p>
-        <h1 class=" mb-4 teks-besar" style="text-weight:600px; font-size:100px; color:  #7B441c;">2024</h1>
-        <div style="width:30px; height:2px; background-color:black;"></div>
+        <h1 class=" mb-2 teks-besar" style="text-weight:600px; font-size:100px; color:  #7B441c;">2024</h1>
+        <p class="m-0 fw-bold" style=" letter-spacing:1em;">ILENA</p>
+        <!-- <div style="width:30px; height:2px; background-color:black;"></div> -->
+    </div>
+</div>
+<div id="modal-series" class="d-none justify-content-center align-items-center"
+    style="z-index:2; position:fixed; top:0; left:0; width:100%; height:100svh; background-color:rgba(0,0,0,0.5);">
+    <div style="background-color:whitesmoke ; border-radius:4px;" class="p-5 gap-2">
+        <div class="d-flex justify-content-end" style="position:relative; height:0; cursor: pointer;">
+            <div onclick="closemodalseries()" class="fw-bold text-secondary"
+                style="position:relative; transform:translateX(25px) translateY(-30px);">X</div>
+        </div>
+        <div style="display:grid; grid-template-columns: repeat(3,1fr);" class="gap-2">
+            <a style="text-decoration:none; color:#7B441c" href="/product?koleksi=industrial"
+                class="border p-4 d-flex justify-content-center align-items-center">
+                <p class="m-0 fw-bold">Industrial</p>
+            </a>
+            <a style="text-decoration:none; color:#7B441c" href="/product?koleksi=sorely"
+                class="border p-4 d-flex justify-content-center align-items-center">
+                <p class="m-0 fw-bold">Sorely</p>
+            </a>
+            <a style="text-decoration:none; color:#7B441c" href="/product?koleksi=water-case"
+                class="border p-4 d-flex justify-content-center align-items-center">
+                <p class="m-0 fw-bold">Water Case</p>
+            </a>
+            <a style="text-decoration:none; color:#7B441c" href="/product?koleksi=plint-base"
+                class="border p-4 d-flex justify-content-center align-items-center">
+                <p class="m-0 fw-bold">Plint Base</p>
+            </a>
+            <a style="text-decoration:none; color:#7B441c" href="/product?koleksi=cutout"
+                class="border p-4 d-flex justify-content-center align-items-center">
+                <p class="m-0 fw-bold">Cutout</p>
+            </a>
+            <a style="text-decoration:none; color:#7B441c" href="/product?koleksi=orca"
+                class="border p-4 d-flex justify-content-center align-items-center">
+                <p class="m-0 fw-bold">Orca</p>
+            </a>
+        </div>
+
     </div>
 </div>
 
-<div class="container d-flex gap-5 pb-5 pt-3" style="width:100%; height:60svh;">
+<script>
+const modalseriesELM = document.getElementById('modal-series');
+
+function closemodalseries() {
+    modalseriesELM.classList.remove('d-flex');
+    modalseriesELM.classList.add('d-none');
+}
+
+function modalseries() {
+    modalseriesELM.classList.add('d-flex');
+    modalseriesELM.classList.remove('d-none');
+
+}
+</script>
+
+<!-- <div class="container d-flex gap-5 pb-5 pt-3" style="width:100%; height:60svh;">
     <div style="flex:1;" class="d-flex align-items-center flex-column">
         <div class="d-flex align-items-center" style="flex:1;">
             <h3 class="mb-3 teks-besar">Brinkk<br>Sideboard</h3>
@@ -416,7 +474,7 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
     background-size: cover; background-position:center; flex:1;">
         </div>
     </div>
-</div>
+</div> -->
 
 <div style="position:relative;">
     <div style="position:absolute" class="p-5 d-flex flex-column w-100 h-100 justify-content-center align-items-center">
