@@ -1,22 +1,22 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <?php if ($msg_active) { ?>
-    <div id="modal-voucher" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
-        class="d-flex justify-content-center align-items-center">
-        <div style="border-radius: 10px; overflow: hidden; background-color: white; width: 80%; max-width: 500px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);"
-            class="p-5">
-            <h1 class="teks-sedang mb-3">Klaim voucher diskon 5% Anda sekarang juga</h1>
-            <p class="text-secondary">*S&K diskon ini hanya berlaku 1 bulan sejak menjadi member kami</p>
-            <a href="/product" class="btn-default w-100 text-center mb-2">Beli Produk</a>
-            <button class="btn-teks-aja mx-auto" onclick="closeModalVoucher()">Nanti</button>
-        </div>
+<div id="modal-voucher" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
+    class="d-flex justify-content-center align-items-center">
+    <div style="border-radius: 10px; overflow: hidden; background-color: white; width: 80%; max-width: 500px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);"
+        class="p-5">
+        <h1 class="teks-sedang mb-3">Klaim voucher diskon 5% Anda sekarang juga</h1>
+        <p class="text-secondary">*S&K diskon ini hanya berlaku 1 bulan sejak menjadi member kami</p>
+        <a href="/product" class="btn-default w-100 text-center mb-2">Beli Produk</a>
+        <button class="btn-teks-aja mx-auto" onclick="closeModalVoucher()">Nanti</button>
     </div>
-    <script>
-        function closeModalVoucher() {
-            document.getElementById('modal-voucher').classList.add('d-none')
-            document.getElementById('modal-voucher').classList.remove('d-flex')
-        }
-    </script>
+</div>
+<script>
+function closeModalVoucher() {
+    document.getElementById('modal-voucher').classList.add('d-none')
+    document.getElementById('modal-voucher').classList.remove('d-flex')
+}
+</script>
 <?php } ?>
 
 <div id="login-modal" class="d-none">
@@ -51,31 +51,31 @@
 </div>
 
 <?php if (!session()->get('isLogin')) { ?>
-    <script>
-        // const loginModalElm = document.getElementById('login-modal')
-        // let opened = false;
-        // document.body.onscroll = (e) => {
-        //     if (!window.sessionStorage.getItem('close-login-modal')) {
-        //         const scrollingElm = e.target.scrollingElement;
-        //         const hasil = Math.round(
-        //             (scrollingElm.scrollTop /
-        //                 (scrollingElm.scrollHeight -
-        //                     scrollingElm.clientHeight)) *
-        //             100
-        //         );
-        //         if (hasil > 50 && !opened) {
-        //             loginModalElm.classList.remove("d-none")
-        //             opened = true
-        //         }
-        //     }
-        // };
+<script>
+// const loginModalElm = document.getElementById('login-modal')
+// let opened = false;
+// document.body.onscroll = (e) => {
+//     if (!window.sessionStorage.getItem('close-login-modal')) {
+//         const scrollingElm = e.target.scrollingElement;
+//         const hasil = Math.round(
+//             (scrollingElm.scrollTop /
+//                 (scrollingElm.scrollHeight -
+//                     scrollingElm.clientHeight)) *
+//             100
+//         );
+//         if (hasil > 50 && !opened) {
+//             loginModalElm.classList.remove("d-none")
+//             opened = true
+//         }
+//     }
+// };
 
-        // function closeLoginModel() {
-        //     loginModalElm.classList.add("d-none")
-        //     window.sessionStorage.setItem('close-login-modal', true)
-        //     opened = false
-        // }
-    </script>
+// function closeLoginModel() {
+//     loginModalElm.classList.add("d-none")
+//     window.sessionStorage.setItem('close-login-modal', true)
+//     opened = false
+// }
+</script>
 <?php } ?>
 
 <!--Tampilan Home Baru -->
@@ -197,15 +197,15 @@
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/8.webp'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/watercase/3.webp'); background-size: cover; background-position:center;">
                 </div>
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/6.webp'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/watercase/2.webp'); background-size: cover; background-position:center;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1.JPG'); background-size: cover; background-position:center; ">
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/watercase/1.webp'); background-size: cover; background-position:center; ">
         </div>
     </div>
     <div class="scroll-home-item">
@@ -220,15 +220,15 @@
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/8.webp'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/plintbase/4.webp'); background-size: cover; background-position:center;">
                 </div>
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/6.webp'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/plintbase/3.webp'); background-size: cover; background-position:center;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1.JPG'); background-size: cover; background-position:center; ">
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/plintbase/1.webp'); background-size: cover; background-position:center; ">
         </div>
     </div>
     <div class="scroll-home-item">
@@ -246,15 +246,15 @@
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/8.webp'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/cutout/1.webp'); background-size: cover; background-position:center;">
                 </div>
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/6.webp'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/cutout/2.webp'); background-size: cover; background-position:center;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1.JPG'); background-size: cover; background-position:center; ">
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/cutout/3.webp'); background-size: cover; background-position:center; ">
         </div>
     </div>
 
@@ -271,15 +271,15 @@
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/8.webp'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/orca/3.webp'); background-size: cover; background-position:center;">
                 </div>
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/6.webp'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/orca/2.webp'); background-size: cover; background-position:center;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1.JPG'); background-size: cover; background-position:center; ">
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/orca/1.webp'); background-size: cover; background-position:center; ">
         </div>
     </div>
 </div>
@@ -301,42 +301,42 @@
 </div>
 
 <script>
-    const scrollHomeElm = document.querySelector('.scroll-home');
-    const counterSlideElm = document.getElementById('counter-slide');
-    const numCounterSlideElm = document.querySelectorAll('#counter-slide p');
-    // console.log(numCounterSlideElm)
-    const inputScrollHomeElm = document.querySelectorAll('input[name="scrollHome"]');
-    // console.log(scrollHomeElm.children);
-    scrollHomeElm.onscroll = () => {
-        let x = scrollHomeElm.scrollLeft;
-        // console.log(x);
-        const widthInnerStg = window.innerWidth / 2;
-        if (x % window.innerWidth < widthInnerStg) {
-            counterSlideElm.style.opacity = 1 - ((x % widthInnerStg) / widthInnerStg) / 1;
-            counterSlideElm.style.transform = 'translateX(-' + (x % widthInnerStg) + 'px)';
-            console.log('translateX(-' + (x % widthInnerStg) + ')')
-        } else {
-            counterSlideElm.style.opacity = ((x % widthInnerStg) / widthInnerStg) / 1;
-            counterSlideElm.style.transform = 'translateX(-' + (widthInnerStg - (x % widthInnerStg)) + 'px)';
-            console.log('translateX(-' + (widthInnerStg - (x % widthInnerStg)) + ')')
-        }
-
-        // console.log(Math.floor(x / (window.innerWidth * 90 / 100)))
-        inputScrollHomeElm.forEach(inputnya => {
-            inputnya.removeAttribute('checked');
-        });
-        inputScrollHomeElm[Math.floor(x / (window.innerWidth * 90 / 100))].setAttribute('checked', '');
-
-        numCounterSlideElm[0].innerHTML = '0' + Math.floor(x / (window.innerWidth * 90 / 100))
-        numCounterSlideElm[1].innerHTML = '0' + (Math.floor(x / (window.innerWidth * 90 / 100)) + 1)
+const scrollHomeElm = document.querySelector('.scroll-home');
+const counterSlideElm = document.getElementById('counter-slide');
+const numCounterSlideElm = document.querySelectorAll('#counter-slide p');
+// console.log(numCounterSlideElm)
+const inputScrollHomeElm = document.querySelectorAll('input[name="scrollHome"]');
+// console.log(scrollHomeElm.children);
+scrollHomeElm.onscroll = () => {
+    let x = scrollHomeElm.scrollLeft;
+    // console.log(x);
+    const widthInnerStg = window.innerWidth / 2;
+    if (x % window.innerWidth < widthInnerStg) {
+        counterSlideElm.style.opacity = 1 - ((x % widthInnerStg) / widthInnerStg) / 1;
+        counterSlideElm.style.transform = 'translateX(-' + (x % widthInnerStg) + 'px)';
+        console.log('translateX(-' + (x % widthInnerStg) + ')')
+    } else {
+        counterSlideElm.style.opacity = ((x % widthInnerStg) / widthInnerStg) / 1;
+        counterSlideElm.style.transform = 'translateX(-' + (widthInnerStg - (x % widthInnerStg)) + 'px)';
+        console.log('translateX(-' + (widthInnerStg - (x % widthInnerStg)) + ')')
     }
-    inputScrollHomeElm.forEach((inputnya, indInput) => {
-        inputnya.addEventListener('change', () => {
-            // console.log('input ' + indInput + ' berubah')
-            scrollHomeElm.scrollLeft = window.innerWidth * indInput
-        });
 
+    // console.log(Math.floor(x / (window.innerWidth * 90 / 100)))
+    inputScrollHomeElm.forEach(inputnya => {
+        inputnya.removeAttribute('checked');
     });
+    inputScrollHomeElm[Math.floor(x / (window.innerWidth * 90 / 100))].setAttribute('checked', '');
+
+    numCounterSlideElm[0].innerHTML = '0' + Math.floor(x / (window.innerWidth * 90 / 100))
+    numCounterSlideElm[1].innerHTML = '0' + (Math.floor(x / (window.innerWidth * 90 / 100)) + 1)
+}
+inputScrollHomeElm.forEach((inputnya, indInput) => {
+    inputnya.addEventListener('change', () => {
+        // console.log('input ' + indInput + ' berubah')
+        scrollHomeElm.scrollLeft = window.innerWidth * indInput
+    });
+
+});
 </script>
 
 <div class="d-flex align-items-stretch" style="width:100%; height:80svh; position:relative;">
