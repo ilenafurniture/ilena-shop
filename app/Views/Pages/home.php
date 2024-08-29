@@ -79,7 +79,8 @@ function closeLoginModel() {
 <?php } ?>
 
 <!--Tampilan Home Baru -->
-<div class="d-flex p-5"
+<!-- bagian windows -->
+<div class="show-flex-ke-hide p-5"
     style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1.webp'); background-size: 130vw 130vh; width:100%; height:80svh;">
     <div>
         <h1 class="teks-besar mb-2">Modern & Stylish<br>Furniture</h1>
@@ -88,7 +89,21 @@ function closeLoginModel() {
         <div style="width:200px; height:20px; background-color:white;"></div>
     </div>
 </div>
-<div class="d-flex align-items-stretch" style="width:100%; height:80svh;">
+<!-- bagian HP -->
+<div class="hide-ke-show-flex p-2"
+    style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1.webp'); background-size: cover; width:100%; height:60svh;">
+    <div>
+        <h1 class="teks-besar mt-5" style="font-size:34px;">Modern & Stylish<br>Furniture</h1>
+        <p class="teks-sedang" style="color: white; background-color: black; font-size:14px; width:200px;">Be Yourself
+            With The Best
+            Choice
+        </p>
+        <div style="width:100px; height:10px; background-color:white;"></div>
+    </div>
+</div>
+
+<!-- Bagian Windows -->
+<div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:80svh;">
     <div class="d-flex align-items-center ps-5"
         style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/1.webp'); background-size: cover; background-position:center;">
         <div>
@@ -109,11 +124,43 @@ function closeLoginModel() {
             </div>
         </div>
         <div class="d-flex" style="flex: 1">
-            <!-- <div
-                style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/3.webp'); background-size: cover; background-position:center;">
-
-            </div> -->
             <div class="d-flex align-items-center ps-5"
+                style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/7.webp'); background-size: cover; background-position:center;">
+                <div>
+                    <h1 class="teks-besar text-light mb-3">Simply</h1>
+                    <div class="d-flex gap-3">
+                        <div style="width:20px; height:20px; border: 2px solid white;"></div>
+                        <div style="width:20px; height:20px; background-color:white;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bagian HP -->
+<div class="hide-ke-show-flex align-items-stretch" style="width:100%;">
+    <div class="hide-ke-show-flex align-items-center"
+        style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/1.webp'); background-size: cover; background-position:center;">
+        <div>
+            <p class="text-light">Make you feel</p>
+            <h1 class="teks-besar text-light">Elegant</h1>
+            <div style="width:120px; height:2px; background-color:white;"></div>
+        </div>
+    </div>
+    <div style="flex:1;" class=" d-flex flex-column">
+        <div class="hide-ke-show-flex align-items-center ps-3"
+            style="flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/5.webp'); background-size: cover; background-position:center;">
+            <div>
+                <h1 class="teks-besar text-light mb-3">Luxury</h1>
+                <div class="d-flex gap-3">
+                    <div style="width:20px; height:20px; background-color:white;"></div>
+                    <div style="width:20px; height:20px; border: 2px solid white;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="hide-ke-show-flex" style="flex: 1">
+            <div class="d-flex align-items-center"
                 style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/7.webp'); background-size: cover; background-position:center;">
                 <div>
                     <h1 class="teks-besar text-light mb-3">Simply</h1>
