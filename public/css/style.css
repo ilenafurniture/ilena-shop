@@ -603,10 +603,23 @@ body {
   color: black;
   transition: 0.5s;
 }
-.btn-lonjong.putih {
-  background-color: rgba(0, 0, 0, 0);
+.btn-diskon {
+  display: block;
+  background-color: rgb(255, 255, 255);
+  color: rgb(0, 0, 0);
+  font-weight: 500;
+  letter-spacing: -1px;
+  text-decoration: none;
+  width: fit-content;
+  padding: 0.5em 1em;
+  border-radius: 2em;
+  transition: 0.5s;
+  border: 1px solid black;
+}
+.btn-diskon:hover {
+  background-color: black;
   color: white;
-  border: 1px solid white;
+  transition: 0.5s;
 }
 .btn-lonjong:hover {
   background-color: whitesmoke;
@@ -1330,8 +1343,16 @@ body {
   transition: 0.3s;
 }
 .kesana:hover {
-  scale: 1.2;
+  scale: 1;
   transition: 0.3s;
+}
+
+.kategori-card > div {
+  max-height: 0;
+  overflow: hidden;
+  padding-block: 0;
+  transition: 0.3s;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 /*FOOTER*/
@@ -1898,5 +1919,8 @@ body {
   }
   .hide-di-1350 {
     display: none;
+  }
+  .scroll-home {
+    height: 100%;
   }
 }

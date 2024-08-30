@@ -24,15 +24,15 @@ function closeModalVoucher() {
         class="show-flex-ke-hide justify-content-center align-items-center">
         <div style="width: fit-content; height: fit-content;  overflow: hidden; position:relative;">
             <div style="position: absolute;"
-                class="w-100 h-100 d-flex flex-column justify-content-between align-items-center">
+                class="p-3 w-100 h-100 d-flex flex-column justify-content-between align-items-center">
                 <div class="d-flex justify-content-end w-100 py-1 px-3">
-                    <p class="m-0 d-block" style="cursor: pointer; font-size:18px; font-weight:bold; color:white;"
+                    <p class="m-0 d-block" style="cursor: pointer; font-size:18px; font-weight:bold; color:black;"
                         onclick="closeLoginModel()">X</p>
                 </div>
                 <div class="d-flex flex-column align-items-center">
-                    <a href="/register" class="btn-lonjong putih mb-2">Daftar Sekarang</a>
-                    <p class="text-center" style="color:#fcf7da;">Sudah punya akun? <a href="/login"
-                            class="btn-teks-aja" style="display: inline; color: white">Login akun</a></p>
+                    <a href="/register" class="btn-diskon mb-2">Daftar Sekarang</a>
+                    <p class="text-center" style="color:black;">Sudah punya akun? <a href="/login" class="btn-teks-aja"
+                            style="display: inline; color: black">Login</a></p>
                 </div>
             </div>
             <img src="<?= base_url('/img/foto/diskon.webp') ?>" style="width: 400px; height: 400px; object-fit: cover"
@@ -139,23 +139,23 @@ function closeLoginModel() {
 </div>
 
 <!-- Bagian HP -->
-<div class="hide-ke-show-flex align-items-stretch" style="width:100%;">
+<div class="hide-ke-show-flex align-items-stretch" style="width:100%; height:40svh;">
     <div class="hide-ke-show-flex align-items-center"
         style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/1.webp'); background-size: cover; background-position:center;">
         <div>
-            <p class="text-light">Make you feel</p>
-            <h1 class="teks-besar text-light">Elegant</h1>
-            <div style="width:120px; height:2px; background-color:white;"></div>
+            <p class="text-light ms-2 m-0" style="font-size:12px;">Make you feel</p>
+            <h1 class="text-light ms-2" style="font-size:28px;">Elegant</h1>
+            <div style="width:60px; height:1px; background-color:white;" class="m-2"></div>
         </div>
     </div>
     <div style="flex:1;" class=" d-flex flex-column">
-        <div class="hide-ke-show-flex align-items-center ps-3"
+        <div class="hide-ke-show-flex align-items-center"
             style="flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/5.webp'); background-size: cover; background-position:center;">
             <div>
-                <h1 class="teks-besar text-light mb-3">Luxury</h1>
-                <div class="d-flex gap-3">
-                    <div style="width:20px; height:20px; background-color:white;"></div>
-                    <div style="width:20px; height:20px; border: 2px solid white;"></div>
+                <h1 class="text-light ms-2" style="font-size:28px;">Luxury</h1>
+                <div class="d-flex gap-1 ms-2">
+                    <div style="width:15px; height:15px; background-color:white;"></div>
+                    <div style="width:15px; height:15px; border: 1px solid white;"></div>
                 </div>
             </div>
         </div>
@@ -163,10 +163,10 @@ function closeLoginModel() {
             <div class="d-flex align-items-center"
                 style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/7.webp'); background-size: cover; background-position:center;">
                 <div>
-                    <h1 class="teks-besar text-light mb-3">Simply</h1>
-                    <div class="d-flex gap-3">
-                        <div style="width:20px; height:20px; border: 2px solid white;"></div>
-                        <div style="width:20px; height:20px; background-color:white;"></div>
+                    <h1 class="text-light ms-2" style="font-size:28px;">Simply</h1>
+                    <div class="d-flex gap-1 ms-2">
+                        <div style="width:15px; height:15px; border: 1px solid white;"></div>
+                        <div style="width:15px; height:15px; background-color:white;"></div>
                     </div>
                 </div>
             </div>
@@ -386,13 +386,12 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
 });
 </script>
 
-<div class="d-flex align-items-stretch" style="width:100%; height:80svh; position:relative;">
-    <!-- <div style="width:100px; position:absolute;" class=" h-100 d-flex align-items-end justify-content-center pb-5">
-        <p class="m-0 fw-bold" style="writing-mode: vertical-lr; letter-spacing:1em;">ILENA</p>
-    </div> -->
+
+<!-- Bagian Desktop -->
+<div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:80svh; position:relative;">
     <div class="d-flex align-items-center" style="flex:1;">
         <div class="p-5">
-            <p class="mb-1" style="letter-spacing:1em;">ILENA</p>
+            <p class="mb-1 ms-1" style="letter-spacing:1em;">ILENA</p>
             <h1 class="teks-besar" style="font-size:80px;">On The Fance,</h1>
             <h1 style="color:#7B441c; font-size:80px;" class="teks-besar">Let's Look New Arrival
             </h1>
@@ -402,7 +401,25 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
         style="flex:2; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/1.webp'); background-size: cover; background-position:center;">
     </div>
 </div>
-<div class="d-flex align-items-stretch" style="width:100%; height:40svh;">
+<!-- Bagian Hp -->
+<div class="hide-ke-show-flex align-items-stretch" style="width:100%; height:40svh; position:relative;">
+    <div class="d-flex align-items-center" style="flex:1;">
+        <div class="px-5">
+            <p class="mb-1 ms-1" style="letter-spacing:1em;">ILENA</p>
+            <h1 class="teks-sedang" style="font-size:40px;">On The Fance,</h1>
+            <h1 style="color:#7B441c; font-size:40px;" class="teks-sedang">Let's Look New Arrival
+            </h1>
+        </div>
+    </div>
+</div>
+<div class="hide-ke-show-flex align-items-stretch" style="width:100%; height:40svh; position:relative;">
+    <div class="w-100"
+        style="height:40svh; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/1.webp'); background-size: cover; background-position:center;">
+    </div>
+</div>
+
+<!-- Bagian Windows -->
+<div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:40svh;">
     <div style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/4.webp');
     background-size: cover; background-position:center;">
     </div>
@@ -411,10 +428,10 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
             <div style="flex:1;" class="h-100 d-flex flex-column justify-content-between">
                 <div>
                     <h3 class="mb-3 teks-sedang fw-bold">Maiden Season</h3>
-                    <p>Ilena hadir pertama kali dengan memperkenalkan 6 series terbaik. Terinspirasi dari berbagai hal
+                    <p>Ilena hadir pertama kali dengan memperkenalkan 6 series terbaik. Terinspirasi dari berbagai
+                        hal
                         baik dengan harapan dapat membawa kebaikan dalam setiap furniture Kami, untuk Anda.</p>
                 </div>
-
             </div>
             <div class="d-flex h-100 align-items-end justify-content-end" style="width:100px;">
                 <a onclick="modalseries()" class="border-bottom gap-2 d-flex align-items-center kesana"
@@ -424,18 +441,37 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
             </div>
         </div>
     </div>
-    <!-- <div style="width:100px; position:absolute;" class=" h-100 d-flex align-items-end justify-content-center pb-5">
-
-    </div> -->
-
-
     <div style="flex:1; background-color:white;" class="d-flex flex-column justify-content-center align-items-center">
         <p class="teks-sedang">EST</p>
         <h1 class=" mb-2 teks-besar" style="text-weight:600px; font-size:100px; color:  #7B441c;">2024</h1>
         <p class="m-0 fw-bold" style=" letter-spacing:1em;">ILENA</p>
-        <!-- <div style="width:30px; height:2px; background-color:black;"></div> -->
     </div>
 </div>
+
+<!-- Bagian HP -->
+<div class="hide-ke-show-flex" style="width:100%; height:40svh;">
+    <div style="flex:1; background-color:#7B441c; position:relative;">
+        <div class="d-flex p-5 h-100 w-100 text-light flex-column" style="flex:1; position:absolute;">
+            <div style="flex:1;" class="h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <h3 class="mb-2 teks-besar fw-bold" style="font-size:36px;">Maiden Season</h3>
+                    <p>Ilena hadir pertama kali dengan memperkenalkan 6 series terbaik. Terinspirasi dari berbagai
+                        hal
+                        baik dengan harapan dapat membawa kebaikan, untuk Anda.</p>
+                </div>
+            </div>
+            <div class="d-flex h-100 align-items-end justify-content-end w-100">
+                <a onclick="modalseries()" class="border-bottom gap-2 d-flex align-items-center kesana"
+                    style="cursor: pointer;">
+                    <p class="m-0">Lihat series</p><i class="material-icons text-light">arrow_forward</i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <div id="modal-series" class="d-none justify-content-center align-items-center"
     style="z-index:2; position:fixed; top:0; left:0; width:100%; height:100svh; background-color:rgba(0,0,0,0.5);">
     <div style="background-color:whitesmoke ; border-radius:4px;" class="p-5 gap-2">
@@ -469,9 +505,9 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
                 <p class="m-0 fw-bold">Orca</p>
             </a>
         </div>
-
     </div>
 </div>
+
 
 <script>
 const modalseriesELM = document.getElementById('modal-series');
@@ -488,40 +524,41 @@ function modalseries() {
 }
 </script>
 
-<!-- <div class="container d-flex gap-5 pb-5 pt-3" style="width:100%; height:60svh;">
-    <div style="flex:1;" class="d-flex align-items-center flex-column">
-        <div class="d-flex align-items-center" style="flex:1;">
-            <h3 class="mb-3 teks-besar">Brinkk<br>Sideboard</h3>
+<div class="container d-flex gap-3 my-5" style="width:100%; height:60svh;">
+    <div style="flex: 1">
+        <img src="./img/foto/4.webp" alt="" class="w-100 mb-3" style="50svh">
+        <div class="d-flex gap-4 justify-content-center mb-2">
+            <h5 style="font-weight: 500;" class="m-0">L</h5>
+            <h5 style="font-weight: 500;" class="m-0">I</h5>
+            <h5 style="font-weight: 500;" class="m-0">V</h5>
+            <h5 style="font-weight: 500;" class="m-0">I</h5>
+            <h5 style="font-weight: 500;" class="m-0">N</h5>
+            <h5 style="font-weight: 500;" class="m-0">G</h5>
         </div>
-        <div class="w-100" style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/4.webp');
-    background-size: cover; background-position:center; flex:1;">
-        </div>
+        <h5 class="text-center text-secondary fw-bold" style="font-size: 13px">ROOM</h5>
     </div>
-    <div class="d-flex flex-column">
-        <div class="d-flex gap-5" style="flex:1;">
-            <div style="flex:2;" class="d-flex flex-column justify-content-center">
-                <div style="flex: 1;">
-                    <h1>Sorely</h1>
-                </div>
-                <div style="flex: 1;" class="d-flex gap-2">
-                    <div style="flex:1;">
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus placeat, veniam quae
-                            perferendis
-                            explicabo cumque?</p>
-                    </div>
-                    <div style="flex:1;">
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus placeat, veniam quae
-                            perferendis
-                            explicabo cumque?</p>
-                    </div>
-                </div>
-            </div>
+    <div style="flex: 1">
+        <img src="./img/foto/3.webp" alt="" class="w-100 mb-3" style="50svh">
+        <div class="d-flex gap-4 justify-content-center mb-2">
+            <h5 style="font-weight: 500;" class="m-0">B</h5>
+            <h5 style="font-weight: 500;" class="m-0">E</h5>
+            <h5 style="font-weight: 500;" class="m-0">D</h5>
         </div>
-        <div class="w-100" style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/4.webp');
-    background-size: cover; background-position:center; flex:1;">
-        </div>
+        <h5 class="text-center text-secondary fw-bold" style="font-size: 13px">ROOM</h5>
     </div>
-</div> -->
+    <div style="flex: 1">
+        <img src="./img/foto/2.webp" alt="" class="w-100 mb-3" style="50svh">
+        <div class="d-flex gap-4 justify-content-center mb-2">
+            <h5 style="font-weight: 500;" class="m-0">L</h5>
+            <h5 style="font-weight: 500;" class="m-0">O</h5>
+            <h5 style="font-weight: 500;" class="m-0">U</h5>
+            <h5 style="font-weight: 500;" class="m-0">N</h5>
+            <h5 style="font-weight: 500;" class="m-0">G</h5>
+            <h5 style="font-weight: 500;" class="m-0">E</h5>
+        </div>
+        <h5 class="text-center fw-bold" style="font-size: 13px">ROOM</h5>
+    </div>
+</div>
 
 <div style="position:relative;">
     <div style="position:absolute" class="p-5 d-flex flex-column w-100 h-100 justify-content-center align-items-center">
