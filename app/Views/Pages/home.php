@@ -354,8 +354,7 @@
     </div>
 </div>
 <div class="d-flex align-items-stretch" style="width:100%; height:40svh;">
-    <div style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/4.webp');
-    background-size: cover; background-position:center;">
+    <div style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/4.webp'); background-size: cover; background-position:center;">
     </div>
     <div style="flex:1; background-color:#7B441c; position:relative;">
         <div class="d-flex p-5 h-100 w-100 text-light" style="flex:1; position:absolute;">
