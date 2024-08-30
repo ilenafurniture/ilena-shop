@@ -1354,6 +1354,30 @@ body {
   transition: 0.3s;
   background-color: rgba(0, 0, 0, 0.5);
 }
+.modalseriesbox {
+  text-decoration: none;
+  background-color: rgba(0, 0, 0, 0);
+  color: white;
+  border: 1px solid white;
+  transition: 0.4s;
+}
+.modalseriesbox p {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 7px;
+  text-transform: uppercase;
+  text-wrap: nowrap;
+  position: relative;
+  transform: translateX(7px);
+}
+.modalseriesbox:hover {
+  text-decoration: none;
+  background-color: white;
+  color: black;
+  transition: 0.4s;
+  /* border: 1px solid ; */
+  /* background-color: white; */
+}
 
 /*FOOTER*/
 .footer__partner__payment {

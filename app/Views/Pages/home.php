@@ -472,36 +472,31 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
 
 
 
-<div id="modal-series" class="d-none justify-content-center align-items-center"
-    style="z-index:2; position:fixed; top:0; left:0; width:100%; height:100svh; background-color:rgba(0,0,0,0.5);">
-    <div style="background-color:whitesmoke ; border-radius:4px;" class="p-5 gap-2">
-        <div class="d-flex justify-content-end" style="position:relative; height:0; cursor: pointer;">
-            <div onclick="closemodalseries()" class="fw-bold text-secondary"
-                style="position:relative; transform:translateX(25px) translateY(-30px);">X</div>
-        </div>
+<div id="modal-series" onclick="closemodalseries()" class="d-none justify-content-center align-items-center"
+    style="z-index:2; position:fixed; top:0; left:0; width:100%; height:100svh; background-color:rgba(0,0,0,0.8);">
+    <div style="border-radius:4px;" class="p-5 gap-2">
         <div style="display:grid; grid-template-columns: repeat(3,1fr);" class="gap-2">
-            <a style="text-decoration:none; color:#7B441c" href="/product?koleksi=industrial"
-                class="border p-4 d-flex justify-content-center align-items-center">
+            <a href="/product?koleksi=industrial"
+                class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
                 <p class="m-0 fw-bold">Industrial</p>
             </a>
-            <a style="text-decoration:none; color:#7B441c" href="/product?koleksi=sorely"
-                class="border p-4 d-flex justify-content-center align-items-center">
+            <a href="/product?koleksi=sorely"
+                class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
                 <p class="m-0 fw-bold">Sorely</p>
             </a>
-            <a style="text-decoration:none; color:#7B441c" href="/product?koleksi=water-case"
-                class="border p-4 d-flex justify-content-center align-items-center">
+            <a href="/product?koleksi=water-case"
+                class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
                 <p class="m-0 fw-bold">Water Case</p>
             </a>
-            <a style="text-decoration:none; color:#7B441c" href="/product?koleksi=plint-base"
-                class="border p-4 d-flex justify-content-center align-items-center">
+            <a href="/product?koleksi=plint-base"
+                class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
                 <p class="m-0 fw-bold">Plint Base</p>
             </a>
-            <a style="text-decoration:none; color:#7B441c" href="/product?koleksi=cutout"
-                class="border p-4 d-flex justify-content-center align-items-center">
+            <a href="/product?koleksi=cutout"
+                class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
                 <p class="m-0 fw-bold">Cutout</p>
             </a>
-            <a style="text-decoration:none; color:#7B441c" href="/product?koleksi=orca"
-                class="border p-4 d-flex justify-content-center align-items-center">
+            <a href="/product?koleksi=orca" class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
                 <p class="m-0 fw-bold">Orca</p>
             </a>
         </div>
@@ -524,7 +519,45 @@ function modalseries() {
 }
 </script>
 
-<div class="container d-flex gap-3 my-5" style="width:100%; height:60svh;">
+<!-- Bagian Windows -->
+<div class="container show-flex-ke-hide gap-3 my-5" style="width:100%; height:60svh;">
+    <div style="flex: 1">
+        <img src="./img/foto/4.webp" alt="" class="w-100 mb-3" style="50svh">
+        <div class="d-flex gap-4 justify-content-center mb-2">
+            <h5 style="font-weight: 500;" class="m-0">L</h5>
+            <h5 style="font-weight: 500;" class="m-0">I</h5>
+            <h5 style="font-weight: 500;" class="m-0">V</h5>
+            <h5 style="font-weight: 500;" class="m-0">I</h5>
+            <h5 style="font-weight: 500;" class="m-0">N</h5>
+            <h5 style="font-weight: 500;" class="m-0">G</h5>
+        </div>
+        <h5 class="text-center fw-bold" style="font-size: 13px">ROOM</h5>
+    </div>
+    <div style="flex: 1">
+        <img src="./img/foto/3.webp" alt="" class="w-100 mb-3" style="50svh">
+        <div class="d-flex gap-4 justify-content-center mb-2">
+            <h5 style="font-weight: 500;" class="m-0">B</h5>
+            <h5 style="font-weight: 500;" class="m-0">E</h5>
+            <h5 style="font-weight: 500;" class="m-0">D</h5>
+        </div>
+        <h5 class="text-center fw-bold" style="font-size: 13px">ROOM</h5>
+    </div>
+    <div style="flex: 1">
+        <img src="./img/foto/2.webp" alt="" class="w-100 mb-3" style="50svh">
+        <div class="d-flex gap-4 justify-content-center mb-2">
+            <h5 style="font-weight: 500;" class="m-0">L</h5>
+            <h5 style="font-weight: 500;" class="m-0">O</h5>
+            <h5 style="font-weight: 500;" class="m-0">U</h5>
+            <h5 style="font-weight: 500;" class="m-0">N</h5>
+            <h5 style="font-weight: 500;" class="m-0">G</h5>
+            <h5 style="font-weight: 500;" class="m-0">E</h5>
+        </div>
+        <h5 class="text-center fw-bold" style="font-size: 13px">ROOM</h5>
+    </div>
+</div>
+
+<!-- Bagian HP -->
+<div class="container hide-ke-show-flex gap-3 my-5 flex-column" style="width:100%; height:60svh;">
     <div style="flex: 1">
         <img src="./img/foto/4.webp" alt="" class="w-100 mb-3" style="50svh">
         <div class="d-flex gap-4 justify-content-center mb-2">
@@ -562,9 +595,7 @@ function modalseries() {
 
 <div style="position:relative;">
     <div style="position:absolute" class="p-5 d-flex flex-column w-100 h-100 justify-content-center align-items-center">
-        <!-- <h4 class="teks-besar" style="color:brown;">Up to 5%</h4> -->
         <a href="/product" class="findout">Find Out More</a>
-        <!-- <a href=" /product" class="btn-default-hitam">Click Here</a> -->
     </div>
     <img src="<?= base_url('/img/foto/home1.webp') ?>" style="width: 100%; height:50svh; object-fit: cover; background-color: rgba(0,0,0, 0.5);
   background-repeat:no-repeat; background-blend-mode: color;">
