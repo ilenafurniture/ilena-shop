@@ -20,7 +20,7 @@
 <?php } ?>
 
 <div id="login-modal">
-    <div style="position: fixed; background-color: rgba(0, 0, 0, 0.5); top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;" class="show-flex-ke-hide justify-content-center align-items-center">
+    <!-- <div style="position: fixed; background-color: rgba(0, 0, 0, 0.5); top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;" class="show-flex-ke-hide justify-content-center align-items-center">
         <div style="width: fit-content; height: fit-content;  overflow: hidden; position:relative;">
             <div style="position: absolute;"
                 class="w-100 h-100 d-flex flex-column justify-content-between align-items-center">
@@ -36,6 +36,20 @@
             </div>
             <img src="<?= base_url('/img/foto/diskon.webp') ?>" style="width: 400px; height: 400px; object-fit: cover"
                 alt="">
+        </div>
+    </div> -->
+    <div style="position: fixed; background-color: rgba(0, 0, 0, 0.5); top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;" class="show-flex-ke-hide justify-content-center align-items-center">
+        <div style="width: fit-content; height: fit-content; background-color: white;" class="px-5 py-4">
+            <div class="d-flex justify-content-end w-100" style="position: relative; margin-bottom: -20px; transform: translateX(20px) translateY(-10px)">
+                <p class="m-0 d-block" style="cursor: pointer; font-size:18px; font-weight:bold; color: grey;"
+                    onclick="closeLoginModel()">X</p>
+            </div>
+            <h1 class="teks-besar mb-2" style="line-height: 63px;">Offer Sales<br>5% Off</h1>
+            <p class="mb-4" style="color: grey; position: relative; transform: translateX(10px)">*Hanya untuk pembelian pertama</p>
+            <div class="d-flex flex-column align-items-center w-100">
+                <a href="/register" class="btn-default mb-2 w-100 text-center">Daftar Sekarang</a>
+                <a onclick="closeLoginModel()" class="btn-teks-aja">Nanti</a>
+            </div>
         </div>
     </div>
     <div style="position: fixed; background-color: white; bottom: 0; left: 0; width: 100%; height: fit-content; z-index: 99;" class="hide-ke-show-flex flex-column justify-content-center align-items-center p-4">
