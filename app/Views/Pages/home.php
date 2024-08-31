@@ -19,7 +19,7 @@ function closeModalVoucher() {
 </script>
 <?php } ?>
 
-<div id="login-modal">
+<div id="login-modal" class="d-none">
     <div style="position: fixed; background-color: rgba(0, 0, 0, 0.5); top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
         class="show-flex-ke-hide justify-content-center align-items-center">
         <div style="width: fit-content; height: fit-content;  overflow: hidden; position:relative;">
@@ -398,7 +398,7 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
         </div>
     </div>
     <div
-        style="flex:2; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/1.webp'); background-size: cover; background-position:center;">
+        style="flex:2; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/0.webp'); background-size: cover; background-position:center;">
     </div>
 </div>
 <!-- Bagian Hp -->
