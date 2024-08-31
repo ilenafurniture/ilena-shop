@@ -48,12 +48,12 @@ class AdminController extends BaseController
         $product = $this->barangModel->getBarangAdmin();
         $koleksi = $this->koleksiModel->findAll();
         foreach ($product as $index_p => $p) {
-            $product[$index_p]['varian'] = json_decode($p['varian'],true);
+            $product[$index_p]['varian'] = json_decode($p['varian'], true);
             $product[$index_p]['allstok'] = '';
             foreach ($product[$index_p]['varian'] as $ind_v => $v) {
                 // $product[$index_p]['allstok'] = $product[$index_p]['allstok'] . $v['stok'];
-                if($ind_v == 0) $product[$index_p]['allstok'] .= $v['nama'] .' : ' .$v['stok'];
-                else $product[$index_p]['allstok'] .= "<br>".$v['nama'] .' : ' .$v['stok'];
+                if ($ind_v == 0) $product[$index_p]['allstok'] .= $v['nama'] . ' : ' . $v['stok'];
+                else $product[$index_p]['allstok'] .= "<br>" . $v['nama'] . ' : ' . $v['stok'];
             }
         }
         $data = [
@@ -212,7 +212,10 @@ class AdminController extends BaseController
             'tokped' => $data['tokped'],
             'tiktok' => $data['tiktok'],
             'active' => '1',
-            'gambar' => $insertGambarBarang300
+            'gambar' => $insertGambarBarang300,
+            'ruang_tamu' => isset($data['ruang_tamu']) ? '1' : '0',
+            'ruang_keluarga' => isset($data['ruang_keluarga']) ? '1' : '0',
+            'ruang_tidur' => isset($data['ruang_tidur']) ? '1' : '0',
         ];
         $this->barangModel->insert($insertDataBarang);
         $this->gambarBarangModel->insert($insertGambarBarang);
@@ -310,12 +313,12 @@ class AdminController extends BaseController
             }
         }
         $jumlahVarian = explode(",", $this->request->getVar('hitung-varian')); //nilai indeks/urutan varian yg masuk ke backend
-        dd([
-            'jmlUrutan' => $jmlUrutanGambar,
-            'dataGambar' => $data_gambar,
-            'getvar' => $data_gambar_mentah,
-            'cekcekcek' => $cekcekek
-        ]);
+        // dd([
+        //     'jmlUrutan' => $jmlUrutanGambar,
+        //     'dataGambar' => $data_gambar,
+        //     'getvar' => $data_gambar_mentah,
+        //     'cekcekcek' => $cekcekek
+        // ]);
         $insertGambarBarang = [];
         $varianData = json_decode($barangCur['varian'], true);
 
@@ -382,7 +385,10 @@ class AdminController extends BaseController
             'shopee' => $data['shopee'],
             'tokped' => $data['tokped'],
             'tiktok' => $data['tiktok'],
-            'gambar' => $insertGambarBarang['gambar1']
+            'gambar' => $insertGambarBarang['gambar1'],
+            'ruang_tamu' => isset($data['ruang_tamu']) ? '1' : '0',
+            'ruang_keluarga' => isset($data['ruang_keluarga']) ? '1' : '0',
+            'ruang_tidur' => isset($data['ruang_tidur']) ? '1' : '0',
         ];
 
         $this->barangModel->where(['id' => $idBarang])->set($insertDataBarang)->update();

@@ -22,7 +22,10 @@ class BarangModel extends Model
         'tokped',
         'tiktok',
         'active',
-        'pengunjung'
+        'pengunjung',
+        'ruang_tamu',
+        'ruang_tidur',
+        'ruang_keluarga',
     ];
 
     public function getBarang($id = false)
@@ -39,8 +42,8 @@ class BarangModel extends Model
             $seluruhBarangFilter = [];
             $seluruhNama =  [];
             foreach ($seluruhBrang as $s) {
-                if(!in_array($s['nama'],$seluruhNama)){
-                    array_push($seluruhBarangFilter,$s);
+                if (!in_array($s['nama'], $seluruhNama)) {
+                    array_push($seluruhBarangFilter, $s);
                     array_push($seluruhNama, $s['nama']);
                 }
             }

@@ -104,6 +104,25 @@
                             </td>
                         </tr>
                         <tr>
+                            <td>Ruangan</td>
+                            <td>
+                                <div class="baris">
+                                    <div>
+                                        <input type="checkbox" name="ruang_tamu" id="check_tamu">
+                                        <label for="check_tamu">Ruang Tamu</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" name="ruang_keluarga" id="check_keluarga">
+                                        <label for="check_keluarga">Ruang Keluarga</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" name="ruang_tidur" id="check_tidur">
+                                        <label for="check_tidur">Ruang Tidur</label>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
                             <td>
                                 <h5 class="mt-4">Bentuk Paket</h5>
                             </td>

@@ -79,6 +79,20 @@ if (isset($_GET['harga'])) {
         }
     }
 }
+if (isset($_GET['ruang'])) {
+    if ($_GET['ruang'] != '') {
+        $ruang = explode(" ", $_GET['ruang']);
+        $produkLama = $produk;
+        $produk = [];
+        foreach ($ruang as $r) {
+            foreach ($produkLama as $p) {
+                if ($p['ruang_' . $r]) {
+                    array_push($produk, $p);
+                }
+            }
+        }
+    }
+}
 
 $hitungPag = ceil(count($produk) / 10);
 $pag = 1;
@@ -132,6 +146,46 @@ for ($i = 0; $i < 10; $i++) {
                         </label>
                     </div>
                 <?php } ?>
+            </div>
+
+            <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample4" aria-expanded="false"
+                aria-controls="collapseExample4">
+                Room Set
+            </div>
+            <div class="collapse py-2" id="collapseExample4">
+                <div class="checkbox-wrapper-46">
+                    <input type="checkbox" id="checkbox-filter-10" class="inp-cbx filter" name="ruang"
+                        value="tamu"
+                        <?= isset($_GET['ruang']) ? (in_array('tamu', explode(" ", $_GET['ruang'])) ? 'checked' : '') : ''; ?> />
+                    <label for="checkbox-filter-10" class="cbx"><span>
+                            <svg viewBox="0 0 12 10" height="10px" width="12px">
+                                <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                            </svg></span>
+                        <p>Ruang Tamu</p>
+                    </label>
+                </div>
+                <div class="checkbox-wrapper-46">
+                    <input type="checkbox" id="checkbox-filter-11" class="inp-cbx filter" name="ruang"
+                        value="keluarga"
+                        <?= isset($_GET['ruang']) ? (in_array('keluarga', explode(" ", $_GET['ruang'])) ? 'checked' : '') : ''; ?> />
+                    <label for="checkbox-filter-11" class="cbx"><span>
+                            <svg viewBox="0 0 12 10" height="10px" width="12px">
+                                <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                            </svg></span>
+                        <p>Ruang Keluarga</p>
+                    </label>
+                </div>
+                <div class="checkbox-wrapper-46">
+                    <input type="checkbox" id="checkbox-filter-12" class="inp-cbx filter" name="ruang"
+                        value="tidur"
+                        <?= isset($_GET['ruang']) ? (in_array('tidur', explode(" ", $_GET['ruang'])) ? 'checked' : '') : ''; ?> />
+                    <label for="checkbox-filter-12" class="cbx"><span>
+                            <svg viewBox="0 0 12 10" height="10px" width="12px">
+                                <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                            </svg></span>
+                        <p>Ruang Tidur</p>
+                    </label>
+                </div>
             </div>
 
             <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample2" aria-expanded="false"
@@ -258,6 +312,46 @@ for ($i = 0; $i < 10; $i++) {
                             </label>
                         </div>
                     <?php } ?>
+                </div>
+
+                <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample4" aria-expanded="false"
+                    aria-controls="collapseExample4">
+                    Room Set
+                </div>
+                <div class="collapse py-2" id="collapseExample4">
+                    <div class="checkbox-wrapper-46">
+                        <input type="checkbox" id="checkbox-filter-10-hp" class="inp-cbx filter" name="ruang1"
+                            value="tamu"
+                            <?= isset($_GET['ruang']) ? (in_array('tamu', explode(" ", $_GET['ruang'])) ? 'checked' : '') : ''; ?> />
+                        <label for="checkbox-filter-10-hp" class="cbx"><span>
+                                <svg viewBox="0 0 12 10" height="10px" width="12px">
+                                    <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                                </svg></span>
+                            <p>Ruang Tamu</p>
+                        </label>
+                    </div>
+                    <div class="checkbox-wrapper-46">
+                        <input type="checkbox" id="checkbox-filter-11-hp" class="inp-cbx filter" name="ruang1"
+                            value="keluarga"
+                            <?= isset($_GET['ruang']) ? (in_array('keluarga', explode(" ", $_GET['ruang'])) ? 'checked' : '') : ''; ?> />
+                        <label for="checkbox-filter-11-hp" class="cbx"><span>
+                                <svg viewBox="0 0 12 10" height="10px" width="12px">
+                                    <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                                </svg></span>
+                            <p>Ruang Keluarga</p>
+                        </label>
+                    </div>
+                    <div class="checkbox-wrapper-46">
+                        <input type="checkbox" id="checkbox-filter-12-hp" class="inp-cbx filter" name="ruang1"
+                            value="tidur"
+                            <?= isset($_GET['ruang']) ? (in_array('tidur', explode(" ", $_GET['ruang'])) ? 'checked' : '') : ''; ?> />
+                        <label for="checkbox-filter-12-hp" class="cbx"><span>
+                                <svg viewBox="0 0 12 10" height="10px" width="12px">
+                                    <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                                </svg></span>
+                            <p>Ruang Tidur</p>
+                        </label>
+                    </div>
                 </div>
 
                 <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample2" aria-expanded="false"
@@ -429,20 +523,24 @@ for ($i = 0; $i < 10; $i++) {
     const filterKoleksiElm = document.querySelectorAll('input[name="koleksi"]')
     const filterJenisElm = document.querySelectorAll('input[name="jenis"]')
     const filterHargaElm = document.querySelectorAll('input[name="harga"]')
+    const filterRuangElm = document.querySelectorAll('input[name="ruang"]')
     const filterKoleksi1Elm = document.querySelectorAll('input[name="koleksi1"]')
     const filterJenis1Elm = document.querySelectorAll('input[name="jenis1"]')
     const filterHarga1Elm = document.querySelectorAll('input[name="harga1"]')
+    const filterRuang1Elm = document.querySelectorAll('input[name="ruang1"]')
     let urlCur = window.location.pathname;
     console.log(urlCur)
     let koleksiParam = ''
     let jenisParam = ''
     let hargaParam = ''
+    let ruangParam = ''
 
     btnFilterElm.forEach(elm => {
         elm.addEventListener('click', () => {
             koleksiParam = ''
             jenisParam = ''
             hargaParam = ''
+            ruangParam = ''
             console.log(window.innerWidth)
             if (window.innerWidth > 600) {
                 filterKoleksiElm.forEach((koleksiElm) => {
@@ -464,6 +562,14 @@ for ($i = 0; $i < 10; $i++) {
                 filterHargaElm.forEach((hargaElm) => {
                     if (hargaElm.checked) {
                         hargaParam = hargaElm.value
+                    }
+                });
+                filterRuangElm.forEach((ruangElm) => {
+                    if (ruangElm.checked) {
+                        if (ruangParam == '')
+                            ruangParam += ruangElm.value
+                        else
+                            ruangParam += '+' + ruangElm.value
                     }
                 });
             } else {
@@ -488,6 +594,14 @@ for ($i = 0; $i < 10; $i++) {
                         hargaParam = hargaElm.value
                     }
                 });
+                filterRuang1Elm.forEach((ruangElm) => {
+                    if (ruangElm.checked) {
+                        if (ruangParam == '')
+                            ruangParam += ruangElm.value
+                        else
+                            ruangParam += '+' + ruangElm.value
+                    }
+                });
             }
 
             // console.log(urlCur + '?koleksi=' + koleksiParam + '&jenis=' + jenisParam + '&harga=' + hargaParam)
@@ -495,6 +609,7 @@ for ($i = 0; $i < 10; $i++) {
             if (koleksiParam != '') paramArr.push('koleksi=' + koleksiParam)
             if (jenisParam != '') paramArr.push('jenis=' + jenisParam)
             if (hargaParam != '') paramArr.push('harga=' + hargaParam)
+            if (ruangParam != '') paramArr.push('ruang=' + ruangParam)
             window.location.href = urlCur + '?' + paramArr.join('&')
         })
     })
