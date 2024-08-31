@@ -1379,6 +1379,11 @@ body {
   /* background-color: white; */
 }
 
+.Mseries {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
 /*FOOTER*/
 .footer__partner__payment {
   display: flex;
@@ -1874,6 +1879,12 @@ body {
     /* border: 2px solid rgb(207, 207, 207);
     padding: 2px;
     border-radius: 1em; */
+  }
+  .Mseries {
+    grid-template-columns: 1fr;
+    gap: 2px;
+    max-height: 80vh;
+    overflow-y: auto;
   }
 
   /*Gudang*/
