@@ -105,7 +105,7 @@ function closeLoginModel() {
 <!-- Bagian Windows -->
 <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:80svh;">
     <div class="d-flex align-items-center ps-5"
-        style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/1.webp'); background-size: cover; background-position:center;">
+        style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/11.webp'); background-size: cover; background-position:center;">
         <div>
             <p class="text-light">Make you feel</p>
             <h1 class="teks-besar text-light mb-5">Elegant</h1>
@@ -114,7 +114,7 @@ function closeLoginModel() {
     </div>
     <div style="flex:1;" class=" d-flex flex-column">
         <div class="d-flex align-items-center ps-5"
-            style="flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/5.webp'); background-size: cover; background-position:center;">
+            style="flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/12.webp'); background-size: cover; background-position:center;">
             <div>
                 <h1 class="teks-besar text-light mb-3">Luxury</h1>
                 <div class="d-flex gap-3">
@@ -125,7 +125,7 @@ function closeLoginModel() {
         </div>
         <div class="d-flex" style="flex: 1">
             <div class="d-flex align-items-center ps-5"
-                style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/10.webp'); background-size: cover; background-position:center;">
+                style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/13.webp'); background-size: cover; background-position:center;">
                 <div>
                     <h1 class="teks-besar text-light mb-3">Simply</h1>
                     <div class="d-flex gap-3">
@@ -141,7 +141,7 @@ function closeLoginModel() {
 <!-- Bagian HP -->
 <div class="hide-ke-show-flex align-items-stretch" style="width:100%; height:40svh;">
     <div class="hide-ke-show-flex align-items-center"
-        style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/1.webp'); background-size: cover; background-position:center;">
+        style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/11.webp'); background-size: cover; background-position:center;">
         <div>
             <p class="text-light ms-2 m-0" style="font-size:12px;">Make you feel</p>
             <h1 class="text-light ms-2" style="font-size:28px;">Elegant</h1>
@@ -150,7 +150,7 @@ function closeLoginModel() {
     </div>
     <div style="flex:1;" class=" d-flex flex-column">
         <div class="hide-ke-show-flex align-items-center"
-            style="flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/5.webp'); background-size: cover; background-position:center;">
+            style="flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/12.webp'); background-size: cover; background-position:center;">
             <div>
                 <h1 class="text-light ms-2" style="font-size:28px;">Luxury</h1>
                 <div class="d-flex gap-1 ms-2">
@@ -161,7 +161,7 @@ function closeLoginModel() {
         </div>
         <div class="hide-ke-show-flex" style="flex: 1">
             <div class="d-flex align-items-center"
-                style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/10.webp'); background-size: cover; background-position:center;">
+                style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/13.webp'); background-size: cover; background-position:center;">
                 <div>
                     <h1 class="text-light ms-2" style="font-size:28px;">Simply</h1>
                     <div class="d-flex gap-1 ms-2">
@@ -523,9 +523,9 @@ function modalseries() {
 
 <!-- Bagian Windows -->
 <div class="container show-flex-ke-hide gap-3 my-5" style="width:100%; height:60svh;">
-    <div style="flex: 1">
-        <img src="./img/foto/4.webp" alt="" class="w-100 mb-3" style="50svh">
-        <div class="d-flex gap-4 justify-content-center mb-2">
+    <a href="/product?ruang=tamu" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
+        <img src="./img/foto/4.webp" alt="" class="w-100 mb-3" style="flex: 1; width: 100%; object-fit: cover;">
+        <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
             <h5 style="font-weight: 500;" class="m-0">L</h5>
             <h5 style="font-weight: 500;" class="m-0">I</h5>
             <h5 style="font-weight: 500;" class="m-0">V</h5>
@@ -533,20 +533,20 @@ function modalseries() {
             <h5 style="font-weight: 500;" class="m-0">N</h5>
             <h5 style="font-weight: 500;" class="m-0">G</h5>
         </div>
-        <h5 class="text-center fw-bold" style="font-size: 13px">ROOM</h5>
-    </div>
-    <div style="flex: 1">
-        <img src="./img/foto/3.webp" alt="" class="w-100 mb-3" style="50svh">
-        <div class="d-flex gap-4 justify-content-center mb-2">
+        <h5 class="text-center fw-bold" style="font-size: 13px; height: fit-content">ROOM</h5>
+    </a>
+    <a href="/product?ruang=tidur" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
+        <img src="./img/foto/3.webp" alt="" class="w-100 mb-3" style="flex: 1; width: 100%; object-fit: cover;">
+        <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
             <h5 style="font-weight: 500;" class="m-0">B</h5>
             <h5 style="font-weight: 500;" class="m-0">E</h5>
             <h5 style="font-weight: 500;" class="m-0">D</h5>
         </div>
-        <h5 class="text-center fw-bold" style="font-size: 13px">ROOM</h5>
-    </div>
-    <div style="flex: 1">
-        <img src="./img/foto/2.webp" alt="" class="w-100 mb-3" style="50svh">
-        <div class="d-flex gap-4 justify-content-center mb-2">
+        <h5 class="text-center fw-bold" style="font-size: 13px; height: fit-content">ROOM</h5>
+    </a>
+    <a href="/product?ruang=keluarga" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
+        <img src="./img/foto/2.webp" alt="" class="w-100 mb-3" style="flex: 1; width: 100%; object-fit: cover;">
+        <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
             <h5 style="font-weight: 500;" class="m-0">L</h5>
             <h5 style="font-weight: 500;" class="m-0">O</h5>
             <h5 style="font-weight: 500;" class="m-0">U</h5>
@@ -554,50 +554,64 @@ function modalseries() {
             <h5 style="font-weight: 500;" class="m-0">G</h5>
             <h5 style="font-weight: 500;" class="m-0">E</h5>
         </div>
-        <h5 class="text-center fw-bold" style="font-size: 13px">ROOM</h5>
-    </div>
+        <h5 class="text-center fw-bold" style="font-size: 13px; height: fit-content">ROOM</h5>
+    </a>
 </div>
 
 <!-- Bagian HP -->
-<div class="container hide-ke-show-flex gap-3 my-5 flex-column" style="width:100%;">
-    <hr>
-    <div style="flex: 1">
-        <img src="<?= base_url('/img/foto/4.webp') ?>" alt="" style=" height: auto; width:100%; border-radius:4px;"
-            class="mb-2">
-        <div class="d-flex gap-4 justify-content-center mb-2">
-            <h5 style="font-weight: 500;" class="m-0">L</h5>
-            <h5 style="font-weight: 500;" class="m-0">I</h5>
-            <h5 style="font-weight: 500;" class="m-0">V</h5>
-            <h5 style="font-weight: 500;" class="m-0">I</h5>
-            <h5 style="font-weight: 500;" class="m-0">N</h5>
-            <h5 style="font-weight: 500;" class="m-0">G</h5>
-        </div>
-        <h5 class="text-center text-secondary fw-bold" style="font-size: 13px">ROOM</h5>
+<style>
+#scroll-set {
+    width: 100%;
+    overflow: scroll;
+    scroll-snap-type: x mandatory;
+}
+
+#scroll-set::-webkit-scrollbar {
+    display: none;
+}
+</style>
+<div class="hide-ke-show-block" id="scroll-set">
+    <div class="d-flex gap-1 px-5 pt-5 pb-4" style="width: fit-content;">
+        <a href="/product?ruang=tamu" class="bg-primary"
+            style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block; height: 100px;">
+            <img src="<?= base_url('/img/foto/4.webp') ?>" alt="" style=" height: auto; width: 100%; border-radius:4px;"
+                class="mb-2">
+            <div class="d-flex gap-4 justify-content-center mb-2">
+                <h5 style="font-weight: 500;" class="m-0">L</h5>
+                <h5 style="font-weight: 500;" class="m-0">I</h5>
+                <h5 style="font-weight: 500;" class="m-0">V</h5>
+                <h5 style="font-weight: 500;" class="m-0">I</h5>
+                <h5 style="font-weight: 500;" class="m-0">N</h5>
+                <h5 style="font-weight: 500;" class="m-0">G</h5>
+            </div>
+            <h5 class="text-center text-secondary fw-bold" style="font-size: 13px">ROOM</h5>
+        </a>
+        <a href="/product?ruang=tidur"
+            style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
+            <img src="<?= base_url('/img/foto/3.webp') ?>" alt="" style=" height: auto; width: 100%; border-radius:4px;"
+                class="mb-2">
+            <div class="d-flex gap-4 justify-content-center mb-2">
+                <h5 style="font-weight: 500;" class="m-0">B</h5>
+                <h5 style="font-weight: 500;" class="m-0">E</h5>
+                <h5 style="font-weight: 500;" class="m-0">D</h5>
+            </div>
+            <h5 class="text-center text-secondary fw-bold" style="font-size: 13px">ROOM</h5>
+        </a>
+        <a href="/product?ruang=keluarga"
+            style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
+            <img src="<?= base_url('/img/foto/2.webp') ?>" alt="" style=" height: auto; width: 100%; border-radius:4px;"
+                class="mb-2">
+            <div class="d-flex gap-4 justify-content-center mb-2">
+                <h5 style="font-weight: 500;" class="m-0">L</h5>
+                <h5 style="font-weight: 500;" class="m-0">O</h5>
+                <h5 style="font-weight: 500;" class="m-0">U</h5>
+                <h5 style="font-weight: 500;" class="m-0">N</h5>
+                <h5 style="font-weight: 500;" class="m-0">G</h5>
+                <h5 style="font-weight: 500;" class="m-0">E</h5>
+            </div>
+            <h5 class="text-center fw-bold" style="font-size: 13px">ROOM</h5>
+        </a>
     </div>
-    <div style="flex: 1">
-        <img src="<?= base_url('/img/foto/3.webp') ?>" alt="" style=" height: auto; width:100%; border-radius:4px;"
-            class="mb-2">
-        <div class="d-flex gap-4 justify-content-center mb-2">
-            <h5 style="font-weight: 500;" class="m-0">B</h5>
-            <h5 style="font-weight: 500;" class="m-0">E</h5>
-            <h5 style="font-weight: 500;" class="m-0">D</h5>
-        </div>
-        <h5 class="text-center text-secondary fw-bold" style="font-size: 13px">ROOM</h5>
-    </div>
-    <div style="flex: 1">
-        <img src="<?= base_url('/img/foto/2.webp') ?>" alt="" style=" height: auto; width:100%; border-radius:4px;"
-            class="mb-2">
-        <div class="d-flex gap-4 justify-content-center mb-2">
-            <h5 style="font-weight: 500;" class="m-0">L</h5>
-            <h5 style="font-weight: 500;" class="m-0">O</h5>
-            <h5 style="font-weight: 500;" class="m-0">U</h5>
-            <h5 style="font-weight: 500;" class="m-0">N</h5>
-            <h5 style="font-weight: 500;" class="m-0">G</h5>
-            <h5 style="font-weight: 500;" class="m-0">E</h5>
-        </div>
-        <h5 class="text-center fw-bold" style="font-size: 13px">ROOM</h5>
-    </div>
-    <hr>
 </div>
 
 <div style="position:relative;">
