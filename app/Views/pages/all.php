@@ -1,6 +1,9 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <?php
+
+use function PHPUnit\Framework\isEmpty;
+
 if (isset($_GET['koleksi'])) {
     if ($_GET['koleksi'] != '') {
         $koleksi = explode(" ", $_GET['koleksi']);
@@ -104,6 +107,25 @@ for ($i = 0; $i < 10; $i++) {
         array_push($produk, $produkLama[$i]);
 }
 
+$seluruhFilter = [];
+if (isset($_GET['koleksi'])) {
+    $koleksiArr = explode(' ', $_GET['koleksi']);
+    foreach ($koleksiArr as $k) {
+        array_push($seluruhFilter, $k);
+    }
+}
+if (isset($_GET['jenis'])) {
+    $koleksiArr = explode(' ', $_GET['jenis']);
+    foreach ($koleksiArr as $k) {
+        array_push($seluruhFilter, $k);
+    }
+}
+if (isset($_GET['ruang'])) {
+    $koleksiArr = explode(' ', $_GET['ruang']);
+    foreach ($koleksiArr as $k) {
+        array_push($seluruhFilter, $k);
+    }
+}
 ?>
 <div class="container d-flex justify-content-center">
     <div class="konten baris-ke-kolom">
@@ -258,14 +280,22 @@ for ($i = 0; $i < 10; $i++) {
             </div>
         </div>
         <div class="hide-ke-show-block">
-            <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
+            <nav style="--bs-breadcrumb-divider: '/'; position: relative; height: 80px" aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/">Beranda</a></li>
                     <li class="breadcrumb-item"><a href="/product">Produk</a></li>
-                    <!-- <li class="breadcrumb-item">Meja TV</li> -->
-                    </li>
                 </ol>
+                <div class="container-badge-filter mb-2" style="position: absolute;">
+                    <?php foreach ($seluruhFilter as $ind_f => $f) {
+                        if ($f) { ?>
+                            <div class="item-badge-filter">
+                                <p><?= ucwords(str_replace('-', ' ', $f)); ?></p>
+                            </div>
+                    <?php }
+                    } ?>
+                </div>
             </nav>
+
             <input type="checkbox" id="container-filter" class="d-none">
             <label for="container-filter" class="w-100">
                 <div class="d-flex gap-2 align-items-center w-100 justify-content-center btn-lonjong">
@@ -426,19 +456,28 @@ for ($i = 0; $i < 10; $i++) {
         </div>
 
         <div style="flex: 1;">
+            <!-- <div style="position: absolute;" class="w-100"> -->
             <?php if (session()->get('role') == '1') { ?>
                 <div class="d-flex justify-content-between">
                     <h1 class="teks-sedang">List Product</h1>
                     <a href="/admin/addproduct" class="btn-default-merah">Tambah Produk</a>
                 </div>
             <?php } ?>
-            <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb" class="show-block-ke-hide">
+            <nav style="--bs-breadcrumb-divider: '/'; position: relative; <?= (isset($_GET['koleksi']) || isset($_GET['jenis']) || isset($_GET['ruang'])) ? 'height: 80px' : ''; ?>" aria-label="breadcrumb" class="show-block-ke-hide">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/">Beranda</a></li>
                     <li class="breadcrumb-item"><a href="/product">Produk</a></li>
                     <!-- <li class="breadcrumb-item">Meja TV</li> -->
-                    </li>
                 </ol>
+                <div class="container-badge-filter mb-3" style="position: absolute;">
+                    <?php foreach ($seluruhFilter as $ind_f => $f) {
+                        if ($f) { ?>
+                            <div class="item-badge-filter">
+                                <p><?= ucwords(str_replace('-', ' ', $f)); ?></p>
+                            </div>
+                    <?php }
+                    } ?>
+                </div>
             </nav>
             <?php if (isset($find)) { ?>
                 <p>Anda mencari "<?= $find ?>"</p>
@@ -502,19 +541,20 @@ for ($i = 0; $i < 10; $i++) {
             <div class="container-pag">
                 <?php if ($pag > 1) { ?>
                     <a class="item-pag"
-                        href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&pag=<?= $pag - 1; ?>"><i
+                        href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&ruang=<?= isset($_GET['ruang']) ? $_GET['ruang'] : ''; ?>&pag=<?= $pag - 1; ?>"><i
                             class="material-icons">chevron_left</i></a>
                 <?php } ?>
                 <?php for ($i = 0; $i < $hitungPag; $i++) { ?>
                     <a class="item-pag <?= $pag == ($i + 1) ? 'active' : ''; ?>"
-                        href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&pag=<?= $i + 1; ?>"><?= $i + 1; ?></a>
+                        href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&ruang=<?= isset($_GET['ruang']) ? $_GET['ruang'] : ''; ?>&pag=<?= $i + 1; ?>"><?= $i + 1; ?></a>
                 <?php } ?>
                 <?php if ($pag < $hitungPag) { ?>
                     <a class="item-pag"
-                        href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&pag=<?= $pag + 1; ?>"><i
+                        href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&ruang=<?= isset($_GET['ruang']) ? $_GET['ruang'] : ''; ?>&pag=<?= $pag + 1; ?>"><i
                             class="material-icons">chevron_right</i></a>
                 <?php } ?>
             </div>
+            <!-- </div> -->
         </div>
     </div>
 </div>

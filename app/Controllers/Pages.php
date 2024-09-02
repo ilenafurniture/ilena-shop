@@ -129,6 +129,113 @@ class Pages extends BaseController
         }
         return $this->response->setJSON(['Sucess' => 'OK'], false);
     }
+    public function fixSet()
+    {
+        $seluruhBarang = $this->barangModel->findAll();
+        $ruangTamu = false;
+        $ruangKeluarga = false;
+        $ruangTidur = false;
+        foreach ($seluruhBarang as $barang) {
+            switch ($barang['subkategori']) {
+                case 'armoir':
+                    $ruangTamu = false;
+                    $ruangKeluarga = false;
+                    $ruangTidur = true;
+                    break;
+                case 'bookshelf':
+                    $ruangTamu = true;
+                    $ruangKeluarga = true;
+                    $ruangTidur = true;
+                    break;
+                case 'coffee table':
+                    $ruangTamu = true;
+                    $ruangKeluarga = true;
+                    $ruangTidur = false;
+                    break;
+                case 'console table':
+                    $ruangTamu = true;
+                    $ruangKeluarga = false;
+                    $ruangTidur = true;
+                    break;
+                case 'credenza':
+                    $ruangTamu = false;
+                    $ruangKeluarga = true;
+                    $ruangTidur = true;
+                    break;
+                case 'dresser 3 drawer':
+                    $ruangTamu = false;
+                    $ruangKeluarga = true;
+                    $ruangTidur = true;
+                    break;
+                case 'dresser 4 drawer':
+                    $ruangTamu = false;
+                    $ruangKeluarga = true;
+                    $ruangTidur = true;
+                    break;
+                case 'dresser 5 drawer':
+                    $ruangTamu = false;
+                    $ruangKeluarga = true;
+                    $ruangTidur = true;
+                    break;
+                case 'dresser 6 drawer':
+                    $ruangTamu = false;
+                    $ruangKeluarga = true;
+                    $ruangTidur = true;
+                    break;
+                case 'dresser tall cabinet':
+                    $ruangTamu = false;
+                    $ruangKeluarga = true;
+                    $ruangTidur = true;
+                    break;
+                case 'dressing table':
+                    $ruangTamu = false;
+                    $ruangKeluarga = false;
+                    $ruangTidur = false;
+                    break;
+                case 'king bed':
+                    $ruangTamu = false;
+                    $ruangKeluarga = false;
+                    $ruangTidur = true;
+                    break;
+                case 'queen bed':
+                    $ruangTamu = false;
+                    $ruangKeluarga = false;
+                    $ruangTidur = true;
+                    break;
+                case 'side table':
+                    $ruangTamu = false;
+                    $ruangKeluarga = false;
+                    $ruangTidur = true;
+                    break;
+                case 'meja nakas':
+                    $ruangTamu = true;
+                    $ruangKeluarga = true;
+                    $ruangTidur = true;
+                    break;
+                case 'bufet tv':
+                    $ruangTamu = true;
+                    $ruangKeluarga = true;
+                    $ruangTidur = true;
+                    break;
+                case 'wardrobe':
+                    $ruangTamu = false;
+                    $ruangKeluarga = false;
+                    $ruangTidur = true;
+                    break;
+                case 'single bed':
+                    $ruangTamu = false;
+                    $ruangKeluarga = false;
+                    $ruangTidur = true;
+                    break;
+            }
+            $this->barangModel->where(['id' => $barang['id']])->set([
+                'ruang_tamu' => $ruangTamu,
+                'ruang_keluarga' => $ruangKeluarga,
+                'ruang_tidur' => $ruangTidur
+            ])->update();
+        }
+        return $this->response->setJSON(['Sucess' => 'OK'], false);
+    }
     public function fixNama()
     {
         $seluruhBarang = $this->barangModel->findAll();

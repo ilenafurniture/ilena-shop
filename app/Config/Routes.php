@@ -122,6 +122,7 @@ $routes->get('/fixmutasi', 'GudangController::fixMutasi');
 $routes->get('/fixnama', 'Pages::fixNama');
 $routes->get('/fixid', 'Pages::fixId');
 $routes->get('/gantijenis/(:any)/(:any)', 'Pages::gantiJenis/$1/$2');
+$routes->get('/fixset', 'Pages::fixSet');
 
 
 // Marketplace Controller
