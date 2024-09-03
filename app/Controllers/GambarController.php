@@ -28,6 +28,12 @@ class GambarController extends BaseController
         $this->response->setHeader('Content-Type', 'image/webp');
         echo $gambar;
     }
+    public function tampilGambarBarangHover($idBarang)
+    {
+        $gambar = $this->barangModel->getBarangAdmin($idBarang)['gambar_hover'];
+        $this->response->setHeader('Content-Type', 'image/webp');
+        echo $gambar;
+    }
 
     public function tampilGambarVarian($idBarang, $urutan)
     {

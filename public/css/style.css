@@ -469,6 +469,18 @@ body {
     margin-bottom: 1em;
     /* border-radius: 0.5em; */
 }
+.card1 .img-pic {
+    display: block;
+}
+.card1:hover .img-pic {
+    display: none;
+}
+.card1 .img-pic-hover {
+    display: none;
+}
+.card1:hover .img-pic-hover {
+    display: block;
+}
 .card1 span {
     font-weight: 600;
     background-color: var(--merah);
