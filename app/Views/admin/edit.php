@@ -44,9 +44,9 @@
                                     <!-- <input type="text" class="form-control" name="kategori" required> -->
                                     <select name="kategori" onchange="generateId(event)">
                                         <?php foreach ($koleksi as $ind_k => $k) { ?>
-                                        <option value="<?= $k['id']; ?>"
-                                            <?= $k['nama'] == $produk['kategori'] ? 'selected' : ''; ?>>
-                                            <?= $k['nama']; ?></option>
+                                            <option value="<?= $k['id']; ?>"
+                                                <?= $k['nama'] == $produk['kategori'] ? 'selected' : ''; ?>>
+                                                <?= $k['nama']; ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
@@ -59,9 +59,9 @@
                                     <!-- <input type="text" class="form-control" name="subkategori" required> -->
                                     <select name="subkategori" onchange="generateId(event)">
                                         <?php foreach ($jenis as $ind_k => $k) { ?>
-                                        <option value="<?= $k['id']; ?>"
-                                            <?= $k['nama'] == $produk['subkategori'] ? 'selected' : ''; ?>>
-                                            <?= $k['nama']; ?></option>
+                                            <option value="<?= $k['id']; ?>"
+                                                <?= $k['nama'] == $produk['subkategori'] ? 'selected' : ''; ?>>
+                                                <?= $k['nama']; ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
@@ -214,74 +214,75 @@
             </div>
             <div class="limapuluh-ke-seratus">
                 <h5 class="jdl=section">Gambar Hover</h5>
+                <img id="imghover-preview" src="/viewpichover/<?= $produk['id']; ?>" alt="" class="limapuluh-ke-seratus mb-1" style="aspect-ratio: 1 / 1;">
                 <div class="mb-2">
-                    <input name="gambar_hover" type="file" class="form-control">
+                    <input name="gambar_hover" type="file" class="form-control" onchange="uploadFileGambarHover(event)">
                 </div>
                 <h5 class="jdl-section">Varian</h5>
                 <div id="container-varian">
                     <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
-                    <div class="item-varian">
-                        <div class="container-gambar" id="container-gambar<?= $ind_v + 1; ?>">
-                            <div id="container-input-gambar<?= $ind_v + 1; ?>">
-                                <?php foreach (explode(",", $v['urutan_gambar']) as $ind_urutanGambar => $urutanGambar) { ?>
-                                <div>
-                                    <input type="file"
-                                        id="input-gambar-<?= $ind_v + 1; ?>-<?= $ind_urutanGambar + 1; ?>"
-                                        name="gambar-<?= $ind_v + 1; ?>-<?= $ind_urutanGambar + 1; ?>"
-                                        style="display: none;" onchange="uploadFile(event)">
-                                    <label for="input-gambar-<?= $ind_v + 1; ?>-<?= $ind_urutanGambar + 1; ?>"
-                                        class="btn-default">+</label>
+                        <div class="item-varian">
+                            <div class="container-gambar" id="container-gambar<?= $ind_v + 1; ?>">
+                                <div id="container-input-gambar<?= $ind_v + 1; ?>">
+                                    <?php foreach (explode(",", $v['urutan_gambar']) as $ind_urutanGambar => $urutanGambar) { ?>
+                                        <div>
+                                            <input type="file"
+                                                id="input-gambar-<?= $ind_v + 1; ?>-<?= $ind_urutanGambar + 1; ?>"
+                                                name="gambar-<?= $ind_v + 1; ?>-<?= $ind_urutanGambar + 1; ?>"
+                                                style="display: none;" onchange="uploadFile(event)">
+                                            <label for="input-gambar-<?= $ind_v + 1; ?>-<?= $ind_urutanGambar + 1; ?>"
+                                                class="btn-default">+</label>
+                                        </div>
+                                    <?php } ?>
+                                    <div>
+                                        <input type="file"
+                                            id="input-gambar-<?= $ind_v + 1; ?>-<?= count(explode(",", $v['urutan_gambar'])) + 1; ?>"
+                                            name="gambar-<?= $ind_v + 1; ?>-<?= count(explode(",", $v['urutan_gambar'])) + 1; ?>"
+                                            style="display: none;" onchange="uploadFile(event)">
+                                        <label
+                                            for="input-gambar-<?= $ind_v + 1; ?>-<?= count(explode(",", $v['urutan_gambar'])) + 1; ?>"
+                                            class="btn-default">+</label>
+                                    </div>
                                 </div>
+                                <?php foreach (explode(",", $v['urutan_gambar']) as $ind_u => $u) { ?>
+                                    <div class="item-gambar"
+                                        onclick="hapusSubvarian('<?= $ind_v + 1; ?>','<?= $ind_u + 1; ?>',event)">
+                                        <p>X</p>
+                                        <img src="/viewvar/<?= $produk['id'] ?>/<?= $u; ?>" alt="">
+                                    </div>
                                 <?php } ?>
-                                <div>
-                                    <input type="file"
-                                        id="input-gambar-<?= $ind_v + 1; ?>-<?= count(explode(",", $v['urutan_gambar'])) + 1; ?>"
-                                        name="gambar-<?= $ind_v + 1; ?>-<?= count(explode(",", $v['urutan_gambar'])) + 1; ?>"
-                                        style="display: none;" onchange="uploadFile(event)">
-                                    <label
-                                        for="input-gambar-<?= $ind_v + 1; ?>-<?= count(explode(",", $v['urutan_gambar'])) + 1; ?>"
-                                        class="btn-default">+</label>
-                                </div>
                             </div>
-                            <?php foreach (explode(",", $v['urutan_gambar']) as $ind_u => $u) { ?>
-                            <div class="item-gambar"
-                                onclick="hapusSubvarian('<?= $ind_v + 1; ?>','<?= $ind_u + 1; ?>',event)">
-                                <p>X</p>
-                                <img src="/viewvar/<?= $produk['id'] ?>/<?= $u; ?>" alt="">
-                            </div>
-                            <?php } ?>
+                            <table class="table-input w-100 mt-2">
+                                <tbody>
+                                    <tr>
+                                        <td>Nama</td>
+                                        <td>
+                                            <div class="baris"><input type="text" class="form-control"
+                                                    name="nama-var<?= $ind_v + 1; ?>" required value="<?= $v['nama']; ?>">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Kode Warna</td>
+                                        <td>
+                                            <div class="baris"><input type="text" class="form-control"
+                                                    name="kode-var<?= $ind_v + 1; ?>" required value="<?= $v['kode']; ?>">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Stok</td>
+                                        <td>
+                                            <div class="baris"><input type="text" class="form-control"
+                                                    name="stok-var<?= $ind_v + 1; ?>" required value="<?= $v['stok']; ?>">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn-teks-aja m-0 ms-auto mt-1"
+                                onclick="deleteVarian(event)">Hapus</button>
                         </div>
-                        <table class="table-input w-100 mt-2">
-                            <tbody>
-                                <tr>
-                                    <td>Nama</td>
-                                    <td>
-                                        <div class="baris"><input type="text" class="form-control"
-                                                name="nama-var<?= $ind_v + 1; ?>" required value="<?= $v['nama']; ?>">
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Kode Warna</td>
-                                    <td>
-                                        <div class="baris"><input type="text" class="form-control"
-                                                name="kode-var<?= $ind_v + 1; ?>" required value="<?= $v['kode']; ?>">
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Stok</td>
-                                    <td>
-                                        <div class="baris"><input type="text" class="form-control"
-                                                name="stok-var<?= $ind_v + 1; ?>" required value="<?= $v['stok']; ?>">
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <button type="button" class="btn-teks-aja m-0 ms-auto mt-1"
-                            onclick="deleteVarian(event)">Hapus</button>
-                    </div>
                     <?php } ?>
                 </div>
                 <button class="btn-default-merah mt-2" type="button" onclick="addVarian()">Tambah Varian</button>
@@ -294,125 +295,136 @@
     </form>
 </div>
 <script>
-let counterJmlVarian = <?= count($produk['varian']); ?>;
-let idStr = "1-00-000-XX"
-const hitungVarianInputElm = document.querySelector('input[name="hitung-varian"]')
-const cobaInput = document.getElementById('coba-input');
+    let counterJmlVarian = <?= count($produk['varian']); ?>;
+    let idStr = "1-00-000-XX"
+    const hitungVarianInputElm = document.querySelector('input[name="hitung-varian"]')
+    const cobaInput = document.getElementById('coba-input');
 
-function buatElementDariHTML(htmlString) {
-    var div = document.createElement('div');
-    div.innerHTML = htmlString.trim();
-    return div.firstChild;
-}
-
-function uploadFile(event) {
-    const eventTargetElm = event.target
-    const varianNum = event.target.id.split("-")[2]
-    const subVarianNum = event.target.id.split("-")[3]
-
-    const inputBaru = '<div><input onchange="uploadFile(event)" type="file" id="input-gambar-' + varianNum + '-' + (
-            Number(subVarianNum) + 1) + '" name="gambar-' + varianNum + '-' + (Number(subVarianNum) + 1) +
-        '" style="display: none;"><label for="input-gambar-' + varianNum + '-' + (Number(subVarianNum) + 1) +
-        '" class="btn-default">+</label></div>'
-    const inputBaruElm = buatElementDariHTML(inputBaru);
-    const containerInputGambar = document.getElementById("container-input-gambar" + varianNum)
-    containerInputGambar.append(inputBaruElm);
-    const parentNode = event.target.parentNode;
-    console.log(parentNode)
-
-    function getRandomColor() {
-        var letters = '0123456789ABCDEF';
-        var color = '#';
-        for (var i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
+    function buatElementDariHTML(htmlString) {
+        var div = document.createElement('div');
+        div.innerHTML = htmlString.trim();
+        return div.firstChild;
     }
-    parentNode.style.padding = "5px";
-    parentNode.style.backgroundColor = getRandomColor();
-    // parentNode.style.display = "none";
 
-    const file = eventTargetElm.files[0];
-    const blobFile = new Blob([file], {
-        type: file.type
-    });
-    var blobUrl = URL.createObjectURL(blobFile);
-    const itemGambar = '<div class="item-gambar"><p>X</p><img src="' + blobUrl + '" alt=""></div>'
-    const itemGambarElm = buatElementDariHTML(itemGambar)
-    const containerGambar = document.getElementById("container-gambar" + varianNum)
-    itemGambarElm.addEventListener("click", () => {
-        console.log(varianNum, subVarianNum)
-        containerGambar.removeChild(itemGambarElm)
+    function uploadFileGambarHover(event) {
+        const imgHoverPreviewElm = document.getElementById('imghover-preview');
+        const eventTargetElm = event.target
+        const file = eventTargetElm.files[0];
+        const blobFile = new Blob([file], {
+            type: file.type
+        });
+        var blobUrl = URL.createObjectURL(blobFile);
+        imgHoverPreviewElm.src = blobUrl;
+    }
+
+    function uploadFile(event) {
+        const eventTargetElm = event.target
+        const varianNum = event.target.id.split("-")[2]
+        const subVarianNum = event.target.id.split("-")[3]
+
+        const inputBaru = '<div><input onchange="uploadFile(event)" type="file" id="input-gambar-' + varianNum + '-' + (
+                Number(subVarianNum) + 1) + '" name="gambar-' + varianNum + '-' + (Number(subVarianNum) + 1) +
+            '" style="display: none;"><label for="input-gambar-' + varianNum + '-' + (Number(subVarianNum) + 1) +
+            '" class="btn-default">+</label></div>'
+        const inputBaruElm = buatElementDariHTML(inputBaru);
+        const containerInputGambar = document.getElementById("container-input-gambar" + varianNum)
+        containerInputGambar.append(inputBaruElm);
+        const parentNode = event.target.parentNode;
+        console.log(parentNode)
+
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+        parentNode.style.padding = "5px";
+        parentNode.style.backgroundColor = getRandomColor();
+        // parentNode.style.display = "none";
+
+        const file = eventTargetElm.files[0];
+        const blobFile = new Blob([file], {
+            type: file.type
+        });
+        var blobUrl = URL.createObjectURL(blobFile);
+        const itemGambar = '<div class="item-gambar"><p>X</p><img src="' + blobUrl + '" alt=""></div>'
+        const itemGambarElm = buatElementDariHTML(itemGambar)
+        const containerGambar = document.getElementById("container-gambar" + varianNum)
+        itemGambarElm.addEventListener("click", () => {
+            console.log(varianNum, subVarianNum)
+            containerGambar.removeChild(itemGambarElm)
+            containerInputGambar.removeChild(parentNode)
+        })
+        containerGambar.append(itemGambarElm);
+    }
+
+    function addVarian() {
+        const containerVarian = document.getElementById("container-varian");
+        const jumlahVarian = counterJmlVarian;
+        const itemVarianBaru = '<div class="item-varian"><div class="container-gambar" id="container-gambar' + (Number(
+                jumlahVarian) + 1) + '"><div id="container-input-gambar' + (Number(jumlahVarian) + 1) +
+            '"><div><input type="file" id="input-gambar-' + (Number(jumlahVarian) + 1) + '-1" name="gambar-' + (Number(
+                jumlahVarian) + 1) + '-1" style="display: none;" onchange="uploadFile(event)"><label for="input-gambar-' + (
+                Number(jumlahVarian) + 1) +
+            '-1" class="btn-default">+</label></div></div></div><table class="table-input w-100 mt-2"><tbody><tr><td>Nama</td><td><div class="baris"><input type="text" class="form-control" name="nama-var' +
+            (Number(jumlahVarian) + 1) +
+            '" required></div></td></tr><tr><td>Kode Warna</td><td><div class="baris"><input type="text" class="form-control" name="kode-var' +
+            (Number(jumlahVarian) + 1) +
+            '" required></div></td></tr><tr><td>Stok</td><td><div class="baris"><input type="text" class="form-control" name="stok-var' +
+            (Number(jumlahVarian) + 1) +
+            '" required></div></td></tr></tbody></table><button type="button" class="btn-teks-aja m-0 ms-auto mt-1" onclick="deleteVarian(event)">Hapus</button></div>'
+        containerVarian.innerHTML += itemVarianBaru
+        counterJmlVarian++;
+        if (hitungVarianInputElm.value == '')
+            hitungVarianInputElm.value += (Number(jumlahVarian) + 1);
+        else
+            hitungVarianInputElm.value += "," + (Number(jumlahVarian) + 1);
+        console.log(hitungVarianInputElm.value)
+    }
+
+    function deleteVarian(event) {
+        const parentNodeElm = event.target.parentNode;
+        const urutanVarianKe = parentNodeElm.children[0].id.substring(16);
+        const containerVarian = document.getElementById("container-varian");
+        containerVarian.removeChild(parentNodeElm);
+
+        let varianArr = hitungVarianInputElm.value.split(",")
+        const index = varianArr.indexOf(urutanVarianKe)
+        varianArr.splice(index, 1)
+        hitungVarianInputElm.value = varianArr.join(",")
+        console.log(hitungVarianInputElm.value)
+    }
+
+    function generateId(event) {
+        // const name = event.target.name;
+        // const value = event.target.value;
+        // const idInputElm = document.querySelector('input[name="id"]');
+        // let idStrArr = idStr.split("-");
+        // switch (name) {
+        //     case 'kategori':
+        //         idStrArr[1] = value.toString().padStart(2, '0');
+        //         idStr = idStrArr.join("-");
+        //         idInputElm.value = idStrArr.join("")
+        //         break;
+        //     case 'subkategori':
+        //         idStrArr[2] = value.toString().padStart(3, '0');
+        //         idStr = idStrArr.join("-");
+        //         idInputElm.value = idStrArr.join("")
+        //         break;
+        // }
+    }
+
+    function hapusSubvarian(varianNum, indexGambar, e) {
+        const containerGambar = document.getElementById("container-gambar" + varianNum)
+        const containerInputGambar = document.getElementById("container-input-gambar" + varianNum)
+        const parentNode = document.getElementById('input-gambar-' + varianNum + '-' + indexGambar).parentNode;
+        console.log(containerGambar)
+        console.log(e.target.parentNode)
+        containerGambar.removeChild(e.target.parentNode)
         containerInputGambar.removeChild(parentNode)
-    })
-    containerGambar.append(itemGambarElm);
-}
-
-function addVarian() {
-    const containerVarian = document.getElementById("container-varian");
-    const jumlahVarian = counterJmlVarian;
-    const itemVarianBaru = '<div class="item-varian"><div class="container-gambar" id="container-gambar' + (Number(
-            jumlahVarian) + 1) + '"><div id="container-input-gambar' + (Number(jumlahVarian) + 1) +
-        '"><div><input type="file" id="input-gambar-' + (Number(jumlahVarian) + 1) + '-1" name="gambar-' + (Number(
-            jumlahVarian) + 1) + '-1" style="display: none;" onchange="uploadFile(event)"><label for="input-gambar-' + (
-            Number(jumlahVarian) + 1) +
-        '-1" class="btn-default">+</label></div></div></div><table class="table-input w-100 mt-2"><tbody><tr><td>Nama</td><td><div class="baris"><input type="text" class="form-control" name="nama-var' +
-        (Number(jumlahVarian) + 1) +
-        '" required></div></td></tr><tr><td>Kode Warna</td><td><div class="baris"><input type="text" class="form-control" name="kode-var' +
-        (Number(jumlahVarian) + 1) +
-        '" required></div></td></tr><tr><td>Stok</td><td><div class="baris"><input type="text" class="form-control" name="stok-var' +
-        (Number(jumlahVarian) + 1) +
-        '" required></div></td></tr></tbody></table><button type="button" class="btn-teks-aja m-0 ms-auto mt-1" onclick="deleteVarian(event)">Hapus</button></div>'
-    containerVarian.innerHTML += itemVarianBaru
-    counterJmlVarian++;
-    if (hitungVarianInputElm.value == '')
-        hitungVarianInputElm.value += (Number(jumlahVarian) + 1);
-    else
-        hitungVarianInputElm.value += "," + (Number(jumlahVarian) + 1);
-    console.log(hitungVarianInputElm.value)
-}
-
-function deleteVarian(event) {
-    const parentNodeElm = event.target.parentNode;
-    const urutanVarianKe = parentNodeElm.children[0].id.substring(16);
-    const containerVarian = document.getElementById("container-varian");
-    containerVarian.removeChild(parentNodeElm);
-
-    let varianArr = hitungVarianInputElm.value.split(",")
-    const index = varianArr.indexOf(urutanVarianKe)
-    varianArr.splice(index, 1)
-    hitungVarianInputElm.value = varianArr.join(",")
-    console.log(hitungVarianInputElm.value)
-}
-
-function generateId(event) {
-    // const name = event.target.name;
-    // const value = event.target.value;
-    // const idInputElm = document.querySelector('input[name="id"]');
-    // let idStrArr = idStr.split("-");
-    // switch (name) {
-    //     case 'kategori':
-    //         idStrArr[1] = value.toString().padStart(2, '0');
-    //         idStr = idStrArr.join("-");
-    //         idInputElm.value = idStrArr.join("")
-    //         break;
-    //     case 'subkategori':
-    //         idStrArr[2] = value.toString().padStart(3, '0');
-    //         idStr = idStrArr.join("-");
-    //         idInputElm.value = idStrArr.join("")
-    //         break;
-    // }
-}
-
-function hapusSubvarian(varianNum, indexGambar, e) {
-    const containerGambar = document.getElementById("container-gambar" + varianNum)
-    const containerInputGambar = document.getElementById("container-input-gambar" + varianNum)
-    const parentNode = document.getElementById('input-gambar-' + varianNum + '-' + indexGambar).parentNode;
-    console.log(containerGambar)
-    console.log(e.target.parentNode)
-    containerGambar.removeChild(e.target.parentNode)
-    containerInputGambar.removeChild(parentNode)
-}
+    }
 </script>
 
 <?= $this->endSection(); ?>
