@@ -114,7 +114,7 @@ function closeLoginModel() {
     </div>
     <div style="flex:1;" class=" d-flex flex-column">
         <div class="d-flex align-items-center ps-5"
-            style="flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/12.webp'); background-size: cover; background-position:center;">
+            style="flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/n.webp'); background-size: cover; background-position:center;">
             <div>
                 <h1 class="teks-besar text-light mb-3">Luxury</h1>
                 <div class="d-flex gap-3">
@@ -125,7 +125,7 @@ function closeLoginModel() {
         </div>
         <div class="d-flex" style="flex: 1">
             <div class="d-flex align-items-center ps-5"
-                style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/13.webp'); background-size: cover; background-position:center;">
+                style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/s.webp'); background-size: cover; background-position:center;">
                 <div>
                     <h1 class="teks-besar text-light mb-3">Simply</h1>
                     <div class="d-flex gap-3">
@@ -618,7 +618,7 @@ function modalseries() {
     <div style="position:absolute" class="p-5 d-flex flex-column w-100 h-100 justify-content-center align-items-center">
         <a href="/product" class="findout">Find Out More</a>
     </div>
-    <img src="<?= base_url('/img/foto/home1.webp') ?>" style="width: 100%; height:50svh; object-fit: cover; background-color: rgba(0,0,0, 0.5);
+    <img src="<?= base_url('/img/foto/end.webp') ?>" style="width: 100%; height:50svh; object-fit: cover; background-color: rgba(0,0,0, 0.5);
   background-repeat:no-repeat; background-blend-mode: color;">
 </div>
 

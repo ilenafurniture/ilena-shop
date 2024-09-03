@@ -263,6 +263,9 @@ class AdminController extends BaseController
         $data = $this->request->getVar();
         $data_gambar_mentah = $this->request->getFiles();
 
+        $getFileGambarHover = $data_gambar_mentah['gambar_hover']->isValid() ? file_get_contents($data_gambar_mentah['gambar_hover']) : $barangCur['gambar_hover'];
+        unset($data_gambar_mentah['gambar_hover']);
+
         // difilter data gambar mentah krn ada input yg hanya sebagai penambah saja
         reset($data_gambar_mentah);
         $cekInputTerakhir = explode("-", key($data_gambar_mentah))[0] . "-" . explode("-", key($data_gambar_mentah))[1];
@@ -386,6 +389,7 @@ class AdminController extends BaseController
             'tokped' => $data['tokped'],
             'tiktok' => $data['tiktok'],
             'gambar' => $insertGambarBarang['gambar1'],
+            'gambar_hover' => $getFileGambarHover,
             'ruang_tamu' => isset($data['ruang_tamu']) ? '1' : '0',
             'ruang_keluarga' => isset($data['ruang_keluarga']) ? '1' : '0',
             'ruang_tidur' => isset($data['ruang_tidur']) ? '1' : '0',

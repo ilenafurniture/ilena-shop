@@ -136,17 +136,17 @@ if (isset($_GET['ruang'])) {
             </div>
             <div class="collapse py-2" id="collapseExample">
                 <?php foreach ($navbar['koleksi'] as $ind_k => $k) { ?>
-                    <div class="checkbox-wrapper-46">
-                        <input type="checkbox" id="checkbox-filter-1-<?= $ind_k ?>" class="inp-cbx filter" name="koleksi"
-                            value="<?= str_replace(" ", "-", strtolower($k['nama'])); ?>"
-                            <?= isset($_GET['koleksi']) ? (in_array(str_replace(" ", "-", strtolower($k['nama'])), explode(" ", $_GET['koleksi'])) ? 'checked' : '') : ''; ?> />
-                        <label for="checkbox-filter-1-<?= $ind_k ?>" class="cbx"><span>
-                                <svg viewBox="0 0 12 10" height="10px" width="12px">
-                                    <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
-                                </svg></span>
-                            <p><?= ucfirst($k['nama']); ?></p>
-                        </label>
-                    </div>
+                <div class="checkbox-wrapper-46">
+                    <input type="checkbox" id="checkbox-filter-1-<?= $ind_k ?>" class="inp-cbx filter" name="koleksi"
+                        value="<?= str_replace(" ", "-", strtolower($k['nama'])); ?>"
+                        <?= isset($_GET['koleksi']) ? (in_array(str_replace(" ", "-", strtolower($k['nama'])), explode(" ", $_GET['koleksi'])) ? 'checked' : '') : ''; ?> />
+                    <label for="checkbox-filter-1-<?= $ind_k ?>" class="cbx"><span>
+                            <svg viewBox="0 0 12 10" height="10px" width="12px">
+                                <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                            </svg></span>
+                        <p><?= ucfirst($k['nama']); ?></p>
+                    </label>
+                </div>
                 <?php } ?>
             </div>
 
@@ -156,17 +156,17 @@ if (isset($_GET['ruang'])) {
             </div>
             <div class="collapse py-2" id="collapseExample1">
                 <?php foreach ($navbar['jenis'] as $ind_j => $j) { ?>
-                    <div class="checkbox-wrapper-46">
-                        <input type="checkbox" id="checkbox-filter-2-<?= $ind_j ?>" class="inp-cbx filter" name="jenis"
-                            value="<?= str_replace(" ", "-", strtolower($j['nama'])); ?>"
-                            <?= isset($_GET['jenis']) ? (in_array(str_replace(" ", "-", strtolower($j['nama'])), explode(" ", $_GET['jenis'])) ? 'checked' : '') : ''; ?> />
-                        <label for="checkbox-filter-2-<?= $ind_j ?>" class="cbx"><span>
-                                <svg viewBox="0 0 12 10" height="10px" width="12px">
-                                    <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
-                                </svg></span>
-                            <p><?= ucfirst($j['nama']); ?></p>
-                        </label>
-                    </div>
+                <div class="checkbox-wrapper-46">
+                    <input type="checkbox" id="checkbox-filter-2-<?= $ind_j ?>" class="inp-cbx filter" name="jenis"
+                        value="<?= str_replace(" ", "-", strtolower($j['nama'])); ?>"
+                        <?= isset($_GET['jenis']) ? (in_array(str_replace(" ", "-", strtolower($j['nama'])), explode(" ", $_GET['jenis'])) ? 'checked' : '') : ''; ?> />
+                    <label for="checkbox-filter-2-<?= $ind_j ?>" class="cbx"><span>
+                            <svg viewBox="0 0 12 10" height="10px" width="12px">
+                                <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                            </svg></span>
+                        <p><?= ucfirst($j['nama']); ?></p>
+                    </label>
+                </div>
                 <?php } ?>
             </div>
 
@@ -176,8 +176,7 @@ if (isset($_GET['ruang'])) {
             </div>
             <div class="collapse py-2" id="collapseExample4">
                 <div class="checkbox-wrapper-46">
-                    <input type="checkbox" id="checkbox-filter-10" class="inp-cbx filter" name="ruang"
-                        value="tamu"
+                    <input type="checkbox" id="checkbox-filter-10" class="inp-cbx filter" name="ruang" value="tamu"
                         <?= isset($_GET['ruang']) ? (in_array('tamu', explode(" ", $_GET['ruang'])) ? 'checked' : '') : ''; ?> />
                     <label for="checkbox-filter-10" class="cbx"><span>
                             <svg viewBox="0 0 12 10" height="10px" width="12px">
@@ -187,8 +186,7 @@ if (isset($_GET['ruang'])) {
                     </label>
                 </div>
                 <div class="checkbox-wrapper-46">
-                    <input type="checkbox" id="checkbox-filter-11" class="inp-cbx filter" name="ruang"
-                        value="keluarga"
+                    <input type="checkbox" id="checkbox-filter-11" class="inp-cbx filter" name="ruang" value="keluarga"
                         <?= isset($_GET['ruang']) ? (in_array('keluarga', explode(" ", $_GET['ruang'])) ? 'checked' : '') : ''; ?> />
                     <label for="checkbox-filter-11" class="cbx"><span>
                             <svg viewBox="0 0 12 10" height="10px" width="12px">
@@ -198,8 +196,7 @@ if (isset($_GET['ruang'])) {
                     </label>
                 </div>
                 <div class="checkbox-wrapper-46">
-                    <input type="checkbox" id="checkbox-filter-12" class="inp-cbx filter" name="ruang"
-                        value="tidur"
+                    <input type="checkbox" id="checkbox-filter-12" class="inp-cbx filter" name="ruang" value="tidur"
                         <?= isset($_GET['ruang']) ? (in_array('tidur', explode(" ", $_GET['ruang'])) ? 'checked' : '') : ''; ?> />
                     <label for="checkbox-filter-12" class="cbx"><span>
                             <svg viewBox="0 0 12 10" height="10px" width="12px">
@@ -275,7 +272,7 @@ if (isset($_GET['ruang'])) {
             <div class="d-flex gap-3 mt-2">
                 <a class="btn-filter btn-lonjong">Terapkan</a>
                 <?php if (!empty($_GET['koleksi']) || !empty($_GET['jenis']) || !empty($_GET['harga'])) { ?>
-                    <a class="btn-teks-aja" href="/product">Hapus Filter</a>
+                <a class="btn-teks-aja" href="/product">Hapus Filter</a>
                 <?php } ?>
             </div>
         </div>
@@ -288,9 +285,9 @@ if (isset($_GET['ruang'])) {
                 <div class="container-badge-filter mb-2" style="position: absolute;">
                     <?php foreach ($seluruhFilter as $ind_f => $f) {
                         if ($f) { ?>
-                            <div class="item-badge-filter">
-                                <p><?= ucwords(str_replace('-', ' ', $f)); ?></p>
-                            </div>
+                    <div class="item-badge-filter">
+                        <p><?= ucwords(str_replace('-', ' ', $f)); ?></p>
+                    </div>
                     <?php }
                     } ?>
                 </div>
@@ -310,17 +307,17 @@ if (isset($_GET['ruang'])) {
                 </div>
                 <div class="collapse py-2" id="collapseExample">
                     <?php foreach ($navbar['koleksi'] as $ind_k => $k) { ?>
-                        <div class="checkbox-wrapper-46">
-                            <input type="checkbox" id="checkbox-filter-1-<?= $ind_k ?>-hp" class="inp-cbx filter"
-                                name="koleksi1" value="<?= str_replace(" ", "-", strtolower($k['nama'])); ?>"
-                                <?= isset($_GET['koleksi']) ? (in_array(str_replace(" ", "-", strtolower($k['nama'])), explode(" ", $_GET['koleksi'])) ? 'checked' : '') : ''; ?> />
-                            <label for="checkbox-filter-1-<?= $ind_k ?>-hp" class="cbx"><span>
-                                    <svg viewBox="0 0 12 10" height="10px" width="12px">
-                                        <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
-                                    </svg></span>
-                                <p><?= ucfirst($k['nama']); ?></p>
-                            </label>
-                        </div>
+                    <div class="checkbox-wrapper-46">
+                        <input type="checkbox" id="checkbox-filter-1-<?= $ind_k ?>-hp" class="inp-cbx filter"
+                            name="koleksi1" value="<?= str_replace(" ", "-", strtolower($k['nama'])); ?>"
+                            <?= isset($_GET['koleksi']) ? (in_array(str_replace(" ", "-", strtolower($k['nama'])), explode(" ", $_GET['koleksi'])) ? 'checked' : '') : ''; ?> />
+                        <label for="checkbox-filter-1-<?= $ind_k ?>-hp" class="cbx"><span>
+                                <svg viewBox="0 0 12 10" height="10px" width="12px">
+                                    <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                                </svg></span>
+                            <p><?= ucfirst($k['nama']); ?></p>
+                        </label>
+                    </div>
                     <?php } ?>
                 </div>
 
@@ -330,17 +327,17 @@ if (isset($_GET['ruang'])) {
                 </div>
                 <div class="collapse py-2" id="collapseExample1">
                     <?php foreach ($navbar['jenis'] as $ind_j => $j) { ?>
-                        <div class="checkbox-wrapper-46">
-                            <input type="checkbox" id="checkbox-filter-2-<?= $ind_j ?>-hp" class="inp-cbx filter"
-                                name="jenis1" value="<?= str_replace(" ", "-", strtolower($j['nama'])); ?>"
-                                <?= isset($_GET['jenis']) ? (in_array(str_replace(" ", "-", strtolower($j['nama'])), explode(" ", $_GET['jenis'])) ? 'checked' : '') : ''; ?> />
-                            <label for="checkbox-filter-2-<?= $ind_j ?>-hp" class="cbx"><span>
-                                    <svg viewBox="0 0 12 10" height="10px" width="12px">
-                                        <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
-                                    </svg></span>
-                                <p><?= ucfirst($j['nama']); ?></p>
-                            </label>
-                        </div>
+                    <div class="checkbox-wrapper-46">
+                        <input type="checkbox" id="checkbox-filter-2-<?= $ind_j ?>-hp" class="inp-cbx filter"
+                            name="jenis1" value="<?= str_replace(" ", "-", strtolower($j['nama'])); ?>"
+                            <?= isset($_GET['jenis']) ? (in_array(str_replace(" ", "-", strtolower($j['nama'])), explode(" ", $_GET['jenis'])) ? 'checked' : '') : ''; ?> />
+                        <label for="checkbox-filter-2-<?= $ind_j ?>-hp" class="cbx"><span>
+                                <svg viewBox="0 0 12 10" height="10px" width="12px">
+                                    <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                                </svg></span>
+                            <p><?= ucfirst($j['nama']); ?></p>
+                        </label>
+                    </div>
                     <?php } ?>
                 </div>
 
@@ -449,7 +446,7 @@ if (isset($_GET['ruang'])) {
                 <div class="d-flex gap-3 mt-2">
                     <a class="btn-filter btn-lonjong">Terapkan</a>
                     <?php if (!empty($_GET['koleksi']) || !empty($_GET['jenis']) || !empty($_GET['harga'])) { ?>
-                        <a class="btn-teks-aja" href="/product">Hapus Filter</a>
+                    <a class="btn-teks-aja" href="/product">Hapus Filter</a>
                     <?php } ?>
                 </div>
             </div>
@@ -458,12 +455,13 @@ if (isset($_GET['ruang'])) {
         <div style="flex: 1;">
             <!-- <div style="position: absolute;" class="w-100"> -->
             <?php if (session()->get('role') == '1') { ?>
-                <div class="d-flex justify-content-between">
-                    <h1 class="teks-sedang">List Product</h1>
-                    <a href="/admin/addproduct" class="btn-default-merah">Tambah Produk</a>
-                </div>
+            <div class="d-flex justify-content-between">
+                <h1 class="teks-sedang">List Product</h1>
+                <a href="/admin/addproduct" class="btn-default-merah">Tambah Produk</a>
+            </div>
             <?php } ?>
-            <nav style="--bs-breadcrumb-divider: '/'; position: relative; <?= (isset($_GET['koleksi']) || isset($_GET['jenis']) || isset($_GET['ruang'])) ? 'height: 80px' : ''; ?>" aria-label="breadcrumb" class="show-block-ke-hide">
+            <nav style="--bs-breadcrumb-divider: '/'; position: relative; <?= (isset($_GET['koleksi']) || isset($_GET['jenis']) || isset($_GET['ruang'])) ? 'height: 80px' : ''; ?>"
+                aria-label="breadcrumb" class="show-block-ke-hide">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/">Beranda</a></li>
                     <li class="breadcrumb-item"><a href="/product">Produk</a></li>
@@ -472,86 +470,88 @@ if (isset($_GET['ruang'])) {
                 <div class="container-badge-filter mb-3" style="position: absolute;">
                     <?php foreach ($seluruhFilter as $ind_f => $f) {
                         if ($f) { ?>
-                            <div class="item-badge-filter">
-                                <p><?= ucwords(str_replace('-', ' ', $f)); ?></p>
-                            </div>
+                    <div class="item-badge-filter">
+                        <p><?= ucwords(str_replace('-', ' ', $f)); ?></p>
+                    </div>
                     <?php }
                     } ?>
                 </div>
             </nav>
             <?php if (isset($find)) { ?>
-                <p>Anda mencari "<?= $find ?>"</p>
+            <p>Anda mencari "<?= $find ?>"</p>
             <?php } ?>
             <div class="container-card1">
                 <?php foreach ($produk as $ind_p => $p) { ?>
-                    <div class="card1">
-                        <div style="position: relative;">
-                            <span class="card1-content-img-kiri" <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
-                            <div class="d-flex flex-column gap-2 card1-content-img-kanan">
-                                <?= session()->get('role') == '1' ? '<a class="card1-btn-img" href="/admin/editproduct/' . $p['id'] . '"><i class="material-icons">edit</i></a>' : '' ?>
-                                <?= in_array($p['id'], $wishlist) ? '<a class="card1-btn-img" href="/delwishlist/' . $p['id'] . '"><i class="material-icons">bookmark</i></a>' : '<a class="card1-btn-img" href="/addwishlist/' . $p['id'] . '"><i class="material-icons">bookmark_border</i></a>' ?>
-                                <a id="card<?= $ind_p ?>" class="card1-btn-img"
-                                    href="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'], true)[0]['nama'] ?>/1"><i
-                                        class="material-icons">shopping_cart</i></a>
-                            </div>
-                            <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>">
-                                <img id="img<?= $ind_p ?>" src="/viewpic/<?= $p['id']; ?>" alt="">
-                            </a>
+                <div class="card1">
+                    <div style="position: relative;">
+                        <span class="card1-content-img-kiri"
+                            <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
+                        <div class="d-flex flex-column gap-2 card1-content-img-kanan">
+                            <?= session()->get('role') == '1' ? '<a class="card1-btn-img" href="/admin/editproduct/' . $p['id'] . '"><i class="material-icons">edit</i></a>' : '' ?>
+                            <?= in_array($p['id'], $wishlist) ? '<a class="card1-btn-img" href="/delwishlist/' . $p['id'] . '"><i class="material-icons">bookmark</i></a>' : '<a class="card1-btn-img" href="/addwishlist/' . $p['id'] . '"><i class="material-icons">bookmark_border</i></a>' ?>
+                            <a id="card<?= $ind_p ?>" class="card1-btn-img"
+                                href="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'], true)[0]['nama'] ?>/1"><i
+                                    class="material-icons">shopping_cart</i></a>
                         </div>
-                        <div class="container-varian mb-1 d-flex">
-                            <?php foreach (json_decode($p['varian'], true) as $ind_v => $v) { ?>
-                                <input id="varian-<?= $ind_p ?>-<?= $ind_v ?>"
-                                    value="<?= $v['urutan_gambar'] ?>-<?= $v['nama'] ?>" type="radio"
-                                    name="varian<?= $ind_p ?>">
-                                <label for="varian-<?= $ind_p ?>-<?= $ind_v ?>"><span
-                                        style="background-color: <?= $v['kode'] ?>"></span></label>
-                            <?php } ?>
-                            <script>
-                                const btnKeranjang<?= $ind_p ?>Elm = document.getElementById("card<?= $ind_p ?>");
-                                const varian<?= $ind_p ?>Elm = document.querySelectorAll('input[name="varian<?= $ind_p ?>"]');
-                                varian<?= $ind_p ?>Elm.forEach(elm => {
-                                    elm.addEventListener('change', (e) => {
-                                        console.log(e.target.value)
-                                        const img<?= $ind_p ?>Elm = document.getElementById("img<?= $ind_p ?>");
-                                        img<?= $ind_p ?>Elm.src =
-                                            "/viewvar/<?= $p['id']; ?>/" + e.target.value.split("-")[0].split(
-                                                ",")[
-                                                0];
-
-                                        btnKeranjang<?= $ind_p ?>Elm.href = "/addcart/<?= $p['id'] ?>/" + e
-                                            .target
-                                            .value.split("-")[1] + "/1";
-                                    })
-                                });
-                            </script>
-                        </div>
-                        <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="text-dark">
-                            <p class="text-secondary text-sm-start m-0"><?= strtolower($p['kategori']); ?></p>
-                            <h5 style="font-size:18px;"><?= str_replace('Tv', 'TV', ucwords($p['nama'])); ?></h5>
-                            <div class="d-flex gap-2">
-                                <p class="harga">Rp <?= number_format($p['harga'] * (100 - $p['diskon']) / 100, 0, ',', '.'); ?></p>
-                                <?php if ($p['diskon'] > 0) { ?>
-                                    <p class="harga-diskon">Rp <?= number_format($p['harga'], 0, ',', '.') ?></p>
-                                <?php } ?>
-                            </div>
+                        <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>">
+                            <img id="img<?= $ind_p ?>" src="/viewpic/<?= $p['id']; ?>" alt="">
                         </a>
                     </div>
+                    <div class="container-varian mb-1 d-flex">
+                        <?php foreach (json_decode($p['varian'], true) as $ind_v => $v) { ?>
+                        <input id="varian-<?= $ind_p ?>-<?= $ind_v ?>"
+                            value="<?= $v['urutan_gambar'] ?>-<?= $v['nama'] ?>" type="radio"
+                            name="varian<?= $ind_p ?>">
+                        <label for="varian-<?= $ind_p ?>-<?= $ind_v ?>"><span
+                                style="background-color: <?= $v['kode'] ?>"></span></label>
+                        <?php } ?>
+                        <script>
+                        const btnKeranjang<?= $ind_p ?>Elm = document.getElementById("card<?= $ind_p ?>");
+                        const varian<?= $ind_p ?>Elm = document.querySelectorAll('input[name="varian<?= $ind_p ?>"]');
+                        varian<?= $ind_p ?>Elm.forEach(elm => {
+                            elm.addEventListener('change', (e) => {
+                                console.log(e.target.value)
+                                const img<?= $ind_p ?>Elm = document.getElementById("img<?= $ind_p ?>");
+                                img<?= $ind_p ?>Elm.src =
+                                    "/viewvar/<?= $p['id']; ?>/" + e.target.value.split("-")[0].split(
+                                        ",")[
+                                        0];
+
+                                btnKeranjang<?= $ind_p ?>Elm.href = "/addcart/<?= $p['id'] ?>/" + e
+                                    .target
+                                    .value.split("-")[1] + "/1";
+                            })
+                        });
+                        </script>
+                    </div>
+                    <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="text-dark">
+                        <p class="text-secondary text-sm-start m-0"><?= strtolower($p['kategori']); ?></p>
+                        <h5 style="font-size:18px;"><?= str_replace('Tv', 'TV', ucwords($p['nama'])); ?></h5>
+                        <div class="d-flex gap-2">
+                            <p class="harga">Rp
+                                <?= number_format($p['harga'] * (100 - $p['diskon']) / 100, 0, ',', '.'); ?></p>
+                            <?php if ($p['diskon'] > 0) { ?>
+                            <p class="harga-diskon">Rp <?= number_format($p['harga'], 0, ',', '.') ?></p>
+                            <?php } ?>
+                        </div>
+                    </a>
+                </div>
                 <?php } ?>
             </div>
             <div class="container-pag">
                 <?php if ($pag > 1) { ?>
-                    <a class="item-pag"
-                        href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&ruang=<?= isset($_GET['ruang']) ? $_GET['ruang'] : ''; ?>&pag=<?= $pag - 1; ?>"><i
-                            class="material-icons">chevron_left</i></a>
+                <a class="item-pag"
+                    href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&ruang=<?= isset($_GET['ruang']) ? $_GET['ruang'] : ''; ?>&pag=<?= $pag - 1; ?>"><i
+                        class="material-icons">chevron_left</i></a>
                 <?php } ?>
                 <?php for ($i = 0; $i < $hitungPag; $i++) { ?>
-                    <a class="item-pag <?= $pag == ($i + 1) ? 'active' : ''; ?>"
-                        href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&ruang=<?= isset($_GET['ruang']) ? $_GET['ruang'] : ''; ?>&pag=<?= $i + 1; ?>"><?= $i + 1; ?></a>
+                <a class="item-pag <?= $pag == ($i + 1) ? 'active' : ''; ?>"
+                    href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&ruang=<?= isset($_GET['ruang']) ? $_GET['ruang'] : ''; ?>&pag=<?= $i + 1; ?>"><?= $i + 1; ?></a>
                 <?php } ?>
                 <?php if ($pag < $hitungPag) { ?>
-                    <a class="item-pag"
-                        href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&ruang=<?= isset($_GET['ruang']) ? $_GET['ruang'] : ''; ?>&pag=<?= $pag + 1; ?>"><i
-                            class="material-icons">chevron_right</i></a>
+                <a class="item-pag"
+                    href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&ruang=<?= isset($_GET['ruang']) ? $_GET['ruang'] : ''; ?>&pag=<?= $pag + 1; ?>"><i
+                        class="material-icons">chevron_right</i></a>
                 <?php } ?>
             </div>
             <!-- </div> -->
@@ -559,129 +559,129 @@ if (isset($_GET['ruang'])) {
     </div>
 </div>
 <script>
-    const btnFilterElm = document.querySelectorAll('.btn-filter');
-    const filterKoleksiElm = document.querySelectorAll('input[name="koleksi"]')
-    const filterJenisElm = document.querySelectorAll('input[name="jenis"]')
-    const filterHargaElm = document.querySelectorAll('input[name="harga"]')
-    const filterRuangElm = document.querySelectorAll('input[name="ruang"]')
-    const filterKoleksi1Elm = document.querySelectorAll('input[name="koleksi1"]')
-    const filterJenis1Elm = document.querySelectorAll('input[name="jenis1"]')
-    const filterHarga1Elm = document.querySelectorAll('input[name="harga1"]')
-    const filterRuang1Elm = document.querySelectorAll('input[name="ruang1"]')
-    let urlCur = window.location.pathname;
-    console.log(urlCur)
-    let koleksiParam = ''
-    let jenisParam = ''
-    let hargaParam = ''
-    let ruangParam = ''
+const btnFilterElm = document.querySelectorAll('.btn-filter');
+const filterKoleksiElm = document.querySelectorAll('input[name="koleksi"]')
+const filterJenisElm = document.querySelectorAll('input[name="jenis"]')
+const filterHargaElm = document.querySelectorAll('input[name="harga"]')
+const filterRuangElm = document.querySelectorAll('input[name="ruang"]')
+const filterKoleksi1Elm = document.querySelectorAll('input[name="koleksi1"]')
+const filterJenis1Elm = document.querySelectorAll('input[name="jenis1"]')
+const filterHarga1Elm = document.querySelectorAll('input[name="harga1"]')
+const filterRuang1Elm = document.querySelectorAll('input[name="ruang1"]')
+let urlCur = window.location.pathname;
+console.log(urlCur)
+let koleksiParam = ''
+let jenisParam = ''
+let hargaParam = ''
+let ruangParam = ''
 
-    btnFilterElm.forEach(elm => {
-        elm.addEventListener('click', () => {
-            koleksiParam = ''
-            jenisParam = ''
-            hargaParam = ''
-            ruangParam = ''
-            console.log(window.innerWidth)
-            if (window.innerWidth > 600) {
-                filterKoleksiElm.forEach((koleksiElm) => {
-                    if (koleksiElm.checked) {
-                        if (koleksiParam == '')
-                            koleksiParam += koleksiElm.value
-                        else
-                            koleksiParam += '+' + koleksiElm.value
-                    }
-                });
-                filterJenisElm.forEach((jenisElm) => {
-                    if (jenisElm.checked) {
-                        if (jenisParam == '')
-                            jenisParam += jenisElm.value
-                        else
-                            jenisParam += '+' + jenisElm.value
-                    }
-                });
-                filterHargaElm.forEach((hargaElm) => {
-                    if (hargaElm.checked) {
-                        hargaParam = hargaElm.value
-                    }
-                });
-                filterRuangElm.forEach((ruangElm) => {
-                    if (ruangElm.checked) {
-                        if (ruangParam == '')
-                            ruangParam += ruangElm.value
-                        else
-                            ruangParam += '+' + ruangElm.value
-                    }
-                });
-            } else {
-                filterKoleksi1Elm.forEach((koleksiElm) => {
-                    if (koleksiElm.checked) {
-                        if (koleksiParam == '')
-                            koleksiParam += koleksiElm.value
-                        else
-                            koleksiParam += '+' + koleksiElm.value
-                    }
-                });
-                filterJenis1Elm.forEach((jenisElm) => {
-                    if (jenisElm.checked) {
-                        if (jenisParam == '')
-                            jenisParam += jenisElm.value
-                        else
-                            jenisParam += '+' + jenisElm.value
-                    }
-                });
-                filterHarga1Elm.forEach((hargaElm) => {
-                    if (hargaElm.checked) {
-                        hargaParam = hargaElm.value
-                    }
-                });
-                filterRuang1Elm.forEach((ruangElm) => {
-                    if (ruangElm.checked) {
-                        if (ruangParam == '')
-                            ruangParam += ruangElm.value
-                        else
-                            ruangParam += '+' + ruangElm.value
-                    }
-                });
-            }
+btnFilterElm.forEach(elm => {
+    elm.addEventListener('click', () => {
+        koleksiParam = ''
+        jenisParam = ''
+        hargaParam = ''
+        ruangParam = ''
+        console.log(window.innerWidth)
+        if (window.innerWidth > 600) {
+            filterKoleksiElm.forEach((koleksiElm) => {
+                if (koleksiElm.checked) {
+                    if (koleksiParam == '')
+                        koleksiParam += koleksiElm.value
+                    else
+                        koleksiParam += '+' + koleksiElm.value
+                }
+            });
+            filterJenisElm.forEach((jenisElm) => {
+                if (jenisElm.checked) {
+                    if (jenisParam == '')
+                        jenisParam += jenisElm.value
+                    else
+                        jenisParam += '+' + jenisElm.value
+                }
+            });
+            filterHargaElm.forEach((hargaElm) => {
+                if (hargaElm.checked) {
+                    hargaParam = hargaElm.value
+                }
+            });
+            filterRuangElm.forEach((ruangElm) => {
+                if (ruangElm.checked) {
+                    if (ruangParam == '')
+                        ruangParam += ruangElm.value
+                    else
+                        ruangParam += '+' + ruangElm.value
+                }
+            });
+        } else {
+            filterKoleksi1Elm.forEach((koleksiElm) => {
+                if (koleksiElm.checked) {
+                    if (koleksiParam == '')
+                        koleksiParam += koleksiElm.value
+                    else
+                        koleksiParam += '+' + koleksiElm.value
+                }
+            });
+            filterJenis1Elm.forEach((jenisElm) => {
+                if (jenisElm.checked) {
+                    if (jenisParam == '')
+                        jenisParam += jenisElm.value
+                    else
+                        jenisParam += '+' + jenisElm.value
+                }
+            });
+            filterHarga1Elm.forEach((hargaElm) => {
+                if (hargaElm.checked) {
+                    hargaParam = hargaElm.value
+                }
+            });
+            filterRuang1Elm.forEach((ruangElm) => {
+                if (ruangElm.checked) {
+                    if (ruangParam == '')
+                        ruangParam += ruangElm.value
+                    else
+                        ruangParam += '+' + ruangElm.value
+                }
+            });
+        }
 
-            // console.log(urlCur + '?koleksi=' + koleksiParam + '&jenis=' + jenisParam + '&harga=' + hargaParam)
-            let paramArr = [];
-            if (koleksiParam != '') paramArr.push('koleksi=' + koleksiParam)
-            if (jenisParam != '') paramArr.push('jenis=' + jenisParam)
-            if (hargaParam != '') paramArr.push('harga=' + hargaParam)
-            if (ruangParam != '') paramArr.push('ruang=' + ruangParam)
-            window.location.href = urlCur + '?' + paramArr.join('&')
-        })
+        // console.log(urlCur + '?koleksi=' + koleksiParam + '&jenis=' + jenisParam + '&harga=' + hargaParam)
+        let paramArr = [];
+        if (koleksiParam != '') paramArr.push('koleksi=' + koleksiParam)
+        if (jenisParam != '') paramArr.push('jenis=' + jenisParam)
+        if (hargaParam != '') paramArr.push('harga=' + hargaParam)
+        if (ruangParam != '') paramArr.push('ruang=' + ruangParam)
+        window.location.href = urlCur + '?' + paramArr.join('&')
     })
-    // btnFilterElm.forEach(element => {
-    //     element.addEventListener('click', () => {
-    //         const filterInputElm = document.querySelectorAll(".filter:checked");
-    //         let arrFilter = [];
-    //         let valueFilter = [];
-    //         filterInputElm.forEach(filterinp => {
-    //             // console.log(filterinp.value);
-    //             if (!arrFilter.includes(filterinp.value.split("-")[0])) {
-    //                 arrFilter.push(filterinp.value.split("-")[0]);
-    //                 valueFilter.push(filterinp.value.split("-")[1]);
-    //             } else {
-    //                 valueFilter[valueFilter.length - 1] += '-' + filterinp.value.split("-")[1]
-    //             }
-    //         });
-    //         console.log(arrFilter)
-    //         console.log(valueFilter)
-    //         const pathUrl = window.location.pathname
-    //         let strUrl = pathUrl + '?'
-    //         arrFilter.forEach((fil, ind_fil) => {
-    //             strUrl += "&" + fil + "=" + valueFilter[ind_fil]
-    //         })
-    //         console.log(strUrl)
-    //         window.location.href = strUrl
-    //     })
-    // });
+})
+// btnFilterElm.forEach(element => {
+//     element.addEventListener('click', () => {
+//         const filterInputElm = document.querySelectorAll(".filter:checked");
+//         let arrFilter = [];
+//         let valueFilter = [];
+//         filterInputElm.forEach(filterinp => {
+//             // console.log(filterinp.value);
+//             if (!arrFilter.includes(filterinp.value.split("-")[0])) {
+//                 arrFilter.push(filterinp.value.split("-")[0]);
+//                 valueFilter.push(filterinp.value.split("-")[1]);
+//             } else {
+//                 valueFilter[valueFilter.length - 1] += '-' + filterinp.value.split("-")[1]
+//             }
+//         });
+//         console.log(arrFilter)
+//         console.log(valueFilter)
+//         const pathUrl = window.location.pathname
+//         let strUrl = pathUrl + '?'
+//         arrFilter.forEach((fil, ind_fil) => {
+//             strUrl += "&" + fil + "=" + valueFilter[ind_fil]
+//         })
+//         console.log(strUrl)
+//         window.location.href = strUrl
+//     })
+// });
 
-    function pergiKeProduct(id_produk) {
-        window.location.href = "/product/" + id_produk
-    }
+function pergiKeProduct(id_produk) {
+    window.location.href = "/product/" + id_produk
+}
 </script>
 
 <?= $this->endSection(); ?>

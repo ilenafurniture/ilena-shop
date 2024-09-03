@@ -12,6 +12,7 @@ class BarangModel extends Model
         'nama',
         'pencarian',
         'gambar',
+        'gambar_hover',
         'harga',
         'deskripsi',
         'kategori',
