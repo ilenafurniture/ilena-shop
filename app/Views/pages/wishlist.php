@@ -25,8 +25,10 @@
                                     <a id="card<?= $ind_p ?>" class="card1-btn-img" href="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'], true)[0]['nama'] ?>/1"><i class="material-icons">shopping_cart</i></a>
                                 </div>
                             </div>
-                            <a href="/product/<?= $p['id']; ?>">
-                                <img id="img<?= $ind_p ?>" src="/viewpic/<?= $p['id']; ?>" alt="">
+                            <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>">
+                                <img class="<?= $p['gambar_hover'] ? '' : 'nonhover'; ?> img-pic" id="img<?= $ind_p ?>" src="/viewpic/<?= $p['id']; ?>" alt="">
+                                <img class="<?= $p['gambar_hover'] ? '' : 'nonhover'; ?> img-pic-hover" id="img<?= $ind_p ?>" src="/viewpichover/<?= $p['id']; ?>"
+                                    alt="">
                             </a>
                         </div>
                         <div class="container-varian mb-1 d-flex">

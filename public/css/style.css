@@ -469,10 +469,22 @@ body {
     margin-bottom: 1em;
     /* border-radius: 0.5em; */
 }
+.card1 .img-pic.nonhover {
+    display: block;
+}
+.card1:hover .img-pic.nonhover {
+    display: block;
+}
 .card1 .img-pic {
     display: block;
 }
 .card1:hover .img-pic {
+    display: none;
+}
+.card1 .img-pic-hover.nonhover {
+    display: none;
+}
+.card1:hover .img-pic-hover.nonhover {
     display: none;
 }
 .card1 .img-pic-hover {

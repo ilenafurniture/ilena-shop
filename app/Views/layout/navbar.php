@@ -14,36 +14,36 @@
             </div>
             <div style="width: calc(100% / 3)" class="d-flex justify-content-end">
                 <?php if (session()->get('isLogin')) { ?>
-                <?php if (session()->get('role') == '0' || session()->get('role') == '4') { ?>
-                <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
-                <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
-                <a href="/account" class="btn"><i class="material-icons text-light">person_outline</i></a>
-                <?php } else if (session()->get('role') == '1') { ?>
-                <a href="/admin/product" class="btn d-flex align-items-center">
-                    <i class="material-icons text-light">chevron_left</i>
-                    <p class="m-0 text-light">Admin</p>
-                </a>
-                <a href="/logout" class="btn" style="padding-right: 0"><i
-                        class="material-icons text-light">exit_to_app</i></a>
-                <?php } else if (session()->get('role') == '2') { ?>
-                <a href="/gudang/listorder" class="btn d-flex align-items-center">
-                    <i class="material-icons text-light">chevron_left</i>
-                    <p class="m-0 text-light">Gudang</p>
-                </a>
-                <a href="/logout" class="btn" style="padding-right: 0"><i
-                        class="material-icons text-light">exit_to_app</i></a>
-                <?php } else if (session()->get('role') == '3') { ?>
-                <a href="/market/product" class="btn d-flex align-items-center">
-                    <i class="material-icons text-light">chevron_left</i>
-                    <p class="m-0 text-light">Marketplace</p>
-                </a>
-                <a href="/logout" class="btn" style="padding-right: 0"><i
-                        class="material-icons text-light">exit_to_app</i></a>
-                <?php } ?>
+                    <?php if (session()->get('role') == '0' || session()->get('role') == '4') { ?>
+                        <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
+                        <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
+                        <a href="/account" class="btn"><i class="material-icons text-light">person_outline</i></a>
+                    <?php } else if (session()->get('role') == '1') { ?>
+                        <a href="/admin/product" class="btn d-flex align-items-center">
+                            <i class="material-icons text-light">chevron_left</i>
+                            <p class="m-0 text-light">Admin</p>
+                        </a>
+                        <a href="/logout" class="btn" style="padding-right: 0"><i
+                                class="material-icons text-light">exit_to_app</i></a>
+                    <?php } else if (session()->get('role') == '2') { ?>
+                        <a href="/gudang/listorder" class="btn d-flex align-items-center">
+                            <i class="material-icons text-light">chevron_left</i>
+                            <p class="m-0 text-light">Gudang</p>
+                        </a>
+                        <a href="/logout" class="btn" style="padding-right: 0"><i
+                                class="material-icons text-light">exit_to_app</i></a>
+                    <?php } else if (session()->get('role') == '3') { ?>
+                        <a href="/market/product" class="btn d-flex align-items-center">
+                            <i class="material-icons text-light">chevron_left</i>
+                            <p class="m-0 text-light">Marketplace</p>
+                        </a>
+                        <a href="/logout" class="btn" style="padding-right: 0"><i
+                                class="material-icons text-light">exit_to_app</i></a>
+                    <?php } ?>
                 <?php } else { ?>
-                <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
-                <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
-                <a href="/login" class="btn"><i class="material-icons text-light">person_outline</i></a>
+                    <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
+                    <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
+                    <a href="/login" class="btn"><i class="material-icons text-light">person_outline</i></a>
                 <?php } ?>
             </div>
         </div>
@@ -364,11 +364,11 @@
                                 href="/product?koleksi=cabana&jenis=queen-bed"
                                 onmouseover="hoverListNav('cabana-queen')">Queen Bed</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cabana&jenis=side-table"
-                                onmouseover="hoverListNav('cabana-side')">Side Table</a>
-                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
                                 href="/product?koleksi=cabana&jenis=single-bed"
                                 onmouseover="hoverListNav('cabana-single')">Single Bed</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=cabana&jenis=side-table"
+                                onmouseover="hoverListNav('cabana-side')">Side Table</a>
                         </div>
                     </div>
                     <div style="flex:1;">
@@ -589,12 +589,12 @@
                                 href="/product?koleksi=orca&jenis=queen-bed"
                                 onmouseover="hoverListNav('orca-queen')">Queen Bed</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=orca&jenis=single-bed"
+                                onmouseover="hoverListNav('orca-single')">Single Bed</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
                                 href="/product?koleksi=orca&jenis=side-table"
                                 onmouseover="hoverListNav('orca-side')">Side
                                 Table</a>
-                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=orca&jenis=single-bed"
-                                onmouseover="hoverListNav('orca-single')">Single Bed</a>
                         </div>
                     </div>
                     <div style="flex: 1;">
@@ -785,12 +785,12 @@
                                 href="/product?koleksi=water-case&jenis=queen-bed"
                                 onmouseover="hoverListNav('water-queen')">Queen Bed</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=water-case&jenis=single-bed"
+                                onmouseover="hoverListNav('water-single')">Single Bed</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
                                 href="/product?koleksi=water-case&jenis=side-table"
                                 onmouseover="hoverListNav('water-side')">Side
                                 Table</a>
-                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=water-case&jenis=single-bed"
-                                onmouseover="hoverListNav('water-single')">Single Bed</a>
                         </div>
                     </div>
                     <div style="flex:1;">
@@ -956,12 +956,12 @@
                                 href="/product?koleksi=plint-base&jenis=queen-bed"
                                 onmouseover="hoverListNav('plint-queen')">Queen Bed</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=plint-base&jenis=single-bed"
+                                onmouseover="hoverListNav('plint-single')">Single Bed</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
                                 href="/product?koleksi=plint-base&jenis=side-table"
                                 onmouseover="hoverListNav('plint-side')">Side
                                 Table</a>
-                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=plint-base&jenis=single-bed"
-                                onmouseover="hoverListNav('plint-single')">Single Bed</a>
                         </div>
                     </div>
                     <div style="flex:1;">
@@ -1138,12 +1138,12 @@
                                 href="/product?koleksi=cutout&jenis=queen-bed"
                                 onmouseover="hoverListNav('cutout-queen')">Queen Bed</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=cutout&jenis=single-bed"
+                                onmouseover="hoverListNav('cutout-single')">Single Bed</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
                                 href="/product?koleksi=cutout&jenis=side-table"
                                 onmouseover="hoverListNav('cutout-side')">Side
                                 Table</a>
-                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=cutout&jenis=single-bed"
-                                onmouseover="hoverListNav('cutout-single')">Single Bed</a>
                         </div>
                     </div>
                     <div style="flex: 1;">
@@ -1318,17 +1318,17 @@
     </div>
 </div>
 <script>
-function hoverListNav(idElm) {
-    console.log('.' + idElm.split('-')[0] + '-penjelasan')
-    const arrPenjelasanElm = document.querySelectorAll('.' + idElm.split('-')[0] + '-penjelasan');
-    console.log(arrPenjelasanElm)
-    arrPenjelasanElm.forEach(penjelasanElm => {
-        penjelasanElm.classList.add('d-none')
-        penjelasanElm.classList.remove('d-flex')
-    });
-    console.log(idElm)
-    const itemElm = document.getElementById(idElm)
-    itemElm.classList.remove('d-none')
-    itemElm.classList.add('d-flex')
-}
+    function hoverListNav(idElm) {
+        console.log('.' + idElm.split('-')[0] + '-penjelasan')
+        const arrPenjelasanElm = document.querySelectorAll('.' + idElm.split('-')[0] + '-penjelasan');
+        console.log(arrPenjelasanElm)
+        arrPenjelasanElm.forEach(penjelasanElm => {
+            penjelasanElm.classList.add('d-none')
+            penjelasanElm.classList.remove('d-flex')
+        });
+        console.log(idElm)
+        const itemElm = document.getElementById(idElm)
+        itemElm.classList.remove('d-none')
+        itemElm.classList.add('d-flex')
+    }
 </script>

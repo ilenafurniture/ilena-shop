@@ -10,11 +10,11 @@
             <div class="container-keranjang show-block-ke-hide">
                 <?php foreach ($keranjang as $index => $k) { ?>
                     <div class="item-keranjang">
-                        <a href="/product/<?= $k['detail']['id'] ?>" style="display:block;">
+                        <a href="/product/<?= str_replace(' ', '-', $k['detail']['nama']); ?>" style="display:block;">
                             <img src="<?= $k['src_gambar'] ?>" alt="Gambar Keranjang">
                         </a>
                         <div style="flex: 1;" class="d-flex flex-column">
-                            <a href="/product/<?= $k['detail']['id'] ?>" style="text-decoration:none; color: black;">
+                            <a href="/product/<?= str_replace(' ', '-', $k['detail']['nama']); ?>" style="text-decoration:none; color: black;">
                                 <p class="m-0"><?= ucfirst($k['detail']['kategori']) ?></p>
                                 <h1 class="nama-barang"><?= $k['detail']['nama'] ?></h1>
                                 <p class="my-2">Varian: <?= ucfirst($k['varian']) ?></p>
@@ -52,11 +52,11 @@
             <div class="hide-ke-show-block">
                 <?php foreach ($keranjang as $index => $k) { ?>
                     <div class="item-keranjang-hp">
-                        <a href="/product/<?= $k['detail']['id'] ?>" style="display:block;">
+                        <a href="/product/<?= str_replace(' ', '-', $k['detail']['nama']); ?>" style="display:block;">
                             <img src="<?= $k['src_gambar'] ?>" alt="Gambar Keranjang">
                         </a>
                         <div style="flex: 1;" class="d-flex flex-column justify-content-between">
-                            <a href="/product/<?= $k['detail']['id'] ?>" style="text-decoration:none; color: black;" class="d-flex flex-column h-100">
+                            <a href="/product/<?= str_replace(' ', '-', $k['detail']['nama']); ?>" style="text-decoration:none; color: black;" class="d-flex flex-column h-100">
                                 <div style="flex: 1">
                                     <p class="m-0" style="letter-spacing: -1px;"><?= ucwords($k['detail']['kategori']); ?></p>
                                     <h1 class="nama-barang"><?= $k['detail']['nama'] ?></h1>
