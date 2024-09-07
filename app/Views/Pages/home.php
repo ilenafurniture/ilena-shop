@@ -189,7 +189,7 @@
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <h1 class="teks-besar m-0">Industrial</h1>
-                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <h2 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
                 <p class="m-0">Menjadi diri sendiri dengan berkreasi sesuai kata hati masihkah terasa sulit? Mari mulai
                     dengan berbenah ruang yang merefleksikan karakter diri. Industrial Series hadir untuk menjadi teman
                     yang tepat untuk berdiri tegak tanpa takut menjadi beda, unik, menawan dengan elegan.<Br>Mari mulai
@@ -213,7 +213,7 @@
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <h1 class="teks-besar m-0">Sorely</h1>
-                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <h2 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
                 <p class="m-0">Terinspirasi oleh keindahan perpaduan dua material: kayu hangat dan logam tebal. Dibuat
                     dengan sungguh-sungguh untuk melengkapi interior estetis, menghadirkan kenyamanan dan ketenangan
                     bagi setiap penghuninya. Kami berbagi semangat kami dengan nama Ilena.</p>
@@ -236,7 +236,7 @@
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <h1 class="teks-besar m-0">Water Case</h1>
-                <h1 style=" font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <h2 style=" font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
                 <p class="m-0">Secara spesial dirancang untuk memberikan kehangatan dan kenyamanan pada hunian rumah.
                     water case series hadir dengan menunjukkan kesederhanaan sebuah desain yang memiliki fungsi sesuai
                     dengan kebutuhan dan memperindah rumah dengan sentuhan interior yang bersahaja dalam balutan gaya
@@ -260,7 +260,7 @@
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <h1 class="teks-besar m-0">Plint Base</h1>
-                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <h2 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
                 <p class="m-0">Ilena memaknai minimalis sebagai mahakarya indah yang dibalut dalam kesederhanaan. Dengan
                     kepraktisan fungsinya, plint base menjawab kebutuhan furniture secara menyeluruh dan relevan hingga
                     dalam waktu berdekade lamanya. Inilah Classic modern yang Anda butuhkan</p>
@@ -283,7 +283,7 @@
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <h1 class="teks-besar m-0">Cut Out</h1>
-                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <h2 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
                 <p class="m-0">Kami percaya bahwa sebuah ruangan didesain dengan sepenuh hati akan memberikan energi
                     positif bagi setiap penghuninya. Bekal inilah yang membuat Ilena terus melakukan inovasi untuk
                     menghadirkan furniture terbaik bagi Anda. Cut Out hadir dengan series dalam balutan gaya minimalis
@@ -310,7 +310,7 @@
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <h1 class="teks-besar m-0">Orca</h1>
-                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <h2 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
                 <p class="m-0">Merancang dengan sepenuh hati furniture bertemakan modern dengan sentuhan warna basic
                     yang menjadi aksen menonjol jadi ciri khas dari series Orca. Hadir dengan menonjolkan teksture khas
                     kayu yang unik dipadukan dengan finishing satin yang solid. Desain ini dipersembahkan untuk Anda
@@ -454,7 +454,7 @@
         <div class="d-flex p-5 h-100 w-100 text-light flex-column" style="flex:1; position:absolute;">
             <div style="flex:1;" class="h-100 d-flex flex-column justify-content-between">
                 <div>
-                    <h3 class="mb-2 teks-besar fw-bold" style="font-size:36px;">Maiden Season</h3>
+                    <h3 class="mb-2 teks-besar fw-bold" style="font-size:36px;">Inaugural Season</h3>
                     <p>Ilena hadir pertama kali dengan memperkenalkan 6 series terbaik. Terinspirasi dari berbagai
                         hal
                         baik dengan harapan dapat membawa kebaikan, untuk Anda.</p>
@@ -524,7 +524,8 @@
 <!-- Bagian Windows -->
 <div class="container show-flex-ke-hide gap-3 my-5" style="width:100%; height:60svh;">
     <a href="/product?ruang=tamu" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
-        <img src="./img/foto/4.webp" alt="" class="w-100 mb-3" style="flex: 1; width: 100%; object-fit: cover;">
+        <img src="./img/foto/livingroom.webp" alt="" class="w-100 mb-3"
+            style="flex: 1; width: 100%; object-fit: cover;">
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
             <h5 style="font-weight: 500;" class="m-0">L</h5>
             <h5 style="font-weight: 500;" class="m-0">I</h5>
@@ -536,7 +537,7 @@
         <h5 class="text-center fw-bold" style="font-size: 13px; height: fit-content">ROOM</h5>
     </a>
     <a href="/product?ruang=tidur" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
-        <img src="./img/foto/3.webp" alt="" class="w-100 mb-3" style="flex: 1; width: 100%; object-fit: cover;">
+        <img src="./img/foto/bedroom.webp" alt="" class="w-100 mb-3" style="flex: 1; width: 100%; object-fit: cover;">
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
             <h5 style="font-weight: 500;" class="m-0">B</h5>
             <h5 style="font-weight: 500;" class="m-0">E</h5>
@@ -545,7 +546,7 @@
         <h5 class="text-center fw-bold" style="font-size: 13px; height: fit-content">ROOM</h5>
     </a>
     <a href="/product?ruang=keluarga" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
-        <img src="./img/foto/2.webp" alt="" class="w-100 mb-3" style="flex: 1; width: 100%; object-fit: cover;">
+        <img src="./img/foto/ruangtamu.webp" alt="" class="w-100 mb-3" style="flex: 1; width: 100%; object-fit: cover;">
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
             <h5 style="font-weight: 500;" class="m-0">L</h5>
             <h5 style="font-weight: 500;" class="m-0">O</h5>

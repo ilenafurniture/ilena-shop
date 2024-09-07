@@ -56,6 +56,7 @@ class Pages extends BaseController
                 'koleksi' => $this->koleksiModel->findAll(),
                 'jenis' => $this->jenisModel->findAll(),
             ],
+            'metaKeyword' => 'ilena Furniture, Toko Furniture, Sorely Ilena Semarang, Cabana Ilena Semarang, Orca Ilena Semarang, Plint Base Ilena Semarang, Cutout Ilena Semarang, Living Room Ilena Semarang, Bed Room Ilena Semarang, Lounge Room Ilena Semarang',
             'produk' => $produk,
             'wishlist' => $wishlist,
             'msg_active' => session()->getFlashdata('msg_active') ? session()->getFlashdata('msg_active') : false,
@@ -287,13 +288,15 @@ class Pages extends BaseController
                     'koleksi' => $this->koleksiModel->findAll(),
                     'jenis' => $this->jenisModel->findAll(),
                 ],
-                'produk' => $product,
-                'wishlist' => $wishlist,
-                'koleksi' => $koleksi,
-                'jenis' => $jenis,
+                'produk'        => $product,
+                'wishlist'      => $wishlist,
+                'koleksi'       => $koleksi,
+                'jenis'         => $jenis,
                 'produkSejenis' => $produkSejenis,
-                'produkSemua' => $productsemua,
-                'indexNama' => $ind_nama
+                'produkSemua'   => $productsemua,
+                'indexNama'     => $ind_nama,
+                'metaDeskripsi' => $product['nama'].' '.'ilena futniture'.' '.'Ilena Semarang',
+                'metaKeyword'   => $product['kategori'].' '.'Ilena Semarang'
             ];
 
             //menambah pengunjung
@@ -315,6 +318,68 @@ class Pages extends BaseController
             ];
             return view('pages/all', $data);
         }
+    }   
+    public function productCategory($kategori)
+    {
+        $wishlist = $this->session->get('wishlist');
+        if (!isset($wishlist)) {
+            $wishlist = [];
+        }
+        $koleksi = $this->koleksiModel->findAll();
+        $jenis = $this->jenisModel->findAll();
+        $product = $this->barangModel->orderBy('nama', 'asc')->where(['active' => '1', 'kategori' => str_replace('-', ' ',$kategori)])->findAll();
+        
+        $seluruhBarangFilter = [];
+        $seluruhNama =  [];
+        foreach ($product as $s) {
+            if (!in_array($s['nama'], $seluruhNama)) {
+                array_push($seluruhBarangFilter, $s);
+                array_push($seluruhNama, $s['nama']);
+            }
+        }
+
+        $meta = [
+            'cabana' => [
+                'deskripsi' => 'Temukan furniture rumah tangga modern berkualitas di Cabana Ilena Semarang',
+                'keywords' => ['Cabana Ilena','Cabana Ilena Semarang,Living Room Ilena','Living Room','Ilena Semarang','Bed Room Ilena','Bed Room Ilena Semarang','Lounge Room Ilena','Lounge Room Ilena Semarang'],
+            ],
+            'sorely' => [
+                'deskripsi' => 'Sempurnakan rumah dengan furniture modern ala sorely Ilena Semarang',
+                'keywords' => ['Sorely Ilena','Sorely Ilena Semarang,Living Room Ilena','Living Room','Ilena Semarang','Bed Room Ilena','Bed Room Ilena Semarang','Lounge Room Ilena','Lounge Room Ilena Semarang'],
+            ],
+            'orca' => [
+                'deskripsi' => 'Buat interior lebih sempurna dengan furniture elegan dari Orca ilena Semarang',
+                'keywords' => ['Orca Ilena,Orca Ilena Semarang,Living Room Ilena','Living Room','Ilena Semarang','Bed Room Ilena','Bed Room Ilena Semarang','Lounge Room Ilena','Lounge Room Ilena Semarang'],
+            ],
+            'water-case' => [
+                'deskripsi' => 'Pilih furniture terbaik untuk hunian dengan beli Water case Ilena Semarang',
+                'keywords' => ['Water Case Ilena,Water Case Ilena Semarang,Living Room Ilena','Living Room','Ilena Semarang','Bed Room Ilena','Bed Room Ilena Semarang','Lounge Room Ilena','Lounge Room Ilena Semarang'],
+            ],
+            'plint-base' => [
+                'deskripsi' => 'Beli sekarang furniture model terbaru ala plint base Ilena Semarang',
+                'keywords' => ['Plint Base Ilena,Plint Base Ilena Semarang,Living Room Ilena','Living Room','Ilena Semarang','Bed Room Ilena','Bed Room Ilena Semarang','Lounge Room Ilena','Lounge Room Ilena Semarang'],
+            ],
+            'cutout' => [
+                'deskripsi' => 'Pastikan furniture rumah selalu keren dan berkualitas dengan beli CutOut Ilena Semarang',
+                'keywords' => ['Cutout Ilena,Cutout Ilena Semarang,Living Room Ilena','Living Room','Ilena Semarang','Bed Room Ilena','Bed Room Ilena Semarang','Lounge Room Ilena','Lounge Room Ilena Semarang'],
+            ],          
+        ];
+        
+        $data = [
+            'title' => 'Produk Kami',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
+            'produk' => $seluruhBarangFilter,
+            'wishlist' => $wishlist,
+            'koleksi' => $koleksi,
+            'jenis' => $jenis,
+            'kategori' => $kategori,
+            'metaDeskripsi' => $meta[$kategori]['deskripsi'],
+            'metaKeyword' => implode(',',$meta[$kategori]['keywords'])
+        ];
+        return view('pages/all', $data);
     }
     public function cart()
     {

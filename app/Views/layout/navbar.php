@@ -14,36 +14,36 @@
             </div>
             <div style="width: calc(100% / 3)" class="d-flex justify-content-end">
                 <?php if (session()->get('isLogin')) { ?>
-                    <?php if (session()->get('role') == '0' || session()->get('role') == '4') { ?>
-                        <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
-                        <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
-                        <a href="/account" class="btn"><i class="material-icons text-light">person_outline</i></a>
-                    <?php } else if (session()->get('role') == '1') { ?>
-                        <a href="/admin/product" class="btn d-flex align-items-center">
-                            <i class="material-icons text-light">chevron_left</i>
-                            <p class="m-0 text-light">Admin</p>
-                        </a>
-                        <a href="/logout" class="btn" style="padding-right: 0"><i
-                                class="material-icons text-light">exit_to_app</i></a>
-                    <?php } else if (session()->get('role') == '2') { ?>
-                        <a href="/gudang/listorder" class="btn d-flex align-items-center">
-                            <i class="material-icons text-light">chevron_left</i>
-                            <p class="m-0 text-light">Gudang</p>
-                        </a>
-                        <a href="/logout" class="btn" style="padding-right: 0"><i
-                                class="material-icons text-light">exit_to_app</i></a>
-                    <?php } else if (session()->get('role') == '3') { ?>
-                        <a href="/market/product" class="btn d-flex align-items-center">
-                            <i class="material-icons text-light">chevron_left</i>
-                            <p class="m-0 text-light">Marketplace</p>
-                        </a>
-                        <a href="/logout" class="btn" style="padding-right: 0"><i
-                                class="material-icons text-light">exit_to_app</i></a>
-                    <?php } ?>
+                <?php if (session()->get('role') == '0' || session()->get('role') == '4') { ?>
+                <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
+                <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
+                <a href="/account" class="btn"><i class="material-icons text-light">person_outline</i></a>
+                <?php } else if (session()->get('role') == '1') { ?>
+                <a href="/admin/product" class="btn d-flex align-items-center">
+                    <i class="material-icons text-light">chevron_left</i>
+                    <p class="m-0 text-light">Admin</p>
+                </a>
+                <a href="/logout" class="btn" style="padding-right: 0"><i
+                        class="material-icons text-light">exit_to_app</i></a>
+                <?php } else if (session()->get('role') == '2') { ?>
+                <a href="/gudang/listorder" class="btn d-flex align-items-center">
+                    <i class="material-icons text-light">chevron_left</i>
+                    <p class="m-0 text-light">Gudang</p>
+                </a>
+                <a href="/logout" class="btn" style="padding-right: 0"><i
+                        class="material-icons text-light">exit_to_app</i></a>
+                <?php } else if (session()->get('role') == '3') { ?>
+                <a href="/market/product" class="btn d-flex align-items-center">
+                    <i class="material-icons text-light">chevron_left</i>
+                    <p class="m-0 text-light">Marketplace</p>
+                </a>
+                <a href="/logout" class="btn" style="padding-right: 0"><i
+                        class="material-icons text-light">exit_to_app</i></a>
+                <?php } ?>
                 <?php } else { ?>
-                    <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
-                    <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
-                    <a href="/login" class="btn"><i class="material-icons text-light">person_outline</i></a>
+                <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
+                <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
+                <a href="/login" class="btn"><i class="material-icons text-light">person_outline</i></a>
                 <?php } ?>
             </div>
         </div>
@@ -58,7 +58,7 @@
     <div class="d-flex align-items-center py-2 gap-5">
         <div class="list-nav">
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
-                href="/product?koleksi=sorely">Sorely</a>
+                href="/product/category/sorely">Sorely</a>
             <div class="child-list-nav" style="overflow: auto;">
                 <div class="container d-flex align-items-stretch py-4">
                     <div style="flex: 1;">
@@ -206,12 +206,12 @@
                         <div class="d-none gap-4 mb-3 sorely-penjelasan" id="sorely-tallcabinet">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="" alt="sorely-dresser-tall-cabinet">
+                                    src="/viewpic/10901001" alt="sorely-dresser-tall-cabinet">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Dresser Tall Cabinet</h3>
                                 <p style="text-align: justify" class="mb-2"></p>
-                                <a href="<?= base_url('/product') ?>"
+                                <a href="<?= base_url('/product/dresser-tall-cabinet-ilena-sorely') ?>"
                                     style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
                                     selengkapnya..</a>
                             </div>
@@ -324,7 +324,7 @@
         </div>
         <div class="list-nav">
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
-                href="/product?koleksi=cabana">Cabana</a>
+                href="/product/category/cabana">Cabana</a>
             <div class="child-list-nav">
                 <div class="container d-flex align-items-stretch py-4">
                     <div style="flex: 1;">
@@ -558,7 +558,7 @@
         </div>
         <div class="list-nav">
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
-                href="/product?koleksi=orca">Orca</a>
+                href="/product/category/orca">Orca</a>
             <div class="child-list-nav">
                 <div class="container d-flex align-items-stretch py-4">
                     <div style="flex: 1;">
@@ -754,7 +754,7 @@
         </div>
         <div class="list-nav">
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
-                href="/product?koleksi=water-case">Water Case</a>
+                href="/product/category/water-case">Water Case</a>
             <div class="child-list-nav">
                 <div class="container d-flex align-items-stretch py-4">
                     <div style="flex: 1;">
@@ -927,7 +927,7 @@
         </div>
         <div class="list-nav">
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
-                href="/product?koleksi=plint-base">Plint Base</a>
+                href="/product/category/plint-base">Plint Base</a>
             <div class="child-list-nav">
                 <div class="container d-flex align-items-stretch py-4">
                     <div style="flex: 1;">
@@ -1099,7 +1099,7 @@
         </div>
         <div class="list-nav">
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
-                href="/product?koleksi=cutout">CutOut</a>
+                href="/product/category/cutout">CutOut</a>
             <div class="child-list-nav">
                 <div class="container d-flex align-items-stretch py-4">
                     <div style="flex: 1;">
@@ -1318,17 +1318,17 @@
     </div>
 </div>
 <script>
-    function hoverListNav(idElm) {
-        console.log('.' + idElm.split('-')[0] + '-penjelasan')
-        const arrPenjelasanElm = document.querySelectorAll('.' + idElm.split('-')[0] + '-penjelasan');
-        console.log(arrPenjelasanElm)
-        arrPenjelasanElm.forEach(penjelasanElm => {
-            penjelasanElm.classList.add('d-none')
-            penjelasanElm.classList.remove('d-flex')
-        });
-        console.log(idElm)
-        const itemElm = document.getElementById(idElm)
-        itemElm.classList.remove('d-none')
-        itemElm.classList.add('d-flex')
-    }
+function hoverListNav(idElm) {
+    console.log('.' + idElm.split('-')[0] + '-penjelasan')
+    const arrPenjelasanElm = document.querySelectorAll('.' + idElm.split('-')[0] + '-penjelasan');
+    console.log(arrPenjelasanElm)
+    arrPenjelasanElm.forEach(penjelasanElm => {
+        penjelasanElm.classList.add('d-none')
+        penjelasanElm.classList.remove('d-flex')
+    });
+    console.log(idElm)
+    const itemElm = document.getElementById(idElm)
+    itemElm.classList.remove('d-none')
+    itemElm.classList.add('d-flex')
+}
 </script>

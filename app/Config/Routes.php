@@ -16,6 +16,7 @@ $routes->get('/visimisi', 'Pages::visiMisi', ['filter' => 'customerFilter']);
 $routes->get('/', 'Pages::index', ['filter' => 'customerFilter']);
 $routes->get('/indexgalih', 'Pages::indexGalih', ['filter' => 'customerFilter']);
 $routes->get('/product', 'Pages::product', ['filter' => 'customerFilter']);
+$routes->get('/product/category/(:any)', 'Pages::productCategory/$1', ['filter' => 'customerFilter']);
 $routes->get('/product/(:any)', 'Pages::product/$1', ['filter' => 'customerFilter']);
 $routes->get('/product/(:any)/(:any)', 'Pages::product/$1/$2', ['filter' => 'customerFilter']);
 
@@ -69,9 +70,6 @@ $routes->post('/actionlogin', 'Pages::actionLogin', ['filter' => 'customerFilter
 $routes->post('/kirimotp', 'Pages::kirimOTP', ['filter' => 'customerFilter']);
 $routes->post('/editsandi/(:any)', 'Pages::editSandi/$1', ['filter' => 'customerFilter']);
 $routes->get('/logout', 'Pages::actionLogout');
-
-
-
 
 // GambarController
 $routes->get('/viewpic/(:any)', 'GambarController::tampilGambarBarang/$1');
