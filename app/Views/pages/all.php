@@ -1,6 +1,7 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <?php
+if (isset($kategori)) $_GET['koleksi'] = $kategori;
 if (isset($_GET['koleksi'])) {
     if ($_GET['koleksi'] != '') {
         $koleksi = explode(" ", $_GET['koleksi']);
@@ -124,7 +125,6 @@ if (isset($_GET['ruang'])) {
     }
 }
 
-if (isset($kategori)) $_GET['koleksi'] = $kategori;
 ?>
 <div class="container d-flex justify-content-center">
     <div class="konten baris-ke-kolom">
@@ -569,7 +569,7 @@ if (isset($kategori)) $_GET['koleksi'] = $kategori;
     const filterJenis1Elm = document.querySelectorAll('input[name="jenis1"]')
     const filterHarga1Elm = document.querySelectorAll('input[name="harga1"]')
     const filterRuang1Elm = document.querySelectorAll('input[name="ruang1"]')
-    let urlCur = window.location.pathname;
+    let urlCur = '/product';
     console.log(urlCur)
     let koleksiParam = ''
     let jenisParam = ''

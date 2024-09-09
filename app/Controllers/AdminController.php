@@ -100,6 +100,10 @@ class AdminController extends BaseController
 
         $data = $this->request->getVar();
         $data_gambar_mentah = $this->request->getFiles();
+
+        $getFileGambarHover = $data_gambar_mentah['gambar_hover']->isValid() ? file_get_contents($data_gambar_mentah['gambar_hover']) : null;
+        unset($data_gambar_mentah['gambar_hover']);
+
         $data_gambar = [];
         foreach ($data_gambar_mentah as $key => $g) {
             if ($g->isValid()) $data_gambar[$key] = $g;
@@ -213,6 +217,7 @@ class AdminController extends BaseController
             'tiktok' => $data['tiktok'],
             'active' => '1',
             'gambar' => $insertGambarBarang300,
+            'gambar_hover' => $getFileGambarHover,
             'ruang_tamu' => isset($data['ruang_tamu']) ? '1' : '0',
             'ruang_keluarga' => isset($data['ruang_keluarga']) ? '1' : '0',
             'ruang_tidur' => isset($data['ruang_tidur']) ? '1' : '0',

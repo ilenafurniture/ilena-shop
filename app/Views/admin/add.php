@@ -193,6 +193,11 @@
                 </div>
             </div>
             <div class="limapuluh-ke-seratus">
+                <h5 class="jdl=section">Gambar Hover</h5>
+                <img id="imghover-preview" src="/img/nopic.jpg" alt="" class="limapuluh-ke-seratus mb-1" style="aspect-ratio: 1 / 1; object-fit: cover;">
+                <div class="mb-2">
+                    <input name="gambar_hover" type="file" class="form-control" onchange="uploadFileGambarHover(event)">
+                </div>
                 <h5 class="jdl-section">Varian</h5>
                 <div id="container-varian">
                     <div class="item-varian">
@@ -254,6 +259,17 @@
         var div = document.createElement('div');
         div.innerHTML = htmlString.trim();
         return div.firstChild;
+    }
+
+    function uploadFileGambarHover(event) {
+        const imgHoverPreviewElm = document.getElementById('imghover-preview');
+        const eventTargetElm = event.target
+        const file = eventTargetElm.files[0];
+        const blobFile = new Blob([file], {
+            type: file.type
+        });
+        var blobUrl = URL.createObjectURL(blobFile);
+        imgHoverPreviewElm.src = blobUrl;
     }
 
     function uploadFile(event) {
