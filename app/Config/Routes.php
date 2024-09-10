@@ -36,8 +36,8 @@ $routes->post('/addaddress', 'Pages::addAddress');
 $routes->get('/deleteaddress/(:any)/(:any)', 'Pages::deleteAddress/$1/$2', ['filter' => 'customerFilter']);
 $routes->post('/editaddress/(:any)', 'Pages::editAddress/$1', ['filter' => 'customerFilter']);
 
-$routes->get('/shipping/(:any)', 'Pages::shipping/$1', ['filter' => 'customerShippingFilter']);
-$routes->get('/tracking', 'Pages::tracking', ['filter' => 'customerFilter']);
+// $routes->get('/shipping/(:any)', 'Pages::shipping/$1', ['filter' => 'customerShippingFilter']);
+// $routes->get('/tracking', 'Pages::tracking', ['filter' => 'customerFilter']);
 
 $routes->get('/usevoucher/(:any)', 'Pages::useVoucher/$1');
 $routes->get('/cancelvoucher/(:any)', 'Pages::cancelVoucher/$1');
@@ -46,9 +46,9 @@ $routes->get('/actionpay/(:any)', 'Pages::actionPay/$1');
 $routes->post('/actionpaysnap', 'Pages::actionPaySnap');
 $routes->post('/actionpaycore/(:any)', 'Pages::actionPayCore/$1');
 $routes->post('/updatetransaction', 'Pages::updateTransaction');
-$routes->get('/progresspay/(:any)', 'Pages::progressPay/$1', ['filter' => 'customerFilter']);
-$routes->get('/successpay/(:any)', 'Pages::successPay/$1', ['filter' => 'customerFilter']);
-$routes->get('/cencelpay', 'Pages::cencelPay', ['filter' => 'customerFilter']);
+// $routes->get('/progresspay/(:any)', 'Pages::progressPay/$1', ['filter' => 'customerFilter']);
+// $routes->get('/successpay/(:any)', 'Pages::successPay/$1', ['filter' => 'customerFilter']);
+// $routes->get('/cencelpay', 'Pages::cencelPay', ['filter' => 'customerFilter']);
 
 $routes->get('/wishlist', 'Pages::wishlist', ['filter' => 'customerFilter']);
 $routes->get('/addwishlist/(:any)', 'Pages::addWishlist/$1', ['filter' => 'customerFilter']);
@@ -57,7 +57,7 @@ $routes->get('/wishlisttocart', 'Pages::wishlistToCart', ['filter' => 'customerF
 
 $routes->get('/order', 'Pages::order', ['filter' => 'customerFilter']);
 $routes->get('/order/(:any)', 'Pages::order/$1', ['filter' => 'customerFilter']);
-$routes->get('/cancelorder/(:any)', 'Pages::cancelOrder/$1', ['filter' => 'customerFilter']); //harus admin
+// $routes->get('/cancelorder/(:any)', 'Pages::cancelOrder/$1', ['filter' => 'customerFilter']); //harus admin
 $routes->get('/invoice/(:any)', 'Pages::invoice/$1', ['filter' => 'customerFilter']);
 $routes->get('/account', 'Pages::account', ['filter' => 'customerLoginFilter']);
 
@@ -67,7 +67,7 @@ $routes->get('/verify', 'Pages::verify', ['filter' => 'customerFilter']);
 $routes->post('/actionverify', 'Pages::actionVerify', ['filter' => 'customerFilter']);
 $routes->get('/login', 'Pages::login', ['filter' => 'customerLogoutFilter']);
 $routes->post('/actionlogin', 'Pages::actionLogin', ['filter' => 'customerFilter']);
-$routes->post('/kirimotp', 'Pages::kirimOTP', ['filter' => 'customerFilter']);
+$routes->get('/kirimotp', 'Pages::kirimOTP', ['filter' => 'customerFilter']);
 $routes->post('/editsandi/(:any)', 'Pages::editSandi/$1', ['filter' => 'customerFilter']);
 $routes->get('/logout', 'Pages::actionLogout');
 
@@ -84,7 +84,7 @@ $routes->get('/gamwm', 'GambarController::tampilGambarVarWM');
 
 // Admin Controller
 $routes->get('/admin/product', 'AdminController::listProduct', ['filter' => 'adminFilter']);
-$routes->get('/admin/customer', 'AdminController::customer', ['filter' => 'adminFilter']);
+// $routes->get('/admin/customer', 'AdminController::customer', ['filter' => 'adminFilter']);
 $routes->get('/admin/addproduct', 'AdminController::addProduct', ['filter' => 'adminFilter']);
 $routes->post('/admin/addproduct', 'AdminController::actionAddProduct', ['filter' => 'adminFilter']);
 $routes->get('/admin/editproduct/(:any)', 'AdminController::editProduct/$1', ['filter' => 'adminFilter']);
