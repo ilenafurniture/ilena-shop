@@ -81,7 +81,7 @@
 <!--Tampilan Home Baru -->
 <!-- bagian windows -->
 <div class="show-flex-ke-hide p-5"
-    style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1.webp'); background-size: 130vw 130vh; width:100%; height:80svh;">
+    style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1.webp'); background-size: cover; width:100%; height:80svh;">
     <div>
         <h1 class="teks-besar mb-2">Modern & Stylish<br>Furniture</h1>
         <p class="teks-sedang py-2 px-3" style="color: white; background-color: black">Be Yourself With The Best Choice

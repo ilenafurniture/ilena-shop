@@ -2,6 +2,11 @@
 <?= $this->section("content"); ?>
 <div class="container konten baris-ke-kolom">
     <div style="flex:1;">
+        <?php if ($msg) { ?>
+            <div class="pemberitahuan mb-2" role="alert">
+                <?= $msg; ?>
+            </div>
+        <?php } ?>
         <h5 style="letter-spacing: -1px; font-weight:100;" class="path"><a class="me-3 text-dark fw-bold" style="text-decoration: none;">Alamat</a> >
             <a class="mx-3 text-secondary" style="text-decoration: none;">Rincian Pembayaran</a>
         </h5>

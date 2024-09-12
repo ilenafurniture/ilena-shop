@@ -92,6 +92,11 @@
                 <h1 class="teks-sedang">Alamat</h1>
                 <p style="color: grey;"><?= count($alamat) <= 0 ? 'Tidak Ada' : count($alamat) ?> tujuan yang dapat dipilih</p>
             </div>
+            <?php if ($msg) { ?>
+                <div class="pemberitahuan" role="alert">
+                    <?= $msg; ?>
+                </div>
+            <?php } ?>
             <div class="container-address my-4">
                 <?php foreach ($alamat as $ind_a => $a) { ?>
                     <div for="address<?= $ind_a ?>" class="item-address">

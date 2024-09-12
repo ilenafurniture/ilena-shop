@@ -295,8 +295,8 @@ class Pages extends BaseController
                 'produkSejenis' => $produkSejenis,
                 'produkSemua'   => $productsemua,
                 'indexNama'     => $ind_nama,
-                'metaDeskripsi' => $product['nama'].' '.'ilena futniture'.' '.'Ilena Semarang',
-                'metaKeyword'   => $product['kategori'].' '.'Ilena Semarang'
+                'metaDeskripsi' => $product['nama'] . ' ' . 'ilena futniture' . ' ' . 'Ilena Semarang',
+                'metaKeyword'   => $product['kategori'] . ' ' . 'Ilena Semarang'
             ];
 
             //menambah pengunjung
@@ -318,7 +318,7 @@ class Pages extends BaseController
             ];
             return view('pages/all', $data);
         }
-    }   
+    }
     public function productCategory($kategori)
     {
         $wishlist = $this->session->get('wishlist');
@@ -327,8 +327,8 @@ class Pages extends BaseController
         }
         $koleksi = $this->koleksiModel->findAll();
         $jenis = $this->jenisModel->findAll();
-        $product = $this->barangModel->orderBy('nama', 'asc')->where(['active' => '1', 'kategori' => str_replace('-', ' ',$kategori)])->findAll();
-        
+        $product = $this->barangModel->orderBy('nama', 'asc')->where(['active' => '1', 'kategori' => str_replace('-', ' ', $kategori)])->findAll();
+
         $seluruhBarangFilter = [];
         $seluruhNama =  [];
         foreach ($product as $s) {
@@ -341,30 +341,30 @@ class Pages extends BaseController
         $meta = [
             'cabana' => [
                 'deskripsi' => 'Temukan furniture rumah tangga modern berkualitas di Cabana Ilena Semarang',
-                'keywords' => ['Cabana Ilena','Cabana Ilena Semarang,Living Room Ilena','Living Room','Ilena Semarang','Bed Room Ilena','Bed Room Ilena Semarang','Lounge Room Ilena','Lounge Room Ilena Semarang'],
+                'keywords' => ['Cabana Ilena', 'Cabana Ilena Semarang,Living Room Ilena', 'Living Room', 'Ilena Semarang', 'Bed Room Ilena', 'Bed Room Ilena Semarang', 'Lounge Room Ilena', 'Lounge Room Ilena Semarang'],
             ],
             'sorely' => [
                 'deskripsi' => 'Sempurnakan rumah dengan furniture modern ala sorely Ilena Semarang',
-                'keywords' => ['Sorely Ilena','Sorely Ilena Semarang,Living Room Ilena','Living Room','Ilena Semarang','Bed Room Ilena','Bed Room Ilena Semarang','Lounge Room Ilena','Lounge Room Ilena Semarang'],
+                'keywords' => ['Sorely Ilena', 'Sorely Ilena Semarang,Living Room Ilena', 'Living Room', 'Ilena Semarang', 'Bed Room Ilena', 'Bed Room Ilena Semarang', 'Lounge Room Ilena', 'Lounge Room Ilena Semarang'],
             ],
             'orca' => [
                 'deskripsi' => 'Buat interior lebih sempurna dengan furniture elegan dari Orca ilena Semarang',
-                'keywords' => ['Orca Ilena,Orca Ilena Semarang,Living Room Ilena','Living Room','Ilena Semarang','Bed Room Ilena','Bed Room Ilena Semarang','Lounge Room Ilena','Lounge Room Ilena Semarang'],
+                'keywords' => ['Orca Ilena,Orca Ilena Semarang,Living Room Ilena', 'Living Room', 'Ilena Semarang', 'Bed Room Ilena', 'Bed Room Ilena Semarang', 'Lounge Room Ilena', 'Lounge Room Ilena Semarang'],
             ],
             'water-case' => [
                 'deskripsi' => 'Pilih furniture terbaik untuk hunian dengan beli Water case Ilena Semarang',
-                'keywords' => ['Water Case Ilena,Water Case Ilena Semarang,Living Room Ilena','Living Room','Ilena Semarang','Bed Room Ilena','Bed Room Ilena Semarang','Lounge Room Ilena','Lounge Room Ilena Semarang'],
+                'keywords' => ['Water Case Ilena,Water Case Ilena Semarang,Living Room Ilena', 'Living Room', 'Ilena Semarang', 'Bed Room Ilena', 'Bed Room Ilena Semarang', 'Lounge Room Ilena', 'Lounge Room Ilena Semarang'],
             ],
             'plint-base' => [
                 'deskripsi' => 'Beli sekarang furniture model terbaru ala plint base Ilena Semarang',
-                'keywords' => ['Plint Base Ilena,Plint Base Ilena Semarang,Living Room Ilena','Living Room','Ilena Semarang','Bed Room Ilena','Bed Room Ilena Semarang','Lounge Room Ilena','Lounge Room Ilena Semarang'],
+                'keywords' => ['Plint Base Ilena,Plint Base Ilena Semarang,Living Room Ilena', 'Living Room', 'Ilena Semarang', 'Bed Room Ilena', 'Bed Room Ilena Semarang', 'Lounge Room Ilena', 'Lounge Room Ilena Semarang'],
             ],
             'cutout' => [
                 'deskripsi' => 'Pastikan furniture rumah selalu keren dan berkualitas dengan beli CutOut Ilena Semarang',
-                'keywords' => ['Cutout Ilena,Cutout Ilena Semarang,Living Room Ilena','Living Room','Ilena Semarang','Bed Room Ilena','Bed Room Ilena Semarang','Lounge Room Ilena','Lounge Room Ilena Semarang'],
-            ],          
+                'keywords' => ['Cutout Ilena,Cutout Ilena Semarang,Living Room Ilena', 'Living Room', 'Ilena Semarang', 'Bed Room Ilena', 'Bed Room Ilena Semarang', 'Lounge Room Ilena', 'Lounge Room Ilena Semarang'],
+            ],
         ];
-        
+
         $data = [
             'title' => 'Produk Kami',
             'navbar' => [
@@ -377,7 +377,7 @@ class Pages extends BaseController
             'jenis' => $jenis,
             'kategori' => $kategori,
             'metaDeskripsi' => $meta[$kategori]['deskripsi'],
-            'metaKeyword' => implode(',',$meta[$kategori]['keywords'])
+            'metaKeyword' => implode(',', $meta[$kategori]['keywords'])
         ];
         return view('pages/all', $data);
     }
@@ -666,6 +666,7 @@ class Pages extends BaseController
             'email' => session()->get('email') ? session()->get('email') : '',
             'nama' => session()->get('nama') ? session()->get('nama') : '',
             'nohp' => session()->get('nohp') ? session()->get('nohp') : '',
+            'msg' => session()->getFlashdata('msg')
         ];
         return view('pages/address', $data);
     }
@@ -685,6 +686,13 @@ class Pages extends BaseController
         if (!isset($alamat)) {
             $alamat = [];
         }
+        $email = session()->get('email');
+        if ($email) {
+            if ($email != $emailPem) {
+                session()->setFlashdata('msg', 'Email yang dimasukan harus sesuai dengan email akun member Anda');
+                return redirect()->to($checkPage == 'address' ? '/address' : '/account');
+            }
+        }
         array_push($alamat, [
             'email_pemesan' => $emailPem,
             'nama_penerima' => $nama,
@@ -702,9 +710,7 @@ class Pages extends BaseController
         ]);
         $this->session->set(['alamat' => $alamat]);
 
-        $email = session()->get('email');
-        if ($email)
-            $this->pembeliModel->where('email', $email)->set(['alamat' => json_encode($alamat)])->update();
+        if ($email) $this->pembeliModel->where('email', $email)->set(['alamat' => json_encode($alamat)])->update();
         return redirect()->to($checkPage == 'address' ? '/address' : '/account');
     }
     public function deleteAddress($ind_add, $pathname)
@@ -732,6 +738,13 @@ class Pages extends BaseController
         $pathnameUrl = $this->request->getVar('url');
 
         $alamat = $this->session->get('alamat');
+        $email = session()->get('email');
+        if ($email) {
+            if ($email != $emailPem) {
+                session()->setFlashdata('msg', 'Email yang dimasukan harus sesuai dengan email akun member Anda');
+                return redirect()->to($pathnameUrl);
+            }
+        }
         $alamat[$ind_add] = [
             'email_pemesan' => $emailPem,
             'nama_penerima' => $nama,
@@ -749,7 +762,6 @@ class Pages extends BaseController
         ];
         $this->session->set(['alamat' => $alamat]);
 
-        $email = session()->get('email');
         if ($email)
             $this->pembeliModel->where('email', $email)->set(['alamat' => json_encode($alamat)])->update();
         return redirect()->to($pathnameUrl);
@@ -3007,7 +3019,8 @@ class Pages extends BaseController
             'nama' => session()->get('nama'),
             'nohp' => session()->get('nohp'),
             'provinsi' => $provinsi["rajaongkir"]["results"],
-            'msgSandi' => session()->get('msg-sandi') ? session()->get('msg-sandi') : false
+            'msgSandi' => session()->get('msg-sandi') ? session()->get('msg-sandi') : false,
+            'msg' => session()->getFlashdata('msg')
         ];
         return view('pages/account', $data);
     }

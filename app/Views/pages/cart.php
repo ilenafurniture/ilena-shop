@@ -16,7 +16,7 @@
                         <div style="flex: 1;" class="d-flex flex-column">
                             <a href="/product/<?= str_replace(' ', '-', $k['detail']['nama']); ?>" style="text-decoration:none; color: black;">
                                 <p class="m-0"><?= ucfirst($k['detail']['kategori']) ?></p>
-                                <h1 class="nama-barang"><?= $k['detail']['nama'] ?></h1>
+                                <h1 class="nama-barang"><?= ucwords($k['detail']['nama']) ?></h1>
                                 <p class="my-2">Varian: <?= ucfirst($k['varian']) ?></p>
                             </a>
                             <div class="d-flex align-items-end flex-grow-1">
@@ -59,7 +59,7 @@
                             <a href="/product/<?= str_replace(' ', '-', $k['detail']['nama']); ?>" style="text-decoration:none; color: black;" class="d-flex flex-column h-100">
                                 <div style="flex: 1">
                                     <p class="m-0" style="letter-spacing: -1px;"><?= ucwords($k['detail']['kategori']); ?></p>
-                                    <h1 class="nama-barang"><?= $k['detail']['nama'] ?></h1>
+                                    <h1 class="nama-barang"><?= ucwords($k['detail']['nama']) ?></h1>
                                 </div>
                                 <p class="harga-hp">
                                     Rp
