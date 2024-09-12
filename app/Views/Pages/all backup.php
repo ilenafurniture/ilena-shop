@@ -126,31 +126,9 @@ if (isset($_GET['ruang'])) {
 }
 
 ?>
-<style>
-    .container-filter-desktop {
-        width: 0px;
-        overflow-x: hidden;
-        transition: 0.4s;
-    }
-
-    .container-filter-desktop.show {
-        width: 200px;
-        transition: 0.4s;
-    }
-
-    .ganti-gap {
-        gap: 0;
-        transition: 0.4s;
-    }
-
-    .ganti-gap.geser {
-        gap: 4em;
-        transition: 0.4s;
-    }
-</style>
 <div class="container d-flex justify-content-center">
-    <div class="konten baris-ke-kolom ganti-gap">
-        <div class="show-block-ke-hide container-filter-desktop" style="position: sticky; top: 50px; height:fit-content">
+    <div class="konten baris-ke-kolom">
+        <div style="width: 200px;" class="show-block-ke-hide">
             <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample" aria-expanded="false"
                 aria-controls="collapseExample">
                 Koleksi
@@ -481,34 +459,23 @@ if (isset($_GET['ruang'])) {
                     <a href="/admin/addproduct" class="btn-default-merah">Tambah Produk</a>
                 </div>
             <?php } ?>
-            <div class="d-flex gap-4 align-items-stretch mb-3">
-                <div style="width: fit-content;" class="show-flex-ke-hide justify-content-center align-items-center">
-                    <button class="btn btn-sm btn-outline-dark d-flex align-items-center" onclick="showFilterDesktop()">
-                        <i class="material-icons">chevron_left</i>
-                        <p class="m-0" style="line-height: 7px;">Filter</p>
-                    </button>
+            <nav style="--bs-breadcrumb-divider: '/'; position: relative; <?= (isset($_GET['koleksi']) || isset($_GET['jenis']) || isset($_GET['ruang'])) ? 'height: 80px' : ''; ?>"
+                aria-label="breadcrumb" class="show-block-ke-hide">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Beranda</a></li>
+                    <li class="breadcrumb-item"><a href="/product">Produk</a></li>
+                    <!-- <li class="breadcrumb-item">Meja TV</li> -->
+                </ol>
+                <div class="container-badge-filter mb-3" style="position: absolute;">
+                    <?php foreach ($seluruhFilter as $ind_f => $f) {
+                        if ($f) { ?>
+                            <div class="item-badge-filter">
+                                <p><?= ucwords(str_replace('-', ' ', $f)); ?></p>
+                            </div>
+                    <?php }
+                    } ?>
                 </div>
-                <div style="width: 1px; background-color:darkgrey;" class="show-block-ke-hide"></div>
-                <div class="d-flex align-items-center">
-                    <nav style="--bs-breadcrumb-divider: '/'; position: relative; <?= (isset($_GET['koleksi']) || isset($_GET['jenis']) || isset($_GET['ruang'])) ? 'height: 60px' : ''; ?>"
-                        aria-label="breadcrumb" class="show-block-ke-hide">
-                        <ol class="breadcrumb <?= count($seluruhFilter) > 0 ? 'mb-2' : 'm-0'; ?>">
-                            <li class="breadcrumb-item"><a href="/">Beranda</a></li>
-                            <li class="breadcrumb-item"><a href="/product">Produk</a></li>
-                            <!-- <li class="breadcrumb-item">Meja TV</li> -->
-                        </ol>
-                        <div class="container-badge-filter" style="position: absolute;">
-                            <?php foreach ($seluruhFilter as $ind_f => $f) {
-                                if ($f) { ?>
-                                    <div class="item-badge-filter">
-                                        <p><?= ucwords(str_replace('-', ' ', $f)); ?></p>
-                                    </div>
-                            <?php }
-                            } ?>
-                        </div>
-                    </nav>
-                </div>
-            </div>
+            </nav>
             <?php if (isset($find)) { ?>
                 <p>Anda mencari "<?= $find ?>"</p>
             <?php } ?>
@@ -608,21 +575,6 @@ if (isset($_GET['ruang'])) {
     let jenisParam = ''
     let hargaParam = ''
     let ruangParam = ''
-
-    let showFilter = false;
-
-    function showFilterDesktop() {
-        const containerFilterDesktopElm = document.querySelector('.container-filter-desktop');
-        const gantiGapElm = document.querySelector('.ganti-gap')
-        if (showFilter) {
-            containerFilterDesktopElm.classList.remove('show')
-            gantiGapElm.classList.remove('geser')
-        } else {
-            containerFilterDesktopElm.classList.add('show')
-            gantiGapElm.classList.add('geser')
-        }
-        showFilter = !showFilter;
-    }
 
     btnFilterElm.forEach(elm => {
         elm.addEventListener('click', () => {

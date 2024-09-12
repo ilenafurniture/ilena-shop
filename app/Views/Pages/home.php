@@ -90,7 +90,7 @@
     </div>
 </div>
 <!-- bagian HP -->
-<div class="hide-ke-show-flex p-2"
+<div class="hide-ke-show-flex px-5"
     style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1.webp'); background-size: cover; width:100%; height:60svh;">
     <div>
         <h1 class="teks-besar mt-5" style="font-size:34px;">Modern & Stylish<br>Furniture</h1>
@@ -139,8 +139,8 @@
 </div>
 
 <!-- Bagian HP -->
-<div class="hide-ke-show-flex align-items-stretch" style="width:100%; height:40svh;">
-    <div class="hide-ke-show-flex align-items-center"
+<div class="hide-ke-show-flex flex-column pt-2 gap-2" style="width:100%; height:80svh;">
+    <div class="d-flex align-items-center px-5"
         style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/11.webp'); background-size: cover; background-position:center;">
         <div>
             <p class="text-light ms-2 m-0" style="font-size:12px;">Make you feel</p>
@@ -148,27 +148,23 @@
             <div style="width:60px; height:1px; background-color:white;" class="m-2"></div>
         </div>
     </div>
-    <div style="flex:1;" class=" d-flex flex-column">
-        <div class="hide-ke-show-flex align-items-center"
-            style="flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/12.webp'); background-size: cover; background-position:center;">
-            <div>
-                <h1 class="text-light ms-2" style="font-size:28px;">Luxury</h1>
-                <div class="d-flex gap-1 ms-2">
-                    <div style="width:15px; height:15px; background-color:white;"></div>
-                    <div style="width:15px; height:15px; border: 1px solid white;"></div>
-                </div>
+    <div class="d-flex align-items-center px-5"
+        style="flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/12.webp'); background-size: cover; background-position:center;">
+        <div>
+            <h1 class="text-light ms-2" style="font-size:28px;">Luxury</h1>
+            <div class="d-flex gap-1 ms-2">
+                <div style="width:15px; height:15px; background-color:white;"></div>
+                <div style="width:15px; height:15px; border: 1px solid white;"></div>
             </div>
         </div>
-        <div class="hide-ke-show-flex" style="flex: 1">
-            <div class="d-flex align-items-center"
-                style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/13.webp'); background-size: cover; background-position:center;">
-                <div>
-                    <h1 class="text-light ms-2" style="font-size:28px;">Simply</h1>
-                    <div class="d-flex gap-1 ms-2">
-                        <div style="width:15px; height:15px; border: 1px solid white;"></div>
-                        <div style="width:15px; height:15px; background-color:white;"></div>
-                    </div>
-                </div>
+    </div>
+    <div class="d-flex align-items-center px-5"
+        style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/13.webp'); background-size: cover; background-position:center;">
+        <div>
+            <h1 class="text-light ms-2" style="font-size:28px;">Simply</h1>
+            <div class="d-flex gap-1 ms-2">
+                <div style="width:15px; height:15px; border: 1px solid white;"></div>
+                <div style="width:15px; height:15px; background-color:white;"></div>
             </div>
         </div>
     </div>

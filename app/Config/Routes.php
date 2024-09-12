@@ -98,7 +98,7 @@ $routes->get('/admin/reprint', 'AdminController::reprint', ['filter' => 'adminFi
 $routes->get('/admin/marketplace', 'AdminController::marketplace', ['filter' => 'adminFilter']);
 $routes->get('/admin/confirm-mp/(:any)', 'AdminController::confirmMarketplace/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/accreprint/(:any)', 'AdminController::accReprint/$1', ['filter' => 'adminFilter']);
-$routes->get('/admin/denyreprint/(:any)', 'AdminController::denyReprint/$1', ['filter' => 'adminFilter']);
+// $routes->get('/admin/denyreprint/(:any)', 'AdminController::denyReprint/$1', ['filter' => 'adminFilter']);
 $routes->get('/gantiukuran', 'AdminController::gantiUkuran');
 $routes->get('/admin/ordertoko/(:any)', 'AdminController::orderToko/$1', ['filter' => 'loginToko']);
 $routes->get('/admin/mutasiconfirm', 'AdminController::mutasiConfirm', ['filter' => 'adminFilter']);

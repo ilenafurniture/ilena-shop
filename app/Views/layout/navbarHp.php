@@ -15,7 +15,7 @@
             <div>
                 <input type="radio" name="collection" id="collection1" class="item-collection">
                 <label for="collection1" class="collectionjdl">
-                    <p class="m-0 fw-bold">Sorely</p>
+                    <a class="m-0 fw-bold" href="/product/category/sorely">Sorely</a>
                     <i class="material-icons">chevron_right</i>
                 </label>
                 <div class="container-collection">
@@ -54,7 +54,7 @@
             <div>
                 <input type="radio" name="collection" id="collection2" class="item-collection">
                 <label for="collection2" class="collectionjdl">
-                    <p class="m-0 fw-bold">Cabana</p>
+                    <a class="m-0 fw-bold" href="/product/category/cabana">Cabana</a>
                     <i class="material-icons">chevron_right</i>
                 </label>
                 <div class="container-collection">
@@ -92,7 +92,7 @@
             <div>
                 <input type="radio" name="collection" id="collection3" class="item-collection">
                 <label for="collection3" class="collectionjdl">
-                    <p class="m-0 fw-bold">Orca</p>
+                    <a class="m-0 fw-bold" href="/product/category/orca">Orca</a>
                     <i class="material-icons">chevron_right</i>
                 </label>
                 <div class="container-collection">
@@ -124,7 +124,7 @@
             <div>
                 <input type="radio" name="collection" id="collection4" class="item-collection">
                 <label for="collection4" class="collectionjdl">
-                    <p class="m-0 fw-bold">Water Case</p>
+                    <a class="m-0 fw-bold" href="/product/category/water-case">Water Case</a>
                     <i class="material-icons">chevron_right</i>
                 </label>
                 <div class="container-collection">
@@ -156,7 +156,7 @@
             <div>
                 <input type="radio" name="collection" id="collection5" class="item-collection">
                 <label for="collection5" class="collectionjdl">
-                    <p class="m-0 fw-bold">Plint Base</p>
+                    <a class="m-0 fw-bold" href="/product/category/plint-base">Plint Base</a>
                     <i class="material-icons">chevron_right</i>
                 </label>
                 <div class="container-collection">
@@ -186,7 +186,7 @@
             <div>
                 <input type="radio" name="collection" id="collection6" class="item-collection">
                 <label for="collection6" class="collectionjdl">
-                    <p class="m-0 fw-bold">Cut Out</p>
+                    <a class="m-0 fw-bold" href="/product/category/cutout">Cut Out</a>
                     <i class="material-icons">chevron_right</i>
                 </label>
                 <div class="container-collection">

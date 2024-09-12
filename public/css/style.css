@@ -17,6 +17,35 @@
     }
 }
 
+/* width */
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 1em;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 /* ESSENSIAL */
 .text-no-select {
     -webkit-user-select: none; /* Safari */
@@ -28,6 +57,7 @@ body {
     display: flex;
     min-height: 100svh;
     flex-direction: column;
+    background-color: rgb(230, 230, 230);
 }
 
 .container-melayang {
@@ -1017,8 +1047,9 @@ body {
     justify-content: space-between;
     transition: 0.2s;
 }
-.collectionjdl p {
+.collectionjdl a {
     font-size: 18px;
+    text-decoration: none;
 }
 .container-collection {
     max-height: 0px;
@@ -1031,7 +1062,8 @@ body {
     transition: 0.6s;
     max-height: 100svh;
 }
-.item-collection:checked ~ .collectionjdl {
+.item-collection:checked ~ .collectionjdl,
+.item-collection:checked ~ .collectionjdl a {
     color: var(--merah);
     transition: 0.2s;
 }
@@ -1068,7 +1100,7 @@ body {
     color: #4e2700;
 }
 .expend-hp a {
-    font-size: 26px;
+    /* font-size: 26px; */
     color: white;
     transition: 0.3s;
     opacity: 0;
@@ -1734,6 +1766,7 @@ body {
     -moz-appearance: textfield;
     text-align: center;
     font-weight: bold;
+    background: none;
 }
 .number-quantity::-webkit-outer-spin-button,
 .number-quantity::-webkit-inner-spin-button {
