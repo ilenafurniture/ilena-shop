@@ -9,7 +9,7 @@
             </div>
             <div style="width: calc(100% / 3)" class="d-flex justify-content-center">
                 <a href="/">
-                    <img src="<?php echo base_url('/img/logoilenawhite.png'); ?>" alt="logo ilena" height="30em">
+                    <img src="<?php echo base_url('/img/Logo Putih Ilena 1.png'); ?>" alt="logo ilena" height="30em">
                 </a>
             </div>
             <div style="width: calc(100% / 3)" class="d-flex justify-content-end">
@@ -49,12 +49,12 @@
         </div>
     </div>
 </nav>
-<div style="background-color: rgb(211, 211, 211);" class="py-1 show-block-ke-hide">
+<div style="background-color: #474747;" class="py-1 show-block-ke-hide">
     <!-- <p class="m-0 text-center" style="color: #844709;">Lebih hemat dengan Free Ongkir hingga 100%</p> -->
-    <p class="m-0 text-center" style="color: black;">Lebih hemat dengan Free Ongkir hingga 100%</p>
+    <p class="m-0 text-center" style="color: white;">Lebih hemat dengan Free Ongkir hingga 100%</p>
 </div>
 <div class="justify-content-center w-100 show-flex-ke-hide"
-    style="background-color:whitesmoke; position: sticky; top:-1px; z-index: 99;">
+    style="background-color: whitesmoke; position: sticky; top:-1px; z-index: 99;">
     <div class="d-flex align-items-center py-2 gap-5">
         <div class="list-nav">
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"

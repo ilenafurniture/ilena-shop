@@ -525,10 +525,9 @@ if (isset($_GET['ruang'])) {
                                     href="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'], true)[0]['nama'] ?>/1"><i
                                         class="material-icons">shopping_cart</i></a>
                             </div>
-                            <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>">
+                            <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="gambar">
                                 <img class="<?= $p['gambar_hover'] ? '' : 'nonhover'; ?> img-pic" id="img<?= $ind_p ?>" src="/viewpic/<?= $p['id']; ?>" alt="">
-                                <img class="<?= $p['gambar_hover'] ? '' : 'nonhover'; ?> img-pic-hover" id="img<?= $ind_p ?>" src="/viewpichover/<?= $p['id']; ?>"
-                                    alt="">
+                                <img class="<?= $p['gambar_hover'] ? '' : 'nonhover'; ?> img-pic-hover" id="img<?= $ind_p ?>" src="/viewpichover/<?= $p['id']; ?>" alt="">
                             </a>
                         </div>
                         <div class="container-varian mb-1 d-flex">

@@ -502,25 +502,25 @@ body {
 .card1 .img-pic.nonhover {
     display: block;
 }
-.card1:hover .img-pic.nonhover {
+.card1 .gambar:hover .img-pic.nonhover {
     display: block;
 }
 .card1 .img-pic {
     display: block;
 }
-.card1:hover .img-pic {
+.card1 .gambar:hover .img-pic {
     display: none;
 }
 .card1 .img-pic-hover.nonhover {
     display: none;
 }
-.card1:hover .img-pic-hover.nonhover {
+.card1 .gambar:hover .img-pic-hover.nonhover {
     display: none;
 }
 .card1 .img-pic-hover {
     display: none;
 }
-.card1:hover .img-pic-hover {
+.card1 .gambar:hover .img-pic-hover {
     display: block;
 }
 .card1 span {
@@ -1972,7 +1972,7 @@ body {
     border-radius: 1em; */
     }
     .Mseries {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
         gap: 2px;
         max-height: 80vh;
         overflow-y: auto;

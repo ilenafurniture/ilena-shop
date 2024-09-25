@@ -495,8 +495,9 @@ class Pages extends BaseController
         if ($keranjang[$index_cart]['jumlah'] == 0) {
             unset($keranjang[$index_cart]);
             $keranjangBaru = array_values($keranjang);
-            $this->session->set(['keranjang' => $keranjangBaru]);
-            return redirect()->to('/cart');
+            $keranjang = $keranjangBaru;
+            // $this->session->set(['keranjang' => $keranjangBaru]);
+            // return redirect()->to('/cart');
         }
         $this->session->set(['keranjang' => $keranjang]);
         $email = session()->get('email');
@@ -1231,12 +1232,14 @@ class Pages extends BaseController
                 $persen = (100 - $produknya['diskon']) / 100;
                 $hasil = round($persen * $produknya['harga']);
                 $subtotal += $hasil * (int)$element['jumlah'];
+                $deskripsinya = json_decode($produknya['deskripsi'], true);
 
                 $item = array(
                     'id' => $produknya["id"],
                     'price' => $hasil,
                     'quantity' => (int)$element['jumlah'],
-                    'name' => substr($produknya["nama"] . " (" . ucfirst($element['varian']) . ")", 0, 50),
+                    'name' => $produknya["nama"] . " " . $deskripsinya['dimensi']['asli']['panjang'] . " (" . ucfirst($element['varian']) . ")", //tambvahin ukuran
+                    // 'name' => substr($produknya["nama"] . " (" . ucfirst($element['varian']) . ")", 0, 50), //tambvahin ukuran
                 );
                 array_push($itemDetails, $item);
             }
@@ -2252,6 +2255,10 @@ class Pages extends BaseController
             $dataMid = json_decode($pemesanan['data_mid'], true);
             $kurir = json_decode($pemesanan['kurir'], true);
             $items = json_decode($pemesanan['items'], true);
+            foreach ($items as $ind_i => $i) {
+                $produknya = $this->barangModel->getBarang($i['id']);
+                $items[$ind_i]['name'] = '';
+            }
             switch ($pemesanan['status']) {
                 case 'Menunggu Pembayaran':
                     $biller_code = "";
@@ -2389,6 +2396,10 @@ class Pages extends BaseController
                         case 'toko':
                             $va_number = 'PEMBAYARAN TOKO';
                             $bank = "toko";
+                            break;
+                        case 'market':
+                            $va_number = 'PEMBAYARAN MARKETPLACE';
+                            $bank = "market";
                             break;
                         case 'credit_card':
                             $va_number = '';

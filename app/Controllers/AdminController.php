@@ -274,6 +274,7 @@ class AdminController extends BaseController
         // difilter data gambar mentah krn ada input yg hanya sebagai penambah saja
         reset($data_gambar_mentah);
         $cekInputTerakhir = explode("-", key($data_gambar_mentah))[0] . "-" . explode("-", key($data_gambar_mentah))[1];
+
         // dd($cekInputTerakhir);
         $simpanInd = '';
         $arrIndLast = [];
@@ -468,9 +469,13 @@ class AdminController extends BaseController
         return redirect()->to('admin/mutasiconfirm');
     }
 
-    public function gantiUkuran()
+    public function gantiUkuran($koleksi, $jenis)
     {
-        $barangLama = $this->barangModel->findAll(10, 0);
+        // $barangLama = $this->barangModel->findAll(10, 0);
+        $barangLama = $this->barangModel->where(['kategori' => $koleksi, 'subkategori' => $jenis])->findAll();
+        if (count($barangLama) <= 0) {
+            return $this->response->setJSON(['message' => 'barang nggk nemu'], false);
+        }
         function file_get_contents_curl($url)
         {
             $ch = curl_init();
@@ -547,6 +552,7 @@ class AdminController extends BaseController
     {
         $produk = $this->barangModel->where('id', $id_product)->delete();
         $gambar = $this->gambarBarangModel->where('id', $id_product)->delete();
+        $gambar3000 = $this->gambarBarang3000Model->where('id', $id_product)->delete();
         return redirect()->to('admin/product');
     }
     public function order()
@@ -689,7 +695,7 @@ class AdminController extends BaseController
                 'id' => $k['id_barang'],
                 'price' => $produk['harga'],
                 'quantity' => $k['jumlah'],
-                'name' => $produk['nama'] . ' (' . $k['varian'] . ')',
+                'name' => $produk['nama'] . " " . json_decode($produk['deskripsi'], true)['dimensi']['asli']['panjang'] . ' (' . $k['varian'] . ')',
             ];
             array_push($items, $item);
         }

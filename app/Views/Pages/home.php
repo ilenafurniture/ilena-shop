@@ -81,7 +81,7 @@
 <!--Tampilan Home Baru -->
 <!-- bagian windows -->
 <div class="show-flex-ke-hide p-5"
-    style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1.webp'); background-size: cover; width:100%; height:80svh;">
+    style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1-3 comp.png'); background-size: cover; width:100%; height:80svh;">
     <div>
         <h1 class="teks-besar mb-2">Modern & Stylish<br>Furniture</h1>
         <p class="teks-sedang py-2 px-3" style="color: white; background-color: black">Be Yourself With The Best Choice
@@ -91,7 +91,7 @@
 </div>
 <!-- bagian HP -->
 <div class="hide-ke-show-flex px-5"
-    style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1.webp'); background-size: cover; width:100%; height:60svh;">
+    style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1-3 comp.png'); background-size: cover; width:100%; height:60svh;">
     <div>
         <h1 class="teks-besar mt-5" style="font-size:34px;">Modern & Stylish<br>Furniture</h1>
         <p class="teks-sedang" style="color: white; background-color: black; font-size:14px; width:200px;">Be Yourself
@@ -105,7 +105,7 @@
 <!-- Bagian Windows -->
 <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:80svh;">
     <div class="d-flex align-items-center ps-5"
-        style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/11.webp'); background-size: cover; background-position:center;">
+        style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/11 comp.png'); background-size: cover; background-position:center;">
         <div>
             <p class="text-light">Make you feel</p>
             <h1 class="teks-besar text-light mb-5">Elegant</h1>
@@ -114,7 +114,7 @@
     </div>
     <div style="flex:1;" class=" d-flex flex-column">
         <div class="d-flex align-items-center ps-5"
-            style="flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/n.webp'); background-size: cover; background-position:center;">
+            style="flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/n1 comp.png'); background-size: cover; background-position:center;">
             <div>
                 <h1 class="teks-besar text-light mb-3">Luxury</h1>
                 <div class="d-flex gap-3">
@@ -125,7 +125,7 @@
         </div>
         <div class="d-flex" style="flex: 1">
             <div class="d-flex align-items-center ps-5"
-                style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/s.webp'); background-size: cover; background-position:center;">
+                style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/s comp.png'); background-size: cover; background-position:center;">
                 <div>
                     <h1 class="teks-besar text-light mb-3">Simply</h1>
                     <div class="d-flex gap-3">
@@ -141,7 +141,7 @@
 <!-- Bagian HP -->
 <div class="hide-ke-show-flex flex-column pt-2 gap-2" style="width:100%; height:80svh;">
     <div class="d-flex align-items-center px-5"
-        style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/11.webp'); background-size: cover; background-position:center;">
+        style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/11 comp.png'); background-size: cover; background-position:center;">
         <div>
             <p class="text-light ms-2 m-0" style="font-size:12px;">Make you feel</p>
             <h1 class="text-light ms-2" style="font-size:28px;">Elegant</h1>
@@ -149,7 +149,7 @@
         </div>
     </div>
     <div class="d-flex align-items-center px-5"
-        style="flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/12.webp'); background-size: cover; background-position:center;">
+        style="flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/n1 comp.png'); background-size: cover; background-position:center;">
         <div>
             <h1 class="text-light ms-2" style="font-size:28px;">Luxury</h1>
             <div class="d-flex gap-1 ms-2">
@@ -159,7 +159,7 @@
         </div>
     </div>
     <div class="d-flex align-items-center px-5"
-        style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/13.webp'); background-size: cover; background-position:center;">
+        style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/s comp.png'); background-size: cover; background-position:center;">
         <div>
             <h1 class="text-light ms-2" style="font-size:28px;">Simply</h1>
             <div class="d-flex gap-1 ms-2">
@@ -185,7 +185,7 @@
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <h1 class="teks-besar m-0">Industrial</h1>
-                <h2 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
+                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
                 <p class="m-0">Menjadi diri sendiri dengan berkreasi sesuai kata hati masihkah terasa sulit? Mari mulai
                     dengan berbenah ruang yang merefleksikan karakter diri. Industrial Series hadir untuk menjadi teman
                     yang tepat untuk berdiri tegak tanpa takut menjadi beda, unik, menawan dengan elegan.<Br>Mari mulai
@@ -193,15 +193,15 @@
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/industrial/3.webp'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/industrial/3 comp.png'); background-size: cover; background-position:center;">
                 </div>
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/industrial/2.webp'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/industrial/2 comp.png'); background-size: cover; background-position:center;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/industrial/1.webp'); background-size: cover; background-position:center; height:100%; background-repeat: no-repeat;">
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/industrial/1 comp.png'); background-size: cover; background-position: center; height:100%; background-repeat: no-repeat;">
         </div>
     </div>
     <div class="scroll-home-item">
@@ -209,22 +209,22 @@
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <h1 class="teks-besar m-0">Sorely</h1>
-                <h2 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
+                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
                 <p class="m-0">Terinspirasi oleh keindahan perpaduan dua material: kayu hangat dan logam tebal. Dibuat
                     dengan sungguh-sungguh untuk melengkapi interior estetis, menghadirkan kenyamanan dan ketenangan
                     bagi setiap penghuninya. Kami berbagi semangat kami dengan nama Ilena.</p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/sorely/3.webp'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/sorely/3 comp.png'); background-size: cover; background-position:center;">
                 </div>
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/sorely/2.webp'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/sorely/2 comp.png'); background-size: cover; background-position:center;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/sorely/1.webp'); background-size: cover; background-position:center; ">
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/sorely/1 comp.png'); background-size: cover; background-position:center; ">
         </div>
     </div>
     <div class="scroll-home-item">
@@ -232,7 +232,7 @@
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <h1 class="teks-besar m-0">Water Case</h1>
-                <h2 style=" font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
+                <h1 style=" font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
                 <p class="m-0">Secara spesial dirancang untuk memberikan kehangatan dan kenyamanan pada hunian rumah.
                     water case series hadir dengan menunjukkan kesederhanaan sebuah desain yang memiliki fungsi sesuai
                     dengan kebutuhan dan memperindah rumah dengan sentuhan interior yang bersahaja dalam balutan gaya
@@ -240,15 +240,15 @@
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/watercase/3.webp'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/watercase/3 comp.png'); background-size: cover; background-position:center;">
                 </div>
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/watercase/2.webp'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/watercase/2 comp.png'); background-size: cover; background-position:center;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/watercase/1.webp'); background-size: cover; background-position:center; ">
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/watercase/1 comp.png'); background-size: cover; background-position:center; ">
         </div>
     </div>
     <div class="scroll-home-item">
@@ -256,22 +256,22 @@
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <h1 class="teks-besar m-0">Plint Base</h1>
-                <h2 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
+                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
                 <p class="m-0">Ilena memaknai minimalis sebagai mahakarya indah yang dibalut dalam kesederhanaan. Dengan
                     kepraktisan fungsinya, plint base menjawab kebutuhan furniture secara menyeluruh dan relevan hingga
                     dalam waktu berdekade lamanya. Inilah Classic modern yang Anda butuhkan</p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/plintbase/4.webp'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/plintbase/4 comp.png'); background-size: cover; background-position:center;">
                 </div>
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/plintbase/3.webp'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/plintbase/2 comp.png'); background-size: cover; background-position:center;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/plintbase/1.webp'); background-size: cover; background-position:center; ">
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/plintbase/1 comp.png'); background-size: cover; background-position:center; ">
         </div>
     </div>
     <div class="scroll-home-item">
@@ -279,7 +279,7 @@
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <h1 class="teks-besar m-0">Cut Out</h1>
-                <h2 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
+                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
                 <p class="m-0">Kami percaya bahwa sebuah ruangan didesain dengan sepenuh hati akan memberikan energi
                     positif bagi setiap penghuninya. Bekal inilah yang membuat Ilena terus melakukan inovasi untuk
                     menghadirkan furniture terbaik bagi Anda. Cut Out hadir dengan series dalam balutan gaya minimalis
@@ -289,15 +289,15 @@
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/cutout/1.webp'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/cutout/1 comp.png'); background-size: cover; background-position:center;">
                 </div>
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/cutout/2.webp'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/cutout/2 comp.png'); background-size: cover; background-position:center;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/cutout/3.webp'); background-size: cover; background-position:center; ">
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/cutout/4 comp.png'); background-size: cover; background-position:center; ">
         </div>
     </div>
 
@@ -306,7 +306,7 @@
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <h1 class="teks-besar m-0">Orca</h1>
-                <h2 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
+                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
                 <p class="m-0">Merancang dengan sepenuh hati furniture bertemakan modern dengan sentuhan warna basic
                     yang menjadi aksen menonjol jadi ciri khas dari series Orca. Hadir dengan menonjolkan teksture khas
                     kayu yang unik dipadukan dengan finishing satin yang solid. Desain ini dipersembahkan untuk Anda
@@ -314,15 +314,15 @@
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/orca/3.webp'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/orca/3 comp.png'); background-size: cover; background-position:center;">
                 </div>
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/orca/2.webp'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/orca/2 comp.png'); background-size: cover; background-position:center;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/orca/1.webp'); background-size: cover; background-position:center; ">
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/orca/1 comp.png'); background-size: cover; background-position:center; ">
         </div>
     </div>
 </div>
@@ -394,7 +394,7 @@
         </div>
     </div>
     <div
-        style="flex:2; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/0.webp'); background-size: cover; background-position:center;">
+        style="flex:2; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/0 comp.png'); background-size: cover; background-position:center;">
     </div>
 </div>
 <!-- Bagian Hp -->
@@ -410,20 +410,20 @@
 </div>
 <div class="hide-ke-show-flex align-items-stretch" style="width:100%; height:40svh; position:relative;">
     <div class="w-100"
-        style="height:40svh; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/1.webp'); background-size: cover; background-position:center;">
+        style="height:40svh; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/0 comp.png'); background-size: cover; background-position:center;">
     </div>
 </div>
 
 <!-- Bagian Windows -->
 <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:40svh;">
-    <div style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/4.webp');
-    background-size: cover; background-position:center;">
+    <div style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/inaugural comp.png');
+    background-size: cover; background-position:top;">
     </div>
     <div style="flex:1; background-color:#7B441c; position:relative;">
         <div class="d-flex p-5 h-100 w-100 text-light" style="flex:1; position:absolute;">
             <div style="flex:1;" class="h-100 d-flex flex-column justify-content-between">
                 <div>
-                    <h3 class="mb-3 teks-sedang fw-bold">Maiden Season</h3>
+                    <h3 class="mb-3 teks-sedang fw-bold">Inaugural Season</h3>
                     <p>Ilena hadir pertama kali dengan memperkenalkan 6 series terbaik. Terinspirasi dari berbagai
                         hal
                         baik dengan harapan dapat membawa kebaikan dalam setiap furniture Kami, untuk Anda.</p>
@@ -469,8 +469,8 @@
 <!-- Bagian Modal Series -->
 <div id="modal-series" onclick="closemodalseries()" class="d-none justify-content-center align-items-center"
     style="z-index:2; position:fixed; top:0; left:0; width:100%; height:100svh; background-color:rgba(0,0,0,0.8);">
-    <div style="border-radius:4px;" class="p-5 gap-2">
-        <div class="gap-2 Mseries">
+    <div style="border-radius:4px;" class="p-5 gap-2 show-block-ke-hide">
+        <div class="gap-2 Mseries ">
             <a href="/product?koleksi=industrial"
                 class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
                 <p class="m-0 fw-bold">Industrial</p>
@@ -491,10 +491,37 @@
                 class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
                 <p class="m-0 fw-bold">Cutout</p>
             </a>
-            <a href="/product?koleksi=orca" class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+            <a href="/product?koleksi=orca"
+                class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
                 <p class="m-0 fw-bold">Orca</p>
             </a>
         </div>
+    </div>
+    <div class="hide-ke-show-block" style="width: 70vw;">
+        <a href="/product?koleksi=industrial"
+            style="border-bottom: 1px solid grey; text-decoration: none; color: white;" class="p-4 d-flex justify-content-center align-items-center">
+            <p class="m-0 fw-bold">Industrial</p>
+        </a>
+        <a href="/product?koleksi=sorely"
+            style="border-bottom: 1px solid grey; text-decoration: none; color: white;" class="p-4 d-flex justify-content-center align-items-center">
+            <p class="m-0 fw-bold">Sorely</p>
+        </a>
+        <a href="/product?koleksi=water-case"
+            style="border-bottom: 1px solid grey; text-decoration: none; color: white;" class="p-4 d-flex justify-content-center align-items-center">
+            <p class="m-0 fw-bold">Water Case</p>
+        </a>
+        <a href="/product?koleksi=plint-base"
+            style="border-bottom: 1px solid grey; text-decoration: none; color: white;" class="p-4 d-flex justify-content-center align-items-center">
+            <p class="m-0 fw-bold">Plint Base</p>
+        </a>
+        <a href="/product?koleksi=cutout"
+            style="border-bottom: 1px solid grey; text-decoration: none; color: white;" class="p-4 d-flex justify-content-center align-items-center">
+            <p class="m-0 fw-bold">Cutout</p>
+        </a>
+        <a href="/product?koleksi=orca"
+            style="text-decoration: none; color: white;" class="p-4 d-flex justify-content-center align-items-center">
+            <p class="m-0 fw-bold">Orca</p>
+        </a>
     </div>
 </div>
 
@@ -520,7 +547,7 @@
 <!-- Bagian Windows -->
 <div class="container show-flex-ke-hide gap-3 my-5" style="width:100%; height:60svh;">
     <a href="/product?ruang=tamu" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
-        <img src="./img/foto/livingroom.webp" alt="" class="w-100 mb-3"
+        <img src="./img/foto/livingroom1 comp.png" alt="" class="w-100 mb-3"
             style="flex: 1; width: 100%; object-fit: cover;">
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
             <h5 style="font-weight: 500;" class="m-0">L</h5>
@@ -533,7 +560,7 @@
         <h5 class="text-center fw-bold" style="font-size: 13px; height: fit-content">ROOM</h5>
     </a>
     <a href="/product?ruang=tidur" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
-        <img src="./img/foto/bedroom.webp" alt="" class="w-100 mb-3" style="flex: 1; width: 100%; object-fit: cover;">
+        <img src="./img/foto/bedroom cody comp.png" alt="" class="w-100 mb-3" style="flex: 1; width: 100%; object-fit: cover;">
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
             <h5 style="font-weight: 500;" class="m-0">B</h5>
             <h5 style="font-weight: 500;" class="m-0">E</h5>
@@ -542,7 +569,7 @@
         <h5 class="text-center fw-bold" style="font-size: 13px; height: fit-content">ROOM</h5>
     </a>
     <a href="/product?ruang=keluarga" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
-        <img src="./img/foto/ruangtamu.webp" alt="" class="w-100 mb-3" style="flex: 1; width: 100%; object-fit: cover;">
+        <img src="./img/foto/ruangtamu1 comp.png" alt="" class="w-100 mb-3" style="flex: 1; width: 100%; object-fit: cover;">
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
             <h5 style="font-weight: 500;" class="m-0">L</h5>
             <h5 style="font-weight: 500;" class="m-0">O</h5>
@@ -571,7 +598,7 @@
     <div class="d-flex gap-1 px-5 pt-5 pb-4" style="width: fit-content;">
         <a href="/product?ruang=tamu" class="bg-primary"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block; height: 100px;">
-            <img src="<?= base_url('/img/foto/4.webp') ?>" alt="" style=" height: auto; width: 100%; border-radius:4px;"
+            <img src="<?= base_url('/img/foto/livingroom1 comp.png') ?>" alt="" style=" height: auto; width: 100%; border-radius:4px;"
                 class="mb-2">
             <div class="d-flex gap-4 justify-content-center mb-2">
                 <h5 style="font-weight: 500;" class="m-0">L</h5>
@@ -585,7 +612,7 @@
         </a>
         <a href="/product?ruang=tidur"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
-            <img src="<?= base_url('/img/foto/3.webp') ?>" alt="" style=" height: auto; width: 100%; border-radius:4px;"
+            <img src="<?= base_url('/img/foto/bedroom cody comp.png') ?>" alt="" style=" height: auto; width: 100%; border-radius:4px;"
                 class="mb-2">
             <div class="d-flex gap-4 justify-content-center mb-2">
                 <h5 style="font-weight: 500;" class="m-0">B</h5>
@@ -596,7 +623,7 @@
         </a>
         <a href="/product?ruang=keluarga"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
-            <img src="<?= base_url('/img/foto/2.webp') ?>" alt="" style=" height: auto; width: 100%; border-radius:4px;"
+            <img src="<?= base_url('/img/foto/ruangtamu1 comp.png') ?>" alt="" style=" height: auto; width: 100%; border-radius:4px;"
                 class="mb-2">
             <div class="d-flex gap-4 justify-content-center mb-2">
                 <h5 style="font-weight: 500;" class="m-0">L</h5>
@@ -606,7 +633,7 @@
                 <h5 style="font-weight: 500;" class="m-0">G</h5>
                 <h5 style="font-weight: 500;" class="m-0">E</h5>
             </div>
-            <h5 class="text-center fw-bold" style="font-size: 13px">ROOM</h5>
+            <h5 class="text-center text-secondary fw-bold" style="font-size: 13px">ROOM</h5>
         </a>
     </div>
 </div>
@@ -615,10 +642,8 @@
     <div style="position:absolute" class="p-5 d-flex flex-column w-100 h-100 justify-content-center align-items-center">
         <a href="/product" class="findout">Find Out More</a>
     </div>
-    <img src="<?= base_url('/img/foto/end.webp') ?>" style="width: 100%; height:50svh; object-fit: cover; background-color: rgba(0,0,0, 0.5);
+    <img src="<?= base_url('/img/foto/find out more watercase comp.png') ?>" style="width: 100%; height:50svh; object-fit: cover; object-position: top; background-color: rgba(0,0,0, 0.5);
   background-repeat:no-repeat; background-blend-mode: color;">
 </div>
-
-
 
 <?= $this->endSection(); ?>

@@ -122,7 +122,7 @@ class MarketplaceController extends BaseController
                 'id' => $k['id_barang'],
                 'price' => $produk['harga'],
                 'quantity' => $k['jumlah'],
-                'name' => $produk['nama'] . ' (' . $k['varian'] . ')',
+                'name' => $produk['nama'] . " " . json_decode($produk['deskripsi'], true)['dimensi']['asli']['panjang'] . ' (' . $k['varian'] . ')',
                 'packed' => false,
             ];
             array_push($items, $item);
