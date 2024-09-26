@@ -14,36 +14,36 @@
             </div>
             <div style="width: calc(100% / 3)" class="d-flex justify-content-end">
                 <?php if (session()->get('isLogin')) { ?>
-                    <?php if (session()->get('role') == '0' || session()->get('role') == '4') { ?>
-                        <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
-                        <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
-                        <a href="/account" class="btn"><i class="material-icons text-light">person_outline</i></a>
-                    <?php } else if (session()->get('role') == '1') { ?>
-                        <a href="/admin/product" class="btn d-flex align-items-center">
-                            <i class="material-icons text-light">chevron_left</i>
-                            <p class="m-0 text-light">Admin</p>
-                        </a>
-                        <a href="/logout" class="btn" style="padding-right: 0"><i
-                                class="material-icons text-light">exit_to_app</i></a>
-                    <?php } else if (session()->get('role') == '2') { ?>
-                        <a href="/gudang/listorder" class="btn d-flex align-items-center">
-                            <i class="material-icons text-light">chevron_left</i>
-                            <p class="m-0 text-light">Gudang</p>
-                        </a>
-                        <a href="/logout" class="btn" style="padding-right: 0"><i
-                                class="material-icons text-light">exit_to_app</i></a>
-                    <?php } else if (session()->get('role') == '3') { ?>
-                        <a href="/market/product" class="btn d-flex align-items-center">
-                            <i class="material-icons text-light">chevron_left</i>
-                            <p class="m-0 text-light">Marketplace</p>
-                        </a>
-                        <a href="/logout" class="btn" style="padding-right: 0"><i
-                                class="material-icons text-light">exit_to_app</i></a>
-                    <?php } ?>
+                <?php if (session()->get('role') == '0' || session()->get('role') == '4') { ?>
+                <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
+                <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
+                <a href="/account" class="btn"><i class="material-icons text-light">person_outline</i></a>
+                <?php } else if (session()->get('role') == '1') { ?>
+                <a href="/admin/product" class="btn d-flex align-items-center">
+                    <i class="material-icons text-light">chevron_left</i>
+                    <p class="m-0 text-light">Admin</p>
+                </a>
+                <a href="/logout" class="btn" style="padding-right: 0"><i
+                        class="material-icons text-light">exit_to_app</i></a>
+                <?php } else if (session()->get('role') == '2') { ?>
+                <a href="/gudang/listorder" class="btn d-flex align-items-center">
+                    <i class="material-icons text-light">chevron_left</i>
+                    <p class="m-0 text-light">Gudang</p>
+                </a>
+                <a href="/logout" class="btn" style="padding-right: 0"><i
+                        class="material-icons text-light">exit_to_app</i></a>
+                <?php } else if (session()->get('role') == '3') { ?>
+                <a href="/market/product" class="btn d-flex align-items-center">
+                    <i class="material-icons text-light">chevron_left</i>
+                    <p class="m-0 text-light">Marketplace</p>
+                </a>
+                <a href="/logout" class="btn" style="padding-right: 0"><i
+                        class="material-icons text-light">exit_to_app</i></a>
+                <?php } ?>
                 <?php } else { ?>
-                    <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
-                    <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
-                    <a href="/login" class="btn"><i class="material-icons text-light">person_outline</i></a>
+                <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
+                <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
+                <a href="/login" class="btn"><i class="material-icons text-light">person_outline</i></a>
                 <?php } ?>
             </div>
         </div>
@@ -1314,21 +1314,839 @@
                 </div>
             </div>
         </div>
+
+        <div class="list-nav">
+            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
+                href="/product/category/industrial">Industrial</a>
+            <div class="child-list-nav">
+                <div class="container d-flex align-items-stretch py-4">
+                    <div style="flex: 1;">
+                        <p class="m-0" style="font-size:14px;">Jelajahi Industrial</p>
+                        <div class="ms-2">
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=industrial&jenis=bookshelf"
+                                onmouseover="hoverListNav('industrial-bookshelf')">Bookshelf</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=industrial&jenis=bufet-tv"
+                                onmouseover="hoverListNav('industrial-bufet')">Bufet TV</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=industrial&jenis=coffee-table"
+                                onmouseover="hoverListNav('industrial-coffee')">Coffee Table</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=industrial&jenis=console-table"
+                                onmouseover="hoverListNav('industrial-console')">Console
+                                Table</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=industrial&jenis=credenza"
+                                onmouseover="hoverListNav('industrial-credenza')">Credenza</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=industrial&jenis=king-bed"
+                                onmouseover="hoverListNav('industrial-king')">King
+                                Bed</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=industrial&jenis=queen-bed"
+                                onmouseover="hoverListNav('industrial-queen')">Queen Bed</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=industrial&jenis=single-bed"
+                                onmouseover="hoverListNav('industrial-single')">Single Bed</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=industrial&jenis=side-table"
+                                onmouseover="hoverListNav('industrial-side')">Side
+                                Table</a>
+                        </div>
+                    </div>
+                    <div style="flex: 1;">
+                        <div class="d-flex gap-4 mb-3 industrial-penjelasan" id="industrial-bookshelf">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10400201" alt="industrial-bookshelf">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Bookshelf</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dengan model modern edgy yang tak
+                                    meninggalkan kesan elegan dan stylish. Memadukan kayu dan jaring logam finishing
+                                    satin yang menghasilkan desain unik sebagai ciri khas bookshelf Industrial ala
+                                    Ilena.
+                                    Koleksi Ilena Furniture series Industrial didesain eksklusif dengan material
+                                    pembuatan berkualitas premium.</p>
+                                <a href="<?= base_url('/product/Bookshelf-Ilena-Industrial') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 industrial-penjelasan" id="industrial-bufet">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewvar/10401601/1" alt="industrial-bufet-tv">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Bufet TV</h3>
+                                <p style="text-align: justify" class="mb-2">Menampilkan style edgy yang memadukan kayu
+                                    dan wire mesh logam finishing satin yang kokoh dan kuat. Dengan ukuran tinggi yang
+                                    pas, bisa membuat momen nonton TV jadi lebih nyaman.
+                                    Koleksi Ilena Furniture series Industrial didesain eksklusif dengan material
+                                    pembuatan berkualitas premium.</p>
+                                <a href="<?= base_url('/product/Bufet-Tv-Ilena-Industrial') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 industrial-penjelasan" id="industrial-coffee">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10400301" alt="industrial-coffee-table">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Coffee Table</h3>
+                                <p style="text-align: justify" class="mb-2">Coffee table ini dirancang dengan tema
+                                    industrial yang menonjolkan perpaduan material kayu dan besi berbentuk wiremesh yang
+                                    cocok digunakan untuk area ruang tamu, ruang keluarga, teras, hingga lobby kantor.
+                                    Koleksi Ilena Furniture series Industrial didesain eksklusif dengan material
+                                    pembuatan berkualitas premium.</p>
+                                <a href="<?= base_url('/product/Coffe-Table-Ilena-Industrial') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 industrial-penjelasan" id="industrial-console">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10400401" alt="industrial-console-table">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Console Table</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dengan model modern yang
+                                    mencirikan sebuah furniture edgy dari bahan kayu dan wire mesh logam finishing satin
+                                    yang stylish. Cocok untuk melengkapi tampilan ruangan jadi lebih sempurna.
+                                    Koleksi Ilena Furniture series Industrial didesain eksklusif dengan material
+                                    pembuatan berkualitas premium.</p>
+                                <a href="<?= base_url('/product/Console-Table-Ilena-Industrial') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 industrial-penjelasan" id="industrial-credenza">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10400501" alt="industrial-credenza">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Credenza</h3>
+                                <p style="text-align: justify" class="mb-2">Dibuat dengan sepenuh hati, coffee table ala
+                                    industrial dari Ilena didesain dengan model modern edgy. Menggunakan kayu dan jaring
+                                    kawat logam finishing satin yang kokoh serta unik. Cocok melengkapi ruang tamu,
+                                    keluarga, hingga lobi kantor.
+                                    Koleksi Ilena Furniture series Industrial didesain eksklusif dengan material
+                                    pembuatan berkualitas premium.</p>
+                                <a href="<?= base_url('/product/Credenza-Ilena-Industrial') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 industrial-penjelasan" id="industrial-king">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10401201" alt="industrial-king-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">King Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang menggunakan model modern dengan
+                                    sentuhan edgy khas industrial yang unik dan edgy. Menggunakan ,material kayu dan
+                                    rangka besi yang kokoh untuk waktu yang lama serta nyaman. Ini adalah ranjang tidur
+                                    yang sangat nyaman untuk di kamar tidur utama.
+                                    Koleksi Ilena Furniture series Industrial didesain eksklusif dengan material
+                                    pembuatan berkualitas premium.</p>
+                                <a href="<?= base_url('/product/King-Bed-Ilena-Industrial') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 industrial-penjelasan" id="industrial-queen">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10401301" alt="industrial-queen-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Queen Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang menggunakan model modern dengan
+                                    sentuhan edgy khas industrial yang unik dan edgy. Menggunakan ,material kayu dan
+                                    rangka besi yang kokoh untuk waktu yang lama serta nyaman. Ini adalah ranjang tidur
+                                    yang sangat nyaman untuk di kamar tidur utama.
+                                    Koleksi Ilena Furniture series Industrial didesain eksklusif dengan material
+                                    pembuatan berkualitas premium.</p>
+                                <a href="<?= base_url('/product/Queen-Bed-Ilena-Industrial') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 industrial-penjelasan" id="industrial-side">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10401401" alt="industrial-side-table">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Side Table</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dengan desain modern yang unik dan
+                                    cantik. Menampilkan style edgy dengan paduan wiremesh logam dan kayu. Cocok untuk
+                                    melengkapi interior ruangan jadi lebih sempurna.
+                                    Koleksi Ilena Furniture series Industrial didesain eksklusif dengan material
+                                    pembuatan berkualitas premium.</p>
+                                <a href="<?= base_url('/product/Side-Table-Ilena-Industrial') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 industrial-penjelasan" id="industrial-single">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10401801" alt="industrial-single-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Single Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang menggunakan model modern dengan
+                                    sentuhan edgy khas industrial yang unik dan edgy. Menggunakan ,material kayu dan
+                                    rangka besi yang kokoh untuk waktu yang lama serta nyaman. Cocok untuk ranjang tidur
+                                    di kamar tidur Anda atau kamar tamu.
+                                    Koleksi Ilena Furniture series Industrial didesain eksklusif dengan material
+                                    pembuatan berkualitas premium.</p>
+                                <a href="<?= base_url('/product/Single-Bed-Ilena-Industrial') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <p class="text-secondary">Kami percaya bahwa sebuah ruangan didesain dengan sepenuh hati akan
+                            memberikan energi positif bagi setiap penghuninya. Bekal inilah yang membuat Ilena terus
+                            melakukan inovasi untuk menghadirkan furniture terbaik bagi Anda. Cut Out hadir dengan
+                            series dalam balutan gaya minimalis dengan mengadopsi budaya Jepang yang terkenal
+                            mengutamakan fungsi dan kepraktisan. Desainnya yang sederhana dengan sedikit aksen
+                            memudahkan Anda untuk merawat dan menempatkan dalam segala konsep ruang menjadi lebih
+                            sempurna dengan Cut Out series dari Ilena.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metal Frame -->
+        <div class="list-nav">
+            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
+                href="/product/category/metal-frame">Metal Frame</a>
+            <div class="child-list-nav">
+                <div class="container d-flex align-items-stretch py-4">
+                    <div style="flex: 1;">
+                        <p class="m-0" style="font-size:14px;">Jelajahi Metal Frame</p>
+                        <div class="ms-2">
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=metal-frame&jenis=bufet-tv"
+                                onmouseover="hoverListNav('metal-bufet')">Bufet TV</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=metal-frame&jenis=coffee-table"
+                                onmouseover="hoverListNav('metal-coffee')">Coffee Table</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=metal-frame&jenis=console-table"
+                                onmouseover="hoverListNav('metal-console')">Console
+                                Table</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=metal-frame&jenis=dresser-6-drawer"
+                                onmouseover="hoverListNav('metal-6drawer')">Dresser 6
+                                Drawer
+                            </a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=metal-frame&jenis=king-bed"
+                                onmouseover="hoverListNav('metal-king')">King
+                                Bed</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=metal-frame&jenis=queen-bed"
+                                onmouseover="hoverListNav('metal-queen')">Queen Bed</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=metal-frame&jenis=single-bed"
+                                onmouseover="hoverListNav('metal-single')">Single Bed</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=metal-frame&jenis=side-table"
+                                onmouseover="hoverListNav('metal-side')">Side
+                                Table</a>
+                        </div>
+                    </div>
+                    <div style="flex:1;">
+                        <div class="d-flex gap-4 mb-3 metal-penjelasan" id="metal-bufet">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10501601/1" alt="metal-bufet-tv">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Bufet TV</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dengan desain modern tanpa
+                                    meninggalkan kesan klasik. Material kayu dengan kayu yang cantik dengan ciri khasnya
+                                    ditambah rangka kaki besi yang menambah ketahanan meja jadi lebih kuat & kokoh lebih
+                                    lama.
+                                    Koleksi Ilena Furniture series didesain eksklusif dengan material pembuatan
+                                    berkualitas premium.</p>
+                                <a href="<?= base_url('/product/Bufet-Tv-Ilena-Metal-Frame') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 metal-penjelasan" id="metal-coffee">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10500301/1" alt="metal-coffee">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Coffee Table</h3>
+                                <p style="text-align: justify" class="mb-2">Kayu solid mahoni, enDirancang dengan
+                                    mempertimbangkan kenyamanan saat bercengkrama dengan orang-orang tersayang atau
+                                    kolega. Coffee Table metal frame ini dibuat dengan perpaduan material kayu dan logam
+                                    yang memunculkan visualisasi simpel dan elegan dalam sebuah furniture.
+                                    Koleksi Ilena Furniture series didesain eksklusif dengan material pembuatan
+                                    berkualitas premium.
+                                    gineered wood, rangka kaki besi, dilapisi vinir jati dengan finishing white & black
+                                    wash.
+                                </p>
+                                <a href="<?= base_url('/product/Coffee-Table-Ilena-Metal-Frame') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 metal-penjelasan" id="metal-console">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10500401/1" alt="metal-console">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Console Table</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dengan sepenuh hati, console table
+                                    ini sangat pas ditempatkan pada spot-spot tertentu dengan tambahan aksesoris sesuai
+                                    preferensi masing-masing. Dibuat dari bahan kayu dan logam finishing satin untuk
+                                    menegaskan kesan tampilan simpel dan elegan.
+                                    Koleksi Ilena Furniture series didesain eksklusif dengan material pembuatan
+                                    berkualitas premium.</p>
+                                <a href="<?= base_url('/product/Console-Table-Ilena-Metal-Frame') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 metal-penjelasan" id="metal-6drawer">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10500901/1" alt="metal-dresser-6-drawer">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Dresser 6 Drawer</h3>
+                                <p style="text-align: justify" class="mb-2">Lemari laci ini terdiri dari 6 kabinet laci
+                                    dirancang dengan model stylish & modern. Paduan kayu solid dan besi pada rangka
+                                    kakinya menjadikan lemari laci ini lebih longlasting. Dengan banyaknya ruang kabinet
+                                    yang dimiliki, lemari laci ini cocok digunakan sebagai tempat penyimpanan pakaian
+                                    dan berbagai barang kebutuhan sesuai dengan kebutuhan masing-masing.
+                                    Koleksi Ilena Furniture series didesain eksklusif dengan material pembuatan
+                                    berkualitas premium.</p>
+                                <a href="<?= base_url('/product/Dresser-6-Drawer-Ilena-Metal-Frame') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 metal-penjelasan" id="metal-king">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10501201/1" alt="metal-king-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">King Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Rangka tempat tidur bergaya modern ini
+                                    menampilkan kesan unik dan simpel. Dibuat dari bahan kayu dan rangka kaki besi
+                                    finishing satin yang terjamin kuat serta kokoh. Pilihan tepat sebagai ranjang tidur
+                                    di kamar tidur Anda.
+                                    Koleksi Ilena Furniture series didesain eksklusif dengan material pembuatan
+                                    berkualitas premium.</p>
+                                <a href="<?= base_url('/product/King-Bed-Ilena-Metal-Frame') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 metal-penjelasan" id="metal-queen">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10501301/1" alt="metal-queen-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Queen Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Rangka tempat tidur bergaya modern ini
+                                    menampilkan kesan unik dan simpel. Dibuat dari bahan kayu dan rangka kaki besi
+                                    finishing satin yang terjamin kuat serta kokoh. Pilihan tepat sebagai ranjang tidur
+                                    di kamar tidur Anda.
+                                    Koleksi Ilena Furniture series didesain eksklusif dengan material pembuatan
+                                    berkualitas premium.</p>
+                                <a href="<?= base_url('/product/Queen-Bed-Ilena-Metal-Frame') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 metal-penjelasan" id="metal-side">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10501401/1" alt="metal-side-table">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Side Table</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dengan desain modern minimalis
+                                    yang cocok sebagai pelengkap di berbagai ruangan untuk memunculkan kesan elegan.
+                                    Dibuat dengan menggunakan finishing kayu jati dengan corak khasnya yang unik serta
+                                    rangka kaki besi finishing satin yang kokoh & awet lama.
+                                    Koleksi Ilena Furniture series didesain eksklusif dengan material pembuatan
+                                    berkualitas premium..</p>
+                                <a href="<?= base_url('/product/Side-Table-Ilena-Metal-Frame') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 metal-penjelasan" id="metal-single">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10701801" alt="metal-single-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Single Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dengan model modern klasik dengan
+                                    memadukan bahan kayu dan besi yang kokoh. Desainnya yang sederhana, membuat ranjang
+                                    tidur ini melengkapi keindahan interior kamar tidur Anda.
+                                    Koleksi Ilena Furniture series didesain eksklusif dengan material pembuatan
+                                    berkualitas premium.</p>
+                                <a href="<?= base_url('/product/Single-Bed-Ilena-Metal-Frame') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <p class="text-secondary">Ilena memaknai minimalis sebagai mahakarya indah yang dibalut dalam
+                            kesederhanaan. Dengan kepraktisan fungsinya, Metal Frame menjawab kebutuhan furniture secara
+                            menyeluruh dan relevan hingga dalam waktu berdekade lamanya. Inilah Classic modern yang Anda
+                            butuhkan!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cody -->
+        <div class="list-nav">
+            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
+                href="/product/category/cody">Cody</a>
+            <div class="child-list-nav">
+                <div class="container d-flex align-items-stretch py-4">
+                    <div style="flex: 1;">
+                        <p class="m-0" style="font-size:14px;">Jelajahi Cody</p>
+                        <div class="ms-2">
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=cody&jenis=bufet-tv"
+                                onmouseover="hoverListNav('codyy-bufet')">Bufet TV</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=cody&jenis=coffee-table"
+                                onmouseover="hoverListNav('codyy-coffee')">Coffee Table</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=cody&jenis=console-table"
+                                onmouseover="hoverListNav('codyy-console')">Console
+                                Table</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=cody&jenis=dresser-4-drawer"
+                                onmouseover="hoverListNav('codyy-6drawer')">Dresser 4
+                                Drawer
+                            </a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=cody&jenis=king-bed"
+                                onmouseover="hoverListNav('codyy-king')">King
+                                Bed</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=cody&jenis=queen-bed"
+                                onmouseover="hoverListNav('codyy-queen')">Queen Bed</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=cody&jenis=single-bed"
+                                onmouseover="hoverListNav('codyy-single')">Single Bed</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=cody&jenis=side-table"
+                                onmouseover="hoverListNav('codyy-side')">Side
+                                Table</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=cody&jenis=wardrobe"
+                                onmouseover="hoverListNav('codyy-wardrobe')">Wardrobe</a>
+                        </div>
+                    </div>
+                    <div style="flex:1;">
+                        <div class="d-flex gap-4 mb-3 codyy-penjelasan" id="codyy-bufet">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10201601/1" alt="codyy-bufet-tv">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Bufet TV</h3>
+                                <p style="text-align: justify" class="mb-2">Meja TV series Cody tampil dengan memadukan
+                                    gaya klasik dan modern.Perpaduan material kayu dengan ciri khas serat kayu yang unik
+                                    serta logam menambah daya tahan lebih kokoh.
+                                    Koleksi Ilena Furniture series Cody didesain eksklusif dengan material pembuatan
+                                    berkualitas premium.</p>
+                                <a href="<?= base_url('/product/Bufet-Tv-Ilena-Cody') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 codyy-penjelasan" id="codyy-coffee">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10200302/1" alt="codyy-coffee">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Coffee Table</h3>
+                                <p style="text-align: justify" class="mb-2">Tampil dengan gaya modern membuat meja kopi
+                                    ini akan menampilkan kesan trendy. Pemilihan bahan kayu dengan menonjolkan ciri khas
+                                    serat kayu yang unik menjadikan meja kopi bergaya modern ini tetap tidak
+                                    meninggalkan kesan klasik yang tak lekang oleh waktu.
+                                    Koleksi Ilena Furniture series Cody didesain eksklusif dengan material pembuatan
+                                    berkualitas premium.
+                                </p>
+                                <a href="<?= base_url('/product/Coffe-Table-Ilena-Cody') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 codyy-penjelasan" id="codyy-console">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10200401" alt="codyy-console">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Console Table</h3>
+                                <p style="text-align: justify" class="mb-2">Meja tambahan bergaya modern minimalis
+                                    dengan 2 laci yang cocok untuk ruangan manapun. Dibuat dari kayu dan paduan logam
+                                    yang kokoh dan tahan hingga waktu yang lama.
+                                    Koleksi Ilena Furniture series Cody didesain eksklusif dengan material pembuatan
+                                    berkualitas premium.</p>
+                                <a href="<?= base_url('/product/console-table-ilena-cody') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 codyy-penjelasan" id="codyy-6drawer">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10200701" alt="codyy-dresser-4-drawer">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Dresser 4 Drawer</h3>
+                                <p style="text-align: justify" class="mb-2">Lemari 4 laci dengan corak serat kayu yang
+                                    memiliki keunikan ini didesain dengan model modern yang cocok untuk tambahan kamar
+                                    tidur atau ruangan lain.
+                                    Koleksi Ilena Furniture series Cody didesain eksklusif dengan material pembuatan
+                                    berkualitas premium.</p>
+                                <a href="<?= base_url('/product/dresser-4-drawer-ilena-cody') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 codyy-penjelasan" id="codyy-king">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10201201" alt="codyy-king-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">King Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Ranjang tidur king bed ini dirancang dengan
+                                    model bergaya minimalis yang cocok untuk mengisi ruang tidur utama di hunian Anda.
+                                    Terbuat dari kayu kokoh dan ditambah dengan rangka kaki dari besi yang menambah daya
+                                    tahan beban lebih kuat.
+                                    Koleksi Ilena Furniture series Cody didesain eksklusif dengan material pembuatan
+                                    berkualitas premium.</p>
+                                <a href="<?= base_url('/product/king-bed-ilena-cody') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 codyy-penjelasan" id="codyy-queen">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10501301/1" alt="codyy-queen-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Queen Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Rangka tempat tidur bergaya modern ini
+                                    menampilkan kesan unik dan simpel. Dibuat dari bahan kayu dan rangka kaki besi
+                                    finishing satin yang terjamin kuat serta kokoh. Pilihan tepat sebagai ranjang tidur
+                                    di kamar tidur Anda.
+                                    Koleksi Ilena Furniture series didesain eksklusif dengan material pembuatan
+                                    berkualitas premium.</p>
+                                <a href="<?= base_url('/product/queen-bed-ilena-cody') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 codyy-penjelasan" id="codyy-side">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10201401" alt="codyy-side-table">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Side Table</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dengan desain modern minimalis
+                                    yang cocok sebagai pelengkap di berbagai ruangan untuk memunculkan kesan elegan.
+                                    Dibuat dengan menggunakan finishing kayu jati dengan corak khasnya yang unik serta
+                                    rangka kaki besi finishing satin yang kokoh & awet lama.
+                                    Koleksi Ilena Furniture series didesain eksklusif dengan material pembuatan
+                                    berkualitas premium..</p>
+                                <a href="<?= base_url('/product/side-table-ilena-cody') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 codyy-penjelasan" id="codyy-single">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10701801" alt="codyy-single-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Single Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dengan model modern klasik dengan
+                                    memadukan bahan kayu dan besi yang kokoh. Desainnya yang sederhana, membuat ranjang
+                                    tidur ini melengkapi keindahan interior kamar tidur Anda.
+                                    Koleksi Ilena Furniture series didesain eksklusif dengan material pembuatan
+                                    berkualitas premium.</p>
+                                <a href="<?= base_url('/product/single-bed-ilena-cody') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 codyy-penjelasan" id="codyy-wardrobe">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10201701" alt="codyy-wardrobe-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Wardrobe</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dengan model modern klasik dengan
+                                    memadukan bahan kayu dan besi yang kokoh. Desainnya yang sederhana, membuat ranjang
+                                    tidur ini melengkapi keindahan interior kamar tidur Anda.
+                                    Koleksi Ilena Furniture series didesain eksklusif dengan material pembuatan
+                                    berkualitas premium.</p>
+                                <a href="<?= base_url('/product/wardrobe-bed-ilena-cody') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <p class="text-secondary">Ilena memaknai minimalis sebagai mahakarya indah yang dibalut dalam
+                            kesederhanaan. Dengan kepraktisan fungsinya, Metal Frame menjawab kebutuhan furniture secara
+                            menyeluruh dan relevan hingga dalam waktu berdekade lamanya. Inilah Classic modern yang Anda
+                            butuhkan!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Socoplate -->
+        <div class="list-nav">
+            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
+                href="/product/category/socoplate">Socoplate</a>
+            <div class="child-list-nav">
+                <div class="container d-flex align-items-stretch py-4">
+                    <div style="flex: 1;">
+                        <p class="m-0" style="font-size:14px;">Jelajahi Socoplate</p>
+                        <div class="ms-2">
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=socoplate&jenis=coffee-table"
+                                onmouseover="hoverListNav('socoplatey-coffee')">Coffee Table</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=socoplate&jenis=console-table"
+                                onmouseover="hoverListNav('socoplatey-console')">Console
+                                Table</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=socoplate&jenis=dresser-3-drawer"
+                                onmouseover="hoverListNav('socoplatey-3drawer')">Dresser 3
+                                Drawer
+                            </a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=socoplate&jenis=dresser-5-drawer"
+                                onmouseover="hoverListNav('socoplatey-5drawer')">Dresser 5
+                                Drawer
+                            </a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=socoplate&jenis=king-bed"
+                                onmouseover="hoverListNav('socoplatey-king')">King
+                                Bed</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=socoplate&jenis=queen-bed"
+                                onmouseover="hoverListNav('socoplatey-queen')">Queen Bed</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=socoplate&jenis=single-bed"
+                                onmouseover="hoverListNav('socoplatey-single')">Single Bed</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=socoplate&jenis=side-table"
+                                onmouseover="hoverListNav('socoplatey-side')">Side
+                                Table</a>
+                        </div>
+                    </div>
+                    <div style="flex:1;">
+                        <div class="d-flex gap-4 mb-3 socoplatey-penjelasan" id="socoplatey-coffee">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10800301" alt="socoplatey-coffee">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Coffee Table</h3>
+                                <p style="text-align: justify" class="mb-2">Tampil dengan memadukan gaya modern klasik
+                                    yang fleksibel untuk segala suasana ruang. Dengan menambahkan meja ini, akan semakin
+                                    membuat ruangan jadi lebih nyaman.
+                                    Koleksi series Socoplate dari Ilena Furniture didesain eksklusif dengan material
+                                    berkualitas premium.
+                                </p>
+                                <a href="<?= base_url('/product/coffee-table-ilena-socoplate') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 socoplatey-penjelasan" id="socoplatey-console">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10200401" alt="socoplatey-console">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Console Table</h3>
+                                <p style="text-align: justify" class="mb-2">Meja tambahan bergaya modern minimalis
+                                    dengan 2 laci yang cocok untuk ruangan manapun. Dibuat dari kayu dan paduan logam
+                                    yang kokoh dan tahan hingga waktu yang lama.
+                                    Koleksi Ilena Furniture series socoplate didesain eksklusif dengan material
+                                    pembuatan
+                                    berkualitas premium.</p>
+                                <a href="<?= base_url('/product/console-table-ilena-socoplate') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 socoplatey-penjelasan" id="socoplatey-3drawer">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10800601" alt="socoplatey-dresser-3-drawer">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Dresser 3 Drawer</h3>
+                                <p style="text-align: justify" class="mb-2">Lemari laci 3 tingkat ini merupakan salah
+                                    satu tempat penyimpanan dengan banyak kegunaan mulai dari penyimpanan aneka barang
+                                    hingga pakaian. Desain minimalis dengan 3 tingkat kabinet laci yang dibekali handle
+                                    yang nyaman di genggaman. Kesan mewah dan elegan pada kabinet laci ini dipertegas
+                                    lagi pada bagian rangka kaki yang terbuat dari material besi yang kokoh.
+                                    Koleksi series Socoplate dari Ilena Furniture didesain eksklusif dengan material
+                                    berkualitas premium.</p>
+                                <a href="<?= base_url('/product/dresser-3-drawer-ilena-socoplate') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 socoplatey-penjelasan" id="socoplatey-5drawer">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10800801" alt="socoplatey-dresser-5-drawer">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Dresser 5 Drawer</h3>
+                                <p style="text-align: justify" class="mb-2">Lemari laci 5 tingkat ini merupakan salah
+                                    satu tempat penyimpanan dengan banyak kegunaan mulai dari penyimpanan aneka barang
+                                    hingga pakaian. Desain minimalis dengan 5 tingkat kabinet laci yang dibekali handle
+                                    yang nyaman di genggaman. Kesan mewah dan elegan pada kabinet laci ini dipertegas
+                                    lagi pada bagian rangka kaki yang terbuat dari material besi yang kokoh.
+                                    Koleksi series Socoplate dari Ilena Furniture didesain eksklusif dengan material
+                                    berkualitas premium.</p>
+                                <a href="<?= base_url('/product/dresser-5-drawer-ilena-socoplate') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 socoplatey-penjelasan" id="socoplatey-king">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10801201" alt="socoplatey-king-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">King Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Ranjang tidur bergaya modern minimalis
+                                    dengan menggunakan kayu sebagai material utamanya. Ditambah dengan aksen logam
+                                    sebagai highlight pada desain socoplate ini, yang membuat tampilan ranjang tidur
+                                    jadi makin sempurna.
+                                    Koleksi series Socoplate dari Ilena Furniture didesain eksklusif dengan material
+                                    berkualitas premium.</p>
+                                <a href="<?= base_url('/product/king-bed-ilena-socoplate') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 socoplatey-penjelasan" id="socoplatey-queen">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10801301" alt="socoplatey-queen-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Queen Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Ranjang tidur bergaya modern minimalis
+                                    dengan menggunakan kayu sebagai material utamanya. Ditambah dengan aksen logam
+                                    sebagai highlight pada desain socoplate ini, yang membuat tampilan ranjang tidur
+                                    jadi makin sempurna.
+                                    Koleksi series Socoplate dari Ilena Furniture didesain eksklusif dengan material
+                                    berkualitas premium.</p>
+                                <a href="<?= base_url('/product/queen-bed-ilena-socoplate') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 socoplatey-penjelasan" id="socoplatey-side">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10801401" alt="socoplatey-side-table">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Side Table</h3>
+                                <p style="text-align: justify" class="mb-2">Meja samping ini cocok digunakan sebagai
+                                    furniture tambahan untuk berbagai ruangan. Dibuat dengan desain modern minimalis
+                                    dari kayu dan logam yang kuat dan kokoh.
+                                    Koleksi series Socoplate dari Ilena Furniture didesain eksklusif dengan material
+                                    berkualitas premium.</p>
+                                <a href="<?= base_url('/product/side-table-ilena-socoplate') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 socoplatey-penjelasan" id="socoplatey-single">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewpic/10701801" alt="socoplatey-single-bed">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Single Bed</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dengan balutan gaya modern yang
+                                    memanfaatkan kayu sebagai material utama dan logam sebagai rangka kaki serta aksen
+                                    pada headboard yang memperindah tampilan visualnya. Dengan model terbaru ini, bisa
+                                    membuat ruang tidur Anda jadi lebih trendy dengan tetap mengedepankan kenyamanan.
+                                    Koleksi series Socoplate dari Ilena Furniture didesain eksklusif dengan material
+                                    berkualitas premium.</p>
+                                <a href="<?= base_url('/product/single-bed-ilena-socoplate') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <p class="text-secondary">Ilena memaknai minimalis sebagai mahakarya indah yang dibalut dalam
+                            kesederhanaan. Dengan kepraktisan fungsinya, Socoplate menjawab kebutuhan furniture secara
+                            menyeluruh dan relevan hingga dalam waktu berdekade lamanya. Inilah Classic modern yang Anda
+                            butuhkan!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <div class="bg-list-nav"></div>
     </div>
 </div>
 <script>
-    function hoverListNav(idElm) {
-        console.log('.' + idElm.split('-')[0] + '-penjelasan')
-        const arrPenjelasanElm = document.querySelectorAll('.' + idElm.split('-')[0] + '-penjelasan');
-        console.log(arrPenjelasanElm)
-        arrPenjelasanElm.forEach(penjelasanElm => {
-            penjelasanElm.classList.add('d-none')
-            penjelasanElm.classList.remove('d-flex')
-        });
-        console.log(idElm)
-        const itemElm = document.getElementById(idElm)
-        itemElm.classList.remove('d-none')
-        itemElm.classList.add('d-flex')
-    }
+function hoverListNav(idElm) {
+    console.log('.' + idElm.split('-')[0] + '-penjelasan')
+    const arrPenjelasanElm = document.querySelectorAll('.' + idElm.split('-')[0] + '-penjelasan');
+    console.log(arrPenjelasanElm)
+    arrPenjelasanElm.forEach(penjelasanElm => {
+        penjelasanElm.classList.add('d-none')
+        penjelasanElm.classList.remove('d-flex')
+    });
+    console.log(idElm)
+    const itemElm = document.getElementById(idElm)
+    itemElm.classList.remove('d-none')
+    itemElm.classList.add('d-flex')
+}
 </script>

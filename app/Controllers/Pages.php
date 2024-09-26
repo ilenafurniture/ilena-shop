@@ -363,6 +363,22 @@ class Pages extends BaseController
                 'deskripsi' => 'Pastikan furniture rumah selalu keren dan berkualitas dengan beli CutOut Ilena Semarang',
                 'keywords' => ['Cutout Ilena,Cutout Ilena Semarang,Living Room Ilena', 'Living Room', 'Ilena Semarang', 'Bed Room Ilena', 'Bed Room Ilena Semarang', 'Lounge Room Ilena', 'Lounge Room Ilena Semarang'],
             ],
+            'industrial' => [
+                'deskripsi' => 'Pastikan furniture rumah selalu keren dan berkualitas dengan beli Industrial Ilena Semarang',
+                'keywords' => ['Industrial Ilena,Industrial Ilena Semarang,Living Room Ilena', 'Living Room', 'Ilena Semarang', 'Bed Room Ilena', 'Bed Room Ilena Semarang', 'Lounge Room Ilena', 'Lounge Room Ilena Semarang'],
+            ],
+            'metal-frame' => [
+                'deskripsi' => 'Pastikan furniture rumah selalu keren dan berkualitas dengan beli Metal Frame Ilena Semarang',
+                'keywords' => ['Metal Frame Ilena,Metal Frame Ilena Semarang,Living Room Ilena', 'Living Room', 'Ilena Semarang', 'Bed Room Ilena', 'Bed Room Ilena Semarang', 'Lounge Room Ilena', 'Lounge Room Ilena Semarang'],
+            ],
+            'socoplate' => [
+                'deskripsi' => 'Pastikan furniture rumah selalu keren dan berkualitas dengan beli Socoplate Ilena Semarang',
+                'keywords' => ['Socoplate Ilena,Socoplate Ilena Semarang,Living Room Ilena', 'Living Room', 'Ilena Semarang', 'Bed Room Ilena', 'Bed Room Ilena Semarang', 'Lounge Room Ilena', 'Lounge Room Ilena Semarang'],
+            ],
+            'cody' => [
+                'deskripsi' => 'Pastikan furniture rumah selalu keren dan berkualitas dengan beli Cody Ilena Semarang',
+                'keywords' => ['Cody Ilena,Cody Ilena Semarang,Living Room Ilena', 'Living Room', 'Ilena Semarang', 'Bed Room Ilena', 'Bed Room Ilena Semarang', 'Lounge Room Ilena', 'Lounge Room Ilena Semarang'],
+            ],
         ];
 
         $data = [

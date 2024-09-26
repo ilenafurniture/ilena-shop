@@ -221,6 +221,135 @@
                         href="/product?koleksi=cutout&jenis=single-bed">Single Bed</a>
                 </div>
             </div>
+
+            <div>
+                <input type="radio" name="collection" id="collection7" class="item-collection">
+                <label for="collection7" class="collectionjdl">
+                    <a class="m-0 fw-bold" href="/product/category/industrial">Industrial</a>
+                    <i class="material-icons">chevron_right</i>
+                </label>
+                <div class="container-collection">
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=industrial&jenis=bookshelf">Bookshelf</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=industrial&jenis=bufet-tv">Bufet TV</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=industrial&jenis=coffee-table">Coffee Table</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=industrial&jenis=console-table">Console
+                        Table</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=industrial&jenis=credenza">Credenza</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=industrial&jenis=king-bed">King
+                        Bed</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=industrial&jenis=queen-bed">Queen Bed</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=industrial&jenis=side-table">Side
+                        Table</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=industrial&jenis=single-bed">Single Bed</a>
+                </div>
+            </div>
+
+            <div>
+                <input type="radio" name="collection" id="collection8" class="item-collection">
+                <label for="collection8" class="collectionjdl">
+                    <a class="m-0 fw-bold" href="/product/category/metal-frame">Metal Frame</a>
+                    <i class="material-icons">chevron_right</i>
+                </label>
+                <div class="container-collection">
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=metal-frame&jenis=bufet-tv">Bufet TV</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=metal-frame&jenis=coffee-table">Coffee Table</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=metal-frame&jenis=console-table">Console
+                        Table</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=metal-frame&jenis=dresser-6-drawer">Dresser 6
+                        Drawer
+                    </a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=metal-frame&jenis=king-bed">King
+                        Bed</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=metal-frame&jenis=queen-bed">Queen Bed</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=metal-frame&jenis=side-table">Side
+                        Table</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=metal-frame&jenis=single-bed">Single Bed</a>
+                </div>
+            </div>
+
+            <div>
+                <input type="radio" name="collection" id="collection9" class="item-collection">
+                <label for="collection9" class="collectionjdl">
+                    <a class="m-0 fw-bold" href="/product/category/cody">Cody</a>
+                    <i class="material-icons">chevron_right</i>
+                </label>
+                <div class="container-collection">
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=cody&jenis=bufet-tv">Bufet TV</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=cody&jenis=coffee-table">Coffee Table</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=cody&jenis=console-table">Console
+                        Table</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=cody&jenis=dresser-4-drawer">Dresser 4
+                        Drawer
+                    </a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=cody&jenis=king-bed">King
+                        Bed</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=cody&jenis=queen-bed">Queen Bed</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=cody&jenis=side-table">Side
+                        Table</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=cody&jenis=single-bed">Single Bed</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=cody&jenis=wardrobe">Wardrobe</a>
+                </div>
+            </div>
+
+            <div>
+                <input type="radio" name="collection" id="collection10" class="item-collection">
+                <label for="collection10" class="collectionjdl">
+                    <a class="m-0 fw-bold" href="/product/category/socoplate">Socoplate</a>
+                    <i class="material-icons">chevron_right</i>
+                </label>
+                <div class="container-collection">
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=socoplate&jenis=coffee-table">Coffee Table</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=socoplate&jenis=console-table">Console
+                        Table</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=socoplate&jenis=dresser-3-drawer">Dresser 3
+                        Drawer
+                    </a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=socoplate&jenis=dresser-5-drawer">Dresser 5
+                        Drawer
+                    </a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=socoplate&jenis=king-bed">King
+                        Bed</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=socoplate&jenis=queen-bed">Queen Bed</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=socoplate&jenis=side-table">Side
+                        Table</a>
+                    <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
+                        href="/product?koleksi=socoplate&jenis=single-bed">Single Bed</a>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
