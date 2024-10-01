@@ -22,6 +22,59 @@ class GambarController extends BaseController
         $this->gambarBarang3000Model = new GambarBarang3000Model();
     }
 
+    public function tampilGambarBarangCoba($idBarang)
+    {
+        // Decode URL dari Base64
+        // $imageUrl = base64_decode($encodedUrl);
+        $imageUrl = 'https://ilenafurniture.com/viewpic/' . $idBarang;
+        dd($imageUrl);
+
+        // Mendownload gambar dari URL
+        $imageContent = file_get_contents($imageUrl);
+        if ($imageContent === false) {
+            return $this->response->setStatusCode(404, 'Image not found.');
+        }
+
+        // Buat gambar dari string
+        $image = imagecreatefromstring($imageContent);
+        if ($image === false) {
+            return $this->response->setStatusCode(500, 'Invalid image format.');
+        }
+
+        // Mendapatkan watermark PNG
+        $watermarkPath = WRITEPATH . 'img/wm.png'; // Pastikan path watermark yang benar
+        if (!file_exists($watermarkPath)) {
+            return $this->response->setStatusCode(404, 'Watermark image not found.');
+        }
+
+        $watermark = imagecreatefrompng($watermarkPath);
+        if ($watermark === false) {
+            return $this->response->setStatusCode(500, 'Invalid watermark format.');
+        }
+
+        // Dapatkan ukuran gambar dan watermark
+        $imageWidth = imagesx($image);
+        $imageHeight = imagesy($image);
+        $watermarkWidth = imagesx($watermark);
+        $watermarkHeight = imagesy($watermark);
+
+        // Tentukan posisi watermark di pojok kanan bawah
+        $xPos = $imageWidth - $watermarkWidth - 10; // Margin 10px dari kanan
+        $yPos = $imageHeight - $watermarkHeight - 10; // Margin 10px dari bawah
+
+        // Tambahkan watermark ke gambar
+        imagecopy($image, $watermark, $xPos, $yPos, 0, 0, $watermarkWidth, $watermarkHeight);
+
+        // Set header untuk menampilkan gambar dengan tipe konten yang sesuai
+        header('Content-Type: image/jpeg');
+
+        // Output gambar
+        imagejpeg($image);
+
+        // Bersihkan memori
+        imagedestroy($image);
+        imagedestroy($watermark);
+    }
     public function tampilGambarBarang($idBarang)
     {
         $gambar = $this->barangModel->getBarangAdmin($idBarang)['gambar'];
