@@ -5,6 +5,8 @@ namespace App\Controllers;
 use App\Models\BarangModel;
 use App\Models\GambarBarangModel;
 use App\Models\GambarBarang3000Model;
+use App\Models\GambarArtikelModel;
+use App\Models\ArtikelModel;
 use App\Models\PembeliModel;
 use App\Models\PemesananModel;
 use App\Models\UserModel;
@@ -13,10 +15,14 @@ use CodeIgniter\Images\Handlers\GDHandler;
 class GambarController extends BaseController
 {
     protected $barangModel;
+    protected $artikelModel;
+    protected $gambarArtikelModel;
     protected $gambarBarangModel;
     protected $gambarBarang3000Model;
     public function __construct()
     {
+        $this->artikelModel = new ArtikelModel();
+        $this->gambarArtikelModel = new GambarArtikelModel();
         $this->barangModel = new BarangModel();
         $this->gambarBarangModel = new GambarBarangModel();
         $this->gambarBarang3000Model = new GambarBarang3000Model();
@@ -167,5 +173,18 @@ class GambarController extends BaseController
 
         unlink($fp);
         unlink('imgdum/1logo-1.webp');
+    }
+
+    public function tampilGambarArtikel($idArtikel, $urutan = false)
+    {
+        if ($urutan) {
+            $gambar = $this->gambarArtikelModel->getGambar($idArtikel);
+            $gambarSelected = $gambar['gambar' . $urutan];
+        } else {
+            $artikel = $this->artikelModel->getArtikel($idArtikel);
+            $gambarSelected = $artikel['header'];
+        }
+        $this->response->setHeader('Content-Type', 'image/webp');
+        echo $gambarSelected;
     }
 }

@@ -7,6 +7,9 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 $routes->get('/faq', 'Pages::faq', ['filter' => 'customerFilter']);
+$routes->get('/article', 'Pages::article',['filter' => 'customerFilter']);
+$routes->get('/article/category/(:any)', 'Pages::articleCategory/$1',['filter' => 'customerFilter']);
+$routes->get('/article/(:any)', 'Pages::article/$1',['filter' => 'customerFilter']);
 $routes->get('/tentang', 'Pages::tentang', ['filter' => 'customerFilter']);
 $routes->get('/contact', 'Pages::contact', ['filter' => 'customerFilter']);
 $routes->get('/syarat', 'Pages::syarat', ['filter' => 'customerFilter']);
@@ -80,10 +83,17 @@ $routes->get('/changepic/(:any)/(:any)', 'GambarController::gantiResolusiGambar/
 // $routes->get('/cobainput', 'GambarController::formCobaInput');
 $routes->get('/cobainput', 'GambarController::actionCobaInput');
 $routes->get('/gamwm', 'GambarController::tampilGambarVarWM');
+$routes->get('/imgart/(:any)', 'GambarController::tampilGambarArtikel/$1');
+$routes->get('/imgart/(:any)/(:any)', 'GambarController::tampilGambarArtikel/$1/$2');
 
 
 // Admin Controller
 $routes->get('/admin/product', 'AdminController::listProduct', ['filter' => 'adminFilter']);
+$routes->get('/admin/deletearticle/(:any)', 'AdminController::deleteArticle/$1', ['filter' => 'adminFilter']);
+$routes->get('/admin/addarticle', 'AdminController::addArticle', ['filter' => 'adminFilter']);
+$routes->post('/admin/addarticle', 'AdminController::actionAddArticle', ['filter' => 'adminFilter']);
+$routes->get('/admin/editarticle/(:any)', 'AdminController::editArticle/$1', ['filter' => 'adminFilter']);
+$routes->post('/admin/editarticle/(:any)', 'AdminController::actionEditArticle/$1', ['filter' => 'adminFilter']);
 // $routes->get('/admin/customer', 'AdminController::customer', ['filter' => 'adminFilter']);
 $routes->get('/admin/addproduct', 'AdminController::addProduct', ['filter' => 'adminFilter']);
 $routes->post('/admin/addproduct', 'AdminController::actionAddProduct', ['filter' => 'adminFilter']);

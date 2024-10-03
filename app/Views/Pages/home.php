@@ -1,22 +1,22 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <?php if ($msg_active) { ?>
-    <div id="modal-voucher" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
-        class="d-flex justify-content-center align-items-center">
-        <div style="border-radius: 10px; overflow: hidden; background-color: white; width: 80%; max-width: 500px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);"
-            class="p-5">
-            <h1 class="teks-sedang mb-3">Klaim voucher diskon 5% Anda sekarang juga</h1>
-            <p class="text-secondary">*S&K diskon ini hanya berlaku 1 bulan sejak menjadi member kami</p>
-            <a href="/product" class="btn-default w-100 text-center mb-2">Beli Produk</a>
-            <button class="btn-teks-aja mx-auto" onclick="closeModalVoucher()">Nanti</button>
-        </div>
+<div id="modal-voucher" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
+    class="d-flex justify-content-center align-items-center">
+    <div style="border-radius: 10px; overflow: hidden; background-color: white; width: 80%; max-width: 500px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);"
+        class="p-5">
+        <h1 class="teks-sedang mb-3">Klaim voucher diskon 5% Anda sekarang juga</h1>
+        <p class="text-secondary">*S&K diskon ini hanya berlaku 1 bulan sejak menjadi member kami</p>
+        <a href="/product" class="btn-default w-100 text-center mb-2">Beli Produk</a>
+        <button class="btn-teks-aja mx-auto" onclick="closeModalVoucher()">Nanti</button>
     </div>
-    <script>
-        function closeModalVoucher() {
-            document.getElementById('modal-voucher').classList.add('d-none')
-            document.getElementById('modal-voucher').classList.remove('d-flex')
-        }
-    </script>
+</div>
+<script>
+function closeModalVoucher() {
+    document.getElementById('modal-voucher').classList.add('d-none')
+    document.getElementById('modal-voucher').classList.remove('d-flex')
+}
+</script>
 <?php } ?>
 
 <div id="login-modal" class="d-none">
@@ -51,31 +51,31 @@
 </div>
 
 <?php if (!session()->get('isLogin')) { ?>
-    <script>
-        const loginModalElm = document.getElementById('login-modal')
-        let opened = false;
-        document.body.onscroll = (e) => {
-            if (!window.sessionStorage.getItem('close-login-modal')) {
-                const scrollingElm = e.target.scrollingElement;
-                const hasil = Math.round(
-                    (scrollingElm.scrollTop /
-                        (scrollingElm.scrollHeight -
-                            scrollingElm.clientHeight)) *
-                    100
-                );
-                if (hasil > 50 && !opened) {
-                    loginModalElm.classList.remove("d-none")
-                    opened = true
-                }
-            }
-        };
-
-        function closeLoginModel() {
-            loginModalElm.classList.add("d-none")
-            window.sessionStorage.setItem('close-login-modal', true)
-            opened = false
+<script>
+const loginModalElm = document.getElementById('login-modal')
+let opened = false;
+document.body.onscroll = (e) => {
+    if (!window.sessionStorage.getItem('close-login-modal')) {
+        const scrollingElm = e.target.scrollingElement;
+        const hasil = Math.round(
+            (scrollingElm.scrollTop /
+                (scrollingElm.scrollHeight -
+                    scrollingElm.clientHeight)) *
+            100
+        );
+        if (hasil > 50 && !opened) {
+            loginModalElm.classList.remove("d-none")
+            opened = true
         }
-    </script>
+    }
+};
+
+function closeLoginModel() {
+    loginModalElm.classList.add("d-none")
+    window.sessionStorage.setItem('close-login-modal', true)
+    opened = false
+}
+</script>
 <?php } ?>
 
 <!--Tampilan Home Baru -->
@@ -344,42 +344,42 @@
 </div>
 
 <script>
-    const scrollHomeElm = document.querySelector('.scroll-home');
-    const counterSlideElm = document.getElementById('counter-slide');
-    const numCounterSlideElm = document.querySelectorAll('#counter-slide p');
-    // console.log(numCounterSlideElm)
-    const inputScrollHomeElm = document.querySelectorAll('input[name="scrollHome"]');
-    // console.log(scrollHomeElm.children);
-    scrollHomeElm.onscroll = () => {
-        let x = scrollHomeElm.scrollLeft;
-        // console.log(x);
-        const widthInnerStg = window.innerWidth / 2;
-        if (x % window.innerWidth < widthInnerStg) {
-            counterSlideElm.style.opacity = 1 - ((x % widthInnerStg) / widthInnerStg) / 1;
-            counterSlideElm.style.transform = 'translateX(-' + (x % widthInnerStg) + 'px)';
-            console.log('translateX(-' + (x % widthInnerStg) + ')')
-        } else {
-            counterSlideElm.style.opacity = ((x % widthInnerStg) / widthInnerStg) / 1;
-            counterSlideElm.style.transform = 'translateX(-' + (widthInnerStg - (x % widthInnerStg)) + 'px)';
-            console.log('translateX(-' + (widthInnerStg - (x % widthInnerStg)) + ')')
-        }
-
-        // console.log(Math.floor(x / (window.innerWidth * 90 / 100)))
-        inputScrollHomeElm.forEach(inputnya => {
-            inputnya.removeAttribute('checked');
-        });
-        inputScrollHomeElm[Math.floor(x / (window.innerWidth * 90 / 100))].setAttribute('checked', '');
-
-        numCounterSlideElm[0].innerHTML = '0' + (Math.floor(x / (window.innerWidth * 90 / 100)) + 1)
-        numCounterSlideElm[1].innerHTML = '0' + inputScrollHomeElm.length;
+const scrollHomeElm = document.querySelector('.scroll-home');
+const counterSlideElm = document.getElementById('counter-slide');
+const numCounterSlideElm = document.querySelectorAll('#counter-slide p');
+// console.log(numCounterSlideElm)
+const inputScrollHomeElm = document.querySelectorAll('input[name="scrollHome"]');
+// console.log(scrollHomeElm.children);
+scrollHomeElm.onscroll = () => {
+    let x = scrollHomeElm.scrollLeft;
+    // console.log(x);
+    const widthInnerStg = window.innerWidth / 2;
+    if (x % window.innerWidth < widthInnerStg) {
+        counterSlideElm.style.opacity = 1 - ((x % widthInnerStg) / widthInnerStg) / 1;
+        counterSlideElm.style.transform = 'translateX(-' + (x % widthInnerStg) + 'px)';
+        console.log('translateX(-' + (x % widthInnerStg) + ')')
+    } else {
+        counterSlideElm.style.opacity = ((x % widthInnerStg) / widthInnerStg) / 1;
+        counterSlideElm.style.transform = 'translateX(-' + (widthInnerStg - (x % widthInnerStg)) + 'px)';
+        console.log('translateX(-' + (widthInnerStg - (x % widthInnerStg)) + ')')
     }
-    inputScrollHomeElm.forEach((inputnya, indInput) => {
-        inputnya.addEventListener('change', () => {
-            // console.log('input ' + indInput + ' berubah')
-            scrollHomeElm.scrollLeft = window.innerWidth * indInput
-        });
 
+    // console.log(Math.floor(x / (window.innerWidth * 90 / 100)))
+    inputScrollHomeElm.forEach(inputnya => {
+        inputnya.removeAttribute('checked');
     });
+    inputScrollHomeElm[Math.floor(x / (window.innerWidth * 90 / 100))].setAttribute('checked', '');
+
+    numCounterSlideElm[0].innerHTML = '0' + (Math.floor(x / (window.innerWidth * 90 / 100)) + 1)
+    numCounterSlideElm[1].innerHTML = '0' + inputScrollHomeElm.length;
+}
+inputScrollHomeElm.forEach((inputnya, indInput) => {
+    inputnya.addEventListener('change', () => {
+        // console.log('input ' + indInput + ' berubah')
+        scrollHomeElm.scrollLeft = window.innerWidth * indInput
+    });
+
+});
 </script>
 
 
@@ -424,7 +424,7 @@
             <div style="flex:1;" class="h-100 d-flex flex-column justify-content-between">
                 <div>
                     <h3 class="mb-3 teks-sedang fw-bold">Inaugural Season</h3>
-                    <p>Ilena hadir pertama kali dengan memperkenalkan 6 series terbaik. Terinspirasi dari berbagai
+                    <p>Ilena hadir pertama kali dengan memperkenalkan 10 series terbaik. Terinspirasi dari berbagai
                         hal
                         baik dengan harapan dapat membawa kebaikan dalam setiap furniture Kami, untuk Anda.</p>
                 </div>
@@ -491,35 +491,37 @@
                 class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
                 <p class="m-0 fw-bold">Cutout</p>
             </a>
-            <a href="/product?koleksi=orca"
-                class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+            <a href="/product?koleksi=orca" class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
                 <p class="m-0 fw-bold">Orca</p>
             </a>
         </div>
     </div>
     <div class="hide-ke-show-block" style="width: 70vw;">
         <a href="/product?koleksi=industrial"
-            style="border-bottom: 1px solid grey; text-decoration: none; color: white;" class="p-4 d-flex justify-content-center align-items-center">
+            style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
+            class="p-4 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Industrial</p>
         </a>
-        <a href="/product?koleksi=sorely"
-            style="border-bottom: 1px solid grey; text-decoration: none; color: white;" class="p-4 d-flex justify-content-center align-items-center">
+        <a href="/product?koleksi=sorely" style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
+            class="p-4 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Sorely</p>
         </a>
         <a href="/product?koleksi=water-case"
-            style="border-bottom: 1px solid grey; text-decoration: none; color: white;" class="p-4 d-flex justify-content-center align-items-center">
+            style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
+            class="p-4 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Water Case</p>
         </a>
         <a href="/product?koleksi=plint-base"
-            style="border-bottom: 1px solid grey; text-decoration: none; color: white;" class="p-4 d-flex justify-content-center align-items-center">
+            style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
+            class="p-4 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Plint Base</p>
         </a>
-        <a href="/product?koleksi=cutout"
-            style="border-bottom: 1px solid grey; text-decoration: none; color: white;" class="p-4 d-flex justify-content-center align-items-center">
+        <a href="/product?koleksi=cutout" style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
+            class="p-4 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Cutout</p>
         </a>
-        <a href="/product?koleksi=orca"
-            style="text-decoration: none; color: white;" class="p-4 d-flex justify-content-center align-items-center">
+        <a href="/product?koleksi=orca" style="text-decoration: none; color: white;"
+            class="p-4 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Orca</p>
         </a>
     </div>
@@ -528,20 +530,20 @@
 
 
 <script>
-    const modalseriesELM = document.getElementById('modal-series');
+const modalseriesELM = document.getElementById('modal-series');
 
-    function closemodalseries() {
-        modalseriesELM.classList.remove('d-flex');
-        modalseriesELM.classList.add('d-none');
-        document.body.style.overflow = 'auto';
-    }
+function closemodalseries() {
+    modalseriesELM.classList.remove('d-flex');
+    modalseriesELM.classList.add('d-none');
+    document.body.style.overflow = 'auto';
+}
 
-    function modalseries() {
-        modalseriesELM.classList.add('d-flex');
-        modalseriesELM.classList.remove('d-none');
-        document.body.style.overflow = 'hidden';
+function modalseries() {
+    modalseriesELM.classList.add('d-flex');
+    modalseriesELM.classList.remove('d-none');
+    document.body.style.overflow = 'hidden';
 
-    }
+}
 </script>
 
 <!-- Bagian Windows -->
@@ -560,7 +562,8 @@
         <h5 class="text-center fw-bold" style="font-size: 13px; height: fit-content">ROOM</h5>
     </a>
     <a href="/product?ruang=tidur" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
-        <img src="./img/foto/bedroom cody comp.png" alt="" class="w-100 mb-3" style="flex: 1; width: 100%; object-fit: cover;">
+        <img src="./img/foto/bedroom cody comp.png" alt="" class="w-100 mb-3"
+            style="flex: 1; width: 100%; object-fit: cover;">
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
             <h5 style="font-weight: 500;" class="m-0">B</h5>
             <h5 style="font-weight: 500;" class="m-0">E</h5>
@@ -569,7 +572,8 @@
         <h5 class="text-center fw-bold" style="font-size: 13px; height: fit-content">ROOM</h5>
     </a>
     <a href="/product?ruang=keluarga" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
-        <img src="./img/foto/ruangtamu1 comp.png" alt="" class="w-100 mb-3" style="flex: 1; width: 100%; object-fit: cover;">
+        <img src="./img/foto/ruangtamu1 comp.png" alt="" class="w-100 mb-3"
+            style="flex: 1; width: 100%; object-fit: cover;">
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
             <h5 style="font-weight: 500;" class="m-0">L</h5>
             <h5 style="font-weight: 500;" class="m-0">O</h5>
@@ -584,22 +588,22 @@
 
 <!-- Bagian HP -->
 <style>
-    #scroll-set {
-        width: 100%;
-        overflow: scroll;
-        scroll-snap-type: x mandatory;
-    }
+#scroll-set {
+    width: 100%;
+    overflow: scroll;
+    scroll-snap-type: x mandatory;
+}
 
-    #scroll-set::-webkit-scrollbar {
-        display: none;
-    }
+#scroll-set::-webkit-scrollbar {
+    display: none;
+}
 </style>
 <div class="hide-ke-show-block" id="scroll-set">
     <div class="d-flex gap-1 px-5 pt-5 pb-4" style="width: fit-content;">
         <a href="/product?ruang=tamu" class="bg-primary"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block; height: 100px;">
-            <img src="<?= base_url('/img/foto/livingroom1 comp.png') ?>" alt="" style=" height: auto; width: 100%; border-radius:4px;"
-                class="mb-2">
+            <img src="<?= base_url('/img/foto/livingroom1 comp.png') ?>" alt=""
+                style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
             <div class="d-flex gap-4 justify-content-center mb-2">
                 <h5 style="font-weight: 500;" class="m-0">L</h5>
                 <h5 style="font-weight: 500;" class="m-0">I</h5>
@@ -612,8 +616,8 @@
         </a>
         <a href="/product?ruang=tidur"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
-            <img src="<?= base_url('/img/foto/bedroom cody comp.png') ?>" alt="" style=" height: auto; width: 100%; border-radius:4px;"
-                class="mb-2">
+            <img src="<?= base_url('/img/foto/bedroom cody comp.png') ?>" alt=""
+                style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
             <div class="d-flex gap-4 justify-content-center mb-2">
                 <h5 style="font-weight: 500;" class="m-0">B</h5>
                 <h5 style="font-weight: 500;" class="m-0">E</h5>
@@ -623,8 +627,8 @@
         </a>
         <a href="/product?ruang=keluarga"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
-            <img src="<?= base_url('/img/foto/ruangtamu1 comp.png') ?>" alt="" style=" height: auto; width: 100%; border-radius:4px;"
-                class="mb-2">
+            <img src="<?= base_url('/img/foto/ruangtamu1 comp.png') ?>" alt=""
+                style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
             <div class="d-flex gap-4 justify-content-center mb-2">
                 <h5 style="font-weight: 500;" class="m-0">L</h5>
                 <h5 style="font-weight: 500;" class="m-0">O</h5>

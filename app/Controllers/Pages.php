@@ -5,6 +5,8 @@ namespace App\Controllers;
 use App\Models\BarangModel;
 use App\Models\GambarBarangModel;
 use App\Models\GambarBarang3000Model;
+use App\Models\GambarArtikelModel;
+use App\Models\ArtikelModel;
 use App\Models\PembeliModel;
 use App\Models\PemesananModel;
 use App\Models\PemesananGudangModel;
@@ -19,6 +21,8 @@ class Pages extends BaseController
     protected $barangModel;
     protected $gambarBarangModel;
     protected $gambarBarang3000Model;
+    protected $gambarArtikelModel;
+    protected $artikelModel;
     protected $userModel;
     protected $pembeliModel;
     protected $pemesananModel;
@@ -33,6 +37,8 @@ class Pages extends BaseController
         $this->barangModel = new BarangModel();
         $this->gambarBarangModel = new GambarBarangModel();
         $this->gambarBarang3000Model = new GambarBarang3000Model();
+        $this->gambarArtikelModel = new GambarArtikelModel();
+        $this->artikelModel = new ArtikelModel();
         $this->userModel = new UserModel();
         $this->pembeliModel = new PembeliModel();
         $this->pemesananModel = new PemesananModel();
@@ -3073,6 +3079,64 @@ class Pages extends BaseController
         ];
         return view('pages/faq', $data);
     }
+
+    public function article($judul_article = false)
+    {
+        $wishlist = session()->get('wishlist');
+        if(!$wishlist) {
+            $wishlist = [];
+        }
+        $artikel = $this->artikelModel->getArtikelJudul($judul_article);
+        $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+        if (!$artikel) return redirect()->to('article');
+        if ($judul_article) {
+            $artikel['header'] = '/imgart/' . $artikel['id'];
+            $artikel['isi'] = json_decode($artikel['isi'], true);
+            $artikel['kategori'] = explode(",", $artikel['kategori']);
+            $artikel['waktu'] = date("d", strtotime($artikel['waktu'])) . " " . $bulan[date("m", strtotime($artikel['waktu'])) - 1] . " " . date("Y", strtotime($artikel['waktu']));
+
+            $artikelTerkait = $this->artikelModel->like('kategori', $artikel['kategori'][0], 'both')->findAll();
+            foreach ($artikelTerkait as $ind_a => $a) {
+                $artikelTerkait[$ind_a]['header'] = '/imgart/' . $a['id'];
+                $artikelTerkait[$ind_a]['isi'] = json_decode($a['isi'], true);
+                $artikelTerkait[$ind_a]['kategori'] = explode(",", $a['kategori']);
+                $artikelTerkait[$ind_a]['waktu'] = date("d", strtotime($a['waktu'])) . " " . $bulan[date("m", strtotime($a['waktu'])) - 1] . " " . date("Y", strtotime($a['waktu']));
+            }
+            $produkTerkait = $this->barangModel->where(['subkategori' => $artikel['kategori'][0]])->orderBy('pengunjung', 'desc')->findAll(10, 0);
+            $data = [
+                'title' => 'Artikel ' . $artikel['judul'],
+                'artikel' => $artikel,
+                'artikelTerkait' => $artikelTerkait,
+                'produkTerkait' => $produkTerkait,
+                'komen' => json_decode($artikel['komen'], true),
+                'komenJson' => $artikel['komen'],
+                'metaDeskripsi' => $artikel['judul'],
+                'metaKeyword' => $artikel['keywords'],
+                'wishlist' => $wishlist
+            ];
+            return view('pages/artikel', $data);
+        } else {
+            foreach ($artikel as $ind_a => $a) {
+                $artikel[$ind_a]['header'] = '/imgart/' . $a['id'];
+                $artikel[$ind_a]['isi'] = json_decode($a['isi'], true);
+                $artikel[$ind_a]['kategori'] = explode(",", $a['kategori']);
+                $artikel[$ind_a]['waktu'] = date("d", strtotime($a['waktu'])) . " " . $bulan[date("m", strtotime($a['waktu'])) - 1] . " " . date("Y", strtotime($a['waktu']));
+            }
+            $data = [
+                'title' => 'Artikel',
+                'artikel' => $artikel
+            ];
+            return view('pages/artikelAll', $data);
+        }
+    }
+
+    public function addLikeArticle($id_artikel)
+    {
+        $artikelCurr = $this->artikelModel->getArtikel($id_artikel);
+        $this->artikelModel->where(['id' => $id_artikel])->set(['suka' => $artikelCurr['suka'] + 1])->update();
+        return redirect()->to('/article/' . urlencode($artikelCurr['judul']));
+    }
+
     public function tentang()
     {
         $data = [

@@ -173,6 +173,15 @@
 </head>
 
 <body>
+    <div class="toast start-50 translate-middle">
+        <div class="toast-body">
+            <p>Hello, world! This is a toast message.</p>
+            <div class="mt-2 pt-2 border-top">
+                <a type="button" class="btn btn-danger btn-sm">Ok</a>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="hapusToast()">Batal</button>
+            </div>
+        </div>
+    </div>
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P2Q6W4SH" height="0" width="0"
             style="display:none;visibility:hidden"></iframe></noscript>
@@ -206,6 +215,26 @@
     </div>
     <?= $this->include('layout/footer'); ?>
     <script>
+    const toastElm = document.querySelector(".toast")
+    const toastTeksElm = document.querySelector(".toast p")
+    const toastOkElm = document.querySelector(".toast a")
+    const toastCloseElm = document.querySelector(".toast button")
+
+    function triggerToast(text, linkAction) {
+        console.log(linkAction, text);
+        toastElm.classList.add("show")
+        toastTeksElm.innerHTML = text
+        toastOkElm.href = linkAction
+        if (!linkAction) {
+            toastOkElm.classList.add('d-none');
+            toastCloseElm.innerHTML = 'Ok';
+        }
+    }
+
+    function hapusToast() {
+        toastElm.classList.remove("show")
+    }
+
     function copytext(teks) {
         navigator.clipboard.writeText(teks);
     }

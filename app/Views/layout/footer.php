@@ -5,6 +5,7 @@
                 <div class="footer-div" style="flex:1;">
                     <h5><strong>Ilena Furniture</strong></h5>
                     <a href="/tentang">Tentang Kami</a><br>
+                    <a href="/article">Artikel Kami</a><br>
                     <a href="/contact">Kontak Kami</a><br>
                     <a href="/kebijakan">Kebijakan Privasi</a><br>
                     <a href="/syarat">Syarat & Ketentuan</a><br>

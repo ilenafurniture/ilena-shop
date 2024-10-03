@@ -641,6 +641,17 @@ body {
     font-size: 12px;
 }
 
+.toast {
+    position: fixed;
+    top: -60px;
+    transition: 1s;
+    z-index: 100;
+}
+.toast.show {
+    top: 100px;
+    transition: 1s;
+}
+
 .btn-lonjong {
     display: flex;
     gap: 0.5em;
@@ -1173,6 +1184,119 @@ body {
 .item-pag:hover {
     color: black;
 }
+
+
+/* ARTIKEL */
+.artikel .header {
+    width: 100%;
+    height: 50svh;
+    object-fit: cover;
+}
+.artikel .judul {
+    font-size: 3em;
+    letter-spacing: -1px;
+}
+.artikel h3,
+.artikel h4 {
+    color: var(--hijau);
+}
+.artikel a.link {
+    color: var(--merah);
+    text-decoration: none;
+}
+.artikel .container-nav-kategori-artikel {
+    overflow-x: auto;
+    padding-bottom: 0.5em;
+    margin-bottom: 0.6em;
+}
+.artikel .container-nav-kategori-artikel::after {
+    content: "";
+    display: block;
+    height: 4px;
+}
+.artikel .container-nav-kategori-artikel:hover::after {
+    display: none;
+}
+.artikel .container-nav-kategori-artikel::-webkit-scrollbar {
+    display: none;
+}
+.artikel .container-nav-kategori-artikel:hover::-webkit-scrollbar {
+    display: block;
+    height: 4px;
+}
+.artikel .nav-kategori-artikel {
+    color: gray;
+    font-size: smaller;
+    flex: 1 0 fit-content;
+}
+.artikel .container-card-artikel {
+    height: 350px;
+    gap: 1em;
+    /* background-color: aqua; */
+}
+.artikel .container-card-artikel > div {
+    height: 100%;
+}
+.artikel .card-artikel-besar {
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+}
+.artikel .card-artikel-besar img {
+    width: 100%;
+    height: 50%;
+    object-fit: cover;
+    margin-bottom: 1em;
+}
+.artikel .card-artikel-besar .judul {
+    font-weight: bold;
+    font-size: large;
+}
+.artikel .card-artikel-besar .isi {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 160px;
+    white-space: nowrap;
+    color: #888;
+    font-size: smaller;
+}
+.artikel .card-artikel-besar:hover {
+    cursor: pointer;
+}
+
+.artikel .card-artikel-kecil {
+    /* height: 350px; */
+    flex: 1;
+    display: flex;
+    gap: 1em;
+}
+.artikel .card-artikel-kecil .img {
+    height: 100%;
+    aspect-ratio: 1 / 1;
+    position: relative;
+}
+.artikel .card-artikel-kecil .img img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    position: absolute;
+}
+.artikel .card-artikel-kecil .judul {
+    font-weight: bold;
+    font-size: smaller;
+}
+.artikel .card-artikel-kecil .isi {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 100px;
+    white-space: nowrap;
+    color: #888;
+    font-size: smaller;
+}
+.artikel .card-artikel-kecil:hover {
+    cursor: pointer;
+}
+/* END ARTIKEL */
 
 /* ADMIN */
 .admin-nav {
@@ -2048,5 +2172,18 @@ body {
     }
     .scroll-home {
         height: 100%;
+    }
+    .artikel.konten .header {
+        height: 30svh;
+    }
+    .artikel.konten .judul {
+        font-size: 2em;
+        line-height: 49px;
+    }
+    .artikel.konten .container-nav-kategori-artikel {
+        margin-bottom: 0;
+    }
+    .artikel.konten .container-nav-kategori-artikel::after {
+        display: none;
     }
 }
