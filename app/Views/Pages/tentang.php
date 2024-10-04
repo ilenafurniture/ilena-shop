@@ -155,10 +155,10 @@
 <div class="container pt-4 pb-5">
     <h1 class="teks-besar mb-4 text-center">Our Clients</h1>
     <div class="d-flex gap-4 align-items-center justify-content-center" style="flex-wrap: wrap;">
-        <img src="img/clients/crate&barel logo.png" alt="" width="100px">
-        <img src="img/clients/the land of nod logo.png" alt="" width="100px">
-        <img src="img/clients/westalm logo.png" alt="" width="100px">
-        <img src="img/clients/williamsonoma logo.png" alt="" width="100px">
+        <img src="img/logo/crate&barel logo.png" alt="" width="100px">
+        <img src="img/logo/the land of nod logo.png" alt="" width="100px">
+        <img src="img/logo/westalm logo.png" alt="" width="100px">
+        <img src="img/logo/williamsonoma logo.png" alt="" width="100px">
     </div>
 </div>
 <?= $this->endSection(); ?>
