@@ -22,15 +22,16 @@ class GambarController extends BaseController
         $this->gambarBarang3000Model = new GambarBarang3000Model();
     }
 
-    public function tampilGambarBarangCoba($idBarang)
+    public function tampilGambarBarang($idBarang)
     {
         // Decode URL dari Base64
         // $imageUrl = base64_decode($encodedUrl);
-        $imageUrl = 'https://ilenafurniture.com/viewpic/' . $idBarang;
-        dd($imageUrl);
+        // $imageUrl = 'https://ilenafurniture.com/viewpic/' . $idBarang;
+        // dd($imageUrl);
 
         // Mendownload gambar dari URL
-        $imageContent = file_get_contents($imageUrl);
+        // $imageContent = file_get_contents($imageUrl);
+        $imageContent = $this->barangModel->getBarangAdmin($idBarang)['gambar'];
         if ($imageContent === false) {
             return $this->response->setStatusCode(404, 'Image not found.');
         }
@@ -42,12 +43,18 @@ class GambarController extends BaseController
         }
 
         // Mendapatkan watermark PNG
-        $watermarkPath = WRITEPATH . 'img/wm.png'; // Pastikan path watermark yang benar
-        if (!file_exists($watermarkPath)) {
+        $watermarkPath = base_url('img/wm.png'); // Pastikan path watermark yang benar
+        // dd($watermarkPath);
+        // if (!file_exists($watermarkPath)) {
+        //     return $this->response->setStatusCode(404, 'Watermark image not found.');
+        // }
+        $watermarkContent = file_get_contents($watermarkPath);
+        if ($watermarkContent === false) {
             return $this->response->setStatusCode(404, 'Watermark image not found.');
         }
 
-        $watermark = imagecreatefrompng($watermarkPath);
+        // $watermark = imagecreatefrompng($watermarkPath);
+        $watermark = imagecreatefromstring($watermarkContent);
         if ($watermark === false) {
             return $this->response->setStatusCode(500, 'Invalid watermark format.');
         }
@@ -75,7 +82,7 @@ class GambarController extends BaseController
         imagedestroy($image);
         imagedestroy($watermark);
     }
-    public function tampilGambarBarang($idBarang)
+    public function tampilGambarBarangBenar($idBarang)
     {
         $gambar = $this->barangModel->getBarangAdmin($idBarang)['gambar'];
         $this->response->setHeader('Content-Type', 'image/webp');
