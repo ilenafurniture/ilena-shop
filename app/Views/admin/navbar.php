@@ -38,6 +38,10 @@
             <i class="material-icons">description</i>
             <p class="m-0">Konfirm Mutasi</p>
         </a>
+        <a class="item-nav <?= $title == 'Konfirm Mutasi' ? 'active' : ''; ?>" href="/article">
+            <i class="material-icons">book</i>
+            <p class="m-0">Artikel</p>
+        </a>
         <a class="item-nav" href="/logout">
             <i class="material-icons">exit_to_app</i>
             <p class="m-0">Keluar</p>
