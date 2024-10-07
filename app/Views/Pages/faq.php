@@ -61,7 +61,8 @@
             <div style="flex: 1" class="isi-faq">
                 <p class="sub-sub-faq">Apa itu katalog Ilena?</p>
                 <div class="isinya">
-                    <p class="mb-0"><a href="https://drive.google.com/file/d/1QrPt9WUCRbVAXc6x2QexFv09HEMtW3f2/view"
+                    <p class="mb-0"><a
+                            href="https://drive.google.com/uc?export=download&id=1QrPt9WUCRbVAXc6x2QexFv09HEMtW3f2"
                             style="text-decoration:none; color:red; font-size:13px;">Katalog
                             Ilena</a> hadir
                         untuk menjawab kebutuhan furniture Anda. Katalog
