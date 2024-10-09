@@ -1,22 +1,22 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <?php if ($msg_active) { ?>
-<div id="modal-voucher" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
-    class="d-flex justify-content-center align-items-center">
-    <div style="border-radius: 10px; overflow: hidden; background-color: white; width: 80%; max-width: 500px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);"
-        class="p-5">
-        <h1 class="teks-sedang mb-3">Klaim voucher diskon 5% Anda sekarang juga</h1>
-        <p class="text-secondary">*S&K diskon ini hanya berlaku 1 bulan sejak menjadi member kami</p>
-        <a href="/product" class="btn-default w-100 text-center mb-2">Beli Produk</a>
-        <button class="btn-teks-aja mx-auto" onclick="closeModalVoucher()">Nanti</button>
+    <div id="modal-voucher" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
+        class="d-flex justify-content-center align-items-center">
+        <div style="border-radius: 10px; overflow: hidden; background-color: white; width: 80%; max-width: 500px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);"
+            class="p-5">
+            <h1 class="teks-sedang mb-3">Klaim voucher diskon 5% Anda sekarang juga</h1>
+            <p class="text-secondary">*S&K diskon ini hanya berlaku 1 bulan sejak menjadi member kami</p>
+            <a href="/product" class="btn-default w-100 text-center mb-2">Beli Produk</a>
+            <button class="btn-teks-aja mx-auto" onclick="closeModalVoucher()">Nanti</button>
+        </div>
     </div>
-</div>
-<script>
-function closeModalVoucher() {
-    document.getElementById('modal-voucher').classList.add('d-none')
-    document.getElementById('modal-voucher').classList.remove('d-flex')
-}
-</script>
+    <script>
+        function closeModalVoucher() {
+            document.getElementById('modal-voucher').classList.add('d-none')
+            document.getElementById('modal-voucher').classList.remove('d-flex')
+        }
+    </script>
 <?php } ?>
 
 <div id="login-modal" class="d-none">
@@ -51,31 +51,31 @@ function closeModalVoucher() {
 </div>
 
 <?php if (!session()->get('isLogin')) { ?>
-<script>
-const loginModalElm = document.getElementById('login-modal')
-let opened = false;
-document.body.onscroll = (e) => {
-    if (!window.sessionStorage.getItem('close-login-modal')) {
-        const scrollingElm = e.target.scrollingElement;
-        const hasil = Math.round(
-            (scrollingElm.scrollTop /
-                (scrollingElm.scrollHeight -
-                    scrollingElm.clientHeight)) *
-            100
-        );
-        if (hasil > 50 && !opened) {
-            loginModalElm.classList.remove("d-none")
-            opened = true
-        }
-    }
-};
+    <script>
+        const loginModalElm = document.getElementById('login-modal')
+        let opened = false;
+        document.body.onscroll = (e) => {
+            if (!window.sessionStorage.getItem('close-login-modal')) {
+                const scrollingElm = e.target.scrollingElement;
+                const hasil = Math.round(
+                    (scrollingElm.scrollTop /
+                        (scrollingElm.scrollHeight -
+                            scrollingElm.clientHeight)) *
+                    100
+                );
+                if (hasil > 50 && !opened) {
+                    loginModalElm.classList.remove("d-none")
+                    opened = true
+                }
+            }
+        };
 
-function closeLoginModel() {
-    loginModalElm.classList.add("d-none")
-    window.sessionStorage.setItem('close-login-modal', true)
-    opened = false
-}
-</script>
+        function closeLoginModel() {
+            loginModalElm.classList.add("d-none")
+            window.sessionStorage.setItem('close-login-modal', true)
+            opened = false
+        }
+    </script>
 <?php } ?>
 
 <!--Tampilan Home Baru -->
@@ -344,42 +344,42 @@ function closeLoginModel() {
 </div>
 
 <script>
-const scrollHomeElm = document.querySelector('.scroll-home');
-const counterSlideElm = document.getElementById('counter-slide');
-const numCounterSlideElm = document.querySelectorAll('#counter-slide p');
-// console.log(numCounterSlideElm)
-const inputScrollHomeElm = document.querySelectorAll('input[name="scrollHome"]');
-// console.log(scrollHomeElm.children);
-scrollHomeElm.onscroll = () => {
-    let x = scrollHomeElm.scrollLeft;
-    // console.log(x);
-    const widthInnerStg = window.innerWidth / 2;
-    if (x % window.innerWidth < widthInnerStg) {
-        counterSlideElm.style.opacity = 1 - ((x % widthInnerStg) / widthInnerStg) / 1;
-        counterSlideElm.style.transform = 'translateX(-' + (x % widthInnerStg) + 'px)';
-        console.log('translateX(-' + (x % widthInnerStg) + ')')
-    } else {
-        counterSlideElm.style.opacity = ((x % widthInnerStg) / widthInnerStg) / 1;
-        counterSlideElm.style.transform = 'translateX(-' + (widthInnerStg - (x % widthInnerStg)) + 'px)';
-        console.log('translateX(-' + (widthInnerStg - (x % widthInnerStg)) + ')')
+    const scrollHomeElm = document.querySelector('.scroll-home');
+    const counterSlideElm = document.getElementById('counter-slide');
+    const numCounterSlideElm = document.querySelectorAll('#counter-slide p');
+    // console.log(numCounterSlideElm)
+    const inputScrollHomeElm = document.querySelectorAll('input[name="scrollHome"]');
+    // console.log(scrollHomeElm.children);
+    scrollHomeElm.onscroll = () => {
+        let x = scrollHomeElm.scrollLeft;
+        // console.log(x);
+        const widthInnerStg = window.innerWidth / 2;
+        if (x % window.innerWidth < widthInnerStg) {
+            counterSlideElm.style.opacity = 1 - ((x % widthInnerStg) / widthInnerStg) / 1;
+            counterSlideElm.style.transform = 'translateX(-' + (x % widthInnerStg) + 'px)';
+            console.log('translateX(-' + (x % widthInnerStg) + ')')
+        } else {
+            counterSlideElm.style.opacity = ((x % widthInnerStg) / widthInnerStg) / 1;
+            counterSlideElm.style.transform = 'translateX(-' + (widthInnerStg - (x % widthInnerStg)) + 'px)';
+            console.log('translateX(-' + (widthInnerStg - (x % widthInnerStg)) + ')')
+        }
+
+        // console.log(Math.floor(x / (window.innerWidth * 90 / 100)))
+        inputScrollHomeElm.forEach(inputnya => {
+            inputnya.removeAttribute('checked');
+        });
+        inputScrollHomeElm[Math.floor(x / (window.innerWidth * 90 / 100))].setAttribute('checked', '');
+
+        numCounterSlideElm[0].innerHTML = '0' + (Math.floor(x / (window.innerWidth * 90 / 100)) + 1)
+        numCounterSlideElm[1].innerHTML = '0' + inputScrollHomeElm.length;
     }
+    inputScrollHomeElm.forEach((inputnya, indInput) => {
+        inputnya.addEventListener('change', () => {
+            // console.log('input ' + indInput + ' berubah')
+            scrollHomeElm.scrollLeft = window.innerWidth * indInput
+        });
 
-    // console.log(Math.floor(x / (window.innerWidth * 90 / 100)))
-    inputScrollHomeElm.forEach(inputnya => {
-        inputnya.removeAttribute('checked');
     });
-    inputScrollHomeElm[Math.floor(x / (window.innerWidth * 90 / 100))].setAttribute('checked', '');
-
-    numCounterSlideElm[0].innerHTML = '0' + (Math.floor(x / (window.innerWidth * 90 / 100)) + 1)
-    numCounterSlideElm[1].innerHTML = '0' + inputScrollHomeElm.length;
-}
-inputScrollHomeElm.forEach((inputnya, indInput) => {
-    inputnya.addEventListener('change', () => {
-        // console.log('input ' + indInput + ' berubah')
-        scrollHomeElm.scrollLeft = window.innerWidth * indInput
-    });
-
-});
 </script>
 
 
@@ -530,20 +530,20 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
 
 
 <script>
-const modalseriesELM = document.getElementById('modal-series');
+    const modalseriesELM = document.getElementById('modal-series');
 
-function closemodalseries() {
-    modalseriesELM.classList.remove('d-flex');
-    modalseriesELM.classList.add('d-none');
-    document.body.style.overflow = 'auto';
-}
+    function closemodalseries() {
+        modalseriesELM.classList.remove('d-flex');
+        modalseriesELM.classList.add('d-none');
+        document.body.style.overflow = 'auto';
+    }
 
-function modalseries() {
-    modalseriesELM.classList.add('d-flex');
-    modalseriesELM.classList.remove('d-none');
-    document.body.style.overflow = 'hidden';
+    function modalseries() {
+        modalseriesELM.classList.add('d-flex');
+        modalseriesELM.classList.remove('d-none');
+        document.body.style.overflow = 'hidden';
 
-}
+    }
 </script>
 
 <!-- Bagian Windows -->
@@ -588,15 +588,15 @@ function modalseries() {
 
 <!-- Bagian HP -->
 <style>
-#scroll-set {
-    width: 100%;
-    overflow: scroll;
-    scroll-snap-type: x mandatory;
-}
+    #scroll-set {
+        width: 100%;
+        overflow: scroll;
+        scroll-snap-type: x mandatory;
+    }
 
-#scroll-set::-webkit-scrollbar {
-    display: none;
-}
+    #scroll-set::-webkit-scrollbar {
+        display: none;
+    }
 </style>
 <div class="hide-ke-show-block" id="scroll-set">
     <div class="d-flex gap-1 px-5 pt-5 pb-4" style="width: fit-content;">
