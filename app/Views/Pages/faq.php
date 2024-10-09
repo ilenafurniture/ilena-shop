@@ -36,9 +36,8 @@
                 <p class="sub-sub-faq">Bagaimana cara mengetahui informasi promo dan diskon?</p>
                 <div class="isinya">
                     <p>
-                        Terkait informasi promo dan diskon, Anda dapat kunjungi website kami di <a
-                            href="http://ilenafurniture.com" target="_blank"
-                            style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>
+                        Terkait informasi promo dan diskon, Anda dapat kunjungi website kami di <a href="/"
+                            target="_blank" style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>
                         atau hubungi <a href="https://wa.me/+628112938158" target="_blank"
                             style="text-decoration:none; color:red; font-size:13px;">Customer Service
                             Kami</a>.
@@ -62,7 +61,9 @@
             <div style="flex: 1" class="isi-faq">
                 <p class="sub-sub-faq">Apa itu katalog Ilena?</p>
                 <div class="isinya">
-                    <p class="mb-0"><a href="#" style="text-decoration:none; color:red; font-size:13px;">Katalog
+                    <p class="mb-0"><a
+                            href="https://drive.google.com/uc?export=download&id=1QrPt9WUCRbVAXc6x2QexFv09HEMtW3f2"
+                            style="text-decoration:none; color:red; font-size:13px;">Katalog
                             Ilena</a> hadir
                         untuk menjawab kebutuhan furniture Anda. Katalog
                         menawarkan lebih dari hanya gambaran sekilas beragam produk Ilena. Kami akan selalu
@@ -71,9 +72,9 @@
                 </div>
                 <p class="sub-sub-faq">Bagaimana caranya mendapatkan katalog Ilena?</p>
                 <div class="isinya">
-                    <p class="mb-0">Katalog terbaru Ilena bisa didapatkan secara gratis di website <a
-                            href="http://ilenafurniture.com" target="_blank"
-                            style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>.</p>
+                    <p class="mb-0">Katalog terbaru Ilena bisa didapatkan secara gratis di website <a href="/"
+                            target="_blank" style="text-decoration:none; color:red; font-size:13px;">Ilena
+                            Furniture</a>.</p>
                 </div>
                 <p class="sub-sub-faq">Apakah Ilena sudah ada di platform e-commerce?</p>
                 <div class="isinya">
@@ -84,7 +85,7 @@
                 <div class="isinya">
                     <p class="mb-0">SKami menyediakan katalog fisik yang bisa Anda dapatkan melalui toko
                         offline yang telah bekerja sama dengan kami. Info daftar toko dapat Anda lihat
-                        melalui website kami di <a href="http://ilenafurniture.com" target="_blank"
+                        melalui website kami di <a href="/" target="_blank"
                             style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>.
                     </p>
                 </div>
@@ -96,13 +97,13 @@
                 <p class="sub-sub-faq">Apakah katalog Ilena memuat informasi promo atau diskon?</p>
                 <div class="isinya">
                     <p class="mb-0">Informasi promo dan diskon yang sedang berlangsung dapat Anda peroleh
-                        secara terbatas dengan mengunjungi website <a href="http://ilenafurniture.com"
+                        secara terbatas dengan mengunjungi website <a href="/"
                             style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>
                         atau hubungi <a href="https://wa.me/+628112938158" target="_blank"
                             style="text-decoration:none; color:red; font-size:13px;">Customer Service
                             Kami</a>.</p>
                 </div>
-                <p class="sub-sub-faq">AApakah katalog Ilena memiliki fitur katalog di aplikasi WhatsApp?</p>
+                <p class="sub-sub-faq">Apakah katalog Ilena memiliki fitur katalog di aplikasi WhatsApp?</p>
                 <div class="isinya">
                     <p class="mb-0">Selain katalog digital dan fisik, Anda dapat mengakses katalog kami
                         melalui WhatsApp customer service.</p>
@@ -110,8 +111,8 @@
                 <p class="sub-sub-faq">Apakah katalog Ilena akan dikirimkan secara rutin kepada customer?</p>
                 <div class="isinya">
                     <p class="mb-0">Tidak. Anda dapat dengan mudah mengakses katalog Ilena dengan
-                        mengunjungi website <a href="http://ilenafurniture.com"
-                            style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>
+                        mengunjungi website <a href="/" style="text-decoration:none; color:red; font-size:13px;">Ilena
+                            Furniture</a>
                         atau menghubungi melalui WhatsApp customer
                         service.</p>
                 </div>
@@ -132,7 +133,7 @@
                     <div class="seq-faq">
                         <div class="item-seq-faq">
                             <p class="nomor">1</p>
-                            <p>Membuka website <a href="https://ilenafurniture.com/"
+                            <p>Membuka website <a href="//"
                                     style="text-decoration:none; color:red; font-size:13px;">Ilena furniture</a></p>
                         </div>
                         <div class="item-seq-faq">
@@ -307,8 +308,11 @@
                 <p class="sub-sub-faq">Apakah saat ini tersedia toko offline?</p>
                 <div class="isinya">
                     <p>Saat ini produk Ilena hanya dapat dipesan melalui website dan platform e-commerce
-                        (<a href="" style="text-decoration:none; color:red; font-size:13px;">Tiktok</a>, <a href=""
-                            style="text-decoration:none; color:red; font-size:13px;">Shopee</a>, dan <a href=""
+                        (<a href="https://www.tiktok.com/@ilenafurnitureofficial"
+                            style="text-decoration:none; color:red; font-size:13px;">Tiktok</a>, <a
+                            href="https://shopee.co.id/ilenafurnitureoffficial?entryPoint=ShopBySearch&searchKeyword=ilena%20furniture"
+                            style="text-decoration:none; color:red; font-size:13px;">Shopee</a>, dan <a
+                            href="https://www.tokopedia.com/ilenafurnitureofficial?source=universe&st=product"
                             style="text-decoration:none; color:red; font-size:13px;">Tokopedia</a>)</p>
                 </div>
                 <p class="sub-sub-faq">Apakah saat ini pemesanan hanya dapat dilakukan secara online?</p>
@@ -339,7 +343,7 @@
                 <p class="sub-sub-faq">Apakah aman melakukan transaksi di website Ilena?</p>
                 <div class="isinya">
                     <p>Kami bekerja sama dengan Midtrans sebagai penjamin keamanan keuangan,
-                        sehingga seluruh aktivitas customer di website <a href="http://ilenafurniture.com"
+                        sehingga seluruh aktivitas customer di website <a href="/"
                             style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>
                         dijamin
                         keamanannya.
@@ -445,7 +449,7 @@
                         untuk produk yang memerlukan perakitan kami akan membagikan <a
                             style="text-decoration:none; color: black; font-size:13px;"
                             class="fw-bold link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
-                            href="https://www.youtube.com/channel/UCc2vGsX2R8CNoZXv7lxJ2qw">link Youtube
+                            href="https://www.youtube.com/@ilenafurnitureofficial">link Youtube
                             Ilena</a>
                         Furniture sebagai petunjuk perakitan untuk customer.
                     </p>
@@ -502,8 +506,8 @@
                         kondisi barang rusak/ cacat dan kami tidak memiliki stok barang yang sama sebagai
                         penggantinya. Jika pihak kami melakukan kesalahan pengiriman barang, maka tanggung
                         jawab
-                        adalah 100% dari <a href="http://ilenafurniture.com"
-                            style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture.</a>
+                        adalah 100% dari <a href="/" style="text-decoration:none; color:red; font-size:13px;">Ilena
+                            Furniture.</a>
                     </p>
                 </div>
                 <p class="sub-sub-faq">Bagaimana apabila terdapat kesalahan pemesanan?</p>

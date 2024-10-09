@@ -778,6 +778,13 @@ class AdminController extends BaseController
 
     
     // ARTIKEL
+    public function article(){
+        $data = [
+            'title' => 'Artikel Konfirmasi',
+        ];
+        return view('pages/artikelAll', $data);
+
+    }
     public function articleCategory($kategori)
     {
         $artikel = $this->artikelModel->getArtikelKategori(str_replace("-", " ", $kategori));
@@ -803,7 +810,7 @@ class AdminController extends BaseController
         $data = [
             'title' => 'Tambah Artikel',
         ];
-        return view('admin/addArtikel', $data);
+        return view('/article', $data);
     }
     public function actionAddArticle()
     {

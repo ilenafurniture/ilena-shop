@@ -288,6 +288,14 @@ class Pages extends BaseController
             $product['deskripsi'] = json_decode($product['deskripsi'], true);
             $product['varian'] = json_decode($product['varian'], true);
             $produkSejenis = $this->barangModel->where(['subkategori' => $product['subkategori']])->where('id !=', $product['id'])->orderBy('pengunjung', 'desc')->findAll(8, 0);
+            $seluruhBarangFilter = [];
+            $seluruhNama =  [];
+            foreach ($produkSejenis as $s) {
+                if (!in_array($s['nama'], $seluruhNama)) {
+                    array_push($seluruhBarangFilter, $s);
+                    array_push($seluruhNama, $s['nama']);
+                }
+            }
             $data = [
                 'title' => 'produk',
                 'navbar' => [
@@ -298,7 +306,7 @@ class Pages extends BaseController
                 'wishlist'      => $wishlist,
                 'koleksi'       => $koleksi,
                 'jenis'         => $jenis,
-                'produkSejenis' => $produkSejenis,
+                'produkSejenis' => $seluruhBarangFilter,
                 'produkSemua'   => $productsemua,
                 'indexNama'     => $ind_nama,
                 'metaDeskripsi' => $product['nama'] . ' ' . 'ilena futniture' . ' ' . 'Ilena Semarang',

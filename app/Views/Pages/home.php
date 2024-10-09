@@ -471,13 +471,16 @@
     style="z-index:2; position:fixed; top:0; left:0; width:100%; height:100svh; background-color:rgba(0,0,0,0.8);">
     <div style="border-radius:4px;" class="p-5 gap-2 show-block-ke-hide">
         <div class="gap-2 Mseries ">
-            <a href="/product?koleksi=industrial"
-                class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
-                <p class="m-0 fw-bold">Industrial</p>
-            </a>
             <a href="/product?koleksi=sorely"
                 class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
                 <p class="m-0 fw-bold">Sorely</p>
+            </a>
+            <a href="/product?koleksi=cabana"
+                class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+                <p class="m-0 fw-bold">Cabana</p>
+            </a>
+            <a href="/product?koleksi=orca" class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+                <p class="m-0 fw-bold">Orca</p>
             </a>
             <a href="/product?koleksi=water-case"
                 class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
@@ -491,20 +494,35 @@
                 class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
                 <p class="m-0 fw-bold">Cutout</p>
             </a>
-            <a href="/product?koleksi=orca" class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
-                <p class="m-0 fw-bold">Orca</p>
+            <a href="/product?koleksi=industrial"
+                class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+                <p class="m-0 fw-bold">Industrial</p>
+            </a>
+            <a href="/product?koleksi=metal-frame"
+                class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+                <p class="m-0 fw-bold">Metal Frame</p>
+            </a>
+            <a href="/product?koleksi=cody" class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+                <p class="m-0 fw-bold">COdy</p>
+            </a>
+            <a href="/product?koleksi=socoplate"
+                class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+                <p class="m-0 fw-bold">Socoplate</p>
             </a>
         </div>
     </div>
     <div class="hide-ke-show-block" style="width: 70vw;">
-        <a href="/product?koleksi=industrial"
-            style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
-            class="p-4 d-flex justify-content-center align-items-center">
-            <p class="m-0 fw-bold">Industrial</p>
-        </a>
         <a href="/product?koleksi=sorely" style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
             class="p-4 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Sorely</p>
+        </a>
+        <a href="/product?koleksi=cabana" style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
+            class="p-4 d-flex justify-content-center align-items-center">
+            <p class="m-0 fw-bold">Cabana</p>
+        </a>
+        <a href="/product?koleksi=cody" style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
+            class="p-4 d-flex justify-content-center align-items-center">
+            <p class="m-0 fw-bold">Cody</p>
         </a>
         <a href="/product?koleksi=water-case"
             style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
@@ -513,16 +531,30 @@
         </a>
         <a href="/product?koleksi=plint-base"
             style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
-            class="p-4 d-flex justify-content-center align-items-center">
+            class="p-4 d-flex justify-content-center align-items-center">1
             <p class="m-0 fw-bold">Plint Base</p>
         </a>
         <a href="/product?koleksi=cutout" style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
             class="p-4 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Cutout</p>
         </a>
-        <a href="/product?koleksi=orca" style="text-decoration: none; color: white;"
+        <a href="/product?koleksi=industrial"
+            style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
             class="p-4 d-flex justify-content-center align-items-center">
-            <p class="m-0 fw-bold">Orca</p>
+            <p class="m-0 fw-bold">Industrial</p>
+        </a>
+        <a href="/product?koleksi=metal-frame"
+            style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
+            class="p-4 d-flex justify-content-center align-items-center">
+            <p class="m-0 fw-bold">Metal Frame</p>
+        </a>
+        <a href="/product?koleksi=cody" style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
+            class="p-4 d-flex justify-content-center align-items-center">
+            <p class="m-0 fw-bold">Cody</p>
+        </a>
+        <a href="/product?koleksi=socoplate" style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
+            class="p-4 d-flex justify-content-center align-items-center">
+            <p class="m-0 fw-bold">Socoplate</p>
         </a>
     </div>
 </div>
