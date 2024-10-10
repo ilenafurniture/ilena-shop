@@ -27,9 +27,11 @@ $routes->post('/actionfind', 'Pages::actionFind', ['filter' => 'customerFilter']
 $routes->get('/find/(:any)', 'Pages::find/$1', ['filter' => 'customerFilter']);
 
 $routes->get('/cart', 'Pages::cart', ['filter' => 'customerFilter']);
-$routes->get('/addcart/(:any)/(:any)/(:any)', 'Pages::addCart/$1/$2/$3', ['filter' => 'customerFilter']);
+// $routes->get('/addcart/(:any)/(:any)/(:any)', 'Pages::addCart/$1/$2/$3', ['filter' => 'customerFilter']);
+$routes->post('/addcart/(:any)/(:any)/(:any)', 'Pages::addCart/$1/$2/$3', ['filter' => 'customerFilter']);
 $routes->get('/deletecart/(:any)', 'Pages::deleteCart/$1', ['filter' => 'customerFilter']);
-$routes->get('/reducecart/(:any)', 'Pages::reduceCart/$1', ['filter' => 'customerFilter']);
+// $routes->get('/reducecart/(:any)', 'Pages::reduceCart/$1', ['filter' => 'customerFilter']);
+$routes->post('/reducecart/(:any)', 'Pages::reduceCart/$1', ['filter' => 'customerFilter']);
 
 $routes->get('/getkota/(:any)', 'Pages::getKota/$1', ['filter' => 'customerFilter']);
 $routes->get('/getkec/(:any)', 'Pages::getKec/$1', ['filter' => 'customerFilter']);
@@ -54,8 +56,10 @@ $routes->post('/updatetransaction', 'Pages::updateTransaction');
 // $routes->get('/cencelpay', 'Pages::cencelPay', ['filter' => 'customerFilter']);
 
 $routes->get('/wishlist', 'Pages::wishlist', ['filter' => 'customerFilter']);
-$routes->get('/addwishlist/(:any)', 'Pages::addWishlist/$1', ['filter' => 'customerFilter']);
-$routes->get('/delwishlist/(:any)', 'Pages::delWishlist/$1', ['filter' => 'customerFilter']);
+// $routes->get('/addwishlist/(:any)', 'Pages::addWishlist/$1', ['filter' => 'customerFilter']);
+$routes->post('/addwishlist/(:any)', 'Pages::addWishlist/$1', ['filter' => 'customerFilter']);
+// $routes->get('/delwishlist/(:any)', 'Pages::delWishlist/$1', ['filter' => 'customerFilter']);
+$routes->post('/delwishlist/(:any)', 'Pages::delWishlist/$1', ['filter' => 'customerFilter']);
 $routes->get('/wishlisttocart', 'Pages::wishlistToCart', ['filter' => 'customerFilter']);
 
 $routes->get('/order', 'Pages::order', ['filter' => 'customerFilter']);
