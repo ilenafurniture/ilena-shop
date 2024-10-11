@@ -78,8 +78,11 @@ for ($i = 0; $i < 10; $i++) {
             </div>
             <div style="flex: 1;">
                 <a class="btn" href="/admin/editproduct/<?= $p['id']; ?>"><i class="material-icons">edit</i></a>
-                <a class="btn" href="/admin/deleteproduct/<?= $p['id']; ?>"><i class="material-icons"
-                        style="color: var(--merah);">delete</i></a>
+                <form action="/admin/deleteproduct/<?= $p['id']; ?>" method="post">
+                    <button class="btn-default-merah d-flex justify-content-center align-items-center">
+                        <p class="m-0"><i class="material-icons">delete</i></p>
+                    </button>
+                </form>
             </div>
         </div>
         <?php } ?>

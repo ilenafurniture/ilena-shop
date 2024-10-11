@@ -50,11 +50,17 @@
                         <i class="material-icons">edit</i>
                         <p class="m-0">Edit</p>
                     </a>
-                    <a class="btn-default-merah d-flex justify-content-center align-items-center"
+                    <!-- <a class="btn-default-merah d-flex justify-content-center align-items-center"
                         href="/admin/deleteproduct/<?= $produk['id']; ?>">
                         <i class="material-icons">delete</i>
                         <p class="m-0">Hapus</p>
-                    </a>
+                    </a> -->
+                    <form action="/admin/deleteproduct/<?= $produk['id']; ?>" method="post">
+                        <button class="btn-default-merah d-flex justify-content-center align-items-center"
+                            type="submit"><i class="material-icons">delete</i>
+                            <p class="m-0">Hapus</p>
+                        </button>
+                    </form>
                 </div>
                 <?php } else { ?>
                 <div class="d-flex gap-2 align-items-stretch">

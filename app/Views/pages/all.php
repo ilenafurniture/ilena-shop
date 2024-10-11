@@ -537,10 +537,11 @@ if (isset($_GET['ruang'])) {
                                         class="material-icons">bookmark_border</i></button>
                             </form>
                             <?php } ?>
-                            <form method="post"
+                            <form method="post" id="card<?= $ind_p ?>"
                                 action="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'], true)[0]['nama'] ?>/1"
-                                type="submit"><button class="card1-btn-img"><i
-                                        class="material-icons">shopping_cart</i></button></form>
+                                type="submit"><button class="card1-btn-img"><i class="material-icons">shopping_cart</i>
+                                </button>
+                            </form>
                         </div>
                         <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="gambar">
                             <img class="<?= $p['gambar_hover'] ? '' : 'nonhover'; ?> img-pic" id="img<?= $ind_p ?>"
@@ -569,7 +570,7 @@ if (isset($_GET['ruang'])) {
                                         ",")[
                                         0];
 
-                                btnKeranjang<?= $ind_p ?>Elm.href = "/addcart/<?= $p['id'] ?>/" + e
+                                btnKeranjang<?= $ind_p ?>Elm.action = "/addcart/<?= $p['id'] ?>/" + e
                                     .target
                                     .value.split("-")[1] + "/1";
                             })
