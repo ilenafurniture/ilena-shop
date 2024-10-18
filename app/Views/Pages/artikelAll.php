@@ -2,6 +2,15 @@
 <?= $this->section('content'); ?>
 <div class="container d-flex justify-content-center artikel">
     <div class="konten">
+        <form action="/actionsearcharticle" method="post">
+            <div class="d-flex mb-2 align-items-center">
+                <div class="container-search-artikel show">
+                    <input type="text" placeholder="Cari artikel" class="form-control" name="cari"
+                        value="<?= isset($find) ? $find : ''; ?>">
+                    <button type="submit" class="btn btn-light"><i class="material-icons">search</i></button>
+                </div>
+            </div>
+        </form>
         <div class="mb-4">
             <div class="p-5 header show-flex-ke-hide"
                 style="position: absolute; flex-direction: column; justify-content: end; width: 40%;">

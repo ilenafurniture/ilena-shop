@@ -7,9 +7,15 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 $routes->get('/faq', 'Pages::faq', ['filter' => 'customerFilter']);
+
+// Artikel
 $routes->get('/article', 'Pages::article',['filter' => 'customerFilter']);
+$routes->post('/actionsearcharticle', 'Pages::actionSearchArticle',['filter' => 'customerFilter']);
+$routes->get('/article/find/(:any)', 'Pages::findArticle/$1',['filter' => 'customerFilter']);
 $routes->get('/article/category/(:any)', 'Pages::articleCategory/$1',['filter' => 'customerFilter']);
 $routes->get('/article/(:any)', 'Pages::article/$1',['filter' => 'customerFilter']);
+
+
 $routes->get('/tentang', 'Pages::tentang', ['filter' => 'customerFilter']);
 $routes->get('/contact', 'Pages::contact', ['filter' => 'customerFilter']);
 $routes->get('/syarat', 'Pages::syarat', ['filter' => 'customerFilter']);
