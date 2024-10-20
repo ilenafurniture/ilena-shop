@@ -1700,7 +1700,7 @@
                         <div class="d-none gap-4 mb-3 metal-penjelasan" id="metal-single">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewpic/10701801" alt="metal-single-bed">
+                                    src="/viewvar/10501801/1" alt="metal-single-bed">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Single Bed</h3>
@@ -1858,7 +1858,7 @@
                         <div class="d-none gap-4 mb-3 codyy-penjelasan" id="codyy-queen">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewpic/10501301/1" alt="codyy-queen-bed">
+                                    src="/viewpic/10201201" alt="codyy-queen-bed">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Queen Bed</h3>
@@ -1894,7 +1894,7 @@
                         <div class="d-none gap-4 mb-3 codyy-penjelasan" id="codyy-single">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewpic/10701801" alt="codyy-single-bed">
+                                    src="/viewvar/10201801/1" alt="codyy-single-bed">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Single Bed</h3>
@@ -1947,10 +1947,6 @@
                                 href="/product?koleksi=socoplate&jenis=coffee-table"
                                 onmouseover="hoverListNav('socoplatey-coffee')">Coffee Table</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=socoplate&jenis=console-table"
-                                onmouseover="hoverListNav('socoplatey-console')">Console
-                                Table</a>
-                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
                                 href="/product?koleksi=socoplate&jenis=dresser-3-drawer"
                                 onmouseover="hoverListNav('socoplatey-3drawer')">Dresser 3
                                 Drawer
@@ -1974,6 +1970,9 @@
                                 href="/product?koleksi=socoplate&jenis=side-table"
                                 onmouseover="hoverListNav('socoplatey-side')">Side
                                 Table</a>
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=socoplate&jenis=wardrobe"
+                                onmouseover="hoverListNav('socoplatey-wardrobe')">Wardrobe</a>
                         </div>
                     </div>
                     <div style="flex:1;">
@@ -1995,28 +1994,10 @@
                                     selengkapnya..</a>
                             </div>
                         </div>
-                        <div class="d-none gap-4 mb-3 socoplatey-penjelasan" id="socoplatey-console">
-                            <div style="flex: 1;">
-                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewpic/10200401" alt="socoplatey-console">
-                            </div>
-                            <div style="flex: 1;">
-                                <h3 class="teks-sedang mb-3">Console Table</h3>
-                                <p style="text-align: justify" class="mb-2">Meja tambahan bergaya modern minimalis
-                                    dengan 2 laci yang cocok untuk ruangan manapun. Dibuat dari kayu dan paduan logam
-                                    yang kokoh dan tahan hingga waktu yang lama.
-                                    Koleksi Ilena Furniture series socoplate didesain eksklusif dengan material
-                                    pembuatan
-                                    berkualitas premium.</p>
-                                <a href="<?= base_url('/product/console-table-ilena-socoplate') ?>"
-                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
-                                    selengkapnya..</a>
-                            </div>
-                        </div>
                         <div class="d-none gap-4 mb-3 socoplatey-penjelasan" id="socoplatey-3drawer">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewpic/10800601" alt="socoplatey-dresser-3-drawer">
+                                    src="/viewvar/10800601/1" alt="socoplatey-dresser-3-drawer">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Dresser 3 Drawer</h3>
@@ -2035,7 +2016,7 @@
                         <div class="d-none gap-4 mb-3 socoplatey-penjelasan" id="socoplatey-5drawer">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewpic/10800801" alt="socoplatey-dresser-5-drawer">
+                                    src="/viewvar/10800801/1" alt="socoplatey-dresser-5-drawer">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Dresser 5 Drawer</h3>
@@ -2118,6 +2099,24 @@
                                     Koleksi series Socoplate dari Ilena Furniture didesain eksklusif dengan material
                                     berkualitas premium.</p>
                                 <a href="<?= base_url('/product/single-bed-ilena-socoplate') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 socoplatey-penjelasan" id="socoplatey-wardrobe">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewvar/10801701/1" alt="socoplatey-wardrobe">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Wardrobe</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dengan balutan gaya modern yang
+                                    memanfaatkan kayu sebagai material utama dan logam sebagai rangka kaki serta aksen
+                                    pada headboard yang memperindah tampilan visualnya. Dengan model terbaru ini, bisa
+                                    membuat ruang tidur Anda jadi lebih trendy dengan tetap mengedepankan kenyamanan.
+                                    Koleksi series Socoplate dari Ilena Furniture didesain eksklusif dengan material
+                                    berkualitas premium.</p>
+                                <a href="<?= base_url('/product/Wardrobe-Ilena-Socoplate') ?>"
                                     style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
                                     selengkapnya..</a>
                             </div>
