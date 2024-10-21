@@ -2088,7 +2088,7 @@
                         <div class="d-none gap-4 mb-3 socoplatey-penjelasan" id="socoplatey-single">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewpic/10701801" alt="socoplatey-single-bed">
+                                    src="/viewvar/10801801/1" alt="socoplatey-single-bed">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Single Bed</h3>
