@@ -28,7 +28,7 @@ class GambarController extends BaseController
         $this->gambarBarang3000Model = new GambarBarang3000Model();
     }
 
-    public function tampilGambarBarang($idBarang)
+    public function tampilGambarBarangCoba($idBarang)
     {
         // Decode URL dari Base64
         // $imageUrl = base64_decode($encodedUrl);
@@ -88,7 +88,7 @@ class GambarController extends BaseController
         imagedestroy($image);
         imagedestroy($watermark);
     }
-    public function tampilGambarBarangBenar($idBarang)
+    public function tampilGambarBarang($idBarang)
     {
         $gambar = $this->barangModel->getBarangAdmin($idBarang)['gambar'];
         $this->response->setHeader('Content-Type', 'image/webp');
