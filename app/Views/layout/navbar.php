@@ -715,6 +715,9 @@
                                     onmouseover="hoverListNav('dresser6-plintbase')">Plint Base</a>
                                 <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
                                     href="/product?koleksi=cody&jenis=dresser-4-drawer"
+                                    onmouseover="hoverListNav('dresser6-watercase')">Water case</a>
+                                <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                    href="/product?koleksi=cody&jenis=dresser-4-drawer"
                                     onmouseover="hoverListNav('dresser6-sorely')">Sorely</a>
                             </div>
                             <!-- End Dresser 6 -->
@@ -975,7 +978,7 @@
                                     src="/viewvar/10700901/1" alt="dresser 6 Plint Base">
                             </div>
                             <div style="flex: 1;">
-                                <h3 class="teks-sedang mb-3">Dresser 6 Orca</h3>
+                                <h3 class="teks-sedang mb-3">Dresser 6 Plint Base</h3>
                                 <p style="text-align: justify" class="mb-2">Dirancang dengan memadukan 2 jenis
                                     material
                                     berbeda yang menghasilkan sebuah coffee table unik yang eye catching dengan daya
@@ -984,6 +987,44 @@
                                     jadi lebih nyaman dan menyenangkan. Cocok ditempatkan pada ruang tamu, ruang
                                     keluarga, teras hingga lobby kantor.</p>
                                 <a href="<?= base_url('/product/Dresser-6-drawer-ilena-plint-base') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 dresser-penjelasan" id="dresser6-watercase">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewvar/11000901/1" alt="dresser 6 Plint Base">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Dresser 6 Water case</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dengan memadukan 2 jenis
+                                    material
+                                    berbeda yang menghasilkan sebuah coffee table unik yang eye catching dengan daya
+                                    tahan tinggi dari material kayu dan logam terbaik. Membuat suasana bersantai
+                                    bersama
+                                    jadi lebih nyaman dan menyenangkan. Cocok ditempatkan pada ruang tamu, ruang
+                                    keluarga, teras hingga lobby kantor.</p>
+                                <a href="<?= base_url('/product/dresser-6-drawer-ilena-water-case') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 dresser-penjelasan" id="dresser6-sorely">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewvar/10901001/1" alt="dresser 6 Sorely">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Dresser 6 Sorely</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dengan memadukan 2 jenis
+                                    material
+                                    berbeda yang menghasilkan sebuah coffee table unik yang eye catching dengan daya
+                                    tahan tinggi dari material kayu dan logam terbaik. Membuat suasana bersantai
+                                    bersama
+                                    jadi lebih nyaman dan menyenangkan. Cocok ditempatkan pada ruang tamu, ruang
+                                    keluarga, teras hingga lobby kantor.</p>
+                                <a href="<?= base_url('/product/dresser-tall-cabinet-ilena-sorely') ?>"
                                     style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
                                     selengkapnya..</a>
                             </div>
@@ -1269,7 +1310,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king1-plintbase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10800601/1" alt="Bed King plint base">
+                                    src="/viewvar/10701201/1" alt="Bed King plint base">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed King Plint Base</h3>
@@ -1472,7 +1513,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king2-plintbase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10800601/1" alt="Bed Queen plint base">
+                                    src="/viewvar/10701201/1" alt="Bed Queen plint base">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Queen Plint Base</h3>
