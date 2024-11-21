@@ -372,7 +372,8 @@
                         <p class="text-secondary">Terinspirasi oleh keindahan perpaduan dua material: kayu hangat dan
                             logam tebal. Dibuat dengan sungguh-sungguh untuk melengkapi interior estetis, menghadirkan
                             kenyamanan dan ketenangan bagi setiap penghuninya. Kami berbagi semangat kami dengan nama
-                            Ilena.</p>
+                            Ilena.
+                        </p>
                     </div>
                 </div>
             </div>
