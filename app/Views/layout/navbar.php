@@ -77,7 +77,7 @@
                                 onmouseover="hoverListNav('bookshelf1-orca')">Orca</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
                                 href="/product?koleksi=sorely&jenis=single-bed"
-                                onmouseover="hoverListNav('bookshlef1-sorely')">Sorely</a>
+                                onmouseover="hoverListNav('bookshelf1-sorely')">Sorely</a>
                         </div>
                     </div>
                     <div style="flex:1;">
@@ -455,7 +455,7 @@
                         <div class="d-none gap-4 mb-3 consoletable-penjelasan" id="consoletable1-cutout">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10300401/1" alt="console table cutout">
+                                    src="/viewvar/10300301/1" alt="console table cutout">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">CutOut</h3>
@@ -489,7 +489,7 @@
                         <div class="d-none gap-4 mb-3 consoletable-penjelasan" id="consoletable1-metalframe">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10500301/1" alt="console table metal frame">
+                                    src="/viewvar/10500401/1" alt="console table metal frame">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Metal Frame</h3>
@@ -506,7 +506,7 @@
                         <div class="d-none gap-4 mb-3 consoletable-penjelasan" id="consoletable1-orca">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10600301/1" alt="coffee table orca">
+                                    src="/viewvar/10600401/1" alt="coffee table orca">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Orca</h3>
@@ -523,7 +523,7 @@
                         <div class="d-none gap-4 mb-3 consoletable-penjelasan" id="consoletable1-plintbase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10700301/1" alt="coffee table plint base">
+                                    src="/viewvar/10700401/1" alt="coffee table plint base">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Plint Base</h3>
@@ -540,7 +540,7 @@
                         <div class="d-none gap-4 mb-3 consoletable-penjelasan" id="consoletable1-socoplate">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10800301/1" alt="coffee table socoplate">
+                                    src="/viewvar/10800401/1" alt="coffee table socoplate">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Socoplate</h3>
@@ -557,7 +557,7 @@
                         <div class="d-none gap-4 mb-3 consoletable-penjelasan" id="consoletable1-sorely">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10900301/1" alt="coffee table sorely">
+                                    src="/viewvar/10900401/1" alt="coffee table sorely">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Sorely</h3>
@@ -574,7 +574,7 @@
                         <div class="d-none gap-4 mb-3 consoletable-penjelasan" id="consoletable1-watercase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/11000301/1" alt="coffee table water case">
+                                    src="/viewvar/11000401/1" alt="coffee table water case">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Water Case</h3>
@@ -692,6 +692,9 @@
                                 <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
                                     href="/product?koleksi=socoplate&jenis=dresser-5-drawer"
                                     onmouseover="hoverListNav('dresser5-socoplate')">Socoplate</a>
+                                <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                    href="/product?koleksi=cody&jenis=dresser-4-drawer"
+                                    onmouseover="hoverListNav('dresser6-sorely')">Sorely</a>
                             </div>
                             <!-- Enf Drasser 5 -->
 
@@ -716,9 +719,7 @@
                                 <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
                                     href="/product?koleksi=cody&jenis=dresser-4-drawer"
                                     onmouseover="hoverListNav('dresser6-watercase')">Water case</a>
-                                <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                    href="/product?koleksi=cody&jenis=dresser-4-drawer"
-                                    onmouseover="hoverListNav('dresser6-sorely')">Sorely</a>
+
                             </div>
                             <!-- End Dresser 6 -->
                         </div>
@@ -1350,7 +1351,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king1-watercase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10900601/1" alt="King water case">
+                                    src="/viewvar/11001201/1" alt="King water case">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed King Water Case</h3>
@@ -1553,7 +1554,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king2-watercase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10900601/1" alt="Queen water case">
+                                    src="/viewvar/11001301/1" alt="Queen water case">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Queen Water Case</h3>
