@@ -72,7 +72,7 @@
                         </div>
                     </div>
                     <div style="flex:1;">
-                        <div class="d-flex gap-4 mb-3 armoir-penjelasan" id="armoir1-cabana">
+                        <div class="d-flex gap-4 mb-3 armoir-penjelasan" id="armoir1-industrial">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
                                     src="/viewvar/10400101/1" alt="armoir industrial">
