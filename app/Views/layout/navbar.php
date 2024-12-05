@@ -70,13 +70,13 @@
                                 href="/product?koleksi=cabana&jenis=bookshelf"
                                 onmouseover="hoverListNav('bookshelf1-cabana')">Cabana</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=sorely&jenis=console-table"
+                                href="/product?koleksi=industrial&jenis=bookshelf"
                                 onmouseover="hoverListNav('bookshelf1-industrial')">Industrial</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=sorely&jenis=dresser-6-drawer"
+                                href="/product?koleksi=orca&jenis=bookshelf"
                                 onmouseover="hoverListNav('bookshelf1-orca')">Orca</a>
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=sorely&jenis=single-bed"
+                                href="/product?koleksi=sorely&jenis=bookshelf"
                                 onmouseover="hoverListNav('bookshelf1-sorely')">Sorely</a>
                         </div>
                     </div>
@@ -610,7 +610,7 @@
                         <div class="ms-2">
 
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=industrial&jenis=console-table"
+                                href="/product?koleksi=industrial&jenis=credenza"
                                 onmouseover="hoverListNav('credenza1-industrial')">Industrial</a>
 
                         </div>
@@ -703,22 +703,22 @@
                             <p class="m-0" style="font-size:14px;">Jelajahi Dresser 6</p>
                             <div class="mb-4">
                                 <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                    href="/product?koleksi=cody&jenis=dresser-4-drawer"
+                                    href="/product?koleksi=cabana&jenis=dresser-6-drawer"
                                     onmouseover="hoverListNav('dresser6-cabana')">Cabana</a>
                                 <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                    href="/product?koleksi=cody&jenis=dresser-4-drawer"
+                                    href="/product?koleksi=cutout&jenis=dresser-6-drawer"
                                     onmouseover="hoverListNav('dresser6-cutout')">Cutout</a>
                                 <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                    href="/product?koleksi=cody&jenis=dresser-4-drawer"
+                                    href="/product?koleksi=metal-frame&jenis=dresser-6-drawer"
                                     onmouseover="hoverListNav('dresser6-metalframe')">Metal Frame</a>
                                 <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                    href="/product?koleksi=cody&jenis=dresser-4-drawer"
+                                    href="/product?koleksi=orca&jenis=dresser-6-drawer"
                                     onmouseover="hoverListNav('dresser6-orca')">Orca</a>
                                 <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                    href="/product?koleksi=cody&jenis=dresser-4-drawer"
+                                    href="/product?koleksi=plint-base&jenis=dresser-6-drawer"
                                     onmouseover="hoverListNav('dresser6-plintbase')">Plint Base</a>
                                 <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                    href="/product?koleksi=cody&jenis=dresser-4-drawer"
+                                    href="/product?koleksi=water-case&jenis=dresser-6-drawer"
                                     onmouseover="hoverListNav('dresser6-watercase')">Water case</a>
 
                             </div>
