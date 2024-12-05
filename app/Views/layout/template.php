@@ -196,6 +196,20 @@
             style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
 
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8L3XG70VSN"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    // end
+
+    gtag('config', 'G-8L3XG70VSN');
+    </script>
+
     <div class="toast start-50 translate-middle">
         <div class="toast-body">
             <p>Hello, world! This is a toast message.</p>
