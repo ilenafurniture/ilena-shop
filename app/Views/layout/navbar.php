@@ -57,48 +57,7 @@
     style="background-color: whitesmoke; position: sticky; top:-1px; z-index: 99;">
     <div class="d-flex align-items-center py-2 gap-5">
 
-        <!-- Armoir -->
-        <div class="list-nav">
-            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
-                href="/product?jenis=armoir">Armoir</a>
-            <div class="child-list-nav" style="overflow: auto;">
-                <div class="container d-flex align-items-stretch py-4">
-                    <div style="flex: 1;">
-                        <p class="m-0" style="font-size:14px;">Jelajahi Armoir</p>
-                        <div class="ms-2">
-                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=industrial&jenis=armoir"
-                                onmouseover="hoverListNav('armoir1-industrial')">Industrial</a>
-                        </div>
-                    </div>
-                    <div style="flex:1;">
-                        <div class="d-flex gap-4 mb-3 armoir-penjelasan" id="armoir1-industrial">
-                            <div style="flex: 1;">
-                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10400101/1" alt="armoir industrial">
-                            </div>
-                            <div style="flex: 1;">
-                                <h3 class="teks-sedang mb-3">Industrial</h3>
-                                <p style="text-align: justify" class="mb-2">Hadir dengan model unfinishing yang menawan,
-                                    lemari pakaian ini bisa jadi opsi tepat untuk mewujudkan ruangan dengan konsep
-                                    industrial kekinian. Terbuat dari kayu dan wire mesh logam yang kokoh hingga waktu
-                                    yang lama.
-                                    Koleksi Ilena Furniture series Industrial didesain eksklusif dengan material
-                                    pembuatan berkualitas premium..</p>
-                                <a href="<?= base_url('/product/Armoir-Ilena-Industrial') ?>"
-                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
-                                    selengkapnya..</a>
-                            </div>
-                        </div>
-                        <p class="text-secondary">Terinspirasi oleh keindahan perpaduan dua material: kayu hangat dan
-                            logam tebal. Dibuat dengan sungguh-sungguh untuk melengkapi interior estetis, menghadirkan
-                            kenyamanan dan ketenangan bagi setiap penghuninya. Kami berbagi semangat kami dengan nama
-                            Ilena.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- End Armoir -->
+
 
         <!-- Bookshelf -->
         <div class="list-nav">
@@ -2348,7 +2307,9 @@
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
                                 href="/product?koleksi=sorely&jenis=wardrobe"
                                 onmouseover="hoverListNav('wardrobe1-sorely')">Sorely</a>
-
+                            <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                href="/product?koleksi=Industrial&jenis=wardrobe"
+                                onmouseover="hoverListNav('wardrobe1-Industrial')">Industrial</a>
                         </div>
                     </div>
                     <div style="flex:1;">
@@ -2400,6 +2361,23 @@
                                     jadi lebih nyaman dan menyenangkan. Cocok ditempatkan pada ruang tamu, ruang
                                     keluarga, teras hingga lobby kantor.</p>
                                 <a href="<?= base_url('/product/wardrobe-ilena-sorely') ?>"
+                                    style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
+                                    selengkapnya..</a>
+                            </div>
+                        </div>
+                        <div class="d-none gap-4 mb-3 wardrobe-penjelasan" id="wardrobe1-Industrial">
+                            <div style="flex: 1;">
+                                <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
+                                    src="/viewvar/10401701/1" alt="wardrobe Industrial">
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 class="teks-sedang mb-3">Industrial</h3>
+                                <p style="text-align: justify" class="mb-2">Dirancang dengan memadukan 2 jenis material
+                                    berbeda yang menghasilkan sebuah coffee table unik yang eye catching dengan daya
+                                    tahan tinggi dari material kayu dan logam terbaik. Membuat suasana bersantai bersama
+                                    jadi lebih nyaman dan menyenangkan. Cocok ditempatkan pada ruang tamu, ruang
+                                    keluarga, teras hingga lobby kantor.</p>
+                                <a href="<?= base_url('/product/wardrobe-ilena-Industrial') ?>"
                                     style="display: inline; font-size: 10px; text-decoration: none; color: var(--merah);">lihat
                                     selengkapnya..</a>
                             </div>
