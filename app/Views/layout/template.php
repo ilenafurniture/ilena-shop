@@ -53,8 +53,9 @@
     </script>
     <!-- TikTok Pixel Code End -->
     <meta name="google-site-verification" content="fbuobh8O6hdzi1dFtDU48hqyMlHD0xvCfObbr1EgD0M" />
+
     <!-- Google Tag Manager -->
-    <script>
+    <!-- <script>
     (function(w, d, s, l, i) {
         w[l] = w[l] || [];
         w[l].push({
@@ -69,11 +70,11 @@
             'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
         f.parentNode.insertBefore(j, f);
     })(window, document, 'script', 'dataLayer', 'GTM-KTNC9FL7');
-    </script>
+    </script> -->
     <!-- End Google Tag Manager -->
 
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6Q18QTYQE0"></script>
+    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-6Q18QTYQE0"></script> -->
     <script>
     window.dataLayer = window.dataLayer || [];
 
