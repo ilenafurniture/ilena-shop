@@ -609,6 +609,16 @@ if (isset($_GET['ruang'])) {
             </div>
             <!-- </div> -->
         </div>
+        <!-- Artikel kategori -->
+        <?php switch ($kategori) {
+            case 'bookshelf' : ?>
+        <hr class="my-5">
+        <div class="container">
+            <div class="overlay-meta"></div>
+            <h5>Apa itu Bookshelf</h5>
+        </div>
+        <?php break;
+        } ?>
     </div>
 </div>
 <script>
@@ -749,6 +759,21 @@ btnFilterElm.forEach(elm => {
 
 function pergiKeProduct(id_produk) {
     window.location.href = "/product/" + id_produk
+}
+
+let bukaMeta = false;
+
+function openMeta(e) {
+    const containerMeta = document.querySelector('.container-meta');
+    if (bukaMeta) {
+        containerMeta.classList.remove('show')
+        bukaMeta = false;
+        e.target.innerHTML = 'Lihat selengkapnya'
+    } else {
+        containerMeta.classList.add('show')
+        bukaMeta = true;
+        e.target.innerHTML = 'Lebih sedikit'
+    }
 }
 </script>
 
