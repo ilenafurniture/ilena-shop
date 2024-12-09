@@ -608,17 +608,73 @@ if (isset($_GET['ruang'])) {
                 <?php } ?>
             </div>
             <!-- </div> -->
-        </div>
-        <!-- Artikel kategori -->
-        <?php switch ($kategori) {
-            case 'bookshelf' : ?>
-        <hr class="my-5">
-        <div class="container">
-            <div class="overlay-meta"></div>
-            <h5>Apa itu Bookshelf</h5>
-        </div>
-        <?php break;
+            <!-- Artikel kategori -->
+            <?php switch ($_GET['jenis']) {
+        case 'bookshelf' : ?>
+            <hr class="my-5">
+            <div class="container">
+                <div class="my-3 container-meta">
+                    <div class="overlay-meta"></div>
+                    <h5>Apa itu Bookshelf</h5>
+                    <p class="text-justify">Bookshelf adalah salah satu furniture yang bisa membuat ruangan jadi lebih
+                        menarik dan membuat koleksi buku-buku tertata rapi dalam satu tempat pada sebuah bookcase.
+                        Umumnya, desain rak buku mirip dengan lemari, hanya saja biasanya tidak memiliki penutup atau
+                        kuncian pintu dan memiliki banyak sekat-sekat. Bentuknya yang terbuka inilah, yang bisa menjadi
+                        space menarik untuk memajang koleksi buku dengan lebih aman dan rapi agar tidak mudah rusak.
+                        Selain itu, desain ini juga akan memudahkan saat hendak mengambil atau menyimpan kembali buku di
+                        rak.</p>
+
+                    <h5>Macam-Macam Model Bookshelves</h5>
+                    <p class="text-justify">Sekarang ini, rak buku memiliki banyak model yang menarik dengan
+                        berbagai aksen unik yang menjadi daya tarik dari furniture satu ini. Beragam model ini juga
+                        dipengaruhi dengan kebutuhan konsumen yang beragam pula. Preferensi mulai dari model, bahan, dan
+                        ukuran ini membuat para pengrajin seperti Ilena Furniture sebagai produsen semangat untuk
+                        mengembangkan produk rak buku. salah satu produknya adalah bookshelf Ilena Cabana yang memiliki
+                        4 tingkat space rak buku plus sebuah laci di bagian bawahnya. Selain modelnya yang stylish,
+                        koleksi bookcase Ilena ini juga terbuat dari bahan-bahan berkualitas yang kokoh dan awet lama.
+                        Bahan kayu mahoni dengan dikombinasikan MDF grade A serta laminasi veneer jati yang terkenal
+                        dengan serat kayu khasnya yang unik. Pertimbangan inilah yang menjadikan furniture unggulan yang
+                        dapat digunakan sebagaimana fungsinya dalam jangka waktu yang lama.
+                    <p>
+                    <h5>Cara Perawatan Yang Mudah</h5>
+                    <p class="text-justify mb-1">Beberapa tips & trik menjaga rak buku agar tetap bersih dan rapi ini
+                        bisa ditiru secara
+                        mandiri
+                        tanpa bantuan profesional:</p>
+                    <ol>
+                        <li>Bersihkan secara rutin dan berkala</li>
+                        <p class="text-justify mb-1">Sama seperti pada furniture lain pada umumnya, bookshelves juga
+                            harus mendapat perhatian
+                            dengan cara dibersihkan secara rutin dan berkala. Hal ini dikarenakan tidak menutup
+                            kemungkinan jika bookcase kotor karena debu yang menutup sehingga bisa mengotori buku
+                            koleksi dan mengurangi estetika di bookcase itu sendiri. Jadwalkan secara rutin pembersihan,
+                            semisal seminggu sekali untuk hasil yang optimal.</p>
+                        <li>Kelompokkan Jenis Buku</li>
+                        <p class="text-justify mb-1">Jika sudah bisa memastikan rak buku bersih, kini saatnya untuk
+                            menata koleksi buku yang dimiliki. Susun buku dengan rapih dan berurutan sesuai dengan abjad
+                            dari penulis, judul, atau cara lainnya untuk mempermudah saat sedang mencari dan menaruh
+                            kembali buku pada tempatnya.</p>
+                        <li>Pakai Penyangga Buku</li>
+                        <p class="text-justify mb-1">Jika dirasa rak buku masih kurang membuat buku-buku terlihat rapi,
+                            maka cara mudahnya adalah
+                            dengan menambahkan penyangga buku untuk memisahkan koleksi buku dan memastikan kolekis buku
+                            tersimpan dengan tegak dan terlihat lebih rapi. Penyangga buku ini juga bisa dijadikan sekat
+                            tambahan dan space kosong sampingnya bisa dimanfaatkan sebagai tempat payangan foto, atau
+                            barang-barang kesayangan seperti akrilik atau lainnya.</p>
+                    </ol>
+                    <p class="text-justify">Itulah beberapa cara merawat rak buku yang sederhana dan dapat ditiru
+                        secara mandiri di rumah.
+                        Dengan ini, dapat memastikan bookcase tetap terjaga kebersihan dan kerapihannya sehingga dapat
+                        menambah estetika ruang.
+                    </p>
+                </div>
+            </div>
+            <div class=" d-flex justify-content-center mb-5">
+                <button class="btn btn-lonjong " onclick="openMeta(event)">Lihat selengkapnya</button>
+            </div>
+            <?php break;
         } ?>
+        </div>
     </div>
 </div>
 <script>

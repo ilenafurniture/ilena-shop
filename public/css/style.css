@@ -1498,6 +1498,39 @@ body {
     width: 30px;
     font-weight: normal;
 }
+
+/* Meta Artikel */
+.container-meta {
+    max-height: 200px;
+    overflow-y: hidden;
+    transition: 0.3s;
+    position: relative;
+    font-size: small;
+}
+.container-meta.show {
+    max-height: 200svh;
+    overflow-y: hidden;
+    transition: 0.3s;
+}
+.container-meta .overlay-meta {
+    height: 100%;
+    width: 100%;
+    /* background-color: rgba(0, 0, 0, 0.5); */
+    background-image: linear-gradient(to top,rgb(230, 230, 230), transparent);
+    position: absolute;
+    display: block;
+}
+.container-meta.show .overlay-meta {
+    display: none;
+}
+.container-meta .sub-1 {
+    margin-left: 20px;
+}
+.container-meta .sub-2 {
+    margin-left: 40px;
+}
+/* End Meta Artikel */
+
 @media (max-width: 600px) {
     .container-faq {
         flex-direction: column;
