@@ -57,7 +57,7 @@
     style="background-color: whitesmoke; position: sticky; top:-1px; z-index: 99;">
     <div class="d-flex align-items-center py-2 gap-5">
 
-
+        <!-- Ini Untuk Kategori -->
 
         <!-- Bookshelf -->
         <div class="list-nav">
