@@ -165,7 +165,7 @@
         data-client-key="<?= $emailUji ? 'SB-Mid-client-aGWfdxs2btRH4xSd' : ''; ?>" type="text/javascript" async>
     </script>
     <?php } ?>
-    <link rel="stylesheet" href="<?= base_url('css/style.css?v=1.38'); ?>">
+    <link rel="stylesheet" href="<?= base_url('css/style.css?v=1.39'); ?>">
     <link rel="icon" href="<?= base_url('logo-icon.png?v=2.0'); ?>" type="image/png">
 </head>
 
