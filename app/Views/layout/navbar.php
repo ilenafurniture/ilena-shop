@@ -650,7 +650,7 @@
         <!-- Dresser -->
         <div class="list-nav">
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
-                href="/product?jenis=console-table">Dresser</a>
+                href="/product?jenis=dresser-3-drawer+dresser-4-drawer+dresser-5-drawer+dresser-6-drawer">Dresser</a>
             <div class="child-list-nav" style="overflow: auto;">
                 <div class="container d-flex align-items-stretch py-4">
                     <div style="flex: 1;" class="d-flex">
@@ -695,9 +695,9 @@
                                 <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
                                     href="/product?koleksi=socoplate&jenis=dresser-5-drawer"
                                     onmouseover="hoverListNav('dresser5-socoplate')">Socoplate</a>
-                                <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
+                                <!-- <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
                                     href="/product?koleksi=cody&jenis=dresser-4-drawer"
-                                    onmouseover="hoverListNav('dresser6-sorely')">Sorely</a>
+                                    onmouseover="hoverListNav('dresser6-sorely')">Sorely</a> -->
                             </div>
                             <!-- Enf Drasser 5 -->
 
