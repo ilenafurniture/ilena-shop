@@ -1532,6 +1532,7 @@ body {
 }
 /* End Meta Artikel */
 
+
 @media (max-width: 600px) {
     .container-faq {
         flex-direction: column;
