@@ -693,6 +693,7 @@ let koleksiParam = ''
 let jenisParam = ''
 let hargaParam = ''
 let ruangParam = ''
+let bukaMeta = false;
 
 let showFilter = false;
 
@@ -817,7 +818,7 @@ function pergiKeProduct(id_produk) {
     window.location.href = "/product/" + id_produk
 }
 
-let bukaMeta = false;
+
 
 function openMeta(e) {
     const containerMeta = document.querySelector('.container-meta');
