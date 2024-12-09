@@ -819,7 +819,6 @@ function pergiKeProduct(id_produk) {
 }
 
 
-
 function openMeta(e) {
     const containerMeta = document.querySelector('.container-meta');
     if (bukaMeta) {
