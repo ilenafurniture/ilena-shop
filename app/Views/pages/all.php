@@ -818,7 +818,6 @@ function pergiKeProduct(id_produk) {
     window.location.href = "/product/" + id_produk
 }
 
-
 function openMeta(e) {
     const containerMeta = document.querySelector('.container-meta');
     if (bukaMeta) {
