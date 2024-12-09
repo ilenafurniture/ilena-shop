@@ -609,8 +609,9 @@ if (isset($_GET['ruang'])) {
             </div>
             <!-- </div> -->
             <!-- Artikel kategori -->
-            <?php switch ($_GET['jenis']) {
-        case 'bookshelf' : ?>
+            <?php if (isset($_GET['jenis'])) {
+                switch ($_GET['jenis']) {
+                case 'bookshelf': ?>
             <hr class="my-5">
             <div class="container">
                 <div class="my-3 container-meta">
@@ -673,7 +674,7 @@ if (isset($_GET['ruang'])) {
                 <button class="btn btn-lonjong " onclick="openMeta(event)">Lihat selengkapnya</button>
             </div>
             <?php break;
-        } ?>
+            } }?>
         </div>
     </div>
 </div>

@@ -1050,7 +1050,7 @@
         <!-- Bed -->
         <div class="list-nav">
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
-                href="/product?jenis=king-bed+queen-bed">Bed</a>
+                href="/product?jenis=king-bed+queen-bed+single-bed">Bed</a>
             <div class="child-list-nav" style="overflow: auto;">
                 <div class="container d-flex align-items-stretch py-4">
                     <div style="flex: 1;" class="d-flex">
@@ -1135,34 +1135,34 @@
                             <p class="m-0" style="font-size:14px;">Jelajahi Single Bed</p>
                             <div class="ms-2 mb-2">
                                 <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                    href="/product?koleksi=cabana&jenis=queen-bed"
+                                    href="/product?koleksi=cabana&jenis=single-bed"
                                     onmouseover="hoverListNav('king3-cabana')">Cabana</a>
                                 <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                    href="/product?koleksi=cody&jenis=queen-bed"
+                                    href="/product?koleksi=cody&jenis=single-bed"
                                     onmouseover="hoverListNav('king3-cody')">Cody</a>
                                 <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                    href="/product?koleksi=cutout&jenis=queen-bed"
+                                    href="/product?koleksi=cutout&jenis=single-bed"
                                     onmouseover="hoverListNav('king3-cutout')">Cutuot</a>
                                 <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                    href="/product?koleksi=socoplate&jenis=queen-bed"
+                                    href="/product?koleksi=socoplate&jenis=single-bed"
                                     onmouseover="hoverListNav('king3-socoplate')">Socoplate</a>
                                 <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                    href="/product?koleksi=industrial&jenis=queen-bed"
+                                    href="/product?koleksi=industrial&jenis=single-bed"
                                     onmouseover="hoverListNav('king3-industrial')">Industrial</a>
                                 <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                    href="/product?koleksi=metal-frame&jenis=queen-bed"
+                                    href="/product?koleksi=metal-frame&jenis=single-bed"
                                     onmouseover="hoverListNav('king3-metalframe')">Metal Frame</a>
                                 <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                    href="/product?koleksi=orca&jenis=queen-bed"
+                                    href="/product?koleksi=orca&jenis=single-bed"
                                     onmouseover="hoverListNav('king3-orca')">Orca</a>
                                 <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                    href="/product?koleksi=plint-base&jenis=queen-bed"
+                                    href="/product?koleksi=plint-base&jenis=single-bed"
                                     onmouseover="hoverListNav('king3-plintbase')">Plint Base</a>
                                 <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                    href="/product?koleksi=sorely&jenis=queen-bed"
+                                    href="/product?koleksi=sorely&jenis=single-bed"
                                     onmouseover="hoverListNav('king3-sorely')">Sorely</a>
                                 <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                    href="/product?koleksi=water-case&jenis=queen-bed"
+                                    href="/product?koleksi=water-case&jenis=single-bed"
                                     onmouseover="hoverListNav('king3-watercase')">Water Case</a>
                             </div>
                             <!-- Single Bed -->
