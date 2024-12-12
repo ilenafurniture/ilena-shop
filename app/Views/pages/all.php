@@ -608,6 +608,7 @@ if (isset($_GET['ruang'])) {
                 <?php } ?>
             </div>
             <!-- </div> -->
+
             <!-- Artikel kategori -->
             <?php if (isset($_GET['jenis'])) {
                 switch ($_GET['jenis']) {
@@ -616,7 +617,7 @@ if (isset($_GET['ruang'])) {
             <div class="container">
                 <div class="my-3 container-meta">
                     <div class="overlay-meta"></div>
-                    <h5>Apa itu Bookshelf</h5>
+                    <h5>Simpan Buku Lebih Rapi di Bookshelf</h5>
                     <p class="text-justify">Bookshelf adalah salah satu furniture yang bisa membuat ruangan jadi lebih
                         menarik dan membuat koleksi buku-buku tertata rapi dalam satu tempat pada sebuah bookcase.
                         Umumnya, desain rak buku mirip dengan lemari, hanya saja biasanya tidak memiliki penutup atau
@@ -674,6 +675,65 @@ if (isset($_GET['ruang'])) {
                 <button class="btn btn-lonjong " onclick="openMeta(event)">Lihat selengkapnya</button>
             </div>
             <?php break;
+            case 'dresser-3-drawer dresser-4-drawer dresser-5-drawer dresser-6-drawer': ?>
+            <hr class="my-5">
+            <div class="container">
+                <div class="my-3 container-meta">
+                    <div class="overlay-meta"></div>
+                    <h5>Kenapa Perlu Punya Drawer?</h5>
+                    <p class="text-justify">Pada dasarnya lemari drawer atau lemari laci merupakan salah satu furniture
+                        berdesain sederhana yang lebih mementingkan fungsionalnya. Meskipun kerap dijadikan sebag ai
+                        opsi kesekian, tapi yang perlu dipahami adalah jenis furniture ini punya banyak manfaat yang
+                        bisa membuat jadi lebih rapi dan terorganisir untuk mempermudah saat sedang mencari atau menaruh
+                        barang. Agar lebih jelasnya, berikut ini adalah alasan kenapa perlu mempertimbangkan untuk
+                        memiliki drawer dalam hunian:</p>
+                    <ol>
+                        <li>Tempat Praktis Menyimpan Barang</li>
+                        <p class="text-justify mb-1">Drawer didesain dengan model laci bertingkat untuk memudahkan dalam
+                            menyimpan barang sesuai dengan kebutuhan dan kategori. Di satu furniture ini, bisa digunakan
+                            untuk menyimpan barang-barang seperti aksesoris, pakaian, dokumen, dan lain sebagainya.
+                            Dengan begitu, tidak perlu lagi repot kesusahan mencari barang yang terselip karena sudah
+                            ada tempat khususnya sendiri.</p>
+                        <li>Hemat Ruang</li>
+                        <p class="text-justify mb-1">Dengan desainnya yang vertikal, furniture dresser akan lebih
+                            menghemat ruang. Sehingga cocok ditempatkan pada ruangan terbatas tanpa menghilangkan fungsi
+                            utamanya sebagai tempat penyimpanan dan juga tidak membuat ruangan terasa lebih sempit.</p>
+                        <li>Memaksimalkan Keindahan Ruang</li>
+                        <p class="text-justify mb-1">Ada banyak model lemari laci dengan berbagai pilihan warna dan
+                            bahan yang membuat tampilannya memiliki keunikan tersendiri masing-masing. Dengan begini,
+                            ada beragam opsi yang bisa dipilih sesuai dengan kebutuhan dan preferensi masing-masing
+                            untuk membeli lemari laci. Maka dari itu, ada baiknya jika memilih furniture berdasarkan
+                            kebutuhan dan tema ruangan agar selaras serta menambah estetika dalam ruang itu sendiri.</p>
+                        <li>Furniture Multifungsi</li>
+                        <p class="text-justify mb-1">salah satu keunggulan dari furniture ini adalah fleksibilitas yang
+                            membuatnya cocok ditempatkan pada berbagai ruangan mulai dari kamar tidur, ruang keluarga,
+                            dan lain sebagainya. Fungsinya pun beragam pula, mulai dari menyimpan pakaian, aksesoris,
+                            dokumen penting, mainan anak, dan masih banyak lagi. Tapi perlu diingat ya, akan lebih baik
+                            jika jenis penyimpanannya tertata dengan rapi dan terorganisir agar tidak menjadi sarang
+                            nyamuk atau serangga lain di dalamnya.</p>
+                        <li>Mudah Diakses</li>
+                        <p class="text-justify mb-1">Tak seperti lemari pada umumnya yang terkadang merepotkan saat
+                            dibuka karena jenis pintunya yang bisa bermasalah, tapi dengan drawer bisa lebih mudah.
+                            Cukup dengan menariknya, Anda bisa langsung mengakses dengan cepat dan kapan saja tanpa
+                            perlu banyak repot.</p>
+                    </ol>
+                    <h5>Temukan Berbagai Model Dresser Stylish</h5>
+                    <p class="text-justify">Bingung cari lemari laci dengan model elegan yang stylish untuk mengisi
+                        hunian? Sekarang tidak lagi karena ada Ilena Furniture yang memberikan sentuhan modern yang
+                        cocok untuk dipadukan dengan tema scandinavian, minimalis, hingga industrial. Dibuat dengan
+                        material premium pilihan yang dapat digunakan secara maksimal hingga waktu lama. Tidak sekedar
+                        menjadi tempat penyimpanan saja untuk membuat kesan rapi dan terorganisir, tetapi juga
+                        memaksimalkan keindahan interior ruang sehingga membuat nyaman setiap penghuni di dalamnya.
+                        Temukan produk dresser populer di tahun ini dan dapatkan harga terbaiknya dengan menjadi bagian
+                        dari member Kami!
+                    </p>
+                </div>
+            </div>
+            <div class=" d-flex justify-content-center mb-5">
+                <button class="btn btn-lonjong " onclick="openMeta(event)">Lihat selengkapnya</button>
+            </div>
+            <?php break;
+
             } }?>
         </div>
     </div>
