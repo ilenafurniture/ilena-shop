@@ -3212,4 +3212,18 @@ class Pages extends BaseController
         ];
         return view('pages/kebijakan', $data);
     }
+
+    public function gantinamakekecil()
+    {
+        $produk = $this->barangModel->limit(10)->findAll();
+        if (empty($produk)) {
+            return $this->response->setJSON(['pesan' => 'Tidak ada produk yang dapat diubah'], false);
+        }
+        foreach ($produk as $p) {
+            $this->barangModel->where("id", $p["id"])->set([
+                "nama" => strtolower($p["nama"])
+            ])->update();
+        }
+        return $this->response->setJSON(['pesan' => '10 produk berhasil diubah'], false);
+    }
 }
