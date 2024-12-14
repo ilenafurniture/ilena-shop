@@ -3215,7 +3215,7 @@ class Pages extends BaseController
 
     public function gantinamakekecil()
     {
-        $produk = $this->barangModel->limit(10)->findAll();
+        $produk = $this->barangModel->findAll(20, 0);
         if (empty($produk)) {
             return $this->response->setJSON(['pesan' => 'Tidak ada produk yang dapat diubah'], false);
         }
