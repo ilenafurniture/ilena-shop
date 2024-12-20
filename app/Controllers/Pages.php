@@ -3213,17 +3213,67 @@ class Pages extends BaseController
         return view('pages/kebijakan', $data);
     }
 
-    public function gantinamakekecil()
+    public function gantinamakekecil($batchSize = 20)
     {
-        $produk = $this->barangModel->findAll(20, 0);
-        if (empty($produk)) {
-            return $this->response->setJSON(['pesan' => 'Tidak ada produk yang dapat diubah'], false);
+        try {
+            // Hitung total produk
+            $totalProduk = $this->barangModel->countAll();
+            if ($totalProduk == 0) {
+                return $this->response->setJSON(['pesan' => 'Tidak ada produk yang tersedia'], 404);
+            }
+
+            // Hitung jumlah produk yang sudah huruf kecil
+            $produkLowercase = $this->barangModel
+                ->where("LOWER(nama) = nama") // Cek apakah sudah huruf kecil
+                ->countAllResults();
+
+            // Hitung jumlah produk yang belum huruf kecil
+            $produkBelumLowercase = $totalProduk - $produkLowercase;
+
+            // Jika semua sudah huruf kecil
+            if ($produkBelumLowercase == 0) {
+                return $this->response->setJSON([
+                    'pesan' => 'Semua produk sudah menjadi huruf kecil',
+                    'total' => $totalProduk,
+                    'sudah_lowercase' => $produkLowercase,
+                    'belum_lowercase' => $produkBelumLowercase
+                ], 200);
+            }
+
+            // Ambil offset dari request (default: 0)
+            $offset = $this->request->getVar('offset') ?? 0;
+
+            // Ambil batch produk yang belum huruf kecil
+            $produk = $this->barangModel
+                ->where("LOWER(nama) != nama") // Hanya produk yang belum huruf kecil
+                ->findAll($batchSize, $offset);
+
+            // Ubah nama produk menjadi huruf kecil
+            foreach ($produk as $p) {
+                $this->barangModel->where("id", $p["id"])->set([
+                    "nama" => strtolower($p["nama"])
+                ])->update();
+            }
+
+            // Hitung batch yang telah diproses
+            $nextOffset = $offset + $batchSize;
+
+            // Respon sukses
+            return $this->response->setJSON([
+                'pesan' => count($produk) . ' produk berhasil diubah',
+                'next_offset' => $nextOffset,
+                'total' => $totalProduk,
+                'sudah_lowercase' => $produkLowercase + count($produk),
+                'belum_lowercase' => $produkBelumLowercase - count($produk)
+            ], 200);
+        } catch (\Exception $e) {
+            // Tangani kesalahan dan kembalikan pesan error
+            return $this->response->setJSON([
+                'pesan' => 'Terjadi kesalahan saat mengubah data',
+                'error' => $e->getMessage()
+            ], 500);
         }
-        foreach ($produk as $p) {
-            $this->barangModel->where("id", $p["id"])->set([
-                "nama" => strtolower($p["nama"])
-            ])->update();
-        }
-        return $this->response->setJSON(['pesan' => '10 produk berhasil diubah'], false);
     }
+
+
 }
