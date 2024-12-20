@@ -733,6 +733,79 @@ if (isset($_GET['ruang'])) {
                 <button class="btn btn-lonjong " onclick="openMeta(event)">Lihat selengkapnya</button>
             </div>
             <?php break;
+            case 'king-bed+queen-bed+single-bed': ?>
+            <hr class="my-5">
+            <div class="container">
+                <div class="my-3 container-meta">
+                    <div class="overlay-meta"></div>
+                    <h5>Manfaat Tidur Pakai Divan</h5>
+                    <p class="text-justify">Dipan adalah sebuah rangka tempat tidur yang difungsikan untuk menopang
+                        kasur. penambahan divan sebagai penopan kasur memiliki manfaat yaitu sebagai berikut ini::</p>
+                    <ol>
+                        <li>Memperlancar Sirkulasi udara</li>
+                        <p class="text-justify mb-1">Bagian bawah dan sekitar kasur akan memperoleh sirkulasi udara yang
+                            baik. Hal ini dimaksudkan untuk menghambat pertumbuhan jamur dan bakteri pada kasur yang
+                            disebabkan pada lembabnya suhu ruang. Selain itu juga agar kasu terhindar dari debu yang
+                            menumpuk jika langsung diletakkan di lantai tanpa adanya rangka ranjang.</p>
+                        <li>Lebih Baik bagi Kesehatan</li>
+                        <p class="text-justify mb-1">Sirkulasi udara yang baik memungkinkan untuk mengurangi tumbuhnya
+                            jamur dan kutu di kasur. Hal ini pastinya berdampak baik pada kesehatan. Apalagi jika sudah
+                            diketahui memiliki alergi atau permasalahan pada pernapasan. Selain itu, tidur dengan
+                            kondisi dipan yang dingin juga bisa mencegah penyakit gangguan paru-paru dan hipotermia.
+                        </p>
+                        <li>Sebagai Tempat Penyimpanan Tambahan</li>
+                        <p class="text-justify mb-1">Rangka ini juga bisa digunakan sebagai tempat penyimpanan tambahan.
+                            Berikan beberapa laci yang bisa digunakan untuk menyimpan beberapa barang dari ukuran besar
+                            hingga kecil di bawah tempat tidur dengan lebih rapi</p>
+                        <li>Memaksimalkan Estetika Kamar Tidur</li>
+                        <p class="text-justify mb-1">Penggunaan divan juga bisa menjadi opsi tepat untuk menambah
+                            estetika desain dalam kamar tidur. Terlebih jika ranjang ini memiliki model yang cantik dan
+                            selaras dengan tema dalam kamar tidur.</p>
+                    </ol>
+                    <h5>Rekomendasi Ukuran Bed</h5>
+                    <p class="text-justify">Terdapat beberapa macam istilah umum untuk menyebut ukuran bed. Agar tidak
+                        salah beli, berikut ini beberapa ukurannya beserta istilahnya:
+                    </p>
+                    <ol>
+                        <li>Single Size (90 x 200 cm)</li>
+                        <p class="text-justify mb-1">Ukuran ini biasanya cocok digunakan untuk kamar tidur anak atau
+                            kamar tidur tamu. Size ini cocok untuk satu orang agar nyaman bergerak tanpa memakan banyak
+                            tempat.</p>
+                        <li>Double Size (120 x 200 cm)</li>
+                        <p class="text-justify mb-1">Ukuran double size memiliki ruang gerak yang lebih luas dari single
+                            bed. Cukup untuk 1 hingga 2 orang. Ukuran ini pas untuk pasangan yang memiliki space ruang
+                            terbatas.
+                        </p>
+                        <li>Queen Size (160 x 200 cm)</li>
+                        <p class="text-justify mb-1">Ukuran queen size merupakan pilihan populer untuk pasangan yang
+                            mempunyai space cukup luas. ukuran ini terbilang pas untuk dua orang, bahkan memungkinkan
+                            space untuk bergerak leluasa.</p>
+                        <li>King Size (180 x 200 cm)</li>
+                        <p class="text-justify mb-1">Ukuran king size ini biasanya cocok untuk menampilkan kesan elegan
+                            dan mewah di kamar tidur. Dengan ukuran yang luas ini, membuat leluasa tidur untuk 2 orang
+                            lebih nyenyak dan memiliki tidur yang berkualitas.</p>
+                        <li>Super King Size (200 x 200 cm)</li>
+                        <p class="text-justify mb-1">Ukuran paling besar adalah super king size yang memberikan ruang
+                            tidur sangat luas. Ukuran ini tentunya sangat ideal untuk kamar tidur utama yang memiliki
+                            luas paling besar diantara kamar tidur lain.</p>
+                    </ol>
+                    <h5>Belanja Ranjang Tidur Minimalis</h5>
+                    <p class="text-justify">Ada banyak desain ranjang yang bisa dipilih dan dibeli. Mulai dari model
+                        minimalism modern, klasik, hingga industrial. Sesuaikan preferensi masing-masing untuk
+                        mendapatkan dipan yang terbaik. Perhatikan juga material bahan yang digunakan. Ranjang kayu
+                        biasanya lebih banyak diminati karena desain dan ketahannya. Terlebih jika pemilihan jatuh pada
+                        ranjang jati yang selalu banyak diincar karena sudah teruji ketahanan dan serat kayunya yang
+                        estetik. Nikmati suasana nyaman, tidur ternyaman dengan kualitas premium dengan membeli produk
+                        di Ilena Furniture. Dapatkan berbagai penawaran terbaik saat berbelanja online melalui situs
+                        website ini.
+                    </p>
+                </div>
+            </div>
+            <div class=" d-flex justify-content-center mb-5">
+                <button class="btn btn-lonjong " onclick="openMeta(event)">Lihat selengkapnya</button>
+            </div>
+
+            <?php break;
 
             } }?>
         </div>
