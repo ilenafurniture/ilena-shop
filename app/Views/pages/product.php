@@ -6,10 +6,10 @@
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/product">Produk Kami</a></li>
                 <li class="breadcrumb-item"><a
-                        href="/product?koleksi=<?= $produk['kategori']; ?>"><?= ucfirst($produk['kategori']); ?></a>
+                        href="/product?koleksi=<?= $produk['kategori']; ?>"><?= $produk['kategori']; ?></a>
                 </li>
                 <li class="breadcrumb-item"><a
-                        href="/product?jenis=<?= $produk['subkategori']; ?>"><?= ucfirst($produk['subkategori']); ?></a>
+                        href="/product?jenis=<?= $produk['subkategori']; ?>"><?= $produk['subkategori']; ?></a>
                 </li>
                 </li>
             </ol>
