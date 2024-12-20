@@ -675,7 +675,239 @@ if (isset($_GET['ruang'])) {
                 <button class="btn btn-lonjong " onclick="openMeta(event)">Lihat selengkapnya</button>
             </div>
             <?php break;
-            case 'dresser-3-drawer dresser-4-drawer dresser-5-drawer dresser-6-drawer': ?>
+            case 'dresser-3-drawer dresser-4-drawer dresser-5-drawer dresser-6-drawer' : ?>
+            <hr class="my-5">
+            <div class="container">
+                <div class="my-3 container-meta">
+                    <div class="overlay-meta"></div>
+                    <h5>Kenapa Perlu Punya Drawer?</h5>
+                    <p class="text-justify">Pada dasarnya lemari drawer atau lemari laci merupakan salah satu furniture
+                        berdesain sederhana yang lebih mementingkan fungsionalnya. Meskipun kerap dijadikan sebag ai
+                        opsi kesekian, tapi yang perlu dipahami adalah jenis furniture ini punya banyak manfaat yang
+                        bisa membuat jadi lebih rapi dan terorganisir untuk mempermudah saat sedang mencari atau menaruh
+                        barang. Agar lebih jelasnya, berikut ini adalah alasan kenapa perlu mempertimbangkan untuk
+                        memiliki drawer dalam hunian:</p>
+                    <ol>
+                        <li>Tempat Praktis Menyimpan Barang</li>
+                        <p class="text-justify mb-1">Drawer didesain dengan model laci bertingkat untuk memudahkan dalam
+                            menyimpan barang sesuai dengan kebutuhan dan kategori. Di satu furniture ini, bisa digunakan
+                            untuk menyimpan barang-barang seperti aksesoris, pakaian, dokumen, dan lain sebagainya.
+                            Dengan begitu, tidak perlu lagi repot kesusahan mencari barang yang terselip karena sudah
+                            ada tempat khususnya sendiri.</p>
+                        <li>Hemat Ruang</li>
+                        <p class="text-justify mb-1">Dengan desainnya yang vertikal, furniture dresser akan lebih
+                            menghemat ruang. Sehingga cocok ditempatkan pada ruangan terbatas tanpa menghilangkan fungsi
+                            utamanya sebagai tempat penyimpanan dan juga tidak membuat ruangan terasa lebih sempit.</p>
+                        <li>Memaksimalkan Keindahan Ruang</li>
+                        <p class="text-justify mb-1">Ada banyak model lemari laci dengan berbagai pilihan warna dan
+                            bahan yang membuat tampilannya memiliki keunikan tersendiri masing-masing. Dengan begini,
+                            ada beragam opsi yang bisa dipilih sesuai dengan kebutuhan dan preferensi masing-masing
+                            untuk membeli lemari laci. Maka dari itu, ada baiknya jika memilih furniture berdasarkan
+                            kebutuhan dan tema ruangan agar selaras serta menambah estetika dalam ruang itu sendiri.</p>
+                        <li>Furniture Multifungsi</li>
+                        <p class="text-justify mb-1">salah satu keunggulan dari furniture ini adalah fleksibilitas yang
+                            membuatnya cocok ditempatkan pada berbagai ruangan mulai dari kamar tidur, ruang keluarga,
+                            dan lain sebagainya. Fungsinya pun beragam pula, mulai dari menyimpan pakaian, aksesoris,
+                            dokumen penting, mainan anak, dan masih banyak lagi. Tapi perlu diingat ya, akan lebih baik
+                            jika jenis penyimpanannya tertata dengan rapi dan terorganisir agar tidak menjadi sarang
+                            nyamuk atau serangga lain di dalamnya.</p>
+                        <li>Mudah Diakses</li>
+                        <p class="text-justify mb-1">Tak seperti lemari pada umumnya yang terkadang merepotkan saat
+                            dibuka karena jenis pintunya yang bisa bermasalah, tapi dengan drawer bisa lebih mudah.
+                            Cukup dengan menariknya, Anda bisa langsung mengakses dengan cepat dan kapan saja tanpa
+                            perlu banyak repot.</p>
+                    </ol>
+                    <h5>Temukan Berbagai Model Dresser Stylish</h5>
+                    <p class="text-justify">Bingung cari lemari laci dengan model elegan yang stylish untuk mengisi
+                        hunian? Sekarang tidak lagi karena ada Ilena Furniture yang memberikan sentuhan modern yang
+                        cocok untuk dipadukan dengan tema scandinavian, minimalis, hingga industrial. Dibuat dengan
+                        material premium pilihan yang dapat digunakan secara maksimal hingga waktu lama. Tidak sekedar
+                        menjadi tempat penyimpanan saja untuk membuat kesan rapi dan terorganisir, tetapi juga
+                        memaksimalkan keindahan interior ruang sehingga membuat nyaman setiap penghuni di dalamnya.
+                        Temukan produk dresser populer di tahun ini dan dapatkan harga terbaiknya dengan menjadi bagian
+                        dari member Kami!
+                    </p>
+                </div>
+            </div>
+            <div class=" d-flex justify-content-center mb-5">
+                <button class="btn btn-lonjong " onclick="openMeta(event)">Lihat selengkapnya</button>
+            </div>
+            <?php break;
+            case 'dresser-3-drawer' : ?>
+            <hr class="my-5">
+            <div class="container">
+                <div class="my-3 container-meta">
+                    <div class="overlay-meta"></div>
+                    <h5>Kenapa Perlu Punya Drawer?</h5>
+                    <p class="text-justify">Pada dasarnya lemari drawer atau lemari laci merupakan salah satu furniture
+                        berdesain sederhana yang lebih mementingkan fungsionalnya. Meskipun kerap dijadikan sebag ai
+                        opsi kesekian, tapi yang perlu dipahami adalah jenis furniture ini punya banyak manfaat yang
+                        bisa membuat jadi lebih rapi dan terorganisir untuk mempermudah saat sedang mencari atau menaruh
+                        barang. Agar lebih jelasnya, berikut ini adalah alasan kenapa perlu mempertimbangkan untuk
+                        memiliki drawer dalam hunian:</p>
+                    <ol>
+                        <li>Tempat Praktis Menyimpan Barang</li>
+                        <p class="text-justify mb-1">Drawer didesain dengan model laci bertingkat untuk memudahkan dalam
+                            menyimpan barang sesuai dengan kebutuhan dan kategori. Di satu furniture ini, bisa digunakan
+                            untuk menyimpan barang-barang seperti aksesoris, pakaian, dokumen, dan lain sebagainya.
+                            Dengan begitu, tidak perlu lagi repot kesusahan mencari barang yang terselip karena sudah
+                            ada tempat khususnya sendiri.</p>
+                        <li>Hemat Ruang</li>
+                        <p class="text-justify mb-1">Dengan desainnya yang vertikal, furniture dresser akan lebih
+                            menghemat ruang. Sehingga cocok ditempatkan pada ruangan terbatas tanpa menghilangkan fungsi
+                            utamanya sebagai tempat penyimpanan dan juga tidak membuat ruangan terasa lebih sempit.</p>
+                        <li>Memaksimalkan Keindahan Ruang</li>
+                        <p class="text-justify mb-1">Ada banyak model lemari laci dengan berbagai pilihan warna dan
+                            bahan yang membuat tampilannya memiliki keunikan tersendiri masing-masing. Dengan begini,
+                            ada beragam opsi yang bisa dipilih sesuai dengan kebutuhan dan preferensi masing-masing
+                            untuk membeli lemari laci. Maka dari itu, ada baiknya jika memilih furniture berdasarkan
+                            kebutuhan dan tema ruangan agar selaras serta menambah estetika dalam ruang itu sendiri.</p>
+                        <li>Furniture Multifungsi</li>
+                        <p class="text-justify mb-1">salah satu keunggulan dari furniture ini adalah fleksibilitas yang
+                            membuatnya cocok ditempatkan pada berbagai ruangan mulai dari kamar tidur, ruang keluarga,
+                            dan lain sebagainya. Fungsinya pun beragam pula, mulai dari menyimpan pakaian, aksesoris,
+                            dokumen penting, mainan anak, dan masih banyak lagi. Tapi perlu diingat ya, akan lebih baik
+                            jika jenis penyimpanannya tertata dengan rapi dan terorganisir agar tidak menjadi sarang
+                            nyamuk atau serangga lain di dalamnya.</p>
+                        <li>Mudah Diakses</li>
+                        <p class="text-justify mb-1">Tak seperti lemari pada umumnya yang terkadang merepotkan saat
+                            dibuka karena jenis pintunya yang bisa bermasalah, tapi dengan drawer bisa lebih mudah.
+                            Cukup dengan menariknya, Anda bisa langsung mengakses dengan cepat dan kapan saja tanpa
+                            perlu banyak repot.</p>
+                    </ol>
+                    <h5>Temukan Berbagai Model Dresser Stylish</h5>
+                    <p class="text-justify">Bingung cari lemari laci dengan model elegan yang stylish untuk mengisi
+                        hunian? Sekarang tidak lagi karena ada Ilena Furniture yang memberikan sentuhan modern yang
+                        cocok untuk dipadukan dengan tema scandinavian, minimalis, hingga industrial. Dibuat dengan
+                        material premium pilihan yang dapat digunakan secara maksimal hingga waktu lama. Tidak sekedar
+                        menjadi tempat penyimpanan saja untuk membuat kesan rapi dan terorganisir, tetapi juga
+                        memaksimalkan keindahan interior ruang sehingga membuat nyaman setiap penghuni di dalamnya.
+                        Temukan produk dresser populer di tahun ini dan dapatkan harga terbaiknya dengan menjadi bagian
+                        dari member Kami!
+                    </p>
+                </div>
+            </div>
+            <div class=" d-flex justify-content-center mb-5">
+                <button class="btn btn-lonjong " onclick="openMeta(event)">Lihat selengkapnya</button>
+            </div>
+            <?php break;
+            case 'dresser-4-drawer' : ?>
+            <hr class="my-5">
+            <div class="container">
+                <div class="my-3 container-meta">
+                    <div class="overlay-meta"></div>
+                    <h5>Kenapa Perlu Punya Drawer?</h5>
+                    <p class="text-justify">Pada dasarnya lemari drawer atau lemari laci merupakan salah satu furniture
+                        berdesain sederhana yang lebih mementingkan fungsionalnya. Meskipun kerap dijadikan sebag ai
+                        opsi kesekian, tapi yang perlu dipahami adalah jenis furniture ini punya banyak manfaat yang
+                        bisa membuat jadi lebih rapi dan terorganisir untuk mempermudah saat sedang mencari atau menaruh
+                        barang. Agar lebih jelasnya, berikut ini adalah alasan kenapa perlu mempertimbangkan untuk
+                        memiliki drawer dalam hunian:</p>
+                    <ol>
+                        <li>Tempat Praktis Menyimpan Barang</li>
+                        <p class="text-justify mb-1">Drawer didesain dengan model laci bertingkat untuk memudahkan dalam
+                            menyimpan barang sesuai dengan kebutuhan dan kategori. Di satu furniture ini, bisa digunakan
+                            untuk menyimpan barang-barang seperti aksesoris, pakaian, dokumen, dan lain sebagainya.
+                            Dengan begitu, tidak perlu lagi repot kesusahan mencari barang yang terselip karena sudah
+                            ada tempat khususnya sendiri.</p>
+                        <li>Hemat Ruang</li>
+                        <p class="text-justify mb-1">Dengan desainnya yang vertikal, furniture dresser akan lebih
+                            menghemat ruang. Sehingga cocok ditempatkan pada ruangan terbatas tanpa menghilangkan fungsi
+                            utamanya sebagai tempat penyimpanan dan juga tidak membuat ruangan terasa lebih sempit.</p>
+                        <li>Memaksimalkan Keindahan Ruang</li>
+                        <p class="text-justify mb-1">Ada banyak model lemari laci dengan berbagai pilihan warna dan
+                            bahan yang membuat tampilannya memiliki keunikan tersendiri masing-masing. Dengan begini,
+                            ada beragam opsi yang bisa dipilih sesuai dengan kebutuhan dan preferensi masing-masing
+                            untuk membeli lemari laci. Maka dari itu, ada baiknya jika memilih furniture berdasarkan
+                            kebutuhan dan tema ruangan agar selaras serta menambah estetika dalam ruang itu sendiri.</p>
+                        <li>Furniture Multifungsi</li>
+                        <p class="text-justify mb-1">salah satu keunggulan dari furniture ini adalah fleksibilitas yang
+                            membuatnya cocok ditempatkan pada berbagai ruangan mulai dari kamar tidur, ruang keluarga,
+                            dan lain sebagainya. Fungsinya pun beragam pula, mulai dari menyimpan pakaian, aksesoris,
+                            dokumen penting, mainan anak, dan masih banyak lagi. Tapi perlu diingat ya, akan lebih baik
+                            jika jenis penyimpanannya tertata dengan rapi dan terorganisir agar tidak menjadi sarang
+                            nyamuk atau serangga lain di dalamnya.</p>
+                        <li>Mudah Diakses</li>
+                        <p class="text-justify mb-1">Tak seperti lemari pada umumnya yang terkadang merepotkan saat
+                            dibuka karena jenis pintunya yang bisa bermasalah, tapi dengan drawer bisa lebih mudah.
+                            Cukup dengan menariknya, Anda bisa langsung mengakses dengan cepat dan kapan saja tanpa
+                            perlu banyak repot.</p>
+                    </ol>
+                    <h5>Temukan Berbagai Model Dresser Stylish</h5>
+                    <p class="text-justify">Bingung cari lemari laci dengan model elegan yang stylish untuk mengisi
+                        hunian? Sekarang tidak lagi karena ada Ilena Furniture yang memberikan sentuhan modern yang
+                        cocok untuk dipadukan dengan tema scandinavian, minimalis, hingga industrial. Dibuat dengan
+                        material premium pilihan yang dapat digunakan secara maksimal hingga waktu lama. Tidak sekedar
+                        menjadi tempat penyimpanan saja untuk membuat kesan rapi dan terorganisir, tetapi juga
+                        memaksimalkan keindahan interior ruang sehingga membuat nyaman setiap penghuni di dalamnya.
+                        Temukan produk dresser populer di tahun ini dan dapatkan harga terbaiknya dengan menjadi bagian
+                        dari member Kami!
+                    </p>
+                </div>
+            </div>
+            <div class=" d-flex justify-content-center mb-5">
+                <button class="btn btn-lonjong " onclick="openMeta(event)">Lihat selengkapnya</button>
+            </div>
+            <?php break;
+            case 'dresser-5-drawer' : ?>
+            <hr class="my-5">
+            <div class="container">
+                <div class="my-3 container-meta">
+                    <div class="overlay-meta"></div>
+                    <h5>Kenapa Perlu Punya Drawer?</h5>
+                    <p class="text-justify">Pada dasarnya lemari drawer atau lemari laci merupakan salah satu furniture
+                        berdesain sederhana yang lebih mementingkan fungsionalnya. Meskipun kerap dijadikan sebag ai
+                        opsi kesekian, tapi yang perlu dipahami adalah jenis furniture ini punya banyak manfaat yang
+                        bisa membuat jadi lebih rapi dan terorganisir untuk mempermudah saat sedang mencari atau menaruh
+                        barang. Agar lebih jelasnya, berikut ini adalah alasan kenapa perlu mempertimbangkan untuk
+                        memiliki drawer dalam hunian:</p>
+                    <ol>
+                        <li>Tempat Praktis Menyimpan Barang</li>
+                        <p class="text-justify mb-1">Drawer didesain dengan model laci bertingkat untuk memudahkan dalam
+                            menyimpan barang sesuai dengan kebutuhan dan kategori. Di satu furniture ini, bisa digunakan
+                            untuk menyimpan barang-barang seperti aksesoris, pakaian, dokumen, dan lain sebagainya.
+                            Dengan begitu, tidak perlu lagi repot kesusahan mencari barang yang terselip karena sudah
+                            ada tempat khususnya sendiri.</p>
+                        <li>Hemat Ruang</li>
+                        <p class="text-justify mb-1">Dengan desainnya yang vertikal, furniture dresser akan lebih
+                            menghemat ruang. Sehingga cocok ditempatkan pada ruangan terbatas tanpa menghilangkan fungsi
+                            utamanya sebagai tempat penyimpanan dan juga tidak membuat ruangan terasa lebih sempit.</p>
+                        <li>Memaksimalkan Keindahan Ruang</li>
+                        <p class="text-justify mb-1">Ada banyak model lemari laci dengan berbagai pilihan warna dan
+                            bahan yang membuat tampilannya memiliki keunikan tersendiri masing-masing. Dengan begini,
+                            ada beragam opsi yang bisa dipilih sesuai dengan kebutuhan dan preferensi masing-masing
+                            untuk membeli lemari laci. Maka dari itu, ada baiknya jika memilih furniture berdasarkan
+                            kebutuhan dan tema ruangan agar selaras serta menambah estetika dalam ruang itu sendiri.</p>
+                        <li>Furniture Multifungsi</li>
+                        <p class="text-justify mb-1">salah satu keunggulan dari furniture ini adalah fleksibilitas yang
+                            membuatnya cocok ditempatkan pada berbagai ruangan mulai dari kamar tidur, ruang keluarga,
+                            dan lain sebagainya. Fungsinya pun beragam pula, mulai dari menyimpan pakaian, aksesoris,
+                            dokumen penting, mainan anak, dan masih banyak lagi. Tapi perlu diingat ya, akan lebih baik
+                            jika jenis penyimpanannya tertata dengan rapi dan terorganisir agar tidak menjadi sarang
+                            nyamuk atau serangga lain di dalamnya.</p>
+                        <li>Mudah Diakses</li>
+                        <p class="text-justify mb-1">Tak seperti lemari pada umumnya yang terkadang merepotkan saat
+                            dibuka karena jenis pintunya yang bisa bermasalah, tapi dengan drawer bisa lebih mudah.
+                            Cukup dengan menariknya, Anda bisa langsung mengakses dengan cepat dan kapan saja tanpa
+                            perlu banyak repot.</p>
+                    </ol>
+                    <h5>Temukan Berbagai Model Dresser Stylish</h5>
+                    <p class="text-justify">Bingung cari lemari laci dengan model elegan yang stylish untuk mengisi
+                        hunian? Sekarang tidak lagi karena ada Ilena Furniture yang memberikan sentuhan modern yang
+                        cocok untuk dipadukan dengan tema scandinavian, minimalis, hingga industrial. Dibuat dengan
+                        material premium pilihan yang dapat digunakan secara maksimal hingga waktu lama. Tidak sekedar
+                        menjadi tempat penyimpanan saja untuk membuat kesan rapi dan terorganisir, tetapi juga
+                        memaksimalkan keindahan interior ruang sehingga membuat nyaman setiap penghuni di dalamnya.
+                        Temukan produk dresser populer di tahun ini dan dapatkan harga terbaiknya dengan menjadi bagian
+                        dari member Kami!
+                    </p>
+                </div>
+            </div>
+            <div class=" d-flex justify-content-center mb-5">
+                <button class="btn btn-lonjong " onclick="openMeta(event)">Lihat selengkapnya</button>
+            </div>
+            <?php break;
+            case 'dresser-6-drawer' : ?>
             <hr class="my-5">
             <div class="container">
                 <div class="my-3 container-meta">
@@ -804,7 +1036,222 @@ if (isset($_GET['ruang'])) {
             <div class=" d-flex justify-content-center mb-5">
                 <button class="btn btn-lonjong " onclick="openMeta(event)">Lihat selengkapnya</button>
             </div>
-
+            <?php break;
+            case 'king-bed': ?>
+            <hr class="my-5">
+            <div class="container">
+                <div class="my-3 container-meta">
+                    <div class="overlay-meta"></div>
+                    <h5>Manfaat Tidur Pakai Divan</h5>
+                    <p class="text-justify">Dipan adalah sebuah rangka tempat tidur yang difungsikan untuk menopang
+                        kasur. penambahan divan sebagai penopan kasur memiliki manfaat yaitu sebagai berikut ini::</p>
+                    <ol>
+                        <li>Memperlancar Sirkulasi udara</li>
+                        <p class="text-justify mb-1">Bagian bawah dan sekitar kasur akan memperoleh sirkulasi udara yang
+                            baik. Hal ini dimaksudkan untuk menghambat pertumbuhan jamur dan bakteri pada kasur yang
+                            disebabkan pada lembabnya suhu ruang. Selain itu juga agar kasu terhindar dari debu yang
+                            menumpuk jika langsung diletakkan di lantai tanpa adanya rangka ranjang.</p>
+                        <li>Lebih Baik bagi Kesehatan</li>
+                        <p class="text-justify mb-1">Sirkulasi udara yang baik memungkinkan untuk mengurangi tumbuhnya
+                            jamur dan kutu di kasur. Hal ini pastinya berdampak baik pada kesehatan. Apalagi jika sudah
+                            diketahui memiliki alergi atau permasalahan pada pernapasan. Selain itu, tidur dengan
+                            kondisi dipan yang dingin juga bisa mencegah penyakit gangguan paru-paru dan hipotermia.
+                        </p>
+                        <li>Sebagai Tempat Penyimpanan Tambahan</li>
+                        <p class="text-justify mb-1">Rangka ini juga bisa digunakan sebagai tempat penyimpanan tambahan.
+                            Berikan beberapa laci yang bisa digunakan untuk menyimpan beberapa barang dari ukuran besar
+                            hingga kecil di bawah tempat tidur dengan lebih rapi</p>
+                        <li>Memaksimalkan Estetika Kamar Tidur</li>
+                        <p class="text-justify mb-1">Penggunaan divan juga bisa menjadi opsi tepat untuk menambah
+                            estetika desain dalam kamar tidur. Terlebih jika ranjang ini memiliki model yang cantik dan
+                            selaras dengan tema dalam kamar tidur.</p>
+                    </ol>
+                    <h5>Rekomendasi Ukuran Bed</h5>
+                    <p class="text-justify">Terdapat beberapa macam istilah umum untuk menyebut ukuran bed. Agar tidak
+                        salah beli, berikut ini beberapa ukurannya beserta istilahnya:
+                    </p>
+                    <ol>
+                        <li>Single Size (90 x 200 cm)</li>
+                        <p class="text-justify mb-1">Ukuran ini biasanya cocok digunakan untuk kamar tidur anak atau
+                            kamar tidur tamu. Size ini cocok untuk satu orang agar nyaman bergerak tanpa memakan banyak
+                            tempat.</p>
+                        <li>Double Size (120 x 200 cm)</li>
+                        <p class="text-justify mb-1">Ukuran double size memiliki ruang gerak yang lebih luas dari single
+                            bed. Cukup untuk 1 hingga 2 orang. Ukuran ini pas untuk pasangan yang memiliki space ruang
+                            terbatas.
+                        </p>
+                        <li>Queen Size (160 x 200 cm)</li>
+                        <p class="text-justify mb-1">Ukuran queen size merupakan pilihan populer untuk pasangan yang
+                            mempunyai space cukup luas. ukuran ini terbilang pas untuk dua orang, bahkan memungkinkan
+                            space untuk bergerak leluasa.</p>
+                        <li>King Size (180 x 200 cm)</li>
+                        <p class="text-justify mb-1">Ukuran king size ini biasanya cocok untuk menampilkan kesan elegan
+                            dan mewah di kamar tidur. Dengan ukuran yang luas ini, membuat leluasa tidur untuk 2 orang
+                            lebih nyenyak dan memiliki tidur yang berkualitas.</p>
+                        <li>Super King Size (200 x 200 cm)</li>
+                        <p class="text-justify mb-1">Ukuran paling besar adalah super king size yang memberikan ruang
+                            tidur sangat luas. Ukuran ini tentunya sangat ideal untuk kamar tidur utama yang memiliki
+                            luas paling besar diantara kamar tidur lain.</p>
+                    </ol>
+                    <h5>Belanja Ranjang Tidur Minimalis</h5>
+                    <p class="text-justify">Ada banyak desain ranjang yang bisa dipilih dan dibeli. Mulai dari model
+                        minimalism modern, klasik, hingga industrial. Sesuaikan preferensi masing-masing untuk
+                        mendapatkan dipan yang terbaik. Perhatikan juga material bahan yang digunakan. Ranjang kayu
+                        biasanya lebih banyak diminati karena desain dan ketahannya. Terlebih jika pemilihan jatuh pada
+                        ranjang jati yang selalu banyak diincar karena sudah teruji ketahanan dan serat kayunya yang
+                        estetik. Nikmati suasana nyaman, tidur ternyaman dengan kualitas premium dengan membeli produk
+                        di Ilena Furniture. Dapatkan berbagai penawaran terbaik saat berbelanja online melalui situs
+                        website ini.
+                    </p>
+                </div>
+            </div>
+            <div class=" d-flex justify-content-center mb-5">
+                <button class="btn btn-lonjong " onclick="openMeta(event)">Lihat selengkapnya</button>
+            </div>
+            <?php break;
+                case 'queen-bed': ?>
+            <hr class="my-5">
+            <div class="container">
+                <div class="my-3 container-meta">
+                    <div class="overlay-meta"></div>
+                    <h5>Manfaat Tidur Pakai Divan</h5>
+                    <p class="text-justify">Dipan adalah sebuah rangka tempat tidur yang difungsikan untuk menopang
+                        kasur. penambahan divan sebagai penopan kasur memiliki manfaat yaitu sebagai berikut ini::</p>
+                    <ol>
+                        <li>Memperlancar Sirkulasi udara</li>
+                        <p class="text-justify mb-1">Bagian bawah dan sekitar kasur akan memperoleh sirkulasi udara yang
+                            baik. Hal ini dimaksudkan untuk menghambat pertumbuhan jamur dan bakteri pada kasur yang
+                            disebabkan pada lembabnya suhu ruang. Selain itu juga agar kasu terhindar dari debu yang
+                            menumpuk jika langsung diletakkan di lantai tanpa adanya rangka ranjang.</p>
+                        <li>Lebih Baik bagi Kesehatan</li>
+                        <p class="text-justify mb-1">Sirkulasi udara yang baik memungkinkan untuk mengurangi tumbuhnya
+                            jamur dan kutu di kasur. Hal ini pastinya berdampak baik pada kesehatan. Apalagi jika sudah
+                            diketahui memiliki alergi atau permasalahan pada pernapasan. Selain itu, tidur dengan
+                            kondisi dipan yang dingin juga bisa mencegah penyakit gangguan paru-paru dan hipotermia.
+                        </p>
+                        <li>Sebagai Tempat Penyimpanan Tambahan</li>
+                        <p class="text-justify mb-1">Rangka ini juga bisa digunakan sebagai tempat penyimpanan tambahan.
+                            Berikan beberapa laci yang bisa digunakan untuk menyimpan beberapa barang dari ukuran besar
+                            hingga kecil di bawah tempat tidur dengan lebih rapi</p>
+                        <li>Memaksimalkan Estetika Kamar Tidur</li>
+                        <p class="text-justify mb-1">Penggunaan divan juga bisa menjadi opsi tepat untuk menambah
+                            estetika desain dalam kamar tidur. Terlebih jika ranjang ini memiliki model yang cantik dan
+                            selaras dengan tema dalam kamar tidur.</p>
+                    </ol>
+                    <h5>Rekomendasi Ukuran Bed</h5>
+                    <p class="text-justify">Terdapat beberapa macam istilah umum untuk menyebut ukuran bed. Agar tidak
+                        salah beli, berikut ini beberapa ukurannya beserta istilahnya:
+                    </p>
+                    <ol>
+                        <li>Single Size (90 x 200 cm)</li>
+                        <p class="text-justify mb-1">Ukuran ini biasanya cocok digunakan untuk kamar tidur anak atau
+                            kamar tidur tamu. Size ini cocok untuk satu orang agar nyaman bergerak tanpa memakan banyak
+                            tempat.</p>
+                        <li>Double Size (120 x 200 cm)</li>
+                        <p class="text-justify mb-1">Ukuran double size memiliki ruang gerak yang lebih luas dari single
+                            bed. Cukup untuk 1 hingga 2 orang. Ukuran ini pas untuk pasangan yang memiliki space ruang
+                            terbatas.
+                        </p>
+                        <li>Queen Size (160 x 200 cm)</li>
+                        <p class="text-justify mb-1">Ukuran queen size merupakan pilihan populer untuk pasangan yang
+                            mempunyai space cukup luas. ukuran ini terbilang pas untuk dua orang, bahkan memungkinkan
+                            space untuk bergerak leluasa.</p>
+                        <li>King Size (180 x 200 cm)</li>
+                        <p class="text-justify mb-1">Ukuran king size ini biasanya cocok untuk menampilkan kesan elegan
+                            dan mewah di kamar tidur. Dengan ukuran yang luas ini, membuat leluasa tidur untuk 2 orang
+                            lebih nyenyak dan memiliki tidur yang berkualitas.</p>
+                        <li>Super King Size (200 x 200 cm)</li>
+                        <p class="text-justify mb-1">Ukuran paling besar adalah super king size yang memberikan ruang
+                            tidur sangat luas. Ukuran ini tentunya sangat ideal untuk kamar tidur utama yang memiliki
+                            luas paling besar diantara kamar tidur lain.</p>
+                    </ol>
+                    <h5>Belanja Ranjang Tidur Minimalis</h5>
+                    <p class="text-justify">Ada banyak desain ranjang yang bisa dipilih dan dibeli. Mulai dari model
+                        minimalism modern, klasik, hingga industrial. Sesuaikan preferensi masing-masing untuk
+                        mendapatkan dipan yang terbaik. Perhatikan juga material bahan yang digunakan. Ranjang kayu
+                        biasanya lebih banyak diminati karena desain dan ketahannya. Terlebih jika pemilihan jatuh pada
+                        ranjang jati yang selalu banyak diincar karena sudah teruji ketahanan dan serat kayunya yang
+                        estetik. Nikmati suasana nyaman, tidur ternyaman dengan kualitas premium dengan membeli produk
+                        di Ilena Furniture. Dapatkan berbagai penawaran terbaik saat berbelanja online melalui situs
+                        website ini.
+                    </p>
+                </div>
+            </div>
+            <div class=" d-flex justify-content-center mb-5">
+                <button class="btn btn-lonjong " onclick="openMeta(event)">Lihat selengkapnya</button>
+            </div>
+            <?php break;
+                    case 'single-bed': ?>
+            <hr class="my-5">
+            <div class="container">
+                <div class="my-3 container-meta">
+                    <div class="overlay-meta"></div>
+                    <h5>Manfaat Tidur Pakai Divan</h5>
+                    <p class="text-justify">Dipan adalah sebuah rangka tempat tidur yang difungsikan untuk menopang
+                        kasur. penambahan divan sebagai penopan kasur memiliki manfaat yaitu sebagai berikut ini::</p>
+                    <ol>
+                        <li>Memperlancar Sirkulasi udara</li>
+                        <p class="text-justify mb-1">Bagian bawah dan sekitar kasur akan memperoleh sirkulasi udara yang
+                            baik. Hal ini dimaksudkan untuk menghambat pertumbuhan jamur dan bakteri pada kasur yang
+                            disebabkan pada lembabnya suhu ruang. Selain itu juga agar kasu terhindar dari debu yang
+                            menumpuk jika langsung diletakkan di lantai tanpa adanya rangka ranjang.</p>
+                        <li>Lebih Baik bagi Kesehatan</li>
+                        <p class="text-justify mb-1">Sirkulasi udara yang baik memungkinkan untuk mengurangi tumbuhnya
+                            jamur dan kutu di kasur. Hal ini pastinya berdampak baik pada kesehatan. Apalagi jika sudah
+                            diketahui memiliki alergi atau permasalahan pada pernapasan. Selain itu, tidur dengan
+                            kondisi dipan yang dingin juga bisa mencegah penyakit gangguan paru-paru dan hipotermia.
+                        </p>
+                        <li>Sebagai Tempat Penyimpanan Tambahan</li>
+                        <p class="text-justify mb-1">Rangka ini juga bisa digunakan sebagai tempat penyimpanan tambahan.
+                            Berikan beberapa laci yang bisa digunakan untuk menyimpan beberapa barang dari ukuran besar
+                            hingga kecil di bawah tempat tidur dengan lebih rapi</p>
+                        <li>Memaksimalkan Estetika Kamar Tidur</li>
+                        <p class="text-justify mb-1">Penggunaan divan juga bisa menjadi opsi tepat untuk menambah
+                            estetika desain dalam kamar tidur. Terlebih jika ranjang ini memiliki model yang cantik dan
+                            selaras dengan tema dalam kamar tidur.</p>
+                    </ol>
+                    <h5>Rekomendasi Ukuran Bed</h5>
+                    <p class="text-justify">Terdapat beberapa macam istilah umum untuk menyebut ukuran bed. Agar tidak
+                        salah beli, berikut ini beberapa ukurannya beserta istilahnya:
+                    </p>
+                    <ol>
+                        <li>Single Size (90 x 200 cm)</li>
+                        <p class="text-justify mb-1">Ukuran ini biasanya cocok digunakan untuk kamar tidur anak atau
+                            kamar tidur tamu. Size ini cocok untuk satu orang agar nyaman bergerak tanpa memakan banyak
+                            tempat.</p>
+                        <li>Double Size (120 x 200 cm)</li>
+                        <p class="text-justify mb-1">Ukuran double size memiliki ruang gerak yang lebih luas dari single
+                            bed. Cukup untuk 1 hingga 2 orang. Ukuran ini pas untuk pasangan yang memiliki space ruang
+                            terbatas.
+                        </p>
+                        <li>Queen Size (160 x 200 cm)</li>
+                        <p class="text-justify mb-1">Ukuran queen size merupakan pilihan populer untuk pasangan yang
+                            mempunyai space cukup luas. ukuran ini terbilang pas untuk dua orang, bahkan memungkinkan
+                            space untuk bergerak leluasa.</p>
+                        <li>King Size (180 x 200 cm)</li>
+                        <p class="text-justify mb-1">Ukuran king size ini biasanya cocok untuk menampilkan kesan elegan
+                            dan mewah di kamar tidur. Dengan ukuran yang luas ini, membuat leluasa tidur untuk 2 orang
+                            lebih nyenyak dan memiliki tidur yang berkualitas.</p>
+                        <li>Super King Size (200 x 200 cm)</li>
+                        <p class="text-justify mb-1">Ukuran paling besar adalah super king size yang memberikan ruang
+                            tidur sangat luas. Ukuran ini tentunya sangat ideal untuk kamar tidur utama yang memiliki
+                            luas paling besar diantara kamar tidur lain.</p>
+                    </ol>
+                    <h5>Belanja Ranjang Tidur Minimalis</h5>
+                    <p class="text-justify">Ada banyak desain ranjang yang bisa dipilih dan dibeli. Mulai dari model
+                        minimalism modern, klasik, hingga industrial. Sesuaikan preferensi masing-masing untuk
+                        mendapatkan dipan yang terbaik. Perhatikan juga material bahan yang digunakan. Ranjang kayu
+                        biasanya lebih banyak diminati karena desain dan ketahannya. Terlebih jika pemilihan jatuh pada
+                        ranjang jati yang selalu banyak diincar karena sudah teruji ketahanan dan serat kayunya yang
+                        estetik. Nikmati suasana nyaman, tidur ternyaman dengan kualitas premium dengan membeli produk
+                        di Ilena Furniture. Dapatkan berbagai penawaran terbaik saat berbelanja online melalui situs
+                        website ini.
+                    </p>
+                </div>
+            </div>
+            <div class=" d-flex justify-content-center mb-5">
+                <button class="btn btn-lonjong " onclick="openMeta(event)">Lihat selengkapnya</button>
+            </div>
             <?php break;
 
             } }?>
