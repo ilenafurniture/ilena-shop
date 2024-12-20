@@ -733,7 +733,7 @@ if (isset($_GET['ruang'])) {
                 <button class="btn btn-lonjong " onclick="openMeta(event)">Lihat selengkapnya</button>
             </div>
             <?php break;
-            case 'king-bed+queen-bed+single-bed': ?>
+            case 'king-bed queen-bed single-bed': ?>
             <hr class="my-5">
             <div class="container">
                 <div class="my-3 container-meta">
