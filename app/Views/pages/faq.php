@@ -26,7 +26,8 @@
                             style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>,
                         lalu pilih produk yang Anda
                         inginkan. Pada page ini akan ditampilkan jumlah produk yang masih tersedia di bagian
-                        bawah deskripsi produk. Anda juga dapat menghubungi kami <a href="https://wa.me/+628112938158"
+                        bawah deskripsi produk. Anda juga dapat menghubungi kami <a
+                            href="https://api.whatsapp.com/send/?phone=%2B628112938158&text=Hallo%20CS%20Ilena,%0ASaya%20tertarik%20dengan%20produk....%0AApakah%20masih%20tersedia%20stoknya?%0ATerima%20kasih&type=phone_number&app_absent=0"
                             target="_blank" style="text-decoration:none; color:red; font-size:13px;">Customer Service
                             Kami</a>
                         untuk
