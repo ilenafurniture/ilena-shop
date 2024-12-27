@@ -39,8 +39,9 @@
                     <p>
                         Terkait informasi promo dan diskon, Anda dapat kunjungi website kami di <a href="/"
                             target="_blank" style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>
-                        atau hubungi <a href="https://wa.me/+628112938158" target="_blank"
-                            style="text-decoration:none; color:red; font-size:13px;">Customer Service
+                        atau hubungi <a
+                            href="https://api.whatsapp.com/send/?phone=%2B628112938158&text=Hallo%20CS%20Ilena,%0ASaya%20tertarik%20dengan%20produk....%0AApakah%20masih%20tersedia%20stoknya?%0ATerima%20kasih&type=phone_number&app_absent=0"
+                            target="_blank" style="text-decoration:none; color:red; font-size:13px;">Customer Service
                             Kami</a>.
                     </p>
                 </div>
@@ -100,8 +101,9 @@
                     <p class="mb-0">Informasi promo dan diskon yang sedang berlangsung dapat Anda peroleh
                         secara terbatas dengan mengunjungi website <a href="/"
                             style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>
-                        atau hubungi <a href="https://wa.me/+628112938158" target="_blank"
-                            style="text-decoration:none; color:red; font-size:13px;">Customer Service
+                        atau hubungi <a
+                            href="https://api.whatsapp.com/send/?phone=%2B628112938158&text=Hallo%20CS%20Ilena,%0ASaya%20tertarik%20dengan%20produk....%0AApakah%20masih%20tersedia%20stoknya?%0ATerima%20kasih&type=phone_number&app_absent=0"
+                            target="_blank" style="text-decoration:none; color:red; font-size:13px;">Customer Service
                             Kami</a>.</p>
                 </div>
                 <p class="sub-sub-faq">Apakah katalog Ilena memiliki fitur katalog di aplikasi WhatsApp?</p>
@@ -416,7 +418,8 @@
                     <p>Ya, saat sudah membayar tagihan produk pesanan, Anda dapat melihat resi
                         yang ada di page pemesanan. Jika ingin melakukan tracking, Anda cukup dengan
                         menyalin nomor resi tersebut ke website mitra logistik Kami atau dengan cara
-                        menghubungi <a href="https://wa.me/+628112938158"
+                        menghubungi <a
+                            href="https://api.whatsapp.com/send/?phone=%2B628112938158&text=Hallo%20CS%20Ilena,%0ASaya%20tertarik%20dengan%20produk....%0AApakah%20masih%20tersedia%20stoknya?%0ATerima%20kasih&type=phone_number&app_absent=0"
                             style="text-decoration:none; color:red; font-size:13px;">Customer Service
                             Kami</a> yang akan membantu tracking produk tersebut.
                     </p>
@@ -437,7 +440,8 @@
                 <div class="isinya">
                     <p>Tentu. Untuk pengiriman produk sudah dalam bentuk rakitan. Namun tidak
                         menutup kemungkinan terdapat beberapa produk yang masih memerlukan proses perakitan.
-                        Untuk informasi lebih lanjut, Anda dapat menghubungi <a href="https://wa.me/+628112938158"
+                        Untuk informasi lebih lanjut, Anda dapat menghubungi <a
+                            href="https://api.whatsapp.com/send/?phone=%2B628112938158&text=Hallo%20CS%20Ilena,%0ASaya%20tertarik%20dengan%20produk....%0AApakah%20masih%20tersedia%20stoknya?%0ATerima%20kasih&type=phone_number&app_absent=0"
                             style="text-decoration:none; color:red; font-size:13px;">Customer Service
                             Kami.</a>
                     </p>
@@ -460,7 +464,8 @@
                 </p>
                 <div class="isinya">
                     <p>Apabila produk belum diterima setelah melewati batas waktu pengiriman
-                        Anda dapat menghubungi <a href="https://wa.me/+628112938158"
+                        Anda dapat menghubungi <a
+                            href="https://api.whatsapp.com/send/?phone=%2B628112938158&text=Hallo%20CS%20Ilena,%0ASaya%20tertarik%20dengan%20produk....%0AApakah%20masih%20tersedia%20stoknya?%0ATerima%20kasih&type=phone_number&app_absent=0"
                             style="text-decoration:none; color:red; font-size:13px;">Customer Service
                             Kami</a> untuk informasi lebih lanjut.
                     </p>
@@ -486,7 +491,8 @@
                 </div>
                 <p class="sub-sub-faq">Bagaimana jika saya ingin membatalkan transaksi yang telah dilakukan?</p>
                 <div class="isinya">
-                    <p>Silakan dapat menghubungi <a href="https://wa.me/+628112938158"
+                    <p>Silakan dapat menghubungi <a
+                            href="https://api.whatsapp.com/send/?phone=%2B628112938158&text=Hallo%20CS%20Ilena,%0ASaya%20tertarik%20dengan%20produk....%0AApakah%20masih%20tersedia%20stoknya?%0ATerima%20kasih&type=phone_number&app_absent=0"
                             style="text-decoration:none; color:red; font-size:13px;">Customer Service
                             Kami</a> untuk informasi lebih
                         lanjut.
@@ -530,7 +536,8 @@
                 </div>
                 <p class="sub-sub-faq">Apa syarat melakukan penukaran unit yang cacat?</p>
                 <div class="isinya">
-                    <p>Anda dapat menghubungi <a href="https://wa.me/+628112938158"
+                    <p>Anda dapat menghubungi <a
+                            href="https://api.whatsapp.com/send/?phone=%2B628112938158&text=Hallo%20CS%20Ilena,%0ASaya%20tertarik%20dengan%20produk....%0AApakah%20masih%20tersedia%20stoknya?%0ATerima%20kasih&type=phone_number&app_absent=0"
                             style="text-decoration:none; color:red; font-size:13px;">Customer Service
                             Kami</a>
                         maksimal 1x24 jam sejak barang
