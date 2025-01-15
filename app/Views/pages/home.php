@@ -1,23 +1,25 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <?php if ($msg_active) { ?>
-    <div id="modal-voucher" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
-        class="d-flex justify-content-center align-items-center">
-        <div style="border-radius: 10px; overflow: hidden; background-color: white; width: 80%; max-width: 500px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);"
-            class="p-5">
-            <h1 class="teks-sedang mb-3">Klaim voucher diskon 5% Anda sekarang juga</h1>
-            <p class="text-secondary">*S&K diskon ini hanya berlaku 1 bulan sejak menjadi member kami</p>
-            <a href="/product" class="btn-default w-100 text-center mb-2">Beli Produk</a>
-            <button class="btn-teks-aja mx-auto" onclick="closeModalVoucher()">Nanti</button>
-        </div>
+<div id="modal-voucher" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
+    class="d-flex justify-content-center align-items-center">
+    <div style="border-radius: 10px; overflow: hidden; background-color: white; width: 80%; max-width: 500px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);"
+        class="p-5">
+        <h1 class="teks-sedang mb-3">Klaim voucher diskon 5% Anda sekarang juga</h1>
+        <p class="text-secondary">*S&K diskon ini hanya berlaku 1 bulan sejak menjadi member kami</p>
+        <a href="/product" class="btn-default w-100 text-center mb-2">Beli Produk</a>
+        <button class="btn-teks-aja mx-auto" onclick="closeModalVoucher()">Nanti</button>
     </div>
-    <script>
-        function closeModalVoucher() {
-            document.getElementById('modal-voucher').classList.add('d-none')
-            document.getElementById('modal-voucher').classList.remove('d-flex')
-        }
-    </script>
+</div>
+<script>
+function closeModalVoucher() {
+    document.getElementById('modal-voucher').classList.add('d-none')
+    document.getElementById('modal-voucher').classList.remove('d-flex')
+}
+</script>
 <?php } ?>
+
+
 
 <div id="login-modal" class="d-none">
     <div style="position: fixed; background-color: rgba(0, 0, 0, 0.5); top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
@@ -51,42 +53,189 @@
 </div>
 
 <?php if (!session()->get('isLogin')) { ?>
-    <script>
-        const loginModalElm = document.getElementById('login-modal')
-        let opened = false;
-        document.body.onscroll = (e) => {
-            if (!window.sessionStorage.getItem('close-login-modal')) {
-                const scrollingElm = e.target.scrollingElement;
-                const hasil = Math.round(
-                    (scrollingElm.scrollTop /
-                        (scrollingElm.scrollHeight -
-                            scrollingElm.clientHeight)) *
-                    100
-                );
-                if (hasil > 50 && !opened) {
-                    loginModalElm.classList.remove("d-none")
-                    opened = true
-                }
-            }
-        };
-
-        function closeLoginModel() {
-            loginModalElm.classList.add("d-none")
-            window.sessionStorage.setItem('close-login-modal', true)
-            opened = false
+<script>
+const loginModalElm = document.getElementById('login-modal')
+let opened = false;
+document.body.onscroll = (e) => {
+    if (!window.sessionStorage.getItem('close-login-modal')) {
+        const scrollingElm = e.target.scrollingElement;
+        const hasil = Math.round(
+            (scrollingElm.scrollTop /
+                (scrollingElm.scrollHeight -
+                    scrollingElm.clientHeight)) *
+            100
+        );
+        if (hasil > 50 && !opened) {
+            loginModalElm.classList.remove("d-none")
+            opened = true
         }
-    </script>
+    }
+};
+
+function closeLoginModel() {
+    loginModalElm.classList.add("d-none")
+    window.sessionStorage.setItem('close-login-modal', true)
+    opened = false
+}
+</script>
 <?php } ?>
 
+
+
+
 <!--Tampilan Home Baru -->
+<!-- Tampilan SLide Promo -->
+<style>
+.slider {
+    overflow: hidden;
+    width: 100%;
+    height: 400px;
+    position: relative;
+}
+
+.slides {
+    height: 100%;
+}
+
+
+.slider a {
+    height: 100%;
+    width: 100vw;
+    display: block;
+    transition: 0.3s;
+    position: absolute;
+}
+
+.slider a.kiri {
+    transform: translateX(-100vw);
+    transition: 0.3s;
+}
+
+.slider a.active {
+    transform: translateX(0vw);
+    transition: 0.3s;
+}
+
+.slider a.kanan {
+    transform: translateX(100vw);
+    transition: 0.3s;
+}
+
+.slides a img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+}
+
+.dot {
+    width: 15px;
+    height: 15px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border: 1px solid black;
+}
+
+.dot.active {
+    background-color: black;
+}
+
+/* @media (max-width: 768px) {
+    .slider {
+        height: auto;
+    }
+} */
+</style>
+<div class="show-flex-ke-hide">
+    <div class="slider">
+        <div class="slides">
+            <a href="#" class="active"><img src="<?= base_url('img/benner/benner1.png') ?>" alt="Slide 1"></a>
+            <a href="#" class="kanan"><img src="<?= base_url('img/benner/benner1.png') ?>" alt="Slide 2"></a>
+            <a href="#" class="kanan"><img src="<?= base_url('img/benner/benner1.png') ?>" alt="Slide 3"></a>
+        </div>
+        <div class="dots">
+            <div class="dot active" onclick="currentSlide(0)"></div>
+            <div class="dot" onclick="currentSlide(1)"></div>
+            <div class="dot" onclick="currentSlide(2)"></div>
+        </div>
+    </div>
+</div>
+<script>
+let slideIndex = 0;
+const slides = document.querySelectorAll('.slides a');
+const dots = document.querySelectorAll('.dot');
+
+function showSlide(index) {
+    const totalSlides = slides.length;
+    // if (index < 0) slideIndex = totalSlides - 1;
+    if (index >= totalSlides) {
+        slideIndex = 0;
+        slides.forEach((slide, i) => {
+            if (i === 0) {
+                slide.classList.add('active')
+                slide.classList.remove('kiri')
+            } else {
+                slide.classList.remove('active')
+                slide.classList.remove('kiri')
+                slide.classList.add('kanan')
+            }
+        });
+    } else {
+        slides.forEach((slide, i) => {
+            if (i < slideIndex) {
+                slide.classList.add('kiri');
+                slide.classList.remove('active');
+                slide.classList.remove('kanan');
+            } else if (i === slideIndex) {
+                slide.classList.add('active');
+                slide.classList.remove('kanan');
+                slide.classList.remove('kiri');
+            } else {
+                slide.classList.remove('active');
+                slide.classList.add('kanan');
+                slide.classList.remove('kiri');
+            }
+        });
+    }
+
+    dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === slideIndex);
+    });
+}
+
+function currentSlide(index) {
+    slideIndex = index;
+    showSlide(slideIndex);
+}
+
+// Auto slide 
+setInterval(() => {
+    slideIndex++;
+    showSlide(slideIndex);
+}, 5000);
+</script>
+
+<!-- End Tampilan Side Promo -->
 <!-- bagian windows -->
 <div class="show-flex-ke-hide p-5"
     style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1-3 comp.png'); background-size: cover; width:100%; height:80svh;">
     <div>
         <h1 class="teks-besar mb-2">Modern & Stylish<br>Furniture</h1>
-        <p class="teks-sedang py-2 px-3" style="color: white; background-color: black">Be Yourself With The Best Choice
+        <p class="teks-sedang py-1 px-2" style="color: white; background-color: black; width:180px; font-size:30px;">
+            True To You
         </p>
-        <div style="width:200px; height:20px; background-color:white;"></div>
+        <div style="width:150px; height:20px; background-color:white;"></div>
     </div>
 </div>
 <!-- bagian HP -->
@@ -94,27 +243,89 @@
     style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1-3 comp.png'); background-size: cover; width:100%; height:60svh;">
     <div>
         <h1 class="teks-besar mt-5" style="font-size:34px;">Modern & Stylish<br>Furniture</h1>
-        <p class="teks-sedang" style="color: white; background-color: black; font-size:14px; width:200px;">Be Yourself
-            With The Best
-            Choice
+        <p class="teks-sedang px-1" style="color: white; background-color: black; font-size:14px; width:80px;">True To
+            You
         </p>
-        <div style="width:100px; height:10px; background-color:white;"></div>
+        <div style="width:60px; height:10px; background-color:white;"></div>
     </div>
 </div>
 
 <!-- Bagian Windows -->
+<style>
+.kontenLN {
+    position: relative;
+    flex: 2;
+    background: url('./img/foto/0 comp.png');
+    background-size: cover;
+    background-position: center;
+    corsor: pointer;
+    transition-delay: 0.4s;
+}
+
+.overlayBed,
+.overlayMeja {
+    max-width: 0px;
+    overflow: hidden;
+    position: absolute;
+    /* background: rgba(0, 0, 0, 0.5); */
+    background: var(--orentua);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.6s ease;
+    transition-delay: 0.4s;
+    text-wrap: nowrap;
+    corsor: pointer;
+    border-radius: 100px;
+    padding: 0.5em 0em;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+.kontenLN:hover .overlayBed,
+.kontenLN:hover .overlayMeja {
+    max-width: 300px;
+    transition: all 0.8s ease;
+    padding: 0.5em 2em;
+}
+
+.overlayBed {
+    top: 360px;
+    left: 220px;
+}
+
+.overlayBed p:first-child {
+    font-size: 20px;
+}
+
+.overlayMeja {
+    bottom: 200px;
+    left: 690px;
+}
+
+.overlayMeja p:first-child {
+    font-size: 20px;
+}
+
+.overlayBed a,
+.overlayMeja a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
+</style>
 <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:80svh;">
-    <div class="d-flex align-items-center ps-5"
-        style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/11 comp.png'); background-size: cover; background-position:center;">
+    <a class="d-flex align-items-center ps-5" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
+        style="text-decoration:none; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/11 comp.png'); background-size: cover; background-position:center;">
         <div>
             <p class="text-light">Make you feel</p>
             <h1 class="teks-besar text-light mb-5">Elegant</h1>
             <div style="width:120px; height:2px; background-color:white;"></div>
         </div>
-    </div>
+    </a>
     <div style="flex:1;" class=" d-flex flex-column">
-        <div class="d-flex align-items-center ps-5"
-            style="flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/n1 comp.png'); background-size: cover; background-position:center;">
+        <a class="d-flex align-items-center ps-5" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
+            style="text-decoration:none; flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/n1 comp.png'); background-size: cover; background-position:center;">
             <div>
                 <h1 class="teks-besar text-light mb-3">Luxury</h1>
                 <div class="d-flex gap-3">
@@ -122,8 +333,8 @@
                     <div style="width:20px; height:20px; border: 2px solid white;"></div>
                 </div>
             </div>
-        </div>
-        <div class="d-flex" style="flex: 1">
+        </a>
+        <a class="d-flex" style="text-decoration:none; flex: 1" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>">
             <div class="d-flex align-items-center ps-5"
                 style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/s comp.png'); background-size: cover; background-position:center;">
                 <div>
@@ -134,22 +345,22 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 </div>
 
 <!-- Bagian HP -->
 <div class="hide-ke-show-flex flex-column pt-2 gap-2" style="width:100%; height:80svh;">
-    <div class="d-flex align-items-center px-5"
-        style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/11 comp.png'); background-size: cover; background-position:center;">
+    <a href="<?= base_url('product/bufet-tv-ilena-cabana') ?>" class="d-flex align-items-center px-5"
+        style="text-decoration:none; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/11 comp.png'); background-size: cover; background-position:center;">
         <div>
             <p class="text-light ms-2 m-0" style="font-size:12px;">Make you feel</p>
             <h1 class="text-light ms-2" style="font-size:28px;">Elegant</h1>
             <div style="width:60px; height:1px; background-color:white;" class="m-2"></div>
         </div>
-    </div>
-    <div class="d-flex align-items-center px-5"
-        style="flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/n1 comp.png'); background-size: cover; background-position:center;">
+    </a>
+    <a class="d-flex align-items-center px-5" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
+        style="text-decoration:none; flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/n1 comp.png'); background-size: cover; background-position:center;">
         <div>
             <h1 class="text-light ms-2" style="font-size:28px;">Luxury</h1>
             <div class="d-flex gap-1 ms-2">
@@ -157,9 +368,9 @@
                 <div style="width:15px; height:15px; border: 1px solid white;"></div>
             </div>
         </div>
-    </div>
-    <div class="d-flex align-items-center px-5"
-        style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/s comp.png'); background-size: cover; background-position:center;">
+    </a>
+    <a href="<?= base_url('product/bufet-tv-ilena-cabana') ?>" class="d-flex align-items-center px-5"
+        style="text-decoration:none; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/s comp.png'); background-size: cover; background-position:center;">
         <div>
             <h1 class="text-light ms-2" style="font-size:28px;">Simply</h1>
             <div class="d-flex gap-1 ms-2">
@@ -167,9 +378,11 @@
                 <div style="width:15px; height:15px; background-color:white;"></div>
             </div>
         </div>
-    </div>
+    </a>
 </div>
+<!-- END BAGIAN HP -->
 
+<!-- BAGIAN SLIDE -->
 <div style="position: absolute; background-color: rgba(255, 0, 0, 0.5); height: 0px;" class="w-100" id="counter-slide">
     <div class="container" style="height: 0px;">
         <div class="d-flex flex-column align-items-center gap-2 pt-5" style="width:20px;">
@@ -326,6 +539,7 @@
         </div>
     </div>
 </div>
+
 <div class="scroll-home-input">
     <div>
         <input id="scrollhome1" type="radio" name="scrollHome" checked>
@@ -344,46 +558,49 @@
 </div>
 
 <script>
-    const scrollHomeElm = document.querySelector('.scroll-home');
-    const counterSlideElm = document.getElementById('counter-slide');
-    const numCounterSlideElm = document.querySelectorAll('#counter-slide p');
-    // console.log(numCounterSlideElm)
-    const inputScrollHomeElm = document.querySelectorAll('input[name="scrollHome"]');
-    // console.log(scrollHomeElm.children);
-    scrollHomeElm.onscroll = () => {
-        let x = scrollHomeElm.scrollLeft;
-        // console.log(x);
-        const widthInnerStg = window.innerWidth / 2;
-        if (x % window.innerWidth < widthInnerStg) {
-            counterSlideElm.style.opacity = 1 - ((x % widthInnerStg) / widthInnerStg) / 1;
-            counterSlideElm.style.transform = 'translateX(-' + (x % widthInnerStg) + 'px)';
-            console.log('translateX(-' + (x % widthInnerStg) + ')')
-        } else {
-            counterSlideElm.style.opacity = ((x % widthInnerStg) / widthInnerStg) / 1;
-            counterSlideElm.style.transform = 'translateX(-' + (widthInnerStg - (x % widthInnerStg)) + 'px)';
-            console.log('translateX(-' + (widthInnerStg - (x % widthInnerStg)) + ')')
-        }
-
-        // console.log(Math.floor(x / (window.innerWidth * 90 / 100)))
-        inputScrollHomeElm.forEach(inputnya => {
-            inputnya.removeAttribute('checked');
-        });
-        inputScrollHomeElm[Math.floor(x / (window.innerWidth * 90 / 100))].setAttribute('checked', '');
-
-        numCounterSlideElm[0].innerHTML = '0' + (Math.floor(x / (window.innerWidth * 90 / 100)) + 1)
-        numCounterSlideElm[1].innerHTML = '0' + inputScrollHomeElm.length;
+const scrollHomeElm = document.querySelector('.scroll-home');
+const counterSlideElm = document.getElementById('counter-slide');
+const numCounterSlideElm = document.querySelectorAll('#counter-slide p');
+// console.log(numCounterSlideElm)
+const inputScrollHomeElm = document.querySelectorAll('input[name="scrollHome"]');
+// console.log(scrollHomeElm.children);
+scrollHomeElm.onscroll = () => {
+    let x = scrollHomeElm.scrollLeft;
+    // console.log(x);
+    const widthInnerStg = window.innerWidth / 2;
+    if (x % window.innerWidth < widthInnerStg) {
+        counterSlideElm.style.opacity = 1 - ((x % widthInnerStg) / widthInnerStg) / 1;
+        counterSlideElm.style.transform = 'translateX(-' + (x % widthInnerStg) + 'px)';
+        console.log('translateX(-' + (x % widthInnerStg) + ')')
+    } else {
+        counterSlideElm.style.opacity = ((x % widthInnerStg) / widthInnerStg) / 1;
+        counterSlideElm.style.transform = 'translateX(-' + (widthInnerStg - (x % widthInnerStg)) + 'px)';
+        console.log('translateX(-' + (widthInnerStg - (x % widthInnerStg)) + ')')
     }
-    inputScrollHomeElm.forEach((inputnya, indInput) => {
-        inputnya.addEventListener('change', () => {
-            // console.log('input ' + indInput + ' berubah')
-            scrollHomeElm.scrollLeft = window.innerWidth * indInput
-        });
 
+    // console.log(Math.floor(x / (window.innerWidth * 90 / 100)))
+    inputScrollHomeElm.forEach(inputnya => {
+        inputnya.removeAttribute('checked');
     });
+    inputScrollHomeElm[Math.floor(x / (window.innerWidth * 90 / 100))].setAttribute('checked', '');
+
+    numCounterSlideElm[0].innerHTML = '0' + (Math.floor(x / (window.innerWidth * 90 / 100)) + 1)
+    numCounterSlideElm[1].innerHTML = '0' + inputScrollHomeElm.length;
+}
+inputScrollHomeElm.forEach((inputnya, indInput) => {
+    inputnya.addEventListener('change', () => {
+        // console.log('input ' + indInput + ' berubah')
+        scrollHomeElm.scrollLeft = window.innerWidth * indInput
+    });
+
+});
 </script>
+<!-- END BAGIAN SERIES  -->
+
 
 
 <!-- Bagian Desktop -->
+
 <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:80svh; position:relative;">
     <div class="d-flex align-items-center" style="flex:1;">
         <div class="p-5">
@@ -393,10 +610,29 @@
             </h1>
         </div>
     </div>
-    <div
-        style="flex:2; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/0 comp.png'); background-size: cover; background-position:center;">
+    <div class="kontenLN">
+        <div class="overlayBed">
+            <a href="https://example.com/detail-bed" class="d-flex gap-3 align-items-center">
+                <div>
+                    <p class="m-0 fw-bold">Bed Cabana</p>
+                    <p class="m-0 fw-regular">Cabana</p>
+                </div>
+                <i class="material-icons">arrow_forward</i>
+            </a>
+        </div>
+        <div class="overlayMeja">
+            <a href="https://example.com/detail-bed" class="d-flex gap-3 align-items-center">
+                <div>
+                    <p class="m-0 fw-bold">Side Table</p>
+                    <p class="m-0 fw-regular">Cabana</p>
+                </div>
+                <i class="material-icons">arrow_forward</i>
+            </a>
+        </div>
     </div>
 </div>
+</div>
+
 <!-- Bagian Hp -->
 <div class="hide-ke-show-flex align-items-stretch" style="width:100%; height:40svh; position:relative;">
     <div class="d-flex align-items-center" style="flex:1;">
@@ -416,9 +652,9 @@
 
 <!-- Bagian Windows -->
 <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:40svh;">
-    <div style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/inaugural comp.png');
+    <a href="<?= base_url('product/bufet-tv-ilena-cabana') ?>" style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/inaugural comp.png');
     background-size: cover; background-position:top;">
-    </div>
+    </a>
     <div style="flex:1; background-color:#7B441c; position:relative;">
         <div class="d-flex p-5 h-100 w-100 text-light" style="flex:1; position:absolute;">
             <div style="flex:1;" class="h-100 d-flex flex-column justify-content-between">
@@ -562,20 +798,20 @@
 
 
 <script>
-    const modalseriesELM = document.getElementById('modal-series');
+const modalseriesELM = document.getElementById('modal-series');
 
-    function closemodalseries() {
-        modalseriesELM.classList.remove('d-flex');
-        modalseriesELM.classList.add('d-none');
-        document.body.style.overflow = 'auto';
-    }
+function closemodalseries() {
+    modalseriesELM.classList.remove('d-flex');
+    modalseriesELM.classList.add('d-none');
+    document.body.style.overflow = 'auto';
+}
 
-    function modalseries() {
-        modalseriesELM.classList.add('d-flex');
-        modalseriesELM.classList.remove('d-none');
-        document.body.style.overflow = 'hidden';
+function modalseries() {
+    modalseriesELM.classList.add('d-flex');
+    modalseriesELM.classList.remove('d-none');
+    document.body.style.overflow = 'hidden';
 
-    }
+}
 </script>
 
 <!-- Bagian Windows -->
@@ -620,15 +856,15 @@
 
 <!-- Bagian HP -->
 <style>
-    #scroll-set {
-        width: 100%;
-        overflow: scroll;
-        scroll-snap-type: x mandatory;
-    }
+#scroll-set {
+    width: 100%;
+    overflow: scroll;
+    scroll-snap-type: x mandatory;
+}
 
-    #scroll-set::-webkit-scrollbar {
-        display: none;
-    }
+#scroll-set::-webkit-scrollbar {
+    display: none;
+}
 </style>
 <div class="hide-ke-show-block" id="scroll-set">
     <div class="d-flex gap-1 px-5 pt-5 pb-4" style="width: fit-content;">
@@ -674,12 +910,80 @@
     </div>
 </div>
 
-<div style="position:relative;">
-    <div style="position:absolute" class="p-5 d-flex flex-column w-100 h-100 justify-content-center align-items-center">
-        <a href="/product" class="findout">Find Out More</a>
+<!-- Bagian Windows Scroll -->
+<style>
+.carousel-indicators button {
+    width: 12px;
+    height: 12px;
+    background-color: #fff;
+    opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+    .carousel-inner img {
+        height: 40vh;
+        object-fit: cover;
+    }
+
+    .carousel-indicators {
+        bottom: 10px;
+    }
+
+    .findout {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+
+    .p-5 {
+        padding: 2rem !important;
+    }
+}
+</style>
+<div id="scrollDuluAnjay" class="carousel slide show-flex-ke-hide" data-bs-interval="2000" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#scrollDuluAnjay" data-bs-slide-to="0" class="active" aria-current="true"
+            aria-label="Geser 1"></button>
+        <button type="button" data-bs-target="#scrollDuluAnjay" data-bs-slide-to="1" aria-label="Geser 2"></button>
+        <button type="button" data-bs-target="#scrollDuluAnjay" data-bs-slide-to="2" aria-label="Geser 3"></button>
     </div>
-    <img src="<?= base_url('/img/foto/find out more watercase comp.png') ?>" style="width: 100%; height:50svh; object-fit: cover; object-position: top; background-color: rgba(0,0,0, 0.5);
-  background-repeat:no-repeat; background-blend-mode: color;">
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <div style="position:relative;">
+                <div class="d-flex flex-column w-100 h-100 justify-content-center align-items-center"
+                    style="position:absolute;">
+                    <a href="/product" class="findout">Find Out More</a>
+                </div>
+                <img src="<?= base_url('/img/foto/find out more watercase comp.png') ?>" class="d-block w-100"
+                    style="object-fit: cover; object-position: top;" alt="Geser 1">
+            </div>
+        </div>
+        <div class="carousel-item">
+            <div style="position:relative;">
+                <div class="d-flex flex-column w-100 h-100 justify-content-center align-items-center"
+                    style="position:absolute;">
+                    <a href="https://ilenafurniture.net/" class="findout">Inventori Collection</a>
+                </div>
+                <img src="<?= base_url('/img/foto/find out more watercase comp.png') ?>" class="d-block w-100"
+                    style=" object-fit: cover; object-position: top;" alt="Geser 2">
+            </div>
+        </div>
+        <div class="carousel-item">
+            <div style="position:relative;">
+                <div class="d-flex flex-column w-100 h-100 justify-content-center align-items-center"
+                    style="position:absolute;">
+                    <a href="/product" class="findout">Find Out More</a>
+                </div>
+                <img src="<?= base_url('/img/foto/find out more watercase comp.png') ?>" class="d-block w-100"
+                    style=" object-fit: cover; object-position: top;" alt="Geser 3">
+            </div>
+        </div>
+    </div>
 </div>
+<!-- End Bagian Windows Scroll -->
+
+
+
+
+
 
 <?= $this->endSection(); ?>
