@@ -93,6 +93,20 @@ function closeLoginModel() {
     position: relative;
 }
 
+@media (max-width: 768px) {
+    .slider {
+        width: 100%;
+        height: auto;
+    }
+}
+
+@media (min-width: 1500px) {
+    .slider {
+        height: auto;
+        aspect-ratio: 4400 / 1320;
+    }
+}
+
 .slides {
     height: 100%;
 }
@@ -149,13 +163,6 @@ function closeLoginModel() {
 
 .dot.active {
     background-color: black;
-}
-
-@media (max-width: 768px) {
-    .slider {
-        width: 100%;
-        height: auto;
-    }
 }
 </style>
 <div class="show-flex-ke-hide">
