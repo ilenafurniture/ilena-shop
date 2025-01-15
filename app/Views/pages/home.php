@@ -151,18 +151,22 @@ function closeLoginModel() {
     background-color: black;
 }
 
-/* @media (max-width: 768px) {
+@media (max-width: 768px) {
     .slider {
+        width: 100%;
         height: auto;
     }
-} */
+}
 </style>
 <div class="show-flex-ke-hide">
     <div class="slider">
         <div class="slides">
-            <a href="#" class="active"><img src="<?= base_url('img/benner/benner1.png') ?>" alt="Slide 1"></a>
-            <a href="#" class="kanan"><img src="<?= base_url('img/benner/benner1.png') ?>" alt="Slide 2"></a>
-            <a href="#" class="kanan"><img src="<?= base_url('img/benner/benner1.png') ?>" alt="Slide 3"></a>
+            <a href="<?= base_url('product/side-table-ilena-cabana/1') ?>" class="active"><img
+                    src="<?= base_url('img/benner/benner1.png') ?>" alt="Slide 1"></a>
+            <a href="<?= base_url('product/side-table-ilena-cabana/1') ?>" class="kanan"><img
+                    src="<?= base_url('img/benner/benner1.png') ?>" alt="Slide 2"></a>
+            <a href="<?= base_url('product/side-table-ilena-cabana/1') ?>" class="kanan"><img
+                    src="<?= base_url('img/benner/benner1.png') ?>" alt="Slide 3"></a>
         </div>
         <div class="dots">
             <div class="dot active" onclick="currentSlide(0)"></div>
