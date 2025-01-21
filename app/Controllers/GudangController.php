@@ -101,7 +101,7 @@ class GudangController extends BaseController
             $pesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
             $itemsnya = json_decode($p['items'], true);
             foreach ($itemsnya as $ind_i => $i) {
-                if($i['id'] != 'Biaya Admin' && $i['id'] != 'Voucher' ){
+                if ($i['id'] != 'Biaya Admin' && $i['id'] != 'Voucher') {
                     $barangnya = $this->barangModel->getBarang($i['id']);
                     $itemsnya[$ind_i]['name'] = strtoupper($barangnya['kategori']) . ' ' . $i['name'];
                 }
@@ -233,7 +233,8 @@ class GudangController extends BaseController
     public function actionScan($id_barang, $varian)
     {
         $produk = $this->barangModel->getBarang($id_barang);
-        $namaSelected = $produk['nama'] . " (" . $varian . ")";
+        $namaSelected = $produk['nama'] . ' ' . json_decode($produk['deskripsi'], true)['dimensi']['asli']['panjang'] . " (" . $varian . ")";
+        // dd($namaSelected);
         $pesanan = $this->pemesananGudangModel->getPemesananGudang(false, $namaSelected);
         if ($pesanan) {
             $this->pemesananGudangModel->where([

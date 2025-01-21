@@ -1,22 +1,22 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <?php if ($msg_active) { ?>
-<div id="modal-voucher" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
-    class="d-flex justify-content-center align-items-center">
-    <div style="border-radius: 10px; overflow: hidden; background-color: white; width: 80%; max-width: 500px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);"
-        class="p-5">
-        <h1 class="teks-sedang mb-3">Klaim voucher diskon 5% Anda sekarang juga</h1>
-        <p class="text-secondary">*S&K diskon ini hanya berlaku 1 bulan sejak menjadi member kami</p>
-        <a href="/product" class="btn-default w-100 text-center mb-2">Beli Produk</a>
-        <button class="btn-teks-aja mx-auto" onclick="closeModalVoucher()">Nanti</button>
+    <div id="modal-voucher" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
+        class="d-flex justify-content-center align-items-center">
+        <div style="border-radius: 10px; overflow: hidden; background-color: white; width: 80%; max-width: 500px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);"
+            class="p-5">
+            <h1 class="teks-sedang mb-3">Klaim voucher diskon 5% Anda sekarang juga</h1>
+            <p class="text-secondary">*S&K diskon ini hanya berlaku 1 bulan sejak menjadi member kami</p>
+            <a href="/product" class="btn-default w-100 text-center mb-2">Beli Produk</a>
+            <button class="btn-teks-aja mx-auto" onclick="closeModalVoucher()">Nanti</button>
+        </div>
     </div>
-</div>
-<script>
-function closeModalVoucher() {
-    document.getElementById('modal-voucher').classList.add('d-none')
-    document.getElementById('modal-voucher').classList.remove('d-flex')
-}
-</script>
+    <script>
+        function closeModalVoucher() {
+            document.getElementById('modal-voucher').classList.add('d-none')
+            document.getElementById('modal-voucher').classList.remove('d-flex')
+        }
+    </script>
 <?php } ?>
 
 
@@ -53,189 +53,146 @@ function closeModalVoucher() {
 </div>
 
 <?php if (!session()->get('isLogin')) { ?>
-<script>
-const loginModalElm = document.getElementById('login-modal')
-let opened = false;
-document.body.onscroll = (e) => {
-    if (!window.sessionStorage.getItem('close-login-modal')) {
-        const scrollingElm = e.target.scrollingElement;
-        const hasil = Math.round(
-            (scrollingElm.scrollTop /
-                (scrollingElm.scrollHeight -
-                    scrollingElm.clientHeight)) *
-            100
-        );
-        if (hasil > 50 && !opened) {
-            loginModalElm.classList.remove("d-none")
-            opened = true
+    <script>
+        const loginModalElm = document.getElementById('login-modal')
+        let opened = false;
+        document.body.onscroll = (e) => {
+            if (!window.sessionStorage.getItem('close-login-modal')) {
+                const scrollingElm = e.target.scrollingElement;
+                const hasil = Math.round(
+                    (scrollingElm.scrollTop /
+                        (scrollingElm.scrollHeight -
+                            scrollingElm.clientHeight)) *
+                    100
+                );
+                if (hasil > 50 && !opened) {
+                    loginModalElm.classList.remove("d-none")
+                    opened = true
+                }
+            }
+        };
+
+        function closeLoginModel() {
+            loginModalElm.classList.add("d-none")
+            window.sessionStorage.setItem('close-login-modal', true)
+            opened = false
         }
-    }
-};
-
-function closeLoginModel() {
-    loginModalElm.classList.add("d-none")
-    window.sessionStorage.setItem('close-login-modal', true)
-    opened = false
-}
-</script>
+    </script>
 <?php } ?>
-
-
-
 
 <!--Tampilan Home Baru -->
 <!-- Tampilan SLide Promo -->
 <style>
-.slider {
-    overflow: hidden;
-    width: 100%;
-    height: 400px;
-    position: relative;
-}
-
-@media (max-width: 768px) {
     .slider {
+        overflow: hidden;
         width: 100%;
         height: auto;
+        aspect-ratio: 1400 / 400;
+        position: relative;
     }
-}
 
-@media (min-width: 1500px) {
-    .slider {
-        height: auto;
-        aspect-ratio: 4400 / 1320;
+    .slides {
+        height: 100%;
     }
-}
-
-.slides {
-    height: 100%;
-}
 
 
-.slider a {
-    height: 100%;
-    width: 100vw;
-    display: block;
-    transition: 0.3s;
-    position: absolute;
-}
+    .slider a {
+        height: 100%;
+        width: 100vw;
+        display: block;
+        transition: 0.3s;
+        position: absolute;
+        text-decoration: none;
+        color: white;
+    }
 
-.slider a.kiri {
-    transform: translateX(-100vw);
-    transition: 0.3s;
-}
+    .slider a.kiri {
+        transform: translateX(-100vw);
+        transition: 0.3s;
+    }
 
-.slider a.active {
-    transform: translateX(0vw);
-    transition: 0.3s;
-}
+    .slider a.active {
+        transform: translateX(0vw);
+        transition: 0.3s;
+    }
 
-.slider a.kanan {
-    transform: translateX(100vw);
-    transition: 0.3s;
-}
+    .slider a.kanan {
+        transform: translateX(100vw);
+        transition: 0.3s;
+    }
 
-.slides a img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
+    .slides a img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
 
-.dots {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 10px;
-}
+    .slides a img.ls {
+        display: block;
+    }
 
-.dot {
-    width: 15px;
-    height: 15px;
-    background-color: rgba(255, 255, 255, 0.7);
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    border: 1px solid black;
-}
+    .slides a img.pt {
+        display: none;
+    }
 
-.dot.active {
-    background-color: black;
-}
+    .dots {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+    }
+
+    .dot {
+        width: 10px;
+        height: 10px;
+        background-color: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        border: 1px solid #844709;
+    }
+
+    .dot.active {
+        background-color: #844709;
+    }
+
+    @media (max-width: 700px) {
+        .slider {
+            aspect-ratio: 1080 / 1200;
+        }
+
+        .slides a img.ls {
+            display: none;
+        }
+
+        .slides a img.pt {
+            display: block;
+        }
+    }
 </style>
-<div class="show-flex-ke-hide">
-    <div class="slider">
-        <div class="slides">
-            <a href="<?= base_url('product/side-table-ilena-cabana/1') ?>" class="active"><img
-                    src="<?= base_url('img/benner/benner1.png') ?>" alt="Slide 1"></a>
-            <a href="<?= base_url('product/side-table-ilena-cabana/1') ?>" class="kanan"><img
-                    src="<?= base_url('img/benner/benner1.png') ?>" alt="Slide 2"></a>
-            <a href="<?= base_url('product/side-table-ilena-cabana/1') ?>" class="kanan"><img
-                    src="<?= base_url('img/benner/benner1.png') ?>" alt="Slide 3"></a>
-        </div>
-        <div class="dots">
-            <div class="dot active" onclick="currentSlide(0)"></div>
-            <div class="dot" onclick="currentSlide(1)"></div>
-            <div class="dot" onclick="currentSlide(2)"></div>
-        </div>
+<div class="slider">
+    <div class="slides">
+        <a href="<?= base_url('product/side-table-ilena-cabana/1') ?>" class="active">
+            <img class="ls" src="<?= base_url('img/benner/poster slide home ls (1).png') ?>" alt="Slide 1">
+            <img class="pt" src="<?= base_url('img/benner/poster slide home pt (1).png') ?>" alt="Slide 1">
+        </a>
+        <a href="<?= base_url('product/side-table-ilena-cabana/1') ?>" class="kanan">
+            <img class="ls" src="<?= base_url('img/benner/poster slide home ls (3).png') ?>" alt="Slide 2">
+            <img class="pt" src="<?= base_url('img/benner/poster slide home pt (3).png') ?>" alt="Slide 2">
+        </a>
+        <a href="<?= base_url('product/side-table-ilena-cabana/1') ?>" class="kanan">
+            <img class="ls" src="<?= base_url('img/benner/poster slide home ls (4).png') ?>" alt="Slide 3">
+            <img class="pt" src="<?= base_url('img/benner/poster slide home pt (4).png') ?>" alt="Slide 3">
+        </a>
+    </div>
+    <div class="dots">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
     </div>
 </div>
-<script>
-let slideIndex = 0;
-const slides = document.querySelectorAll('.slides a');
-const dots = document.querySelectorAll('.dot');
-
-function showSlide(index) {
-    const totalSlides = slides.length;
-    // if (index < 0) slideIndex = totalSlides - 1;
-    if (index >= totalSlides) {
-        slideIndex = 0;
-        slides.forEach((slide, i) => {
-            if (i === 0) {
-                slide.classList.add('active')
-                slide.classList.remove('kiri')
-            } else {
-                slide.classList.remove('active')
-                slide.classList.remove('kiri')
-                slide.classList.add('kanan')
-            }
-        });
-    } else {
-        slides.forEach((slide, i) => {
-            if (i < slideIndex) {
-                slide.classList.add('kiri');
-                slide.classList.remove('active');
-                slide.classList.remove('kanan');
-            } else if (i === slideIndex) {
-                slide.classList.add('active');
-                slide.classList.remove('kanan');
-                slide.classList.remove('kiri');
-            } else {
-                slide.classList.remove('active');
-                slide.classList.add('kanan');
-                slide.classList.remove('kiri');
-            }
-        });
-    }
-
-    dots.forEach((dot, i) => {
-        dot.classList.toggle('active', i === slideIndex);
-    });
-}
-
-function currentSlide(index) {
-    slideIndex = index;
-    showSlide(slideIndex);
-}
-
-// Auto slide 
-setInterval(() => {
-    slideIndex++;
-    showSlide(slideIndex);
-}, 5000);
-</script>
 
 <!-- End Tampilan Side Promo -->
 <!-- bagian windows -->
@@ -263,67 +220,67 @@ setInterval(() => {
 
 <!-- Bagian Windows -->
 <style>
-.kontenLN {
-    position: relative;
-    flex: 2;
-    background: url('./img/foto/0 comp.png');
-    background-size: cover;
-    background-position: center;
-    corsor: pointer;
-    transition-delay: 0.4s;
-}
+    .kontenLN {
+        position: relative;
+        flex: 2;
+        background: url('./img/foto/0 comp.png');
+        background-size: cover;
+        background-position: center;
+        corsor: pointer;
+        transition-delay: 0.4s;
+    }
 
-.overlayBed,
-.overlayMeja {
-    max-width: 0px;
-    overflow: hidden;
-    position: absolute;
-    /* background: rgba(0, 0, 0, 0.5); */
-    background: var(--orentua);
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: all 0.6s ease;
-    transition-delay: 0.4s;
-    text-wrap: nowrap;
-    corsor: pointer;
-    border-radius: 100px;
-    padding: 0.5em 0em;
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
-}
+    .overlayBed,
+    .overlayMeja {
+        max-width: 0px;
+        overflow: hidden;
+        position: absolute;
+        /* background: rgba(0, 0, 0, 0.5); */
+        background: var(--orentua);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: all 0.6s ease;
+        transition-delay: 0.4s;
+        text-wrap: nowrap;
+        corsor: pointer;
+        border-radius: 100px;
+        padding: 0.5em 0em;
+        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+    }
 
-.kontenLN:hover .overlayBed,
-.kontenLN:hover .overlayMeja {
-    max-width: 300px;
-    transition: all 0.8s ease;
-    padding: 0.5em 2em;
-}
+    .kontenLN:hover .overlayBed,
+    .kontenLN:hover .overlayMeja {
+        max-width: 300px;
+        transition: all 0.8s ease;
+        padding: 0.5em 2em;
+    }
 
-.overlayBed {
-    top: 360px;
-    left: 220px;
-}
+    .overlayBed {
+        top: 360px;
+        left: 220px;
+    }
 
-.overlayBed p:first-child {
-    font-size: 20px;
-}
+    .overlayBed p:first-child {
+        font-size: 20px;
+    }
 
-.overlayMeja {
-    bottom: 200px;
-    left: 690px;
-}
+    .overlayMeja {
+        bottom: 200px;
+        left: 690px;
+    }
 
-.overlayMeja p:first-child {
-    font-size: 20px;
-}
+    .overlayMeja p:first-child {
+        font-size: 20px;
+    }
 
-.overlayBed a,
-.overlayMeja a {
-    text-decoration: none;
-    color: white;
-    font-weight: bold;
-}
+    .overlayBed a,
+    .overlayMeja a {
+        text-decoration: none;
+        color: white;
+        font-weight: bold;
+    }
 </style>
 <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:80svh;">
     <a class="d-flex align-items-center ps-5" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
@@ -569,42 +526,42 @@ setInterval(() => {
 </div>
 
 <script>
-const scrollHomeElm = document.querySelector('.scroll-home');
-const counterSlideElm = document.getElementById('counter-slide');
-const numCounterSlideElm = document.querySelectorAll('#counter-slide p');
-// console.log(numCounterSlideElm)
-const inputScrollHomeElm = document.querySelectorAll('input[name="scrollHome"]');
-// console.log(scrollHomeElm.children);
-scrollHomeElm.onscroll = () => {
-    let x = scrollHomeElm.scrollLeft;
-    // console.log(x);
-    const widthInnerStg = window.innerWidth / 2;
-    if (x % window.innerWidth < widthInnerStg) {
-        counterSlideElm.style.opacity = 1 - ((x % widthInnerStg) / widthInnerStg) / 1;
-        counterSlideElm.style.transform = 'translateX(-' + (x % widthInnerStg) + 'px)';
-        console.log('translateX(-' + (x % widthInnerStg) + ')')
-    } else {
-        counterSlideElm.style.opacity = ((x % widthInnerStg) / widthInnerStg) / 1;
-        counterSlideElm.style.transform = 'translateX(-' + (widthInnerStg - (x % widthInnerStg)) + 'px)';
-        console.log('translateX(-' + (widthInnerStg - (x % widthInnerStg)) + ')')
+    const scrollHomeElm = document.querySelector('.scroll-home');
+    const counterSlideElm = document.getElementById('counter-slide');
+    const numCounterSlideElm = document.querySelectorAll('#counter-slide p');
+    // console.log(numCounterSlideElm)
+    const inputScrollHomeElm = document.querySelectorAll('input[name="scrollHome"]');
+    // console.log(scrollHomeElm.children);
+    scrollHomeElm.onscroll = () => {
+        let x = scrollHomeElm.scrollLeft;
+        // console.log(x);
+        const widthInnerStg = window.innerWidth / 2;
+        if (x % window.innerWidth < widthInnerStg) {
+            counterSlideElm.style.opacity = 1 - ((x % widthInnerStg) / widthInnerStg) / 1;
+            counterSlideElm.style.transform = 'translateX(-' + (x % widthInnerStg) + 'px)';
+            console.log('translateX(-' + (x % widthInnerStg) + ')')
+        } else {
+            counterSlideElm.style.opacity = ((x % widthInnerStg) / widthInnerStg) / 1;
+            counterSlideElm.style.transform = 'translateX(-' + (widthInnerStg - (x % widthInnerStg)) + 'px)';
+            console.log('translateX(-' + (widthInnerStg - (x % widthInnerStg)) + ')')
+        }
+
+        // console.log(Math.floor(x / (window.innerWidth * 90 / 100)))
+        inputScrollHomeElm.forEach(inputnya => {
+            inputnya.removeAttribute('checked');
+        });
+        inputScrollHomeElm[Math.floor(x / (window.innerWidth * 90 / 100))].setAttribute('checked', '');
+
+        numCounterSlideElm[0].innerHTML = '0' + (Math.floor(x / (window.innerWidth * 90 / 100)) + 1)
+        numCounterSlideElm[1].innerHTML = '0' + inputScrollHomeElm.length;
     }
+    inputScrollHomeElm.forEach((inputnya, indInput) => {
+        inputnya.addEventListener('change', () => {
+            // console.log('input ' + indInput + ' berubah')
+            scrollHomeElm.scrollLeft = window.innerWidth * indInput
+        });
 
-    // console.log(Math.floor(x / (window.innerWidth * 90 / 100)))
-    inputScrollHomeElm.forEach(inputnya => {
-        inputnya.removeAttribute('checked');
     });
-    inputScrollHomeElm[Math.floor(x / (window.innerWidth * 90 / 100))].setAttribute('checked', '');
-
-    numCounterSlideElm[0].innerHTML = '0' + (Math.floor(x / (window.innerWidth * 90 / 100)) + 1)
-    numCounterSlideElm[1].innerHTML = '0' + inputScrollHomeElm.length;
-}
-inputScrollHomeElm.forEach((inputnya, indInput) => {
-    inputnya.addEventListener('change', () => {
-        // console.log('input ' + indInput + ' berubah')
-        scrollHomeElm.scrollLeft = window.innerWidth * indInput
-    });
-
-});
 </script>
 <!-- END BAGIAN SERIES  -->
 
@@ -809,20 +766,20 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
 
 
 <script>
-const modalseriesELM = document.getElementById('modal-series');
+    const modalseriesELM = document.getElementById('modal-series');
 
-function closemodalseries() {
-    modalseriesELM.classList.remove('d-flex');
-    modalseriesELM.classList.add('d-none');
-    document.body.style.overflow = 'auto';
-}
+    function closemodalseries() {
+        modalseriesELM.classList.remove('d-flex');
+        modalseriesELM.classList.add('d-none');
+        document.body.style.overflow = 'auto';
+    }
 
-function modalseries() {
-    modalseriesELM.classList.add('d-flex');
-    modalseriesELM.classList.remove('d-none');
-    document.body.style.overflow = 'hidden';
+    function modalseries() {
+        modalseriesELM.classList.add('d-flex');
+        modalseriesELM.classList.remove('d-none');
+        document.body.style.overflow = 'hidden';
 
-}
+    }
 </script>
 
 <!-- Bagian Windows -->
@@ -867,15 +824,15 @@ function modalseries() {
 
 <!-- Bagian HP -->
 <style>
-#scroll-set {
-    width: 100%;
-    overflow: scroll;
-    scroll-snap-type: x mandatory;
-}
+    #scroll-set {
+        width: 100%;
+        overflow: scroll;
+        scroll-snap-type: x mandatory;
+    }
 
-#scroll-set::-webkit-scrollbar {
-    display: none;
-}
+    #scroll-set::-webkit-scrollbar {
+        display: none;
+    }
 </style>
 <div class="hide-ke-show-block" id="scroll-set">
     <div class="d-flex gap-1 px-5 pt-5 pb-4" style="width: fit-content;">
@@ -922,33 +879,51 @@ function modalseries() {
 </div>
 
 <!-- Bagian Windows Scroll -->
-<style>
-.carousel-indicators button {
-    width: 12px;
-    height: 12px;
-    background-color: #fff;
-    opacity: 0.8;
-}
-
-@media (max-width: 768px) {
-    .carousel-inner img {
-        height: 40vh;
-        object-fit: cover;
+<div class="slider">
+    <div class="slides">
+        <a href="/product" class="kanan bg-primary">
+            <div style="position: absolute; z-index: 5; top: 0; left: 0; width: 100%; height: 100%" class="d-flex justify-content-center align-items-center">
+                <p class="text-light m-0" style="font-size: 24px; font-weight: 500; letter-spacing: -1px;">Find Out More</p>
+            </div>
+            <img style="position: absolute; z-index: 4; top: 0; left: 0; width: 100%; height: 100%" class="d-block" src="<?= base_url('/img/foto/find out more watercase comp.png') ?>" alt="Slide 2">
+        </a>
+        <a href="<?= base_url('product/side-table-ilena-cabana/1') ?>" class="kanan">
+            <img class="ls" src="<?= base_url('img/benner/poster slide home ls (2).png') ?>" alt="Slide 2">
+            <img class="pt" src="<?= base_url('img/benner/poster slide home pt (2).png') ?>" alt="Slide 2">
+        </a>
+    </div>
+    <div class="dots">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+    </div>
+</div>
+<!-- <style>
+    .carousel-indicators button {
+        width: 12px;
+        height: 12px;
+        background-color: #fff;
+        opacity: 0.8;
     }
 
-    .carousel-indicators {
-        bottom: 10px;
-    }
+    @media (max-width: 768px) {
+        .carousel-inner img {
+            height: 40vh;
+            object-fit: cover;
+        }
 
-    .findout {
-        font-size: 14px;
-        padding: 8px 16px;
-    }
+        .carousel-indicators {
+            bottom: 10px;
+        }
 
-    .p-5 {
-        padding: 2rem !important;
+        .findout {
+            font-size: 14px;
+            padding: 8px 16px;
+        }
+
+        .p-5 {
+            padding: 2rem !important;
+        }
     }
-}
 </style>
 <div id="scrollDuluAnjay" class="carousel slide show-flex-ke-hide" data-bs-interval="2000" data-bs-ride="carousel">
     <div class="carousel-indicators">
@@ -989,12 +964,78 @@ function modalseries() {
             </div>
         </div>
     </div>
-</div>
+</div> -->
 <!-- End Bagian Windows Scroll -->
 
+<script>
+    const sliders = document.querySelectorAll('.slider');
+    let slideIndex = [];
+    for (let i = 0; i < sliders.length; i++) {
+        slideIndex.push(0);
+    }
+    sliders.forEach((slider, ind_slider) => {
+        const slidesCur = slider.children[0].children;
+        const dotsCur = slider.children[1].children;
 
+        // Auto slide 
+        setInterval(() => {
+            slideIndex[ind_slider]++;
+            showSlide(ind_slider, slideIndex[ind_slider], slidesCur, dotsCur);
+        }, 5000);
 
+        for (let i = 0; i < dotsCur.length; i++) {
+            const dot = dotsCur[i];
+            dot.addEventListener('click', () => {
+                currentSlide(ind_slider, i, slidesCur, dotsCur)
+            })
+        }
+    });
 
+    function showSlide(index_slider, index, slides, dots) {
+        console.log('slides yg ada di showSlide')
+        console.log(slides)
+        const totalSlides = slides.length;
+        if (index >= totalSlides) {
+            slideIndex[index_slider] = 0;
+            for (let i = 0; i < slides.length; i++) {
+                const slide = slides[i];
+                if (i === 0) {
+                    slide.classList.add('active')
+                    slide.classList.remove('kiri')
+                } else {
+                    slide.classList.remove('active')
+                    slide.classList.remove('kiri')
+                    slide.classList.add('kanan')
+                }
+            }
+        } else {
+            for (let i = 0; i < slides.length; i++) {
+                const slide = slides[i];
+                if (i < slideIndex[index_slider]) {
+                    slide.classList.add('kiri');
+                    slide.classList.remove('active');
+                    slide.classList.remove('kanan');
+                } else if (i === slideIndex[index_slider]) {
+                    slide.classList.add('active');
+                    slide.classList.remove('kanan');
+                    slide.classList.remove('kiri');
+                } else {
+                    slide.classList.remove('active');
+                    slide.classList.add('kanan');
+                    slide.classList.remove('kiri');
+                }
+            }
+        }
 
+        for (let i = 0; i < dots.length; i++) {
+            const dot = dots[i];
+            dot.classList.toggle('active', i === slideIndex[index_slider]);
+        }
+    }
 
+    function currentSlide(index_slider, index, slides, dots) {
+        slideIndex[index_slider] = index;
+        showSlide(index_slider, slideIndex[index_slider], slides, dots);
+    }
+</script>
 <?= $this->endSection(); ?>
