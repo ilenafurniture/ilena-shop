@@ -174,15 +174,15 @@
 </style>
 <div class="slider">
     <div class="slides">
-        <a href="<?= base_url('product/side-table-ilena-cabana/1') ?>" class="active">
+        <a class="active">
             <img class="ls" src="<?= base_url('img/benner/poster slide home ls (1).png') ?>" alt="Slide 1">
             <img class="pt" src="<?= base_url('img/benner/poster slide home pt (1).png') ?>" alt="Slide 1">
         </a>
-        <a href="<?= base_url('product/side-table-ilena-cabana/1') ?>" class="kanan">
+        <a href="/product" class="kanan">
             <img class="ls" src="<?= base_url('img/benner/poster slide home ls (3).png') ?>" alt="Slide 2">
             <img class="pt" src="<?= base_url('img/benner/poster slide home pt (3).png') ?>" alt="Slide 2">
         </a>
-        <a href="<?= base_url('product/side-table-ilena-cabana/1') ?>" class="kanan">
+        <a href="/login" class="kanan">
             <img class="ls" src="<?= base_url('img/benner/poster slide home ls (4).png') ?>" alt="Slide 3">
             <img class="pt" src="<?= base_url('img/benner/poster slide home pt (4).png') ?>" alt="Slide 3">
         </a>
@@ -244,7 +244,7 @@
         transition: all 0.6s ease;
         transition-delay: 0.4s;
         text-wrap: nowrap;
-        corsor: pointer;
+        cursor: pointer;
         border-radius: 100px;
         padding: 0.5em 0em;
         box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
@@ -580,7 +580,7 @@
     </div>
     <div class="kontenLN">
         <div class="overlayBed">
-            <a href="https://example.com/detail-bed" class="d-flex gap-3 align-items-center">
+            <a href="/product?koleksi=cabana&jenis=queen-bed" class="d-flex gap-3 align-items-center">
                 <div>
                     <p class="m-0 fw-bold">Bed Cabana</p>
                     <p class="m-0 fw-regular">Cabana</p>
@@ -589,7 +589,7 @@
             </a>
         </div>
         <div class="overlayMeja">
-            <a href="https://example.com/detail-bed" class="d-flex gap-3 align-items-center">
+            <a href="/product?koleksi=cabana&jenis=side-table" class="d-flex gap-3 align-items-center">
                 <div>
                     <p class="m-0 fw-bold">Side Table</p>
                     <p class="m-0 fw-regular">Cabana</p>
@@ -887,7 +887,7 @@
             </div>
             <img style="position: absolute; z-index: 4; top: 0; left: 0; width: 100%; height: 100%" class="d-block" src="<?= base_url('/img/foto/find out more watercase comp.png') ?>" alt="Slide 2">
         </a>
-        <a href="<?= base_url('product/side-table-ilena-cabana/1') ?>" class="kanan">
+        <a href="https://ilenafurniture.id/" class="kanan">
             <img class="ls" src="<?= base_url('img/benner/poster slide home ls (2).png') ?>" alt="Slide 2">
             <img class="pt" src="<?= base_url('img/benner/poster slide home pt (2).png') ?>" alt="Slide 2">
         </a>

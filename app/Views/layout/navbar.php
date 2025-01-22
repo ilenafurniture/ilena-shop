@@ -14,36 +14,36 @@
             </div>
             <div style="width: calc(100% / 3)" class="d-flex justify-content-end">
                 <?php if (session()->get('isLogin')) { ?>
-                <?php if (session()->get('role') == '0' || session()->get('role') == '4') { ?>
-                <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
-                <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
-                <a href="/account" class="btn"><i class="material-icons text-light">person_outline</i></a>
-                <?php } else if (session()->get('role') == '1') { ?>
-                <a href="/admin/product" class="btn d-flex align-items-center">
-                    <i class="material-icons text-light">chevron_left</i>
-                    <p class="m-0 text-light">Admin</p>
-                </a>
-                <a href="/logout" class="btn" style="padding-right: 0"><i
-                        class="material-icons text-light">exit_to_app</i></a>
-                <?php } else if (session()->get('role') == '2') { ?>
-                <a href="/gudang/listorder" class="btn d-flex align-items-center">
-                    <i class="material-icons text-light">chevron_left</i>
-                    <p class="m-0 text-light">Gudang</p>
-                </a>
-                <a href="/logout" class="btn" style="padding-right: 0"><i
-                        class="material-icons text-light">exit_to_app</i></a>
-                <?php } else if (session()->get('role') == '3') { ?>
-                <a href="/market/product" class="btn d-flex align-items-center">
-                    <i class="material-icons text-light">chevron_left</i>
-                    <p class="m-0 text-light">Marketplace</p>
-                </a>
-                <a href="/logout" class="btn" style="padding-right: 0"><i
-                        class="material-icons text-light">exit_to_app</i></a>
-                <?php } ?>
+                    <?php if (session()->get('role') == '0' || session()->get('role') == '4') { ?>
+                        <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
+                        <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
+                        <a href="/account" class="btn"><i class="material-icons text-light">person_outline</i></a>
+                    <?php } else if (session()->get('role') == '1') { ?>
+                        <a href="/admin/product" class="btn d-flex align-items-center">
+                            <i class="material-icons text-light">chevron_left</i>
+                            <p class="m-0 text-light">Admin</p>
+                        </a>
+                        <a href="/logout" class="btn" style="padding-right: 0"><i
+                                class="material-icons text-light">exit_to_app</i></a>
+                    <?php } else if (session()->get('role') == '2') { ?>
+                        <a href="/gudang/listorder" class="btn d-flex align-items-center">
+                            <i class="material-icons text-light">chevron_left</i>
+                            <p class="m-0 text-light">Gudang</p>
+                        </a>
+                        <a href="/logout" class="btn" style="padding-right: 0"><i
+                                class="material-icons text-light">exit_to_app</i></a>
+                    <?php } else if (session()->get('role') == '3') { ?>
+                        <a href="/market/product" class="btn d-flex align-items-center">
+                            <i class="material-icons text-light">chevron_left</i>
+                            <p class="m-0 text-light">Marketplace</p>
+                        </a>
+                        <a href="/logout" class="btn" style="padding-right: 0"><i
+                                class="material-icons text-light">exit_to_app</i></a>
+                    <?php } ?>
                 <?php } else { ?>
-                <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
-                <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
-                <a href="/login" class="btn"><i class="material-icons text-light">person_outline</i></a>
+                    <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
+                    <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
+                    <a href="/login" class="btn"><i class="material-icons text-light">person_outline</i></a>
                 <?php } ?>
             </div>
         </div>
@@ -2019,7 +2019,7 @@
 
         <!-- Meja Nakas -->
         <div class="list-nav">
-            <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
+            <a class="text-dark text-center w-100 d-block" style="text-decoration: none; text-wrap:nowrap;"
                 href="/product?jenis=meja-nakas">Meja Nakas</a>
             <div class="child-list-nav" style="overflow: auto;">
                 <div class="container d-flex align-items-stretch py-4">
@@ -2028,7 +2028,7 @@
                         <div class="ms-2">
 
                             <a class="w-100 d-block" style="text-decoration: none; font-weight:500; font-size:20px;"
-                                href="/product?koleksi=industrial&jenis=console-table"
+                                href="/product?koleksi=sorely&jenis=meja-nakas"
                                 onmouseover="hoverListNav('mejanakas1-sorely')">Sorely</a>
 
                         </div>
@@ -2397,16 +2397,16 @@
     </div>
 </div>
 <script>
-function hoverListNav(idElm) {
-    const arrPenjelasanElm = document.querySelectorAll('.' + idElm.split('-')[0].slice(0, -1) + '-penjelasan');
-    // console.log(arrPenjelasanElm)
-    arrPenjelasanElm.forEach(penjelasanElm => {
-        penjelasanElm.classList.add('d-none')
-        penjelasanElm.classList.remove('d-flex')
-    });
-    // console.log(idElm)
-    const itemElm = document.getElementById(idElm)
-    itemElm.classList.remove('d-none')
-    itemElm.classList.add('d-flex')
-}
+    function hoverListNav(idElm) {
+        const arrPenjelasanElm = document.querySelectorAll('.' + idElm.split('-')[0].slice(0, -1) + '-penjelasan');
+        // console.log(arrPenjelasanElm)
+        arrPenjelasanElm.forEach(penjelasanElm => {
+            penjelasanElm.classList.add('d-none')
+            penjelasanElm.classList.remove('d-flex')
+        });
+        // console.log(idElm)
+        const itemElm = document.getElementById(idElm)
+        itemElm.classList.remove('d-none')
+        itemElm.classList.add('d-flex')
+    }
 </script>
