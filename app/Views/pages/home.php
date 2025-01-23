@@ -196,25 +196,23 @@
 
 <!-- End Tampilan Side Promo -->
 <!-- bagian windows -->
-<div class="show-flex-ke-hide p-5"
-    style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1-3 comp.png'); background-size: cover; width:100%; height:80svh;">
-    <div>
-        <h1 class="teks-besar mb-2">Modern & Stylish<br>Furniture</h1>
-        <p class="teks-sedang py-1 px-2" style="color: white; background-color: black; width:180px; font-size:30px;">
-            True To You
-        </p>
-        <div style="width:150px; height:20px; background-color:white;"></div>
+<div class="p-5">
+    <div class="show-flex-ke-hide p-5 flex-column align-items-center justify-content-center"
+        style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/set cabana.png'); background-size: cover; background-position: center; width:100%; height:80svh;">
+        <h1 class="teks-besar mb-2 text-center text-light">Modern & Stylish<br>Furniture</h1>
+        <p class="text-handwrite py-1 px-2 text-light" style="font-size:30px; transform: rotate(-10deg) translate(100px, -20px);">True to you</p>
+        <a href="/product" class="btn-underline text-light">
+            <p class="m-0 fw-bold">Telusuri</p><i class="material-icons text-light">arrow_forward</i>
+        </a>
     </div>
-</div>
-<!-- bagian HP -->
-<div class="hide-ke-show-flex px-5"
-    style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/banner1-3 comp.png'); background-size: cover; width:100%; height:60svh;">
-    <div>
-        <h1 class="teks-besar mt-5" style="font-size:34px;">Modern & Stylish<br>Furniture</h1>
-        <p class="teks-sedang px-1" style="color: white; background-color: black; font-size:14px; width:80px;">True To
-            You
-        </p>
-        <div style="width:60px; height:10px; background-color:white;"></div>
+    <!-- bagian HP -->
+    <div class="hide-ke-show-flex px-5 flex-column justify-content-center"
+        style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/set cabana.png'); background-size: cover; width:100%; height:60svh;">
+        <h1 class="teks-besar text-light" style="font-size:34px;">Modern & Stylish<br>Furniture</h1>
+        <p class="text-handwrite py-1 px-2 text-light" style="font-size:20px; transform: rotate(-10deg) translate(50px, -15px);">True to you</p>
+        <a href="/product" class="btn-underline text-light" style="transform: translateY(100px);">
+            <p class="m-0 fw-bold">Telusuri</p><i class="material-icons text-light">arrow_forward</i>
+        </a>
     </div>
 </div>
 
@@ -226,7 +224,7 @@
         background: url('./img/foto/0 comp.png');
         background-size: cover;
         background-position: center;
-        corsor: pointer;
+        cursor: pointer;
         transition-delay: 0.4s;
     }
 
