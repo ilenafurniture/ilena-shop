@@ -1311,10 +1311,11 @@ class Pages extends BaseController
         );
         array_push($itemDetails, $biayaadmin);
 
+        $midtrans_production_key = env('MIDTRANS_PRODUCTION_KEY', 'DefaultValue');
         if (in_array($email, $emailUjiCoba))
             $auth = base64_encode("SB-Mid-server-3M67g25LgovNPlwdS4WfiMsh" . ":");
         else
-            $auth = base64_encode("" . ":");
+            $auth = base64_encode($midtrans_production_key . ":");
         $pesananke = $this->pemesananModel->orderBy('id', 'desc')->first();
         $idAsli = "IL" . (sprintf("%08d", $pesananke ? ((int)$pesananke['id'] + 1) : 1));
         $randomId = "IL" . rand();
