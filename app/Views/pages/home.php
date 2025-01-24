@@ -578,7 +578,7 @@
     </div>
     <div class="kontenLN">
         <div class="overlayBed">
-            <a href="/product?koleksi=cabana&jenis=queen-bed" class="d-flex gap-3 align-items-center">
+            <a href="/product?koleksi=cabana&jenis=king-bed+queen-bed+single-bed" class="d-flex gap-3 align-items-center">
                 <div>
                     <p class="m-0 fw-bold">Bed Cabana</p>
                     <p class="m-0 fw-regular">Cabana</p>

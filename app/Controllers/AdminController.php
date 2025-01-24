@@ -69,6 +69,29 @@ class AdminController extends BaseController
         ];
         return view('admin/all', $data);
     }
+    public function listProductTable()
+    {
+        $product = $this->barangModel->orderBy('nama', 'asc')->findAll();
+        foreach ($product as $index_p => $p) {
+            $deskripsiArr = json_decode($p['deskripsi'], true);
+            $deskripsi = str_replace('</p>', '', str_replace('<br>', '', str_replace('<p>', '', $deskripsiArr['deskripsi'])));
+            $dimensi = 'Dimensi : P(' . $deskripsiArr['dimensi']['asli']['panjang'] . 'mm) x L(' . $deskripsiArr['dimensi']['asli']['lebar'] . 'mm) x T(' . $deskripsiArr['dimensi']['asli']['tinggi'] . 'mm) dengan berat ' . $deskripsiArr['dimensi']['asli']['berat'] . 'kg';
+            $product[$index_p]['deskripsi_nonhtml'] = $deskripsi . ' ' . $dimensi;
+            $product[$index_p]['gambar'] = 'https://ilenafurniture.com/viewpichover/' . $p['id'];
+            $product[$index_p]['varian'] = json_decode($p['varian'], true);
+            $product[$index_p]['stok_total'] = 0;
+            $product[$index_p]['warna'] = '';
+            foreach ($product[$index_p]['varian'] as $ind_v => $v) {
+                $product[$index_p]['stok_total'] += $v['stok'];
+                $product[$index_p]['warna'] .= ($ind_v == 0 ? '' : '/') . ucwords(strtolower($v['nama']));
+            }
+        }
+        $data = [
+            'title' => 'Produk Kami ',
+            'produk' => $product,
+        ];
+        return view('admin/allTable', $data);
+    }
     public function addProduct()
     {
         $koleksi = $this->koleksiModel->getKoleksi();
@@ -443,7 +466,7 @@ class AdminController extends BaseController
             'msg' => session()->getFlashdata('msg')
         ];
         return view('admin/mutasiConfirm', $data);
-    } 
+    }
     public function accMutasi($id)
     {
         $getMutasi  = $this->kartuStokModel->where(['id' => $id])->first();
@@ -776,14 +799,14 @@ class AdminController extends BaseController
         return view('admin/labelBarang', $data);
     }
 
-    
+
     // ARTIKEL
-    public function article(){
+    public function article()
+    {
         $data = [
             'title' => 'Artikel Konfirmasi',
         ];
         return view('pages/artikelAll', $data);
-
     }
     public function articleCategory($kategori)
     {
@@ -872,9 +895,10 @@ class AdminController extends BaseController
         return redirect()->to('/article/' . $path);
     }
 
-    public function deleteArticle($id){
-        $this->artikelModel->where(['id'=> $id])->delete();
-        $this->gambarArtikelModel->where(['id'=> $id])->delete();
+    public function deleteArticle($id)
+    {
+        $this->artikelModel->where(['id' => $id])->delete();
+        $this->gambarArtikelModel->where(['id' => $id])->delete();
         return redirect()->to('/article');
     }
     public function editArticle($id)

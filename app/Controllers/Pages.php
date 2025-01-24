@@ -297,7 +297,7 @@ class Pages extends BaseController
                 }
             }
             $data = [
-                'title' => 'produk',
+                'title' => ucwords($product['nama']),
                 'navbar' => [
                     'koleksi' => $this->koleksiModel->findAll(),
                     'jenis' => $this->jenisModel->findAll(),
@@ -3114,7 +3114,7 @@ class Pages extends BaseController
     public function article($judul_article = false)
     {
         $wishlist = session()->get('wishlist');
-        if(!$wishlist) {
+        if (!$wishlist) {
             $wishlist = [];
         }
         $artikel = $this->artikelModel->getArtikelJudul($judul_article);
@@ -3274,6 +3274,4 @@ class Pages extends BaseController
             ], 500);
         }
     }
-
-
 }
