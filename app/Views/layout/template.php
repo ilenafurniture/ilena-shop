@@ -166,7 +166,7 @@
             data-client-key="<?= $emailUji ? 'SB-Mid-client-aGWfdxs2btRH4xSd' : 'Mid-client-9sUvUz3XTM_xqGOp'; ?>" type="text/javascript" async>
         </script>
     <?php } ?>
-    <link rel="stylesheet" href="<?= base_url('css/style.css?v=1.41'); ?>">
+    <link rel="stylesheet" href="<?= base_url('css/style.css?v=1.43'); ?>">
     <link rel="icon" href="<?= base_url('logo-icon.png?v=2.0'); ?>" type="image/png">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
