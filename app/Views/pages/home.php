@@ -176,19 +176,19 @@
     <div class="slides">
         <a class="active">
             <img class="ls" src="imgheader/1" alt="Slide 1">
-            <img class="pt" src="imgheader/1" alt="Slide 1">
+            <img class="pt" src="imgheaderhp/1" alt="Slide 1">
         </a>
         <a class="kanan">
             <img class="ls" src="imgheader/2" alt="Slide 2">
-            <img class="pt" src="imgheader/2" alt="Slide 2">
+            <img class="pt" src="imgheaderhp/2" alt="Slide 2">
         </a>
         <a href="/product" class="kanan">
             <img class="ls" src="imgheader/3" alt="Slide 3">
-            <img class="pt" src="imgheader/3" alt="Slide 3">
+            <img class="pt" src="imgheaderhp/3" alt="Slide 3">
         </a>
         <a href="/login" class="kanan">
             <img class="ls" src="imgheader/4" alt="Slide 4">
-            <img class="pt" src="imgheader/4" alt="Slide 4">
+            <img class="pt" src="imgheaderhp/4" alt="Slide 4">
         </a>
     </div>
     <div class="dots">
