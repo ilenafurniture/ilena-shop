@@ -175,20 +175,25 @@
 <div class="slider">
     <div class="slides">
         <a class="active">
-            <img class="ls" src="<?= base_url('img/benner/poster slide home ls (1).png') ?>" alt="Slide 1">
-            <img class="pt" src="<?= base_url('img/benner/poster slide home pt (1).png') ?>" alt="Slide 1">
+            <img class="ls" src="imgheader/1" alt="Slide 1">
+            <img class="pt" src="imgheader/1" alt="Slide 1">
+        </a>
+        <a class="kanan">
+            <img class="ls" src="imgheader/2" alt="Slide 2">
+            <img class="pt" src="imgheader/2" alt="Slide 2">
         </a>
         <a href="/product" class="kanan">
-            <img class="ls" src="<?= base_url('img/benner/poster slide home ls (3).png') ?>" alt="Slide 2">
-            <img class="pt" src="<?= base_url('img/benner/poster slide home pt (3).png') ?>" alt="Slide 2">
+            <img class="ls" src="imgheader/3" alt="Slide 3">
+            <img class="pt" src="imgheader/3" alt="Slide 3">
         </a>
         <a href="/login" class="kanan">
-            <img class="ls" src="<?= base_url('img/benner/poster slide home ls (4).png') ?>" alt="Slide 3">
-            <img class="pt" src="<?= base_url('img/benner/poster slide home pt (4).png') ?>" alt="Slide 3">
+            <img class="ls" src="imgheader/4" alt="Slide 4">
+            <img class="pt" src="imgheader/4" alt="Slide 4">
         </a>
     </div>
     <div class="dots">
         <div class="dot active"></div>
+        <div class="dot"></div>
         <div class="dot"></div>
         <div class="dot"></div>
     </div>

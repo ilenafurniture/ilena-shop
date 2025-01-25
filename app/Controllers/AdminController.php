@@ -15,11 +15,13 @@ use App\Models\KoleksiModel;
 use App\Models\JenisModel;
 use App\Models\AjukanPrintModel;
 use App\Models\KartuStokModel;
+use App\Models\GambarHeaderModel;
 
 class AdminController extends BaseController
 {
     protected $barangModel;
     protected $gambarBarangModel;
+    protected $gambarHeaderModel;
     protected $gambarBarang3000Model;
     protected $artikelModel;
     protected $gambarArtikelModel;
@@ -36,6 +38,7 @@ class AdminController extends BaseController
     {
         $this->barangModel = new BarangModel();
         $this->gambarBarangModel = new GambarBarangModel();
+        $this->gambarHeaderModel = new GambarHeaderModel();
         $this->gambarBarang3000Model = new GambarBarang3000Model();
         $this->gambarArtikelModel = new GambarArtikelModel();
         $this->artikelModel = new ArtikelModel();
@@ -1010,4 +1013,46 @@ class AdminController extends BaseController
         return redirect()->to('/article/' . $path);
     }
     // END LANJUTAN ARTIKEL
+
+    public function homeLayout()
+    {
+        $data = [
+            'title' => 'Home Layout',
+            'msg' => session()->getFlashdata('msg')
+        ];
+        return view('admin/homeLayout', $data);
+    }
+    public function actionHomeLayout()
+    {
+        $image1 = $this->request->getFile('image1');
+        $image1hp = $this->request->getFile('image1-hp');
+        $image2 = $this->request->getFile('image2');
+        $image2hp = $this->request->getFile('image2-hp');
+        $image3 = $this->request->getFile('image3');
+        $image3hp = $this->request->getFile('image3-hp');
+        $image4 = $this->request->getFile('image4');
+        $image4hp = $this->request->getFile('image4-hp');
+        if ($image1->isValid() && $image1hp->isValid()) {
+            $imageDesktop = file_get_contents($image1);
+            $imageHp = file_get_contents($image1hp);
+            $this->gambarHeaderModel->where(['id' => 1])->set(['foto' => $imageDesktop, 'foto_hp' => $imageHp])->update();
+        }
+        if ($image2->isValid() && $image2hp->isValid()) {
+            $imageDesktop = file_get_contents($image2);
+            $imageHp = file_get_contents($image2hp);
+            $this->gambarHeaderModel->where(['id' => 2])->set(['foto' => $imageDesktop, 'foto_hp' => $imageHp])->update();
+        }
+        if ($image3->isValid() && $image3hp->isValid()) {
+            $imageDesktop = file_get_contents($image3);
+            $imageHp = file_get_contents($image3hp);
+            $this->gambarHeaderModel->where(['id' => 3])->set(['foto' => $imageDesktop, 'foto_hp' => $imageHp])->update();
+        }
+        if ($image4->isValid() && $image4hp->isValid()) {
+            $imageDesktop = file_get_contents($image4);
+            $imageHp = file_get_contents($image4hp);
+            $this->gambarHeaderModel->where(['id' => 4])->set(['foto' => $imageDesktop, 'foto_hp' => $imageHp])->update();
+        }
+        session()->setFlashdata('msg', 'Home layout telah diperbarui');
+        return redirect()->to('/admin/homelayout');
+    }
 }

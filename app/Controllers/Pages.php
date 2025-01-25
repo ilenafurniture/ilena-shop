@@ -15,11 +15,13 @@ use App\Models\UserModel;
 use App\Models\KoleksiModel;
 use App\Models\JenisModel;
 use App\Models\VoucherModel;
+use App\Models\GambarHeaderModel;
 
 class Pages extends BaseController
 {
     protected $barangModel;
     protected $gambarBarangModel;
+    protected $gambarHeaderModel;
     protected $gambarBarang3000Model;
     protected $gambarArtikelModel;
     protected $artikelModel;
@@ -36,6 +38,7 @@ class Pages extends BaseController
     {
         $this->barangModel = new BarangModel();
         $this->gambarBarangModel = new GambarBarangModel();
+        $this->gambarHeaderModel = new GambarHeaderModel();
         $this->gambarBarang3000Model = new GambarBarang3000Model();
         $this->gambarArtikelModel = new GambarArtikelModel();
         $this->artikelModel = new ArtikelModel();
@@ -66,7 +69,7 @@ class Pages extends BaseController
             'produk' => $produk,
             'wishlist' => $wishlist,
             'msg_active' => session()->getFlashdata('msg_active') ? session()->getFlashdata('msg_active') : false,
-            'isLogin' => session()->get('isLogin') ? true : false
+            'isLogin' => session()->get('isLogin') ? true : false,
         ];
         return view('pages/home', $data);
     }

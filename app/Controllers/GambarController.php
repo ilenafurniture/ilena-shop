@@ -11,6 +11,7 @@ use App\Models\PembeliModel;
 use App\Models\PemesananModel;
 use App\Models\UserModel;
 use CodeIgniter\Images\Handlers\GDHandler;
+use App\Models\GambarHeaderModel;
 
 class GambarController extends BaseController
 {
@@ -19,6 +20,7 @@ class GambarController extends BaseController
     protected $gambarArtikelModel;
     protected $gambarBarangModel;
     protected $gambarBarang3000Model;
+    protected $gambarHeaderModel;
     public function __construct()
     {
         $this->artikelModel = new ArtikelModel();
@@ -26,6 +28,7 @@ class GambarController extends BaseController
         $this->barangModel = new BarangModel();
         $this->gambarBarangModel = new GambarBarangModel();
         $this->gambarBarang3000Model = new GambarBarang3000Model();
+        $this->gambarHeaderModel = new GambarHeaderModel();
     }
 
     public function tampilGambarBarangCoba($idBarang)
@@ -193,5 +196,18 @@ class GambarController extends BaseController
         }
         $this->response->setHeader('Content-Type', 'image/webp');
         echo $gambarSelected;
+    }
+
+    public function tampilGambarHeader($id)
+    {
+        $gambar = $this->gambarHeaderModel->getGambar($id)['foto'];
+        $this->response->setHeader('Content-Type', 'image/webp');
+        echo $gambar;
+    }
+    public function tampilGambarHeaderHp($id)
+    {
+        $gambar = $this->gambarHeaderModel->getGambar($id)['foto_hp'];
+        $this->response->setHeader('Content-Type', 'image/webp');
+        echo $gambar;
     }
 }

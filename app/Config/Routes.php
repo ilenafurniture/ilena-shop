@@ -95,6 +95,8 @@ $routes->get('/cobainput', 'GambarController::actionCobaInput');
 $routes->get('/gamwm', 'GambarController::tampilGambarVarWM');
 $routes->get('/imgart/(:any)', 'GambarController::tampilGambarArtikel/$1');
 $routes->get('/imgart/(:any)/(:any)', 'GambarController::tampilGambarArtikel/$1/$2');
+$routes->get('/imgheader/(:any)', 'GambarController::tampilGambarHeader/$1');
+$routes->get('/imgheaderhp/(:any)', 'GambarController::tampilGambarHeaderHp/$1');
 
 
 // Admin Controller
@@ -127,6 +129,8 @@ $routes->get('/admin/mutasiconfirm', 'AdminController::mutasiConfirm', ['filter'
 $routes->get('/admin/accmutasi/(:any)', 'AdminController::accMutasi/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/denymutasi/(:any)', 'AdminController::denyMutasi/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/labelbarang/(:any)', 'AdminController::labelBarang/$1', ['filter' => 'adminFilter']);
+$routes->get('/admin/homelayout', 'AdminController::homeLayout', ['filter' => 'adminFilter']);
+$routes->post('/admin/homelayout', 'AdminController::actionHomeLayout', ['filter' => 'adminFilter']);
 
 //GUDANG Controller
 $routes->get('/gudang/listorder', 'GudangController::listOrder', ['filter' => 'gudangFilter']);
