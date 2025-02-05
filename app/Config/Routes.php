@@ -69,7 +69,7 @@ $routes->post('/delwishlist/(:any)', 'Pages::delWishlist/$1', ['filter' => 'cust
 $routes->get('/wishlisttocart', 'Pages::wishlistToCart', ['filter' => 'customerFilter']);
 
 $routes->get('/order', 'Pages::order', ['filter' => 'customerFilter']);
-$routes->get('/order/(:any)', 'Pages::order/$1', ['filter' => 'customerFilter']);
+$routes->get('/orderdetail/(:any)', 'Pages::orderDetail/$1', ['filter' => 'customerFilter']);
 // $routes->get('/cancelorder/(:any)', 'Pages::cancelOrder/$1', ['filter' => 'customerFilter']); //harus admin
 $routes->get('/invoice/(:any)', 'Pages::invoice/$1', ['filter' => 'customerFilter']);
 $routes->get('/account', 'Pages::account', ['filter' => 'customerLoginFilter']);

@@ -1175,7 +1175,7 @@ class Pages extends BaseController
             'v' => $voucher
         ]);
 
-        $emailUjiCoba = ['galihsuks123@gmail.com', 'ilenafurniture@gmail.com', 'galih8.4.2001@gmail.com'];
+        $emailUjiCoba = ['galihsuks123@gmail.com', 'ilenafurniture@gmail.com', 'galih8.4.2001@gmail.com','adityaanugrah494@gmail.com'];
         $arrPostField = [
             "transaction_details" => [
                 "order_id" => $randomId,
@@ -1255,7 +1255,7 @@ class Pages extends BaseController
             }
         }
         $tokencc = $this->request->getVar('tokencc');
-        $emailUjiCoba = ['galihsuks123@gmail.com', 'ilenafurniture@gmail.com', 'galih8.4.2001@gmail.com'];
+        $emailUjiCoba = ['galihsuks123@gmail.com', 'ilenafurniture@gmail.com', 'galih8.4.2001@gmail.com','adityaanugrah494@gmail.com'];
 
         $subtotal = 0;
         $itemDetails = [];
@@ -1538,7 +1538,7 @@ class Pages extends BaseController
                 ])->update();
             }
         }
-        return redirect()->to('/order/' . $idFix);
+        return redirect()->to('/orderdetail/'. strtolower($status).'?idorder=' . $idFix);
     }
     public function actionPay($metode)
     {
@@ -2058,7 +2058,7 @@ class Pages extends BaseController
         ];
         return view('pages/cencelpay', $data);
     }
-    public function order($id_order = false)
+    public function orderLama($id_order = false)
     {
         $pemesanan = $this->pemesananModel->getPemesanan($id_order);
         $carapembayaran = [
@@ -2552,6 +2552,568 @@ class Pages extends BaseController
                 'msgSandi' => session()->get('msg-sandi') ? session()->get('msg-sandi') : false,
             ];
             return view('pages/order', $data);
+        }
+    }
+    public function order($id_order = false)
+    {
+        $pemesanan = $this->pemesananModel->getPemesanan($id_order);
+        $carapembayaran = [
+            'bca' => [
+                [
+                    'nama' => 'myBCA',
+                    'isi' => '1. Login ke myBCA<br>
+                                2. Pilih Transfer dan pilih Virtual Account<br>
+                                3. Pilih Transfer ke tujuan baru<br>
+                                4. Masukkan nomor Virtual Account dari e-commerce dan klik Lanjut<br>
+                                5. Pilih rekening sumber dana (jika memiliki lebih dari satu), masukkan nominal dan klik Lanjut<br>
+                                6. Cek detail transaksi, klik Lanjut<br>
+                                7. Masukkan PIN dan transaksi berhasil'
+                ],
+                [
+                    'nama' => 'BCA Mobile',
+                    'isi' => '1. Login ke BCA mobile<br>
+                                2. Pilih m-Transfer dan pilih BCA Virtual Account<br>
+                                3. Masukkan nomor BCA Virtual Account dari e-commerce dan klik Send<br>
+                                4. Masukkan nominal<br>
+                                5. Cek detail transaksi, klik OK<br>
+                                6. Masukkan PIN dan transaksi berhasil'
+                ],
+                [
+                    'nama' => 'KlikBCA',
+                    'isi' => '1. Login ke KlikBCA<br>
+                                2. Pilih Transfer Dana dan pilih Transfer ke BCA Virtual Account<br>
+                                3. Masukkan nomor BCA Virtual Account dari e-commerce dan klik Lanjutkan<br>
+                                4. Masukkan nominal dan klik Lanjutkan<br>
+                                5. Masukkan Respon KeyBCA Appli 1 dan klik Kirim<br>
+                                6. Transaksi berhasil dilakukan'
+                ],
+                [
+                    'nama' => 'ATM BCA',
+                    'isi' => '1. Masukkan Kartu ATM dan PIN di ATM BCA<br>
+                                2. Pilih Penarikan Tunai/Transaksi Lainnya<br>
+                                3. Pilih Transaksi Lainnya<br>
+                                4. Pilih Transfer<br>
+                                5. Pilih menu Ke Rek BCA Virtual Account<br>
+                                6. Masukkan nomor BCA Virtual Account dan klik Benar<br>
+                                7. Cek detail transaksi dan pilih Ya<br>
+                                8. Transaksi berhasil'
+                ]
+            ],
+            'mandiri' => [
+                [
+                    'nama' => 'Livin by Mandiri',
+                    'isi' => '1. Pilih bayar pada menu utama.<br>
+                                2. Pilih Ecommerce.<br>
+                                3. Pilih Midtrans di bagian penyedia jasa.<br>
+                                4. Masukkan nomor virtual account pada bagian kode bayar.<br>
+                                5. Klik lanjutkan untuk konfirmasi.<br>
+                                6. Pembayaran selesai.'
+                ],
+                [
+                    'nama' => 'ATM Mandiri',
+                    'isi' => '1. Pilih bayar/beli pada menu utama.<br>
+                                2. Pilih lainnya.<br>
+                                3. Pilih multi payment.<br>
+                                4. Masukkan kode perusahaan Midtrans 70012.<br>
+                                5. Masukkan kode pembayaran, lalu konfirmasi.<br>
+                                6. Pembayaran selesai.'
+                ],
+                [
+                    'nama' => 'Mandiri Internet Banking',
+                    'isi' => '1. Pilih bayar pada menu utama.<br>
+                                2. Pilih multi payment.<br>
+                                3. Pilih dari rekening.<br>
+                                4. Pilih Midtrans di bagian penyedia jasa.<br>
+                                5. Masukkan kode pembayaran, lalu konfirmasi.<br>
+                                6. Pembayaran selesai.'
+                ],
+            ],
+            'bni' => [
+                [
+                    'nama' => 'ATM BNI',
+                    'isi' => '1. Pilih menu lain pada menu utama.<br>
+                                2. Pilih transfer.<br>
+                                3. Pilih ke rekening BNI.<br>
+                                4. Masukkan nomor rekening pembayaran.<br>
+                                5. Masukkan jumlah yang akan dibayar, lalu konfirmasi.<br>
+                                6. Pembayaran berhasil.<br>
+                                7. Internet Banking'
+                ],
+                [
+                    'nama' => 'BNI Internet Banking',
+                    'isi' => '1. Pilih transaksi, lalu info & administrasi transfer.<br>
+                                2. Pilih atur rekening tujuan.<br>
+                                3. Masukkan informasi rekening, lalu konfirmasi.<br>
+                                4. Pilih transfer, lalu transfer ke rekening BNI.<br>
+                                5. Masukkan detail pembayaran, lalu konfirmasi.<br>
+                                6. Pembayaran berhasil.'
+                ],
+                [
+                    'nama' => 'BNI Mobile Banking',
+                    'isi' => '1. Pilih transfer.<br>
+                                2. Pilih virtual account billing.<br>
+                                3. Pilih rekening debit yang akan digunakan.<br>
+                                4. Masukkan nomor virtual account, lalu konfirmasi.<br>
+                                5. Pembayaran berhasil.'
+                ],
+            ],
+            'bri' => [
+                [
+                    'nama' => 'ATM BRI',
+                    'isi' => '1. Pilih transaksi lainnya pada menu utama.<br>
+                                2. Pilih pembayaran.<br>
+                                3. Pilih lainnya.<br>
+                                4. Pilih BRIVA.<br>
+                                5. Masukkan nomor BRIVA, lalu konfirmasi.<br>
+                                6. Pembayaran berhasil.'
+                ],
+                [
+                    'nama' => 'IB BRI',
+                    'isi' => '1. Pilih pembayaran & pembelian.<br>
+                                2. Pilih BRIVA.<br>
+                                3. Masukkan nomor BRIVA, lalu konfirmasi.<br>
+                                4. Pembayaran berhasil.'
+                ],
+                [
+                    'nama' => 'BRImo',
+                    'isi' => '1. Pilih pembayaran.<br>
+                                2. Pilih BRIVA.<br>
+                                3. Masukkan nomor BRIVA, lalu konfirmasi.<br>
+                                4. Pembayaran berhasil.'
+                ],
+            ],
+            'bca' => [
+                [
+                    'nama' => 'ATM BCA',
+                    'isi' => '1. Pilih transaksi lainnya pada menu utama.<br>
+                                2. Pilih transfer.<br>
+                                3. Pilih ke rekening BCA virtual account.<br>
+                                4. Masukan Nomor BCA virtual account.<br>
+                                5. Masukan jumlah yang akan dibayar, lalu konfirmasi.<br>
+                                6. Pembayaran berhasil.'
+                ],
+                [
+                    'nama' => 'Klik BCA',
+                    'isi' => '1. Pilih Transfer Dana.<br>
+                                2. Pilih Transfer ke BCA virtual account.<br>
+                                3. Masukkan nomor BCA virtual account.<br>
+                                4. Masukan jumlah yang akan dibayar, lalu konfirmasi.<br>
+                                5. Pembayaran berhasil.'
+                ],
+                [
+                    'nama' => 'M-BCA',
+                    'isi' => '1. Pilih m-Transfer.<br>
+                                2. Pilih BCA virtual account.<br>
+                                3. Masukkan nomor BCA virtual account.<br>
+                                4. Masukan jumlah yang akan dibayar, lalu konfirmasi<br>
+                                5. Pembayaran berhasil.'
+                ],
+            ],
+            'permata' => [
+                [
+                    'nama' => 'ATM Permata/ALTO',
+                    'isi' => '1. Pilih transaksi lainnya pada menu utama.<br>
+                                2. Pilih pembayaran.<br>
+                                3. Pilih pembayaran lainnya.<br>
+                                4. Pilih virtual account.<br>
+                                5. Masukkan nomor virtual account Permata, lalu konfirmasi.<br>
+                                6. Pembayaran berhasil.'
+                ],
+            ],
+            'cimb' => [
+                [
+                    'nama' => 'ATM CIMB Niaga',
+                    'isi' => '1. Pilih pembayaran pada menu utama.<br>
+                                2. Pilih virtual account.<br>
+                                3. Masukkan nomor virtual account, lalu konfirmasi.<br>
+                                4. Pembayaran selesai.'
+                ],
+                [
+                    'nama' => 'OCTO Clicks',
+                    'isi' => '1. Pilih pembayaran tagihan pada menu utama.<br>
+                                2. Pilih mobile rekening virtual.<br>
+                                3. Masukkan nomor virtual account, lalu klik lanjut untuk verifikasi detail.<br>
+                                4. Pilih kirim OTP untuk lanjut.<br>
+                                5. Masukkan OTP yang dikirimkan ke nomor HP Anda, lalu konfirmasi.<br>
+                                6. Pembayaran selesai.'
+                ],
+                [
+                    'nama' => 'OCTO Mobile',
+                    'isi' => '1. Pilih menu transfer.<br>
+                                2. Pilih transfer to other CIMB Niaga account.<br>
+                                3. Pilih sumber dana: CASA atau rekening ponsel.<br>
+                                4. Masukkan nomor virtual account.<br>
+                                5. Masukkan jumlah yang akan dibayar.<br>
+                                6. Ikuti instruksi untuk menyelesaikan pembayaran.<br>
+                                7. Pembayaran selesai.'
+                ],
+            ],
+            'qris' => [
+                [
+                    'nama' => 'QRIS',
+                    'isi' => '1. Buka aplikasi yang mendukung pembayaran dengan QRIS.<br>
+                                2. Download atau pindai QRIS pada layar.<br>
+                                3. Konfirmasi pembayaran pada aplikasi.<br>
+                                4. Pembayaran berhasil.'
+                ],
+            ],
+            'gopay' => [
+                [
+                    'nama' => 'GoPay',
+                    'isi' => '1. Klik Bayar sekarang.<br>
+                                2. Aplikasi Gojek atau GoPay akan terbuka.<br>
+                                3. Konfirmasi pembayaran di aplikasi Gojek atau GoPay.<br>
+                                4. Pembayaran berhasil.'
+                ],
+            ],
+            'toko' => [
+                [
+                    'nama' => 'Pemesanan Gudang',
+                    'isi' => '-'
+                ],
+            ],
+            'market' => [
+                [
+                    'nama' => 'Pemesanan Marketplace',
+                    'isi' => '-'
+                ],
+            ],
+            'card' => 'Always Success'
+        ];
+        
+        $email = session()->get('email');
+        $pesanan = $this->pemesananModel->getPemesananCus($email);
+        foreach ($pesanan as $ind_p => $p) {
+            $pesanan[$ind_p]['data_mid'] = [
+                'transaction_time' => json_decode($p['data_mid'], true)['transaction_time'],
+                'gross_amount' => json_decode($p['data_mid'], true)['gross_amount'],
+            ];
+            $pesanan[$ind_p]['items'] = json_decode($p['items'], true);
+            $pesanan[$ind_p]['kurir'] = json_decode($p['kurir'], true);
+        }
+        $data = [
+            'title' => 'Pesanan',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
+            'pesanan' => $pesanan,
+            'email' => session()->get('email'),
+            'nama' => session()->get('nama'),
+            'nohp' => session()->get('nohp'),
+            'pesananJson' => json_encode($pesanan),
+            'msgSandi' => session()->get('msg-sandi') ? session()->get('msg-sandi') : false,
+        ];
+        return view('pages/order', $data);
+    }
+    public function orderDetail($status)
+    {
+        $pemesanan = $this->pemesananModel->where('status', $status)->findAll();    
+        $pemesananAll = $this->pemesananModel->findAll();    
+        $carapembayaran = [
+            'bca' => [
+                [
+                    'nama' => 'myBCA',
+                    'isi' => '1. Login ke myBCA<br>
+                                2. Pilih Transfer dan pilih Virtual Account<br>
+                                3. Pilih Transfer ke tujuan baru<br>
+                                4. Masukkan nomor Virtual Account dari e-commerce dan klik Lanjut<br>
+                                5. Pilih rekening sumber dana (jika memiliki lebih dari satu), masukkan nominal dan klik Lanjut<br>
+                                6. Cek detail transaksi, klik Lanjut<br>
+                                7. Masukkan PIN dan transaksi berhasil'
+                ],
+                [
+                    'nama' => 'BCA Mobile',
+                    'isi' => '1. Login ke BCA mobile<br>
+                                2. Pilih m-Transfer dan pilih BCA Virtual Account<br>
+                                3. Masukkan nomor BCA Virtual Account dari e-commerce dan klik Send<br>
+                                4. Masukkan nominal<br>
+                                5. Cek detail transaksi, klik OK<br>
+                                6. Masukkan PIN dan transaksi berhasil'
+                ],
+                [
+                    'nama' => 'KlikBCA',
+                    'isi' => '1. Login ke KlikBCA<br>
+                                2. Pilih Transfer Dana dan pilih Transfer ke BCA Virtual Account<br>
+                                3. Masukkan nomor BCA Virtual Account dari e-commerce dan klik Lanjutkan<br>
+                                4. Masukkan nominal dan klik Lanjutkan<br>
+                                5. Masukkan Respon KeyBCA Appli 1 dan klik Kirim<br>
+                                6. Transaksi berhasil dilakukan'
+                ],
+                [
+                    'nama' => 'ATM BCA',
+                    'isi' => '1. Masukkan Kartu ATM dan PIN di ATM BCA<br>
+                                2. Pilih Penarikan Tunai/Transaksi Lainnya<br>
+                                3. Pilih Transaksi Lainnya<br>
+                                4. Pilih Transfer<br>
+                                5. Pilih menu Ke Rek BCA Virtual Account<br>
+                                6. Masukkan nomor BCA Virtual Account dan klik Benar<br>
+                                7. Cek detail transaksi dan pilih Ya<br>
+                                8. Transaksi berhasil'
+                ]
+            ],
+            'mandiri' => [
+                [
+                    'nama' => 'Livin by Mandiri',
+                    'isi' => '1. Pilih bayar pada menu utama.<br>
+                                2. Pilih Ecommerce.<br>
+                                3. Pilih Midtrans di bagian penyedia jasa.<br>
+                                4. Masukkan nomor virtual account pada bagian kode bayar.<br>
+                                5. Klik lanjutkan untuk konfirmasi.<br>
+                                6. Pembayaran selesai.'
+                ],
+                [
+                    'nama' => 'ATM Mandiri',
+                    'isi' => '1. Pilih bayar/beli pada menu utama.<br>
+                                2. Pilih lainnya.<br>
+                                3. Pilih multi payment.<br>
+                                4. Masukkan kode perusahaan Midtrans 70012.<br>
+                                5. Masukkan kode pembayaran, lalu konfirmasi.<br>
+                                6. Pembayaran selesai.'
+                ],
+                [
+                    'nama' => 'Mandiri Internet Banking',
+                    'isi' => '1. Pilih bayar pada menu utama.<br>
+                                2. Pilih multi payment.<br>
+                                3. Pilih dari rekening.<br>
+                                4. Pilih Midtrans di bagian penyedia jasa.<br>
+                                5. Masukkan kode pembayaran, lalu konfirmasi.<br>
+                                6. Pembayaran selesai.'
+                ],
+            ],
+            'bni' => [
+                [
+                    'nama' => 'ATM BNI',
+                    'isi' => '1. Pilih menu lain pada menu utama.<br>
+                                2. Pilih transfer.<br>
+                                3. Pilih ke rekening BNI.<br>
+                                4. Masukkan nomor rekening pembayaran.<br>
+                                5. Masukkan jumlah yang akan dibayar, lalu konfirmasi.<br>
+                                6. Pembayaran berhasil.<br>
+                                7. Internet Banking'
+                ],
+                [
+                    'nama' => 'BNI Internet Banking',
+                    'isi' => '1. Pilih transaksi, lalu info & administrasi transfer.<br>
+                                2. Pilih atur rekening tujuan.<br>
+                                3. Masukkan informasi rekening, lalu konfirmasi.<br>
+                                4. Pilih transfer, lalu transfer ke rekening BNI.<br>
+                                5. Masukkan detail pembayaran, lalu konfirmasi.<br>
+                                6. Pembayaran berhasil.'
+                ],
+                [
+                    'nama' => 'BNI Mobile Banking',
+                    'isi' => '1. Pilih transfer.<br>
+                                2. Pilih virtual account billing.<br>
+                                3. Pilih rekening debit yang akan digunakan.<br>
+                                4. Masukkan nomor virtual account, lalu konfirmasi.<br>
+                                5. Pembayaran berhasil.'
+                ],
+            ],
+            'bri' => [
+                [
+                    'nama' => 'ATM BRI',
+                    'isi' => '1. Pilih transaksi lainnya pada menu utama.<br>
+                                2. Pilih pembayaran.<br>
+                                3. Pilih lainnya.<br>
+                                4. Pilih BRIVA.<br>
+                                5. Masukkan nomor BRIVA, lalu konfirmasi.<br>
+                                6. Pembayaran berhasil.'
+                ],
+                [
+                    'nama' => 'IB BRI',
+                    'isi' => '1. Pilih pembayaran & pembelian.<br>
+                                2. Pilih BRIVA.<br>
+                                3. Masukkan nomor BRIVA, lalu konfirmasi.<br>
+                                4. Pembayaran berhasil.'
+                ],
+                [
+                    'nama' => 'BRImo',
+                    'isi' => '1. Pilih pembayaran.<br>
+                                2. Pilih BRIVA.<br>
+                                3. Masukkan nomor BRIVA, lalu konfirmasi.<br>
+                                4. Pembayaran berhasil.'
+                ],
+            ],
+            'bca' => [
+                [
+                    'nama' => 'ATM BCA',
+                    'isi' => '1. Pilih transaksi lainnya pada menu utama.<br>
+                                2. Pilih transfer.<br>
+                                3. Pilih ke rekening BCA virtual account.<br>
+                                4. Masukan Nomor BCA virtual account.<br>
+                                5. Masukan jumlah yang akan dibayar, lalu konfirmasi.<br>
+                                6. Pembayaran berhasil.'
+                ],
+                [
+                    'nama' => 'Klik BCA',
+                    'isi' => '1. Pilih Transfer Dana.<br>
+                                2. Pilih Transfer ke BCA virtual account.<br>
+                                3. Masukkan nomor BCA virtual account.<br>
+                                4. Masukan jumlah yang akan dibayar, lalu konfirmasi.<br>
+                                5. Pembayaran berhasil.'
+                ],
+                [
+                    'nama' => 'M-BCA',
+                    'isi' => '1. Pilih m-Transfer.<br>
+                                2. Pilih BCA virtual account.<br>
+                                3. Masukkan nomor BCA virtual account.<br>
+                                4. Masukan jumlah yang akan dibayar, lalu konfirmasi<br>
+                                5. Pembayaran berhasil.'
+                ],
+            ],
+            'permata' => [
+                [
+                    'nama' => 'ATM Permata/ALTO',
+                    'isi' => '1. Pilih transaksi lainnya pada menu utama.<br>
+                                2. Pilih pembayaran.<br>
+                                3. Pilih pembayaran lainnya.<br>
+                                4. Pilih virtual account.<br>
+                                5. Masukkan nomor virtual account Permata, lalu konfirmasi.<br>
+                                6. Pembayaran berhasil.'
+                ],
+            ],
+            'cimb' => [
+                [
+                    'nama' => 'ATM CIMB Niaga',
+                    'isi' => '1. Pilih pembayaran pada menu utama.<br>
+                                2. Pilih virtual account.<br>
+                                3. Masukkan nomor virtual account, lalu konfirmasi.<br>
+                                4. Pembayaran selesai.'
+                ],
+                [
+                    'nama' => 'OCTO Clicks',
+                    'isi' => '1. Pilih pembayaran tagihan pada menu utama.<br>
+                                2. Pilih mobile rekening virtual.<br>
+                                3. Masukkan nomor virtual account, lalu klik lanjut untuk verifikasi detail.<br>
+                                4. Pilih kirim OTP untuk lanjut.<br>
+                                5. Masukkan OTP yang dikirimkan ke nomor HP Anda, lalu konfirmasi.<br>
+                                6. Pembayaran selesai.'
+                ],
+                [
+                    'nama' => 'OCTO Mobile',
+                    'isi' => '1. Pilih menu transfer.<br>
+                                2. Pilih transfer to other CIMB Niaga account.<br>
+                                3. Pilih sumber dana: CASA atau rekening ponsel.<br>
+                                4. Masukkan nomor virtual account.<br>
+                                5. Masukkan jumlah yang akan dibayar.<br>
+                                6. Ikuti instruksi untuk menyelesaikan pembayaran.<br>
+                                7. Pembayaran selesai.'
+                ],
+            ],
+            'qris' => [
+                [
+                    'nama' => 'QRIS',
+                    'isi' => '1. Buka aplikasi yang mendukung pembayaran dengan QRIS.<br>
+                                2. Download atau pindai QRIS pada layar.<br>
+                                3. Konfirmasi pembayaran pada aplikasi.<br>
+                                4. Pembayaran berhasil.'
+                ],
+            ],
+            'gopay' => [
+                [
+                    'nama' => 'GoPay',
+                    'isi' => '1. Klik Bayar sekarang.<br>
+                                2. Aplikasi Gojek atau GoPay akan terbuka.<br>
+                                3. Konfirmasi pembayaran di aplikasi Gojek atau GoPay.<br>
+                                4. Pembayaran berhasil.'
+                ],
+            ],
+            'toko' => [
+                [
+                    'nama' => 'Pemesanan Gudang',
+                    'isi' => '-'
+                ],
+            ],
+            'market' => [
+                [
+                    'nama' => 'Pemesanan Marketplace',
+                    'isi' => '-'
+                ],
+            ],
+            'card' => 'Always Success'
+        ];
+        // $status = "Proses";
+        //     break;
+        // case 'capture':
+        //     $status = "Proses";
+        //     break;
+        // case 'pending':
+        //     $status = "Menunggu Pembayaran";
+        //     break;
+        // case 'expire':
+        //     $status = "Kadaluarsa";
+        //     break;
+        // case 'deny':
+        //     $status = "Ditolak";
+        //     break;
+        // case 'failure':
+        //     $status = "Gagal";
+        //     break;
+        // case 'refund':
+        //     $status = "Refund";
+        //     break;
+        // case 'partial_refund':
+        //     $status = "Partial Refund";
+        //     break;
+        // case 'cancel':
+        //     $status = "Dibatalkan";
+        //     break;
+        // default:
+        //     $status = "No Status";
+        $statusAll = ['Proses', 'Menunggu Pembayaran', 'Kadaluarsa', 'Ditolak', 'Gagal', 'Refund', 'Partial Refund', 'Dibatalkan'];
+        $statusSelain = array_filter($statusAll, function ($s) use ($status) {
+            return strtolower($s) != strtolower($status);
+        });
+        foreach ($pemesanan as $ind_p => $p) {
+            $pemesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
+            $pemesanan[$ind_p]['kurir'] = json_decode($p['kurir'], true);
+            $pemesanan[$ind_p]['items'] = json_decode($p['items'], true);
+            $items = $pemesanan[$ind_p]['items'];
+            foreach ($items as $ind_i => $i) {
+                $produknya = $this->barangModel->getBarang($i['id']);
+                if ($produknya) {
+                    $items[$ind_i]['name'] = $produknya['nama'];
+                }
+            }
+        }
+        foreach ($pemesananAll as $ind_p => $p) {
+            $pemesananAll[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
+            $pemesananAll[$ind_p]['kurir'] = json_decode($p['kurir'], true);
+            $pemesananAll[$ind_p]['items'] = json_decode($p['items'], true);
+            $items = $pemesananAll[$ind_p]['items'];
+            foreach ($items as $ind_i => $i) {
+                $produknya = $this->barangModel->getBarang($i['id']);
+                if ($produknya) {
+                    $items[$ind_i]['name'] = $produknya['nama'];
+                }
+            }
+        }
+        $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+        $data = [
+            'title' => 'Peroses Pembayaran',
+            'navbar' => [
+                'koleksi' => $this->koleksiModel->findAll(),
+                'jenis' => $this->jenisModel->findAll(),
+            ],
+            'pemesanan' => $pemesanan,
+            'pemesananAll' => $pemesananAll,
+            'bulan' => $bulan,
+            'carapembayaran' => $carapembayaran,
+            'status' => $status,
+            'statusSelain' => $statusSelain,
+        ];
+        switch (strtolower($status)) {
+            case 'menunggu pembayaran':
+                return view('pages/detailOrderMenunggu', $data);
+                break;
+            case 'proses':
+                return view('pages/detailOrderProses', $data);
+                break;
+            
+            default:
+                # code...
+                break;
         }
     }
     public function invoice($id_mid)
