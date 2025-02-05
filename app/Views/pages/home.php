@@ -1,22 +1,22 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <?php if ($msg_active) { ?>
-    <div id="modal-voucher" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
-        class="d-flex justify-content-center align-items-center">
-        <div style="border-radius: 10px; overflow: hidden; background-color: white; width: 80%; max-width: 500px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);"
-            class="p-5">
-            <h1 class="teks-sedang mb-3">Klaim voucher diskon 5% Anda sekarang juga</h1>
-            <p class="text-secondary">*S&K diskon ini hanya berlaku 1 bulan sejak menjadi member kami</p>
-            <a href="/product" class="btn-default w-100 text-center mb-2">Beli Produk</a>
-            <button class="btn-teks-aja mx-auto" onclick="closeModalVoucher()">Nanti</button>
-        </div>
+<div id="modal-voucher" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
+    class="d-flex justify-content-center align-items-center">
+    <div style="border-radius: 10px; overflow: hidden; background-color: white; width: 80%; max-width: 500px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);"
+        class="p-5">
+        <h1 class="teks-sedang mb-3">Klaim voucher diskon 5% Anda sekarang juga</h1>
+        <p class="text-secondary">*S&K diskon ini hanya berlaku 1 bulan sejak menjadi member kami</p>
+        <a href="/product" class="btn-default w-100 text-center mb-2">Beli Produk</a>
+        <button class="btn-teks-aja mx-auto" onclick="closeModalVoucher()">Nanti</button>
     </div>
-    <script>
-        function closeModalVoucher() {
-            document.getElementById('modal-voucher').classList.add('d-none')
-            document.getElementById('modal-voucher').classList.remove('d-flex')
-        }
-    </script>
+</div>
+<script>
+function closeModalVoucher() {
+    document.getElementById('modal-voucher').classList.add('d-none')
+    document.getElementById('modal-voucher').classList.remove('d-flex')
+}
+</script>
 <?php } ?>
 
 
@@ -53,124 +53,137 @@
 </div>
 
 <?php if (!session()->get('isLogin')) { ?>
-    <script>
-        const loginModalElm = document.getElementById('login-modal')
-        let opened = false;
-        document.body.onscroll = (e) => {
-            if (!window.sessionStorage.getItem('close-login-modal')) {
-                const scrollingElm = e.target.scrollingElement;
-                const hasil = Math.round(
-                    (scrollingElm.scrollTop /
-                        (scrollingElm.scrollHeight -
-                            scrollingElm.clientHeight)) *
-                    100
-                );
-                if (hasil > 50 && !opened) {
-                    loginModalElm.classList.remove("d-none")
-                    opened = true
-                }
-            }
-        };
-
-        function closeLoginModel() {
-            loginModalElm.classList.add("d-none")
-            window.sessionStorage.setItem('close-login-modal', true)
-            opened = false
+<script>
+const loginModalElm = document.getElementById('login-modal')
+let opened = false;
+document.body.onscroll = (e) => {
+    if (!window.sessionStorage.getItem('close-login-modal')) {
+        const scrollingElm = e.target.scrollingElement;
+        const hasil = Math.round(
+            (scrollingElm.scrollTop /
+                (scrollingElm.scrollHeight -
+                    scrollingElm.clientHeight)) *
+            100
+        );
+        if (hasil > 50 && !opened) {
+            loginModalElm.classList.remove("d-none")
+            opened = true
         }
-    </script>
+    }
+};
+
+function closeLoginModel() {
+    loginModalElm.classList.add("d-none")
+    window.sessionStorage.setItem('close-login-modal', true)
+    opened = false
+}
+</script>
 <?php } ?>
 
 <!--Tampilan Home Baru -->
 <!-- Tampilan SLide Promo -->
 <style>
+.slider {
+    overflow: hidden;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1400 / 400;
+    position: relative;
+}
+
+.slides {
+    height: 100%;
+}
+
+
+.slider a {
+    height: 100%;
+    width: 100vw;
+    display: block;
+    transition: 0.3s;
+    position: absolute;
+    text-decoration: none;
+    color: white;
+}
+
+.slider a.kiri {
+    transform: translateX(-100vw);
+    transition: 0.3s;
+}
+
+.slider a.active {
+    transform: translateX(0vw);
+    transition: 0.3s;
+}
+
+.slider a.kanan {
+    transform: translateX(100vw);
+    transition: 0.3s;
+}
+
+.slides a img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.slides a img.ls {
+    display: block;
+}
+
+.slides a img.pt {
+    display: none;
+}
+
+.dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border: 1px solid #844709;
+}
+
+.dot.active {
+    background-color: #844709;
+}
+
+.panah {
+    position: absolute;
+    top: 50%;
+    /* transform: translateY(-50%); */
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    height: 0px;
+    background-color: aqua;
+    /* padding: 10px; */
+}
+
+@media (max-width: 700px) {
     .slider {
-        overflow: hidden;
-        width: 100%;
-        height: auto;
-        aspect-ratio: 1400 / 400;
-        position: relative;
-    }
-
-    .slides {
-        height: 100%;
-    }
-
-
-    .slider a {
-        height: 100%;
-        width: 100vw;
-        display: block;
-        transition: 0.3s;
-        position: absolute;
-        text-decoration: none;
-        color: white;
-    }
-
-    .slider a.kiri {
-        transform: translateX(-100vw);
-        transition: 0.3s;
-    }
-
-    .slider a.active {
-        transform: translateX(0vw);
-        transition: 0.3s;
-    }
-
-    .slider a.kanan {
-        transform: translateX(100vw);
-        transition: 0.3s;
-    }
-
-    .slides a img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+        aspect-ratio: 1080 / 1200;
     }
 
     .slides a img.ls {
-        display: block;
-    }
-
-    .slides a img.pt {
         display: none;
     }
 
-    .dots {
-        position: absolute;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        gap: 10px;
+    .slides a img.pt {
+        display: block;
     }
-
-    .dot {
-        width: 10px;
-        height: 10px;
-        background-color: rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        border: 1px solid #844709;
-    }
-
-    .dot.active {
-        background-color: #844709;
-    }
-
-    @media (max-width: 700px) {
-        .slider {
-            aspect-ratio: 1080 / 1200;
-        }
-
-        .slides a img.ls {
-            display: none;
-        }
-
-        .slides a img.pt {
-            display: block;
-        }
-    }
+}
 </style>
 <div class="slider">
     <div class="slides">
@@ -197,6 +210,10 @@
         <div class="dot"></div>
         <div class="dot"></div>
     </div>
+    <div class="panah">
+        <button class="btn-teks-aja item-panah"><i class="material-icons">chevron_left</i></button>
+        <button class="btn-teks-aja item-panah"><i class="material-icons">chevron_right</i></button>
+    </div>
 </div>
 
 <!-- End Tampilan Side Promo -->
@@ -205,7 +222,8 @@
     <div class="show-flex-ke-hide p-5 flex-column align-items-center justify-content-center"
         style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/set cabana.png'); background-size: cover; background-position: center; width:100%; height:80svh;">
         <h1 class="teks-besar mb-2 text-center text-light">Modern & Stylish<br>Furniture</h1>
-        <p class="text-handwrite py-1 px-2 text-light" style="font-size:30px; transform: rotate(-10deg) translate(100px, -20px);">True to you</p>
+        <p class="text-handwrite py-1 px-2 text-light"
+            style="font-size:30px; transform: rotate(-10deg) translate(100px, -20px);">True to you</p>
         <a href="/product" class="btn-underline text-light">
             <p class="m-0 fw-bold">Telusuri</p><i class="material-icons text-light">arrow_forward</i>
         </a>
@@ -214,7 +232,8 @@
     <div class="hide-ke-show-flex px-5 flex-column justify-content-center"
         style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/set cabana.png'); background-size: cover; width:100%; height:60svh;">
         <h1 class="teks-besar text-light" style="font-size:34px;">Modern & Stylish<br>Furniture</h1>
-        <p class="text-handwrite py-1 px-2 text-light" style="font-size:20px; transform: rotate(-10deg) translate(50px, -15px);">True to you</p>
+        <p class="text-handwrite py-1 px-2 text-light"
+            style="font-size:20px; transform: rotate(-10deg) translate(50px, -15px);">True to you</p>
         <a href="/product" class="btn-underline text-light" style="transform: translateY(100px);">
             <p class="m-0 fw-bold">Telusuri</p><i class="material-icons text-light">arrow_forward</i>
         </a>
@@ -223,67 +242,67 @@
 
 <!-- Bagian Windows -->
 <style>
-    .kontenLN {
-        position: relative;
-        flex: 2;
-        background: url('./img/foto/0 comp.png');
-        background-size: cover;
-        background-position: center;
-        cursor: pointer;
-        transition-delay: 0.4s;
-    }
+.kontenLN {
+    position: relative;
+    flex: 2;
+    background: url('./img/foto/0 comp.png');
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    transition-delay: 0.4s;
+}
 
-    .overlayBed,
-    .overlayMeja {
-        max-width: 0px;
-        overflow: hidden;
-        position: absolute;
-        /* background: rgba(0, 0, 0, 0.5); */
-        background: var(--orentua);
-        color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transition: all 0.6s ease;
-        transition-delay: 0.4s;
-        text-wrap: nowrap;
-        cursor: pointer;
-        border-radius: 100px;
-        padding: 0.5em 0em;
-        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
-    }
+.overlayBed,
+.overlayMeja {
+    max-width: 0px;
+    overflow: hidden;
+    position: absolute;
+    /* background: rgba(0, 0, 0, 0.5); */
+    background: var(--orentua);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.6s ease;
+    transition-delay: 0.4s;
+    text-wrap: nowrap;
+    cursor: pointer;
+    border-radius: 100px;
+    padding: 0.5em 0em;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+}
 
-    .kontenLN:hover .overlayBed,
-    .kontenLN:hover .overlayMeja {
-        max-width: 300px;
-        transition: all 0.8s ease;
-        padding: 0.5em 2em;
-    }
+.kontenLN:hover .overlayBed,
+.kontenLN:hover .overlayMeja {
+    max-width: 300px;
+    transition: all 0.8s ease;
+    padding: 0.5em 2em;
+}
 
-    .overlayBed {
-        top: 360px;
-        left: 220px;
-    }
+.overlayBed {
+    top: 360px;
+    left: 220px;
+}
 
-    .overlayBed p:first-child {
-        font-size: 20px;
-    }
+.overlayBed p:first-child {
+    font-size: 20px;
+}
 
-    .overlayMeja {
-        bottom: 200px;
-        left: 690px;
-    }
+.overlayMeja {
+    bottom: 200px;
+    left: 690px;
+}
 
-    .overlayMeja p:first-child {
-        font-size: 20px;
-    }
+.overlayMeja p:first-child {
+    font-size: 20px;
+}
 
-    .overlayBed a,
-    .overlayMeja a {
-        text-decoration: none;
-        color: white;
-        font-weight: bold;
-    }
+.overlayBed a,
+.overlayMeja a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
 </style>
 <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:80svh;">
     <a class="d-flex align-items-center ps-5" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
@@ -368,7 +387,9 @@
         <div class="container d-flex py-5 gap-5" style="flex: 1">
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
-                <h1 class="teks-besar m-0">Industrial</h1>
+                <a href="<?= base_url('/product?koleksi=industrial') ?>" style="text-decoration:none; color:black;">
+                    <h1 class="teks-besar m-0">Industrial</h1>
+                </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
                 <p class="m-0">Menjadi diri sendiri dengan berkreasi sesuai kata hati masihkah terasa sulit? Mari mulai
                     dengan berbenah ruang yang merefleksikan karakter diri. Industrial Series hadir untuk menjadi teman
@@ -392,7 +413,9 @@
         <div class="container d-flex py-5 gap-5" style="flex: 1">
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
-                <h1 class="teks-besar m-0">Sorely</h1>
+                <a href="<?= base_url('/product?koleksi=sorely') ?>" style="text-decoration:none; color:black;">
+                    <h1 class="teks-besar m-0">Sorely</h1>
+                </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
                 <p class="m-0">Terinspirasi oleh keindahan perpaduan dua material: kayu hangat dan logam tebal. Dibuat
                     dengan sungguh-sungguh untuk melengkapi interior estetis, menghadirkan kenyamanan dan ketenangan
@@ -415,7 +438,9 @@
         <div class="container d-flex py-5 gap-5" style="flex: 1">
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
-                <h1 class="teks-besar m-0">Water Case</h1>
+                <a href="<?= base_url('/product?koleksi=watercase') ?>" style="text-decoration:none; color:black;">
+                    <h1 class="teks-besar m-0">Water Case</h1>
+                </a>
                 <h1 style=" font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
                 <p class="m-0">Secara spesial dirancang untuk memberikan kehangatan dan kenyamanan pada hunian rumah.
                     water case series hadir dengan menunjukkan kesederhanaan sebuah desain yang memiliki fungsi sesuai
@@ -439,10 +464,14 @@
         <div class="container d-flex py-5 gap-5" style="flex: 1">
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
-                <h1 class="teks-besar m-0">Plint Base</h1>
+                <a href="<?= base_url('/product?koleksi=plintbase') ?>" style="text-decoration:none; color:black;">
+                    <h1 class="teks-besar m-0">Plint Base</h1>
+                </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Ilena memaknai minimalis sebagai mahakarya indah yang dibalut dalam kesederhanaan. Dengan
-                    kepraktisan fungsinya, plint base menjawab kebutuhan furniture secara menyeluruh dan relevan hingga
+                <p class="m-0">Ilena memaknai minimalis sebagai mahakarya indah yang dibalut dalam kesederhanaan.
+                    Dengan
+                    kepraktisan fungsinya, plint base menjawab kebutuhan furniture secara menyeluruh dan relevan
+                    hingga
                     dalam waktu berdekade lamanya. Inilah Classic modern yang Anda butuhkan</p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
@@ -462,12 +491,16 @@
         <div class="container d-flex py-5 gap-5" style="flex: 1">
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
-                <h1 class="teks-besar m-0">Cut Out</h1>
+                <a href="<?= base_url('/product?koleksi=    ') ?>" style="text-decoration:none; color:black;">
+                    <h1 class="teks-besar m-0">Cut Out</h1>
+                </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
                 <p class="m-0">Kami percaya bahwa sebuah ruangan didesain dengan sepenuh hati akan memberikan energi
                     positif bagi setiap penghuninya. Bekal inilah yang membuat Ilena terus melakukan inovasi untuk
-                    menghadirkan furniture terbaik bagi Anda. Cut Out hadir dengan series dalam balutan gaya minimalis
-                    dengan mengadopsi budaya Jepang yang terkenal mengutamakan fungsi dan kepraktisan. Desainnya yang
+                    menghadirkan furniture terbaik bagi Anda. Cut Out hadir dengan series dalam balutan gaya
+                    minimalis
+                    dengan mengadopsi budaya Jepang yang terkenal mengutamakan fungsi dan kepraktisan. Desainnya
+                    yang
                     sederhana dengan sedikit aksen memudahkan Anda untuk merawat dan menempatkan dalam segala konsep
                     ruang menjadi lebih sempurna dengan Cut Out series dari Ilena.</p>
             </div>
@@ -489,7 +522,9 @@
         <div class="container d-flex py-5 gap-5" style="flex: 1">
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
-                <h1 class="teks-besar m-0">Orca</h1>
+                <a href="<?= base_url('/product?koleksi=orca') ?>" style="text-decoration:none; color:black;">
+                    <h1 class="teks-besar m-0">Orca</h1>
+                </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
                 <p class="m-0">Merancang dengan sepenuh hati furniture bertemakan modern dengan sentuhan warna basic
                     yang menjadi aksen menonjol jadi ciri khas dari series Orca. Hadir dengan menonjolkan teksture khas
@@ -509,6 +544,109 @@
             style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/orca/1 comp.png'); background-size: cover; background-position:center; ">
         </div>
     </div>
+
+    <div class="scroll-home-item">
+        <div class="container d-flex py-5 gap-5" style="flex: 1">
+            <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
+            <div style="flex:6;">
+                <a href="<?= base_url('/product?koleksi=cody') ?>" style="text-decoration:none; color:black;">
+                    <h1 class="teks-besar m-0">Cody</h1>
+                </a>
+                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <p class="m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo labore quaerat culpa minima
+                    numquam quasi blanditiis voluptatibus fugit quam eum molestiae, tempora veniam sed saepe dolorum,
+                    nulla qui totam hic!</p>
+            </div>
+            <div class="d-flex gap-4" style="flex:4;">
+                <div
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/cody/'); background-size: cover; background-position:center;">
+                </div>
+                <div
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/cody/'); background-size: cover; background-position:center;">
+                </div>
+            </div>
+        </div>
+        <div class="w-100"
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/cody/'); background-size: cover; background-position:center; ">
+        </div>
+    </div>
+
+    <div class="scroll-home-item">
+        <div class="container d-flex py-5 gap-5" style="flex: 1">
+            <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
+            <div style="flex:6;">
+                <a href="<?= base_url('/product?koleksi=metalframe') ?>" style="text-decoration:none; color:black;">
+                    <h1 class="teks-besar m-0">Metal Frame</h1>
+                </a>
+                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <p class="m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo labore quaerat culpa minima
+                    numquam quasi blanditiis voluptatibus fugit quam eum molestiae, tempora veniam sed saepe dolorum,
+                    nulla qui totam hic!</p>
+            </div>
+            <div class="d-flex gap-4" style="flex:4;">
+                <div
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/metalframe/'); background-size: cover; background-position:center;">
+                </div>
+                <div
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/metalframe/'); background-size: cover; background-position:center;">
+                </div>
+            </div>
+        </div>
+        <div class="w-100"
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/metalframe/'); background-size: cover; background-position:center; ">
+        </div>
+    </div>
+
+    <div class="scroll-home-item">
+        <div class="container d-flex py-5 gap-5" style="flex: 1">
+            <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
+            <div style="flex:6;">
+                <a href="<?= base_url('/product?koleksi=socoplate') ?>" style="text-decoration:none; color:black;">
+                    <h1 class="teks-besar m-0">Socoplate</h1>
+                </a>
+                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <p class="m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo labore quaerat culpa minima
+                    numquam quasi blanditiis voluptatibus fugit quam eum molestiae, tempora veniam sed saepe dolorum,
+                    nulla qui totam hic!</p>
+            </div>
+            <div class="d-flex gap-4" style="flex:4;">
+                <div
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/socoplate/'); background-size: cover; background-position:center;">
+                </div>
+                <div
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/socoplate/'); background-size: cover; background-position:center;">
+                </div>
+            </div>
+        </div>
+        <div class="w-100"
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/socoplate/'); background-size: cover; background-position:center; ">
+        </div>
+    </div>
+    <div class="scroll-home-item">
+        <div class="container d-flex py-5 gap-5" style="flex: 1">
+            <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
+            <div style="flex:6;">
+                <a href="<?= base_url('/product?koleksi=cabana') ?>" style="text-decoration:none; color:black;">
+                    <h1 class="teks-besar m-0">Cabana</h1>
+                </a>
+                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <p class="m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo labore quaerat culpa minima
+                    numquam quasi blanditiis voluptatibus fugit quam eum molestiae, tempora veniam sed saepe dolorum,
+                    nulla qui totam hic!</p>
+            </div>
+            <div class="d-flex gap-4" style="flex:4;">
+                <div
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/cabana/'); background-size: cover; background-position:center;">
+                </div>
+                <div
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/cabana/'); background-size: cover; background-position:center;">
+                </div>
+            </div>
+        </div>
+        <div class="w-100"
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/cabana/'); background-size: cover; background-position:center; ">
+        </div>
+    </div>
 </div>
 
 <div class="scroll-home-input">
@@ -525,46 +663,54 @@
         <label for="scrollhome5"></label>
         <input id="scrollhome6" type="radio" name="scrollHome">
         <label for="scrollhome6"></label>
+        <input id="scrollhome7" type="radio" name="scrollHome">
+        <label for="scrollhome7"></label>
+        <input id="scrollhome8" type="radio" name="scrollHome">
+        <label for="scrollhome8"></label>
+        <input id="scrollhome9" type="radio" name="scrollHome">
+        <label for="scrollhome9"></label>
+        <input id="scrollhome10" type="radio" name="scrollHome">
+        <label for="scrollhome10"></label>
     </div>
 </div>
 
 <script>
-    const scrollHomeElm = document.querySelector('.scroll-home');
-    const counterSlideElm = document.getElementById('counter-slide');
-    const numCounterSlideElm = document.querySelectorAll('#counter-slide p');
-    // console.log(numCounterSlideElm)
-    const inputScrollHomeElm = document.querySelectorAll('input[name="scrollHome"]');
-    // console.log(scrollHomeElm.children);
-    scrollHomeElm.onscroll = () => {
-        let x = scrollHomeElm.scrollLeft;
-        // console.log(x);
-        const widthInnerStg = window.innerWidth / 2;
-        if (x % window.innerWidth < widthInnerStg) {
-            counterSlideElm.style.opacity = 1 - ((x % widthInnerStg) / widthInnerStg) / 1;
-            counterSlideElm.style.transform = 'translateX(-' + (x % widthInnerStg) + 'px)';
-            console.log('translateX(-' + (x % widthInnerStg) + ')')
-        } else {
-            counterSlideElm.style.opacity = ((x % widthInnerStg) / widthInnerStg) / 1;
-            counterSlideElm.style.transform = 'translateX(-' + (widthInnerStg - (x % widthInnerStg)) + 'px)';
-            console.log('translateX(-' + (widthInnerStg - (x % widthInnerStg)) + ')')
-        }
-
-        // console.log(Math.floor(x / (window.innerWidth * 90 / 100)))
-        inputScrollHomeElm.forEach(inputnya => {
-            inputnya.removeAttribute('checked');
-        });
-        inputScrollHomeElm[Math.floor(x / (window.innerWidth * 90 / 100))].setAttribute('checked', '');
-
-        numCounterSlideElm[0].innerHTML = '0' + (Math.floor(x / (window.innerWidth * 90 / 100)) + 1)
-        numCounterSlideElm[1].innerHTML = '0' + inputScrollHomeElm.length;
+const scrollHomeElm = document.querySelector('.scroll-home');
+const counterSlideElm = document.getElementById('counter-slide');
+const numCounterSlideElm = document.querySelectorAll('#counter-slide p');
+// console.log(numCounterSlideElm)
+const inputScrollHomeElm = document.querySelectorAll('input[name="scrollHome"]');
+// console.log(scrollHomeElm.children);
+scrollHomeElm.onscroll = () => {
+    let x = scrollHomeElm.scrollLeft;
+    // console.log(x);
+    const widthInnerStg = window.innerWidth / 2;
+    if (x % window.innerWidth < widthInnerStg) {
+        counterSlideElm.style.opacity = 1 - ((x % widthInnerStg) / widthInnerStg) / 1;
+        counterSlideElm.style.transform = 'translateX(-' + (x % widthInnerStg) + 'px)';
+        console.log('translateX(-' + (x % widthInnerStg) + ')')
+    } else {
+        counterSlideElm.style.opacity = ((x % widthInnerStg) / widthInnerStg) / 1;
+        counterSlideElm.style.transform = 'translateX(-' + (widthInnerStg - (x % widthInnerStg)) + 'px)';
+        console.log('translateX(-' + (widthInnerStg - (x % widthInnerStg)) + ')')
     }
-    inputScrollHomeElm.forEach((inputnya, indInput) => {
-        inputnya.addEventListener('change', () => {
-            // console.log('input ' + indInput + ' berubah')
-            scrollHomeElm.scrollLeft = window.innerWidth * indInput
-        });
 
+    // console.log(Math.floor(x / (window.innerWidth * 90 / 100)))
+    inputScrollHomeElm.forEach(inputnya => {
+        inputnya.removeAttribute('checked');
     });
+    inputScrollHomeElm[Math.floor(x / (window.innerWidth * 90 / 100))].setAttribute('checked', '');
+
+    numCounterSlideElm[0].innerHTML = '0' + (Math.floor(x / (window.innerWidth * 90 / 100)) + 1)
+    numCounterSlideElm[1].innerHTML = '0' + inputScrollHomeElm.length;
+}
+inputScrollHomeElm.forEach((inputnya, indInput) => {
+    inputnya.addEventListener('change', () => {
+        // console.log('input ' + indInput + ' berubah')
+        scrollHomeElm.scrollLeft = window.innerWidth * indInput
+    });
+
+});
 </script>
 <!-- END BAGIAN SERIES  -->
 
@@ -583,7 +729,8 @@
     </div>
     <div class="kontenLN">
         <div class="overlayBed">
-            <a href="/product?koleksi=cabana&jenis=king-bed+queen-bed+single-bed" class="d-flex gap-3 align-items-center">
+            <a href="/product?koleksi=cabana&jenis=king-bed+queen-bed+single-bed"
+                class="d-flex gap-3 align-items-center">
                 <div>
                     <p class="m-0 fw-bold">Bed Cabana</p>
                     <p class="m-0 fw-regular">Cabana</p>
@@ -769,20 +916,20 @@
 
 
 <script>
-    const modalseriesELM = document.getElementById('modal-series');
+const modalseriesELM = document.getElementById('modal-series');
 
-    function closemodalseries() {
-        modalseriesELM.classList.remove('d-flex');
-        modalseriesELM.classList.add('d-none');
-        document.body.style.overflow = 'auto';
-    }
+function closemodalseries() {
+    modalseriesELM.classList.remove('d-flex');
+    modalseriesELM.classList.add('d-none');
+    document.body.style.overflow = 'auto';
+}
 
-    function modalseries() {
-        modalseriesELM.classList.add('d-flex');
-        modalseriesELM.classList.remove('d-none');
-        document.body.style.overflow = 'hidden';
+function modalseries() {
+    modalseriesELM.classList.add('d-flex');
+    modalseriesELM.classList.remove('d-none');
+    document.body.style.overflow = 'hidden';
 
-    }
+}
 </script>
 
 <!-- Bagian Windows -->
@@ -827,15 +974,15 @@
 
 <!-- Bagian HP -->
 <style>
-    #scroll-set {
-        width: 100%;
-        overflow: scroll;
-        scroll-snap-type: x mandatory;
-    }
+#scroll-set {
+    width: 100%;
+    overflow: scroll;
+    scroll-snap-type: x mandatory;
+}
 
-    #scroll-set::-webkit-scrollbar {
-        display: none;
-    }
+#scroll-set::-webkit-scrollbar {
+    display: none;
+}
 </style>
 <div class="hide-ke-show-block" id="scroll-set">
     <div class="d-flex gap-1 px-5 pt-5 pb-4" style="width: fit-content;">
@@ -885,10 +1032,13 @@
 <div class="slider">
     <div class="slides">
         <a href="/product" class="kanan bg-primary">
-            <div style="position: absolute; z-index: 5; top: 0; left: 0; width: 100%; height: 100%" class="d-flex justify-content-center align-items-center">
-                <p class="text-light m-0" style="font-size: 24px; font-weight: 500; letter-spacing: -1px;">Find Out More</p>
+            <div style="position: absolute; z-index: 5; top: 0; left: 0; width: 100%; height: 100%"
+                class="d-flex justify-content-center align-items-center">
+                <p class="text-light m-0" style="font-size: 24px; font-weight: 500; letter-spacing: -1px;">Find Out More
+                </p>
             </div>
-            <img style="position: absolute; z-index: 4; top: 0; left: 0; width: 100%; height: 100%" class="d-block" src="<?= base_url('/img/foto/find out more watercase comp.png') ?>" alt="Slide 2">
+            <img style="position: absolute; z-index: 4; top: 0; left: 0; width: 100%; height: 100%" class="d-block"
+                src="<?= base_url('/img/foto/find out more watercase comp.png') ?>" alt="Slide 2">
         </a>
         <a href="https://ilenafurniture.id/" class="kanan">
             <img class="ls" src="<?= base_url('img/benner/poster slide home ls (2).png') ?>" alt="Slide 2">
@@ -898,6 +1048,10 @@
     <div class="dots">
         <div class="dot active"></div>
         <div class="dot"></div>
+    </div>
+    <div class="panah">
+        <button class="btn-teks-aja item-panah"><i class="material-icons">chevron_left</i></button>
+        <button class="btn-teks-aja item-panah"><i class="material-icons">chevron_right</i></button>
     </div>
 </div>
 <!-- <style>
@@ -971,74 +1125,109 @@
 <!-- End Bagian Windows Scroll -->
 
 <script>
-    const sliders = document.querySelectorAll('.slider');
-    let slideIndex = [];
-    for (let i = 0; i < sliders.length; i++) {
-        slideIndex.push(0);
+const sliders = document.querySelectorAll('.slider');
+let slideIndex = [];
+for (let i = 0; i < sliders.length; i++) {
+    slideIndex.push(0);
+}
+sliders.forEach((slider, ind_slider) => {
+    const slidesCur = slider.children[0].children;
+    const dotsCur = slider.children[1].children;
+    const panahCur = slider.children[2].children;
+
+    console.log()
+
+    Auto slide
+    setInterval(() => {
+        slideIndex[ind_slider]++;
+        showSlide(ind_slider, slideIndex[ind_slider], slidesCur, dotsCur);
+    }, 5000);
+
+    for (let i = 0; i < dotsCur.length; i++) {
+        const dot = dotsCur[i];
+        dot.addEventListener('click', () => {
+            currentSlide(ind_slider, i, slidesCur, dotsCur)
+        })
     }
-    sliders.forEach((slider, ind_slider) => {
-        const slidesCur = slider.children[0].children;
-        const dotsCur = slider.children[1].children;
 
-        // Auto slide 
-        setInterval(() => {
-            slideIndex[ind_slider]++;
-            showSlide(ind_slider, slideIndex[ind_slider], slidesCur, dotsCur);
-        }, 5000);
+    for (let i = 0; i < panahCur.length; i++) {
+        const itemPanah = panahCur[i];
+        itemPanah.addEventListener('click', () => {
+            currentSlidePanah(ind_slider, i, slidesCur, panahCur)
+        })
+    }
+});
 
-        for (let i = 0; i < dotsCur.length; i++) {
-            const dot = dotsCur[i];
-            dot.addEventListener('click', () => {
-                currentSlide(ind_slider, i, slidesCur, dotsCur)
-            })
-        }
-    });
-
-    function showSlide(index_slider, index, slides, dots) {
-        console.log('slides yg ada di showSlide')
-        console.log(slides)
-        const totalSlides = slides.length;
-        if (index >= totalSlides) {
-            slideIndex[index_slider] = 0;
-            for (let i = 0; i < slides.length; i++) {
-                const slide = slides[i];
-                if (i === 0) {
-                    slide.classList.add('active')
-                    slide.classList.remove('kiri')
-                } else {
-                    slide.classList.remove('active')
-                    slide.classList.remove('kiri')
-                    slide.classList.add('kanan')
-                }
-            }
-        } else {
-            for (let i = 0; i < slides.length; i++) {
-                const slide = slides[i];
-                if (i < slideIndex[index_slider]) {
-                    slide.classList.add('kiri');
-                    slide.classList.remove('active');
-                    slide.classList.remove('kanan');
-                } else if (i === slideIndex[index_slider]) {
-                    slide.classList.add('active');
-                    slide.classList.remove('kanan');
-                    slide.classList.remove('kiri');
-                } else {
-                    slide.classList.remove('active');
-                    slide.classList.add('kanan');
-                    slide.classList.remove('kiri');
-                }
+function showSlide(index_slider, index, slides, dots) {
+    console.log('slides yg ada di showSlide')
+    console.log(slides)
+    const totalSlides = slides.length;
+    if (index >= totalSlides) {
+        slideIndex[index_slider] = 0;
+        for (let i = 0; i < slides.length; i++) {
+            const slide = slides[i];
+            if (i === 0) {
+                slide.classList.add('active')
+                slide.classList.remove('kiri')
+            } else {
+                slide.classList.remove('active')
+                slide.classList.remove('kiri')
+                slide.classList.add('kanan')
             }
         }
-
-        for (let i = 0; i < dots.length; i++) {
-            const dot = dots[i];
-            dot.classList.toggle('active', i === slideIndex[index_slider]);
+    } else if (index < 0) {
+        slideIndex[index_slider] = totalSlides - 1;
+        for (let i = 0; i < slides.length; i++) {
+            const slide = slides[i];
+            if (i === slides.length - 1) {
+                slide.classList.add('active')
+                slide.classList.remove('kanan')
+            } else {
+                slide.classList.remove('active')
+                slide.classList.remove('kanan')
+                slide.classList.add('kiri')
+            }
+        }
+    } else {
+        for (let i = 0; i < slides.length; i++) {
+            const slide = slides[i];
+            if (i < slideIndex[index_slider]) {
+                slide.classList.add('kiri');
+                slide.classList.remove('active');
+                slide.classList.remove('kanan');
+            } else if (i === slideIndex[index_slider]) {
+                slide.classList.add('active');
+                slide.classList.remove('kanan');
+                slide.classList.remove('kiri');
+            } else {
+                slide.classList.remove('active');
+                slide.classList.add('kanan');
+                slide.classList.remove('kiri');
+            }
         }
     }
 
-    function currentSlide(index_slider, index, slides, dots) {
-        slideIndex[index_slider] = index;
-        showSlide(index_slider, slideIndex[index_slider], slides, dots);
+    for (let i = 0; i < dots.length; i++) {
+        const dot = dots[i];
+        dot.classList.toggle('active', i === slideIndex[index_slider]);
     }
+}
+
+function currentSlide(index_slider, index, slides, dots) {
+    slideIndex[index_slider] = index;
+    showSlide(index_slider, slideIndex[index_slider], slides, dots);
+}
+
+function currentSlidePanah(index_slider, index, slides, itemPanah) {
+    switch (index) {
+        case 0:
+            slideIndex[index_slider]--;
+            break;
+        case 1:
+            slideIndex[index_slider]++;
+            break;
+    }
+    showSlide(index_slider, slideIndex[index_slider], slides, itemPanah);
+}
 </script>
 <?= $this->endSection(); ?>
