@@ -1,22 +1,22 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <?php if ($msg_active) { ?>
-    <div id="modal-voucher" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
-        class="d-flex justify-content-center align-items-center">
-        <div style="border-radius: 10px; overflow: hidden; background-color: white; width: 80%; max-width: 500px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);"
-            class="p-5">
-            <h1 class="teks-sedang mb-3">Klaim voucher diskon 5% Anda sekarang juga</h1>
-            <p class="text-secondary">*S&K diskon ini hanya berlaku 1 bulan sejak menjadi member kami</p>
-            <a href="/product" class="btn-default w-100 text-center mb-2">Beli Produk</a>
-            <button class="btn-teks-aja mx-auto" onclick="closeModalVoucher()">Nanti</button>
-        </div>
+<div id="modal-voucher" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
+    class="d-flex justify-content-center align-items-center">
+    <div style="border-radius: 10px; overflow: hidden; background-color: white; width: 80%; max-width: 500px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);"
+        class="p-5">
+        <h1 class="teks-sedang mb-3">Klaim voucher diskon 5% Anda sekarang juga</h1>
+        <p class="text-secondary">*S&K diskon ini hanya berlaku 1 bulan sejak menjadi member kami</p>
+        <a href="/product" class="btn-default w-100 text-center mb-2">Beli Produk</a>
+        <button class="btn-teks-aja mx-auto" onclick="closeModalVoucher()">Nanti</button>
     </div>
-    <script>
-        function closeModalVoucher() {
-            document.getElementById('modal-voucher').classList.add('d-none')
-            document.getElementById('modal-voucher').classList.remove('d-flex')
-        }
-    </script>
+</div>
+<script>
+function closeModalVoucher() {
+    document.getElementById('modal-voucher').classList.add('d-none')
+    document.getElementById('modal-voucher').classList.remove('d-flex')
+}
+</script>
 <?php } ?>
 
 
@@ -53,137 +53,138 @@
 </div>
 
 <?php if (!session()->get('isLogin')) { ?>
-    <script>
-        const loginModalElm = document.getElementById('login-modal')
-        let opened = false;
-        document.body.onscroll = (e) => {
-            if (!window.sessionStorage.getItem('close-login-modal')) {
-                const scrollingElm = e.target.scrollingElement;
-                const hasil = Math.round(
-                    (scrollingElm.scrollTop /
-                        (scrollingElm.scrollHeight -
-                            scrollingElm.clientHeight)) *
-                    100
-                );
-                if (hasil > 50 && !opened) {
-                    loginModalElm.classList.remove("d-none")
-                    opened = true
-                }
-            }
-        };
-
-        function closeLoginModel() {
-            loginModalElm.classList.add("d-none")
-            window.sessionStorage.setItem('close-login-modal', true)
-            opened = false
+<script>
+const loginModalElm = document.getElementById('login-modal')
+let opened = false;
+document.body.onscroll = (e) => {
+    if (!window.sessionStorage.getItem('close-login-modal')) {
+        const scrollingElm = e.target.scrollingElement;
+        const hasil = Math.round(
+            (scrollingElm.scrollTop /
+                (scrollingElm.scrollHeight -
+                    scrollingElm.clientHeight)) *
+            100
+        );
+        if (hasil > 50 && !opened) {
+            loginModalElm.classList.remove("d-none")
+            opened = true
         }
-    </script>
+    }
+};
+
+function closeLoginModel() {
+    loginModalElm.classList.add("d-none")
+    window.sessionStorage.setItem('close-login-modal', true)
+    opened = false
+}
+</script>
 <?php } ?>
 
 <!--Tampilan Home Baru -->
 <!-- Tampilan SLide Promo -->
 <style>
+.slider {
+    overflow: hidden;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1400 / 400;
+    position: relative;
+}
+
+.slides {
+    height: 100%;
+}
+
+
+.slider a {
+    height: 100%;
+    width: 100vw;
+    display: block;
+    transition: 0.3s;
+    position: absolute;
+    text-decoration: none;
+    color: white;
+    flex-shrink: 0;
+}
+
+.slider a.kiri {
+    transform: translateX(-100vw);
+    transition: 0.3s;
+}
+
+.slider a.active {
+    transform: translateX(0vw);
+    transition: 0.3s;
+}
+
+.slider a.kanan {
+    transform: translateX(100vw);
+    transition: 0.3s;
+}
+
+.slides a img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.slides a img.ls {
+    display: block;
+}
+
+.slides a img.pt {
+    display: none;
+}
+
+.dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border: 1px solid #844709;
+}
+
+.dot.active {
+    background-color: #844709;
+}
+
+.panah {
+    position: absolute;
+    top: 50%;
+    /* transform: translateY(-50%); */
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    height: 0px;
+    background-color: aqua;
+    /* padding: 10px; */
+}
+
+@media (max-width: 700px) {
     .slider {
-        overflow: hidden;
-        width: 100%;
-        height: auto;
-        aspect-ratio: 1400 / 400;
-        position: relative;
-    }
-
-    .slides {
-        height: 100%;
-    }
-
-
-    .slider a {
-        height: 100%;
-        width: 100vw;
-        display: block;
-        transition: 0.3s;
-        position: absolute;
-        text-decoration: none;
-        color: white;
-    }
-
-    .slider a.kiri {
-        transform: translateX(-100vw);
-        transition: 0.3s;
-    }
-
-    .slider a.active {
-        transform: translateX(0vw);
-        transition: 0.3s;
-    }
-
-    .slider a.kanan {
-        transform: translateX(100vw);
-        transition: 0.3s;
-    }
-
-    .slides a img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+        aspect-ratio: 1080 / 1200;
     }
 
     .slides a img.ls {
-        display: block;
-    }
-
-    .slides a img.pt {
         display: none;
     }
 
-    .dots {
-        position: absolute;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        gap: 10px;
+    .slides a img.pt {
+        display: block;
     }
-
-    .dot {
-        width: 10px;
-        height: 10px;
-        background-color: rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        border: 1px solid #844709;
-    }
-
-    .dot.active {
-        background-color: #844709;
-    }
-
-    .panah {
-        position: absolute;
-        top: 50%;
-        /* transform: translateY(-50%); */
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        width: 100%;
-        height: 0px;
-        background-color: aqua;
-        /* padding: 10px; */
-    }
-
-    @media (max-width: 700px) {
-        .slider {
-            aspect-ratio: 1080 / 1200;
-        }
-
-        .slides a img.ls {
-            display: none;
-        }
-
-        .slides a img.pt {
-            display: block;
-        }
-    }
+}
 </style>
 <div class="slider">
     <div class="slides">
@@ -242,67 +243,67 @@
 
 <!-- Bagian Windows -->
 <style>
-    .kontenLN {
-        position: relative;
-        flex: 2;
-        background: url('./img/foto/0 comp.png');
-        background-size: cover;
-        background-position: center;
-        cursor: pointer;
-        transition-delay: 0.4s;
-    }
+.kontenLN {
+    position: relative;
+    flex: 2;
+    background: url('./img/foto/0 comp.png');
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    transition-delay: 0.4s;
+}
 
-    .overlayBed,
-    .overlayMeja {
-        max-width: 0px;
-        overflow: hidden;
-        position: absolute;
-        /* background: rgba(0, 0, 0, 0.5); */
-        background: var(--orentua);
-        color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transition: all 0.6s ease;
-        transition-delay: 0.4s;
-        text-wrap: nowrap;
-        cursor: pointer;
-        border-radius: 100px;
-        padding: 0.5em 0em;
-        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
-    }
+.overlayBed,
+.overlayMeja {
+    max-width: 0px;
+    overflow: hidden;
+    position: absolute;
+    /* background: rgba(0, 0, 0, 0.5); */
+    background: var(--orentua);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.6s ease;
+    transition-delay: 0.4s;
+    text-wrap: nowrap;
+    cursor: pointer;
+    border-radius: 100px;
+    padding: 0.5em 0em;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+}
 
-    .kontenLN:hover .overlayBed,
-    .kontenLN:hover .overlayMeja {
-        max-width: 300px;
-        transition: all 0.8s ease;
-        padding: 0.5em 2em;
-    }
+.kontenLN:hover .overlayBed,
+.kontenLN:hover .overlayMeja {
+    max-width: 300px;
+    transition: all 0.8s ease;
+    padding: 0.5em 2em;
+}
 
-    .overlayBed {
-        top: 360px;
-        left: 220px;
-    }
+.overlayBed {
+    top: 360px;
+    left: 220px;
+}
 
-    .overlayBed p:first-child {
-        font-size: 20px;
-    }
+.overlayBed p:first-child {
+    font-size: 20px;
+}
 
-    .overlayMeja {
-        bottom: 200px;
-        left: 690px;
-    }
+.overlayMeja {
+    bottom: 200px;
+    left: 690px;
+}
 
-    .overlayMeja p:first-child {
-        font-size: 20px;
-    }
+.overlayMeja p:first-child {
+    font-size: 20px;
+}
 
-    .overlayBed a,
-    .overlayMeja a {
-        text-decoration: none;
-        color: white;
-        font-weight: bold;
-    }
+.overlayBed a,
+.overlayMeja a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
 </style>
 <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:80svh;">
     <a class="d-flex align-items-center ps-5" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
@@ -675,42 +676,42 @@
 </div>
 
 <script>
-    const scrollHomeElm = document.querySelector('.scroll-home');
-    const counterSlideElm = document.getElementById('counter-slide');
-    const numCounterSlideElm = document.querySelectorAll('#counter-slide p');
-    // console.log(numCounterSlideElm)
-    const inputScrollHomeElm = document.querySelectorAll('input[name="scrollHome"]');
-    // console.log(scrollHomeElm.children);
-    scrollHomeElm.onscroll = () => {
-        let x = scrollHomeElm.scrollLeft;
-        // console.log(x);
-        const widthInnerStg = window.innerWidth / 2;
-        if (x % window.innerWidth < widthInnerStg) {
-            counterSlideElm.style.opacity = 1 - ((x % widthInnerStg) / widthInnerStg) / 1;
-            counterSlideElm.style.transform = 'translateX(-' + (x % widthInnerStg) + 'px)';
-            console.log('translateX(-' + (x % widthInnerStg) + ')')
-        } else {
-            counterSlideElm.style.opacity = ((x % widthInnerStg) / widthInnerStg) / 1;
-            counterSlideElm.style.transform = 'translateX(-' + (widthInnerStg - (x % widthInnerStg)) + 'px)';
-            console.log('translateX(-' + (widthInnerStg - (x % widthInnerStg)) + ')')
-        }
-
-        // console.log(Math.floor(x / (window.innerWidth * 90 / 100)))
-        inputScrollHomeElm.forEach(inputnya => {
-            inputnya.removeAttribute('checked');
-        });
-        inputScrollHomeElm[Math.floor(x / (window.innerWidth * 90 / 100))].setAttribute('checked', '');
-
-        numCounterSlideElm[0].innerHTML = '0' + (Math.floor(x / (window.innerWidth * 90 / 100)) + 1)
-        numCounterSlideElm[1].innerHTML = '0' + inputScrollHomeElm.length;
+const scrollHomeElm = document.querySelector('.scroll-home');
+const counterSlideElm = document.getElementById('counter-slide');
+const numCounterSlideElm = document.querySelectorAll('#counter-slide p');
+// console.log(numCounterSlideElm)
+const inputScrollHomeElm = document.querySelectorAll('input[name="scrollHome"]');
+// console.log(scrollHomeElm.children);
+scrollHomeElm.onscroll = () => {
+    let x = scrollHomeElm.scrollLeft;
+    // console.log(x);
+    const widthInnerStg = window.innerWidth / 2;
+    if (x % window.innerWidth < widthInnerStg) {
+        counterSlideElm.style.opacity = 1 - ((x % widthInnerStg) / widthInnerStg) / 1;
+        counterSlideElm.style.transform = 'translateX(-' + (x % widthInnerStg) + 'px)';
+        console.log('translateX(-' + (x % widthInnerStg) + ')')
+    } else {
+        counterSlideElm.style.opacity = ((x % widthInnerStg) / widthInnerStg) / 1;
+        counterSlideElm.style.transform = 'translateX(-' + (widthInnerStg - (x % widthInnerStg)) + 'px)';
+        console.log('translateX(-' + (widthInnerStg - (x % widthInnerStg)) + ')')
     }
-    inputScrollHomeElm.forEach((inputnya, indInput) => {
-        inputnya.addEventListener('change', () => {
-            // console.log('input ' + indInput + ' berubah')
-            scrollHomeElm.scrollLeft = window.innerWidth * indInput
-        });
 
+    // console.log(Math.floor(x / (window.innerWidth * 90 / 100)))
+    inputScrollHomeElm.forEach(inputnya => {
+        inputnya.removeAttribute('checked');
     });
+    inputScrollHomeElm[Math.floor(x / (window.innerWidth * 90 / 100))].setAttribute('checked', '');
+
+    numCounterSlideElm[0].innerHTML = '0' + (Math.floor(x / (window.innerWidth * 90 / 100)) + 1)
+    numCounterSlideElm[1].innerHTML = '0' + inputScrollHomeElm.length;
+}
+inputScrollHomeElm.forEach((inputnya, indInput) => {
+    inputnya.addEventListener('change', () => {
+        // console.log('input ' + indInput + ' berubah')
+        scrollHomeElm.scrollLeft = window.innerWidth * indInput
+    });
+
+});
 </script>
 <!-- END BAGIAN SERIES  -->
 
@@ -916,20 +917,20 @@
 
 
 <script>
-    const modalseriesELM = document.getElementById('modal-series');
+const modalseriesELM = document.getElementById('modal-series');
 
-    function closemodalseries() {
-        modalseriesELM.classList.remove('d-flex');
-        modalseriesELM.classList.add('d-none');
-        document.body.style.overflow = 'auto';
-    }
+function closemodalseries() {
+    modalseriesELM.classList.remove('d-flex');
+    modalseriesELM.classList.add('d-none');
+    document.body.style.overflow = 'auto';
+}
 
-    function modalseries() {
-        modalseriesELM.classList.add('d-flex');
-        modalseriesELM.classList.remove('d-none');
-        document.body.style.overflow = 'hidden';
+function modalseries() {
+    modalseriesELM.classList.add('d-flex');
+    modalseriesELM.classList.remove('d-none');
+    document.body.style.overflow = 'hidden';
 
-    }
+}
 </script>
 
 <!-- Bagian Windows -->
@@ -974,15 +975,15 @@
 
 <!-- Bagian HP -->
 <style>
-    #scroll-set {
-        width: 100%;
-        overflow: scroll;
-        scroll-snap-type: x mandatory;
-    }
+#scroll-set {
+    width: 100%;
+    overflow: scroll;
+    scroll-snap-type: x mandatory;
+}
 
-    #scroll-set::-webkit-scrollbar {
-        display: none;
-    }
+#scroll-set::-webkit-scrollbar {
+    display: none;
+}
 </style>
 <div class="hide-ke-show-block" id="scroll-set">
     <div class="d-flex gap-1 px-5 pt-5 pb-4" style="width: fit-content;">
@@ -1125,108 +1126,71 @@
 <!-- End Bagian Windows Scroll -->
 
 <script>
-    const sliders = document.querySelectorAll('.slider');
-    let slideIndex = [];
-    for (let i = 0; i < sliders.length; i++) {
-        slideIndex.push(0);
+const sliders = document.querySelectorAll('.slider');
+let slideIndex = [];
+for (let i = 0; i < sliders.length; i++) {
+    slideIndex.push(0);
+}
+sliders.forEach((slider, ind_slider) => {
+    const slidesCur = slider.children[0].children;
+    const dotsCur = slider.children[1].children;
+    const panahCur = slider.children[2].children;
+    setInterval(() => {
+        slideIndex[ind_slider]++;
+        showSlide(ind_slider, slideIndex[ind_slider], slidesCur, dotsCur);
+    }, 5000);
+    for (let i = 0; i < dotsCur.length; i++) {
+        const dot = dotsCur[i];
+        dot.addEventListener('click', () => {
+            currentSlide(ind_slider, i, slidesCur, dotsCur);
+        });
     }
-    sliders.forEach((slider, ind_slider) => {
-        const slidesCur = slider.children[0].children;
-        const dotsCur = slider.children[1].children;
-        const panahCur = slider.children[2].children;
+    for (let i = 0; i < panahCur.length; i++) {
+        const itemPanah = panahCur[i];
+        itemPanah.addEventListener('click', () => {
+            currentSlidePanah(ind_slider, i, slidesCur, dotsCur);
+        });
+    }
+});
 
-        console.log()
-
-        setInterval(() => {
-            slideIndex[ind_slider]++;
-            showSlide(ind_slider, slideIndex[ind_slider], slidesCur, dotsCur);
-        }, 5000);
-
-        for (let i = 0; i < dotsCur.length; i++) {
-            const dot = dotsCur[i];
-            dot.addEventListener('click', () => {
-                currentSlide(ind_slider, i, slidesCur, dotsCur)
-            })
-        }
-
-        for (let i = 0; i < panahCur.length; i++) {
-            const itemPanah = panahCur[i];
-            itemPanah.addEventListener('click', () => {
-                currentSlidePanah(ind_slider, i, slidesCur, panahCur)
-            })
-        }
-    });
-
-    function showSlide(index_slider, index, slides, dots) {
-        console.log('slides yg ada di showSlide')
-        console.log(slides)
-        const totalSlides = slides.length;
-        if (index >= totalSlides) {
-            slideIndex[index_slider] = 0;
-            for (let i = 0; i < slides.length; i++) {
-                const slide = slides[i];
-                if (i === 0) {
-                    slide.classList.add('active')
-                    slide.classList.remove('kiri')
-                } else {
-                    slide.classList.remove('active')
-                    slide.classList.remove('kiri')
-                    slide.classList.add('kanan')
-                }
-            }
-        } else if (index < 0) {
-            slideIndex[index_slider] = totalSlides - 1;
-            for (let i = 0; i < slides.length; i++) {
-                const slide = slides[i];
-                if (i === slides.length - 1) {
-                    slide.classList.add('active')
-                    slide.classList.remove('kanan')
-                } else {
-                    slide.classList.remove('active')
-                    slide.classList.remove('kanan')
-                    slide.classList.add('kiri')
-                }
-            }
+function showSlide(index_slider, index, slides, dots) {
+    const totalSlides = slides.length;
+    if (index >= totalSlides) {
+        slideIndex[index_slider] = 0;
+    } else if (index < 0) {
+        slideIndex[index_slider] = totalSlides - 1;
+    }
+    for (let i = 0; i < slides.length; i++) {
+        const slide = slides[i];
+        slide.classList.remove('active', 'kiri', 'kanan');
+        if (i === slideIndex[index_slider]) {
+            slide.classList.add('active');
+        } else if (i < slideIndex[index_slider]) {
+            slide.classList.add('kiri');
         } else {
-            for (let i = 0; i < slides.length; i++) {
-                const slide = slides[i];
-                if (i < slideIndex[index_slider]) {
-                    slide.classList.add('kiri');
-                    slide.classList.remove('active');
-                    slide.classList.remove('kanan');
-                } else if (i === slideIndex[index_slider]) {
-                    slide.classList.add('active');
-                    slide.classList.remove('kanan');
-                    slide.classList.remove('kiri');
-                } else {
-                    slide.classList.remove('active');
-                    slide.classList.add('kanan');
-                    slide.classList.remove('kiri');
-                }
-            }
-        }
-
-        for (let i = 0; i < dots.length; i++) {
-            const dot = dots[i];
-            dot.classList.toggle('active', i === slideIndex[index_slider]);
+            slide.classList.add('kanan');
         }
     }
-
-    function currentSlide(index_slider, index, slides, dots) {
-        slideIndex[index_slider] = index;
-        showSlide(index_slider, slideIndex[index_slider], slides, dots);
+    for (let i = 0; i < dots.length; i++) {
+        const dot = dots[i];
+        dot.classList.toggle('active', i === slideIndex[index_slider]);
     }
+}
 
-    function currentSlidePanah(index_slider, index, slides, itemPanah) {
-        switch (index) {
-            case 0:
-                slideIndex[index_slider]--;
-                break;
-            case 1:
-                slideIndex[index_slider]++;
-                break;
-        }
-        showSlide(index_slider, slideIndex[index_slider], slides, itemPanah);
+function currentSlide(index_slider, index, slides, dots) {
+    slideIndex[index_slider] = index;
+    showSlide(index_slider, slideIndex[index_slider], slides, dots);
+}
+
+function currentSlidePanah(index_slider, index, slides, dots) {
+    if (index === 0) {
+        slideIndex[index_slider]--;
+    } else if (index === 1) {
+        slideIndex[index_slider]++;
     }
+    if (slideIndex[index_slider] < 0) slideIndex[index_slider] = slides.length - 1;
+    if (slideIndex[index_slider] >= slides.length) slideIndex[index_slider] = 0;
+    showSlide(index_slider, slideIndex[index_slider], slides, dots);
+}
 </script>
 <?= $this->endSection(); ?>
