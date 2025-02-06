@@ -3104,17 +3104,32 @@ class Pages extends BaseController
             'statusSelain' => $statusSelain,
         ];
         switch (strtolower($status)) {
+            case 'kadaluarsa':
+                if (isset($pemesanan[0]['data_mid']['expiry_time'])) {
+                    $data['expiry_time'] = $pemesanan[0]['data_mid']['expiry_time'];
+                } else {
+                    $data['expiry_time'] = 'Waktu Kadaluarsa Tidak Tersedia';
+                }
+                return view('pages/detailOrderKadaluarsa', $data);
+                break;
+            
+            case 'dibatalkan':
+                return view('pages/detailOrderBatal', $data);
+                break;
+        
             case 'menunggu pembayaran':
                 return view('pages/detailOrderMenunggu', $data);
                 break;
+        
             case 'proses':
                 return view('pages/detailOrderProses', $data);
                 break;
-            
+        
             default:
-                # code...
+                return redirect()->to('/order');
                 break;
         }
+        
     }
     public function invoice($id_mid)
     {
