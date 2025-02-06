@@ -284,7 +284,7 @@ $waktuExpireFix = date("d", $waktuExpire) . " " . $bulan[(int)date("m", $waktuEx
 }
 </style>
 
-<h1 class="header-title text-center mb-4 mt-4">Pesanan Kadaluarsa</h1>
+<h1 class="header-title text-center mb-4 mt-4">Pesanan kedaluwarsa</h1>
 <div class="py-1 text-light w-100 text-center" style="background-color: var(--dark); letter-spacing: -1px;">
     ID Pesanan : <b><?= $pemesananSelected['id_midtrans']; ?></b>
 </div>
@@ -304,8 +304,8 @@ $waktuExpireFix = date("d", $waktuExpire) . " " . $bulan[(int)date("m", $waktuEx
                 </div>
             </div>
             <div class="payment-detail text-center">
-                <p class="m-0">Waktu Kadaluarsa</p>
-                <h5 class="m-0"><?= $waktuExpireFix; ?></h5> <!-- Menampilkan waktu kadaluarsa -->
+                <p class="m-0">Waktu kedaluwarsa</p>
+                <h5 class="m-0"><?= $waktuExpireFix; ?></h5> <!-- Menampilkan waktu kedaluwarsa -->
             </div>
         </div>
 
@@ -353,7 +353,7 @@ $waktuExpireFix = date("d", $waktuExpire) . " " . $bulan[(int)date("m", $waktuEx
 <?= $this->endSection(); ?>
 
 <script>
-// Membuat fungsi countdown untuk waktu kadaluarsa (jika dibutuhkan)
+// Membuat fungsi countdown untuk waktu kedaluwarsa (jika dibutuhkan)
 const expiryTimeElm = document.querySelectorAll(".waktu");
 const de = new Date('<?= $dataMid['expiry_time']; ?>');
 const expireTime = de.getTime();
