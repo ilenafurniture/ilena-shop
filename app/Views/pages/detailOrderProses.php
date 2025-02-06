@@ -301,12 +301,12 @@ $waktuExpireFix = date("d", $waktuExpire) . " " . $bulan[(int)date("m", $waktuEx
         <h4 class="mb-3 text-center">Identitas Pembeli</h4>
         <div class="d-flex flex-column flex-md-row justify-content-between">
             <div class="buyer-details">
-                <p><strong>Nama:</strong> <?= $pemesananSelected['nama']; ?></p>
-                <p><strong>Email:</strong> <?= $pemesananSelected['email']; ?></p>
-                <p><strong>Telepon:</strong> <?= $pemesananSelected['nohp']; ?></p>
+                <p id="buyer_name"><strong>Nama:</strong> <?= $pemesananSelected['nama']; ?></p>
+                <p id="buyer_email"><strong>Email:</strong> <?= $pemesananSelected['email']; ?></p>
+                <p id="buyer_phone"><strong>Telepon:</strong> <?= $pemesananSelected['nohp']; ?></p>
             </div>
             <div class="buyer-address mt-3 mt-md-0">
-                <p><strong>Alamat:</strong> <?= $pemesananSelected['alamat']; ?></p>
+                <p id="buyer_address"><strong>Alamat:</strong> <?= $pemesananSelected['alamat']; ?></p>
             </div>
         </div>
     </div>

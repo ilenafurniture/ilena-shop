@@ -67,7 +67,224 @@ $waktuExpireFix = date("d", $waktuExpire) . " " . $bulan[(int)date("m", $waktuEx
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 
-<h1 class="teks-besar text-center mb-3 mt-4">Pesanan Kadaluarsa</h1>
+<style>
+.order-content {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.row-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.header-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.transaction-info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.transaction-info .payment-method {
+    margin-top: 1rem;
+}
+
+.tracking-number {
+    font-size: 16px;
+}
+
+.copy-btn {
+    font-size: 18px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #333;
+}
+
+.courier-image {
+    width: 100px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.btn-order {
+    text-decoration: none;
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #ff4747;
+    color: white;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-order:hover {
+    background-color: #e04040;
+}
+
+.content-text {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+}
+
+.buyer-info {
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.buyer-info h4 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.buyer-info p {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.buyer-details,
+.buyer-address {
+    flex: 1;
+}
+
+/* Payment Section */
+.payment-info {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.payment-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.payment-detail,
+.payment-method {
+    flex: 1;
+    padding: 15px;
+}
+
+.payment-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.payment-method {
+    text-align: center;
+}
+
+.payment-icon {
+    width: 50px;
+    margin-top: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.payment-method-logo {
+    max-width: 150px;
+    margin-top: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.copy-btn {
+    font-size: 18px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #ff4747;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+    .payment-row {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .payment-detail,
+    .payment-method {
+        padding: 10px;
+        text-align: center;
+    }
+
+    .payment-method-logo {
+        max-width: 120px;
+    }
+
+    .payment-title {
+        font-size: 16px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+    }
+
+    .payment-detail h3 {
+        font-size: 24px;
+    }
+
+    .buyer-info {
+        padding: 8px;
+    }
+
+    .buyer-info h4 {
+        font-size: 16px;
+    }
+
+    .buyer-info p {
+        font-size: 13px;
+    }
+
+    .copy-btn {
+        margin-top: 10px;
+    }
+}
+
+/* Animasi Sukses */
+.success-animation i {
+    font-size: 50px;
+    color: green;
+    animation: bounce 1s ease infinite;
+}
+
+@keyframes bounce {
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+</style>
+
+<h1 class="header-title text-center mb-4 mt-4">Pesanan Kadaluarsa</h1>
 <div class="py-1 text-light w-100 text-center" style="background-color: var(--dark); letter-spacing: -1px;">
     ID Pesanan : <b><?= $pemesananSelected['id_midtrans']; ?></b>
 </div>
@@ -75,32 +292,38 @@ $waktuExpireFix = date("d", $waktuExpire) . " " . $bulan[(int)date("m", $waktuEx
 <div class="container">
     <div class="konten mx-auto" style="max-width: 1000px;">
         <!-- Menampilkan informasi tagihan -->
-        <div class="row mb-3 pb-3 border-bottom">
-            <div class="col-12 col-md-6">
-                <p class="m-0">Jumlah Tagihan</p>
-                <h3 class="m-0" style="font-size: 40px; letter-spacing: -3px; font-weight:600;">Rp
-                    <?= number_format($dataMid['gross_amount'], 0, ',', '.'); ?></h3>
+        <div class="payment-row d-flex justify-content-center align-items-center">
+            <div class="payment-detail text-center">
+                <p class="payment-title">Jumlah Tagihan</p>
+                <div class="d-flex align-items-end justify-content-center gap-2">
+                    <div id="transaction_value" class="d-none"><?= (int)$dataMid['gross_amount']; ?></div>
+                    <h3 class="m-0">Rp <?= number_format($dataMid['gross_amount'], 0, ',', '.'); ?></h3>
+                    <button class="copy-btn mb-1" onclick="copytext('<?= (int)$dataMid['gross_amount']; ?>')">
+                        <i class="material-icons">content_copy</i>
+                    </button>
+                </div>
             </div>
-            <div class="col-12 col-md-6">
+            <div class="payment-detail text-center">
                 <p class="m-0">Waktu Kadaluarsa</p>
                 <h5 class="m-0"><?= $waktuExpireFix; ?></h5> <!-- Menampilkan waktu kadaluarsa -->
             </div>
         </div>
 
         <!-- Menampilkan nomor virtual account -->
-        <div class="row mb-3 pb-3 border-bottom">
-            <div class="col-12 col-md-6">
-                <p class="m-0">Nomor Virtual Account</p>
-                <img src="/img/pembayaran/<?= $bank; ?>.webp" alt="Pembayaran <?= $bank; ?>" class="img-fluid mb-3">
-                <div class="d-flex align-items-end gap-2">
-                    <h3 class="m-0" style="font-size: 40px; letter-spacing: -3px; font-weight:600;">
+        <div style="flex: 1">
+            <div>
+                <p class="payment-method text-center">Nomor Virtual Account</p>
+                <img class="payment-method-logo" src="/img/pembayaran/<?= $bank; ?>.webp" alt="">
+                <div class="d-flex align-items-end justify-content-center gap-2 my-4">
+                    <h3 class="m-0" style=" letter-spacing: -3px; font-weight:600;">
                         <?= $va_number; ?></h3>
-                    <button class="btn-teks-aja hitam mb-1" onclick="copytext('<?= $va_number; ?>')"><i
+                    <button class="copy-btn mb-1" onclick="copytext('<?= $va_number; ?>')"><i
                             class="material-icons">content_copy</i></button>
                 </div>
-                <p class="mb-3">Simpan nomor virtual account di atas untuk melakukan pembayaran sesuai bank yang telah
-                    dipilih</p>
             </div>
+            <p class="mb-3 text-center">Simpan nomor virtual account diatas
+                untuk melakukan pembayaran sesuai bank yang telah
+                dipilih</p>
         </div>
 
         <!-- Petunjuk Pembayaran -->
