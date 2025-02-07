@@ -304,6 +304,81 @@ function closeLoginModel() {
     color: white;
     font-weight: bold;
 }
+
+/* Mobile */
+.kontenLNMobile {
+    position: relative;
+    flex: 2;
+    background: url('./img/foto/0 comp.png');
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    transition-delay: 0.4s;
+}
+
+@media (max-width: 767px) {
+    .teks-sedang {
+        font-size: 30px;
+    }
+
+    .kontenLNMobile {
+        height: 50vh;
+    }
+
+    .overlayBed,
+    .overlayMeja {
+        position: absolute;
+        opacity: 0;
+        max-width: 0;
+        padding: 0.5em 0.5em;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+        transition: 1s;
+        border-radius: 50px;
+    }
+
+    .overlayBed.show,
+    .overlayMeja.show {
+        opacity: 1;
+        height: 60px;
+        max-width: 200px;
+        padding: 0.5em 2em;
+        transition: 1s;
+    }
+
+    .overlayBed p:first-child,
+    .overlayMeja p:first-child {
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .overlayBed a,
+    .overlayMeja a {
+        text-decoration: none;
+        color: white;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+    }
+
+    .overlayBed a i,
+    .overlayMeja a i {
+        font-size: 16px;
+        margin-left: 0.5rem;
+    }
+
+    .overlayBed {
+        top: 150px;
+        left: 60px;
+    }
+
+    .overlayMeja {
+        top: 250px;
+        left: 200px;
+    }
+}
 </style>
 <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:80svh;">
     <a class="d-flex align-items-center ps-5" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
@@ -764,10 +839,46 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
     </div>
 </div>
 <div class="hide-ke-show-flex align-items-stretch" style="width:100%; height:40svh; position:relative;">
-    <div class="w-100"
-        style="height:40svh; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/0 comp.png'); background-size: cover; background-position:center;">
+    <div class="kontenLNMobile">
+        <div class="overlayBed" id="overlayBed">
+            <a href="/product?koleksi=cabana&jenis=king-bed+queen-bed+single-bed"
+                class="d-flex gap-3 align-items-center">
+                <div>
+                    <p class="m-0 fw-bold">Bed Cabana</p>
+                    <p class="m-0 fw-regular">Cabana</p>
+                </div>
+                <i class="material-icons">arrow_forward</i>
+            </a>
+        </div>
+        <div class="overlayMeja" id="overlayMeja">
+            <a href="/product?koleksi=cabana&jenis=side-table" class="d-flex gap-3 align-items-center">
+                <div>
+                    <p class="m-0 fw-bold">Side Table</p>
+                    <p class="m-0 fw-regular">Cabana</p>
+                </div>
+                <i class="material-icons">arrow_forward</i>
+            </a>
+        </div>
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const overlayBed = document.getElementById('overlayBed');
+    const overlayMeja = document.getElementById('overlayMeja');
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('show');
+            }
+        });
+    }, {
+        threshold: 1
+    });
+    observer.observe(overlayBed);
+    observer.observe(overlayMeja);
+});
+</script>
 
 <!-- Bagian Windows -->
 <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:40svh;">
