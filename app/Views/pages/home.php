@@ -917,7 +917,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <div style="flex:1;" class="h-100 d-flex flex-column justify-content-between">
                 <div>
                     <h3 class="mb-2 teks-besar fw-bold" style="font-size:36px;">Inaugural Season</h3>
-                    <p>Ilena hadir pertama kali dengan memperkenalkan 6 series terbaik. Terinspirasi dari berbagai
+                    <p>Ilena hadir pertama kali dengan memperkenalkan 10 series terbaik. Terinspirasi dari berbagai
                         hal
                         baik dengan harapan dapat membawa kebaikan, untuk Anda.</p>
                 </div>
