@@ -188,7 +188,7 @@ function closeLoginModel() {
 </style>
 <div class="slider">
     <div class="slides">
-        <a href="/product/dresser-3-drawer-ilena-socoplate" class="active">
+        <a href="/product?koleksi=industrial&jenis=coffee-table" class="active">
             <img class="ls" src="imgheader/1" alt="Slide 1">
             <img class="pt" src="imgheaderhp/1" alt="Slide 1">
         </a>
@@ -200,7 +200,7 @@ function closeLoginModel() {
             <img class="ls" src="imgheader/3" alt="Slide 3">
             <img class="pt" src="imgheaderhp/3" alt="Slide 3">
         </a>
-        <a href="/login" class="kanan">
+        <a class="kanan">
             <img class="ls" src="imgheader/4" alt="Slide 4">
             <img class="pt" src="imgheaderhp/4" alt="Slide 4">
         </a>
