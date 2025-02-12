@@ -16,7 +16,59 @@
         </nav>
         <div class="baris-ke-kolom-reverse w-100">
             <div class="limapuluh-ke-seratus">
-                <h1 class="teks-besar mb-2"><?= str_replace('Tv', 'TV', ucwords($produk['nama'])) ?></h1>
+                <style>
+                a {
+                    position: relative;
+                    text-decoration: none;
+                }
+
+                .hover-text {
+                    display: none;
+                    position: absolute;
+                    bottom: 100%;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background-color: #333;
+                    color: #fff;
+                    padding: 8px 15px;
+                    border-radius: 5px;
+                    font-size: 14px;
+                    white-space: nowrap;
+                    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                }
+
+                @media (min-width: 769px) {
+                    a:hover .hover-text {
+                        display: block;
+                        opacity: 1;
+                    }
+                }
+
+                @media (max-width: 768px) {
+                    .hover-text {
+                        display: none;
+                    }
+
+                    a {
+                        font-size: 16px;
+                    }
+                }
+                </style>
+                <div class="d-flex gap-4">
+                    <div>
+                        <h1 class="teks-besar mb-2"><?= str_replace('Tv', 'TV', ucwords($produk['nama'])) ?></h1>
+                    </div>
+                    <div>
+                        <a href="/product?koleksi=<?= $produk['kategori']; ?>" class="btn-teks-aja"
+                            style="display: inline;">
+                            <i class="material-icons" style="font-size: 30px;">info_outline</i>
+                            <span class="hover-text">Ingin melihat produk <?= $produk['kategori']; ?></span>
+                        </a>
+                    </div>
+                </div>
+
                 <div class="d-flex gap-2 mb-3">
                     <p class="harga">Rp
                         <?= number_format($produk['harga'] * (100 - $produk['diskon']) / 100, 0, ',', '.'); ?></p>
