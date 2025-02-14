@@ -131,8 +131,9 @@
                 </div>
                 <?php } ?>
                 <p id="info-habis" class="mt-2 <?= $produk['varian'][0]['stok'] <= 0 ? '' : 'd-none'; ?>"
-                    style="font-size: 10px;">*Produk ini bisa di pre-order dengan menghubungi <a href=""
-                        class="btn-teks-aja" style="display: inline;">Customer Service</a> kami</p>
+                    style="font-size: 10px;">*Produk ini bisa di pre-order dengan menghubungi <a
+                        href="https://wa.me/+628112938158" class="btn-teks-aja" style="display: inline;">Customer
+                        Service</a> kami</p>
                 <?php if ($produk['tokped'] || $produk['shopee'] || $produk['tiktok']) { ?>
                 <div class="mt-4 <?= $produk['varian'][0]['stok'] <= 0 ? 'd-none' : ''; ?>" id="container-market">
                     <p class="mb-2">
