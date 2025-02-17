@@ -11,6 +11,7 @@ class GambarHeaderModel extends Model
         'id',
         'foto',
         'foto_hp',
+        'url',
     ];
 
     public function getGambar($id)

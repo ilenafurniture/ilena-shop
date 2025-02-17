@@ -186,7 +186,29 @@ function closeLoginModel() {
     }
 }
 </style>
+
 <div class="slider">
+    <div class="slides">
+        <?php foreach ($sliders as $slider): ?>
+        <a <?= $slider['url'] ? 'href="'.$slider['url'].'"' : ''; ?> class="active">
+            <!-- Menampilkan gambar dengan data URL -->
+            <img class="ls" src="data:image/jpeg;base64,<?= base64_encode($slider['foto']); ?>" alt="Slide">
+            <img class="pt" src="data:image/jpeg;base64,<?= base64_encode($slider['foto_hp']); ?>" alt="Slide">
+        </a>
+        <?php endforeach; ?>
+    </div>
+    <div class="dots">
+        <?php foreach ($sliders as $key => $slider): ?>
+        <div class="dot <?= $key === 0 ? 'active' : ''; ?>"></div>
+        <?php endforeach; ?>
+    </div>
+    <div class="panah">
+        <button class="btn-teks-aja item-panah"><i class="material-icons">chevron_left</i></button>
+        <button class="btn-teks-aja item-panah"><i class="material-icons">chevron_right</i></button>
+    </div>
+</div>
+
+<!-- <div class="slider">
     <div class="slides">
         <a href="/product?koleksi=industrial&jenis=coffee-table" class="active">
             <img class="ls" src="imgheader/1" alt="Slide 1">
@@ -215,7 +237,7 @@ function closeLoginModel() {
         <button class="btn-teks-aja item-panah"><i class="material-icons">chevron_left</i></button>
         <button class="btn-teks-aja item-panah"><i class="material-icons">chevron_right</i></button>
     </div>
-</div>
+</div> -->
 
 <!-- End Tampilan Side Promo -->
 <!-- bagian windows -->
@@ -381,6 +403,47 @@ function closeLoginModel() {
 }
 </style>
 <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:80svh;">
+    <a class="d-flex align-items-center ps-5 zoom-wrapper" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
+        style="text-decoration:none; flex:1; position: relative;">
+        <img src="./img/foto/11 comp.png" alt="Background Image"
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
+        <div>
+            <p class="text-light">Make you feel</p>
+            <h1 class="teks-besar text-light mb-5">Elegant</h1>
+            <div style="width:120px; height:2px; background-color:white;"></div>
+        </div>
+    </a>
+    <div style="flex:1;" class=" d-flex flex-column">
+        <a class="d-flex align-items-center ps-5 zoom-wrapper" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
+            style="text-decoration:none; flex: 1; position: relative;">
+            <img src="./img/foto/n1 comp.png" alt="Background Image"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
+            <div>
+                <h1 class="teks-besar text-light mb-3">Luxury</h1>
+                <div class="d-flex gap-3">
+                    <div style="width:20px; height:20px; background-color:white;"></div>
+                    <div style="width:20px; height:20px; border: 2px solid white;"></div>
+                </div>
+            </div>
+        </a>
+        <a class="d-flex" style="text-decoration:none; flex: 1" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>">
+            <div class="d-flex align-items-center ps-5 zoom-wrapper" style="flex:1; position: relative;">
+                <img src="./img/foto/s comp.png" alt="Background Image"
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
+                <div>
+                    <h1 class="teks-besar text-light mb-3">Simply</h1>
+                    <div class="d-flex gap-3">
+                        <div style="width:20px; height:20px; border: 2px solid white;"></div>
+                        <div style="width:20px; height:20px; background-color:white;"></div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+
+<!-- <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:80svh;">
     <a class="d-flex align-items-center ps-5" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
         style="text-decoration:none; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/11 comp.png'); background-size: cover; background-position:center;">
         <div>
@@ -413,7 +476,10 @@ function closeLoginModel() {
             </div>
         </a>
     </div>
-</div>
+</div> -->
+
+
+
 
 <!-- Bagian HP -->
 <div class="hide-ke-show-flex flex-column pt-2 gap-2" style="width:100%; height:80svh;">
@@ -447,6 +513,7 @@ function closeLoginModel() {
     </a>
 </div>
 <!-- END BAGIAN HP -->
+
 
 <!-- BAGIAN SLIDE -->
 <div style="position: absolute; background-color: rgba(255, 0, 0, 0.5); height: 0px;" class="w-100" id="counter-slide">
@@ -793,7 +860,6 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
 
 
 <!-- Bagian Desktop -->
-
 <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:80svh; position:relative;">
     <div class="d-flex align-items-center" style="flex:1;">
         <div class="p-5">
@@ -1044,11 +1110,30 @@ function modalseries() {
 }
 </script>
 
+<style>
+.zoom-wrapper {
+    overflow: hidden;
+    height: 100%;
+    corsor: pointer;
+}
+
+.zoom-wrapper img {
+    object-fit: cover;
+    height: 100%;
+    transition: transform 0.5s;
+}
+
+.zoom-wrapper:hover img {
+    transform: scale(1.1);
+}
+</style>
+
 <!-- Bagian Windows -->
 <div class="container show-flex-ke-hide gap-3 my-5" style="width:100%; height:60svh;">
     <a href="/product?ruang=tamu" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
-        <img src="./img/foto/livingroom1 comp.png" alt="" class="w-100 mb-3"
-            style="flex: 1; width: 100%; object-fit: cover;">
+        <div class="zoom-wrapper mb-2">
+            <img src="./img/foto/livingroom1 comp.png" alt="" style="flex: 1; width: 100%; object-fit: cover;">
+        </div>
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
             <h5 style="font-weight: 500;" class="m-0">L</h5>
             <h5 style="font-weight: 500;" class="m-0">I</h5>
@@ -1060,8 +1145,9 @@ function modalseries() {
         <h5 class="text-center fw-bold" style="font-size: 13px; height: fit-content">ROOM</h5>
     </a>
     <a href="/product?ruang=tidur" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
-        <img src="./img/foto/bedroom cody comp.png" alt="" class="w-100 mb-3"
-            style="flex: 1; width: 100%; object-fit: cover;">
+        <div class="zoom-wrapper mb-2">
+            <img src="./img/foto/bedroom cody comp.png" alt="" style="flex: 1; width: 100%; object-fit: cover;">
+        </div>
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
             <h5 style="font-weight: 500;" class="m-0">B</h5>
             <h5 style="font-weight: 500;" class="m-0">E</h5>
@@ -1070,8 +1156,9 @@ function modalseries() {
         <h5 class="text-center fw-bold" style="font-size: 13px; height: fit-content">ROOM</h5>
     </a>
     <a href="/product?ruang=keluarga" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
-        <img src="./img/foto/ruangtamu1 comp.png" alt="" class="w-100 mb-3"
-            style="flex: 1; width: 100%; object-fit: cover;">
+        <div class="zoom-wrapper mb-2">
+            <img src="./img/foto/ruangtamu1 comp.png" alt="" style="flex: 1; width: 100%; object-fit: cover;">
+        </div>
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
             <h5 style="font-weight: 500;" class="m-0">L</h5>
             <h5 style="font-weight: 500;" class="m-0">O</h5>
@@ -1096,6 +1183,7 @@ function modalseries() {
     display: none;
 }
 </style>
+
 <div class="hide-ke-show-block" id="scroll-set">
     <div class="d-flex gap-1 px-5 pt-5 pb-4" style="width: fit-content;">
         <a href="/product?ruang=tamu" class="bg-primary"

@@ -1016,42 +1016,62 @@ class AdminController extends BaseController
 
     public function homeLayout()
     {
+        $gambarHeader = [
+            'url1' => $this->gambarHeaderModel->where(['id' => 1])->first()['url'],
+            'url2' => $this->gambarHeaderModel->where(['id' => 2])->first()['url'],
+            'url3' => $this->gambarHeaderModel->where(['id' => 3])->first()['url'],
+            'url4' => $this->gambarHeaderModel->where(['id' => 4])->first()['url'],
+        ];
         $data = [
             'title' => 'Home Layout',
-            'msg' => session()->getFlashdata('msg')
+            'msg' => session()->getFlashdata('msg'),
+            'gambarHeader' => $gambarHeader
         ];
         return view('admin/homeLayout', $data);
     }
+
     public function actionHomeLayout()
     {
         $image1 = $this->request->getFile('image1');
         $image1hp = $this->request->getFile('image1-hp');
+        $url1 = $this->request->getVar('url1'); 
+
         $image2 = $this->request->getFile('image2');
         $image2hp = $this->request->getFile('image2-hp');
+        $url2 = $this->request->getVar('url2'); 
+
         $image3 = $this->request->getFile('image3');
         $image3hp = $this->request->getFile('image3-hp');
+        $url3 = $this->request->getVar('url3'); 
+
         $image4 = $this->request->getFile('image4');
         $image4hp = $this->request->getFile('image4-hp');
-        if ($image1->isValid() && $image1hp->isValid()) {
-            $imageDesktop = file_get_contents($image1);
-            $imageHp = file_get_contents($image1hp);
-            $this->gambarHeaderModel->where(['id' => 1])->set(['foto' => $imageDesktop, 'foto_hp' => $imageHp])->update();
-        }
-        if ($image2->isValid() && $image2hp->isValid()) {
-            $imageDesktop = file_get_contents($image2);
-            $imageHp = file_get_contents($image2hp);
-            $this->gambarHeaderModel->where(['id' => 2])->set(['foto' => $imageDesktop, 'foto_hp' => $imageHp])->update();
-        }
-        if ($image3->isValid() && $image3hp->isValid()) {
-            $imageDesktop = file_get_contents($image3);
-            $imageHp = file_get_contents($image3hp);
-            $this->gambarHeaderModel->where(['id' => 3])->set(['foto' => $imageDesktop, 'foto_hp' => $imageHp])->update();
-        }
-        if ($image4->isValid() && $image4hp->isValid()) {
-            $imageDesktop = file_get_contents($image4);
-            $imageHp = file_get_contents($image4hp);
-            $this->gambarHeaderModel->where(['id' => 4])->set(['foto' => $imageDesktop, 'foto_hp' => $imageHp])->update();
-        }
+        $url4 = $this->request->getVar('url4');
+
+        $dataUpdate = [];
+        if($image1->isValid()) $dataUpdate['foto'] = file_get_contents($image1);
+        if($image1hp->isValid()) $dataUpdate['foto_hp'] = file_get_contents($image1hp);
+        $dataUpdate['url'] = $url1 ? $url1 : null;
+        $this->gambarHeaderModel->where(['id' => 1])->set($dataUpdate)->update();
+        
+        $dataUpdate = [];
+        if($image2->isValid()) $dataUpdate['foto'] = file_get_contents($image2);
+        if($image2hp->isValid()) $dataUpdate['foto_hp'] = file_get_contents($image2hp);
+        $dataUpdate['url'] = $url2 ? $url2 : null;
+        $this->gambarHeaderModel->where(['id' => 2])->set($dataUpdate)->update();
+        
+        $dataUpdate = [];
+        if($image3->isValid()) $dataUpdate['foto'] = file_get_contents($image3);
+        if($image3hp->isValid()) $dataUpdate['foto_hp'] = file_get_contents($image3hp);
+        $dataUpdate['url'] = $url3 ? $url3 : null;
+        $this->gambarHeaderModel->where(['id' => 3])->set($dataUpdate)->update();
+        
+        $dataUpdate = [];
+        if($image4->isValid()) $dataUpdate['foto'] = file_get_contents($image4);
+        if($image4hp->isValid()) $dataUpdate['foto_hp'] = file_get_contents($image4hp);
+        $dataUpdate['url'] = $url4 ? $url4 : null;
+        $this->gambarHeaderModel->where(['id' => 4])->set($dataUpdate)->update();
+        
         session()->setFlashdata('msg', 'Home layout telah diperbarui');
         return redirect()->to('/admin/homelayout');
     }

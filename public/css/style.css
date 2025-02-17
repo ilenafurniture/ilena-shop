@@ -2286,6 +2286,21 @@ body {
         transform: scale(0.7);
     }
 }
+.shimmer {
+    background-color: linear-gradient(90deg, #EEEEEE 0%, #F5F5F5 20%, #EEEEEE 40%, #F5F5F5 60%, #EEEEEE 80%, #F5F5F5 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite linear;
+}
+
+@keyframes shimmer {
+    from {
+        background-position: 100% 100%;
+    }
+
+    to {
+        background-position: 0 0;
+    }
+}
 
 .show-di-1350 {
     display: none;

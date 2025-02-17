@@ -54,6 +54,8 @@ class Pages extends BaseController
     }
     public function index()
     {
+        
+        $sliders = $this->gambarHeaderModel->findAll();
         $produk  = $this->barangModel->orderBy('pengunjung', 'desc')->findAll(4, 0);
         $wishlist = $this->session->get('wishlist');
         if (!isset($wishlist)) {
@@ -68,6 +70,7 @@ class Pages extends BaseController
             'metaKeyword' => 'ilena Furniture, Toko Furniture, Sorely Ilena Semarang, Cabana Ilena Semarang, Orca Ilena Semarang, Plint Base Ilena Semarang, Cutout Ilena Semarang, Living Room Ilena Semarang, Bed Room Ilena Semarang, Lounge Room Ilena Semarang',
             'produk' => $produk,
             'wishlist' => $wishlist,
+            'sliders' => $sliders,
             'msg_active' => session()->getFlashdata('msg_active') ? session()->getFlashdata('msg_active') : false,
             'isLogin' => session()->get('isLogin') ? true : false,
         ];
