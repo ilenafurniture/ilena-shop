@@ -247,7 +247,7 @@ function closeLoginModel() {
         <h1 class="teks-besar mb-2 text-center text-light">Modern & Stylish<br>Furniture</h1>
         <p class="text-handwrite py-1 px-2 text-light"
             style="font-size:30px; transform: rotate(-10deg) translate(100px, -20px);">True to you</p>
-        <a href="/product" class="btn-underline text-light">
+        <a href="/product" class="d-flex align-items-center gap-2 kesana">
             <p class="m-0 fw-bold">Telusuri</p><i class="material-icons text-light">arrow_forward</i>
         </a>
     </div>
@@ -962,8 +962,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 </div>
             </div>
             <div class="d-flex h-100 align-items-end justify-content-end" style="width:100px;">
-                <a onclick="modalseries()" class="border-bottom gap-2 d-flex align-items-center kesana"
-                    style="cursor: pointer;">
+                <a onclick="modalseries()" class=" gap-2 d-flex align-items-center kesana" style="cursor: pointer;">
                     <p class="m-0">Lihat series</p><i class="material-icons text-light">arrow_forward</i>
                 </a>
             </div>
@@ -1229,13 +1228,28 @@ function modalseries() {
 </div>
 
 <!-- Bagian Windows Scroll -->
+<style>
+.find-out-text {
+    transition: transform 0.3s ease;
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -1px;
+}
+
+.find-out-text:hover {
+    transform: scale(1.1);
+}
+
+.material-icons {
+    font-size: 40px;
+}
+</style>
 <div class="slider">
     <div class="slides">
         <a href="/product" class="kanan bg-primary">
             <div style="position: absolute; z-index: 5; top: 0; left: 0; width: 100%; height: 100%"
                 class="d-flex justify-content-center align-items-center">
-                <p class="text-light m-0" style="font-size: 24px; font-weight: 500; letter-spacing: -1px;">Find Out More
-                </p>
+                <p class="find-out-text">Find Out More</p>
             </div>
             <img style="position: absolute; z-index: 4; top: 0; left: 0; width: 100%; height: 100%" class="d-block"
                 src="<?= base_url('/img/foto/find out more watercase comp.png') ?>" alt="Slide 2">
@@ -1254,6 +1268,7 @@ function modalseries() {
         <button class="btn-teks-aja item-panah"><i class="material-icons">chevron_right</i></button>
     </div>
 </div>
+
 <!-- <style>
     .carousel-indicators button {
         width: 12px;
@@ -1337,7 +1352,7 @@ sliders.forEach((slider, ind_slider) => {
     setInterval(() => {
         slideIndex[ind_slider]++;
         showSlide(ind_slider, slideIndex[ind_slider], slidesCur, dotsCur);
-    }, 5000);
+    }, 7000);
     for (let i = 0; i < dotsCur.length; i++) {
         const dot = dotsCur[i];
         dot.addEventListener('click', () => {

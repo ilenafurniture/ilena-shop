@@ -1646,12 +1646,41 @@ body {
     text-decoration: none;
     width: fit-content;
     scale: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+.kesana::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: white; /* Change this to your desired color */
+    transition: width 0.3s ease;
+}
+
+.kesana:hover::after {
+    width: 100%;
+}
+
+.kesana:hover {
+    scale: 1;
+    transition: 0.3s;
+}
+
+/* .kesana {
+    color: white;
+    text-decoration: none;
+    width: fit-content;
+    scale: 1;
     transition: 0.3s;
 }
 .kesana:hover {
     scale: 1;
     transition: 0.3s;
-}
+} */
 
 .kategori-card > div {
     max-height: 0;
