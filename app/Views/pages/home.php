@@ -203,8 +203,8 @@ function closeLoginModel() {
         <?php endforeach; ?>
     </div>
     <div class="panah">
-        <button class="btn-teks-aja item-panah"><i class="material-icons ukuran-icon">chevron_left</i></button>
-        <button class="btn-teks-aja item-panah"><i class="material-icons ukuran-icon">chevron_right</i></button>
+        <button class="btn-teks-aja item-panah"><i class="material-icons ">chevron_left</i></button>
+        <button class="btn-teks-aja item-panah"><i class="material-icons ">chevron_right</i></button>
     </div>
 </div>
 
@@ -1239,10 +1239,6 @@ function modalseries() {
 .find-out-text:hover {
     transform: scale(1.1);
 }
-
-.ukuran-icon {
-    font-size: 40px;
-}
 </style>
 <div class="slider">
     <div class="slides">
@@ -1264,8 +1260,8 @@ function modalseries() {
         <div class="dot"></div>
     </div>
     <div class="panah">
-        <button class="btn-teks-aja item-panah"><i class="material-icons ukuran-icon">chevron_left</i></button>
-        <button class="btn-teks-aja item-panah"><i class="material-icons ukuran-icon">chevron_right</i></button>
+        <button class="btn-teks-aja item-panah"><i class="material-icons ">chevron_left</i></button>
+        <button class="btn-teks-aja item-panah"><i class="material-icons ">chevron_right</i></button>
     </div>
 </div>
 
