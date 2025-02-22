@@ -1227,25 +1227,20 @@ function modalseries() {
     </div>
 </div>
 
-<!-- Bagian Windows Scroll -->
-<style>
-.find-out-text {
-    transition: transform 0.3s ease;
-    font-size: 24px;
-    font-weight: 500;
-    letter-spacing: -1px;
-}
 
-.find-out-text:hover {
-    transform: scale(1.1);
-}
-</style>
+
+
 <div class="slider">
     <div class="slides">
         <a href="/product" class="kanan bg-primary">
             <div style="position: absolute; z-index: 5; top: 0; left: 0; width: 100%; height: 100%"
-                class="d-flex justify-content-center align-items-center">
+                class="d-flex justify-content-center align-items-center flex-column container-find-out">
                 <p class="find-out-text">Find Out More</p>
+                <div class="d-flex flex-column align-items-center">
+                    <div class="popup-text">See All Products</div>
+                    <i class="material-icons"
+                        style="font-size: 50px; transform: translateY(-22px); color: black;">arrow_drop_down</i>
+                </div>
             </div>
             <img style="position: absolute; z-index: 4; top: 0; left: 0; width: 100%; height: 100%" class="d-block"
                 src="<?= base_url('/img/foto/find out more watercase comp.png') ?>" alt="Slide 2">
@@ -1264,6 +1259,64 @@ function modalseries() {
         <button class="btn-teks-aja item-panah"><i class="material-icons ">chevron_right</i></button>
     </div>
 </div>
+<style>
+.container-find-out {
+    background-color: rgba(0, 0, 0, 0);
+    transition: 0.3s;
+    pointer-events: none;
+}
+
+.container-find-out:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+    transition: 0.3s;
+}
+
+.find-out-text {
+    pointer-events: auto;
+    position: absolute;
+    z-index: 2;
+    transition: transform 0.3s ease;
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -1px;
+    position: relative;
+    transition: 0.7s;
+    letter-spacing: normal;
+}
+
+.find-out-text:hover {
+    /* font-size: 27px; */
+    transition: 0.7s;
+    letter-spacing: 2px;
+}
+
+.popup-text {
+    background-color: black;
+    color: white;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 10px 20px;
+}
+
+.find-out-text+.d-flex {
+    z-index: 1;
+    position: absolute;
+    transform: translateY(-30px);
+    max-height: 0px;
+    overflow: hidden;
+    transition: 0.3s;
+    opacity: 0;
+}
+
+.find-out-text:hover+.d-flex {
+    transition: 0.6s;
+    max-height: 100px;
+    opacity: 1;
+}
+</style>
+
+
 
 <!-- <style>
     .carousel-indicators button {
