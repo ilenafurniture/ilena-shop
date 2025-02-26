@@ -20,10 +20,51 @@
                     <h1 class="teks-besar d-inline"><?= str_replace('Tv', 'TV', ucwords($produk['nama'])) ?> </h1>
                     <a href="/product?koleksi=<?= $produk['kategori']; ?>" class="btn-teks-aja d-inline">
                         <i class="material-icons d-inline" style="font-size: 30px;">open_in_new</i>
+                        <span class="popup"> Lihat Produk <?= ucfirst($produk['kategori']); ?></span>
+                        <style>
+                        .btn-teks-aja {
+                            position: relative;
+                        }
+
+                        .popup {
+                            visibility: hidden;
+                            opacity: 0;
+                            width: 120px;
+                            background-color: black;
+                            color: #fff;
+                            text-align: center;
+                            border-radius: 6px;
+                            padding: 5px 5px;
+                            position: absolute;
+                            bottom: 240%;
+                            left: 50%;
+                            transform: translateX(-50%) translateY(10px);
+                            z-index: 1;
+                            transition: opacity 0.6s, transform 0.6s;
+                        }
+
+                        .popup::before {
+                            content: "";
+                            position: absolute;
+                            top: 100%;
+                            left: 50%;
+                            margin-left: -5px;
+                            border-width: 5px;
+                            border-style: solid;
+                            border-color: black transparent transparent transparent;
+                        }
+
+                        .btn-teks-aja:hover .popup {
+                            visibility: visible;
+                            opacity: 1;
+                            transform: translateX(-50%) translateY(0);
+                        }
+                        </style>
                     </a>
                 </div>
 
                 <div class="d-flex gap-2 mb-3">
+                    <p class="harga">Rp
                     <p class="harga">Rp
                         <?= number_format($produk['harga'] * (100 - $produk['diskon']) / 100, 0, ',', '.'); ?></p>
                     <?php if ($produk['diskon'] > 0) { ?>
