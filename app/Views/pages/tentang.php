@@ -131,23 +131,23 @@ var map = L.map('map', {
 });
 
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    maxZoom: 20
+    maxZoom: 25
 }).addTo(map);
 
 var customIcon = L.icon({
     iconUrl: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#e84a49" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-map-pin">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e84a49" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-map-pin">
             <path d="M21 10c0 7.941-9 13-9 13S3 17.941 3 10a9 9 0 1 1 18 0z"></path>
             <circle cx="12" cy="10" r="3"></circle>
         </svg>
     `),
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -32]
+    iconSize: [18, 18],
+    iconAnchor: [10, 10],
+    popupAnchor: [0, 0]
 });
 
 var stores = [{
-    name: "Jempol Baru",
+    name: "Jempol Baru Furniture",
     coords: [-7.565517457000553, 110.82418385423263],
     link: "https://maps.app.goo.gl/J7anuqnuommmVAta9",
     image: "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=GhMtvLKGPqypqcpi8sT4pQ&cb_client=search.gws-prod.gps&w=408&h=240&yaw=53.174248&pitch=0&thumbfov=100"
@@ -156,6 +156,21 @@ var stores = [{
     coords: [-7.743342634217805, 110.36247403971207],
     link: "https://maps.app.goo.gl/DcA9BUHheDdQD6Gc7",
     image: "https://lh3.googleusercontent.com/gps-proxy/ALd4DhGShmpToVMb7TTupR8Vi1tkd8bzWn5XfuPzOzw5NTGIy_-t1Ju5aSRxPTpFW_QJKRAiWQmJpElLFyTRFyEbD2xO77PYFF3PfOaLOn-E_ksf0r3L4c9PxjtlRSMBp1A5O1J_K_d7BdEfMyAkMo0gJs2xHWievt7lFeu-neRzcNyZFh47c3e2eStMdtkJ9M8V0S3_G10=w408-h240-k-no"
+}, {
+    name: "Home Gallery Furniture",
+    coords: [-7.289629716812322, 112.67434212019445],
+    link: "https://maps.app.goo.gl/TxCk5fSik1DYdbDV7",
+    image: "https://www.google.com/maps/place/Home+Gallery+-+PTC+Surabaya/@-7.2890192,112.673548,3a,75y,90t/data=!3m8!1e2!3m6!1sAF1QipOoBRnUjEsbwm2qQ7dGex2s30m_zSb3uX-pZ8Jf!2e10!3e12!6shttps:%2F%2Flh5.googleusercontent.com%2Fp%2FAF1QipOoBRnUjEsbwm2qQ7dGex2s30m_zSb3uX-pZ8Jf%3Dw104-h86-k-no!7i1080!8i889!4m11!1m2!2m1!1sgudang+home+gallery+surabaya!3m7!1s0x2dd7fc36123d7971:0x54f57457dfd3bee8!8m2!3d-7.289658!4d112.674339!10e5!15sChxndWRhbmcgaG9tZSBnYWxsZXJ5IHN1cmFiYXlhWh4iHGd1ZGFuZyBob21lIGdhbGxlcnkgc3VyYWJheWGSAQ9mdXJuaXR1cmVfc3RvcmXgAQA!16s%2Fg%2F11cjh_9x2h?entry=ttu&g_ep=EgoyMDI1MDIxOS4xIKXMDSoASAFQAw%3D%3D#"
+}, {
+    name: "Pari Anom Jaya Furniture",
+    coords: [-7.264405907300976, 112.79562668327448],
+    link: "https://maps.app.goo.gl/c7FX6VVayuNHE5Sp8",
+    image: "https://www.google.com/maps/@-7.2418678,112.744882,3a,75y,90t/data=!3m8!1e2!3m6!1s3d2tRXH8lIQAAAQYa2kNyg!2e0!3e3!6shttps:%2F%2Flh3.googleusercontent.com%2Fgps-proxy%2FALd4DhG-v_-Vzkr3WL1B0PebVNqXDTX7iU9628Qpfxj4p8Xk83F_6zJ6vCX7V7zoqIrIbI5hb9-Sg8oHZKnpkAUJj9IlpCbvpA6e-J2M2GeFdw8U4TsNPQW8W0BfHBsXyj9BfvlYVDbbvAuKgT-HfigyCr7MBgChUkTrCAoyzNIWv0H7gMXFY9BhnekwvK54sS1xikRkATQ%3Dw114-h86-k-no!7i2133!8i1600?entry=ttu&g_ep=EgoyMDI1MDIxOS4xIKXMDSoASAFQAw%3D%3D"
+}, {
+    name: "Suri Mebel Semarang",
+    coords: [-6.985425332274277, 110.41746260495303],
+    link: "https://maps.app.goo.gl/bbT2yeHvj1jPttWUA",
+    image: "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=NPKi7fw1xW7VgdaqnCNLFw&cb_client=search.gws-prod.gps&w=408&h=240&yaw=270.7453&pitch=0&thumbfov=100"
 }];
 
 stores.forEach(store => {
@@ -164,7 +179,7 @@ stores.forEach(store => {
     }).addTo(map);
     marker.bindPopup(
         `<b>${store.name}</b><br>
-         <img src="${store.image}" alt="${store.name}" style="width:100%; max-width:200px; border-radius:4px; margin:5px 0;"><br>
+         <img src="${store.image}" alt="${store.name}" style="width:100%; max-width:100px; border-radius:4px; margin:5px 0;"><br>
          <a href="${store.link}" target="_blank" style="text-align: center;">Buka di Google Maps</a>`
     );
     marker.on('mouseover', function() {
