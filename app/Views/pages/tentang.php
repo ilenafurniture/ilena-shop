@@ -158,9 +158,9 @@ var stores = [{
     image: "https://lh3.googleusercontent.com/gps-proxy/ALd4DhGShmpToVMb7TTupR8Vi1tkd8bzWn5XfuPzOzw5NTGIy_-t1Ju5aSRxPTpFW_QJKRAiWQmJpElLFyTRFyEbD2xO77PYFF3PfOaLOn-E_ksf0r3L4c9PxjtlRSMBp1A5O1J_K_d7BdEfMyAkMo0gJs2xHWievt7lFeu-neRzcNyZFh47c3e2eStMdtkJ9M8V0S3_G10=w408-h240-k-no"
 }, {
     name: "Home Gallery Furniture",
-    coords: [-7.289629716812322, 112.67434212019445],
-    link: "https://maps.app.goo.gl/TxCk5fSik1DYdbDV7",
-    image: "https://www.google.com/maps/place/Home+Gallery+-+PTC+Surabaya/@-7.2890192,112.673548,3a,75y,90t/data=!3m8!1e2!3m6!1sAF1QipOoBRnUjEsbwm2qQ7dGex2s30m_zSb3uX-pZ8Jf!2e10!3e12!6shttps:%2F%2Flh5.googleusercontent.com%2Fp%2FAF1QipOoBRnUjEsbwm2qQ7dGex2s30m_zSb3uX-pZ8Jf%3Dw104-h86-k-no!7i1080!8i889!4m11!1m2!2m1!1sgudang+home+gallery+surabaya!3m7!1s0x2dd7fc36123d7971:0x54f57457dfd3bee8!8m2!3d-7.289658!4d112.674339!10e5!15sChxndWRhbmcgaG9tZSBnYWxsZXJ5IHN1cmFiYXlhWh4iHGd1ZGFuZyBob21lIGdhbGxlcnkgc3VyYWJheWGSAQ9mdXJuaXR1cmVfc3RvcmXgAQA!16s%2Fg%2F11cjh_9x2h?entry=ttu&g_ep=EgoyMDI1MDIxOS4xIKXMDSoASAFQAw%3D%3D#"
+    coords: [-7.2886288976515985, 112.67261790823825],
+    link: "https://maps.app.goo.gl/p5UwACRF6S8hMdrg7",
+    image: "https://lh5.googleusercontent.com/p/AF1QipOoBRnUjEsbwm2qQ7dGex2s30m_zSb3uX-pZ8Jf=w408-h335-k-no"
 }, {
     name: "Pari Anom Jaya Furniture",
     coords: [-7.264405907300976, 112.79562668327448],
