@@ -113,8 +113,8 @@
 <hr>
 
 <!-- Lokasi Toko -->
-<div class="container pt-4 pb-5" style="background-color: rgb(230, 230, 230); border-radius: 10px;">
-    <h2 class="teks-sedang mb-4 text-center">Lokasi Toko Kami</h2>
+<div id="mitrakami" class="container pt-4 pb-5" style="background-color: rgb(230, 230, 230); border-radius: 10px;">
+    <h2 class="teks-sedang mb-4 text-center">Mitra Kami</h2>
     <div id="map" style="height: 500px; width: 100%; border-radius: 10px;"></div>
 </div>
 

@@ -1005,6 +1005,15 @@ class Pages extends BaseController
         $this->session->set(['kurirTerpilih' => $kurir[$index_kurir]]);
         return view('pages/payment', $data);
     }
+
+    public function isTimeInRange($startTime, $endTime) {
+        $currentTime = date("H:i", strtotime(("+7 hours")));
+        if ($currentTime >= $startTime && $currentTime <= $endTime) {
+            return true;
+        } else {
+            return false; 
+        }
+    }
     public function payment($ind_add)
     {
         if (session()->get('active') == '0') return redirect()->to('/verify');
@@ -1023,6 +1032,8 @@ class Pages extends BaseController
         }
 
         $alamatselected = $alamat[$ind_add];
+        $flashSale = 0;
+        $hargaTotalBundling = 0;
         foreach ($keranjang as $index => $k) {
             $produk = $this->barangModel->getBarang($k['id_barang']);
             foreach (json_decode($produk['varian'], true) as $v) {
@@ -1032,6 +1043,20 @@ class Pages extends BaseController
             }
             $keranjang[$index]['detail'] = $produk;
             $hargaTotal += $produk['harga'] * $k['jumlah'] * (100 - $produk['diskon']) / 100;
+            
+
+            //cek  apakah masuk bundling atau tidak
+            if(str_contains(strtolower($produk['nama']), 'bundling')) {
+                $hargaTotalBundling += $produk['harga'] * $k['jumlah'] * (100 - $produk['diskon']) / 100;
+                $arrWaktuFS = ["10:00@14:00", "17:00@18:00"];
+                foreach ($arrWaktuFS as $a) {
+                    $startTime = explode("@", $a)[0];
+                    $endTime = explode("@", $a)[1];
+                    if ($this->isTimeInRange($startTime, $endTime)) {
+                        $flashSale = $hargaTotalBundling * 15/100;
+                    }
+                }
+            }
         }
 
         //voucher
@@ -1054,6 +1079,9 @@ class Pages extends BaseController
             $voucherSelected = $voucherDetail;
             $voucherSelected['rupiah'] = $diskonVoucher;
         }
+
+        //hitung flash sale
+
 
         $data = [
             'title' => 'Pembayaran',
@@ -1089,7 +1117,8 @@ class Pages extends BaseController
                 'selected' => $voucherSelected,
             ],
             'emailUji' => in_array($alamatselected['email_pemesan'], $emailUjiCoba),
-            'msg' => session()->getFlashdata('msg')
+            'msg' => session()->getFlashdata('msg'),
+            'flashSale' => $flashSale
         ];
 
         $this->session->set(['alamatTerpilih' => $alamatselected]);
@@ -1238,6 +1267,7 @@ class Pages extends BaseController
         $hasilMidtrans = json_decode($response, true);
         return $this->response->setJSON($hasilMidtrans, false);
     }
+    
     public function actionPayCore($ind_add)
     {
         $pembayaran = $this->request->getVar('pembayaran');
@@ -1257,11 +1287,14 @@ class Pages extends BaseController
                 return redirect()->to('/payment/' . $ind_add)->withInput();
             }
         }
+        
         $tokencc = $this->request->getVar('tokencc');
         $emailUjiCoba = ['galihsuks123@gmail.com', 'ilenafurniture@gmail.com', 'galih8.4.2001@gmail.com','adityaanugrah494@gmail.com'];
 
         $subtotal = 0;
         $itemDetails = [];
+        $hargaTotalBundling = 0;
+        $flashSale = 0;
         if (!empty($keranjang)) {
             foreach ($keranjang as $ind => $element) {
                 $produknya = $this->barangModel->getBarang($element['id_barang']);
@@ -1278,6 +1311,19 @@ class Pages extends BaseController
                     // 'name' => substr($produknya["nama"] . " (" . ucfirst($element['varian']) . ")", 0, 50), //tambvahin ukuran
                 );
                 array_push($itemDetails, $item);
+
+                //cek  apakah masuk bundling atau tidak
+                if(str_contains(strtolower($produknya['nama']), 'bundling')) {
+                    $hargaTotalBundling += $produknya['harga'] * $element['jumlah'] * (100 - $produknya['diskon']) / 100;
+                    $arrWaktuFS = ["10:00@14:00", "17:00@18:00"];
+                    foreach ($arrWaktuFS as $a) {
+                        $startTime = explode("@", $a)[0];
+                        $endTime = explode("@", $a)[1];
+                        if ($this->isTimeInRange($startTime, $endTime)) {
+                            $flashSale = $hargaTotalBundling * 15/100;
+                        }
+                    }
+                }
             }
         }
 
@@ -1298,7 +1344,9 @@ class Pages extends BaseController
         ] : false;
         // $kurir = $body['kurir'];
 
-        $total = $subtotal + 5000;
+        
+        $total = $subtotal + 5000 ;
+        
         if ($voucher) {
             $item = array(
                 'id' => 'Voucher',
@@ -1309,6 +1357,17 @@ class Pages extends BaseController
             array_push($itemDetails, $item);
             $total -= $voucher['d'];
         }
+        
+
+        $total -= $flashSale;
+        $itemflashSale = array(
+            'id' => 'Flash Sale',
+            'price' => -$flashSale,
+            'quantity' => 1,
+            'name' => 'Flash Sale',
+        );
+        array_push($itemDetails, $itemflashSale);
+
         $biayaadmin = array(
             'id' => 'Biaya Admin',
             'price' => 5000,
@@ -1528,7 +1587,7 @@ class Pages extends BaseController
         $dataTransaksiFulDariDatabase = $this->pemesananModel->where('id_midtrans', $idFix)->first();
         $dataTransaksiFulDariDatabase_items = json_decode($dataTransaksiFulDariDatabase['items'], true);
         foreach ($dataTransaksiFulDariDatabase_items as $item) {
-            if ($item['id'] != 'Biaya Admin' && $item['id'] != 'Voucher') {
+            if ($item['id'] != 'Biaya Admin' && $item['id'] != 'Voucher' && $item['id'] != 'Flash Sale' && !str_contains($item['name'], 'potongan')) {
                 $barangCurr = $this->barangModel->where('id', $item['id'])->first();
                 $varianBarangCurr = json_decode($barangCurr['varian'], true);
                 foreach ($varianBarangCurr as $ind_v => $v) {
