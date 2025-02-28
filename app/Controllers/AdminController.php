@@ -608,6 +608,118 @@ class AdminController extends BaseController
         ];
         return view('admin/order', $data);
     }
+    public function orderAdd()
+    {
+        $produk = $this->barangModel->findAll();
+        foreach ($produk as $ind_p => $p) {
+            $produk[$ind_p]['gambar'] = '/viewpic/' . $p['id'];
+            $produk[$ind_p]['gambar_hover'] = '';
+            $produk[$ind_p]['dimensi'] =  json_decode($p['deskripsi'], true)['dimensi']['asli'];
+            $produk[$ind_p]['deskripsi'] =  '';
+            $produk[$ind_p]['varian'] =  json_decode($p['varian'], true);
+            $produk[$ind_p]['shopee'] = '';
+            $produk[$ind_p]['tokped'] = '';
+            $produk[$ind_p]['tiktok'] = '';
+            $produk[$ind_p]['nama'] = ucwords($p['nama']);
+        }
+
+        //Dapatkan data provinsi
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://pro.rajaongkir.com/api/province",
+            CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_SSL_VERIFYPEER => 0,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => array(
+                "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
+            ),
+        ));
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        if ($err) {
+            return "cURL Error #:" . $err;
+        }
+        $provinsi = json_decode($response, true);
+        // dd($provinsi);
+
+        $data = [
+            'title' => 'Pesanan',
+            'produkJson' => json_encode($produk),
+            'provinsi' => $provinsi['rajaongkir']['results']
+        ];
+        return view('admin/orderAdd', $data);
+    }
+    public function actionOrderAdd()
+    {
+        $bodyJson = $this->request->getBody();
+        $body = json_decode($bodyJson, true);
+        $keranjang = $body['keranjang'];
+
+        $items = [];
+        foreach ($body['keranjang'] as $k) {
+            array_push($items, [
+                'id' => $k['id'],
+                'name' => $k['name'],
+                'quantity' => $k['quantity'],
+                'price' => $k['price'],
+            ]);
+        }
+        $hargaTotal = $body['hargaTotal'];
+        $waktu = date("Y-m-d H:i:s", strtotime(('+7 Hours')));
+        $pesananke = $this->pemesananModel->orderBy('id', 'desc')->first();
+        $idFix = "AD" . (sprintf("%08d", $pesananke ? ((int)$pesananke['id'] + 1) : 1)) . '';
+        $randomId = "AD" . rand();
+        foreach ($keranjang as $k) {
+            //kartu stok ditambahkan
+            $varian = $k['detail']['varian'];
+            $saldo = (int)$varian['stok'];
+            $tanggalNoStrip = date("YmdHis", strtotime("+7 hours"));
+            $this->kartuStokModel->insert([
+                'id_barang' => $k['id'],
+                'tanggal' => $waktu,
+                'keterangan' => $tanggalNoStrip . "-" . $k['id'] . "-" . strtoupper($varian['nama']) . "-" . $idFix,
+                'debit' => 0,
+                'kredit' => $k['quantity'],
+                'saldo' => $saldo,
+                'pending' => true,
+                'id_pesanan' => $idFix,
+                'varian' => strtoupper($varian['nama'])
+            ]);
+        }
+        $data = [
+            'data_mid'          => json_encode([
+                'transaction_time' => $waktu,
+                'order_id'         => $idFix,
+                'gross_amount'     => $hargaTotal,
+                'payment_type'     => 'admin'
+            ]),
+            'id_midtrans'       => $idFix,
+            'email'             => $body['email'],
+            'nohp'              => $body['nohp'],
+            'alamat'            => $body['alamatLengkap'],
+            'nama'              => $body['nama'],
+            'kurir'             => json_encode([
+                'nama' => 'Menyesuaikan',
+                'deskripsi' => 'Menyesuaikan',
+                'harga' => 'Menyesuaikan',
+                'estimasi' => 'Menyesuaikan'
+            ]),
+            'resi'              => 'Menunggu pengiriman',
+            'status'            => 'Proses',
+            'id_marketplace'    => '',
+            'items'             => json_encode($items),
+            'status_print'      => 'siap',
+            'keterangan_suratjalan' => $body['keteranganSJ']
+        ];
+        $this->pemesananModel->insert($data);
+        return $this->response->setStatusCode(200)->setJSON(['success' => true], false);
+    }
     public function actionEditResi()
     {
         $nama = $this->request->getVar('nama');
@@ -1034,45 +1146,101 @@ class AdminController extends BaseController
     {
         $image1 = $this->request->getFile('image1');
         $image1hp = $this->request->getFile('image1-hp');
-        $url1 = $this->request->getVar('url1'); 
+        $url1 = $this->request->getVar('url1');
 
         $image2 = $this->request->getFile('image2');
         $image2hp = $this->request->getFile('image2-hp');
-        $url2 = $this->request->getVar('url2'); 
+        $url2 = $this->request->getVar('url2');
 
         $image3 = $this->request->getFile('image3');
         $image3hp = $this->request->getFile('image3-hp');
-        $url3 = $this->request->getVar('url3'); 
+        $url3 = $this->request->getVar('url3');
 
         $image4 = $this->request->getFile('image4');
         $image4hp = $this->request->getFile('image4-hp');
         $url4 = $this->request->getVar('url4');
 
         $dataUpdate = [];
-        if($image1->isValid()) $dataUpdate['foto'] = file_get_contents($image1);
-        if($image1hp->isValid()) $dataUpdate['foto_hp'] = file_get_contents($image1hp);
+        if ($image1->isValid()) $dataUpdate['foto'] = file_get_contents($image1);
+        if ($image1hp->isValid()) $dataUpdate['foto_hp'] = file_get_contents($image1hp);
         $dataUpdate['url'] = $url1 ? $url1 : null;
         $this->gambarHeaderModel->where(['id' => 1])->set($dataUpdate)->update();
-        
+
         $dataUpdate = [];
-        if($image2->isValid()) $dataUpdate['foto'] = file_get_contents($image2);
-        if($image2hp->isValid()) $dataUpdate['foto_hp'] = file_get_contents($image2hp);
+        if ($image2->isValid()) $dataUpdate['foto'] = file_get_contents($image2);
+        if ($image2hp->isValid()) $dataUpdate['foto_hp'] = file_get_contents($image2hp);
         $dataUpdate['url'] = $url2 ? $url2 : null;
         $this->gambarHeaderModel->where(['id' => 2])->set($dataUpdate)->update();
-        
+
         $dataUpdate = [];
-        if($image3->isValid()) $dataUpdate['foto'] = file_get_contents($image3);
-        if($image3hp->isValid()) $dataUpdate['foto_hp'] = file_get_contents($image3hp);
+        if ($image3->isValid()) $dataUpdate['foto'] = file_get_contents($image3);
+        if ($image3hp->isValid()) $dataUpdate['foto_hp'] = file_get_contents($image3hp);
         $dataUpdate['url'] = $url3 ? $url3 : null;
         $this->gambarHeaderModel->where(['id' => 3])->set($dataUpdate)->update();
-        
+
         $dataUpdate = [];
-        if($image4->isValid()) $dataUpdate['foto'] = file_get_contents($image4);
-        if($image4hp->isValid()) $dataUpdate['foto_hp'] = file_get_contents($image4hp);
+        if ($image4->isValid()) $dataUpdate['foto'] = file_get_contents($image4);
+        if ($image4hp->isValid()) $dataUpdate['foto_hp'] = file_get_contents($image4hp);
         $dataUpdate['url'] = $url4 ? $url4 : null;
         $this->gambarHeaderModel->where(['id' => 4])->set($dataUpdate)->update();
-        
+
         session()->setFlashdata('msg', 'Home layout telah diperbarui');
         return redirect()->to('/admin/homelayout');
+    }
+
+    public function suratJalan($id_midtrans)
+    {
+        $pemesanan = $this->pemesananModel->getPemesanan($id_midtrans);
+        $d = strtotime("+7 hours");
+        $this->pemesananModel->where(['id_midtrans' => $id_midtrans])->set(['status_print' => 'sudah print'])->update();
+        $items = [];
+        if ($pemesanan['status_print'] == 'siap') {
+            foreach (json_decode($pemesanan['items'], true) as $p) {
+                if ($p['name'] != 'Biaya Ongkir' && $p['name'] != 'Biaya Admin' && $p['name'] != 'Voucher' && strtolower($p['name']) != 'flash sale' && !str_contains(strtolower($p['name']), 'potongan')) {
+                    $produknya = $this->barangModel->getBarang($p['id']);
+                    $varian = json_decode($produknya['varian'], true);
+                    $saldo = 0;
+                    foreach ($varian as $ind_v => $v) {
+                        if (strtolower($v['nama']) == strtolower(rtrim(explode("(", $p['name'])[1], ")"))) {
+                            $saldo = (int)$v['stok'];
+                        }
+                    }
+                    // $this->kartuStokModel->insert([
+                    //     'id_barang' => $p['id'],
+                    //     'tanggal' => $tanggal,
+                    //     'keterangan' => $tanggalNoStrip . "-" . $p['id'] . "-" . strtoupper(rtrim(explode("(", $p['name'])[1], ")")) . "-" . $pemesanan['id_midtrans'],
+                    //     'debit' => 0,
+                    //     'kredit' => $p['quantity'],
+                    //     'saldo' => (int)$saldo - (int)$p['quantity'],
+                    // ]);
+                    $this->kartuStokModel->where(['id_barang' => $p['id'], 'tanggal' => json_decode($pemesanan['data_mid'], true)['transaction_time']])->set([
+                        'pending' => false,
+                        'saldo' => (int)$saldo - (int)$p['quantity'],
+                    ])->update();
+                    array_push($items, $p);
+                }
+            }
+        }
+
+        $pemesanan['items'] = json_decode($pemesanan['items'], true);
+        $pemesanan['kurir'] = json_decode($pemesanan['kurir'], true);
+        $pemesanan['data_mid'] = json_decode($pemesanan['data_mid'], true);
+        foreach ($pemesanan['items'] as $ind_i => $item) {
+            if ($item['name'] != 'Voucher' && $item['name'] != 'Biaya Admin' && $item['name'] != 'Biaya Ongkir') {
+                $varianItem = rtrim(explode("(", $item['name'])[1], ")");
+                $produkCurr = $this->barangModel->getBarang($item['id']);
+                $dimensi = json_decode($produkCurr['deskripsi'], true)['dimensi']['asli'];
+                $pemesanan['items'][$ind_i]['name'] = $produkCurr['nama'] . ", " . $dimensi['panjang'] . "x" . $dimensi['lebar'] . "x" . $dimensi['tinggi'] . "<br>" . $varianItem;
+                array_push($items, $item);
+            }
+        }
+        $bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        $data = [
+            'title' => 'Surat Jalan',
+            'pemesanan' => $pemesanan,
+            'tanggal' => date("d", $d) . " " . $bulan[(int)date("m", $d) - 1] . " " . date("Y", $d),
+            'items' => $items
+        ];
+        return view('gudang/suratJalan', $data);
     }
 }

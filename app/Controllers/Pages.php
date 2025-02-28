@@ -54,7 +54,7 @@ class Pages extends BaseController
     }
     public function index()
     {
-        
+
         $sliders = $this->gambarHeaderModel->findAll();
         $produk  = $this->barangModel->orderBy('pengunjung', 'desc')->findAll(4, 0);
         $wishlist = $this->session->get('wishlist');
@@ -1178,7 +1178,7 @@ class Pages extends BaseController
             'v' => $voucher
         ]);
 
-        $emailUjiCoba = ['galihsuks123@gmail.com', 'ilenafurniture@gmail.com', 'galih8.4.2001@gmail.com','adityaanugrah494@gmail.com'];
+        $emailUjiCoba = ['galihsuks123@gmail.com', 'ilenafurniture@gmail.com', 'galih8.4.2001@gmail.com', 'adityaanugrah494@gmail.com'];
         $arrPostField = [
             "transaction_details" => [
                 "order_id" => $randomId,
@@ -1258,7 +1258,7 @@ class Pages extends BaseController
             }
         }
         $tokencc = $this->request->getVar('tokencc');
-        $emailUjiCoba = ['galihsuks123@gmail.com', 'ilenafurniture@gmail.com', 'galih8.4.2001@gmail.com','adityaanugrah494@gmail.com'];
+        $emailUjiCoba = ['galihsuks123@gmail.com', 'ilenafurniture@gmail.com', 'galih8.4.2001@gmail.com', 'adityaanugrah494@gmail.com'];
 
         $subtotal = 0;
         $itemDetails = [];
@@ -1541,7 +1541,7 @@ class Pages extends BaseController
                 ])->update();
             }
         }
-        return redirect()->to('/orderdetail/'. strtolower($status).'?idorder=' . $idFix);
+        return redirect()->to('/orderdetail/' . strtolower($status) . '?idorder=' . $idFix);
     }
     public function actionPay($metode)
     {
@@ -2783,7 +2783,7 @@ class Pages extends BaseController
             ],
             'card' => 'Always Success'
         ];
-        
+
         $email = session()->get('email');
         $pesanan = $this->pemesananModel->getPemesananCus($email);
         foreach ($pesanan as $ind_p => $p) {
@@ -2811,8 +2811,8 @@ class Pages extends BaseController
     }
     public function orderDetail($status)
     {
-        $pemesanan = $this->pemesananModel->where('status', $status)->findAll();    
-        $pemesananAll = $this->pemesananModel->findAll();    
+        $pemesanan = $this->pemesananModel->where('status', $status)->findAll();
+        $pemesananAll = $this->pemesananModel->findAll();
         $carapembayaran = [
             'bca' => [
                 [
@@ -3115,24 +3115,23 @@ class Pages extends BaseController
                 }
                 return view('pages/detailOrderKadaluarsa', $data);
                 break;
-            
+
             case 'dibatalkan':
                 return view('pages/detailOrderBatal', $data);
                 break;
-        
+
             case 'menunggu pembayaran':
                 return view('pages/detailOrderMenunggu', $data);
                 break;
-        
+
             case 'proses':
                 return view('pages/detailOrderProses', $data);
                 break;
-        
+
             default:
                 return redirect()->to('/order');
                 break;
         }
-        
     }
     public function invoice($id_mid)
     {
@@ -3378,6 +3377,7 @@ class Pages extends BaseController
         } else if ($getUser['role'] == '1') {
             $ses_data = [
                 'active' => '1',
+                'nama' => 'Admin Ilena',
                 'email' => $getUser['email'],
                 'role' => $getUser['role'],
                 'isLogin' => true

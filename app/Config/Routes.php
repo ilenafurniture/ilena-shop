@@ -117,8 +117,11 @@ $routes->post('/admin/editproduct/(:any)', 'AdminController::actionEditProduct/$
 $routes->post('/admin/deleteproduct/(:any)', 'AdminController::deleteProduct/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/activeproduct/(:any)', 'AdminController::activeProduct/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/order', 'AdminController::order', ['filter' => 'adminFilter']);
+$routes->get('/admin/order/add', 'AdminController::orderAdd', ['filter' => 'adminFilter']);
+$routes->post('/admin/order/add', 'AdminController::actionOrderAdd', ['filter' => 'adminFilter']);
 $routes->post('/admin/actioneditresi', 'AdminController::actionEditResi', ['filter' => 'adminFilter']);
 $routes->get('/admin/reprint', 'AdminController::reprint', ['filter' => 'adminFilter']);
+$routes->get('/admin/suratjalan/(:any)', 'AdminController::suratJalan/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/marketplace', 'AdminController::marketplace', ['filter' => 'adminFilter']);
 $routes->get('/admin/confirm-mp/(:any)', 'AdminController::confirmMarketplace/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/accreprint/(:any)', 'AdminController::accReprint/$1', ['filter' => 'adminFilter']);
