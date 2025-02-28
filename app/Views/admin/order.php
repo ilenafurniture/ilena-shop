@@ -1,5 +1,10 @@
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
+<style>
+    [data-bs-toggle="tooltip"] {
+        color: gray;
+    }
+</style>
 <div id="edit-resi" class="d-none justify-content-center align-items-center" style="position: fixed; top: 0; left: 0; height: 100svh; width: 100vw; background-color: rgba(0,0,0,0.8); z-index: 101;">
     <div class="p-4" style="background-color: white; border-radius: 1em">
         <form action="/admin/actioneditresi" method="post">
@@ -25,69 +30,77 @@
     </div>
 </div>
 <div style="padding: 2em;">
-    <div class="mb-4">
-        <h1 class="teks-sedang">Pesanan Pelanggan</h1>
-        <p style="color: grey;"><?= count($pesanan) <= 0 ? 'Tidak Ada' : count($pesanan) ?> Pesanan</p>
+    <div class="mb-4 d-flex align-items-center justify-content-between gap-2">
+        <div>
+            <h1 class="teks-sedang">Pesanan Pelanggan</h1>
+            <p style="color: grey;"><?= count($pesanan) <= 0 ? 'Tidak Ada' : count($pesanan) ?> Pesanan</p>
+        </div>
+        <a class="btn-default-merah" href="/admin/order/add">Tambah</a>
     </div>
     <div class="container-table show-block-ke-hide">
         <div class="header-table border-buttom border-dark">
-            <div style="flex: 1;">ID Pesanan</div>
+            <div style="flex: 2;">ID Pesanan</div>
             <div style="flex: 2;">Tanggal</div>
             <div style="flex: 2;">Penerima</div>
             <div style="flex: 2;">Harga</div>
             <div style="flex: 1;">Status</div>
-            <div style="flex: 2;" class="d-flex justify-content-center">Action</div>
+            <!-- <div style="flex: 2;" class="d-flex justify-content-center">Action</div> -->
         </div>
-        <?php foreach ($pesanan as $ind_p => $p) { ?>
-            <div class="isi-table" onclick="openDetail(<?= $ind_p; ?>, event)">
-                <div style="flex: 1;"><?= $p['id_midtrans']; ?></div>
-                <?php
-                $transactionTime = strtotime($p['data_mid']['transaction_time']);
-                $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
-                $tgl = date("d", $transactionTime) . " " . $bulan[(int)date("m", $transactionTime) - 1] . " " . date("Y H:i:s", $transactionTime);
-                ?>
-                <div style="flex: 2;"><?= $tgl; ?></div>
-                <div style="flex: 2;"><?= $p['nama']; ?></div>
-                <div style="flex: 2;">Rp <?= number_format((int)$p['data_mid']['gross_amount'], 0, ',', '.'); ?></div>
-                <div style="flex: 1;">
-                    <span class="badge rounded-pill <?php
-                                                    switch ($p['status']) {
-                                                        case 'Menunggu Pembayaran':
-                                                            echo "text-bg-primary";
-                                                            break;
-                                                        case 'Proses':
-                                                            echo "text-bg-warning";
-                                                            break;
-                                                        case 'Dikirim':
-                                                            echo "text-bg-info";
-                                                            break;
-                                                        case 'Selesai':
-                                                            echo "text-bg-success";
-                                                            break;
-                                                        case 'Dibatalkan':
-                                                            echo "text-bg-danger";
-                                                            break;
-                                                        case 'Gagal':
-                                                            echo "text-bg-danger";
-                                                            break;
-                                                        default:
-                                                            echo "text-bg-dark";
-                                                            break;
-                                                    }
-                                                    ?>"><?= ucfirst($p['status']); ?></span>
+        <div class="d-flex flex-column gap-1">
+            <?php foreach ($pesanan as $ind_p => $p) { ?>
+                <div style="box-shadow: 0 8px 6px -6px rgba(0,0,0,0.2);" class="px-3 py-2">
+                    <div class="isi-table" onclick="openDetail(<?= $ind_p; ?>, event)">
+                        <div style="flex: 2;"><?= $p['id_midtrans']; ?></div>
+                        <?php
+                        $transactionTime = strtotime($p['data_mid']['transaction_time']);
+                        $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+                        $tgl = date("d", $transactionTime) . " " . $bulan[(int)date("m", $transactionTime) - 1] . " " . date("Y", $transactionTime);
+                        ?>
+                        <div style="flex: 2;"><?= $tgl; ?></div>
+                        <div style="flex: 2;"><?= $p['nama']; ?></div>
+                        <div style="flex: 2;">Rp <?= number_format((int)$p['data_mid']['gross_amount'], 0, ',', '.'); ?></div>
+                        <div style="flex: 1;">
+                            <span class="badge rounded-pill <?php
+                                                            switch ($p['status']) {
+                                                                case 'Menunggu Pembayaran':
+                                                                    echo "text-bg-primary";
+                                                                    break;
+                                                                case 'Proses':
+                                                                    echo "text-bg-warning";
+                                                                    break;
+                                                                case 'Dikirim':
+                                                                    echo "text-bg-info";
+                                                                    break;
+                                                                case 'Selesai':
+                                                                    echo "text-bg-success";
+                                                                    break;
+                                                                case 'Dibatalkan':
+                                                                    echo "text-bg-danger";
+                                                                    break;
+                                                                case 'Gagal':
+                                                                    echo "text-bg-danger";
+                                                                    break;
+                                                                default:
+                                                                    echo "text-bg-dark";
+                                                                    break;
+                                                            }
+                                                            ?>"><?= ucfirst($p['status']); ?></span>
+                        </div>
+                    </div>
+                    <div style="flex: 2;" class="d-flex justify-content-center border-top">
+                        <a data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Label barang" class="btn" href="/admin/labelbarang/<?= $p['id_midtrans']; ?>" target="_blank"><i class="material-icons">label_outline</i></a>
+                        <a data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Invoice" class="btn" href="/invoice/<?= $p['id_midtrans']; ?>"><i class="material-icons">description</i></a>
+                        <?php if ($p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
+                            <a data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit resi" class="btn" onclick="openEditResi('<?= $p['id_midtrans']; ?>')"><i class="material-icons">edit</i></a>
+                            <a data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Surat jalan (<?= $p['status_print'] ? $p['status_print'] : 'No status' ?>)" class="btn" <?= $p['status_print'] == 'sudah print' ? 'style="color: var(--merah);"' : '' ?> href="/admin/suratjalan/<?= $p['id_midtrans']; ?>" target="_blank"><i class="material-icons">local_shipping</i></a>
+                        <?php } ?>
+                        <?php if ($p['status'] == 'Menunggu Pembayaran') { ?>
+                            <a class="btn" href="/cancelorder/<?= $p['id_midtrans']; ?>"><i class="material-icons" style="color: var(--merah);">cancel</i></a>
+                        <?php } ?>
+                    </div>
                 </div>
-                <div style="flex: 2;" class="d-flex justify-content-center">
-                    <a class="btn" href="/admin/labelbarang/<?= $p['id_midtrans']; ?>" target="_blank"><i class="material-icons">label_outline</i></a>
-                    <a class="btn" href="/invoice/<?= $p['id_midtrans']; ?>"><i class="material-icons">description</i></a>
-                    <?php if ($p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
-                        <a class="btn" onclick="openEditResi('<?= $p['id_midtrans']; ?>')"><i class="material-icons">edit</i></a>
-                    <?php } ?>
-                    <?php if ($p['status'] == 'Menunggu Pembayaran' || $p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
-                        <a class="btn" href="/cancelorder/<?= $p['id_midtrans']; ?>"><i class="material-icons" style="color: var(--merah);">cancel</i></a>
-                    <?php } ?>
-                </div>
-            </div>
-        <?php } ?>
+            <?php } ?>
+        </div>
     </div>
     <div class="hide-ke-show-block">
         <div class="container-table" style="width: 700px; overflow-x: auto;">
@@ -100,52 +113,54 @@
                 <div style="flex: 2;" class="d-flex justify-content-center">Action</div>
             </div>
             <?php foreach ($pesanan as $ind_p => $p) { ?>
-                <div class="isi-table" onclick="openDetail(<?= $ind_p; ?>, event)">
-                    <div style="flex: 1;"><?= $p['id_midtrans']; ?></div>
-                    <?php
-                    $transactionTime = strtotime($p['data_mid']['transaction_time']);
-                    $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
-                    $tgl = date("d", $transactionTime) . " " . $bulan[(int)date("m", $transactionTime) - 1] . " " . date("Y H:i:s", $transactionTime);
-                    ?>
-                    <div style="flex: 2;"><?= $tgl; ?></div>
-                    <div style="flex: 2;"><?= $p['nama']; ?></div>
-                    <div style="flex: 2;">Rp <?= number_format((int)$p['data_mid']['gross_amount'], 0, ',', '.'); ?></div>
-                    <div style="flex: 1;">
-                        <span class="badge rounded-pill <?php
-                                                        switch ($p['status']) {
-                                                            case 'Menunggu Pembayaran':
-                                                                echo "text-bg-primary";
-                                                                break;
-                                                            case 'Proses':
-                                                                echo "text-bg-warning";
-                                                                break;
-                                                            case 'Dikirim':
-                                                                echo "text-bg-info";
-                                                                break;
-                                                            case 'Selesai':
-                                                                echo "text-bg-success";
-                                                                break;
-                                                            case 'Dibatalkan':
-                                                                echo "text-bg-danger";
-                                                                break;
-                                                            case 'Gagal':
-                                                                echo "text-bg-danger";
-                                                                break;
-                                                            default:
-                                                                echo "text-bg-dark";
-                                                                break;
-                                                        }
-                                                        ?>"><?= ucfirst($p['status']); ?></span>
-                    </div>
-                    <div style="flex: 2;" class="d-flex justify-content-center">
-                        <a class="btn" href="/admin/labelbarang/<?= $p['id_midtrans']; ?>" target="_blank"><i class="material-icons">label_outline</i></a>
-                        <a class="btn" href="/invoice/<?= $p['id_midtrans']; ?>"><i class="material-icons">description</i></a>
-                        <?php if ($p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
-                            <a class="btn" href="/editresi/<?= $p['id_midtrans']; ?>"><i class="material-icons">edit</i></a>
-                        <?php } ?>
-                        <?php if ($p['status'] == 'Menunggu Pembayaran' || $p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
-                            <a class="btn" href="/cancelorder/<?= $p['id_midtrans']; ?>"><i class="material-icons" style="color: var(--merah);">cancel</i></a>
-                        <?php } ?>
+                <div>
+                    <div class="isi-table" onclick="openDetail(<?= $ind_p; ?>, event)">
+                        <div style="flex: 1;"><?= $p['id_midtrans']; ?></div>
+                        <?php
+                        $transactionTime = strtotime($p['data_mid']['transaction_time']);
+                        $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+                        $tgl = date("d", $transactionTime) . " " . $bulan[(int)date("m", $transactionTime) - 1] . " " . date("Y", $transactionTime);
+                        ?>
+                        <div style="flex: 2;"><?= $tgl; ?></div>
+                        <div style="flex: 2;"><?= $p['nama']; ?></div>
+                        <div style="flex: 2;">Rp <?= number_format((int)$p['data_mid']['gross_amount'], 0, ',', '.'); ?></div>
+                        <div style="flex: 1;">
+                            <span class="badge rounded-pill <?php
+                                                            switch ($p['status']) {
+                                                                case 'Menunggu Pembayaran':
+                                                                    echo "text-bg-primary";
+                                                                    break;
+                                                                case 'Proses':
+                                                                    echo "text-bg-warning";
+                                                                    break;
+                                                                case 'Dikirim':
+                                                                    echo "text-bg-info";
+                                                                    break;
+                                                                case 'Selesai':
+                                                                    echo "text-bg-success";
+                                                                    break;
+                                                                case 'Dibatalkan':
+                                                                    echo "text-bg-danger";
+                                                                    break;
+                                                                case 'Gagal':
+                                                                    echo "text-bg-danger";
+                                                                    break;
+                                                                default:
+                                                                    echo "text-bg-dark";
+                                                                    break;
+                                                            }
+                                                            ?>"><?= ucfirst($p['status']); ?></span>
+                        </div>
+                        <div style="flex: 2;" class="d-flex justify-content-center">
+                            <a class="btn" href="/admin/labelbarang/<?= $p['id_midtrans']; ?>" target="_blank"><i class="material-icons">label_outline</i></a>
+                            <a class="btn" href="/invoice/<?= $p['id_midtrans']; ?>"><i class="material-icons">description</i></a>
+                            <?php if ($p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
+                                <a class="btn" href="/editresi/<?= $p['id_midtrans']; ?>"><i class="material-icons">edit</i></a>
+                            <?php } ?>
+                            <?php if ($p['status'] == 'Menunggu Pembayaran' || $p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
+                                <a class="btn" href="/cancelorder/<?= $p['id_midtrans']; ?>"><i class="material-icons" style="color: var(--merah);">cancel</i></a>
+                            <?php } ?>
+                        </div>
                     </div>
                 </div>
             <?php } ?>
@@ -219,7 +234,10 @@
         <a href="" class="btn-default btnBawah">Detail</a>
     </div>
 </div>
-
+<script>
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+</script>
 <script>
     const pesanan = JSON.parse('<?= $pesananJson; ?>');
     console.log(pesanan);

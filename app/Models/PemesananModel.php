@@ -19,7 +19,8 @@ class PemesananModel extends Model
         'kurir',
         'data_mid',
         'id_marketplace',
-        'status_print'
+        'status_print',
+        'keterangan_suratjalan'
     ];
 
     public function getPemesanan($id_midtrans = false)
