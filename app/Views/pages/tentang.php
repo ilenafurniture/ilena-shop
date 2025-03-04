@@ -1,15 +1,195 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
-<div>
-    <img style="width: 100%; height: 50vh; object-fit: cover;" src="../img/foto/gambar-hero2.webp" alt="Hero Image">
+<style>
+.container-toko::-webkit-scrollbar {
+    display: none;
+}
 
-    <div class="pb-4">
+.container-toko {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 15px;
+    padding-bottom: 10px;
+    height: 100px;
+    width: 100%;
+}
+
+.item-toko {
+    display: flex;
+    flex-direction: row;
+    background-color: white;
+    border-radius: 12px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 5px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.item-toko:hover {
+    transform: translateY(-5px);
+}
+
+.item-toko img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.item-toko .nama {
+    font-size: 1.2rem;
+    font-weight: bold;
+    letter-spacing: -0.5px;
+    margin-bottom: 5px;
+}
+
+.item-toko .alamat {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+    .container-toko {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 10px;
+        height: 100px;
+    }
+
+    .item-toko {
+        width: 100%;
+    }
+
+    .item-toko img {
+        height: 100%;
+        border-radius: 12px;
+        object-fit: cover;
+        width: 100%;
+    }
+
+    .item-toko .nama {
+        font-size: 14px;
+    }
+
+    .item-toko .alamat {
+        font-size: 11px;
+        font-style: normal;
+        line-height: 1.2;
+    }
+
+    #map {
+        height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .item-toko .nama {
+        font-size: 11px;
+    }
+
+    .item-toko .alamat {
+        font-size: 8px;
+        font-style: normal;
+        line-height: 1.2;
+    }
+
+    .container-toko {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+}
+</style>
+<div>
+    <!-- <img style="width: 100%; height: 50vh; object-fit: cover;" src="../img/foto/gambar-hero2.webp" alt="Hero Image"> -->
+    <!-- Lokasi Toko -->
+
+    <div id="mitrakami" class="container pt-4 pb-5" style="background-color: rgb(230, 230, 230); border-radius: 10px;">
+        <h2 class="teks-sedang mb-4 text-center">Mitra Kami</h2>
+        <div id="map" style="flex: 1; height: 400px; border-radius: 8px;" class="mb-3"></div>
+        <div class="container-toko">
+            <div class="item-toko">
+                <a href="https://maps.app.goo.gl/KxVrTxNAJv8ub8YJA"
+                    style="flex: 1; text-decoration: none; color: black;" class="p-4">
+                    <h3 class="nama">Jempol Baru Furniture</h3>
+                    <p class="alamat m-0">Jl. R. M. Said No.4, RW.6, Keprabon, Kec. Banjarsari, Kota Surakarta</p>
+                </a>
+                <div class="p-2">
+                    <img src="<?= base_url('/img/fototoko/tokojempol.png') ?>" style="width: max-content;"
+                        alt="Jempol Baru Furniture" class="client-logo">
+                </div>
+            </div>
+
+            <div class="item-toko">
+                <div class="p-4">
+                    <a href="https://maps.app.goo.gl/cBQGbHzKCgyoTAM29"
+                        style="flex: 1; text-decoration: none; color: black;">
+                        <h3 class="nama">Sumber Abadi Furniture</h3>
+                        <p class="alamat m-0">Jl. Magelang No.km7, Mlati Beningan, Sendangadi, Kec. Mlati, Kabupaten
+                            Sleman,
+                            Daerah Istimewa Yogyakarta</p>
+                    </a>
+                </div>
+                <div class="p-2">
+                    <img src="<?= base_url('/img/fototoko/tokosumberabadi.png') ?>" style="width: max-content;"
+                        alt="Sumber Abadi Furniture" class="client-logo">
+                </div>
+            </div>
+
+            <div class="item-toko">
+                <a href="https://maps.app.goo.gl/2f6uDgjkd9SSwRnC8"
+                    style="flex: 1; text-decoration: none; color: black;" class="p-4">
+                    <h3 class="nama">SURI Meubel Furniture</h3>
+                    <p class="alamat m-0">2C79+R2C, Jl. MH Thamrin, Sekayu, Kec. Semarang Tengah, Kota Semarang, Jawa
+                        Tengah</p>
+                </a>
+                <div class="p-2">
+                    <img src="<?= base_url('/img/fototoko/tokosuri.png') ?>" style="width: max-content;"
+                        alt="SURI Meubel Furniture" class="client-logo">
+                </div>
+            </div>
+
+            <div class="item-toko">
+                <a href="https://maps.app.goo.gl/EJYp9pEmPZ3a7XASA"
+                    style="flex: 1; text-decoration: none; color: black;" class="p-4">
+                    <h3 class="nama">Home Gallery Furniture</h3>
+                    <p class="alamat m-0">Jl. Puncak Permai Utara I A No.5, Babatan, Kec. Wiyung, Surabaya, Jawa Timur
+                    </p>
+                </a>
+                <div class="p-2">
+                    <img src="<?= base_url('/img/fototoko/tokohome.png') ?>" alt="Toko Kayu Jaya" class="client-logo">
+                </div>
+            </div>
+            <div class="item-toko">
+                <a href="https://maps.app.goo.gl/BPDJUK8MyRBFrJGW8"
+                    style="flex: 1; text-decoration: none; color: black;" class="p-4">
+                    <h3 class="nama">Pari Anom Jaya Furniture</h3>
+                    <p class="alamat m-0">Jl. Puncak Permai Utara I A No.5, Babatan, Kec. Wiyung, Surabaya, Jawa Timur
+                    </p>
+                </a>
+                <div class="p-2">
+                    <img src="<?= base_url('/img/fototoko/tokoparianom.png') ?>" style="width: max-content;"
+                        alt="Toko Kayu Jaya" class="client-logo">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class=" pb-4">
         <div class="container py-4">
             <h1 class="teks-besar mb-3">Cerita Kami</h1>
             <p style="text-align: justify; line-height: 1.6;">
-                Cerita lahirnya Ilena bermula pada tahun 2024 di bawah naungan CV Catur Bhakti Mandiri yang telah
-                berdiri sejak 30 tahun. Ilena menandai dimulainya bisnis ritel dan interior. Dengan melebarnya industri
-                yang didorong oleh kebutuhan konsumen, kami melakukan berbagai inovasi, keberlanjutan serta keinginan
+                Cerita lahirnya Ilena bermula pada tahun 2024 di bawah naungan CV Catur Bhakti Mandiri yang
+                telah
+                berdiri sejak 30 tahun. Ilena menandai dimulainya bisnis ritel dan interior. Dengan
+                melebarnya industri
+                yang didorong oleh kebutuhan konsumen, kami melakukan berbagai inovasi, keberlanjutan serta
+                keinginan
                 untuk terus konsisten berada di dekat hati konsumen dengan furniture berkualitas.
             </p>
         </div>
@@ -24,10 +204,14 @@
                 <div class="col-md-6">
                     <h2 class="teks-besar mb-3">Crafted to Urban Design</h2>
                     <p style="text-align: justify;">
-                        Ilena hadir menjadi teman untuk menciptakan banyak kesan dan pesan dalam setiap sudut ruang yang
-                        menjadi indah dalam kenangan. Keberhasilan Ilena merupakan usaha menghadirkan furniture khas
-                        masyarakat urban yang cocok untuk segala suasana. Kami percaya bahwa setiap ruang kosong
-                        memiliki cerita yang diukir indah oleh individu dan relasinya sebagai bentuk representasi
+                        Ilena hadir menjadi teman untuk menciptakan banyak kesan dan pesan dalam setiap
+                        sudut ruang yang
+                        menjadi indah dalam kenangan. Keberhasilan Ilena merupakan usaha menghadirkan
+                        furniture khas
+                        masyarakat urban yang cocok untuk segala suasana. Kami percaya bahwa setiap ruang
+                        kosong
+                        memiliki cerita yang diukir indah oleh individu dan relasinya sebagai bentuk
+                        representasi
                         tersendiri. Bersama Ilena wujudkan keindahan interior ruang impian.
                     </p>
                 </div>
@@ -39,11 +223,16 @@
                 <div class="col-md-6">
                     <h2 class="teks-besar mb-3">Profil Perusahaan</h2>
                     <p style="text-align: justify;">
-                        CV Catur Bhakti Mandiri merupakan produsen kayu ternama Indonesia yang berada di Semarang, Jawa
-                        Tengah. Selama 30 tahun lamanya berkomitmen untuk selalu memberikan kualitas dan terintegrasi
-                        terhadap keseimbangan kebutuhan konsumen dan kesediaan sumber daya selama puluhan tahun lamanya.
-                        Produk kami terdiri dari beragam furniture untuk mewujudkan interior ruang rumah tangga,
-                        perkantoran & perhotelan berbahan dasar kayu yang bersumber dari hutan berkelanjutan.
+                        CV Catur Bhakti Mandiri merupakan produsen kayu ternama Indonesia yang berada di
+                        Semarang, Jawa
+                        Tengah. Selama 30 tahun lamanya berkomitmen untuk selalu memberikan kualitas dan
+                        terintegrasi
+                        terhadap keseimbangan kebutuhan konsumen dan kesediaan sumber daya selama puluhan
+                        tahun lamanya.
+                        Produk kami terdiri dari beragam furniture untuk mewujudkan interior ruang rumah
+                        tangga,
+                        perkantoran & perhotelan berbahan dasar kayu yang bersumber dari hutan
+                        berkelanjutan.
                     </p>
                 </div>
                 <div class="col-md-6">
@@ -52,7 +241,6 @@
                 </div>
             </div>
         </div>
-
         <!-- END Bagian Windows -->
 
         <!-- Bagian HP (Mobile view) -->
@@ -65,10 +253,14 @@
                 <div class="col-12">
                     <h2 class="teks-besar mb-3">Crafted to Urban Design</h2>
                     <p style="text-align: justify;">
-                        Ilena hadir menjadi teman untuk menciptakan banyak kesan dan pesan dalam setiap sudut ruang yang
-                        menjadi indah dalam kenangan. Keberhasilan Ilena merupakan usaha menghadirkan furniture khas
-                        masyarakat urban yang cocok untuk segala suasana. Kami percaya bahwa setiap ruang kosong
-                        memiliki cerita yang diukir indah oleh individu dan relasinya sebagai bentuk representasi
+                        Ilena hadir menjadi teman untuk menciptakan banyak kesan dan pesan dalam setiap
+                        sudut ruang yang
+                        menjadi indah dalam kenangan. Keberhasilan Ilena merupakan usaha menghadirkan
+                        furniture khas
+                        masyarakat urban yang cocok untuk segala suasana. Kami percaya bahwa setiap ruang
+                        kosong
+                        memiliki cerita yang diukir indah oleh individu dan relasinya sebagai bentuk
+                        representasi
                         tersendiri. Bersama Ilena wujudkan keindahan interior ruang impian.
                     </p>
                 </div>
@@ -82,11 +274,16 @@
                 <div class="col-12">
                     <h3 class="teks-besar mb-3">Profil Perusahaan</h3>
                     <p style="text-align: justify;">
-                        CV Catur Bhakti Mandiri merupakan produsen kayu ternama Indonesia yang berada di Semarang, Jawa
-                        Tengah. Selama 30 tahun lamanya berkomitmen untuk selalu memberikan kualitas dan terintegrasi
-                        terhadap keseimbangan kebutuhan konsumen dan kesediaan sumber daya selama puluhan tahun lamanya.
-                        Produk kami terdiri dari beragam furniture untuk mewujudkan interior ruang rumah tangga,
-                        perkantoran & perhotelan berbahan dasar kayu yang bersumber dari hutan berkelanjutan.
+                        CV Catur Bhakti Mandiri merupakan produsen kayu ternama Indonesia yang berada di
+                        Semarang, Jawa
+                        Tengah. Selama 30 tahun lamanya berkomitmen untuk selalu memberikan kualitas dan
+                        terintegrasi
+                        terhadap keseimbangan kebutuhan konsumen dan kesediaan sumber daya selama puluhan
+                        tahun lamanya.
+                        Produk kami terdiri dari beragam furniture untuk mewujudkan interior ruang rumah
+                        tangga,
+                        perkantoran & perhotelan berbahan dasar kayu yang bersumber dari hutan
+                        berkelanjutan.
                     </p>
                 </div>
             </div>
@@ -112,17 +309,13 @@
 
 <hr>
 
-<!-- Lokasi Toko -->
-<div id="mitrakami" class="container pt-4 pb-5" style="background-color: rgb(230, 230, 230); border-radius: 10px;">
-    <h2 class="teks-sedang mb-4 text-center">Mitra Kami</h2>
-    <div id="map" style="height: 500px; width: 100%; border-radius: 10px;"></div>
-</div>
+
 
 <script>
 // Map Initialization
 var map = L.map('map', {
     center: [-7.614529, 110.712246],
-    zoom: 7,
+    zoom: 6.5,
     dragging: false,
     scrollWheelZoom: false,
     doubleClickZoom: false,
@@ -148,29 +341,19 @@ var customIcon = L.icon({
 
 var stores = [{
     name: "Jempol Baru Furniture",
-    coords: [-7.565517457000553, 110.82418385423263],
-    link: "https://maps.app.goo.gl/J7anuqnuommmVAta9",
-    image: "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=GhMtvLKGPqypqcpi8sT4pQ&cb_client=search.gws-prod.gps&w=408&h=240&yaw=53.174248&pitch=0&thumbfov=100"
+    coords: [-7.565618587313341, 110.82431800071647]
 }, {
     name: "Sumber Abadi Furniture",
-    coords: [-7.743342634217805, 110.36247403971207],
-    link: "https://maps.app.goo.gl/DcA9BUHheDdQD6Gc7",
-    image: "https://lh3.googleusercontent.com/gps-proxy/ALd4DhGShmpToVMb7TTupR8Vi1tkd8bzWn5XfuPzOzw5NTGIy_-t1Ju5aSRxPTpFW_QJKRAiWQmJpElLFyTRFyEbD2xO77PYFF3PfOaLOn-E_ksf0r3L4c9PxjtlRSMBp1A5O1J_K_d7BdEfMyAkMo0gJs2xHWievt7lFeu-neRzcNyZFh47c3e2eStMdtkJ9M8V0S3_G10=w408-h240-k-no"
+    coords: [-7.743324302431505, 110.3624866828005]
 }, {
     name: "Home Gallery Furniture",
-    coords: [-7.2886288976515985, 112.67261790823825],
-    link: "https://maps.app.goo.gl/p5UwACRF6S8hMdrg7",
-    image: "https://lh5.googleusercontent.com/p/AF1QipOoBRnUjEsbwm2qQ7dGex2s30m_zSb3uX-pZ8Jf=w408-h335-k-no"
+    coords: [-7.2886288976515985, 112.67261790823825]
 }, {
     name: "Pari Anom Jaya Furniture",
-    coords: [-7.264405907300976, 112.79562668327448],
-    link: "https://maps.app.goo.gl/c7FX6VVayuNHE5Sp8",
-    image: "https://www.google.com/maps/@-7.2418678,112.744882,3a,75y,90t/data=!3m8!1e2!3m6!1s3d2tRXH8lIQAAAQYa2kNyg!2e0!3e3!6shttps:%2F%2Flh3.googleusercontent.com%2Fgps-proxy%2FALd4DhG-v_-Vzkr3WL1B0PebVNqXDTX7iU9628Qpfxj4p8Xk83F_6zJ6vCX7V7zoqIrIbI5hb9-Sg8oHZKnpkAUJj9IlpCbvpA6e-J2M2GeFdw8U4TsNPQW8W0BfHBsXyj9BfvlYVDbbvAuKgT-HfigyCr7MBgChUkTrCAoyzNIWv0H7gMXFY9BhnekwvK54sS1xikRkATQ%3Dw114-h86-k-no!7i2133!8i1600?entry=ttu&g_ep=EgoyMDI1MDIxOS4xIKXMDSoASAFQAw%3D%3D"
+    coords: [-7.264405907300976, 112.79562668327448]
 }, {
     name: "Suri Mebel Semarang",
-    coords: [-6.985425332274277, 110.41746260495303],
-    link: "https://maps.app.goo.gl/bbT2yeHvj1jPttWUA",
-    image: "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=NPKi7fw1xW7VgdaqnCNLFw&cb_client=search.gws-prod.gps&w=408&h=240&yaw=270.7453&pitch=0&thumbfov=100"
+    coords: [-6.985425332274277, 110.41746260495303]
 }];
 
 stores.forEach(store => {
@@ -178,18 +361,14 @@ stores.forEach(store => {
         icon: customIcon
     }).addTo(map);
     marker.bindPopup(
-        `<b>${store.name}</b><br>
-         <img src="${store.image}" alt="${store.name}" style="width:100%; max-width:100px; border-radius:4px; margin:5px 0;"><br>
-         <a href="${store.link}" target="_blank" style="text-align: center;">Buka di Google Maps</a>`
+        `<b>${store.name}</b>
+         `
     );
     marker.on('mouseover', function() {
         marker.openPopup();
     });
     marker.on('mouseout', function() {
         marker.closePopup();
-    });
-    marker.on('click', function() {
-        window.open(store.link, "_blank");
     });
 });
 </script>

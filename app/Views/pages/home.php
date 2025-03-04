@@ -1,22 +1,22 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <?php if ($msg_active) { ?>
-    <div id="modal-voucher" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
-        class="d-flex justify-content-center align-items-center">
-        <div style="border-radius: 10px; overflow: hidden; background-color: white; width: 80%; max-width: 500px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);"
-            class="p-5">
-            <h1 class="teks-sedang mb-3">Klaim voucher diskon 5% Anda sekarang juga</h1>
-            <p class="text-secondary">*S&K diskon ini hanya berlaku 1 bulan sejak menjadi member kami</p>
-            <a href="/product" class="btn-default w-100 text-center mb-2">Beli Produk</a>
-            <button class="btn-teks-aja mx-auto" onclick="closeModalVoucher()">Nanti</button>
-        </div>
+<div id="modal-voucher" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
+    class="d-flex justify-content-center align-items-center">
+    <div style="border-radius: 10px; overflow: hidden; background-color: white; width: 80%; max-width: 500px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);"
+        class="p-5">
+        <h1 class="teks-sedang mb-3">Klaim voucher diskon 5% Anda sekarang juga</h1>
+        <p class="text-secondary">*S&K diskon ini hanya berlaku 1 bulan sejak menjadi member kami</p>
+        <a href="/product" class="btn-default w-100 text-center mb-2">Beli Produk</a>
+        <button class="btn-teks-aja mx-auto" onclick="closeModalVoucher()">Nanti</button>
     </div>
-    <script>
-        function closeModalVoucher() {
-            document.getElementById('modal-voucher').classList.add('d-none')
-            document.getElementById('modal-voucher').classList.remove('d-flex')
-        }
-    </script>
+</div>
+<script>
+function closeModalVoucher() {
+    document.getElementById('modal-voucher').classList.add('d-none')
+    document.getElementById('modal-voucher').classList.remove('d-flex')
+}
+</script>
 <?php } ?>
 
 
@@ -53,153 +53,154 @@
 </div>
 
 <?php if (!session()->get('isLogin')) { ?>
-    <script>
-        const loginModalElm = document.getElementById('login-modal')
-        let opened = false;
-        document.body.onscroll = (e) => {
-            if (!window.sessionStorage.getItem('close-login-modal')) {
-                const scrollingElm = e.target.scrollingElement;
-                const hasil = Math.round(
-                    (scrollingElm.scrollTop /
-                        (scrollingElm.scrollHeight -
-                            scrollingElm.clientHeight)) *
-                    100
-                );
-                if (hasil > 50 && !opened) {
-                    loginModalElm.classList.remove("d-none")
-                    opened = true
-                }
-            }
-        };
-
-        function closeLoginModel() {
-            loginModalElm.classList.add("d-none")
-            window.sessionStorage.setItem('close-login-modal', true)
-            opened = false
+<script>
+const loginModalElm = document.getElementById('login-modal')
+let opened = false;
+document.body.onscroll = (e) => {
+    if (!window.sessionStorage.getItem('close-login-modal')) {
+        const scrollingElm = e.target.scrollingElement;
+        const hasil = Math.round(
+            (scrollingElm.scrollTop /
+                (scrollingElm.scrollHeight -
+                    scrollingElm.clientHeight)) *
+            100
+        );
+        if (hasil > 50 && !opened) {
+            loginModalElm.classList.remove("d-none")
+            opened = true
         }
-    </script>
+    }
+};
+
+function closeLoginModel() {
+    loginModalElm.classList.add("d-none")
+    window.sessionStorage.setItem('close-login-modal', true)
+    opened = false
+}
+</script>
 <?php } ?>
 
 <!--Tampilan Home Baru -->
 <!-- Tampilan SLide Promo -->
 <style>
+.slider {
+    overflow: hidden;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1400 / 400;
+    position: relative;
+}
+
+.slides {
+    height: 100%;
+}
+
+
+.slider a {
+    height: 100%;
+    width: 100vw;
+    display: block;
+    transition: 0.3s;
+    position: absolute;
+    text-decoration: none;
+    color: white;
+    flex-shrink: 0;
+}
+
+.slider a.kiri {
+    transform: translateX(-100vw);
+    transition: 0.3s;
+}
+
+.slider a.active {
+    transform: translateX(0vw);
+    transition: 0.3s;
+}
+
+.slider a.kanan {
+    transform: translateX(100vw);
+    transition: 0.3s;
+}
+
+.slides a img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.slides a img.ls {
+    display: block;
+}
+
+.slides a img.pt {
+    display: none;
+}
+
+.dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border: 1px solid #844709;
+}
+
+.dot.active {
+    background-color: #844709;
+}
+
+.panah {
+    position: absolute;
+    top: 50%;
+    /* transform: translateY(-50%); */
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    height: 0px;
+    background-color: aqua;
+    /* padding: 10px; */
+}
+
+@media (max-width: 700px) {
     .slider {
-        overflow: hidden;
-        width: 100%;
-        height: auto;
-        aspect-ratio: 1400 / 400;
-        position: relative;
-    }
-
-    .slides {
-        height: 100%;
-    }
-
-
-    .slider a {
-        height: 100%;
-        width: 100vw;
-        display: block;
-        transition: 0.3s;
-        position: absolute;
-        text-decoration: none;
-        color: white;
-        flex-shrink: 0;
-    }
-
-    .slider a.kiri {
-        transform: translateX(-100vw);
-        transition: 0.3s;
-    }
-
-    .slider a.active {
-        transform: translateX(0vw);
-        transition: 0.3s;
-    }
-
-    .slider a.kanan {
-        transform: translateX(100vw);
-        transition: 0.3s;
-    }
-
-    .slides a img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+        aspect-ratio: 1080 / 1200;
     }
 
     .slides a img.ls {
-        display: block;
-    }
-
-    .slides a img.pt {
         display: none;
     }
 
-    .dots {
-        position: absolute;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        gap: 10px;
+    .slides a img.pt {
+        display: block;
     }
-
-    .dot {
-        width: 10px;
-        height: 10px;
-        background-color: rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        border: 1px solid #844709;
-    }
-
-    .dot.active {
-        background-color: #844709;
-    }
-
-    .panah {
-        position: absolute;
-        top: 50%;
-        /* transform: translateY(-50%); */
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        width: 100%;
-        height: 0px;
-        background-color: aqua;
-        /* padding: 10px; */
-    }
-
-    @media (max-width: 700px) {
-        .slider {
-            aspect-ratio: 1080 / 1200;
-        }
-
-        .slides a img.ls {
-            display: none;
-        }
-
-        .slides a img.pt {
-            display: block;
-        }
-    }
+}
 </style>
 
 <div class="slider">
     <div class="slides">
-        <?php foreach ($sliders as $slider): ?>
-            <a <?= $slider['url'] ? 'href="' . $slider['url'] . '"' : ''; ?> class="active">
-                <!-- Menampilkan gambar dengan data URL -->
-                <img class="ls" src="data:image/jpeg;base64,<?= base64_encode($slider['foto']); ?>" alt="Slide">
-                <img class="pt" src="data:image/jpeg;base64,<?= base64_encode($slider['foto_hp']); ?>" alt="Slide">
-            </a>
+        <?php foreach ($sliders as $ind_s => $slider): ?>
+        <a <?= $slider['url'] ? 'href="' . $slider['url'] . '"' : ''; ?>
+            class="<?= $ind_s === 0 ? 'active' : 'kanan'; ?>">
+            <!-- Menampilkan gambar dengan data URL -->
+            <img class="ls" src="data:image/jpeg;base64,<?= base64_encode($slider['foto']); ?>" alt="Slide">
+            <img class="pt" src="data:image/jpeg;base64,<?= base64_encode($slider['foto_hp']); ?>" alt="Slide">
+        </a>
         <?php endforeach; ?>
     </div>
     <div class="dots">
         <?php foreach ($sliders as $key => $slider): ?>
-            <div class="dot <?= $key === 0 ? 'active' : ''; ?>"></div>
+        <div class="dot <?= $key === 0 ? 'active' : ''; ?>"></div>
         <?php endforeach; ?>
     </div>
     <div class="panah">
@@ -265,59 +266,115 @@
 
 <!-- Bagian Windows -->
 <style>
-    .kontenLN {
-        position: relative;
-        flex: 2;
-        background: url('./img/foto/0 comp.png');
-        background-size: cover;
-        background-position: center;
-        cursor: pointer;
-        transition-delay: 0.4s;
+.kontenLN {
+    position: relative;
+    flex: 2;
+    background: url('./img/foto/0 comp.png');
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    transition-delay: 0.4s;
+}
+
+.overlayBed,
+.overlayMeja {
+    max-width: 0px;
+    overflow: hidden;
+    position: absolute;
+    /* background: rgba(0, 0, 0, 0.5); */
+    background: var(--orentua);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.6s ease;
+    transition-delay: 0.4s;
+    text-wrap: nowrap;
+    cursor: pointer;
+    border-radius: 100px;
+    padding: 0.5em 0em;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+.kontenLN:hover .overlayBed,
+.kontenLN:hover .overlayMeja {
+    max-width: 300px;
+    transition: all 0.8s ease;
+    padding: 0.5em 2em;
+}
+
+.overlayBed {
+    top: 360px;
+    left: 220px;
+}
+
+.overlayBed p:first-child {
+    font-size: 20px;
+}
+
+.overlayMeja {
+    bottom: 200px;
+    left: 690px;
+}
+
+.overlayMeja p:first-child {
+    font-size: 20px;
+}
+
+.overlayBed a,
+.overlayMeja a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
+
+/* Mobile */
+.kontenLNMobile {
+    position: relative;
+    flex: 2;
+    background: url('./img/foto/0 comp.png');
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    transition-delay: 0.4s;
+}
+
+@media (max-width: 767px) {
+    .teks-sedang {
+        font-size: 30px;
+    }
+
+    .kontenLNMobile {
+        height: 50vh;
     }
 
     .overlayBed,
     .overlayMeja {
-        max-width: 0px;
-        overflow: hidden;
         position: absolute;
-        /* background: rgba(0, 0, 0, 0.5); */
-        background: var(--orentua);
-        color: white;
+        opacity: 0;
+        max-width: 0;
+        padding: 0.5em 0.5em;
         display: flex;
-        justify-content: center;
+        flex-direction: row;
         align-items: center;
-        transition: all 0.6s ease;
-        transition-delay: 0.4s;
-        text-wrap: nowrap;
-        cursor: pointer;
-        border-radius: 100px;
-        padding: 0.5em 0em;
-        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+        gap: 1rem;
+        transition: 1s;
+        border-radius: 50px;
     }
 
-    .kontenLN:hover .overlayBed,
-    .kontenLN:hover .overlayMeja {
-        max-width: 300px;
-        transition: all 0.8s ease;
+    .overlayBed.show,
+    .overlayMeja.show {
+        opacity: 1;
+        height: 60px;
+        max-width: 200px;
         padding: 0.5em 2em;
+        transition: 1s;
     }
 
-    .overlayBed {
-        top: 360px;
-        left: 220px;
-    }
-
-    .overlayBed p:first-child {
-        font-size: 20px;
-    }
-
-    .overlayMeja {
-        bottom: 200px;
-        left: 690px;
-    }
-
+    .overlayBed p:first-child,
     .overlayMeja p:first-child {
-        font-size: 20px;
+        font-size: 14px;
+        margin: 0;
     }
 
     .overlayBed a,
@@ -325,82 +382,26 @@
         text-decoration: none;
         color: white;
         font-weight: bold;
+        display: flex;
+        align-items: center;
     }
 
-    /* Mobile */
-    .kontenLNMobile {
-        position: relative;
-        flex: 2;
-        background: url('./img/foto/0 comp.png');
-        background-size: cover;
-        background-position: center;
-        cursor: pointer;
-        transition-delay: 0.4s;
+    .overlayBed a i,
+    .overlayMeja a i {
+        font-size: 16px;
+        margin-left: 0.5rem;
     }
 
-    @media (max-width: 767px) {
-        .teks-sedang {
-            font-size: 30px;
-        }
-
-        .kontenLNMobile {
-            height: 50vh;
-        }
-
-        .overlayBed,
-        .overlayMeja {
-            position: absolute;
-            opacity: 0;
-            max-width: 0;
-            padding: 0.5em 0.5em;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            gap: 1rem;
-            transition: 1s;
-            border-radius: 50px;
-        }
-
-        .overlayBed.show,
-        .overlayMeja.show {
-            opacity: 1;
-            height: 60px;
-            max-width: 200px;
-            padding: 0.5em 2em;
-            transition: 1s;
-        }
-
-        .overlayBed p:first-child,
-        .overlayMeja p:first-child {
-            font-size: 14px;
-            margin: 0;
-        }
-
-        .overlayBed a,
-        .overlayMeja a {
-            text-decoration: none;
-            color: white;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-        }
-
-        .overlayBed a i,
-        .overlayMeja a i {
-            font-size: 16px;
-            margin-left: 0.5rem;
-        }
-
-        .overlayBed {
-            top: 150px;
-            left: 60px;
-        }
-
-        .overlayMeja {
-            top: 250px;
-            left: 200px;
-        }
+    .overlayBed {
+        top: 150px;
+        left: 60px;
     }
+
+    .overlayMeja {
+        top: 250px;
+        left: 200px;
+    }
+}
 </style>
 <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:80svh;">
     <a class="d-flex align-items-center ps-5 zoom-wrapper" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
@@ -818,42 +819,42 @@
 </div>
 
 <script>
-    const scrollHomeElm = document.querySelector('.scroll-home');
-    const counterSlideElm = document.getElementById('counter-slide');
-    const numCounterSlideElm = document.querySelectorAll('#counter-slide p');
-    // console.log(numCounterSlideElm)
-    const inputScrollHomeElm = document.querySelectorAll('input[name="scrollHome"]');
-    // console.log(scrollHomeElm.children);
-    scrollHomeElm.onscroll = () => {
-        let x = scrollHomeElm.scrollLeft;
-        // console.log(x);
-        const widthInnerStg = window.innerWidth / 2;
-        if (x % window.innerWidth < widthInnerStg) {
-            counterSlideElm.style.opacity = 1 - ((x % widthInnerStg) / widthInnerStg) / 1;
-            counterSlideElm.style.transform = 'translateX(-' + (x % widthInnerStg) + 'px)';
-            console.log('translateX(-' + (x % widthInnerStg) + ')')
-        } else {
-            counterSlideElm.style.opacity = ((x % widthInnerStg) / widthInnerStg) / 1;
-            counterSlideElm.style.transform = 'translateX(-' + (widthInnerStg - (x % widthInnerStg)) + 'px)';
-            console.log('translateX(-' + (widthInnerStg - (x % widthInnerStg)) + ')')
-        }
-
-        // console.log(Math.floor(x / (window.innerWidth * 90 / 100)))
-        inputScrollHomeElm.forEach(inputnya => {
-            inputnya.removeAttribute('checked');
-        });
-        inputScrollHomeElm[Math.floor(x / (window.innerWidth * 90 / 100))].setAttribute('checked', '');
-
-        numCounterSlideElm[0].innerHTML = '0' + (Math.floor(x / (window.innerWidth * 90 / 100)) + 1)
-        numCounterSlideElm[1].innerHTML = '0' + inputScrollHomeElm.length;
+const scrollHomeElm = document.querySelector('.scroll-home');
+const counterSlideElm = document.getElementById('counter-slide');
+const numCounterSlideElm = document.querySelectorAll('#counter-slide p');
+// console.log(numCounterSlideElm)
+const inputScrollHomeElm = document.querySelectorAll('input[name="scrollHome"]');
+// console.log(scrollHomeElm.children);
+scrollHomeElm.onscroll = () => {
+    let x = scrollHomeElm.scrollLeft;
+    // console.log(x);
+    const widthInnerStg = window.innerWidth / 2;
+    if (x % window.innerWidth < widthInnerStg) {
+        counterSlideElm.style.opacity = 1 - ((x % widthInnerStg) / widthInnerStg) / 1;
+        counterSlideElm.style.transform = 'translateX(-' + (x % widthInnerStg) + 'px)';
+        console.log('translateX(-' + (x % widthInnerStg) + ')')
+    } else {
+        counterSlideElm.style.opacity = ((x % widthInnerStg) / widthInnerStg) / 1;
+        counterSlideElm.style.transform = 'translateX(-' + (widthInnerStg - (x % widthInnerStg)) + 'px)';
+        console.log('translateX(-' + (widthInnerStg - (x % widthInnerStg)) + ')')
     }
-    inputScrollHomeElm.forEach((inputnya, indInput) => {
-        inputnya.addEventListener('change', () => {
-            // console.log('input ' + indInput + ' berubah')
-            scrollHomeElm.scrollLeft = window.innerWidth * indInput
-        });
 
+    // console.log(Math.floor(x / (window.innerWidth * 90 / 100)))
+    inputScrollHomeElm.forEach(inputnya => {
+        inputnya.removeAttribute('checked');
     });
+    inputScrollHomeElm[Math.floor(x / (window.innerWidth * 90 / 100))].setAttribute('checked', '');
+
+    numCounterSlideElm[0].innerHTML = '0' + (Math.floor(x / (window.innerWidth * 90 / 100)) + 1)
+    numCounterSlideElm[1].innerHTML = '0' + inputScrollHomeElm.length;
+}
+inputScrollHomeElm.forEach((inputnya, indInput) => {
+    inputnya.addEventListener('change', () => {
+        // console.log('input ' + indInput + ' berubah')
+        scrollHomeElm.scrollLeft = window.innerWidth * indInput
+    });
+
+});
 </script>
 <!-- END BAGIAN SERIES  -->
 
@@ -929,21 +930,21 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const overlayBed = document.getElementById('overlayBed');
-        const overlayMeja = document.getElementById('overlayMeja');
-        const observer = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('show');
-                }
-            });
-        }, {
-            threshold: 1
+document.addEventListener("DOMContentLoaded", function() {
+    const overlayBed = document.getElementById('overlayBed');
+    const overlayMeja = document.getElementById('overlayMeja');
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('show');
+            }
         });
-        observer.observe(overlayBed);
-        observer.observe(overlayMeja);
+    }, {
+        threshold: 1
     });
+    observer.observe(overlayBed);
+    observer.observe(overlayMeja);
+});
 </script>
 
 <!-- Bagian Windows -->
@@ -1093,38 +1094,38 @@
 
 
 <script>
-    const modalseriesELM = document.getElementById('modal-series');
+const modalseriesELM = document.getElementById('modal-series');
 
-    function closemodalseries() {
-        modalseriesELM.classList.remove('d-flex');
-        modalseriesELM.classList.add('d-none');
-        document.body.style.overflow = 'auto';
-    }
+function closemodalseries() {
+    modalseriesELM.classList.remove('d-flex');
+    modalseriesELM.classList.add('d-none');
+    document.body.style.overflow = 'auto';
+}
 
-    function modalseries() {
-        modalseriesELM.classList.add('d-flex');
-        modalseriesELM.classList.remove('d-none');
-        document.body.style.overflow = 'hidden';
+function modalseries() {
+    modalseriesELM.classList.add('d-flex');
+    modalseriesELM.classList.remove('d-none');
+    document.body.style.overflow = 'hidden';
 
-    }
+}
 </script>
 
 <style>
-    .zoom-wrapper {
-        overflow: hidden;
-        height: 100%;
-        cursor: pointer;
-    }
+.zoom-wrapper {
+    overflow: hidden;
+    height: 100%;
+    cursor: pointer;
+}
 
-    .zoom-wrapper img {
-        object-fit: cover;
-        height: 100%;
-        transition: transform 0.5s;
-    }
+.zoom-wrapper img {
+    object-fit: cover;
+    height: 100%;
+    transition: transform 0.5s;
+}
 
-    .zoom-wrapper:hover img {
-        transform: scale(1.1);
-    }
+.zoom-wrapper:hover img {
+    transform: scale(1.1);
+}
 </style>
 
 <!-- Bagian Windows -->
@@ -1172,15 +1173,15 @@
 
 <!-- Bagian HP -->
 <style>
-    #scroll-set {
-        width: 100%;
-        overflow: scroll;
-        scroll-snap-type: x mandatory;
-    }
+#scroll-set {
+    width: 100%;
+    overflow: scroll;
+    scroll-snap-type: x mandatory;
+}
 
-    #scroll-set::-webkit-scrollbar {
-        display: none;
-    }
+#scroll-set::-webkit-scrollbar {
+    display: none;
+}
 </style>
 
 <div class="hide-ke-show-block" id="scroll-set">
@@ -1232,7 +1233,7 @@
 
 <div class="slider">
     <div class="slides">
-        <a href="/product" class="kanan bg-primary">
+        <a href="/product" class="active">
             <div style="position: absolute; z-index: 5; top: 0; left: 0; width: 100%; height: 100%"
                 class="d-flex justify-content-center align-items-center flex-column container-find-out">
                 <p class="find-out-text">Find Out More</p>
@@ -1260,60 +1261,60 @@
     </div>
 </div>
 <style>
-    .container-find-out {
-        background-color: rgba(0, 0, 0, 0);
-        transition: 0.3s;
-        pointer-events: none;
-    }
+.container-find-out {
+    background-color: rgba(0, 0, 0, 0);
+    transition: 0.3s;
+    pointer-events: none;
+}
 
-    .container-find-out:hover {
-        background-color: rgba(0, 0, 0, 0.6);
-        transition: 0.3s;
-    }
+.container-find-out:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+    transition: 0.3s;
+}
 
-    .find-out-text {
-        pointer-events: auto;
-        position: absolute;
-        z-index: 2;
-        transition: transform 0.3s ease;
-        font-size: 24px;
-        font-weight: 500;
-        letter-spacing: -1px;
-        position: relative;
-        transition: 0.7s;
-        letter-spacing: normal;
-    }
+.find-out-text {
+    pointer-events: auto;
+    position: absolute;
+    z-index: 2;
+    transition: transform 0.3s ease;
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -1px;
+    position: relative;
+    transition: 0.7s;
+    letter-spacing: normal;
+}
 
-    .find-out-text:hover {
-        /* font-size: 27px; */
-        transition: 0.7s;
-        letter-spacing: 2px;
-    }
+.find-out-text:hover {
+    /* font-size: 27px; */
+    transition: 0.7s;
+    letter-spacing: 2px;
+}
 
-    .popup-text {
-        background-color: black;
-        color: white;
-        border-radius: 5px;
-        font-size: 12px;
-        font-weight: 600;
-        padding: 10px 20px;
-    }
+.popup-text {
+    background-color: black;
+    color: white;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 10px 20px;
+}
 
-    .find-out-text+.d-flex {
-        z-index: 1;
-        position: absolute;
-        transform: translateY(-30px);
-        max-height: 0px;
-        overflow: hidden;
-        transition: 0.3s;
-        opacity: 0;
-    }
+.find-out-text+.d-flex {
+    z-index: 1;
+    position: absolute;
+    transform: translateY(-30px);
+    max-height: 0px;
+    overflow: hidden;
+    transition: 0.3s;
+    opacity: 0;
+}
 
-    .find-out-text:hover+.d-flex {
-        transition: 0.6s;
-        max-height: 100px;
-        opacity: 1;
-    }
+.find-out-text:hover+.d-flex {
+    transition: 0.6s;
+    max-height: 100px;
+    opacity: 1;
+}
 </style>
 
 
@@ -1389,71 +1390,71 @@
 <!-- End Bagian Windows Scroll -->
 
 <script>
-    const sliders = document.querySelectorAll('.slider');
-    let slideIndex = [];
-    for (let i = 0; i < sliders.length; i++) {
-        slideIndex.push(0);
+const sliders = document.querySelectorAll('.slider');
+let slideIndex = [];
+for (let i = 0; i < sliders.length; i++) {
+    slideIndex.push(0);
+}
+sliders.forEach((slider, ind_slider) => {
+    const slidesCur = slider.children[0].children;
+    const dotsCur = slider.children[1].children;
+    const panahCur = slider.children[2].children;
+    setInterval(() => {
+        slideIndex[ind_slider]++;
+        showSlide(ind_slider, slideIndex[ind_slider], slidesCur, dotsCur);
+    }, 7000);
+    for (let i = 0; i < dotsCur.length; i++) {
+        const dot = dotsCur[i];
+        dot.addEventListener('click', () => {
+            currentSlide(ind_slider, i, slidesCur, dotsCur);
+        });
     }
-    sliders.forEach((slider, ind_slider) => {
-        const slidesCur = slider.children[0].children;
-        const dotsCur = slider.children[1].children;
-        const panahCur = slider.children[2].children;
-        setInterval(() => {
-            slideIndex[ind_slider]++;
-            showSlide(ind_slider, slideIndex[ind_slider], slidesCur, dotsCur);
-        }, 7000);
-        for (let i = 0; i < dotsCur.length; i++) {
-            const dot = dotsCur[i];
-            dot.addEventListener('click', () => {
-                currentSlide(ind_slider, i, slidesCur, dotsCur);
-            });
-        }
-        for (let i = 0; i < panahCur.length; i++) {
-            const itemPanah = panahCur[i];
-            itemPanah.addEventListener('click', () => {
-                currentSlidePanah(ind_slider, i, slidesCur, dotsCur);
-            });
-        }
-    });
+    for (let i = 0; i < panahCur.length; i++) {
+        const itemPanah = panahCur[i];
+        itemPanah.addEventListener('click', () => {
+            currentSlidePanah(ind_slider, i, slidesCur, dotsCur);
+        });
+    }
+});
 
-    function showSlide(index_slider, index, slides, dots) {
-        const totalSlides = slides.length;
-        if (index >= totalSlides) {
-            slideIndex[index_slider] = 0;
-        } else if (index < 0) {
-            slideIndex[index_slider] = totalSlides - 1;
-        }
-        for (let i = 0; i < slides.length; i++) {
-            const slide = slides[i];
-            slide.classList.remove('active', 'kiri', 'kanan');
-            if (i === slideIndex[index_slider]) {
-                slide.classList.add('active');
-            } else if (i < slideIndex[index_slider]) {
-                slide.classList.add('kiri');
-            } else {
-                slide.classList.add('kanan');
-            }
-        }
-        for (let i = 0; i < dots.length; i++) {
-            const dot = dots[i];
-            dot.classList.toggle('active', i === slideIndex[index_slider]);
+function showSlide(index_slider, index, slides, dots) {
+    const totalSlides = slides.length;
+    if (index >= totalSlides) {
+        slideIndex[index_slider] = 0;
+    } else if (index < 0) {
+        slideIndex[index_slider] = totalSlides - 1;
+    }
+    for (let i = 0; i < slides.length; i++) {
+        const slide = slides[i];
+        slide.classList.remove('active', 'kiri', 'kanan');
+        if (i === slideIndex[index_slider]) {
+            slide.classList.add('active');
+        } else if (i < slideIndex[index_slider]) {
+            slide.classList.add('kiri');
+        } else {
+            slide.classList.add('kanan');
         }
     }
+    for (let i = 0; i < dots.length; i++) {
+        const dot = dots[i];
+        dot.classList.toggle('active', i === slideIndex[index_slider]);
+    }
+}
 
-    function currentSlide(index_slider, index, slides, dots) {
-        slideIndex[index_slider] = index;
-        showSlide(index_slider, slideIndex[index_slider], slides, dots);
-    }
+function currentSlide(index_slider, index, slides, dots) {
+    slideIndex[index_slider] = index;
+    showSlide(index_slider, slideIndex[index_slider], slides, dots);
+}
 
-    function currentSlidePanah(index_slider, index, slides, dots) {
-        if (index === 0) {
-            slideIndex[index_slider]--;
-        } else if (index === 1) {
-            slideIndex[index_slider]++;
-        }
-        if (slideIndex[index_slider] < 0) slideIndex[index_slider] = slides.length - 1;
-        if (slideIndex[index_slider] >= slides.length) slideIndex[index_slider] = 0;
-        showSlide(index_slider, slideIndex[index_slider], slides, dots);
+function currentSlidePanah(index_slider, index, slides, dots) {
+    if (index === 0) {
+        slideIndex[index_slider]--;
+    } else if (index === 1) {
+        slideIndex[index_slider]++;
     }
+    if (slideIndex[index_slider] < 0) slideIndex[index_slider] = slides.length - 1;
+    if (slideIndex[index_slider] >= slides.length) slideIndex[index_slider] = 0;
+    showSlide(index_slider, slideIndex[index_slider], slides, dots);
+}
 </script>
 <?= $this->endSection(); ?>
