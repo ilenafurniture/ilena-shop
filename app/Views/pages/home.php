@@ -52,9 +52,33 @@ function closeModalVoucher() {
     </div>
 </div>
 
+<div id="second-ad" class="d-none">
+    <div style="position: fixed; background-color: rgba(0, 0, 0, 0.5); top: 0; left: 0; width: 100vw; height: 100svh; z-index: 100;"
+        class="show-flex-ke-hide justify-content-center align-items-center">
+        <div style="width: fit-content; height: fit-content; overflow: hidden; position:relative;">
+            <div style="position: absolute;"
+                class="p-3 w-100 h-100 d-flex flex-column justify-content-between align-items-center">
+                <div class="d-flex justify-content-end w-100 py-1 px-3">
+                    <p class="m-0 d-block" style="cursor: pointer; font-size:18px; font-weight:bold; color:black;"
+                        onclick="closeSecondAd()">X</p>
+                </div>
+                <div class="d-flex flex-column align-items-center position-relative w-100" style="height: 100%;">
+
+                    <a href="/product?koleksi=bundling&jenis=akbar+kareem" class="btn-popup text-center mt-2">
+                        Lihat Produk
+                    </a>
+                </div>
+            </div>
+            <img src=" <?= base_url('/img/foto/iklanpopup.webp') ?>"
+                style="width: 400px; height: 400px; object-fit: cover; border-radius: 10px;" alt="">
+        </div>
+    </div>
+</div>
+
 <?php if (!session()->get('isLogin')) { ?>
 <script>
 const loginModalElm = document.getElementById('login-modal')
+onst secondAdElm = document.getElementById('second-ad');
 let opened = false;
 document.body.onscroll = (e) => {
     if (!window.sessionStorage.getItem('close-login-modal')) {
@@ -76,6 +100,15 @@ function closeLoginModel() {
     loginModalElm.classList.add("d-none")
     window.sessionStorage.setItem('close-login-modal', true)
     opened = false
+    setTimeout(() => {
+        secondAdElm.classList.remove("d-none");
+    }, 2000);
+}
+
+function closeSecondAd() {
+    secondAdElm.classList.add("d-none");
+    window.sessionStorage.setItem('close-second-ad', true);
+    opened = false
 }
 </script>
 <?php } ?>
@@ -83,6 +116,20 @@ function closeLoginModel() {
 <!--Tampilan Home Baru -->
 <!-- Tampilan SLide Promo -->
 <style>
+.btn-popup {
+    width: 400px;
+    position: absolute;
+    bottom: -17px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px 10px;
+    text-decoration: none;
+    color: #b37c20;
+    background-color: #24513c;
+    border-radius: 0px 0px 8px 8px;
+    font-weight: bold;
+}
+
 .slider {
     overflow: hidden;
     width: 100%;
@@ -535,9 +582,12 @@ function closeLoginModel() {
                     <h1 class="teks-besar m-0">Industrial</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Menjadi diri sendiri dengan berkreasi sesuai kata hati masihkah terasa sulit? Mari mulai
-                    dengan berbenah ruang yang merefleksikan karakter diri. Industrial Series hadir untuk menjadi teman
-                    yang tepat untuk berdiri tegak tanpa takut menjadi beda, unik, menawan dengan elegan.<Br>Mari mulai
+                <p class="m-0">Menjadi diri sendiri dengan berkreasi sesuai kata hati masihkah terasa sulit?
+                    Mari mulai
+                    dengan berbenah ruang yang merefleksikan karakter diri. Industrial Series hadir untuk
+                    menjadi teman
+                    yang tepat untuk berdiri tegak tanpa takut menjadi beda, unik, menawan dengan
+                    elegan.<Br>Mari mulai
                     dari sekarang, bersama Ilena.</p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
@@ -561,8 +611,10 @@ function closeLoginModel() {
                     <h1 class="teks-besar m-0">Sorely</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Terinspirasi oleh keindahan perpaduan dua material: kayu hangat dan logam tebal. Dibuat
-                    dengan sungguh-sungguh untuk melengkapi interior estetis, menghadirkan kenyamanan dan ketenangan
+                <p class="m-0">Terinspirasi oleh keindahan perpaduan dua material: kayu hangat dan logam tebal.
+                    Dibuat
+                    dengan sungguh-sungguh untuk melengkapi interior estetis, menghadirkan kenyamanan dan
+                    ketenangan
                     bagi setiap penghuninya. Kami berbagi semangat kami dengan nama Ilena.</p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
@@ -586,9 +638,12 @@ function closeLoginModel() {
                     <h1 class="teks-besar m-0">Water Case</h1>
                 </a>
                 <h1 style=" font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Secara spesial dirancang untuk memberikan kehangatan dan kenyamanan pada hunian rumah.
-                    water case series hadir dengan menunjukkan kesederhanaan sebuah desain yang memiliki fungsi sesuai
-                    dengan kebutuhan dan memperindah rumah dengan sentuhan interior yang bersahaja dalam balutan gaya
+                <p class="m-0">Secara spesial dirancang untuk memberikan kehangatan dan kenyamanan pada hunian
+                    rumah.
+                    water case series hadir dengan menunjukkan kesederhanaan sebuah desain yang memiliki fungsi
+                    sesuai
+                    dengan kebutuhan dan memperindah rumah dengan sentuhan interior yang bersahaja dalam balutan
+                    gaya
                     modern klasik ala Ilena Furniture.</p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
@@ -612,7 +667,8 @@ function closeLoginModel() {
                     <h1 class="teks-besar m-0">Plint Base</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Ilena memaknai minimalis sebagai mahakarya indah yang dibalut dalam kesederhanaan.
+                <p class="m-0">Ilena memaknai minimalis sebagai mahakarya indah yang dibalut dalam
+                    kesederhanaan.
                     Dengan
                     kepraktisan fungsinya, plint base menjawab kebutuhan furniture secara menyeluruh dan relevan
                     hingga
@@ -639,13 +695,16 @@ function closeLoginModel() {
                     <h1 class="teks-besar m-0">Cut Out</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Kami percaya bahwa sebuah ruangan didesain dengan sepenuh hati akan memberikan energi
-                    positif bagi setiap penghuninya. Bekal inilah yang membuat Ilena terus melakukan inovasi untuk
+                <p class="m-0">Kami percaya bahwa sebuah ruangan didesain dengan sepenuh hati akan memberikan
+                    energi
+                    positif bagi setiap penghuninya. Bekal inilah yang membuat Ilena terus melakukan inovasi
+                    untuk
                     menghadirkan furniture terbaik bagi Anda. Cut Out hadir dengan series dalam balutan gaya
                     minimalis
                     dengan mengadopsi budaya Jepang yang terkenal mengutamakan fungsi dan kepraktisan. Desainnya
                     yang
-                    sederhana dengan sedikit aksen memudahkan Anda untuk merawat dan menempatkan dalam segala konsep
+                    sederhana dengan sedikit aksen memudahkan Anda untuk merawat dan menempatkan dalam segala
+                    konsep
                     ruang menjadi lebih sempurna dengan Cut Out series dari Ilena.</p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
@@ -670,9 +729,12 @@ function closeLoginModel() {
                     <h1 class="teks-besar m-0">Orca</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Merancang dengan sepenuh hati furniture bertemakan modern dengan sentuhan warna basic
-                    yang menjadi aksen menonjol jadi ciri khas dari series Orca. Hadir dengan menonjolkan teksture khas
-                    kayu yang unik dipadukan dengan finishing satin yang solid. Desain ini dipersembahkan untuk Anda
+                <p class="m-0">Merancang dengan sepenuh hati furniture bertemakan modern dengan sentuhan warna
+                    basic
+                    yang menjadi aksen menonjol jadi ciri khas dari series Orca. Hadir dengan menonjolkan
+                    teksture khas
+                    kayu yang unik dipadukan dengan finishing satin yang solid. Desain ini dipersembahkan untuk
+                    Anda
                     yang menyukai perabotan kayu dengan sentuhan modern masa kini.</p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
@@ -697,8 +759,10 @@ function closeLoginModel() {
                     <h1 class="teks-besar m-0">Cody</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo labore quaerat culpa minima
-                    numquam quasi blanditiis voluptatibus fugit quam eum molestiae, tempora veniam sed saepe dolorum,
+                <p class="m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo labore quaerat
+                    culpa minima
+                    numquam quasi blanditiis voluptatibus fugit quam eum molestiae, tempora veniam sed saepe
+                    dolorum,
                     nulla qui totam hic!</p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
@@ -723,8 +787,10 @@ function closeLoginModel() {
                     <h1 class="teks-besar m-0">Metal Frame</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo labore quaerat culpa minima
-                    numquam quasi blanditiis voluptatibus fugit quam eum molestiae, tempora veniam sed saepe dolorum,
+                <p class="m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo labore quaerat
+                    culpa minima
+                    numquam quasi blanditiis voluptatibus fugit quam eum molestiae, tempora veniam sed saepe
+                    dolorum,
                     nulla qui totam hic!</p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
@@ -749,8 +815,10 @@ function closeLoginModel() {
                     <h1 class="teks-besar m-0">Socoplate</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo labore quaerat culpa minima
-                    numquam quasi blanditiis voluptatibus fugit quam eum molestiae, tempora veniam sed saepe dolorum,
+                <p class="m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo labore quaerat
+                    culpa minima
+                    numquam quasi blanditiis voluptatibus fugit quam eum molestiae, tempora veniam sed saepe
+                    dolorum,
                     nulla qui totam hic!</p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
@@ -774,8 +842,10 @@ function closeLoginModel() {
                     <h1 class="teks-besar m-0">Cabana</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo labore quaerat culpa minima
-                    numquam quasi blanditiis voluptatibus fugit quam eum molestiae, tempora veniam sed saepe dolorum,
+                <p class="m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo labore quaerat
+                    culpa minima
+                    numquam quasi blanditiis voluptatibus fugit quam eum molestiae, tempora veniam sed saepe
+                    dolorum,
                     nulla qui totam hic!</p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
