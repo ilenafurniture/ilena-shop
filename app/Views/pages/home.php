@@ -77,8 +77,8 @@ function closeModalVoucher() {
 
 <?php if (!session()->get('isLogin')) { ?>
 <script>
-const loginModalElm = document.getElementById('login-modal')
-onst secondAdElm = document.getElementById('second-ad');
+const loginModalElm = document.getElementById('login-modal');
+const secondAdElm = document.getElementById('second-ad');
 let opened = false;
 document.body.onscroll = (e) => {
     if (!window.sessionStorage.getItem('close-login-modal')) {
