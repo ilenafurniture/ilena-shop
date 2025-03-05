@@ -671,7 +671,7 @@ class AdminController extends BaseController
             ]);
         }
         $hargaTotal = $body['hargaTotal'];
-        $waktu = date("Y-m-d H:i:s", strtotime(('+7 Hours')));
+        $waktu = $body['waktu'] ? str_replace("T", " ", $body['waktu']) : date("Y-m-d H:i:s", strtotime(('+7 Hours')));
         $pesananke = $this->pemesananModel->orderBy('id', 'desc')->first();
         $idFix = "AD" . (sprintf("%08d", $pesananke ? ((int)$pesananke['id'] + 1) : 1)) . '';
         $randomId = "AD" . rand();

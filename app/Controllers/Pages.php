@@ -17,6 +17,7 @@ use App\Models\JenisModel;
 use App\Models\VoucherModel;
 use App\Models\GambarHeaderModel;
 
+
 class Pages extends BaseController
 {
     protected $barangModel;
@@ -1048,7 +1049,7 @@ class Pages extends BaseController
             //cek  apakah masuk bundling atau tidak
             if(str_contains(strtolower($produk['nama']), 'bundling')) {
                 $hargaTotalBundling += $produk['harga'] * $k['jumlah'] * (100 - $produk['diskon']) / 100;
-                $arrWaktuFS = ["10:00@14:00", "17:00@18:00"];
+                $arrWaktuFS = ["03:00@07:00"];
                 foreach ($arrWaktuFS as $a) {
                     $startTime = explode("@", $a)[0];
                     $endTime = explode("@", $a)[1];
@@ -1315,7 +1316,7 @@ class Pages extends BaseController
                 //cek  apakah masuk bundling atau tidak
                 if(str_contains(strtolower($produknya['nama']), 'bundling')) {
                     $hargaTotalBundling += $produknya['harga'] * $element['jumlah'] * (100 - $produknya['diskon']) / 100;
-                    $arrWaktuFS = ["10:00@14:00", "17:00@18:00"];
+                    $arrWaktuFS = ["03:00@07:00"];
                     foreach ($arrWaktuFS as $a) {
                         $startTime = explode("@", $a)[0];
                         $endTime = explode("@", $a)[1];
