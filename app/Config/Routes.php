@@ -162,3 +162,6 @@ $routes->get('/market/cart', 'MarketplaceController::cart', ['filter' => 'market
 $routes->get('/market/addcart/(:any)/(:any)', 'MarketplaceController::addCart/$1/$2', ['filter' => 'marketFilter']);
 $routes->get('/market/reducecart/(:any)', 'MarketplaceController::reduceCart/$1', ['filter' => 'marketFilter']);
 $routes->post('/maket/submitorder', 'MarketplaceController::submitOrder', ['filter' => 'marketFilter']);
+
+
+$routes->get('/(:any)', 'Pages::notFound');

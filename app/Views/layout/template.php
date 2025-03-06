@@ -227,7 +227,7 @@
     </div>
     <?= $this->include('layout/navbar'); ?>
     <?= $this->include('layout/navbarHp'); ?>
-    <div style="flex: 1">
+    <div style="flex: 1; position: relative; min-height: 500px;">
         <?= $this->renderSection('content'); ?>
     </div>
     <?= $this->include('layout/footer'); ?>

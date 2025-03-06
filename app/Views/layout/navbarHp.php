@@ -1,7 +1,7 @@
 <div class="navbar-hp-atas hide-ke-show-flex">
-    <div class="d-flex justify-content-center">
-        <img src="<?php echo base_url('/img/logo/N.png'); ?>" alt="logo ilena" height="30em">
-    </div>
+    <a href="/">
+        <img src="<?php echo base_url('/img/logo/N.png'); ?>" alt="logo ilena" style="height: 40px; width: 40px;">
+    </a>
     <div style="flex:1;">
         <form action="/actionfind" method="post" class="w-100">
             <input placeholder="Cari produk" style="text-transform: capitalize;" class="input w-100" name="cari"

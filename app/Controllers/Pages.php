@@ -3918,4 +3918,12 @@ class Pages extends BaseController
             ], 500);
         }
     }
+
+    public function notFound(){
+        $data = [
+            'title' => 'Halaman Tidak Ditemukan',
+        ];
+        return view('layout/notFound', $data);
+    }
+    
 }

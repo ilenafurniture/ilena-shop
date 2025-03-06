@@ -19,14 +19,15 @@
         <div class="d-flex justify-content-between">
             <div style="flex: 1;">
                 <div class="d-flex gap-2 align-items-center">
-                    <img src="<?= base_url('img/Logo CBM.png'); ?>" alt="Logo CBM" style="width:20mm; height:fit-content">
+                    <img src="<?= base_url('img/Logo CBM.png'); ?>" alt="Logo CBM"
+                        style="width:20mm; height:fit-content">
                     <p class="m-0 fw-bold">CV. CATUR BHAKTI MANDIRI</p>
                 </div>
             </div>
             <div style="flex: 1;">
                 <img src="<?= base_url('img/LogoIlena.png'); ?>" alt="logo Ilena"
                     style="width:80mm; height:fit-content">
-                <p class="m-0">Kepadad Yth.</p>
+                <p class="m-0">Kepada Yth.</p>
                 <p class="m-0">Nama: <?= $pemesanan['nama']; ?></p>
                 <p class="m-0"><?= $pemesanan['alamat']; ?></p>
             </div>
@@ -51,20 +52,20 @@
                 </div>
                 <?php foreach ($pemesanan['items'] as $ind_i => $i) {
                     if ($i['name'] != 'Biaya Admin' && $i['name'] != 'Voucher') { ?>
-                        <div class="w-100 d-flex">
-                            <div style="flex:0.5;">
-                                <p class="m-0"><?= $ind_i + 1; ?></p>
-                            </div>
-                            <div style="flex:2;">
-                                <p class="m-0"><?= $i['id']; ?></p>
-                            </div>
-                            <div style="flex:4;">
-                                <p class="m-0"><?= $i['name']; ?></p>
-                            </div>
-                            <div style="flex:1;">
-                                <p class="m-0"><?= $i['quantity']; ?> Unit</p>
-                            </div>
-                        </div>
+                <div class="w-100 d-flex">
+                    <div style="flex:0.5;">
+                        <p class="m-0"><?= $ind_i + 1; ?></p>
+                    </div>
+                    <div style="flex:2;">
+                        <p class="m-0"><?= $i['id']; ?></p>
+                    </div>
+                    <div style="flex:4;">
+                        <p class="m-0"><?= $i['name']; ?></p>
+                    </div>
+                    <div style="flex:1;">
+                        <p class="m-0"><?= $i['quantity']; ?> Unit</p>
+                    </div>
+                </div>
                 <?php }
                 } ?>
             </div>
@@ -94,11 +95,11 @@
         <div class="d-flex justify-content-between">
             <div style="flex:1;">
                 <p class="m-0"><?= session()->get('nama'); ?></p>
-                <p class="m-0">Nama Terang</p>
+                <p class="m-0">( )</p>
             </div>
             <div style="flex:1;" class="d-flex flex-column align-items-end">
                 <p class="m-0">‎ </p>
-                <p class="m-0">Nama terang</p>
+                <p class="m-0">( )</p>
             </div>
             <!-- <div style="flex:1;" class="d-flex flex-column align-items-end">
                 <p class="m-0"><?= $pemesanan['nama']; ?></p>
@@ -107,8 +108,12 @@
         </div>
     </div>
     <script>
-        window.print();
+    window.print();
     </script>
 </body>
 
 </html>
+
+
+
+
