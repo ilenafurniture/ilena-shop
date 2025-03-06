@@ -180,17 +180,17 @@
 
 
 
-    <div class=" pb-4">
+    <div class="pb-4">
         <div class="container py-4">
-            <h1 class="teks-besar mb-3">Cerita Kami</h1>
-            <p style="text-align: justify; line-height: 1.6;">
-                Cerita lahirnya Ilena bermula pada tahun 2024 di bawah naungan CV Catur Bhakti Mandiri yang
-                telah
-                berdiri sejak 30 tahun. Ilena menandai dimulainya bisnis ritel dan interior. Dengan
-                melebarnya industri
-                yang didorong oleh kebutuhan konsumen, kami melakukan berbagai inovasi, keberlanjutan serta
-                keinginan
-                untuk terus konsisten berada di dekat hati konsumen dengan furniture berkualitas.
+            <h1 class="teks-sedang mb-4 text-center">Cerita Kami</h1>
+            <p class="text-justify" style="line-height: 1.8;">
+                Cerita lahirnya Ilena bermula pada tahun 2024 di bawah naungan CV Catur Bhakti Mandiri yang telah
+                berdiri sejak 30 tahun.
+                Ilena menandai dimulainya bisnis ritel dan interior. Dengan melebarnya industri yang didorong oleh
+                kebutuhan konsumen,
+                kami melakukan berbagai inovasi, keberlanjutan serta keinginan untuk terus konsisten berada di dekat
+                hati konsumen
+                dengan furniture berkualitas.
             </p>
         </div>
 
@@ -198,21 +198,19 @@
         <div class="container show-block-ke-hide">
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    <img style="width: 100%; height: auto; object-fit: cover; border-radius: 8px;"
-                        src="<?= base_url('/img/foto/tt.jpg') ?>" alt="Urban Design">
+                    <img class="w-100 h-auto rounded-3 shadow-lg" src="<?= base_url('/img/foto/tt.jpg') ?>"
+                        alt="Urban Design" style="object-fit: cover;">
                 </div>
                 <div class="col-md-6">
-                    <h2 class="teks-besar mb-3">Crafted to Urban Design</h2>
-                    <p style="text-align: justify;">
-                        Ilena hadir menjadi teman untuk menciptakan banyak kesan dan pesan dalam setiap
-                        sudut ruang yang
-                        menjadi indah dalam kenangan. Keberhasilan Ilena merupakan usaha menghadirkan
-                        furniture khas
-                        masyarakat urban yang cocok untuk segala suasana. Kami percaya bahwa setiap ruang
-                        kosong
-                        memiliki cerita yang diukir indah oleh individu dan relasinya sebagai bentuk
-                        representasi
-                        tersendiri. Bersama Ilena wujudkan keindahan interior ruang impian.
+                    <h2 class="mb-5" style="font-size: 2.5rem;">Crafted to Urban Design</h2>
+                    <p class="text-justify">
+                        Ilena hadir menjadi teman untuk menciptakan banyak kesan dan pesan dalam setiap sudut ruang yang
+                        menjadi indah dalam kenangan.
+                        Keberhasilan Ilena merupakan usaha menghadirkan furniture khas masyarakat urban yang cocok untuk
+                        segala suasana.
+                        Kami percaya bahwa setiap ruang kosong memiliki cerita yang diukir indah oleh individu dan
+                        relasinya sebagai bentuk representasi tersendiri.
+                        Bersama Ilena, wujudkan keindahan interior ruang impian Anda.
                     </p>
                 </div>
             </div>
@@ -221,23 +219,22 @@
         <div class="container show-block-ke-hide mt-5">
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    <h2 class="teks-besar mb-3">Profil Perusahaan</h2>
-                    <p style="text-align: justify;">
-                        CV Catur Bhakti Mandiri merupakan produsen kayu ternama Indonesia yang berada di
-                        Semarang, Jawa
-                        Tengah. Selama 30 tahun lamanya berkomitmen untuk selalu memberikan kualitas dan
-                        terintegrasi
-                        terhadap keseimbangan kebutuhan konsumen dan kesediaan sumber daya selama puluhan
-                        tahun lamanya.
-                        Produk kami terdiri dari beragam furniture untuk mewujudkan interior ruang rumah
-                        tangga,
-                        perkantoran & perhotelan berbahan dasar kayu yang bersumber dari hutan
-                        berkelanjutan.
+                    <h2 class="mb-5" style="font-size: 2.5rem;">Profil Perusahaan</h2>
+                    <p class="text-justify">
+                        CV Catur Bhakti Mandiri merupakan produsen kayu ternama Indonesia yang berada di Semarang, Jawa
+                        Tengah.
+                        Selama 30 tahun lamanya berkomitmen untuk selalu memberikan kualitas dan terintegrasi terhadap
+                        keseimbangan kebutuhan konsumen
+                        dan kesediaan sumber daya selama puluhan tahun lamanya.
+                        Produk kami terdiri dari beragam furniture untuk mewujudkan interior ruang rumah tangga,
+                        perkantoran & perhotelan berbahan dasar kayu
+                        yang bersumber dari hutan berkelanjutan.
                     </p>
                 </div>
                 <div class="col-md-6">
-                    <img style="width: 100%; height: auto; object-fit: cover; filter: grayscale(1); border-radius: 8px;"
-                        src="<?= base_url('/img/foto/Tentangperusahaan.JPG') ?>" alt="Company Profile">
+                    <img class="w-100 h-auto rounded-3 shadow-lg"
+                        src="<?= base_url('/img/foto/Tentangperusahaan.JPG') ?>" alt="Company Profile"
+                        style="object-fit: cover; filter: grayscale(1);">
                 </div>
             </div>
         </div>
@@ -247,130 +244,127 @@
         <div class="container hide-ke-show-block">
             <div class="row mb-4">
                 <div class="col-12 mb-3">
-                    <img style="width: 100%; object-fit: cover; border-radius: 8px;"
-                        src="<?= base_url('/img/foto/tt.jpg') ?>" alt="Urban Design Mobile">
+                    <img class="w-100 h-auto rounded-3 shadow-lg" src="<?= base_url('/img/foto/tt.jpg') ?>"
+                        alt="Urban Design Mobile" style="object-fit: cover;">
                 </div>
                 <div class="col-12">
-                    <h2 class="teks-besar mb-3">Crafted to Urban Design</h2>
-                    <p style="text-align: justify;">
-                        Ilena hadir menjadi teman untuk menciptakan banyak kesan dan pesan dalam setiap
-                        sudut ruang yang
-                        menjadi indah dalam kenangan. Keberhasilan Ilena merupakan usaha menghadirkan
-                        furniture khas
-                        masyarakat urban yang cocok untuk segala suasana. Kami percaya bahwa setiap ruang
-                        kosong
-                        memiliki cerita yang diukir indah oleh individu dan relasinya sebagai bentuk
-                        representasi
-                        tersendiri. Bersama Ilena wujudkan keindahan interior ruang impian.
+                    <h2 class="mb-3" style="font-size: 2.5rem;">Crafted to Urban Design</h2>
+                    <p class="text-justify">
+                        Ilena hadir menjadi teman untuk menciptakan banyak kesan dan pesan dalam setiap sudut ruang yang
+                        menjadi indah dalam kenangan.
+                        Keberhasilan Ilena merupakan usaha menghadirkan furniture khas masyarakat urban yang cocok untuk
+                        segala suasana.
+                        Kami percaya bahwa setiap ruang kosong memiliki cerita yang diukir indah oleh individu dan
+                        relasinya sebagai bentuk representasi tersendiri.
+                        Bersama Ilena, wujudkan keindahan interior ruang impian Anda.
                     </p>
                 </div>
             </div>
 
             <div class="row mb-4">
                 <div class="col-12 mb-3">
-                    <img style="width: 100%; object-fit: cover; filter: grayscale(1); border-radius: 8px;"
-                        src="<?= base_url('/img/foto/Tentangperusahaan.JPG') ?>" alt="Company Profile Mobile">
+                    <img class="w-100 h-auto rounded-3 shadow-lg"
+                        src="<?= base_url('/img/foto/Tentangperusahaan.JPG') ?>" alt="Company Profile Mobile"
+                        style="object-fit: cover; filter: grayscale(1);">
                 </div>
                 <div class="col-12">
-                    <h3 class="teks-besar mb-3">Profil Perusahaan</h3>
-                    <p style="text-align: justify;">
-                        CV Catur Bhakti Mandiri merupakan produsen kayu ternama Indonesia yang berada di
-                        Semarang, Jawa
-                        Tengah. Selama 30 tahun lamanya berkomitmen untuk selalu memberikan kualitas dan
-                        terintegrasi
-                        terhadap keseimbangan kebutuhan konsumen dan kesediaan sumber daya selama puluhan
-                        tahun lamanya.
-                        Produk kami terdiri dari beragam furniture untuk mewujudkan interior ruang rumah
-                        tangga,
-                        perkantoran & perhotelan berbahan dasar kayu yang bersumber dari hutan
-                        berkelanjutan.
+                    <h3 class="mb-3" style="font-size: 2.5rem;">Profil Perusahaan</h3>
+                    <p class="text-justify">
+                        CV Catur Bhakti Mandiri merupakan produsen kayu ternama Indonesia yang berada di Semarang, Jawa
+                        Tengah.
+                        Selama 30 tahun lamanya berkomitmen untuk selalu memberikan kualitas dan terintegrasi terhadap
+                        keseimbangan kebutuhan konsumen
+                        dan kesediaan sumber daya selama puluhan tahun lamanya.
+                        Produk kami terdiri dari beragam furniture untuk mewujudkan interior ruang rumah tangga,
+                        perkantoran & perhotelan berbahan dasar kayu
+                        yang bersumber dari hutan berkelanjutan.
                     </p>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<hr>
 
-<!-- Bagian Klien -->
-<div class="container pt-4 pb-5">
-    <h2 class="teks-sedang mb-4 text-center">Our Clients</h2>
-    <div class="d-flex gap-4 align-items-center justify-content-center flex-wrap">
-        <img src="<?= base_url('../img/logo/thelandofnod.webp'); ?>" alt="The Land of Nod" width="150px"
-            class="client-logo">
-        <img src="<?= base_url('../img/logo/crateandbarrel.webp'); ?>" alt="Crate and Barrel" width="150px"
-            class="client-logo">
-        <img src="<?= base_url('../img/logo/westelm.webp'); ?>" alt="West Elm" width="150px" class="client-logo">
-        <img src="<?= base_url('../img/logo/williamssonoma.webp'); ?>" alt="Williams Sonoma" width="150px"
-            class="client-logo">
+    <hr>
+
+    <!-- Bagian Klien -->
+    <div class="container pt-4 pb-5">
+        <h2 class="teks-sedang mb-4 text-center">Our Clients</h2>
+        <div class="d-flex gap-4 align-items-center justify-content-center flex-wrap">
+            <img src="<?= base_url('../img/logo/thelandofnod.webp'); ?>" alt="The Land of Nod" width="150px"
+                class="client-logo">
+            <img src="<?= base_url('../img/logo/crateandbarrel.webp'); ?>" alt="Crate and Barrel" width="150px"
+                class="client-logo">
+            <img src="<?= base_url('../img/logo/westelm.webp'); ?>" alt="West Elm" width="150px" class="client-logo">
+            <img src="<?= base_url('../img/logo/williamssonoma.webp'); ?>" alt="Williams Sonoma" width="150px"
+                class="client-logo">
+        </div>
     </div>
-</div>
 
-<hr>
-
+    <hr>
 
 
-<script>
-// Map Initialization
-var map = L.map('map', {
-    center: [-7.614529, 110.712246],
-    zoom: 6.5,
-    dragging: false,
-    scrollWheelZoom: false,
-    doubleClickZoom: false,
-    boxZoom: false,
-    touchZoom: false
-});
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    maxZoom: 25
-}).addTo(map);
+    <script>
+    // Map Initialization
+    var map = L.map('map', {
+        center: [-7.614529, 110.712246],
+        zoom: 6.5,
+        dragging: false,
+        scrollWheelZoom: false,
+        doubleClickZoom: false,
+        boxZoom: false,
+        touchZoom: false
+    });
 
-var customIcon = L.icon({
-    iconUrl: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 25
+    }).addTo(map);
+
+    var customIcon = L.icon({
+        iconUrl: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e84a49" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-map-pin">
             <path d="M21 10c0 7.941-9 13-9 13S3 17.941 3 10a9 9 0 1 1 18 0z"></path>
             <circle cx="12" cy="10" r="3"></circle>
         </svg>
     `),
-    iconSize: [18, 18],
-    iconAnchor: [10, 10],
-    popupAnchor: [0, 0]
-});
+        iconSize: [18, 18],
+        iconAnchor: [10, 10],
+        popupAnchor: [0, 0]
+    });
 
-var stores = [{
-    name: "Jempol Baru Furniture",
-    coords: [-7.565618587313341, 110.82431800071647]
-}, {
-    name: "Sumber Abadi Furniture",
-    coords: [-7.743324302431505, 110.3624866828005]
-}, {
-    name: "Home Gallery Furniture",
-    coords: [-7.2886288976515985, 112.67261790823825]
-}, {
-    name: "Pari Anom Jaya Furniture",
-    coords: [-7.264405907300976, 112.79562668327448]
-}, {
-    name: "Suri Mebel Semarang",
-    coords: [-6.985425332274277, 110.41746260495303]
-}];
+    var stores = [{
+        name: "Jempol Baru Furniture",
+        coords: [-7.565618587313341, 110.82431800071647]
+    }, {
+        name: "Sumber Abadi Furniture",
+        coords: [-7.743324302431505, 110.3624866828005]
+    }, {
+        name: "Home Gallery Furniture",
+        coords: [-7.2886288976515985, 112.67261790823825]
+    }, {
+        name: "Pari Anom Jaya Furniture",
+        coords: [-7.264405907300976, 112.79562668327448]
+    }, {
+        name: "Suri Mebel Semarang",
+        coords: [-6.985425332274277, 110.41746260495303]
+    }];
 
-stores.forEach(store => {
-    var marker = L.marker(store.coords, {
-        icon: customIcon
-    }).addTo(map);
-    marker.bindPopup(
-        `<b>${store.name}</b>
+    stores.forEach(store => {
+        var marker = L.marker(store.coords, {
+            icon: customIcon
+        }).addTo(map);
+        marker.bindPopup(
+            `<b>${store.name}</b>
          `
-    );
-    marker.on('mouseover', function() {
-        marker.openPopup();
+        );
+        marker.on('mouseover', function() {
+            marker.openPopup();
+        });
+        marker.on('mouseout', function() {
+            marker.closePopup();
+        });
     });
-    marker.on('mouseout', function() {
-        marker.closePopup();
-    });
-});
-</script>
+    </script>
 
-<?= $this->endSection(); ?>
+    <?= $this->endSection(); ?>
