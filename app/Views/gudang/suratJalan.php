@@ -95,11 +95,17 @@
         <div class="d-flex justify-content-between">
             <div style="flex:1;">
                 <p class="m-0"><?= session()->get('nama'); ?></p>
-                <p class="m-0">(‎)</p>
+                <div class="d-flex justify-content-between" style="width: 100px;">
+                    <div>(</div>
+                    <div>)</div>
+                </div>
             </div>
             <div style="flex:1;" class="d-flex flex-column align-items-end">
                 <p class="m-0">‎ </p>
-                <p class="m-0">(‎)</p>
+                <div class="d-flex justify-content-between" style="width: 100px;">
+                    <div>(</div>
+                    <div>)</div>
+                </div>
             </div>
             <!-- <div style="flex:1;" class="d-flex flex-column align-items-end">
                 <p class="m-0"><?= $pemesanan['nama']; ?></p>
