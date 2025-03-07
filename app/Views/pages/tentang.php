@@ -174,29 +174,29 @@
                         alt="Toko Kayu Jaya" class="client-logo">
                 </div>
             </div>
-        </div>
-        <div class="item-toko">
-            <a href="https://maps.app.goo.gl/BkiBFdCA4Rop3qHS7" style="flex: 1; text-decoration: none; color: black;"
-                class="p-4">
-                <h3 class="nama">Puri Mabel & Interior</h3>
-                <p class="alamat m-0">Jl. Puri Anjasmoro Blk. H5 No.57, Tawangsari, Semarang, Jawa Tengah
-                </p>
-            </a>
-            <div class="p-2">
-                <img src="<?= base_url('/img/fototoko/tokopuri.png') ?>" style="width: max-content;"
-                    alt="Toko Kayu Jaya" class="client-logo">
+            <div class="item-toko">
+                <a href="https://maps.app.goo.gl/BkiBFdCA4Rop3qHS7"
+                    style="flex: 1; text-decoration: none; color: black;" class="p-4">
+                    <h3 class="nama">Puri Mabel & Interior</h3>
+                    <p class="alamat m-0">Jl. Puri Anjasmoro Blk. H5 No.57, Tawangsari, Semarang, Jawa Tengah
+                    </p>
+                </a>
+                <div class="p-2">
+                    <img src="<?= base_url('/img/fototoko/tokopuri.png') ?>" style="width: max-content;"
+                        alt="Toko Kayu Jaya" class="client-logo">
+                </div>
             </div>
-        </div>
-        <div class="item-toko">
-            <a href="https://maps.app.goo.gl/5ZXJpa5BAFadgwAr5" style="flex: 1; text-decoration: none; color: black;"
-                class="p-4">
-                <h3 class="nama">Victoria Furnicenter</h3>
-                <p class="alamat m-0">Jl. Raya Menganti Karangan No.578, Babatan, Kec. Wiyung, Surabaya, Jawa Timur
-                </p>
-            </a>
-            <div class="p-2">
-                <img src="<?= base_url('/img/fototoko/tokoveiktoria.png') ?>" style="width: max-content;"
-                    alt="Toko Kayu Jaya" class="client-logo">
+            <div class="item-toko">
+                <a href="https://maps.app.goo.gl/5ZXJpa5BAFadgwAr5"
+                    style="flex: 1; text-decoration: none; color: black;" class="p-4">
+                    <h3 class="nama">Victoria Furnicenter</h3>
+                    <p class="alamat m-0">Jl. Raya Menganti Karangan No.578, Babatan, Kec. Wiyung, Surabaya, Jawa Timur
+                    </p>
+                </a>
+                <div class="p-2">
+                    <img src="<?= base_url('/img/fototoko/tokoveiktoria.png') ?>" style="width: max-content;"
+                        alt="Toko Kayu Jaya" class="client-logo">
+                </div>
             </div>
         </div>
     </div>
@@ -341,7 +341,7 @@ var map = L.map('map', {
 });
 
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    maxZoom: 25
+    maxZoom: 30
 }).addTo(map);
 
 var customIcon = L.icon({
@@ -351,7 +351,7 @@ var customIcon = L.icon({
             <circle cx="12" cy="10" r="3"></circle>
         </svg>
     `),
-    iconSize: [18, 18],
+    iconSize: [14, 14],
     iconAnchor: [10, 10],
     popupAnchor: [0, 0]
 });
