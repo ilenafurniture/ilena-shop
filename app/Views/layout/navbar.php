@@ -50,20 +50,33 @@
     </div>
 </nav>
 <div style="background-color: #474747;" class="py-1 show-block-ke-hide">
-    <!-- <p class="m-0 text-center" style="color: #844709;">Lebih hemat dengan Free Ongkir hingga 100%</p> -->
     <p class="m-0 text-center" style="color: white;">Lebih hemat dengan Free Ongkir hingga 100%</p>
 </div>
-<div class="justify-content-center w-100 show-flex-ke-hide"
-    style="background-color: whitesmoke; position: sticky; top:-1px; z-index: 99;">
+<style>
+    .container-navbar-list-nav {
+        background-color: whitesmoke;
+        position: sticky;
+        top: -1px;
+        z-index: 99;
+        justify-content: center;
+    }
+
+    @media (max-width: 1146px) {
+        .container-navbar-list-nav {
+            justify-content: start;
+            padding-inline: 2em;
+            overflow-x: scroll;
+        }
+    }
+</style>
+<div class="w-100 show-flex-ke-hide container-navbar-list-nav">
     <div class="d-flex align-items-center py-2 gap-5">
-
         <!-- Ini Untuk Kategori -->
-
         <!-- Bookshelf -->
         <div class="list-nav">
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
                 href="/product?jenis=bookshelf">Bookshelf</a>
-            <div class="child-list-nav" style="overflow: auto;">
+            <div class="child-list-nav" style="overflow: hidden;">
                 <div class="container d-flex align-items-stretch py-4">
                     <div style="flex: 1;">
                         <p class="m-0" style="font-size:14px;">Jelajahi Bookshelf</p>
@@ -165,7 +178,7 @@
         <div class="list-nav">
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
                 href="/product?jenis=coffee-table">Coffee Table</a>
-            <div class="child-list-nav" style="overflow: auto;">
+            <div class="child-list-nav" style="overflow: hidden;">
                 <div class="container d-flex align-items-stretch py-4">
                     <div style="flex: 1;">
                         <p class="m-0" style="font-size:14px;">Jelajahi Coffee Table</p>
@@ -386,7 +399,7 @@
         <div class="list-nav">
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
                 href="/product?jenis=console-table">Console Table</a>
-            <div class="child-list-nav" style="overflow: auto;">
+            <div class="child-list-nav" style="overflow: hidden;">
                 <div class="container d-flex align-items-stretch py-4">
                     <div style="flex: 1;">
                         <p class="m-0" style="font-size:14px;">Jelajahi Console Table</p>
@@ -605,7 +618,7 @@
         <div class="list-nav">
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
                 href="/product?jenis=credenza">Credenza</a>
-            <div class="child-list-nav" style="overflow: auto;">
+            <div class="child-list-nav" style="overflow: hidden;">
                 <div class="container d-flex align-items-stretch py-4">
                     <div style="flex: 1;">
                         <p class="m-0" style="font-size:14px;">Jelajahi Credenza</p>
@@ -651,7 +664,7 @@
         <div class="list-nav">
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
                 href="/product?jenis=dresser-3-drawer+dresser-4-drawer+dresser-5-drawer+dresser-6-drawer">Dresser</a>
-            <div class="child-list-nav" style="overflow: auto;">
+            <div class="child-list-nav" style="overflow: hidden;">
                 <div class="container d-flex align-items-stretch py-4">
                     <div style="flex: 1;" class="d-flex">
                         <div style="flex: 0.5;">
@@ -1051,7 +1064,7 @@
         <div class="list-nav">
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
                 href="/product?jenis=king-bed+queen-bed+single-bed">Bed</a>
-            <div class="child-list-nav" style="overflow: auto;">
+            <div class="child-list-nav" style="overflow: hidden;">
                 <div class="container d-flex align-items-stretch py-4">
                     <div style="flex: 1;" class="d-flex">
                         <div style="flex: 0.5;">
@@ -1796,7 +1809,7 @@
         <div class="list-nav">
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
                 href="/product?jenis=side-table">Side Table</a>
-            <div class="child-list-nav" style="overflow: auto;">
+            <div class="child-list-nav" style="overflow: hidden;">
                 <div class="container d-flex align-items-stretch py-4">
                     <div style="flex: 1;">
                         <p class="m-0" style="font-size:14px;">Jelajahi Side Table</p>
@@ -2021,7 +2034,7 @@
         <div class="list-nav">
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none; text-wrap:nowrap;"
                 href="/product?jenis=meja-nakas">Meja Nakas</a>
-            <div class="child-list-nav" style="overflow: auto;">
+            <div class="child-list-nav" style="overflow: hidden;">
                 <div class="container d-flex align-items-stretch py-4">
                     <div style="flex: 1;">
                         <p class="m-0" style="font-size:14px;">Jelajahi Meja Nakas</p>
@@ -2067,7 +2080,7 @@
         <div class="list-nav">
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
                 href="/product?jenis=bufet-tv">Bufet TV</a>
-            <div class="child-list-nav" style="overflow: auto;">
+            <div class="child-list-nav" style="overflow: hidden;">
                 <div class="container d-flex align-items-stretch py-4">
                     <div style="flex: 1;">
                         <p class="m-0" style="font-size:14px;">Jelajahi Bufet TV</p>
@@ -2292,7 +2305,7 @@
         <div class="list-nav">
             <a class="text-dark text-center w-100 d-block" style="text-decoration: none;"
                 href="/product?jenis=wardrobe">Wardrobe</a>
-            <div class="child-list-nav" style="overflow: auto;">
+            <div class="child-list-nav" style="overflow: hidden;">
                 <div class="container d-flex align-items-stretch py-4">
                     <div style="flex: 1;">
                         <p class="m-0" style="font-size:14px;">Jelajahi Wardrobe</p>

@@ -305,10 +305,10 @@ class Pages extends BaseController
             }
             $data = [
                 'title' => ucwords($product['nama']),
-                'navbar' => [
-                    'koleksi' => $this->koleksiModel->findAll(),
-                    'jenis' => $this->jenisModel->findAll(),
-                ],
+                // 'navbar' => [
+                //     'koleksi' => $koleksi,
+                //     'jenis' => $jenis,
+                // ],
                 'produk'        => $product,
                 'wishlist'      => $wishlist,
                 'koleksi'       => $koleksi,
@@ -325,12 +325,16 @@ class Pages extends BaseController
 
             return view('pages/product', $data);
         } else {
+            // dd([
+            //     'koleksi' => $koleksi,
+            //     'jenis' => $jenis,
+            // ]);
             $product = $this->barangModel->getBarangNama();
             $data = [
                 'title' => 'Produk Kami',
                 'navbar' => [
-                    'koleksi' => $this->koleksiModel->findAll(),
-                    'jenis' => $this->jenisModel->findAll(),
+                    'koleksi' => $koleksi,
+                    'jenis' => $jenis,
                 ],
                 'produk' => $product,
                 'wishlist' => $wishlist,
@@ -340,6 +344,7 @@ class Pages extends BaseController
             return view('pages/all', $data);
         }
     }
+
     public function productCategory($kategori)
     {
         $wishlist = $this->session->get('wishlist');
@@ -1007,12 +1012,13 @@ class Pages extends BaseController
         return view('pages/payment', $data);
     }
 
-    public function isTimeInRange($startTime, $endTime) {
+    public function isTimeInRange($startTime, $endTime)
+    {
         $currentTime = date("H:i", strtotime(("+7 hours")));
         if ($currentTime >= $startTime && $currentTime <= $endTime) {
             return true;
         } else {
-            return false; 
+            return false;
         }
     }
     public function payment($ind_add)
@@ -1044,17 +1050,17 @@ class Pages extends BaseController
             }
             $keranjang[$index]['detail'] = $produk;
             $hargaTotal += $produk['harga'] * $k['jumlah'] * (100 - $produk['diskon']) / 100;
-            
+
 
             //cek  apakah masuk bundling atau tidak
-            if(str_contains(strtolower($produk['nama']), 'bundling')) {
+            if (str_contains(strtolower($produk['nama']), 'bundling')) {
                 $hargaTotalBundling += $produk['harga'] * $k['jumlah'] * (100 - $produk['diskon']) / 100;
                 $arrWaktuFS = ["03:00@07:00"];
                 foreach ($arrWaktuFS as $a) {
                     $startTime = explode("@", $a)[0];
                     $endTime = explode("@", $a)[1];
                     if ($this->isTimeInRange($startTime, $endTime)) {
-                        $flashSale = $hargaTotalBundling * 15/100;
+                        $flashSale = $hargaTotalBundling * 15 / 100;
                     }
                 }
             }
@@ -1268,7 +1274,7 @@ class Pages extends BaseController
         $hasilMidtrans = json_decode($response, true);
         return $this->response->setJSON($hasilMidtrans, false);
     }
-    
+
     public function actionPayCore($ind_add)
     {
         $pembayaran = $this->request->getVar('pembayaran');
@@ -1288,7 +1294,7 @@ class Pages extends BaseController
                 return redirect()->to('/payment/' . $ind_add)->withInput();
             }
         }
-        
+
         $tokencc = $this->request->getVar('tokencc');
         $emailUjiCoba = ['galihsuks123@gmail.com', 'ilenafurniture@gmail.com', 'galih8.4.2001@gmail.com', 'adityaanugrah494@gmail.com'];
 
@@ -1314,14 +1320,14 @@ class Pages extends BaseController
                 array_push($itemDetails, $item);
 
                 //cek  apakah masuk bundling atau tidak
-                if(str_contains(strtolower($produknya['nama']), 'bundling')) {
+                if (str_contains(strtolower($produknya['nama']), 'bundling')) {
                     $hargaTotalBundling += $produknya['harga'] * $element['jumlah'] * (100 - $produknya['diskon']) / 100;
                     $arrWaktuFS = ["03:00@07:00"];
                     foreach ($arrWaktuFS as $a) {
                         $startTime = explode("@", $a)[0];
                         $endTime = explode("@", $a)[1];
                         if ($this->isTimeInRange($startTime, $endTime)) {
-                            $flashSale = $hargaTotalBundling * 15/100;
+                            $flashSale = $hargaTotalBundling * 15 / 100;
                         }
                     }
                 }
@@ -1345,9 +1351,9 @@ class Pages extends BaseController
         ] : false;
         // $kurir = $body['kurir'];
 
-        
-        $total = $subtotal + 5000 ;
-        
+
+        $total = $subtotal + 5000;
+
         if ($voucher) {
             $item = array(
                 'id' => 'Voucher',
@@ -1358,7 +1364,7 @@ class Pages extends BaseController
             array_push($itemDetails, $item);
             $total -= $voucher['d'];
         }
-        
+
 
         $total -= $flashSale;
         $itemflashSale = array(
@@ -3919,11 +3925,11 @@ class Pages extends BaseController
         }
     }
 
-    public function notFound(){
+    public function notFound()
+    {
         $data = [
             'title' => 'Halaman Tidak Ditemukan',
         ];
         return view('layout/notFound', $data);
     }
-    
 }
