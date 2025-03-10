@@ -93,28 +93,40 @@ class GambarController extends BaseController
     }
     public function tampilGambarBarang($idBarang)
     {
+        $data = file_get_contents_curl(
+            base_url('img/nopic.png')
+        );
         $gambar = $this->barangModel->getBarangAdmin($idBarang)['gambar'];
         $this->response->setHeader('Content-Type', 'image/webp');
-        echo $gambar;
+        echo $gambar ? $gambar : $data;
     }
     public function tampilGambarBarangHover($idBarang)
     {
+        $data = file_get_contents_curl(
+            base_url('img/nopic.png')
+        );
         $gambar = $this->barangModel->getBarangAdmin($idBarang)['gambar_hover'];
         $this->response->setHeader('Content-Type', 'image/webp');
-        echo $gambar;
+        echo $gambar ? $gambar : $data;
     }
 
     public function tampilGambarVarian($idBarang, $urutan)
     {
+        $data = file_get_contents_curl(
+            base_url('img/nopic.png')
+        );
         $gambar = $this->gambarBarangModel->getGambar($idBarang);
-        $gambarSelected = $gambar['gambar' . $urutan];
+        $gambarSelected = $gambar ? $gambar['gambar' . $urutan] : $data;
         $this->response->setHeader('Content-Type', 'image/webp');
         echo $gambarSelected;
     }
     public function tampilGambarVarian3000($idBarang, $urutan)
     {
+        $data = file_get_contents_curl(
+            base_url('img/nopic.png')
+        );
         $gambar = $this->gambarBarang3000Model->getGambar($idBarang);
-        $gambarSelected = $gambar['gambar' . $urutan];
+        $gambarSelected = $gambar ? $gambar['gambar' . $urutan] : $data;
         $this->response->setHeader('Content-Type', 'image/webp');
         echo $gambarSelected;
     }
