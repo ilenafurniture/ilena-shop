@@ -134,6 +134,7 @@ $routes->get('/admin/denymutasi/(:any)', 'AdminController::denyMutasi/$1', ['fil
 $routes->get('/admin/labelbarang/(:any)', 'AdminController::labelBarang/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/homelayout', 'AdminController::homeLayout', ['filter' => 'adminFilter']);
 $routes->post('/admin/homelayout', 'AdminController::actionHomeLayout', ['filter' => 'adminFilter']);
+$routes->get('/admin/changepic', 'AdminController::changePic', ['filter' => 'adminFilter']);
 
 //GUDANG Controller
 $routes->get('/gudang/listorder', 'GudangController::listOrder', ['filter' => 'gudangFilter']);

@@ -14,36 +14,36 @@
             </div>
             <div style="width: calc(100% / 3)" class="d-flex justify-content-end">
                 <?php if (session()->get('isLogin')) { ?>
-                    <?php if (session()->get('role') == '0' || session()->get('role') == '4') { ?>
-                        <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
-                        <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
-                        <a href="/account" class="btn"><i class="material-icons text-light">person_outline</i></a>
-                    <?php } else if (session()->get('role') == '1') { ?>
-                        <a href="/admin/product" class="btn d-flex align-items-center">
-                            <i class="material-icons text-light">chevron_left</i>
-                            <p class="m-0 text-light">Admin</p>
-                        </a>
-                        <a href="/logout" class="btn" style="padding-right: 0"><i
-                                class="material-icons text-light">exit_to_app</i></a>
-                    <?php } else if (session()->get('role') == '2') { ?>
-                        <a href="/gudang/listorder" class="btn d-flex align-items-center">
-                            <i class="material-icons text-light">chevron_left</i>
-                            <p class="m-0 text-light">Gudang</p>
-                        </a>
-                        <a href="/logout" class="btn" style="padding-right: 0"><i
-                                class="material-icons text-light">exit_to_app</i></a>
-                    <?php } else if (session()->get('role') == '3') { ?>
-                        <a href="/market/product" class="btn d-flex align-items-center">
-                            <i class="material-icons text-light">chevron_left</i>
-                            <p class="m-0 text-light">Marketplace</p>
-                        </a>
-                        <a href="/logout" class="btn" style="padding-right: 0"><i
-                                class="material-icons text-light">exit_to_app</i></a>
-                    <?php } ?>
+                <?php if (session()->get('role') == '0' || session()->get('role') == '4') { ?>
+                <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
+                <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
+                <a href="/account" class="btn"><i class="material-icons text-light">person_outline</i></a>
+                <?php } else if (session()->get('role') == '1') { ?>
+                <a href="/admin/product" class="btn d-flex align-items-center">
+                    <i class="material-icons text-light">chevron_left</i>
+                    <p class="m-0 text-light">Admin</p>
+                </a>
+                <a href="/logout" class="btn" style="padding-right: 0"><i
+                        class="material-icons text-light">exit_to_app</i></a>
+                <?php } else if (session()->get('role') == '2') { ?>
+                <a href="/gudang/listorder" class="btn d-flex align-items-center">
+                    <i class="material-icons text-light">chevron_left</i>
+                    <p class="m-0 text-light">Gudang</p>
+                </a>
+                <a href="/logout" class="btn" style="padding-right: 0"><i
+                        class="material-icons text-light">exit_to_app</i></a>
+                <?php } else if (session()->get('role') == '3') { ?>
+                <a href="/market/product" class="btn d-flex align-items-center">
+                    <i class="material-icons text-light">chevron_left</i>
+                    <p class="m-0 text-light">Marketplace</p>
+                </a>
+                <a href="/logout" class="btn" style="padding-right: 0"><i
+                        class="material-icons text-light">exit_to_app</i></a>
+                <?php } ?>
                 <?php } else { ?>
-                    <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
-                    <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
-                    <a href="/login" class="btn"><i class="material-icons text-light">person_outline</i></a>
+                <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
+                <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
+                <a href="/login" class="btn"><i class="material-icons text-light">person_outline</i></a>
                 <?php } ?>
             </div>
         </div>
@@ -53,21 +53,21 @@
     <p class="m-0 text-center" style="color: white;">Lebih hemat dengan Free Ongkir hingga 100%</p>
 </div>
 <style>
-    .container-navbar-list-nav {
-        background-color: whitesmoke;
-        position: sticky;
-        top: -1px;
-        z-index: 99;
-        justify-content: center;
-    }
+.container-navbar-list-nav {
+    background-color: whitesmoke;
+    position: sticky;
+    top: -1px;
+    z-index: 99;
+    justify-content: center;
+}
 
-    @media (max-width: 1146px) {
-        .container-navbar-list-nav {
-            justify-content: start;
-            padding-inline: 2em;
-            overflow-x: scroll;
-        }
+@media (max-width: 1146px) {
+    .container-navbar-list-nav {
+        justify-content: start;
+        padding-inline: 2em;
+        overflow-x: scroll;
     }
+}
 </style>
 <div class="w-100 show-flex-ke-hide container-navbar-list-nav">
     <div class="d-flex align-items-center py-2 gap-5">
@@ -99,7 +99,7 @@
                         <div class="d-flex gap-4 mb-3 bookshelf-penjelasan" id="bookshelf1-cabana">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10100201/1" alt="bookshelf cabana">
+                                    src="/viewpic/10100201" alt="bookshelf cabana">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Cabana</h3>
@@ -116,7 +116,7 @@
                         <div class="d-none gap-4 mb-3 bookshelf-penjelasan" id="bookshelf1-industrial">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10400201/1" alt="bookshelf industrial">
+                                    src="/viewpic/10400201" alt="bookshelf industrial">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Industrial</h3>
@@ -133,7 +133,7 @@
                         <div class="d-none gap-4 mb-3 bookshelf-penjelasan" id="bookshelf1-orca">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10600201/1" alt="bookshelf orca">
+                                    src="/viewpic/10600201" alt="bookshelf orca">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Orca</h3>
@@ -150,7 +150,7 @@
                         <div class="d-none gap-4 mb-3 bookshelf-penjelasan" id="bookshelf1-sorely">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10900201/1" alt="sorely-queen-bed">
+                                    src="/viewpic/10900201" alt="sorely-queen-bed">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Sorely</h3>
@@ -216,7 +216,7 @@
                         <div class="d-flex gap-4 mb-3 coffeetable-penjelasan" id="coffeetable1-cabana">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10100301/1" alt="coffee table cabana">
+                                    src="/viewpic/10100301" alt="coffee table cabana">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Cabana</h3>
@@ -233,7 +233,7 @@
                         <div class="d-none gap-4 mb-3 coffeetable-penjelasan" id="coffeetable1-cody">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10200301/1" alt="coffee table cody">
+                                    src="/viewpic/10200301" alt="coffee table cody">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Cody</h3>
@@ -267,7 +267,7 @@
                         <div class="d-none gap-4 mb-3 coffeetable-penjelasan" id="coffeetable1-industrial">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10400301/1" alt="coffee table industrial">
+                                    src="/viewpic/10400301" alt="coffee table industrial">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Industrial</h3>
@@ -284,7 +284,7 @@
                         <div class="d-none gap-4 mb-3 coffeetable-penjelasan" id="coffeetable1-metalframe">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10500301/1" alt="sorely-dresser-3-drawer">
+                                    src="/viewpic/10500301" alt="sorely-dresser-3-drawer">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Metal Frame</h3>
@@ -301,7 +301,7 @@
                         <div class="d-none gap-4 mb-3 coffeetable-penjelasan" id="coffeetable1-orca">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10600301/1" alt="coffee table orca">
+                                    src="/viewpic/10600301" alt="coffee table orca">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Orca</h3>
@@ -318,7 +318,7 @@
                         <div class="d-none gap-4 mb-3 coffeetable-penjelasan" id="coffeetable1-plintbase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10700301/1" alt="coffee table plint base">
+                                    src="/viewpic/10700301" alt="coffee table plint base">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Plint Base</h3>
@@ -335,7 +335,7 @@
                         <div class="d-none gap-4 mb-3 coffeetable-penjelasan" id="coffeetable1-socoplate">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10800301/1" alt="coffee table socoplate">
+                                    src="/viewpic/10800301" alt="coffee table socoplate">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Socoplate</h3>
@@ -352,7 +352,7 @@
                         <div class="d-none gap-4 mb-3 coffeetable-penjelasan" id="coffeetable1-sorely">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10900301/1" alt="coffee table sorely">
+                                    src="/viewpic/10900301" alt="coffee table sorely">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Sorely</h3>
@@ -369,7 +369,7 @@
                         <div class="d-none gap-4 mb-3 coffeetable-penjelasan" id="coffeetable1-watercase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/11000301/1" alt="coffee table water case">
+                                    src="/viewpic/11000301" alt="coffee table water case">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Water Case</h3>
@@ -437,7 +437,7 @@
                         <div class="d-flex gap-4 mb-3 consoletable-penjelasan" id="consoletable1-cabana">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10100401/1" alt="console table cabana">
+                                    src="/viewpic/10100401" alt="console table cabana">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Cabana</h3>
@@ -454,7 +454,7 @@
                         <div class="d-none gap-4 mb-3 consoletable-penjelasan" id="consoletable1-cody">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10200401/1" alt="console table cody">
+                                    src="/viewpic/10200401" alt="console table cody">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Cody</h3>
@@ -471,7 +471,7 @@
                         <div class="d-none gap-4 mb-3 consoletable-penjelasan" id="consoletable1-cutout">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10300301/1" alt="console table cutout">
+                                    src="/viewpic/10300301" alt="console table cutout">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">CutOut</h3>
@@ -488,7 +488,7 @@
                         <div class="d-none gap-4 mb-3 consoletable-penjelasan" id="consoletable1-industrial">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10400401/1" alt="console table industrial">
+                                    src="/viewpic/10400401" alt="console table industrial">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Industrial</h3>
@@ -505,7 +505,7 @@
                         <div class="d-none gap-4 mb-3 consoletable-penjelasan" id="consoletable1-metalframe">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10500401/1" alt="console table metal frame">
+                                    src="/viewpic/10500401" alt="console table metal frame">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Metal Frame</h3>
@@ -522,7 +522,7 @@
                         <div class="d-none gap-4 mb-3 consoletable-penjelasan" id="consoletable1-orca">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10600401/1" alt="coffee table orca">
+                                    src="/viewpic/10600401" alt="coffee table orca">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Orca</h3>
@@ -539,7 +539,7 @@
                         <div class="d-none gap-4 mb-3 consoletable-penjelasan" id="consoletable1-plintbase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10700401/1" alt="coffee table plint base">
+                                    src="/viewpic/10700401" alt="coffee table plint base">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Plint Base</h3>
@@ -556,7 +556,7 @@
                         <div class="d-none gap-4 mb-3 consoletable-penjelasan" id="consoletable1-socoplate">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10800401/1" alt="coffee table socoplate">
+                                    src="/viewpic/10800401" alt="coffee table socoplate">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Socoplate</h3>
@@ -573,7 +573,7 @@
                         <div class="d-none gap-4 mb-3 consoletable-penjelasan" id="consoletable1-sorely">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10900401/1" alt="coffee table sorely">
+                                    src="/viewpic/10900401" alt="coffee table sorely">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Sorely</h3>
@@ -590,7 +590,7 @@
                         <div class="d-none gap-4 mb-3 consoletable-penjelasan" id="consoletable1-watercase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/11000401/1" alt="coffee table water case">
+                                    src="/viewpic/11000401" alt="coffee table water case">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Water Case</h3>
@@ -635,7 +635,7 @@
                         <div class="d-flex gap-4 mb-3 credenza-penjelasan" id="credenza1-industrial">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10400501/1" alt="credenza industrial">
+                                    src="/viewpic/10400501" alt="credenza industrial">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Industrial</h3>
@@ -745,7 +745,7 @@
                         <div class="d-flex gap-4 mb-3 dresser-penjelasan" id="dresser3-cabana">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10100601/1" alt="dresser3 cabana">
+                                    src="/viewpic/10100601" alt="dresser3 cabana">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Dresser 3 Cabana</h3>
@@ -765,7 +765,7 @@
                         <div class="d-none gap-4 mb-3 dresser-penjelasan" id="dresser3-cutout">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10300601/1" alt="dresser3 cutout">
+                                    src="/viewpic/10300601" alt="dresser3 cutout">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Dresser 3 CutOut</h3>
@@ -785,7 +785,7 @@
                         <div class="d-none gap-4 mb-3 dresser-penjelasan" id="dresser3-socoplate">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10800601/1" alt="Dresser 3 socoplate">
+                                    src="/viewpic/10800601" alt="Dresser 3 socoplate">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Dresser 3 Socoplate</h3>
@@ -805,7 +805,7 @@
                         <div class="d-none gap-4 mb-3 dresser-penjelasan" id="dresser3-sorely">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10900601/1" alt="Dresser 3  sorely">
+                                    src="/viewpic/10900601" alt="Dresser 3  sorely">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Dresser 3 Sorely</h3>
@@ -828,7 +828,7 @@
                         <div class="d-none gap-4 mb-3 dresser-penjelasan" id="dresser4-cody">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10200701/1" alt="Dresser 4 cody">
+                                    src="/viewpic/10200701" alt="Dresser 4 cody">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Dresser 4 cody</h3>
@@ -851,7 +851,7 @@
                         <div class="d-none gap-4 mb-3 dresser-penjelasan" id="dresser5-cabana">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10100801/1" alt="dresser 5 cabana">
+                                    src="/viewpic/10100801" alt="dresser 5 cabana">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Dresser 5 Cabana</h3>
@@ -871,7 +871,7 @@
                         <div class="d-none gap-4 mb-3 dresser-penjelasan" id="dresser5-cutout">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10300901/1" alt="dresser 5 cutout">
+                                    src="/viewpic/10300901" alt="dresser 5 cutout">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Dresser 5 CutOut</h3>
@@ -891,7 +891,7 @@
                         <div class="d-none gap-4 mb-3 dresser-penjelasan" id="dresser5-socoplate">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10800801/1" alt="dresser 5 socoplate">
+                                    src="/viewpic/10800801" alt="dresser 5 socoplate">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Dresser 5 Socoplate</h3>
@@ -916,7 +916,7 @@
                         <div class="d-none gap-4 mb-3 dresser-penjelasan" id="dresser6-cabana">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10100901/1" alt="dresser 5 Canaba">
+                                    src="/viewpic/10100901" alt="dresser 5 Canaba">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Dresser 5 Canaba</h3>
@@ -935,7 +935,7 @@
                         <div class="d-none gap-4 mb-3 dresser-penjelasan" id="dresser6-cutout">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10300901/1" alt="dresser 6 cutout">
+                                    src="/viewpic/10300901" alt="dresser 6 cutout">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Dresser 5 Orca</h3>
@@ -954,7 +954,7 @@
                         <div class="d-none gap-4 mb-3 dresser-penjelasan" id="dresser6-metalframe">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10500901/1" alt="dresser 6 Metal Frame">
+                                    src="/viewpic/10500901" alt="dresser 6 Metal Frame">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Dresser 6 Metal frame</h3>
@@ -973,7 +973,7 @@
                         <div class="d-none gap-4 mb-3 dresser-penjelasan" id="dresser6-orca">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10600901/1" alt="dresser 6 Orca">
+                                    src="/viewpic/10600901" alt="dresser 6 Orca">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Dresser 6 Orca</h3>
@@ -992,7 +992,7 @@
                         <div class="d-none gap-4 mb-3 dresser-penjelasan" id="dresser6-plintbase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10700901/1" alt="dresser 6 Plint Base">
+                                    src="/viewpic/10700901" alt="dresser 6 Plint Base">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Dresser 6 Plint Base</h3>
@@ -1011,7 +1011,7 @@
                         <div class="d-none gap-4 mb-3 dresser-penjelasan" id="dresser6-watercase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/11000901/1" alt="dresser 6 Plint Base">
+                                    src="/viewpic/11000901" alt="dresser 6 Plint Base">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Dresser 6 Water case</h3>
@@ -1030,7 +1030,7 @@
                         <div class="d-none gap-4 mb-3 dresser-penjelasan" id="dresser6-sorely">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10901001/1" alt="dresser 6 Sorely">
+                                    src="/viewpic/10901001" alt="dresser 6 Sorely">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Dresser 6 Sorely</h3>
@@ -1187,7 +1187,7 @@
                         <div class="d-flex gap-4 mb-3 king-penjelasan" id="king1-cabana">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10101201/1" alt="king1 cabana">
+                                    src="/viewpic/10101201" alt="king1 cabana">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed King Cabana</h3>
@@ -1207,7 +1207,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king1-cody">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10201201/1" alt="king1 cody">
+                                    src="/viewpic/10201201" alt="king1 cody">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed King Cody</h3>
@@ -1227,7 +1227,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king1-cutout">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10301201/1" alt="king1 cutout">
+                                    src="/viewpic/10301201" alt="king1 cutout">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed King CutOut</h3>
@@ -1247,7 +1247,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king1-socoplate">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10801201/1" alt="Bed King socoplate">
+                                    src="/viewpic/10801201" alt="Bed King socoplate">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed King Socoplate</h3>
@@ -1267,7 +1267,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king1-industrial">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10401201/1" alt="Bed King industrial">
+                                    src="/viewpic/10401201" alt="Bed King industrial">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed King Industrial</h3>
@@ -1287,7 +1287,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king1-metalframe">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10501201/1" alt="Bed King metal frame">
+                                    src="/viewpic/10501201" alt="Bed King metal frame">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed King Metal Frame</h3>
@@ -1307,7 +1307,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king1-orca">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10601201/1" alt="Bed King Orca">
+                                    src="/viewpic/10601201" alt="Bed King Orca">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed King Orca</h3>
@@ -1327,7 +1327,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king1-plintbase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10701201/1" alt="Bed King plint base">
+                                    src="/viewpic/10701201" alt="Bed King plint base">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed King Plint Base</h3>
@@ -1347,7 +1347,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king1-sorely">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10901201/1" alt="King sorely">
+                                    src="/viewpic/10901201" alt="King sorely">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed King Sorely</h3>
@@ -1367,7 +1367,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king1-watercase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/11001201/1" alt="King water case">
+                                    src="/viewpic/11001201" alt="King water case">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed King Water Case</h3>
@@ -1390,7 +1390,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king2-cabana">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10101301/1" alt="queen cabana">
+                                    src="/viewpic/10101301" alt="queen cabana">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Queen Cabana</h3>
@@ -1410,7 +1410,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king2-cody">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10201301/1" alt="Queen cody">
+                                    src="/viewpic/10201301" alt="Queen cody">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Queen Cody</h3>
@@ -1430,7 +1430,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king2-cutout">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10301301/1" alt="Queen cutout">
+                                    src="/viewpic/10301301" alt="Queen cutout">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Queen CutOut</h3>
@@ -1450,7 +1450,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king2-socoplate">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10801301/1" alt="Bed Queen socoplate">
+                                    src="/viewpic/10801301" alt="Bed Queen socoplate">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Queen Socoplate</h3>
@@ -1470,7 +1470,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king2-industrial">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10401201/1" alt="Bed Queen industrial">
+                                    src="/viewpic/10401201" alt="Bed Queen industrial">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Queen Industrial</h3>
@@ -1490,7 +1490,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king2-metalframe">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10501201/1" alt="Bed Queen metal frame">
+                                    src="/viewpic/10501201" alt="Bed Queen metal frame">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Queen Metal Frame</h3>
@@ -1510,7 +1510,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king2-orca">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10601201/1" alt="Bed Queen Orca">
+                                    src="/viewpic/10601201" alt="Bed Queen Orca">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Queen Orca</h3>
@@ -1530,7 +1530,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king2-plintbase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10701201/1" alt="Bed Queen plint base">
+                                    src="/viewpic/10701201" alt="Bed Queen plint base">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Queen Plint Base</h3>
@@ -1550,7 +1550,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king2-sorely">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10901201/1" alt="Queen sorely">
+                                    src="/viewpic/10901201" alt="Queen sorely">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Queen Sorely</h3>
@@ -1570,7 +1570,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king2-watercase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/11001301/1" alt="Queen water case">
+                                    src="/viewpic/11001301" alt="Queen water case">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Queen Water Case</h3>
@@ -1593,7 +1593,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king3-cabana">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10101801/1" alt="king3 cabana">
+                                    src="/viewpic/10101801" alt="king3 cabana">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Single Cabana</h3>
@@ -1613,7 +1613,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king3-cody">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10201801/1" alt="king3 cody">
+                                    src="/viewpic/10201801" alt="king3 cody">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Single Cody</h3>
@@ -1633,7 +1633,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king3-cutout">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10301801/1" alt="king3 cutout">
+                                    src="/viewpic/10301801" alt="king3 cutout">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Single CutOut</h3>
@@ -1653,7 +1653,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king3-socoplate">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10801801/1" alt="Bed Single socoplate">
+                                    src="/viewpic/10801801" alt="Bed Single socoplate">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Single Socoplate</h3>
@@ -1673,7 +1673,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king3-industrial">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10401801/1" alt="Bed Single industrial">
+                                    src="/viewpic/10401801" alt="Bed Single industrial">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Single Industrial</h3>
@@ -1693,7 +1693,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king3-metalframe">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10501801/1" alt="Bed Single metal frame">
+                                    src="/viewpic/10501801" alt="Bed Single metal frame">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Single Metal Frame</h3>
@@ -1713,7 +1713,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king3-orca">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10601201/1" alt="Bed Single Orca">
+                                    src="/viewpic/10601201" alt="Bed Single Orca">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Single Orca</h3>
@@ -1733,7 +1733,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king3-plintbase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10701801/1" alt="Bed Single plint base">
+                                    src="/viewpic/10701801" alt="Bed Single plint base">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Single Plint Base</h3>
@@ -1753,7 +1753,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king3-sorely">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10901801/1" alt="King sorely">
+                                    src="/viewpic/10901801" alt="King sorely">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Single Sorely</h3>
@@ -1773,7 +1773,7 @@
                         <div class="d-none gap-4 mb-3 king-penjelasan" id="king3-watercase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/11001801/1" alt="King water case">
+                                    src="/viewpic/11001801" alt="King water case">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Bed Single Water Case</h3>
@@ -1852,7 +1852,7 @@
                         <div class="d-flex gap-4 mb-3 sidetable-penjelasan" id="sidetable1-cabana">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10101401/1" alt="sidetable Cabana">
+                                    src="/viewpic/10101401" alt="sidetable Cabana">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Cabana</h3>
@@ -1869,7 +1869,7 @@
                         <div class="d-none gap-4 mb-3 sidetable-penjelasan" id="sidetable1-cody">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10201401/1" alt="sidetable cody">
+                                    src="/viewpic/10201401" alt="sidetable cody">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Cody</h3>
@@ -1886,7 +1886,7 @@
                         <div class="d-none gap-4 mb-3 sidetable-penjelasan" id="sidetable1-cutout">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10301401/1" alt="sidetable cutout">
+                                    src="/viewpic/10301401" alt="sidetable cutout">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Cutout</h3>
@@ -1903,7 +1903,7 @@
                         <div class="d-none gap-4 mb-3 sidetable-penjelasan" id="sidetable1-industrial">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10401401/1" alt="sidetable industrial">
+                                    src="/viewpic/10401401" alt="sidetable industrial">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Industrial</h3>
@@ -1920,7 +1920,7 @@
                         <div class="d-none gap-4 mb-3 sidetable-penjelasan" id="sidetable1-metalframe">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10501401/1" alt="sidetable metalframe">
+                                    src="/viewpic/10501401" alt="sidetable metalframe">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Metal Frame</h3>
@@ -1937,7 +1937,7 @@
                         <div class="d-none gap-4 mb-3 sidetable-penjelasan" id="sidetable1-orca">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10601401/1" alt="sidetable orca">
+                                    src="/viewpic/10601401" alt="sidetable orca">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Orca</h3>
@@ -1954,7 +1954,7 @@
                         <div class="d-none gap-4 mb-3 sidetable-penjelasan" id="sidetable1-plintbase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10701401/1" alt="sidetable plint base">
+                                    src="/viewpic/10701401" alt="sidetable plint base">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Plint Base</h3>
@@ -1971,7 +1971,7 @@
                         <div class="d-none gap-4 mb-3 sidetable-penjelasan" id="sidetable1-socoplate">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10801401/1" alt="sidetable socoplate">
+                                    src="/viewpic/10801401" alt="sidetable socoplate">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Socoplate</h3>
@@ -1988,7 +1988,7 @@
                         <div class="d-none gap-4 mb-3 sidetable-penjelasan" id="sidetable1-sorely">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10901401/1" alt="sidetable socoplate">
+                                    src="/viewpic/10901401" alt="sidetable socoplate">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Sorely</h3>
@@ -2005,7 +2005,7 @@
                         <div class="d-none gap-4 mb-3 sidetable-penjelasan" id="sidetable1-watercase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/11001401/1" alt="sidetable watercase">
+                                    src="/viewpic/11001401" alt="sidetable watercase">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Water case</h3>
@@ -2051,7 +2051,7 @@
                         <div class="d-flex gap-4 mb-3 mejanakas-penjelasan" id="mejanakas1-sorely">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10901501/1" alt="mejanakas sorely">
+                                    src="/viewpic/10901501" alt="mejanakas sorely">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Sorely</h3>
@@ -2123,7 +2123,7 @@
                         <div class="d-flex gap-4 mb-3 bufet-penjelasan" id="bufet1-cabana">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10101601/1" alt="bufetTV Cabana">
+                                    src="/viewpic/10101601" alt="bufetTV Cabana">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Cabana</h3>
@@ -2140,7 +2140,7 @@
                         <div class="d-none gap-4 mb-3 bufet-penjelasan" id="bufet1-cody">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10201601/1" alt="bufetTV cody">
+                                    src="/viewpic/10201601" alt="bufetTV cody">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Cody</h3>
@@ -2157,7 +2157,7 @@
                         <div class="d-none gap-4 mb-3 bufet-penjelasan" id="bufet1-cutout">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10301601/1" alt="bufetTV cutout">
+                                    src="/viewpic/10301601" alt="bufetTV cutout">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Cutout</h3>
@@ -2174,7 +2174,7 @@
                         <div class="d-none gap-4 mb-3 bufet-penjelasan" id="bufet1-industrial">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10401601/1" alt="bufetTV industrial">
+                                    src="/viewpic/10401601" alt="bufetTV industrial">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Industrial</h3>
@@ -2191,7 +2191,7 @@
                         <div class="d-none gap-4 mb-3 bufet-penjelasan" id="bufet1-metalframe">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10501601/1" alt="bufetTV metalframe">
+                                    src="/viewpic/10501601" alt="bufetTV metalframe">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Metal Frame</h3>
@@ -2208,7 +2208,7 @@
                         <div class="d-none gap-4 mb-3 bufet-penjelasan" id="bufet1-orca">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10601601/1" alt="bufetTV orca">
+                                    src="/viewpic/10601601" alt="bufetTV orca">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Orca</h3>
@@ -2225,7 +2225,7 @@
                         <div class="d-none gap-4 mb-3 bufet-penjelasan" id="bufet1-plintbase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10701601/1" alt="bufetTV plint base">
+                                    src="/viewpic/10701601" alt="bufetTV plint base">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Plint Base</h3>
@@ -2242,7 +2242,7 @@
                         <!-- <div class="d-none gap-4 mb-3 bufet-penjelasan" id="bufet1-socoplate">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10801401/1" alt="bufetTV socoplate">
+                                    src="/viewpic/10801401" alt="bufetTV socoplate">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Socoplate</h3>
@@ -2259,7 +2259,7 @@
                         <div class="d-none gap-4 mb-3 bufet-penjelasan" id="bufet1-sorely">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10901601/1" alt="bufet sorely">
+                                    src="/viewpic/10901601" alt="bufet sorely">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Sorely</h3>
@@ -2276,7 +2276,7 @@
                         <div class="d-none gap-4 mb-3 bufet-penjelasan" id="bufet1-watercase">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/11001601/1" alt="bufetTV watercase">
+                                    src="/viewpic/11001601" alt="bufetTV watercase">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Water case</h3>
@@ -2330,7 +2330,7 @@
                         <div class="d-flex gap-4 mb-3 wardrobe-penjelasan" id="wardrobe1-cody">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10201701/1" alt="wardrobe cody">
+                                    src="/viewpic/10201701" alt="wardrobe cody">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Cody</h3>
@@ -2347,7 +2347,7 @@
                         <div class="d-none gap-4 mb-3 wardrobe-penjelasan" id="wardrobe1-socoplate">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10801701/1" alt="wardrobe socoplate">
+                                    src="/viewpic/10801701" alt="wardrobe socoplate">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Socoplate</h3>
@@ -2364,7 +2364,7 @@
                         <div class="d-none gap-4 mb-3 wardrobe-penjelasan" id="wardrobe1-sorely">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10901701/1" alt="wardrobe sorely">
+                                    src="/viewpic/10901701" alt="wardrobe sorely">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Sorely</h3>
@@ -2381,7 +2381,7 @@
                         <div class="d-none gap-4 mb-3 wardrobe-penjelasan" id="wardrobe1-Industrial">
                             <div style="flex: 1;">
                                 <img style="border-radius:6px; overflow: hidden; object-fit: cover; width: 100%; height: 100%;"
-                                    src="/viewvar/10401701/1" alt="wardrobe Industrial">
+                                    src="/viewpic/10401701" alt="wardrobe Industrial">
                             </div>
                             <div style="flex: 1;">
                                 <h3 class="teks-sedang mb-3">Industrial</h3>
@@ -2410,16 +2410,16 @@
     </div>
 </div>
 <script>
-    function hoverListNav(idElm) {
-        const arrPenjelasanElm = document.querySelectorAll('.' + idElm.split('-')[0].slice(0, -1) + '-penjelasan');
-        // console.log(arrPenjelasanElm)
-        arrPenjelasanElm.forEach(penjelasanElm => {
-            penjelasanElm.classList.add('d-none')
-            penjelasanElm.classList.remove('d-flex')
-        });
-        // console.log(idElm)
-        const itemElm = document.getElementById(idElm)
-        itemElm.classList.remove('d-none')
-        itemElm.classList.add('d-flex')
-    }
+function hoverListNav(idElm) {
+    const arrPenjelasanElm = document.querySelectorAll('.' + idElm.split('-')[0].slice(0, -1) + '-penjelasan');
+    // console.log(arrPenjelasanElm)
+    arrPenjelasanElm.forEach(penjelasanElm => {
+        penjelasanElm.classList.add('d-none')
+        penjelasanElm.classList.remove('d-flex')
+    });
+    // console.log(idElm)
+    const itemElm = document.getElementById(idElm)
+    itemElm.classList.remove('d-none')
+    itemElm.classList.add('d-flex')
+}
 </script>

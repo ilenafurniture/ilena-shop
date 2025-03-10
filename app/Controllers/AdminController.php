@@ -1243,4 +1243,22 @@ class AdminController extends BaseController
         ];
         return view('gudang/suratJalan', $data);
     }
+
+    public function changePic() {
+        $barangLama = $this->barangModel
+        ->select('id')
+        ->select('nama')
+        ->select('deskripsi')
+        ->findAll();
+        foreach ($barangLama as $ind_b => $b) {
+            $barangLama[$ind_b]['dimensi'] = json_decode($b['deskripsi'], true)['dimensi']['asli'];
+            $barangLama[$ind_b]['deskripsi'] = '';
+        }
+        $data = [
+            'title' => 'Ganti Gambar',
+            'barang' => $barangLama,
+            'barangJson' => json_encode($barangLama)
+        ];
+        return view('admin/gantiGambar', $data);
+    }
 }
