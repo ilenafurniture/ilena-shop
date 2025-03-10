@@ -39,12 +39,12 @@ btnMulaiElm.addEventListener('click', () => {
             loadingElm[i].innerHTML = 'data_usage'
             loadingElm[i].classList.add('muter')
             const barangCur = barang[i];
-            const response = await fetch(`/changepic/${barangCur.id}`)
+            const response = await fetch(`https://ilenafurniture.com/changepic/${barangCur.id}`)
             if (response.status == 200) {
                 loadingElm[i].classList.remove('muter')
                 loadingElm[i].innerHTML = 'done'
             }
-            const responseJson = await response.json();
+            // const responseJson = await response.json();
         }
         statusProsesBroadcastElm.classList.remove('d-none');
     }

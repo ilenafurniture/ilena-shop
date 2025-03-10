@@ -34,6 +34,7 @@ class Filters extends BaseConfig
         'gudangFilter'   => \App\Filters\GudangFilter::class,
         'marketFilter'   => \App\Filters\MarketFilter::class,
         'loginToko'   => \App\Filters\LoginToko::class,
+        'corsFilter'    => \App\Filters\CorsFilter::class,
     ];
 
     /**
