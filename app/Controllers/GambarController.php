@@ -210,4 +210,71 @@ class GambarController extends BaseController
         $this->response->setHeader('Content-Type', 'image/webp');
         echo $gambar;
     }
+
+    public function gantiUkuran($koleksi) //koleksinya = water_case
+    {
+        $barangLama = $this->barangModel->where(['kategori' => str_replace('_', ' ', $koleksi)])->findAll();
+        if (count($barangLama) <= 0) {
+            return $this->response->setJSON(['message' => 'barang nggk nemu'], false);
+        }
+
+        $barangChecker = [];
+        foreach ($barangLama as $b) {
+            $dataChecker = [];
+            $insertGambarBarang = [];
+            $insertGambar300 = false;
+            $jumlahGambar = '';
+            foreach (json_decode($b['varian'], true) as $ind_v => $v) {
+                if($ind_v == 0){
+                    $jumlahGambar = $jumlahGambar . $v['urutan_gambar'];
+                } else {
+                    $jumlahGambar = $jumlahGambar . ',' . $v['urutan_gambar'];
+                }
+            }
+            $jumlahGambar = count(explode(',', $jumlahGambar));
+            $dataGambar = $this->gambarBarang3000Model->where(['id' => $b['id']])->first();
+            for ($i = 1; $i <= $jumlahGambar; $i++) {
+                $gambarSelected = $dataGambar['gambar' . $i];
+                $fp = 'imgdum/' . $b['id'] . '-' . $i . '.webp';
+                file_put_contents($fp, $gambarSelected);
+                \Config\Services::image()
+                    ->withFile($fp)
+                    ->resize(1000, 1000, true, 'height')->save('imgdum/' . $b['id'] . '-' . $i . '(1).webp');
+                $insertGambarBarang['gambar' . $i] = file_get_contents('imgdum/' . $b['id'] . '-' . $i . '(1).webp');
+                unlink('imgdum/' . $b['id'] . '-' . $i . '(1).webp');
+                $dataChecker['resize_300'] = 'success';
+
+                if ($i == 1) {
+                    \Config\Services::image()
+                        ->withFile($fp)
+                        ->resize(300, 300, true, 'height')->save('imgdum/' . $b['id'] . '-' . $i . '300(1).webp');
+                    $insertGambar300 = file_get_contents('imgdum/' . $b['id'] . '-' . $i . '300(1).webp');
+                    unlink('imgdum/' . $b['id'] . '-' . $i . '300(1).webp');
+                }
+                unlink($fp);
+                $dataChecker['resize_1000'] = 'success';
+            }
+
+            //resize gambar hover
+            $fp = 'imgdum/hover-' . $b['id'] .'.webp';
+            file_put_contents($fp, $b['gambar_hover']);
+            \Config\Services::image()
+                ->withFile($fp)
+                ->resize(300, 300, true, 'height')->save('imgdum/hover' . $b['id'] . '(1).webp');
+            
+            $this->barangModel->where(['id' => $b['id']])->set([
+                'gambar' => $insertGambar300,
+                'gambar_hover' => file_get_contents('imgdum/hover' . $b['id'] . '(1).webp')
+                ])->update();
+            unlink('imgdum/hover-' . $b['id'] . '(1).webp');
+            $dataChecker['resize_hover'] = 'success';
+            $this->gambarBarangModel->where(['id' => $b['id']])->set($insertGambarBarang)->update();
+            $dataChecker['nama_barang'] = $b['nama'];
+            array_push($barangChecker, $dataChecker);
+        }
+        return $this->response->setJSON([
+            'success' => true,
+            'barang' => $barangChecker
+        ], false);
+    }
 }
