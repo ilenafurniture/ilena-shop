@@ -260,11 +260,11 @@ class GambarController extends BaseController
             file_put_contents($fp, $b['gambar_hover']);
             \Config\Services::image()
                 ->withFile($fp)
-                ->resize(300, 300, true, 'height')->save('imgdum/hover' . $b['id'] . '(1).webp');
+                ->resize(300, 300, true, 'height')->save('imgdum/hover-' . $b['id'] . '(1).webp');
             
             $this->barangModel->where(['id' => $b['id']])->set([
                 'gambar' => $insertGambar300,
-                'gambar_hover' => file_get_contents('imgdum/hover' . $b['id'] . '(1).webp')
+                'gambar_hover' => file_get_contents('imgdum/hover-' . $b['id'] . '(1).webp')
                 ])->update();
             unlink('imgdum/hover-' . $b['id'] . '(1).webp');
             $dataChecker['resize_hover'] = 'success';
