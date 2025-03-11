@@ -283,7 +283,7 @@ body {
     cursor: default;
 }
 .child-list-nav {
-    height: 0;
+    max-height: 0;
     overflow-y: hidden;
     background-color: whitesmoke;
     z-index: 3;
@@ -304,21 +304,23 @@ body {
     background-color: rgba(0, 0, 0, 0);
     position: absolute;
     left: 0;
-    top: 99.6px;
+    top: 30px;
     width: 100%;
-    height: calc(100svh - 100px);
+    height: calc(100svh - 124px);
     backdrop-filter: blur(0px);
     transition: 0.3s;
     display: none;
 }
 .list-nav a {
     text-wrap: nowrap;
+    transition: 0.2s;
 }
 .list-nav:hover a {
     font-weight: bold;
+    transition: 0.2s;
 }
 .list-nav:hover .child-list-nav {
-    height: 455px;
+    max-height: 100svh;
     transition: 0.3s;
 }
 .list-nav .child-list-nav a {
@@ -1826,6 +1828,10 @@ body {
     color: white;
     text-decoration: none;
     opacity: 0.7;
+}
+.footer__left-menu a:hover {
+    color: rgb(255, 94, 94);
+    opacity: 1;
 }
 /*END FOOTER*/
 

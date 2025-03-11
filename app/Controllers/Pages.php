@@ -53,9 +53,49 @@ class Pages extends BaseController
         $this->voucherModel = new VoucherModel();
         $this->session = \Config\Services::session();
     }
+    public function getNavbarData(){
+        $jenis = $this->barangModel->query(
+            "SELECT 
+                subkategori AS jenis, 
+                GROUP_CONCAT(DISTINCT kategori ORDER BY kategori ASC) AS koleksi
+            FROM barang
+            GROUP BY subkategori;"
+        )->getResultArray();
+
+        $hasil = [];
+        foreach ($jenis as $j) {
+            $arrKoleksi = [];
+            $koleksi = explode(',', $j['koleksi']);
+            
+            foreach ($koleksi as $k) {
+                $produk = $this->barangModel
+                    ->select('id')
+                    ->select('nama')
+                    ->select('deskripsi')
+                    ->where(['subkategori' => $j['jenis'], 'kategori' => $k])->first();
+                $itemKoleksi = [
+                    'id' => $produk['id'],
+                    'nama' => $produk['nama'],
+                    'deskripsi' => $produk['deskripsi'],
+                    'koleksi' => $k
+                ];
+                array_push($arrKoleksi, $itemKoleksi);
+            }
+
+            if(str_contains($j['jenis'], 'dresser')) {
+                $hasil['dresser'][$j['jenis']] = $arrKoleksi;
+            } 
+            else if(str_contains($j['jenis'], 'bed')) {
+                $hasil['bed'][$j['jenis']] = $arrKoleksi;
+            } 
+            else {
+                $hasil[$j['jenis']] = $arrKoleksi;
+            }
+        }
+        return $hasil;
+    }
     public function index()
     {
-
         $sliders = $this->gambarHeaderModel->findAll();
         $produk  = $this->barangModel->orderBy('pengunjung', 'desc')->findAll(4, 0);
         $wishlist = $this->session->get('wishlist');
@@ -64,10 +104,7 @@ class Pages extends BaseController
         }
         $data = [
             'title' => 'Home',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
             'metaKeyword' => 'ilena Furniture, Toko Furniture, Sorely Ilena Semarang, Cabana Ilena Semarang, Orca Ilena Semarang, Plint Base Ilena Semarang, Cutout Ilena Semarang, Living Room Ilena Semarang, Bed Room Ilena Semarang, Lounge Room Ilena Semarang',
             'produk' => $produk,
             'wishlist' => $wishlist,
@@ -86,10 +123,7 @@ class Pages extends BaseController
         }
         $data = [
             'title' => 'Home',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
             'produk' => $produk,
             'wishlist' => $wishlist,
             'msg_active' => session()->getFlashdata('msg_active') ? session()->getFlashdata('msg_active') : false,
@@ -113,10 +147,7 @@ class Pages extends BaseController
         }
         $data = [
             'title' => 'Cari Produk',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
             'produk' => $produk,
             'wishlist' => $wishlist,
             'find' => $cari
@@ -305,14 +336,12 @@ class Pages extends BaseController
             }
             $data = [
                 'title' => ucwords($product['nama']),
-                // 'navbar' => [
-                //     'koleksi' => $koleksi,
-                //     'jenis' => $jenis,
-                // ],
+                
+                'navbar' => $this->getNavbarData(),
                 'produk'        => $product,
                 'wishlist'      => $wishlist,
-                'koleksi'       => $koleksi,
-                'jenis'         => $jenis,
+                // 'koleksi'       => $koleksi,
+                // 'jenis'         => $jenis,
                 'produkSejenis' => $seluruhBarangFilter,
                 'produkSemua'   => $productsemua,
                 'indexNama'     => $ind_nama,
@@ -332,14 +361,15 @@ class Pages extends BaseController
             $product = $this->barangModel->getBarangNama();
             $data = [
                 'title' => 'Produk Kami',
-                'navbar' => [
+                
+                'navbar' => $this->getNavbarData(),
+                'produk' => $product,
+                'koleksiJenis' => [
                     'koleksi' => $koleksi,
                     'jenis' => $jenis,
                 ],
-                'produk' => $product,
-                'wishlist' => $wishlist,
-                'koleksi' => $koleksi,
                 'jenis' => $jenis,
+                'wishlist'      => $wishlist,
             ];
             return view('pages/all', $data);
         }
@@ -409,10 +439,7 @@ class Pages extends BaseController
 
         $data = [
             'title' => 'Produk Kami',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
             'produk' => $seluruhBarangFilter,
             'wishlist' => $wishlist,
             'koleksi' => $koleksi,
@@ -484,7 +511,7 @@ class Pages extends BaseController
             $produk = $this->barangModel->getBarang($k['id_barang']);
             foreach (json_decode($produk['varian'], true) as $v) {
                 if ($v['nama'] == $k['varian']) {
-                    $keranjang[$index]['src_gambar'] = "/viewvar/" . $k['id_barang'] . "/" . explode(',', $v['urutan_gambar'])[0];
+                    $keranjang[$index]['src_gambar'] = "/img/barang/1000/" . $k['id_barang'] . "-" . explode(',', $v['urutan_gambar'])[0].'.webp';
                 }
             }
             $keranjang[$index]['detail'] = $produk;
@@ -493,10 +520,7 @@ class Pages extends BaseController
 
         $data = [
             'title' => 'Keranjang',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
             'keranjang' => $keranjang,
             'hargaTotal' => $hargaTotal,
             'hargaKeseluruhan' => $hargaTotal + 5000
@@ -696,10 +720,7 @@ class Pages extends BaseController
 
         $data = [
             'title' => 'Alamat',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
             'provinsi' => $provinsi["rajaongkir"]["results"],
             'keranjang' => $keranjang,
             'hargaTotal' => $hargaTotal,
@@ -926,10 +947,7 @@ class Pages extends BaseController
 
         $data = [
             'title' => 'Pengiriman',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
             'alamat' => $alamat[$ind_add],
             'keranjang' => $keranjang,
             'hargaTotal' => $hargaTotal,
@@ -974,10 +992,7 @@ class Pages extends BaseController
 
         $data = [
             'title' => 'Pembayaran',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
             'hargaTotal' => $hargaTotal,
             'hargaOngkir' => $kurir[$index_kurir]['harga'],
             'hargaKeseluruhan' => ($hargaTotal + 5000 + $kurir[$index_kurir]['harga']),
@@ -1045,7 +1060,7 @@ class Pages extends BaseController
             $produk = $this->barangModel->getBarang($k['id_barang']);
             foreach (json_decode($produk['varian'], true) as $v) {
                 if ($v['nama'] == $k['varian']) {
-                    $keranjang[$index]['src_gambar'] = "/viewvar/" . $k['id_barang'] . "/" . explode(',', $v['urutan_gambar'])[0];
+                    $keranjang[$index]['src_gambar'] = "/img/barang/1000/" . $k['id_barang'] . "-" . explode(',', $v['urutan_gambar'])[0] . ".webp";
                 }
             }
             $keranjang[$index]['detail'] = $produk;
@@ -1092,10 +1107,7 @@ class Pages extends BaseController
 
         $data = [
             'title' => 'Pembayaran',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
             'hargaTotal' => $hargaTotal,
             'user' => [
                 'email' => $alamatselected['email_pemesan'],
@@ -2069,10 +2081,7 @@ class Pages extends BaseController
         $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
         $data = [
             'title' => 'Peroses Pembayaran',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
             'pemesanan' => $pemesanan,
             'dataMid' => $dataMid,
             'va_number' => $va_number,
@@ -2104,10 +2113,7 @@ class Pages extends BaseController
         }
         $data = [
             'title' => 'Pembayaran Sukes',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
             'pemesanan' => $pemesanan,
             'dataMid' => $dataMid,
             'kurir' => $kurir,
@@ -2120,10 +2126,7 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Pembayaran batal',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
         ];
         return view('pages/cencelpay', $data);
     }
@@ -2402,10 +2405,7 @@ class Pages extends BaseController
                     $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
                     $data = [
                         'title' => 'Peroses Pembayaran',
-                        'navbar' => [
-                            'koleksi' => $this->koleksiModel->findAll(),
-                            'jenis' => $this->jenisModel->findAll(),
-                        ],
+                        'navbar' => $this->getNavbarData(),
                         'pemesanan' => $pemesanan,
                         'dataMid' => $dataMid,
                         'va_number' => $va_number,
@@ -2459,10 +2459,7 @@ class Pages extends BaseController
 
                     $data = [
                         'title' => 'Pembayaran Sukes',
-                        'navbar' => [
-                            'koleksi' => $this->koleksiModel->findAll(),
-                            'jenis' => $this->jenisModel->findAll(),
-                        ],
+                        'navbar' => $this->getNavbarData(),
                         'pemesanan' => $pemesanan,
                         'dataMid' => $dataMid,
                         'kurir' => $kurir,
@@ -2515,10 +2512,7 @@ class Pages extends BaseController
 
                     $data = [
                         'title' => 'Pembayaran Sukes',
-                        'navbar' => [
-                            'koleksi' => $this->koleksiModel->findAll(),
-                            'jenis' => $this->jenisModel->findAll(),
-                        ],
+                        'navbar' => $this->getNavbarData(),
                         'pemesanan' => $pemesanan,
                         'dataMid' => $dataMid,
                         'kurir' => $kurir,
@@ -2565,10 +2559,7 @@ class Pages extends BaseController
                     $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
                     $data = [
                         'title' => 'Peroses Pembayaran',
-                        'navbar' => [
-                            'koleksi' => $this->koleksiModel->findAll(),
-                            'jenis' => $this->jenisModel->findAll(),
-                        ],
+                        'navbar' => $this->getNavbarData(),
                         'pemesanan' => $pemesanan,
                         'dataMid' => $dataMid,
                         'va_number' => $va_number,
@@ -2609,10 +2600,7 @@ class Pages extends BaseController
             }
             $data = [
                 'title' => 'Pesanan',
-                'navbar' => [
-                    'koleksi' => $this->koleksiModel->findAll(),
-                    'jenis' => $this->jenisModel->findAll(),
-                ],
+                'navbar' => $this->getNavbarData(),
                 'pesanan' => $pesanan,
                 'email' => session()->get('email'),
                 'nama' => session()->get('nama'),
@@ -2862,10 +2850,7 @@ class Pages extends BaseController
         }
         $data = [
             'title' => 'Pesanan',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
             'pesanan' => $pesanan,
             'email' => session()->get('email'),
             'nama' => session()->get('nama'),
@@ -3161,10 +3146,7 @@ class Pages extends BaseController
         $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
         $data = [
             'title' => 'Peroses Pembayaran',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
             'pemesanan' => $pemesanan,
             'pemesananAll' => $pemesananAll,
             'bulan' => $bulan,
@@ -3227,10 +3209,7 @@ class Pages extends BaseController
         $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
         $data = [
             'title' => 'Print Preview',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
             'transaksi' => $arr,
             'transaksiJson' => json_encode($arr),
             'bulan' => $bulan
@@ -3267,10 +3246,7 @@ class Pages extends BaseController
         }
         $data = [
             'title' => 'Favorite',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
             'produk' => $produk,
             'wishlist' => $wishlist
         ];
@@ -3354,6 +3330,7 @@ class Pages extends BaseController
         }
         $data = [
             'title' => 'Artikel',
+            'navbar' => $this->getNavbarData(),
             'artikel' => $artikel,
             'find' => str_replace('-', ' ', $cari)
         ];
@@ -3364,10 +3341,7 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Akun',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
             'val' => [
                 'msg' => session()->getFlashdata('msg'),
                 'val_email' => session()->getFlashdata('val-email'),
@@ -3491,10 +3465,7 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Membuat Akun',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
             'val' => [
                 'val_nama' => session()->getFlashdata('val-nama'),
                 'val_email' => session()->getFlashdata('val-email'),
@@ -3597,10 +3568,7 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Verifikasi',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
             'val' => [
                 'msg' => session()->getFlashdata('msg'),
                 'val_verify' => session()->getFlashdata('val_verify')
@@ -3723,10 +3691,7 @@ class Pages extends BaseController
 
         $data = [
             'title' => 'Akun Saya',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
             'alamat' => $alamat,
             'alamatJson' => json_encode($alamat),
             'email' => session()->get('email'),
@@ -3742,10 +3707,7 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Visi dan Misi',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
         ];
         return view('pages/visiMisi', $data);
     }
@@ -3753,10 +3715,7 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'FAQ',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
         ];
         return view('pages/faq', $data);
     }
@@ -3786,6 +3745,7 @@ class Pages extends BaseController
             $produkTerkait = $this->barangModel->where(['subkategori' => $artikel['kategori'][0]])->orderBy('pengunjung', 'desc')->findAll(10, 0);
             $data = [
                 'title' => 'Artikel ' . $artikel['judul'],
+                'navbar' => $this->getNavbarData(),
                 'artikel' => $artikel,
                 'artikelTerkait' => $artikelTerkait,
                 'produkTerkait' => $produkTerkait,
@@ -3805,6 +3765,7 @@ class Pages extends BaseController
             }
             $data = [
                 'title' => 'Artikel',
+                'navbar' => $this->getNavbarData(),
                 'artikel' => $artikel
             ];
             return view('pages/artikelAll', $data);
@@ -3822,10 +3783,7 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Tentang Kami',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
         ];
         return view('pages/tentang', $data);
     }
@@ -3833,10 +3791,7 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Kontak Kami',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
         ];
         return view('pages/contact', $data);
     }
@@ -3844,10 +3799,7 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Syarat & Ketentuan',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
         ];
         return view('pages/syarat', $data);
     }
@@ -3855,10 +3807,7 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Kebijakan Privasi',
-            'navbar' => [
-                'koleksi' => $this->koleksiModel->findAll(),
-                'jenis' => $this->jenisModel->findAll(),
-            ],
+            'navbar' => $this->getNavbarData(),
         ];
         return view('pages/kebijakan', $data);
     }
@@ -3929,6 +3878,7 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Halaman Tidak Ditemukan',
+            'navbar' => $this->getNavbarData(),
         ];
         return view('layout/notFound', $data);
     }

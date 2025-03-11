@@ -85,11 +85,12 @@ $routes->post('/editsandi/(:any)', 'Pages::editSandi/$1', ['filter' => 'customer
 $routes->get('/logout', 'Pages::actionLogout');
 
 // GambarController
-$routes->get('/viewpic/(:any)', 'GambarController::tampilGambarBarang/$1');
-$routes->get('/viewpichover/(:any)', 'GambarController::tampilGambarBarangHover/$1');
-$routes->get('/viewvar/(:any)/(:any)', 'GambarController::tampilGambarVarian/$1/$2');
-$routes->get('/viewvar3000/(:any)/(:any)', 'GambarController::tampilGambarVarian3000/$1/$2');
+// $routes->get('/viewpic/(:any)', 'GambarController::tampilGambarBarang/$1');
+// $routes->get('/viewpichover/(:any)', 'GambarController::tampilGambarBarangHover/$1');
+// $routes->get('/viewvar/(:any)/(:any)', 'GambarController::tampilGambarVarian/$1/$2');
+// $routes->get('/viewvar3000/(:any)/(:any)', 'GambarController::tampilGambarVarian3000/$1/$2');
 $routes->get('/changepic/(:any)', 'GambarController::gantiUkuran/$1', ['filter' => 'corsFilter']);
+$routes->get('/gantilokasi/(:any)', 'GambarController::gantiLokasi/$1', ['filter' => 'corsFilter']);
 // $routes->get('/cobainput', 'GambarController::formCobaInput');
 $routes->get('/cobainput', 'GambarController::actionCobaInput');
 $routes->get('/gamwm', 'GambarController::tampilGambarVarWM');

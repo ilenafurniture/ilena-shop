@@ -133,7 +133,18 @@ class AdminController extends BaseController
         $data = $this->request->getVar();
         $data_gambar_mentah = $this->request->getFiles();
 
-        $getFileGambarHover = $data_gambar_mentah['gambar_hover']->isValid() ? file_get_contents($data_gambar_mentah['gambar_hover']) : null;
+        // $getFileGambarHover = $data_gambar_mentah['gambar_hover']->isValid() ? file_put_contents('img/barang/hover/'. $data['id'].'.webp' ,$data_gambar_mentah['gambar_hover']) : null;
+        
+        //gambar hover
+        if ($data_gambar_mentah['gambar_hover']->isValid()) {
+            $fp = 'imgdum/barang/hover';
+            $data_gambar_mentah['gambar_hover']->move($fp, $data['id'] . '.webp');
+            \Config\Services::image()
+                ->withFile($fp)
+                ->resize(300, 300, true, 'height')->save('img/barang/hover/' . $data['id'] . '.webp');
+            unlink($fp.'/'. $data['id'] . '.webp');
+        }
+        
         unset($data_gambar_mentah['gambar_hover']);
 
         $data_gambar = [];
@@ -142,12 +153,12 @@ class AdminController extends BaseController
         }
         $jumlahVarian = explode(",", $this->request->getVar('hitung-varian'));
 
-        $insertGambarBarang = [
-            'id' => $data['id']
-        ];
-        $insertGambarBarang3000 = [
-            'id' => $data['id']
-        ];
+        // $insertGambarBarang = [
+        //     'id' => $data['id']
+        // ];
+        // $insertGambarBarang3000 = [
+        //     'id' => $data['id']
+        // ];
         $varianData = [];
         $counterGambar = 0;
         foreach ($jumlahVarian as $j) {
@@ -189,28 +200,28 @@ class AdminController extends BaseController
             return ($var['id'] == $dataSubkategori);
         }))[0]['nama'];
 
-        $index_data_gambar = array_flip(array_keys($data_gambar));
+        // $index_data_gambar = array_flip(array_keys($data_gambar));
         $iterasi = 0;
         foreach ($data_gambar as $key_dg => $dG) {
             $dG->move('imgdum');
             \Config\Services::image()
                 ->withFile('imgdum/' . $dG->getName())
-                ->resize(3000, 3000, true, 'height')->save('imgdum/1' . $dG->getName());
-            $insertGambarBarang3000['gambar' . ((int)$index_data_gambar[$key_dg] + 1)] = file_get_contents('imgdum/1' . $dG->getName());
-            unlink('imgdum/1' . $dG->getName());
+                ->resize(3000, 3000, true, 'height')->save('img/barang/3000/' . $dG->getName() . '.webp');
+            // $insertGambarBarang3000['gambar' . ((int)$index_data_gambar[$key_dg] + 1)] = file_get_contents('imgdum/1' . $dG->getName());
+            // unlink('imgdum/1' . $dG->getName());
 
             \Config\Services::image()
                 ->withFile('imgdum/' . $dG->getName())
-                ->resize(1000, 1000, true, 'height')->save('imgdum/1' . $dG->getName());
-            $insertGambarBarang['gambar' . ((int)$index_data_gambar[$key_dg] + 1)] = file_get_contents('imgdum/1' . $dG->getName());
-            unlink('imgdum/1' . $dG->getName());
+                ->resize(1000, 1000, true, 'height')->save('img/barang/1000/' . $dG->getName() . '.webp');
+            // $insertGambarBarang['gambar' . ((int)$index_data_gambar[$key_dg] + 1)] = file_get_contents('imgdum/1' . $dG->getName());
+            // unlink('imgdum/1' . $dG->getName());
 
             if ($iterasi <= 0) {
                 \Config\Services::image()
                     ->withFile('imgdum/' . $dG->getName())
-                    ->resize(300, 300, true, 'height')->save('imgdum/1' . $dG->getName());
-                $insertGambarBarang300 = file_get_contents('imgdum/1' . $dG->getName());
-                unlink('imgdum/1' . $dG->getName());
+                    ->resize(300, 300, true, 'height')->save('img/barang/300/' . $dG->getName() . '.webp');
+                // $insertGambarBarang300 = file_get_contents('imgdum/1' . $dG->getName());
+                // unlink('imgdum/1' . $dG->getName());
             }
             unlink('imgdum/' . $dG->getName());
             $iterasi++;
@@ -248,16 +259,15 @@ class AdminController extends BaseController
             'tokped' => $data['tokped'],
             'tiktok' => $data['tiktok'],
             'active' => '1',
-            'gambar' => $insertGambarBarang300,
-            'gambar_hover' => $getFileGambarHover,
+            'gambar' => null,
+            'gambar_hover' => null,
             'ruang_tamu' => isset($data['ruang_tamu']) ? '1' : '0',
             'ruang_keluarga' => isset($data['ruang_keluarga']) ? '1' : '0',
             'ruang_tidur' => isset($data['ruang_tidur']) ? '1' : '0',
         ];
         $this->barangModel->insert($insertDataBarang);
-        $this->gambarBarangModel->insert($insertGambarBarang);
-        $this->gambarBarang3000Model->insert($insertGambarBarang3000);
-
+        // $this->gambarBarangModel->insert($insertGambarBarang);
+        // $this->gambarBarang3000Model->insert($insertGambarBarang3000);
         return redirect()->to('admin/product');
     }
     public function editProduct($id_product)

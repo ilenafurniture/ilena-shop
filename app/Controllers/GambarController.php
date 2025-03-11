@@ -31,6 +31,16 @@ class GambarController extends BaseController
         $this->gambarHeaderModel = new GambarHeaderModel();
     }
 
+    public function file_get_contents_curl($url)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        return $data;
+    }
     public function tampilGambarBarangCoba($idBarang)
     {
         // Decode URL dari Base64
@@ -91,49 +101,49 @@ class GambarController extends BaseController
         imagedestroy($image);
         imagedestroy($watermark);
     }
-    public function tampilGambarBarang($idBarang)
-    {
-        $data = file_get_contents_curl(
-            base_url('img/nopic.png')
-        );
-        $gambar = $this->barangModel->getBarangAdmin($idBarang)['gambar'];
-        $this->response->setHeader('Content-Type', 'image/webp');
-        echo $gambar ? $gambar : $data;
-    }
-    public function tampilGambarBarangHover($idBarang)
-    {
-        $data = file_get_contents_curl(
-            base_url('img/nopic.png')
-        );
-        $gambar = $this->barangModel->getBarangAdmin($idBarang)['gambar_hover'];
-        $this->response->setHeader('Content-Type', 'image/webp');
-        echo $gambar ? $gambar : $data;
-    }
+    // public function tampilGambarBarang($idBarang)
+    // {
+    //     $data = $this->file_get_contents_curl(
+    //         base_url('img/barang/300/' . $idBarang . '.webp')
+    //     );
+    //     // $gambar = $this->barangModel->getBarangAdmin($idBarang)['gambar'];
+    //     $this->response->setHeader('Content-Type', 'image/webp');
+    //     echo  $data;
+    // }
+    // public function tampilGambarBarangHover($idBarang)
+    // {
+    //     $data = $this->file_get_contents_curl(
+    //         base_url('img/barang/hover/' . $idBarang . '.webp')
+    //     );
+    //     // $gambar = $this->barangModel->getBarangAdmin($idBarang)['gambar_hover'];
+    //     $this->response->setHeader('Content-Type', 'image/webp');
+    //     echo  $data;
+    // }
 
-    public function tampilGambarVarian($idBarang, $urutan)
-    {
-        $data = file_get_contents_curl(
-            base_url('img/nopic.png')
-        );
-        $gambar = $this->gambarBarangModel->getGambar($idBarang);
-        $gambarSelected = $gambar ? $gambar['gambar' . $urutan] : $data;
-        $this->response->setHeader('Content-Type', 'image/webp');
-        echo $gambarSelected;
-    }
-    public function tampilGambarVarian3000($idBarang, $urutan)
-    {
-        $data = file_get_contents_curl(
-            base_url('img/nopic.png')
-        );
-        $gambar = $this->gambarBarang3000Model->getGambar($idBarang);
-        $gambarSelected = $gambar ? $gambar['gambar' . $urutan] : $data;
-        $this->response->setHeader('Content-Type', 'image/webp');
-        echo $gambarSelected;
-    }
+    // public function tampilGambarVarian($idBarang, $urutan)
+    // {
+    //     $data = $this->file_get_contents_curl(
+    //         base_url('img/barang/1000/' . $idBarang . '/' . $urutan . '.webp')
+    //     );
+    //     // $gambar = $this->gambarBarangModel->getGambar($idBarang);
+        
+    //     $this->response->setHeader('Content-Type', 'image/webp');
+    //     echo $data;
+    // }
+    // public function tampilGambarVarian3000($idBarang, $urutan)
+    // {
+    //     $data = $this->file_get_contents_curl(
+    //         base_url('img/barang/3000/' . $idBarang . '/' . $urutan . '.webp')
+    //     );
+    //     // $gambar = $this->gambarBarang3000Model->getGambar($idBarang);
+    //     // $gambarSelected = $gambar ? $gambar['gambar' . $urutan] : $data;
+    //     $this->response->setHeader('Content-Type', 'image/webp');
+    //     echo $data;
+    // }
 
     public function tampilGambarVarWM($idBarang, $urutan)
     {
-        $data = file_get_contents_curl(
+        $data = $this->file_get_contents_curl(
             base_url('viewvar/' . $idBarang . '/' . $urutan)
         );
         $fp = 'imgdum/logo-1.webp';
@@ -168,20 +178,7 @@ class GambarController extends BaseController
 
         // unlink('imgdum/' . $gambarnya->getName());
         // unlink('imgdum/1' . $gambarnya->getName());
-
-
-
-        function file_get_contents_curl($url)
-        {
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_HEADER, 0);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_URL, $url);
-            $data = curl_exec($ch);
-            curl_close($ch);
-            return $data;
-        }
-        $data = file_get_contents_curl(
+        $data = $this->file_get_contents_curl(
             'https://ilenafurniture.com/viewpic/1000801'
         );
         $fp = 'imgdum/logo-1.webp';
@@ -282,6 +279,71 @@ class GambarController extends BaseController
         $this->gambarBarangModel->where(['id' => $barangLama['id']])->set($insertGambarBarang)->update();
         $dataChecker['nama_barang'] = $barangLama['nama'];
         
+        return $this->response->setStatusCode(200)->setJSON([
+            'success' => true,
+            'barang' => $dataChecker
+        ], false);
+    }
+
+    public function gantiLokasi($id) //koleksinya = water_case
+    {
+        $dataChecker = [];
+        $barangLama = $this->barangModel->where(['id' => $id])->first();
+        
+            // Ukuran 300
+        $fp = 'imgdum/barang/300/' . $barangLama['id'] .'.webp';
+        file_put_contents($fp, $barangLama['gambar']);
+        \Config\Services::image()
+                ->withFile($fp)
+                ->resize(300, 300, true, 'height')->save('img/barang/300/' . $barangLama['id'].'.webp');
+        unlink($fp);
+        $dataChecker['resize_300'] = 'success';
+
+
+        // Ukuran Hover
+        $fp = 'imgdum/barang/hover/' . $barangLama['id'] .'.webp';
+        file_put_contents($fp, $barangLama['gambar_hover']);
+        \Config\Services::image()
+                ->withFile($fp)
+                ->resize(300, 300, true, 'height')->save('img/barang/hover/' . $barangLama['id'].'.webp');
+        unlink($fp);
+        $dataChecker['resize_hover'] = 'success';
+
+
+        $gambarBarang = $this->gambarBarangModel->where(['id' => $barangLama['id']])->first();
+        $gambarBarang3000 = $this->gambarBarang3000Model->where(['id' => $barangLama['id']])->first();
+        $jumlahGambar = '';
+        foreach (json_decode($barangLama['varian'], true) as $ind_v => $v) {
+            if($ind_v == 0){
+                $jumlahGambar = $jumlahGambar . $v['urutan_gambar'];
+            } else {
+                $jumlahGambar = $jumlahGambar . ',' . $v['urutan_gambar'];
+            }
+        }
+        $jumlahGambar = count(explode(',', $jumlahGambar));
+        for ($i = 1; $i <= $jumlahGambar; $i++) {
+            // Ukuran 1000
+            $fp = 'imgdum/barang/1000/' . $barangLama['id'] . '-' . $i.'.webp';
+            file_put_contents($fp, $gambarBarang['gambar'.$i]);
+            \Config\Services::image()
+                ->withFile($fp)
+                ->resize(1000, 1000, true, 'height')->save('img/barang/1000/' . $barangLama['id'].'-'.$i.'.webp');
+            unlink($fp);
+            $dataChecker['resize_1000'] = 'success';
+
+
+            // Ukuran 3000
+            $fp = 'imgdum/barang/3000/' . $barangLama['id'] . '-' . $i.'.webp';
+            file_put_contents($fp, $gambarBarang3000['gambar'.$i]);
+            \Config\Services::image()
+                ->withFile($fp)
+                ->resize(3000, 3000, true, 'height')->save('img/barang/3000/' . $barangLama['id'].'-'.$i.'.webp');
+            unlink($fp);
+            $dataChecker['resize_3000'] = 'success';
+
+        }
+
+        $dataChecker['nama_barang'] = $barangLama['nama'];
         return $this->response->setStatusCode(200)->setJSON([
             'success' => true,
             'barang' => $dataChecker
