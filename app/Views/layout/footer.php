@@ -160,7 +160,7 @@
         </div>
 
         <div class="border-top border-secondary pt-4 mb-3 d-flex gap-4 align-items-center">
-            <img src="<?= base_url('img/logoilenawhite.png') ?>" style="width:120px; height: 18px" alt="">
+            <img src="<?= base_url('img/LogoIlenaWhite.png') ?>" style="width:120px; height: 18px" alt="">
             <span style="display: block; height: 20px; width: 1px; background-color: white;"></span>
             <p class="m-0" style="color:whitesmoke;">©<?= date("Y"); ?> All rights reserved</p>
         </div>
