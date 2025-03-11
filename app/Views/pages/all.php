@@ -593,7 +593,7 @@ if (isset($_GET['ruang'])) {
                 </div>
                 <?php } ?>
             </div>
-            <div class="container-pag">
+            <!-- <div class="container-pag">
                 <?php if ($pag > 1) { ?>
                 <a class="item-pag"
                     href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&ruang=<?= isset($_GET['ruang']) ? $_GET['ruang'] : ''; ?>&pag=<?= $pag - 1; ?>"><i
@@ -608,7 +608,35 @@ if (isset($_GET['ruang'])) {
                     href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&ruang=<?= isset($_GET['ruang']) ? $_GET['ruang'] : ''; ?>&pag=<?= $pag + 1; ?>"><i
                         class="material-icons">chevron_right</i></a>
                 <?php } ?>
+            </div> -->
+            <div class="container-pag">
+                <?php 
+    $start = max(1, $pag - 2); // Mulai dari dua halaman sebelumnya
+    $end = min($hitungPag, $pag + 2); // Selesai di dua halaman berikutnya
+
+    // Menampilkan tombol 'Prev'
+    if ($pag > 1) { ?>
+                <a class="item-pag"
+                    href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&ruang=<?= isset($_GET['ruang']) ? $_GET['ruang'] : ''; ?>&pag=<?= $pag - 1; ?>"><i
+                        class="material-icons">chevron_left</i></a>
+                <?php } ?>
+
+                <?php 
+    // Menampilkan angka pagination dari $start sampai $end
+    for ($i = $start; $i <= $end; $i++) { ?>
+                <a class="item-pag <?= $pag == $i ? 'active' : ''; ?>"
+                    href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&ruang=<?= isset($_GET['ruang']) ? $_GET['ruang'] : ''; ?>&pag=<?= $i; ?>"><?= $i; ?></a>
+                <?php } ?>
+
+                <?php 
+    // Menampilkan tombol 'Next'
+    if ($pag < $hitungPag) { ?>
+                <a class="item-pag"
+                    href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&ruang=<?= isset($_GET['ruang']) ? $_GET['ruang'] : ''; ?>&pag=<?= $pag + 1; ?>"><i
+                        class="material-icons">chevron_right</i></a>
+                <?php } ?>
             </div>
+
             <!-- </div> -->
 
             <!-- Artikel kategori -->

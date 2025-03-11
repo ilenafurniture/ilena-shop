@@ -142,12 +142,18 @@ class Pages extends BaseController
         $cari = str_replace("-", " ", $teks);
         $produk = $this->barangModel->like('nama', $cari, 'both')->where(['active' => '1'])->findAll();
         $wishlist = $this->session->get('wishlist');
+        $koleksi = $this->koleksiModel->findAll();
+        $jenis = $this->jenisModel->findAll();
         if (!isset($wishlist)) {
             $wishlist = [];
         }
         $data = [
             'title' => 'Cari Produk',
             'navbar' => $this->getNavbarData(),
+            'koleksiJenis' => [
+                'koleksi' => $koleksi,
+                'jenis' => $jenis,
+            ],
             'produk' => $produk,
             'wishlist' => $wishlist,
             'find' => $cari
