@@ -27,17 +27,14 @@
                                         <div class="number-left"></div>
                                     </a> -->
                                     <form action="/reducecart/<?= $index ?>" method="post">
-                                        <button type="submit"
-                                            style="text-decoration: none; color: black; outline: none; border: none;">
+                                        <button type="submit">
                                             <div class="number-left"></div>
                                         </button>
                                     </form>
                                     <input type="number" name="number" class="number-quantity" disabled
                                         value="<?= $k['jumlah'] ?>">
-
                                     <form action="/addcart/<?= $k['id_barang'] ?>/<?= $k['varian'] ?>/1" method="post">
-                                        <button type="submit"
-                                            style="text-decoration: none; color: black; outline: none; border: none;">
+                                        <button type="submit">
                                             <div class="number-right"></div>
                                         </button>
                                     </form>
@@ -85,19 +82,23 @@
                     </div>
 
                     <div class="d-flex flex-column gap-2 align-items-end justify-content-between">
-                        <a href="/deletecart/<?= $index ?>" class="btn-teks-aja m-0">Hapus</a>
+                        <form action="/deletecart/<?= $index ?>" method="post">
+                            <button type="submit" class="btn-teks-aja m-0">Hapus</button>
+                        </form>
                         <div class="number-control-hp">
-                            <a style="text-decoration: none; color: black;" href="/reducecart/<?= $index ?>">
-                                <div class="number-left"></div>
-                            </a>
+                            <form action="/reducecart/<?= $index ?>" method="post">
+                                <button type="submit">
+                                    <div class="number-left"></div>
+                                </button>
+                            </form>
                             <div class="number-quantity-hp">
                                 <?= $k['jumlah'] ?>
                             </div>
-                            <!-- <input type="number" name="number" class="number-quantity" disabled value="<?= $k['jumlah'] ?>"> -->
-                            <a style="text-decoration: none; color: black;"
-                                href="/addcart/<?= $k['id_barang'] ?>/<?= $k['varian'] ?>/1">
-                                <div class="number-right"></div>
-                            </a>
+                            <form action="/addcart/<?= $k['id_barang'] ?>/<?= $k['varian'] ?>/1" method="post">
+                                <button type="submit">
+                                    <div class="number-right"></div>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

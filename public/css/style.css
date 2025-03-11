@@ -267,9 +267,9 @@ body {
     /* width: fit-content; */
     text-align: center;
     color: #e84a49;
+    background-color: #e8494911;
     letter-spacing: -1px;
     font-size: 15px;
-    background-color: #e8494911;
     padding: 0.5em 1em;
     border-radius: 10px;
     /* margin-inline: auto; */
@@ -2002,22 +2002,28 @@ body {
     height: 30px;
     gap: 10px;
 }
-.number-control-hp a {
-    /* background-color: whitesmoke; */
-    border-radius: 60px;
-    height: 30px;
-    width: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
 .number-control {
     display: flex;
     align-items: center;
-    border: 1px solid grey;
     width: fit-content;
     border-radius: 0.5em;
+    font-weight: bold;
     /* height: 100%; */
+}
+.number-control button,
+.number-control-hp button {
+    border: none;
+    outline: none;
+    border-radius: 3em;
+    color: #e84a49;
+    background-color: #e8494911;
+    transition: 0.2s;
+}
+.number-control button:hover,
+.number-control-hp button:hover {
+    color: white;
+    background-color: #e84949d8;
+    transition: 0.2s;
 }
 
 .number-left,
@@ -2026,7 +2032,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* background-color: aqua; */
 }
 .number-left::before,
 .number-right::after {
@@ -2039,7 +2044,6 @@ body {
     cursor: pointer;
     font-weight: bold;
     text-decoration: none;
-    color: black;
 }
 
 .number-left::before {
