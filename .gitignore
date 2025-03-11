@@ -125,13 +125,3 @@ nb-configuration.xml
 /results/
 /phpunit*.xml
 /.phpunit.*.cache
-
-/public/img/barang/300/*
-/public/img/barang/1000/*
-/public/img/barang/3000/*
-/public/img/barang/hover/*
-
-/public/imgdum/barang/300/*
-/public/imgdum/barang/1000/*
-/public/imgdum/barang/3000/*
-/public/imgdum/barang/hover/*
