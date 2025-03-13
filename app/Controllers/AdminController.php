@@ -134,7 +134,7 @@ class AdminController extends BaseController
         $data_gambar_mentah = $this->request->getFiles();
 
         // $getFileGambarHover = $data_gambar_mentah['gambar_hover']->isValid() ? file_put_contents('img/barang/hover/'. $data['id'].'.webp' ,$data_gambar_mentah['gambar_hover']) : null;
-        
+
         //gambar hover
         if ($data_gambar_mentah['gambar_hover']->isValid()) {
             $fp = 'imgdum/barang/hover';
@@ -142,9 +142,9 @@ class AdminController extends BaseController
             \Config\Services::image()
                 ->withFile($fp)
                 ->resize(300, 300, true, 'height')->save('img/barang/hover/' . $data['id'] . '.webp');
-            unlink($fp.'/'. $data['id'] . '.webp');
+            unlink($fp . '/' . $data['id'] . '.webp');
         }
-        
+
         unset($data_gambar_mentah['gambar_hover']);
 
         $data_gambar = [];
@@ -924,14 +924,16 @@ class AdminController extends BaseController
         return view('admin/labelBarang', $data);
     }
 
-
     // ARTIKEL
     public function article()
     {
+        $artikel = $this->artikelModel->orderBy('waktu', 'desc')->findAll();
         $data = [
-            'title' => 'Artikel Konfirmasi',
+            'title' => 'Artikel',
+            'artikel' => $artikel,
+            'msg' => session()->getFlashdata('msg')
         ];
-        return view('pages/artikelAll', $data);
+        return view('admin/artikel', $data);
     }
     public function articleCategory($kategori)
     {
@@ -955,46 +957,35 @@ class AdminController extends BaseController
     // LANJUTAN ARTIKEL
     public function addArticle()
     {
+        $galeri = $this->gambarArtikelModel->findAll();
+        $tinymce_key = env('TINYMCE_KEY', 'DefaultValue');
         $data = [
             'title' => 'Tambah Artikel',
+            'galeri' => $galeri,
+            'tinyMCE' => $tinymce_key
         ];
-        return view('/article', $data);
+        return view('admin/addArtikel', $data);
+    }
+    public function actionAddGaleriArticle()
+    {
+        $gambar = $this->request->getFile('file');
+        $id = date(strtotime("+7 hours"));
+        if ($gambar->isValid()) {
+            $fp = 'img/artikel';
+            $gambar->move($fp, $id . '.webp');
+        }
+        $this->gambarArtikelModel->insert([
+            'id' => $id,
+            'url' => 'img/artikel/' . $id . '.webp'
+        ]);
+        return $this->response->setStatusCode(200)->setJSON([
+            'success' => true,
+            'url' => 'img/artikel/' . $id . '.webp'
+        ], false);
     }
     public function actionAddArticle()
     {
         $judul = $this->request->getVar('judul');
-        $penulis = $this->request->getVar('penulis');
-        $kategori = $this->request->getVar('kategori');
-        $waktu = $this->request->getVar('waktu');
-        $header = file_get_contents($this->request->getFile('header'));
-        $counter = explode(",", $this->request->getVar('arrCounter'));
-
-        $d = strtotime("+7 Hours");
-        $id = "A" . date("YmdHis", $d);
-        $insertGambarArtikel = ['id' => $id];
-
-        $isi = [];
-        $counterGambar = 0;
-        foreach ($counter as $c) {
-            $itemIsi = [];
-            $tag = $this->request->getVar('tag' . $c);
-            $itemIsi['tag'] = $tag;
-            if ($tag == 'h2' || $tag == 'h4' || $tag == 'p') {
-                $itemIsi['teks'] = $this->request->getVar('teks' . $c);
-                $itemIsi['style'] = $this->request->getVar('style' . $c);
-            } else if ($tag == 'a') {
-                $itemIsi['link'] = $this->request->getVar('link' . $c);
-                $itemIsi['teks'] = $this->request->getVar('teks' . $c);
-                $itemIsi['style'] = $this->request->getVar('style' . $c);
-            } else if ($tag == 'img') {
-                $counterGambar++;
-                $insertGambarArtikel["gambar" . $counterGambar] = file_get_contents($this->request->getFile('file' . $c));
-                $itemIsi['src'] = "/imgart/" . $id . "/" . $counterGambar;
-                $itemIsi['style'] = $this->request->getVar('style' . $c);
-            }
-            array_push($isi, $itemIsi);
-        }
-
         $path = str_replace(",", "", $judul);
         $path = str_replace(".", "", $path);
         $path = str_replace("& ", "", $path);
@@ -1002,139 +993,66 @@ class AdminController extends BaseController
         $path = str_replace(" ", "-", $path);
         $path = strtolower($path);
         $this->artikelModel->insert([
-            'id' => $id,
+            'id' => "A" . date("YmdHis", strtotime("+7 Hours")),
             'judul' => $judul,
             'path' => $path,
-            'penulis' => $penulis,
-            'kategori' => $kategori,
-            'waktu' => $waktu,
-            'isi' => json_encode($isi),
-            'header' => $header,
+            'penulis' => $this->request->getVar('penulis'),
+            'keywords' => $this->request->getVar('keywords'),
+            'kategori' => strtolower($this->request->getVar('kategori')),
+            'deskripsi' => $this->request->getVar('deskripsi'),
+            'waktu' => $this->request->getVar('waktu'),
+            'isi' => $this->request->getVar('isi'),
+            'header' => $this->request->getVar('header'),
             'suka' => 0,
             'bagikan' => 0,
             'komen' => json_encode([]),
         ]);
-        $this->gambarArtikelModel->insert($insertGambarArtikel);
-
         session()->setFlashdata('msg', 'Artikel berhasil ditambahkan');
-        return redirect()->to('/article/' . $path);
+        return redirect()->to('/admin/article');
     }
 
     public function deleteArticle($id)
     {
         $this->artikelModel->where(['id' => $id])->delete();
-        $this->gambarArtikelModel->where(['id' => $id])->delete();
-        return redirect()->to('/article');
+        session()->setFlashdata('msg', 'Artikel berhasil dihapus');
+        return redirect()->to('/admin/article');
     }
     public function editArticle($id)
     {
         $artikel = $this->artikelModel->where(['id' => $id])->first();
-        $artikel['isi'] = json_decode($artikel['isi'], true);
-        $counterIsi = count($artikel['isi']);
-        $arrCounterIsi = [];
-        for ($i = 1; $i <= $counterIsi; $i++) {
-            array_push($arrCounterIsi, $i);
-        }
-        $d = strtotime("+7 Hours");
-        $waktu = date("Y-m-d H:i:", $d) . "00";
+        $galeri = $this->gambarArtikelModel->findAll();
+        $tinymce_key = env('TINYMCE_KEY', 'DefaultValue');
         $data = [
             'title' => 'Edit Artikel',
             'artikel' => $artikel,
-            'isi' => $artikel['isi'],
-            'counterIsi' => $counterIsi,
-            'arrCounterIsi' => json_encode($arrCounterIsi),
-            'arrCounter' => implode(",", $arrCounterIsi),
-            'waktu' => $waktu
+            'galeri' => $galeri,
+            'tinyMCE' => $tinymce_key
         ];
         return view('admin/editArtikel', $data);
     }
     public function actionEditArticle($id)
     {
         $judul = $this->request->getVar('judul');
-        $penulis = $this->request->getVar('penulis');
-        $kategori = $this->request->getVar('kategori');
-        $waktu = $this->request->getVar('waktu');
-        $header = $this->request->getFile('header');
-        $counter = explode(",", $this->request->getVar('arrCounter'));
-
-        $getFiles = $this->request->getFiles();
-        unset($getFiles['header']);
-
-        $isiCur = json_decode($this->artikelModel->where(['id' => $id])->first()['isi'], true);
-        $insertGambarArtikel = [];
-        $arrUrutanImg = [];
-        foreach ($isiCur as $ind_i => $i) {
-            if ($i['tag'] == 'img') {
-                array_push($arrUrutanImg, ($ind_i + 1));
-            }
-        }
-
-        $isi = [];
-        $counterGambar = 0;
-        foreach ($counter as $c) {
-            $itemIsi = [];
-            $tag = $this->request->getVar('tag' . $c);
-            $itemIsi['tag'] = $tag;
-            if ($tag == 'h2' || $tag == 'h4' || $tag == 'p') {
-                $itemIsi['teks'] = $this->request->getVar('teks' . $c);
-                $itemIsi['style'] = $this->request->getVar('style' . $c);
-            } else if ($tag == 'a') {
-                $itemIsi['link'] = $this->request->getVar('link' . $c);
-                $itemIsi['teks'] = $this->request->getVar('teks' . $c);
-                $itemIsi['style'] = $this->request->getVar('style' . $c);
-            } else if ($tag == 'img') {
-                $counterGambar++;
-                $insertGambarArtikel["gambar" . $counterGambar] = $this->request->getFile('file' . $c)->isValid() ? file_get_contents($this->request->getFile('file' . $c)) : $this->gambarArtikelModel->where(['id' => $id])->first()['gambar' . (array_search($c, $arrUrutanImg) + 1)];
-                $itemIsi['src'] = "/imgart/" . $id . "/" . $counterGambar;
-                $itemIsi['style'] = $this->request->getVar('style' . $c);
-            }
-            array_push($isi, $itemIsi);
-        }
-
         $path = str_replace(",", "", $judul);
         $path = str_replace(".", "", $path);
         $path = str_replace("& ", "", $path);
         $path = str_replace("?", "", $path);
         $path = str_replace(" ", "-", $path);
         $path = strtolower($path);
-
-        if (!empty($_FILES['header']['tmp_name'])) {
-            $this->artikelModel->where(['id' => $id])->set([
-                'judul' => $judul,
-                'path' => $path,
-                'penulis' => $penulis,
-                'kategori' => $kategori,
-                'waktu' => $waktu,
-                'isi' => json_encode($isi),
-                'header' => file_get_contents($header),
-            ])->update();
-        } else {
-            $this->artikelModel->where(['id' => $id])->set([
-                'judul' => $judul,
-                'path' => $path,
-                'penulis' => $penulis,
-                'kategori' => $kategori,
-                'waktu' => $waktu,
-                'isi' => json_encode($isi)
-            ])->update();
-        }
-
-        //pengosongan gambar artikel
-        $kosongkanGambar = [];
-        for ($i = 1; $i <= count($arrUrutanImg); $i++) {
-            $kosongkanGambar['gambar' . $i] = null;
-        }
-        if (count($kosongkanGambar) > 0) {
-            $this->gambarArtikelModel->where(['id' => $id])->set($kosongkanGambar)->update();
-        }
-        if (count($insertGambarArtikel) > 0) {
-            $this->gambarArtikelModel->where(['id' => $id])->set($insertGambarArtikel)->update();
-        }
-
-        session()->setFlashdata('msg', 'Artikel berhasil diubah');
-        return redirect()->to('/article/' . $path);
+        $this->artikelModel->where(['id' => $id])->set([
+            'judul' => $judul,
+            'path' => $path,
+            'penulis' => $this->request->getVar('penulis'),
+            'keywords' => $this->request->getVar('keywords'),
+            'kategori' => strtolower($this->request->getVar('kategori')),
+            'deskripsi' => $this->request->getVar('deskripsi'),
+            'waktu' => $this->request->getVar('waktu'),
+            'isi' => $this->request->getVar('isi'),
+            'header' => $this->request->getVar('header'),
+        ])->update();
+        session()->setFlashdata('msg', 'Artikel berhasil diedit');
+        return redirect()->to('/admin/article');
     }
-    // END LANJUTAN ARTIKEL
 
     public function homeLayout()
     {
@@ -1254,12 +1172,13 @@ class AdminController extends BaseController
         return view('gudang/suratJalan', $data);
     }
 
-    public function changePic() {
+    public function changePic()
+    {
         $barangLama = $this->barangModel
-        ->select('id')
-        ->select('nama')
-        ->select('deskripsi')
-        ->findAll();
+            ->select('id')
+            ->select('nama')
+            ->select('deskripsi')
+            ->findAll();
         foreach ($barangLama as $ind_b => $b) {
             $barangLama[$ind_b]['dimensi'] = json_decode($b['deskripsi'], true)['dimensi']['asli'];
             $barangLama[$ind_b]['deskripsi'] = '';

@@ -1,10 +1,120 @@
-<?= $this->extend('layout/template'); ?>
+<?= $this->extend('admin/template'); ?>
 <?= $this->section('content'); ?>
+<style>
+    .container-galeri {
+        width: 90%;
+        height: 90%;
+        background-color: white;
+        padding: 2em;
+        border-radius: 1em;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .galeri {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+    }
+
+    @media (max-width: 1600px) {
+        .galeri {
+            grid-template-columns: repeat(5, 1fr);
+        }
+    }
+
+    @media (max-width: 1300px) {
+        .galeri {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    .galeri .item-galeri {
+        aspect-ratio: 1 /1;
+        border-radius: 1em;
+        overflow: hidden;
+        border: 3px solid gray;
+        cursor: pointer;
+    }
+
+    .galeri .item-galeri:hover {
+        border: 3px solid var(--merah);
+    }
+
+    .galeri .item-galeri img {
+        width: 100%;
+        aspect-ratio: 1 /1;
+        object-fit: cover;
+        display: block;
+    }
+</style>
+<script
+    src="https://cdn.tiny.cloud/1/<?= $tinyMCE; ?>/tinymce/7/tinymce.min.js"
+    referrerpolicy="origin"></script>
+<div id="modal-galeri" class="d-none justify-content-center align-items-center" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.3); z-index: 5;">
+    <div class="container-galeri">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 style="margin-bottom: -5px;">Galeri</h2>
+                <p class="m-0 text-secondary">Klik gambar untuk menyalin URL gambar</p>
+            </div>
+            <button onclick="closeModalGaleri()" class="btn btn-outline-dark">Tutup</button>
+        </div>
+        <hr>
+        <div class="d-flex gap-1">
+            <input type="file" class="form-control" id="input-add-galeri">
+            <button onclick="submitAddGaleri()" class="btn-default-merah">+</button>
+        </div>
+        <hr>
+        <div style="flex: 1; overflow-y:scroll;" class="pe-1">
+            <div class="galeri gap-1">
+                <?php foreach ($galeri as $g) { ?>
+                    <div class="item-galeri" onclick="copytext('<?= base_url($g['url']); ?>', 'Url telah di salin')">
+                        <img src="<?= base_url($g['url']); ?>" alt="">
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+    <script>
+        function submitAddGaleri() {
+            const galeriElm = document.querySelector('.galeri');
+            const inputFile = document.getElementById('input-add-galeri');
+            if (inputFile.files.length === 0) {
+                alert('Pilih file terlebih dahulu!');
+                return;
+            }
+            const formData = new FormData();
+            formData.append('file', inputFile.files[0]);
+            fetch('/admin/addgaleriarticle', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const base_url = window.location.origin;
+                    galeriElm.innerHTML += `
+                        <div class="item-galeri" onclick="copytext('${base_url}/${data.url}', 'Url telah di salin')">
+                            <img src="${base_url}/${data.url}" alt="">
+                        </div>`;
+                    inputFile.value = "";
+                    console.log(data)
+                    callNotif('Galeri ditambahkan')
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan, coba lagi nanti!');
+                });
+        }
+    </script>
+</div>
 <div class="container artikel">
     <div class="konten">
-        <form method="post" action="/admin/editarticle/<?= $artikel['id']; ?>" enctype="multipart/form-data">
+        <form method="post" action="/admin/editarticle/<?= $artikel['id']; ?>">
             <div class="container">
-                <h1 class="mb-3">Tambah Artikel</h1>
+                <div class="d-flex justify-content-between w-100 align-items-center">
+                    <h1 class="mb-3">Edit Artikel</h1>
+                    <button type="button" class="btn-default-merah" onclick="openModalGaleri()">Galeri</button>
+                </div>
                 <?= csrf_field(); ?>
                 <div>
                     <table class="table-input w-100">
@@ -12,16 +122,14 @@
                             <tr>
                                 <td>Judul</td>
                                 <td>
-                                    <div class="baris"><input type="text" class="form-control" name="judul" required
-                                            value="<?= $artikel['judul']; ?>">
+                                    <div class="baris"><input type="text" class="form-control" name="judul" required value="<?= $artikel['judul']; ?>">
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td>Penulis</td>
                                 <td>
-                                    <div class="baris"><input type="text" class="form-control" name="penulis" required
-                                            value="<?= $artikel['penulis']; ?>">
+                                    <div class="baris"><input type="text" class="form-control" name="penulis" required value="<?= $artikel['penulis']; ?>">
                                     </div>
                                 </td>
                             </tr>
@@ -29,25 +137,38 @@
                                 <td>Kategori</td>
                                 <td>
                                     <div class="baris"><input type="text" class="form-control" name="kategori"
-                                            placeholder="pisahkan dengan koma" required
-                                            value="<?= $artikel['kategori']; ?>">
+                                            placeholder="pisahkan dengan koma" required value="<?= $artikel['kategori']; ?>">
                                     </div>
                                 </td>
                             <tr>
                                 <td>Tanggal Ubah</td>
                                 <td>
                                     <div class="baris"><input type="datetime-local" class="form-control" name="waktu"
-                                            required value="<?= $waktu; ?>">
+                                            required value="<?= $artikel['waktu']; ?>">
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td>Gambar Header</td>
                                 <td>
-                                    <div class="baris"><input type="file" class="form-control" name="header">
+                                    <div class="baris"><input type="text" class="form-control" name="header" required placeholder="Masukan URL" value="<?= $artikel['header']; ?>">
                                     </div>
                                 </td>
                             </tr>
+                            <tr>
+                                <td>Keywords</td>
+                                <td>
+                                    <div class="baris"><input type="text" class="form-control" name="keywords" required placeholder="Pisahkan dengan koma" value="<?= $artikel['keywords']; ?>">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Deskripsi</td>
+                                <td>
+                                    <div class="baris">
+                                        <textarea name="deskripsi" class="form-control" required><?= $artikel['deskripsi']; ?></textarea>
+                                    </div>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -55,216 +176,88 @@
             </div>
             <div class="container mt-3">
                 <h5>Isi Artikel</h5>
+                <textarea name="isi" id="content"><?= $artikel['isi']; ?></textarea>
             </div>
-            <div id="container-isi" class="d-flex flex-column gap-2">
-                <?php foreach ($isi as $ind_i => $i) { ?>
-                <div class="py-3">
-                    <div class="container">
-                        <?php switch ($i['tag']) {
-                            case 'p': ?>
-                        <input type="text" name="tag<?= $ind_i + 1 ?>" value="p">
-                        <textarea class="w-100 mt-1" placeholder="teks"
-                            name="teks<?= $ind_i + 1 ?>"><?= $i['teks']; ?></textarea>
-                        <input type="text" name="style<?= $ind_i + 1 ?>" placeholder="style" value="<?= $i['style']; ?>"
-                            class="mb-1">
-                        <div class="d-flex gap-1">
-                            <button type="button" onclick="hapusIsi('<?= $ind_i + 1 ?>')">hapus</button>
-                            <button type="button" onclick="geserAtas('<?= $ind_i + 1 ?>')"><i
-                                    class="material-icons m-0">expand_less</i></button>
-                            <button type="button" onclick="geserBawah('<?= $ind_i + 1 ?>')"><i
-                                    class="material-icons m-0">expand_more</i></button>
-                        </div>
-                        <?php break;
-                            case 'h2': ?>
-                        <input type="text" name="tag<?= $ind_i + 1 ?>" value="h2">
-                        <textarea class="w-100 mt-1" placeholder="teks"
-                            name="teks<?= $ind_i + 1 ?>"><?= $i['teks']; ?></textarea>
-                        <input type="text" name="style<?= $ind_i + 1 ?>" placeholder="style"
-                            value="<?= $i['style']; ?>">
-                        <div class="d-flex gap-1">
-                            <button type="button" onclick="hapusIsi('<?= $ind_i + 1 ?>')">hapus</button>
-                            <button type="button" onclick="geserAtas('<?= $ind_i + 1 ?>')"><i
-                                    class="material-icons m-0">expand_less</i></button>
-                            <button type="button" onclick="geserBawah('<?= $ind_i + 1 ?>')"><i
-                                    class="material-icons m-0">expand_more</i></button>
-                        </div>
-                        <?php break;
-                            case 'h4': ?>
-                        <input type="text" name="tag<?= $ind_i + 1 ?>" value="h2">
-                        <textarea class="w-100 mt-1" placeholder="teks"
-                            name="teks<?= $ind_i + 1 ?>"><?= $i['teks']; ?></textarea>
-                        <input type="text" name="style<?= $ind_i + 1 ?>" placeholder="style"
-                            value="<?= $i['style']; ?>">
-                        <div class="d-flex gap-1">
-                            <button type="button" onclick="hapusIsi('<?= $ind_i + 1 ?>')">hapus</button>
-                            <button type="button" onclick="geserAtas('<?= $ind_i + 1 ?>')"><i
-                                    class="material-icons m-0">expand_less</i></button>
-                            <button type="button" onclick="geserBawah('<?= $ind_i + 1 ?>')"><i
-                                    class="material-icons m-0">expand_more</i></button>
-                        </div>
-                        <?php break;
-                            case 'a': ?>
-                        <input type="text" name="tag<?= $ind_i + 1 ?>" value="a">
-                        <input type="text" name="link<?= $ind_i + 1 ?>" placeholder="link" value="<?= $i['link']; ?>">
-                        <input type="text" name="teks<?= $ind_i + 1 ?>" placeholder="teks" value="<?= $i['teks']; ?>">
-                        <input type="text" name="style<?= $ind_i + 1 ?>" placeholder="style"
-                            value="<?= $i['style']; ?>">
-                        <div class="d-flex gap-1">
-                            <button type="button" onclick="hapusIsi('<?= $ind_i + 1 ?>')">hapus</button>
-                            <button type="button" onclick="geserAtas('<?= $ind_i + 1 ?>')"><i
-                                    class="material-icons m-0">expand_less</i></button>
-                            <button type="button" onclick="geserBawah('<?= $ind_i + 1 ?>')"><i
-                                    class="material-icons m-0">expand_more</i></button>
-                        </div>
-                        <?php break;
-                            case 'img': ?>
-                        <input type="text" name="tag<?= $ind_i + 1 ?>" value="img">
-                        <input type="file" name="file<?= $ind_i + 1 ?>">
-                        <input type="text" name="style<?= $ind_i + 1 ?>" placeholder="style"
-                            value="<?= $i['style']; ?>">
-                        <div class="d-flex gap-1">
-                            <button type="button" onclick="hapusIsi('<?= $ind_i + 1 ?>')">hapus</button>
-                            <button type="button" onclick="geserAtas('<?= $ind_i + 1 ?>')"><i
-                                    class="material-icons m-0">expand_less</i></button>
-                            <button type="button" onclick="geserBawah('<?= $ind_i + 1 ?>')"><i
-                                    class="material-icons m-0">expand_more</i></button>
-                        </div>
-                        <?php break;
-                            case 'space': ?>
-                        <input type="text" name="tag<?= $ind_i + 1 ?>" value="space">
-                        <div class="d-flex gap-1">
-                            <button type="button" onclick="hapusIsi('<?= $ind_i + 1 ?>')">hapus</button>
-                            <button type="button" onclick="geserAtas('<?= $ind_i + 1 ?>')"><i
-                                    class="material-icons m-0">expand_less</i></button>
-                            <button type="button" onclick="geserBawah('<?= $ind_i + 1 ?>')"><i
-                                    class="material-icons m-0">expand_more</i></button>
-                        </div>
-                        <?php break;
-                            default:
-                                # code...
-                                break;
-                        } ?>
-                    </div>
-                </div>
-                <?php } ?>
-            </div>
-            <hr>
-            <div class="container">
-                <div class="d-flex gap-2 border-top py-3">
-                    <select id="select-tag">
-                        <option value="" selected>-- pilih tag --</option>
-                        <option value="h2">h2</option>
-                        <option value="h4">h3</option>
-                        <option value="p">p</option>
-                        <option value="img">img</option>
-                        <option value="a">a</option>
-                        <option value="space">space</option>
-                    </select>
-                    <button type="button" onclick="tambahIsi()">Tambahkan</button>
-                </div>
-                <div class="d-flex justify-content-center mt-3">
-                    <button class="btn btn-default-putih" type="submit">Simpan</button>
-                </div>
-                <input type="text" class="d-none" name="arrCounter" value="<?= $arrCounter; ?>">
-                <!-- <input type="text" class="d-none" name="checkerImg"> -->
-            </div>
+            <button type="submit" class="btn-default mt-2 w-100">Simpan</button>
         </form>
     </div>
 </div>
 <script>
-const tagSelectElm = document.getElementById("select-tag");
-const arrCounterElm = document.querySelector('input[name="arrCounter"]');
-const containerIsiElm = document.getElementById("container-isi");
-let counterIsi = <?= $counterIsi; ?>;
-let arrCounterIsi = JSON.parse('<?= $arrCounterIsi; ?>');
-// const checkerImgElm = document.querySelector('input[name="checkerImg"]');
-// let arrCheckerImg = []
+    const modalGaleriElm = document.getElementById('modal-galeri');
 
-function tambahIsi() {
-    if (tagSelectElm.value != '') {
-        counterIsi++;
-        let initItemIsi = '';
-        if (tagSelectElm.value == 'h2' || tagSelectElm.value == 'h4' || tagSelectElm.value == 'p') {
-            initItemIsi = '<div class="py-2"><div class="container"><input type="text" name="tag' + counterIsi +
-                '" value="' + tagSelectElm.value + '"><textarea class="w-100 mt-1" placeholder="teks" name="teks' +
-                counterIsi + '"></textarea><input type="text" name="style' + counterIsi +
-                '" placeholder="style"><div class="d-flex gap-1"><button type="button" onclick="hapusIsi(' +
-                counterIsi + ')">hapus</button><button type="button" onclick="geserAtas(' + counterIsi +
-                ')"><i class="material-icons m-0">expand_less</i></button><button type="button" onclick="geserBawah(' +
-                counterIsi + ')"><i class="material-icons m-0">expand_more</i></button></div></div></div>'
-        } else if (tagSelectElm.value == 'a') {
-            initItemIsi = '<div class="py-2"><div class="container"><input type="text" name="tag' + counterIsi +
-                '" value="' + tagSelectElm.value + '"><input type="text" name="link' + counterIsi +
-                '" placeholder="link"><input type="text" name="teks' + counterIsi +
-                '" placeholder="teks"><input type="text" name="style' + counterIsi +
-                '" placeholder="style" value="d-inline link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"><div class="d-flex gap-1"><button type="button" onclick="hapusIsi(' +
-                counterIsi + ')">hapus</button><button type="button" onclick="geserAtas(' + counterIsi +
-                ')"><i class="material-icons m-0">expand_less</i></button><button type="button" onclick="geserBawah(' +
-                counterIsi + ')"><i class="material-icons m-0">expand_more</i></button></div></div></div>'
-        } else if (tagSelectElm.value == 'img') {
-            initItemIsi = '<div class="py-2"><div class="container"><input type="text" name="tag' + counterIsi +
-                '" value="' + tagSelectElm.value + '"><input type="file" name="file' + counterIsi +
-                '" required><input type="text" name="style' + counterIsi +
-                '" placeholder="style"><div class="d-flex gap-1"><button type="button" onclick="hapusIsi(' +
-                counterIsi + ')">hapus</button><button type="button" onclick="geserAtas(' + counterIsi +
-                ')"><i class="material-icons m-0">expand_less</i></button><button type="button" onclick="geserBawah(' +
-                counterIsi + ')"><i class="material-icons m-0">expand_more</i></button></div></div></div>'
-        } else if (tagSelectElm.value == 'space') {
-            initItemIsi = '<div class="py-2"><div class="container"><input type="text" name="tag' + counterIsi +
-                '" value="space"><div class="d-flex gap-1"><button type="button" onclick="hapusIsi(' + counterIsi +
-                ')">hapus</button><button type="button" onclick="geserAtas(' + counterIsi +
-                ')"><i class="material-icons m-0">expand_less</i></button><button type="button" onclick="geserBawah(' +
-                counterIsi + ')"><i class="material-icons m-0">expand_more</i></button></div></div></div>'
-        }
-        const initItemIsiElm = document.createRange().createContextualFragment(initItemIsi)
-        containerIsiElm.appendChild(initItemIsiElm)
-        arrCounterIsi.push(counterIsi);
-        arrCounterElm.value = arrCounterIsi.join(",");
+    function openModalGaleri() {
+        modalGaleriElm.classList.remove('d-none')
+        modalGaleriElm.classList.add('d-flex')
     }
-}
 
-function hapusIsi(urutan) {
-    // console.log(arrCounterIsi, urutan)
-    const indexnya = arrCounterIsi.indexOf(Number(urutan))
-    // if (urutan <= <?= $counterIsi; ?> && containerIsiElm.children[indexnya].children[0].children[0].value == 'img') {
-    //     arrCheckerImg.push(urutan);
-    //     checkerImgElm.value = arrCheckerImg.join(",");
-    // }
-
-    // console.log(containerIsiElm.children);
-    // console.log(indexnya)
-    containerIsiElm.removeChild(containerIsiElm.children[indexnya]);
-    arrCounterIsi.splice(indexnya, 1);
-    arrCounterElm.value = arrCounterIsi.join(",");
-}
-
-function geserAtas(urutan) {
-    const indexnya = arrCounterIsi.indexOf(Number(urutan))
-    if (indexnya > 0) {
-        const elmTujuan = containerIsiElm.children[indexnya - 1]
-        containerIsiElm.removeChild(containerIsiElm.children[indexnya - 1])
-        const arrCounterIsiTujuan = arrCounterIsi[indexnya - 1]
-        arrCounterIsi.splice(indexnya - 1, 1);
-        // console.log(elmTujuan)
-        // console.log(arrCounterIsiTujuan)
-        containerIsiElm.insertBefore(elmTujuan, containerIsiElm.children[indexnya]);
-        arrCounterIsi.splice(indexnya, 0, arrCounterIsiTujuan);
-        arrCounterElm.value = arrCounterIsi.join(",");
-        // console.log(arrCounterIsi)
+    function closeModalGaleri() {
+        modalGaleriElm.classList.add('d-none')
+        modalGaleriElm.classList.remove('d-flex')
     }
-}
 
-function geserBawah(urutan) {
-    const indexnya = arrCounterIsi.indexOf(Number(urutan))
-    if (indexnya < arrCounterIsi.length - 1) {
-        const elmTujuan = containerIsiElm.children[indexnya + 1]
-        containerIsiElm.removeChild(containerIsiElm.children[indexnya + 1])
-        const arrCounterIsiTujuan = arrCounterIsi[indexnya + 1]
-        arrCounterIsi.splice(indexnya + 1, 1);
-        containerIsiElm.insertBefore(elmTujuan, containerIsiElm.children[indexnya]);
-        arrCounterIsi.splice(indexnya, 0, arrCounterIsiTujuan);
-        arrCounterElm.value = arrCounterIsi.join(",");
-    }
-}
+    tinymce.init({
+        selector: "#content",
+        plugins: [
+            // Core editing features
+            "anchor",
+            "autolink",
+            "charmap",
+            "codesample",
+            "emoticons",
+            "image",
+            "link",
+            "lists",
+            "media",
+            "searchreplace",
+            "table",
+            "visualblocks",
+            "wordcount",
+            // Your account includes a free trial of TinyMCE premium features
+            // Try the most popular premium features until Mar 26, 2025:
+            "checklist",
+            "mediaembed",
+            "casechange",
+            "export",
+            "formatpainter",
+            "pageembed",
+            "a11ychecker",
+            "tinymcespellchecker",
+            "permanentpen",
+            "powerpaste",
+            "advtable",
+            "advcode",
+            "editimage",
+            "advtemplate",
+            "ai",
+            "mentions",
+            "tinycomments",
+            "tableofcontents",
+            "footnotes",
+            "mergetags",
+            "autocorrect",
+            "typography",
+            "inlinecss",
+            "markdown",
+            "importword",
+            "exportword",
+            "exportpdf",
+        ],
+        toolbar: "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat",
+        tinycomments_mode: "embedded",
+        tinycomments_author: "Author name",
+        mergetags_list: [{
+                value: "First.Name",
+                title: "First Name"
+            },
+            {
+                value: "Email",
+                title: "Email"
+            },
+        ],
+        ai_request: (request, respondWith) =>
+            respondWith.string(() =>
+                Promise.reject("See docs to implement AI Assistant")
+            ),
+    });
 </script>
 <?= $this->endSection(); ?>

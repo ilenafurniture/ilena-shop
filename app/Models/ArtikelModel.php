@@ -15,6 +15,7 @@ class ArtikelModel extends Model
         'waktu',
         'isi',
         'kategori',
+        'deskripsi',
         'header',
         'suka',
         'komen',

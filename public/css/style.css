@@ -9,13 +9,6 @@
     --dark: #212529;
     --oren: #dc9042;
     --orentua: #844709;
-    p,
-    a,
-    input,
-    option {
-        font-size: smaller;
-        font-weight: 300;
-    }
 }
 
 .teks-oren {
@@ -260,6 +253,25 @@ body {
     padding-block: 3em;
     flex: 1;
     gap: 4em;
+}
+
+.notif {
+    color: #e84a49;
+    background-color: #fdefef;
+    position: fixed;
+    z-index: 1000;
+    padding: 0.5em 1.3em;
+    font-weight: 500;
+    bottom: 50px;
+    width: 200px;
+    right: -200px;
+    transition: 0.4s;
+    text-align: right;
+    border-bottom: 3px solid #e84a49;
+}
+.notif.show {
+    right: 0px;
+    transition: 0.4s;
 }
 
 .pemberitahuan {
@@ -772,6 +784,7 @@ body {
     transition: 0.5s;
     border: 0;
     cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, 0);
 }
 .btn-default:hover {
     background-color: whitesmoke;
@@ -1317,7 +1330,6 @@ body {
 }
 
 .artikel .card-artikel-kecil {
-    /* height: 350px; */
     flex: 1;
     display: flex;
     gap: 1em;
@@ -1336,11 +1348,12 @@ body {
 .artikel .card-artikel-kecil .judul {
     font-weight: bold;
     font-size: smaller;
+    margin-bottom: -5px;
 }
 .artikel .card-artikel-kecil .isi {
     text-overflow: ellipsis;
     overflow: hidden;
-    width: 100px;
+    width: 200px;
     white-space: nowrap;
     color: #888;
     font-size: smaller;

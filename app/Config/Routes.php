@@ -103,11 +103,14 @@ $routes->get('/imgheaderhp/(:any)', 'GambarController::tampilGambarHeaderHp/$1')
 // Admin Controller
 $routes->get('/admin/producttable', 'AdminController::listProductTable', ['filter' => 'adminFilter']);
 $routes->get('/admin/product', 'AdminController::listProduct', ['filter' => 'adminFilter']);
-$routes->get('/admin/deletearticle/(:any)', 'AdminController::deleteArticle/$1', ['filter' => 'adminFilter']);
+$routes->get('/admin/article', 'AdminController::article', ['filter' => 'adminFilter']);
+$routes->get('/admin/article/(:any)', 'AdminController::article/$1', ['filter' => 'adminFilter']);
+$routes->post('/admin/deletearticle/(:any)', 'AdminController::deleteArticle/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/addarticle', 'AdminController::addArticle', ['filter' => 'adminFilter']);
 $routes->post('/admin/addarticle', 'AdminController::actionAddArticle', ['filter' => 'adminFilter']);
 $routes->get('/admin/editarticle/(:any)', 'AdminController::editArticle/$1', ['filter' => 'adminFilter']);
 $routes->post('/admin/editarticle/(:any)', 'AdminController::actionEditArticle/$1', ['filter' => 'adminFilter']);
+$routes->post('/admin/addgaleriarticle', 'AdminController::actionAddGaleriArticle', ['filter' => 'adminFilter']);
 // $routes->get('/admin/customer', 'AdminController::customer', ['filter' => 'adminFilter']);
 $routes->get('/admin/addproduct', 'AdminController::addProduct', ['filter' => 'adminFilter']);
 $routes->post('/admin/addproduct', 'AdminController::actionAddProduct', ['filter' => 'adminFilter']);

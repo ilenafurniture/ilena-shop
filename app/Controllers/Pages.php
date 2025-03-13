@@ -53,7 +53,8 @@ class Pages extends BaseController
         $this->voucherModel = new VoucherModel();
         $this->session = \Config\Services::session();
     }
-    public function getNavbarData(){
+    public function getNavbarData()
+    {
         $jenis = $this->barangModel->query(
             "SELECT 
                 subkategori AS jenis, 
@@ -66,7 +67,7 @@ class Pages extends BaseController
         foreach ($jenis as $j) {
             $arrKoleksi = [];
             $koleksi = explode(',', $j['koleksi']);
-            
+
             foreach ($koleksi as $k) {
                 $produk = $this->barangModel
                     ->select('id')
@@ -82,13 +83,11 @@ class Pages extends BaseController
                 array_push($arrKoleksi, $itemKoleksi);
             }
 
-            if(str_contains($j['jenis'], 'dresser')) {
+            if (str_contains($j['jenis'], 'dresser')) {
                 $hasil['dresser'][$j['jenis']] = $arrKoleksi;
-            } 
-            else if(str_contains($j['jenis'], 'bed')) {
+            } else if (str_contains($j['jenis'], 'bed')) {
                 $hasil['bed'][$j['jenis']] = $arrKoleksi;
-            } 
-            else {
+            } else {
                 $hasil[$j['jenis']] = $arrKoleksi;
             }
         }
@@ -342,7 +341,7 @@ class Pages extends BaseController
             }
             $data = [
                 'title' => ucwords($product['nama']),
-                
+
                 'navbar' => $this->getNavbarData(),
                 'produk'        => $product,
                 'wishlist'      => $wishlist,
@@ -367,7 +366,7 @@ class Pages extends BaseController
             $product = $this->barangModel->getBarangNama();
             $data = [
                 'title' => 'Produk Kami',
-                
+
                 'navbar' => $this->getNavbarData(),
                 'produk' => $product,
                 'koleksiJenis' => [
@@ -517,7 +516,7 @@ class Pages extends BaseController
             $produk = $this->barangModel->getBarang($k['id_barang']);
             foreach (json_decode($produk['varian'], true) as $v) {
                 if ($v['nama'] == $k['varian']) {
-                    $keranjang[$index]['src_gambar'] = "/img/barang/1000/" . $k['id_barang'] . "-" . explode(',', $v['urutan_gambar'])[0].'.webp';
+                    $keranjang[$index]['src_gambar'] = "/img/barang/1000/" . $k['id_barang'] . "-" . explode(',', $v['urutan_gambar'])[0] . '.webp';
                 }
             }
             $keranjang[$index]['detail'] = $produk;
@@ -3736,15 +3735,11 @@ class Pages extends BaseController
         $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
         if (!$artikel) return redirect()->to('article');
         if ($judul_article) {
-            $artikel['header'] = '/imgart/' . $artikel['id'];
-            $artikel['isi'] = json_decode($artikel['isi'], true);
             $artikel['kategori'] = explode(",", $artikel['kategori']);
             $artikel['waktu'] = date("d", strtotime($artikel['waktu'])) . " " . $bulan[date("m", strtotime($artikel['waktu'])) - 1] . " " . date("Y", strtotime($artikel['waktu']));
 
             $artikelTerkait = $this->artikelModel->like('kategori', $artikel['kategori'][0], 'both')->findAll();
             foreach ($artikelTerkait as $ind_a => $a) {
-                $artikelTerkait[$ind_a]['header'] = '/imgart/' . $a['id'];
-                $artikelTerkait[$ind_a]['isi'] = json_decode($a['isi'], true);
                 $artikelTerkait[$ind_a]['kategori'] = explode(",", $a['kategori']);
                 $artikelTerkait[$ind_a]['waktu'] = date("d", strtotime($a['waktu'])) . " " . $bulan[date("m", strtotime($a['waktu'])) - 1] . " " . date("Y", strtotime($a['waktu']));
             }
@@ -3764,8 +3759,6 @@ class Pages extends BaseController
             return view('pages/artikel', $data);
         } else {
             foreach ($artikel as $ind_a => $a) {
-                $artikel[$ind_a]['header'] = '/imgart/' . $a['id'];
-                $artikel[$ind_a]['isi'] = json_decode($a['isi'], true);
                 $artikel[$ind_a]['kategori'] = explode(",", $a['kategori']);
                 $artikel[$ind_a]['waktu'] = date("d", strtotime($a['waktu'])) . " " . $bulan[date("m", strtotime($a['waktu'])) - 1] . " " . date("Y", strtotime($a['waktu']));
             }

@@ -8,9 +8,22 @@
     <link href="<?= base_url('css/bootstrap.min.css'); ?>" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="<?= base_url('css/style.css'); ?>">
+    <link rel="icon" href="<?= base_url('img/logo/N.png?v=11-03-2025'); ?>" type="image/png">
 </head>
 
 <body>
+    <div class="toast start-50 translate-middle">
+        <div class="toast-body">
+            <p>Hello, world! This is a toast message.</p>
+            <div class="mt-2 pt-2 border-top d-flex gap-1">
+                <form method="post">
+                    <button type="submit" class="btn btn-danger btn-sm">Ok</button>
+                </form>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="hapusToast()">Batal</button>
+            </div>
+        </div>
+    </div>
+    <div id="notif" class="notif">Isi notif</div>
     <script src="<?= base_url('js/bootstrap.bundle.min.js'); ?>">
     </script>
     <div class="baris-ke-kolom gap-0 w-100" style="height: 100svh;">
@@ -25,6 +38,43 @@
         </div>
         <div class="hide-ke-show-block" style="height:100px; width:10px; background-color: red; "></div>
     </div>
+    <script>
+        function copytext(teksCopy, teksNotif) {
+            navigator.clipboard.writeText(teksCopy);
+            callNotif(teksNotif);
+        }
+
+        function callNotif(teks) {
+            const notifElm = document.getElementById('notif')
+            notifElm.innerHTML = teks;
+            notifElm.classList.add('show');
+            setTimeout(() => {
+                notifElm.classList.remove('show');
+            }, 2000);
+        }
+
+        const toastElm = document.querySelector(".toast")
+        const toastTeksElm = document.querySelector(".toast p")
+        const toastOkElm = document.querySelector(`.toast form`)
+        const toastCloseElm = document.querySelector(`.toast button[type="button"]`)
+
+        function triggerToast(text, linkAction) {
+            toastElm.classList.add("show")
+            toastTeksElm.innerHTML = text
+            toastOkElm.action = linkAction;
+            if (!linkAction) {
+                toastOkElm.classList.add('d-none');
+                toastCloseElm.innerHTML = 'Ok';
+            } else {
+                toastOkElm.classList.remove('d-none');
+                toastCloseElm.innerHTML = 'Batal';
+            }
+        }
+
+        function hapusToast() {
+            toastElm.classList.remove("show")
+        }
+    </script>
 </body>
 
 </html>
