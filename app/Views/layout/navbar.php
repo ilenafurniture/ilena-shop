@@ -74,8 +74,14 @@
         overflow-x: scroll;
     }
 }
+
+@media (max-width: 600px) {
+    .tampilHp {
+        display: none;
+    }
+}
 </style>
-<div id="container-react">
+<div id="container-react" class="tampilHp">
 
 </div>
 <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
