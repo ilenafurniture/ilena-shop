@@ -1349,7 +1349,7 @@ body {
 .artikel .card-artikel-kecil .isi {
     text-overflow: ellipsis;
     overflow: hidden;
-    width: 200px;
+    max-width: 200px;
     white-space: nowrap;
     color: #888;
     font-size: smaller;
@@ -2161,7 +2161,7 @@ body {
 
     .teks-besar {
         font-weight: 600;
-        font-size: 48px;
+        font-size: 30px;
         letter-spacing: -2px;
         margin: 0;
         line-height: 35px;
