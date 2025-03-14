@@ -290,7 +290,6 @@ body {
     color: #0a961d;
     background-color: #1ece3623;
 }
-
 .list-nav {
     cursor: default;
 }
@@ -298,10 +297,11 @@ body {
     max-height: 0;
     overflow-y: hidden;
     background-color: whitesmoke;
-    z-index: 3;
-    position: absolute;
-    left: 0;
     width: 100%;
+    transition: 0.3s;
+}
+.child-list-nav.show {
+    max-height: 100svh;
     transition: 0.3s;
 }
 .child-list-nav a {
@@ -314,11 +314,11 @@ body {
 }
 .bg-list-nav {
     background-color: rgba(0, 0, 0, 0);
-    position: absolute;
+    position: fixed;
     left: 0;
-    top: 30px;
+    bottom: 0;
     width: 100%;
-    height: calc(100svh - 124px);
+    height: calc(100svh - 138px);
     backdrop-filter: blur(0px);
     transition: 0.3s;
     display: none;
@@ -330,10 +330,6 @@ body {
 .list-nav:hover a {
     font-weight: bold;
     transition: 0.2s;
-}
-.list-nav:hover .child-list-nav {
-    max-height: 100svh;
-    transition: 0.3s;
 }
 .list-nav .child-list-nav a {
     color: black;

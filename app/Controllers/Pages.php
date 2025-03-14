@@ -74,10 +74,17 @@ class Pages extends BaseController
                     ->select('nama')
                     ->select('deskripsi')
                     ->where(['subkategori' => $j['jenis'], 'kategori' => $k])->first();
+                $deskripsi = json_decode($produk['deskripsi'], true);
+                $deskripsi['perawatan'] = '';
+                $text = strip_tags($deskripsi['deskripsi']);
+                $text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
+                $text = trim($text);
+                $text = str_replace(["\r\n", "\r", "\n"], ' ', $text);
+                $deskripsi['deskripsi'] = $text;
                 $itemKoleksi = [
                     'id' => $produk['id'],
                     'nama' => $produk['nama'],
-                    'deskripsi' => $produk['deskripsi'],
+                    'deskripsi' => $deskripsi,
                     'koleksi' => $k
                 ];
                 array_push($arrKoleksi, $itemKoleksi);
