@@ -183,6 +183,10 @@ function closeSecondAd() {
     display: none;
 }
 
+.slider .material-icons {
+    font-size: 40px;
+}
+
 .dots {
     position: absolute;
     bottom: 20px;

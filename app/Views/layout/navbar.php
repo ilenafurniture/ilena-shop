@@ -65,13 +65,18 @@
     top: -1px;
     z-index: 99;
     justify-content: center;
+    overflow-x: auto;
 }
 
-@media (max-width: 1146px) {
-    #container-react {
+.container-navbar-list-nav::-webkit-scrollbar {
+    display: none;
+}
+
+@media (max-width: 1343px) {
+    .container-navbar-list-nav {
         justify-content: start;
         padding-inline: 2em;
-        overflow-x: scroll;
+        /* overflow-x: scroll; */
     }
 }
 
@@ -80,19 +85,42 @@
         display: none;
     }
 }
-</style>
-<div id="container-react" class="tampilHp">
 
-</div>
+.overlay-navbar {
+    height: 40px;
+    width: 200px;
+    background-image: linear-gradient(to left, whitesmoke, transparent);
+    margin-bottom: -40px;
+    display: flex;
+    z-index: 120;
+    align-items: center;
+    justify-content: end;
+    padding-right: 20px;
+}
+
+.overlay-navbar i {
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.overlay-navbar i:hover {
+    font-weight: bold;
+    color: var(--merah);
+    transition: 0.2s;
+}
+</style>
+<div id="container-react" class="tampilHp"></div>
+
 <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
 <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 <script type="text/babel">
-    const { useState, useEffect } = React;
+    const { useState, useEffect, useRef } = React;
     const navbar = JSON.parse('<?= json_encode($navbar); ?>');
     console.log(navbar);
     const App = () => {
+        const containerNavbarListNav = useRef();
         const [jenisSelected , setJenisSelected] = useState({
             category: null,
             products: null
@@ -105,6 +133,9 @@
             jenis: false,
             kategori: false,
         });
+        const [scrollPosition, setScrollPosition] = useState(0);
+        const [isAtEnd, setIsAtEnd] = useState(false);
+
         const handleCloseHover = (type) => {
             switch (type) {
                 case 'jenis':
@@ -144,15 +175,45 @@
             });
         }
 
+        const handleScrollClick = () => {
+            if(containerNavbarListNav) {
+                console.log(containerNavbarListNav.current)
+                containerNavbarListNav.current.scrollLeft += 200;
+            }
+        }
+
+        // Fungsi untuk menangani event scroll
+        const handleScroll = (event) => {
+            const { scrollLeft, scrollWidth, clientWidth } = event.target;
+            // Mengupdate posisi scroll
+            setScrollPosition(scrollLeft);
+            console.log(`${scrollWidth} - ${scrollLeft} = ${scrollWidth - scrollLeft}`)
+            console.log(`clientWidth: ${clientWidth - 20}`)
+            // Mengecek apakah sudah di bagian kanan (end) dari scroll
+            if (scrollWidth - scrollLeft - 20 < clientWidth) {
+                setIsAtEnd(true);
+            } else {
+                setIsAtEnd(false);
+            }
+        };
+        
+        useEffect(()=>{
+            console.log(scrollPosition)
+        }, [scrollPosition])
+
         return (
             <>
-                <div className="w-100 show-flex-ke-hide container-navbar-list-nav">
+                {!isAtEnd &&
+                <div className="d-flex justify-content-end">
+                    <div className="overlay-navbar"><i className="material-icons" onClick={() => {handleScrollClick()}}>chevron_right</i></div>
+                </div>}
+                <div className="w-100 show-flex-ke-hide container-navbar-list-nav" ref={containerNavbarListNav} onScroll={handleScroll}>
                     <div className="d-flex align-items-center py-2 gap-5">
                         {Object.entries(navbar).map(([category, products]) => (
                         <div key={category} className="list-nav" onMouseOver={() => handleHoverJenis(category, products)} onMouseLeave={() => handleCloseHover('jenis')}>
                             <a
-                                className="text-dark text-center w-100 d-block"
-                                style={{ textDecoration: 'none' }}
+                                className="text-center w-100 d-block"
+                                style={{ textDecoration: 'none', color: jenisSelected.category == category ? 'var(--merah)' : 'black' }}
                                 href={`/product?jenis=${category.replace(' ', '-')}`}
                             >{category.charAt(0).toUpperCase() + category.slice(1)}
                             </a>
