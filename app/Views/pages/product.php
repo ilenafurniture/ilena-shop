@@ -65,7 +65,6 @@
 
                 <div class="d-flex gap-2 mb-3">
                     <p class="harga">Rp
-                    <p class="harga">Rp
                         <?= number_format($produk['harga'] * (100 - $produk['diskon']) / 100, 0, ',', '.'); ?></p>
                     <?php if ($produk['diskon'] > 0) { ?>
                     <p class="harga-diskon">Rp <?= number_format($produk['harga'], 0, ',', '.') ?></p>

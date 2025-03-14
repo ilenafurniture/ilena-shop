@@ -64,7 +64,7 @@ function closeModalVoucher() {
                 </div>
                 <div class="d-flex flex-column align-items-center position-relative w-100" style="height: 100%;">
 
-                    <a href="/product?koleksi=bundling&jenis=akbar+kareem" class="btn-popup text-center mt-2">
+                    <a href="/product?jenis=bundling" class="btn-popup text-center mt-2">
                         Lihat Produk
                     </a>
                 </div>
@@ -295,7 +295,7 @@ function closeSecondAd() {
 <!-- bagian windows -->
 <div class="p-5">
     <div class="show-flex-ke-hide p-5 flex-column align-items-center justify-content-center"
-        style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/set cabana.png'); background-size: cover; background-position: center; width:100%; height:80svh;">
+        style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/bgc.webp'); background-size: cover; background-position: center; width:100%; height:80svh;">
         <h1 class="teks-besar mb-2 text-center text-light">Modern & Stylish<br>Furniture</h1>
         <p class="text-handwrite py-1 px-2 text-light"
             style="font-size:30px; transform: rotate(-10deg) translate(100px, -20px);">True to you</p>
@@ -305,7 +305,7 @@ function closeSecondAd() {
     </div>
     <!-- bagian HP -->
     <div class="hide-ke-show-flex px-5 flex-column justify-content-center"
-        style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/set cabana.png'); background-size: cover; width:100%; height:60svh;">
+        style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/bgc.webp'); background-size: cover; width:100%; height:60svh;">
         <h1 class="teks-besar text-light" style="font-size:34px;">Modern & Stylish<br>Furniture</h1>
         <p class="text-handwrite py-1 px-2 text-light"
             style="font-size:20px; transform: rotate(-10deg) translate(50px, -15px);">True to you</p>
@@ -320,7 +320,7 @@ function closeSecondAd() {
 .kontenLN {
     position: relative;
     flex: 2;
-    background: url('./img/foto/0 comp.png');
+    background: url('./img/foto/0 comp.webp');
     background-size: cover;
     background-position: center;
     cursor: pointer;
@@ -383,7 +383,7 @@ function closeSecondAd() {
 .kontenLNMobile {
     position: relative;
     flex: 2;
-    background: url('./img/foto/0 comp.png');
+    background: url('./img/foto/0 comp.webp');
     background-size: cover;
     background-position: center;
     cursor: pointer;
@@ -457,7 +457,7 @@ function closeSecondAd() {
 <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:80svh;">
     <a class="d-flex align-items-center ps-5 zoom-wrapper" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
         style="text-decoration:none; flex:1; position: relative;">
-        <img src="./img/foto/11 comp.png" alt="Background Image"
+        <img src="./img/foto/11 comp.webp" alt="Background Image"
             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
         <div>
             <p class="text-light">Make you feel</p>
@@ -468,7 +468,7 @@ function closeSecondAd() {
     <div style="flex:1;" class=" d-flex flex-column">
         <a class="d-flex align-items-center ps-5 zoom-wrapper" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
             style="text-decoration:none; flex: 1; position: relative;">
-            <img src="./img/foto/n1 comp.png" alt="Background Image"
+            <img src="./img/foto/n1 comp.webp" alt="Background Image"
                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
             <div>
                 <h1 class="teks-besar text-light mb-3">Luxury</h1>
@@ -480,7 +480,7 @@ function closeSecondAd() {
         </a>
         <a class="d-flex" style="text-decoration:none; flex: 1" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>">
             <div class="d-flex align-items-center ps-5 zoom-wrapper" style="flex:1; position: relative;">
-                <img src="./img/foto/s comp.png" alt="Background Image"
+                <img src="./img/foto/s comp.webp" alt="Background Image"
                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
                 <div>
                     <h1 class="teks-besar text-light mb-3">Simply</h1>
@@ -536,7 +536,7 @@ function closeSecondAd() {
 <!-- Bagian HP -->
 <div class="hide-ke-show-flex flex-column pt-2 gap-2" style="width:100%; height:80svh;">
     <a href="<?= base_url('product/bufet-tv-ilena-cabana') ?>" class="d-flex align-items-center px-5"
-        style="text-decoration:none; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/11 comp.png'); background-size: cover; background-position:center;">
+        style="text-decoration:none; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/11 comp.webp'); background-size: cover; background-position:center;">
         <div>
             <p class="text-light ms-2 m-0" style="font-size:12px;">Make you feel</p>
             <h1 class="text-light ms-2" style="font-size:28px;">Elegant</h1>
@@ -544,7 +544,7 @@ function closeSecondAd() {
         </div>
     </a>
     <a class="d-flex align-items-center px-5" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
-        style="text-decoration:none; flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/n1 comp.png'); background-size: cover; background-position:center;">
+        style="text-decoration:none; flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/n1 comp.webp'); background-size: cover; background-position:center;">
         <div>
             <h1 class="text-light ms-2" style="font-size:28px;">Luxury</h1>
             <div class="d-flex gap-1 ms-2">
@@ -554,7 +554,7 @@ function closeSecondAd() {
         </div>
     </a>
     <a href="<?= base_url('product/bufet-tv-ilena-cabana') ?>" class="d-flex align-items-center px-5"
-        style="text-decoration:none; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/s comp.png'); background-size: cover; background-position:center;">
+        style="text-decoration:none; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/s comp.webp'); background-size: cover; background-position:center;">
         <div>
             <h1 class="text-light ms-2" style="font-size:28px;">Simply</h1>
             <div class="d-flex gap-1 ms-2">
@@ -1023,7 +1023,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 <!-- Bagian Windows -->
 <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:40svh;">
-    <a href="<?= base_url('product/bufet-tv-ilena-cabana') ?>" style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/inaugural comp.png');
+    <a href="<?= base_url('product/bufet-tv-ilena-cabana') ?>" style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/inaugural comp.webp');
     background-size: cover; background-position:top;">
     </a>
     <div style="flex:1; background-color:#7B441c; position:relative;">
@@ -1206,7 +1206,7 @@ function modalseries() {
 <div class="container show-flex-ke-hide gap-3 my-5" style="width:100%; height:60svh;">
     <a href="/product?ruang=tamu" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
         <div class="zoom-wrapper mb-2">
-            <img src="./img/foto/livingroom1 comp.png" alt="" style="flex: 1; width: 100%; object-fit: cover;">
+            <img src="./img/foto/livingroom1 comp.webp" alt="" style="flex: 1; width: 100%; object-fit: cover;">
         </div>
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
             <h5 style="font-weight: 500;" class="m-0">L</h5>
@@ -1220,7 +1220,7 @@ function modalseries() {
     </a>
     <a href="/product?ruang=tidur" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
         <div class="zoom-wrapper mb-2">
-            <img src="./img/foto/bedroom cody comp.png" alt="" style="flex: 1; width: 100%; object-fit: cover;">
+            <img src="./img/foto/bedroom cody comp.webp" alt="" style="flex: 1; width: 100%; object-fit: cover;">
         </div>
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
             <h5 style="font-weight: 500;" class="m-0">B</h5>
@@ -1231,7 +1231,7 @@ function modalseries() {
     </a>
     <a href="/product?ruang=keluarga" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
         <div class="zoom-wrapper mb-2">
-            <img src="./img/foto/ruangtamu1 comp.png" alt="" style="flex: 1; width: 100%; object-fit: cover;">
+            <img src="./img/foto/ruangtamu1 comp.webp" alt="" style="flex: 1; width: 100%; object-fit: cover;">
         </div>
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
             <h5 style="font-weight: 500;" class="m-0">L</h5>
@@ -1262,7 +1262,7 @@ function modalseries() {
     <div class="d-flex gap-1 px-5 pt-5 pb-4" style="width: fit-content;">
         <a href="/product?ruang=tamu" class="bg-primary"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block; height: 100px;">
-            <img src="<?= base_url('/img/foto/livingroom1 comp.png') ?>" alt=""
+            <img src="<?= base_url('/img/foto/livingroom1 comp.webp') ?>" alt=""
                 style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
             <div class="d-flex gap-4 justify-content-center mb-2">
                 <h5 style="font-weight: 500;" class="m-0">L</h5>
@@ -1276,7 +1276,7 @@ function modalseries() {
         </a>
         <a href="/product?ruang=tidur"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
-            <img src="<?= base_url('/img/foto/bedroom cody comp.png') ?>" alt=""
+            <img src="<?= base_url('/img/foto/bedroom cody comp.webp') ?>" alt=""
                 style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
             <div class="d-flex gap-4 justify-content-center mb-2">
                 <h5 style="font-weight: 500;" class="m-0">B</h5>
@@ -1287,7 +1287,7 @@ function modalseries() {
         </a>
         <a href="/product?ruang=keluarga"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
-            <img src="<?= base_url('/img/foto/ruangtamu1 comp.png') ?>" alt=""
+            <img src="<?= base_url('/img/foto/ruangtamu1 comp.webp') ?>" alt=""
                 style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
             <div class="d-flex gap-4 justify-content-center mb-2">
                 <h5 style="font-weight: 500;" class="m-0">L</h5>
@@ -1318,7 +1318,7 @@ function modalseries() {
                 </div>
             </div>
             <img style="position: absolute; z-index: 4; top: 0; left: 0; width: 100%; height: 100%" class="d-block"
-                src="<?= base_url('/img/foto/find out more watercase comp.png') ?>" alt="Slide 2">
+                src="<?= base_url('/img/foto/find out more watercase comp.webp') ?>" alt="Slide 2">
         </a>
         <a href="https://ilenafurniture.id/" class="kanan">
             <img class="ls" src="<?= base_url('img/benner/poster slide home ls (2).png') ?>" alt="Slide 2">
