@@ -130,8 +130,17 @@
     <?php }
     } ?>
 
-
+    <meta property="og:title" content="Ilena Furniture">
+    <meta property="og:description"
+        content="<?= isset($metaDeskripsi) ? $metaDeskripsi : 'Toko Online furniture Semarang meliputi produk buffet tv, bed, lemari pakaian, coffee table, meja konsol, rak buku, dresser, meja nakas, dll. '; ?>">
+    <meta property="og:image" content="https://ilenafurniture.com/img/logo/N.png">
+    <meta property="og:url" content="https://ilenafurniture.com">
+    <meta property="og:type" content="website">
     <meta charset="UTF-8">
+    <meta name="theme-color" content="#e84a49">
+    <meta name="msapplication-navbutton-color" content="#e84a49">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#e84a49">
+    <meta name="crome-mobile-web-app-status-bar-style" content="#e84a49">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="ilena furniture">
     <meta name="author" content="Ilena Furniture">
