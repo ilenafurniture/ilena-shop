@@ -32,7 +32,7 @@
     }
 }
 </style>
-<div class="container artikel">
+<div class="container artikel d-flex justify-content-center">
     <div class="konten">
         <div class="artikel">
             <img src="<?= $artikel['header']; ?>" alt="<?= $artikel['judul'] ?>" class="header">
