@@ -1320,7 +1320,7 @@ function modalseries() {
             <img style="position: absolute; z-index: 4; top: 0; left: 0; width: 100%; height: 100%" class="d-block"
                 src="<?= base_url('/img/foto/find out more watercase comp.webp') ?>" alt="Slide 2">
         </a>
-        <a href="https://ilenafurniture.id/" class="kanan">
+        <a href="https://ilenafurniture.net/" class="kanan">
             <img class="ls" src="<?= base_url('img/benner/poster slide home ls (2).png') ?>" alt="Slide 2">
             <img class="pt" src="<?= base_url('img/benner/poster slide home pt (2).png') ?>" alt="Slide 2">
         </a>
