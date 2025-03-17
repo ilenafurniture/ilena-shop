@@ -223,7 +223,7 @@
     <div class="container show-block-ke-hide">
         <div class="row align-items-center">
             <div class="col-md-6">
-                <img class="w-100 h-auto rounded-3 shadow-lg" src="<?= base_url('/img/foto/tt.jpg') ?>"
+                <img class="w-100 h-auto rounded-3 shadow-lg" src="<?= base_url('/img/foto/tt.webp') ?>"
                     alt="Urban Design" style="object-fit: cover;">
             </div>
             <div class="col-md-6">
@@ -257,7 +257,7 @@
                 </p>
             </div>
             <div class="col-md-6">
-                <img class="w-100 h-auto rounded-3 shadow-lg" src="<?= base_url('/img/foto/Tentangperusahaan.JPG') ?>"
+                <img class="w-100 h-auto rounded-3 shadow-lg" src="<?= base_url('/img/foto/Tentangperusahaan.webp') ?>"
                     alt="Company Profile" style="object-fit: cover; filter: grayscale(1);">
             </div>
         </div>
@@ -268,7 +268,7 @@
     <div class="container hide-ke-show-block">
         <div class="row mb-4">
             <div class="col-12 mb-3">
-                <img class="w-100 h-auto rounded-3 shadow-lg" src="<?= base_url('/img/foto/tt.jpg') ?>"
+                <img class="w-100 h-auto rounded-3 shadow-lg" src="<?= base_url('/img/foto/tt.webp') ?>"
                     alt="Urban Design Mobile" style="object-fit: cover;">
             </div>
             <div class="col-12">
@@ -287,7 +287,7 @@
 
         <div class="row mb-4">
             <div class="col-12 mb-3">
-                <img class="w-100 h-auto rounded-3 shadow-lg" src="<?= base_url('/img/foto/Tentangperusahaan.JPG') ?>"
+                <img class="w-100 h-auto rounded-3 shadow-lg" src="<?= base_url('/img/foto/Tentangperusahaan.webp') ?>"
                     alt="Company Profile Mobile" style="object-fit: cover; filter: grayscale(1);">
             </div>
             <div class="col-12">
