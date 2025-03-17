@@ -25,8 +25,7 @@
                 "ext-mbstring": "*",
                 "laminas/laminas-escaper": "^2.13",
                 "php": "^8.1",
-                "psr/log": "^3.0",
-                "codeigniter4/framework": "4.5.8"
+                "psr/log": "^3.0"
             },
             "require-dev": {
                 "codeigniter/coding-standard": "^1.7",
