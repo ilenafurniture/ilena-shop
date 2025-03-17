@@ -274,7 +274,7 @@
                                                     fontSize: '20px',
                                                     color: product.id == productSelected.id ? 'var(--merah)' : 'black',
                                                 }}
-                                                href={`/product?koleksi=${product.koleksi.replace(' ', '-')}&jenis=${jenisSelected.category.replace(' ', '-')}`}
+                                                href={`/product?koleksi=${product.koleksi.replace(' ', '-')}&jenis=${subCategory.split(' ').join('-')}`}
                                                 onMouseOver={() => handleHover(product)}
                                             >
                                                 {product.koleksi.charAt(0).toUpperCase() + product.koleksi.slice(1)}
