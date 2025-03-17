@@ -17,7 +17,7 @@ $routes->get('/article/(:any)', 'Pages::article/$1', ['filter' => 'customerFilte
 
 
 $routes->get('/tentang', 'Pages::tentang', ['filter' => 'customerFilter']);
-$routes->get('/contact', 'Pages::contact', ['filter' => 'customerFilter']);
+// $routes->get('/contact', 'Pages::contact', ['filter' => 'customerFilter']);
 $routes->get('/syarat', 'Pages::syarat', ['filter' => 'customerFilter']);
 $routes->get('/kebijakan', 'Pages::kebijakan', ['filter' => 'customerFilter']);
 $routes->get('/visimisi', 'Pages::visiMisi', ['filter' => 'customerFilter']);
