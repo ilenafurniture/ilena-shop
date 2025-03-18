@@ -67,7 +67,7 @@
         height: 60px;
         border-radius: 12px;
         object-fit: cover;
-        width: 60px;
+        width: 80px;
     }
 
     .item-toko .nama {
@@ -105,7 +105,7 @@
         height: 60px;
         border-radius: 12px;
         object-fit: cover;
-        width: 40px;
+        width: 70px;
     }
 }
 </style>
@@ -118,7 +118,7 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/">Home</a></li>
                     <li class="breadcrumb-item active" aria-current="page">
-                        Kontak Kami
+                        Tentang Kami
                     </li>
                 </ol>
             </nav>
@@ -138,8 +138,8 @@
                             </p>
                         </a>
                         <div class="p-2">
-                            <img src="<?= base_url('/img/fototoko/tokojempol.webp') ?>" style="width: max-content;"
-                                alt="Jempol Baru Furniture" class="client-logo">
+                            <img src="<?= base_url('/img/fototoko/tokojempol.webp') ?>" alt="Jempol Baru Furniture"
+                                class="client-logo">
                         </div>
                     </div>
 
@@ -155,7 +155,7 @@
                             </a>
                         </div>
                         <div class="p-2">
-                            <img src="<?= base_url('/img/fototoko/tokosumberabadi.webp') ?>" style="width: max-content;"
+                            <img src="<?= base_url('/img/fototoko/tokosumberabadi.webp') ?>"
                                 alt="Sumber Abadi Furniture" class="client-logo">
                         </div>
                     </div>
@@ -169,8 +169,8 @@
                                 Tengah</p>
                         </a>
                         <div class="p-2">
-                            <img src="<?= base_url('/img/fototoko/tokosuri.webp') ?>" style="width: max-content;"
-                                alt="SURI Meubel Furniture" class="client-logo">
+                            <img src="<?= base_url('/img/fototoko/tokosuri.webp') ?>" alt="SURI Meubel Furniture"
+                                class="client-logo">
                         </div>
                     </div>
 
@@ -196,8 +196,8 @@
                             </p>
                         </a>
                         <div class="p-2">
-                            <img src="<?= base_url('/img/fototoko/tokoparianom.webp') ?>" style="width: max-content;"
-                                alt="Toko Kayu Jaya" class="client-logo">
+                            <img src="<?= base_url('/img/fototoko/tokoparianom.webp') ?>" alt="Toko Kayu Jaya"
+                                class="client-logo">
                         </div>
                     </div>
                     <div class="item-toko">
@@ -208,8 +208,8 @@
                             </p>
                         </a>
                         <div class="p-2">
-                            <img src="<?= base_url('/img/fototoko/tokopuri.webp') ?>" style="width: max-content;"
-                                alt="Toko Kayu Jaya" class="client-logo">
+                            <img src="<?= base_url('/img/fototoko/tokopuri.webp') ?>" alt="Toko Kayu Jaya"
+                                class="client-logo">
                         </div>
                     </div>
                     <div class="item-toko">
@@ -222,8 +222,8 @@
                             </p>
                         </a>
                         <div class="p-2">
-                            <img src="<?= base_url('/img/fototoko/tokoveiktoria.webp') ?>" style="width: max-content;"
-                                alt="Toko Kayu Jaya" class="client-logo">
+                            <img src="<?= base_url('/img/fototoko/tokoveiktoria.webp') ?>" alt="Toko Kayu Jaya"
+                                class="client-logo">
                         </div>
                     </div>
                 </div>
