@@ -64,10 +64,10 @@
     }
 
     .item-toko img {
-        height: 80%;
+        height: 60px;
         border-radius: 12px;
         object-fit: cover;
-        width: 100%;
+        width: 60px;
     }
 
     .item-toko .nama {
@@ -93,7 +93,7 @@
     .item-toko .alamat {
         font-size: 6px;
         font-style: normal;
-        line-height: 1;
+        /* line-height: 1; */
     }
 
     .container-toko {
@@ -102,10 +102,10 @@
     }
 
     .item-toko img {
-        height: 90%;
+        height: 60px;
         border-radius: 12px;
         object-fit: cover;
-        width: 100%;
+        width: 40px;
     }
 }
 </style>
@@ -138,7 +138,7 @@
                             </p>
                         </a>
                         <div class="p-2">
-                            <img src="<?= base_url('/img/fototoko/tokojempol.png') ?>" style="width: max-content;"
+                            <img src="<?= base_url('/img/fototoko/tokojempol.webp') ?>" style="width: max-content;"
                                 alt="Jempol Baru Furniture" class="client-logo">
                         </div>
                     </div>
@@ -155,7 +155,7 @@
                             </a>
                         </div>
                         <div class="p-2">
-                            <img src="<?= base_url('/img/fototoko/tokosumberabadi.png') ?>" style="width: max-content;"
+                            <img src="<?= base_url('/img/fototoko/tokosumberabadi.webp') ?>" style="width: max-content;"
                                 alt="Sumber Abadi Furniture" class="client-logo">
                         </div>
                     </div>
@@ -169,7 +169,7 @@
                                 Tengah</p>
                         </a>
                         <div class="p-2">
-                            <img src="<?= base_url('/img/fototoko/tokosuri.png') ?>" style="width: max-content;"
+                            <img src="<?= base_url('/img/fototoko/tokosuri.webp') ?>" style="width: max-content;"
                                 alt="SURI Meubel Furniture" class="client-logo">
                         </div>
                     </div>
@@ -183,7 +183,7 @@
                             </p>
                         </a>
                         <div class="p-2">
-                            <img src="<?= base_url('/img/fototoko/tokohome.png') ?>" alt="Toko Kayu Jaya"
+                            <img src="<?= base_url('/img/fototoko/tokohome.webp') ?>" alt="Toko Kayu Jaya"
                                 class="client-logo">
                         </div>
                     </div>
@@ -196,7 +196,7 @@
                             </p>
                         </a>
                         <div class="p-2">
-                            <img src="<?= base_url('/img/fototoko/tokoparianom.png') ?>" style="width: max-content;"
+                            <img src="<?= base_url('/img/fototoko/tokoparianom.webp') ?>" style="width: max-content;"
                                 alt="Toko Kayu Jaya" class="client-logo">
                         </div>
                     </div>
@@ -208,7 +208,7 @@
                             </p>
                         </a>
                         <div class="p-2">
-                            <img src="<?= base_url('/img/fototoko/tokopuri.png') ?>" style="width: max-content;"
+                            <img src="<?= base_url('/img/fototoko/tokopuri.webp') ?>" style="width: max-content;"
                                 alt="Toko Kayu Jaya" class="client-logo">
                         </div>
                     </div>
@@ -222,7 +222,7 @@
                             </p>
                         </a>
                         <div class="p-2">
-                            <img src="<?= base_url('/img/fototoko/tokoveiktoria.png') ?>" style="width: max-content;"
+                            <img src="<?= base_url('/img/fototoko/tokoveiktoria.webp') ?>" style="width: max-content;"
                                 alt="Toko Kayu Jaya" class="client-logo">
                         </div>
                     </div>
