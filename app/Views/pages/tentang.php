@@ -81,7 +81,7 @@
     }
 
     #map {
-        height: 300px;
+        height: 200px;
     }
 }
 
@@ -93,7 +93,6 @@
     .item-toko .alamat {
         font-size: 6px;
         font-style: normal;
-        /* line-height: 1; */
     }
 
     .container-toko {
@@ -106,6 +105,10 @@
         border-radius: 12px;
         object-fit: cover;
         width: 70px;
+    }
+
+    #map {
+        height: 200px;
     }
 }
 </style>
@@ -183,7 +186,7 @@
                             </p>
                         </a>
                         <div class="p-2">
-                            <img src="<?= base_url('/img/fototoko/tokohome.webp') ?>" alt="Toko Kayu Jaya"
+                            <img src="<?= base_url('/img/fototoko/tokohome.webp') ?>" alt="Home Gallery Furniture"
                                 class="client-logo">
                         </div>
                     </div>
@@ -196,7 +199,7 @@
                             </p>
                         </a>
                         <div class="p-2">
-                            <img src="<?= base_url('/img/fototoko/tokoparianom.webp') ?>" alt="Toko Kayu Jaya"
+                            <img src="<?= base_url('/img/fototoko/tokoparianom.webp') ?>" alt="Pari Anom Jaya Furniture"
                                 class="client-logo">
                         </div>
                     </div>
@@ -208,7 +211,7 @@
                             </p>
                         </a>
                         <div class="p-2">
-                            <img src="<?= base_url('/img/fototoko/tokopuri.webp') ?>" alt="Toko Kayu Jaya"
+                            <img src="<?= base_url('/img/fototoko/tokopuri.webp') ?>" alt="Puri Mabel & Interior"
                                 class="client-logo">
                         </div>
                     </div>
@@ -222,7 +225,7 @@
                             </p>
                         </a>
                         <div class="p-2">
-                            <img src="<?= base_url('/img/fototoko/tokoveiktoria.webp') ?>" alt="Toko Kayu Jaya"
+                            <img src="<?= base_url('/img/fototoko/tokoveiktoria.webp') ?>" alt="Victoria Furnicenter"
                                 class="client-logo">
                         </div>
                     </div>
@@ -427,7 +430,7 @@
 
 
 
-<script>
+<!-- <script>
 // Map Initialization
 var map = L.map('map', {
     center: [-7.614529, 110.712246],
@@ -492,6 +495,94 @@ stores.forEach(store => {
     marker.on('mouseout', function() {
         marker.closePopup();
     });
+});
+</script> -->
+
+<script>
+var map = L.map('map').setView([-7.614529, 110.712246], 6.5);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+var locations = [{
+        name: "Jempol Baru Furniture",
+        coords: [-7.565618587313341, 110.82431800071647]
+    },
+    {
+        name: "Sumber Abadi Furniture",
+        coords: [-7.743324302431505, 110.3624866828005]
+    },
+    {
+        name: "Home Gallery Furniture",
+        coords: [-7.2886288976515985, 112.67261790823825]
+    },
+    {
+        name: "Pari Anom Jaya Furniture",
+        coords: [-7.264405907300976, 112.79562668327448]
+    },
+    {
+        name: "Suri Mebel Semarang",
+        coords: [-6.985425332274277, 110.41746260495303]
+    },
+    {
+        name: "Puri Mabel & Interior",
+        coords: [-6.9658085878072935, 110.39043865842983]
+    },
+    {
+        name: "Victoria Furnicenter",
+        coords: [-7.310519605654715, 112.68303473759022]
+    }
+];
+
+locations.forEach(function(store) {
+    var marker = L.circleMarker([store.coords[0], store.coords[1]], {
+        color: '#FF4D4D',
+        fillColor: '#FF4D4D',
+        fillOpacity: 0.2,
+        stroke: true,
+        strokeOpacity: 0.2,
+        weight: 0.2,
+        radius: 10
+    }).addTo(map);
+
+    var popupContent = "<b>" + store.name + "</b>";
+    marker.bindPopup(popupContent);
+
+    var circle = L.circle([store.coords[0], store.coords[1]], {
+        color: '#FF4D4D',
+        fillColor: '#FF4D4D',
+        fillOpacity: 0.2,
+        radius: 50
+    }).addTo(map);
+
+    // Open popup on mouseover
+    marker.on('mouseover', function() {
+        marker.openPopup();
+    });
+
+    // Close popup on mouseout
+    marker.on('mouseout', function() {
+        marker.closePopup();
+    });
+    marker.on('click', function() {
+        var lat = store.coords[0];
+        var lng = store.coords[1];
+        var googleMapsUrl = "https://www.google.com/maps?q=" + lat + "," + lng;
+        window.open(googleMapsUrl, "_blank");
+    });
+
+    circle.on('click', function() {
+        var lat = store.coords[0];
+        var lng = store.coords[1];
+        var googleMapsUrl = "https://www.google.com/maps?q=" + lat + "," + lng;
+        window.open(googleMapsUrl, "_blank");
+    });
+});
+map.on('click', function(e) {
+    var lat = e.latlng.lat;
+    var lng = e.latlng.lng;
+    var googleMapsUrl = "https://www.google.com/maps?q=" + lat + "," + lng;
+    window.open(googleMapsUrl, "_blank");
 });
 </script>
 
