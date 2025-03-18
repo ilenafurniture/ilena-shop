@@ -21,7 +21,7 @@
                     <a href="/product" class="btn btn-default-hitam">Pergi ke Toko</a>
                 </div>
             </div>
-            <img class="d-block rounded header" src="/img/foto/set%20cabana.png" alt="">
+            <img class="d-block rounded header" src="/img/foto/find%20out%20more.webp" alt="">
         </div>
         <?php
         $indexAwal = -1;
