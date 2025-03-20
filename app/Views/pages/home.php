@@ -37,8 +37,8 @@ function closeModalVoucher() {
                             style="display: inline; color: black">Login</a></p>
                 </div>
             </div>
-            <img src="<?= base_url('/img/foto/diskon2.webp') ?>" style="width: 400px; height: 400px; object-fit: cover"
-                alt="">
+            <img src="https://img.ilenafurniture.com/image/1742444827619.webp/?apikey=<?=  $apikey_img_ilena ?>"
+                style="width: 400px; height: 400px; object-fit: cover" alt="">
         </div>
     </div>
     <div style="position: fixed; background-color: white; bottom: 0; left: 0; width: 100%; height: fit-content; z-index: 99;"
@@ -69,7 +69,7 @@ function closeModalVoucher() {
                     </a>
                 </div>
             </div>
-            <img src=" <?= base_url('/img/foto/iklanpopup.webp') ?>"
+            <img src="https://img.ilenafurniture.com/image/1742445131798.webp/?apikey=<?=  $apikey_img_ilena ?>"
                 style="width: 400px; height: 400px; object-fit: cover; border-radius: 10px;" alt="">
         </div>
     </div>
@@ -295,7 +295,7 @@ function closeSecondAd() {
 <!-- bagian windows -->
 <div class="p-5">
     <div class="show-flex-ke-hide p-5 flex-column align-items-center justify-content-center"
-        style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/bgc.webp'); background-size: cover; background-position: center; width:100%; height:80svh;">
+        style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742446235599.webp/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position: center; width:100%; height:80svh;">
         <h1 class="teks-besar mb-2 text-center text-light">Modern & Stylish<br>Furniture</h1>
         <p class="text-handwrite py-1 px-2 text-light"
             style="font-size:30px; transform: rotate(-10deg) translate(100px, -20px);">True to you</p>
@@ -305,7 +305,7 @@ function closeSecondAd() {
     </div>
     <!-- bagian HP -->
     <div class="hide-ke-show-flex px-5 flex-column justify-content-center"
-        style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/bgc.webp'); background-size: cover; width:100%; height:60svh;">
+        style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742446235599.webp/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; width:100%; height:60svh;">
         <h1 class="teks-besar text-light" style="font-size:34px;">Modern & Stylish<br>Furniture</h1>
         <p class="text-handwrite py-1 px-2 text-light"
             style="font-size:20px; transform: rotate(-10deg) translate(50px, -15px);">True to you</p>
@@ -320,7 +320,7 @@ function closeSecondAd() {
 .kontenLN {
     position: relative;
     flex: 2;
-    background: url('./img/foto/0 comp.webp');
+    background: url('https://img.ilenafurniture.com/image/1742446101353.webp/?apikey=<?=  $apikey_img_ilena ?>');
     background-size: cover;
     background-position: center;
     cursor: pointer;
@@ -383,7 +383,7 @@ function closeSecondAd() {
 .kontenLNMobile {
     position: relative;
     flex: 2;
-    background: url('./img/foto/0 comp.webp');
+    background: url('https://img.ilenafurniture.com/image/1742446101353.webp/?apikey=<?=  $apikey_img_ilena ?>');
     background-size: cover;
     background-position: center;
     cursor: pointer;
@@ -457,7 +457,8 @@ function closeSecondAd() {
 <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:80svh;">
     <a class="d-flex align-items-center ps-5 zoom-wrapper" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
         style="text-decoration:none; flex:1; position: relative;">
-        <img src="./img/foto/11 comp.webp" alt="Background Image"
+        <img src="https://img.ilenafurniture.com/image/1742445277837.webp/?apikey=<?=  $apikey_img_ilena ?>"
+            alt="Background Image"
             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
         <div>
             <p class="text-light">Make you feel</p>
@@ -468,7 +469,8 @@ function closeSecondAd() {
     <div style="flex:1;" class=" d-flex flex-column">
         <a class="d-flex align-items-center ps-5 zoom-wrapper" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
             style="text-decoration:none; flex: 1; position: relative;">
-            <img src="./img/foto/n1 comp.webp" alt="Background Image"
+            <img src="https://img.ilenafurniture.com/image/1742445320940.webp/?apikey=<?=  $apikey_img_ilena ?>"
+                alt="Background Image"
                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
             <div>
                 <h1 class="teks-besar text-light mb-3">Luxury</h1>
@@ -480,7 +482,8 @@ function closeSecondAd() {
         </a>
         <a class="d-flex" style="text-decoration:none; flex: 1" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>">
             <div class="d-flex align-items-center ps-5 zoom-wrapper" style="flex:1; position: relative;">
-                <img src="./img/foto/s comp.webp" alt="Background Image"
+                <img src="https://img.ilenafurniture.com/image/1742445358952.webp/?apikey=<?=  $apikey_img_ilena ?>"
+                    alt="Background Image"
                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
                 <div>
                     <h1 class="teks-besar text-light mb-3">Simply</h1>
@@ -536,7 +539,7 @@ function closeSecondAd() {
 <!-- Bagian HP -->
 <div class="hide-ke-show-flex flex-column pt-2 gap-2" style="width:100%; height:80svh;">
     <a href="<?= base_url('product/bufet-tv-ilena-cabana') ?>" class="d-flex align-items-center px-5"
-        style="text-decoration:none; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/11 comp.webp'); background-size: cover; background-position:center;">
+        style="text-decoration:none; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742446306648.webp/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
         <div>
             <p class="text-light ms-2 m-0" style="font-size:12px;">Make you feel</p>
             <h1 class="text-light ms-2" style="font-size:28px;">Elegant</h1>
@@ -544,7 +547,7 @@ function closeSecondAd() {
         </div>
     </a>
     <a class="d-flex align-items-center px-5" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
-        style="text-decoration:none; flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/n1 comp.webp'); background-size: cover; background-position:center;">
+        style="text-decoration:none; flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742446338490.webp/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
         <div>
             <h1 class="text-light ms-2" style="font-size:28px;">Luxury</h1>
             <div class="d-flex gap-1 ms-2">
@@ -554,7 +557,7 @@ function closeSecondAd() {
         </div>
     </a>
     <a href="<?= base_url('product/bufet-tv-ilena-cabana') ?>" class="d-flex align-items-center px-5"
-        style="text-decoration:none; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/s comp.webp'); background-size: cover; background-position:center;">
+        style="text-decoration:none; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742446372850.webp/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
         <div>
             <h1 class="text-light ms-2" style="font-size:28px;">Simply</h1>
             <div class="d-flex gap-1 ms-2">
@@ -596,15 +599,15 @@ function closeSecondAd() {
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/industrial/3 comp.png'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742448909605.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
                 </div>
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/industrial/2 comp.png'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742448940409.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/industrial/1 comp.png'); background-size: cover; background-position: center; height:100%; background-repeat: no-repeat;">
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742448971773.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position: center; height:100%; background-repeat: no-repeat;">
         </div>
     </div>
     <div class="scroll-home-item">
@@ -623,15 +626,15 @@ function closeSecondAd() {
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/sorely/3 comp.png'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742449015853.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
                 </div>
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/sorely/2 comp.png'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742449044439.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/sorely/1 comp.png'); background-size: cover; background-position:center; ">
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742449070724.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center; ">
         </div>
     </div>
     <div class="scroll-home-item">
@@ -652,15 +655,15 @@ function closeSecondAd() {
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/watercase/3 comp.png'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742449142002.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
                 </div>
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/watercase/2 comp.png'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742449164348.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/watercase/1 comp.png'); background-size: cover; background-position:center; ">
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742449189905.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center; ">
         </div>
     </div>
     <div class="scroll-home-item">
@@ -680,15 +683,15 @@ function closeSecondAd() {
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/plintbase/4 comp.png'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742449272365.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
                 </div>
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/plintbase/2 comp.png'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742449295384.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/plintbase/1 comp.png'); background-size: cover; background-position:center; ">
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742449317998.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center; ">
         </div>
     </div>
     <div class="scroll-home-item">
@@ -713,15 +716,15 @@ function closeSecondAd() {
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/cutout/1 comp.png'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742449351540.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
                 </div>
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/cutout/2 comp.png'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742449375221.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/cutout/4 comp.png'); background-size: cover; background-position:center; ">
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742449396827.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center; ">
         </div>
     </div>
 
@@ -743,15 +746,15 @@ function closeSecondAd() {
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/orca/3 comp.png'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742449442663.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
                 </div>
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/orca/2 comp.png'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742449462506.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/orca/1 comp.png'); background-size: cover; background-position:center; ">
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742449486165.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center; ">
         </div>
     </div>
 
@@ -771,10 +774,10 @@ function closeSecondAd() {
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/cody/'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
                 </div>
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/cody/'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
                 </div>
             </div>
         </div>
@@ -1023,7 +1026,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 <!-- Bagian Windows -->
 <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:40svh;">
-    <a href="<?= base_url('product/bufet-tv-ilena-cabana') ?>" style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/inaugural comp.webp');
+    <a href="<?= base_url('product/bufet-tv-ilena-cabana') ?>" style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742449659675.webp/?apikey=<?=  $apikey_img_ilena ?>');
     background-size: cover; background-position:top;">
     </a>
     <div style="flex:1; background-color:#7B441c; position:relative;">
@@ -1206,7 +1209,8 @@ function modalseries() {
 <div class="container show-flex-ke-hide gap-3 my-5" style="width:100%; height:60svh;">
     <a href="/product?ruang=tamu" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
         <div class="zoom-wrapper mb-2">
-            <img src="./img/foto/livingroom1 comp.webp" alt="" style="flex: 1; width: 100%; object-fit: cover;">
+            <img src="https://img.ilenafurniture.com/image/1742445399641.webp/?apikey=<?=  $apikey_img_ilena ?>" alt=""
+                style="flex: 1; width: 100%; object-fit: cover;">
         </div>
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
             <h5 style="font-weight: 500;" class="m-0">L</h5>
@@ -1220,7 +1224,8 @@ function modalseries() {
     </a>
     <a href="/product?ruang=tidur" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
         <div class="zoom-wrapper mb-2">
-            <img src="./img/foto/bedroom cody comp.webp" alt="" style="flex: 1; width: 100%; object-fit: cover;">
+            <img src="https://img.ilenafurniture.com/image/1742445431983.webp/?apikey=<?=  $apikey_img_ilena ?>" alt=""
+                style="flex: 1; width: 100%; object-fit: cover;">
         </div>
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
             <h5 style="font-weight: 500;" class="m-0">B</h5>
@@ -1231,7 +1236,8 @@ function modalseries() {
     </a>
     <a href="/product?ruang=keluarga" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
         <div class="zoom-wrapper mb-2">
-            <img src="./img/foto/ruangtamu1 comp.webp" alt="" style="flex: 1; width: 100%; object-fit: cover;">
+            <img src="https://img.ilenafurniture.com/image/1742445475511.webp/?apikey=<?=  $apikey_img_ilena ?>" alt=""
+                style="flex: 1; width: 100%; object-fit: cover;">
         </div>
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
             <h5 style="font-weight: 500;" class="m-0">L</h5>
@@ -1262,7 +1268,7 @@ function modalseries() {
     <div class="d-flex gap-1 px-5 pt-5 pb-4" style="width: fit-content;">
         <a href="/product?ruang=tamu" class="bg-primary"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block; height: 100px;">
-            <img src="<?= base_url('/img/foto/livingroom1 comp.webp') ?>" alt=""
+            <img src="https://img.ilenafurniture.com/image/1742445542692.webp/?apikey=<?=  $apikey_img_ilena ?>" alt=""
                 style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
             <div class="d-flex gap-4 justify-content-center mb-2">
                 <h5 style="font-weight: 500;" class="m-0">L</h5>
@@ -1276,7 +1282,7 @@ function modalseries() {
         </a>
         <a href="/product?ruang=tidur"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
-            <img src="<?= base_url('/img/foto/bedroom cody comp.webp') ?>" alt=""
+            <img src="https://img.ilenafurniture.com/image/1742445603554.webp/?apikey=<?=  $apikey_img_ilena ?>" alt=""
                 style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
             <div class="d-flex gap-4 justify-content-center mb-2">
                 <h5 style="font-weight: 500;" class="m-0">B</h5>
@@ -1287,7 +1293,7 @@ function modalseries() {
         </a>
         <a href="/product?ruang=keluarga"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
-            <img src="<?= base_url('/img/foto/ruangtamu1 comp.webp') ?>" alt=""
+            <img src="https://img.ilenafurniture.com/image/1742445633826.webp/?apikey=<?=  $apikey_img_ilena ?>" alt=""
                 style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
             <div class="d-flex gap-4 justify-content-center mb-2">
                 <h5 style="font-weight: 500;" class="m-0">L</h5>
@@ -1318,11 +1324,16 @@ function modalseries() {
                 </div>
             </div>
             <img style="position: absolute; z-index: 4; top: 0; left: 0; width: 100%; height: 100%" class="d-block"
-                src="<?= base_url('/img/foto/find out more watercase comp.webp') ?>" alt="Slide 2">
+                src="https://img.ilenafurniture.com/image/1742445684882.webp/?apikey=<?=  $apikey_img_ilena ?>"
+                alt="Slide 2">
         </a>
         <a href="https://ilenafurniture.net/" class="kanan">
-            <img class="ls" src="<?= base_url('img/benner/poster slide home ls (2).png') ?>" alt="Slide 2">
-            <img class="pt" src="<?= base_url('img/benner/poster slide home pt (2).png') ?>" alt="Slide 2">
+            <img class="ls"
+                src="https://img.ilenafurniture.com/image/1742445731467.png/?apikey=<?=  $apikey_img_ilena ?>"
+                alt="Slide 2">
+            <img class="pt"
+                src="https://img.ilenafurniture.com/image/1742445771003.png/?apikey=<?=  $apikey_img_ilena ?>"
+                alt="Slide 2">
         </a>
     </div>
     <div class="dots">

@@ -34,6 +34,7 @@ class AdminController extends BaseController
     protected $ajukanPrintModel;
     protected $kartuStokModel;
     protected $session;
+    protected $apikey_img_ilena = env('APIKEY_IMG_ILENA', 'DefaultValue'); 
     public function __construct()
     {
         $this->barangModel = new BarangModel();
@@ -51,6 +52,7 @@ class AdminController extends BaseController
         $this->ajukanPrintModel = new AjukanPrintModel();
         $this->kartuStokModel = new KartuStokModel();
         $this->session = \Config\Services::session();
+        $this->apikey_img_ilena = env('APIKEY_IMG_ILENA', 'DefaultValue');
     }
     public function listProduct()
     {
@@ -67,6 +69,7 @@ class AdminController extends BaseController
         }
         $data = [
             'title' => 'Produk Kami',
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'produk' => $product,
             'koleksi' => $koleksi
         ];
@@ -91,6 +94,7 @@ class AdminController extends BaseController
         }
         $data = [
             'title' => 'Produk Kami ',
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'produk' => $product,
         ];
         return view('admin/allTable', $data);
@@ -101,6 +105,7 @@ class AdminController extends BaseController
         $jenis = $this->jenisModel->getJenis();
         $data = [
             'title' => 'Tambah Produk',
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'koleksi' => $koleksi,
             'koleksiJson' => json_encode($koleksi),
             'jenis' => $jenis,
@@ -288,6 +293,7 @@ class AdminController extends BaseController
         }
         $data = [
             'title' => 'Tambah Produk',
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'koleksi' => $koleksi,
             'jenis' => $jenis,
             'produk' => $product,
@@ -475,6 +481,7 @@ class AdminController extends BaseController
         }
         $data = [
             'title' => 'Konfirm Mutasi',
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'mutasi' => $mutasi,
             'msg' => session()->getFlashdata('msg')
         ];
@@ -613,6 +620,7 @@ class AdminController extends BaseController
         }
         $data = [
             'title' => 'Pesanan',
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'pesanan' => $pesanan,
             'pesananJson' => json_encode($pesanan)
         ];
@@ -660,6 +668,7 @@ class AdminController extends BaseController
 
         $data = [
             'title' => 'Pesanan',
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'produkJson' => json_encode($produk),
             'provinsi' => $provinsi['rajaongkir']['results']
         ];
@@ -757,6 +766,7 @@ class AdminController extends BaseController
         }
         $data = [
             'title' => 'Pengajuan Print Ulang',
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'ajukan' => $ajukanPrint
         ];
         return view('admin/reprint', $data);
@@ -794,6 +804,7 @@ class AdminController extends BaseController
 
         $data = [
             'title' => 'Konfirmasi Marketplace',
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'val' => [
                 'msg' => session()->getFlashdata('msg')
             ],
@@ -919,6 +930,7 @@ class AdminController extends BaseController
         $pemesanan['items'] = json_decode($pemesanan['items'], true);
         $data = [
             'title' => 'Label Barang',
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'pemesanan' => $pemesanan
         ];
         return view('admin/labelBarang', $data);
@@ -930,6 +942,7 @@ class AdminController extends BaseController
         $artikel = $this->artikelModel->orderBy('waktu', 'desc')->findAll();
         $data = [
             'title' => 'Artikel',
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'artikel' => $artikel,
             'msg' => session()->getFlashdata('msg')
         ];
@@ -948,6 +961,7 @@ class AdminController extends BaseController
         }
         $data = [
             'title' => 'Artikel',
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'artikel' => $artikel
         ];
         return view('pages/artikelAll', $data);
@@ -961,6 +975,7 @@ class AdminController extends BaseController
         $tinymce_key = env('TINYMCE_KEY', 'DefaultValue');
         $data = [
             'title' => 'Tambah Artikel',
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'galeri' => $galeri,
             'tinyMCE' => $tinymce_key
         ];
@@ -1024,6 +1039,7 @@ class AdminController extends BaseController
         $tinymce_key = env('TINYMCE_KEY', 'DefaultValue');
         $data = [
             'title' => 'Edit Artikel',
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'artikel' => $artikel,
             'galeri' => $galeri,
             'tinyMCE' => $tinymce_key
@@ -1064,6 +1080,7 @@ class AdminController extends BaseController
         ];
         $data = [
             'title' => 'Home Layout',
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'msg' => session()->getFlashdata('msg'),
             'gambarHeader' => $gambarHeader
         ];
@@ -1165,6 +1182,7 @@ class AdminController extends BaseController
         $bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
         $data = [
             'title' => 'Surat Jalan',
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'pemesanan' => $pemesanan,
             'tanggal' => date("d", $d) . " " . $bulan[(int)date("m", $d) - 1] . " " . date("Y", $d),
             'items' => $items
@@ -1185,6 +1203,7 @@ class AdminController extends BaseController
         }
         $data = [
             'title' => 'Ganti Gambar',
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'barang' => $barangLama,
             'barangJson' => json_encode($barangLama)
         ];

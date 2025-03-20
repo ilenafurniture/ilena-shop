@@ -139,8 +139,8 @@
                     </p>
                 </a>
                 <div class="p-2">
-                    <img src="<?= base_url('/img/fototoko/tokojempol.webp') ?>" alt="Jempol Baru Furniture"
-                        class="client-logo">
+                    <img src="https://img.ilenafurniture.com/image/1742449816363.webp/?apikey=<?=  $apikey_img_ilena ?>"
+                        alt="Jempol Baru Furniture" class="client-logo">
                 </div>
             </div>
 
@@ -156,8 +156,8 @@
                     </a>
                 </div>
                 <div class="p-2">
-                    <img src="<?= base_url('/img/fototoko/tokosumberabadi.webp') ?>" alt="Sumber Abadi Furniture"
-                        class="client-logo">
+                    <img src="https://img.ilenafurniture.com/image/1742449853266.webp/?apikey=<?=  $apikey_img_ilena ?>"
+                        alt="Sumber Abadi Furniture" class="client-logo">
                 </div>
             </div>
 
@@ -170,8 +170,8 @@
                         Tengah</p>
                 </a>
                 <div class="p-2">
-                    <img src="<?= base_url('/img/fototoko/tokosuri.webp') ?>" alt="SURI Meubel Furniture"
-                        class="client-logo">
+                    <img src="https://img.ilenafurniture.com/image/1742449882169.webp/?apikey=<?=  $apikey_img_ilena ?>"
+                        alt="SURI Meubel Furniture" class="client-logo">
                 </div>
             </div>
 
@@ -184,8 +184,8 @@
                     </p>
                 </a>
                 <div class="p-2">
-                    <img src="<?= base_url('/img/fototoko/tokohome.webp') ?>" alt="Home Gallery Furniture"
-                        class="client-logo">
+                    <img src="https://img.ilenafurniture.com/image/1742449923158.webp/?apikey=<?=  $apikey_img_ilena ?>"
+                        alt="Home Gallery Furniture" class="client-logo">
                 </div>
             </div>
             <div class="item-toko">
@@ -197,8 +197,8 @@
                     </p>
                 </a>
                 <div class="p-2">
-                    <img src="<?= base_url('/img/fototoko/tokoparianom.webp') ?>" alt="Pari Anom Jaya Furniture"
-                        class="client-logo">
+                    <img src="https://img.ilenafurniture.com/image/1742449972596.webp/?apikey=<?=  $apikey_img_ilena ?>"
+                        alt="Pari Anom Jaya Furniture" class="client-logo">
                 </div>
             </div>
             <div class="item-toko">
@@ -209,8 +209,8 @@
                     </p>
                 </a>
                 <div class="p-2">
-                    <img src="<?= base_url('/img/fototoko/tokopuri.webp') ?>" alt="Puri Mabel & Interior"
-                        class="client-logo">
+                    <img src="https://img.ilenafurniture.com/image/1742450004899.webp/?apikey=<?=  $apikey_img_ilena ?>"
+                        alt="Puri Mabel & Interior" class="client-logo">
                 </div>
             </div>
             <div class="item-toko">
@@ -223,8 +223,8 @@
                     </p>
                 </a>
                 <div class="p-2">
-                    <img src="<?= base_url('/img/fototoko/tokoveiktoria.webp') ?>" alt="Victoria Furnicenter"
-                        class="client-logo">
+                    <img src="https://img.ilenafurniture.com/image/1742450030786.webp/?apikey=<?=  $apikey_img_ilena ?>"
+                        alt="Victoria Furnicenter" class="client-logo">
                 </div>
             </div>
         </div>
@@ -245,7 +245,8 @@
         <div class="container show-block-ke-hide">
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    <img class="w-100 h-auto rounded-3 shadow-lg" src="<?= base_url('/img/foto/tt.webp') ?>"
+                    <img class="w-100 h-auto rounded-3 shadow-lg"
+                        src="https://img.ilenafurniture.com/image/1742450062282.webp/?apikey=<?=  $apikey_img_ilena ?>"
                         alt="Urban Design" style="object-fit: cover;">
                 </div>
                 <div class="col-md-6">
@@ -284,8 +285,8 @@
                 </div>
                 <div class="col-md-6">
                     <img class="w-100 h-auto rounded-3 shadow-lg"
-                        src="<?= base_url('/img/foto/Tentangperusahaan.webp') ?>" alt="Company Profile"
-                        style="object-fit: cover; filter: grayscale(1);">
+                        src="https://img.ilenafurniture.com/image/1742450090380.webp/?apikey=<?=  $apikey_img_ilena ?>"
+                        alt="Company Profile" style="object-fit: cover; filter: grayscale(1);">
                 </div>
             </div>
         </div>
@@ -295,7 +296,8 @@
         <div class="container hide-ke-show-block">
             <div class="row mb-4">
                 <div class="col-12 mb-3">
-                    <img class="w-100 h-auto rounded-3 shadow-lg" src="<?= base_url('/img/foto/tt.webp') ?>"
+                    <img class="w-100 h-auto rounded-3 shadow-lg"
+                        src="https://img.ilenafurniture.com/image/1742450062282.webp/?apikey=<?=  $apikey_img_ilena ?>"
                         alt="Urban Design Mobile" style="object-fit: cover;">
                 </div>
                 <div class="col-12">
@@ -317,8 +319,8 @@
             <div class="row mb-4">
                 <div class="col-12 mb-3">
                     <img class="w-100 h-auto rounded-3 shadow-lg"
-                        src="<?= base_url('/img/foto/Tentangperusahaan.webp') ?>" alt="Company Profile Mobile"
-                        style="object-fit: cover; filter: grayscale(1);">
+                        src="https://img.ilenafurniture.com/image/1742450090380.webp/?apikey=<?=  $apikey_img_ilena ?>"
+                        alt="Company Profile Mobile" style="object-fit: cover; filter: grayscale(1);">
                 </div>
                 <div class="col-12">
                     <h3 class="mb-3" style="font-size: 2.5rem;">Profil Perusahaan</h3>
@@ -345,13 +347,14 @@
         <h2 class="teks-sedang mb-4 mt-4 text-center">Our Clients</h2>
         <hr class="my-3">
         <div class="d-flex gap-4 align-items-center justify-content-center flex-wrap">
-            <img src="<?= base_url('../img/logo/thelandofnod.webp'); ?>" alt="The Land of Nod" width="150px"
-                class="client-logo">
-            <img src="<?= base_url('../img/logo/crateandbarrel.webp'); ?>" alt="Crate and Barrel" width="150px"
-                class="client-logo">
-            <img src="<?= base_url('../img/logo/westelm.webp'); ?>" alt="West Elm" width="150px" class="client-logo">
-            <img src="<?= base_url('../img/logo/williamssonoma.webp'); ?>" alt="Williams Sonoma" width="150px"
-                class="client-logo">
+            <img src="https://img.ilenafurniture.com/image/1742450163897.webp/?apikey=<?=  $apikey_img_ilena ?>"
+                alt="The Land of Nod" width="150px" class="client-logo">
+            <img src="https://img.ilenafurniture.com/image/1742450190985.webp/?apikey=<?=  $apikey_img_ilena ?>"
+                alt="Crate and Barrel" width="150px" class="client-logo">
+            <img src="https://img.ilenafurniture.com/image/1742450222588.webp/?apikey=<?=  $apikey_img_ilena ?>"
+                alt="West Elm" width="150px" class="client-logo">
+            <img src="https://img.ilenafurniture.com/image/1742450249426.webp/?apikey=<?=  $apikey_img_ilena ?>"
+                alt="Williams Sonoma" width="150px" class="client-logo">
         </div>
 
         <hr>

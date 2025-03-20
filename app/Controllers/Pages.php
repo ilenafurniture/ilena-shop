@@ -35,6 +35,7 @@ class Pages extends BaseController
     protected $jenisModel;
     protected $voucherModel;
     protected $session;
+    protected $apikey_img_ilena;
     public function __construct()
     {
         $this->barangModel = new BarangModel();
@@ -52,6 +53,7 @@ class Pages extends BaseController
         $this->jenisModel = new JenisModel();
         $this->voucherModel = new VoucherModel();
         $this->session = \Config\Services::session();
+        $this->apikey_img_ilena = env('APIKEY_IMG_ILENA', 'DefaultValue');
     }
     public function getNavbarData()
     {
@@ -111,6 +113,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Home',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'metaKeyword' => 'ilena Furniture, Toko Furniture, Sorely Ilena Semarang, Cabana Ilena Semarang, Orca Ilena Semarang, Plint Base Ilena Semarang, Cutout Ilena Semarang, Living Room Ilena Semarang, Bed Room Ilena Semarang, Lounge Room Ilena Semarang',
             'produk' => $produk,
             'wishlist' => $wishlist,
@@ -130,6 +133,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Home',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'produk' => $produk,
             'wishlist' => $wishlist,
             'msg_active' => session()->getFlashdata('msg_active') ? session()->getFlashdata('msg_active') : false,
@@ -156,6 +160,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Cari Produk',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'koleksiJenis' => [
                 'koleksi' => $koleksi,
                 'jenis' => $jenis,
@@ -350,6 +355,7 @@ class Pages extends BaseController
                 'title' => ucwords($product['nama']),
 
                 'navbar' => $this->getNavbarData(),
+                'apikey_img_ilena' => $this->apikey_img_ilena,
                 'produk'        => $product,
                 'wishlist'      => $wishlist,
                 // 'koleksi'       => $koleksi,
@@ -375,6 +381,7 @@ class Pages extends BaseController
                 'title' => 'Produk Kami',
 
                 'navbar' => $this->getNavbarData(),
+                'apikey_img_ilena' => $this->apikey_img_ilena,
                 'produk' => $product,
                 'koleksiJenis' => [
                     'koleksi' => $koleksi,
@@ -452,6 +459,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Produk Kami',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'produk' => $seluruhBarangFilter,
             'wishlist' => $wishlist,
             'koleksi' => $koleksi,
@@ -533,6 +541,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Keranjang',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'keranjang' => $keranjang,
             'hargaTotal' => $hargaTotal,
             'hargaKeseluruhan' => $hargaTotal + 5000
@@ -733,6 +742,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Alamat',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'provinsi' => $provinsi["rajaongkir"]["results"],
             'keranjang' => $keranjang,
             'hargaTotal' => $hargaTotal,
@@ -960,6 +970,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Pengiriman',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'alamat' => $alamat[$ind_add],
             'keranjang' => $keranjang,
             'hargaTotal' => $hargaTotal,
@@ -1005,6 +1016,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Pembayaran',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'hargaTotal' => $hargaTotal,
             'hargaOngkir' => $kurir[$index_kurir]['harga'],
             'hargaKeseluruhan' => ($hargaTotal + 5000 + $kurir[$index_kurir]['harga']),
@@ -1120,6 +1132,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Pembayaran',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'hargaTotal' => $hargaTotal,
             'user' => [
                 'email' => $alamatselected['email_pemesan'],
@@ -2094,6 +2107,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Peroses Pembayaran',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'pemesanan' => $pemesanan,
             'dataMid' => $dataMid,
             'va_number' => $va_number,
@@ -2126,6 +2140,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Pembayaran Sukes',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'pemesanan' => $pemesanan,
             'dataMid' => $dataMid,
             'kurir' => $kurir,
@@ -2139,6 +2154,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Pembayaran batal',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
         ];
         return view('pages/cencelpay', $data);
     }
@@ -2418,6 +2434,7 @@ class Pages extends BaseController
                     $data = [
                         'title' => 'Peroses Pembayaran',
                         'navbar' => $this->getNavbarData(),
+                        'apikey_img_ilena' => $this->apikey_img_ilena,
                         'pemesanan' => $pemesanan,
                         'dataMid' => $dataMid,
                         'va_number' => $va_number,
@@ -2472,6 +2489,7 @@ class Pages extends BaseController
                     $data = [
                         'title' => 'Pembayaran Sukes',
                         'navbar' => $this->getNavbarData(),
+                        'apikey_img_ilena' => $this->apikey_img_ilena,
                         'pemesanan' => $pemesanan,
                         'dataMid' => $dataMid,
                         'kurir' => $kurir,
@@ -2525,6 +2543,7 @@ class Pages extends BaseController
                     $data = [
                         'title' => 'Pembayaran Sukes',
                         'navbar' => $this->getNavbarData(),
+                        'apikey_img_ilena' => $this->apikey_img_ilena,
                         'pemesanan' => $pemesanan,
                         'dataMid' => $dataMid,
                         'kurir' => $kurir,
@@ -2572,6 +2591,7 @@ class Pages extends BaseController
                     $data = [
                         'title' => 'Peroses Pembayaran',
                         'navbar' => $this->getNavbarData(),
+                        'apikey_img_ilena' => $this->apikey_img_ilena,
                         'pemesanan' => $pemesanan,
                         'dataMid' => $dataMid,
                         'va_number' => $va_number,
@@ -2613,6 +2633,7 @@ class Pages extends BaseController
             $data = [
                 'title' => 'Pesanan',
                 'navbar' => $this->getNavbarData(),
+                'apikey_img_ilena' => $this->apikey_img_ilena,
                 'pesanan' => $pesanan,
                 'email' => session()->get('email'),
                 'nama' => session()->get('nama'),
@@ -2863,6 +2884,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Pesanan',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'pesanan' => $pesanan,
             'email' => session()->get('email'),
             'nama' => session()->get('nama'),
@@ -3159,6 +3181,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Peroses Pembayaran',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'pemesanan' => $pemesanan,
             'pemesananAll' => $pemesananAll,
             'bulan' => $bulan,
@@ -3222,6 +3245,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Print Preview',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'transaksi' => $arr,
             'transaksiJson' => json_encode($arr),
             'bulan' => $bulan
@@ -3259,6 +3283,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Favorite',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'produk' => $produk,
             'wishlist' => $wishlist
         ];
@@ -3343,6 +3368,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Artikel',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'artikel' => $artikel,
             'find' => str_replace('-', ' ', $cari)
         ];
@@ -3354,6 +3380,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Akun',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'val' => [
                 'msg' => session()->getFlashdata('msg'),
                 'val_email' => session()->getFlashdata('val-email'),
@@ -3478,6 +3505,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Membuat Akun',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'val' => [
                 'val_nama' => session()->getFlashdata('val-nama'),
                 'val_email' => session()->getFlashdata('val-email'),
@@ -3581,6 +3609,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Verifikasi',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'val' => [
                 'msg' => session()->getFlashdata('msg'),
                 'val_verify' => session()->getFlashdata('val_verify')
@@ -3704,6 +3733,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Akun Saya',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
             'alamat' => $alamat,
             'alamatJson' => json_encode($alamat),
             'email' => session()->get('email'),
@@ -3720,6 +3750,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Visi dan Misi',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
         ];
         return view('pages/visiMisi', $data);
     }
@@ -3728,6 +3759,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'FAQ',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
         ];
         return view('pages/faq', $data);
     }
@@ -3754,6 +3786,7 @@ class Pages extends BaseController
             $data = [
                 'title' => 'Artikel ' . $artikel['judul'],
                 'navbar' => $this->getNavbarData(),
+                'apikey_img_ilena' => $this->apikey_img_ilena,
                 'artikel' => $artikel,
                 'artikelTerkait' => $artikelTerkait,
                 'produkTerkait' => $produkTerkait,
@@ -3772,6 +3805,7 @@ class Pages extends BaseController
             $data = [
                 'title' => 'Artikel',
                 'navbar' => $this->getNavbarData(),
+                'apikey_img_ilena' => $this->apikey_img_ilena,
                 'artikel' => $artikel
             ];
             return view('pages/artikelAll', $data);
@@ -3790,6 +3824,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Tentang Kami',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
         ];
         return view('pages/tentang', $data);
     }
@@ -3798,6 +3833,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Kontak Kami',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
         ];
         return view('pages/contact', $data);
     }
@@ -3806,6 +3842,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Syarat & Ketentuan',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
         ];
         return view('pages/syarat', $data);
     }
@@ -3814,6 +3851,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Kebijakan Privasi',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
         ];
         return view('pages/kebijakan', $data);
     }
@@ -3885,6 +3923,7 @@ class Pages extends BaseController
         $data = [
             'title' => 'Halaman Tidak Ditemukan',
             'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
         ];
         return view('layout/notFound', $data);
     }

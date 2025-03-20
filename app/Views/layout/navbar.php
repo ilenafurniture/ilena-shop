@@ -214,12 +214,23 @@
                     <div className="d-flex align-items-center py-2 gap-5">
                         {Object.entries(navbar).map(([category, products]) => (
                         <div key={category} className="list-nav" onMouseOver={() => handleHoverJenis(category, products)} onMouseLeave={() => handleCloseHover('jenis')}>
+                            {Array.isArray(products) ?
                             <a
                                 className="text-center w-100 d-block"
                                 style={{ textDecoration: 'none', color: jenisSelected.category == category ? 'var(--merah)' : 'black' }}
                                 href={`/product?jenis=${category.replace(' ', '-')}`}
                             >{category.charAt(0).toUpperCase() + category.slice(1)}
                             </a>
+                            :
+                            <a
+                                className="text-center w-100 d-block"
+                                style={{ textDecoration: 'none', color: jenisSelected.category == category ? 'var(--merah)' : 'black' }}
+                                href={`/product?jenis=${Object.entries(products).reduce((prev, [index, isi]) => {
+                                    return `${prev}${prev == '' ? '' : '+'}${index.split(' ').join('-')}`;
+                                }, "")}`}
+                            >{category.charAt(0).toUpperCase() + category.slice(1)}
+                            </a>
+                            }
                         </div>
                         ))}
                     </div>
