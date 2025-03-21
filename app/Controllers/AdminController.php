@@ -34,7 +34,7 @@ class AdminController extends BaseController
     protected $ajukanPrintModel;
     protected $kartuStokModel;
     protected $session;
-    protected $apikey_img_ilena = env('APIKEY_IMG_ILENA', 'DefaultValue'); 
+    protected $apikey_img_ilena;
     public function __construct()
     {
         $this->barangModel = new BarangModel();
