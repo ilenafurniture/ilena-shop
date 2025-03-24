@@ -21,7 +21,8 @@
                     <a href="/product" class="btn btn-default-hitam">Pergi ke Toko</a>
                 </div>
             </div>
-            <img class="d-block rounded header" src="/img/foto/find%20out%20more.webp" alt="">
+            <img class="d-block rounded header"
+                src="https://img.ilenafurniture.com/image/1742445475511.webp/?apikey=<?=  $apikey_img_ilena ?>" alt="">
         </div>
         <?php
         $indexAwal = -1;
