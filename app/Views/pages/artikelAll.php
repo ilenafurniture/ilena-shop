@@ -39,7 +39,7 @@
                         <img class="rounded" src="<?= $artikel[0]['header']; ?>" alt="<?= $artikel[0]['judul']; ?>">
                         <p class="m-0 judul"><?= $artikel[0]['judul']; ?></p>
                         <div class="flex-grow-1">
-                            <p class="m-0 isi"><?= $artikel[0]['deskrideskripsi']; ?></p>
+                            <p class="m-0 isi"><?= $artikel[0]['deskripsi']; ?></p>
                         </div>
                         <p class="m-0 fw-bold" style="font-size: smaller;"><?= $artikel[0]['penulis']; ?></p>
                         <p class="m-0" style="font-size: smaller; color: #888;"><?= $artikel[0]['waktu']; ?></p>
