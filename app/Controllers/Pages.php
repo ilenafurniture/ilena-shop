@@ -3792,7 +3792,7 @@ class Pages extends BaseController
                 'produkTerkait' => $produkTerkait,
                 'komen' => json_decode($artikel['komen'], true),
                 'komenJson' => $artikel['komen'],
-                'metaDeskripsi' => $artikel['judul'],
+                'metaDeskripsi' => $artikel['deskripsi'],
                 'metaKeyword' => $artikel['keywords'],
                 'wishlist' => $wishlist
             ];

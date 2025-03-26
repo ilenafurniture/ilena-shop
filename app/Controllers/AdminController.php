@@ -1005,6 +1005,8 @@ class AdminController extends BaseController
         $path = str_replace(".", "", $path);
         $path = str_replace("& ", "", $path);
         $path = str_replace("?", "", $path);
+        $path = str_replace("!", "", $path);
+        $path = str_replace(":", "", $path);
         $path = str_replace(" ", "-", $path);
         $path = strtolower($path);
         $this->artikelModel->insert([
@@ -1053,6 +1055,8 @@ class AdminController extends BaseController
         $path = str_replace(".", "", $path);
         $path = str_replace("& ", "", $path);
         $path = str_replace("?", "", $path);
+        $path = str_replace("!", "", $path);
+        $path = str_replace(":", "", $path);
         $path = str_replace(" ", "-", $path);
         $path = strtolower($path);
         $this->artikelModel->where(['id' => $id])->set([
@@ -1208,5 +1212,30 @@ class AdminController extends BaseController
             'barangJson' => json_encode($barangLama)
         ];
         return view('admin/gantiGambar', $data);
+    }
+    public function seoCheck($id)
+    {
+        $artikel = $this->artikelModel->getArtikel($id);
+
+        if (!$artikel) {
+            return 'Artikel tidak ditemukan';
+        }
+
+        $seoTitleMeta = checkTitleMeta($artikel['judul'], $artikel['deskripsi']);
+        $seoKeywordDensity = checkKeywordDensity($artikel['isi'], $artikel['keywords']);
+        $seoImages = checkImageAltTags($artikel['isi']);
+        $seoLinks = checkInternalExternalLinks($artikel['isi'], base_url());
+        $seoHeadings = checkHeadingStructure($artikel['isi']);
+        $seoReadability = readabilityScore($artikel['isi']);
+
+        return view('seo_check', [
+            'artikel' => $artikel,
+            'seoTitleMeta' => $seoTitleMeta,
+            'seoKeywordDensity' => $seoKeywordDensity,
+            'seoImages' => $seoImages,
+            'seoLinks' => $seoLinks,
+            'seoHeadings' => $seoHeadings,
+            'seoReadability' => $seoReadability,
+        ]);
     }
 }

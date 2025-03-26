@@ -14,36 +14,36 @@
             </div>
             <div style="width: calc(100% / 3)" class="d-flex justify-content-end">
                 <?php if (session()->get('isLogin')) { ?>
-                <?php if (session()->get('role') == '0' || session()->get('role') == '4') { ?>
-                <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
-                <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
-                <a href="/account" class="btn"><i class="material-icons text-light">person_outline</i></a>
-                <?php } else if (session()->get('role') == '1') { ?>
-                <a href="/admin/product" class="btn d-flex align-items-center">
-                    <i class="material-icons text-light">chevron_left</i>
-                    <p class="m-0 text-light">Admin</p>
-                </a>
-                <a href="/logout" class="btn" style="padding-right: 0"><i
-                        class="material-icons text-light">exit_to_app</i></a>
-                <?php } else if (session()->get('role') == '2') { ?>
-                <a href="/gudang/listorder" class="btn d-flex align-items-center">
-                    <i class="material-icons text-light">chevron_left</i>
-                    <p class="m-0 text-light">Gudang</p>
-                </a>
-                <a href="/logout" class="btn" style="padding-right: 0"><i
-                        class="material-icons text-light">exit_to_app</i></a>
-                <?php } else if (session()->get('role') == '3') { ?>
-                <a href="/market/product" class="btn d-flex align-items-center">
-                    <i class="material-icons text-light">chevron_left</i>
-                    <p class="m-0 text-light">Marketplace</p>
-                </a>
-                <a href="/logout" class="btn" style="padding-right: 0"><i
-                        class="material-icons text-light">exit_to_app</i></a>
-                <?php } ?>
+                    <?php if (session()->get('role') == '0' || session()->get('role') == '4') { ?>
+                        <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
+                        <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
+                        <a href="/account" class="btn"><i class="material-icons text-light">person_outline</i></a>
+                    <?php } else if (session()->get('role') == '1') { ?>
+                        <a href="/admin/product" class="btn d-flex align-items-center">
+                            <i class="material-icons text-light">chevron_left</i>
+                            <p class="m-0 text-light">Admin</p>
+                        </a>
+                        <a href="/logout" class="btn" style="padding-right: 0"><i
+                                class="material-icons text-light">exit_to_app</i></a>
+                    <?php } else if (session()->get('role') == '2') { ?>
+                        <a href="/gudang/listorder" class="btn d-flex align-items-center">
+                            <i class="material-icons text-light">chevron_left</i>
+                            <p class="m-0 text-light">Gudang</p>
+                        </a>
+                        <a href="/logout" class="btn" style="padding-right: 0"><i
+                                class="material-icons text-light">exit_to_app</i></a>
+                    <?php } else if (session()->get('role') == '3') { ?>
+                        <a href="/market/product" class="btn d-flex align-items-center">
+                            <i class="material-icons text-light">chevron_left</i>
+                            <p class="m-0 text-light">Marketplace</p>
+                        </a>
+                        <a href="/logout" class="btn" style="padding-right: 0"><i
+                                class="material-icons text-light">exit_to_app</i></a>
+                    <?php } ?>
                 <?php } else { ?>
-                <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
-                <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
-                <a href="/login" class="btn"><i class="material-icons text-light">person_outline</i></a>
+                    <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
+                    <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
+                    <a href="/login" class="btn"><i class="material-icons text-light">person_outline</i></a>
                 <?php } ?>
             </div>
         </div>
@@ -53,61 +53,61 @@
     <p class="m-0 text-center" style="color: white;">Lebih hemat dengan Free Ongkir hingga 100%</p>
 </div>
 <style>
-#container-react {
-    position: sticky;
-    top: -1px;
-    z-index: 99;
-}
-
-.container-navbar-list-nav {
-    background-color: whitesmoke;
-    position: sticky;
-    top: -1px;
-    z-index: 99;
-    justify-content: center;
-    overflow-x: auto;
-}
-
-.container-navbar-list-nav::-webkit-scrollbar {
-    display: none;
-}
-
-@media (max-width: 1343px) {
-    .container-navbar-list-nav {
-        justify-content: start;
-        padding-inline: 2em;
-        /* overflow-x: scroll; */
+    #container-react {
+        position: sticky;
+        top: -1px;
+        z-index: 99;
     }
-}
 
-@media (max-width: 600px) {
-    .tampilHp {
+    .container-navbar-list-nav {
+        background-color: whitesmoke;
+        position: sticky;
+        top: -1px;
+        z-index: 99;
+        justify-content: center;
+        overflow-x: auto;
+    }
+
+    .container-navbar-list-nav::-webkit-scrollbar {
         display: none;
     }
-}
 
-.overlay-navbar {
-    height: 40px;
-    width: 200px;
-    background-image: linear-gradient(to left, whitesmoke, transparent);
-    margin-bottom: -40px;
-    display: flex;
-    z-index: 120;
-    align-items: center;
-    justify-content: end;
-    padding-right: 20px;
-}
+    @media (max-width: 1343px) {
+        .container-navbar-list-nav {
+            justify-content: start;
+            padding-inline: 2em;
+            /* overflow-x: scroll; */
+        }
+    }
 
-.overlay-navbar i {
-    cursor: pointer;
-    transition: 0.2s;
-}
+    @media (max-width: 600px) {
+        .tampilHp {
+            display: none;
+        }
+    }
 
-.overlay-navbar i:hover {
-    font-weight: bold;
-    color: var(--merah);
-    transition: 0.2s;
-}
+    .overlay-navbar {
+        height: 40px;
+        width: 200px;
+        background-image: linear-gradient(to left, whitesmoke, transparent);
+        margin-bottom: -40px;
+        display: flex;
+        z-index: 120;
+        align-items: center;
+        justify-content: end;
+        padding-right: 20px;
+    }
+
+    .overlay-navbar i {
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .overlay-navbar i:hover {
+        font-weight: bold;
+        color: var(--merah);
+        transition: 0.2s;
+    }
 </style>
 <div id="container-react" class="tampilHp"></div>
 
@@ -320,7 +320,7 @@
                                         </h3>
                                         <p style={{ textAlign: 'justify' }} className="mb-2">{productSelected.deskripsi.deskripsi}</p>
                                         <a
-                                            href={`/product/${productSelected.nama.toLowerCase().replace(' ', '-')}`}
+                                            href={`/product/${productSelected.nama.toLowerCase().split(' ').join('-')}`}
                                             style={{
                                                 display: 'inline',
                                                 fontSize: '10px',
