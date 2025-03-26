@@ -295,7 +295,7 @@ function closeSecondAd() {
 <!-- bagian windows -->
 <div class="p-5">
     <div class="show-flex-ke-hide p-5 flex-column align-items-center justify-content-center"
-        style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742446235599.webp/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position: center; width:100%; height:80svh;">
+        style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742972542166.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position: center; width:100%; height:80svh;">
         <h1 class="teks-besar mb-2 text-center text-light">Modern & Stylish<br>Furniture</h1>
         <p class="text-handwrite py-1 px-2 text-light"
             style="font-size:30px; transform: rotate(-10deg) translate(100px, -20px);">True to you</p>
@@ -305,7 +305,7 @@ function closeSecondAd() {
     </div>
     <!-- bagian HP -->
     <div class="hide-ke-show-flex px-5 flex-column justify-content-center"
-        style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742446235599.webp/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; width:100%; height:60svh;">
+        style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742972542166.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; width:100%; height:60svh;">
         <h1 class="teks-besar text-light" style="font-size:34px;">Modern & Stylish<br>Furniture</h1>
         <p class="text-handwrite py-1 px-2 text-light"
             style="font-size:20px; transform: rotate(-10deg) translate(50px, -15px);">True to you</p>
@@ -457,7 +457,7 @@ function closeSecondAd() {
 <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:80svh;">
     <a class="d-flex align-items-center ps-5 zoom-wrapper" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
         style="text-decoration:none; flex:1; position: relative;">
-        <img src="https://img.ilenafurniture.com/image/1742445277837.webp/?apikey=<?=  $apikey_img_ilena ?>"
+        <img src="https://img.ilenafurniture.com/image/1742973197480.png/?apikey=<?=  $apikey_img_ilena ?>"
             alt="Background Image"
             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
         <div>
@@ -469,7 +469,7 @@ function closeSecondAd() {
     <div style="flex:1;" class=" d-flex flex-column">
         <a class="d-flex align-items-center ps-5 zoom-wrapper" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
             style="text-decoration:none; flex: 1; position: relative;">
-            <img src="https://img.ilenafurniture.com/image/1742445320940.webp/?apikey=<?=  $apikey_img_ilena ?>"
+            <img src="https://img.ilenafurniture.com/image/1742973329631.png/?apikey=<?=  $apikey_img_ilena ?>"
                 alt="Background Image"
                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
             <div>
@@ -482,7 +482,7 @@ function closeSecondAd() {
         </a>
         <a class="d-flex" style="text-decoration:none; flex: 1" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>">
             <div class="d-flex align-items-center ps-5 zoom-wrapper" style="flex:1; position: relative;">
-                <img src="https://img.ilenafurniture.com/image/1742445358952.webp/?apikey=<?=  $apikey_img_ilena ?>"
+                <img src="https://img.ilenafurniture.com/image/1742973475864.png/?apikey=<?=  $apikey_img_ilena ?>"
                     alt="Background Image"
                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
                 <div>
@@ -539,7 +539,7 @@ function closeSecondAd() {
 <!-- Bagian HP -->
 <div class="hide-ke-show-flex flex-column pt-2 gap-2" style="width:100%; height:80svh;">
     <a href="<?= base_url('product/bufet-tv-ilena-cabana') ?>" class="d-flex align-items-center px-5"
-        style="text-decoration:none; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742446306648.webp/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
+        style="text-decoration:none; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742973197480.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
         <div>
             <p class="text-light ms-2 m-0" style="font-size:12px;">Make you feel</p>
             <h1 class="text-light ms-2" style="font-size:28px;">Elegant</h1>
@@ -547,7 +547,7 @@ function closeSecondAd() {
         </div>
     </a>
     <a class="d-flex align-items-center px-5" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
-        style="text-decoration:none; flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742446338490.webp/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
+        style="text-decoration:none; flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742973329631.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
         <div>
             <h1 class="text-light ms-2" style="font-size:28px;">Luxury</h1>
             <div class="d-flex gap-1 ms-2">
@@ -557,7 +557,7 @@ function closeSecondAd() {
         </div>
     </a>
     <a href="<?= base_url('product/bufet-tv-ilena-cabana') ?>" class="d-flex align-items-center px-5"
-        style="text-decoration:none; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742446372850.webp/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
+        style="text-decoration:none; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742973475864.png/?apikey=<?=  $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
         <div>
             <h1 class="text-light ms-2" style="font-size:28px;">Simply</h1>
             <div class="d-flex gap-1 ms-2">
