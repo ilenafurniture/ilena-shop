@@ -1344,7 +1344,7 @@ if (isset($_GET['ruang'])) {
                             <button class="btn btn-lonjong " onclick="openMeta(event)">Lihat selengkapnya</button>
                         </div>
                     <?php break;
-                    case 'meja-nakas': ?>
+                    case 'side-table': ?>
                         <hr class="my-5">
                         <div class="container">
                             <div class="my-3 container-meta">
