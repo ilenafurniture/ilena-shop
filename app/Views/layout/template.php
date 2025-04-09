@@ -237,6 +237,11 @@
         </div>
     </div>
 
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+
     <?= $this->include('layout/navbar'); ?>
     <?= $this->include('layout/navbarHp'); ?>
     <div style="flex: 1; position: relative; min-height: 500px;">

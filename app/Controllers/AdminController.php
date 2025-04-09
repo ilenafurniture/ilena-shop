@@ -699,17 +699,33 @@ class AdminController extends BaseController
             $varian = $k['detail']['varian'];
             $saldo = (int)$varian['stok'];
             $tanggalNoStrip = date("YmdHis", strtotime("+7 hours"));
-            $this->kartuStokModel->insert([
-                'id_barang' => $k['id'],
-                'tanggal' => $waktu,
-                'keterangan' => $tanggalNoStrip . "-" . $k['id'] . "-" . strtoupper($varian['nama']) . "-" . $idFix,
-                'debit' => 0,
-                'kredit' => $k['quantity'],
-                'saldo' => $saldo,
-                'pending' => true,
-                'id_pesanan' => $idFix,
-                'varian' => strtoupper($varian['nama'])
-            ]);
+            if (!isset($body['stokTetap'])) {
+                $this->kartuStokModel->insert([
+                    'id_barang' => $k['id'],
+                    'tanggal' => $waktu,
+                    'keterangan' => $tanggalNoStrip . "-" . $k['id'] . "-" . strtoupper($varian['nama']) . "-" . $idFix,
+                    'debit' => 0,
+                    'kredit' => $k['quantity'],
+                    'saldo' => $saldo,
+                    'pending' => true,
+                    'id_pesanan' => $idFix,
+                    'varian' => strtoupper($varian['nama'])
+                ]);
+            } else {
+                if (!$body['stokTetap']) {
+                    $this->kartuStokModel->insert([
+                        'id_barang' => $k['id'],
+                        'tanggal' => $waktu,
+                        'keterangan' => $tanggalNoStrip . "-" . $k['id'] . "-" . strtoupper($varian['nama']) . "-" . $idFix,
+                        'debit' => 0,
+                        'kredit' => $k['quantity'],
+                        'saldo' => $saldo,
+                        'pending' => true,
+                        'id_pesanan' => $idFix,
+                        'varian' => strtoupper($varian['nama'])
+                    ]);
+                }
+            }
         }
         $data = [
             'data_mid'          => json_encode([

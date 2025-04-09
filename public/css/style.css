@@ -717,8 +717,40 @@ body {
     color: white;
     transition: 0.5s;
 }
-.btn-lonjong:hover {
-    background-color: whitesmoke;
+
+.btn-lonjong-putih {
+    display: flex;
+    gap: 0.5em;
+    background-color: white;
+    color: black;
+    font-weight: 500;
+    letter-spacing: -1px;
+    text-decoration: none;
+    width: fit-content;
+    padding: 0.5em 1em;
+    border-radius: 2em;
+    transition: 0.5s;
+}
+.btn-lonjong-putih:hover {
+    background-color: var(--merah);
+    color: white;
+    transition: 0.5s;
+}
+.btn-lonjong-putih-outline {
+    display: flex;
+    gap: 0.5em;
+    border: 1px solid white;
+    color: white;
+    font-weight: 500;
+    letter-spacing: -1px;
+    text-decoration: none;
+    width: fit-content;
+    padding: 0.5em 1em;
+    border-radius: 2em;
+    transition: 0.5s;
+}
+.btn-lonjong-putih-outline:hover {
+    background-color: white;
     color: black;
     transition: 0.5s;
 }
@@ -1251,6 +1283,7 @@ body {
 .artikel .header {
     width: 100%;
     height: 50svh;
+    min-height: 430px;
     object-fit: cover;
 }
 .artikel .judul {

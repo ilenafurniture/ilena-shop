@@ -1,178 +1,179 @@
 <?= $this->extend('layout/template'); ?>
 <?= $this->section('content'); ?>
-<div class="container d-flex justify-content-center artikel">
-    <div class="konten">
-        <form action="/actionsearcharticle" method="post">
-            <div class="d-flex mb-2 align-items-center">
-                <div class="container-search-artikel show">
-                    <input type="text" placeholder="Cari artikel" class="form-control" name="cari"
-                        value="<?= isset($find) ? $find : ''; ?>">
-                    <button type="submit" class="btn btn-light"><i class="material-icons">search</i></button>
-                </div>
-            </div>
-        </form>
-        <div class="mb-4">
-            <div class="p-5 header show-flex-ke-hide"
-                style="position: absolute; flex-direction: column; justify-content: end; width: 40%;">
-                <h1 class="text-light mb-1" style="font-size: 50px; line-height: 52px">Welcome to Ilena's Article</h1>
-                <p class="text-light mb-3">Perbarui informasi & referensi Anda seputar furniture dengan desain ala
-                    masyarakat urban</p>
-                <div class="d-flex gap-2">
-                    <a href="/product" class="btn btn-default-hitam">Pergi ke Toko</a>
-                </div>
-            </div>
-            <img class="d-block rounded header"
-                src="https://img.ilenafurniture.com/image/1742445475511.webp/?apikey=<?=  $apikey_img_ilena ?>" alt="">
-        </div>
-        <?php
-        $indexAwal = -1;
-        if (count($artikel) > 6) { ?>
-        <div class="mb-4">
-            <div class="d-flex justify-content-between mb-3 align-items-center">
-                <h5 class="jdl-section">Artikel Baru</h5>
-                <?php if (session()->get('role') == '1') { ?>
-                <a href="/admin/addarticle" class="btn btn-default-putih">Buat Artikel Baru</a>
-                <?php } ?>
-            </div>
-            <div class="gap-4 show-flex-ke-hide container-card-artikel">
-                <div class="flex-grow-1">
-                    <div class="card-artikel-besar" onclick="pergiKeArtikel(`<?= $artikel[0]['path']; ?>`)">
-                        <img class="rounded" src="<?= $artikel[0]['header']; ?>" alt="<?= $artikel[0]['judul']; ?>">
-                        <p class="m-0 judul"><?= $artikel[0]['judul']; ?></p>
-                        <div class="flex-grow-1">
-                            <p class="m-0 isi"><?= $artikel[0]['deskripsi']; ?></p>
-                        </div>
-                        <p class="m-0 fw-bold" style="font-size: smaller;"><?= $artikel[0]['penulis']; ?></p>
-                        <p class="m-0" style="font-size: smaller; color: #888;"><?= $artikel[0]['waktu']; ?></p>
-                    </div>
-                </div>
-                <div class="d-flex flex-grow-1 flex-column gap-4">
-                    <div class="card-artikel-kecil" onclick="pergiKeArtikel(`<?= $artikel[1]['path']; ?>`)">
-                        <div class="img">
-                            <img class="rounded" src="<?= $artikel[1]['header']; ?>" alt="<?= $artikel[1]['judul']; ?>">
-                        </div>
-                        <div class="flex-grow-1 d-flex flex-column">
-                            <p class="m-0 judul"><?= $artikel[1]['judul']; ?></p>
-                            <div class="flex-grow-1">
-                                <p class="m-0 isi"><?= $artikel[1]['deskripsi']; ?></p>
+<style>
+    .header {
+        height: 90svh;
+        width: 100%;
+        min-height: 633px;
+        max-height: 760px;
+        background-color: aqua;
+        color: white;
+    }
+
+    .header .container-header-img {
+        width: 100%;
+        height: 90svh;
+        min-height: 633px;
+        max-height: 760px;
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+    }
+
+    .header .container-header-img img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0;
+        scale: 1;
+        transition: 2s;
+    }
+
+    .header .container-header-img img.active {
+        opacity: 1;
+        transition: 2s;
+        scale: 1.1;
+    }
+
+    .header .container-header-content {
+        background-image: linear-gradient(to right, rgba(0, 0, 0, 0.7), transparent);
+        width: 100%;
+        height: 90svh;
+        max-height: 760px;
+        min-height: 633px;
+        position: absolute;
+        z-index: 2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .item-slider-header-img {
+        background-color: rgba(255, 255, 255, 0.5);
+        height: 10px;
+        width: 10px;
+        border-radius: 20px;
+        transition: 0.5s;
+    }
+
+    .item-slider-header-img.active {
+        width: 20px;
+        background-color: white;
+        transition: 0.5s;
+    }
+
+    .material-icons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 22px;
+    }
+
+    .container-kategori-artikel {
+        display: flex;
+        gap: 10px;
+        background-color: aqua;
+        justify-content: start;
+    }
+
+    .item-kategori-artikel {
+        background-position: center;
+        background-size: cover;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        color: white;
+        width: calc(30%);
+        justify-content: center;
+        border-radius: 10px;
+        aspect-ratio: 3 / 4;
+    }
+
+    .item-kategori-artikel p {
+        margin: 0;
+    }
+</style>
+<div id="container-react-artikel" class="tampilHp"></div>
+<script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+    const App = () => {
+        const [img, setImg] = useState(['active', '', '']);
+        const categories = [
+            {
+                teks: 'Olahraga',
+                link: '/article/category/olahraga',
+                gambar: 'https://images.unsplash.com/photo-1733509213080-db2aca1bc244?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            {
+                teks: 'Tips Trik',
+                link: '/article/category/tips-trik',
+                gambar: 'https://images.unsplash.com/photo-1739989934265-b46240484890?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            {
+                teks: 'Home',
+                link: '/article/category/olahraga',
+                gambar: 'https://images.unsplash.com/photo-1742238619061-c4470b8c0372?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            {
+                teks: 'News',
+                link: '/article/category/olahraga',
+                gambar: 'https://plus.unsplash.com/premium_photo-1681336549369-ee96c6ca07b5?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+        ];
+
+        return (
+            <>
+                <div className="header">
+                    <div className="container-header-content">
+                        <div className="d-flex align-items-end container gap-5">
+                            <div style={{ height: '100%', flex: '1' }}>
+                                <div>
+                                    <p>Tips & trik</p>
+                                    <h5 className="teks-sedang">INTO THE</h5>
+                                    <h1 className="teks-besar">WILD THE BIGGEST</h1>
+                                    <h1 className="teks-besar mb-3">RARE MOMENTs</h1>
+                                    <div style={{maxWidth: '500px', borderLeft: '3px solid white'}} className="ps-4">
+                                        <p className="mb-4" style={{ color: 'rgb(219, 219, 219)'}}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor provident deserunt soluta corporis distinctio quia culpa maiores, esse quibusdam perspiciatis.</p>
+                                    </div>
+                                    <div className="d-flex gap-2">
+                                        <a href="" className="btn-lonjong-putih"><i className="material-icons">bookmark_border</i></a>
+                                        <a href="" className="btn-lonjong-putih-outline">Baca selengkapnya</a>
+                                    </div>
+                                </div>
                             </div>
-                            <p class="m-0 fw-bold" style="font-size: smaller;"><?= $artikel[1]['penulis']; ?></p>
-                            <p class="m-0" style="font-size: smaller; color: #888;"><?= $artikel[1]['waktu']; ?></p>
+                            <div className="d-flex align-items-center gap-2">
+                                <div className={`item-slider-header-img ${img[0]}`} onClick={()=>{setImg(img.map((e, ind)=>(ind == 0 ? 'active' : '')))}}></div>
+                                <div className={`item-slider-header-img ${img[1]}`} onClick={()=>{setImg(img.map((e, ind)=>(ind == 1 ? 'active' : '')))}}></div>
+                                <div className={`item-slider-header-img ${img[2]}`} onClick={()=>{setImg(img.map((e, ind)=>(ind == 2 ? 'active' : '')))}}></div>
+                            </div>
                         </div>
                     </div>
-                    <div class="card-artikel-kecil" onclick="pergiKeArtikel(`<?= $artikel[2]['path']; ?>`)">
-                        <div class="img">
-                            <img class="rounded" src="<?= $artikel[2]['header']; ?>" alt="<?= $artikel[2]['judul']; ?>">
-                        </div>
-                        <div class="flex-grow-1 d-flex flex-column">
-                            <p class="m-0 judul"><?= $artikel[2]['judul']; ?></p>
-                            <div class="flex-grow-1">
-                                <p class="m-0 isi"><?= $artikel[2]['deskripsi']; ?></p>
-                            </div>
-                            <p class="m-0 fw-bold" style="font-size: smaller;"><?= $artikel[2]['penulis']; ?></p>
-                            <p class="m-0" style="font-size: smaller; color: #888;"><?= $artikel[2]['waktu']; ?></p>
-                        </div>
+                    <div className="container-header-img">
+                        <img className={img[0]} src="https://images.unsplash.com/photo-1742827871492-72428a28106b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" />
+                        <img className={img[1]} src="https://images.unsplash.com/photo-1742654230711-f938802dea76?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" />
+                        <img className={img[2]} src="https://images.unsplash.com/photo-1742646895349-93c71c08e693?q=80&w=1013&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" />
                     </div>
                 </div>
-                <div class="d-flex flex-grow-1 flex-column gap-4">
-                    <div class="card-artikel-kecil" onclick="pergiKeArtikel(`<?= $artikel[3]['path']; ?>`)">
-                        <div class="img">
-                            <img class="rounded" src="<?= $artikel[3]['header']; ?>" alt="<?= $artikel[3]['judul']; ?>">
-                        </div>
-                        <div class="flex-grow-1 d-flex flex-column">
-                            <p class="m-0 judul"><?= $artikel[3]['judul']; ?></p>
-                            <div class="flex-grow-1">
-                                <p class="m-0 isi"><?= $artikel[3]['deskripsi']; ?></p>
+                <div className="container">
+                    <div style={{ paddingBlock: '3em' }}>
+                        <h1 className="teks-besar mb-3">Article categories</h1>
+                            <div className="container-kategori-artikel">
+                                {categories.map((c, ind_c) => (
+                                    // <a key={ind_c} href={c.link} style={{backgroundImage: `url(${c.gambar})`}} className="item-kategori-artikel">
+                                    //     <p>{c.teks}</p>
+                                    //     <i className="material-icons">open_in_new</i>
+                                    // </a>
+                                    <div key={ind_c} className="item-kategori-artikel">
+
+                                    </div>
+                                ))}
                             </div>
-                            <p class="m-0 fw-bold" style="font-size: smaller;"><?= $artikel[3]['penulis']; ?></p>
-                            <p class="m-0" style="font-size: smaller; color: #888;"><?= $artikel[3]['waktu']; ?></p>
-                        </div>
-                    </div>
-                    <div class="card-artikel-kecil" onclick="pergiKeArtikel(`<?= $artikel[4]['path']; ?>`)">
-                        <div class="img">
-                            <img class="rounded" src="<?= $artikel[4]['header']; ?>" alt="<?= $artikel[4]['judul']; ?>">
-                        </div>
-                        <div class="flex-grow-1 d-flex flex-column">
-                            <p class="m-0 judul"><?= $artikel[4]['judul']; ?></p>
-                            <div class="flex-grow-1">
-                                <p class="m-0 isi"><?= $artikel[4]['deskripsi']; ?></p>
-                            </div>
-                            <p class="m-0 fw-bold" style="font-size: smaller;"><?= $artikel[4]['penulis']; ?></p>
-                            <p class="m-0" style="font-size: smaller; color: #888;"><?= $artikel[4]['waktu']; ?></p>
-                        </div>
-                    </div>
-                    <div class="card-artikel-kecil" onclick="pergiKeArtikel(`<?= $artikel[5]['path']; ?>`)">
-                        <div class="img">
-                            <img class="rounded" src="<?= $artikel[5]['header']; ?>" alt="<?= $artikel[5]['judul']; ?>">
-                        </div>
-                        <div class="flex-grow-1 d-flex flex-column">
-                            <p class="m-0 judul"><?= $artikel[5]['judul']; ?></p>
-                            <div class="flex-grow-1">
-                                <p class="m-0 isi"><?= $artikel[5]['deskripsi']; ?></p>
-                            </div>
-                            <p class="m-0 fw-bold" style="font-size: smaller;"><?= $artikel[5]['penulis']; ?></p>
-                            <p class="m-0" style="font-size: smaller; color: #888;"><?= $artikel[5]['waktu']; ?></p>
-                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <?php
-            $indexAwal = 5;
-        }
-        ?>
-        <div class="show-flex-ke-hide flex-column gap-2">
-            <?php foreach ($artikel as $ind_a => $a) {
-                if ($ind_a > $indexAwal) {
-                    if (fmod($ind_a, 3) == 0) { ?>
-            <div class="gap-4 d-flex container-card-artikel">
-                <?php for ($i = $ind_a; $i < $ind_a + 3; $i++) {
-                                if (isset($artikel[$i])) { ?>
-                <div class="flex-grow-1" onclick="pergiKeArtikel(`<?= $artikel[$i]['path']; ?>`)">
-                    <div class="card-artikel-besar" .>
-                        <img class="rounded" src="<?= $artikel[$i]['header']; ?>" alt="<?= $artikel[$i]['judul']; ?>">
-                        <p class="m-0 judul"><?= $artikel[$i]['judul']; ?></p>
-                        <div class="flex-grow-1">
-                            <p class="m-0 isi"><?= $artikel[$i]['deskripsi']; ?></p>
-                        </div>
-                        <p class="m-0 fw-bold" style="font-size: smaller;"><?= $artikel[$i]['penulis']; ?></p>
-                        <p class="m-0" style="font-size: smaller; color: #888;"><?= $artikel[$i]['waktu']; ?></p>
-                    </div>
-                </div>
-                <?php }
-                            } ?>
-            </div>
-            <?php }
-                }
-            } ?>
-        </div>
-        <div class="hide-ke-show-flex flex-column gap-2">
-            <?php foreach ($artikel as $ind_a => $a) { ?>
-            <div class="gap-4 d-flex container-card-artikel" style="height: 100px;">
-                <div class="d-flex flex-grow-1 flex-column gap-4">
-                    <div class="card-artikel-kecil" onclick="pergiKeArtikel(`<?= $a['path']; ?>`)">
-                        <div class="img">
-                            <img class="rounded" src="<?= $a['header']; ?>" alt="<?= $a['judul']; ?>">
-                        </div>
-                        <div class="flex-grow-1 d-flex flex-column">
-                            <p class="m-0 judul" style="line-height: 16px;"><?= $a['judul']; ?></p>
-                            <div class="flex-grow-1">
-                                <p class="m-0 isi"><?= $a['deskripsi']; ?></p>
-                            </div>
-                            <p class="m-0 fw-bold" style="font-size: smaller;"><?= $a['penulis']; ?></p>
-                            <p class="m-0" style="font-size: smaller; color: #888;"><?= $a['waktu']; ?></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <?php } ?>
-        </div>
-    </div>
-</div>
-<script>
-function pergiKeArtikel(judulArtikel) {
-    console.log(judulArtikel)
-    window.location.href = '/article/' + judulArtikel
-}
+            </>
+        );
+    }
+    ReactDOM.render(<App />, document.getElementById("container-react-artikel"));
 </script>
 <?= $this->endSection(); ?>

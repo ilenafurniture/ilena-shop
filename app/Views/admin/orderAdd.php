@@ -1,90 +1,90 @@
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
 <style>
-.notif {
-    position: fixed;
-    bottom: 50px;
-    right: 0px;
-    padding: 0.6em 2em;
-    color: white;
-    border-radius: 7px;
-    color: #e84a49;
-    letter-spacing: -1px;
-    font-size: 15px;
-    background-color: #e8494911;
-    transition: 0.5s;
-    transform: translateX(100%);
-}
+    .notif {
+        position: fixed;
+        bottom: 50px;
+        right: 0px;
+        padding: 0.6em 2em;
+        color: white;
+        border-radius: 7px;
+        color: #e84a49;
+        letter-spacing: -1px;
+        font-size: 15px;
+        background-color: #e8494911;
+        transition: 0.5s;
+        transform: translateX(100%);
+    }
 
-.notif.show {
-    right: 50px;
-    transform: translateX(0%);
-    transition: 0.5s;
-}
+    .notif.show {
+        right: 50px;
+        transform: translateX(0%);
+        transition: 0.5s;
+    }
 
-.item-produk {
-    border-radius: 12px;
-}
+    .item-produk {
+        border-radius: 12px;
+    }
 
-.item-produk img {
-    width: 50px;
-    border-radius: 10px;
-}
+    .item-produk img {
+        width: 50px;
+        border-radius: 10px;
+    }
 
-.item-produk .item-varian {
-    cursor: pointer;
-    outline: 1px solid gray;
-    border: 1px solid white;
-    border-radius: 2em;
-    width: 14px;
-    height: 14px;
-    margin: 0;
-    padding: 0;
-}
+    .item-produk .item-varian {
+        cursor: pointer;
+        outline: 1px solid gray;
+        border: 1px solid white;
+        border-radius: 2em;
+        width: 14px;
+        height: 14px;
+        margin: 0;
+        padding: 0;
+    }
 
-.item-produk .item-varian:hover {
-    outline: 1px solid var(--merah);
-}
+    .item-produk .item-varian:hover {
+        outline: 1px solid var(--merah);
+    }
 
-.item-keranjang-admin img {
-    width: 50px;
-    border-radius: 10px;
-    height: 50px;
-    object-fit: cover;
-}
+    .item-keranjang-admin img {
+        width: 50px;
+        border-radius: 10px;
+        height: 50px;
+        object-fit: cover;
+    }
 
-.item-keranjang-admin .counter {
-    display: flex;
-    align-items: center;
-}
+    .item-keranjang-admin .counter {
+        display: flex;
+        align-items: center;
+    }
 
-.item-keranjang-admin .counter .action {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 20px;
-    height: 20px;
-    border-radius: 20px;
-    background-color: #e8494911;
-    color: var(--merah);
-    font-weight: 500;
-    cursor: pointer;
-}
+    .item-keranjang-admin .counter .action {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 20px;
+        background-color: #e8494911;
+        color: var(--merah);
+        font-weight: 500;
+        cursor: pointer;
+    }
 
-.item-keranjang-admin .counter .action:hover {
-    background-color: var(--merah);
-    color: white;
-}
+    .item-keranjang-admin .counter .action:hover {
+        background-color: var(--merah);
+        color: white;
+    }
 
-.item-keranjang-admin .counter .angka {
-    width: 30px;
-    text-align: center;
-    font-weight: bold;
-}
+    .item-keranjang-admin .counter .angka {
+        width: 30px;
+        text-align: center;
+        font-weight: bold;
+    }
 
-input {
-    font-size: 13px;
-}
+    input {
+        font-size: 13px;
+    }
 </style>
 <div style="padding: 2em;" class="h-100 d-flex flex-column">
     <h1 class="teks-sedang mb-4">Buat Pesanan</h1>
@@ -94,7 +94,7 @@ input {
 <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script>
-console.log(JSON.parse('<?= $produkJson; ?>'))
+    console.log(JSON.parse('<?= $produkJson; ?>'))
 </script>
 <script type="text/babel">
     const { useState, useEffect } = React;
@@ -138,7 +138,8 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
             },
             keteranganSJ: '',
             hargaTotal: 0,
-            waktu: waktuSkrg()
+            waktu: waktuSkrg(),
+            stokTetap: '',
         });
         const [kabupaten, setKabupaten] = useState([])
         const [kecamatan, setKecamatan] = useState([])
@@ -213,7 +214,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
         }, [cari])
 
         useEffect(()=>{
-            if(formData.nama && formData.email && formData.nohp && formData.keteranganSJ && formData.alamat.provinsi && formData.alamat.kabupaten && formData.alamat.kecamatan && formData.alamat.kelurahan && formData.alamat.pelengkap && keranjang.length > 0) {
+            if(formData.nama && formData.email && formData.nohp && formData.keteranganSJ && formData.alamat.provinsi && formData.alamat.kabupaten && formData.alamat.kecamatan && formData.alamat.kelurahan && formData.alamat.pelengkap && keranjang.length > 0 && formData.stokTetap) {
                 setCanSave(true)
             } else {
                 setCanSave(false)
@@ -283,16 +284,14 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
             }).filter((k)=>{return k.quantity > 0}))
         }
 
-        const handleSubmit =()=>{
+        const handleSubmit = () => {
             const body = {...formData, 
                 alamatLengkap: `${formData.alamat.pelengkap} ${formData.alamat.kelurahan.split('-')[0]}, ${formData.alamat.kecamatan.split('-')[1]}, ${formData.alamat.kabupaten.split('-')[1]}, ${formData.alamat.provinsi.split('-')[1]} ${formData.alamat.kelurahan.split('-')[1]}`,
                 keranjang: keranjang
             }
-
-            console.log('formData')
-            console.log(formData)
-            console.log('bodynya')
+            body.stokTetap = formData.stokTetap == '1' ? false : true;
             console.log(body)
+
             async function fetchSubmit() {
                 const response = await fetch(
                     `/admin/order/add`,
@@ -462,7 +461,13 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                             ))}
                         </select>
                     </div>
-                    <input type="text" className="form-control mb-3" placeholder="Jalan, NO.Rumah, RT/RW," value={formData.alamat.pelengkap} onChange={(e)=>{setFormData({...formData, alamat: {...formData.alamat, pelengkap: e.target.value}})}} />
+                    <input type="text" className="form-control mb-1" placeholder="Jalan, NO.Rumah, RT/RW," value={formData.alamat.pelengkap} onChange={(e)=>{setFormData({...formData, alamat: {...formData.alamat, pelengkap: e.target.value}})}} />
+                    <hr />
+                    <select className="form-select mb-3" value={formData.stokTetap} required onChange={(e)=>{setFormData({...formData, stokTetap: e.target.value})}}>
+                        <option value="">-- Stok dikurangi? --</option>
+                        <option value="1">Ya</option>
+                        <option value="2">Tidak</option>
+                    </select>
                     <button type="button" onClick={handleSubmit} className={`btn-default-merah w-100 ${canSave ? '' : 'disabled'}`}>Buat</button>
                 </div>
             </>

@@ -110,18 +110,9 @@
     }
 </style>
 <div id="container-react" class="tampilHp"></div>
-
-
-<script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
-<!-- <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script> -->
-<script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
 <script type="text/babel">
     const { useState, useEffect, useRef } = React;
     const navbar = JSON.parse('<?= json_encode($navbar); ?>');
-    console.log(navbar);
     const App = () => {
         const containerNavbarListNav = useRef();
         const [jenisSelected , setJenisSelected] = useState({
@@ -161,10 +152,10 @@
             }
         }, [enterNavbar])
         const handleHoverJenis = (category, products) =>{
-            console.log({
-                category,
-                products
-            })
+            // console.log({
+            //     category,
+            //     products
+            // })
             // console.log(Array.isArray(products) ? products[0] : products[Object.keys(products)[0]][0])
             if(category == null) setProductSelected(null);
             else setProductSelected(Array.isArray(products) ? products[0] : products[Object.keys(products)[0]][0]);
@@ -180,7 +171,7 @@
 
         const handleScrollClick = () => {
             if(containerNavbarListNav) {
-                console.log(containerNavbarListNav.current)
+                // console.log(containerNavbarListNav.current)
                 containerNavbarListNav.current.scrollLeft += 200;
             }
         }
@@ -190,8 +181,8 @@
             const { scrollLeft, scrollWidth, clientWidth } = event.target;
             // Mengupdate posisi scroll
             setScrollPosition(scrollLeft);
-            console.log(`${scrollWidth} - ${scrollLeft} = ${scrollWidth - scrollLeft}`)
-            console.log(`clientWidth: ${clientWidth - 20}`)
+            // console.log(`${scrollWidth} - ${scrollLeft} = ${scrollWidth - scrollLeft}`)
+            // console.log(`clientWidth: ${clientWidth - 20}`)
             // Mengecek apakah sudah di bagian kanan (end) dari scroll
             if (scrollWidth - scrollLeft - 20 < clientWidth) {
                 setIsAtEnd(true);
@@ -201,7 +192,7 @@
         };
         
         useEffect(()=>{
-            console.log(scrollPosition)
+            // console.log(scrollPosition)
         }, [scrollPosition])
 
         return (
