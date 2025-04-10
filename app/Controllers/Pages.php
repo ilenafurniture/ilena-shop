@@ -3811,7 +3811,9 @@ class Pages extends BaseController
                 'title' => 'Artikel',
                 'navbar' => $this->getNavbarData(),
                 'apikey_img_ilena' => $this->apikey_img_ilena,
-                'artikel' => $artikel,
+                'artikel' => array_values(array_filter($artikel, function ($value, $key) {
+                    return $key >= 2;
+                }, ARRAY_FILTER_USE_BOTH)),
                 'artikel3BaruJson' => json_encode($artikel3Baru),
                 'artikelPopuler' => $artikelPopuler,
                 'bulan' => $bulan

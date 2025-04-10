@@ -202,12 +202,44 @@
 </style>
 <div id="container-react-artikel"></div>
 <script type="text/babel">
+    function judulSplitter(judul) {
+        const arrJudul = judul.split(" ");
+        const judul1 = `${arrJudul[0]} ${arrJudul[1]}`;
+        arrJudul.splice(0, 2);
+        const panjangBagi2Up = Math.ceil(arrJudul.length / 2);
+        const judul2 = arrJudul
+            .filter((a, ind_a) => ind_a < panjangBagi2Up)
+            .join(" ");
+        const judul3 = arrJudul
+            .filter((a, ind_a) => ind_a >= panjangBagi2Up)
+            .join(" ");
+        return { judul1, judul2, judul3 };
+    }
+    function titleCase(str) {
+        var splitStr = str.toLowerCase().split(' ');
+        for (var i = 0; i < splitStr.length; i++) {
+            splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+        }
+        return splitStr.join(' '); 
+    }
+
     const { useState, useEffect, useRef } = React;
     const artikel3Baru = JSON.parse('<?= $artikel3BaruJson; ?>');
     console.log(artikel3Baru)
+    const inisialisasiImgSelected = artikel3Baru[0]
+    
     const App = () => {
+        const intervalRef = useRef(null);
         const [img, setImg] = useState(['active', '', '']);
-        const [imgSelected, setImgSelected] = useState(null);
+        const [imgSelected, setImgSelected] = useState({
+                ...judulSplitter(inisialisasiImgSelected.judul),
+                deskripsi: inisialisasiImgSelected.deskripsi,  
+                id: inisialisasiImgSelected.id,  
+                kategori: titleCase(inisialisasiImgSelected.kategori),  
+                path: inisialisasiImgSelected.path,  
+                header: inisialisasiImgSelected.header,
+            });
+        const innerWidth = useRef(window.innerWidth);
         const categories = [
             {
                 teks: 'Olahraga',
@@ -248,27 +280,27 @@
         ];
 
         useEffect(() => {
-            const interval = setInterval(() => {
+            intervalRef.current = setInterval(() => {
                 setImg((prev) => {
                     const indx = prev.indexOf("active") + 1 >= prev.length ? 0 : prev.indexOf("active") + 1;
                     return prev.map((p, ind_p) => (ind_p == indx ? "active" : ""));
                 })
             }, 5000)
-            return () => clearInterval(interval)
+            return () => clearInterval(intervalRef.current)
         }, [])
 
         useEffect(() => {
             const indexOn = img.indexOf('active')
             const imgCur = {...artikel3Baru[indexOn]};
             setImgSelected({
-                judul: imgCur.judul,
+                ...judulSplitter(imgCur.judul),
+                deskripsi: imgCur.deskripsi,  
+                id: imgCur.id,  
+                kategori: titleCase(imgCur.kategori),  
+                path: imgCur.path,  
+                header: imgCur.header,
             })
         }, [img])
-        
-        useEffect(() => {
-            console.log('img selected')
-            console.log(imgSelected)
-        }, [imgSelected])
 
         return (
             <>
@@ -276,26 +308,32 @@
                     <div className="container-header-content">
                         <div className="d-flex align-items-end container gap-5">
                             <div style={{ height: '100%', flex: '1' }}>
-                                {imgSelected &&
-                                    <div>
-                                        <p>{imgSelected}</p>
-                                        <h5 className="teks-sedang">INTO THE</h5>
-                                        <h1 className="teks-besar">WILD THE BIGGEST</h1>
-                                        <h1 className="teks-besar mb-3">RARE MOMENTs</h1>
-                                        <div style={{maxWidth: '500px', borderLeft: '3px solid white'}} className="ps-4">
-                                            <p className="mb-4" style={{ color: 'rgb(219, 219, 219)'}}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor provident deserunt soluta corporis distinctio quia culpa maiores, esse quibusdam perspiciatis.</p>
-                                        </div>
-                                        <div className="d-flex gap-2">
-                                            <a href="" className="btn-lonjong-putih"><i className="material-icons">bookmark_border</i></a>
-                                            <a href="" className="btn-lonjong-putih-outline">Baca selengkapnya</a>
-                                        </div>
+                                <div>
+                                    <p>{imgSelected.kategori}</p>
+                                    <h5 className="teks-sedang">{imgSelected.judul1}</h5>
+                                    <h1 className="teks-besar mb-3">{imgSelected.judul2} {imgSelected.judul3}</h1>
+                                    <div style={{maxWidth: '500px', borderLeft: '3px solid white'}} className="ps-4">
+                                        <p className="mb-4" style={{ color: 'rgb(219, 219, 219)'}}>{imgSelected.deskripsi}</p>
                                     </div>
-                                }
+                                    <div className="d-flex gap-2">
+                                        <a href="" className="btn-lonjong-putih"><i className="material-icons">bookmark_border</i></a>
+                                        <a href={`/article/${imgSelected.path}`} className="btn-lonjong-putih-outline">Baca selengkapnya</a>
+                                    </div>
+                                </div>
                             </div>
                             <div className="d-flex align-items-center gap-2">
-                                <div className={`item-slider-header-img ${img[0]}`} onClick={()=>{setImg(img.map((e, ind)=>(ind == 0 ? 'active' : '')))}}></div>
-                                <div className={`item-slider-header-img ${img[1]}`} onClick={()=>{setImg(img.map((e, ind)=>(ind == 1 ? 'active' : '')))}}></div>
-                                <div className={`item-slider-header-img ${img[2]}`} onClick={()=>{setImg(img.map((e, ind)=>(ind == 2 ? 'active' : '')))}}></div>
+                                <div className={`item-slider-header-img ${img[0]}`} onClick={()=>{
+                                    setImg(img.map((e, ind)=>(ind == 0 ? 'active' : '')));
+                                    clearInterval(intervalRef.current);
+                                }}></div>
+                                <div className={`item-slider-header-img ${img[1]}`} onClick={()=>{
+                                    setImg(img.map((e, ind)=>(ind == 1 ? 'active' : '')));
+                                    clearInterval(intervalRef.current);
+                                }}></div>
+                                <div className={`item-slider-header-img ${img[2]}`} onClick={()=>{
+                                    setImg(img.map((e, ind)=>(ind == 2 ? 'active' : '')));
+                                    clearInterval(intervalRef.current);
+                                }}></div>
                             </div>
                         </div>
                     </div>
@@ -306,7 +344,7 @@
                     </div>
                 </div>
                 <div className="container">
-                    <div className="py-5">
+                    <div className={innerWidth.current < 700 ? 'py-4' : 'py-5'}>
                         <h1 className="teks-besar mb-5 show-block-ke-hide">Article categories</h1>
                         <h1 className="teks-besar mb-3 hide-ke-show-block">Article<br />categories</h1>
                         <div className="container-kategori-artikel">
@@ -333,7 +371,7 @@
 </script>
 <div class="container">
     <hr>
-    <div class="py-4">
+    <div class="py-4 ubah-padding">
         <h3 class="teks-sedang mb-3">Popular now</h3>
         <div class="d-flex baris-ke-kolom">
             <?php foreach ($artikelPopuler as $ind_a => $a) { ?>
@@ -360,12 +398,43 @@
         </div>
     </div>
     <hr>
-    <div class="py-4">
+    <style>
+        .artikel-list-besar {
+            aspect-ratio: 16 / 9;
+            background-position: center;
+            background-size: cover;
+            padding: 2em;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .artikel-list-besar .judul {
+            font-weight: 600;
+            color: white;
+            font-size: 20px;
+            margin: 0;
+        }
+    </style>
+    <div class="py-4 ubah-padding">
         <div class="baris-ke-kolom">
+            <div style="flex: 2;">
+                <div class="artikel-list-besar" style="background-image: url(<?= $artikel[0]['header']; ?>);">
+                    <div style="flex: 1;"></div>
+                    <p class="judul"><?= $artikel[0]['judul']; ?></p>
+                </div>
+            </div>
             <div style="flex: 1;">
-                <img src="" alt="">
+
             </div>
         </div>
     </div>
 </div>
+<script>
+    const ubahPaddingElm = document.querySelectorAll('.ubah-padding')
+    const innerWidthClient = window.innerWidth;
+    ubahPaddingElm.forEach((e) => {
+        e.classList.add(innerWidthClient > 700 ? 'py-4' : 'py-3')
+    })
+</script>
 <?= $this->endSection(); ?>
