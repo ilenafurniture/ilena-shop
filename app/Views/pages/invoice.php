@@ -150,7 +150,7 @@
                             </p>
                         </div>
                     </div>
-                    <?php if (substr($transaksi['id_midtrans'], -2) != 'MP') { ?>
+                    <?php if (substr($transaksi['id_midtrans'], -2) == 'IL') { ?>
                         <div class="w-100 d-flex">
                             <div style="flex: 2">
                                 <p class="mb-0">Biaya Admin</p>
@@ -158,19 +158,7 @@
                             <div style="flex: 1">
                                 <p class="text-end mb-0">Rp 5.000</p>
                             </div>
-                        </div><?php } ?> <div class="w-100 d-flex">
-                        <!-- <div class="w-100 d-flex">
-                        <div style="flex: 2">
-                            <p class="mb-0">Ongkos Kirim</p>
                         </div>
-                        <div style="flex: 1">
-                            <p class="text-end mb-0">Rp     
-                            <?php
-                            $ongkir = (int)$transaksi['data_mid']['gross_amount'] - 5000 - $totalHarga;
-                            echo number_format($ongkir, 0, ",", ".");
-                            ?></p>
-                        </div>
-                    </div> -->
                         <div class="w-100 d-flex">
                             <div style="flex: 2">
                                 <p class="mb-0 fw-bold">TOTAL TAGIHAN</p>
@@ -181,7 +169,7 @@
                                 </p>
                             </div>
                         </div>
-                    </div>
+                    <?php } ?>
                 </div>
             </div>
         </div>
