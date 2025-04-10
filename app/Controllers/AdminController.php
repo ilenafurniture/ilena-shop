@@ -1200,11 +1200,12 @@ class AdminController extends BaseController
             }
         }
         $bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        $tsPemesanan = strtotime($pemesanan['data_mid']['transaction_time']);
         $data = [
             'title' => 'Surat Jalan',
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'pemesanan' => $pemesanan,
-            'tanggal' => date("d", $d) . " " . $bulan[(int)date("m", $d) - 1] . " " . date("Y", $d),
+            'tanggal' => date("d", $tsPemesanan) . " " . $bulan[(int)date("m", $tsPemesanan) - 1] . " " . date("Y", $tsPemesanan),
             'items' => $items
         ];
         return view('gudang/suratJalan', $data);

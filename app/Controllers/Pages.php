@@ -3774,6 +3774,7 @@ class Pages extends BaseController
         $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
         if (!$artikel) return redirect()->to('article');
         if ($judul_article) {
+            $this->artikelModel->where(['id' => $artikel['id']])->set(['pengunjung' => $artikel['pengunjung'] + 1])->update();
             $artikel['kategori'] = explode(",", $artikel['kategori']);
             $artikel['waktu'] = date("d", strtotime($artikel['waktu'])) . " " . $bulan[date("m", strtotime($artikel['waktu'])) - 1] . " " . date("Y", strtotime($artikel['waktu']));
 
@@ -3798,6 +3799,10 @@ class Pages extends BaseController
             ];
             return view('pages/artikel', $data);
         } else {
+            $artikelPopuler = $this->artikelModel->orderBy('pengunjung', 'desc')->limit(5, 0)->findAll();
+            $artikel3Baru = $this->artikelModel
+                ->select('judul')->select('path')->select('kategori')->select('deskripsi')->select('id')->select('header')
+                ->orderBy('id', 'asc')->limit(3, 0)->findAll();
             foreach ($artikel as $ind_a => $a) {
                 $artikel[$ind_a]['kategori'] = explode(",", $a['kategori']);
                 $artikel[$ind_a]['waktu'] = date("d", strtotime($a['waktu'])) . " " . $bulan[date("m", strtotime($a['waktu'])) - 1] . " " . date("Y", strtotime($a['waktu']));
@@ -3806,7 +3811,10 @@ class Pages extends BaseController
                 'title' => 'Artikel',
                 'navbar' => $this->getNavbarData(),
                 'apikey_img_ilena' => $this->apikey_img_ilena,
-                'artikel' => $artikel
+                'artikel' => $artikel,
+                'artikel3BaruJson' => json_encode($artikel3Baru),
+                'artikelPopuler' => $artikelPopuler,
+                'bulan' => $bulan
             ];
             return view('pages/artikelAll', $data);
         }
