@@ -400,13 +400,46 @@
     <hr>
     <style>
         .artikel-list-besar {
-            aspect-ratio: 16 / 9;
+            /* aspect-ratio: 16 / 9; */
+            height: 100%;
             background-position: center;
-            background-size: cover;
-            padding: 2em;
-            border-radius: 20px;
+            background-size: 100%;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: 0.5s;
+            position: relative;
+            text-decoration: none;
+        }
+
+        .artikel-list-besar:hover {
+            background-size: 110%;
+            transition: 0.5s;
+        }
+
+        .artikel-list-besar>div {
+            height: 100%;
+            border-radius: 15px;
+            width: 100%;
             display: flex;
             flex-direction: column;
+            padding: 2em;
+            background-image: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+            position: absolute;
+        }
+
+        .artikel-list-besar::after {
+            content: '';
+            display: block;
+            border-radius: 15px;
+            height: 100%;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0);
+            transition: 0.5s;
+        }
+
+        .artikel-list-besar:hover::after {
+            background-color: rgba(0, 0, 0, 0.6);
+            transition: 0.5s;
         }
 
         .artikel-list-besar .judul {
@@ -414,20 +447,243 @@
             color: white;
             font-size: 20px;
             margin: 0;
+            max-width: 500px;
+        }
+
+        .artikel-list-besar .kategori {
+            background-color: white;
+            height: fit-content;
+            display: block;
+            padding: 0.3em 1em;
+            font-weight: bold;
+            border-radius: 2em;
+            font-size: 14px;
+            color: black;
+        }
+
+        .artikel-list-besar .tanggal {
+            background-color: rgba(255, 255, 255, 0.3);
+            height: fit-content;
+            display: block;
+            padding: 0.3em 1em;
+            font-weight: bold;
+            border-radius: 2em;
+            font-size: 14px;
+            color: white;
+            width: fit-content;
+        }
+
+        .artikel-list-kecil {
+            background-position: center;
+            background-size: 100%;
+            border-radius: 15px;
+            min-width: 425px;
+            cursor: pointer;
+            transition: 0.5s;
+            position: relative;
+            text-decoration: none;
+
+        }
+
+        .artikel-list-kecil:hover {
+            background-size: 110%;
+            transition: 0.5s;
+        }
+
+        .artikel-list-kecil>div {
+            border-radius: 15px;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 2em;
+            background-image: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+            z-index: 3;
+            position: relative;
+        }
+
+        .artikel-list-kecil::before {
+            content: '';
+            display: block;
+            border-radius: 15px;
+            height: 100%;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0);
+            transition: 0.5s;
+            position: absolute;
+            z-index: 2;
+        }
+
+        .artikel-list-kecil:hover::before {
+            background-color: rgba(0, 0, 0, 0.6);
+            position: absolute;
+            transition: 0.5s;
+        }
+
+
+        .artikel-list-kecil .judul {
+            font-weight: 600;
+            color: white;
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .artikel-list-kecil .kategori {
+            background-color: white;
+            height: fit-content;
+            display: block;
+            padding: 0.3em 1em;
+            font-weight: bold;
+            border-radius: 2em;
+            font-size: 14px;
+            color: black;
+        }
+
+        .artikel-list-kecil .tanggal {
+            background-color: rgba(255, 255, 255, 0.3);
+            height: fit-content;
+            display: block;
+            padding: 0.3em 1em;
+            font-weight: bold;
+            border-radius: 2em;
+            font-size: 14px;
+            color: white;
+            width: fit-content;
         }
     </style>
     <div class="py-4 ubah-padding">
-        <div class="baris-ke-kolom">
+        <div class="d-flex gap-4">
             <div style="flex: 2;">
-                <div class="artikel-list-besar" style="background-image: url(<?= $artikel[0]['header']; ?>);">
-                    <div style="flex: 1;"></div>
-                    <p class="judul"><?= $artikel[0]['judul']; ?></p>
-                </div>
+                <a href="/article/<?= $artikel[0]['path']; ?>" class="artikel-list-besar" style="background-image: url(<?= $artikel[0]['header']; ?>);">
+                    <div>
+                        <div style="flex: 1;" class="d-flex justify-content-end">
+                            <snap class="kategori"><?= ucwords($artikel[0]['kategori'][0]); ?></snap>
+                        </div>
+                        <p class="tanggal"><?= $artikel[0]['waktu']; ?></p>
+                        <p class="judul"><?= $artikel[0]['judul']; ?></p>
+                    </div>
+                </a>
             </div>
-            <div style="flex: 1;">
-
+            <div style="flex: 1;" class="d-flex flex-column gap-4">
+                <a href="/article/<?= $artikel[1]['path']; ?>" style="height: 50%; background-image: url(<?= $artikel[1]['header']; ?>);" class="w-full artikel-list-kecil">
+                    <div>
+                        <div style="flex: 1;" class="d-flex justify-content-end">
+                            <snap class="kategori"><?= ucwords($artikel[1]['kategori'][0]); ?></snap>
+                        </div>
+                        <p class="tanggal"><?= $artikel[1]['waktu']; ?></p>
+                        <p class="judul"><?= $artikel[1]['judul']; ?></p>
+                    </div>
+                </a>
+                <a href="/article/<?= $artikel[2]['path']; ?>" style="height: 50%; background-image: url(<?= $artikel[2]['header']; ?>);" class="w-full artikel-list-kecil">
+                    <div>
+                        <div style="flex: 1;" class="d-flex justify-content-end">
+                            <snap class="kategori"><?= ucwords($artikel[2]['kategori'][0]); ?></snap>
+                        </div>
+                        <p class="tanggal"><?= $artikel[2]['waktu']; ?></p>
+                        <p class="judul"><?= $artikel[2]['judul']; ?></p>
+                    </div>
+                </a>
             </div>
         </div>
+    </div>
+    <style>
+        .container-artikel-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .artikel-list {
+            background-position: center;
+            background-size: 100%;
+            border-radius: 15px;
+            /* min-width: 425px; */
+            cursor: pointer;
+            transition: 0.5s;
+            position: relative;
+            aspect-ratio: 1 / 1;
+            text-decoration: none;
+        }
+
+        .artikel-list:hover {
+            background-size: 110%;
+            transition: 0.5s;
+        }
+
+        .artikel-list>div {
+            border-radius: 15px;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 2em;
+            background-image: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+            z-index: 3;
+            position: relative;
+        }
+
+        .artikel-list::before {
+            content: '';
+            display: block;
+            border-radius: 15px;
+            height: 100%;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0);
+            transition: 0.5s;
+            position: absolute;
+            z-index: 2;
+        }
+
+        .artikel-list:hover::before {
+            background-color: rgba(0, 0, 0, 0.6);
+            position: absolute;
+            transition: 0.5s;
+        }
+
+
+        .artikel-list .judul {
+            font-weight: 600;
+            color: white;
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .artikel-list .kategori {
+            background-color: white;
+            height: fit-content;
+            display: block;
+            padding: 0.3em 1em;
+            font-weight: bold;
+            border-radius: 2em;
+            font-size: 14px;
+            color: black;
+        }
+
+        .artikel-list .tanggal {
+            background-color: rgba(255, 255, 255, 0.3);
+            height: fit-content;
+            display: block;
+            padding: 0.3em 1em;
+            font-weight: bold;
+            border-radius: 2em;
+            font-size: 14px;
+            color: white;
+            width: fit-content;
+        }
+    </style>
+    <div class="container-artikel-list gap-4 mb-5">
+        <?php foreach ($artikel as $ind_a => $a) { ?>
+            <?php if ($ind_a > 2) { ?>
+                <a href="/article/<?= $a['path']; ?>" class="artikel-list" style="background-image: url(<?= $a['header']; ?>);">
+                    <div>
+                        <div style="flex: 1;" class="d-flex justify-content-end">
+                            <snap class="kategori"><?= ucwords($a['kategori'][0]); ?></snap>
+                        </div>
+                        <p class="tanggal"><?= $a['waktu']; ?></p>
+                        <p class="judul"><?= $a['judul']; ?></p>
+                    </div>
+                </a>
+            <?php } ?>
+        <?php } ?>
     </div>
 </div>
 <script>
