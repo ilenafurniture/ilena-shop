@@ -3795,7 +3795,8 @@ class Pages extends BaseController
                 'komenJson' => $artikel['komen'],
                 'metaDeskripsi' => $artikel['deskripsi'],
                 'metaKeyword' => $artikel['keywords'],
-                'wishlist' => $wishlist
+                'wishlist' => $wishlist,
+                'bulan' => $bulan
             ];
             return view('pages/artikel', $data);
         } else {

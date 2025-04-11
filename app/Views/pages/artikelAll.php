@@ -39,8 +39,8 @@
         background-image: linear-gradient(to right, rgba(0, 0, 0, 0.7), transparent);
         width: 100%;
         height: 90svh;
-        max-height: 760px;
         min-height: 633px;
+        max-height: 760px;
         position: absolute;
         z-index: 2;
         display: flex;
@@ -55,7 +55,7 @@
             height: 70svh;
         }
 
-        .header .container-header-content>div {
+        .header .container-header-content {
             height: 70svh;
             flex-direction: column;
         }
