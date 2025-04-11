@@ -469,7 +469,6 @@
         .artikel-list-besar .tanggal {
             background-color: rgba(255, 255, 255, 0.3);
             height: fit-content;
-            display: block;
             padding: 0.3em 1em;
             font-weight: bold;
             border-radius: 2em;
@@ -548,7 +547,6 @@
         .artikel-list-kecil .tanggal {
             background-color: rgba(255, 255, 255, 0.3);
             height: fit-content;
-            display: block;
             padding: 0.3em 1em;
             font-weight: bold;
             border-radius: 2em;
@@ -567,10 +565,15 @@
             .artikel-list-besar .judul,
             .artikel-list-kecil .judul {
                 font-size: 14px;
+                margin-bottom: 10px;
             }
 
             .artikel-list-besar .kategori,
-            .artikel-list-kecil .kategori,
+            .artikel-list-kecil .kategori {
+                font-size: 10px;
+                margin-bottom: 10px;
+            }
+
             .artikel-list-besar .tanggal,
             .artikel-list-kecil .tanggal {
                 font-size: 10px;
@@ -585,8 +588,9 @@
                         <div style="flex: 1;" class="d-flex justify-content-end">
                             <snap class="kategori"><?= ucwords($artikel[0]['kategori'][0]); ?></snap>
                         </div>
-                        <p class="tanggal"><?= $artikel[0]['waktu']; ?></p>
+                        <p class="tanggal show-block-ke-hide"><?= $artikel[0]['waktu']; ?></p>
                         <p class="judul"><?= $artikel[0]['judul']; ?></p>
+                        <p class="tanggal hide-ke-show-block m-0"><?= $artikel[0]['waktu']; ?></p>
                     </div>
                 </a>
             </div>
@@ -596,8 +600,9 @@
                         <div style="flex: 1;" class="d-flex justify-content-end">
                             <snap class="kategori"><?= ucwords($artikel[1]['kategori'][0]); ?></snap>
                         </div>
-                        <p class="tanggal"><?= $artikel[1]['waktu']; ?></p>
+                        <p class="tanggal show-block-ke-hide"><?= $artikel[1]['waktu']; ?></p>
                         <p class="judul"><?= $artikel[1]['judul']; ?></p>
+                        <p class="tanggal hide-ke-show-block m-0"><?= $artikel[1]['waktu']; ?></p>
                     </div>
                 </a>
                 <a href="/article/<?= $artikel[2]['path']; ?>" style="height: 50%; background-image: url(<?= $artikel[2]['header']; ?>);" class="w-full artikel-list-kecil">
@@ -605,8 +610,9 @@
                         <div style="flex: 1;" class="d-flex justify-content-end">
                             <snap class="kategori"><?= ucwords($artikel[2]['kategori'][0]); ?></snap>
                         </div>
-                        <p class="tanggal"><?= $artikel[2]['waktu']; ?></p>
+                        <p class="tanggal show-block-ke-hide"><?= $artikel[2]['waktu']; ?></p>
                         <p class="judul"><?= $artikel[2]['judul']; ?></p>
+                        <p class="tanggal hide-ke-show-block m-0"><?= $artikel[2]['waktu']; ?></p>
                     </div>
                 </a>
             </div>
