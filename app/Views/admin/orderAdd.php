@@ -392,7 +392,7 @@
                 <div style={{flex: 1}} className="d-flex flex-column">
                     <h5 className="m-0">Keranjang</h5>
                     <hr />
-                    <div className="w-100" style={{flex: 1, position: 'relative'}}>
+                    <div className="w-100" style={{ flex: 1, position: 'relative', minHeight: '200px' }}>
                         <div className="w-100 h-100 pe-2" style={{position: 'absolute', overflow: 'auto'}}>
                             <div className="d-flex flex-column gap-2">
                                 {keranjang.length > 0 ?

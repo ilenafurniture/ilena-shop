@@ -746,7 +746,7 @@ class AdminController extends BaseController
                 'estimasi' => 'Menyesuaikan'
             ]),
             'resi'              => 'Menunggu pengiriman',
-            'status'            => 'Proses',
+            'status'            => isset($body['stokTetap']) ? ($body['stokTetap'] ? 'Menunggu Pembayaran' : 'Proses') : 'Proses',
             'id_marketplace'    => '',
             'items'             => json_encode($items),
             'status_print'      => 'siap',
