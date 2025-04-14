@@ -24,8 +24,11 @@
         </div>
     </div>
     <div id="notif" class="notif">Isi notif</div>
-    <script src="<?= base_url('js/bootstrap.bundle.min.js'); ?>">
-    </script>
+    <script src="<?= base_url('js/bootstrap.bundle.min.js'); ?>"></script>
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
     <div class="baris-ke-kolom gap-0 w-100" style="height: 100svh;">
         <div class="show-block-ke-hide">
             <?= $this->include('admin/navbar'); ?>

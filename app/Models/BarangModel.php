@@ -11,8 +11,8 @@ class BarangModel extends Model
         'id',
         'nama',
         'pencarian',
-        'gambar',
-        'gambar_hover',
+        // 'gambar',
+        // 'gambar_hover',
         'harga',
         'deskripsi',
         'kategori',
@@ -27,6 +27,7 @@ class BarangModel extends Model
         'ruang_tamu',
         'ruang_tidur',
         'ruang_keluarga',
+        'tgl_update'
     ];
 
     public function getBarang($id = false)

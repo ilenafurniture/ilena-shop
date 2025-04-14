@@ -283,6 +283,7 @@ class AdminController extends BaseController
         $product['varian'] = json_decode($product['varian'], true);
         $koleksi = $this->koleksiModel->getKoleksi();
         $jenis = $this->jenisModel->getJenis();
+        // dd($product);
         $hitungVarian = '';
         foreach ($product['varian'] as $ind => $v) {
             if ($ind == 0) {

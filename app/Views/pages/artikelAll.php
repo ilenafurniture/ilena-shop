@@ -242,40 +242,22 @@
         const innerWidth = useRef(window.innerWidth);
         const categories = [
             {
-                teks: 'Olahraga',
-                link: '/article/category/olahraga',
-                gambar: 'https://images.unsplash.com/photo-1733509213080-db2aca1bc244?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                deskripsi: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia, ex soluta aut aliquam vitae at '   
-            },
-            {
-                teks: 'Tips Trik',
+                teks: 'Tips & Trik',
                 link: '/article/category/tips-trik',
-                gambar: 'https://images.unsplash.com/photo-1739989934265-b46240484890?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                deskripsi: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia, ex soluta aut aliquam vitae at '   
+                gambar: 'https://cdn.pixabay.com/photo/2020/03/05/17/35/tips-4905013_1280.jpg',
+                deskripsi: 'Lebih banyak tahu berbagai life hack yang mempermudah hidup' 
             },
             {
-                teks: 'Home',
-                link: '/article/category/olahraga',
-                gambar: 'https://images.unsplash.com/photo-1742238619061-c4470b8c0372?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                deskripsi: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia, ex soluta aut aliquam vitae at '   
+                teks: 'Edukasi',
+                link: '/article/category/edukasi',
+                gambar: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=1122&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                deskripsi: 'Beragam informasi seputar furniture & properti terbaru'   
             },
             {
-                teks: 'News',
-                link: '/article/category/olahraga',
-                gambar: 'https://plus.unsplash.com/premium_photo-1681336549369-ee96c6ca07b5?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                deskripsi: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia, ex soluta aut aliquam vitae at '   
-            },
-            {
-                teks: 'Home',
-                link: '/article/category/olahraga',
-                gambar: 'https://images.unsplash.com/photo-1742238619061-c4470b8c0372?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                deskripsi: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia, ex soluta aut aliquam vitae at '   
-            },
-            {
-                teks: 'News',
-                link: '/article/category/olahraga',
-                gambar: 'https://plus.unsplash.com/premium_photo-1681336549369-ee96c6ca07b5?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                deskripsi: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia, ex soluta aut aliquam vitae at '   
+                teks: 'Fun Fact',
+                link: '/article/category/fun-fact',
+                gambar: 'https://images.unsplash.com/photo-1676276375656-c4864c632a08?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                deskripsi: 'Ketahui serba-serbi fakta menarik yang menginspirasi'   
             },
         ];
 

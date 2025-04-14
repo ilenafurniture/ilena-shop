@@ -192,8 +192,8 @@
         };
         
         useEffect(()=>{
-            // console.log(scrollPosition)
-        }, [scrollPosition])
+            console.log(jenisSelected)
+        }, [jenisSelected])
 
         return (
             <>
