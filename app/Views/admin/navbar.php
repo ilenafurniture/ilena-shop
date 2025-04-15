@@ -22,10 +22,24 @@
             <i class="material-icons">people</i>
             <p class="m-0">Produk</p>
         </a>
-        <a class="item-nav <?= $title == 'Pesanan' ? 'active' : ''; ?>" href="/admin/order">
-            <i class="material-icons">shopping_cart</i>
-            <p class="m-0">Pesanan</p>
-        </a>
+        <div class="item-nav <?= $title == 'Pesanan' ? 'active' : ''; ?>">
+            <label for="navbar-admin-pesanan">
+                <i class="material-icons">shopping_cart</i>
+                <p class="m-0" style="flex: 1">Pesanan</p>
+                <i class="material-icons arrow">arrow_right</i>
+            </label>
+        </div>
+        <input type="checkbox" id="navbar-admin-pesanan">
+        <div class="item-nav-expand">
+            <a class="item-nav <?= $title == 'Pesanan' ? 'active' : ''; ?>" href="/admin/order/online">
+                <i class="material-icons">language</i>
+                <p class="m-0">Online</p>
+            </a>
+            <a class="item-nav <?= $title == 'Pesanan' ? 'active' : ''; ?>" href="/admin/order/offline/sale">
+                <i class="material-icons">store</i>
+                <p class="m-0">Offline</p>
+            </a>
+        </div>
         <a class="item-nav <?= $title == 'Pengajuan Print Ulang' ? 'active' : ''; ?>" href="/admin/reprint">
             <i class="material-icons">assignment</i>
             <p class="m-0">Pengajuan Print</p>

@@ -32,7 +32,7 @@
 <div style="padding: 2em;">
     <div class="mb-4 d-flex align-items-center justify-content-between gap-2">
         <div>
-            <h1 class="teks-sedang">Pesanan Pelanggan</h1>
+            <h1 class="teks-sedang">Pesanan Pelanggan Online</h1>
             <p style="color: grey;"><?= count($pesanan) <= 0 ? 'Tidak Ada' : count($pesanan) ?> Pesanan</p>
         </div>
         <a class="btn-default-merah" href="/admin/order/add">Tambah</a>

@@ -1445,13 +1445,24 @@ body {
     height: 100%;
 }
 .admin-nav .item-nav {
-    display: flex;
     color: black;
     text-decoration: none;
-    padding: 1em 2em;
     gap: 1em;
     font-size: large;
     align-items: center;
+}
+.admin-nav .item-nav:not(:has(label)) {
+    display: flex;
+    padding: 1em 2em;
+}
+.admin-nav .item-nav > label {
+    padding: 1em 2em;
+    display: flex;
+    text-decoration: none;
+    gap: 1em;
+    font-size: large;
+    align-items: center;
+    width: 100%;
 }
 .admin-nav .item-nav:hover {
     background-color: whitesmoke;
@@ -1462,6 +1473,24 @@ body {
 }
 .admin-nav .item-nav p {
     letter-spacing: -1px;
+}
+.admin-nav .item-nav .arrow {
+    rotate: 90deg;
+}
+.admin-nav .item-nav-expand {
+    max-height: 0;
+    overflow: hidden;
+    transition: 0.2s;
+}
+.admin-nav .item-nav-expand .item-nav {
+    padding-left: 3em;
+}
+.admin-nav input[type="checkbox"]:checked + .item-nav-expand {
+    max-height: 400px;
+    transition: 0.2s;
+}
+.admin-nav input {
+    display: none;
 }
 .container-list-product {
     background-color: aqua;

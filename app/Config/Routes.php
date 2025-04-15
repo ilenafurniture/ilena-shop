@@ -120,7 +120,7 @@ $routes->post('/admin/editproduct/(:any)', 'AdminController::actionEditProduct/$
 // $routes->get('/admin/deleteproduct/(:any)', 'AdminController::deleteProduct/$1', ['filter' => 'adminFilter']);
 $routes->post('/admin/deleteproduct/(:any)', 'AdminController::deleteProduct/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/activeproduct/(:any)', 'AdminController::activeProduct/$1', ['filter' => 'adminFilter']);
-$routes->get('/admin/order', 'AdminController::order', ['filter' => 'adminFilter']);
+$routes->get('/admin/order/online', 'AdminController::order', ['filter' => 'adminFilter']);
 $routes->get('/admin/order/add', 'AdminController::orderAdd', ['filter' => 'adminFilter']);
 $routes->post('/admin/order/add', 'AdminController::actionOrderAdd', ['filter' => 'adminFilter']);
 $routes->post('/admin/actioneditresi', 'AdminController::actionEditResi', ['filter' => 'adminFilter']);
@@ -139,6 +139,8 @@ $routes->get('/admin/labelbarang/(:any)', 'AdminController::labelBarang/$1', ['f
 $routes->get('/admin/homelayout', 'AdminController::homeLayout', ['filter' => 'adminFilter']);
 $routes->post('/admin/homelayout', 'AdminController::actionHomeLayout', ['filter' => 'adminFilter']);
 $routes->get('/admin/changepic', 'AdminController::changePic', ['filter' => 'adminFilter']);
+$routes->get('/admin/order/offline/(:any)', 'AdminController::orderOffline/$1', ['filter' => 'adminFilter']);
+$routes->get('/admin/order-offline/add', 'AdminController::orderOfflineAdd', ['filter' => 'adminFilter']);
 $routes->post('/admin/order-offline/add', 'AdminController::actionAddOrderOffline');
 
 //GUDANG Controller

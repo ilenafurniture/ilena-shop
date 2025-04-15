@@ -34,12 +34,12 @@
             subkategori: '',
             diskon: '',
             varian: [
-                // {
-                //     nama: "HITAM",
-                //     kode: "#000000",
-                //     stok: "2",
-                //     urutan_gambar: "1,2,3,4"
-                // }
+                {
+                    nama: "HITAM",
+                    kode: "#000000",
+                    stok: "2",
+                    urutan_gambar: "1,2,3,4"
+                }
             ],
             shopee: '',
             tokped: '',
@@ -48,29 +48,30 @@
             ruang_keluarga: false,
             ruang_tidur: false
         });
+        const idStr = useRef("1-00-000-XX");
 
         useEffect(()=>{
             console.log(formData)
         }, [formData])
 
         useEffect(() => {
-            const name = event.target.name;
-            const value = event.target.value;
-            const idInputElm = document.querySelector('input[name="id"]');
-            let idStrArr = idStr.split("-");
-            switch (name) {
-                case 'kategori':
-                    idStrArr[1] = value.toString().padStart(2, '0');
-                    idStr = idStrArr.join("-");
-                    idInputElm.value = idStrArr.join("")
-                    break;
-                case 'subkategori':
-                    idStrArr[2] = value.toString().padStart(3, '0');
-                    idStr = idStrArr.join("-");
-                    idInputElm.value = idStrArr.join("")
-                    break;
-            }
-        }, [formData.kategori, formData.subkategori])
+            let idStrArr = idStr.current.split("-");
+            idStrArr[1] = formData.kategori.toString().padStart(2, '0');
+            idStr.current = idStrArr.join("-");
+            setFormData({
+                ...formData,
+                id: idStrArr.join("")
+            })
+        }, [formData.kategori])
+        useEffect(() => {
+            let idStrArr = idStr.current.split("-");
+            idStrArr[2] = formData.subkategori.toString().padStart(3, '0');
+            idStr.current = idStrArr.join("-");
+            setFormData({
+                ...formData,
+                id: idStrArr.join("")
+            })
+        }, [formData.subkategori])
 
         return (
             <>
@@ -167,9 +168,7 @@
                                                 <input
                                                     type="text"
                                                     className="form-control"
-                                                    name="id"
-                                                    required=""
-                                                    placeholder="akan tergenerate"
+                                                    value={formData.id}
                                                 />
                                             </div>
                                         </td>
