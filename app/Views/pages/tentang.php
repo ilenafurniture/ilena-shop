@@ -149,10 +149,8 @@
                     <a href="https://maps.app.goo.gl/cBQGbHzKCgyoTAM29"
                         style="flex: 1; text-decoration: none; color: black;">
                         <h3 class="nama">Sumber Abadi Furniture</h3>
-                        <p class="alamat m-0">Jl. Magelang No.km7, Mlati Beningan, Sendangadi, Kec. Mlati,
-                            Kabupaten
-                            Sleman,
-                            Daerah Istimewa Yogyakarta</p>
+                        <p class="alamat m-0">Jl. Magelang No.km7, Mlati Beningan, Sendangadi,
+                            Kec. Mlati, Kabupaten Sleman, Daerah Istimewa Yogyakarta</p>
                     </a>
                 </div>
                 <div class="p-2">
@@ -192,8 +190,7 @@
                 <a href="https://maps.app.goo.gl/BPDJUK8MyRBFrJGW8"
                     style="flex: 1; text-decoration: none; color: black;" class="p-4">
                     <h3 class="nama">Pari Anom Jaya Furniture</h3>
-                    <p class="alamat m-0">Jl. Puncak Permai Utara I A No.5, Babatan, Kec. Wiyung, Surabaya, Jawa
-                        Timur
+                    <p class="alamat m-0">Jl. Bunguran No.45 Lantai 4, Bongkaran, Kec. Pabean Cantikan, Surabaya
                     </p>
                 </a>
                 <div class="p-2">
@@ -225,6 +222,20 @@
                 <div class="p-2">
                     <img src="https://img.ilenafurniture.com/image/1742450030786.webp/?apikey=<?=  $apikey_img_ilena ?>"
                         alt="Victoria Furnicenter" class="client-logo">
+                </div>
+            </div>
+            <div class="item-toko">
+                <a href="https://maps.app.goo.gl/5ZXJpa5BAFadgwAr5"
+                    style="flex: 1; text-decoration: none; color: black;" class="p-4">
+                    <h3 class="nama">Tunggal Jaya Furniture</h3>
+                    <p class="alamat m-0">Jl. Raya Menganti Karangan No.578, Babatan, Kec. Wiyung, Surabaya,
+                        Jawa
+                        Timur
+                    </p>
+                </a>
+                <div class="p-2">
+                    <img src="https://img.ilenafurniture.com/image/1742450030786.webp/?apikey=<?=  $apikey_img_ilena ?>"
+                        alt="Tunggal Jaya Furniture" class="client-logo">
                 </div>
             </div>
         </div>
@@ -501,7 +512,7 @@ var locations = [{
     },
     {
         name: "Sumber Abadi Furniture",
-        coords: [-7.743324302431505, 110.3624866828005]
+        coords: [-7.743532734851712, 110.36242217704519]
     },
     {
         name: "Home Gallery Furniture",
@@ -509,7 +520,7 @@ var locations = [{
     },
     {
         name: "Pari Anom Jaya Furniture",
-        coords: [-7.264405907300976, 112.79562668327448]
+        coords: [-7.241679877880819, 112.74470435104482]
     },
     {
         name: "Suri Mebel Semarang",
@@ -522,6 +533,10 @@ var locations = [{
     {
         name: "Victoria Furnicenter",
         coords: [-7.310519605654715, 112.68303473759022]
+    },
+    {
+        name: "Tunggal Jaya Furniture",
+        coords: [-7.98299983310868, 112.62939860029017]
     }
 ];
 

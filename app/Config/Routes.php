@@ -139,6 +139,7 @@ $routes->get('/admin/labelbarang/(:any)', 'AdminController::labelBarang/$1', ['f
 $routes->get('/admin/homelayout', 'AdminController::homeLayout', ['filter' => 'adminFilter']);
 $routes->post('/admin/homelayout', 'AdminController::actionHomeLayout', ['filter' => 'adminFilter']);
 $routes->get('/admin/changepic', 'AdminController::changePic', ['filter' => 'adminFilter']);
+$routes->post('/admin/order-offline/add', 'AdminController::actionAddOrderOffline');
 
 //GUDANG Controller
 $routes->get('/gudang/listorder', 'GudangController::listOrder', ['filter' => 'gudangFilter']);
