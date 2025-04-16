@@ -1413,12 +1413,37 @@ class AdminController extends BaseController
         foreach ($pesanan as $ind_p => $p) {
             $pesanan[$ind_p]['items'] = json_decode($p['items'], true);
         }
+
+        //Dapatkan data provinsi
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://pro.rajaongkir.com/api/province",
+            CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_SSL_VERIFYPEER => 0,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => array(
+                "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
+            ),
+        ));
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        if ($err) {
+            return "cURL Error #:" . $err;
+        }
+        $provinsi = json_decode($response, true);
         $data = [
             'title' => 'Pesanan',
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'pesanan' => $pesanan,
             'pesananJson' => json_encode($pesanan),
-            'jenis' => $jenis
+            'jenis' => $jenis,
+            'provinsi' => $provinsi['rajaongkir']['results']
         ];
         return view('admin/orderOffline', $data);
     }
@@ -1471,6 +1496,17 @@ class AdminController extends BaseController
         ];
         return view('admin/orderOfflineAdd', $data);
     }
+
+    public function generateAlamat($alamat)
+    {
+        $detail = $alamat['detail'];
+        $provinsi = $alamat['provinsi'];
+        $kabupaten = $alamat['kabupaten'];
+        $kecamatan = $alamat['kecamatan'];
+        $kelurahan = $alamat['kelurahan'];
+        $kodepos = $alamat['kodepos'];
+        return $detail . ", " . $kelurahan . ", " . $kecamatan . ", " . $kabupaten . ", " . $provinsi . " " . $kodepos;
+    }
     public function actionAddOrderOffline()
     {
         $body = $this->request->getBody();
@@ -1492,16 +1528,6 @@ class AdminController extends BaseController
             'detail' => $body['detailTagihan'],
         ];
         $totalAkhir = $body['totalAkhir'];
-        function generateAlamat($alamat)
-        {
-            $detail = $alamat['detail'];
-            $provinsi = $alamat['provinsi'];
-            $kabupaten = $alamat['kabupaten'];
-            $kecamatan = $alamat['kecamatan'];
-            $kelurahan = $alamat['kelurahan'];
-            $kodepos = $alamat['kodepos'];
-            return $detail . ", " . $kelurahan . ", " . $kecamatan . ", " . $kabupaten . ", " . $provinsi . " " . $kodepos;
-        }
 
         //generate id
         $KODE_AWAL = $body['jenis'] == 'sale' ? 'SJ' : 'SP';
@@ -1547,8 +1573,8 @@ class AdminController extends BaseController
         $data = [
             'nama' => $body['nama'],
             'nohp' => $body['nohp'],
-            'alamat_pengiriman' => generateAlamat($alamatPengiriman),
-            'alamat_tagihan' => generateAlamat($alamatTagihan),
+            'alamat_pengiriman' => $this->generateAlamat($alamatPengiriman),
+            'alamat_tagihan' => $this->generateAlamat($alamatTagihan),
             'npwp' => $body['npwp'],
             'tanggal' => $body['tanggal'],
             'id_pesanan' => $idFix,
@@ -1563,5 +1589,89 @@ class AdminController extends BaseController
             'success' => true,
             'id_pesanan' => $idFix,
         ], false);
+    }
+    public function actionKoreksiSP()
+    {
+        $body = $this->request->getVar();
+        $isiBody = [
+            'id_pesanan' => $body['id_pesanan'],
+            'tanggal' => $body['tanggal'],
+            'provinsiTagihan' => $body['provinsi'],
+            'kabupatenTagihan' => $body['kota'],
+            'kecamatanTagihan' => $body['kecamatan'],
+            'kodeposTagihan' => $body['kodepos'],
+            'detailTagihan' => $body['detail'],
+            'alamatTagihan' => $body['alamatTagihan'],
+            'npwp' => $body['npwp'],
+        ];
+
+        $id_pesanan_SP = $body['id_pesanan'];
+        $sp_current = $this->pemesananOfflineModel->getPemesanan($id_pesanan_SP);
+        $alamatTagihan = [
+            'provinsi' => explode('-', $body['provinsi'])[1],
+            'kabupaten' => explode('-', $body['kota'])[1],
+            'kecamatan' => explode('-', $body['kecamatan'])[1],
+            'kelurahan' => explode('-', $body['kodepos'])[0],
+            'kodepos' => explode('-', $body['kodepos'])[1],
+            'detail' => $body['detail'],
+        ];
+
+        //generate id
+        $dataTerbaru = $this->pemesananOfflineModel->like('id_pesanan', 'SJ', 'after')->orderBy('id', 'desc')->first();
+        $idFix = 'SJ' . (sprintf("%08d", $dataTerbaru ? ((int)$dataTerbaru['id'] + 1) : 1));
+        $tanggalNoStrip = date('Ymd', strtotime($body['tanggal']));
+
+        foreach (json_decode($sp_current['items'], true) as $item) {
+            $produkCur = $this->barangModel->getBarang($item['id']);
+            $varian = json_decode($produkCur['varian'], true);
+            $saldo = 0;
+            $varianBaru = $varian;
+            foreach ($varian as $ind => $v) {
+                if ($v['nama'] == $item['varian']) {
+                    $saldo = (int)$v['stok'];
+                    $varianBaru[$ind]['stok'] = (string)((int)$v['stok'] - $item['jumlah']);
+                }
+            }
+            $this->kartuStokModel->insert([
+                'id_barang' => $item['id'],
+                'tanggal' => $body['tanggal'],
+                'keterangan' => $tanggalNoStrip . "-" . $item['id'] . "-" . str_replace(' ', '-', strtoupper($item['varian'])) . "-" . $body['id_pesanan'],
+                'debit' => $item['jumlah'],
+                'kredit' => 0,
+                'saldo' => $saldo + $item['jumlah'],
+                'pending' => false,
+                'id_pesanan' => $body['id_pesanan'],
+                'varian' => $item['varian'],
+            ]);
+            $this->kartuStokModel->insert([
+                'id_barang' => $item['id'],
+                'tanggal' => $body['tanggal'],
+                'keterangan' => $tanggalNoStrip . "-" . $item['id'] . "-" . str_replace(' ', '-', strtoupper($item['varian'])) . "-" . $idFix,
+                'debit' => 0,
+                'kredit' => $item['jumlah'],
+                'saldo' => $saldo,
+                'pending' => false,
+                'id_pesanan' => $idFix,
+                'varian' => $item['varian'],
+            ]);
+        }
+
+        $data = [
+            'nama' => $sp_current['nama'],
+            'nohp' => $sp_current['nohp'],
+            'alamat_pengiriman' => $sp_current['alamat_pengiriman'],
+            'alamat_tagihan' => isset($body['checkAlamat']) ? $body['alamatTagihan'] : $this->generateAlamat($alamatTagihan),
+            'npwp' => $body['npwp'],
+            'tanggal' => $body['tanggal'],
+            'id_pesanan' => $idFix,
+            'items' => $sp_current['items'],
+            'status' => 'pending',
+            'jenis' => 'sale',
+            'total_akhir' => $sp_current['total_akhir'],
+        ];
+        $this->pemesananOfflineModel->where(['id_pesanan' => $sp_current['id_pesanan']])->set(['status' => 'return'])->update();
+        $this->pemesananOfflineModel->insert($data);
+
+        return redirect()->to('/admin/order/offline/sale');
     }
 }
