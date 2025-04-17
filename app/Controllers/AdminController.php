@@ -1373,6 +1373,28 @@ class AdminController extends BaseController
         return view('admin/suratInvoice', $data);
     }
 
+    public function suratJalanOffline($sjOffline){
+        $pemesanan = $this->pemesananOfflineModel->getPemesanan($sjOffline);
+        $data = [
+            'title' => 'Surat Jalan Offline',
+            'apikey_img_ilena' => $this->apikey_img_ilena,
+            'pemesanan' => $pemesanan,            
+            'items' => json_decode($pemesanan['items'], true),
+        ];
+        return view('admin/suratJalanOffline', $data);  
+    }
+
+    public function suratIPengantarOffline($spOffline){
+        $pemesanan = $this->pemesananOfflineModel->getPemesanan($spOffline);
+        $data = [
+            'title' => 'Surat Pengantar Offline',
+            'apikey_img_ilena' => $this->apikey_img_ilena,
+            'pemesanan' => $pemesanan,            
+            'items' => json_decode($pemesanan['items'], true),
+        ];
+        return view('admin/suratIPengantarOffline', $data);  
+    }
+
     public function changePic()
     {
         $barangLama = $this->barangModel
