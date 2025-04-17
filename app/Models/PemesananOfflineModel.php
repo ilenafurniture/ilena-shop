@@ -15,7 +15,6 @@ class PemesananOfflineModel extends Model
         'npwp',
         'tanggal',
         'id_pesanan',
-        'items',
         'status',
         'total_akhir',
         'jenis',
@@ -25,6 +24,4 @@ class PemesananOfflineModel extends Model
     {
         return $this->where(['id_pesanan' => $id_pesanan])->first();
     }
-
-
 }

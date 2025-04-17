@@ -1,13 +1,13 @@
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
 <style>
-[data-bs-toggle="tooltip"] {
-    color: gray;
-}
+    [data-bs-toggle="tooltip"] {
+        color: gray;
+    }
 </style>
 <div id="input-koreksi" class="d-none justify-content-center align-items-center"
     style="position: fixed; left: 0; top: 0; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.5)">
-    <div class="bg-white p-4 rounded" style="width: 80%;">
+    <div class="bg-white p-4 rounded" style="width: 80%; max-height: 90%; overflow-y:scroll;">
         <form method="post" action="/admin/order-offline/koreksisp">
             <h5 class="m-0 fw-bold">Koreksi Surat Pengantar</h5>
             <p class="m-0 text-sm" style="color: var(--merah); font-size: 12px">ID Order : <input type="text"
@@ -16,7 +16,7 @@
             <hr>
             <div class="mb-3">
                 <p class="mb-1">Tanggal</p>
-                <input type="datetime-local" name="tanggal" class="form-control">
+                <input type="datetime-local" name="tanggal" class="form-control" required>
             </div>
             <p class="mb-1 fw-bold">Alamat Tagihan</p>
             <div class="ps-3 alamat-taghihan" style="border-left: 1px solid black;">
@@ -24,7 +24,7 @@
                     <select name="provinsi" class="form-select">
                         <option value="">-- Pilih provinsi --</option>
                         <?php foreach ($provinsi as $p) { ?>
-                        <option value="<?= $p['province_id']; ?>-<?= $p['province']; ?>"><?= $p['province']; ?></option>
+                            <option value="<?= $p['province_id']; ?>-<?= $p['province']; ?>"><?= $p['province']; ?></option>
                         <?php } ?>
                     </select>
                     <select name="kota" class="form-select">
@@ -50,9 +50,38 @@
                 <input name="checkAlamat" type="checkbox" onchange="handleChangeAlamatTagihan(event)">
                 <p class="m-0">Sama dengan alamat pengiriman</p>
             </label>
+
+            <div class="mb-3">
+                <p class="mb-1">Pilih barang</p>
+                <div id="container-items" class="d-flex flex-column gap-1">
+                    <label class="d-flex gap-3 align-items-center">
+                        <input type="checkbox" onchange="handleChangeInputItem(0, event)">
+                        <div>
+                            <p class="fw-bold m-0">Coffe table (HITAM)</p>
+                            <p class="text-secondary text-sm m-0">1023142</p>
+                        </div>
+                    </label>
+                    <label class="d-flex gap-3 align-items-center">
+                        <input type="checkbox" onchange="handleChangeInputItem(1, event)">
+                        <div>
+                            <p class="fw-bold m-0">Coffe table (HITAM)</p>
+                            <p class="text-secondary text-sm m-0">1023142</p>
+                        </div>
+                    </label>
+                    <label class="d-flex gap-3 align-items-center">
+                        <input type="checkbox" onchange="handleChangeInputItem(2, event)">
+                        <div>
+                            <p class="fw-bold m-0">Coffe table (HITAM)</p>
+                            <p class="text-secondary text-sm m-0">1023142</p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <input type="text" name="index_items_selected" required class="d-none">
+
             <div class="mb-3">
                 <p class="mb-1">NPWP</p>
-                <input type="text" name="npwp" class="form-control">
+                <input type="text" name="npwp" class="form-control" required>
             </div>
             <div class="d-flex gap-1">
                 <button type="button" class="btn btn-default w-100" onclick="closeModal()">Closes</button>
@@ -89,159 +118,188 @@
         </thead>
         <tbody>
             <?php foreach ($pesanan as $ind_p => $p) { ?>
-            <tr>
-                <td><?= $ind_p + 1; ?></td>
-                <td><?= $p['id_pesanan']; ?></td>
-                <td><?= $p['tanggal']; ?></td>
-                <td><?= $p['nama']; ?></td>
-                <td><?= $p['status']; ?></td>
-                <td>
-                    <div class="d-flex gap-1">
-                        <?php if ($jenis == 'sale') { ?>
-                        <a href="/admin/suratjalan-offline/<?= $p['id_pesanan']; ?>" data-bs-toggle="tooltip"
-                            data-bs-placement="top" data-bs-title="Surat Jalan"><i
-                                class="material-icons">local_shipping</i></a>
-                        <a href="/admin/invoice-offline/<?= $p['id_pesanan']; ?>" data-bs-toggle="tooltip"
-                            data-bs-placement="top" data-bs-title="Invoice"><i
-                                class="material-icons">description</i></a>
-                        <?php } else { ?>
-                        <a href="/admin/suratpengantar-offline/<?= $p['id_pesanan']; ?>" data-bs-toggle="tooltip"
-                            data-bs-placement="top" data-bs-title="Surat Pengantar"><i
-                                class="material-icons">description</i></a>
-                        <?php if ($p['status'] != 'return') { ?>
-                        <a onclick="pilihPesanan(<?= $ind_p; ?>)" data-bs-toggle="tooltip" data-bs-placement="top"
-                            data-bs-title="Buat Surat Jalan"><i class="material-icons">insert_drive_file</i></a>
-                        <?php } ?>
-                        <?php } ?>
-                    </div>
-                </td>
-            </tr>
+                <tr>
+                    <td><?= $ind_p + 1; ?></td>
+                    <td><?= $p['id_pesanan']; ?></td>
+                    <td><?= $p['tanggal']; ?></td>
+                    <td><?= $p['nama']; ?></td>
+                    <td><?= $p['status']; ?></td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <?php if ($jenis == 'sale') { ?>
+                                <a href="/admin/suratjalan-offline/<?= $p['id_pesanan']; ?>" data-bs-toggle="tooltip"
+                                    data-bs-placement="top" data-bs-title="Surat Jalan"><i
+                                        class="material-icons">local_shipping</i></a>
+                                <a href="/admin/invoice-offline/<?= $p['id_pesanan']; ?>" data-bs-toggle="tooltip"
+                                    data-bs-placement="top" data-bs-title="Invoice"><i
+                                        class="material-icons">description</i></a>
+                            <?php } else { ?>
+                                <a href="/admin/suratpengantar-offline/<?= $p['id_pesanan']; ?>" data-bs-toggle="tooltip"
+                                    data-bs-placement="top" data-bs-title="Surat Pengantar"><i
+                                        class="material-icons">description</i></a>
+                                <?php if ($p['status'] != 'return') { ?>
+                                    <a onclick="pilihPesanan(<?= $ind_p; ?>)" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        data-bs-title="Buat Surat Jalan"><i class="material-icons">insert_drive_file</i></a>
+                                <?php } ?>
+                            <?php } ?>
+                        </div>
+                    </td>
+                </tr>
             <?php } ?>
         </tbody>
     </table>
 </div>
 <script>
-const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 </script>
 <script>
-function selectJenis(event) {
-    window.location.replace(`/admin/order/offline/${event.target.value}`)
-}
+    function selectJenis(event) {
+        window.location.replace(`/admin/order/offline/${event.target.value}`)
+    }
 </script>
 <script>
-const provElm = document.querySelector('select[name="provinsi"]');
-const kotaElm = document.querySelector('select[name="kota"]');
-const kecElm = document.querySelector('select[name="kecamatan"]');
-const kodeElm = document.querySelector('select[name="kodepos"]');
+    const provElm = document.querySelector('select[name="provinsi"]');
+    const kotaElm = document.querySelector('select[name="kota"]');
+    const kecElm = document.querySelector('select[name="kecamatan"]');
+    const kodeElm = document.querySelector('select[name="kodepos"]');
 
-function titleCase(str) {
-    var splitStr = str.toLowerCase().split(' ');
-    for (var i = 0; i < splitStr.length; i++) {
-        splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+    function titleCase(str) {
+        var splitStr = str.toLowerCase().split(' ');
+        for (var i = 0; i < splitStr.length; i++) {
+            splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+        }
+        return splitStr.join(' ');
     }
-    return splitStr.join(' ');
-}
-async function getKota(idprov) {
-    const response = await fetch("/getkota/" + idprov);
-    const kota = await response.json();
-    const hasil = kota.rajaongkir.results;
-    kotaElm.innerHTML = '<option value="">-- Pilih kota --</option>';
-    hasil.forEach(element => {
-        const optElm = document.createElement("option");
-        optElm.value = element.city_id + "-" + element.city_name.split("/")[0]
-        optElm.innerHTML = element.type == 'Kota' ? `${element.city_name} Kota` : element.city_name
-        kotaElm.appendChild(optElm);
-    });
-}
-async function getKec(idkota) {
-    const response = await fetch("/getkec/" + idkota);
-    const kecamatan = await response.json();
-    const hasil = kecamatan.rajaongkir.results;
-    // console.log(hasil)
-    kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
-    kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
-    hasil.forEach(element => {
-        const optElm = document.createElement("option");
-        optElm.value = element.subdistrict_id + "-" + element.subdistrict_name.split("/")[0]
-        optElm.innerHTML = element.subdistrict_name
-        kecElm.appendChild(optElm);
-    });
-}
-async function getKode(kec) {
-    const response = await fetch("/getkode/" + kec);
-    const kode = await response.json();
-    const hasil = kode;
-    // console.log(hasil)
-    kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
-    hasil.forEach(element => {
-        const optElm = document.createElement("option");
-        optElm.value = titleCase(element.DesaKelurahan).split("/")[0] + "-" + element.KodePos
-        optElm.innerHTML = titleCase(element.DesaKelurahan)
-        kodeElm.appendChild(optElm);
-    });
-}
+    async function getKota(idprov) {
+        const response = await fetch("/getkota/" + idprov);
+        const kota = await response.json();
+        const hasil = kota.rajaongkir.results;
+        kotaElm.innerHTML = '<option value="">-- Pilih kota --</option>';
+        hasil.forEach(element => {
+            const optElm = document.createElement("option");
+            optElm.value = element.city_id + "-" + element.city_name.split("/")[0]
+            optElm.innerHTML = element.type == 'Kota' ? `${element.city_name} Kota` : element.city_name
+            kotaElm.appendChild(optElm);
+        });
+    }
+    async function getKec(idkota) {
+        const response = await fetch("/getkec/" + idkota);
+        const kecamatan = await response.json();
+        const hasil = kecamatan.rajaongkir.results;
+        // console.log(hasil)
+        kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
+        kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        hasil.forEach(element => {
+            const optElm = document.createElement("option");
+            optElm.value = element.subdistrict_id + "-" + element.subdistrict_name.split("/")[0]
+            optElm.innerHTML = element.subdistrict_name
+            kecElm.appendChild(optElm);
+        });
+    }
+    async function getKode(kec) {
+        const response = await fetch("/getkode/" + kec);
+        const kode = await response.json();
+        const hasil = kode;
+        // console.log(hasil)
+        kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        hasil.forEach(element => {
+            const optElm = document.createElement("option");
+            optElm.value = titleCase(element.DesaKelurahan).split("/")[0] + "-" + element.KodePos
+            optElm.innerHTML = titleCase(element.DesaKelurahan)
+            kodeElm.appendChild(optElm);
+        });
+    }
 
-provElm.addEventListener("change", (e) => {
-    kotaElm.innerHTML = '<option value="">Loading..</option>'
-    kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
-    kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
-    const valuenya = e.target.value.split("-");
-    const idprov = Number(valuenya[0]);
-    if (idprov > 0) {
-        getKota(idprov)
-    }
-})
-kotaElm.addEventListener("change", (e) => {
-    kecElm.innerHTML = '<option value="">Loading..</option>'
-    kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
-    const value = e.target.value.split("-")
-    const idkota = Number(value[0])
-    if (idkota > 0) {
-        getKec(idkota)
-    }
-})
-kecElm.addEventListener("change", (e) => {
-    kodeElm.innerHTML = '<option value="">Loading..</option>'
-    const value = e.target.value.split("-")
-    const idkec = Number(value[0])
-    if (idkec > 0) {
-        getKode(value[1])
-    }
-})
+    provElm.addEventListener("change", (e) => {
+        kotaElm.innerHTML = '<option value="">Loading..</option>'
+        kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
+        kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        const valuenya = e.target.value.split("-");
+        const idprov = Number(valuenya[0]);
+        if (idprov > 0) {
+            getKota(idprov)
+        }
+    })
+    kotaElm.addEventListener("change", (e) => {
+        kecElm.innerHTML = '<option value="">Loading..</option>'
+        kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        const value = e.target.value.split("-")
+        const idkota = Number(value[0])
+        if (idkota > 0) {
+            getKec(idkota)
+        }
+    })
+    kecElm.addEventListener("change", (e) => {
+        kodeElm.innerHTML = '<option value="">Loading..</option>'
+        const value = e.target.value.split("-")
+        const idkec = Number(value[0])
+        if (idkec > 0) {
+            getKode(value[1])
+        }
+    })
 </script>
 <script>
-const inputIdpesananElm = document.getElementById('input-idpesanan');
-const alamatTaghihanElm = document.querySelectorAll('.alamat-taghihan')
-const inputKoreksiElm = document.getElementById('input-koreksi');
-const pesanan = JSON.parse('<?= $pesananJson; ?>')
-const alamatTagihanElm = document.querySelector('textarea[name="alamatTagihan"]');
-let pesananSelected = {};
+    const containerItemsElm = document.getElementById('container-items');
+    const indexItemsSelectedElm = document.querySelector('input[name="index_items_selected"]');
+    const inputIdpesananElm = document.getElementById('input-idpesanan');
+    const alamatTaghihanElm = document.querySelectorAll('.alamat-taghihan')
+    const inputKoreksiElm = document.getElementById('input-koreksi');
+    const pesanan = JSON.parse('<?= $pesananJson; ?>')
+    const alamatTagihanElm = document.querySelector('textarea[name="alamatTagihan"]');
+    let pesananSelected = {};
 
-function pilihPesanan(index) {
-    console.log(pesanan[index])
-    pesananSelected = pesanan[index]
-    inputIdpesananElm.value = pesananSelected.id_pesanan
-    inputKoreksiElm.classList.remove('d-none')
-    inputKoreksiElm.classList.add('d-flex')
-}
-
-function closeModal() {
-    inputKoreksiElm.classList.add('d-none')
-    inputKoreksiElm.classList.remove('d-flex')
-}
-
-function handleChangeAlamatTagihan(event) {
-    console.log(event.target.checked)
-    console.log()
-    alamatTagihanElm.value = pesananSelected.alamat_pengiriman
-    if (event.target.checked) {
-        alamatTaghihanElm[0].classList.add('d-none');
-        alamatTaghihanElm[1].classList.remove('d-none');
-    } else {
-        alamatTaghihanElm[1].classList.add('d-none');
-        alamatTaghihanElm[0].classList.remove('d-none');
+    function handleChangeInputItem(index, event) {
+        let arrIndexItem = indexItemsSelectedElm.value.split(',');
+        arrIndexItem[index] = event.target.checked ? '1' : '0';
+        indexItemsSelectedElm.value = arrIndexItem.join(',');
     }
-}
+
+    function pilihPesanan(index) {
+        console.log(pesanan[index])
+        pesananSelected = pesanan[index];
+        indexItemsSelectedElm.value = '';
+        containerItemsElm.innerHTML = '';
+        (async () => {
+            const fetchItems = await fetch(`/admin/getitemsoffline/${pesananSelected.id_pesanan}`);
+            const fetchItemsJson = await fetchItems.json();
+            console.log(fetchItemsJson)
+            if (fetchItemsJson.items.length == 0) {
+                return window.alert('Produk sudah di beli semua');
+            }
+            fetchItemsJson.items.forEach((item, index) => {
+                indexItemsSelectedElm.value += `${index == 0 ? '' : ','}${0}`
+                containerItemsElm.innerHTML += `
+                    <label class="d-flex gap-3 align-items-center">
+                        <input type="checkbox" onchange="handleChangeInputItem(${index}, event)">
+                        <div>
+                            <p class="fw-bold m-0">${item.nama} (${item.varian})</p>
+                            <p class="text-secondary text-sm m-0">${item.id_barang}</p>
+                        </div>
+                    </label>
+                `
+            })
+            inputIdpesananElm.value = pesananSelected.id_pesanan
+            inputKoreksiElm.classList.remove('d-none')
+            inputKoreksiElm.classList.add('d-flex')
+        })();
+    }
+
+    function closeModal() {
+        inputKoreksiElm.classList.add('d-none')
+        inputKoreksiElm.classList.remove('d-flex')
+        indexItemsSelectedElm.value = '';
+    }
+
+    function handleChangeAlamatTagihan(event) {
+        alamatTagihanElm.value = pesananSelected.alamat_pengiriman
+        if (event.target.checked) {
+            alamatTaghihanElm[0].classList.add('d-none');
+            alamatTaghihanElm[1].classList.remove('d-none');
+        } else {
+            alamatTaghihanElm[1].classList.add('d-none');
+            alamatTaghihanElm[0].classList.remove('d-none');
+        }
+    }
 </script>
 <?= $this->endSection(); ?>

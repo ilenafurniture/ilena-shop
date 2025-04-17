@@ -1,90 +1,90 @@
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
 <style>
-.notif {
-    position: fixed;
-    bottom: 50px;
-    right: 0px;
-    padding: 0.6em 2em;
-    color: white;
-    border-radius: 7px;
-    color: #e84a49;
-    letter-spacing: -1px;
-    font-size: 15px;
-    background-color: #e8494911;
-    transition: 0.5s;
-    transform: translateX(100%);
-}
+    .notif {
+        position: fixed;
+        bottom: 50px;
+        right: 0px;
+        padding: 0.6em 2em;
+        color: white;
+        border-radius: 7px;
+        color: #e84a49;
+        letter-spacing: -1px;
+        font-size: 15px;
+        background-color: #e8494911;
+        transition: 0.5s;
+        transform: translateX(100%);
+    }
 
-.notif.show {
-    right: 50px;
-    transform: translateX(0%);
-    transition: 0.5s;
-}
+    .notif.show {
+        right: 50px;
+        transform: translateX(0%);
+        transition: 0.5s;
+    }
 
-.item-produk {
-    border-radius: 12px;
-}
+    .item-produk {
+        border-radius: 12px;
+    }
 
-.item-produk img {
-    width: 50px;
-    border-radius: 10px;
-}
+    .item-produk img {
+        width: 50px;
+        border-radius: 10px;
+    }
 
-.item-produk .item-varian {
-    cursor: pointer;
-    outline: 1px solid gray;
-    border: 1px solid white;
-    border-radius: 2em;
-    width: 14px;
-    height: 14px;
-    margin: 0;
-    padding: 0;
-}
+    .item-produk .item-varian {
+        cursor: pointer;
+        outline: 1px solid gray;
+        border: 1px solid white;
+        border-radius: 2em;
+        width: 14px;
+        height: 14px;
+        margin: 0;
+        padding: 0;
+    }
 
-.item-produk .item-varian:hover {
-    outline: 1px solid var(--merah);
-}
+    .item-produk .item-varian:hover {
+        outline: 1px solid var(--merah);
+    }
 
-.item-keranjang-admin img {
-    width: 50px;
-    border-radius: 10px;
-    height: 50px;
-    object-fit: cover;
-}
+    .item-keranjang-admin img {
+        width: 50px;
+        border-radius: 10px;
+        height: 50px;
+        object-fit: cover;
+    }
 
-.item-keranjang-admin .counter {
-    display: flex;
-    align-items: center;
-}
+    .item-keranjang-admin .counter {
+        display: flex;
+        align-items: center;
+    }
 
-.item-keranjang-admin .counter .action {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 20px;
-    height: 20px;
-    border-radius: 20px;
-    background-color: #e8494911;
-    color: var(--merah);
-    font-weight: 500;
-    cursor: pointer;
-}
+    .item-keranjang-admin .counter .action {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 20px;
+        background-color: #e8494911;
+        color: var(--merah);
+        font-weight: 500;
+        cursor: pointer;
+    }
 
-.item-keranjang-admin .counter .action:hover {
-    background-color: var(--merah);
-    color: white;
-}
+    .item-keranjang-admin .counter .action:hover {
+        background-color: var(--merah);
+        color: white;
+    }
 
-.item-keranjang-admin .counter .angka {
-    width: 30px;
-    text-align: center;
-    font-weight: bold;
-}
+    .item-keranjang-admin .counter .angka {
+        width: 30px;
+        text-align: center;
+        font-weight: bold;
+    }
 
-input {
-    font-size: 13px;
-}
+    input {
+        font-size: 13px;
+    }
 </style>
 <div style="padding: 2em;" class="h-100 d-flex flex-column">
     <h1 class="teks-sedang mb-4">Buat Pesanan</h1>
@@ -94,7 +94,7 @@ input {
 <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script>
-console.log(JSON.parse('<?= $produkJson; ?>'))
+    console.log(JSON.parse('<?= $produkJson; ?>'))
 </script>
 
 <script type="text/babel">
@@ -167,6 +167,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
             nominal: 0,
             satuan: 'persen'
         });
+        const [alamatTagihanSama, setAlamatTagihanSama] = useState(false);
         
         useEffect(()=>{
             if(formData.provinsi) {
@@ -292,29 +293,45 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
         }, [cari])
 
         useEffect(()=>{
+            const {
+                provinsi, kabupaten, kecamatan, kelurahan, kodepos, detail,
+                totalAkhir, jenis, tanggal,
+                items,
+                nama, nohp,
+                provinsiTagihan, kabupatenTagihan, kecamatanTagihan, kelurahanTagihan, kodeposTagihan, detailTagihan,
+                npwp,
+            } = formData;
+            const isFormValidKhusus = (jenis) => {
+                if(jenis == 'sale') {
+                    if(alamatTagihanSama) {
+                        const fieldsFilled = [
+                            npwp
+                        ].every(val => val && val !== '');
+                        return fieldsFilled;
+                    } else {
+                        const fieldsFilled = [
+                            provinsiTagihan, kabupatenTagihan, kecamatanTagihan, kelurahanTagihan, kodeposTagihan, detailTagihan,
+                            npwp
+                        ].every(val => val && val !== '');
+                        return fieldsFilled;
+                    }
+                } else return true;
+            }
             const isFormValid = () => {
-                const {
-                    provinsi, kabupaten, kecamatan, kelurahan, kodepos, detail,
-                    provinsiTagihan, kabupatenTagihan, kecamatanTagihan, kelurahanTagihan, kodeposTagihan, detailTagihan,
-                    totalAkhir, jenis, tanggal,
-                    items,
-                    nama, nohp, npwp,
-                } = formData;
                 const fieldsFilled = [
                     provinsi, kabupaten, kecamatan, kelurahan, kodepos, detail,
-                    provinsiTagihan, kabupatenTagihan, kecamatanTagihan, kelurahanTagihan, kodeposTagihan, detailTagihan,
-                    jenis, tanggal, nama, nohp, npwp
+                    jenis, tanggal, nama, nohp
                 ].every(val => val && val !== '');
                 const totalValid = totalAkhir > 0;
                 const itemsValid = items.length > 0;
                 return fieldsFilled && totalValid && itemsValid;
             };
-            if(isFormValid(formData)) {
+            if(isFormValid(formData) && isFormValidKhusus(jenis)) {
                 setCanSave(true)
             } else {
                 setCanSave(false)
             }
-        }, [formData])
+        }, [formData, alamatTagihanSama])
 
         useEffect(()=>{
             if(formData.items.length > 0) {
@@ -340,16 +357,6 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                 }, 3000);
                 return;
             }
-            console.log({
-                produk, varian, stok, cekExistData, formData, itemBaru: {
-                            id: produk.id,
-                            nama: produk.nama,
-                            jumlah: 1,
-                            varian: varian.nama,
-                            harga: produk.harga,
-                            detail: {produk, varian}
-                        }
-            })
             if(cekExistData) {
                 setFormData({
                     ...formData,
@@ -401,10 +408,12 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                 kabupaten: formData.kabupaten.split("-")[1],
                 kecamatan: formData.kecamatan.split("-")[1],
                 kelurahan: formData.kelurahan.split("-")[0],
-                provinsiTagihan: formData.provinsiTagihan.split("-")[1],
-                kabupatenTagihan: formData.kabupatenTagihan.split("-")[1],
-                kecamatanTagihan: formData.kecamatanTagihan.split("-")[1],
-                kelurahanTagihan: formData.kelurahanTagihan.split("-")[0],
+                provinsiTagihan: alamatTagihanSama ? formData.provinsi.split("-")[1] : formData.provinsiTagihan.split("-")[1],
+                kabupatenTagihan: alamatTagihanSama ? formData.kabupaten.split("-")[1] : formData.kabupatenTagihan.split("-")[1],
+                kecamatanTagihan: alamatTagihanSama ? formData.kecamatan.split("-")[1] : formData.kecamatanTagihan.split("-")[1],
+                kelurahanTagihan: alamatTagihanSama ? formData.kelurahan.split("-")[0] : formData.kelurahanTagihan.split("-")[0],
+                kodeposTagihan: alamatTagihanSama ? formData.kodepos : formData.kodeposTagihan,
+                detailTagihan: alamatTagihanSama ? formData.detail : formData.detailTagihan,
                 items: formData.items.map((item) => {
                     return {
                         id: item.id,
@@ -415,7 +424,18 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                     }
                 })
             }
-            console.log(formDataAkhir)
+            const formDataAkhir1 = {
+                ...formDataAkhir,
+                provinsiTagihan: formDataAkhir.jenis == 'display' ? null : formDataAkhir.provinsiTagihan,
+                kabupatenTagihan: formDataAkhir.jenis == 'display' ? null : formDataAkhir.kabupatenTagihan,
+                kecamatanTagihan: formDataAkhir.jenis == 'display' ? null : formDataAkhir.kecamatanTagihan,
+                kelurahanTagihan: formDataAkhir.jenis == 'display' ? null : formDataAkhir.kelurahanTagihan,
+                kodeposTagihan: formDataAkhir.jenis == 'display' ? null : formDataAkhir.kodeposTagihan,
+                detailTagihan: formDataAkhir.jenis == 'display' ? null : formDataAkhir.detailTagihan,
+                npwp: formDataAkhir.jenis == 'display' ? null : formDataAkhir.npwp,
+            }
+
+            console.log(formDataAkhir1)
 
             async function fetchSubmit() {
                 const response = await fetch(
@@ -425,7 +445,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                         headers: {
                             "Content-Type": "application/json",
                         },
-                        body: JSON.stringify(formDataAkhir),
+                        body: JSON.stringify(formDataAkhir1),
                     }
                 );
                 const responseJson = await response.json()
@@ -562,7 +582,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                 <div className={`notif ${notif.show ? 'show' : ''}`}>{notif.teks}</div>
                 <div className="d-flex gap-4 w-100" style={{ height: 'fit-content' }}>
                     <div className="d-flex flex-column gap-4" style={{flex: 1}}>
-                        <div style={{ width: '100%', flex: 1, position: 'relative'}} className="mb-1">
+                        <div style={{ width: '100%', flex: 1, position: 'relative', minHeight: '400px'}} className="mb-1">
                             <div style={{position: 'absolute', border: '1px solid rgb(167, 8, 8)', padding: '1em', borderRadius: '5px'}} className="w-100 h-100 d-flex flex-column">
                                 <div className="d-flex gap-2  justify-content-between">
                                     <div className="d-flex flex-column">
@@ -616,12 +636,14 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                         <div className="d-flex flex-column gap-2">
                             <p className="m-0" style={{letterSpacing: '-1px',fontSize: '16px'}}>Detail :</p>
                             <div className="d-flex gap-1 mb-1">
-                                <input type="text" className="form-control" placeholder="Nama penerima" value={formData.nama} onChange={(e)=>{setFormData({...formData, nama: e.target.value})}} />
-                                <input type="text" className="form-control" placeholder="Nohp penerima" value={formData.nohp} onChange={(e)=>{setFormData({...formData, nohp: e.target.value})}} />
+                                <input type="text w-50" className="form-control" placeholder="Nama penerima" value={formData.nama} onChange={(e)=>{setFormData({...formData, nama: e.target.value})}} />
+                                <input type="text w-50" className="form-control" placeholder="Nohp penerima" value={formData.nohp} onChange={(e)=>{setFormData({...formData, nohp: e.target.value})}} />
                             </div>
                             <div className="d-flex gap-1 mb-1">
-                                <input type="text" className="form-control" placeholder="No NPWP" value={formData.npwp} onChange={(e)=>{setFormData({...formData, npwp: e.target.value})}} />
-                                <input type="datetime-local" placeholder="Tanggal" className="form-control w-100" value={formData.tanggal} onChange={(e)=>{setFormData({...formData, tanggal: e.target.value})}} />
+                                {formData.jenis == 'sale' &&
+                                    <input type="text" className="w-100 form-control" placeholder="No NPWP" value={formData.npwp} onChange={(e)=>{setFormData({...formData, npwp: e.target.value})}} />
+                                }
+                                <input type="datetime-local" placeholder="Tanggal" className="w-100 form-control" value={formData.tanggal} onChange={(e)=>{setFormData({...formData, tanggal: e.target.value})}} />
                             </div>
                             <select value={formData.jenis} onChange={(e)=>{setFormData({...formData, jenis: e.target.value})}} className="form-select mb-1">
                                 <option value="sale">Sale</option>
@@ -631,7 +653,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                     </div>
                     <div className="d-flex flex-column" style={{flex: 1}}>
                         {/* <Form Pengiriman> */}
-                        <div className={"d-flex flex-column gap-2 mt-4"}>
+                        <div className={"d-flex flex-column gap-2"}>
                             <p className="m-0" style={{letterSpacing: '-1px',fontSize: '16px'}}>Alamat Pengiriman</p>
                             <div className="mb-1 d-flex gap-1 align-items-center">
                                     <select className="form-select" value={formData.provinsi} onChange={(e)=>{setFormData({...formData, provinsi: e.target.value})}}>
@@ -669,56 +691,64 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                             <input type="text" className="form-control mb-1" placeholder="Jalan, NO.Rumah, RT/RW," value={formData.detail} onChange={(e)=>{setFormData({...formData, detail: e.target.value})}} />
                         </div>
                         {/* <Form Tagihan> */}
-                        <div className={"d-flex flex-column gap-2 my-4"}>
-                            <p className="m-0" style={{letterSpacing: '-1px',fontSize: '16px'}}>Alamat Tagihan</p>
-                            <div className="mb-1 d-flex gap-1 align-items-center">
-                                    <select className="form-select" value={formData.provinsiTagihan} onChange={(e)=>{setFormData({...formData, provinsiTagihan: e.target.value})}}>
-                                        <option value="">-- Pilih provinsi --</option>
-                                        <?php foreach ($provinsi as $p) { ?>
-                                            <option value="<?= $p['province_id']; ?>-<?= $p['province']; ?>">
-                                                <?= $p['province']; ?>
-                                            </option>
-                                        <?php } ?>
-                                    </select>
-                                    <select className="form-select" value={formData.kabupatenTagihan} onChange={(e)=>{setFormData({...formData,kabupatenTagihan: e.target.value})}}>
-                                        <option value="">-- Pilih kabupaten --</option>
-                                        {kabupatenTagihan.map((k, ind_k)=>(
-                                            <option key={ind_k} value={`${k.city_id}-${k.city_name}`}>{k.city_name}</option>
-                                        ))}
-                                    </select>
+                        {formData.jenis == 'sale' &&
+                            <div className={"d-flex flex-column gap-2 my-4"}>
+                                {!alamatTagihanSama && <>
+                                    <p className="m-0" style={{letterSpacing: '-1px',fontSize: '16px'}}>Alamat Tagihan</p>
+                                    <div className="mb-1 d-flex gap-1 align-items-center">
+                                            <select className="form-select" value={formData.provinsiTagihan} onChange={(e)=>{setFormData({...formData, provinsiTagihan: e.target.value})}}>
+                                                <option value="">-- Pilih provinsi --</option>
+                                                <?php foreach ($provinsi as $p) { ?>
+                                                    <option value="<?= $p['province_id']; ?>-<?= $p['province']; ?>">
+                                                        <?= $p['province']; ?>
+                                                    </option>
+                                                <?php } ?>
+                                            </select>
+                                            <select className="form-select" value={formData.kabupatenTagihan} onChange={(e)=>{setFormData({...formData,kabupatenTagihan: e.target.value})}}>
+                                                <option value="">-- Pilih kabupaten --</option>
+                                                {kabupatenTagihan.map((k, ind_k)=>(
+                                                    <option key={ind_k} value={`${k.city_id}-${k.city_name}`}>{k.city_name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    <div className="mb-1 d-flex gap-1 align-items-center">
+                                        <select className="form-select" value={formData.kecamatanTagihan} onChange={(e)=>{setFormData({...formData, kecamatanTagihan: e.target.value})}}>
+                                            <option value="">-- Pilih kecamatan --</option>
+                                            {kecamatanTagihan.map((k, ind_k)=>(
+                                                <option key={ind_k} value={`${k.subdistrict_id}-${k.subdistrict_name}`}>{k.subdistrict_name}</option>
+                                            ))}
+                                        </select>
+                                        <select className="form-select" value={formData.kelurahanTagihan} onChange={(e)=>{setFormData({...formData,kelurahanTagihan: e.target.value})}}>
+                                            <option value="">-- Pilih kelurahan --</option>
+                                            {kelurahanTagihan.map((k, ind_k)=>(
+                                                <option key={ind_k} value={`${k.DesaKelurahan}-${k.KodePos}`}>{k.DesaKelurahan}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="mb-1 d-flex gap-1 align-items-center">
+                                        <input type="text" className="form-control" placeholder="Kodepos" value={formData.kodeposTagihan} onChange={(e)=>{setFormData({...formData, kodeposTagihan: e.target.value})}} />
+                                    </div>
+                                    <input type="text" className="form-control mb-1" placeholder="Jalan, NO.Rumah, RT/RW," value={formData.detailTagihan} onChange={(e)=>{setFormData({...formData, detailTagihan: e.target.value})}} />
+                                </>}
+                                <label className="d-flex gap-2 align-items-center">
+                                    <input type="checkbox" onChange={(e) => setAlamatTagihanSama(e.target.checked)} checked={alamatTagihanSama} />
+                                    <p className="m-0">Samakan alamat pengiriman</p>
+                                </label>
+                                <hr />
+                                <p className="m-0" style={{letterSpacing: '-1px',fontSize: '16px'}}>Potongan</p>
+                                <div className="d-flex gap-1 mb-1">
+                                    <div style={{flex: 1}}>
+                                        <input type="number" value={potongan.nominal} onChange={(e)=>{setPotongan({...potongan, nominal: Number(e.target.value)})}} className="form-control mb-1" placeholder="Nominal"/>
+                                    </div>
+                                    <div style={{flex: 1}}>
+                                        <select className="form-select" value={potongan.satuan} onChange={(e)=>{setPotongan({...potongan, satuan: e.target.value})}}>
+                                            <option value="rupiah">Rupiah</option>
+                                            <option value="persen">Persen</option>
+                                        </select>
+                                    </div>
                                 </div>
-                            <div className="mb-1 d-flex gap-1 align-items-center">
-                                <select className="form-select" value={formData.kecamatanTagihan} onChange={(e)=>{setFormData({...formData, kecamatanTagihan: e.target.value})}}>
-                                    <option value="">-- Pilih kecamatan --</option>
-                                    {kecamatanTagihan.map((k, ind_k)=>(
-                                        <option key={ind_k} value={`${k.subdistrict_id}-${k.subdistrict_name}`}>{k.subdistrict_name}</option>
-                                    ))}
-                                </select>
-                                <select className="form-select" value={formData.kelurahanTagihan} onChange={(e)=>{setFormData({...formData,kelurahanTagihan: e.target.value})}}>
-                                    <option value="">-- Pilih kelurahan --</option>
-                                    {kelurahanTagihan.map((k, ind_k)=>(
-                                        <option key={ind_k} value={`${k.DesaKelurahan}-${k.KodePos}`}>{k.DesaKelurahan}</option>
-                                    ))}
-                                </select>
                             </div>
-                            <div className="mb-1 d-flex gap-1 align-items-center">
-                                <input type="text" className="form-control" placeholder="Kodepos" value={formData.kodeposTagihan} onChange={(e)=>{setFormData({...formData, kodeposTagihan: e.target.value})}} />
-                            </div>
-                            <input type="text" className="form-control mb-1" placeholder="Jalan, NO.Rumah, RT/RW," value={formData.detailTagihan} onChange={(e)=>{setFormData({...formData, detailTagihan: e.target.value})}} />
-                            <hr />
-                            <p className="m-0" style={{letterSpacing: '-1px',fontSize: '16px'}}>Potongan</p>
-                            <div className="d-flex gap-1 mb-1">
-                                <div style={{flex: 1}}>
-                                    <input type="number" value={potongan.nominal} onChange={(e)=>{setPotongan({...potongan, nominal: Number(e.target.value)})}} className="form-control mb-1" placeholder="Nominal"/>
-                                </div>
-                                <div style={{flex: 1}}>
-                                    <select className="form-select" value={potongan.satuan} onChange={(e)=>{setPotongan({...potongan, satuan: e.target.value})}}>
-                                        <option value="rupiah">Rupiah</option>
-                                        <option value="persen">Persen</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
+                        }
 
                         <button type="button" onClick={handleSubmit} className={`btn-default-merah w-100 ${canSave ? '' : 'disabled'}`}>Buat</button>
                     </div>
