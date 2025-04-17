@@ -1368,7 +1368,12 @@ class AdminController extends BaseController
     public function suratInvoice($id_pesanan)
     {
         $pemesanan = $this->pemesananOfflineModel->getPemesanan($id_pesanan);
-        $items = $this->pemesananOfflineItemModel->where(['id_pesanan' => $id_pesanan])->findAll();
+        $items = $this->pemesananOfflineItemModel
+            ->select('pemesanan_offline_item.*')
+            ->select('barang.nama')
+            ->join('barang', 'barang.id = pemesanan_offline_item.id_barang')
+            ->where(['id_pesanan' => $id_pesanan])
+            ->findAll();
         $data = [
             'title' => 'Surat Invoice',
             'apikey_img_ilena' => $this->apikey_img_ilena,
@@ -1378,31 +1383,24 @@ class AdminController extends BaseController
         return view('admin/suratInvoice', $data);
     }
 
-    public function suratJalanOffline($sjOffline)
+    public function suratOffline($sjOffline)
     {
         $pemesanan = $this->pemesananOfflineModel->getPemesanan($sjOffline);
-        $items = $this->pemesananOfflineItemModel->where(['id_pesanan' => $sjOffline])->findAll();
+        $items = $this->pemesananOfflineItemModel
+            ->select('pemesanan_offline_item.*')
+            ->select('barang.nama')
+            ->join('barang', 'barang.id = pemesanan_offline_item.id_barang')
+            ->where(['id_pesanan' => $sjOffline])
+            ->findAll();
         $data = [
             'title' => 'Surat Jalan Offline',
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'pemesanan' => $pemesanan,
             'items' => $items,
         ];
-        return view('admin/suratJalanOffline', $data);
+        return view('admin/suratOffline', $data);
     }
 
-    public function suratPengantarOffline($spOffline)
-    {
-        $pemesanan = $this->pemesananOfflineModel->getPemesanan($spOffline);
-        $items = $this->pemesananOfflineItemModel->where(['id_pesanan' => $spOffline])->findAll();
-        $data = [
-            'title' => 'Surat Pengantar Offline',
-            'apikey_img_ilena' => $this->apikey_img_ilena,
-            'pemesanan' => $pemesanan,
-            'items' => $items,
-        ];
-        return view('admin/suratIPengantarOffline', $data);
-    }
 
     public function changePic()
     {

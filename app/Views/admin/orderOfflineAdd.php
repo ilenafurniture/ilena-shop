@@ -1,90 +1,90 @@
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
 <style>
-    .notif {
-        position: fixed;
-        bottom: 50px;
-        right: 0px;
-        padding: 0.6em 2em;
-        color: white;
-        border-radius: 7px;
-        color: #e84a49;
-        letter-spacing: -1px;
-        font-size: 15px;
-        background-color: #e8494911;
-        transition: 0.5s;
-        transform: translateX(100%);
-    }
+.notif {
+    position: fixed;
+    bottom: 50px;
+    right: 0px;
+    padding: 0.6em 2em;
+    color: white;
+    border-radius: 7px;
+    color: #e84a49;
+    letter-spacing: -1px;
+    font-size: 15px;
+    background-color: #e8494911;
+    transition: 0.5s;
+    transform: translateX(100%);
+}
 
-    .notif.show {
-        right: 50px;
-        transform: translateX(0%);
-        transition: 0.5s;
-    }
+.notif.show {
+    right: 50px;
+    transform: translateX(0%);
+    transition: 0.5s;
+}
 
-    .item-produk {
-        border-radius: 12px;
-    }
+.item-produk {
+    border-radius: 12px;
+}
 
-    .item-produk img {
-        width: 50px;
-        border-radius: 10px;
-    }
+.item-produk img {
+    width: 50px;
+    border-radius: 10px;
+}
 
-    .item-produk .item-varian {
-        cursor: pointer;
-        outline: 1px solid gray;
-        border: 1px solid white;
-        border-radius: 2em;
-        width: 14px;
-        height: 14px;
-        margin: 0;
-        padding: 0;
-    }
+.item-produk .item-varian {
+    cursor: pointer;
+    outline: 1px solid gray;
+    border: 1px solid white;
+    border-radius: 2em;
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    padding: 0;
+}
 
-    .item-produk .item-varian:hover {
-        outline: 1px solid var(--merah);
-    }
+.item-produk .item-varian:hover {
+    outline: 1px solid var(--merah);
+}
 
-    .item-keranjang-admin img {
-        width: 50px;
-        border-radius: 10px;
-        height: 50px;
-        object-fit: cover;
-    }
+.item-keranjang-admin img {
+    width: 50px;
+    border-radius: 10px;
+    height: 50px;
+    object-fit: cover;
+}
 
-    .item-keranjang-admin .counter {
-        display: flex;
-        align-items: center;
-    }
+.item-keranjang-admin .counter {
+    display: flex;
+    align-items: center;
+}
 
-    .item-keranjang-admin .counter .action {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 20px;
-        height: 20px;
-        border-radius: 20px;
-        background-color: #e8494911;
-        color: var(--merah);
-        font-weight: 500;
-        cursor: pointer;
-    }
+.item-keranjang-admin .counter .action {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 20px;
+    background-color: #e8494911;
+    color: var(--merah);
+    font-weight: 500;
+    cursor: pointer;
+}
 
-    .item-keranjang-admin .counter .action:hover {
-        background-color: var(--merah);
-        color: white;
-    }
+.item-keranjang-admin .counter .action:hover {
+    background-color: var(--merah);
+    color: white;
+}
 
-    .item-keranjang-admin .counter .angka {
-        width: 30px;
-        text-align: center;
-        font-weight: bold;
-    }
+.item-keranjang-admin .counter .angka {
+    width: 30px;
+    text-align: center;
+    font-weight: bold;
+}
 
-    input {
-        font-size: 13px;
-    }
+input {
+    font-size: 13px;
+}
 </style>
 <div style="padding: 2em;" class="h-100 d-flex flex-column">
     <h1 class="teks-sedang mb-4">Buat Pesanan</h1>
@@ -94,7 +94,7 @@
 <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script>
-    console.log(JSON.parse('<?= $produkJson; ?>'))
+console.log(JSON.parse('<?= $produkJson; ?>'))
 </script>
 
 <script type="text/babel">

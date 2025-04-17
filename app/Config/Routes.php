@@ -143,8 +143,7 @@ $routes->get('/admin/order/offline/(:any)', 'AdminController::orderOffline/$1', 
 $routes->get('/admin/getitemsoffline/(:any)', 'AdminController::getItemsOffline/$1');
 $routes->get('/admin/order-offline/add', 'AdminController::orderOfflineAdd', ['filter' => 'adminFilter']);
 $routes->get('/admin/invoice-offline/(:any)', 'AdminController::suratInvoice/$1', ['filter' => 'adminFilter']);
-$routes->get('/admin/suratjalan-offline/(:any)', 'AdminController::suratJalanOffline/$1', ['filter' => 'adminFilter']);
-$routes->get('/admin/suratpengantar-offline/(:any)', 'AdminController::suratPengantarOffline/$1', ['filter' => 'adminFilter']);
+$routes->get('/admin/surat-offline/(:any)', 'AdminController::suratOffline/$1', ['filter' => 'adminFilter']);
 $routes->post('/admin/order-offline/add', 'AdminController::actionAddOrderOffline');
 $routes->post('/admin/order-offline/koreksisp', 'AdminController::actionKoreksiSP');
 
