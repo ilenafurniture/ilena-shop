@@ -1362,6 +1362,25 @@ class AdminController extends BaseController
         return view('gudang/suratJalan', $data);
     }
 
+    public function printSuratInvoice(){
+        $this->pemesananOfflineModel->where(['id' => $this->request->getVar('id')])->set(['status_print' => 'sudah print'])->update();
+        $pemesanan = $this->pemesananOfflineModel->where(['id' => $this->request->getVar('id')])->first();
+        $items = [];
+        foreach (json_decode($pemesanan['items'], true) as $p) {
+            array_push($items, $p);
+        }
+        $bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        $tsPemesanan = strtotime($pemesanan['data_mid']['transaction_time']);
+        $data = [
+            'title' => 'Surat Invoice',
+            'apikey_img_ilena' => $this->apikey_img_ilena,
+            'pemesanan' => $pemesanan,
+            'tanggal' => date("d", $tsPemesanan) . " " . $bulan[(int)date("m", $tsPemesanan) - 1] . " " . date("Y", $tsPemesanan),
+            'items' => $items
+        ];
+        return view('admin/printSuratInvoice');
+    }
+
     public function changePic()
     {
         $barangLama = $this->barangModel

@@ -141,6 +141,7 @@ $routes->post('/admin/homelayout', 'AdminController::actionHomeLayout', ['filter
 $routes->get('/admin/changepic', 'AdminController::changePic', ['filter' => 'adminFilter']);
 $routes->get('/admin/order/offline/(:any)', 'AdminController::orderOffline/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/order-offline/add', 'AdminController::orderOfflineAdd', ['filter' => 'adminFilter']);
+$routes->get('/admin/suratPrinInvoice/(:any)', 'AdminController::printSuratInvoice/$1', ['filter' => 'gudangFilter']);
 $routes->post('/admin/order-offline/add', 'AdminController::actionAddOrderOffline');
 $routes->post('/admin/order-offline/koreksisp', 'AdminController::actionKoreksiSP');
 
