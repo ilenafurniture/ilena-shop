@@ -18,6 +18,8 @@ class PemesananOfflineModel extends Model
         'status',
         'total_akhir',
         'jenis',
+        'keterangan',
+        'po',
     ];
 
     public function getPemesanan($id_pesanan)

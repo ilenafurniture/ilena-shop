@@ -12,6 +12,11 @@
     </script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
+    <style>
+        * {
+            font-size: 12px;
+        }
+    </style>
 </head>
 
 <?php setlocale(LC_TIME, 'id_ID'); ?>
@@ -46,7 +51,7 @@
             </div>
         </div>
         <!-- INI Table Pengantar -->
-        <div class="table-responsive mt-1">
+        <div class="table-responsive mt-3">
             <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
@@ -54,29 +59,29 @@
                         <th class="text-center">KODE BARANG</th>
                         <th class="text-center">NAMA BARANG</th>
                         <th class="text-center">JUMLAH</th>
-                        <th class="text-center">KETERANGAN</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php $no = 1; ?>
                     <?php foreach ($items as $t) { ?>
-                    <tr>
-                        <td class="text-center"><?= strtoupper($no++); ?></td>
-                        <td class="text-center"><?= strtoupper($t['id_barang']); ?></td>
-                        <td class="text-center"><?= strtoupper($t['nama']); ?></td>
-                        <td class="text-center"><?= strtoupper($t['jumlah']); ?></td>
-                        <td class="text-center"><?= strtoupper($pemesanan['jenis']); ?></td>
-                    </tr>
+                        <tr>
+                            <td class="text-center"><?= strtoupper($no++); ?></td>
+                            <td class="text-center"><?= strtoupper($t['id_barang']); ?></td>
+                            <td class="">
+                                <p class="m-0"><?= strtoupper($t['nama']); ?> (<?= strtoupper($t['varian']); ?>)</p>
+                                <p class="m-0"><?= $t['dimensi']['panjang'] ?> x <?= $t['dimensi']['lebar'] ?> x <?= $t['dimensi']['tinggi'] ?></p>
+                            </td>
+                            <td class="text-center"><?= strtoupper($t['jumlah']); ?></td>
+                        </tr>
                     <?php } ?>
                 </tbody>
             </table>
-            <p class="m-0"><b>Keterangan : </b><span class="italic" style="color: red;">*permintaan harus selesai di
-                    pukul 17:00 WIB</span></p>
+            <p class="m-0"><b>Keterangan : </b><span class="text-danger"><?= $pemesanan['keterangan'] ? '*' . $pemesanan['keterangan'] : '<i>Tidak ada keterangan</i>'; ?></span></p>
 
             <p class="mt-5">Kendal, <?= date('d F Y', strtotime($pemesanan['tanggal'])); ?></p>
 
             <div class="d-flex justify-content-between mt-5">
-                <div style="flex: 1;" class="text-center">
+                <div class="text-center">
                     <p class="m-0"><b>Dibuat Oleh :</b></p>
                     <br>
                     <br>
@@ -85,7 +90,16 @@
                     <br>
                     <p class="m-0"><b>____________________</b></p>
                 </div>
-                <div style="flex: 1;" class="text-center">
+                <div class="text-center">
+                    <p class="m-0"><b>Dibawa Oleh :</b></p>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <p class="m-0"><b>____________________</b></p>
+                </div>
+                <div class="text-center">
                     <p class="m-0"><b>Diterima Oleh :</b></p>
                     <br>
                     <br>
@@ -98,12 +112,12 @@
         </div>
     </div>
     <script>
-    // window.print();
-    // window.onafterprint = function() {
-    //     window.close(
-    //         window.location.href = "<?= base_url('/admin/order/offline/'.$pemesanan['jenis']); ?>"
-    //     );
-    // };
+        // window.print();
+        // window.onafterprint = function() {
+        //     window.close(
+        //         window.location.href = "<?= base_url('/admin/order/offline/' . $pemesanan['jenis']); ?>"
+        //     );
+        // };
     </script>
 </body>
 

@@ -11,7 +11,7 @@ class PemesananOfflineItemModel extends Model
         'id_pesanan',
         'id_barang',
         'harga',
-        'jumlah',
+        // 'jumlah',
         'varian',
         'id_return' // ini ID SP maupun SJ nya, pokonya ini unutk mengkoneksikannya
     ];

@@ -1371,14 +1371,36 @@ class AdminController extends BaseController
         $items = $this->pemesananOfflineItemModel
             ->select('pemesanan_offline_item.*')
             ->select('barang.nama')
+            ->select('barang.deskripsi')
             ->join('barang', 'barang.id = pemesanan_offline_item.id_barang')
             ->where(['id_pesanan' => $id_pesanan])
             ->findAll();
+        $filter = [];
+        $itemsFiltered = [];
+        $counterJumlah = [];
+        foreach ($items as $i) {
+            if (!in_array($i['id_barang'] . '-' . $i['varian'], $filter)) {
+                array_push($filter, $i['id_barang'] . '-' . $i['varian']);
+                array_push($counterJumlah, 1);
+            } else {
+                $counterJumlah[count($counterJumlah) - 1] += 1;
+            }
+        }
+        $filter = [];
+        foreach ($items as $i) {
+            if (!in_array($i['id_barang'] . '-' . $i['varian'], $filter)) {
+                array_push($itemsFiltered, array_merge($i, [
+                    'dimensi' => json_decode($i['deskripsi'], true)['dimensi']['asli'],
+                    'jumlah' => $counterJumlah[count($itemsFiltered)]
+                ]));
+                array_push($filter, $i['id_barang'] . '-' . $i['varian']);
+            }
+        }
         $data = [
             'title' => 'Surat Invoice',
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'pemesanan' => $pemesanan,
-            'items' => $items,
+            'items' => $itemsFiltered,
         ];
         return view('admin/suratInvoice', $data);
     }
@@ -1389,14 +1411,37 @@ class AdminController extends BaseController
         $items = $this->pemesananOfflineItemModel
             ->select('pemesanan_offline_item.*')
             ->select('barang.nama')
+            ->select('barang.deskripsi')
             ->join('barang', 'barang.id = pemesanan_offline_item.id_barang')
             ->where(['id_pesanan' => $sjOffline])
             ->findAll();
+        $filter = [];
+        $itemsFiltered = [];
+        $counterJumlah = [];
+        foreach ($items as $i) {
+            if (!in_array($i['id_barang'] . '-' . $i['varian'], $filter)) {
+                array_push($filter, $i['id_barang'] . '-' . $i['varian']);
+                array_push($counterJumlah, 1);
+            } else {
+                $counterJumlah[count($counterJumlah) - 1] += 1;
+            }
+        }
+        $filter = [];
+        foreach ($items as $i) {
+            if (!in_array($i['id_barang'] . '-' . $i['varian'], $filter)) {
+                array_push($itemsFiltered, array_merge($i, [
+                    'dimensi' => json_decode($i['deskripsi'], true)['dimensi']['asli'],
+                    'jumlah' => $counterJumlah[count($itemsFiltered)]
+                ]));
+                array_push($filter, $i['id_barang'] . '-' . $i['varian']);
+            }
+        }
+
         $data = [
             'title' => 'Surat Jalan Offline',
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'pemesanan' => $pemesanan,
-            'items' => $items,
+            'items' => $itemsFiltered,
         ];
         return view('admin/suratOffline', $data);
     }
@@ -1604,14 +1649,6 @@ class AdminController extends BaseController
                     'message' => 'Stok tidak mencukupi untuk produk ' . $item['varian'] . ' pada barang ' . $produkCur['nama'],
                 ], false);
             }
-            $this->pemesananOfflineItemModel->insert([
-                'id_pesanan' => $idFix,
-                'id_barang' => $item['id'],
-                'harga' => $item['harga'],
-                'jumlah' => $item['jumlah'],
-                'varian' => $item['varian'],
-                'id_return' => ''
-            ]);
             $this->barangModel->where('id', $item['id'])->set([
                 'varian' => json_encode($varianBaru)
             ])->update();
@@ -1626,6 +1663,15 @@ class AdminController extends BaseController
                 'id_pesanan' => $idFix,
                 'varian' => $item['varian'],
             ]);
+            for ($i = 0; $i < $item['jumlah']; $i++) {
+                $this->pemesananOfflineItemModel->insert([
+                    'id_pesanan' => $idFix,
+                    'id_barang' => $item['id'],
+                    'harga' => $item['harga'],
+                    'varian' => $item['varian'],
+                    'id_return' => ''
+                ]);
+            }
         }
 
         $data = [
@@ -1639,6 +1685,8 @@ class AdminController extends BaseController
             'status' => $body['jenis'] == 'sale' ? 'pending' : 'success',
             'jenis' => $body['jenis'],
             'total_akhir' => $totalAkhir,
+            'keterangan' => $body['keterangan'],
+            'po' => $body['po'] ? $body['po'] : null,
         ];
         $this->pemesananOfflineModel->insert($data);
 
@@ -1682,10 +1730,11 @@ class AdminController extends BaseController
 
         //generate id
         $dataTerbaru = $this->pemesananOfflineModel->like('id_pesanan', 'SJ', 'after')->orderBy('id', 'desc')->first();
-        $idFix = 'SJ' . (sprintf("%08d", $dataTerbaru ? ((int)$dataTerbaru['id'] + 1) : 1));
+        $idFix = 'SJ' . (sprintf("%08d", $dataTerbaru ? ((int)substr($dataTerbaru['id_pesanan'], 2) + 1) : 1));
         $tanggalNoStrip = date('Ymd', strtotime($body['tanggal']));
 
         $indexItems = explode(',', $body['index_items_selected']);
+        $totalAkhir = 0;
         foreach ($items as $ind_i => $item) {
             if ($indexItems[$ind_i] == '1') {
                 $produkCur = $this->barangModel->getBarang($item['id_barang']);
@@ -1703,7 +1752,6 @@ class AdminController extends BaseController
                     'id_pesanan' => $idFix,
                     'id_barang' => $item['id_barang'],
                     'harga' => $item['harga'],
-                    'jumlah' => $item['jumlah'],
                     'varian' => $item['varian'],
                     'id_return' => $id_pesanan_SP
                 ]);
@@ -1729,6 +1777,7 @@ class AdminController extends BaseController
                     'id_pesanan' => $idFix,
                     'varian' => $item['varian'],
                 ]);
+                $totalAkhir += (int)$item['harga'];
             }
         }
 
@@ -1743,7 +1792,9 @@ class AdminController extends BaseController
             // 'items' => $sp_current['items'],
             'status' => 'pending',
             'jenis' => 'sale',
-            'total_akhir' => $sp_current['total_akhir'],
+            'total_akhir' => $totalAkhir,
+            'keterangan' => $sp_current['keterangan'],
+            'po' => $sp_current['po'],
         ];
         $this->pemesananOfflineModel->insert($data);
         return redirect()->to('/admin/order/offline/sale');

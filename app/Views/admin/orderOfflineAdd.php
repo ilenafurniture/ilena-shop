@@ -1,90 +1,90 @@
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
 <style>
-.notif {
-    position: fixed;
-    bottom: 50px;
-    right: 0px;
-    padding: 0.6em 2em;
-    color: white;
-    border-radius: 7px;
-    color: #e84a49;
-    letter-spacing: -1px;
-    font-size: 15px;
-    background-color: #e8494911;
-    transition: 0.5s;
-    transform: translateX(100%);
-}
+    .notif {
+        position: fixed;
+        bottom: 50px;
+        right: 0px;
+        padding: 0.6em 2em;
+        color: white;
+        border-radius: 7px;
+        color: #e84a49;
+        letter-spacing: -1px;
+        font-size: 15px;
+        background-color: #e8494911;
+        transition: 0.5s;
+        transform: translateX(100%);
+    }
 
-.notif.show {
-    right: 50px;
-    transform: translateX(0%);
-    transition: 0.5s;
-}
+    .notif.show {
+        right: 50px;
+        transform: translateX(0%);
+        transition: 0.5s;
+    }
 
-.item-produk {
-    border-radius: 12px;
-}
+    .item-produk {
+        border-radius: 12px;
+    }
 
-.item-produk img {
-    width: 50px;
-    border-radius: 10px;
-}
+    .item-produk img {
+        width: 50px;
+        border-radius: 10px;
+    }
 
-.item-produk .item-varian {
-    cursor: pointer;
-    outline: 1px solid gray;
-    border: 1px solid white;
-    border-radius: 2em;
-    width: 14px;
-    height: 14px;
-    margin: 0;
-    padding: 0;
-}
+    .item-produk .item-varian {
+        cursor: pointer;
+        outline: 1px solid gray;
+        border: 1px solid white;
+        border-radius: 2em;
+        width: 14px;
+        height: 14px;
+        margin: 0;
+        padding: 0;
+    }
 
-.item-produk .item-varian:hover {
-    outline: 1px solid var(--merah);
-}
+    .item-produk .item-varian:hover {
+        outline: 1px solid var(--merah);
+    }
 
-.item-keranjang-admin img {
-    width: 50px;
-    border-radius: 10px;
-    height: 50px;
-    object-fit: cover;
-}
+    .item-keranjang-admin img {
+        width: 50px;
+        border-radius: 10px;
+        height: 50px;
+        object-fit: cover;
+    }
 
-.item-keranjang-admin .counter {
-    display: flex;
-    align-items: center;
-}
+    .item-keranjang-admin .counter {
+        display: flex;
+        align-items: center;
+    }
 
-.item-keranjang-admin .counter .action {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 20px;
-    height: 20px;
-    border-radius: 20px;
-    background-color: #e8494911;
-    color: var(--merah);
-    font-weight: 500;
-    cursor: pointer;
-}
+    .item-keranjang-admin .counter .action {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 20px;
+        background-color: #e8494911;
+        color: var(--merah);
+        font-weight: 500;
+        cursor: pointer;
+    }
 
-.item-keranjang-admin .counter .action:hover {
-    background-color: var(--merah);
-    color: white;
-}
+    .item-keranjang-admin .counter .action:hover {
+        background-color: var(--merah);
+        color: white;
+    }
 
-.item-keranjang-admin .counter .angka {
-    width: 30px;
-    text-align: center;
-    font-weight: bold;
-}
+    .item-keranjang-admin .counter .angka {
+        width: 30px;
+        text-align: center;
+        font-weight: bold;
+    }
 
-input {
-    font-size: 13px;
-}
+    input {
+        font-size: 13px;
+    }
 </style>
 <div style="padding: 2em;" class="h-100 d-flex flex-column">
     <h1 class="teks-sedang mb-4">Buat Pesanan</h1>
@@ -94,7 +94,7 @@ input {
 <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script>
-console.log(JSON.parse('<?= $produkJson; ?>'))
+    console.log(JSON.parse('<?= $produkJson; ?>'))
 </script>
 
 <script type="text/babel">
@@ -155,6 +155,8 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
             nama: '',
             nohp: '',
             npwp: '',
+            keterangan: '',
+            po: '',
         });
         const [kabupaten, setKabupaten] = useState([]);
         const [kecamatan, setKecamatan] = useState([]);
@@ -584,7 +586,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                     <div className="d-flex flex-column gap-4" style={{flex: 1}}>
                         <div style={{ width: '100%', flex: 1, position: 'relative', minHeight: '400px'}} className="mb-1">
                             <div style={{position: 'absolute', border: '1px solid rgb(167, 8, 8)', padding: '1em', borderRadius: '5px'}} className="w-100 h-100 d-flex flex-column">
-                                <div className="d-flex gap-2  justify-content-between">
+                                <div className="d-flex gap-1 justify-content-between">
                                     <div className="d-flex flex-column">
                                         <p className="fw-bold m-0" style={{fontSize: '14px',}}>Keranjang kamu</p>
                                         <p className="m-0" style={{fontSize: '14px',letterSpacing: '-1px'}}>{formData.items.length} Produk</p>
@@ -596,7 +598,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                                     }
                                 </div>
                                 <hr/>
-                                <div className="d-flex flex-column gap-2 w-100" style={{ overflow: 'auto', flex: 1 }}>
+                                <div className="d-flex flex-column gap-1 w-100" style={{ overflow: 'auto', flex: 1 }}>
                                     {formData.items.length > 0 ?
                                         <>
                                         {formData.items.map((i, ind_i) => (
@@ -633,7 +635,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                                 </div>
                             </div>
                         </div>
-                        <div className="d-flex flex-column gap-2">
+                        <div className="d-flex flex-column gap-1">
                             <p className="m-0" style={{letterSpacing: '-1px',fontSize: '16px'}}>Detail :</p>
                             <div className="d-flex gap-1 mb-1">
                                 <input type="text w-50" className="form-control" placeholder="Nama penerima" value={formData.nama} onChange={(e)=>{setFormData({...formData, nama: e.target.value})}} />
@@ -645,6 +647,10 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                                 }
                                 <input type="datetime-local" placeholder="Tanggal" className="w-100 form-control" value={formData.tanggal} onChange={(e)=>{setFormData({...formData, tanggal: e.target.value})}} />
                             </div>
+                            <div className="d-flex gap-1 mb-1">
+                                <input type="text w-50" className="form-control" placeholder="Keterangan (opt)" value={formData.keterangan} onChange={(e)=>{setFormData({...formData, keterangan: e.target.value})}} />
+                                <input type="text w-50" className="form-control" placeholder="PO (opt)" value={formData.po} onChange={(e)=>{setFormData({...formData, po: e.target.value})}} />
+                            </div>
                             <select value={formData.jenis} onChange={(e)=>{setFormData({...formData, jenis: e.target.value})}} className="form-select mb-1">
                                 <option value="sale">Sale</option>
                                 <option value="display">Display</option>
@@ -653,7 +659,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                     </div>
                     <div className="d-flex flex-column" style={{flex: 1}}>
                         {/* <Form Pengiriman> */}
-                        <div className={"d-flex flex-column gap-2"}>
+                        <div className={"d-flex flex-column gap-1"}>
                             <p className="m-0" style={{letterSpacing: '-1px',fontSize: '16px'}}>Alamat Pengiriman</p>
                             <div className="mb-1 d-flex gap-1 align-items-center">
                                     <select className="form-select" value={formData.provinsi} onChange={(e)=>{setFormData({...formData, provinsi: e.target.value})}}>
@@ -692,7 +698,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                         </div>
                         {/* <Form Tagihan> */}
                         {formData.jenis == 'sale' &&
-                            <div className={"d-flex flex-column gap-2 my-4"}>
+                            <div className={"d-flex flex-column gap-1 my-4"}>
                                 {!alamatTagihanSama && <>
                                     <p className="m-0" style={{letterSpacing: '-1px',fontSize: '16px'}}>Alamat Tagihan</p>
                                     <div className="mb-1 d-flex gap-1 align-items-center">
