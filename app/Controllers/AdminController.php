@@ -1535,7 +1535,7 @@ class AdminController extends BaseController
             ->select('pemesanan_offline_item.*')
             ->select('barang.nama')
             ->join('barang', 'barang.id = pemesanan_offline_item.id_barang')
-            ->where(['id_pesanan' => $id_pesanan, 'id_return' => ''])
+            ->where(['id_pesanan' => $id_pesanan])
             ->findAll();
         return $this->response->setStatusCode(200)->setJSON([
             'success' => true,
@@ -1717,7 +1717,7 @@ class AdminController extends BaseController
             ->select('pemesanan_offline_item.*')
             ->select('barang.nama')
             ->join('barang', 'barang.id = pemesanan_offline_item.id_barang')
-            ->where(['id_pesanan' => $id_pesanan_SP, 'id_return' => ''])
+            ->where(['id_pesanan' => $id_pesanan_SP])
             ->findAll();
         $alamatTagihan = $body['provinsi'] ? [
             'provinsi' => explode('-', $body['provinsi'])[1],
@@ -1744,7 +1744,7 @@ class AdminController extends BaseController
                 foreach ($varian as $ind => $v) {
                     if ($v['nama'] == $item['varian']) {
                         $saldo = (int)$v['stok'];
-                        $varianBaru[$ind]['stok'] = (string)((int)$v['stok'] - (int)$item['jumlah']);
+                        $varianBaru[$ind]['stok'] = (string)((int)$v['stok'] - 1);
                     }
                 }
                 $this->pemesananOfflineItemModel->where(['id' => $item['id']])->set(['id_return' => $idFix])->update();
@@ -1759,9 +1759,9 @@ class AdminController extends BaseController
                     'id_barang' => $item['id_barang'],
                     'tanggal' => $body['tanggal'],
                     'keterangan' => $tanggalNoStrip . "-" . $item['id_barang'] . "-" . str_replace(' ', '-', strtoupper($item['varian'])) . "-" . $body['id_pesanan'],
-                    'debit' => $item['jumlah'],
+                    'debit' => 1,
                     'kredit' => 0,
-                    'saldo' => $saldo + $item['jumlah'],
+                    'saldo' => $saldo + 1,
                     'pending' => false,
                     'id_pesanan' => $body['id_pesanan'],
                     'varian' => $item['varian'],
@@ -1771,7 +1771,7 @@ class AdminController extends BaseController
                     'tanggal' => $body['tanggal'],
                     'keterangan' => $tanggalNoStrip . "-" . $item['id_barang'] . "-" . str_replace(' ', '-', strtoupper($item['varian'])) . "-" . $idFix,
                     'debit' => 0,
-                    'kredit' => $item['jumlah'],
+                    'kredit' => 1,
                     'saldo' => $saldo,
                     'pending' => false,
                     'id_pesanan' => $idFix,
