@@ -1736,6 +1736,7 @@ class AdminController extends BaseController
             'detailTagihan' => $body['detail'],
             'alamatTagihan' => $body['alamatTagihan'],
             'npwp' => $body['npwp'],
+            'keterangan' => $body['keterangan'],
         ];
 
         $id_pesanan_SP = $body['id_pesanan'];
@@ -1816,11 +1817,10 @@ class AdminController extends BaseController
             'npwp' => $body['npwp'],
             'tanggal' => $body['tanggal'],
             'id_pesanan' => $idFix,
-            // 'items' => $sp_current['items'],
             'status' => 'pending',
             'jenis' => 'sale',
             'total_akhir' => $totalAkhir,
-            'keterangan' => $sp_current['keterangan'],
+            'keterangan' => $body['keterangan'],
             'po' => $sp_current['po'],
         ];
         $this->pemesananOfflineModel->insert($data);

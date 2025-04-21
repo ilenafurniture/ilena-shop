@@ -3357,21 +3357,79 @@ class Pages extends BaseController
     }
     public function findArticle($cari)
     {
-        $artikel = $this->artikelModel->like('judul', str_replace("-", " ", $cari), 'both')->orderBy('id', 'desc')->findAll();
+        $kataKunci = explode('-', $cari);
+        $this->artikelModel->groupStart();
+        foreach ($kataKunci as $kata) {
+            $this->artikelModel->orLike('judul', $kata, 'both');
+        }
+        $this->artikelModel->groupEnd();
+        $relevan = $this->artikelModel->findAll();
+
+        function slugify($text)
+        {
+            $text = strtolower($text);
+            $text = preg_replace('/[^a-z0-9\s]/', '', $text); // Hilangkan tanda baca
+            $text = preg_replace('/\s+/', '-', $text); // Ubah spasi jadi dash
+            return trim($text, '-');
+        }
+
+        usort($relevan, function ($a, $b) use ($cari) {
+            similar_text(slugify($a['judul']), $cari, $percentA);
+            similar_text(slugify($b['judul']), $cari, $percentB);
+            return $percentB <=> $percentA; // Urutkan dari yang paling mirip ke paling rendah
+        });
+
+        $idsRelevan = array_column($relevan, 'id');
+        $tambahan = [];
+        if (!empty($idsRelevan)) {
+            $tambahan = $this->artikelModel
+                ->whereNotIn('id', $idsRelevan)
+                ->findAll();
+        } else {
+            $tambahan = $this->artikelModel->findAll();
+        }
+
+        // Gabungkan dua hasil
+        $artikel = array_merge($relevan, $tambahan);
         $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+        $artikelPopuler = $this->artikelModel->orderBy('pengunjung', 'desc')->limit(3, 0)->findAll();
+        $artikel3Baru = [];
         foreach ($artikel as $ind_a => $a) {
-            $artikel[$ind_a]['header'] = '/imgart/' . $a['id'];
-            $artikel[$ind_a]['isi'] = json_decode($a['isi'], true);
             $artikel[$ind_a]['kategori'] = explode(",", $a['kategori']);
             $artikel[$ind_a]['waktu'] = date("d", strtotime($a['waktu'])) . " " . $bulan[date("m", strtotime($a['waktu'])) - 1] . " " . date("Y", strtotime($a['waktu']));
+            if ($ind_a < 3) {
+                array_push($artikel3Baru, [
+                    'judul' => $a['judul'],
+                    'path' => $a['path'],
+                    'kategori' => $a['kategori'],
+                    'deskripsi' => $a['deskripsi'],
+                    'id' => $a['id'],
+                    'header' => $a['header'],
+                ]);
+            }
         }
+
         $data = [
             'title' => 'Artikel',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
-            'artikel' => $artikel,
-            'find' => str_replace('-', ' ', $cari)
+            'artikel' => array_values(array_filter($artikel, function ($value, $key) {
+                return $key >= 2;
+            }, ARRAY_FILTER_USE_BOTH)),
+            'artikel3BaruJson' => json_encode($artikel3Baru),
+            'artikelPopuler' => $artikelPopuler,
+            'bulan' => $bulan,
+            'cari' => str_replace('-', ' ', $cari)
         ];
+
+        // $data = [
+        //     'title' => 'Artikel',
+        //     'navbar' => $this->getNavbarData(),
+        //     'apikey_img_ilena' => $this->apikey_img_ilena,
+        //     'artikel' => $artikel,
+        //     'find' => str_replace('-', ' ', $cari),
+        //     'bulan' => $bulan
+        // ];
         return view('pages/artikelAll', $data);
     }
 

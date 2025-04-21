@@ -82,9 +82,13 @@
             </div>
             <input type="text" name="index_items_selected" required class="d-none">
 
-            <div class="mb-3">
+            <div class="mb-1">
                 <p class="mb-1">NPWP</p>
                 <input type="text" name="npwp" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <p class="mb-1">Keterangan</p>
+                <input type="text" name="keterangan" class="form-control" required>
             </div>
             <div class="d-flex gap-1">
                 <button type="button" class="btn btn-default w-100" onclick="closeModal()">Closes</button>

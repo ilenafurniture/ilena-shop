@@ -199,7 +199,41 @@
     .btn-selengkapnya p {
         margin: 0;
     }
+
+    input[name="cari"] {
+        width: 100%;
+        border: none;
+        border-bottom: 1px solid white;
+        background: none;
+        color: white;
+    }
+
+    input[name="cari"]:focus {
+        border: none;
+        outline: none;
+        border-bottom: 1px solid white;
+    }
+
+    input[name="cari"]+button {
+        background: none;
+        cursor: pointer;
+        outline: none;
+        border: none;
+        color: white;
+    }
 </style>
+<div style="position: absolute; z-index: 4;" class="w-100 pt-4">
+    <div class="container">
+        <form action="/actionsearcharticle" method="post">
+            <div class="d-flex align-items-center gap-3">
+                <input type="text" name="cari" class="py-1" value="<?= isset($cari) ? $cari : ''; ?>">
+                <button type="submit">
+                    <i class="material-icons">search</i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 <div id="container-react-artikel"></div>
 <script type="text/babel">
     function judulSplitter(judul) {
@@ -277,7 +311,7 @@
             setImgSelected({
                 ...judulSplitter(imgCur.judul),
                 deskripsi: imgCur.deskripsi,  
-                id: imgCur.id,  
+                id: imgCur.id,
                 kategori: titleCase(imgCur.kategori),  
                 path: imgCur.path,  
                 header: imgCur.header,
@@ -327,8 +361,8 @@
                 </div>
                 <div className="container">
                     <div className={innerWidth.current < 700 ? 'py-4' : 'py-5'}>
-                        <h1 className="teks-besar mb-5 show-block-ke-hide">Article categories</h1>
-                        <h1 className="teks-besar mb-3 hide-ke-show-block">Article<br />categories</h1>
+                        <h1 className="teks-besar mb-5 show-block-ke-hide">Categories</h1>
+                        <h1 className="teks-besar mb-3 hide-ke-show-block">Categories</h1>
                         <div className="container-kategori-artikel">
                             {categories.map((c, ind_c) => (
                                 <a key={ind_c} href={c.link} style={{backgroundImage: `url(${c.gambar})`}} className="item-kategori-artikel">
