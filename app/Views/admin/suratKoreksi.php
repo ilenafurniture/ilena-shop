@@ -13,9 +13,9 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
     <style>
-    * {
-        font-size: 12px;
-    }
+        * {
+            font-size: 12px;
+        }
     </style>
 </head>
 
@@ -44,7 +44,7 @@
                 <p class="m-0"><?= $pemesanan['alamat_pengiriman']; ?></p>
             </div>
             <div style="margin-top: 3em;">
-                <p class="m-0">SURAT <?= $pemesanan['jenis'] == 'sale' ? 'JALAN' : 'PENGANTAR'; ?> NO.
+                <p class="m-0">SURAT KOREKSI NO.
                     <?= substr($pemesanan['id_pesanan'], 5); ?>/<?= $pemesanan['jenis'] == 'sale' ? 'SJ' : 'SP'; ?>/<?= date('m', strtotime($pemesanan['tanggal'])); ?>/<?= date('Y', strtotime($pemesanan['tanggal'])); ?>
                     </b>
                 </p>
@@ -58,27 +58,27 @@
                         <th class="text-center" style="width: 10px;">NO</th>
                         <th class="text-center">KODE BARANG</th>
                         <th class="text-center">NAMA BARANG</th>
-                        <th class="text-center">NO KOREKSI</th>
-                        <th class="text-center">JUMLAH</th>
+                        <th class="text-center">ID SURAT PENGANTAR</th>
+                        <th class="text-center">ID SURAT JALAN</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php $no = 1; ?>
                     <?php foreach ($items as $t) {
                         if (!empty($t['id_return'])) { ?>
-                    <tr>
-                        <td class="text-center"><?= strtoupper($no++); ?></td>
-                        <td class="text-center"><?= strtoupper($t['id_barang']); ?></td>
-                        <td class="">
-                            <p class="m-0"><?= strtoupper($t['nama']); ?> (<?= strtoupper($t['varian']); ?>)</p>
-                            <p class="m-0"><?= $t['dimensi']['panjang'] ?> x <?= $t['dimensi']['lebar'] ?> x
-                                <?= $t['dimensi']['tinggi'] ?></p>
-                        </td>
-                        <td class="text-center"><?= strtoupper($t['id_return']); ?></td>
-                        <td class="text-center"><?= strtoupper($t['jumlah']); ?></td>
-                    </tr>
+                            <tr>
+                                <td class="text-center"><?= strtoupper($no++); ?></td>
+                                <td class="text-center"><?= strtoupper($t['id_barang']); ?></td>
+                                <td class="">
+                                    <p class="m-0"><?= strtoupper($t['nama']); ?> (<?= strtoupper($t['varian']); ?>)</p>
+                                    <p class="m-0"><?= $t['dimensi']['panjang'] ?> x <?= $t['dimensi']['lebar'] ?> x
+                                        <?= $t['dimensi']['tinggi'] ?></p>
+                                </td>
+                                <td class="text-center"><?= $pemesanan['id_pesanan']; ?></td>
+                                <td class="text-center"><?= strtoupper($t['id_return']); ?></td>
+                            </tr>
                     <?php }
-                        } ?>
+                    } ?>
                 </tbody>
             </table>
             <p class="m-0"><b>Keterangan : </b><span
@@ -119,12 +119,12 @@
         </div>
     </div>
     <script>
-    // window.print();
-    // window.onafterprint = function() {
-    //     window.close(
-    //         window.location.href = "<?= base_url('/admin/order/offline/' . $pemesanan['jenis']); ?>"
-    //     );
-    // };
+        // window.print();
+        // window.onafterprint = function() {
+        //     window.close(
+        //         window.location.href = "<?= base_url('/admin/order/offline/' . $pemesanan['jenis']); ?>"
+        //     );
+        // };
     </script>
 </body>
 

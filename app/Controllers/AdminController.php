@@ -1446,7 +1446,7 @@ class AdminController extends BaseController
         return view('admin/suratOffline', $data);
     }
 
-    public function actionSuratKoreksi($id_Koreksi)
+    public function suratKoreksi($id_Koreksi)
     {
         $pemesanan = $this->pemesananOfflineModel->getPemesanan($id_Koreksi);
         $items = $this->pemesananOfflineItemModel
@@ -1455,34 +1455,19 @@ class AdminController extends BaseController
             ->select('barang.deskripsi')
             ->join('barang', 'barang.id = pemesanan_offline_item.id_barang')
             ->where(['id_pesanan' => $id_Koreksi])
+            ->where('id_return !=', '')
             ->findAll();
-        $filter = [];
-        $itemsFiltered = [];
-        $counterJumlah = [];
-        foreach ($items as $i) {
-            if (!in_array($i['id_barang'] . '-' . $i['varian'], $filter)) {
-                array_push($filter, $i['id_barang'] . '-' . $i['varian']);
-                array_push($counterJumlah, 1);
-            } else {
-                $counterJumlah[count($counterJumlah) - 1] += 1;
-            }
+
+        foreach ($items as $ind_i => $i) {
+            $items[$ind_i]['dimensi'] = json_decode($i['deskripsi'], true)['dimensi']['asli'];
         }
-        $filter = [];
-        foreach ($items as $i) {
-            if (!in_array($i['id_barang'] . '-' . $i['varian'], $filter)) {
-                array_push($itemsFiltered, array_merge($i, [
-                    'dimensi' => json_decode($i['deskripsi'], true)['dimensi']['asli'],
-                    'jumlah' => $counterJumlah[count($itemsFiltered)]
-                ]));
-                array_push($filter, $i['id_barang'] . '-' . $i['varian']);
-            }
-        }
+        // dd($items);
 
         $data = [
             'title' => 'Surat Koreksi',
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'pemesanan' => $pemesanan,
-            'items' => $itemsFiltered,
+            'items' => $items,
             'id_koreksi' => $id_Koreksi,
         ];
         return view('admin/suratKoreksi', $data);
