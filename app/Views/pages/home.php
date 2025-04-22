@@ -388,6 +388,7 @@
         background-position: center;
         cursor: pointer;
         transition-delay: 0.4s;
+        height: 100%;
     }
 
     @media (max-width: 767px) {
@@ -396,7 +397,7 @@
         }
 
         .kontenLNMobile {
-            height: 50vh;
+            /* height: 50vh; */
         }
 
         .overlayBed,
@@ -982,7 +983,7 @@
         </div>
     </div>
 </div>
-<div class="hide-ke-show-flex align-items-stretch" style="width:100%; height:40svh; position:relative;">
+<div class="hide-ke-show-flex align-items-stretch" style="width:100%; height:40svh; position:relative; min-height: 414px;">
     <div class="kontenLNMobile">
         <div class="overlayBed" id="overlayBed">
             <a href="/product?koleksi=cabana&jenis=king-bed+queen-bed+single-bed"
@@ -1025,22 +1026,23 @@
 </script>
 
 <!-- Bagian Windows -->
-<div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:40svh;">
+<div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:40svh; min-height: 373px;">
     <a href="<?= base_url('product/bufet-tv-ilena-cabana') ?>" style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742449659675.webp/?apikey=<?= $apikey_img_ilena ?>');
     background-size: cover; background-position:top;">
     </a>
     <div style="flex:1; background-color:#7B441c; position:relative;">
-        <div class="d-flex p-5 h-100 w-100 text-light" style="flex:1; position:absolute;">
+        <div class="d-flex p-5 h-100 w-100 text-light flex-column" style="flex:1; position:absolute;">
             <div style="flex:1;" class="h-100 d-flex flex-column justify-content-between">
                 <div>
-                    <h3 class="mb-3 teks-sedang fw-bold">Inaugural Season</h3>
+                    <h3 class="mb-3 teks-sedang fw-bold">Inaugural<br>Season</h3>
                     <p>Ilena hadir pertama kali dengan memperkenalkan 10 series terbaik. Terinspirasi dari berbagai
                         hal
-                        baik dengan harapan dapat membawa kebaikan dalam setiap furniture Kami, untuk Anda.</p>
+                        baik dengan harapan dapat membawa kebaikan, untuk Anda.</p>
                 </div>
             </div>
-            <div class="d-flex h-100 align-items-end justify-content-end" style="width:100px;">
-                <a onclick="modalseries()" class=" gap-2 d-flex align-items-center kesana" style="cursor: pointer;">
+            <div class="d-flex h-100 align-items-end justify-content-end w-100">
+                <a onclick="modalseries()" class="border-bottom gap-2 d-flex align-items-center kesana"
+                    style="cursor: pointer;">
                     <p class="m-0">Lihat series</p><i class="material-icons text-light">arrow_forward</i>
                 </a>
             </div>
@@ -1048,7 +1050,7 @@
     </div>
     <div style="flex:1; background-color:white;" class="d-flex flex-column justify-content-center align-items-center">
         <p class="teks-sedang">EST</p>
-        <h1 class=" mb-2 teks-besar" style="text-weight:600px; font-size:100px; color:  #7B441c;">2024</h1>
+        <h1 class=" mb-2 teks-besar" style="font-weight:600px; font-size:100px; color:  #7B441c;">2024</h1>
         <p class="m-0 fw-bold" style=" letter-spacing:1em;">ILENA</p>
     </div>
 </div>
@@ -1075,50 +1077,84 @@
     </div>
 </div>
 
+<style>
+    .modalseriesbox {
+        text-decoration: none;
+        background-color: rgba(0, 0, 0, 0);
+        color: white;
+        border: 1px solid white;
+        transition: 0.4s;
+        flex: 1;
+    }
+
+    .modalseriesbox p {
+        font-size: 20px;
+        font-weight: 500;
+        letter-spacing: 7px;
+        text-transform: uppercase;
+        text-wrap: nowrap;
+        position: relative;
+        transform: translateX(7px);
+    }
+
+    .modalseriesbox:hover {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+        transition: 0.4s;
+        /* border: 1px solid ; */
+        /* background-color: white; */
+    }
+
+    .Mseries {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+    }
+</style>
 <!-- Bagian Modal Series -->
 <div id="modal-series" onclick="closemodalseries()" class="d-none justify-content-center align-items-center"
     style="z-index:2; position:fixed; top:0; left:0; width:100%; height:100svh; background-color:rgba(0,0,0,0.8);">
-    <div style="border-radius:4px;" class="p-5 gap-2 show-block-ke-hide">
-        <div class="gap-2 Mseries ">
-            <a href="/product?koleksi=sorely"
-                class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
-                <p class="m-0 fw-bold">Sorely</p>
-            </a>
-            <a href="/product?koleksi=cabana"
-                class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
-                <p class="m-0 fw-bold">Cabana</p>
-            </a>
-            <a href="/product?koleksi=orca" class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
-                <p class="m-0 fw-bold">Orca</p>
-            </a>
-            <a href="/product?koleksi=water-case"
-                class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
-                <p class="m-0 fw-bold">Water Case</p>
-            </a>
-            <a href="/product?koleksi=plint-base"
-                class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
-                <p class="m-0 fw-bold">Plint Base</p>
-            </a>
-            <a href="/product?koleksi=cutout"
-                class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
-                <p class="m-0 fw-bold">Cutout</p>
-            </a>
-            <a href="/product?koleksi=industrial"
-                class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
-                <p class="m-0 fw-bold">Industrial</p>
-            </a>
-            <a href="/product?koleksi=metal-frame"
-                class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
-                <p class="m-0 fw-bold">Metal Frame</p>
-            </a>
-            <a href="/product?koleksi=cody" class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
-                <p class="m-0 fw-bold">COdy</p>
-            </a>
-            <a href="/product?koleksi=socoplate"
-                class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
-                <p class="m-0 fw-bold">Socoplate</p>
-            </a>
-        </div>
+    <div style="border-radius:4px;" class="p-5 gap-2 show-flex-ke-hide flex-wrap justify-content-center">
+        <a href="/product?koleksi=sorely"
+            class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+            <p class="m-0 fw-bold">Sorely</p>
+        </a>
+        <a href="/product?koleksi=cabana"
+            class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+            <p class="m-0 fw-bold">Cabana</p>
+        </a>
+        <a href="/product?koleksi=orca" class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+            <p class="m-0 fw-bold">Orca</p>
+        </a>
+        <a href="/product?koleksi=water-case"
+            class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+            <p class="m-0 fw-bold">Water Case</p>
+        </a>
+        <a href="/product?koleksi=plint-base"
+            class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+            <p class="m-0 fw-bold">Plint Base</p>
+        </a>
+        <a href="/product?koleksi=cutout"
+            class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+            <p class="m-0 fw-bold">Cutout</p>
+        </a>
+        <a href="/product?koleksi=industrial"
+            class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+            <p class="m-0 fw-bold">Industrial</p>
+        </a>
+        <a href="/product?koleksi=metal-frame"
+            class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+            <p class="m-0 fw-bold">Metal Frame</p>
+        </a>
+        <a href="/product?koleksi=cody" class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+            <p class="m-0 fw-bold">COdy</p>
+        </a>
+        <a href="/product?koleksi=socoplate"
+            class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+            <p class="m-0 fw-bold">Socoplate</p>
+        </a>
+        <!-- <div class="gap-2 Mseries ">
+        </div> -->
     </div>
     <div class="hide-ke-show-block" style="width: 70vw;">
         <a href="/product?koleksi=sorely" style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
@@ -1203,10 +1239,20 @@
     .zoom-wrapper:hover img {
         transform: scale(1.1);
     }
+
+    #ruangan {
+        height: 60svh;
+    }
+
+    @media(orientation: portrait) {
+        #ruangan {
+            max-height: 470px;
+        }
+    }
 </style>
 
 <!-- Bagian Windows -->
-<div class="container show-flex-ke-hide gap-3 my-5" style="width:100%; height:60svh;">
+<div id="ruangan" class="container show-flex-ke-hide gap-3 my-5" style="width:100%;">
     <a href="/product?ruang=tamu" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
         <div class="zoom-wrapper mb-2">
             <img src="https://img.ilenafurniture.com/image/1742445399641.webp/?apikey=<?= $apikey_img_ilena ?>" alt=""

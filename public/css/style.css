@@ -1767,35 +1767,6 @@ body {
     transition: 0.3s;
     background-color: rgba(0, 0, 0, 0.5);
 }
-.modalseriesbox {
-    text-decoration: none;
-    background-color: rgba(0, 0, 0, 0);
-    color: white;
-    border: 1px solid white;
-    transition: 0.4s;
-}
-.modalseriesbox p {
-    font-size: 20px;
-    font-weight: 500;
-    letter-spacing: 7px;
-    text-transform: uppercase;
-    text-wrap: nowrap;
-    position: relative;
-    transform: translateX(7px);
-}
-.modalseriesbox:hover {
-    text-decoration: none;
-    background-color: white;
-    color: black;
-    transition: 0.4s;
-    /* border: 1px solid ; */
-    /* background-color: white; */
-}
-
-.Mseries {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-}
 
 .container-badge-filter {
     display: flex;
@@ -2339,12 +2310,6 @@ body {
         /* border: 2px solid rgb(207, 207, 207);
     padding: 2px;
     border-radius: 1em; */
-    }
-    .Mseries {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 2px;
-        max-height: 80vh;
-        overflow-y: auto;
     }
 
     /*Gudang*/
