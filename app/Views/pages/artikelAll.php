@@ -48,15 +48,23 @@
         align-items: center;
     }
 
+    .header .container-header-content .deskripsi {
+        max-height: 90px;
+    }
+
+    .header .container-header-content .deskripsi::-webkit-scrollbar {
+        display: none;
+    }
+
     @media (max-width: 600px) {
 
         .header,
         .header .container-header-img {
-            height: 70svh;
+            height: 90svh;
         }
 
         .header .container-header-content {
-            height: 70svh;
+            height: 90svh;
             flex-direction: column;
         }
     }
@@ -328,11 +336,10 @@
                                     <p>{imgSelected.kategori}</p>
                                     <h5 className="teks-sedang">{imgSelected.judul1}</h5>
                                     <h1 className="teks-besar mb-3">{imgSelected.judul2} {imgSelected.judul3}</h1>
-                                    <div style={{maxWidth: '500px', borderLeft: '3px solid white'}} className="ps-4">
-                                        <p className="mb-4" style={{ color: 'rgb(219, 219, 219)'}}>{imgSelected.deskripsi}</p>
+                                    <div style={{maxWidth: '500px', borderLeft: '3px solid white', overflowY: 'auto'}} className="ps-4 mb-3 deskripsi">
+                                        <p className="m-0" style={{ color: 'rgb(219, 219, 219)'}}>{imgSelected.deskripsi}</p>
                                     </div>
                                     <div className="d-flex gap-2">
-                                        <a href="" className="btn-lonjong-putih"><i className="material-icons">bookmark_border</i></a>
                                         <a href={`/article/${imgSelected.path}`} className="btn-lonjong-putih-outline">Baca selengkapnya</a>
                                     </div>
                                 </div>
