@@ -25,10 +25,15 @@
     <div class="container my-4">
         <div class="d-flex justify-content-between my-5">
             <div style="flex: 1;" class="d-flex align-items-between gap-2">
-                <div class="d-flex gap-2 align-items-center" style="flex: 1;">
-                    <img src="<?= base_url('img/Logo CBM.png'); ?>" alt="Logo CBM"
-                        style="width:20mm; height:fit-content">
-                    <p class="m-0 fw-bold">CV. CATUR BHAKTI MANDIRI</p>
+                <div class="d-flex gap-4 justify-content-start mb-4">
+                    <div>
+                        <img src="<?= base_url('img/logo/logo-invoice.jpg'); ?>" alt="Logo" width="70" height="40" />
+                    </div>
+                    <div class="d-flex flex-column justify-content-center gap-1">
+                        <h5 class="tw-bold m-0" style="font-size: large;">CV.CATUR BHAKTI MANDIRI</h5>
+                        <h5 class="tw-bold m-0">Kawasan Industri BSB, A 3A, 5-6 Jatibarang,Mijen
+                            Semarang</h5>
+                    </div>
                 </div>
                 <div style="flex: 1;" class="d-flex justify-content-end align-items-center">
                     <img src="<?= base_url('img/LogoIlena.png'); ?>" alt="logo Ilena"
