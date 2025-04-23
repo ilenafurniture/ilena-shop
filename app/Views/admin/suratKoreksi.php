@@ -42,14 +42,14 @@
             </div>
         </div>
 
-        <div class="d-flex justify-content-between">
-            <div style="margin-top: 3em;">
+        <div class="d-flex justify-content-between align-items-end">
+            <div style="flex: 1">
                 <p class="m-0 fw-bold">SURAT KOREKSI NO.
                     <?= substr($pemesanan['id_pesanan'], 5); ?>/<?= $pemesanan['jenis'] == 'sale' ? 'SJ' : 'SP'; ?>/<?= date('m', strtotime($pemesanan['tanggal'])); ?>/<?= date('Y', strtotime($pemesanan['tanggal'])); ?>
                     </b>
                 </p>
             </div>
-            <div>
+            <div style="flex: 1">
                 <p class="m-0">Kepada Yth.</p>
                 <p class="m-0"><?= $pemesanan['nama']; ?></p>
                 <p class="m-0"><?= $pemesanan['alamat_pengiriman']; ?></p>
