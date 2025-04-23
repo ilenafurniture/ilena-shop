@@ -14,7 +14,7 @@
 
     <style>
         * {
-            font-size: 12px;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -43,16 +43,16 @@
         </div>
 
         <div class="d-flex justify-content-between">
+            <div style="margin-top: 3em;">
+                <p class="m-0 fw-bold">SURAT KOREKSI NO.
+                    <?= substr($pemesanan['id_pesanan'], 5); ?>/<?= $pemesanan['jenis'] == 'sale' ? 'SJ' : 'SP'; ?>/<?= date('m', strtotime($pemesanan['tanggal'])); ?>/<?= date('Y', strtotime($pemesanan['tanggal'])); ?>
+                    </b>
+                </p>
+            </div>
             <div>
                 <p class="m-0">Kepada Yth.</p>
                 <p class="m-0"><?= $pemesanan['nama']; ?></p>
                 <p class="m-0"><?= $pemesanan['alamat_pengiriman']; ?></p>
-            </div>
-            <div style="margin-top: 3em;">
-                <p class="m-0">SURAT KOREKSI NO.
-                    <?= substr($pemesanan['id_pesanan'], 5); ?>/<?= $pemesanan['jenis'] == 'sale' ? 'SJ' : 'SP'; ?>/<?= date('m', strtotime($pemesanan['tanggal'])); ?>/<?= date('Y', strtotime($pemesanan['tanggal'])); ?>
-                    </b>
-                </p>
             </div>
         </div>
         <!-- INI Table Pengantar -->
@@ -63,8 +63,7 @@
                         <th class="text-center" style="width: 10px;">NO</th>
                         <th class="text-center">KODE BARANG</th>
                         <th class="text-center">NAMA BARANG</th>
-                        <th class="text-center">ID SURAT PENGANTAR</th>
-                        <th class="text-center">ID SURAT JALAN</th>
+                        <th class="text-center">JUMLAH</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -79,8 +78,7 @@
                                     <p class="m-0"><?= $t['dimensi']['panjang'] ?> x <?= $t['dimensi']['lebar'] ?> x
                                         <?= $t['dimensi']['tinggi'] ?></p>
                                 </td>
-                                <td class="text-center"><?= $pemesanan['id_pesanan']; ?></td>
-                                <td class="text-center"><?= strtoupper($t['id_return']); ?></td>
+                                <td class="text-center"><?= $t['jumlah']; ?></td>
                             </tr>
                     <?php }
                     } ?>

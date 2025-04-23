@@ -31,7 +31,7 @@
         }
 
         .kotak-pembayaran {
-            border: 1px solid black;
+            border: 1px solid red;
             padding: 10px 20px;
             margin-top: 20px;
             margin-bottom: 20px;
@@ -42,7 +42,7 @@
         }
 
         * {
-            font-size: 12px;
+            font-size: 14px;
         }
     </style>
 
@@ -297,7 +297,7 @@
                     </tr>
                     <tr>
                         <td class="pe-3">Surat Jalan</td>
-                        <td>: <?= $pemesanan['id_pesanan']; ?></td>
+                        <td>: <?= substr($pemesanan['id_pesanan'], 5); ?></td>
                     </tr>
                 </tbody>
             </table>
@@ -306,7 +306,7 @@
 
         <div class="d-flex justify-content-between mt-5 mb-3">
             <div class="d-flex flex-column kotak-pembayaran">
-                <p class="m-0"> Pembayaran mohon dapat ditransfer ke rekening: <br> <b>BCA/C 8715898787 an CATUR BHAKTI MANDIRI</p>
+                <p class="m-0" style="font-size: 17px;"> Pembayaran mohon dapat ditransfer ke rekening: <br> <b style="font-size: 17px; color: red;">BCA/C 8715898787 an CATUR BHAKTI MANDIRI</b></p>
             </div>
             <div class="d-flex flex-column align-items-center">
                 Bagian Keuangan <br>

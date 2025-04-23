@@ -14,7 +14,7 @@
 
     <style>
         * {
-            font-size: 12px;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -43,16 +43,16 @@
         </div>
 
         <div class="d-flex justify-content-between">
+            <div style="margin-top: 3em;">
+                <p class="m-0 fw-bold">SURAT <?= $pemesanan['jenis'] == 'sale' ? 'JALAN' : 'PENGANTAR'; ?> NO.
+                    <?= substr($pemesanan['id_pesanan'], 5); ?>/<?= $pemesanan['jenis'] == 'sale' ? 'SJ' : 'SP'; ?>/<?= date('m', strtotime($pemesanan['tanggal'])); ?>/<?= date('Y', strtotime($pemesanan['tanggal'])); ?>
+                    </b>
+                </p>
+            </div>
             <div>
                 <p class="m-0">Kepada Yth.</p>
                 <p class="m-0"><?= $pemesanan['nama']; ?></p>
                 <p class="m-0"><?= $pemesanan['alamat_pengiriman']; ?></p>
-            </div>
-            <div style="margin-top: 3em;">
-                <p class="m-0">SURAT <?= $pemesanan['jenis'] == 'sale' ? 'JALAN' : 'PENGANTAR'; ?> NO.
-                    <?= substr($pemesanan['id_pesanan'], 5); ?>/<?= $pemesanan['jenis'] == 'sale' ? 'SJ' : 'SP'; ?>/<?= date('m', strtotime($pemesanan['tanggal'])); ?>/<?= date('Y', strtotime($pemesanan['tanggal'])); ?>
-                    </b>
-                </p>
             </div>
         </div>
         <!-- INI Table Pengantar -->

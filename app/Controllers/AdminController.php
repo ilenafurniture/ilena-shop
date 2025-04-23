@@ -1458,16 +1458,32 @@ class AdminController extends BaseController
             ->where('id_return !=', '')
             ->findAll();
 
-        foreach ($items as $ind_i => $i) {
-            $items[$ind_i]['dimensi'] = json_decode($i['deskripsi'], true)['dimensi']['asli'];
+        $grouped = [];
+        foreach ($items as $item) {
+            $key = $item['id_barang'] . '|' . $item['varian'];
+            if (!isset($grouped[$key])) {
+                $grouped[$key] = [
+                    'id_pesanan' => $item['id_pesanan'], // ambil yang pertama ditemukan
+                    'id_barang' => $item['id_barang'],
+                    'harga' => $item['harga'],
+                    'id_return' => $item['id_return'],
+                    'nama' => $item['nama'],
+                    'dimensi' => json_decode($item['deskripsi'], true)['dimensi']['asli'],
+                    'varian' => $item['varian'],
+                    'jumlah' => 0,
+                ];
+            }
+
+            $grouped[$key]['jumlah']++;
         }
-        // dd($items);
+
+        $itemsFilter = array_values($grouped);
 
         $data = [
             'title' => 'Surat Koreksi',
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'pemesanan' => $pemesanan,
-            'items' => $items,
+            'items' => $itemsFilter,
             'id_koreksi' => $id_Koreksi,
         ];
         return view('admin/suratKoreksi', $data);
