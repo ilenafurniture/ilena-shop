@@ -1536,7 +1536,7 @@ class AdminController extends BaseController
 
     public function orderOffline($jenis)
     {
-        $pesanan = $this->pemesananOfflineModel->where(['jenis' => $jenis])->findAll();
+        $pesanan = $this->pemesananOfflineModel->like('id_pesanan', $jenis == 'sale' ? 'SJ' : 'SP', 'after')->findAll();
 
         //Dapatkan data provinsi
         $curl = curl_init();

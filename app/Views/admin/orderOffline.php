@@ -62,7 +62,10 @@
                                 <p class="text-secondary text-sm m-0">1023142</p>
                             </div>
                         </div>
-                        <a href="/admin/surat-koreksi/" class="btn-teks-aja">Lihat koreksi</a>
+                        <div class="d-flex flex-column align-items-end">
+                            <a href="/admin/surat-koreksi/" class="btn-teks-aja">Lihat koreksi</a>
+                            <p class="text-secondary" style="font-size: 12px;">SK0000001</p>
+                        </div>
                     </label>
                     <label class="d-flex gap-3 align-items-center">
                         <input type="checkbox" onchange="handleChangeInputItem(1, event)">
@@ -138,18 +141,18 @@
                         <td>
                             <div class="d-flex gap-1">
                                 <?php if ($jenis == 'sale') { ?>
-                                    <a href="/admin/surat-offline/<?= $p['id_pesanan']; ?>" data-bs-toggle="tooltip"
+                                    <a class="btn" href="/admin/surat-offline/<?= $p['id_pesanan']; ?>" data-bs-toggle="tooltip"
                                         data-bs-placement="top" data-bs-title="Surat Jalan"><i
                                             class="material-icons">local_shipping</i></a>
-                                    <a href="/admin/invoice-offline/<?= $p['id_pesanan']; ?>" data-bs-toggle="tooltip"
+                                    <a class="btn" href="/admin/invoice-offline/<?= $p['id_pesanan']; ?>" data-bs-toggle="tooltip"
                                         data-bs-placement="top" data-bs-title="Invoice"><i
                                             class="material-icons">description</i></a>
                                 <?php } else { ?>
-                                    <a href="/admin/surat-offline/<?= $p['id_pesanan']; ?>" data-bs-toggle="tooltip"
+                                    <a class="btn" href="/admin/surat-offline/<?= $p['id_pesanan']; ?>" data-bs-toggle="tooltip"
                                         data-bs-placement="top" data-bs-title="Surat Pengantar"><i
                                             class="material-icons">description</i></a>
                                     <?php if ($p['status'] != 'return') { ?>
-                                        <a onclick="pilihPesanan(<?= $ind_p; ?>)" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        <a class="btn" onclick="pilihPesanan(<?= $ind_p; ?>)" data-bs-toggle="tooltip" data-bs-placement="top"
                                             data-bs-title="Buat Surat Jalan"><i class="material-icons">insert_drive_file</i></a>
                                     <?php } ?>
                                 <?php } ?>
@@ -294,7 +297,10 @@
                             </div>
                         </div>
                         ${item.id_return != '' ? `
-                            <a href="/admin/surat-koreksi/${item.id_return}" class="btn-teks-aja">Lihat koreksi</a>
+                            <div class="d-flex flex-column align-items-end">
+                                <a href="/admin/surat-koreksi/${item.id_return}" class="btn-teks-aja">Lihat koreksi</a>
+                                <p class="text-secondary" style="font-size: 12px;">${item.id_return}</p>
+                            </div>
                         ` : ''
                         }
                     </label>
