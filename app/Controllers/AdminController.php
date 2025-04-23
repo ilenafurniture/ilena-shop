@@ -2011,12 +2011,12 @@ class AdminController extends BaseController
                 $this->kartuStokModel->insert([
                     'id_barang' => $item['id_barang'],
                     'tanggal' => $body['tanggal'],
-                    'keterangan' => $tanggalNoStrip . "-" . $item['id_barang'] . "-" . str_replace(' ', '-', strtoupper($item['varian'])) . "-" . $body['id_pesanan'],
+                    'keterangan' => $tanggalNoStrip . "-" . $item['id_barang'] . "-" . str_replace(' ', '-', strtoupper($item['varian'])) . "-" . $idSK,
                     'debit' => 1,
                     'kredit' => 0,
                     'saldo' => $saldo + 1,
                     'pending' => false,
-                    'id_pesanan' => $body['id_pesanan'],
+                    'id_pesanan' => $idSK,
                     'varian' => $item['varian'],
                 ]);
                 $this->kartuStokModel->insert([
