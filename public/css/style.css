@@ -9,6 +9,7 @@
     --dark: #212529;
     --oren: #dc9042;
     --orentua: #844709;
+    box-sizing: border-box;
 }
 
 .teks-oren {
@@ -813,6 +814,7 @@ body {
     border: 0;
     cursor: pointer;
     border: 1px solid rgba(0, 0, 0, 0);
+    text-wrap: nowrap;
 }
 .btn-default:hover {
     background-color: whitesmoke;

@@ -7,7 +7,7 @@
     <title><?= $title; ?> | I L E N A</title>
     <link href="<?= base_url('css/bootstrap.min.css'); ?>" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="<?= base_url('css/style.css?v=21-04-2025'); ?>">
+    <link rel="stylesheet" href="<?= base_url('css/style.css?v=23-04-2025'); ?>">
     <link rel="icon" href="<?= base_url('img/logo/N.png?v=11-03-2025'); ?>" type="image/png">
 </head>
 
@@ -30,7 +30,7 @@
     <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <div class="baris-ke-kolom gap-0 w-100" style="height: 100svh;">
-        <div class="show-block-ke-hide">
+        <div class="show-block-ke-hide bg-white" style="height: 100%; overflow-y: auto;">
             <?= $this->include('admin/navbar'); ?>
         </div>
         <div class="hide-ke-show-block">

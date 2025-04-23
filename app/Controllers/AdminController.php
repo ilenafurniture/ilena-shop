@@ -616,6 +616,103 @@ class AdminController extends BaseController
         return redirect()->to($pathname ? str_replace('@', '/', $pathname) : 'admin/product');
     }
 
+    public function mutasi($data = false)
+    {
+        $product = $this->barangModel->getBarang();
+        if (!$data) {
+            $id_barang = $product[0]['id'];
+            $varian = json_decode($product[0]['varian'], true)[0]['nama'];
+        } else {
+            $id_barang = explode('-', $data)[0];
+            $varian = explode('-', $data)[1];
+        }
+        foreach ($product as $ind_p => $p) {
+            $product[$ind_p]['varian'] = json_decode($p['varian'], true);
+            $product[$ind_p]['deskripsi'] = json_decode($p['deskripsi'], true);
+        }
+        $mutasi = $this->kartuStokModel->where(['id_barang' => $id_barang, 'varian' => $varian])->findAll();
+        // $pemesananBelumPrint = $this->pemesananModel->where('status_print !=', 'sudah print')->findAll();
+
+        // $mutasiDanPemesanan = $mutasi;
+        // foreach ($pemesananBelumPrint as $p) {
+        //     foreach (json_decode($pemesananBelumPrint['items'], true) as $i) {
+        //         if($i['id'] == $id_barang) {
+        //             $itemMP = [
+        //                 'id_barang' => $id_barang,
+        //                 'tanggal' => json_decode($pemesananBelumPrint['data_mid'], true)['transaction_time'],
+        //                 'keterangan' => 'Masih menunggu surat jalan di print',
+        //                 'debit' => 0,
+        //                 'kredit' => $i['quantity'],
+        //                 'saldo' => 'Menyesuaikan'
+        //             ];
+        //             array_push($mutasiDanPemesanan, )
+        //         }
+        //     }
+        // }
+        $msg = session()->getFlashdata('msg');
+        $data = [
+            'title' => 'Mutasi',
+            'mutasi' => $mutasi,
+            'product' => $product,
+            'idBarang' => $id_barang,
+            'data' => $data,
+            'msg' => $msg ? $msg : false
+        ];
+        return view('admin/mutasi', $data);
+    }
+    public function actionAddMutasi()
+    {
+        $tanggal = $this->request->getVar('tanggal');
+        $barang = explode("-", $this->request->getVar('barang'));
+        $jenis = $this->request->getVar('jenis');
+        $alasan = $this->request->getVar('alasan');
+        $nominal = (int)$this->request->getVar('nominal');
+
+        //cek apakah ada pesanan yg masuh menunggu pembayaran
+        $pesanan = $this->pemesananModel->where(['status' => 'Menunggu Pembayaran'])->findAll();
+        if (count($pesanan) > 0) {
+            session()->setFlashdata('msg', 'Ada pesanan dengan status Menunggu Pembayaran sehingga belum bisa melakukan perubahan data stok');
+            return redirect()->to('/admin/mutasi/' . $barang[0] . '-' . $barang[1]);
+        }
+
+        $d = strtotime($tanggal);
+        $keterangan = date("Ymd", $d) . date("His") . "-" . $barang[0] . "-" . strtoupper($barang[1]) . "-MANUALLY";
+
+        $produk = $this->barangModel->getBarang($barang[0]);
+        $saldoSkrg = (int)json_decode($produk['varian'], true)[(int)$barang[2]]['stok'];
+        $debit = 0;
+        $kredit = 0;
+        if ($jenis == 'debit') {
+            $debit = $nominal;
+        } else if ($jenis == 'kredit') {
+            $kredit = $nominal;
+        }
+        $nominal *= ($jenis == 'debit' ? 1 : -1);
+        $saldo = $saldoSkrg + $nominal;
+        if ($saldo < 0) {
+            session()->setFlashdata('msg', 'Saldo tinggal ' . $saldoSkrg . ' jadi tidak cukup');
+            return redirect()->to('/admin/mutasi/' . $barang[0] . '-' . $barang[1]);
+        }
+        $varianBaru = json_decode($produk['varian'], true);
+        $varianBaru[(int)$barang[2]]['stok'] = (string)$saldo;
+        $this->barangModel->where('id', $barang[0])->set([
+            'varian' => json_encode($varianBaru)
+        ])->update();
+        $this->kartuStokModel->insert([
+            'id_barang' => $barang[0],
+            'tanggal' => $tanggal,
+            'keterangan' => $keterangan,
+            'debit' => $debit,
+            'kredit' => $kredit,
+            'saldo' => $saldo,
+            'pending' => false,
+            'id_pesanan' => 'MANUALLY',
+            'alasan' => $alasan,
+            'varian' => $varianBaru[(int)$barang[2]]['nama'],
+        ]);
+        return redirect()->to('/admin/mutasi/' . $barang[0] . '-' . $barang[1]);
+    }
+
     public function mutasiConfirm()
     {
         $mutasi = $this->kartuStokModel->where('alasan !=', '')->findAll();

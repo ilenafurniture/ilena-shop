@@ -133,6 +133,9 @@ $routes->get('/admin/accreprint/(:any)', 'AdminController::accReprint/$1', ['fil
 $routes->get('/gantiukuran/(:any)/(:any)', 'AdminController::gantiUkuran/$1/$2');
 $routes->get('/admin/ordertoko/(:any)', 'AdminController::orderToko/$1', ['filter' => 'loginToko']);
 $routes->get('/admin/mutasiconfirm', 'AdminController::mutasiConfirm', ['filter' => 'adminFilter']);
+$routes->get('/admin/mutasi', 'AdminController::mutasi', ['filter' => 'adminFilter']);
+$routes->get('/admin/mutasi/(:any)', 'AdminController::mutasi/$1', ['filter' => 'adminFilter']);
+$routes->post('/admin/actionaddmutasi', 'AdminController::actionAddMutasi', ['filter' => 'adminFilter']);
 $routes->get('/admin/accmutasi/(:any)', 'AdminController::accMutasi/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/denymutasi/(:any)', 'AdminController::denyMutasi/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/labelbarang/(:any)', 'AdminController::labelBarang/$1', ['filter' => 'adminFilter']);

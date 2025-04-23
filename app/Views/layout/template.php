@@ -176,7 +176,7 @@
             type="text/javascript" async>
         </script>
     <?php } ?>
-    <link rel="stylesheet" href="<?= base_url('css/style.css?v=22-04-2025'); ?>">
+    <link rel="stylesheet" href="<?= base_url('css/style.css?v=23-04-2025'); ?>">
     <link rel="icon" href="<?= base_url('img/logo/N.png?v=14-03-2025'); ?>" type="image/png">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>

@@ -52,6 +52,10 @@
             <i class="material-icons">description</i>
             <p class="m-0">Konfirm Mutasi</p>
         </a>
+        <a class="item-nav <?= $title == 'Mutasi' ? 'active' : ''; ?>" href="/admin/mutasi">
+            <i class="material-icons">library_books</i>
+            <p class="m-0">Mutasi</p>
+        </a>
         <a class="item-nav <?= str_contains(strtolower($title), 'artikel') ? 'active' : ''; ?>" href="/admin/article">
             <i class="material-icons">book</i>
             <p class="m-0">Artikel</p>
