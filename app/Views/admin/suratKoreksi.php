@@ -45,7 +45,7 @@
         <div class="d-flex justify-content-between align-items-end">
             <div style="flex: 1">
                 <p class="m-0 fw-bold">SURAT KOREKSI NO.
-                    <?= substr($pemesanan['id_pesanan'], 5); ?>/<?= $pemesanan['jenis'] == 'sale' ? 'SJ' : 'SP'; ?>/<?= date('m', strtotime($pemesanan['tanggal'])); ?>/<?= date('Y', strtotime($pemesanan['tanggal'])); ?>
+                    <?= substr($pemesanan['id_pesanan'], 5); ?>/SK/<?= date('m', strtotime($pemesanan['tanggal'])); ?>/<?= date('Y', strtotime($pemesanan['tanggal'])); ?>
                     </b>
                 </p>
             </div>
@@ -68,20 +68,18 @@
                 </thead>
                 <tbody>
                     <?php $no = 1; ?>
-                    <?php foreach ($items as $t) {
-                        if (!empty($t['id_return'])) { ?>
-                            <tr>
-                                <td class="text-center"><?= strtoupper($no++); ?></td>
-                                <td class="text-center"><?= strtoupper($t['id_barang']); ?></td>
-                                <td class="">
-                                    <p class="m-0"><?= strtoupper($t['nama']); ?> (<?= strtoupper($t['varian']); ?>)</p>
-                                    <p class="m-0"><?= $t['dimensi']['panjang'] ?> x <?= $t['dimensi']['lebar'] ?> x
-                                        <?= $t['dimensi']['tinggi'] ?></p>
-                                </td>
-                                <td class="text-center"><?= $t['jumlah']; ?></td>
-                            </tr>
-                    <?php }
-                    } ?>
+                    <?php foreach ($items as $t) { ?>
+                        <tr>
+                            <td class="text-center"><?= strtoupper($no++); ?></td>
+                            <td class="text-center"><?= strtoupper($t['id_barang']); ?></td>
+                            <td class="">
+                                <p class="m-0"><?= strtoupper($t['nama']); ?> (<?= strtoupper($t['varian']); ?>)</p>
+                                <p class="m-0"><?= $t['dimensi']['panjang'] ?> x <?= $t['dimensi']['lebar'] ?> x
+                                    <?= $t['dimensi']['tinggi'] ?></p>
+                            </td>
+                            <td class="text-center"><?= $t['jumlah']; ?></td>
+                        </tr>
+                    <?php } ?>
                 </tbody>
             </table>
             <p class="m-0"><b>Keterangan : </b><span

@@ -294,7 +294,7 @@
                             </div>
                         </div>
                         ${item.id_return != '' ? `
-                            <a href="/admin/surat-koreksi/${item.id_pesanan}" class="btn-teks-aja">Lihat koreksi</a>
+                            <a href="/admin/surat-koreksi/${item.id_return}" class="btn-teks-aja">Lihat koreksi</a>
                         ` : ''
                         }
                     </label>
