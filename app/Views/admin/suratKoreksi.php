@@ -88,31 +88,13 @@
 
             <p class="mt-5">Kendal, <?= date('d F Y', strtotime($pemesanan['tanggal'])); ?></p>
 
-            <div class="d-flex justify-content-between mt-5">
+            <div class="d-flex justify-content-end mt-5">
                 <div class="text-center">
                     <p class="m-0"><b>Dibuat Oleh :</b></p>
                     <br>
                     <br>
                     <br>
                     <p class="m-0"><b>Admin Ilena</b></p>
-                    <br>
-                    <p class="m-0"><b>____________________</b></p>
-                </div>
-                <div class="text-center">
-                    <p class="m-0"><b>Dibawa Oleh :</b></p>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <p class="m-0"><b>____________________</b></p>
-                </div>
-                <div class="text-center">
-                    <p class="m-0"><b>Diterima Oleh :</b></p>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
                     <br>
                     <p class="m-0"><b>____________________</b></p>
                 </div>
