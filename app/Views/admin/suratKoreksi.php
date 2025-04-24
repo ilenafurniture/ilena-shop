@@ -42,19 +42,17 @@
             </div>
         </div>
 
-        <div class="d-flex justify-content-between align-items-end">
-            <div style="flex: 1">
-                <p class="m-0 fw-bold">SURAT KOREKSI NO.
-                    <?= substr($pemesanan['id_pesanan'], 5); ?>/SK/<?= date('m', strtotime($pemesanan['tanggal'])); ?>/<?= date('Y', strtotime($pemesanan['tanggal'])); ?>
-                    </b>
-                </p>
-            </div>
-            <div style="flex: 1">
+        <div class="d-flex justify-content-end">
+            <div style="width: 300px;">
                 <p class="m-0">Kepada Yth.</p>
                 <p class="m-0"><?= $pemesanan['nama']; ?></p>
                 <p class="m-0"><?= $pemesanan['alamat_pengiriman']; ?></p>
             </div>
         </div>
+        <p class="m-0 fw-bold">KOREKSI SURAT PENGANTAR NO.
+            <?= substr($pemesanan['id_pesanan'], 5); ?>/SK/<?= date('m', strtotime($pemesanan['tanggal'])); ?>/<?= date('Y', strtotime($pemesanan['tanggal'])); ?>
+            </b>
+        </p>
         <!-- INI Table Pengantar -->
         <div class="table-responsive mt-3">
             <table class="table table-striped table-bordered">
@@ -86,17 +84,17 @@
                     class="text-danger"><?= $pemesanan['keterangan'] ? '*' . $pemesanan['keterangan'] : '<i>Tidak ada keterangan</i>'; ?></span>
             </p>
 
-            <p class="mt-5 text-end">Kendal, <?= date('d F Y', strtotime($pemesanan['tanggal'])); ?></p>
 
             <div class="d-flex justify-content-end mt-5">
-                <div class="text-center">
+                <div style="width: 300px;">
+                    <p>Kendal, <?= date('d F Y', strtotime($pemesanan['tanggal'])); ?></p>
                     <p class="m-0"><b>Dibuat Oleh :</b></p>
                     <br>
                     <br>
                     <br>
                     <p class="m-0"><b>Admin Ilena</b></p>
                     <br>
-                    <p class="m-0"><b>____________________</b></p>
+                    <!-- <p class="m-0"><b>____________________</b></p> -->
                 </div>
             </div>
         </div>
