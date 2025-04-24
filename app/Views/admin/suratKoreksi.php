@@ -86,7 +86,7 @@
                     class="text-danger"><?= $pemesanan['keterangan'] ? '*' . $pemesanan['keterangan'] : '<i>Tidak ada keterangan</i>'; ?></span>
             </p>
 
-            <p class="mt-5">Kendal, <?= date('d F Y', strtotime($pemesanan['tanggal'])); ?></p>
+            <p class="mt-5 text-end">Kendal, <?= date('d F Y', strtotime($pemesanan['tanggal'])); ?></p>
 
             <div class="d-flex justify-content-end mt-5">
                 <div class="text-center">
