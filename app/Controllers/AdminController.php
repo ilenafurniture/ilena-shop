@@ -1720,7 +1720,6 @@ class AdminController extends BaseController
             return "cURL Error #:" . $err;
         }
         $provinsi = json_decode($response, true);
-        // dd($provinsi);
 
         $data = [
             'title' => 'Pesanan',
@@ -1833,110 +1832,6 @@ class AdminController extends BaseController
             'success' => true,
             'id_pesanan' => $idFix,
         ], false);
-    }
-    public function actionKoreksiSPBenar()
-    {
-        $body = $this->request->getVar();
-        $isiBody = [
-            'index_items_selected' => $body['index_items_selected'],
-            'id_pesanan' => $body['id_pesanan'],
-            'tanggal' => $body['tanggal'],
-            'provinsiTagihan' => $body['provinsi'],
-            'kabupatenTagihan' => $body['kota'],
-            'kecamatanTagihan' => $body['kecamatan'],
-            'kodeposTagihan' => $body['kodepos'],
-            'detailTagihan' => $body['detail'],
-            'alamatTagihan' => $body['alamatTagihan'],
-            'npwp' => $body['npwp'],
-            'keterangan' => $body['keterangan'],
-        ];
-
-        $id_pesanan_SP = $body['id_pesanan'];
-        $sp_current = $this->pemesananOfflineModel->getPemesanan($id_pesanan_SP);
-        $items = $this->pemesananOfflineItemModel
-            ->select('pemesanan_offline_item.*')
-            ->select('barang.nama')
-            ->join('barang', 'barang.id = pemesanan_offline_item.id_barang')
-            ->where(['id_pesanan' => $id_pesanan_SP])
-            ->findAll();
-        $alamatTagihan = $body['provinsi'] ? [
-            'provinsi' => explode('-', $body['provinsi'])[1],
-            'kabupaten' => explode('-', $body['kota'])[1],
-            'kecamatan' => explode('-', $body['kecamatan'])[1],
-            'kelurahan' => explode('-', $body['kodepos'])[0],
-            'kodepos' => explode('-', $body['kodepos'])[1],
-            'detail' => $body['detail'],
-        ] : [];
-
-        //generate id
-        $dataTerbaru = $this->pemesananOfflineModel->like('id_pesanan', 'SJ', 'after')->orderBy('id', 'desc')->first();
-        $idFix = 'SJ' . (sprintf("%08d", $dataTerbaru ? ((int)substr($dataTerbaru['id_pesanan'], 2) + 1) : 1));
-        $tanggalNoStrip = date('Ymd', strtotime($body['tanggal']));
-
-        $indexItems = explode(',', $body['index_items_selected']);
-        $totalAkhir = 0;
-        foreach ($items as $ind_i => $item) {
-            if ($indexItems[$ind_i] == '1') {
-                $produkCur = $this->barangModel->getBarang($item['id_barang']);
-                $varian = json_decode($produkCur['varian'], true);
-                $saldo = 0;
-                $varianBaru = $varian;
-                foreach ($varian as $ind => $v) {
-                    if ($v['nama'] == $item['varian']) {
-                        $saldo = (int)$v['stok'];
-                        $varianBaru[$ind]['stok'] = (string)((int)$v['stok'] - 1);
-                    }
-                }
-                $this->pemesananOfflineItemModel->where(['id' => $item['id']])->set(['id_return' => $idFix])->update();
-                $this->pemesananOfflineItemModel->insert([
-                    'id_pesanan' => $idFix,
-                    'id_barang' => $item['id_barang'],
-                    'harga' => $item['harga'],
-                    'varian' => $item['varian'],
-                    'id_return' => $id_pesanan_SP
-                ]);
-                $this->kartuStokModel->insert([
-                    'id_barang' => $item['id_barang'],
-                    'tanggal' => $body['tanggal'],
-                    'keterangan' => $tanggalNoStrip . "-" . $item['id_barang'] . "-" . str_replace(' ', '-', strtoupper($item['varian'])) . "-" . $body['id_pesanan'],
-                    'debit' => 1,
-                    'kredit' => 0,
-                    'saldo' => $saldo + 1,
-                    'pending' => false,
-                    'id_pesanan' => $body['id_pesanan'],
-                    'varian' => $item['varian'],
-                ]);
-                $this->kartuStokModel->insert([
-                    'id_barang' => $item['id_barang'],
-                    'tanggal' => $body['tanggal'],
-                    'keterangan' => $tanggalNoStrip . "-" . $item['id_barang'] . "-" . str_replace(' ', '-', strtoupper($item['varian'])) . "-" . $idFix,
-                    'debit' => 0,
-                    'kredit' => 1,
-                    'saldo' => $saldo,
-                    'pending' => false,
-                    'id_pesanan' => $idFix,
-                    'varian' => $item['varian'],
-                ]);
-                $totalAkhir += (int)$item['harga'];
-            }
-        }
-
-        $data = [
-            'nama' => $sp_current['nama'],
-            'nohp' => $sp_current['nohp'],
-            'alamat_pengiriman' => $sp_current['alamat_pengiriman'],
-            'alamat_tagihan' => isset($body['checkAlamat']) ? $body['alamatTagihan'] : $this->generateAlamat($alamatTagihan),
-            'npwp' => $body['npwp'],
-            'tanggal' => $body['tanggal'],
-            'id_pesanan' => $idFix,
-            'status' => 'pending',
-            'jenis' => 'sale',
-            'total_akhir' => $totalAkhir,
-            'keterangan' => $body['keterangan'],
-            'po' => $sp_current['po'],
-        ];
-        $this->pemesananOfflineModel->insert($data);
-        return redirect()->to('/admin/order/offline/sale');
     }
     public function actionKoreksiSP()
     {
@@ -2068,55 +1963,9 @@ class AdminController extends BaseController
     }
     public function benerinSurat()
     {
-        $items = $this->pemesananOfflineItemModel
-            ->select('pemesanan_offline_item.*')
-            ->select('pemesanan_offline.nama')
-            ->select('pemesanan_offline.nohp')
-            ->select('pemesanan_offline.alamat_pengiriman')
-            ->select('pemesanan_offline.alamat_tagihan')
-            ->select('pemesanan_offline.npwp')
-            ->select('pemesanan_offline.tanggal')
-            ->select('pemesanan_offline.total_akhir')
-            ->select('pemesanan_offline.status')
-            ->select('pemesanan_offline.jenis')
-            ->select('pemesanan_offline.keterangan')
-            ->select('pemesanan_offline.po')
-            ->join('pemesanan_offline', 'pemesanan_offline.id_pesanan = pemesanan_offline_item.id_return')
-            ->like('id_return', 'SJ', 'after')
-            ->findAll();
-        // dd($items);
-        $idSJ = '';
-        $dataTerbaruSK = [];
-        foreach ($items as $i) {
-            if ($idSJ != $i['id_return']) {
-                $idSJ = $i['id_return'];
-                $dataTerbaruSK = $this->pemesananOfflineModel->like('id_pesanan', 'SK', 'after')->orderBy('id', 'desc')->first();
-                $idSK = 'SK' . (sprintf("%08d", $dataTerbaruSK ? ((int)substr($dataTerbaruSK['id_pesanan'], 2) + 1) : 1));
-                $dataSK = [
-                    'nama' => $i['nama'],
-                    'nohp' => $i['nohp'],
-                    'alamat_pengiriman' => $i['alamat_pengiriman'],
-                    'alamat_tagihan' => $i['alamat_tagihan'],
-                    'npwp' => $i['npwp'],
-                    'tanggal' => $i['tanggal'],
-                    'id_pesanan' => $idSK,
-                    'status' => 'success',
-                    'jenis' => 'sale',
-                    'total_akhir' => $i['total_akhir'],
-                    'keterangan' => $i['keterangan'],
-                    'po' => $i['po'],
-                ];
-                $this->pemesananOfflineModel->insert($dataSK);
-                $this->pemesananOfflineItemModel->where(['id_pesanan' => $idSJ])->set(['id_return' => $idSK])->update();
-            }
-            $this->pemesananOfflineItemModel->where(['id' => $i['id']])->set(['id_return' => $idSK])->update();
-            $this->pemesananOfflineItemModel->insert([
-                'id_pesanan' => $idSK,
-                'id_barang' => $i['id_barang'],
-                'harga' => $i['harga'],
-                'varian' => $i['varian'],
-                'id_return' => ''
-            ]);
+        $pemesanan = $this->pemesananOfflineModel->findAll();
+        foreach ($pemesanan as $p) {
+            $this->pemesananOfflineModel->where(['id' => $p['id']])->set(['tanggal_inv' => $p['tanggal']])->update();
         }
         dd('done');
     }

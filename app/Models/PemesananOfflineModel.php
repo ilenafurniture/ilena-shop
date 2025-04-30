@@ -14,6 +14,7 @@ class PemesananOfflineModel extends Model
         'alamat_tagihan',
         'npwp',
         'tanggal',
+        'tanggal_inv',
         'id_pesanan',
         'status',
         'total_akhir',
