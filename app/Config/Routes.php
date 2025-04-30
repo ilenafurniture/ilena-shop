@@ -151,6 +151,7 @@ $routes->post('/admin/order-offline/add', 'AdminController::actionAddOrderOfflin
 $routes->post('/admin/order-offline/koreksisp', 'AdminController::actionKoreksiSP');
 $routes->get('/admin/surat-koreksi/(:any)', 'AdminController::suratKoreksi/$1');
 $routes->get('/admin/benerinsurat', 'AdminController::benerinSurat');
+$routes->post('/admin/actionbuatinvoice', 'AdminController::actionBuatInvoice');
 
 //GUDANG Controller
 $routes->get('/gudang/listorder', 'GudangController::listOrder', ['filter' => 'gudangFilter']);

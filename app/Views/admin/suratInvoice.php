@@ -73,7 +73,7 @@
                 </div>
                 <div class="d-flex flex-column align-items-start">
                     <p class="isint">
-                        <?= substr($pemesanan['id_pesanan'], 5); ?>/INV/CBM/<?= date('m', strtotime($pemesanan['tanggal'])); ?>/<?= date('Y', strtotime($pemesanan['tanggal'])); ?>
+                        <?= substr($pemesanan['id_pesanan'], 5); ?>/INV/CBM/<?= date('m', strtotime($pemesanan['tanggal_inv'])); ?>/<?= date('Y', strtotime($pemesanan['tanggal_inv'])); ?>
                     </p>
                     <p class="isint"><?php
                                         $bulan_indonesia = [
@@ -90,9 +90,9 @@
                                             11 => 'November',
                                             12 => 'Desember'
                                         ];
-                                        $tanggal = date('d', strtotime($pemesanan['tanggal']));
-                                        $bulan = date('n', strtotime($pemesanan['tanggal']));
-                                        $tahun = date('Y', strtotime($pemesanan['tanggal']));
+                                        $tanggal = date('d', strtotime($pemesanan['tanggal_inv']));
+                                        $bulan = date('n', strtotime($pemesanan['tanggal_inv']));
+                                        $tahun = date('Y', strtotime($pemesanan['tanggal_inv']));
                                         echo "$tanggal " . $bulan_indonesia[$bulan] . " $tahun";
                                         ?>
                     </p>

@@ -301,22 +301,17 @@
                 items,
                 nama, nohp,
                 provinsiTagihan, kabupatenTagihan, kecamatanTagihan, kelurahanTagihan, kodeposTagihan, detailTagihan,
-                npwp,
             } = formData;
-            const isFormValidKhusus = (jenis) => {
-                if(jenis == 'sale') {
-                    if(alamatTagihanSama) {
-                        const fieldsFilled = [
-                            npwp
-                        ].every(val => val && val !== '');
-                        return fieldsFilled;
-                    } else {
-                        const fieldsFilled = [
-                            provinsiTagihan, kabupatenTagihan, kecamatanTagihan, kelurahanTagihan, kodeposTagihan, detailTagihan,
-                            npwp
-                        ].every(val => val && val !== '');
-                        return fieldsFilled;
-                    }
+            console.log('jenis')
+            console.log(jenis)
+            console.log('alanat tagihan')
+            console.log(alamatTagihanSama)
+            const isFormValidKhusus = () => {
+                if(jenis == 'sale' && !alamatTagihanSama) {
+                    const fieldsFilled = [
+                        provinsiTagihan, kabupatenTagihan, kecamatanTagihan, kelurahanTagihan, kodeposTagihan, detailTagihan
+                    ].every(val => val && val !== '');
+                    return fieldsFilled;
                 } else return true;
             }
             const isFormValid = () => {

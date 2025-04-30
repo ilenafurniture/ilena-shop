@@ -5,13 +5,36 @@
         color: gray;
     }
 </style>
+<div id="input-buat-invoice" class="d-none justify-content-center align-items-center"
+    style="position: fixed; left: 0; top: 0; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.5)">
+    <div class="bg-white p-4 rounded" style="width: 80%; max-height: 90%; overflow-y:scroll;">
+        <form method="post" action="/admin/actionbuatinvoice">
+            <h5 class="m-0 fw-bold">Buat Invoice</h5>
+            <p class="mb-3 text-sm" style="color: var(--merah); font-size: 12px">ID Order : <input type="text"
+                    name="id_pesanan" id="input-idpesanan"
+                    style="border: none; color: var(--merah); pointer-events: none;" class="fw-bold"></p>
+            <div class="mb-1">
+                <p class="mb-1">Tanggal</p>
+                <input type="datetime-local" name="tanggal" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <p class="mb-1">NPWP</p>
+                <input type="text" name="npwp" class="form-control" required>
+            </div>
+            <div class="d-flex gap-1">
+                <button type="button" class="btn btn-default w-100" onclick="closeModal()">Closes</button>
+                <button type="submit" class="btn btn-default-merah w-100">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
 <div id="input-koreksi" class="d-none justify-content-center align-items-center"
     style="position: fixed; left: 0; top: 0; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.5)">
     <div class="bg-white p-4 rounded" style="width: 80%; max-height: 90%; overflow-y:scroll;">
         <form method="post" action="/admin/order-offline/koreksisp">
             <h5 class="m-0 fw-bold">Koreksi Surat Pengantar</h5>
             <p class="m-0 text-sm" style="color: var(--merah); font-size: 12px">ID Order : <input type="text"
-                    name="id_pesanan" id="input-idpesanan"
+                    name="id_pesanan"
                     style="border: none; color: var(--merah); pointer-events: none;" class="fw-bold"></p>
             <hr>
             <div class="mb-3">
@@ -87,7 +110,7 @@
 
             <div class="mb-1">
                 <p class="mb-1">NPWP</p>
-                <input type="text" name="npwp" class="form-control" required>
+                <input type="text" name="npwp" class="form-control" placeholder="kosongin kalau Invoice menyusul">
             </div>
             <div class="mb-3">
                 <p class="mb-1">Keterangan</p>
@@ -115,6 +138,9 @@
         </div>
         <a class="btn-default-merah" href="/admin/order-offline/add">Tambah</a>
     </div>
+    <?php if ($msg) { ?>
+        <div class="pemberitahuan"><?= $msg; ?></div>
+    <?php } ?>
     <div class="table-responsive">
         <table class="table table-striped table-hover">
             <thead>
@@ -144,8 +170,8 @@
                                     <a class="btn" href="/admin/surat-offline/<?= $p['id_pesanan']; ?>" data-bs-toggle="tooltip"
                                         data-bs-placement="top" data-bs-title="Surat Jalan"><i
                                             class="material-icons">local_shipping</i></a>
-                                    <a class="btn" href="/admin/invoice-offline/<?= $p['id_pesanan']; ?>" data-bs-toggle="tooltip"
-                                        data-bs-placement="top" data-bs-title="Invoice"><i
+                                    <a class="btn <?= $p['npwp'] ? '' : 'text-danger'; ?>" <?= $p['npwp'] ? 'href="/admin/invoice-offline/' . $p['id_pesanan'] . '"' : 'onclick="buatInvoice(' . $ind_p . ')"'; ?> data-bs-toggle="tooltip"
+                                        data-bs-placement="top" data-bs-title="<?= $p['npwp'] ? 'Invoice' : 'Buat invoice'; ?>"><i
                                             class="material-icons">description</i></a>
                                 <?php } else { ?>
                                     <a class="btn" href="/admin/surat-offline/<?= $p['id_pesanan']; ?>" data-bs-toggle="tooltip"
@@ -257,9 +283,10 @@
 <script>
     const containerItemsElm = document.getElementById('container-items');
     const indexItemsSelectedElm = document.querySelector('input[name="index_items_selected"]');
-    const inputIdpesananElm = document.getElementById('input-idpesanan');
+    const inputIdpesananElm = document.querySelectorAll('input[name="id_pesanan"]');
     const alamatTaghihanElm = document.querySelectorAll('.alamat-taghihan')
     const inputKoreksiElm = document.getElementById('input-koreksi');
+    const inputBuatInvoiceElm = document.getElementById('input-buat-invoice');
     const pesanan = JSON.parse('<?= $pesananJson; ?>')
     const alamatTagihanElm = document.querySelector('textarea[name="alamatTagihan"]');
     let pesananSelected = {};
@@ -306,7 +333,9 @@
                     </label>
                 `
             })
-            inputIdpesananElm.value = pesananSelected.id_pesanan
+            inputIdpesananElm.forEach((e) => {
+                e.value = pesananSelected.id_pesanan;
+            })
             inputKoreksiElm.classList.remove('d-none')
             inputKoreksiElm.classList.add('d-flex')
         })();
@@ -315,6 +344,8 @@
     function closeModal() {
         inputKoreksiElm.classList.add('d-none')
         inputKoreksiElm.classList.remove('d-flex')
+        inputBuatInvoiceElm.classList.add('d-none')
+        inputBuatInvoiceElm.classList.remove('d-flex')
         indexItemsSelectedElm.value = '';
     }
 
@@ -327,6 +358,16 @@
             alamatTaghihanElm[1].classList.add('d-none');
             alamatTaghihanElm[0].classList.remove('d-none');
         }
+    }
+
+    function buatInvoice(index) {
+        const pesananInvoice = pesanan[index]
+        console.log(pesananInvoice)
+        inputIdpesananElm.forEach((e) => {
+            e.value = pesananInvoice.id_pesanan;
+        })
+        inputBuatInvoiceElm.classList.remove('d-none')
+        inputBuatInvoiceElm.classList.add('d-flex')
     }
 </script>
 <?= $this->endSection(); ?>

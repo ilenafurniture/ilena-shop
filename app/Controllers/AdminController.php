@@ -1465,6 +1465,7 @@ class AdminController extends BaseController
     public function suratInvoice($id_pesanan)
     {
         $pemesanan = $this->pemesananOfflineModel->getPemesanan($id_pesanan);
+        if (!$pemesanan['tanggal_inv']) return redirect()->to('/admin/order/offline/sale');
         $items = $this->pemesananOfflineItemModel
             ->select('pemesanan_offline_item.*')
             ->select('barang.nama')
@@ -1664,6 +1665,7 @@ class AdminController extends BaseController
             'pesanan' => $pesanan,
             'pesananJson' => json_encode($pesanan),
             'jenis' => $jenis,
+            'msg' => session()->getFlashdata('msg'),
             'provinsi' => $provinsi['rajaongkir']['results']
         ];
         return view('admin/orderOffline', $data);
@@ -1817,8 +1819,9 @@ class AdminController extends BaseController
             'nohp' => $body['nohp'],
             'alamat_pengiriman' => $this->generateAlamat($alamatPengiriman),
             'alamat_tagihan' => $body['jenis'] == 'display' ? null : $this->generateAlamat($alamatTagihan),
-            'npwp' => $body['npwp'],
+            'npwp' => $body['npwp'] ? $body['npwp'] : null,
             'tanggal' => $body['tanggal'],
+            'tanggal_inv' => $body['npwp'] ? $body['tanggal'] : null,
             'id_pesanan' => $idFix,
             'status' => $body['jenis'] == 'sale' ? 'pending' : 'success',
             'jenis' => $body['jenis'],
@@ -1934,8 +1937,9 @@ class AdminController extends BaseController
             'nohp' => $sp_current['nohp'],
             'alamat_pengiriman' => $sp_current['alamat_pengiriman'],
             'alamat_tagihan' => isset($body['checkAlamat']) ? $body['alamatTagihan'] : $this->generateAlamat($alamatTagihan),
-            'npwp' => $body['npwp'],
+            'npwp' => $body['npwp'] ? $body['npwp'] : null,
             'tanggal' => $body['tanggal'],
+            'tanggal_inv' => $body['npwp'] ? $body['tanggal'] : null,
             'id_pesanan' => $idSJ,
             'status' => 'pending',
             'jenis' => 'sale',
@@ -1948,7 +1952,6 @@ class AdminController extends BaseController
             'nohp' => $sp_current['nohp'],
             'alamat_pengiriman' => $sp_current['alamat_pengiriman'],
             'alamat_tagihan' => isset($body['checkAlamat']) ? $body['alamatTagihan'] : $this->generateAlamat($alamatTagihan),
-            'npwp' => $body['npwp'],
             'tanggal' => $body['tanggal'],
             'id_pesanan' => $idSK,
             'status' => 'success',
@@ -1959,6 +1962,19 @@ class AdminController extends BaseController
         ];
         $this->pemesananOfflineModel->insert($dataSJ);
         $this->pemesananOfflineModel->insert($dataSK);
+        return redirect()->to('/admin/order/offline/sale');
+    }
+    public function actionBuatInvoice()
+    {
+        $tanggal = $this->request->getVar('tanggal');
+        $npwp = $this->request->getVar('npwp');
+        $idPesanan = $this->request->getVar('id_pesanan');
+
+        $this->pemesananOfflineModel->where(['id_pesanan' => $idPesanan])->set([
+            'npwp' => $npwp,
+            'tanggal_inv' => $tanggal,
+        ])->update();
+        session()->setFlashdata('msg', 'Invoice ' . $idPesanan . ' berhasil dibuat');
         return redirect()->to('/admin/order/offline/sale');
     }
     public function benerinSurat()
