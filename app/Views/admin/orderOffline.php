@@ -131,7 +131,7 @@
     <div class="mb-4 d-flex align-items-center justify-content-between gap-2">
         <div>
             <div class="d-flex gap-2">
-                <h1 class="teks-sedang" style="text-wrap: nowrap;">Pesanan Offline</h1>
+                <h1 class="teks-sedang" style="text-wrap: nowrap;">Pesanan Offline Apalah</h1>
                 <select class="form-select" onchange="selectJenis(event)">
                     <option value="sale" class="fw-bold" <?= $jenis == 'sale' ? 'selected' : ''; ?>>Sale</option>
                     <option value="display" class="fw-bold" <?= $jenis == 'display' ? 'selected' : ''; ?>>Display
