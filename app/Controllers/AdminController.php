@@ -1818,7 +1818,7 @@ class AdminController extends BaseController
             'nama' => $body['nama'],
             'nohp' => $body['nohp'],
             'alamat_pengiriman' => $this->generateAlamat($alamatPengiriman),
-            'alamat_tagihan' => $body['jenis'] == 'display' ? null : $this->generateAlamat($alamatTagihan),
+            'alamat_tagihan' => $body['npwp'] ? $this->generateAlamat($alamatTagihan) : null,
             'npwp' => $body['npwp'] ? $body['npwp'] : null,
             'tanggal' => $body['tanggal'],
             'tanggal_inv' => $body['npwp'] ? $body['tanggal'] : null,
@@ -1936,7 +1936,7 @@ class AdminController extends BaseController
             'nama' => $sp_current['nama'],
             'nohp' => $sp_current['nohp'],
             'alamat_pengiriman' => $sp_current['alamat_pengiriman'],
-            'alamat_tagihan' => isset($body['checkAlamat']) ? $body['alamatTagihan'] : $this->generateAlamat($alamatTagihan),
+            'alamat_tagihan' => $body['npwp'] ? (isset($body['checkAlamat']) ? $body['alamatTagihan'] : $this->generateAlamat($alamatTagihan)) : null,
             'npwp' => $body['npwp'] ? $body['npwp'] : null,
             'tanggal' => $body['tanggal'],
             'tanggal_inv' => $body['npwp'] ? $body['tanggal'] : null,
@@ -1951,7 +1951,7 @@ class AdminController extends BaseController
             'nama' => $sp_current['nama'],
             'nohp' => $sp_current['nohp'],
             'alamat_pengiriman' => $sp_current['alamat_pengiriman'],
-            'alamat_tagihan' => isset($body['checkAlamat']) ? $body['alamatTagihan'] : $this->generateAlamat($alamatTagihan),
+            // 'alamat_tagihan' => isset($body['checkAlamat']) ? $body['alamatTagihan'] : $this->generateAlamat($alamatTagihan),
             'tanggal' => $body['tanggal'],
             'id_pesanan' => $idSK,
             'status' => 'success',
@@ -1968,11 +1968,13 @@ class AdminController extends BaseController
     {
         $tanggal = $this->request->getVar('tanggal');
         $npwp = $this->request->getVar('npwp');
+        $alamat = $this->request->getVar('alamat');
         $idPesanan = $this->request->getVar('id_pesanan');
 
         $this->pemesananOfflineModel->where(['id_pesanan' => $idPesanan])->set([
             'npwp' => $npwp,
             'tanggal_inv' => $tanggal,
+            'alamat_tagihan' => $alamat
         ])->update();
         session()->setFlashdata('msg', 'Invoice ' . $idPesanan . ' berhasil dibuat');
         return redirect()->to('/admin/order/offline/sale');

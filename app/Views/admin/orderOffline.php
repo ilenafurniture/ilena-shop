@@ -17,6 +17,10 @@
                 <p class="mb-1">Tanggal</p>
                 <input type="datetime-local" name="tanggal" class="form-control" required>
             </div>
+            <div class="mb-1">
+                <p class="mb-1">Alamat</p>
+                <textarea name="alamat" id="input-alamat-invoice" required class="form-control"></textarea>
+            </div>
             <div class="mb-3">
                 <p class="mb-1">NPWP</p>
                 <input type="text" name="npwp" class="form-control" required>
@@ -287,6 +291,7 @@
     const alamatTaghihanElm = document.querySelectorAll('.alamat-taghihan')
     const inputKoreksiElm = document.getElementById('input-koreksi');
     const inputBuatInvoiceElm = document.getElementById('input-buat-invoice');
+    const inputAlamatInvoiceElm = document.getElementById('input-alamat-invoice');
     const pesanan = JSON.parse('<?= $pesananJson; ?>')
     const alamatTagihanElm = document.querySelector('textarea[name="alamatTagihan"]');
     let pesananSelected = {};
@@ -363,6 +368,7 @@
     function buatInvoice(index) {
         const pesananInvoice = pesanan[index]
         console.log(pesananInvoice)
+        inputAlamatInvoiceElm.value = pesananInvoice.alamat_pengiriman
         inputIdpesananElm.forEach((e) => {
             e.value = pesananInvoice.id_pesanan;
         })
