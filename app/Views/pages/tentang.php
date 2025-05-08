@@ -238,6 +238,19 @@
                         alt="Tunggal Jaya Furniture" class="client-logo">
                 </div>
             </div>
+            <div class="item-toko">
+                <a href="https://maps.app.goo.gl/5ZXJpa5BAFadgwAr5"
+                    style="flex: 1; text-decoration: none; color: black;" class="p-4">
+                    <h3 class="nama">Cipta Bangun Jaya Furniture</h3>
+                    <p class="alamat m-0">Jl. Jend. Sudirman No.189, Tidar Sel., Kec. Magelang Sel., Kota Magelang, Jawa
+                        Tengah
+                    </p>
+                </a>
+                <div class="p-2">
+                    <img src="https://lh3.googleusercontent.com/p/AF1QipMWUmj6bwLhOk3oi1hkWM-kq86aSIa5cQ8IAIFW=w427-h240-k-no"
+                        alt="Cipta Bangun Jaya Furniture" class="client-logo">
+                </div>
+            </div>
         </div>
         <hr>
         <h1 class="teks-sedang mb-4 mt-4 text-center">Cerita Kami</h1>
@@ -537,6 +550,10 @@ var locations = [{
     {
         name: "Tunggal Jaya Furniture",
         coords: [-7.98299983310868, 112.62939860029017]
+    },
+    {
+        name: "Cipta Bangun Jaya Furniture",
+        coords: [-7.497190468107969, 110.22351816365261]
     }
 ];
 
