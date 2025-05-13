@@ -18,6 +18,7 @@ class PemesananOfflineModel extends Model
         'id_pesanan',
         'status',
         'total_akhir',
+        'down_payment',
         'jenis',
         'keterangan',
         'po',

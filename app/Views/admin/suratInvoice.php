@@ -12,38 +12,65 @@
     </script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <style>
-        .tw-bold-italic {
-            font-weight: normal;
-            font-style: italic;
-        }
+    .tw-bold-italic {
+        font-weight: normal;
+        font-style: italic;
+    }
 
-        .nt {
-            font-weight: normal;
-            color: black;
-            font-style: italic;
-            margin: 0;
-        }
+    .nt {
+        font-weight: normal;
+        color: black;
+        font-style: italic;
+        margin: 0;
+    }
 
-        .isint {
-            font-weight: normal;
-            font-style: italic;
-            margin: 0;
-        }
+    .isint {
+        font-weight: normal;
+        font-style: italic;
+        margin: 0;
+    }
 
-        .kotak-pembayaran {
-            border: 1px solid red;
-            padding: 10px 20px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            align-self: center;
-            text-align: center;
-            font-weight: normal;
-            font-style: italic;
-        }
+    .kotak-pembayaran {
+        border: 1px solid red;
+        padding: 10px 20px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        align-self: center;
+        text-align: center;
+        font-weight: normal;
+        font-style: italic;
+    }
 
-        * {
-            font-size: 14px;
-        }
+    * {
+        font-size: 14px;
+    }
+
+    .print-lunas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 20px;
+        /* background-color: aqua; */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 20%;
+    }
+
+    .print-lunas p {
+        font-size: 4em;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: 900;
+        margin: 0;
+        /* initial-letter-align: center; */
+        /* transform: rotate(-15deg) translateY(500px); */
+        transform: translateY(500px) rotate(-15deg);
+
+        border: 10px solid var(--merah);
+        color: var(--merah);
+        border-radius: 0.5em;
+    }
     </style>
 
 </head>
@@ -51,6 +78,11 @@
 <?php setlocale(LC_TIME, 'id_ID'); ?>
 
 <body>
+    <?php if($pemesanan['down_payment'] == 0) {?>
+    <div class="print-lunas">
+        <p>L U N A S</p>
+    </div>
+    <?php } ?>
     <div class="container mt-5 mb-5">
         <div class="d-flex gap-4 justify-content-start mb-4">
             <div>
@@ -122,7 +154,7 @@
                     <p class="m-0 tw-bold-italic" style="margin-right: 10px;"><span id="provinsi"></span>,</p>
                     <p class="m-0 tw-bold-italic"><span id="kodepos"></span>,</p>
                 </div>
-                <p class="isint">NPWP : <?= $pemesanan['npwp']; ?></p>
+                <p class="isint">NPWP : <?= $pemesanan['npwp'] ? $pemesanan['npwp'] : '-'; ?></p>
             </div>
         </div>
 
@@ -143,37 +175,60 @@
                     <?php $no = 1; ?>
                     <?php $totalHargaBarang  = 0; ?>
                     <?php foreach ($items as $t) { ?>
-                        <?php $totalHargaBarang += $t['jumlah'] * $t['harga']; ?>
-                        <tr>
-                            <td class="text-center"><?= strtoupper($no++); ?></td>
-                            <td class="text-center"><?= strtoupper($t['id_barang']); ?></td>
-                            <td class="">
-                                <p class="m-0"><?= strtoupper($t['nama']); ?> (<?= strtoupper($t['varian']); ?>)</p>
-                                <p class="m-0"><?= $t['dimensi']['panjang']; ?> x <?= $t['dimensi']['lebar']; ?> x <?= $t['dimensi']['tinggi']; ?></p>
-                            </td>
-                            <td class="text-center"><?= strtoupper($t['jumlah']); ?></td>
-                            <td class="text-end">Rp <?= strtoupper(number_format($t['harga'], 0, ',', '.')); ?></td>
-                            <td class="text-end">Rp
-                                <?= strtoupper(number_format($t['jumlah'] * $t['harga'], 0, ',', '.')); ?></td>
-                        </tr>
+                    <?php $totalHargaBarang += $t['jumlah'] * $t['harga']; ?>
+                    <tr>
+                        <td class="text-center"><?= strtoupper($no++); ?></td>
+                        <td class="text-center"><?= strtoupper($t['id_barang']); ?></td>
+                        <td class="">
+                            <p class="m-0"><?= strtoupper($t['nama']); ?> (<?= strtoupper($t['varian']); ?>)</p>
+                            <p class="m-0"><?= $t['dimensi']['panjang']; ?> x <?= $t['dimensi']['lebar']; ?> x
+                                <?= $t['dimensi']['tinggi']; ?></p>
+                        </td>
+                        <td class="text-center"><?= strtoupper($t['jumlah']); ?></td>
+                        <td class="text-end" style="text-wrap: nowrap;">Rp
+                            <?= strtoupper(number_format($t['harga'], 0, ',', '.')); ?></td>
+                        <td class="text-end" style="text-wrap: nowrap;">Rp
+                            <?= strtoupper(number_format($t['jumlah'] * $t['harga'], 0, ',', '.')); ?></td>
+                    </tr>
                     <?php } ?>
+                    <?php if($pemesanan['total_akhir'] - $totalHargaBarang < 0) { ?>
+
                     <tr>
                         <td colspan="5" class="fw-bold">TOTAL HARGA</td>
-                        <td class="text-end">Rp <?= number_format($totalHargaBarang, 0, ',', '.'); ?></td>
+                        <td class="text-end" style="text-wrap: nowrap;">Rp
+                            <?= number_format($totalHargaBarang, 0, ',', '.'); ?></td>
                     </tr>
                     <?php $diskonPersen = round(100 - ($totalHargaBarang / $pemesanan['total_akhir'] * 100), 2); ?>
                     <tr>
-                        <td colspan="5" class="text-start fw-bold italic">POTONGAN
+                        <td colspan="5" class="text-start fw-bold italic" style="text-wrap: nowrap;">POTONGAN
                             <?= $diskonPersen > 0 ? "( $diskonPersen% )" : ''; ?></td>
-                        <td class="text-end fw-bold italic">Rp
+                        <td class="text-end fw-bold italic" style="text-wrap: nowrap;">Rp
                             <?= strtoupper(number_format($pemesanan['total_akhir'] - $totalHargaBarang, 0, ',', '.')); ?>
                         </td>
                     </tr>
+                    <?php } ?>
                     <tr>
-                        <td colspan="5" class="fw-bold">TOTAL INVOICE</td>
+                        <td colspan="5" class="fw-bold" style="text-wrap: nowrap;">TOTAL TAGIHAN</td>
                         <td class="text-end fw-bold">Rp
                             <?= strtoupper(number_format($pemesanan['total_akhir'], 0, ',', '.')); ?></td>
                     </tr>
+                    <?php if($pemesanan['down_payment']) { ?>
+                    <?php if($pemesanan['down_payment'] > 0)  {?>
+                    <tr>
+                        <td colspan="5" class="fw-bold">DP</td>
+                        <td class="text-end fw-bold" style="text-wrap: nowrap;">Rp
+                            <?= strtoupper(number_format($pemesanan['down_payment'], 0, ',', '.')); ?></td>
+                    </tr>
+                    <?php } ?>
+                    <tr>
+                        <td colspan="5" class="fw-bold">
+                            <?php echo $pemesanan['down_payment'] == 0 ? 'TOTAL INVOICE' : ($pemesanan['down_payment'] > 0 ? 'SISA TAGIHAN' : 'TOTAL INVOICE'); ?>
+                        </td>
+                        <td class="text-end fw-bold">Rp
+                            <?= strtoupper(number_format($pemesanan['total_akhir'] - (($pemesanan['down_payment']) > 0 ? abs($pemesanan['down_payment']) : 0), 0, ',', '.')); ?>
+                        </td>
+                    </tr>
+                    <?php } ?>
                 </tbody>
             </table>
         </div>
@@ -288,8 +343,14 @@
             <table>
                 <tbody>
                     <tr>
-                        <td class="pe-3">Terbilang</td>
+                        <td class="pe-3">Terbilang <?= $pemesanan['down_payment'] > 0 ? 'DP' : '' ?></td>
+                        <?php if($pemesanan['down_payment']) { ?>
+                        <td>:
+                            <i><?= ucwords(strtolower(terbilang($pemesanan['down_payment'] > 0 ? $pemesanan['down_payment'] : $pemesanan['total_akhir']))); ?></i>
+                        </td>
+                        <?php } else { ?>
                         <td>: <i><?= ucwords(strtolower(terbilang($pemesanan['total_akhir']))); ?></i></td>
+                        <?php } ?>
                     </tr>
                     <tr>
                         <td class="pe-3">PO</td>
@@ -297,7 +358,12 @@
                     </tr>
                     <tr>
                         <td class="pe-3">Surat Jalan</td>
+                        <?php
+                        if($pemesanan['down_payment']) {?>
+                        <td>: <?= substr($items[0]['id_return'], 5); ?></td>
+                        <?php } else {?>
                         <td>: <?= substr($pemesanan['id_pesanan'], 5); ?></td>
+                        <?php } ?>
                     </tr>
                 </tbody>
             </table>
@@ -306,7 +372,8 @@
 
         <div class="d-flex justify-content-between mt-5 mb-3">
             <div class="d-flex flex-column kotak-pembayaran">
-                <p class="m-0" style="font-size: 17px;"> Pembayaran mohon dapat ditransfer ke rekening: <br> <b style="font-size: 17px; color: red;">BCA/C 8715898787 an CATUR BHAKTI MANDIRI</b></p>
+                <p class="m-0" style="font-size: 17px;"> Pembayaran mohon dapat ditransfer ke rekening: <br> <b
+                        style="font-size: 17px; color: red;">BCA/C 8715898787 an CATUR BHAKTI MANDIRI</b></p>
             </div>
             <div class="d-flex flex-column align-items-center">
                 Bagian Keuangan <br>
@@ -321,21 +388,22 @@
     </div>
 
     <script>
-        const alamatLengkap = "<?= $pemesanan['alamat_tagihan']; ?>";
-        const alamatParts = alamatLengkap.split(', ');
-        const jalan = alamatParts[0];
-        const kelurahan = alamatParts[1];
-        const kecamatan = alamatParts[2];
-        const kota = alamatParts[3];
-        const provinsiDanKodePos = alamatParts[4].split(' ');
-        const provinsi = provinsiDanKodePos[0];
-        const kodePos = provinsiDanKodePos[1];
-        document.getElementById('jalan').innerText = jalan;
-        document.getElementById('kelurahan').innerText = kelurahan;
-        document.getElementById('kecamatan').innerText = kecamatan;
-        document.getElementById('kota').innerText = kota;
-        document.getElementById('provinsi').innerText = provinsi;
-        document.getElementById('kodepos').innerText = kodePos;
+    const alamatLengkap =
+        "<?= $pemesanan['alamat_tagihan'] ? $pemesanan['alamat_tagihan'] : $pemesanan['alamat_pengiriman']; ?>";
+    const alamatParts = alamatLengkap.split(', ');
+    const jalan = alamatParts[0];
+    const kelurahan = alamatParts[1];
+    const kecamatan = alamatParts[2];
+    const kota = alamatParts[3];
+    const provinsiDanKodePos = alamatParts[4].split(' ');
+    const provinsi = provinsiDanKodePos[0];
+    const kodePos = provinsiDanKodePos[1];
+    document.getElementById('jalan').innerText = jalan;
+    document.getElementById('kelurahan').innerText = kelurahan;
+    document.getElementById('kecamatan').innerText = kecamatan;
+    document.getElementById('kota').innerText = kota;
+    document.getElementById('provinsi').innerText = provinsi;
+    document.getElementById('kodepos').innerText = kodePos;
     </script>
 
 

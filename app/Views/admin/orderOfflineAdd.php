@@ -1,90 +1,90 @@
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
 <style>
-    .notif {
-        position: fixed;
-        bottom: 50px;
-        right: 0px;
-        padding: 0.6em 2em;
-        color: white;
-        border-radius: 7px;
-        color: #e84a49;
-        letter-spacing: -1px;
-        font-size: 15px;
-        background-color: #e8494911;
-        transition: 0.5s;
-        transform: translateX(100%);
-    }
+.notif {
+    position: fixed;
+    bottom: 50px;
+    right: 0px;
+    padding: 0.6em 2em;
+    color: white;
+    border-radius: 7px;
+    color: #e84a49;
+    letter-spacing: -1px;
+    font-size: 15px;
+    background-color: #e8494911;
+    transition: 0.5s;
+    transform: translateX(100%);
+}
 
-    .notif.show {
-        right: 50px;
-        transform: translateX(0%);
-        transition: 0.5s;
-    }
+.notif.show {
+    right: 50px;
+    transform: translateX(0%);
+    transition: 0.5s;
+}
 
-    .item-produk {
-        border-radius: 12px;
-    }
+.item-produk {
+    border-radius: 12px;
+}
 
-    .item-produk img {
-        width: 50px;
-        border-radius: 10px;
-    }
+.item-produk img {
+    width: 50px;
+    border-radius: 10px;
+}
 
-    .item-produk .item-varian {
-        cursor: pointer;
-        outline: 1px solid gray;
-        border: 1px solid white;
-        border-radius: 2em;
-        width: 14px;
-        height: 14px;
-        margin: 0;
-        padding: 0;
-    }
+.item-produk .item-varian {
+    cursor: pointer;
+    outline: 1px solid gray;
+    border: 1px solid white;
+    border-radius: 2em;
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    padding: 0;
+}
 
-    .item-produk .item-varian:hover {
-        outline: 1px solid var(--merah);
-    }
+.item-produk .item-varian:hover {
+    outline: 1px solid var(--merah);
+}
 
-    .item-keranjang-admin img {
-        width: 50px;
-        border-radius: 10px;
-        height: 50px;
-        object-fit: cover;
-    }
+.item-keranjang-admin img {
+    width: 50px;
+    border-radius: 10px;
+    height: 50px;
+    object-fit: cover;
+}
 
-    .item-keranjang-admin .counter {
-        display: flex;
-        align-items: center;
-    }
+.item-keranjang-admin .counter {
+    display: flex;
+    align-items: center;
+}
 
-    .item-keranjang-admin .counter .action {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 20px;
-        height: 20px;
-        border-radius: 20px;
-        background-color: #e8494911;
-        color: var(--merah);
-        font-weight: 500;
-        cursor: pointer;
-    }
+.item-keranjang-admin .counter .action {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 20px;
+    background-color: #e8494911;
+    color: var(--merah);
+    font-weight: 500;
+    cursor: pointer;
+}
 
-    .item-keranjang-admin .counter .action:hover {
-        background-color: var(--merah);
-        color: white;
-    }
+.item-keranjang-admin .counter .action:hover {
+    background-color: var(--merah);
+    color: white;
+}
 
-    .item-keranjang-admin .counter .angka {
-        width: 30px;
-        text-align: center;
-        font-weight: bold;
-    }
+.item-keranjang-admin .counter .angka {
+    width: 30px;
+    text-align: center;
+    font-weight: bold;
+}
 
-    input {
-        font-size: 13px;
-    }
+input {
+    font-size: 13px;
+}
 </style>
 <div style="padding: 2em;" class="h-100 d-flex flex-column">
     <h1 class="teks-sedang mb-4">Buat Pesanan</h1>
@@ -94,7 +94,7 @@
 <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script>
-    console.log(JSON.parse('<?= $produkJson; ?>'))
+console.log(JSON.parse('<?= $produkJson; ?>'))
 </script>
 
 <script type="text/babel">
@@ -157,7 +157,9 @@
             npwp: '',
             keterangan: '',
             po: '',
+            downPayment: 0,
         });
+        const [potonganHargaSatuan, setPotonganHargaSatuan] = useState(0);
         const [kabupaten, setKabupaten] = useState([]);
         const [kecamatan, setKecamatan] = useState([]);
         const [kelurahan, setKelurahan] = useState([]);
@@ -376,13 +378,27 @@
                             nama: produk.nama,
                             jumlah: 1,
                             varian: varian.nama,
-                            harga: produk.harga * 75 / 100,
+                            harga: produk.harga * (potonganHargaSatuan > 0 ? (100 - potonganHargaSatuan) : 75) / 100,
                             detail: {produk, varian}
                         }
                     ]
                 })
             }
         }
+
+        useEffect(() => {
+            console.log('ini potognan harga')
+            console.log(potonganHargaSatuan)
+            setFormData({
+                ...formData, 
+                items: formData.items.map((item) => {
+                    return {
+                        ...item,
+                        harga: item.detail.produk.harga * (potonganHargaSatuan > 0 ? (100 - potonganHargaSatuan) : 75) / 100,
+                    }
+                })
+            })
+        }, [potonganHargaSatuan])
 
         const handleCount = (index, max, tambah) =>{
             setFormData({
@@ -419,7 +435,8 @@
                         jumlah: item.jumlah,
                         harga: item.harga,
                     }
-                })
+                }),
+                potonganHargaSatuan
             }
             const formDataAkhir1 = {
                 ...formDataAkhir,
@@ -433,7 +450,6 @@
             }
 
             console.log(formDataAkhir1)
-
             async function fetchSubmit() {
                 const response = await fetch(
                     `/admin/order-offline/add`,
@@ -451,7 +467,7 @@
                     window.alert('Berhasil menambahkan pesanan')
                     window.location.href = `/admin/order/offline/${formData.jenis}`
                 }else {
-                    window.alert('Gagal menambahkan pesanan')
+                    window.alert(responseJson.pesan)
                     console.log(responseJson)
                 }
             }
@@ -693,48 +709,51 @@
                         </div>
                         {/* <Form Tagihan> */}
                         {formData.jenis == 'sale' &&
-                            <div className={"d-flex flex-column gap-1 my-4"}>
-                                {!alamatTagihanSama && <>
-                                    <p className="m-0" style={{letterSpacing: '-1px',fontSize: '16px'}}>Alamat Tagihan</p>
-                                    <div className="mb-1 d-flex gap-1 align-items-center">
-                                            <select className="form-select" value={formData.provinsiTagihan} onChange={(e)=>{setFormData({...formData, provinsiTagihan: e.target.value})}}>
-                                                <option value="">-- Pilih provinsi --</option>
-                                                <?php foreach ($provinsi as $p) { ?>
-                                                    <option value="<?= $p['province_id']; ?>-<?= $p['province']; ?>">
-                                                        <?= $p['province']; ?>
-                                                    </option>
-                                                <?php } ?>
+                            <>
+                                <div className={"d-flex flex-column gap-1 my-4"}>
+                                    {!alamatTagihanSama && <>
+                                        <p className="m-0" style={{letterSpacing: '-1px',fontSize: '16px'}}>Alamat Tagihan</p>
+                                        <div className="mb-1 d-flex gap-1 align-items-center">
+                                                <select className="form-select" value={formData.provinsiTagihan} onChange={(e)=>{setFormData({...formData, provinsiTagihan: e.target.value})}}>
+                                                    <option value="">-- Pilih provinsi --</option>
+                                                    <?php foreach ($provinsi as $p) { ?>
+                                                        <option value="<?= $p['province_id']; ?>-<?= $p['province']; ?>">
+                                                            <?= $p['province']; ?>
+                                                        </option>
+                                                    <?php } ?>
+                                                </select>
+                                                <select className="form-select" value={formData.kabupatenTagihan} onChange={(e)=>{setFormData({...formData,kabupatenTagihan: e.target.value})}}>
+                                                    <option value="">-- Pilih kabupaten --</option>
+                                                    {kabupatenTagihan.map((k, ind_k)=>(
+                                                        <option key={ind_k} value={`${k.city_id}-${k.city_name}`}>{k.city_name}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        <div className="mb-1 d-flex gap-1 align-items-center">
+                                            <select className="form-select" value={formData.kecamatanTagihan} onChange={(e)=>{setFormData({...formData, kecamatanTagihan: e.target.value})}}>
+                                                <option value="">-- Pilih kecamatan --</option>
+                                                {kecamatanTagihan.map((k, ind_k)=>(
+                                                    <option key={ind_k} value={`${k.subdistrict_id}-${k.subdistrict_name}`}>{k.subdistrict_name}</option>
+                                                ))}
                                             </select>
-                                            <select className="form-select" value={formData.kabupatenTagihan} onChange={(e)=>{setFormData({...formData,kabupatenTagihan: e.target.value})}}>
-                                                <option value="">-- Pilih kabupaten --</option>
-                                                {kabupatenTagihan.map((k, ind_k)=>(
-                                                    <option key={ind_k} value={`${k.city_id}-${k.city_name}`}>{k.city_name}</option>
+                                            <select className="form-select" value={formData.kelurahanTagihan} onChange={(e)=>{setFormData({...formData,kelurahanTagihan: e.target.value})}}>
+                                                <option value="">-- Pilih kelurahan --</option>
+                                                {kelurahanTagihan.map((k, ind_k)=>(
+                                                    <option key={ind_k} value={`${k.DesaKelurahan}-${k.KodePos}`}>{k.DesaKelurahan}</option>
                                                 ))}
                                             </select>
                                         </div>
-                                    <div className="mb-1 d-flex gap-1 align-items-center">
-                                        <select className="form-select" value={formData.kecamatanTagihan} onChange={(e)=>{setFormData({...formData, kecamatanTagihan: e.target.value})}}>
-                                            <option value="">-- Pilih kecamatan --</option>
-                                            {kecamatanTagihan.map((k, ind_k)=>(
-                                                <option key={ind_k} value={`${k.subdistrict_id}-${k.subdistrict_name}`}>{k.subdistrict_name}</option>
-                                            ))}
-                                        </select>
-                                        <select className="form-select" value={formData.kelurahanTagihan} onChange={(e)=>{setFormData({...formData,kelurahanTagihan: e.target.value})}}>
-                                            <option value="">-- Pilih kelurahan --</option>
-                                            {kelurahanTagihan.map((k, ind_k)=>(
-                                                <option key={ind_k} value={`${k.DesaKelurahan}-${k.KodePos}`}>{k.DesaKelurahan}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="mb-1 d-flex gap-1 align-items-center">
-                                        <input type="text" className="form-control" placeholder="Kodepos" value={formData.kodeposTagihan} onChange={(e)=>{setFormData({...formData, kodeposTagihan: e.target.value})}} />
-                                    </div>
-                                    <input type="text" className="form-control mb-1" placeholder="Jalan, NO.Rumah, RT/RW," value={formData.detailTagihan} onChange={(e)=>{setFormData({...formData, detailTagihan: e.target.value})}} />
-                                </>}
-                                <label className="d-flex gap-2 align-items-center">
-                                    <input type="checkbox" onChange={(e) => setAlamatTagihanSama(e.target.checked)} checked={alamatTagihanSama} />
-                                    <p className="m-0">Samakan alamat pengiriman</p>
-                                </label>
+                                        <div className="mb-1 d-flex gap-1 align-items-center">
+                                            <input type="text" className="form-control" placeholder="Kodepos" value={formData.kodeposTagihan} onChange={(e)=>{setFormData({...formData, kodeposTagihan: e.target.value})}} />
+                                        </div>
+                                        <input type="text" className="form-control mb-1" placeholder="Jalan, NO.Rumah, RT/RW," value={formData.detailTagihan} onChange={(e)=>{setFormData({...formData, detailTagihan: e.target.value})}} />
+                                    </>}
+                                    <label className="d-flex gap-2 align-items-center">
+                                        <input type="checkbox" onChange={(e) => setAlamatTagihanSama(e.target.checked)} checked={alamatTagihanSama} />
+                                        <p className="m-0">Samakan alamat pengiriman</p>
+                                    </label>
+                                </div>
+                                
                                 <hr />
                                 <p className="m-0" style={{letterSpacing: '-1px',fontSize: '16px'}}>Potongan</p>
                                 <div className="d-flex gap-1 mb-1">
@@ -748,7 +767,17 @@
                                         </select>
                                     </div>
                                 </div>
-                            </div>
+                                <hr />
+                                <p className="m-0" style={{letterSpacing: '-1px',fontSize: '16px'}}>Down Payment</p>
+                                <input type="number" value={formData.downPayment} onChange={(e)=>{setFormData({...formData, downPayment: e.target.value})}} className="form-control mb-1" />
+                                
+                                <hr />
+                                <p className="m-0" style={{letterSpacing: '-1px',fontSize: '16px'}}>Potongan Harga Satuan</p>
+                                <div className="input-group">
+                                    <input type="number" value={potonganHargaSatuan} onChange={(e)=>{setPotonganHargaSatuan(e.target.value)}} className="form-control mb-1" />
+                                    <span className="input-group-text">%</span>
+                                </div>
+                            </>
                         }
 
                         <button type="button" onClick={handleSubmit} className={`btn-default-merah w-100 ${canSave ? '' : 'disabled'}`}>Buat</button>

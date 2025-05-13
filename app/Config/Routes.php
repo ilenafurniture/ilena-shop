@@ -146,12 +146,14 @@ $routes->get('/admin/order/offline/(:any)', 'AdminController::orderOffline/$1', 
 $routes->get('/admin/getitemsoffline/(:any)', 'AdminController::getItemsOffline/$1');
 $routes->get('/admin/order-offline/add', 'AdminController::orderOfflineAdd', ['filter' => 'adminFilter']);
 $routes->get('/admin/invoice-offline/(:any)', 'AdminController::suratInvoice/$1', ['filter' => 'adminFilter']);
+$routes->get('/admin/invoice-offline-dp/(:any)', 'AdminController::suratInvoiceDP/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/surat-offline/(:any)', 'AdminController::suratOffline/$1', ['filter' => 'adminFilter']);
 $routes->post('/admin/order-offline/add', 'AdminController::actionAddOrderOffline');
 $routes->post('/admin/order-offline/koreksisp', 'AdminController::actionKoreksiSP');
 $routes->get('/admin/surat-koreksi/(:any)', 'AdminController::suratKoreksi/$1');
 $routes->get('/admin/benerinsurat', 'AdminController::benerinSurat');
 $routes->post('/admin/actionbuatinvoice', 'AdminController::actionBuatInvoice');
+$routes->post('/admin/actionbuatdp', 'AdminController::actionBuatDP');
 
 //GUDANG Controller
 $routes->get('/gudang/listorder', 'GudangController::listOrder', ['filter' => 'gudangFilter']);
