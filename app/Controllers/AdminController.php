@@ -1826,7 +1826,6 @@ class AdminController extends BaseController
         ];
         $totalAkhir = $body['totalAkhir'];
 
-        //generate id
         $KODE_AWAL = $body['jenis'] == 'sale' ? 'SJ' : 'SP';
         $dataTerbaru = $this->pemesananOfflineModel->like('id_pesanan', $KODE_AWAL, 'after')->orderBy('id', 'desc')->first();
         $idFix = $KODE_AWAL . (sprintf("%08d", $dataTerbaru ? ((int)substr($dataTerbaru['id_pesanan'], 2) + 1) : 1));
@@ -1873,6 +1872,7 @@ class AdminController extends BaseController
                     'id_barang' => $item['id'],
                     'harga' => $item['harga'],
                     'varian' => $item['varian'],
+                    'special_price' => $body['potonganHargaSatuan'],
                     'id_return' => ''
                 ]);
             }
@@ -1994,6 +1994,7 @@ class AdminController extends BaseController
                     'id_barang' => $i['id_barang'],
                     'harga' => $i['harga'],
                     'varian' => $i['varian'],
+                    'special_price' => $i['special_price'],
                     'id_return' => $idPesanan
                 ]);
             }

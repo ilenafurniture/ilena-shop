@@ -78,7 +78,7 @@
 <?php setlocale(LC_TIME, 'id_ID'); ?>
 
 <body>
-    <?php if($pemesanan['down_payment'] == 0) {?>
+    <?php if($pemesanan['down_payment'] <= 0) {?>
     <div class="print-lunas">
         <p>L U N A S</p>
     </div>
@@ -103,9 +103,10 @@
                     <p class="nt">Nomor :</p>
                     <p class="nt">Tanggal :</p>
                 </div>
+                <?php $tanggalFix = $pemesanan['down_payment'] > 0 ? $pemesanan['tanggal'] : $pemesanan['tanggal_inv'] ?>
                 <div class="d-flex flex-column align-items-start">
                     <p class="isint">
-                        <?= substr($pemesanan['id_pesanan'], 5); ?>/INV/CBM/<?= date('m', strtotime($pemesanan['tanggal_inv'])); ?>/<?= date('Y', strtotime($pemesanan['tanggal_inv'])); ?>
+                        <?= substr($pemesanan['id_pesanan'], 5); ?>/INV/CBM/<?= date('m', strtotime($tanggalFix)); ?>/<?= date('Y', strtotime($tanggalFix)); ?>
                     </p>
                     <p class="isint"><?php
                                         $bulan_indonesia = [
@@ -122,16 +123,16 @@
                                             11 => 'November',
                                             12 => 'Desember'
                                         ];
-                                        $tanggal = date('d', strtotime($pemesanan['tanggal_inv']));
-                                        $bulan = date('n', strtotime($pemesanan['tanggal_inv']));
-                                        $tahun = date('Y', strtotime($pemesanan['tanggal_inv']));
+                                        $tanggal = date('d', strtotime($tanggalFix));
+                                        $bulan = date('n', strtotime($tanggalFix));
+                                        $tahun = date('Y', strtotime($tanggalFix));
                                         echo "$tanggal " . $bulan_indonesia[$bulan] . " $tahun";
                                         ?>
                     </p>
                 </div>
             </div>
         </div>
-        <div class="my-5">
+        <div class="my-1">
             <h3 class="text-center">INVOICE</h3>
         </div>
         <div class="d-flex justify-content-start mt-4 mb-4 flex-column">
@@ -172,6 +173,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <?php if($pemesanan['down_payment'] <= 0) { ?>
                     <?php $no = 1; ?>
                     <?php $totalHargaBarang  = 0; ?>
                     <?php foreach ($items as $t) { ?>
@@ -180,7 +182,9 @@
                         <td class="text-center"><?= strtoupper($no++); ?></td>
                         <td class="text-center"><?= strtoupper($t['id_barang']); ?></td>
                         <td class="">
-                            <p class="m-0"><?= strtoupper($t['nama']); ?> (<?= strtoupper($t['varian']); ?>)</p>
+                            <p class="m-0">
+                                <?= $t['special_price'] > 0 ? "[SPECIAL PRICE] " : ""; ?><?= strtoupper($t['nama']); ?>
+                                (<?= strtoupper($t['varian']); ?>)</p>
                             <p class="m-0"><?= $t['dimensi']['panjang']; ?> x <?= $t['dimensi']['lebar']; ?> x
                                 <?= $t['dimensi']['tinggi']; ?></p>
                         </td>
@@ -191,10 +195,8 @@
                             <?= strtoupper(number_format($t['jumlah'] * $t['harga'], 0, ',', '.')); ?></td>
                     </tr>
                     <?php } ?>
-                    <?php if($pemesanan['total_akhir'] - $totalHargaBarang < 0) { ?>
-
                     <tr>
-                        <td colspan="5" class="fw-bold">TOTAL HARGA</td>
+                        <td colspan="5" class="fw-bold">JUMLAH</td>
                         <td class="text-end" style="text-wrap: nowrap;">Rp
                             <?= number_format($totalHargaBarang, 0, ',', '.'); ?></td>
                     </tr>
@@ -206,29 +208,36 @@
                             <?= strtoupper(number_format($pemesanan['total_akhir'] - $totalHargaBarang, 0, ',', '.')); ?>
                         </td>
                     </tr>
-                    <?php } ?>
+                    <?php if($pemesanan['down_payment'] < 0) { ?>
                     <tr>
-                        <td colspan="5" class="fw-bold" style="text-wrap: nowrap;">TOTAL TAGIHAN</td>
-                        <td class="text-end fw-bold">Rp
-                            <?= strtoupper(number_format($pemesanan['total_akhir'], 0, ',', '.')); ?></td>
+                        <td colspan="5" class="fw-bold">UANG MUKA YANG DITERIMA</td>
+                        <td class="text-end" style="text-wrap: nowrap;">Rp
+                            <?= number_format(abs($pemesanan['down_payment']), 0, ',', '.'); ?></td>
                     </tr>
-                    <?php if($pemesanan['down_payment']) { ?>
-                    <?php if($pemesanan['down_payment'] > 0)  {?>
+                    <?php } ?>
+                    <?php } else { ?>
                     <tr>
-                        <td colspan="5" class="fw-bold">DP</td>
-                        <td class="text-end fw-bold" style="text-wrap: nowrap;">Rp
+                        <td class="text-center">1</td>
+                        <td class="text-center"></td>
+                        <td class="">UANG MUKA</td>
+                        <td class="text-center"></td>
+                        <td class="text-end" style="text-wrap: nowrap;"></td>
+                        <td class="text-end" style="text-wrap: nowrap;">Rp
                             <?= strtoupper(number_format($pemesanan['down_payment'], 0, ',', '.')); ?></td>
                     </tr>
                     <?php } ?>
                     <tr>
-                        <td colspan="5" class="fw-bold">
-                            <?php echo $pemesanan['down_payment'] == 0 ? 'TOTAL INVOICE' : ($pemesanan['down_payment'] > 0 ? 'SISA TAGIHAN' : 'TOTAL INVOICE'); ?>
+                        <td colspan="5" class="fw-bold">TOTAL INVOICE</td>
+                        <?php if($pemesanan['down_payment'] > 0) { ?>
+                        <td class="text-end fw-bold" style="text-wrap: nowrap;">Rp
+                            <?= strtoupper(number_format($pemesanan['down_payment'] , 0, ',', '.')); ?>
                         </td>
-                        <td class="text-end fw-bold">Rp
-                            <?= strtoupper(number_format($pemesanan['total_akhir'] - (($pemesanan['down_payment']) > 0 ? abs($pemesanan['down_payment']) : 0), 0, ',', '.')); ?>
+                        <?php } else { ?>
+                        <td class="text-end fw-bold" style="text-wrap: nowrap;">Rp
+                            <?= strtoupper(number_format($pemesanan['total_akhir'] - (($pemesanan['down_payment']) < 0 ? abs($pemesanan['down_payment']) : 0), 0, ',', '.')); ?>
                         </td>
+                        <?php } ?>
                     </tr>
-                    <?php } ?>
                 </tbody>
             </table>
         </div>
