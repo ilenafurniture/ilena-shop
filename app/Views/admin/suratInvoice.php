@@ -353,12 +353,14 @@
                 <tbody>
                     <tr>
                         <td class="pe-3">Terbilang <?= $pemesanan['down_payment'] > 0 ? 'DP' : '' ?></td>
-                        <?php if($pemesanan['down_payment']) { ?>
+                        <?php if($pemesanan['down_payment'] > 0) { ?>
                         <td>:
-                            <i><?= ucwords(strtolower(terbilang($pemesanan['down_payment'] > 0 ? $pemesanan['down_payment'] : $pemesanan['total_akhir']))); ?></i>
+                            <i><?= ucwords(strtolower(terbilang($pemesanan['down_payment']))); ?></i>
                         </td>
                         <?php } else { ?>
-                        <td>: <i><?= ucwords(strtolower(terbilang($pemesanan['total_akhir']))); ?></i></td>
+                        <td>:
+                            <i><?= ucwords(strtolower(terbilang($pemesanan['total_akhir'] - ($pemesanan['down_payment'] < 0 ? abs($pemesanan['down_payment']) : 0)))); ?></i>
+                        </td>
                         <?php } ?>
                     </tr>
                     <tr>
