@@ -13,9 +13,9 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
     <style>
-        * {
-            font-size: 14px;
-        }
+    * {
+        font-size: 14px;
+    }
     </style>
 </head>
 
@@ -49,7 +49,7 @@
                     </b>
                 </p>
             </div>
-            <div style="flex: 1">
+            <div style="flex: 1" class="mb-5">
                 <p class="m-0">Kepada Yth.</p>
                 <p class="m-0"><?= $pemesanan['nama']; ?></p>
                 <p class="m-0"><?= $pemesanan['alamat_pengiriman']; ?></p>
@@ -69,19 +69,22 @@
                 <tbody>
                     <?php $no = 1; ?>
                     <?php foreach ($items as $t) { ?>
-                        <tr>
-                            <td class="text-center"><?= strtoupper($no++); ?></td>
-                            <td class="text-center"><?= strtoupper($t['id_barang']); ?></td>
-                            <td class="">
-                                <p class="m-0"><?= strtoupper($t['nama']); ?> (<?= strtoupper($t['varian']); ?>)</p>
-                                <p class="m-0"><?= $t['dimensi']['panjang'] ?> x <?= $t['dimensi']['lebar'] ?> x <?= $t['dimensi']['tinggi'] ?></p>
-                            </td>
-                            <td class="text-center"><?= strtoupper($t['jumlah']); ?></td>
-                        </tr>
+                    <tr>
+                        <td class="text-center"><?= strtoupper($no++); ?></td>
+                        <td class="text-center"><?= strtoupper($t['id_barang']); ?></td>
+                        <td class="">
+                            <p class="m-0"><?= strtoupper($t['nama']); ?> (<?= strtoupper($t['varian']); ?>)</p>
+                            <p class="m-0"><?= $t['dimensi']['panjang'] ?> x <?= $t['dimensi']['lebar'] ?> x
+                                <?= $t['dimensi']['tinggi'] ?></p>
+                        </td>
+                        <td class="text-center"><?= strtoupper($t['jumlah']); ?></td>
+                    </tr>
                     <?php } ?>
                 </tbody>
             </table>
-            <p class="m-0"><b>Keterangan : </b><span class="text-danger"><?= $pemesanan['keterangan'] ? '*' . $pemesanan['keterangan'] : '<i>Tidak ada keterangan</i>'; ?></span></p>
+            <p class="m-0"><b>Keterangan : </b><span
+                    class="text-danger"><?= $pemesanan['keterangan'] ? '*' . $pemesanan['keterangan'] : '<i>Tidak ada keterangan</i>'; ?></span>
+            </p>
 
             <p class="mt-5">Kendal, <?= date('d F Y', strtotime($pemesanan['tanggal'])); ?></p>
 
@@ -117,12 +120,12 @@
         </div>
     </div>
     <script>
-        // window.print();
-        // window.onafterprint = function() {
-        //     window.close(
-        //         window.location.href = "<?= base_url('/admin/order/offline/' . $pemesanan['jenis']); ?>"
-        //     );
-        // };
+    // window.print();
+    // window.onafterprint = function() {
+    //     window.close(
+    //         window.location.href = "<?= base_url('/admin/order/offline/' . $pemesanan['jenis']); ?>"
+    //     );
+    // };
     </script>
 </body>
 
