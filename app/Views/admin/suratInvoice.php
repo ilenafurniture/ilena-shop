@@ -201,6 +201,7 @@
                             <?= number_format($totalHargaBarang, 0, ',', '.'); ?></td>
                     </tr>
                     <?php $diskonPersen = round(100 - ($totalHargaBarang / $pemesanan['total_akhir'] * 100), 2); ?>
+                    <?php if($diskonPersen > 0) { ?>
                     <tr>
                         <td colspan="5" class="text-start fw-bold italic" style="text-wrap: nowrap;">POTONGAN
                             <?= $diskonPersen > 0 ? "( $diskonPersen% )" : ''; ?></td>
@@ -208,6 +209,7 @@
                             <?= strtoupper(number_format($pemesanan['total_akhir'] - $totalHargaBarang, 0, ',', '.')); ?>
                         </td>
                     </tr>
+                    <?php } ?>
                     <?php if($pemesanan['down_payment'] < 0) { ?>
                     <tr>
                         <td colspan="5" class="fw-bold">UANG MUKA YANG DITERIMA</td>
