@@ -224,6 +224,12 @@
                                 data-bs-toggle="tooltip" data-bs-placement="top"
                                 data-bs-title="<?= $p['npwp'] ? 'Invoice' : 'Buat invoice'; ?>"><i
                                     class="material-icons">description</i></a>
+
+                            <?php if($p['status'] == 'pending') { ?>
+                            <a class="btn" data-bs-toggle="tooltip" data-bs-placement="top"
+                                onclick="alertSuccess('<?= $p['id_pesanan']; ?>')" data-bs-title="Surat Jalan"><i
+                                    class="material-icons">check</i></a>
+                            <?php } ?>
                             <?php } else { ?>
                             <a class="btn" href="/admin/invoice-offline-dp/<?= $p['id_pesanan']; ?>"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Invoice DP"><i
@@ -365,6 +371,14 @@ const inputAlamatInvoiceElm = document.getElementById('input-alamat-invoice');
 const pesanan = JSON.parse('<?= $pesananJson; ?>')
 const alamatTagihanElm = document.querySelector('textarea[name="alamatTagihan"]');
 let pesananSelected = {};
+console.log(pesanan)
+
+function alertSuccess(idPesanan) {
+    const check = window.confirm(`ID pesanan ${idPesanan} sudah lunas?`);
+    if (check) {
+        window.location.replace(`/admin/actionaccorderoffline/${idPesanan}`);
+    }
+}
 
 function handleChangeInputItem(index, event) {
     let arrIndexItem = indexItemsSelectedElm.value.split(',');

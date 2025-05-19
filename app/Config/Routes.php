@@ -154,6 +154,7 @@ $routes->get('/admin/surat-koreksi/(:any)', 'AdminController::suratKoreksi/$1');
 $routes->get('/admin/benerinsurat', 'AdminController::benerinSurat');
 $routes->post('/admin/actionbuatinvoice', 'AdminController::actionBuatInvoice');
 $routes->post('/admin/actionbuatdp', 'AdminController::actionBuatDP');
+$routes->get('/admin/actionaccorderoffline/(:any)', 'AdminController::actionAccOrderOffline/$1', ['filter' => 'adminFilter']);
 
 //GUDANG Controller
 $routes->get('/gudang/listorder', 'GudangController::listOrder', ['filter' => 'gudangFilter']);

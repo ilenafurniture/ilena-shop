@@ -78,7 +78,7 @@
 <?php setlocale(LC_TIME, 'id_ID'); ?>
 
 <body>
-    <?php if($pemesanan['down_payment'] <= 0) {?>
+    <?php if($pemesanan['status'] == "success" || $pemesanan['status'] == "DP paid") {?>
     <div class="print-lunas">
         <p>L U N A S</p>
     </div>

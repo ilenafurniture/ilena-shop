@@ -2153,4 +2153,10 @@ class AdminController extends BaseController
         }
         dd('done');
     }
+
+    public function actionAccOrderOffline($id_pesanan) {
+        $this->pemesananOfflineModel->where(['id_pesanan' => $id_pesanan])->set(['status' => 'success'])->update();
+        session()->setFlashdata('msg', 'Invoice ' . $id_pesanan . ' sudah lunas');
+        return redirect()->to('/admin/order/offline/sale');
+    }
 }
