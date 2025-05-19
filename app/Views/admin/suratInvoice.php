@@ -248,111 +248,130 @@
         <!-- end Tabel Invoice -->
         <div>
             <?php
-            function terbilang($angka)
-            {
-                $angka = (int) $angka;
-                $huruf = array(
-                    1 => 'Satu',
-                    2 => 'Dua',
-                    3 => 'Tiga',
-                    4 => 'Empat',
-                    5 => 'Lima',
-                    6 => 'Enam',
-                    7 => 'Tujuh',
-                    8 => 'Delapan',
-                    9 => 'Sembilan',
-                    0 => 'Nol'
-                );
-                $tingkat = array(
-                    '',
-                    'Ribu',
-                    'Juta',
-                    'Miliar',
-                    'Triliun',
-                    'Kuadriliun',
-                    'Kuintiliun'
-                );
+function terbilang($angka)
+{
+    $angka = (int) $angka;
+    $huruf = array(
+        1 => 'Satu',
+        2 => 'Dua',
+        3 => 'Tiga',
+        4 => 'Empat',
+        5 => 'Lima',
+        6 => 'Enam',
+        7 => 'Tujuh',
+        8 => 'Delapan',
+        9 => 'Sembilan',
+        0 => 'Nol'
+    );
+    $tingkat = array(
+        '',
+        'Ribu',
+        'Juta',
+        'Miliar',
+        'Triliun',
+        'Kuadriliun',
+        'Kuintiliun'
+    );
 
-                if ($angka == 0) {
-                    return "Nol Rupiah";
-                }
+    if ($angka == 0) {
+        return "Nol Rupiah";
+    }
 
-                $kalimat = '';
-                $i = 0;
-                while ($angka > 0) {
-                    $bagian = $angka % 1000;
-                    if ($bagian != 0) {
-                        $kalimat = _terbilang_ratusan($bagian) . ' ' . $tingkat[$i] . ' ' . $kalimat;
-                    }
-                    $angka = (int) ($angka / 1000);
-                    $i++;
-                }
+    $kalimat = '';
+    $i = 0;
+    while ($angka > 0) {
+        $bagian = $angka % 1000;
+        if ($bagian != 0) {
+            $kalimat = _terbilang_ratusan($bagian) . ' ' . $tingkat[$i] . ' ' . $kalimat;
+        }
+        $angka = (int) ($angka / 1000);
+        $i++;
+    }
 
-                return $kalimat . 'Rupiah';
-            }
+    return trim($kalimat) . ' Rupiah';
+}
 
-            function _terbilang_ratusan($angka)
-            {
-                $huruf = array(
-                    1 => 'Satu',
-                    2 => 'Dua',
-                    3 => 'Tiga',
-                    4 => 'Empat',
-                    5 => 'Lima',
-                    6 => 'Enam',
-                    7 => 'Tujuh',
-                    8 => 'Delapan',
-                    9 => 'Sembilan',
-                    0 => 'Nol'
-                );
+function _terbilang_ratusan($angka)
+{
+    $huruf = array(
+        1 => 'Satu',
+        2 => 'Dua',
+        3 => 'Tiga',
+        4 => 'Empat',
+        5 => 'Lima',
+        6 => 'Enam',
+        7 => 'Tujuh',
+        8 => 'Delapan',
+        9 => 'Sembilan',
+        0 => 'Nol'
+    );
 
-                $kalimat = '';
-                if ($angka >= 100) {
-                    $kalimat .= $huruf[(int)($angka / 100)] . ' Ratus ';
-                    $angka %= 100;
-                }
-                if ($angka >= 10) {
-                    $kalimat .= _terbilang_puluhan($angka);
-                } else {
-                    $kalimat .= $huruf[$angka];
-                }
+    $kalimat = '';
+    if ($angka >= 100) {
+        $kalimat .= $huruf[(int)($angka / 100)] . ' Ratus ';
+        $angka %= 100;
+    }
+    if ($angka >= 10) {
+        $kalimat .= _terbilang_puluhan($angka);
+    } else {
+        $kalimat .= $huruf[$angka];
+    }
 
-                return $kalimat;
-            }
+    return $kalimat;
+}
 
-            function _terbilang_puluhan($angka)
-            {
-                $huruf = array(
-                    10 => 'Sepuluh',
-                    11 => 'Sebelas',
-                    12 => 'Dua Belas',
-                    13 => 'Tiga Belas',
-                    14 => 'Empat Belas',
-                    15 => 'Lima Belas',
-                    16 => 'Enam Belas',
-                    17 => 'Tujuh Belas',
-                    18 => 'Delapan Belas',
-                    19 => 'Sembilan Belas',
-                    20 => 'Dua Puluh',
-                    30 => 'Tiga Puluh',
-                    40 => 'Empat Puluh',
-                    50 => 'Lima Puluh',
-                    60 => 'Enam Puluh',
-                    70 => 'Tujuh Puluh',
-                    80 => 'Delapan Puluh',
-                    90 => 'Sembilan Puluh'
-                );
+function _terbilang_puluhan($angka)
+{
+    $huruf = array(
+        10 => 'Sepuluh',
+        11 => 'Sebelas',
+        12 => 'Dua Belas',
+        13 => 'Tiga Belas',
+        14 => 'Empat Belas',
+        15 => 'Lima Belas',
+        16 => 'Enam Belas',
+        17 => 'Tujuh Belas',
+        18 => 'Delapan Belas',
+        19 => 'Sembilan Belas',
+        20 => 'Dua Puluh',
+        30 => 'Tiga Puluh',
+        40 => 'Empat Puluh',
+        50 => 'Lima Puluh',
+        60 => 'Enam Puluh',
+        70 => 'Tujuh Puluh',
+        80 => 'Delapan Puluh',
+        90 => 'Sembilan Puluh'
+    );
 
-                if ($angka <= 9) {
-                    return '';
-                } elseif ($angka <= 19) {
-                    return $huruf[$angka];
-                } else {
-                    $puluhan = (int)($angka / 10) * 10;
-                    return $huruf[$puluhan] . ' ';
-                }
-            }
-            ?>
+    if ($angka <= 9) {
+        return '';
+    } elseif ($angka <= 19) {
+        return $huruf[$angka]; 
+    } else {
+        $puluhan = (int)($angka / 10) * 10;
+        return $huruf[$puluhan] . ' ' . _terbilang_satuan($angka % 10); // For numbers above 20
+    }
+}
+
+function _terbilang_satuan($angka)
+{
+    $huruf = array(
+        1 => 'Satu',
+        2 => 'Dua',
+        3 => 'Tiga',
+        4 => 'Empat',
+        5 => 'Lima',
+        6 => 'Enam',
+        7 => 'Tujuh',
+        8 => 'Delapan',
+        9 => 'Sembilan',
+        0 => ''
+    );
+    return $huruf[$angka];
+}
+
+?>
+
             <table>
                 <tbody>
                     <tr>
