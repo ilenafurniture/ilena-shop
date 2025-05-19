@@ -195,12 +195,14 @@
                             <?= strtoupper(number_format($t['jumlah'] * $t['harga'], 0, ',', '.')); ?></td>
                     </tr>
                     <?php } ?>
+                    <?php $diskonPersen = round(100 - ($totalHargaBarang / $pemesanan['total_akhir'] * 100), 2); ?>
+                    <?php if($diskonPersen > 0) { ?>
                     <tr>
                         <td colspan="5" class="fw-bold">JUMLAH</td>
                         <td class="text-end" style="text-wrap: nowrap;">Rp
                             <?= number_format($totalHargaBarang, 0, ',', '.'); ?></td>
                     </tr>
-                    <?php $diskonPersen = round(100 - ($totalHargaBarang / $pemesanan['total_akhir'] * 100), 2); ?>
+                    <?php } ?>
                     <?php if($diskonPersen > 0) { ?>
                     <tr>
                         <td colspan="5" class="text-start fw-bold italic" style="text-wrap: nowrap;">POTONGAN
