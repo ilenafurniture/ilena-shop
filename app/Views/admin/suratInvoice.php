@@ -155,7 +155,7 @@
                     <p class="m-0 tw-bold-italic" style="margin-right: 10px;"><span id="provinsi"></span>,</p>
                     <p class="m-0 tw-bold-italic"><span id="kodepos"></span>,</p>
                 </div>
-                <p class="isint">NPWP : <?= $pemesanan['npwp'] ? $pemesanan['npwp'] : '-'; ?></p>
+                <p class="isint">NPWP/NIK : <?= $pemesanan['npwp'] ? $pemesanan['npwp'] : '-'; ?></p>
             </div>
         </div>
 
