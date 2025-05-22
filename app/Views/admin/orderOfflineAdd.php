@@ -153,6 +153,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                 // },
             ],
             nama: '',
+            nama_npwp: '',
             nohp: '',
             npwp: '',
             keterangan: '',
@@ -450,6 +451,8 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
             }
 
             console.log(formDataAkhir1)
+            console.log('Form dataaaaa')
+            console.log(formData)
             async function fetchSubmit() {
                 const response = await fetch(
                     `/admin/order-offline/add`,
@@ -650,6 +653,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                             <p className="m-0" style={{letterSpacing: '-1px',fontSize: '16px'}}>Detail :</p>
                             <div className="d-flex gap-1 mb-1">
                                 <input type="text w-50" className="form-control" placeholder="Nama penerima" value={formData.nama} onChange={(e)=>{setFormData({...formData, nama: e.target.value})}} />
+                                <input type="text w-50" className="form-control" placeholder="Nama NPWP" value={formData.nama_npwp} onChange={(e)=>{setFormData({...formData, nama_npwp: e.target.value})}} />
                                 <input type="text w-50" className="form-control" placeholder="Nohp penerima" value={formData.nohp} onChange={(e)=>{setFormData({...formData, nohp: e.target.value})}} />
                             </div>
                             <div className="d-flex gap-1 mb-1">

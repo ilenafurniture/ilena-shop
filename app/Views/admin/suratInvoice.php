@@ -138,7 +138,7 @@
         <div class="d-flex justify-content-start mt-4 mb-4 flex-column">
             <p class="m-0 nt">Kepada Yth.</p>
             <div class="d-flex flex-column">
-                <p class="m-0 tw-bold-italic"><?= $pemesanan['nama']; ?></p>
+                <p class="m-0 tw-bold-italic"><?= $pemesanan['nama_npwp']; ?></p>
                 <div class="d-flex m-0 p-0">
                     <p class="m-0 tw-bold-italic" style="margin-right: 10px;"><span class="m-0" id="jalan"></span>,</p>
                     <p class="m-0 tw-bold-italic" style="margin-right: 10px;"><span class="m-0" id="kelurahan"></span>,

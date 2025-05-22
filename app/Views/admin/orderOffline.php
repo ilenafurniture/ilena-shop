@@ -22,6 +22,10 @@
                 <textarea name="alamat" id="input-alamat-invoice" required class="form-control"></textarea>
             </div>
             <div class="mb-3">
+                <p class="mb-1">Nama</p>
+                <input type="text" name="nama_npwp" placeholder="Nama sesuai di NPWP" class="form-control" required>
+            </div>
+            <div class="mb-3">
                 <p class="mb-1">NPWP</p>
                 <input type="text" name="npwp" class="form-control" required>
             </div>
@@ -41,15 +45,23 @@
             <p class="mb-3 text-sm" style="color: var(--merah); font-size: 12px">ID Order : <input type="text"
                     name="id_pesanan" id="input-idpesanan"
                     style="border: none; color: var(--merah); pointer-events: none;" class="fw-bold"></p>
-
             <div class="d-flex gap-3 mb-4">
-                <div style="flex: 1;">
-                    <p class="mb-1">Tanggal</p>
-                    <input type="datetime-local" name="tanggal" class="form-control" required>
+                <div class="d-flex flex-column gap-2" style="flex: 1;">
+                    <div style="flex: 1;">
+                        <p class="mb-1">Nama</p>
+                        <input type="text" name="nama_npwp" placeholder="Nama sesuai di NPWP" class="form-control">
+                    </div>
+                    <div style="flex: 1;">
+                        <p class="mb-1">NPWP</p>
+                        <input type="text" name="npwp" class="form-control"
+                            placeholder="kosongin kalau Invoice menyusul">
+                    </div>
                 </div>
-                <div style="flex: 1;">
-                    <p class="mb-1">NPWP</p>
-                    <input type="text" name="npwp" class="form-control" placeholder="kosongin kalau Invoice menyusul">
+                <div class="d-flex flex-column gap-2" style="flex: 1;">
+                    <div style="flex: 1;">
+                        <p class="mb-1">Tanggal</p>
+                        <input type="datetime-local" name="tanggal" class="form-control" required>
+                    </div>
                 </div>
             </div>
             <div class="mb-4">
@@ -154,10 +166,15 @@
                 </div>
             </div>
             <input type="text" name="index_items_selected" required class="d-none">
-
-            <div class="mb-1">
-                <p class="mb-1">NPWP</p>
-                <input type="text" name="npwp" class="form-control" placeholder="kosongin kalau Invoice menyusul">
+            <div class="d-flex gap-2 w-100">
+                <div class="mb-1" style="flex: 1;">
+                    <p class="mb-1">Nama NPWP</p>
+                    <input type="text" name="nama_npwp" class="form-control" placeholder="Nama yang ada di NPWP">
+                </div>
+                <div class="mb-1" style="flex: 1;">
+                    <p class="mb-1">NPWP</p>
+                    <input type="text" name="npwp" class="form-control" placeholder="kosongin kalau Invoice menyusul">
+                </div>
             </div>
             <div class="mb-3">
                 <p class="mb-1">Keterangan</p>

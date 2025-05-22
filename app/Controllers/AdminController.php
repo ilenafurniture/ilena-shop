@@ -1884,6 +1884,7 @@ class AdminController extends BaseController
             'alamat_pengiriman' => $this->generateAlamat($alamatPengiriman),
             'alamat_tagihan' => $body['npwp'] ? $this->generateAlamat($alamatTagihan) : null,
             'npwp' => $body['npwp'] ? $body['npwp'] : null,
+            'nama_npwp' => $body['npwp'] ? $body['nama_npwp'] : null,
             'tanggal' => $body['tanggal'],
             'tanggal_inv' => $body['npwp'] ? ($body['downPayment'] > 0 ? null : $body['tanggal']) : null,
             'id_pesanan' => $idFix,
@@ -1902,9 +1903,11 @@ class AdminController extends BaseController
         ], false);
     }
     public function actionBuatDP() {
+        
         $tanggal = $this->request->getVar('tanggal');
         $idPesanan = $this->request->getVar('id_pesanan');
         $npwp = $this->request->getVar('npwp');
+        $nama_npwp = $this->request->getVar('nama_npwp');
 
         $pesananDP = $this->pemesananOfflineModel->getPemesanan($idPesanan);
         $itemsDP = $this->pemesananOfflineItemModel
@@ -1924,6 +1927,7 @@ class AdminController extends BaseController
             'nohp' => $pesananDP['nohp'],
             'alamat_pengiriman' => $pesananDP['alamat_pengiriman'],
             'alamat_tagihan' => $pesananDP['alamat_pengiriman'],
+            'nama_npwp' => $npwp ? $nama_npwp : null,
             'npwp' => $npwp ? $npwp : null,
             'tanggal' => $tanggal,
             'tanggal_inv' => $npwp ? $tanggal: null,
@@ -2104,6 +2108,7 @@ class AdminController extends BaseController
             'alamat_pengiriman' => $sp_current['alamat_pengiriman'],
             'alamat_tagihan' => $body['npwp'] ? (isset($body['checkAlamat']) ? $body['alamatTagihan'] : $this->generateAlamat($alamatTagihan)) : null,
             'npwp' => $body['npwp'] ? $body['npwp'] : null,
+            'nama_npwp' => $body['npwp'] ? $body['nama_npwp'] : null,
             'tanggal' => $body['tanggal'],
             'tanggal_inv' => $body['npwp'] ? $body['tanggal'] : null,
             'id_pesanan' => $idSJ,
@@ -2134,11 +2139,13 @@ class AdminController extends BaseController
     {
         $tanggal = $this->request->getVar('tanggal');
         $npwp = $this->request->getVar('npwp');
+        $nama_npwp = $this->request->getVar('nama_npwp');
         $alamat = $this->request->getVar('alamat');
         $idPesanan = $this->request->getVar('id_pesanan');
 
         $this->pemesananOfflineModel->where(['id_pesanan' => $idPesanan])->set([
             'npwp' => $npwp,
+            'nama_npwp' => $nama_npwp,
             'tanggal_inv' => $tanggal,
             'alamat_tagihan' => $alamat
         ])->update();

@@ -13,6 +13,7 @@ class PemesananOfflineModel extends Model
         'alamat_pengiriman',
         'alamat_tagihan',
         'npwp',
+        'nama_npwp',
         'tanggal',
         'tanggal_inv',
         'id_pesanan',
