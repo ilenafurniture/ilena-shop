@@ -241,14 +241,39 @@
             <div class="item-toko">
                 <a href="https://maps.app.goo.gl/5ZXJpa5BAFadgwAr5"
                     style="flex: 1; text-decoration: none; color: black;" class="p-4">
-                    <h3 class="nama">Cipta Bangun Jaya Furniture</h3>
+                    <h3 class="nama">Cipta Bangun Jaya Furniture Magelang</h3>
                     <p class="alamat m-0">Jl. Jend. Sudirman No.189, Tidar Sel., Kec. Magelang Sel., Kota Magelang, Jawa
                         Tengah
                     </p>
                 </a>
                 <div class="p-2">
                     <img src="https://lh3.googleusercontent.com/p/AF1QipMWUmj6bwLhOk3oi1hkWM-kq86aSIa5cQ8IAIFW=w427-h240-k-no"
-                        alt="Cipta Bangun Jaya Furniture" class="client-logo">
+                        alt="Cipta Bangun Jaya Furniture Magelang" class="client-logo">
+                </div>
+            </div>
+            <div class="item-toko">
+                <a href="https://maps.app.goo.gl/5ZXJpa5BAFadgwAr5"
+                    style="flex: 1; text-decoration: none; color: black;" class="p-4">
+                    <h3 class="nama">Cipta Bangun Jaya Furniture Jakarta</h3>
+                    <p class="alamat m-0">Jl. Raya Ragunan No.51, RT.5/RW.4, Ps. Minggu, Kota Jakarta Selatan, Daerah
+                        Khusus Ibukota Jakarta
+                    </p>
+                </a>
+                <div class="p-2">
+                    <img src="https://lh3.googleusercontent.com/gps-cs-s/AC9h4npIeYybVsaWPUt8J9SFrLRy5WsNFexTWw-Rb2GMXlC2Yi91DkFi1opmxP210dhgxOpHqxdFomlQPgPdZR07yllFb7BXcw0n9VxnIKy56Ld__02l6lQUBJ2jtT5du7rGXr0BnJqveA=w408-h306-k-no"
+                        alt="Cipta Bangun Jaya Furniture Jakarta" class="client-logo">
+                </div>
+            </div>
+            <div class="item-toko">
+                <a href="https://maps.app.goo.gl/5ZXJpa5BAFadgwAr5"
+                    style="flex: 1; text-decoration: none; color: black;" class="p-4">
+                    <h3 class="nama">Homj Furniture</h3>
+                    <p class="alamat m-0">Jl. Jemursari III No.25, Jemur Wonosari, Kec. Wonocolo, Surabaya, Jawa Timur
+                    </p>
+                </a>
+                <div class="p-2">
+                    <img src="https://lh3.googleusercontent.com/gps-cs-s/AC9h4noB7Su_X26RWhDD2QvcU6AwF_uD_xpB8gNz2ed6UFI3zUgJ9s5DjOGlNEKvhUX3Tr9c1jmOirs19hCpk-wLJEiGT4CYCDztq59Ndw9jV0Htb8MRXAG5PRbo9UXVL8dlz0iebt7P=w408-h544-k-no"
+                        alt="Homj Furniture" class="client-logo">
                 </div>
             </div>
         </div>
@@ -524,6 +549,10 @@ var locations = [{
         coords: [-7.565618587313341, 110.82431800071647]
     },
     {
+        name: "Cipta Bangun Jaya Furniture Jakarta",
+        coords: [-6.285266506836552, 106.84299483660007]
+    },
+    {
         name: "Sumber Abadi Furniture",
         coords: [-7.743532734851712, 110.36242217704519]
     },
@@ -552,8 +581,12 @@ var locations = [{
         coords: [-7.98299983310868, 112.62939860029017]
     },
     {
-        name: "Cipta Bangun Jaya Furniture",
+        name: "Cipta Bangun Jaya Furniture Magelang",
         coords: [-7.497190468107969, 110.22351816365261]
+    },
+    {
+        name: "Homj Furniture",
+        coords: [-7.321151681470964, 112.7441071560504]
     }
 ];
 
