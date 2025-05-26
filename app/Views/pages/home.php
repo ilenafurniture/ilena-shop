@@ -608,7 +608,7 @@ function closeSecondAd() {
             </div>
         </div>
         <div class="w-100"
-            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742448971773.png/?apikey=<?= $apikey_img_ilena ?>'); background-size: cover; background-position: center; height:100%; background-repeat: no-repeat;">
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1748241007946.jpg/?apikey=<?= $apikey_img_ilena ?>'); background-size: cover; background-position: center; height:100%; background-repeat: no-repeat;">
         </div>
     </div>
     <div class="scroll-home-item">
