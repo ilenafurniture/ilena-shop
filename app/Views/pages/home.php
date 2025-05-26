@@ -803,15 +803,15 @@ function closeSecondAd() {
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/metalframe/'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1748244560652.jpg/?apikey=<?= $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
                 </div>
                 <div
-                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/metalframe/'); background-size: cover; background-position:center;">
+                    style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1748244523907.jpg/?apikey=<?= $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/metalframe/'); background-size: cover; background-position:center; ">
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1748244474986.jpg/?apikey=<?= $apikey_img_ilena ?>'); background-size: cover; background-position:center; ">
         </div>
     </div>
 
