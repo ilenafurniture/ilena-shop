@@ -986,7 +986,7 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
 <div class="hide-ke-show-flex align-items-stretch"
     style="width:100%; height:40svh; position:relative; min-height: 414px;">
     <div class="kontenLNMobile">
-        <div class="overlayBed" id="overlayBed">
+        <!-- <div class="overlayBed" id="overlayBed">
             <a href="/product?koleksi=cabana&jenis=king-bed+queen-bed+single-bed"
                 class="d-flex gap-3 align-items-center">
                 <div>
@@ -995,12 +995,12 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
                 </div>
                 <i class="material-icons">arrow_forward</i>
             </a>
-        </div>
+        </div> -->
         <div class="overlayMeja" id="overlayMeja">
-            <a href="/product?koleksi=cabana&jenis=side-table" class="d-flex gap-3 align-items-center">
+            <a href="/product?koleksi=cody&jenis=queen-bed" class="d-flex gap-3 align-items-center">
                 <div>
-                    <p class="m-0 fw-bold">Side Table</p>
-                    <p class="m-0 fw-regular">Cabana</p>
+                    <p class="m-0 fw-bold">Bed Cody</p>
+                    <p class="m-0 fw-regular">Cody</p>
                 </div>
                 <i class="material-icons">arrow_forward</i>
             </a>
