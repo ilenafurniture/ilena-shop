@@ -783,7 +783,7 @@ function closeSecondAd() {
             </div>
         </div>
         <div class="w-100"
-            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/series/cody/image/1748243821780.jpg/?apikey=<?= $apikey_img_ilena ?>'); background-size: cover; background-position:center; ">
+            style=" flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1748243821780.jpg/?apikey=<?= $apikey_img_ilena ?>'); background-size: cover; background-position:center; ">
         </div>
     </div>
 
