@@ -949,7 +949,7 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
         </div>
     </div>
     <div class="kontenLN">
-        <div class="overlayBed">
+        <!-- <div class="overlayBed">
             <a href="/product?koleksi=cabana&jenis=king-bed+queen-bed+single-bed"
                 class="d-flex gap-3 align-items-center">
                 <div>
@@ -958,12 +958,21 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
                 </div>
                 <i class="material-icons">arrow_forward</i>
             </a>
-        </div>
-        <div class="overlayMeja">
+        </div> -->
+        <!-- <div class="overlayMeja">
             <a href="/product?koleksi=cabana&jenis=side-table" class="d-flex gap-3 align-items-center">
                 <div>
                     <p class="m-0 fw-bold">Side Table</p>
                     <p class="m-0 fw-regular">Cabana</p>
+                </div>
+                <i class="material-icons">arrow_forward</i>
+            </a>
+        </div> -->
+        <div class="overlayMeja" id="overlayMeja">
+            <a href="/product?koleksi=cody&jenis=queen-bed" class="d-flex gap-3 align-items-center">
+                <div>
+                    <p class="m-0 fw-bold">Bed Cody</p>
+                    <p class="m-0 fw-regular">Cody</p>
                 </div>
                 <i class="material-icons">arrow_forward</i>
             </a>
@@ -1010,7 +1019,7 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    const overlayBed = document.getElementById('overlayBed');
+    // const overlayBed = document.getElementById('overlayBed');
     const overlayMeja = document.getElementById('overlayMeja');
     const observer = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
@@ -1021,7 +1030,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }, {
         threshold: 1
     });
-    observer.observe(overlayBed);
+    // observer.observe(overlayBed);
     observer.observe(overlayMeja);
 });
 </script>
