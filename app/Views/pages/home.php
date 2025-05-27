@@ -456,9 +456,9 @@ function closeSecondAd() {
 }
 </style>
 <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:80svh;">
-    <a class="d-flex align-items-center ps-5 zoom-wrapper" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
+    <a class="d-flex align-items-center ps-5 zoom-wrapper" href="<?= base_url('/product/bufet-tv-ilena-plint-base') ?>"
         style="text-decoration:none; flex:1; position: relative;">
-        <img src="https://img.ilenafurniture.com/image/1742973197480.png/?apikey=<?= $apikey_img_ilena ?>"
+        <img src="https://img.ilenafurniture.com/image/1748320128043.jpg/?apikey=<?= $apikey_img_ilena ?>"
             alt="Background Image"
             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
         <div>
@@ -468,9 +468,10 @@ function closeSecondAd() {
         </div>
     </a>
     <div style="flex:1;" class=" d-flex flex-column">
-        <a class="d-flex align-items-center ps-5 zoom-wrapper" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
+        <a class="d-flex align-items-center ps-5 zoom-wrapper"
+            href="<?= base_url('/product/coffee-table-ilena-cody') ?>"
             style="text-decoration:none; flex: 1; position: relative;">
-            <img src="https://img.ilenafurniture.com/image/1742973329631.png/?apikey=<?= $apikey_img_ilena ?>"
+            <img src="https://img.ilenafurniture.com/image/1748318610868.jpg/?apikey=<?= $apikey_img_ilena ?>"
                 alt="Background Image"
                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
             <div>
@@ -539,16 +540,16 @@ function closeSecondAd() {
 
 <!-- Bagian HP -->
 <div class="hide-ke-show-flex flex-column pt-2 gap-2" style="width:100%; height:80svh;">
-    <a href="<?= base_url('product/bufet-tv-ilena-cabana') ?>" class="d-flex align-items-center px-5"
-        style="text-decoration:none; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742973197480.png/?apikey=<?= $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
+    <a href="<?= base_url('/product/bufet-tv-ilena-plint-base') ?>" class="d-flex align-items-center px-5"
+        style="text-decoration:none; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1748320128043.jpg/?apikey=<?= $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
         <div>
             <p class="text-light ms-2 m-0" style="font-size:12px;">Make you feel</p>
             <h1 class="text-light ms-2" style="font-size:28px;">Elegant</h1>
             <div style="width:60px; height:1px; background-color:white;" class="m-2"></div>
         </div>
     </a>
-    <a class="d-flex align-items-center px-5" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
-        style="text-decoration:none; flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1742973329631.png/?apikey=<?= $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
+    <a class="d-flex align-items-center px-5" href="<?= base_url('/product/coffee-table-ilena-cody') ?>"
+        style="text-decoration:none; flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('https://img.ilenafurniture.com/image/1748318610868.jpg/?apikey=<?= $apikey_img_ilena ?>'); background-size: cover; background-position:center;">
         <div>
             <h1 class="text-light ms-2" style="font-size:28px;">Luxury</h1>
             <div class="d-flex gap-1 ms-2">
