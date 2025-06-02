@@ -12,65 +12,65 @@
     </script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <style>
-        .tw-bold-italic {
-            font-weight: normal;
-            font-style: italic;
-        }
+    .tw-bold-italic {
+        font-weight: normal;
+        font-style: italic;
+    }
 
-        .nt {
-            font-weight: normal;
-            color: black;
-            font-style: italic;
-            margin: 0;
-        }
+    .nt {
+        font-weight: normal;
+        color: black;
+        font-style: italic;
+        margin: 0;
+    }
 
-        .isint {
-            font-weight: normal;
-            font-style: italic;
-            margin: 0;
-        }
+    .isint {
+        font-weight: normal;
+        font-style: italic;
+        margin: 0;
+    }
 
-        .kotak-pembayaran {
-            border: 1px solid red;
-            padding: 10px 20px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            align-self: center;
-            text-align: center;
-            font-weight: normal;
-            font-style: italic;
-        }
+    .kotak-pembayaran {
+        border: 1px solid red;
+        padding: 10px 20px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        align-self: center;
+        text-align: center;
+        font-weight: normal;
+        font-style: italic;
+    }
 
-        * {
-            font-size: 14px;
-        }
+    * {
+        font-size: 14px;
+    }
 
-        .print-lunas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 20px;
-            /* background-color: aqua; */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 20%;
-        }
+    .print-lunas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 20px;
+        /* background-color: aqua; */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 20%;
+    }
 
-        .print-lunas p {
-            font-size: 4em;
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            font-weight: 900;
-            margin: 0;
-            /* initial-letter-align: center; */
-            /* transform: rotate(-15deg) translateY(500px); */
-            transform: translateY(500px) rotate(-15deg);
+    .print-lunas p {
+        font-size: 4em;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: 900;
+        margin: 0;
+        /* initial-letter-align: center; */
+        /* transform: rotate(-15deg) translateY(500px); */
+        transform: translateY(500px) rotate(-15deg);
 
-            border: 10px solid var(--merah);
-            color: var(--merah);
-            border-radius: 0.5em;
-        }
+        border: 10px solid var(--merah);
+        color: var(--merah);
+        border-radius: 0.5em;
+    }
     </style>
 
 </head>
@@ -79,9 +79,9 @@
 
 <body>
     <?php if ($pemesanan['status'] == "success" || $pemesanan['status'] == "DP paid") { ?>
-        <div class="print-lunas">
-            <p>L U N A S</p>
-        </div>
+    <div class="print-lunas">
+        <p>L U N A S</p>
+    </div>
     <?php } ?>
     <div class="container mt-5 mb-5">
         <div class="d-flex gap-4 justify-content-start mb-4">
@@ -138,7 +138,7 @@
         <div class="d-flex justify-content-start mt-4 mb-4 flex-column">
             <p class="m-0 nt">Kepada Yth.</p>
             <p class="m-0 tw-bold-italic"><?= $pemesanan['nama_npwp']; ?></p>
-            <p class="m-0" style="max-width: 250px;"><?= $pemesanan['alamat_pengiriman']; ?></p>
+            <p class="m-0" style="max-width: 250px;"><?= $pemesanan['alamat_tagihan']; ?></p>
             <!-- <div class="d-flex flex-column">
                 <div class="d-flex m-0 p-0">
                     <p class="m-0 tw-bold-italic" style="margin-right: 10px;"><span class="m-0" id="jalan"></span>,</p>
@@ -175,72 +175,72 @@
                 </thead>
                 <tbody>
                     <?php if ($pemesanan['down_payment'] <= 0) { ?>
-                        <?php $no = 1; ?>
-                        <?php $totalHargaBarang  = 0; ?>
-                        <?php foreach ($items as $t) { ?>
-                            <?php $totalHargaBarang += $t['jumlah'] * $t['harga']; ?>
-                            <tr>
-                                <td class="text-center"><?= strtoupper($no++); ?></td>
-                                <td class="text-center"><?= strtoupper($t['id_barang']); ?></td>
-                                <td class="">
-                                    <p class="m-0">
-                                        <?= $t['special_price'] > 0 ? "[SPECIAL PRICE] " : ""; ?><?= strtoupper($t['nama']); ?>
-                                        (<?= strtoupper($t['varian']); ?>)</p>
-                                    <p class="m-0"><?= $t['dimensi']['panjang']; ?> x <?= $t['dimensi']['lebar']; ?> x
-                                        <?= $t['dimensi']['tinggi']; ?></p>
-                                </td>
-                                <td class="text-center"><?= strtoupper($t['jumlah']); ?></td>
-                                <td class="text-end" style="text-wrap: nowrap;">Rp
-                                    <?= strtoupper(number_format($t['harga'], 0, ',', '.')); ?></td>
-                                <td class="text-end" style="text-wrap: nowrap;">Rp
-                                    <?= strtoupper(number_format($t['jumlah'] * $t['harga'], 0, ',', '.')); ?></td>
-                            </tr>
-                        <?php } ?>
-                        <?php $diskonPersen = round(100 - ($totalHargaBarang / $pemesanan['total_akhir'] * 100), 2); ?>
-                        <?php if ($diskonPersen > 0) { ?>
-                            <tr>
-                                <td colspan="5" class="fw-bold">JUMLAH</td>
-                                <td class="text-end" style="text-wrap: nowrap;">Rp
-                                    <?= number_format($totalHargaBarang, 0, ',', '.'); ?></td>
-                            </tr>
-                        <?php } ?>
-                        <?php if ($diskonPersen > 0) { ?>
-                            <tr>
-                                <td colspan="5" class="text-start fw-bold italic" style="text-wrap: nowrap;">POTONGAN
-                                    <?= $diskonPersen > 0 ? "( $diskonPersen% )" : ''; ?></td>
-                                <td class="text-end fw-bold italic" style="text-wrap: nowrap;">Rp
-                                    <?= strtoupper(number_format($pemesanan['total_akhir'] - $totalHargaBarang, 0, ',', '.')); ?>
-                                </td>
-                            </tr>
-                        <?php } ?>
-                        <?php if ($pemesanan['down_payment'] < 0) { ?>
-                            <tr>
-                                <td colspan="5" class="fw-bold">UANG MUKA YANG DITERIMA</td>
-                                <td class="text-end" style="text-wrap: nowrap;">Rp
-                                    <?= number_format(abs($pemesanan['down_payment']), 0, ',', '.'); ?></td>
-                            </tr>
-                        <?php } ?>
+                    <?php $no = 1; ?>
+                    <?php $totalHargaBarang  = 0; ?>
+                    <?php foreach ($items as $t) { ?>
+                    <?php $totalHargaBarang += $t['jumlah'] * $t['harga']; ?>
+                    <tr>
+                        <td class="text-center"><?= strtoupper($no++); ?></td>
+                        <td class="text-center"><?= strtoupper($t['id_barang']); ?></td>
+                        <td class="">
+                            <p class="m-0">
+                                <?= $t['special_price'] > 0 ? "[SPECIAL PRICE] " : ""; ?><?= strtoupper($t['nama']); ?>
+                                (<?= strtoupper($t['varian']); ?>)</p>
+                            <p class="m-0"><?= $t['dimensi']['panjang']; ?> x <?= $t['dimensi']['lebar']; ?> x
+                                <?= $t['dimensi']['tinggi']; ?></p>
+                        </td>
+                        <td class="text-center"><?= strtoupper($t['jumlah']); ?></td>
+                        <td class="text-end" style="text-wrap: nowrap;">Rp
+                            <?= strtoupper(number_format($t['harga'], 0, ',', '.')); ?></td>
+                        <td class="text-end" style="text-wrap: nowrap;">Rp
+                            <?= strtoupper(number_format($t['jumlah'] * $t['harga'], 0, ',', '.')); ?></td>
+                    </tr>
+                    <?php } ?>
+                    <?php $diskonPersen = round(100 - ($totalHargaBarang / $pemesanan['total_akhir'] * 100), 2); ?>
+                    <?php if ($diskonPersen > 0) { ?>
+                    <tr>
+                        <td colspan="5" class="fw-bold">JUMLAH</td>
+                        <td class="text-end" style="text-wrap: nowrap;">Rp
+                            <?= number_format($totalHargaBarang, 0, ',', '.'); ?></td>
+                    </tr>
+                    <?php } ?>
+                    <?php if ($diskonPersen > 0) { ?>
+                    <tr>
+                        <td colspan="5" class="text-start fw-bold italic" style="text-wrap: nowrap;">POTONGAN
+                            <?= $diskonPersen > 0 ? "( $diskonPersen% )" : ''; ?></td>
+                        <td class="text-end fw-bold italic" style="text-wrap: nowrap;">Rp
+                            <?= strtoupper(number_format($pemesanan['total_akhir'] - $totalHargaBarang, 0, ',', '.')); ?>
+                        </td>
+                    </tr>
+                    <?php } ?>
+                    <?php if ($pemesanan['down_payment'] < 0) { ?>
+                    <tr>
+                        <td colspan="5" class="fw-bold">UANG MUKA YANG DITERIMA</td>
+                        <td class="text-end" style="text-wrap: nowrap;">Rp
+                            <?= number_format(abs($pemesanan['down_payment']), 0, ',', '.'); ?></td>
+                    </tr>
+                    <?php } ?>
                     <?php } else { ?>
-                        <tr>
-                            <td class="text-center">1</td>
-                            <td class="text-center"></td>
-                            <td class="">UANG MUKA</td>
-                            <td class="text-center"></td>
-                            <td class="text-end" style="text-wrap: nowrap;"></td>
-                            <td class="text-end" style="text-wrap: nowrap;">Rp
-                                <?= strtoupper(number_format($pemesanan['down_payment'], 0, ',', '.')); ?></td>
-                        </tr>
+                    <tr>
+                        <td class="text-center">1</td>
+                        <td class="text-center"></td>
+                        <td class="">UANG MUKA</td>
+                        <td class="text-center"></td>
+                        <td class="text-end" style="text-wrap: nowrap;"></td>
+                        <td class="text-end" style="text-wrap: nowrap;">Rp
+                            <?= strtoupper(number_format($pemesanan['down_payment'], 0, ',', '.')); ?></td>
+                    </tr>
                     <?php } ?>
                     <tr>
                         <td colspan="5" class="fw-bold">TOTAL INVOICE</td>
                         <?php if ($pemesanan['down_payment'] > 0) { ?>
-                            <td class="text-end fw-bold" style="text-wrap: nowrap;">Rp
-                                <?= strtoupper(number_format($pemesanan['down_payment'], 0, ',', '.')); ?>
-                            </td>
+                        <td class="text-end fw-bold" style="text-wrap: nowrap;">Rp
+                            <?= strtoupper(number_format($pemesanan['down_payment'], 0, ',', '.')); ?>
+                        </td>
                         <?php } else { ?>
-                            <td class="text-end fw-bold" style="text-wrap: nowrap;">Rp
-                                <?= strtoupper(number_format($pemesanan['total_akhir'] - (($pemesanan['down_payment']) < 0 ? abs($pemesanan['down_payment']) : 0), 0, ',', '.')); ?>
-                            </td>
+                        <td class="text-end fw-bold" style="text-wrap: nowrap;">Rp
+                            <?= strtoupper(number_format($pemesanan['total_akhir'] - (($pemesanan['down_payment']) < 0 ? abs($pemesanan['down_payment']) : 0), 0, ',', '.')); ?>
+                        </td>
                         <?php } ?>
                     </tr>
                 </tbody>
@@ -378,13 +378,13 @@
                     <tr>
                         <td class="pe-3">Terbilang <?= $pemesanan['down_payment'] > 0 ? 'DP' : '' ?></td>
                         <?php if ($pemesanan['down_payment'] > 0) { ?>
-                            <td>:
-                                <i><?= ucwords(strtolower(terbilang($pemesanan['down_payment']))); ?></i>
-                            </td>
+                        <td>:
+                            <i><?= ucwords(strtolower(terbilang($pemesanan['down_payment']))); ?></i>
+                        </td>
                         <?php } else { ?>
-                            <td>:
-                                <i><?= ucwords(strtolower(terbilang($pemesanan['total_akhir'] - ($pemesanan['down_payment'] < 0 ? abs($pemesanan['down_payment']) : 0)))); ?></i>
-                            </td>
+                        <td>:
+                            <i><?= ucwords(strtolower(terbilang($pemesanan['total_akhir'] - ($pemesanan['down_payment'] < 0 ? abs($pemesanan['down_payment']) : 0)))); ?></i>
+                        </td>
                         <?php } ?>
                     </tr>
                     <tr>
@@ -395,9 +395,9 @@
                         <td class="pe-3">Surat Jalan</td>
                         <?php
                         if ($pemesanan['down_payment']) { ?>
-                            <td>: <?= substr($items[0]['id_return'], 5); ?></td>
+                        <td>: <?= substr($items[0]['id_return'], 5); ?></td>
                         <?php } else { ?>
-                            <td>: <?= substr($pemesanan['id_pesanan'], 5); ?></td>
+                        <td>: <?= substr($pemesanan['id_pesanan'], 5); ?></td>
                         <?php } ?>
                     </tr>
                 </tbody>
@@ -423,22 +423,22 @@
     </div>
 
     <script>
-        const alamatLengkap =
-            "<?= $pemesanan['alamat_tagihan'] ? $pemesanan['alamat_tagihan'] : $pemesanan['alamat_pengiriman']; ?>";
-        const alamatParts = alamatLengkap.split(', ');
-        const jalan = alamatParts[0];
-        const kelurahan = alamatParts[1];
-        const kecamatan = alamatParts[2];
-        const kota = alamatParts[3];
-        const provinsiDanKodePos = alamatParts[4].split(' ');
-        const provinsi = provinsiDanKodePos[0];
-        const kodePos = provinsiDanKodePos[1];
-        document.getElementById('jalan').innerText = jalan;
-        document.getElementById('kelurahan').innerText = kelurahan;
-        document.getElementById('kecamatan').innerText = kecamatan;
-        document.getElementById('kota').innerText = kota;
-        document.getElementById('provinsi').innerText = provinsi;
-        document.getElementById('kodepos').innerText = kodePos;
+    const alamatLengkap =
+        "<?= $pemesanan['alamat_tagihan'] ? $pemesanan['alamat_tagihan'] : $pemesanan['alamat_pengiriman']; ?>";
+    const alamatParts = alamatLengkap.split(', ');
+    const jalan = alamatParts[0];
+    const kelurahan = alamatParts[1];
+    const kecamatan = alamatParts[2];
+    const kota = alamatParts[3];
+    const provinsiDanKodePos = alamatParts[4].split(' ');
+    const provinsi = provinsiDanKodePos[0];
+    const kodePos = provinsiDanKodePos[1];
+    document.getElementById('jalan').innerText = jalan;
+    document.getElementById('kelurahan').innerText = kelurahan;
+    document.getElementById('kecamatan').innerText = kecamatan;
+    document.getElementById('kota').innerText = kota;
+    document.getElementById('provinsi').innerText = provinsi;
+    document.getElementById('kodepos').innerText = kodePos;
     </script>
 
 
