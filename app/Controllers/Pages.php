@@ -3880,6 +3880,35 @@ class Pages extends BaseController
             return view('pages/artikelAll', $data);
         }
     }
+    public function articleCategory($category)
+    {
+        $category = str_replace('-', ' ', $category);
+        $category = str_replace('@', '&', $category);
+        $artikel = $this->artikelModel->like('kategori', $category, 'both')->findAll();
+        $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+        if (!$artikel) return redirect()->to('article');
+        $artikelPopuler = $this->artikelModel->orderBy('pengunjung', 'desc')->limit(5, 0)->findAll();
+        $artikel3Baru = $this->artikelModel
+            ->select('judul')->select('path')->select('kategori')->select('deskripsi')->select('id')->select('header')
+            ->orderBy('id', 'asc')->limit(3, 0)->findAll();
+        foreach ($artikel as $ind_a => $a) {
+            $artikel[$ind_a]['kategori'] = explode(",", $a['kategori']);
+            $artikel[$ind_a]['waktu'] = date("d", strtotime($a['waktu'])) . " " . $bulan[date("m", strtotime($a['waktu'])) - 1] . " " . date("Y", strtotime($a['waktu']));
+        }
+        $data = [
+            'title' => 'Artikel | ' . ucwords($category),
+            'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
+            'artikel' => array_values(array_filter($artikel, function ($value, $key) {
+                return $key >= 2;
+            }, ARRAY_FILTER_USE_BOTH)),
+            'artikel3BaruJson' => json_encode($artikel3Baru),
+            'artikelPopuler' => $artikelPopuler,
+            'bulan' => $bulan,
+            'category' => $category,
+        ];
+        return view('pages/artikelAll', $data);
+    }
 
     public function addLikeArticle($id_artikel)
     {
@@ -3896,6 +3925,15 @@ class Pages extends BaseController
             'apikey_img_ilena' => $this->apikey_img_ilena,
         ];
         return view('pages/tentang', $data);
+    }
+    public function partner()
+    {
+        $data = [
+            'title' => 'Mitra Kami',
+            'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
+        ];
+        return view('pages/mitra', $data);
     }
     public function contact()
     {

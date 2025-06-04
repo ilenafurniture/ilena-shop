@@ -4,14 +4,29 @@
             <div class="d-flex w-100">
                 <div class="footer-div" style="flex:1;">
                     <h5><strong>Ilena Furniture</strong></h5>
-                    <a href="/tentang">Tentang Kami</a><br>
-                    <a href="/article">Artikel</a><br>
-                    <!-- <a href="/contact">Kontak Kami</a><br> -->
-                    <a href="/kebijakan">Kebijakan Privasi</a><br>
-                    <a href="/syarat">Syarat & Ketentuan</a><br>
-                    <a href="/login">Masuk</a><br>
-                    <a href="/faq">FAQ</a><br>
-                    <a href="/visimisi">Visi, Misi, dan Nilai Budaya</a>
+                    <div class="d-flex flex-column gap-1">
+                        <a href="/tentang">
+                            <p class="m-0">Tentang Kami</p>
+                        </a>
+                        <a href="/partner" class="d-flex align-items-center gap-1">
+                            <p class="m-0">Tersedia Di</p><i class="material-icons">location_on</i>
+                        </a>
+                        <a href="/article">
+                            <p class="m-0">Artikel</p>
+                        </a>
+                        <a href="/kebijakan">
+                            <p class="m-0">Kebijakan Privasi</p>
+                        </a>
+                        <a href="/syarat">
+                            <p class="m-0">Syarat & Ketentuan</p>
+                        </a>
+                        <a href="/faq">
+                            <p class="m-0">FAQ</p>
+                        </a>
+                        <a href="/visimisi">
+                            <p class="m-0">Visi, Misi, dan Nilai Budaya</p>
+                        </a>
+                    </div>
                 </div>
                 <div class="footer-div" style="flex:1;">
                     <h5><strong>Social Media</strong></h5>
