@@ -135,8 +135,15 @@
                             <tr>
                                 <td>Kategori</td>
                                 <td>
-                                    <div class="baris"><input type="text" class="form-control" name="kategori"
-                                            placeholder="pisahkan dengan koma" required>
+                                    <div class="baris">
+                                        <!-- <input type="text" class="form-control" name="kategori"
+                                            placeholder="pisahkan dengan koma" required> -->
+                                        <select name="kategori" class="form-select">
+                                            <option selected value="edukasi">Edukasi</option>
+                                            <option value="tips & trik">Tips & trick</option>
+                                            <option value="fun fact">Fun Fact</option>
+                                            <option value="rekomendasi">Rekomendasi</option>
+                                        </select>
                                     </div>
                                 </td>
                             <tr>

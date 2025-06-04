@@ -136,8 +136,15 @@
                             <tr>
                                 <td>Kategori</td>
                                 <td>
-                                    <div class="baris"><input type="text" class="form-control" name="kategori"
-                                            placeholder="pisahkan dengan koma" required value="<?= $artikel['kategori']; ?>">
+                                    <div class="baris">
+                                        <!-- <input type="text" class="form-control" name="kategori"
+                                            placeholder="pisahkan dengan koma" required value="<?= $artikel['kategori']; ?>"> -->
+                                        <select name="kategori" class="form-select">
+                                            <option <?= $artikel['kategori'] == 'edukasi' ? 'selected' : ''; ?> value="edukasi">Edukasi</option>
+                                            <option <?= $artikel['kategori'] == 'tips & trik' ? 'selected' : ''; ?> value="tips & trik">Tips & trick</option>
+                                            <option <?= $artikel['kategori'] == 'fun fact' ? 'selected' : ''; ?> value="fun fact">Fun Fact</option>
+                                            <option <?= $artikel['kategori'] == 'rekomendasi' ? 'selected' : ''; ?> value="rekomendasi">Rekomendasi</option>
+                                        </select>
                                     </div>
                                 </td>
                             <tr>
