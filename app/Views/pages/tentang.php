@@ -452,7 +452,7 @@ locations.forEach(function(store) {
         stroke: true,
         strokeOpacity: 0.2,
         weight: 0.2,
-        radius: 10
+        radius: 9
     }).addTo(map);
 
     var popupContent = "<b>" + store.name + "</b>";
