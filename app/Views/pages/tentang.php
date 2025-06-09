@@ -1,116 +1,116 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <style>
-    .container-toko::-webkit-scrollbar {
-        display: none;
-    }
+.container-toko::-webkit-scrollbar {
+    display: none;
+}
 
+.container-toko {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 15px;
+    padding-bottom: 10px;
+    height: 100px;
+    width: 100%;
+}
+
+.item-toko {
+    display: flex;
+    flex-direction: row;
+    background-color: white;
+    border-radius: 12px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 5px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.item-toko:hover {
+    transform: translateY(-5px);
+}
+
+.item-toko img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.item-toko .nama {
+    font-size: 1.2rem;
+    font-weight: bold;
+    letter-spacing: -0.5px;
+    margin-bottom: 5px;
+}
+
+.item-toko .alamat {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.4;
+}
+
+@media (max-width: 768px) {
     .container-toko {
-        display: flex;
         flex-direction: row;
         flex-wrap: nowrap;
-        overflow-x: auto;
-        gap: 15px;
-        padding-bottom: 10px;
+        gap: 10px;
         height: 100px;
-        width: 100%;
     }
 
     .item-toko {
-        display: flex;
-        flex-direction: row;
-        background-color: white;
-        border-radius: 12px;
-        flex-shrink: 0;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        padding: 5px;
-        transition: transform 0.3s ease-in-out;
-    }
-
-    .item-toko:hover {
-        transform: translateY(-5px);
+        width: 100%;
     }
 
     .item-toko img {
-        width: 100%;
-        height: 100%;
+        height: 60px;
+        border-radius: 12px;
         object-fit: cover;
-        border-radius: 8px;
+        width: 80px;
     }
 
     .item-toko .nama {
-        font-size: 1.2rem;
-        font-weight: bold;
-        letter-spacing: -0.5px;
-        margin-bottom: 5px;
+        font-size: 10px;
     }
 
     .item-toko .alamat {
-        font-size: 12px;
-        color: #666;
-        line-height: 1.4;
+        font-size: 8px;
+        font-style: normal;
+        line-height: 1;
     }
 
-    @media (max-width: 768px) {
-        .container-toko {
-            flex-direction: row;
-            flex-wrap: nowrap;
-            gap: 10px;
-            height: 100px;
-        }
+    #map {
+        height: 200px;
+    }
+}
 
-        .item-toko {
-            width: 100%;
-        }
-
-        .item-toko img {
-            height: 60px;
-            border-radius: 12px;
-            object-fit: cover;
-            width: 80px;
-        }
-
-        .item-toko .nama {
-            font-size: 10px;
-        }
-
-        .item-toko .alamat {
-            font-size: 8px;
-            font-style: normal;
-            line-height: 1;
-        }
-
-        #map {
-            height: 200px;
-        }
+@media (max-width: 480px) {
+    .item-toko .nama {
+        font-size: 8px;
     }
 
-    @media (max-width: 480px) {
-        .item-toko .nama {
-            font-size: 8px;
-        }
-
-        .item-toko .alamat {
-            font-size: 6px;
-            font-style: normal;
-        }
-
-        .container-toko {
-            padding-left: 5px;
-            padding-right: 5px;
-        }
-
-        .item-toko img {
-            height: 60px;
-            border-radius: 12px;
-            object-fit: cover;
-            width: 70px;
-        }
-
-        #map {
-            height: 200px;
-        }
+    .item-toko .alamat {
+        font-size: 6px;
+        font-style: normal;
     }
+
+    .container-toko {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    .item-toko img {
+        height: 60px;
+        border-radius: 12px;
+        object-fit: cover;
+        width: 70px;
+    }
+
+    #map {
+        height: 200px;
+    }
+}
 </style>
 <div class="container">
     <div class="konten mx-auto">
@@ -389,103 +389,107 @@ stores.forEach(store => {
 </script> -->
 
 <script>
-    var map = L.map('map').setView([-7.614529, 110.712246], 6.5);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+var map = L.map('map').setView([-7.614529, 110.712246], 6.5);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+var locations = [{
+        name: "Jempol Baru Furniture",
+        coords: [-7.565618587313341, 110.82431800071647]
+    },
+    {
+        name: "Cipta Bangun Jaya Furniture Jakarta",
+        coords: [-6.285266506836552, 106.84299483660007]
+    },
+    {
+        name: "Sumber Abadi Furniture",
+        coords: [-7.743532734851712, 110.36242217704519]
+    },
+    {
+        name: "Home Gallery Furniture",
+        coords: [-7.2886288976515985, 112.67261790823825]
+    },
+    {
+        name: "Pari Anom Jaya Furniture",
+        coords: [-7.241679877880819, 112.74470435104482]
+    },
+    {
+        name: "Suri Mebel Semarang",
+        coords: [-6.985425332274277, 110.41746260495303]
+    },
+    {
+        name: "Puri Mabel & Interior",
+        coords: [-6.9658085878072935, 110.39043865842983]
+    },
+    {
+        name: "Victoria Furnicenter",
+        coords: [-7.310519605654715, 112.68303473759022]
+    },
+    {
+        name: "Tunggal Jaya Furniture",
+        coords: [-7.98299983310868, 112.62939860029017]
+    },
+    {
+        name: "Cipta Bangun Jaya Furniture Magelang",
+        coords: [-7.497190468107969, 110.22351816365261]
+    },
+    {
+        name: "Homj Furniture",
+        coords: [-7.321151681470964, 112.7441071560504]
+    },
+    {
+        name: "Kasur Indah",
+        coords: [-8.696812172382534, 115.18640535462836]
+    }
+];
+
+locations.forEach(function(store) {
+    var marker = L.circleMarker([store.coords[0], store.coords[1]], {
+        color: '#FF4D4D',
+        fillColor: '#FF4D4D',
+        fillOpacity: 0.2,
+        stroke: true,
+        strokeOpacity: 0.2,
+        weight: 0.2,
+        radius: 10
     }).addTo(map);
 
-    var locations = [{
-            name: "Jempol Baru Furniture",
-            coords: [-7.565618587313341, 110.82431800071647]
-        },
-        {
-            name: "Cipta Bangun Jaya Furniture Jakarta",
-            coords: [-6.285266506836552, 106.84299483660007]
-        },
-        {
-            name: "Sumber Abadi Furniture",
-            coords: [-7.743532734851712, 110.36242217704519]
-        },
-        {
-            name: "Home Gallery Furniture",
-            coords: [-7.2886288976515985, 112.67261790823825]
-        },
-        {
-            name: "Pari Anom Jaya Furniture",
-            coords: [-7.241679877880819, 112.74470435104482]
-        },
-        {
-            name: "Suri Mebel Semarang",
-            coords: [-6.985425332274277, 110.41746260495303]
-        },
-        {
-            name: "Puri Mabel & Interior",
-            coords: [-6.9658085878072935, 110.39043865842983]
-        },
-        {
-            name: "Victoria Furnicenter",
-            coords: [-7.310519605654715, 112.68303473759022]
-        },
-        {
-            name: "Tunggal Jaya Furniture",
-            coords: [-7.98299983310868, 112.62939860029017]
-        },
-        {
-            name: "Cipta Bangun Jaya Furniture Magelang",
-            coords: [-7.497190468107969, 110.22351816365261]
-        },
-        {
-            name: "Homj Furniture",
-            coords: [-7.321151681470964, 112.7441071560504]
-        }
-    ];
+    var popupContent = "<b>" + store.name + "</b>";
+    marker.bindPopup(popupContent);
 
-    locations.forEach(function(store) {
-        var marker = L.circleMarker([store.coords[0], store.coords[1]], {
-            color: '#FF4D4D',
-            fillColor: '#FF4D4D',
-            fillOpacity: 0.2,
-            stroke: true,
-            strokeOpacity: 0.2,
-            weight: 0.2,
-            radius: 10
-        }).addTo(map);
-
-        var popupContent = "<b>" + store.name + "</b>";
-        marker.bindPopup(popupContent);
-
-        var circle = L.circle([store.coords[0], store.coords[1]], {
-            color: '#FF4D4D',
-            fillColor: '#FF4D4D',
-            fillOpacity: 0.2,
-            radius: 50
-        }).addTo(map);
-        marker.on('mouseover', function() {
-            marker.openPopup();
-        });
-        marker.on('mouseout', function() {
-            marker.closePopup();
-        });
-        marker.on('click', function() {
-            var lat = store.coords[0];
-            var lng = store.coords[1];
-            var googleMapsUrl = "https://www.google.com/maps?q=" + lat + "," + lng;
-            window.open(googleMapsUrl, "_blank");
-        });
-
-        circle.on('click', function() {
-            var lat = store.coords[0];
-            var lng = store.coords[1];
-            var googleMapsUrl = "https://www.google.com/maps?q=" + lat + "," + lng;
-            window.open(googleMapsUrl, "_blank");
-        });
+    var circle = L.circle([store.coords[0], store.coords[1]], {
+        color: '#FF4D4D',
+        fillColor: '#FF4D4D',
+        fillOpacity: 0.2,
+        radius: 50
+    }).addTo(map);
+    marker.on('mouseover', function() {
+        marker.openPopup();
     });
-    map.on('click', function(e) {
-        var lat = e.latlng.lat;
-        var lng = e.latlng.lng;
+    marker.on('mouseout', function() {
+        marker.closePopup();
+    });
+    marker.on('click', function() {
+        var lat = store.coords[0];
+        var lng = store.coords[1];
         var googleMapsUrl = "https://www.google.com/maps?q=" + lat + "," + lng;
         window.open(googleMapsUrl, "_blank");
     });
+
+    circle.on('click', function() {
+        var lat = store.coords[0];
+        var lng = store.coords[1];
+        var googleMapsUrl = "https://www.google.com/maps?q=" + lat + "," + lng;
+        window.open(googleMapsUrl, "_blank");
+    });
+});
+map.on('click', function(e) {
+    var lat = e.latlng.lat;
+    var lng = e.latlng.lng;
+    var googleMapsUrl = "https://www.google.com/maps?q=" + lat + "," + lng;
+    window.open(googleMapsUrl, "_blank");
+});
 </script>
 
 <?= $this->endSection(); ?>
