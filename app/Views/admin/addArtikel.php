@@ -418,6 +418,9 @@
                 checkReadabilityScore(contentArtikel);
             });
         },
+        convert_urls: true,
+        relative_urls: false,
+        remove_script_host: false,
         plugins: [
             // "anchor",
             // "autolink",
