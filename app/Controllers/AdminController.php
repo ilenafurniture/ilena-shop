@@ -469,7 +469,22 @@ class AdminController extends BaseController
         $data = $this->request->getVar();
         $data_gambar_mentah = $this->request->getFiles();
 
-        $getFileGambarHover = $data_gambar_mentah['gambar_hover']->isValid() ? file_get_contents($data_gambar_mentah['gambar_hover']) : $barangCur['gambar_hover'];
+        // $getFileGambarHover = $data_gambar_mentah['gambar_hover']->isValid() ? file_get_contents($data_gambar_mentah['gambar_hover']) : $barangCur['gambar_hover'];
+        // unset($data_gambar_mentah['gambar_hover']);
+
+        //gambar hover
+        if ($data_gambar_mentah['gambar_hover']->isValid()) {
+            $fp = 'imgdum/barang/hover';
+            $data_gambar_mentah['gambar_hover']->move($fp, $data['id'] . '.webp');
+            if (file_exists('img/barang/hover/' . $data['id'] . '.webp')) {
+                unlink('img/barang/hover/' . $data['id'] . '.webp');
+            }
+            \Config\Services::image()
+                ->withFile($fp)
+                ->resize(300, 300, true, 'height')->save('img/barang/hover/' . $data['id'] . '.webp');
+            unlink($fp . '/' . $data['id'] . '.webp');
+        }
+
         unset($data_gambar_mentah['gambar_hover']);
 
         // difilter data gambar mentah krn ada input yg hanya sebagai penambah saja
@@ -504,7 +519,29 @@ class AdminController extends BaseController
         $cekcekek = [];
         foreach ($data_gambar_mentah as $key => $g) {
             if ($g->isValid()) {
-                $data_gambar[$key] = file_get_contents($g);
+                // $data_gambar[$key] = file_get_contents($g);
+                $g->move('imgdum');
+                if (file_exists('img/barang/3000/' . $g->getName() . '.webp')) {
+                    unlink('img/barang/3000/' . $g->getName() . '.webp');
+                }
+                \Config\Services::image()
+                    ->withFile('imgdum/' . $g->getName())
+                    ->resize(3000, 3000, true, 'height')->save('img/barang/3000/' . $g->getName() . '.webp');
+                
+                if (file_exists('img/barang/1000/' . $g->getName() . '.webp')) {
+                    unlink('img/barang/1000/' . $g->getName() . '.webp');
+                }
+                \Config\Services::image()
+                    ->withFile('imgdum/' . $g->getName())
+                    ->resize(1000, 1000, true, 'height')->save('img/barang/1000/' . $g->getName() . '.webp');
+                
+                if (file_exists('img/barang/300/' . $g->getName() . '.webp')) {
+                    unlink('img/barang/300/' . $g->getName() . '.webp');
+                }
+                \Config\Services::image()
+                    ->withFile('imgdum/' . $g->getName())
+                    ->resize(300, 300, true, 'height')->save('img/barang/300/' . $g->getName() . '.webp');
+                unlink('imgdum/' . $g->getName());
             } else {
                 // if ($gambarBarangCur['gambar' . explode("-", $key)[2]] != null) {
                 //     $data_gambar[$key] = $gambarBarangCur['gambar' . explode("-", $key)[2]];
@@ -596,7 +633,7 @@ class AdminController extends BaseController
             'tokped' => $data['tokped'],
             'tiktok' => $data['tiktok'],
             'gambar' => $insertGambarBarang['gambar1'],
-            'gambar_hover' => $getFileGambarHover,
+            // 'gambar_hover' => $getFileGambarHover,
             'ruang_tamu' => isset($data['ruang_tamu']) ? '1' : '0',
             'ruang_keluarga' => isset($data['ruang_keluarga']) ? '1' : '0',
             'ruang_tidur' => isset($data['ruang_tidur']) ? '1' : '0',

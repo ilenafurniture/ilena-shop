@@ -1,5 +1,11 @@
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
+<style>
+.container-gambar-add-product {
+    display: flex;
+    flex-wrap: wrap;
+}
+</style>
 <div style="padding: 2em;">
     <div id="container-react"></div>
 </div>
@@ -34,12 +40,12 @@
             subkategori: '',
             diskon: '',
             varian: [
-                {
-                    nama: "HITAM",
-                    kode: "#000000",
-                    stok: "2",
-                    urutan_gambar: "1,2,3,4"
-                }
+                // {
+                //     nama: "HITAM",
+                //     kode: "#000000",
+                //     stok: "2",
+                //     urutan_gambar: "1,2"
+                // }
             ],
             shopee: '',
             tokped: '',
@@ -48,6 +54,10 @@
             ruang_keluarga: false,
             ruang_tidur: false
         });
+        const [hoverSrc, setHoverSrc] = useState(null);
+        const [hoverFile, setHoverFile] = useState(null);
+        const [gambarSrc, setGambarSrc] = useState([]);
+        const [gambarFile, setGambarFile] = useState([]);
         const idStr = useRef("1-00-000-XX");
 
         useEffect(()=>{
@@ -72,6 +82,25 @@
                 id: idStrArr.join("")
             })
         }, [formData.subkategori])
+
+        useEffect(() => {
+            setFormData({
+                ...formData,
+                varian: formData.varian.map((v, ind_v) => {
+                    return {
+                        ...v,
+                        urutan_gambar: ind_v == 0 ? 
+                            gambarSrc[ind_v].reduce((prev, curr, index) => {
+                                return `${prev}${index > 0 ? ',' : ''}${index + 1}`
+                            }, '')
+                            :
+                            gambarSrc[ind_v].reduce((prev, curr, index) => {
+                                return `${prev}${index > 0 ? ',' : ''}${index + 1 +  + Number(formData.varian[ind_v - 1].urutan_gambar.split(',')[formData.varian[ind_v - 1].urutan_gambar.split(',').length - 1])}`
+                            }, '')
+                    }
+                })
+            })
+        }, [gambarSrc])
 
         return (
             <>
@@ -536,13 +565,26 @@
                             <h5 className="jdl=section">Gambar Hover</h5>
                             <img
                                 id="imghover-preview"
-                                src="/img/nopic.jpg"
+                                src={hoverSrc ? hoverSrc : "/img/nopic.jpg"}
                                 alt=""
                                 className="limapuluh-ke-seratus mb-1"
                                 style={{ aspectRatio: "1 / 1", objectFit: "cover" }}
                             />
                             <div className="mb-2">
                                 <input
+                                    onChange={(e) => {
+                                        const file = e.target.files[0];
+                                        if(file) {
+                                            setHoverFile(e.target.files[0]);
+                                            const reader = new FileReader();
+                                            reader.onload = () => {
+                                                setHoverSrc(reader.result);
+                                            };
+                                            reader.readAsDataURL(file);
+                                        } else {
+                                            setHoverFile(null)
+                                        }
+                                    }}
                                     name="gambar_hover"
                                     type="file"
                                     className="form-control"
@@ -551,75 +593,152 @@
                             </div>
                             <h5 className="jdl-section">Varian</h5>
                             <div id="container-varian">
-                                <div className="item-varian">
-                                    <div className="container-gambar" id="container-gambar1">
-                                        <div id="container-input-gambar1">
+                                {formData.varian.map((v, ind_v) => (
+                                    <div key={ind_v}>
+                                        <div className="container-gambar">
+                                            {gambarSrc.length > 0 && gambarSrc[ind_v].map((g, ind_g) => (
+                                                <div className="item-gambar" key={ind_g}>
+                                                    <p>X</p>
+                                                    <img src={g ? g : "/img/nopic.jpg"} alt="" />
+                                                </div>
+                                            ))}
                                             <div>
-                                            <input
-                                                type="file"
-                                                id="input-gambar-1-1"
-                                                name="gambar-1-1"
-                                                style={{ display: "none" }}
-                                                onchange="uploadFile(event)"
-                                            />
-                                            <label htmlFor="input-gambar-1-1" className="btn-default">
-                                                +
-                                            </label>
+                                                <input
+                                                    type="file"
+                                                    id={ind_v}
+                                                    style={{ display: "none" }}
+                                                    onChange={(e) => {
+                                                        const file = e.target.files[0];
+                                                        if(file) {
+                                                            const reader = new FileReader();
+                                                            reader.onload = () => {
+                                                                const newGambarSrc = [...gambarSrc];
+                                                                newGambarSrc[ind_v].push(reader.result);
+                                                                setGambarSrc(newGambarSrc);
+                                                            };
+                                                            reader.readAsDataURL(file);
+                                                        }
+                                                    }}
+                                                />
+                                                <label htmlFor={ind_v} className="btn-default">
+                                                    +
+                                                </label>
                                             </div>
                                         </div>
+                                        <table className="table-input w-100 mt-2">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Nama</td>
+                                                    <td>
+                                                        <div className="baris">
+                                                            <input
+                                                                type="text"
+                                                                className="form-control"
+                                                                onChange={(e) => {
+                                                                    setFormData({
+                                                                        ...formData,
+                                                                        varian: formData.varian.map((vv, ind_vv) => {
+                                                                            if(ind_vv === ind_v) {
+                                                                                return {
+                                                                                    ...vv,
+                                                                                    nama: e.target.value
+                                                                                }
+                                                                            } else {
+                                                                                return vv
+                                                                            }
+                                                                        })
+                                                                    })
+                                                                }}
+                                                                value={v.nama}
+                                                                required
+                                                            />
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Kode Warna</td>
+                                                    <td>
+                                                        <div className="baris">
+                                                            <input
+                                                                type="text"
+                                                                className="form-control"
+                                                                required
+                                                                onChange={(e) => {
+                                                                    setFormData({
+                                                                        ...formData,
+                                                                        varian: formData.varian.map((vv, ind_vv) => {
+                                                                            if(ind_vv === ind_v) {
+                                                                                return {
+                                                                                    ...vv,
+                                                                                    kode: e.target.value
+                                                                                }
+                                                                            } else {
+                                                                                return vv
+                                                                            }
+                                                                        })
+                                                                    })
+                                                                }}
+                                                                value={v.kode}
+                                                            />
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Stok</td>
+                                                    <td>
+                                                        <div className="baris">
+                                                            <input
+                                                                type="text"
+                                                                className="form-control"
+                                                                required
+                                                                onChange={(e) => {
+                                                                    setFormData({
+                                                                        ...formData,
+                                                                        varian: formData.varian.map((vv, ind_vv) => {
+                                                                            if(ind_vv === ind_v) {
+                                                                                return {
+                                                                                    ...vv,
+                                                                                    stok: e.target.value
+                                                                                }
+                                                                            } else {
+                                                                                return vv
+                                                                            }
+                                                                        })
+                                                                    })
+                                                                }}
+                                                                value={v.stok}
+                                                            />
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <button
+                                            type="button"
+                                            className="btn-teks-aja m-0 ms-auto mt-1"
+                                            onClick={() => {
+                                                setFormData({
+                                                    ...formData,
+                                                    varian: formData.varian.filter((vv, ind_vv) => ind_vv !== ind_v)
+                                                })
+                                                setGambarFile(gambarFile.filter((vv, ind_vv) => ind_vv !== ind_v));
+                                                setGambarSrc(gambarSrc.filter((vv, ind_vv) => ind_vv !== ind_v));
+                                            }}
+                                        >Hapus</button>
                                     </div>
-                                    <table className="table-input w-100 mt-2">
-                                        <tbody>
-                                            <tr>
-                                                <td>Nama</td>
-                                                <td>
-                                                    <div className="baris">
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            name="nama-var1"
-                                                            required=""
-                                                        />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Kode Warna</td>
-                                                <td>
-                                                    <div className="baris">
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            name="kode-var1"
-                                                            required=""
-                                                        />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Stok</td>
-                                                <td>
-                                                    <div className="baris">
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            name="stok-var1"
-                                                            required=""
-                                                        />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <button
-                                        type="button"
-                                        className="btn-teks-aja m-0 ms-auto mt-1"
-                                    >Hapus</button>
-                                </div>
+                                ))}
                             </div>
                             <button
                                 className="btn-default-merah mt-2"
                                 type="button"
+                                onClick={() => {
+                                    setFormData({
+                                        ...formData,
+                                        varian: [...formData.varian, { nama: "", kode: "", stok: "", urutan_gambar: "" }]
+                                    })
+                                    setGambarFile([...gambarFile, []]);
+                                    setGambarSrc([...gambarSrc, []]);
+                                }}
                             >
                                 Tambah Varian
                             </button>
