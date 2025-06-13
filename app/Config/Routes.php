@@ -114,10 +114,11 @@ $routes->post('/admin/editarticle/(:any)', 'AdminController::actionEditArticle/$
 $routes->post('/admin/addgaleriarticle', 'AdminController::actionAddGaleriArticle', ['filter' => 'adminFilter']);
 // $routes->get('/admin/customer', 'AdminController::customer', ['filter' => 'adminFilter']);
 $routes->get('/admin/addproduct', 'AdminController::addProduct', ['filter' => 'adminFilter']);
-$routes->post('/admin/addproduct', 'AdminController::actionAddProduct', ['filter' => 'adminFilter']);
+$routes->post('/admin/product', 'AdminController::actionAddProduct');
+$routes->put('/admin/product/(:any)', 'AdminController::actionEditProduct/$1');
 $routes->get('/admin/editproduct/(:any)', 'AdminController::editProduct/$1', ['filter' => 'adminFilter']);
-$routes->post('/admin/editproduct', 'AdminController::actionEditProduct', ['filter' => 'adminFilter']);
-$routes->post('/admin/editproduct/(:any)', 'AdminController::actionEditProduct/$1', ['filter' => 'adminFilter']);
+// $routes->post('/admin/editproduct', 'AdminController::actionEditProduct');
+// $routes->post('/admin/editproduct/(:any)', 'AdminController::actionEditProduct/$1', ['filter' => 'adminFilter']);
 // $routes->get('/admin/deleteproduct/(:any)', 'AdminController::deleteProduct/$1', ['filter' => 'adminFilter']);
 $routes->post('/admin/deleteproduct/(:any)', 'AdminController::deleteProduct/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/activeproduct/(:any)', 'AdminController::activeProduct/$1', ['filter' => 'adminFilter']);

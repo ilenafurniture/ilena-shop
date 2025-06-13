@@ -123,151 +123,6 @@ class AdminController extends BaseController
         ];
         return view('admin/add', $data);
     }
-    public function actionAddProduct1()
-    {
-        $body = json_decode($this->request->getBody(), true);
-        $koleksi = $this->koleksiModel->getKoleksi($body['kategori']);
-        $jenis = $this->jenisModel->getJenis($body['subkategori']);
-        $data = $this->request->getVar();
-        $data_gambar_mentah = $this->request->getFiles();
-
-        // $getFileGambarHover = $data_gambar_mentah['gambar_hover']->isValid() ? file_put_contents('img/barang/hover/'. $data['id'].'.webp' ,$data_gambar_mentah['gambar_hover']) : null;
-
-        //gambar hover
-        if ($data_gambar_mentah['gambar_hover']->isValid()) {
-            $fp = 'imgdum/barang/hover';
-            $data_gambar_mentah['gambar_hover']->move($fp, $data['id'] . '.webp');
-            \Config\Services::image()
-                ->withFile($fp)
-                ->resize(300, 300, true, 'height')->save('img/barang/hover/' . $data['id'] . '.webp');
-            unlink($fp . '/' . $data['id'] . '.webp');
-        }
-
-        unset($data_gambar_mentah['gambar_hover']);
-
-        $data_gambar = [];
-        foreach ($data_gambar_mentah as $key => $g) {
-            if ($g->isValid()) $data_gambar[$key] = $g;
-        }
-        $jumlahVarian = explode(",", $this->request->getVar('hitung-varian'));
-
-        // $insertGambarBarang = [
-        //     'id' => $data['id']
-        // ];
-        // $insertGambarBarang3000 = [
-        //     'id' => $data['id']
-        // ];
-        $varianData = [];
-        $counterGambar = 0;
-        foreach ($jumlahVarian as $j) {
-            $urutanGambar = [];
-            foreach ($data_gambar as $ind_g => $g) {
-                if (explode("-", $ind_g)[1] == $j) {
-                    $counterGambar++;
-                    array_push($urutanGambar, $counterGambar);
-                }
-            }
-            $itemVarian = [
-                'nama' => $data['nama-var' . $j],
-                'kode' => $data['kode-var' . $j],
-                'stok' => $data['stok-var' . $j],
-                'urutan_gambar' => implode(",", $urutanGambar),
-            ];
-            array_push($varianData, $itemVarian);
-
-            $tanggalNoStrip = date("YmdHis", strtotime("+7 Hours"));
-            $this->kartuStokModel->insert([
-                'id_barang' => $data['id'],
-                'tanggal' => date("Y-m-d H:i:s", strtotime("+7 Hours")),
-                'keterangan' => $tanggalNoStrip . "-" . $data['id'] . "-" . strtoupper($data['nama-var' . $j]) . "-ADDPRODUCT",
-                'debit' => $data['stok-var' . $j],
-                'kredit' => 0,
-                'saldo' => $data['stok-var' . $j],
-                'pending' => false,
-                'id_pesanan' => 'ADDPRODUCT',
-                'varian' => strtoupper($data['nama-var' . $j])
-            ]);
-        }
-
-        $dataKategori = $data['kategori'];
-        $koleksiSelected = array_values(array_filter($koleksi, function ($var) use ($dataKategori) {
-            return ($var['id'] == $dataKategori);
-        }))[0]['nama'];
-        $dataSubkategori = $data['subkategori'];
-        $jenisSelected = array_values(array_filter($jenis, function ($var) use ($dataSubkategori) {
-            return ($var['id'] == $dataSubkategori);
-        }))[0]['nama'];
-
-        // $index_data_gambar = array_flip(array_keys($data_gambar));
-        $iterasi = 0;
-        foreach ($data_gambar as $key_dg => $dG) {
-            $dG->move('imgdum');
-            \Config\Services::image()
-                ->withFile('imgdum/' . $dG->getName())
-                ->resize(3000, 3000, true, 'height')->save('img/barang/3000/' . $dG->getName() . '.webp');
-            // $insertGambarBarang3000['gambar' . ((int)$index_data_gambar[$key_dg] + 1)] = file_get_contents('imgdum/1' . $dG->getName());
-            // unlink('imgdum/1' . $dG->getName());
-
-            \Config\Services::image()
-                ->withFile('imgdum/' . $dG->getName())
-                ->resize(1000, 1000, true, 'height')->save('img/barang/1000/' . $dG->getName() . '.webp');
-            // $insertGambarBarang['gambar' . ((int)$index_data_gambar[$key_dg] + 1)] = file_get_contents('imgdum/1' . $dG->getName());
-            // unlink('imgdum/1' . $dG->getName());
-
-            if ($iterasi <= 0) {
-                \Config\Services::image()
-                    ->withFile('imgdum/' . $dG->getName())
-                    ->resize(300, 300, true, 'height')->save('img/barang/300/' . $dG->getName() . '.webp');
-                // $insertGambarBarang300 = file_get_contents('imgdum/1' . $dG->getName());
-                // unlink('imgdum/1' . $dG->getName());
-            }
-            unlink('imgdum/' . $dG->getName());
-            $iterasi++;
-        }
-
-        $insertDataBarang = [
-            'id' => $data['id'],
-            'nama' => $data['nama'],
-            'harga' => $data['harga'],
-            'pencarian' => '',
-            'rate' => '0',
-            'deskripsi' => json_encode([
-                'deskripsi' => $data['deskripsi'],
-                'dimensi' => [
-                    'asli' => [
-                        'panjang' => $data['panjang-asli'],
-                        'lebar' => $data['lebar-asli'],
-                        'tinggi' => $data['tinggi-asli'],
-                        'berat' => $data['berat-asli'],
-                    ],
-                    'paket' => [
-                        'panjang' => $data['panjang-paket'],
-                        'lebar' => $data['lebar-paket'],
-                        'tinggi' => $data['tinggi-paket'],
-                        'berat' => $data['berat-paket'],
-                    ]
-                ],
-                'perawatan' => $data['perawatan']
-            ]),
-            'kategori' => $koleksiSelected,
-            'subkategori' => $jenisSelected,
-            'diskon' => $data['diskon'],
-            'varian' => json_encode($varianData),
-            'shopee' => $data['shopee'],
-            'tokped' => $data['tokped'],
-            'tiktok' => $data['tiktok'],
-            'active' => '1',
-            'gambar' => null,
-            'gambar_hover' => null,
-            'ruang_tamu' => isset($data['ruang_tamu']) ? '1' : '0',
-            'ruang_keluarga' => isset($data['ruang_keluarga']) ? '1' : '0',
-            'ruang_tidur' => isset($data['ruang_tidur']) ? '1' : '0',
-        ];
-        $this->barangModel->insert($insertDataBarang);
-        // $this->gambarBarangModel->insert($insertGambarBarang);
-        // $this->gambarBarang3000Model->insert($insertGambarBarang3000);
-        return redirect()->to('admin/product');
-    }
     public function actionAddProduct()
     {
         if (!$this->validate([
@@ -290,61 +145,31 @@ class AdminController extends BaseController
         $data = $this->request->getVar();
         $data_gambar_mentah = $this->request->getFiles();
 
-        // $getFileGambarHover = $data_gambar_mentah['gambar_hover']->isValid() ? file_put_contents('img/barang/hover/'. $data['id'].'.webp' ,$data_gambar_mentah['gambar_hover']) : null;
-
-        //gambar hover
         if ($data_gambar_mentah['gambar_hover']->isValid()) {
             $fp = 'imgdum/barang/hover';
             $data_gambar_mentah['gambar_hover']->move($fp, $data['id'] . '.webp');
+            if (file_exists('img/barang/hover/' . $data['id'] . '.webp')) {
+                unlink('img/barang/hover/' . $data['id'] . '.webp');
+            }
             \Config\Services::image()
-                ->withFile($fp)
+                ->withFile($fp . '/' . $data['id'] . '.webp')
                 ->resize(300, 300, true, 'height')->save('img/barang/hover/' . $data['id'] . '.webp');
             unlink($fp . '/' . $data['id'] . '.webp');
         }
-
         unset($data_gambar_mentah['gambar_hover']);
 
-        $data_gambar = [];
-        foreach ($data_gambar_mentah as $key => $g) {
-            if ($g->isValid()) $data_gambar[$key] = $g;
-        }
-        $jumlahVarian = explode(",", $this->request->getVar('hitung-varian'));
-
-        // $insertGambarBarang = [
-        //     'id' => $data['id']
-        // ];
-        // $insertGambarBarang3000 = [
-        //     'id' => $data['id']
-        // ];
-        $varianData = [];
-        $counterGambar = 0;
-        foreach ($jumlahVarian as $j) {
-            $urutanGambar = [];
-            foreach ($data_gambar as $ind_g => $g) {
-                if (explode("-", $ind_g)[1] == $j) {
-                    $counterGambar++;
-                    array_push($urutanGambar, $counterGambar);
-                }
-            }
-            $itemVarian = [
-                'nama' => $data['nama-var' . $j],
-                'kode' => $data['kode-var' . $j],
-                'stok' => $data['stok-var' . $j],
-                'urutan_gambar' => implode(",", $urutanGambar),
-            ];
-            array_push($varianData, $itemVarian);
-
+        foreach (json_decode($data['varian'], true) as $varian) {
             $tanggalNoStrip = date("YmdHis", strtotime("+7 Hours"));
             $this->kartuStokModel->insert([
                 'id_barang' => $data['id'],
                 'tanggal' => date("Y-m-d H:i:s", strtotime("+7 Hours")),
-                'keterangan' => $tanggalNoStrip . "-" . $data['id'] . "-" . strtoupper($data['nama-var' . $j]) . "-ADDPRODUCT",
-                'debit' => $data['stok-var' . $j],
+                'keterangan' => $tanggalNoStrip . "-" . $data['id'] . "-" . strtoupper($varian['nama']) . "-ADDPRODUCT",
+                'debit' => $varian['stok'],
                 'kredit' => 0,
-                'saldo' => $data['stok-var' . $j],
+                'saldo' => $varian['stok'],
                 'pending' => false,
                 'id_pesanan' => 'ADDPRODUCT',
-                'varian' => strtoupper($data['nama-var' . $j])
+                'varian' => strtoupper($varian['nama'])
             ]);
         }
 
@@ -357,31 +182,32 @@ class AdminController extends BaseController
             return ($var['id'] == $dataSubkategori);
         }))[0]['nama'];
 
-        // $index_data_gambar = array_flip(array_keys($data_gambar));
-        $iterasi = 0;
-        foreach ($data_gambar as $key_dg => $dG) {
+        foreach ($data_gambar_mentah as $ind_g => $dG) {
+            $urutan = (int)explode('_', $ind_g)[1];
             $dG->move('imgdum');
+            if (file_exists('img/barang/3000/' . $data['id'] . '-' . ($urutan + 1) . '.webp')) {
+                unlink('img/barang/3000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
+            }
             \Config\Services::image()
                 ->withFile('imgdum/' . $dG->getName())
-                ->resize(3000, 3000, true, 'height')->save('img/barang/3000/' . $dG->getName() . '.webp');
-            // $insertGambarBarang3000['gambar' . ((int)$index_data_gambar[$key_dg] + 1)] = file_get_contents('imgdum/1' . $dG->getName());
-            // unlink('imgdum/1' . $dG->getName());
+                ->resize(3000, 3000, true, 'height')->save('img/barang/3000/' . $data['id'] . '-' . ($urutan + 1)  . '.webp');
 
+            if (file_exists('img/barang/1000/' . $data['id'] . '-' . ($urutan + 1) . '.webp')) {
+                unlink('img/barang/1000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
+            }
             \Config\Services::image()
                 ->withFile('imgdum/' . $dG->getName())
-                ->resize(1000, 1000, true, 'height')->save('img/barang/1000/' . $dG->getName() . '.webp');
-            // $insertGambarBarang['gambar' . ((int)$index_data_gambar[$key_dg] + 1)] = file_get_contents('imgdum/1' . $dG->getName());
-            // unlink('imgdum/1' . $dG->getName());
+                ->resize(1000, 1000, true, 'height')->save('img/barang/1000/' . $data['id'] . '-' . ($urutan + 1)  . '.webp');
 
-            if ($iterasi <= 0) {
+            if ($urutan <= 0) {
+                if (file_exists('img/barang/300/' . $data['id']  . '.webp')) {
+                    unlink('img/barang/300/' . $data['id']  . '.webp');
+                }
                 \Config\Services::image()
                     ->withFile('imgdum/' . $dG->getName())
-                    ->resize(300, 300, true, 'height')->save('img/barang/300/' . $dG->getName() . '.webp');
-                // $insertGambarBarang300 = file_get_contents('imgdum/1' . $dG->getName());
-                // unlink('imgdum/1' . $dG->getName());
+                    ->resize(300, 300, true, 'height')->save('img/barang/300/' . $data['id']  . '.webp');
             }
             unlink('imgdum/' . $dG->getName());
-            $iterasi++;
         }
 
         $insertDataBarang = [
@@ -390,42 +216,25 @@ class AdminController extends BaseController
             'harga' => $data['harga'],
             'pencarian' => '',
             'rate' => '0',
-            'deskripsi' => json_encode([
-                'deskripsi' => $data['deskripsi'],
-                'dimensi' => [
-                    'asli' => [
-                        'panjang' => $data['panjang-asli'],
-                        'lebar' => $data['lebar-asli'],
-                        'tinggi' => $data['tinggi-asli'],
-                        'berat' => $data['berat-asli'],
-                    ],
-                    'paket' => [
-                        'panjang' => $data['panjang-paket'],
-                        'lebar' => $data['lebar-paket'],
-                        'tinggi' => $data['tinggi-paket'],
-                        'berat' => $data['berat-paket'],
-                    ]
-                ],
-                'perawatan' => $data['perawatan']
-            ]),
+            'deskripsi' => $data['deskripsi'],
             'kategori' => $koleksiSelected,
             'subkategori' => $jenisSelected,
             'diskon' => $data['diskon'],
-            'varian' => json_encode($varianData),
+            'varian' => $data['varian'],
             'shopee' => $data['shopee'],
             'tokped' => $data['tokped'],
             'tiktok' => $data['tiktok'],
             'active' => '1',
-            'gambar' => null,
-            'gambar_hover' => null,
-            'ruang_tamu' => isset($data['ruang_tamu']) ? '1' : '0',
-            'ruang_keluarga' => isset($data['ruang_keluarga']) ? '1' : '0',
-            'ruang_tidur' => isset($data['ruang_tidur']) ? '1' : '0',
+            'ruang_tamu' => $data['ruang_tamu'],
+            'ruang_keluarga' => $data['ruang_keluarga'],
+            'ruang_tidur' => $data['ruang_tidur'],
         ];
         $this->barangModel->insert($insertDataBarang);
-        // $this->gambarBarangModel->insert($insertGambarBarang);
-        // $this->gambarBarang3000Model->insert($insertGambarBarang3000);
-        return redirect()->to('admin/product');
+        return $this->response->setStatusCode(200)->setJSON([
+            'data_gambar_mentah' => $data_gambar_mentah,
+            'dataYgDiInsertKeBarang' => $insertDataBarang,
+            'pesan' => 'Berhasil menambahkan produk ' . $data['nama']
+        ], false);
     }
     public function editProduct($id_product)
     {
@@ -527,14 +336,14 @@ class AdminController extends BaseController
                 \Config\Services::image()
                     ->withFile('imgdum/' . $g->getName())
                     ->resize(3000, 3000, true, 'height')->save('img/barang/3000/' . $g->getName() . '.webp');
-                
+
                 if (file_exists('img/barang/1000/' . $g->getName() . '.webp')) {
                     unlink('img/barang/1000/' . $g->getName() . '.webp');
                 }
                 \Config\Services::image()
                     ->withFile('imgdum/' . $g->getName())
                     ->resize(1000, 1000, true, 'height')->save('img/barang/1000/' . $g->getName() . '.webp');
-                
+
                 if (file_exists('img/barang/300/' . $g->getName() . '.webp')) {
                     unlink('img/barang/300/' . $g->getName() . '.webp');
                 }
@@ -1542,7 +1351,7 @@ class AdminController extends BaseController
     public function suratInvoiceDP($id_pesanan)
     {
         $pemesanan = $this->pemesananOfflineModel->getPemesanan($id_pesanan);
-        
+
         $items = $this->pemesananOfflineItemModel
             ->select('pemesanan_offline_item.*')
             ->select('barang.nama')
@@ -1736,7 +1545,7 @@ class AdminController extends BaseController
             return "cURL Error #:" . $err;
         }
         $provinsi = json_decode($response, true);
-        
+
         $data = [
             'title' => 'Pesanan',
             'apikey_img_ilena' => $this->apikey_img_ilena,
@@ -1832,13 +1641,13 @@ class AdminController extends BaseController
         $body['downPayment'] = (int)$body['downPayment'];
         $body['npwp'] = $body['npwp'] == '-' ? null : $body['npwp'];
 
-        if($body['downPayment'] > $body['totalAkhir']) {
+        if ($body['downPayment'] > $body['totalAkhir']) {
             return $this->response->setStatusCode(400)->setJSON([
                 'success' => false,
                 'pesan' => 'Down Payment melebihi total akhir',
             ]);
         }
-        if($body['potonganHargaSatuan'] > 25) {
+        if ($body['potonganHargaSatuan'] > 25) {
             return $this->response->setStatusCode(400)->setJSON([
                 'success' => false,
                 'pesan' => 'Potongan harga satuan melebihi 25%',
@@ -1887,7 +1696,7 @@ class AdminController extends BaseController
                     'message' => 'Stok tidak mencukupi untuk produk ' . $item['varian'] . ' pada barang ' . $produkCur['nama'],
                 ], false);
             }
-            if($body['downPayment'] == 0) {
+            if ($body['downPayment'] == 0) {
                 $this->barangModel->where('id', $item['id'])->set([
                     'varian' => json_encode($varianBaru)
                 ])->update();
@@ -1939,8 +1748,9 @@ class AdminController extends BaseController
             'id_pesanan' => $idFix,
         ], false);
     }
-    public function actionBuatDP() {
-        
+    public function actionBuatDP()
+    {
+
         $tanggal = $this->request->getVar('tanggal');
         $idPesanan = $this->request->getVar('id_pesanan');
         $npwp = $this->request->getVar('npwp');
@@ -1953,7 +1763,7 @@ class AdminController extends BaseController
             ->select('barang.deskripsi')
             ->join('barang', 'barang.id = pemesanan_offline_item.id_barang')
             ->where(['id_pesanan' => $idPesanan])->findAll();
-        
+
         //generate id
         $dataTerbaru = $this->pemesananOfflineModel->like('id_pesanan', 'SJ', 'after')->orderBy('id', 'desc')->first();
         $idFix = 'SJ' . (sprintf("%08d", $dataTerbaru ? ((int)substr($dataTerbaru['id_pesanan'], 2) + 1) : 1));
@@ -1967,7 +1777,7 @@ class AdminController extends BaseController
             'nama_npwp' => $npwp ? $nama_npwp : null,
             'npwp' => $npwp ? $npwp : null,
             'tanggal' => $tanggal,
-            'tanggal_inv' => $npwp ? $tanggal: null,
+            'tanggal_inv' => $npwp ? $tanggal : null,
             'id_pesanan' => $idFix,
             'status' => "pending",
             'jenis' => 'sale',
@@ -2000,7 +1810,7 @@ class AdminController extends BaseController
                 array_push($filter, $i['id_barang'] . '-' . $i['varian']);
             }
         }
-        
+
         foreach ($itemsFiltered as $i) {
             $produkCur = $this->barangModel->getBarang($i['id_barang']);
             $varian = json_decode($produkCur['varian'], true);
@@ -2198,7 +2008,8 @@ class AdminController extends BaseController
         dd('done');
     }
 
-    public function actionAccOrderOffline($id_pesanan) {
+    public function actionAccOrderOffline($id_pesanan)
+    {
         $this->pemesananOfflineModel->where(['id_pesanan' => $id_pesanan])->set(['status' => 'success'])->update();
         session()->setFlashdata('msg', 'Invoice ' . $id_pesanan . ' sudah lunas');
         return redirect()->to('/admin/order/offline/sale');

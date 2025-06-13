@@ -232,18 +232,15 @@
                             style={{
                                 flex: 1,
                                 display: 'grid',
-                                gridTemplateColumns: 'repeat(3, 1fr)',
-                                rowGap: '1em',
+                                gridTemplateColumns: `repeat(${jenisSelected.products && Array.isArray(jenisSelected.products) ? '2' : '3'}, 1fr)`,
+                                rowGap: jenisSelected.products && Array.isArray(jenisSelected.products) ? '0em' : '1em',
                             }}
                         >
                         {jenisSelected.products && <>
                             {Array.isArray(jenisSelected.products)
                             ? jenisSelected.products.map((product, index) => (
                                 <div key={product.id}>
-                                    <p className="m-0" style={{ fontSize: '14px' }}>
-                                        Jelajahi {product.koleksi.charAt(0).toUpperCase() + product.koleksi.slice(1)}
-                                    </p>
-                                    <div className="ms-2">
+                                    <div className="ms-1">
                                         <a
                                             className="w-100 d-block"
                                             style={{
