@@ -62,6 +62,13 @@
         const [gambarFile, setGambarFile] = useState([]);
         const idStr = useRef("1-00-000-XX");
 
+        useEffect(() => {
+            if(idProduct) {
+                const currentProduct = JSON.parse('<?= isset($produkJson) ? $produkJson : ''; ?>');
+                console.log(currentProduct);
+            }
+        }, [])
+
         useEffect(()=>{
             console.log(formData)
         }, [formData])

@@ -245,23 +245,30 @@ class AdminController extends BaseController
         $koleksi = $this->koleksiModel->getKoleksi();
         $jenis = $this->jenisModel->getJenis();
         // dd($product);
-        $hitungVarian = '';
-        foreach ($product['varian'] as $ind => $v) {
-            if ($ind == 0) {
-                $hitungVarian = $hitungVarian . ($ind + 1);
-            } else {
-                $hitungVarian = $hitungVarian . "," . ($ind + 1);
-            }
-        }
+        // $hitungVarian = '';
+        // foreach ($product['varian'] as $ind => $v) {
+        //     if ($ind == 0) {
+        //         $hitungVarian = $hitungVarian . ($ind + 1);
+        //     } else {
+        //         $hitungVarian = $hitungVarian . "," . ($ind + 1);
+        //     }
+        // }
         $data = [
             'title' => 'Tambah Produk',
             'apikey_img_ilena' => $this->apikey_img_ilena,
+            'jenisJson' => json_encode($jenis),
+            'koleksiJson' => json_encode($koleksi),
             'koleksi' => $koleksi,
             'jenis' => $jenis,
             'produk' => $product,
-            'hitungVarian' => $hitungVarian
+            'produkJson' => json_encode($product),
+            'idProduct' => $id_product,
+            'val' => [
+                'msg' => session()->getFlashdata('val-id'),
+            ]
+            // 'hitungVarian' => $hitungVarian
         ];
-        return view('admin/edit', $data);
+        return view('admin/add', $data);
     }
     public function actionEditProduct($pathname = false)
     {
