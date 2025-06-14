@@ -46,7 +46,7 @@
                 //     kode: "#000000",
                 //     stok: "2",
                 //     urutan_gambar: "1,2"
-                // }
+                // }qwdqw
             ],
             shopee: '',
             tokped: '',
