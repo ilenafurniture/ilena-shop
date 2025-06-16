@@ -328,9 +328,9 @@
                         </form>
                     </div>
                     <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="gambar">
-                        <img class="<?= $p['gambar_hover'] ? '' : 'nonhover'; ?> img-pic" id="img<?= $ind_p ?>"
+                        <img class=" img-pic" id="img<?= $ind_p ?>"
                             src="<?= base_url('img/barang/300/' . $p['id'] . '.webp') ?>" alt="">
-                        <img class="<?= $p['gambar_hover'] ? '' : 'nonhover'; ?> img-pic-hover" id="img<?= $ind_p ?>"
+                        <img class=" img-pic-hover" id="img<?= $ind_p ?>"
                             src="<?= base_url('img/barang/hover/' . $p['id'] . '.webp') ?>" alt="">
                     </a>
                 </div>
