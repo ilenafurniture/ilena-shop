@@ -32,3 +32,7 @@ defined('SHOW_DEBUG_BACKTRACE') || define('SHOW_DEBUG_BACKTRACE', true);
  | items. It can always be used within your own application too.
  */
 defined('CI_DEBUG') || define('CI_DEBUG', true);
+
+if (class_exists(\Kint\Kint::class)) {
+    \Kint\Kint::$file_link_format = '%f:%l';
+}
