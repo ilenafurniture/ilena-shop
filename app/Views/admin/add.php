@@ -1,10 +1,10 @@
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
 <style>
-    .container-gambar-add-product {
-        display: flex;
-        flex-wrap: wrap;
-    }
+.container-gambar-add-product {
+    display: flex;
+    flex-wrap: wrap;
+}
 </style>
 <div style="padding: 2em;">
     <div id="container-react"></div>
@@ -15,6 +15,7 @@
     const jenis = JSON.parse('<?= $jenisJson; ?>');
     const idProduct = '<?= isset($idProduct) ? $idProduct : ''; ?>'
     const App = () => {
+        const firstRender = useRef(true);
         const [formData, setFormData] = useState({
             id: '',
             nama: '',
@@ -66,10 +67,32 @@
             if(idProduct) {
                 const currentProduct = JSON.parse('<?= isset($produkJson) ? $produkJson : ''; ?>');
                 console.log(currentProduct);
+                setHoverSrc('<?= base_url('img/barang/hover/' . ($produk ? $produk['id'] : '') . '.webp') ?>');
+                console.log(currentProduct.varian.reduce((prev,cur) => {
+                    return prev.concat(cur.urutan_gambar.split(',').map((item) => {
+                        return `<?= base_url('img/barang/1000/' . ($produk ? $produk['id'] : '') . '-') ?>${item}.webp`;
+                    }));
+                },[]));
+                
+                console.log("FORM DATA ANJAYYY");
+                console.log({
+                    ...formData,
+                    nama: currentProduct.nama,
+                    harga: currentProduct.harga,
+                    deskripsi: currentProduct.deskripsi,
+                    kategori: currentProduct.kategori,
+                    subkategori: currentProduct.subkategori,
+                    diskon: currentProduct.diskon,
+                    varian: currentProduct.varian,
+                    shopee: currentProduct.shopee,
+                    tokped: currentProduct.tokped,
+                    tiktok: currentProduct.tiktok
+                });
             }
         }, [])
 
         useEffect(()=>{
+            console.log("FORM DATA")
             console.log(formData)
         }, [formData])
 
@@ -93,6 +116,32 @@
         }, [formData.subkategori])
 
         useEffect(() => {
+            if(firstRender.current) {
+                if(idProduct) {
+                    const currentProduct = JSON.parse('<?= isset($produkJson) ? $produkJson : ''; ?>');
+                    
+                    setFormData({
+                        ...formData,
+                        nama: currentProduct.nama,
+                        harga: currentProduct.harga,
+                        deskripsi: currentProduct.deskripsi,
+                        kategori: currentProduct.kategori,
+                        subkategori: currentProduct.subkategori,
+                        diskon: currentProduct.diskon,
+                        varian: currentProduct.varian,
+                        shopee: currentProduct.shopee,
+                        tokped: currentProduct.tokped,
+                        tiktok: currentProduct.tiktok
+                    }); 
+                    setGambarSrc(currentProduct.varian.map((v) => {
+                        return v.urutan_gambar.split(',').map((item) => {
+                            return `<?= base_url('img/barang/1000/' . ($produk ? $produk['id'] : '') . '-') ?>${item}.webp`;
+                        });
+                    },[]));
+                }
+                firstRender.current = false;
+                return
+            }
             setFormData({
                 ...formData,
                 varian: formData.varian.map((v, ind_v) => {
@@ -108,14 +157,16 @@
                             }, '')
                     }
                 })
-            })
+            }) 
+            
         }, [gambarSrc])
 
         const handleSubmit = () => {
             const form = new FormData();
+            const keyDisallow = ['id','kategori','subkategori'];
             for (const key in formData) {
                 if(idProduct) {
-                    if(key != 'id') {
+                    if(!keyDisallow.includes(key)) {
                         if (typeof formData[key] == 'string') {
                             form.append(key, formData[key]);
                         } else if (typeof formData[key] == 'boolean') {
@@ -145,9 +196,7 @@
                 form.append(`gambar_${ind_i}`, item);
             });
 
-            console.log(`<?= base_url(); ?>/admin/product${
-                        idProduct ? `/${idProduct}` : ""
-                    }`);
+            
             (async () => {
                 const responseFetch = await fetch(
                     `<?= base_url(); ?>/admin/product${
@@ -223,56 +272,61 @@
                                         </div>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>Koleksi</td>
-                                    <td>
+                                {!idProduct &&
+                                <>
+                                    <tr>
+                                        <td>Koleksi</td>
+                                        <td>
+                                            <div className="baris">
+                                                <select 
+                                                    className="form-select" 
+                                                    value={formData.kategori}
+                                                    onChange={(e) => {setFormData({...formData, kategori: e.target.value})}}
+                                                    required
+                                                >
+                                                    <option value="">-- Pilih koleksi --</option>
+                                                    {koleksi.map((k, ind_k) => (
+                                                        <option key={ind_k} value={k.id}>{k.nama}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Jenis</td>
+                                        <td>
                                         <div className="baris">
-                                            <select 
-                                                className="form-select" 
-                                                value={formData.kategori}
-                                                onChange={(e) => {setFormData({...formData, kategori: e.target.value})}}
-                                                required
-                                            >
-                                                <option value="">-- Pilih koleksi --</option>
-                                                {koleksi.map((k, ind_k) => (
-                                                    <option key={ind_k} value={k.id}>{k.nama}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Jenis</td>
-                                    <td>
-                                    <div className="baris">
-                                            <select 
-                                                className="form-select" 
-                                                value={formData.subkategori}
-                                                onChange={(e) => {setFormData({...formData, subkategori: e.target.value})}}
-                                                required
-                                            >
-                                                <option value="">-- Pilih jenis --</option>
-                                                {jenis.map((j, ind_j) => (
-                                                    <option key={ind_j} value={j.id}>{j.nama}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>ID Produk</td>
-                                    <td>
-                                        <div className="baris">
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                value={formData.id}
-                                                onChange={(e) => {setFormData({...formData, id: e.target.value})}}
-                                                required
-                                            />
-                                        </div>
-                                    </td>
-                                </tr>
+                                                <select 
+                                                    className="form-select" 
+                                                    value={formData.subkategori}
+                                                    onChange={(e) => {setFormData({...formData, subkategori: e.target.value})}}
+                                                    required
+                                                >
+                                                    <option value="">-- Pilih jenis --</option>
+                                                    {jenis.map((j, ind_j) => (
+                                                        <option key={ind_j} value={j.id}>{j.nama}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>ID Produk</td>
+                                        <td>
+                                            <div className="baris">
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={formData.id}
+                                                    onChange={(e) => {setFormData({...formData, id: e.target.value})}}
+                                                    required
+                                                />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </>
+                                }
                                 <tr>
                                     <td>Link Shopee</td>
                                     <td>

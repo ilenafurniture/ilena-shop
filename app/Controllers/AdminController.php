@@ -117,6 +117,7 @@ class AdminController extends BaseController
             'koleksiJson' => json_encode($koleksi),
             'jenis' => $jenis,
             'jenisJson' => json_encode($jenis),
+            'produk' => false,
             'val' => [
                 'msg' => session()->getFlashdata('val-id'),
             ]
@@ -244,15 +245,14 @@ class AdminController extends BaseController
         $product['varian'] = json_decode($product['varian'], true);
         $koleksi = $this->koleksiModel->getKoleksi();
         $jenis = $this->jenisModel->getJenis();
-        // dd($product);
-        // $hitungVarian = '';
-        // foreach ($product['varian'] as $ind => $v) {
-        //     if ($ind == 0) {
-        //         $hitungVarian = $hitungVarian . ($ind + 1);
-        //     } else {
-        //         $hitungVarian = $hitungVarian . "," . ($ind + 1);
-        //     }
-        // }
+        unset($product['gambar']);
+        unset($product['tgl_update']);
+        unset($product['active']);
+        $product['ruang_tamu'] = $product['ruang_tamu'] == '1' ? true : false;
+        $product['ruang_keluarga'] = $product['ruang_keluarga'] == '1'? true : false;
+        $product['ruang_tidur'] = $product['ruang_tidur'] == '1' ? true : false;
+        $product['kategori'] = $this->koleksiModel->where('nama', $product['kategori'])->first()['id'];
+        $product['subkategori'] = $this->jenisModel->where('nama', $product['subkategori'])->first()['id'];
         $data = [
             'title' => 'Tambah Produk',
             'apikey_img_ilena' => $this->apikey_img_ilena,
@@ -275,6 +275,7 @@ class AdminController extends BaseController
         $idBarang = $this->request->getVar('id');
         $barangCur = $this->barangModel->getBarangAdmin($idBarang);
         $gambarBarangCur = $this->gambarBarangModel->getGambar($idBarang);
+
         if (!$barangCur) {
             session()->setFlashdata('val-id', 'ID barang tidak ditemukan');
             return redirect()->to('/admin/editproduct/' . $idBarang)->withInput();
@@ -283,191 +284,77 @@ class AdminController extends BaseController
         $koleksi = $this->koleksiModel->getKoleksi();
         $jenis = $this->jenisModel->getJenis();
         $data = $this->request->getVar();
-        $data_gambar_mentah = $this->request->getFiles();
+        $files = $this->request->getFiles();
 
-        // $getFileGambarHover = $data_gambar_mentah['gambar_hover']->isValid() ? file_get_contents($data_gambar_mentah['gambar_hover']) : $barangCur['gambar_hover'];
-        // unset($data_gambar_mentah['gambar_hover']);
-
-        //gambar hover
-        if ($data_gambar_mentah['gambar_hover']->isValid()) {
-            $fp = 'imgdum/barang/hover';
-            $data_gambar_mentah['gambar_hover']->move($fp, $data['id'] . '.webp');
-            if (file_exists('img/barang/hover/' . $data['id'] . '.webp')) {
-                unlink('img/barang/hover/' . $data['id'] . '.webp');
-            }
+        // Gambar Hover
+        if (isset($files['gambar_hover']) && $files['gambar_hover']->isValid()) {
+            $tmpPath = 'imgdum/barang/hover';
+            $files['gambar_hover']->move($tmpPath, $idBarang . '.webp');
+            $finalPath = 'img/barang/hover/' . $idBarang . '.webp';
+            if (file_exists($finalPath)) unlink($finalPath);
             \Config\Services::image()
-                ->withFile($fp)
-                ->resize(300, 300, true, 'height')->save('img/barang/hover/' . $data['id'] . '.webp');
-            unlink($fp . '/' . $data['id'] . '.webp');
+                ->withFile($tmpPath . '/' . $idBarang . '.webp')
+                ->resize(300, 300, true, 'height')
+                ->save($finalPath);
+            unlink($tmpPath . '/' . $idBarang . '.webp');
         }
 
-        unset($data_gambar_mentah['gambar_hover']);
-
-        // difilter data gambar mentah krn ada input yg hanya sebagai penambah saja
-        reset($data_gambar_mentah);
-        $cekInputTerakhir = explode("-", key($data_gambar_mentah))[0] . "-" . explode("-", key($data_gambar_mentah))[1];
-
-        // dd($cekInputTerakhir);
-        $simpanInd = '';
-        $arrIndLast = [];
-        foreach ($data_gambar_mentah as $ind_dgm => $dgm) {
-            if (explode("-", $ind_dgm)[0] . "-" . explode("-", $ind_dgm)[1] != $cekInputTerakhir) {
-                array_push($arrIndLast, $simpanInd);
-                $cekInputTerakhir = explode("-", $ind_dgm)[0] . "-" . explode("-", $ind_dgm)[1];
-            }
-            $simpanInd = $ind_dgm;
-        }
-
-        end($data_gambar_mentah);
-        array_push($arrIndLast, key($data_gambar_mentah));
-        foreach ($arrIndLast as $ai) {
-            unset($data_gambar_mentah[$ai]);
-        }
-        // dd($data_gambar_mentah);
-
-        $data_gambar = [];
-        $jmlUrutanGambar = [];
-        $sumJml = 0;
-        foreach (json_decode($barangCur['varian'], true) as $v) {
-            $sumJml += count(explode(',', $v['urutan_gambar']));
-            array_push($jmlUrutanGambar, $sumJml);
-        }
-        $cekcekek = [];
-        foreach ($data_gambar_mentah as $key => $g) {
-            if ($g->isValid()) {
-                // $data_gambar[$key] = file_get_contents($g);
-                $g->move('imgdum');
-                if (file_exists('img/barang/3000/' . $g->getName() . '.webp')) {
-                    unlink('img/barang/3000/' . $g->getName() . '.webp');
+        // Gambar Varian
+        $gambarPaths = [];
+        foreach ($files as $key => $file) {
+            if (strpos($key, 'gambar_') === 0 && $file->isValid()) {
+                $urutan = (int) explode('_', $key)[1];
+                $file->move('imgdum');
+                $filename = $file->getName();
+                foreach ([3000, 1000, 300] as $size) {
+                    $savePath = "img/barang/{$size}/{$idBarang}-" . ($urutan + 1) . '.webp';
+                    if (file_exists($savePath)) unlink($savePath);
+                    \Config\Services::image()
+                        ->withFile('imgdum/' . $filename)
+                        ->resize($size, $size, true, 'height')
+                        ->save($savePath);
                 }
-                \Config\Services::image()
-                    ->withFile('imgdum/' . $g->getName())
-                    ->resize(3000, 3000, true, 'height')->save('img/barang/3000/' . $g->getName() . '.webp');
-
-                if (file_exists('img/barang/1000/' . $g->getName() . '.webp')) {
-                    unlink('img/barang/1000/' . $g->getName() . '.webp');
-                }
-                \Config\Services::image()
-                    ->withFile('imgdum/' . $g->getName())
-                    ->resize(1000, 1000, true, 'height')->save('img/barang/1000/' . $g->getName() . '.webp');
-
-                if (file_exists('img/barang/300/' . $g->getName() . '.webp')) {
-                    unlink('img/barang/300/' . $g->getName() . '.webp');
-                }
-                \Config\Services::image()
-                    ->withFile('imgdum/' . $g->getName())
-                    ->resize(300, 300, true, 'height')->save('img/barang/300/' . $g->getName() . '.webp');
-                unlink('imgdum/' . $g->getName());
-            } else {
-                // if ($gambarBarangCur['gambar' . explode("-", $key)[2]] != null) {
-                //     $data_gambar[$key] = $gambarBarangCur['gambar' . explode("-", $key)[2]];
-                // }
-                if ((int)explode("-", $key)[1] == 1) {
-                    if ($gambarBarangCur['gambar' . explode("-", $key)[2]] != null) {
-                        array_push($cekcekek, 'gambar' . explode("-", $key)[2]);
-                        $data_gambar[$key] = $gambarBarangCur['gambar' . explode("-", $key)[2]];
-                    }
-                } else {
-                    array_push($cekcekek, 'gambar' . ((int)explode("-", $key)[2] + $jmlUrutanGambar[(int)explode("-", $key)[1] - 2]));
-                    if ($gambarBarangCur['gambar' . ((int)explode("-", $key)[2] + $jmlUrutanGambar[(int)explode("-", $key)[1] - 2])] != null) {
-                        $data_gambar[$key] = $gambarBarangCur['gambar' . ((int)explode("-", $key)[2] + $jmlUrutanGambar[(int)explode("-", $key)[1] - 2])];
-                    }
-                }
+                unlink('imgdum/' . $filename);
+                $gambarPaths['gambar' . ($urutan + 1)] = "{$idBarang}-" . ($urutan + 1) . '.webp';
             }
         }
-        $jumlahVarian = explode(",", $this->request->getVar('hitung-varian')); //nilai indeks/urutan varian yg masuk ke backend
-        // dd([
-        //     'jmlUrutan' => $jmlUrutanGambar,
-        //     'dataGambar' => $data_gambar,
-        //     'getvar' => $data_gambar_mentah,
-        //     'cekcekcek' => $cekcekek
-        // ]);
-        $insertGambarBarang = [];
-        $varianData = json_decode($barangCur['varian'], true);
 
-        // dd($data_gambar);
-
-        $counterGambar = 0;
-        $varianDataBaru = [];
-        foreach ($jumlahVarian as $j) {
-            $urutanGambar = [];
-            foreach ($data_gambar as $ind_g => $g) {
-                if (explode("-", $ind_g)[1] == $j) {
-                    $counterGambar++;
-                    array_push($urutanGambar, $counterGambar);
-                    $insertGambarBarang['gambar' . $counterGambar] = $g;
-                }
-            }
-            $itemVarianBaru = [
-                'nama' => $data['nama-var' . $j],
-                'kode' => $data['kode-var' . $j],
-                'stok' => $data['stok-var' . $j],
-                'urutan_gambar' => implode(",", $urutanGambar),
-            ];
-            array_push($varianDataBaru, $itemVarianBaru);
-        }
-
-        $dataKategori = $data['kategori'];
-        $koleksiSelected = array_values(array_filter($koleksi, function ($var) use ($dataKategori) {
-            return ($var['id'] == $dataKategori);
-        }))[0]['nama'];
-        $dataSubkategori = $data['subkategori'];
-        $jenisSelected = array_values(array_filter($jenis, function ($var) use ($dataSubkategori) {
-            return ($var['id'] == $dataSubkategori);
-        }))[0]['nama'];
-
-        // $index_data_gambar = array_flip(array_keys($data_gambar));
-        // foreach ($data_gambar as $key_dg => $dG) {
-        //     $insertGambarBarang['gambar' . ((int)$index_data_gambar[$key_dg] + 1)] = file_get_contents($dG);
-        // }
-        $insertDataBarang = [
-            'nama' => $data['nama'],
-            'harga' => $data['harga'],
-            'deskripsi' => json_encode([
-                'deskripsi' => $data['deskripsi'],
-                'dimensi' => [
-                    'asli' => [
-                        'panjang' => $data['panjang-asli'],
-                        'lebar' => $data['lebar-asli'],
-                        'tinggi' => $data['tinggi-asli'],
-                        'berat' => $data['berat-asli'],
-                    ],
-                    'paket' => [
-                        'panjang' => $data['panjang-paket'],
-                        'lebar' => $data['lebar-paket'],
-                        'tinggi' => $data['tinggi-paket'],
-                        'berat' => $data['berat-paket'],
-                    ]
-                ],
-                'perawatan' => $data['perawatan']
-            ]),
-            'kategori' => $koleksiSelected,
-            'subkategori' => $jenisSelected,
-            'diskon' => $data['diskon'],
-            'varian' => json_encode($varianDataBaru),
-            'shopee' => $data['shopee'],
-            'tokped' => $data['tokped'],
-            'tiktok' => $data['tiktok'],
-            'gambar' => $insertGambarBarang['gambar1'],
-            // 'gambar_hover' => $getFileGambarHover,
-            'ruang_tamu' => isset($data['ruang_tamu']) ? '1' : '0',
-            'ruang_keluarga' => isset($data['ruang_keluarga']) ? '1' : '0',
-            'ruang_tidur' => isset($data['ruang_tidur']) ? '1' : '0',
-        ];
-
-        $this->barangModel->where(['id' => $idBarang])->set($insertDataBarang)->update();
-
-        //kosongin semua gambar di db gambar barang
+        // Update Gambar DB
         foreach ($gambarBarangCur as $ind_g => $g) {
-            if ($g != null && $ind_g != 'id') {
+            if ($g !== null && $ind_g !== 'id') {
                 $this->gambarBarangModel->where(['id' => $idBarang])->set([$ind_g => null])->update();
                 $this->gambarBarang3000Model->where(['id' => $idBarang])->set([$ind_g => null])->update();
             }
         }
-        $this->gambarBarangModel->where(['id' => $idBarang])->set($insertGambarBarang)->update();
-        $this->gambarBarang3000Model->where(['id' => $idBarang])->set($insertGambarBarang)->update();
+        $this->gambarBarangModel->where(['id' => $idBarang])->set($gambarPaths)->update();
+        $this->gambarBarang3000Model->where(['id' => $idBarang])->set($gambarPaths)->update();
+
+        // Decode koleksi dan jenis
+        $koleksiSelected = array_values(array_filter($koleksi, fn($k) => $k['id'] == $data['kategori']))[0]['nama'];
+        $jenisSelected = array_values(array_filter($jenis, fn($j) => $j['id'] == $data['subkategori']))[0]['nama'];
+
+        // Final insert
+        $insertDataBarang = [
+            'nama' => $data['nama'],
+            'harga' => $data['harga'],
+            'deskripsi' => $data['deskripsi'], // sudah JSON string
+            'kategori' => $koleksiSelected,
+            'subkategori' => $jenisSelected,
+            'diskon' => $data['diskon'],
+            'varian' => $data['varian'], // sudah JSON string
+            'shopee' => $data['shopee'],
+            'tokped' => $data['tokped'],
+            'tiktok' => $data['tiktok'],
+            'gambar' => $gambarPaths['gambar1'] ?? $barangCur['gambar'],
+            'ruang_tamu' => $data['ruang_tamu'] ?? '0',
+            'ruang_keluarga' => $data['ruang_keluarga'] ?? '0',
+            'ruang_tidur' => $data['ruang_tidur'] ?? '0',
+        ];
+        $this->barangModel->where(['id' => $idBarang])->set($insertDataBarang)->update();
+
         return redirect()->to($pathname ? str_replace('@', '/', $pathname) : 'admin/product');
     }
+
 
     public function mutasi($data = false)
     {
