@@ -9,6 +9,7 @@
 <div style="padding: 2em;">
     <div id="container-react"></div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/babel">
     const { useState, useEffect, useRef } = React;
     const koleksi = JSON.parse('<?= $koleksiJson; ?>')
@@ -17,7 +18,7 @@
     const App = () => {
         const firstRender = useRef(true);
         const [formData, setFormData] = useState({
-            id: '',
+            id: idProduct || '',
             nama: '',
             harga: '',
             deskripsi: {
@@ -61,11 +62,12 @@
         const [hoverFile, setHoverFile] = useState(null);
         const [gambarSrc, setGambarSrc] = useState([]);
         const [gambarFile, setGambarFile] = useState([]);
+        const [loading, setLoading] = useState(false);
         const idStr = useRef("1-00-000-XX");
 
         useEffect(() => {
             if(idProduct) {
-                const currentProduct = JSON.parse('<?= isset($produkJson) ? $produkJson : ''; ?>');
+                const currentProduct = JSON.parse(<?= json_encode($produkJson ?? '{}') ?>);
                 console.log(currentProduct);
                 setHoverSrc('<?= base_url('img/barang/hover/' . ($produk ? $produk['id'] : '') . '.webp') ?>');
                 console.log(currentProduct.varian.reduce((prev,cur) => {
@@ -118,7 +120,8 @@
         useEffect(() => {
             if(firstRender.current) {
                 if(idProduct) {
-                    const currentProduct = JSON.parse('<?= isset($produkJson) ? $produkJson : ''; ?>');
+                    const currentProduct = JSON.parse(<?= json_encode($produkJson ?? '{}') ?>);
+
                     
                     setFormData({
                         ...formData,
@@ -162,59 +165,102 @@
         }, [gambarSrc])
 
         const handleSubmit = () => {
-            const form = new FormData();
-            const keyDisallow = ['id','kategori','subkategori'];
-            for (const key in formData) {
-                if(idProduct) {
-                    if(!keyDisallow.includes(key)) {
-                        if (typeof formData[key] == 'string') {
-                            form.append(key, formData[key]);
-                        } else if (typeof formData[key] == 'boolean') {
-                            form.append(key, formData[key] ? '1' : '0');
-                        } else {
-                            form.append(key, JSON.stringify(formData[key]));
-                        }
+            if (!formData.nama || !formData.harga) {
+                setEror("Nama dan harga produk wajib diisi.");
+                return;
+            }
+
+            if (formData.varian.length === 0) {
+                setEror("Minimal 1 varian harus ditambahkan.");
+                return;
+            }
+
+            if (!idProduct) {
+                for (let i = 0; i < formData.varian.length; i++) {
+                    if (!gambarFile[i] || gambarFile[i].length === 0) {
+                    setEror(`Varian ke-${i + 1} belum memiliki gambar.`);
+                    return;
                     }
-                } else {
-                    if (typeof formData[key] == 'string') {
-                            form.append(key, formData[key]);
-                        } else if (typeof formData[key] == 'boolean') {
-                            form.append(key, formData[key] ? '1' : '0');
-                        } else {
-                            form.append(key, JSON.stringify(formData[key]));
-                        }
                 }
             }
-            if(hoverFile) {
-                form.append('gambar_hover', hoverFile);
+
+            console.log("ISI formData SAAT SUBMIT", formData);
+            const form = new FormData();
+
+            for (const key in formData) {
+                const value = formData[key];
+                if (typeof value === "string" || typeof value === "number") {
+                form.append(key, value);
+                } else if (typeof value === "boolean") {
+                form.append(key, value ? "1" : "0");
+                } else {
+                form.append(key, JSON.stringify(value));
+                }
             }
-            const gambarFileFix = gambarFile.reduce((prev, curr) => {
-                return prev.concat(curr);
-            }, [])
-            console.log(gambarFileFix);
-            gambarFileFix.forEach((item, ind_i) => {
-                form.append(`gambar_${ind_i}`, item);
+            if (idProduct) {
+                form.append("id", formData.id);
+                form.append("_method", "PUT");
+            }
+
+            if (hoverFile) {
+                form.append("gambar_hover", hoverFile);
+            }
+
+            const gambarFileFix = gambarFile.reduce((prev, curr) => prev.concat(curr), []);
+            if (gambarFileFix.length === 0 && !idProduct) {
+                setEror("Minimal upload satu gambar untuk varian pertama.");
+                return;
+            }
+
+            gambarFileFix.forEach((file, idx) => {
+                form.append(`gambar_${idx}`, file);
             });
 
-            
+            setLoading(true);
+            setEror("");
+
             (async () => {
-                const responseFetch = await fetch(
-                    `<?= base_url(); ?>/admin/product${
-                        idProduct ? `/${idProduct}` : ""
-                    }`,
+                try {
+                console.log("Mengirim data ke server...", form);
+                const response = await fetch(
+                    `<?= rtrim(base_url(), '/'); ?>/admin/product${idProduct ? `/${idProduct}` : ""}`,
                     {
-                        method: idProduct ? "put" : "post",
+                        method: "POST",
+                        headers: {
+                        Accept: "application/json"
+                        },
                         body: form,
                     }
                 );
-                console.log(responseFetch)
-                const productJson = await responseFetch.json();
-                console.log(productJson);
-                // if (responseFetch.status != 200) {
-                //     return setEror(productJson.pesan);
-                // }
+
+
+                const result = await response.json();
+                setLoading(false);
+
+                if (!response.ok) {
+                    setEror(result.pesan || "Terjadi kesalahan saat menyimpan data.");
+                    return;
+                }
+
+                Swal.fire({
+                    title: "Berhasil!",
+                    text: "Produk berhasil disimpan.",
+                    icon: "success",
+                    confirmButtonText: "OK"
+                    }).then(() => {
+                    window.location.href = `<?= base_url('admin/product'); ?>`;
+                });
+
+                } catch (err) {
+                console.error("Gagal mengirim data:", err);
+                setLoading(false);
+                setEror("Gagal menghubungi server.");
+                }
             })();
-        }
+        };
+
+
+
 
         return (
             <>
@@ -674,8 +720,8 @@
                             </tbody>
                         </table>
                         <div className=" show-flex-ke-hide mt-4 justify-content-center gap-2">
-                            <button className="btn-default" onClick={() => {handleSubmit()}}>
-                                Simpan
+                            <button className="btn-default" disabled={loading} onClick={() => {handleSubmit()}}>
+                                {loading ? 'Menyimpan...' : 'Simpan'}
                             </button>
                         </div>
                     </div>
@@ -706,7 +752,6 @@
                                 name="gambar_hover"
                                 type="file"
                                 className="form-control"
-                                onchange="uploadFileGambarHover(event)"
                             />
                         </div>
                         <h5 className="jdl-section">Varian</h5>
