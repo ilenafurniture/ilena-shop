@@ -115,8 +115,9 @@ $routes->post('/admin/addgaleriarticle', 'AdminController::actionAddGaleriArticl
 // $routes->get('/admin/customer', 'AdminController::customer', ['filter' => 'adminFilter']);
 
 $routes->get('/admin/addproduct', 'AdminController::addProduct', ['filter' => 'adminFilter']);
+$routes->post('/admin/product/(:any)', 'AdminController::actionEditProduct/$1');
 $routes->post('/admin/product', 'AdminController::actionAddProduct');
-$routes->match(['post', 'put'], '/admin/product/(:any)', 'AdminController::actionEditProduct');
+// $routes->match(['POST', 'PUT'], '/admin/product/(:any)', 'AdminController::actionEditProduct');
 $routes->get('/admin/editproduct/(:any)', 'AdminController::editProduct/$1', ['filter' => 'adminFilter']);
 $routes->post('/admin/deleteproduct/(:any)', 'AdminController::deleteProduct/$1', ['filter' => 'adminFilter']);
 
@@ -184,6 +185,9 @@ $routes->get('/market/cart', 'MarketplaceController::cart', ['filter' => 'market
 $routes->get('/market/addcart/(:any)/(:any)', 'MarketplaceController::addCart/$1/$2', ['filter' => 'marketFilter']);
 $routes->get('/market/reducecart/(:any)', 'MarketplaceController::reduceCart/$1', ['filter' => 'marketFilter']);
 $routes->post('/maket/submitorder', 'MarketplaceController::submitOrder', ['filter' => 'marketFilter']);
+
+// routes untuk nyolong raja ongkir
+$routes->post('/ro/provinsi', 'MarketplaceController::submitOrder', ['filter' => 'marketFilter']);
 
 
 $routes->get('/(:any)', 'Pages::notFound');

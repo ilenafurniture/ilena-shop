@@ -268,9 +268,119 @@ class AdminController extends BaseController
             ]
             // 'hitungVarian' => $hitungVarian
         ];
+        log_message('error', print_r($this->request->getVar(), true));
         return view('admin/add', $data);
     }
-    public function actionEditProduct($pathname = false)
+
+    public function actionEditProduct($id_product)
+    {
+        
+        $koleksi = $this->koleksiModel->getKoleksi();
+        $jenis = $this->jenisModel->getJenis();
+        
+        $data = $this->request->getPost();
+        $data_gambar_mentah = $this->request->getFiles();
+
+
+        if (isset($data_gambar_mentah['gambar_hover'])) {
+            if ($data_gambar_mentah['gambar_hover']->isValid()) {
+                $fp = 'imgdum/barang/hover';
+                $data_gambar_mentah['gambar_hover']->move($fp, $id_product . '.webp');
+                if (file_exists('img/barang/hover/' . $id_product . '.webp')) {
+                    unlink('img/barang/hover/' . $id_product . '.webp');
+                }
+                \Config\Services::image()
+                    ->withFile($fp . '/' . $id_product . '.webp')
+                    ->resize(300, 300, true, 'height')->save('img/barang/hover/' . $id_product . '.webp');
+                unlink($fp . '/' . $id_product . '.webp');
+            }
+            unset($data_gambar_mentah['gambar_hover']);
+        }
+
+        
+        $dataKategori = $data['kategori'];
+        $koleksiSelected = array_values(array_filter($koleksi, function ($var) use ($dataKategori) {
+            return ($var['id'] == $dataKategori);
+        }))[0]['nama'];
+        $dataSubkategori = $data['subkategori'];
+        $jenisSelected = array_values(array_filter($jenis, function ($var) use ($dataSubkategori) {
+            return ($var['id'] == $dataSubkategori);
+        }))[0]['nama'];
+
+        $gambarCur = $this->barangModel->getBarangAdmin($id_product);
+        $varianCur = json_decode($gambarCur['varian'], true);
+        if (file_exists('img/barang/300/' . $id_product  . '.webp'))
+        {
+            unlink('img/barang/300/' . $id_product  . '.webp'); 
+        }
+        foreach ($varianCur as $v) {
+            foreach (explode(',' , $v['urutan_gambar']) as $vv) {
+                if (file_exists('img/barang/3000/' . $id_product . '-' . ($vv) . '.webp'))
+                {
+                    unlink('img/barang/3000/' . $id_product . '-' . ($vv) . '.webp'); 
+                }
+                if (file_exists('img/barang/1000/' . $id_product . '-' . ($vv) . '.webp'))
+                {
+                    unlink('img/barang/1000/' . $id_product . '-' . ($vv) . '.webp'); 
+                }
+            }
+        }
+
+        foreach ($data_gambar_mentah as $ind_g => $dG) {
+            $urutan = (int)explode('_', $ind_g)[1];
+            $dG->move('imgdum');
+            if (file_exists('img/barang/3000/' . $id_product . '-' . ($urutan + 1) . '.webp')) {
+                unlink('img/barang/3000/' . $id_product . '-' . ($urutan + 1) . '.webp');
+            }
+            \Config\Services::image()
+                ->withFile('imgdum/' . $dG->getName())
+                ->resize(3000, 3000, true, 'height')->save('img/barang/3000/' . $id_product . '-' . ($urutan + 1)  . '.webp');
+
+            if (file_exists('img/barang/1000/' . $id_product . '-' . ($urutan + 1) . '.webp')) {
+                unlink('img/barang/1000/' . $id_product . '-' . ($urutan + 1) . '.webp');
+            }
+            \Config\Services::image()
+                ->withFile('imgdum/' . $dG->getName())
+                ->resize(1000, 1000, true, 'height')->save('img/barang/1000/' . $id_product . '-' . ($urutan + 1)  . '.webp');
+
+            if ($urutan <= 0) {
+                if (file_exists('img/barang/300/' . $id_product  . '.webp')) {
+                    unlink('img/barang/300/' . $id_product  . '.webp');
+                }
+                \Config\Services::image()
+                    ->withFile('imgdum/' . $dG->getName())
+                    ->resize(300, 300, true, 'height')->save('img/barang/300/' . $id_product  . '.webp');
+            }
+            unlink('imgdum/' . $dG->getName());
+        }
+
+        $insertDataBarang = [
+            'nama' => $data['nama'],
+            'harga' => $data['harga'],
+            'pencarian' => '',
+            'rate' => '0',
+            'deskripsi' => $data['deskripsi'],
+            'kategori' => $koleksiSelected,
+            'subkategori' => $jenisSelected,
+            'diskon' => $data['diskon'],
+            'varian' => $data['varian'],
+            'shopee' => $data['shopee'],
+            'tokped' => $data['tokped'],
+            'tiktok' => $data['tiktok'],
+            'active' => '1',
+            'ruang_tamu' => $data['ruang_tamu'],
+            'ruang_keluarga' => $data['ruang_keluarga'],
+            'ruang_tidur' => $data['ruang_tidur'],
+        ];
+        $this->barangModel->where('id', $id_product)->set($insertDataBarang)->update();
+        return $this->response->setStatusCode(200)->setJSON([
+            'data_gambar_mentah' => $data_gambar_mentah,
+            'dataYgDiInsertKeBarang' => $insertDataBarang,
+            'pesan' => 'Berhasil mengupdate produk ' . $data['nama']
+        ], false);
+
+    }
+    public function actionEditProductOld($pathname = false)
     {
         $idBarang = $this->request->getVar('id');
         if (!$idBarang) {
@@ -278,8 +388,6 @@ class AdminController extends BaseController
         }
 
         $barangCur = $this->barangModel->getBarangAdmin($idBarang);
-        $gambarBarangCur = $this->gambarBarangModel->getGambar($idBarang);
-
         if (!$barangCur) {
             return $this->response->setStatusCode(404)->setJSON(['status' => 'error', 'pesan' => 'Barang tidak ditemukan']);
         }
@@ -289,11 +397,13 @@ class AdminController extends BaseController
         $data = $this->request->getVar();
         $files = $this->request->getFiles();
 
-        // Decode JSON dari frontend
-        $data['deskripsi'] = json_decode($data['deskripsi'], true);
-        $data['varian'] = json_decode($data['varian'], true);
+        $data['deskripsi'] = json_decode($data['deskripsi'] ?? '', true) ?? [];
+        $data['varian'] = json_decode($data['varian'] ?? '', true) ?? [];
 
-        // Gambar Hover
+        if (!is_array($data['deskripsi']) || !is_array($data['varian'])) {
+            return $this->response->setStatusCode(400)->setJSON(['status' => 'error', 'pesan' => 'Format JSON tidak valid']);
+        }
+
         if (isset($files['gambar_hover']) && $files['gambar_hover']->isValid()) {
             $tmpPath = 'imgdum/barang/hover';
             $files['gambar_hover']->move($tmpPath, $idBarang . '.webp');
@@ -306,7 +416,6 @@ class AdminController extends BaseController
             unlink($tmpPath . '/' . $idBarang . '.webp');
         }
 
-        // Gambar Varian
         $gambarPaths = [];
         foreach ($files as $key => $file) {
             if (strpos($key, 'gambar_') === 0 && $file->isValid()) {
@@ -328,42 +437,47 @@ class AdminController extends BaseController
             }
         }
 
-        // Update ke semua model gambar (jika struktur kamu mendukung itu)
         foreach ($gambarPaths as $key => $filename) {
             $this->gambarBarangModel->where(['id' => $idBarang])->set([$key => $filename])->update();
             $this->gambarBarang3000Model->where(['id' => $idBarang])->set([$key => $filename])->update();
         }
 
-        // Konversi ID kategori dan jenis ke nama
         $koleksiSelected = array_values(array_filter($koleksi, fn($k) => $k['id'] == $data['kategori']))[0]['nama'] ?? '';
         $jenisSelected = array_values(array_filter($jenis, fn($j) => $j['id'] == $data['subkategori']))[0]['nama'] ?? '';
 
-        // Simpan ke DB
-        $this->barangModel->where(['id' => $idBarang])->set([
-            'nama' => $data['nama'],
-            'harga' => $data['harga'],
+        $dataUpdate = [
+            'nama' => $data['nama'] ?? null,
+            'harga' => $data['harga'] ?? null,
             'deskripsi' => json_encode($data['deskripsi']),
             'kategori' => $koleksiSelected,
             'subkategori' => $jenisSelected,
-            'diskon' => $data['diskon'],
+            'diskon' => $data['diskon'] ?? '0',
             'varian' => json_encode($data['varian']),
-            'shopee' => $data['shopee'],
-            'tokped' => $data['tokped'],
-            'tiktok' => $data['tiktok'],
+            'shopee' => $data['shopee'] ?? '',
+            'tokped' => $data['tokped'] ?? '',
+            'tiktok' => $data['tiktok'] ?? '',
             'gambar' => $gambarPaths['gambar_0'] ?? $barangCur['gambar'],
             'ruang_tamu' => $data['ruang_tamu'] ?? '0',
             'ruang_keluarga' => $data['ruang_keluarga'] ?? '0',
             'ruang_tidur' => $data['ruang_tidur'] ?? '0',
-        ])->update();
+        ];
 
-        // Jika dipanggil dari React, kirim JSON
+        $dataUpdate = array_filter($dataUpdate, fn($val) => !is_null($val));
+
+        if (empty($dataUpdate)) {
+            return $this->response->setStatusCode(400)->setJSON(['status' => 'error', 'pesan' => 'Tidak ada data untuk diperbarui']);
+        }
+
+
+        $this->barangModel->where(['id' => $idBarang])->set($dataUpdate)->update();
+
         if ($this->request->isAJAX() || $this->request->getHeaderLine('Accept') === 'application/json') {
             return $this->response->setJSON(['status' => 'ok', 'pesan' => 'Produk berhasil diupdate']);
         }
 
-        // Jika dari form biasa
         return redirect()->to($pathname ? str_replace('@', '/', $pathname) : 'admin/product');
     }
+
 
 
     public function mutasi($data = false)

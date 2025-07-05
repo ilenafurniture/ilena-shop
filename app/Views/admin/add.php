@@ -15,6 +15,14 @@
     const koleksi = JSON.parse('<?= $koleksiJson; ?>')
     const jenis = JSON.parse('<?= $jenisJson; ?>');
     const idProduct = '<?= isset($idProduct) ? $idProduct : ''; ?>'
+
+    async function urlToFile(url, filename, mimeType) {
+        const res = await fetch(url);
+        const buffer = await res.arrayBuffer();
+        return new File([buffer], filename, { type: mimeType });
+    }
+
+
     const App = () => {
         const firstRender = useRef(true);
         const [formData, setFormData] = useState({
@@ -68,35 +76,11 @@
         useEffect(() => {
             if(idProduct) {
                 const currentProduct = JSON.parse(<?= json_encode($produkJson ?? '{}') ?>);
-                console.log(currentProduct);
                 setHoverSrc('<?= base_url('img/barang/hover/' . ($produk ? $produk['id'] : '') . '.webp') ?>');
-                console.log(currentProduct.varian.reduce((prev,cur) => {
-                    return prev.concat(cur.urutan_gambar.split(',').map((item) => {
-                        return `<?= base_url('img/barang/1000/' . ($produk ? $produk['id'] : '') . '-') ?>${item}.webp`;
-                    }));
-                },[]));
-                
-                console.log("FORM DATA ANJAYYY");
-                console.log({
-                    ...formData,
-                    nama: currentProduct.nama,
-                    harga: currentProduct.harga,
-                    deskripsi: currentProduct.deskripsi,
-                    kategori: currentProduct.kategori,
-                    subkategori: currentProduct.subkategori,
-                    diskon: currentProduct.diskon,
-                    varian: currentProduct.varian,
-                    shopee: currentProduct.shopee,
-                    tokped: currentProduct.tokped,
-                    tiktok: currentProduct.tiktok
-                });
             }
         }, [])
 
-        useEffect(()=>{
-            console.log("FORM DATA")
-            console.log(formData)
-        }, [formData])
+        
 
         useEffect(() => {
             let idStrArr = idStr.current.split("-");
@@ -117,12 +101,12 @@
             })
         }, [formData.subkategori])
 
-        useEffect(() => {
-            if(firstRender.current) {
-                if(idProduct) {
-                    const currentProduct = JSON.parse(<?= json_encode($produkJson ?? '{}') ?>);
+        
 
-                    
+        useEffect(() => {
+            if (firstRender.current) {
+                if (idProduct) {
+                    const currentProduct = JSON.parse(<?= json_encode($produkJson ?? '{}') ?>);
                     setFormData({
                         ...formData,
                         nama: currentProduct.nama,
@@ -138,136 +122,159 @@
                     }); 
                     setGambarSrc(currentProduct.varian.map((v) => {
                         return v.urutan_gambar.split(',').map((item) => {
-                            return `<?= base_url('img/barang/1000/' . ($produk ? $produk['id'] : '') . '-') ?>${item}.webp`;
+                        return `<?= base_url('img/barang/1000/' . ($produk ? $produk['id'] : '') . '-') ?>${item}.webp`;
                         });
-                    },[]));
+                    }));
+                    
+                    (async () => {
+                        const gambarFileBig = []; 
+                        for (let i = 0; i < currentProduct.varian.length; i++) {
+                            const v = currentProduct.varian[i];
+                            const gambarArray = v.urutan_gambar.split(',');
+                            const gambarFileDum = [];
+                            for (let j = 0; j < gambarArray.length; j++) {
+                                const g = gambarArray[j];
+                                const imageUrl = `<?= base_url('img/barang/3000/' . ($produk ? $produk['id'] : '') . '-') ?>${g}.webp`;
+                                const file = await urlToFile(imageUrl, `gambar-ku-${i}-${j}.webp`, 'image/webp');
+                                gambarFileDum.push(file);
+                                
+                            }
+                            gambarFileBig.push(gambarFileDum);
+                        }
+                        setGambarFile(gambarFileBig);
+                    })();
                 }
                 firstRender.current = false;
-                return
+                return;
             }
+
             setFormData({
                 ...formData,
                 varian: formData.varian.map((v, ind_v) => {
-                    return {
-                        ...v,
-                        urutan_gambar: ind_v == 0 ? 
-                            gambarSrc[ind_v].reduce((prev, curr, index) => {
-                                return `${prev}${index > 0 ? ',' : ''}${index + 1}`
-                            }, '')
-                            :
-                            gambarSrc[ind_v].reduce((prev, curr, index) => {
-                                return `${prev}${index > 0 ? ',' : ''}${index + 1 +  + Number(formData.varian[ind_v - 1].urutan_gambar.split(',')[formData.varian[ind_v - 1].urutan_gambar.split(',').length - 1])}`
-                            }, '')
-                    }
+                const gambarArray = gambarSrc[ind_v] || [];
+                return {
+                    ...v,
+                    urutan_gambar: ind_v === 0
+                    ? gambarArray.map((_, index) => index + 1).join(',')
+                    : gambarArray.map((_, index) => {
+                        const prev = formData.varian[ind_v - 1].urutan_gambar;
+                        const lastUrutan = parseInt(prev.split(',').pop() || "0");
+                        return lastUrutan + index + 1;
+                        }).join(',')
+                };
                 })
-            }) 
-            
-        }, [gambarSrc])
+            });
+        }, [gambarSrc]);
+
 
         const handleSubmit = () => {
-            if (!formData.nama || !formData.harga) {
-                setEror("Nama dan harga produk wajib diisi.");
-                return;
-            }
-
-            if (formData.varian.length === 0) {
-                setEror("Minimal 1 varian harus ditambahkan.");
-                return;
-            }
-
-            if (!idProduct) {
-                for (let i = 0; i < formData.varian.length; i++) {
-                    if (!gambarFile[i] || gambarFile[i].length === 0) {
-                    setEror(`Varian ke-${i + 1} belum memiliki gambar.`);
+                if (!formData.nama || !formData.harga) {
+                    setEror("Nama dan harga produk wajib diisi.");
                     return;
+                }
+
+                if (formData.varian.length === 0) {
+                    setEror("Minimal 1 varian harus ditambahkan.");
+                    return;
+                }
+
+                if (!idProduct) {
+                    for (let i = 0; i < formData.varian.length; i++) {
+                    if (!gambarFile[i] || gambarFile[i].length === 0) {
+                        setEror(`Varian ke-${i + 1} belum memiliki gambar.`);
+                        return;
+                    }
                     }
                 }
-            }
 
-            console.log("ISI formData SAAT SUBMIT", formData);
-            const form = new FormData();
+                const form = new FormData();
 
-            for (const key in formData) {
-                const value = formData[key];
-                if (typeof value === "string" || typeof value === "number") {
-                form.append(key, value);
-                } else if (typeof value === "boolean") {
-                form.append(key, value ? "1" : "0");
-                } else {
-                form.append(key, JSON.stringify(value));
-                }
-            }
-            if (idProduct) {
                 form.append("id", formData.id);
-                form.append("_method", "PUT");
-            }
+                form.append("nama", formData.nama);
+                form.append("harga", formData.harga);
+                form.append("diskon", formData.diskon || "0");
+                form.append("kategori", formData.kategori);
+                form.append("subkategori", formData.subkategori);
+                form.append("shopee", formData.shopee || "");
+                form.append("tokped", formData.tokped || "");
+                form.append("tiktok", formData.tiktok || "");
 
-            if (hoverFile) {
-                form.append("gambar_hover", hoverFile);
-            }
+                form.append("ruang_tamu", formData.ruang_tamu ? "1" : "0");
+                form.append("ruang_keluarga", formData.ruang_keluarga ? "1" : "0");
+                form.append("ruang_tidur", formData.ruang_tidur ? "1" : "0");
 
-            const gambarFileFix = gambarFile.reduce((prev, curr) => prev.concat(curr), []);
-            if (gambarFileFix.length === 0 && !idProduct) {
-                setEror("Minimal upload satu gambar untuk varian pertama.");
-                return;
-            }
+                form.append("deskripsi", JSON.stringify(formData.deskripsi || {}));
+                form.append("varian", JSON.stringify(formData.varian || []));
 
-            gambarFileFix.forEach((file, idx) => {
-                form.append(`gambar_${idx}`, file);
-            });
+                
 
-            setLoading(true);
-            setEror("");
+                if (hoverFile) {
+                    form.append("gambar_hover", hoverFile);
+                }
 
-            (async () => {
-                try {
-                console.log("Mengirim data ke server...", form);
-                const response = await fetch(
-                    `<?= rtrim(base_url(), '/'); ?>/admin/product${idProduct ? `/${idProduct}` : ""}`,
-                    {
+                const gambarFileFix = gambarFile.reduce((prev, curr) => prev.concat(curr), []);
+                if (!idProduct && gambarFileFix.length === 0) {
+                    setEror("Minimal upload satu gambar untuk varian pertama.");
+                    return;
+                }
+
+                gambarFileFix.forEach((file, idx) => {
+                    if (file instanceof File) {
+                    form.append(`gambar_${idx}`, file);
+                    }
+                });
+                setLoading(true);
+                setEror("");
+
+                (async () => {
+                    try {
+                        
+
+                        
+                    const response = await fetch(
+                        `<?= rtrim(base_url(), '/'); ?>/admin/product${idProduct ? `/${idProduct}` : ""}`,
+                        {
                         method: "POST",
                         headers: {
-                        Accept: "application/json"
+                            Accept: "application/json",
                         },
                         body: form,
+                        }
+                    );
+                    
+                    const result = await response.json();
+                    setLoading(false);
+
+                    if (response.status != 200) {
+                        setEror(result.pesan || "Terjadi kesalahan saat menyimpan data.");
+                        return;
                     }
-                );
 
-
-                const result = await response.json();
-                setLoading(false);
-
-                if (!response.ok) {
-                    setEror(result.pesan || "Terjadi kesalahan saat menyimpan data.");
-                    return;
-                }
-
-                Swal.fire({
-                    title: "Berhasil!",
-                    text: "Produk berhasil disimpan.",
-                    icon: "success",
-                    confirmButtonText: "OK"
+                    Swal.fire({
+                        title: "Berhasil!",
+                        text: `Produk berhasil {${idProduct ? "diubah" : "ditambahkan"}}.`,
+                        icon: "success",
+                        confirmButtonText: "OK",
                     }).then(() => {
-                    window.location.href = `<?= base_url('admin/product'); ?>`;
-                });
+                        window.location.href = `<?= base_url('admin/product'); ?>`;
+                    });
+                    } catch (err) {
+                    console.error("Gagal mengirim data:", err);
+                    setLoading(false);
+                    setEror("Gagal menghubungi server.");
+                    }
+                })();
+            };
 
-                } catch (err) {
-                console.error("Gagal mengirim data:", err);
-                setLoading(false);
-                setEror("Gagal menghubungi server.");
-                }
-            })();
-        };
+
 
 
 
 
         return (
             <>
-                <h1 className="teks-sedang mb-3">Tambah Produk</h1>
-                <div className="pemberitahuan my-1">
-                    ini alert
-                </div>
+                <h1 className="teks-sedang mb-3">{idProduct ? "Edit" : "Tambah"} Produk</h1>
+                
                 <div className="baris-ke-kolom">
                     <div className="limapuluh-ke-seratus">
                         <table className="table-input w-100">
@@ -783,13 +790,19 @@
                                                 style={{ display: "none" }}
                                                 onChange={(e) => {
                                                     const file = e.target.files[0];
-                                                    if(file) {
+                                                    if (file) {
                                                         const reader = new FileReader();
                                                         reader.onload = () => {
                                                             const newGambarSrc = [...gambarSrc];
                                                             const newGambarFile = [...gambarFile];
+
+                                                            // PASTIKAN array untuk varian ini SUDAH ADA
+                                                            if (!newGambarSrc[ind_v]) newGambarSrc[ind_v] = [];
+                                                            if (!newGambarFile[ind_v]) newGambarFile[ind_v] = [];
+
                                                             newGambarSrc[ind_v].push(reader.result);
                                                             newGambarFile[ind_v].push(file);
+
                                                             setGambarSrc(newGambarSrc);
                                                             setGambarFile(newGambarFile);
                                                         };

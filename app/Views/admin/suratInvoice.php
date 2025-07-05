@@ -89,8 +89,8 @@
                 <img src="<?= base_url('img/logo/logo-invoice.jpg'); ?>" alt="Logo" width="70" height="40" />
             </div>
             <div class="d-flex flex-column justify-content-center gap-1">
-                <h5 class="tw-bold m-0" style="font-size: large;">CV.CATUR BHAKTI MANDIRI</h5>
-                <h5 class="tw-bold m-0">Kawasan Industri BSB, A 3A, 5-6 Jatibarang,Mijen
+                <h5 class="tw-bold m-0" style="font-size: 18px;">CV.CATUR BHAKTI MANDIRI</h5>
+                <h5 class="tw-bold m-0" style="font-size: 14px;">Kawasan Industri BSB, A 3A, 5-6 Jatibarang,Mijen
                     Semarang</h5>
             </div>
         </div>
@@ -133,12 +133,12 @@
             </div>
         </div>
         <div class="my-1">
-            <h3 class="text-center">INVOICE</h3>
+            <h3 class="text-center" style="letter-spacing: -1px;, font-weight: 900; font-size: 20px;">INVOICE</h3>
         </div>
         <div class="d-flex justify-content-start mt-4 mb-4 flex-column">
-            <p class="m-0 nt">Kepada Yth.</p>
-            <p class="m-0 tw-bold-italic"><?= $pemesanan['nama_npwp']; ?></p>
-            <p class="m-0" style="max-width: 250px;"><?= $pemesanan['alamat_tagihan']; ?></p>
+            <p class="m-0 nt" style="max-width: 250px; font-size: 12px;">Kepada Yth.</p>
+            <p class="m-0 tw-bold-italic" style="max-width: 250px; font-size: 12px;"><?= $pemesanan['nama_npwp']; ?></p>
+            <p class="m-0" style="max-width: 250px; font-size: 12px;"><?= $pemesanan['alamat_tagihan']; ?></p>
             <!-- <div class="d-flex flex-column">
                 <div class="d-flex m-0 p-0">
                     <p class="m-0 tw-bold-italic" style="margin-right: 10px;"><span class="m-0" id="jalan"></span>,</p>
@@ -157,7 +157,8 @@
                     <p class="m-0 tw-bold-italic"><span id="kodepos"></span>,</p>
                 </div>
             </div> -->
-            <p class="isint">NPWP/NIK : <?= $pemesanan['npwp'] ? $pemesanan['npwp'] : '-'; ?></p>
+            <p style="font-size: 12px;" class="isint">NPWP/NIK : <?= $pemesanan['npwp'] ? $pemesanan['npwp'] : '-'; ?>
+            </p>
         </div>
 
         <!-- Tabel Invoice -->
@@ -165,12 +166,12 @@
             <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
-                        <th class="text-center" style="width: 10px;">NO</th>
-                        <th class="text-center">KODE BARANG</th>
-                        <th class="text-center">NAMA BARANG</th>
-                        <th class="text-center">KUANTITAS</th>
-                        <th class="text-center">HARGA</th>
-                        <th class="text-center">JUMLAH</th>
+                        <th class="text-center" style="width: 10px; font-size: 12px;">NO</th>
+                        <th class="text-center" style="font-size: 12px;">KODE BARANG</th>
+                        <th class="text-center" style="font-size: 12px;">NAMA BARANG</th>
+                        <th class="text-center" style="font-size: 12px;">KUANTITAS</th>
+                        <th class="text-center" style="font-size: 12px;">HARGA</th>
+                        <th class="text-center" style="font-size: 12px;">JUMLAH</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -180,42 +181,45 @@
                     <?php foreach ($items as $t) { ?>
                     <?php $totalHargaBarang += $t['jumlah'] * $t['harga']; ?>
                     <tr>
-                        <td class="text-center"><?= strtoupper($no++); ?></td>
-                        <td class="text-center"><?= strtoupper($t['id_barang']); ?></td>
-                        <td class="">
-                            <p class="m-0">
+                        <td class="text-center" style="font-size: 12px;" s><?= strtoupper($no++); ?></td>
+                        <td class="text-center" style="font-size: 12px;"><?= strtoupper($t['id_barang']); ?></td>
+                        <td>
+                            <p class="m-0" style="font-size: 12px;">
                                 <?= $t['special_price'] > 0 ? "[SPECIAL PRICE] " : ""; ?><?= strtoupper($t['nama']); ?>
                                 (<?= strtoupper($t['varian']); ?>)</p>
-                            <p class="m-0"><?= $t['dimensi']['panjang']; ?> x <?= $t['dimensi']['lebar']; ?> x
+                            <p class="m-0" style="font-size: 12px;"><?= $t['dimensi']['panjang']; ?> x
+                                <?= $t['dimensi']['lebar']; ?> x
                                 <?= $t['dimensi']['tinggi']; ?></p>
                         </td>
-                        <td class="text-center"><?= strtoupper($t['jumlah']); ?></td>
-                        <td class="text-end" style="text-wrap: nowrap;">Rp
+                        <td class="text-center" style="font-size: 12px;"><?= strtoupper($t['jumlah']); ?></td>
+                        <td class="text-end" style="text-wrap: nowrap; font-size: 12px;">Rp
                             <?= strtoupper(number_format($t['harga'], 0, ',', '.')); ?></td>
-                        <td class="text-end" style="text-wrap: nowrap;">Rp
+                        <td class="text-end" style="text-wrap: nowrap; font-size: 12px;">Rp
                             <?= strtoupper(number_format($t['jumlah'] * $t['harga'], 0, ',', '.')); ?></td>
                     </tr>
                     <?php } ?>
                     <?php $diskonPersen = round(100 - ($totalHargaBarang / $pemesanan['total_akhir'] * 100), 2); ?>
                     <?php if ($diskonPersen > 0) { ?>
                     <tr>
-                        <td colspan="5" class="fw-bold">JUMLAH</td>
+                        <td colspan="5" class="fw-bold" style="text-wrap: nowrap; font-size: 12px;">JUMLAH</td>
                         <td class="text-end" style="text-wrap: nowrap;">Rp
                             <?= number_format($totalHargaBarang, 0, ',', '.'); ?></td>
                     </tr>
                     <?php } ?>
-                    <?php if ($diskonPersen > 0) { ?>
+                    <?php if ($diskonPersen < 0) { ?>
                     <tr>
-                        <td colspan="5" class="text-start fw-bold italic" style="text-wrap: nowrap;">POTONGAN
+                        <td colspan="5" class="text-start fw-bold italic" style="text-wrap: nowrap; font-size: 12px;">
+                            POTONGAN
                             <?= $diskonPersen > 0 ? "( $diskonPersen% )" : ''; ?></td>
-                        <td class="text-end fw-bold italic" style="text-wrap: nowrap;">Rp
+                        <td class="text-end fw-bold italic" style="text-wrap: nowrap; font-size: 12px;">Rp
                             <?= strtoupper(number_format($pemesanan['total_akhir'] - $totalHargaBarang, 0, ',', '.')); ?>
                         </td>
                     </tr>
                     <?php } ?>
                     <?php if ($pemesanan['down_payment'] < 0) { ?>
                     <tr>
-                        <td colspan="5" class="fw-bold">UANG MUKA YANG DITERIMA</td>
+                        <td colspan="5" class="fw-bold" style="text-wrap: nowrap; font-size: 12px;">UANG MUKA YANG
+                            DITERIMA</td>
                         <td class="text-end" style="text-wrap: nowrap;">Rp
                             <?= number_format(abs($pemesanan['down_payment']), 0, ',', '.'); ?></td>
                     </tr>
@@ -232,13 +236,13 @@
                     </tr>
                     <?php } ?>
                     <tr>
-                        <td colspan="5" class="fw-bold">TOTAL INVOICE</td>
+                        <td colspan="5" class="fw-bold" style="text-wrap: nowrap; font-size: 12px;">TOTAL INVOICE</td>
                         <?php if ($pemesanan['down_payment'] > 0) { ?>
-                        <td class="text-end fw-bold" style="text-wrap: nowrap;">Rp
+                        <td class="text-end fw-bold" style="text-wrap: nowrap; font-size: 12px;">Rp
                             <?= strtoupper(number_format($pemesanan['down_payment'], 0, ',', '.')); ?>
                         </td>
                         <?php } else { ?>
-                        <td class="text-end fw-bold" style="text-wrap: nowrap;">Rp
+                        <td class="text-end fw-bold" style="text-wrap: nowrap; font-size: 12px;">Rp
                             <?= strtoupper(number_format($pemesanan['total_akhir'] - (($pemesanan['down_payment']) < 0 ? abs($pemesanan['down_payment']) : 0), 0, ',', '.')); ?>
                         </td>
                         <?php } ?>
@@ -376,28 +380,31 @@
             <table>
                 <tbody>
                     <tr>
-                        <td class="pe-3">Terbilang <?= $pemesanan['down_payment'] > 0 ? 'DP' : '' ?></td>
+                        <td style="font-size: 12px;" class="pe-3">Terbilang
+                            <?= $pemesanan['down_payment'] > 0 ? 'DP' : '' ?></td>
                         <?php if ($pemesanan['down_payment'] > 0) { ?>
-                        <td>:
+                        <td style="font-size: 12px;">:
                             <i><?= ucwords(strtolower(terbilang($pemesanan['down_payment']))); ?></i>
                         </td>
                         <?php } else { ?>
-                        <td>:
+                        <td style="font-size: 12px;">:
                             <i><?= ucwords(strtolower(terbilang($pemesanan['total_akhir'] - ($pemesanan['down_payment'] < 0 ? abs($pemesanan['down_payment']) : 0)))); ?></i>
                         </td>
                         <?php } ?>
                     </tr>
                     <tr>
-                        <td class="pe-3">PO</td>
-                        <td>: <?= $pemesanan['po'] ? $pemesanan['po'] : '-'; ?></td>
+                        <td style="text-wrap: nowrap; font-size: 12px;" class="pe-3">PO</td>
+                        <td style="text-wrap: nowrap; font-size: 12px;">:
+                            <?= $pemesanan['po'] ? $pemesanan['po'] : '-'; ?></td>
                     </tr>
                     <tr>
-                        <td class="pe-3">Surat Jalan</td>
+                        <td style="text-wrap: nowrap; font-size: 12px;" class="pe-3">Surat Jalan</td>
                         <?php
                         if ($pemesanan['down_payment']) { ?>
-                        <td>: <?= substr($items[0]['id_return'], 5); ?></td>
+                        <td style="text-wrap: nowrap; font-size: 12px;">: <?= substr($items[0]['id_return'], 5); ?></td>
                         <?php } else { ?>
-                        <td>: <?= substr($pemesanan['id_pesanan'], 5); ?></td>
+                        <td style="text-wrap: nowrap; font-size: 12px;">: <?= substr($pemesanan['id_pesanan'], 5); ?>
+                        </td>
                         <?php } ?>
                     </tr>
                 </tbody>
@@ -407,16 +414,16 @@
 
         <div class="d-flex justify-content-between mt-5 mb-3">
             <div class="d-flex flex-column kotak-pembayaran">
-                <p class="m-0" style="font-size: 17px;"> Pembayaran mohon dapat ditransfer ke rekening: <br> <b
-                        style="font-size: 17px; color: red;">BCA/C 8715898787 an CATUR BHAKTI MANDIRI</b></p>
+                <p class="m-0" style="font-size: 12px;"> Pembayaran mohon dapat ditransfer ke rekening: <br> <b
+                        style="font-size: 12px; color: red;">BCA/C 8715898787 an CATUR BHAKTI MANDIRI</b></p>
             </div>
-            <div class="d-flex flex-column align-items-center">
+            <div class="d-flex flex-column align-items-center" style="width: 200px; font-size: 12px;">
                 Bagian Keuangan <br>
                 <br>
                 <br>
                 <br>
                 <br>
-                <p class="tw-bold-italic">Puspita Aprilia Damayanti</p>
+                <p class="tw-bold-italic" style="font-size: 12px;">Puspita Aprilia Damayanti</p>
             </div>
         </div>
 
