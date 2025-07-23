@@ -7,10 +7,14 @@ use App\Models\GambarBarangModel;
 use App\Models\GambarBarang3000Model;
 use App\Models\GambarArtikelModel;
 use App\Models\ArtikelModel;
+use App\Models\KabupatenModel;
+use App\Models\KecamatanModel;
+use App\Models\KelurahanModel;
 use App\Models\PembeliModel;
 use App\Models\PemesananModel;
 use App\Models\PemesananGudangModel;
 use App\Models\KartuStokModel;
+use App\Models\ProvinsiModel;
 use App\Models\UserModel;
 use App\Models\KoleksiModel;
 use App\Models\JenisModel;
@@ -36,6 +40,11 @@ class Pages extends BaseController
     protected $voucherModel;
     protected $session;
     protected $apikey_img_ilena;
+
+    protected $provinsiModel;
+    protected $kabupatenModel;
+    protected $kecamatanModel;
+    protected $kelurahanModel;
     public function __construct()
     {
         $this->barangModel = new BarangModel();
@@ -54,6 +63,10 @@ class Pages extends BaseController
         $this->voucherModel = new VoucherModel();
         $this->session = \Config\Services::session();
         $this->apikey_img_ilena = env('APIKEY_IMG_ILENA', 'DefaultValue');
+        $this->provinsiModel = new ProvinsiModel();
+        $this->kabupatenModel = new KabupatenModel();
+        $this->kecamatanModel = new KecamatanModel();
+        $this->kelurahanModel = new KelurahanModel();
     }
     public function getNavbarData()
     {
@@ -472,213 +485,224 @@ class Pages extends BaseController
     }
     public function cart()
     {
-        if (session()->get('active') == '0') return redirect()->to('/verify');
-        $hargaTotal = 0;
-        $keranjang = $this->session->get('keranjang');
-        if (!isset($keranjang)) {
-            $keranjang = [];
-        }
-        $ketemuProdukNull = [];
-        $ketemuProdukKurang = [];
-        foreach ($keranjang as $index => $k) {
-            $produk = $this->barangModel->getBarang($k['id_barang']);
-            if (!$produk) {
-                array_push($ketemuProdukNull, $index);
-            } else {
-                $varianProduk = json_decode($produk['varian'], true);
-                $cekVarianExist = false;
-                foreach ($varianProduk as $vp) {
-                    if (strtolower($vp['nama']) == strtolower($k['varian'])) {
-                        if ($vp['stok'] < $k['jumlah']) {
-                            if ($vp['stok'] == 0) {
-                                array_push($ketemuProdukNull, $index);
-                            } else {
-                                array_push($ketemuProdukKurang, $index . '-' . $vp['stok']);
-                            }
-                        }
-                        $cekVarianExist = true;
-                    }
-                }
-                if (!$cekVarianExist) {
-                    array_push($ketemuProdukNull, $index);
-                }
-            }
-        }
-        if (count($ketemuProdukNull) > 0) {
-            foreach ($ketemuProdukNull as $k) {
-                unset($keranjang[$k]);
-                $keranjangBaru = array_values($keranjang);
-                $this->session->set(['keranjang' => $keranjangBaru]);
-                $email = session()->get('email');
-                if ($email)
-                    $this->pembeliModel->where('email', $email)->set(['keranjang' => json_encode($keranjangBaru)])->update();
-            }
-            return redirect()->to('/cart');
-        }
-        if (count($ketemuProdukKurang) > 0) {
-            foreach ($ketemuProdukKurang as $k) {
-                $index = explode("-", $k)[0];
-                $stokCur = explode("-", $k)[1];
-                $keranjang[$index]['jumlah'] = $stokCur;
-                $this->session->set(['keranjang' => $keranjang]);
-                $email = session()->get('email');
-                if ($email)
-                    $this->pembeliModel->where('email', $email)->set(['keranjang' => json_encode($keranjang)])->update();
-            }
-            return redirect()->to('/cart');
-        }
-        foreach ($keranjang as $index => $k) {
-            $produk = $this->barangModel->getBarang($k['id_barang']);
-            foreach (json_decode($produk['varian'], true) as $v) {
-                if ($v['nama'] == $k['varian']) {
-                    $keranjang[$index]['src_gambar'] = "/img/barang/1000/" . $k['id_barang'] . "-" . explode(',', $v['urutan_gambar'])[0] . '.webp';
-                }
-            }
-            $keranjang[$index]['detail'] = $produk;
-            $hargaTotal += $produk['harga'] * $k['jumlah'] * (100 - $produk['diskon']) / 100;
+        // Pastikan user terverifikasi
+        if (session()->get('active') === '0') {
+            return redirect()->to('/verify');
         }
 
-        $data = [
-            'title' => 'Keranjang',
-            'navbar' => $this->getNavbarData(),
-            'apikey_img_ilena' => $this->apikey_img_ilena,
-            'keranjang' => $keranjang,
-            'hargaTotal' => $hargaTotal,
-            'hargaKeseluruhan' => $hargaTotal + 5000
-        ];
-        return view('pages/cart', $data);
+        // Ambil keranjang dari session (fallback ke array kosong)
+        $keranjang = session()->get('keranjang') ?? [];
+
+        // Validasi dan sinkronisasi stok
+        $invalidIndex = [];
+        $insufficientIndex = [];
+        foreach ($keranjang as $i => $item) {
+            $produk = $this->barangModel->getBarang($item['id_barang']);
+            if (! $produk) {
+                $invalidIndex[] = $i;
+                continue;
+            }
+            $varianList = json_decode($produk['varian'], true);
+            $foundVariant = false;
+            foreach ($varianList as $v) {
+                if (strtolower($v['nama']) === strtolower($item['varian'])) {
+                    $foundVariant = true;
+                    if ($v['stok'] < $item['jumlah']) {
+                        if ($v['stok'] === 0) {
+                            $invalidIndex[] = $i;
+                        } else {
+                            $insufficientIndex[] = ['index' => $i, 'stok' => $v['stok']];
+                        }
+                    }
+                    break;
+                }
+            }
+            if (! $foundVariant) {
+                $invalidIndex[] = $i;
+            }
+        }
+
+        // Hapus produk yang tidak valid
+        if (! empty($invalidIndex)) {
+            foreach ($invalidIndex as $idx) {
+                unset($keranjang[$idx]);
+            }
+            $keranjang = array_values($keranjang);
+            session()->set('keranjang', $keranjang);
+            $this->syncCartToUser($keranjang);
+            return redirect()->to('/cart');
+        }
+
+        // Perbaiki jumlah jika stok kurang
+        if (! empty($insufficientIndex)) {
+            foreach ($insufficientIndex as $info) {
+                $keranjang[$info['index']]['jumlah'] = $info['stok'];
+            }
+            session()->set('keranjang', $keranjang);
+            $this->syncCartToUser($keranjang);
+            return redirect()->to('/cart');
+        }
+
+        // Hitung total harga dan pasang detail gambar
+        $hargaTotal = 0;
+        foreach ($keranjang as $i => $item) {
+            $produk = $this->barangModel->getBarang($item['id_barang']);
+            $varians = json_decode($produk['varian'], true);
+            foreach ($varians as $v) {
+                if ($v['nama'] === $item['varian']) {
+                    $keranjang[$i]['src_gambar'] = "/img/barang/1000/{$item['id_barang']}-" . explode(',', $v['urutan_gambar'])[0] . '.webp';
+                    break;
+                }
+            }
+            $keranjang[$i]['detail'] = $produk;
+            $linePrice = $produk['harga'] * $item['jumlah'] * (100 - $produk['diskon']) / 100;
+            $hargaTotal += $linePrice;
+        }
+
+        // Siapkan data untuk view
+        return view('pages/cart', [
+            'title'       => 'Keranjang',
+            'navbar'      => $this->getNavbarData(),
+            'keranjang'   => $keranjang,
+            'hargaTotal'  => $hargaTotal,
+        ]);
     }
+
     public function addCart($idbarang, $varian, $jumlah)
     {
-        $keranjang = $this->session->get('keranjang');
-        if (!isset($keranjang)) {
-            $keranjang = [];
-        }
-        $ketemu = false;
-        foreach ($keranjang as $index => $k) {
-            if ($k['id_barang'] == $idbarang && $k['varian'] == $varian) {
-                $keranjang[$index]['jumlah'] += $jumlah;
-                $ketemu = true;
+        $keranjang = session()->get('keranjang') ?? [];
+        $found = false;
+        foreach ($keranjang as &$item) {
+            if ($item['id_barang'] == $idbarang && $item['varian'] == $varian) {
+                $item['jumlah'] += (int) $jumlah;
+                $found = true;
+                break;
             }
         }
-        if (!$ketemu) {
-            array_push($keranjang, [
+        if (! $found) {
+            $keranjang[] = [
                 'id_barang' => $idbarang,
-                'varian' => $varian,
-                'jumlah' => $jumlah
-            ]);
+                'varian'    => $varian,
+                'jumlah'    => (int) $jumlah,
+            ];
         }
-        $this->session->set(['keranjang' => $keranjang]);
-        $email = session()->get('email');
-        if ($email)
-            $this->pembeliModel->where('email', $email)->set(['keranjang' => json_encode($keranjang)])->update();
+        session()->set('keranjang', $keranjang);
+        $this->syncCartToUser($keranjang);
         return redirect()->to('/cart');
     }
 
-    public function reduceCart($index_cart)
+    public function reduceCart($idx)
     {
-        $keranjang = $this->session->get('keranjang');
-        $keranjang[$index_cart]['jumlah'] -= 1;
-        if ($keranjang[$index_cart]['jumlah'] == 0) {
-            unset($keranjang[$index_cart]);
-            $keranjangBaru = array_values($keranjang);
-            $keranjang = $keranjangBaru;
-            // $this->session->set(['keranjang' => $keranjangBaru]);
-            // return redirect()->to('/cart');
+        $keranjang = session()->get('keranjang') ?? [];
+        if (isset($keranjang[$idx])) {
+            $keranjang[$idx]['jumlah']--;
+            if ($keranjang[$idx]['jumlah'] <= 0) {
+                unset($keranjang[$idx]);
+            }
         }
-        $this->session->set(['keranjang' => $keranjang]);
-        $email = session()->get('email');
-        if ($email)
-            $this->pembeliModel->where('email', $email)->set(['keranjang' => json_encode($keranjang)])->update();
+        $keranjang = array_values($keranjang);
+        session()->set('keranjang', $keranjang);
+        $this->syncCartToUser($keranjang);
         return redirect()->to('/cart');
     }
 
-    public function deleteCart($index_cart)
+    public function deleteCart($idx)
     {
-        $keranjang = $this->session->get('keranjang');
-        unset($keranjang[$index_cart]);
-
-        $keranjangBaru = array_values($keranjang);
-        $this->session->set(['keranjang' => $keranjangBaru]);
-        $email = session()->get('email');
-        if ($email)
-            $this->pembeliModel->where('email', $email)->set(['keranjang' => json_encode($keranjangBaru)])->update();
+        $keranjang = session()->get('keranjang') ?? [];
+        if (isset($keranjang[$idx])) {
+            unset($keranjang[$idx]);
+        }
+        $keranjang = array_values($keranjang);
+        session()->set('keranjang', $keranjang);
+        $this->syncCartToUser($keranjang);
         return redirect()->to('/cart');
+    }
+
+    private function syncCartToUser(array $cart)
+    {
+        if ($email = session()->get('email')) {
+            $this->pembeliModel->where('email', $email)
+                                 ->set(['keranjang' => json_encode($cart)])
+                                 ->update();
+        }
     }
 
     public function getKota($id_prov)
     {
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://pro.rajaongkir.com/api/city?province=" . $id_prov,
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => array(
-                "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
-            ),
-        ));
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        curl_close($curl);
-        if ($err) {
-            return "cURL Error #:" . $err;
-        }
-        $kota = json_decode($response, true);
+        // $curl = curl_init();
+        // curl_setopt_array($curl, array(
+        //     CURLOPT_URL => "https://pro.rajaongkir.com/api/city?province=" . $id_prov,
+        //     CURLOPT_SSL_VERIFYHOST => 0,
+        //     CURLOPT_SSL_VERIFYPEER => 0,
+        //     CURLOPT_RETURNTRANSFER => true,
+        //     CURLOPT_ENCODING => "",
+        //     CURLOPT_MAXREDIRS => 10,
+        //     CURLOPT_TIMEOUT => 30,
+        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        //     CURLOPT_CUSTOMREQUEST => "GET",
+        //     CURLOPT_HTTPHEADER => array(
+        //         "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
+        //     ),
+        // ));
+        // $response = curl_exec($curl);
+        // $err = curl_error($curl);
+        // curl_close($curl);
+        // if ($err) {
+        //     return "cURL Error #:" . $err;
+        // }
+        $kota = $this->kabupatenModel->getKabupatenByProvinsi($id_prov);
         return $this->response->setJSON($kota, false);
     }
     public function getKec($id_kota)
     {
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://pro.rajaongkir.com/api/subdistrict?city=" . $id_kota,
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => array(
-                "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
-            ),
-        ));
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        curl_close($curl);
-        if ($err) {
-            return "cURL Error #:" . $err;
-        }
-        $kec = json_decode($response, true);
+        // $curl = curl_init();
+        // curl_setopt_array($curl, array(
+        //     CURLOPT_URL => "https://pro.rajaongkir.com/api/subdistrict?city=" . $id_kota,
+        //     CURLOPT_SSL_VERIFYHOST => 0,
+        //     CURLOPT_SSL_VERIFYPEER => 0,
+        //     CURLOPT_RETURNTRANSFER => true,
+        //     CURLOPT_ENCODING => "",
+        //     CURLOPT_MAXREDIRS => 10,
+        //     CURLOPT_TIMEOUT => 30,
+        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        //     CURLOPT_CUSTOMREQUEST => "GET",
+        //     CURLOPT_HTTPHEADER => array(
+        //         "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
+        //     ),
+        // ));
+        // $response = curl_exec($curl);
+        // $err = curl_error($curl);
+        // curl_close($curl);
+        // if ($err) {
+        //     return "cURL Error #:" . $err;
+        // }
+        $kec = $this->kecamatanModel->getKecamatanByKabupaten($id_kota);
         return $this->response->setJSON($kec, false);
     }
     public function getKode($kec)
     {
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://dakotacargo.co.id/api/api_glb_M_kodepos.asp?key=15f6a51696a8b034f9ce366a6dc22138&id=11022019000001&aKec=" . rawurlencode($kec),
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-        ));
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        curl_close($curl);
-        if ($err) {
-            return "cURL Error #:" . $err;
+        // $curl = curl_init();
+        // curl_setopt_array($curl, array(
+        //     CURLOPT_URL => "https://dakotacargo.co.id/api/api_glb_M_kodepos.asp?key=15f6a51696a8b034f9ce366a6dc22138&id=11022019000001&aKec=" . rawurlencode($kec),
+        //     CURLOPT_SSL_VERIFYHOST => 0,
+        //     CURLOPT_SSL_VERIFYPEER => 0,
+        //     CURLOPT_RETURNTRANSFER => true,
+        //     CURLOPT_ENCODING => "",
+        //     CURLOPT_MAXREDIRS => 10,
+        //     CURLOPT_TIMEOUT => 30,
+        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        //     CURLOPT_CUSTOMREQUEST => "GET",
+        // ));
+        // $response = curl_exec($curl);
+        // $err = curl_error($curl);
+        // curl_close($curl);
+        // if ($err) {
+        //     return "cURL Error #:" . $err;
+        // }
+        $kode = $this->kelurahanModel->getKelurahanByKecamatan($kec);
+        if (!$kode) {
+            return $this->response->setJSON(['error' => 'Kode pos tidak ditemukan'], false);
         }
-        $kode = json_decode($response, true);
         return $this->response->setJSON($kode, false);
     }
 
@@ -695,28 +719,28 @@ class Pages extends BaseController
         }
 
         //Dapatkan data provinsi
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://pro.rajaongkir.com/api/province",
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => array(
-                "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
-            ),
-        ));
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        curl_close($curl);
-        if ($err) {
-            return "cURL Error #:" . $err;
-        }
-        $provinsi = json_decode($response, true);
+        // $curl = curl_init();
+        // curl_setopt_array($curl, array(
+        //     CURLOPT_URL => "https://pro.rajaongkir.com/api/province",
+        //     CURLOPT_SSL_VERIFYHOST => 0,
+        //     CURLOPT_SSL_VERIFYPEER => 0,
+        //     CURLOPT_RETURNTRANSFER => true,
+        //     CURLOPT_ENCODING => "",
+        //     CURLOPT_MAXREDIRS => 10,
+        //     CURLOPT_TIMEOUT => 30,
+        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        //     CURLOPT_CUSTOMREQUEST => "GET",
+        //     CURLOPT_HTTPHEADER => array(
+        //         "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
+        //     ),
+        // ));
+        // $response = curl_exec($curl);
+        // $err = curl_error($curl);
+        // curl_close($curl);
+        // if ($err) {
+        //     return "cURL Error #:" . $err;
+        // }
+        $provinsi = $this->provinsiModel->getProvinsi();
 
         $hargaTotal = 0;
         $keranjang = $this->session->get('keranjang');
@@ -743,10 +767,10 @@ class Pages extends BaseController
             'title' => 'Alamat',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
-            'provinsi' => $provinsi["rajaongkir"]["results"],
+            'provinsi' => $provinsi,
             'keranjang' => $keranjang,
             'hargaTotal' => $hargaTotal,
-            'hargaKeseluruhan' => $hargaTotal + 5000,
+            'hargaKeseluruhan' => $hargaTotal,
             'alamat' => $alamat,
             'alamatJson' => json_encode($alamat),
             'email' => session()->get('email') ? session()->get('email') : '',
@@ -758,6 +782,7 @@ class Pages extends BaseController
     }
     public function addAddress()
     {
+        // dd($this->request->getVar());
         $checkPage = $this->request->getVar('checkpage');
         $emailPem = $this->request->getVar('emailPem');
         $nama = $this->request->getVar('nama');
@@ -1104,7 +1129,6 @@ class Pages extends BaseController
                 }
             }
         }
-
         //voucher
         $voucher = [];
         $emailUjiCoba = ['galihsuks123@gmail.com', 'ilenafurniture@gmail.com', 'galih8.4.2001@gmail.com'];
@@ -1126,8 +1150,38 @@ class Pages extends BaseController
             $voucherSelected['rupiah'] = $diskonVoucher;
         }
 
-        //hitung flash sale
-
+        $fees = [
+            'bca'       => ['type'=>'flat',    'value'=>4000,   'taxable'=>true],
+            'bri'       => ['type'=>'flat',    'value'=>4000,   'taxable'=>true],
+            'bni'       => ['type'=>'flat',    'value'=>4000,   'taxable'=>true],
+            'mandiri'   => ['type'=>'flat',    'value'=>4000,   'taxable'=>true],
+            'permata'   => ['type'=>'flat',    'value'=>4000,   'taxable'=>true],
+            'cimb'      => ['type'=>'flat',    'value'=>4000,   'taxable'=>true],
+            'gopay'     => ['type'=>'percent', 'value'=>2.0],
+            'shopeepay' => ['type'=>'percent', 'value'=>2.0],
+            'dana'      => ['type'=>'percent', 'value'=>1.5],
+            'qris'      => ['type'=>'percent', 'value'=>0.7],
+            'card'      => ['type'=>'percent', 'value'=>2.9,   'flat_add'=>2000],
+        ];
+        $ppnRate = 0.11;
+        $method = $this->request->getPost('payment_method' ?? 'bca');
+        $grossAmount = $hargaTotal - $diskonVoucher - $flashSale;
+        $fee = 0;
+        if (isset($fees[$method])) {
+            $rule = $fees[$method];
+            if ($rule['type'] === 'flat') {
+                $fee = $rule['value'];
+                if (! empty($rule['taxable'])) {
+                    $fee += $fee * $ppnRate;
+                }
+            } else { 
+                $fee = $grossAmount * ($rule['value'] / 100);
+            }
+            if (isset($rule['flat_add'])) {
+                $fee += $rule['flat_add'];
+            }
+        }
+        $biayaAdmin = (int) ceil($fee);
 
         $data = [
             'title' => 'Pembayaran',
@@ -1162,7 +1216,9 @@ class Pages extends BaseController
             ],
             'emailUji' => in_array($alamatselected['email_pemesan'], $emailUjiCoba),
             'msg' => session()->getFlashdata('msg'),
-            'flashSale' => $flashSale
+            'flashSale' => $flashSale,
+            'biayaAdmin' => $biayaAdmin,
+            'paymentMethod' => $method,
         ];
 
         $this->session->set(['alamatTerpilih' => $alamatselected]);
@@ -1388,8 +1444,10 @@ class Pages extends BaseController
         ] : false;
         // $kurir = $body['kurir'];
 
+        // hitung biaya admin
+        $biayaAdmin = 5000;
 
-        $total = $subtotal + 5000;
+        $total = $subtotal + $biayaAdmin;
 
         if ($voucher) {
             $item = array(
@@ -1412,13 +1470,12 @@ class Pages extends BaseController
         );
         array_push($itemDetails, $itemflashSale);
 
-        $biayaadmin = array(
+        array_push($itemDetails, array(
             'id' => 'Biaya Admin',
-            'price' => 5000,
+            'price' => $biayaAdmin,
             'quantity' => 1,
             'name' => 'Biaya Admin',
-        );
-        array_push($itemDetails, $biayaadmin);
+        ));
 
         $midtrans_production_key = env('MIDTRANS_PRODUCTION_KEY', 'DefaultValue');
         if (in_array($email, $emailUjiCoba))
@@ -1933,7 +1990,7 @@ class Pages extends BaseController
             $items_curr = json_decode($dataTransaksi_curr['items'], true);
             if ($status == 'Proses') {
                 foreach ($items_curr as $i) {
-                    if ($i['name'] != "Biaya Ongkir" && $i['name'] != "Biaya Admin") {
+                    if ($i['name'] != "Biaya Ongkir" && $i['name'] != "Biaya Admin" && $i['name'] != "Flash Sale") {
                         for ($x = 1; $x <= (int)$i['quantity']; $x++) {
                             $this->pemesananGudangModel->insert([
                                 'id_pesanan' => $order_id,
@@ -3237,10 +3294,13 @@ class Pages extends BaseController
             'data_mid' => json_decode($transaksi['data_mid'], true),
         ];
         foreach ($arr['items'] as $ind_i => $i) {
-            if ($i['id'] != 'Voucher' && $i['id'] != 'Biaya Admin') {
-                $arr['items'][$ind_i]['collection'] = $this->barangModel->getBarang($i['id'])['kategori'];
+            if ($i['id'] != 'Voucher' && $i['id'] != 'Biaya Admin' && $i['id'] != 'Flash Sale') {
+                $barangCur = $this->barangModel->getBarang($i['id']);
+                $arr['items'][$ind_i]['collection'] = $barangCur['kategori'];
+                $arr['items'][$ind_i]['detail'] = $barangCur;
             }
         }
+
         $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
         $data = [
             'title' => 'Print Preview',
@@ -3760,28 +3820,28 @@ class Pages extends BaseController
     public function account()
     {
         //Dapatkan data provinsi
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://pro.rajaongkir.com/api/province",
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => array(
-                "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
-            ),
-        ));
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        curl_close($curl);
-        if ($err) {
-            return "cURL Error #:" . $err;
-        }
-        $provinsi = json_decode($response, true);
+        // $curl = curl_init();
+        // curl_setopt_array($curl, array(
+        //     CURLOPT_URL => "https://pro.rajaongkir.com/api/province",
+        //     CURLOPT_SSL_VERIFYHOST => 0,
+        //     CURLOPT_SSL_VERIFYPEER => 0,
+        //     CURLOPT_RETURNTRANSFER => true,
+        //     CURLOPT_ENCODING => "",
+        //     CURLOPT_MAXREDIRS => 10,
+        //     CURLOPT_TIMEOUT => 30,
+        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        //     CURLOPT_CUSTOMREQUEST => "GET",
+        //     CURLOPT_HTTPHEADER => array(
+        //         "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
+        //     ),
+        // ));
+        // $response = curl_exec($curl);
+        // $err = curl_error($curl);
+        // curl_close($curl);
+        // if ($err) {
+        //     return "cURL Error #:" . $err;
+        // }
+        $provinsi = $this->rajaOngkirModel->getProvinsi();
 
         $alamat = $this->session->get('alamat');
         if (!isset($alamat)) {
@@ -3797,7 +3857,7 @@ class Pages extends BaseController
             'email' => session()->get('email'),
             'nama' => session()->get('nama'),
             'nohp' => session()->get('nohp'),
-            'provinsi' => $provinsi["rajaongkir"]["results"],
+            'provinsi' => $provinsi,
             'msgSandi' => session()->get('msg-sandi') ? session()->get('msg-sandi') : false,
             'msg' => session()->getFlashdata('msg')
         ];

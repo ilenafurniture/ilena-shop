@@ -282,10 +282,10 @@
                     </p>
                 </a>
                 <div class="p-2">
-                    <img src="https://lh3.googleusercontent.com/gps-cs-s/AC9h4nq5BzKlF5hskhE3BJsRD9fJH0rnCjMN7H6VjLi9Lfsbv70PpDM5-8rzf7bTs25d5E_1_HUxMJ1FQULtePLvp6NGJbAPyYoQbFPRz7yFYkypwbgPp_UncGDsqgX7tlj1FaPbJkRk=w408-h544-k-no"
-                        alt="Homj Furniture" class="client-logo">
+                    <img src="https://i.imgur.com/MwLYjVf.png" alt="Kasur Indah" class="client-logo">
                 </div>
             </div>
+
         </div>
 
     </div>
@@ -410,6 +410,10 @@ var locations = [{
     {
         name: "Homj Furniture",
         coords: [-7.321151681470964, 112.7441071560504]
+    },
+    {
+        name: "Kasur Indah",
+        coords: [-8.696614587200164, 115.18642372535126]
     }
 ];
 

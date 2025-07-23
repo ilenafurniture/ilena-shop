@@ -158,7 +158,7 @@ $routes->post('/admin/actionbuatinvoice', 'AdminController::actionBuatInvoice');
 $routes->post('/admin/actionbuatdp', 'AdminController::actionBuatDP');
 $routes->get('/admin/actionaccorderoffline/(:any)', 'AdminController::actionAccOrderOffline/$1', ['filter' => 'adminFilter']);
 
-//GUDANG Controller
+#region GUDANG
 $routes->get('/gudang/listorder', 'GudangController::listOrder', ['filter' => 'gudangFilter']);
 $routes->get('/gudang/listordertable', 'GudangController::listOrderTable');
 $routes->get('/gudang/listorderafter', 'GudangController::listOrderAfter', ['filter' => 'gudangFilter']);
@@ -169,15 +169,16 @@ $routes->post('/gudang/actionaddmutasi', 'GudangController::actionAddMutasi', ['
 $routes->get('/gudang/suratjalan/(:any)', 'GudangController::suratJalan/$1', ['filter' => 'gudangFilter']);
 $routes->post('/gudang/ajukanprint', 'GudangController::ajukanPrint', ['filter' => 'gudangFilter']);
 
+#region Fixing
 $routes->get('/fixmutasi', 'GudangController::fixMutasi');
 $routes->get('/fixnama', 'Pages::fixNama');
 $routes->get('/fixid', 'Pages::fixId');
 $routes->get('/gantijenis/(:any)/(:any)', 'Pages::gantiJenis/$1/$2');
 $routes->get('/fixset', 'Pages::fixSet');
 $routes->get('/gantinamakekecil', 'Pages::gantinamakekecil');
+$routes->get('/fix-id-barang', 'FixingController::fixIdBarang');
 
-
-// Marketplace Controller
+#region Marketplace
 $routes->get('/market/product', 'MarketplaceController::product', ['filter' => 'marketFilter']);
 $routes->post('/market/actionfind', 'MarketplaceController::actionFind', ['filter' => 'marketFilter']);
 $routes->get('/market/find/(:any)', 'MarketplaceController::find/$1', ['filter' => 'marketFilter']);

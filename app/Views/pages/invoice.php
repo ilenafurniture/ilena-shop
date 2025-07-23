@@ -25,14 +25,14 @@
 <body>
     <div class="print">
         <?php if ($transaksi['status'] == 'Proses' || $transaksi['status'] == 'Dikirim' || $transaksi['status'] == 'Selesai') { ?>
-            <div class="print-lunas">
-                <p>L U N A S</p>
-            </div>
+        <div class="print-lunas">
+            <p>L U N A S</p>
+        </div>
         <?php } else if ($transaksi['status'] == 'Menunggu Pembayaran') {
         } else { ?>
-            <div class="print-lunas">
-                <p>G A G A L</p>
-            </div>
+        <div class="print-lunas">
+            <p>G A G A L</p>
+        </div>
         <?php } ?>
         <div class="d-flex justify-content-between mb-2">
             <img src="<?= base_url('img/LogoIlena.png'); ?>" class="logo" />
@@ -114,23 +114,23 @@
             $totalHarga = 0;
             foreach ($transaksi['items'] as $item) {
                 $totalHarga += $item['price'] * $item['quantity'];
-                if ($item['id'] != 'Voucher' && $item['id'] != 'Biaya Admin') {
+                if ($item['id'] != 'Voucher' && $item['id'] != 'Biaya Admin'&& $item['id'] != 'Flash Sale') {
             ?>
-                    <div class="w-100 d-flex">
-                        <div style="flex: 3">
-                            <p class="mb-0">| <?= strtoupper($item['collection']) ?> | <?= $item['name']; ?></p>
-                        </div>
-                        <div style="flex: 1">
-                            <p class="text-center mb-0"><?= $item['quantity']; ?></p>
-                        </div>
-                        <div style="flex: 1">
-                            <p class="text-center mb-0">Rp <?= number_format($item['price'], 0, ",", "."); ?></p>
-                        </div>
-                        <div style="flex: 1">
-                            <p class="text-end mb-0">Rp <?= number_format($item['price'] * $item['quantity'], 0, ",", "."); ?>
-                            </p>
-                        </div>
-                    </div>
+            <div class="w-100 d-flex">
+                <div style="flex: 3">
+                    <p class="mb-0">| <?= strtoupper($item['collection']) ?> | <?= $item['name']; ?></p>
+                </div>
+                <div style="flex: 1">
+                    <p class="text-center mb-0"><?= $item['quantity']; ?></p>
+                </div>
+                <div style="flex: 1">
+                    <p class="text-center mb-0">Rp <?= number_format($item['price'], 0, ",", "."); ?></p>
+                </div>
+                <div style="flex: 1">
+                    <p class="text-end mb-0">Rp <?= number_format($item['price'] * $item['quantity'], 0, ",", "."); ?>
+                    </p>
+                </div>
+            </div>
             <?php }
             } ?>
         </div>
@@ -151,24 +151,24 @@
                         </div>
                     </div>
                     <?php if (substr($transaksi['id_midtrans'], -2) == 'IL') { ?>
-                        <div class="w-100 d-flex">
-                            <div style="flex: 2">
-                                <p class="mb-0">Biaya Admin</p>
-                            </div>
-                            <div style="flex: 1">
-                                <p class="text-end mb-0">Rp 5.000</p>
-                            </div>
+                    <div class="w-100 d-flex">
+                        <div style="flex: 2">
+                            <p class="mb-0">Biaya Admin</p>
                         </div>
-                        <div class="w-100 d-flex">
-                            <div style="flex: 2">
-                                <p class="mb-0 fw-bold">TOTAL TAGIHAN</p>
-                            </div>
-                            <div style="flex: 1">
-                                <p class="text-end mb-0 fw-bold">
-                                    Rp <?= number_format($transaksi['data_mid']['gross_amount'], 0, ",", "."); ?>
-                                </p>
-                            </div>
+                        <div style="flex: 1">
+                            <p class="text-end mb-0">Rp 5.000</p>
                         </div>
+                    </div>
+                    <div class="w-100 d-flex">
+                        <div style="flex: 2">
+                            <p class="mb-0 fw-bold">TOTAL TAGIHAN</p>
+                        </div>
+                        <div style="flex: 1">
+                            <p class="text-end mb-0 fw-bold">
+                                Rp <?= number_format($transaksi['data_mid']['gross_amount'], 0, ",", "."); ?>
+                            </p>
+                        </div>
+                    </div>
                     <?php } ?>
                 </div>
             </div>
@@ -179,10 +179,10 @@
             <div class="w-100">
                 <p class="mb-0 text-black-50">Kurir :</p>
                 <?php if ($transaksi['kurir']['nama'] == 'Menunggu pengiriman') { ?>
-                    <p class="mb-0 fw-bold">Menunggu pengiriman</p>
+                <p class="mb-0 fw-bold">Menunggu pengiriman</p>
                 <?php } else { ?>
-                    <p class="mb-0 fw-bold">
-                        <?= strtoupper($transaksi['kurir']['nama']) . " " . $transaksi['kurir']['deskripsi']; ?></p>
+                <p class="mb-0 fw-bold">
+                    <?= strtoupper($transaksi['kurir']['nama']) . " " . $transaksi['kurir']['deskripsi']; ?></p>
                 <?php } ?>
             </div>
             <div class="w-100">
@@ -248,9 +248,9 @@
     </div>
 </body>
 <?php if ($transaksi['status'] == 'Proses' || $transaksi['status'] == 'Dikirim' || $transaksi['status'] == 'Selesai' || $transaksi['status'] == 'Menunggu Pembayaran') { ?>
-    <script>
-        window.print();
-    </script>
+<script>
+window.print();
+</script>
 <?php } ?>
 
 </html>

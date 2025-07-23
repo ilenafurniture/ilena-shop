@@ -794,53 +794,36 @@ class AdminController extends BaseController
         $bodyJson = $this->request->getBody();
         $body = json_decode($bodyJson, true);
         $keranjang = $body['keranjang'];
-
         $items = [];
-        foreach ($body['keranjang'] as $k) {
+        
+        $hargaTotal = $body['hargaTotal'];
+        $waktu = $body['waktu'] ? str_replace("T", " ", $body['waktu']) : date("Y-m-d H:i:s", strtotime(('+7 Hours')));
+        $pesananke = $this->pemesananModel->orderBy('id', 'desc')->first();
+        $idFix = "IL" . (sprintf("%08d", $pesananke ? ((int)$pesananke['id'] + 1) : 1)) . '';
+        $randomId = "IL" . rand();
+        foreach ($keranjang as $k) {
             array_push($items, [
                 'id' => $k['id'],
                 'name' => $k['name'],
                 'quantity' => $k['quantity'],
                 'price' => $k['price'],
             ]);
-        }
-        $hargaTotal = $body['hargaTotal'];
-        $waktu = $body['waktu'] ? str_replace("T", " ", $body['waktu']) : date("Y-m-d H:i:s", strtotime(('+7 Hours')));
-        $pesananke = $this->pemesananModel->orderBy('id', 'desc')->first();
-        $idFix = "AD" . (sprintf("%08d", $pesananke ? ((int)$pesananke['id'] + 1) : 1)) . '';
-        $randomId = "AD" . rand();
-        foreach ($keranjang as $k) {
+
             //kartu stok ditambahkan
             $varian = $k['detail']['varian'];
             $saldo = (int)$varian['stok'];
             $tanggalNoStrip = date("YmdHis", strtotime("+7 hours"));
-            if (!isset($body['stokTetap'])) {
-                $this->kartuStokModel->insert([
-                    'id_barang' => $k['id'],
-                    'tanggal' => $waktu,
-                    'keterangan' => $tanggalNoStrip . "-" . $k['id'] . "-" . strtoupper($varian['nama']) . "-" . $idFix,
-                    'debit' => 0,
-                    'kredit' => $k['quantity'],
-                    'saldo' => $saldo,
-                    'pending' => true,
-                    'id_pesanan' => $idFix,
-                    'varian' => strtoupper($varian['nama'])
-                ]);
-            } else {
-                if (!$body['stokTetap']) {
-                    $this->kartuStokModel->insert([
-                        'id_barang' => $k['id'],
-                        'tanggal' => $waktu,
-                        'keterangan' => $tanggalNoStrip . "-" . $k['id'] . "-" . strtoupper($varian['nama']) . "-" . $idFix,
-                        'debit' => 0,
-                        'kredit' => $k['quantity'],
-                        'saldo' => $saldo,
-                        'pending' => true,
-                        'id_pesanan' => $idFix,
-                        'varian' => strtoupper($varian['nama'])
-                    ]);
-                }
-            }
+            $this->kartuStokModel->insert([
+                'id_barang' => $k['id'],
+                'tanggal' => $waktu,
+                'keterangan' => $tanggalNoStrip . "-" . $k['id'] . "-" . strtoupper($varian['nama']) . "-" . $idFix,
+                'debit' => 0,
+                'kredit' => $k['quantity'],
+                'saldo' => $saldo,
+                'pending' => true,
+                'id_pesanan' => $idFix,
+                'varian' => strtoupper($varian['nama'])
+            ]);
         }
         $data = [
             'data_mid'          => json_encode([
@@ -862,7 +845,7 @@ class AdminController extends BaseController
             ]),
             'resi'              => 'Menunggu pengiriman',
             'status'            => isset($body['stokTetap']) ? ($body['stokTetap'] ? 'Menunggu Pembayaran' : 'Proses') : 'Proses',
-            'id_marketplace'    => '',
+            'id_marketplace'    => $body['idMarketplace'],
             'items'             => json_encode($items),
             'status_print'      => 'siap',
             'keterangan_suratjalan' => $body['keteranganSJ']
@@ -884,7 +867,7 @@ class AdminController extends BaseController
             'resi' => $resi,
             'status' => 'Dikirim'
         ])->update();
-        return redirect()->to('/admin/order');
+        return redirect()->to('/admin/order/online');
     }
 
     public function reprint()
@@ -1306,7 +1289,7 @@ class AdminController extends BaseController
         $pemesanan['kurir'] = json_decode($pemesanan['kurir'], true);
         $pemesanan['data_mid'] = json_decode($pemesanan['data_mid'], true);
         foreach ($pemesanan['items'] as $ind_i => $item) {
-            if ($item['name'] != 'Voucher' && $item['name'] != 'Biaya Admin' && $item['name'] != 'Biaya Ongkir') {
+            if ($item['name'] != 'Voucher' && $item['name'] != 'Biaya Admin' && $item['name'] != 'Biaya Ongkir' && $item['name'] != 'Flash Sale') {
                 $varianItem = rtrim(explode("(", $item['name'])[1], ")");
                 $produkCurr = $this->barangModel->getBarang($item['id']);
                 $dimensi = json_decode($produkCurr['deskripsi'], true)['dimensi']['asli'];
@@ -1334,6 +1317,7 @@ class AdminController extends BaseController
             ->select('pemesanan_offline_item.*')
             ->select('barang.nama')
             ->select('barang.deskripsi')
+            ->select('barang.varian as barang_varian')
             ->join('barang', 'barang.id = pemesanan_offline_item.id_barang')
             ->where(['id_pesanan' => $id_pesanan])
             ->findAll();
@@ -1357,6 +1341,13 @@ class AdminController extends BaseController
                 ]));
                 array_push($filter, $i['id_barang'] . '-' . $i['varian']);
             }
+        }
+        foreach ($itemsFiltered as $ind_i => $i) {
+            $varian = json_decode($i['barang_varian'], true);
+            $varianSelected = array_values(array_filter($varian, function ($v) use ($i) {
+                return $v['nama'] == $i['varian'];
+            }))[0];
+            $itemsFiltered[$ind_i]['id_baru'] = $i['id_barang'] . $varianSelected['id'];
         }
         $data = [
             'title' => 'Surat Invoice',

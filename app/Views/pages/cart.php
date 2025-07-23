@@ -117,21 +117,21 @@
                         Rp <?= number_format($hargaTotal, 0, ',', '.'); ?>
                     </p>
                 </div>
-                <div class="d-flex justify-content-between py-1">
+                <!-- <div class="d-flex justify-content-between py-1">
                     <p class="m-0">
                         Biaya Admin
                     </p>
                     <p class="fw-bold m-0">
                         Rp 5,000
                     </p>
-                </div>
+                </div> -->
                 <span class="garis my-2"></span>
                 <div class="d-flex justify-content-between py-1">
                     <p class="m-0">
                         TOTAL
                     </p>
                     <p class="fw-bold m-0">
-                        Rp <?= number_format($hargaKeseluruhan, 0, ',', '.'); ?>
+                        Rp <?= number_format($hargaTotal, 0, ',', '.'); ?>
                     </p>
                 </div>
                 <a <?= count($keranjang) > 0 ? 'href="/address"' : '' ?>

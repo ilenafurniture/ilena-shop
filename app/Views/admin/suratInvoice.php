@@ -166,88 +166,102 @@
             <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
-                        <th class="text-center" style="width: 10px; font-size: 12px;">NO</th>
-                        <th class="text-center" style="font-size: 12px;">KODE BARANG</th>
-                        <th class="text-center" style="font-size: 12px;">NAMA BARANG</th>
-                        <th class="text-center" style="font-size: 12px;">KUANTITAS</th>
-                        <th class="text-center" style="font-size: 12px;">HARGA</th>
-                        <th class="text-center" style="font-size: 12px;">JUMLAH</th>
+                        <th class="text-center" style="width: 10px; font-size: 11px;">NO</th>
+                        <th class="text-center" style="font-size: 11px;">KODE BARANG</th>
+                        <th class="text-center" style="font-size: 11px;">NAMA BARANG</th>
+                        <th class="text-center" style="font-size: 11px;">KUANTITAS</th>
+                        <th class="text-center" style="font-size: 11px;">HARGA</th>
+                        <th class="text-center" style="font-size: 11px;">JUMLAH</th>
                     </tr>
                 </thead>
                 <tbody>
+                    <?php
+                $totalHargaBarang = 0;
+                foreach ($items as $t) {
+                    $totalHargaBarang += $t['jumlah'] * $t['harga'];
+                }
+                $discountFactor = 1;
+                if ($pemesanan['total_akhir'] < $totalHargaBarang) {
+                    $discountFactor = $pemesanan['total_akhir'] / $totalHargaBarang;
+                }
+                $diskonPersen = round((1 - $discountFactor) * 100, 2);
+                ?>
+
                     <?php if ($pemesanan['down_payment'] <= 0) { ?>
                     <?php $no = 1; ?>
-                    <?php $totalHargaBarang  = 0; ?>
-                    <?php foreach ($items as $t) { ?>
-                    <?php $totalHargaBarang += $t['jumlah'] * $t['harga']; ?>
+                    <?php foreach ($items as $t) {
+                        $origPrice = $t['harga'];
+                        $origTotal = $t['jumlah'] * $origPrice;
+                        if ($discountFactor < 1) {
+                            $netPrice = round($origPrice * $discountFactor);
+                            $netTotal = $t['jumlah'] * $netPrice;
+                        } else {
+                            $netPrice = $origPrice;
+                            $netTotal = $origTotal;
+                        }
+                    ?>
                     <tr>
-                        <td class="text-center" style="font-size: 12px;" s><?= strtoupper($no++); ?></td>
-                        <td class="text-center" style="font-size: 12px;"><?= strtoupper($t['id_barang']); ?></td>
-                        <td>
-                            <p class="m-0" style="font-size: 12px;">
-                                <?= $t['special_price'] > 0 ? "[SPECIAL PRICE] " : ""; ?><?= strtoupper($t['nama']); ?>
-                                (<?= strtoupper($t['varian']); ?>)</p>
-                            <p class="m-0" style="font-size: 12px;"><?= $t['dimensi']['panjang']; ?> x
-                                <?= $t['dimensi']['lebar']; ?> x
-                                <?= $t['dimensi']['tinggi']; ?></p>
+                        <td class="text-center" style="font-size:11px;"><?= $no++; ?></td>
+                        <td class="text-center" style="font-size:11px;"><?= strtoupper($t['id_baru']); ?></td>
+                        <td style="font-size:11px;">
+                            <p class="m-0" style="font-size: 11px;">
+                                <?= $t['special_price'] > 0 ? "[SPECIAL PRICE] " : ""; ?>
+                                <?= strtoupper($t['nama']); ?> (<?= strtoupper($t['varian']); ?>)
+                            </p>
+                            <p class="m-0" style="font-size: 11px;">
+                                <?= "{$t['dimensi']['panjang']} x {$t['dimensi']['lebar']} x {$t['dimensi']['tinggi']}"; ?>
+                            </p>
                         </td>
-                        <td class="text-center" style="font-size: 12px;"><?= strtoupper($t['jumlah']); ?></td>
-                        <td class="text-end" style="text-wrap: nowrap; font-size: 12px;">Rp
-                            <?= strtoupper(number_format($t['harga'], 0, ',', '.')); ?></td>
-                        <td class="text-end" style="text-wrap: nowrap; font-size: 12px;">Rp
-                            <?= strtoupper(number_format($t['jumlah'] * $t['harga'], 0, ',', '.')); ?></td>
+                        <td class="text-center" style="font-size:11px; text-wrap: nowrap;"><?= $t['jumlah']; ?></td>
+                        <td class="text-end" style="font-size:11px; text-wrap: nowrap;">Rp
+                            <?= number_format($netPrice,0,',','.'); ?></td>
+                        <td class="text-end" style="font-size:11px; text-wrap: nowrap;">Rp
+                            <?= number_format($netTotal,0,',','.'); ?></td>
                     </tr>
                     <?php } ?>
-                    <?php $diskonPersen = round(100 - ($totalHargaBarang / $pemesanan['total_akhir'] * 100), 2); ?>
-                    <?php if ($diskonPersen > 0) { ?>
-                    <tr>
-                        <td colspan="5" class="fw-bold" style="text-wrap: nowrap; font-size: 12px;">JUMLAH</td>
-                        <td class="text-end" style="text-wrap: nowrap;">Rp
-                            <?= number_format($totalHargaBarang, 0, ',', '.'); ?></td>
-                    </tr>
-                    <?php } ?>
-                    <?php if ($diskonPersen < 0) { ?>
-                    <tr>
-                        <td colspan="5" class="text-start fw-bold italic" style="text-wrap: nowrap; font-size: 12px;">
-                            POTONGAN
-                            <?= $diskonPersen > 0 ? "( $diskonPersen% )" : ''; ?></td>
-                        <td class="text-end fw-bold italic" style="text-wrap: nowrap; font-size: 12px;">Rp
-                            <?= strtoupper(number_format($pemesanan['total_akhir'] - $totalHargaBarang, 0, ',', '.')); ?>
-                        </td>
-                    </tr>
-                    <?php } ?>
+
+
+
                     <?php if ($pemesanan['down_payment'] < 0) { ?>
                     <tr>
-                        <td colspan="5" class="fw-bold" style="text-wrap: nowrap; font-size: 12px;">UANG MUKA YANG
-                            DITERIMA</td>
-                        <td class="text-end" style="text-wrap: nowrap;">Rp
-                            <?= number_format(abs($pemesanan['down_payment']), 0, ',', '.'); ?></td>
+                        <td colspan="5" class="fw-bold" style="font-size:11px;">UANG MUKA YANG DITERIMA</td>
+                        <td class="text-end" style="font-size:11px;">
+                            Rp <?= number_format(abs($pemesanan['down_payment']),0,',','.'); ?>
+                        </td>
                     </tr>
                     <?php } ?>
+
                     <?php } else { ?>
                     <tr>
                         <td class="text-center">1</td>
                         <td class="text-center"></td>
-                        <td class="">UANG MUKA</td>
+                        <td>UANG MUKA</td>
                         <td class="text-center"></td>
-                        <td class="text-end" style="text-wrap: nowrap;"></td>
-                        <td class="text-end" style="text-wrap: nowrap;">Rp
-                            <?= strtoupper(number_format($pemesanan['down_payment'], 0, ',', '.')); ?></td>
+                        <td class="text-end"></td>
+                        <td class="text-end">
+                            Rp <?= number_format($pemesanan['down_payment'],0,',','.'); ?>
+                        </td>
                     </tr>
                     <?php } ?>
+
+                    <!-- TOTAL INVOICE -->
                     <tr>
-                        <td colspan="5" class="fw-bold" style="text-wrap: nowrap; font-size: 12px;">TOTAL INVOICE</td>
-                        <?php if ($pemesanan['down_payment'] > 0) { ?>
-                        <td class="text-end fw-bold" style="text-wrap: nowrap; font-size: 12px;">Rp
-                            <?= strtoupper(number_format($pemesanan['down_payment'], 0, ',', '.')); ?>
+                        <td colspan="5" class="fw-bold" style="font-size:11px;">TOTAL INVOICE</td>
+                        <td class="text-end fw-bold" style="font-size:11px; text-wrap: nowrap; ">
+                            Rp
+                            <?php
+                        if ($pemesanan['down_payment'] > 0) {
+                            echo number_format($pemesanan['down_payment'],0,',','.');
+                        } else {
+                            // totalAkhir minus DP (jika DP negatif)
+                            $net = $pemesanan['total_akhir'] - ( $pemesanan['down_payment'] < 0 ? abs($pemesanan['down_payment']) : 0 );
+                            echo number_format($net,0,',','.');
+                        }
+                        ?>
                         </td>
-                        <?php } else { ?>
-                        <td class="text-end fw-bold" style="text-wrap: nowrap; font-size: 12px;">Rp
-                            <?= strtoupper(number_format($pemesanan['total_akhir'] - (($pemesanan['down_payment']) < 0 ? abs($pemesanan['down_payment']) : 0), 0, ',', '.')); ?>
-                        </td>
-                        <?php } ?>
                     </tr>
                 </tbody>
+
             </table>
         </div>
         <!-- end Tabel Invoice -->
@@ -257,26 +271,11 @@
             {
                 $angka = (int) $angka;
                 $huruf = array(
-                    1 => 'Satu',
-                    2 => 'Dua',
-                    3 => 'Tiga',
-                    4 => 'Empat',
-                    5 => 'Lima',
-                    6 => 'Enam',
-                    7 => 'Tujuh',
-                    8 => 'Delapan',
-                    9 => 'Sembilan',
-                    0 => 'Nol'
+                    1 => 'Satu', 2 => 'Dua', 3 => 'Tiga', 4 => 'Empat', 5 => 'Lima',
+                    6 => 'Enam', 7 => 'Tujuh', 8 => 'Delapan', 9 => 'Sembilan', 0 => 'Nol'
                 );
-                $tingkat = array(
-                    '',
-                    'Ribu',
-                    'Juta',
-                    'Miliar',
-                    'Triliun',
-                    'Kuadriliun',
-                    'Kuintiliun'
-                );
+
+                $tingkat = array('', 'Ribu', 'Juta', 'Miliar', 'Triliun', 'Kuadriliun', 'Kuintiliun');
 
                 if ($angka == 0) {
                     return "Nol Rupiah";
@@ -284,6 +283,7 @@
 
                 $kalimat = '';
                 $i = 0;
+
                 while ($angka > 0) {
                     $bagian = $angka % 1000;
                     if ($bagian != 0) {
@@ -299,53 +299,37 @@
             function _terbilang_ratusan($angka)
             {
                 $huruf = array(
-                    1 => 'Satu',
-                    2 => 'Dua',
-                    3 => 'Tiga',
-                    4 => 'Empat',
-                    5 => 'Lima',
-                    6 => 'Enam',
-                    7 => 'Tujuh',
-                    8 => 'Delapan',
-                    9 => 'Sembilan',
-                    0 => 'Nol'
+                    1 => 'Satu', 2 => 'Dua', 3 => 'Tiga', 4 => 'Empat', 5 => 'Lima',
+                    6 => 'Enam', 7 => 'Tujuh', 8 => 'Delapan', 9 => 'Sembilan', 0 => 'Nol'
                 );
 
                 $kalimat = '';
+
                 if ($angka >= 100) {
-                    $kalimat .= $huruf[(int)($angka / 100)] . ' Ratus ';
+                    if ((int)($angka / 100) == 1) {
+                        $kalimat .= 'Seratus ';
+                    } else {
+                        $kalimat .= $huruf[(int)($angka / 100)] . ' Ratus ';
+                    }
                     $angka %= 100;
                 }
+
                 if ($angka >= 10) {
                     $kalimat .= _terbilang_puluhan($angka);
-                } else {
+                } elseif ($angka > 0) {
                     $kalimat .= $huruf[$angka];
                 }
 
-                return $kalimat;
+                return trim($kalimat);
             }
 
             function _terbilang_puluhan($angka)
             {
                 $huruf = array(
-                    10 => 'Sepuluh',
-                    11 => 'Sebelas',
-                    12 => 'Dua Belas',
-                    13 => 'Tiga Belas',
-                    14 => 'Empat Belas',
-                    15 => 'Lima Belas',
-                    16 => 'Enam Belas',
-                    17 => 'Tujuh Belas',
-                    18 => 'Delapan Belas',
-                    19 => 'Sembilan Belas',
-                    20 => 'Dua Puluh',
-                    30 => 'Tiga Puluh',
-                    40 => 'Empat Puluh',
-                    50 => 'Lima Puluh',
-                    60 => 'Enam Puluh',
-                    70 => 'Tujuh Puluh',
-                    80 => 'Delapan Puluh',
-                    90 => 'Sembilan Puluh'
+                    10 => 'Sepuluh', 11 => 'Sebelas', 12 => 'Dua Belas', 13 => 'Tiga Belas', 14 => 'Empat Belas',
+                    15 => 'Lima Belas', 16 => 'Enam Belas', 17 => 'Tujuh Belas', 18 => 'Delapan Belas', 19 => 'Sembilan Belas',
+                    20 => 'Dua Puluh', 30 => 'Tiga Puluh', 40 => 'Empat Puluh', 50 => 'Lima Puluh',
+                    60 => 'Enam Puluh', 70 => 'Tujuh Puluh', 80 => 'Delapan Puluh', 90 => 'Sembilan Puluh'
                 );
 
                 if ($angka <= 9) {
@@ -354,56 +338,48 @@
                     return $huruf[$angka];
                 } else {
                     $puluhan = (int)($angka / 10) * 10;
-                    return $huruf[$puluhan] . ' ' . _terbilang_satuan($angka % 10); // For numbers above 20
+                    return $huruf[$puluhan] . ' ' . _terbilang_satuan($angka % 10);
                 }
             }
 
             function _terbilang_satuan($angka)
             {
                 $huruf = array(
-                    1 => 'Satu',
-                    2 => 'Dua',
-                    3 => 'Tiga',
-                    4 => 'Empat',
-                    5 => 'Lima',
-                    6 => 'Enam',
-                    7 => 'Tujuh',
-                    8 => 'Delapan',
-                    9 => 'Sembilan',
-                    0 => ''
+                    1 => 'Satu', 2 => 'Dua', 3 => 'Tiga', 4 => 'Empat', 5 => 'Lima',
+                    6 => 'Enam', 7 => 'Tujuh', 8 => 'Delapan', 9 => 'Sembilan', 0 => ''
                 );
                 return $huruf[$angka];
             }
-
-            ?>
-
+        ?>
             <table>
                 <tbody>
                     <tr>
-                        <td style="font-size: 12px;" class="pe-3">Terbilang
+                        <td style="font-size: 11px;" class="pe-3">Terbilang
                             <?= $pemesanan['down_payment'] > 0 ? 'DP' : '' ?></td>
                         <?php if ($pemesanan['down_payment'] > 0) { ?>
-                        <td style="font-size: 12px;">:
-                            <i><?= ucwords(strtolower(terbilang($pemesanan['down_payment']))); ?></i>
+                        <td style="font-size: 11px;">:
+                            <i
+                                style="font-size: 11px;"><?= ucwords(strtolower(terbilang($pemesanan['down_payment']))); ?></i>
                         </td>
                         <?php } else { ?>
-                        <td style="font-size: 12px;">:
-                            <i><?= ucwords(strtolower(terbilang($pemesanan['total_akhir'] - ($pemesanan['down_payment'] < 0 ? abs($pemesanan['down_payment']) : 0)))); ?></i>
+                        <td style="font-size: 11px;">:
+                            <i
+                                style="font-size: 11px;"><?= ucwords(strtolower(terbilang($pemesanan['total_akhir'] - ($pemesanan['down_payment'] < 0 ? abs($pemesanan['down_payment']) : 0)))); ?></i>
                         </td>
                         <?php } ?>
                     </tr>
                     <tr>
-                        <td style="text-wrap: nowrap; font-size: 12px;" class="pe-3">PO</td>
-                        <td style="text-wrap: nowrap; font-size: 12px;">:
+                        <td style="text-wrap: nowrap; font-size: 11px;" class="pe-3">PO</td>
+                        <td style="text-wrap: nowrap; font-size: 11px;">:
                             <?= $pemesanan['po'] ? $pemesanan['po'] : '-'; ?></td>
                     </tr>
                     <tr>
-                        <td style="text-wrap: nowrap; font-size: 12px;" class="pe-3">Surat Jalan</td>
+                        <td style="text-wrap: nowrap; font-size: 11px;" class="pe-3">Surat Jalan</td>
                         <?php
                         if ($pemesanan['down_payment']) { ?>
-                        <td style="text-wrap: nowrap; font-size: 12px;">: <?= substr($items[0]['id_return'], 5); ?></td>
+                        <td style="text-wrap: nowrap; font-size: 11px;">: <?= substr($items[0]['id_return'], 5); ?></td>
                         <?php } else { ?>
-                        <td style="text-wrap: nowrap; font-size: 12px;">: <?= substr($pemesanan['id_pesanan'], 5); ?>
+                        <td style="text-wrap: nowrap; font-size: 11px;">: <?= substr($pemesanan['id_pesanan'], 5); ?>
                         </td>
                         <?php } ?>
                     </tr>

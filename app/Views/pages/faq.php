@@ -505,59 +505,71 @@
                 <p class="nomor">07</p>
                 <p class="sub-faq">GARANSI PRODUK</p>
             </div>
-            <div style="flex: 1" class="isi-faq">
-                <p class="sub-sub-faq">Bagaimana kebijakan pembatalan pemesanan apabila terdapat kesalahan
-                    dalam pemesanan barang?</p>
+            <div class="isi-faq" style="flex: 1;">
+                <p class="sub-sub-faq">Bagaimana kebijakan pembatalan pemesanan apabila terdapat kesalahan dalam
+                    pemesanan barang?</p>
                 <div class="isinya">
-                    <p>Untuk barang yang sudah terkirim tidak bisa dilakukan pembatalan kecuali
-                        kondisi barang rusak/ cacat dan kami tidak memiliki stok barang yang sama sebagai
-                        penggantinya. Jika pihak kami melakukan kesalahan pengiriman barang, maka tanggung
-                        jawab
-                        adalah 100% dari <a href="/" style="text-decoration:none; color:red; font-size:13px;">Ilena
-                            Furniture.</a>
+                    <p>
+                        Barang yang sudah terkirim tidak bisa dilakukan pembatalan kecuali kondisi barang yang diterima
+                        rusak atau cacat karena kesalahan QC dari kami sebagai pengirim. Jika pihak kami melakukan
+                        kesalahan pengiriman barang, maka akan menjadi tanggung jawab <a href="/"
+                            style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>.
                     </p>
                 </div>
-                <p class="sub-sub-faq">Bagaimana apabila terdapat kesalahan pemesanan?</p>
+
+                <p class="sub-sub-faq">Bagaimana jika terdapat kesalahan pemesanan ?</p>
                 <div class="isinya">
-                    <p>Apabila terdapat kesalahan dalam pemesanan maka akan kami ganti dengan
-                        unit
-                        baru sesuai dengan unit yang ingin dipilih. </p>
+                    <p>
+                        Apabila terdapat kesalahan dalam proses pemesanan dari pihak kami, pembeli akan mendapatkan
+                        ganti dengan unit baru sesuai dengan unit yang ingin dipilih.
+                    </p>
                 </div>
-                <p class="sub-sub-faq">Jika ada penukaran barang, siapakah yang menanggung biaya
-                    pengirimannya?
-                </p>
+
+                <p class="sub-sub-faq">Apabila ada penukaran barang, siapakah yang menanggung biaya pengirimannya?</p>
                 <div class="isinya">
-                    <p>Apabila Anda menerima barang yang cacat, kami akan tukar dengan unit
-                        baru.
-                        Untuk pengiriman unit lama biaya pengiriman akan ditanggung oleh Customer terlebih
-                        dahulu untuk selanjutnya akan kami reimburse 100% (dengan melampirkan nota
-                        pengiriman)
-                        sedangkan untuk pengiriman ulang, biaya pengiriman akan kami tanggung. </p>
+                    <p>
+                        Apabila Anda menerima barang yang cacat atau rusak karena kelalaian QC kami, akan ditukar dengan
+                        unit baru. Untuk pengiriman unit lama, biaya pengiriman akan ditanggung oleh Customer terlebih
+                        dahulu dan selanjutnya akan kami reimburse 100% (dengan melampirkan nota pengiriman). Sedangkan
+                        untuk pengiriman ulang, biaya pengiriman akan kami tanggung 100% hingga sampai ke alamat tujuan.
+                    </p>
                 </div>
+
                 <p class="sub-sub-faq">Apa syarat melakukan penukaran unit yang cacat?</p>
                 <div class="isinya">
-                    <p>Anda dapat menghubungi <a
-                            href="https://api.whatsapp.com/send/?phone=%2B628112938158&text=Hallo%20CS%20Ilena,%0ASaya%20tertarik%20dengan%20produk....%0AApakah%20masih%20tersedia%20stoknya?%0ATerima%20kasih&type=phone_number&app_absent=0"
-                            style="text-decoration:none; color:red; font-size:13px;">Customer Service
-                            Kami</a>
-                        maksimal 1x24 jam sejak barang
-                        diterima dengan menyertakan nomor pemesanan, bukti foto yang memperlihatkan letak
-                        cacatnya serta video yang terlihat jelas pada saat melakukan unboxing. Maka dari
-                        itu,
-                        pastikan Anda selalu melakukan video ketika melakukan unboxing. </p>
+                    <p>
+                        Anda dapat menghubungi <a
+                            href="https://api.whatsapp.com/send/?phone=%2B628112938158&text=Hallo%20CS%20Ilena,%0ASaya%20tertarik%20dengan%20produk...&type=phone_number&app_absent=0"
+                            style="text-decoration:none; color:red; font-size:13px;">Customer Service Kami</a> maksimal
+                        3x24 jam sejak barang diterima dengan menyertakan nomor pemesanan, bukti foto yang
+                        memperlihatkan letak cacatnya serta video yang terlihat jelas pada saat melakukan unboxing.
+                    </p>
                 </div>
+
                 <p class="sub-sub-faq">Berapa lama proses penukaran unit jika ada kerusakan barang?</p>
                 <div class="isinya">
-                    <p>Apabila bukti kerusakan (berupa foto/video) telah kami terima, tim kami
-                        akan
-                        segera melakukan investigasi, sebagai tindak lanjut kami akan melakukan penukaran
-                        unit
-                        sesegera mungkin. Tim kami akan menghubungi Anda apabila proses investigasi telah
-                        selesai dilakukan. Pastikan nomor Anda selalu aktif jika sewaktu-waktu tim kami
-                        menghubungi Anda.</p>
+                    <p>
+                        Apabila bukti kerusakan (berupa foto atau video) telah kami terima, tim kami akan segera
+                        melakukan investigasi. Sebagai tindak lanjut, kami akan melakukan penukaran unit sesegera
+                        mungkin. Tim kami akan menghubungi Anda apabila proses investigasi telah selesai dilakukan.
+                        Pastikan nomor Anda selalu aktif jika sewaktu-waktu tim kami menghubungi Anda.
+                    </p>
+                </div>
+
+                <p class="sub-sub-faq">Apakah bisa melakukan pembatalan saat produk sudah sampai di alamat tujuan?</p>
+                <div class="isinya">
+                    <p>
+                        Jika terdapat ketidaksesuaian produk yang dikirim dengan yang ada di katalog, segera lakukan
+                        konfirmasi paling lambat 3x24 jam melalui <a
+                            href="https://api.whatsapp.com/send/?phone=%2B628112938158&text=Hallo%20CS%20Ilena,%0ASaya%20tertarik%20dengan%20produk...&type=phone_number&app_absent=0"
+                            style="text-decoration:none; color:red; font-size:13px;">Customer Service Kami</a> Kami di
+                        nomor yang tertera untuk
+                        informasi lebih detail.
+                    </p>
                 </div>
             </div>
         </div>
+
         <div class="container-faq">
             <div class="tigapuluh-ke-seratus">
                 <p class="nomor">08</p>

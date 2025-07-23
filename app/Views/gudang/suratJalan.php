@@ -51,7 +51,7 @@
                     </div>
                 </div>
                 <?php foreach ($pemesanan['items'] as $ind_i => $i) {
-                    if ($i['name'] != 'Biaya Admin' && $i['name'] != 'Voucher') { ?>
+                    if ($i['name'] != 'Biaya Admin' && $i['name'] != 'Voucher' && $i['name'] != 'Biaya Ongkir' && $i['name'] != 'Flash Sale') { ?>
                 <div class="w-100 d-flex">
                     <div style="flex:0.5;">
                         <p class="m-0"><?= $ind_i + 1; ?></p>

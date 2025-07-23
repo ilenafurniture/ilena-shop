@@ -441,7 +441,11 @@ var locations = [{
     {
         name: "Kasur Indah",
         coords: [-8.696812172382534, 115.18640535462836]
-    }
+    },
+    {
+        name: "Kasur Indah",
+        coords: [-8.696614587200164, 115.18642372535126]
+    },
 ];
 
 locations.forEach(function(store) {
