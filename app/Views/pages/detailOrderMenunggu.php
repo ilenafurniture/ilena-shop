@@ -30,6 +30,10 @@ switch ($dataMid['payment_type']) {
         $biller_code = $dataMid['biller_code'];
         $bank = "mandiri";
         break;
+    case'gopay':
+        $va_number = $dataMid['payment_type'];
+        $bank = "gopay";
+        break;
     case 'qris':
         $va_number = 'https://api.midtrans.com/v2/qris/' . $dataMid['transaction_id'] . '/qr-code';
         $bank = "qris";

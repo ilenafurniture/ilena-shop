@@ -1045,11 +1045,18 @@ body {
     height: 30px;
 }
 
-.container-pembayaran .item-pembayaran {
+/* .container-pembayaran .item-pembayaran {
     background-color: whitesmoke;
     padding: 1em 1.5em;
     letter-spacing: -1px;
     font-weight: 500;
+} */
+
+.container-pembayaran {
+    display: flex;
+    gap: 1em;
+    flex-wrap: wrap;
+    padding-block: 1em;
 }
 .container-pembayaran img {
     height: 20px;
@@ -1057,16 +1064,17 @@ body {
 .container-pembayaran input {
     display: none;
 }
-.container-pembayaran .collapse .item-logo-pembayaran {
+.container-pembayaran .item-logo-pembayaran {
     background-color: whitesmoke;
     padding: 0.5em 1em;
     border-radius: 0.3em;
 }
-.container-pembayaran .collapse .item-logo-pembayaran:hover {
+.container-pembayaran .item-logo-pembayaran:hover {
     background-color: rgb(201, 201, 201);
 }
-.container-pembayaran input:checked + .item-logo-pembayaran {
+.container-pembayaran .item-logo-pembayaran.active {
     border: 2px solid black;
+    
 }
 
 .modal .modal-title {

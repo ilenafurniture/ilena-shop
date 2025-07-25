@@ -53,10 +53,11 @@ $routes->post('/editaddress/(:any)', 'Pages::editAddress/$1', ['filter' => 'cust
 
 $routes->get('/usevoucher/(:any)', 'Pages::useVoucher/$1');
 $routes->get('/cancelvoucher/(:any)', 'Pages::cancelVoucher/$1');
+$routes->get('/payment/method/(:any)/(:any)', 'Pages::paymentMethod/$1/$2', ['filter' => 'customerShippingFilter']);
 $routes->get('/payment/(:any)', 'Pages::payment/$1', ['filter' => 'customerShippingFilter']);
 $routes->get('/actionpay/(:any)', 'Pages::actionPay/$1');
 $routes->post('/actionpaysnap', 'Pages::actionPaySnap');
-$routes->post('/actionpaycore/(:any)', 'Pages::actionPayCore/$1');
+$routes->get('/actionpaycore/(:any)', 'Pages::actionPayCore/$1');
 $routes->post('/updatetransaction', 'Pages::updateTransaction');
 // $routes->get('/progresspay/(:any)', 'Pages::progressPay/$1', ['filter' => 'customerFilter']);
 // $routes->get('/successpay/(:any)', 'Pages::successPay/$1', ['filter' => 'customerFilter']);
