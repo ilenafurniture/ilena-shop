@@ -106,7 +106,9 @@
                     <select name="provinsi" class="form-select">
                         <option value="">-- Pilih provinsi --</option>
                         <?php foreach ($provinsi as $p) { ?>
-                        <option value="<?= $p['province_id']; ?>-<?= $p['province']; ?>"><?= $p['province']; ?></option>
+                        <option value="<?= $p['id']; ?>-<?= $p['label']; ?>">
+                            <?= $p['label']; ?>
+                        </option>
                         <?php } ?>
                     </select>
                     <select name="kota" class="form-select">

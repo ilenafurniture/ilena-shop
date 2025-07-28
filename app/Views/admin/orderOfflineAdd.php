@@ -177,6 +177,8 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
         useEffect(()=>{
             if(formData.provinsi) {
                 const idprov = formData.provinsi.split("-")[0];
+                console.log('INI ID provinsi');
+                console.log(idprov);
                 async function fetchRajaOngkir() {
                     const response = await fetch("/getkota/" + idprov);
                     const kota = await response.json();
@@ -680,8 +682,8 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                                     <select className="form-select" value={formData.provinsi} onChange={(e)=>{setFormData({...formData, provinsi: e.target.value})}}>
                                         <option value="">-- Pilih provinsi --</option>
                                         <?php foreach ($provinsi as $p) { ?>
-                                            <option value="<?= $p['province_id']; ?>-<?= $p['province']; ?>">
-                                                <?= $p['province']; ?>
+                                            <option value="<?= $p['id']; ?>-<?= $p['label']; ?>">
+                                                <?= $p['label']; ?>
                                             </option>
                                         <?php } ?>
                                     </select>
@@ -721,8 +723,8 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                                                 <select className="form-select" value={formData.provinsiTagihan} onChange={(e)=>{setFormData({...formData, provinsiTagihan: e.target.value})}}>
                                                     <option value="">-- Pilih provinsi --</option>
                                                     <?php foreach ($provinsi as $p) { ?>
-                                                        <option value="<?= $p['province_id']; ?>-<?= $p['province']; ?>">
-                                                            <?= $p['province']; ?>
+                                                        <option value="<?= $p['id']; ?>-<?= $p['label']; ?>">
+                                                            <?= $p['label']; ?>
                                                         </option>
                                                     <?php } ?>
                                                 </select>

@@ -7,9 +7,13 @@ use App\Models\GambarBarangModel;
 use App\Models\GambarBarang3000Model;
 use App\Models\ArtikelModel;
 use App\Models\GambarArtikelModel;
+use App\Models\KabupatenModel;
+use App\Models\KecamatanModel;
+use App\Models\KelurahanModel;
 use App\Models\PembeliModel;
 use App\Models\PemesananModel;
 use App\Models\PemesananGudangModel;
+use App\Models\ProvinsiModel;
 use App\Models\UserModel;
 use App\Models\KoleksiModel;
 use App\Models\JenisModel;
@@ -39,6 +43,14 @@ class AdminController extends BaseController
     protected $apikey_img_ilena;
     protected $pemesananOfflineModel;
     protected $pemesananOfflineItemModel;
+    protected $provinsiModel;
+    protected $kabupatenModel;
+    protected $kecamatanModel;
+    protected $kelurahanModel;
+
+
+
+
 
     public function __construct()
     {
@@ -60,6 +72,11 @@ class AdminController extends BaseController
         $this->pemesananOfflineItemModel = new PemesananOfflineItemModel();
         $this->session = \Config\Services::session();
         $this->apikey_img_ilena = env('APIKEY_IMG_ILENA', 'DefaultValue');
+        $this->provinsiModel = new ProvinsiModel();
+        $this->kabupatenModel = new KabupatenModel();
+        $this->kecamatanModel = new KecamatanModel();
+        $this->kelurahanModel = new KelurahanModel();
+        
     }
     public function listProduct()
     {
@@ -757,35 +774,35 @@ class AdminController extends BaseController
         }
 
         //Dapatkan data provinsi
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://pro.rajaongkir.com/api/province",
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => array(
-                "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
-            ),
-        ));
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        curl_close($curl);
-        if ($err) {
-            return "cURL Error #:" . $err;
-        }
-        $provinsi = json_decode($response, true);
+        // $curl = curl_init();
+        // curl_setopt_array($curl, array(
+        //     CURLOPT_URL => "https://pro.rajaongkir.com/api/province",
+        //     CURLOPT_SSL_VERIFYHOST => 0,
+        //     CURLOPT_SSL_VERIFYPEER => 0,
+        //     CURLOPT_RETURNTRANSFER => true,
+        //     CURLOPT_ENCODING => "",
+        //     CURLOPT_MAXREDIRS => 10,
+        //     CURLOPT_TIMEOUT => 30,
+        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        //     CURLOPT_CUSTOMREQUEST => "GET",
+        //     CURLOPT_HTTPHEADER => array(
+        //         "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
+        //     ),
+        // ));
+        // $response = curl_exec($curl);
+        // $err = curl_error($curl);
+        // curl_close($curl);
+        // if ($err) {
+        //     return "cURL Error #:" . $err;
+        // }
+        $provinsi = $this->provinsiModel->findAll();
         // dd($provinsi);
 
         $data = [
             'title' => 'Pesanan',
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'produkJson' => json_encode($produk),
-            'provinsi' => $provinsi['rajaongkir']['results']
+            'provinsi' => $provinsi
         ];
         return view('admin/orderAdd', $data);
     }
@@ -1532,28 +1549,28 @@ class AdminController extends BaseController
         $pesanan = $this->pemesananOfflineModel->like('id_pesanan', $jenis == 'sale' ? 'SJ' : 'SP', 'after')->findAll();
 
         //Dapatkan data provinsi
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://pro.rajaongkir.com/api/province",
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => array(
-                "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
-            ),
-        ));
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        curl_close($curl);
-        if ($err) {
-            return "cURL Error #:" . $err;
-        }
-        $provinsi = json_decode($response, true);
+        // $curl = curl_init();
+        // curl_setopt_array($curl, array(
+        //     CURLOPT_URL => "https://pro.rajaongkir.com/api/province",
+        //     CURLOPT_SSL_VERIFYHOST => 0,
+        //     CURLOPT_SSL_VERIFYPEER => 0,
+        //     CURLOPT_RETURNTRANSFER => true,
+        //     CURLOPT_ENCODING => "",
+        //     CURLOPT_MAXREDIRS => 10,
+        //     CURLOPT_TIMEOUT => 30,
+        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        //     CURLOPT_CUSTOMREQUEST => "GET",
+        //     CURLOPT_HTTPHEADER => array(
+        //         "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
+        //     ),
+        // ));
+        // $response = curl_exec($curl);
+        // $err = curl_error($curl);
+        // curl_close($curl);
+        // if ($err) {
+        //     return "cURL Error #:" . $err;
+        // }
+        $provinsi = $this->provinsiModel->findAll();
 
         $data = [
             'title' => 'Pesanan',
@@ -1601,34 +1618,34 @@ class AdminController extends BaseController
         }
 
         //Dapatkan data provinsi
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://pro.rajaongkir.com/api/province",
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => array(
-                "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
-            ),
-        ));
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        curl_close($curl);
-        if ($err) {
-            return "cURL Error #:" . $err;
-        }
-        $provinsi = json_decode($response, true);
+        // $curl = curl_init();
+        // curl_setopt_array($curl, array(
+        //     CURLOPT_URL => "https://pro.rajaongkir.com/api/province",
+        //     CURLOPT_SSL_VERIFYHOST => 0,
+        //     CURLOPT_SSL_VERIFYPEER => 0,
+        //     CURLOPT_RETURNTRANSFER => true,
+        //     CURLOPT_ENCODING => "",
+        //     CURLOPT_MAXREDIRS => 10,
+        //     CURLOPT_TIMEOUT => 30,
+        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        //     CURLOPT_CUSTOMREQUEST => "GET",
+        //     CURLOPT_HTTPHEADER => array(
+        //         "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
+        //     ),
+        // ));
+        // $response = curl_exec($curl);
+        // $err = curl_error($curl);
+        // curl_close($curl);
+        // if ($err) {
+        //     return "cURL Error #:" . $err;
+        // }
+        $provinsi = $this->provinsiModel->findAll();
 
         $data = [
             'title' => 'Pesanan',
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'produkJson' => json_encode($produk),
-            'provinsi' => $provinsi['rajaongkir']['results']
+            'provinsi' => $provinsi
         ];
         return view('admin/orderOfflineAdd', $data);
     }

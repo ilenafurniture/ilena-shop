@@ -435,8 +435,8 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                         <select className="form-select" value={formData.alamat.provinsi} onChange={(e)=>{setFormData({...formData, alamat: {...formData.alamat, provinsi: e.target.value}})}}>
                             <option value="">-- Pilih provinsi --</option>
                             <?php foreach ($provinsi as $p) { ?>
-                                <option value="<?= $p['province_id']; ?>-<?= $p['province']; ?>">
-                                    <?= $p['province']; ?>
+                                <option value="<?= $p['id']; ?>-<?= $p['label']; ?>">
+                                    <?= $p['label']; ?>
                                 </option>
                             <?php } ?>
                         </select>
