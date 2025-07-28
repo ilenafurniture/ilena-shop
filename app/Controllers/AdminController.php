@@ -1562,7 +1562,7 @@ class AdminController extends BaseController
             'pesananJson' => json_encode($pesanan),
             'jenis' => $jenis,
             'msg' => session()->getFlashdata('msg'),
-            'provinsi' => $provinsi['rajaongkir']['results']
+            'provinsi' => $provinsi
         ];
         return view('admin/orderOffline', $data);
     }
