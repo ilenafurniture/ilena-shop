@@ -152,8 +152,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                 async function fetchRajaOngkir() {
                     const response = await fetch("/getkota/" + idprov);
                     const kota = await response.json();
-                    const hasil = kota.rajaongkir.results;
-                    setKabupaten(hasil)
+                    setKabupaten(kota)
                 }
                 fetchRajaOngkir()
             }
@@ -168,8 +167,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                 async function fetchRajaOngkir() {
                     const response = await fetch("/getkec/" + idkab);
                     const kota = await response.json();
-                    const hasil = kota.rajaongkir.results;
-                    setKecamatan(hasil)
+                    setKecamatan(kota)
                 }
                 fetchRajaOngkir()
             }
@@ -179,7 +177,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
 
         useEffect(()=>{
             if(formData.alamat.kecamatan) {
-                const idkec = formData.alamat.kecamatan.split("-")[1];
+                const idkec = formData.alamat.kecamatan.split("-")[0];
                 async function fetchRajaOngkir() {
                     const response = await fetch("/getkode/" + idkec);
                     const hasil = await response.json();
@@ -289,7 +287,6 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                 alamatLengkap: `${formData.alamat.pelengkap} ${formData.alamat.kelurahan.split('-')[0]}, ${formData.alamat.kecamatan.split('-')[1]}, ${formData.alamat.kabupaten.split('-')[1]}, ${formData.alamat.provinsi.split('-')[1]} ${formData.alamat.kelurahan.split('-')[1]}`,
                 keranjang: keranjang
             }
-            console.log(body)
 
             async function fetchSubmit() {
                 const response = await fetch(
@@ -443,7 +440,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                         <select className="form-select" value={formData.alamat.kabupaten} onChange={(e)=>{setFormData({...formData, alamat: {...formData.alamat, kabupaten: e.target.value}})}}>
                             <option value="">-- Pilih kabupaten --</option>
                             {kabupaten.map((k, ind_k)=>(
-                                <option key={ind_k} value={`${k.city_id}-${k.city_name}`}>{k.city_name}</option>
+                                <option key={ind_k} value={`${k.id}-${k.label}`}>{k.label}</option>
                             ))}
                         </select>
                     </div>
@@ -451,13 +448,13 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                         <select className="form-select" value={formData.alamat.kecamatan} onChange={(e)=>{setFormData({...formData, alamat: {...formData.alamat, kecamatan: e.target.value}})}}>
                             <option value="">-- Pilih kecamatan --</option>
                             {kecamatan.map((k, ind_k)=>(
-                                <option key={ind_k} value={`${k.subdistrict_id}-${k.subdistrict_name}`}>{k.subdistrict_name}</option>
+                                <option key={ind_k} value={`${k.id}-${k.label}`}>{k.label}</option>
                             ))}
                         </select>
                         <select className="form-select" value={formData.alamat.kelurahan} onChange={(e)=>{setFormData({...formData, alamat: {...formData.alamat, kelurahan: e.target.value}})}}>
                             <option value="">-- Pilih kelurahan --</option>
                             {kelurahan.map((k, ind_k)=>(
-                                <option key={ind_k} value={`${k.DesaKelurahan}-${k.KodePos}`}>{k.DesaKelurahan}</option>
+                                <option key={ind_k} value={`${k.label}-${k.kodepos}`}>{k.label}</option>
                             ))}
                         </select>
                     </div>

@@ -177,13 +177,10 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
         useEffect(()=>{
             if(formData.provinsi) {
                 const idprov = formData.provinsi.split("-")[0];
-                console.log('INI ID provinsi');
-                console.log(idprov);
                 async function fetchRajaOngkir() {
                     const response = await fetch("/getkota/" + idprov);
                     const kota = await response.json();
-                    const hasil = kota.rajaongkir.results;
-                    setKabupaten(hasil)
+                    setKabupaten(kota)
                 }
                 fetchRajaOngkir()
             }
@@ -198,8 +195,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                 async function fetchRajaOngkir() {
                     const response = await fetch("/getkec/" + idkab);
                     const kota = await response.json();
-                    const hasil = kota.rajaongkir.results;
-                    setKecamatan(hasil)
+                    setKecamatan(kota)
                 }
                 fetchRajaOngkir()
             }
@@ -209,7 +205,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
 
         useEffect(()=>{
             if(formData.kecamatan) {
-                const idkec = formData.kecamatan.split("-")[1];
+                const idkec = formData.kecamatan.split("-")[0];
                 async function fetchRajaOngkir() {
                     const response = await fetch("/getkode/" + idkec);
                     const hasil = await response.json();
@@ -232,8 +228,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                 async function fetchRajaOngkir() {
                     const response = await fetch("/getkota/" + idprov);
                     const kota = await response.json();
-                    const hasil = kota.rajaongkir.results;
-                    setKabupatenTagihan(hasil)
+                    setKabupatenTagihan(kota)
                 }
                 fetchRajaOngkir()
             }
@@ -248,8 +243,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                 async function fetchRajaOngkir() {
                     const response = await fetch("/getkec/" + idkab);
                     const kota = await response.json();
-                    const hasil = kota.rajaongkir.results;
-                    setKecamatanTagihan(hasil)
+                    setKecamatanTagihan(kota)
                 }
                 fetchRajaOngkir()
             }
@@ -259,7 +253,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
 
         useEffect(()=>{
             if(formData.kecamatanTagihan) {
-                const idkec = formData.kecamatanTagihan.split("-")[1];
+                const idkec = formData.kecamatanTagihan.split("-")[0];
                 async function fetchRajaOngkir() {
                     const response = await fetch("/getkode/" + idkec);
                     const hasil = await response.json();
@@ -690,7 +684,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                                     <select className="form-select" value={formData.kabupaten} onChange={(e)=>{setFormData({...formData,kabupaten: e.target.value})}}>
                                         <option value="">-- Pilih kabupaten --</option>
                                         {kabupaten.map((k, ind_k)=>(
-                                            <option key={ind_k} value={`${k.city_id}-${k.city_name}`}>{k.city_name}</option>
+                                            <option key={ind_k} value={`${k.id}-${k.label}`}>{k.label}</option>
                                         ))}
                                     </select>
                                 </div>
@@ -698,13 +692,13 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                                 <select className="form-select" value={formData.kecamatan} onChange={(e)=>{setFormData({...formData, kecamatan: e.target.value})}}>
                                     <option value="">-- Pilih kecamatan --</option>
                                     {kecamatan.map((k, ind_k)=>(
-                                        <option key={ind_k} value={`${k.subdistrict_id}-${k.subdistrict_name}`}>{k.subdistrict_name}</option>
+                                        <option key={ind_k} value={`${k.id}-${k.label}`}>{k.label}</option>
                                     ))}
                                 </select>
                                 <select className="form-select" value={formData.kelurahan} onChange={(e)=>{setFormData({...formData,kelurahan: e.target.value})}}>
                                     <option value="">-- Pilih kelurahan --</option>
                                     {kelurahan.map((k, ind_k)=>(
-                                        <option key={ind_k} value={`${k.DesaKelurahan}-${k.KodePos}`}>{k.DesaKelurahan}</option>
+                                        <option key={ind_k} value={`${k.label}-${k.kodepos}`}>{k.label}</option>
                                     ))}
                                 </select>
                             </div>
@@ -731,7 +725,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                                                 <select className="form-select" value={formData.kabupatenTagihan} onChange={(e)=>{setFormData({...formData,kabupatenTagihan: e.target.value})}}>
                                                     <option value="">-- Pilih kabupaten --</option>
                                                     {kabupatenTagihan.map((k, ind_k)=>(
-                                                        <option key={ind_k} value={`${k.city_id}-${k.city_name}`}>{k.city_name}</option>
+                                                        <option key={ind_k} value={`${k.id}-${k.label}`}>{k.label}</option>
                                                     ))}
                                                 </select>
                                             </div>
@@ -739,13 +733,13 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                                             <select className="form-select" value={formData.kecamatanTagihan} onChange={(e)=>{setFormData({...formData, kecamatanTagihan: e.target.value})}}>
                                                 <option value="">-- Pilih kecamatan --</option>
                                                 {kecamatanTagihan.map((k, ind_k)=>(
-                                                    <option key={ind_k} value={`${k.subdistrict_id}-${k.subdistrict_name}`}>{k.subdistrict_name}</option>
+                                                    <option key={ind_k} value={`${k.id}-${k.label}`}>{k.label}</option>
                                                 ))}
                                             </select>
                                             <select className="form-select" value={formData.kelurahanTagihan} onChange={(e)=>{setFormData({...formData,kelurahanTagihan: e.target.value})}}>
                                                 <option value="">-- Pilih kelurahan --</option>
                                                 {kelurahanTagihan.map((k, ind_k)=>(
-                                                    <option key={ind_k} value={`${k.DesaKelurahan}-${k.KodePos}`}>{k.DesaKelurahan}</option>
+                                                    <option key={ind_k} value={`${k.label}-${k.kodepos}`}>{k.label}</option>
                                                 ))}
                                             </select>
                                         </div>
