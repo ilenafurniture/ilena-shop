@@ -285,15 +285,27 @@
                     <img src="https://i.imgur.com/MwLYjVf.png" alt="Kasur Indah" class="client-logo">
                 </div>
             </div>
+            <div class="item-toko">
+                <a href="https://maps.app.goo.gl/5ZXJpa5BAFadgwAr5"
+                    style="flex: 1; text-decoration: none; color: black;" class="p-4">
+                    <h3 class="nama">DM Mebel Supeno</h3>
+                    <p class="alamat m-0">Jl. Menteri Supeno No.73, Pandeyan, Kec. Umbulharjo, Kota Yogyakarta, Daerah
+                        Istimewa Yogyakarta 55162
+                    </p>
+                </a>
+                <div class="p-2">
+                    <img src="https://img.ilenafurniture.com/image/1742450061236.webp/?apikey=<?= $apikey_img_ilena ?>"
+                        alt="DM Mebel Supeno" class="client-logo">
+                </div>
+
+            </div>
 
         </div>
-
     </div>
-</div>
 
 
 
-<!-- <script>
+    <!-- <script>
 // Map Initialization
 var map = L.map('map', {
     center: [-7.614529, 110.712246],
@@ -361,108 +373,112 @@ stores.forEach(store => {
 });
 </script> -->
 
-<script>
-var map = L.map('map').setView([-7.614529, 110.712246], 6.5);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
-
-var locations = [{
-        name: "Jempol Baru Furniture",
-        coords: [-7.565618587313341, 110.82431800071647]
-    },
-    {
-        name: "Cipta Bangun Jaya Furniture Jakarta",
-        coords: [-6.285266506836552, 106.84299483660007]
-    },
-    {
-        name: "Sumber Abadi Furniture",
-        coords: [-7.743532734851712, 110.36242217704519]
-    },
-    {
-        name: "Home Gallery Furniture",
-        coords: [-7.2886288976515985, 112.67261790823825]
-    },
-    {
-        name: "Pari Anom Jaya Furniture",
-        coords: [-7.241679877880819, 112.74470435104482]
-    },
-    {
-        name: "Suri Mebel Semarang",
-        coords: [-6.985425332274277, 110.41746260495303]
-    },
-    {
-        name: "Puri Mabel & Interior",
-        coords: [-6.9658085878072935, 110.39043865842983]
-    },
-    {
-        name: "Victoria Furnicenter",
-        coords: [-7.310519605654715, 112.68303473759022]
-    },
-    {
-        name: "Tunggal Jaya Furniture",
-        coords: [-7.98299983310868, 112.62939860029017]
-    },
-    {
-        name: "Cipta Bangun Jaya Furniture Magelang",
-        coords: [-7.497190468107969, 110.22351816365261]
-    },
-    {
-        name: "Homj Furniture",
-        coords: [-7.321151681470964, 112.7441071560504]
-    },
-    {
-        name: "Kasur Indah",
-        coords: [-8.696614587200164, 115.18642372535126]
-    }
-];
-
-locations.forEach(function(store) {
-    var marker = L.circleMarker([store.coords[0], store.coords[1]], {
-        color: '#FF4D4D',
-        fillColor: '#FF4D4D',
-        fillOpacity: 0.2,
-        stroke: true,
-        strokeOpacity: 0.2,
-        weight: 0.2,
-        radius: 10
+    <script>
+    var map = L.map('map').setView([-7.614529, 110.712246], 6.5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    var popupContent = "<b>" + store.name + "</b>";
-    marker.bindPopup(popupContent);
+    var locations = [{
+            name: "Jempol Baru Furniture",
+            coords: [-7.565618587313341, 110.82431800071647]
+        },
+        {
+            name: "Cipta Bangun Jaya Furniture Jakarta",
+            coords: [-6.285266506836552, 106.84299483660007]
+        },
+        {
+            name: "Sumber Abadi Furniture",
+            coords: [-7.743532734851712, 110.36242217704519]
+        },
+        {
+            name: "Home Gallery Furniture",
+            coords: [-7.2886288976515985, 112.67261790823825]
+        },
+        {
+            name: "Pari Anom Jaya Furniture",
+            coords: [-7.241679877880819, 112.74470435104482]
+        },
+        {
+            name: "Suri Mebel Semarang",
+            coords: [-6.985425332274277, 110.41746260495303]
+        },
+        {
+            name: "Puri Mabel & Interior",
+            coords: [-6.9658085878072935, 110.39043865842983]
+        },
+        {
+            name: "Victoria Furnicenter",
+            coords: [-7.310519605654715, 112.68303473759022]
+        },
+        {
+            name: "Tunggal Jaya Furniture",
+            coords: [-7.98299983310868, 112.62939860029017]
+        },
+        {
+            name: "Cipta Bangun Jaya Furniture Magelang",
+            coords: [-7.497190468107969, 110.22351816365261]
+        },
+        {
+            name: "Homj Furniture",
+            coords: [-7.321151681470964, 112.7441071560504]
+        },
+        {
+            name: "Kasur Indah",
+            coords: [-8.696614587200164, 115.18642372535126]
+        },
+        {
+            name: "DM Mebel Supeno",
+            coords: [-7.816169475560965, 110.38068786772793]
+        }
+    ];
 
-    var circle = L.circle([store.coords[0], store.coords[1]], {
-        color: '#FF4D4D',
-        fillColor: '#FF4D4D',
-        fillOpacity: 0.2,
-        radius: 50
-    }).addTo(map);
-    marker.on('mouseover', function() {
-        marker.openPopup();
+    locations.forEach(function(store) {
+        var marker = L.circleMarker([store.coords[0], store.coords[1]], {
+            color: '#FF4D4D',
+            fillColor: '#FF4D4D',
+            fillOpacity: 0.2,
+            stroke: true,
+            strokeOpacity: 0.2,
+            weight: 0.2,
+            radius: 10
+        }).addTo(map);
+
+        var popupContent = "<b>" + store.name + "</b>";
+        marker.bindPopup(popupContent);
+
+        var circle = L.circle([store.coords[0], store.coords[1]], {
+            color: '#FF4D4D',
+            fillColor: '#FF4D4D',
+            fillOpacity: 0.2,
+            radius: 50
+        }).addTo(map);
+        marker.on('mouseover', function() {
+            marker.openPopup();
+        });
+        marker.on('mouseout', function() {
+            marker.closePopup();
+        });
+        marker.on('click', function() {
+            var lat = store.coords[0];
+            var lng = store.coords[1];
+            var googleMapsUrl = "https://www.google.com/maps?q=" + lat + "," + lng;
+            window.open(googleMapsUrl, "_blank");
+        });
+
+        circle.on('click', function() {
+            var lat = store.coords[0];
+            var lng = store.coords[1];
+            var googleMapsUrl = "https://www.google.com/maps?q=" + lat + "," + lng;
+            window.open(googleMapsUrl, "_blank");
+        });
     });
-    marker.on('mouseout', function() {
-        marker.closePopup();
-    });
-    marker.on('click', function() {
-        var lat = store.coords[0];
-        var lng = store.coords[1];
+    map.on('click', function(e) {
+        var lat = e.latlng.lat;
+        var lng = e.latlng.lng;
         var googleMapsUrl = "https://www.google.com/maps?q=" + lat + "," + lng;
         window.open(googleMapsUrl, "_blank");
     });
+    </script>
 
-    circle.on('click', function() {
-        var lat = store.coords[0];
-        var lng = store.coords[1];
-        var googleMapsUrl = "https://www.google.com/maps?q=" + lat + "," + lng;
-        window.open(googleMapsUrl, "_blank");
-    });
-});
-map.on('click', function(e) {
-    var lat = e.latlng.lat;
-    var lng = e.latlng.lng;
-    var googleMapsUrl = "https://www.google.com/maps?q=" + lat + "," + lng;
-    window.open(googleMapsUrl, "_blank");
-});
-</script>
-
-<?= $this->endSection(); ?>
+    <?= $this->endSection(); ?>
