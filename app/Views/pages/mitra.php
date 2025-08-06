@@ -286,7 +286,7 @@
                 </div>
             </div>
             <div class="item-toko">
-                <a href="https://maps.app.goo.gl/5ZXJpa5BAFadgwAr5"
+                <a href="https://maps.app.goo.gl/MJ396VhceiHfGLBF6"
                     style="flex: 1; text-decoration: none; color: black;" class="p-4">
                     <h3 class="nama">DM Mebel Supeno</h3>
                     <p class="alamat m-0">Jl. Menteri Supeno No.73, Pandeyan, Kec. Umbulharjo, Kota Yogyakarta, Daerah
@@ -294,8 +294,8 @@
                     </p>
                 </a>
                 <div class="p-2">
-                    <img src="https://img.ilenafurniture.com/image/1742450061236.webp/?apikey=<?= $apikey_img_ilena ?>"
-                        alt="DM Mebel Supeno" class="client-logo">
+                    <img src="https://i.ibb.co.com/q3vG29Bf/Screenshot-2025-08-06-102008.png" alt="DM Mebel Supeno"
+                        class="client-logo">
                 </div>
 
             </div>
