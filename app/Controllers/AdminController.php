@@ -1365,6 +1365,7 @@ class AdminController extends BaseController
                 return $v['nama'] == $i['varian'];
             }))[0];
             $itemsFiltered[$ind_i]['id_baru'] = $i['id_barang'] . $varianSelected['id'];
+            dd($varianSelected);
         }
         $data = [
             'title' => 'Surat Invoice',

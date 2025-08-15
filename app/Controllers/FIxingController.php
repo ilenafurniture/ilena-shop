@@ -14,48 +14,57 @@ class FixingController extends BaseController
     }
 
     public function fixIdBarang()
-    {
-        $barangAll = $this->barangModel->findAll();
-        $checking = [];
-        foreach ($barangAll as $barang) {
-            try {
-                $varian = json_decode($barang['varian'], true);
-                $adaHitam = count(array_filter($varian, function($v) {
-                    return strtolower($v['nama']) == 'hitam';
-                })) > 0;
-                foreach ($varian as $ind_v => $v) {
-                    if(count($varian) > 1) {
-                        if($adaHitam) {
-                            $id_varian = strtolower($v['nama']) == 'hitam' ? '01' : '02';
-                        } else {
-                            $id_varian = '0'. ($ind_v + 1);
-                        }
+{
+    $barangAll = $this->barangModel->findAll();
+    $checking = [];
+
+    foreach ($barangAll as $barang) {
+        $varian = []; // inisialisasi awal
+        try {
+            $decoded = json_decode($barang['varian'] ?? '[]', true);
+            $varian = is_array($decoded) ? $decoded : [];
+
+            $adaHitam = array_reduce($varian, function($acc, $v) {
+                return $acc || (isset($v['nama']) && strtolower($v['nama']) === 'hitam');
+            }, false);
+
+            foreach ($varian as $ind_v => $v) {
+                $nama = strtolower($v['nama'] ?? '');
+                if (count($varian) > 1) {
+                    if ($adaHitam) {
+                        $id_varian = $nama === 'hitam' ? '01' : '02';
                     } else {
-                        $id_varian = '01';
+                        $id_varian = str_pad((string) ($ind_v + 1), 2, '0', STR_PAD_LEFT);
                     }
-                    $varian[$ind_v]['id'] = $id_varian;
+                } else {
+                    $id_varian = '01';
                 }
-                $this->barangModel->where('id', $barang['id'])
-                    ->set(['varian' => json_encode($varian)])
-                    ->update();
-                $checking[] = [
-                    'id' => $barang['id'],
-                    'nama' => $barang['nama'],
-                    'varian' => $varian,
-                    'status' => 'success'
-                ];
-            } catch (\Throwable $th) {
-                //throw $th;
-                $checking[] = [
-                    'id' => $barang['id'],
-                    'nama' => $barang['nama'],
-                    'varian' => $varian,
-                    'status' => 'error'
-                ];
+                $varian[$ind_v]['id'] = $id_varian;
             }
+
+            $this->barangModel->where('id', $barang['id'])
+                ->set(['varian' => json_encode($varian, JSON_UNESCAPED_UNICODE)])
+                ->update();
+
+            $checking[] = [
+                'id' => $barang['id'],
+                'nama' => $barang['nama'],
+                'varian' => $varian,
+                'status' => 'success',
+            ];
+        } catch (\Throwable $th) {
+            $checking[] = [
+                'id' => $barang['id'],
+                'nama' => $barang['nama'],
+                'varian' => $varian,
+                'status' => 'error',
+                'error' => $th->getMessage(),
+            ];
         }
-        dd($checking);
     }
+
+    return $this->response->setJSON($checking);
+}
 
     
 }

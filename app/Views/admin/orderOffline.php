@@ -310,9 +310,9 @@ function titleCase(str) {
     return splitStr.join(' ');
 }
 async function getKota(idprov) {
-    const response = await fetch("/getkota/" + idprov);
+    const response = await fetch(`/getkota/${idprov}`);
     const kota = await response.json();
-    const hasil = kota.rajaongkir.results;
+    const hasil = kota;
     kotaElm.innerHTML = '<option value="">-- Pilih kota --</option>';
     hasil.forEach(element => {
         const optElm = document.createElement("option");
@@ -324,7 +324,7 @@ async function getKota(idprov) {
 async function getKec(idkota) {
     const response = await fetch("/getkec/" + idkota);
     const kecamatan = await response.json();
-    const hasil = kecamatan.rajaongkir.results;
+    const hasil = kecamatan;
     // console.log(hasil)
     kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
     kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';

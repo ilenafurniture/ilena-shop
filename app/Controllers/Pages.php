@@ -3897,7 +3897,7 @@ class Pages extends BaseController
         // if ($err) {
         //     return "cURL Error #:" . $err;
         // }
-        $provinsi = $this->rajaOngkirModel->getProvinsi();
+        $provinsi = $this->provinsiModel->findAll();
 
         $alamat = $this->session->get('alamat');
         if (!isset($alamat)) {
