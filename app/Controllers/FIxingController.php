@@ -8,6 +8,7 @@ class FixingController extends BaseController
 {
     protected $barangModel;
  
+
     public function __construct()
     {
         $this->barangModel = new BarangModel();

@@ -302,81 +302,151 @@ const kotaElm = document.querySelector('select[name="kota"]');
 const kecElm = document.querySelector('select[name="kecamatan"]');
 const kodeElm = document.querySelector('select[name="kodepos"]');
 
-function titleCase(str) {
-    var splitStr = str.toLowerCase().split(' ');
-    for (var i = 0; i < splitStr.length; i++) {
-        splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
-    }
-    return splitStr.join(' ');
-}
-async function getKota(idprov) {
-    const response = await fetch(`/getkota/${idprov}`);
-    const kota = await response.json();
-    const hasil = kota;
-    kotaElm.innerHTML = '<option value="">-- Pilih kota --</option>';
-    hasil.forEach(element => {
-        const optElm = document.createElement("option");
-        optElm.value = element.city_id + "-" + element.city_name.split("/")[0]
-        optElm.innerHTML = element.type == 'Kota' ? `${element.city_name} Kota` : element.city_name
-        kotaElm.appendChild(optElm);
-    });
-}
-async function getKec(idkota) {
-    const response = await fetch("/getkec/" + idkota);
-    const kecamatan = await response.json();
-    const hasil = kecamatan;
-    // console.log(hasil)
-    kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
-    kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
-    hasil.forEach(element => {
-        const optElm = document.createElement("option");
-        optElm.value = element.subdistrict_id + "-" + element.subdistrict_name.split("/")[0]
-        optElm.innerHTML = element.subdistrict_name
-        kecElm.appendChild(optElm);
-    });
-}
-async function getKode(kec) {
-    const response = await fetch("/getkode/" + kec);
-    const kode = await response.json();
-    const hasil = kode;
-    // console.log(hasil)
-    kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
-    hasil.forEach(element => {
-        const optElm = document.createElement("option");
-        optElm.value = titleCase(element.DesaKelurahan).split("/")[0] + "-" + element.KodePos
-        optElm.innerHTML = titleCase(element.DesaKelurahan)
-        kodeElm.appendChild(optElm);
-    });
+function titleCase(str = "") {
+    return String(str)
+        .toLowerCase()
+        .split(' ')
+        .map(s => s.charAt(0).toUpperCase() + s.substring(1))
+        .join(' ');
 }
 
+// helper: ambil array dari berbagai kemungkinan bentuk payload
+function normalizeList(payload) {
+    if (Array.isArray(payload)) return payload;
+    if (Array.isArray(payload?.label)) return payload.label;
+    if (Array.isArray(payload?.results)) return payload.results;
+    if (Array.isArray(payload?.data?.results)) return payload.data.results;
+    return [];
+}
+
+// helper: aman split by "/" jika ada
+function safeStripSlash(text) {
+    return String(text ?? "").split("/")[0].trim();
+}
+
+async function getKota(idprov) {
+    kotaElm.innerHTML = '<option value="">Loading kota…</option>';
+    try {
+        const res = await fetch(`/getkota/${idprov}`);
+        if (!res.ok) throw new Error(res.statusText);
+        const payload = await res.json();
+        const list = normalizeList(payload);
+
+        kotaElm.innerHTML = '<option value="">-- Pilih kota --</option>';
+        if (list.length === 0) {
+            kotaElm.innerHTML = '<option value="">(Tidak ada kota)</option>';
+            return;
+        }
+
+        list.forEach(item => {
+            // dukung berbagai key: {id,label}, atau {city_id, city_name, type}
+            const id = item.city_id ?? item.id ?? item.value ?? "";
+            const nama0 = item.city_name ?? item.label ?? item.name ?? "";
+            const nama = safeStripSlash(nama0);
+            const type = item.type === 'Kota' ? ' Kota' : '';
+
+            const opt = document.createElement("option");
+            opt.value = `${id}-${nama}`;
+            opt.textContent = (item.city_name ? `${nama}${type}` : nama); // kalau ada type baru tambahkan
+            kotaElm.appendChild(opt);
+        });
+    } catch (err) {
+        console.error("getKota error:", err);
+        kotaElm.innerHTML = '<option value="">(Gagal memuat kota)</option>';
+    }
+}
+
+async function getKec(idkota) {
+    kecElm.innerHTML = '<option value="">Loading kecamatan…</option>';
+    kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+    try {
+        const res = await fetch(`/getkec/${idkota}`);
+        if (!res.ok) throw new Error(res.statusText);
+        const payload = await res.json();
+        const list = normalizeList(payload);
+
+        kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
+        if (list.length === 0) {
+            kecElm.innerHTML = '<option value="">(Tidak ada kecamatan)</option>';
+            return;
+        }
+
+        list.forEach(item => {
+            // dukung {subdistrict_id, subdistrict_name} atau {id,label}
+            const id = item.subdistrict_id ?? item.id ?? item.value ?? "";
+            const nama = safeStripSlash(item.subdistrict_name ?? item.label ?? item.name ?? "");
+            const opt = document.createElement("option");
+            opt.value = `${id}-${nama}`;
+            opt.textContent = nama;
+            kecElm.appendChild(opt);
+        });
+    } catch (err) {
+        console.error("getKec error:", err);
+        kecElm.innerHTML = '<option value="">(Gagal memuat kecamatan)</option>';
+    }
+}
+
+async function getKode(kecNamaAtauId) {
+    kodeElm.innerHTML = '<option value="">Loading desa…</option>';
+    try {
+        const res = await fetch(`/getkode/${encodeURIComponent(kecNamaAtauId)}`);
+        if (!res.ok) throw new Error(res.statusText);
+        const payload = await res.json();
+        const list = normalizeList(payload);
+
+        kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        if (list.length === 0) {
+            kodeElm.innerHTML = '<option value="">(Tidak ada desa)</option>';
+            return;
+        }
+
+        list.forEach(item => {
+            // contoh: { DesaKelurahan, KodePos } atau varian lain
+            const desa = titleCase(safeStripSlash(item.DesaKelurahan ?? item.desa ?? item.label ?? item
+                .name ?? ""));
+            const kp = String(item.KodePos ?? item.kodepos ?? item.zip ?? "").trim();
+            const opt = document.createElement("option");
+            opt.value = `${desa}-${kp}`;
+            opt.textContent = desa + (kp ? ` (${kp})` : "");
+            kodeElm.appendChild(opt);
+        });
+    } catch (err) {
+        console.error("getKode error:", err);
+        kodeElm.innerHTML = '<option value="">(Gagal memuat desa)</option>';
+    }
+}
+
+// EVENTS
 provElm.addEventListener("change", (e) => {
-    kotaElm.innerHTML = '<option value="">Loading..</option>'
+    kotaElm.innerHTML = '<option value="">Loading kota…</option>';
     kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
     kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
-    const valuenya = e.target.value.split("-");
-    const idprov = Number(valuenya[0]);
-    if (idprov > 0) {
-        getKota(idprov)
-    }
-})
+    const [idprovStr] = String(e.target.value || "").split("-");
+    const idprov = Number(idprovStr);
+    if (idprov > 0) getKota(idprov);
+    else kotaElm.innerHTML = '<option value="">-- Pilih kota --</option>';
+});
+
 kotaElm.addEventListener("change", (e) => {
-    kecElm.innerHTML = '<option value="">Loading..</option>'
+    kecElm.innerHTML = '<option value="">Loading kecamatan…</option>';
     kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
-    const value = e.target.value.split("-")
-    const idkota = Number(value[0])
-    if (idkota > 0) {
-        getKec(idkota)
-    }
-})
+    const [idkotaStr] = String(e.target.value || "").split("-");
+    const idkota = Number(idkotaStr);
+    if (idkota > 0) getKec(idkota);
+    else kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
+});
+
 kecElm.addEventListener("change", (e) => {
-    kodeElm.innerHTML = '<option value="">Loading..</option>'
-    const value = e.target.value.split("-")
-    const idkec = Number(value[0])
-    if (idkec > 0) {
-        getKode(value[1])
-    }
-})
+    kodeElm.innerHTML = '<option value="">Loading desa…</option>';
+    const parts = String(e.target.value || "").split("-");
+    const idkec = Number(parts[0]);
+    const namaKec = parts[0] ?? "";
+    // endpoint kamu tampaknya butuh NAMA kecamatan (bukan ID) → gunakan namaKec
+    if (idkec > 0 || namaKec) getKode(namaKec);
+    else kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+});
 </script>
+
 <script>
 const tableDpElm = document.getElementById('table-dp');
 const containerItemsElm = document.getElementById('container-items');
