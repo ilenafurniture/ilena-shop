@@ -299,6 +299,32 @@
                 </div>
 
             </div>
+            <div class="item-toko">
+                <a href="https://maps.app.goo.gl/8a9karvqThnFXzX97"
+                    style="flex: 1; text-decoration: none; color: black;" class="p-4">
+                    <h3 class="nama">Istana Meubel CIREBON</h3>
+                    <p class="alamat m-0">Jl. Pekarungan No.12-14, Panjunan, Kec. Lemahwungkuk, Kota Cirebon, Jawa Barat
+                        45112
+                    </p>
+                </a>
+                <div class="p-2">
+                    <img src="https://i.ibb.co.com/Q7HV0b1v/Screenshot-2025-08-19-233904.png" alt="DM Mebel Supeno"
+                        class="client-logo">
+                </div>
+            </div>
+            <div class="item-toko">
+                <a href="https://maps.app.goo.gl/5QZ8tTaSVTmTtxHQ7"
+                    style="flex: 1; text-decoration: none; color: black;" class="p-4">
+                    <h3 class="nama">Living Home Houseware & Furniture</h3>
+                    <p class="alamat m-0">Jl. KH. Wahid Hasyim No.88, Windusara, Karangklesem, Kec. Purwokerto Sel.,
+                        Kabupaten Banyumas, Jawa Tengah 53144
+                    </p>
+                </a>
+                <div class="p-2">
+                    <img src="https://i.ibb.co.com/TDFP36LD/Screenshot-2025-08-19-234119.png" alt="DM Mebel Supeno"
+                        class="client-logo">
+                </div>
+            </div>
 
         </div>
     </div>
@@ -430,6 +456,14 @@ stores.forEach(store => {
         {
             name: "DM Mebel Supeno",
             coords: [-7.816169475560965, 110.38068786772793]
+        },
+        {
+            name: "Istana Meubel CIREBON",
+            coords: [-6.715091293405323, 108.56476548596918]
+        },
+        {
+            name: "Living Home Houseware & Furniture",
+            coords: [-7.446178589024145, 109.24378085767192]
         }
     ];
 
