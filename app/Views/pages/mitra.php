@@ -325,6 +325,32 @@
                         class="client-logo">
                 </div>
             </div>
+            <div class="item-toko">
+                <a href="https://maps.app.goo.gl/cU4SfXLKjL9pV5uz8"
+                    style="flex: 1; text-decoration: none; color: black;" class="p-4">
+                    <h3 class="nama">Vinetta Furniture Purwokerto</h3>
+                    <p class="alamat m-0">Jalan Kombes Jl. Komisaris Bambang Suprapto No.99, Cigrobak, Purwokerto Lor,
+                        Kec. Purwokerto Tim., Kabupaten Banyumas, Jawa Tengah 53114
+                    </p>
+                </a>
+                <div class="p-2">
+                    <img src="https://i.ibb.co.com/v4VDntfc/Screenshot-2025-08-22-142911.png"
+                        alt="Vinetta Furniture Purwokerto" class="client-logo">
+                </div>
+            </div>
+            <div class="item-toko">
+                <a href="https://maps.app.goo.gl/17uAqPADuswiuxeG6"
+                    style="flex: 1; text-decoration: none; color: black;" class="p-4">
+                    <h3 class="nama">Pusat Grosir & Eceran Meubel FURNI CENTER Purwokerto</h3>
+                    <p class="alamat m-0">Jl. Pekarungan No.12-14, Panjunan, Kec. Lemahwungkuk, Kota Cirebon, Jawa Barat
+                        45112
+                    </p>
+                </a>
+                <div class="p-2">
+                    <img src="https://i.ibb.co.com/JR7y1B3Y/Screenshot-2025-08-22-144249.png"
+                        alt="Pusat Grosir & Eceran Meubel FURNI CENTER Purwokerto" class="client-logo">
+                </div>
+            </div>
 
         </div>
     </div>
@@ -464,6 +490,14 @@ stores.forEach(store => {
         {
             name: "Living Home Houseware & Furniture",
             coords: [-7.446178589024145, 109.24378085767192]
+        },
+        {
+            name: "Vinetta Furniture Purwokerto",
+            coords: [-7.42304698938314, 109.25023176982587]
+        },
+        {
+            name: "Pusat Grosir & Eceran Meubel FURNI CENTER Purwokerto",
+            coords: [-7.438356338368611, 109.24430059470743]
         }
     ];
 
