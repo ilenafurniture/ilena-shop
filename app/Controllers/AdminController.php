@@ -1976,6 +1976,7 @@ class AdminController extends BaseController
             }
         }
 
+        $diskon_koreksi = ($body['diskon'] ? (int)$body['diskon'] : 0) / 100 * $totalAkhir;
         $dataSJ = [
             'nama' => $sp_current['nama'],
             'nohp' => $sp_current['nohp'],
@@ -1988,7 +1989,7 @@ class AdminController extends BaseController
             'id_pesanan' => $idSJ,
             'status' => 'pending',
             'jenis' => 'sale',
-            'total_akhir' => $totalAkhir,
+            'total_akhir' => $totalAkhir - $diskon_koreksi,
             'keterangan' => $body['keterangan'],
             'po' => $sp_current['po'],
         ];

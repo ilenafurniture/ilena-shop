@@ -3944,58 +3944,114 @@ class Pages extends BaseController
         if (!$wishlist) {
             $wishlist = [];
         }
+
         $artikel = $this->artikelModel->getArtikelJudul($judul_article);
         $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-        if (!$artikel) return redirect()->to('article');
-        if ($judul_article) {
-            $this->artikelModel->where(['id' => $artikel['id']])->set(['pengunjung' => $artikel['pengunjung'] + 1])->update();
-            $artikel['kategori'] = explode(",", $artikel['kategori']);
-            $artikel['waktu'] = date("d", strtotime($artikel['waktu'])) . " " . $bulan[date("m", strtotime($artikel['waktu'])) - 1] . " " . date("Y", strtotime($artikel['waktu']));
 
-            $artikelTerkait = $this->artikelModel->like('kategori', $artikel['kategori'][0], 'both')->findAll();
+        if (!$artikel) return redirect()->to('article');
+
+        if ($judul_article) {
+            // ++ pengunjung
+            $this->artikelModel->where(['id' => $artikel['id']])
+                ->set(['pengunjung' => $artikel['pengunjung'] + 1])
+                ->update();
+
+            // normalisasi field
+            $artikel['kategori'] = explode(",", $artikel['kategori']);
+            $artikel['waktu'] = date("d", strtotime($artikel['waktu'])) . " " .
+                $bulan[date("m", strtotime($artikel['waktu'])) - 1] . " " .
+                date("Y", strtotime($artikel['waktu']));
+
+            /*
+            |----------------------------------------------------------
+            | Pagination untuk Artikel Terkait (perubahan minimal)
+            | Param halaman khusus: rpage (agar tidak bentrok param lain)
+            |----------------------------------------------------------
+            */
+            $perTerkait = 6; // jumlah item terkait per halaman (sesuaikan)
+            $rpage      = max(1, (int)($this->request->getVar('rpage') ?? 1));
+            $roffset    = ($rpage - 1) * $perTerkait;
+
+            // Hitung total artikel terkait
+            $totalTerkait = $this->artikelModel
+                ->like('kategori', $artikel['kategori'][0], 'both')
+                ->countAllResults();
+
+            // Ambil artikel terkait sesuai halaman
+            $artikelTerkait = $this->artikelModel
+                ->like('kategori', $artikel['kategori'][0], 'both')
+                ->orderBy('waktu', 'DESC')
+                ->findAll($perTerkait, $roffset);
+
+            // Normalisasi artikel terkait
             foreach ($artikelTerkait as $ind_a => $a) {
                 $artikelTerkait[$ind_a]['kategori'] = explode(",", $a['kategori']);
-                $artikelTerkait[$ind_a]['waktu'] = date("d", strtotime($a['waktu'])) . " " . $bulan[date("m", strtotime($a['waktu'])) - 1] . " " . date("Y", strtotime($a['waktu']));
+                $artikelTerkait[$ind_a]['waktu'] = date("d", strtotime($a['waktu'])) . " " .
+                    $bulan[date("m", strtotime($a['waktu'])) - 1] . " " .
+                    date("Y", strtotime($a['waktu']));
             }
-            $produkTerkait = $this->barangModel->where(['subkategori' => $artikel['kategori'][0]])->orderBy('pengunjung', 'desc')->findAll(10, 0);
+
+            // Pager sederhana untuk view
+            $pagerTerkait = [
+                'total'    => $totalTerkait,
+                'perPage'  => $perTerkait,
+                'current'  => $rpage,
+                'lastPage' => (int)ceil(($totalTerkait ?: 0) / $perTerkait),
+            ];
+
+            // Produk terkait (tanpa perubahan)
+            $produkTerkait = $this->barangModel
+                ->where(['subkategori' => $artikel['kategori'][0]])
+                ->orderBy('pengunjung', 'desc')
+                ->findAll(10, 0);
+
             $data = [
-                'title' => 'Artikel ' . $artikel['judul'],
-                'navbar' => $this->getNavbarData(),
-                'apikey_img_ilena' => $this->apikey_img_ilena,
-                'artikel' => $artikel,
-                'artikelTerkait' => $artikelTerkait,
-                'produkTerkait' => $produkTerkait,
-                'komen' => json_decode($artikel['komen'], true),
-                'komenJson' => $artikel['komen'],
-                'metaDeskripsi' => $artikel['deskripsi'],
-                'metaKeyword' => $artikel['keywords'],
-                'wishlist' => $wishlist,
-                'bulan' => $bulan
+                'title'             => 'Artikel ' . $artikel['judul'],
+                'navbar'            => $this->getNavbarData(),
+                'apikey_img_ilena'  => $this->apikey_img_ilena,
+                'artikel'           => $artikel,
+                'artikelTerkait'    => $artikelTerkait,
+                'pagerTerkait'      => $pagerTerkait, // <-- kirim ke view
+                'produkTerkait'     => $produkTerkait,
+                'komen'             => json_decode($artikel['komen'], true),
+                'komenJson'         => $artikel['komen'],
+                'metaDeskripsi'     => $artikel['deskripsi'],
+                'metaKeyword'       => $artikel['keywords'],
+                'wishlist'          => $wishlist,
+                'bulan'             => $bulan
             ];
             return view('pages/artikel', $data);
         } else {
+            // Halaman daftar artikel (tanpa perubahan)
             $artikelPopuler = $this->artikelModel->orderBy('pengunjung', 'desc')->limit(5, 0)->findAll();
             $artikel3Baru = $this->artikelModel
                 ->select('judul')->select('path')->select('kategori')->select('deskripsi')->select('id')->select('header')
                 ->orderBy('id', 'asc')->limit(3, 0)->findAll();
+
+            // Catatan: pastikan $artikel terdefinisi jika memang diperlukan di sini.
+            // (Di kode asli, foreach ($artikel as ...) dipakai, pastikan Anda sudah menyiapkan $artikel sebelumnya.)
             foreach ($artikel as $ind_a => $a) {
                 $artikel[$ind_a]['kategori'] = explode(",", $a['kategori']);
-                $artikel[$ind_a]['waktu'] = date("d", strtotime($a['waktu'])) . " " . $bulan[date("m", strtotime($a['waktu'])) - 1] . " " . date("Y", strtotime($a['waktu']));
+                $artikel[$ind_a]['waktu'] = date("d", strtotime($a['waktu'])) . " " .
+                    $bulan[date("m", strtotime($a['waktu'])) - 1] . " " .
+                    date("Y", strtotime($a['waktu']));
             }
+
             $data = [
-                'title' => 'Artikel',
-                'navbar' => $this->getNavbarData(),
+                'title'            => 'Artikel',
+                'navbar'           => $this->getNavbarData(),
                 'apikey_img_ilena' => $this->apikey_img_ilena,
-                'artikel' => array_values(array_filter($artikel, function ($value, $key) {
+                'artikel'          => array_values(array_filter($artikel, function ($value, $key) {
                     return $key >= 2;
                 }, ARRAY_FILTER_USE_BOTH)),
                 'artikel3BaruJson' => json_encode($artikel3Baru),
-                'artikelPopuler' => $artikelPopuler,
-                'bulan' => $bulan
+                'artikelPopuler'   => $artikelPopuler,
+                'bulan'            => $bulan
             ];
             return view('pages/artikelAll', $data);
         }
     }
+
     public function articleCategory($category)
     {
         $category = str_replace('-', ' ', $category);

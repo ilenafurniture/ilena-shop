@@ -177,6 +177,10 @@
                     <p class="mb-1">NPWP</p>
                     <input type="text" name="npwp" class="form-control" placeholder="kosongin kalau Invoice menyusul">
                 </div>
+                <div class="mb-1" style="flex: 1;">
+                    <p class="mb-1">DIskon</p>
+                    <input type="number" name="diskon" class="form-control" placeholder="Tulis jika ada diskon">
+                </div>
             </div>
             <div class="mb-3">
                 <p class="mb-1">Keterangan</p>
