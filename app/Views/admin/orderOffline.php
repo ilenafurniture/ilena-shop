@@ -171,17 +171,30 @@
             <div class="d-flex gap-2 w-100">
                 <div class="mb-1" style="flex: 1;">
                     <p class="mb-1">Nama NPWP</p>
+                    <small class="text-danger d-block mb-1">
+                        *ini adalah nama untuk di SJ
+                    </small>
                     <input type="text" name="nama_npwp" class="form-control" placeholder="Nama yang ada di NPWP">
                 </div>
                 <div class="mb-1" style="flex: 1;">
                     <p class="mb-1">NPWP</p>
+                    <small class="text-danger d-block mb-1">
+                        *ini adalah nomor NPWP yang dipakai di Invoice
+                    </small>
                     <input type="text" name="npwp" class="form-control" placeholder="kosongin kalau Invoice menyusul">
                 </div>
+                <!-- 
                 <div class="mb-1" style="flex: 1;">
-                    <p class="mb-1">DIskon</p>
+                    <p class="mb-1">Diskon</p>
+                    <small class="text-danger d-block mb-1">
+                        *isi jika ada potongan harga
+                    </small>
                     <input type="number" name="diskon" class="form-control" placeholder="Tulis jika ada diskon">
-                </div>
+                </div> 
+                -->
             </div>
+
+
             <div class="mb-3">
                 <p class="mb-1">Keterangan</p>
                 <input type="text" name="keterangan" class="form-control" required>

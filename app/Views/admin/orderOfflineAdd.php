@@ -48,9 +48,9 @@
 
 .item-keranjang-admin img {
     width: 50px;
-    border-radius: 10px;
     height: 50px;
     object-fit: cover;
+    border-radius: 10px;
 }
 
 .item-keranjang-admin .counter {
@@ -85,7 +85,234 @@
 input {
     font-size: 13px;
 }
+
+/* ============================================================
+   REMINDER UNTUK <small> (TAMPILAN SAJA) — TANPA UBAH SISTEM
+   ============================================================ */
+
+/* Theme variables (gampang ganti) */
+:root {
+    --rem-bg: #fff8e1;
+    /* amber-50 */
+    --rem-fg: #8a6d3b;
+    /* amber-700 */
+    --rem-bd: #f2e6bd;
+    --rem-bg-hover: #fff3c4;
+    --rem-bd-hover: #eddc9a;
+
+    --rem-pill-bg: #111;
+    /* pill ketika fokus */
+    --rem-pill-fg: #fff;
+    --rem-pill-bd: #222;
+
+    --rem-info-bg: #e8f4ff;
+    /* varian info */
+    --rem-info-bd: #cfe7ff;
+    --rem-info-fg: #1e4e79;
+
+    --rem-urgent-bg: #ffe8e8;
+    /* varian urgent */
+    --rem-urgent-bd: #ffc9c9;
+    --rem-urgent-fg: #8b2a2b;
+}
+
+/* Scope: utamakan di area form/page ini agar ga ganggu halaman lain */
+#container-react small,
+.mb-1>small,
+.d-flex.gap-1>small,
+.d-flex.gap-2>small,
+.d-flex.flex-column>small {
+    position: relative;
+    display: block;
+    margin: 6px 0;
+    padding: 8px 12px 8px 36px;
+    font-size: 12px;
+    line-height: 1.35;
+    letter-spacing: -0.2px;
+    background: var(--rem-bg);
+    color: var(--rem-fg);
+    border: 1px solid var(--rem-bd);
+    border-radius: 10px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02) inset;
+    transition: background .2s ease, border-color .2s ease, transform .2s ease, opacity .2s ease, box-shadow .2s ease;
+}
+
+/* Override text-muted agar tetap terbaca */
+#container-react small.text-muted,
+.mb-1>small.text-muted,
+.d-flex.gap-1>small.text-muted,
+.d-flex.gap-2>small.text-muted,
+.d-flex.flex-column>small.text-muted {
+    color: var(--rem-fg) !important;
+}
+
+/* Ikon default: notifications_active (Material Icons) */
+#container-react small::before,
+.mb-1>small::before,
+.d-flex.gap-1>small::before,
+.d-flex.gap-2>small::before,
+.d-flex.flex-column>small::before {
+    content: "notifications_active";
+    font-family: "Material Icons";
+    font-weight: normal;
+    font-style: normal;
+    font-size: 18px;
+    line-height: 1;
+    display: inline-block;
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: .9;
+}
+
+#container-react small:hover,
+.mb-1>small:hover,
+.d-flex.gap-1>small:hover,
+.d-flex.gap-2>small:hover,
+.d-flex.flex-column>small:hover {
+    background: var(--rem-bg-hover);
+    border-color: var(--rem-bd-hover);
+}
+
+/* Varian OPSIONAL via atribut (kalau sewaktu-waktu mau ditekankan tanpa ubah sistem besar)
+   <small data-urgent>...</small>  atau  <small data-type="info">...</small> */
+#container-react small[data-urgent],
+.mb-1>small[data-urgent],
+.d-flex.gap-1>small[data-urgent],
+.d-flex.gap-2>small[data-urgent],
+.d-flex.flex-column>small[data-urgent] {
+    background: var(--rem-urgent-bg);
+    border-color: var(--rem-urgent-bd);
+    color: var(--rem-urgent-fg);
+}
+
+#container-react small[data-urgent]::before,
+.mb-1>small[data-urgent]::before,
+.d-flex.gap-1>small[data-urgent]::before,
+.d-flex.gap-2>small[data-urgent]::before,
+.d-flex.flex-column>small[data-urgent]::before {
+    content: "priority_high";
+}
+
+#container-react small[data-type="info"],
+.mb-1>small[data-type="info"],
+.d-flex.gap-1>small[data-type="info"],
+.d-flex.gap-2>small[data-type="info"],
+.d-flex.flex-column>small[data-type="info"] {
+    background: var(--rem-info-bg);
+    border-color: var(--rem-info-bd);
+    color: var(--rem-info-fg);
+}
+
+#container-react small[data-type="info"]::before,
+.mb-1>small[data-type="info"]::before,
+.d-flex.gap-1>small[data-type="info"]::before,
+.d-flex.gap-2>small[data-type="info"]::before,
+.d-flex.flex-column>small[data-type="info"]::before {
+    content: "info";
+}
+
+/* Spasi setelah label */
+p+small {
+    margin-top: 4px;
+}
+
+/* =========== Floating pill saat field fokus (tanpa :has, pakai :focus-within) =========== */
+
+/* Pastikan baris kontainer mudah diposisikan absolute */
+.mb-1,
+.d-flex.gap-1.mb-1,
+.d-flex.gap-2.mb-1,
+.d-flex.gap-1,
+.d-flex.gap-2,
+.d-flex.flex-column {
+    position: relative;
+}
+
+/* Saat kontainer memiliki fokus di dalamnya (input/select/textarea), ubah small jadi pill */
+.mb-1:focus-within>small,
+.d-flex.gap-1:focus-within>small,
+.d-flex.gap-2:focus-within>small,
+.d-flex.flex-column:focus-within>small {
+    position: absolute;
+    right: 0;
+    top: -10px;
+    background: var(--rem-pill-bg);
+    color: var(--rem-pill-fg);
+    border-color: var(--rem-pill-bd);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.20);
+    z-index: 3;
+    opacity: .98;
+    max-width: clamp(220px, 45vw, 420px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none;
+    /* supaya tidak menutup input */
+}
+
+/* Ganti ikon saat jadi pill */
+.mb-1:focus-within>small::before,
+.d-flex.gap-1:focus-within>small::before,
+.d-flex.gap-2:focus-within>small::before,
+.d-flex.flex-column:focus-within>small::before {
+    content: "tips_and_updates";
+    opacity: 1;
+}
+
+/* Jika field disabled, tone down */
+.mb-1:has(input:disabled)>small,
+.d-flex.gap-1:has(input:disabled)>small,
+.d-flex.gap-2:has(input:disabled)>small,
+.d-flex.flex-column:has(input:disabled)>small {
+    filter: grayscale(.2) opacity(.7);
+}
+
+/* Prefer-reduced-motion: kurangi animasi */
+@media (prefers-reduced-motion: reduce) {
+
+    #container-react small,
+    .mb-1>small,
+    .d-flex.gap-1>small,
+    .d-flex.gap-2>small,
+    .d-flex.flex-column>small {
+        transition: none;
+    }
+}
+
+/* Responsif mobile */
+@media (max-width: 576px) {
+
+    #container-react small,
+    .mb-1>small,
+    .d-flex.gap-1>small,
+    .d-flex.gap-2>small,
+    .d-flex.flex-column>small {
+        font-size: 11.5px;
+        padding-left: 34px;
+    }
+
+    #container-react small::before,
+    .mb-1>small::before,
+    .d-flex.gap-1>small::before,
+    .d-flex.gap-2>small::before,
+    .d-flex.flex-column>small::before {
+        font-size: 16px;
+        left: 9px;
+    }
+
+    .mb-1:focus-within>small,
+    .d-flex.gap-1:focus-within>small,
+    .d-flex.gap-2:focus-within>small,
+    .d-flex.flex-column:focus-within>small {
+        top: -6px;
+        right: 0;
+        max-width: 85%;
+    }
+}
 </style>
+
 <div style="padding: 2em;" class="h-100 d-flex flex-column">
     <h1 class="teks-sedang mb-4">Buat Pesanan</h1>
     <div id="container-react" style="flex: 1;" class="d-flex gap-3"></div>
@@ -102,63 +329,26 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
     const produkSemua = JSON.parse('<?= $produkJson; ?>');
     function waktuSkrg() {
         const date = new Date();
-        let datePart = [
-            date.getFullYear(),
-            date.getMonth() + 1,
-            date.getDate()
-        ].map((n, i) => n.toString().padStart(i === 0 ? 4 : 2, "0")).join("-");
-        let timePart = [
-            date.getHours(),
-            date.getMinutes(),
-            date.getSeconds()
-        ].map((n, i) => n.toString().padStart(2, "0")).join(":");
+        let datePart = [date.getFullYear(), date.getMonth() + 1, date.getDate()].map((n, i) => n.toString().padStart(i === 0 ? 4 : 2, "0")).join("-");
+        let timePart = [date.getHours(), date.getMinutes(), date.getSeconds()].map((n) => n.toString().padStart(2, "0")).join(":");
         return datePart + " " + timePart;
     }
     const App = () => {
         const [listProduk, setListProduk] = useState(JSON.parse('<?= $produkJson; ?>'))
         const [currentPage, setCurrentPage] = useState(1);
         const [pageNumbers, setPageNumbers] = useState([]);
-        const [currentItems, setCurrentItems] = useState([]); 
+        const [currentItems, setCurrentItems] = useState([]);
         const [cari, setCari] = useState('');
         const [modalKeranjang, setModalKeranjang] = useState(false);
         const [keranjang, setKeranjang] = useState([]);
-        const [notif, setNotif] = useState({
-            show: false,
-            teks: 'Stok tidak cukup'
-        });
+        const [notif, setNotif] = useState({ show: false, teks: 'Stok tidak cukup' });
         const [totalHarga, setTotalHarga] = useState(0);
         const [formData, setFormData] = useState({
-            provinsi: '',
-            kabupaten: '',
-            kecamatan: '',
-            kelurahan: '',
-            kodepos: '',
-            detail: '',
-            provinsiTagihan: '',
-            kabupatenTagihan: '',
-            kecamatanTagihan: '',
-            kelurahanTagihan: '',
-            kodeposTagihan: '',
-            detailTagihan: '',
-            totalAkhir: 0,
-            jenis: 'sale',
-            tanggal: '',
-            items: [
-                // {
-                //     id: '',
-                //     nama: 'qwdqw',
-                //     jumlah: 2,
-                //     varian: 'HITAM',
-                //     harga: 124000
-                // },
-            ],
-            nama: '',
-            nama_npwp: '',
-            nohp: '',
-            npwp: '',
-            keterangan: '',
-            po: '',
-            downPayment: 0,
+            provinsi: '', kabupaten: '', kecamatan: '', kelurahan: '', kodepos: '', detail: '',
+            provinsiTagihan: '', kabupatenTagihan: '', kecamatanTagihan: '', kelurahanTagihan: '', kodeposTagihan: '', detailTagihan: '',
+            totalAkhir: 0, jenis: 'sale', tanggal: '',
+            items: [],
+            nama: '', nama_npwp: '', nohp: '', npwp: '', keterangan: '', po: '', downPayment: 0,
         });
         const [potonganHargaSatuan, setPotonganHargaSatuan] = useState(0);
         const [kabupaten, setKabupaten] = useState([]);
@@ -168,10 +358,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
         const [kecamatanTagihan, setKecamatanTagihan] = useState([]);
         const [kelurahanTagihan, setKelurahanTagihan] = useState([]);
         const [canSave, setCanSave] = useState(false);
-        const [potongan, setPotongan] = useState({
-            nominal: 0,
-            satuan: 'persen'
-        });
+        const [potongan, setPotongan] = useState({ nominal: 0, satuan: 'persen' });
         const [alamatTagihanSama, setAlamatTagihanSama] = useState(false);
         
         useEffect(()=>{
@@ -185,8 +372,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                 fetchRajaOngkir()
             }
             setFormData({...formData, kabupaten: '', kecamatan: '', kelurahan: '', kodepos: ''})
-            setKecamatan([]);
-            setKelurahan([]);
+            setKecamatan([]); setKelurahan([]);
         }, [formData.provinsi])
 
         useEffect(()=>{
@@ -216,12 +402,9 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
             setFormData({...formData, kelurahan: '', kodepos: ''})
         }, [formData.kecamatan])
 
-        useEffect(()=>{
-            if(formData.kelurahan){
-                setFormData({...formData, kodepos: formData.kelurahan.split('-')[1]})
-            }
-        },[formData.kelurahan])
-        {/* TAGIHAN */}
+        useEffect(()=>{ if(formData.kelurahan){ setFormData({...formData, kodepos: formData.kelurahan.split('-')[1]}) } },[formData.kelurahan])
+
+        /* TAGIHAN */
         useEffect(()=>{
             if(formData.provinsiTagihan) {
                 const idprov = formData.provinsiTagihan.split("-")[0];
@@ -233,8 +416,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                 fetchRajaOngkir()
             }
             setFormData({...formData, kabupatenTagihan: '', kecamatanTagihan: '', kelurahanTagihan: '', kodeposTagihan: ''})
-            setKecamatanTagihan([]);
-            setKelurahanTagihan([]);
+            setKecamatanTagihan([]); setKelurahanTagihan([]);
         }, [formData.provinsiTagihan])
 
         useEffect(()=>{
@@ -264,32 +446,22 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
             setFormData({...formData, kelurahanTagihan: '', kodeposTagihan: ''})
         }, [formData.kecamatanTagihan])
         
-        useEffect(()=>{
-            if(formData.kelurahanTagihan){
-                setFormData({...formData, kodeposTagihan: formData.kelurahanTagihan.split('-')[1]})
-            }
-        },[formData.kelurahanTagihan])
+        useEffect(()=>{ if(formData.kelurahanTagihan){ setFormData({...formData, kodeposTagihan: formData.kelurahanTagihan.split('-')[1]}) } },[formData.kelurahanTagihan])
 
-        useEffect(()=>{
-            setCurrentPage(1);
-        }, [pageNumbers])
+        useEffect(()=>{ setCurrentPage(1); }, [pageNumbers])
 
         useEffect(() => {
             setPageNumbers(Array.from({ length: Math.ceil(listProduk.length / 20) }, (_, i) => i + 1));
-        }, [listProduk]); // Gunakan listProduk sebagai dependency
+        }, [listProduk]);
 
         useEffect(() => {
             const indexOfLastItem = currentPage * 20;
             const indexOfFirstItem = indexOfLastItem - 20;
-            setCurrentItems(
-                listProduk.slice(indexOfFirstItem, indexOfLastItem)
-            );
+            setCurrentItems(listProduk.slice(indexOfFirstItem, indexOfLastItem));
         }, [currentPage, listProduk]);
 
         useEffect(()=>{
-            const listProdukBaru = [...produkSemua].filter((produk)=>{
-                return produk.nama.toLowerCase().includes(cari.toLowerCase());
-            });
+            const listProdukBaru = [...produkSemua].filter((produk)=> produk.nama.toLowerCase().includes(cari.toLowerCase()));
             setListProduk(listProdukBaru)
         }, [cari])
 
@@ -301,41 +473,27 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                 nama, nohp,
                 provinsiTagihan, kabupatenTagihan, kecamatanTagihan, kelurahanTagihan, kodeposTagihan, detailTagihan,
             } = formData;
-            console.log('jenis')
-            console.log(jenis)
-            console.log('alanat tagihan')
-            console.log(alamatTagihanSama)
+
             const isFormValidKhusus = () => {
                 if(jenis == 'sale' && !alamatTagihanSama) {
-                    const fieldsFilled = [
-                        provinsiTagihan, kabupatenTagihan, kecamatanTagihan, kelurahanTagihan, kodeposTagihan, detailTagihan
-                    ].every(val => val && val !== '');
+                    const fieldsFilled = [provinsiTagihan, kabupatenTagihan, kecamatanTagihan, kelurahanTagihan, kodeposTagihan, detailTagihan].every(v => v && v !== '');
                     return fieldsFilled;
                 } else return true;
             }
             const isFormValid = () => {
-                const fieldsFilled = [
-                    provinsi, kabupaten, kecamatan, kelurahan, kodepos, detail,
-                    jenis, tanggal, nama, nohp
-                ].every(val => val && val !== '');
+                const fieldsFilled = [provinsi, kabupaten, kecamatan, kelurahan, kodepos, detail, jenis, tanggal, nama, nohp].every(v => v && v !== '');
                 const totalValid = totalAkhir > 0;
                 const itemsValid = items.length > 0;
                 return fieldsFilled && totalValid && itemsValid;
             };
-            if(isFormValid(formData) && isFormValidKhusus(jenis)) {
-                setCanSave(true)
-            } else {
-                setCanSave(false)
-            }
+            setCanSave(isFormValid(formData) && isFormValidKhusus(jenis));
         }, [formData, alamatTagihanSama])
 
         useEffect(()=>{
             if(formData.items.length > 0) {
-                const hargaTotal = formData.items.map((k) => {
-                    return Number(k.harga) * Number(k.jumlah)
-                }).reduce((prev, cur) => {
-                    return prev + cur;
-                }, 0)
+                const hargaTotal = formData.items
+                  .map((k) => Number(k.harga) * Number(k.jumlah))
+                  .reduce((prev, cur) => prev + cur, 0);
                 setFormData({...formData, totalAkhir: Math.ceil(hargaTotal - (potongan.satuan == 'rupiah' ? potongan.nominal : potongan.nominal / 100 * hargaTotal))})
             } else {
                 setFormData({...formData, totalAkhir: 0})
@@ -343,14 +501,11 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
         }, [formData.items, potongan])
 
         const handlePilih = (produk, varian) => {
-            // const nama = `${produk.nama} ${produk.dimensi.panjang} (${varian.nama})`;
             const stok = Number(varian.stok);
             const cekExistData = formData.items.find((k) => k.id == produk.id && k.varian == varian.nama);
             if(stok == 0) {
                 setNotif({teks: 'Stok habis', show: true});
-                setTimeout(() => {
-                    setNotif({teks: 'Stok habis', show: false});
-                }, 3000);
+                setTimeout(() => setNotif({teks: 'Stok habis', show: false}), 3000);
                 return;
             }
             if(cekExistData) {
@@ -358,10 +513,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                     ...formData,
                     items: formData.items.map((item) => {
                         if(item.id == produk.id && item.varian == varian.nama) {
-                            return {
-                                ...item,
-                                jumlah: (item.jumlah + 1) > stok ? item.jumlah : (item.jumlah + 1)
-                            }
+                            return { ...item, jumlah: (item.jumlah + 1) > stok ? item.jumlah : (item.jumlah + 1) }
                         } else return item
                     })
                 })
@@ -384,30 +536,21 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
         }
 
         useEffect(() => {
-            console.log('ini potognan harga')
-            console.log(potonganHargaSatuan)
             setFormData({
                 ...formData, 
-                items: formData.items.map((item) => {
-                    return {
-                        ...item,
-                        harga: item.detail.produk.harga * (potonganHargaSatuan > 0 ? (100 - potonganHargaSatuan) : 75) / 100,
-                    }
-                })
+                items: formData.items.map((item) => ({
+                    ...item,
+                    harga: item.detail.produk.harga * (potonganHargaSatuan > 0 ? (100 - potonganHargaSatuan) : 75) / 100,
+                }))
             })
         }, [potonganHargaSatuan])
 
         const handleCount = (index, max, tambah) =>{
             setFormData({
                 ...formData,
-                items: formData.items.map((item, ind_i) => {
-                    if(index == ind_i) {
-                        return {
-                            ...item,
-                            jumlah: (item.jumlah + tambah) > max ? item.jumlah : (item.jumlah + tambah)
-                        }
-                    } else return item
-                }).filter((item) => item.jumlah > 0)
+                items: formData.items
+                  .map((item, ind_i) => index == ind_i ? { ...item, jumlah: (item.jumlah + tambah) > max ? item.jumlah : (item.jumlah + tambah) } : item)
+                  .filter((item) => item.jumlah > 0)
             });
         }
 
@@ -424,15 +567,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                 kelurahanTagihan: alamatTagihanSama ? formData.kelurahan.split("-")[0] : formData.kelurahanTagihan.split("-")[0],
                 kodeposTagihan: alamatTagihanSama ? formData.kodepos : formData.kodeposTagihan,
                 detailTagihan: alamatTagihanSama ? formData.detail : formData.detailTagihan,
-                items: formData.items.map((item) => {
-                    return {
-                        id: item.id,
-                        nama: item.nama,
-                        varian: item.varian,
-                        jumlah: item.jumlah,
-                        harga: item.harga,
-                    }
-                }),
+                items: formData.items.map((item) => ({ id: item.id, nama: item.nama, varian: item.varian, jumlah: item.jumlah, harga: item.harga })),
                 potonganHargaSatuan
             }
             const formDataAkhir1 = {
@@ -446,28 +581,18 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                 npwp: formDataAkhir.jenis == 'display' ? null : formDataAkhir.npwp,
             }
 
-            console.log(formDataAkhir1)
-            console.log('Form dataaaaa')
-            console.log(formData)
             async function fetchSubmit() {
-                const response = await fetch(
-                    `/admin/order-offline/add`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(formDataAkhir1),
-                    }
-                );
+                const response = await fetch(`/admin/order-offline/add`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(formDataAkhir1),
+                });
                 const responseJson = await response.json()
-                console.log(responseJson)
                 if(response.status == 200) {
                     window.alert('Berhasil menambahkan pesanan')
                     window.location.href = `/admin/order/offline/${formData.jenis}`
-                }else {
+                } else {
                     window.alert(responseJson.pesan)
-                    console.log(responseJson)
                 }
             }
             fetchSubmit()
@@ -514,47 +639,19 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                                     </div>
                                     {/* Pagination */}
                                     <div className="container-pag">
-                                        <a
-                                            onClick={() =>
-                                                setCurrentPage((prev) =>
-                                                    Math.max(prev - 1, 1)
-                                                )
-                                            }
-                                            disabled={currentPage === 1}
-                                            className='item-pag'
-                                        >
+                                        <a onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1} className='item-pag'>
                                             <i className="material-icons">chevron_left</i>
                                         </a>
 
-                                        {pageNumbers.map(
-                                            (number) =>
-                                                number >= currentPage - 2 &&
-                                                number <= currentPage + 2 && (
-                                                    <a
-                                                        key={number}
-                                                        onClick={() =>
-                                                            setCurrentPage(number)
-                                                        }
-                                                        className={`item-pag ${
-                                                            currentPage === number
-                                                                ? "active"
-                                                                : ""
-                                                        }`}
-                                                    >
-                                                        {number}
-                                                    </a>
-                                                )
+                                        {pageNumbers.map((number) =>
+                                            number >= currentPage - 2 && number <= currentPage + 2 && (
+                                                <a key={number} onClick={() => setCurrentPage(number)} className={`item-pag ${currentPage === number ? "active" : ""}`}>
+                                                    {number}
+                                                </a>
+                                            )
                                         )}
 
-                                        <a
-                                            onClick={() =>
-                                                setCurrentPage((prev) =>
-                                                    Math.min(prev + 1, pageNumbers.length)
-                                                )
-                                            }
-                                            disabled={currentPage === pageNumbers.length}
-                                            className="item-pag"
-                                        >
+                                        <a onClick={() => setCurrentPage((prev) => Math.min(prev + 1, pageNumbers.length))} disabled={currentPage === pageNumbers.length} className="item-pag">
                                             <i className="material-icons">chevron_right</i>
                                         </a>
                                     </div>
@@ -662,7 +759,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                                 <input type="text w-50" className="form-control" placeholder="Keterangan (opt)" value={formData.keterangan} onChange={(e)=>{setFormData({...formData, keterangan: e.target.value})}} />
                                 <input type="text w-50" className="form-control" placeholder="PO (opt)" value={formData.po} onChange={(e)=>{setFormData({...formData, po: e.target.value})}} />
                             </div>
-                            <select value={formData.jenis} onChange={(e)=>{setFormData({...formData, jenis: e.target.value})}} className="form-select mb-1">
+                            <select value={formData.jenis} onChange={(e)=>{setFormData({... formData, jenis: e.target.value})}} className="form-select mb-1">
                                 <option value="sale">Sale</option>
                                 <option value="display">Display</option>
                             </select>
