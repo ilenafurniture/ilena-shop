@@ -53,13 +53,16 @@ class Analytics extends BaseController
 
         $startPrev = date('Y-m-d', strtotime($opt['start'].' -1 month'));
         $endPrev   = date('Y-m-d', strtotime($opt['end'].' -1 month'));
-        $optPrev   = $opt;
-        $optPrev['start'] = $startPrev;
+        $optPrev   = $opt; 
+        $optPrev['start'] = $startPrev; 
         $optPrev['end']   = $endPrev;
 
         $summaryPrev = $m->getSummary($optPrev);
         $topPrev     = $m->getTopPaths($optPrev, 10);
         $dailyPrev   = $m->getDailySeries($optPrev);
+
+        // 👉 Tambahkan ini untuk hitung pengunjung online 5 menit terakhir
+        $onlineNow   = $m->countOnlineNow(5);
 
         return view('admin/tracing', [
             'title'       => 'Insights Analytics',
@@ -77,8 +80,11 @@ class Analytics extends BaseController
             'dailyNow'    => $dailyNow,
             'dailyPrev'   => $dailyPrev,
             'blacklist'   => $m->getBlacklist(),
+            // kirim ke view
+            'onlineNow'   => $onlineNow,
         ]);
     }
+
 
     /**
      * ✅ Endpoint JSON realtime untuk auto-refresh front-end.

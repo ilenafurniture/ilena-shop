@@ -200,6 +200,8 @@ $routes->get('analytics/exportPdf', 'Analytics::exportPdf', ['filter' => 'adminF
 $routes->post('analytics/blacklist/add', 'Analytics::addBlacklist', ['filter' => 'adminFilter']);
 $routes->get('analytics/blacklist/del/(:any)', 'Analytics::delBlacklist/$1', ['filter' => 'adminFilter']);
 
+$routes->post('track/hit', 'Track::hit'); // endpoint tracking
+
 
 
 

@@ -4,136 +4,137 @@
 <head>
     <!-- Google Tag Manager -->
     <script>
-        (function(w, d, s, l, i) {
-            w[l] = w[l] || [];
-            w[l].push({
-                'gtm.start': new Date().getTime(),
-                event: 'gtm.js'
-            });
-            var f = d.getElementsByTagName(s)[0],
-                j = d.createElement(s),
-                dl = l != 'dataLayer' ? '&l=' + l : '';
-            j.async = true;
-            j.src =
-                'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-            f.parentNode.insertBefore(j, f);
-        })(window, document, 'script', 'dataLayer', 'GTM-K5BLN7VV');
+    (function(w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({
+            'gtm.start': new Date().getTime(),
+            event: 'gtm.js'
+        });
+        var f = d.getElementsByTagName(s)[0],
+            j = d.createElement(s),
+            dl = l != 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src =
+            'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-K5BLN7VV');
     </script>
     <!-- End Google Tag Manager -->
     <!-- TikTok Pixel Code Start -->
     <script>
-        ! function(w, d, t) {
-            w.TiktokAnalyticsObject = t;
-            var ttq = w[t] = w[t] || [];
-            ttq.methods = ["page", "track", "identify", "instances", "debug", "on", "off", "once", "ready", "alias",
-                "group", "enableCookie", "disableCookie", "holdConsent", "revokeConsent", "grantConsent"
-            ], ttq.setAndDefer = function(t, e) {
-                t[e] = function() {
-                    t.push([e].concat(Array.prototype.slice.call(arguments, 0)))
-                }
-            };
-            for (var i = 0; i < ttq.methods.length; i++) ttq.setAndDefer(ttq, ttq.methods[i]);
-            ttq.instance = function(t) {
-                for (
-                    var e = ttq._i[t] || [], n = 0; n < ttq.methods.length; n++) ttq.setAndDefer(e, ttq.methods[n]);
-                return e
-            }, ttq.load = function(e, n) {
-                var r = "https://analytics.tiktok.com/i18n/pixel/events.js",
-                    o = n && n.partner;
-                ttq._i = ttq._i || {}, ttq._i[e] = [], ttq._i[e]._u = r, ttq._t = ttq._t || {}, ttq._t[e] = +new Date,
-                    ttq._o = ttq._o || {}, ttq._o[e] = n || {};
-                n = document.createElement("script");
-                n.type = "text/javascript", n.async = !0, n.src = r + "?sdkid=" + e + "&lib=" + t;
-                e = document.getElementsByTagName("script")[0];
-                e.parentNode.insertBefore(n, e)
-            };
-            ttq.load('CR2OGUBC77U99EQB0MMG');
-            ttq.page();
-        }(window, document, 'ttq');
+    ! function(w, d, t) {
+        w.TiktokAnalyticsObject = t;
+        var ttq = w[t] = w[t] || [];
+        ttq.methods = ["page", "track", "identify", "instances", "debug", "on", "off", "once", "ready", "alias",
+            "group", "enableCookie", "disableCookie", "holdConsent", "revokeConsent", "grantConsent"
+        ], ttq.setAndDefer = function(t, e) {
+            t[e] = function() {
+                t.push([e].concat(Array.prototype.slice.call(arguments, 0)))
+            }
+        };
+        for (var i = 0; i < ttq.methods.length; i++) ttq.setAndDefer(ttq, ttq.methods[i]);
+        ttq.instance = function(t) {
+            for (
+                var e = ttq._i[t] || [], n = 0; n < ttq.methods.length; n++) ttq.setAndDefer(e, ttq.methods[n]);
+            return e
+        }, ttq.load = function(e, n) {
+            var r = "https://analytics.tiktok.com/i18n/pixel/events.js",
+                o = n && n.partner;
+            ttq._i = ttq._i || {}, ttq._i[e] = [], ttq._i[e]._u = r, ttq._t = ttq._t || {}, ttq._t[e] = +new Date,
+                ttq._o = ttq._o || {}, ttq._o[e] = n || {};
+            n = document.createElement("script");
+            n.type = "text/javascript", n.async = !0, n.src = r + "?sdkid=" + e + "&lib=" + t;
+            e = document.getElementsByTagName("script")[0];
+            e.parentNode.insertBefore(n, e)
+        };
+        ttq.load('CR2OGUBC77U99EQB0MMG');
+        ttq.page();
+    }(window, document, 'ttq');
     </script>
     <!-- TikTok Pixel Code End -->
     <meta name="google-site-verification" content="fbuobh8O6hdzi1dFtDU48hqyMlHD0xvCfObbr1EgD0M" />
     <script>
-        window.dataLayer = window.dataLayer || [];
+    window.dataLayer = window.dataLayer || [];
 
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
 
-        gtag('config', 'G-6Q18QTYQE0');
+    gtag('config', 'G-6Q18QTYQE0');
     </script>
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y4Z51NJ3QM"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
+    window.dataLayer = window.dataLayer || [];
 
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
 
-        gtag('config', 'G-Y4Z51NJ3QM');
+    gtag('config', 'G-Y4Z51NJ3QM');
     </script>
     <!-- Google Tag Manager -->
     <script>
-        (function(w, d, s, l, i) {
-            w[l] = w[l] || [];
-            w[l].push({
-                'gtm.start': new Date().getTime(),
-                event: 'gtm.js'
-            });
-            var f = d.getElementsByTagName(s)[0],
-                j = d.createElement(s),
-                dl = l != 'dataLayer' ? '&l=' + l : '';
-            j.async = true;
-            j.src =
-                'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-            f.parentNode.insertBefore(j, f);
-        })(window, document, 'script', 'dataLayer', 'GTM-P2Q6W4SH');
+    (function(w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({
+            'gtm.start': new Date().getTime(),
+            event: 'gtm.js'
+        });
+        var f = d.getElementsByTagName(s)[0],
+            j = d.createElement(s),
+            dl = l != 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src =
+            'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-P2Q6W4SH');
     </script>
     <!-- End Google Tag Manager -->
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-6Q18QTYQE0"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
+    window.dataLayer = window.dataLayer || [];
 
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
 
-        gtag('config', 'G-6Q18QTYQE0');
+    gtag('config', 'G-6Q18QTYQE0');
     </script>
 
     <?php if (isset($produk)) {
         if (isset($produk['nama'])) { ?>
-            <script type="application/ld+json">
-                {
-                    "@context": "https://ilenafurniture.com/",
-                    "@type": "produk",
-                    "name": "<?= $produk['nama'] ?>",
-                    "image": "https://ilenafurniture.com/viewpic/<?= $produk['id'] ?>",
-                    "description": "<?= $produk['deskripsi']['deskripsi'] ?>",
-                    "sku": "<?= $produk['id']; ?>",
-                    "offers": {
-                        "@type": "Offer",
-                        "priceCurrency": "IDR",
-                        "price": "<?= $produk['harga'] ?>",
-                        "itemCondition": "New",
-                        "availability": "in_stok"
-                    }
-                }
-            </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://ilenafurniture.com/",
+        "@type": "produk",
+        "name": "<?= $produk['nama'] ?>",
+        "image": "https://ilenafurniture.com/viewpic/<?= $produk['id'] ?>",
+        "description": "<?= $produk['deskripsi']['deskripsi'] ?>",
+        "sku": "<?= $produk['id']; ?>",
+        "offers": {
+            "@type": "Offer",
+            "priceCurrency": "IDR",
+            "price": "<?= $produk['harga'] ?>",
+            "itemCondition": "New",
+            "availability": "in_stok"
+        }
+    }
+    </script>
     <?php }
     } ?>
 
     <meta property="og:title" content="<?= isset($metaTitle) ? $metaTitle : 'Ilena Furniture'; ?>">
     <meta property="og:description"
         content="<?= isset($metaDeskripsi) ? $metaDeskripsi : 'Toko Online furniture Semarang meliputi produk buffet tv, bed, lemari pakaian, coffee table, meja konsol, rak buku, dresser, meja nakas, dll. '; ?>">
-    <meta property="og:image" content="<?= isset($metaImage) ? $metaImage : 'https://ilenafurniture.com/img/logo/N.png'; ?>">
+    <meta property="og:image"
+        content="<?= isset($metaImage) ? $metaImage : 'https://ilenafurniture.com/img/logo/N.png'; ?>">
     <meta property="og:url" content="https://ilenafurniture.com">
     <meta property="og:type" content="website">
     <meta charset="UTF-8">
@@ -168,13 +169,13 @@
     <link href="<?= base_url('css/bootstrap.min.css'); ?>" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <?php if ($title == 'Pembayaran') { ?>
-        <!-- <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
+    <!-- <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
         data-client-key="SB-Mid-client-aGWfdxs2btRH4xSd" async></script> -->
-        <script rel="preconnect" id="midtrans-script" src="https://api.midtrans.com/v2/assets/js/midtrans-new-3ds.min.js"
-            data-environment="<?= $emailUji ? 'sandbox' : 'production'; ?>"
-            data-client-key="<?= $emailUji ? 'SB-Mid-client-aGWfdxs2btRH4xSd' : 'Mid-client-9sUvUz3XTM_xqGOp'; ?>"
-            type="text/javascript" async>
-        </script>
+    <script rel="preconnect" id="midtrans-script" src="https://api.midtrans.com/v2/assets/js/midtrans-new-3ds.min.js"
+        data-environment="<?= $emailUji ? 'sandbox' : 'production'; ?>"
+        data-client-key="<?= $emailUji ? 'SB-Mid-client-aGWfdxs2btRH4xSd' : 'Mid-client-9sUvUz3XTM_xqGOp'; ?>"
+        type="text/javascript" async>
+    </script>
     <?php } ?>
     <link rel="stylesheet" href="<?= base_url('css/style.css?v=23-04-2025'); ?>">
     <link rel="icon" href="<?= base_url('img/logo/N.png?v=14-03-2025'); ?>" type="image/png">
@@ -191,15 +192,15 @@
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-8L3XG70VSN"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
+    window.dataLayer = window.dataLayer || [];
 
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
-        // end
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    // end
 
-        gtag('config', 'G-8L3XG70VSN');
+    gtag('config', 'G-8L3XG70VSN');
     </script>
 
     <div class="toast start-50 translate-middle">
@@ -249,36 +250,108 @@
     </div>
     <?= $this->include('layout/footer'); ?>
     <script>
-        const toastElm = document.querySelector(".toast")
-        const toastTeksElm = document.querySelector(".toast p")
-        const toastOkElm = document.querySelector(`.toast form`)
-        const toastCloseElm = document.querySelector(`.toast button[type="button"]`)
+    const toastElm = document.querySelector(".toast")
+    const toastTeksElm = document.querySelector(".toast p")
+    const toastOkElm = document.querySelector(`.toast form`)
+    const toastCloseElm = document.querySelector(`.toast button[type="button"]`)
 
-        function triggerToast(text, linkAction) {
-            toastElm.classList.add("show")
-            toastTeksElm.innerHTML = text
-            toastOkElm.action = linkAction;
-            if (!linkAction) {
-                toastOkElm.classList.add('d-none');
-                toastCloseElm.innerHTML = 'Ok';
+    function triggerToast(text, linkAction) {
+        toastElm.classList.add("show")
+        toastTeksElm.innerHTML = text
+        toastOkElm.action = linkAction;
+        if (!linkAction) {
+            toastOkElm.classList.add('d-none');
+            toastCloseElm.innerHTML = 'Ok';
+        } else {
+            toastOkElm.classList.remove('d-none');
+            toastCloseElm.innerHTML = 'Batal';
+        }
+    }
+
+    function hapusToast() {
+        toastElm.classList.remove("show")
+    }
+
+    function copytext(teks) {
+        navigator.clipboard.writeText(teks);
+    }
+
+    function pergiKeProduk(namaProduk) {
+        window.location.href = '/product/' + namaProduk
+    }
+    </script>
+
+    <!-- Tracking -->
+    <script>
+    (() => {
+        // abaikan halaman admin atau bot
+        const isAdmin = location.pathname.startsWith('/admin');
+        if (isAdmin) return;
+        // kamu juga bisa nambah pengecualian lain kalau perlu
+
+        // catat start time
+        const t0 = Date.now();
+
+        // data dasar
+        const payload = {
+            path: location.pathname || '/',
+            ref: document.referrer || '',
+            ua: navigator.userAgent || '',
+            w: screen.width,
+            h: screen.height,
+        };
+
+        // fungsi kirim pakai Beacon (aman saat halaman ditutup)
+        function sendBeacon(extra = {}) {
+            const data = JSON.stringify({
+                ...payload,
+                ...extra
+            });
+            const url = '/track/hit';
+            if (navigator.sendBeacon) {
+                const blob = new Blob([data], {
+                    type: 'application/json'
+                });
+                navigator.sendBeacon(url, blob);
             } else {
-                toastOkElm.classList.remove('d-none');
-                toastCloseElm.innerHTML = 'Batal';
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: data,
+                    keepalive: true
+                }).catch(() => {});
             }
         }
 
-        function hapusToast() {
-            toastElm.classList.remove("show")
-        }
+        // pageview awal (durasi=0)
+        sendBeacon({
+            durasi: 0,
+            event: 'pv'
+        });
 
-        function copytext(teks) {
-            navigator.clipboard.writeText(teks);
-        }
+        // heartbeat tiap 15 detik agar durasi “real”
+        let timer = setInterval(() => {
+            const dur = Math.round((Date.now() - t0) / 1000);
+            sendBeacon({
+                durasi: dur,
+                event: 'hb'
+            });
+        }, 15000);
 
-        function pergiKeProduk(namaProduk) {
-            window.location.href = '/product/' + namaProduk
-        }
+        // saat akan keluar halaman, kirim durasi final
+        window.addEventListener('pagehide', () => {
+            clearInterval(timer);
+            const dur = Math.round((Date.now() - t0) / 1000);
+            sendBeacon({
+                durasi: dur,
+                event: 'leave'
+            });
+        });
+    })();
     </script>
+
 </body>
 
 </html>

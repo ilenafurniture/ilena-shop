@@ -134,4 +134,15 @@ class M_Tracking extends Model
         }
         return $out;
     }
+
+    public function countOnlineNow(int $minutes = 5): int
+{
+    $since = date('Y-m-d H:i:s', time() - $minutes * 60);
+    $row = $this->db->table($this->table)
+        ->select('COUNT(DISTINCT ip) AS c')
+        ->where('waktu >=', $since)
+        ->get()->getRowArray();
+    return (int)($row['c'] ?? 0);
+}
+
 }

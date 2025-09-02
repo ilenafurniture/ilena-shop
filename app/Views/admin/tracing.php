@@ -386,14 +386,23 @@ tbody tr:hover {
   ?>
     <div class="card">
         <div class="kpi">
+
+
             <div class="kpi-item">
+                <span class="kpi-label">Online Sekarang</span>
+                <span class="kpi-value"><?= number_format($onlineNow) ?></span>
+                <div class="kpi-trend"><span id="kpiOnlineTrend" class="badge amber">
+                        (diperbarui setiap 30 detik)
+                    </span></div>
+            </div>
+            <!-- <div class="kpi-item">
                 <span class="kpi-label">Tracking (range aktif)</span>
                 <span class="kpi-value" id="kpiTracking"><?= $fmt($summaryNow['total_tracking']) ?></span>
                 <div class="kpi-trend"><span id="kpiTrackingTrend" class="badge <?= $badgeClass($dTrack) ?>">
                         <?= $sTrack==='±'?'±':$sTrack ?><?= $fmt(abs($dTrack)) ?>
                         (<?= $percent($summaryNow['total_tracking'],$summaryPrev['total_tracking']) ?>) vs prev
                     </span></div>
-            </div>
+            </div> -->
             <div class="kpi-item">
                 <span class="kpi-label">IP Unik</span>
                 <span class="kpi-value" id="kpiIp"><?= $fmt($summaryNow['total_ip_unik']) ?></span>
