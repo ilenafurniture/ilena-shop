@@ -12,11 +12,11 @@ $percent = function($now,$prev){ if((int)$prev===0) return '—'; $p=(($now-$pre
     --brand: var(--merah, #e84a49);
     --stroke: #e5e7eb;
     --muted: #6b7280;
-    --bg-soft: #f5f6f8;
+    --bg-soft: #f5f6f8
 }
 
 .ana {
-    color: #111;
+    color: #111
 }
 
 .container-page {
@@ -25,7 +25,7 @@ $percent = function($now,$prev){ if((int)$prev===0) return '—'; $p=(($now-$pre
     margin: 8px auto 24px;
     padding: 0 12px;
     width: 100%;
-    max-width: 1580px;
+    max-width: 1580px
 }
 
 .header-row {
@@ -33,18 +33,18 @@ $percent = function($now,$prev){ if((int)$prev===0) return '—'; $p=(($now-$pre
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    flex-wrap: wrap;
+    flex-wrap: wrap
 }
 
 .page-title {
     font-size: 20px;
     font-weight: 800;
     letter-spacing: -.01em;
-    margin: 0;
+    margin: 0
 }
 
 .sub {
-    color: var(--muted);
+    color: var(--muted)
 }
 
 .card {
@@ -52,7 +52,7 @@ $percent = function($now,$prev){ if((int)$prev===0) return '—'; $p=(($now-$pre
     border: 1px solid var(--stroke);
     border-radius: 12px;
     padding: 14px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, .03);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .03)
 }
 
 .toolbar {
@@ -62,25 +62,25 @@ $percent = function($now,$prev){ if((int)$prev===0) return '—'; $p=(($now-$pre
     background: #fff;
     border: 1px solid var(--stroke);
     border-radius: 12px;
-    padding: 14px;
+    padding: 14px
 }
 
 .grid {
     display: grid;
-    gap: 12px;
+    gap: 12px
 }
 
 .grid-12 {
-    grid-template-columns: repeat(12, 1fr);
+    grid-template-columns: repeat(12, 1fr)
 }
 
 .col-6 {
-    grid-column: span 6;
+    grid-column: span 6
 }
 
 @media (max-width:980px) {
     .col-6 {
-        grid-column: span 12;
+        grid-column: span 12
     }
 }
 
@@ -88,7 +88,7 @@ label {
     font-size: 12px;
     color: var(--muted);
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 6px
 }
 
 input,
@@ -100,20 +100,20 @@ button,
     background: #fff;
     color: #111;
     padding: 0 12px;
-    font-size: 14px;
+    font-size: 14px
 }
 
 input:focus {
     outline: none;
     border-color: #9ca3af;
-    box-shadow: 0 0 0 3px rgba(156, 163, 175, .25);
+    box-shadow: 0 0 0 3px rgba(156, 163, 175, .25)
 }
 
 .actions {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: center
 }
 
 .btn {
@@ -122,30 +122,29 @@ input:focus {
     gap: 8px;
     cursor: pointer;
     text-decoration: none;
-    transition: .15s;
+    transition: .15s
 }
 
 .btn.primary {
     background: var(--brand);
     border-color: var(--brand);
-    color: #fff;
+    color: #fff
 }
 
 .btn.secondary {
     background: #fff;
-    border-color: var(--stroke);
+    border-color: var(--stroke)
 }
 
 .btn:hover {
-    filter: brightness(.97);
+    filter: brightness(.97)
 }
 
-/* Quick range */
 .quick-range {
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: center
 }
 
 .pill {
@@ -157,16 +156,15 @@ input:focus {
     font-size: 12px;
     display: inline-flex;
     align-items: center;
-    cursor: pointer;
+    cursor: pointer
 }
 
 .pill.active {
     border-color: var(--brand);
     color: var(--brand);
-    font-weight: 600;
+    font-weight: 600
 }
 
-/* Badges */
 .badge {
     display: inline-flex;
     align-items: center;
@@ -176,37 +174,36 @@ input:focus {
     border-radius: 999px;
     font-size: 12px;
     background: #fafafa;
-    color: #374151;
+    color: #374151
 }
 
 .badge.green {
     background: #f0fdf4;
     border-color: #c7f0d5;
-    color: #0a7a2e;
+    color: #0a7a2e
 }
 
 .badge.red {
     background: #fff1f1;
     border-color: #ffd2d2;
-    color: #b91c1c;
+    color: #b91c1c
 }
 
 .badge.amber {
     background: #fff7ed;
     border-color: #ffdfbd;
-    color: #92400e;
+    color: #92400e
 }
 
-/* KPI (RENAMED to avoid collision) */
 .ana .kpi {
     display: grid;
     gap: 12px;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr))
 }
 
 @media (max-width:980px) {
     .ana .kpi {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr))
     }
 }
 
@@ -214,7 +211,7 @@ input:focus {
     background: #fff;
     border: 1px solid var(--stroke);
     border-radius: 10px;
-    padding: 12px;
+    padding: 12px
 }
 
 .ana .kpi-label {
@@ -224,33 +221,32 @@ input:focus {
     margin-bottom: 6px;
     background: none;
     border: none;
-    padding: 0;
+    padding: 0
 }
 
 .ana .kpi-value {
     font-size: 24px;
     font-weight: 800;
     letter-spacing: -.02em;
-    display: block;
+    display: block
 }
 
 .ana .kpi-trend {
-    margin-top: 6px;
+    margin-top: 6px
 }
 
-/* Tables */
 .table-wrap {
     border: 1px solid var(--stroke);
     border-radius: 12px;
     overflow: auto;
-    max-height: 52vh;
+    max-height: 52vh
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
     font-size: 14px;
-    min-width: 420px;
+    min-width: 420px
 }
 
 thead th {
@@ -261,44 +257,41 @@ thead th {
     padding: 10px;
     background: #f9fafb;
     color: var(--muted);
-    border-bottom: 1px solid #ececec;
+    border-bottom: 1px solid #ececec
 }
 
 tbody td {
     padding: 10px;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid #f3f4f6
 }
 
 tbody tr:hover {
-    background: #fafafa;
+    background: #fafafa
 }
 
 .right {
-    text-align: right;
+    text-align: right
 }
 
-/* Chart */
 .chart-card canvas {
-    max-height: 340px;
+    max-height: 340px
 }
 
-/* Titles */
 .h3 {
     margin: 0 0 8px;
     font-size: 16px;
-    font-weight: 700;
+    font-weight: 700
 }
 
-/* Two columns */
 .two-col {
     display: grid;
     gap: 12px;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr))
 }
 
 @media (max-width:980px) {
     .two-col {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr
     }
 }
 
@@ -306,7 +299,7 @@ tbody tr:hover {
     display: flex;
     gap: 10px;
     align-items: center;
-    flex-wrap: wrap;
+    flex-wrap: wrap
 }
 </style>
 
@@ -387,22 +380,22 @@ tbody tr:hover {
     <div class="card">
         <div class="kpi">
 
-
             <div class="kpi-item">
                 <span class="kpi-label">Online Sekarang</span>
-                <span class="kpi-value"><?= number_format($onlineNow) ?></span>
-                <div class="kpi-trend"><span id="kpiOnlineTrend" class="badge amber">
-                        (diperbarui setiap 30 detik)
-                    </span></div>
+                <span class="kpi-value" id="kpiOnline"><?= isset($onlineNow)?number_format($onlineNow):'0' ?></span>
+                <div class="kpi-trend"><span id="kpiOnlineTrend" class="badge amber">auto refresh / 30 dtk</span></div>
             </div>
-            <!-- <div class="kpi-item">
+
+            <!-- (Opsional) aktifkan ini kalau mau tampil Tracking dan sinkron dengan JS -->
+            <div class="kpi-item">
                 <span class="kpi-label">Tracking (range aktif)</span>
                 <span class="kpi-value" id="kpiTracking"><?= $fmt($summaryNow['total_tracking']) ?></span>
                 <div class="kpi-trend"><span id="kpiTrackingTrend" class="badge <?= $badgeClass($dTrack) ?>">
                         <?= $sTrack==='±'?'±':$sTrack ?><?= $fmt(abs($dTrack)) ?>
                         (<?= $percent($summaryNow['total_tracking'],$summaryPrev['total_tracking']) ?>) vs prev
                     </span></div>
-            </div> -->
+            </div>
+
             <div class="kpi-item">
                 <span class="kpi-label">IP Unik</span>
                 <span class="kpi-value" id="kpiIp"><?= $fmt($summaryNow['total_ip_unik']) ?></span>
@@ -411,6 +404,7 @@ tbody tr:hover {
                         (<?= $percent($summaryNow['total_ip_unik'],$summaryPrev['total_ip_unik']) ?>)
                     </span></div>
             </div>
+
             <div class="kpi-item">
                 <span class="kpi-label">Path Unik</span>
                 <span class="kpi-value" id="kpiPath"><?= $fmt($summaryNow['total_path_unik']) ?></span>
@@ -419,6 +413,7 @@ tbody tr:hover {
                         (<?= $percent($summaryNow['total_path_unik'],$summaryPrev['total_path_unik']) ?>)
                     </span></div>
             </div>
+
             <div class="kpi-item">
                 <span class="kpi-label">Total Durasi (detik)</span>
                 <span class="kpi-value" id="kpiDur"><?= $fmt($summaryNow['total_durasi']) ?></span>
@@ -427,6 +422,7 @@ tbody tr:hover {
                         (<?= $percent($summaryNow['total_durasi'],$summaryPrev['total_durasi']) ?>)
                     </span></div>
             </div>
+
         </div>
     </div>
 
@@ -539,12 +535,17 @@ tbody tr:hover {
         return (p > 0 ? '+' : '') + p.toFixed(1) + ' %';
     };
     const badgeClass = (d) => d > 0 ? 'green' : (d < 0 ? 'red' : 'amber');
+    const setTxt = (sel, val) => {
+        const el = qs(sel);
+        if (el) el.textContent = val;
+    };
 
     // Chart
     const css = getComputedStyle(document.documentElement);
     const brand = (css.getPropertyValue('--merah') || '').trim() || '#e84a49';
     const grey = '#94a3b8';
     const ctx = document.getElementById('chartDaily').getContext('2d');
+
     const grad = ctx.createLinearGradient(0, 0, 0, 280);
     grad.addColorStop(0, brand + '33');
     grad.addColorStop(1, brand + '05');
@@ -635,9 +636,10 @@ tbody tr:hover {
 
     async function fetchLiveAndRender() {
         try {
+            const filters = getFilters();
             const q = toQuery({
-                ...getFilters(),
-                start: getFilters().start || '<?= esc($opt['start']) ?>'
+                ...filters,
+                start: filters.start || '<?= esc($opt['start']) ?>'
             });
             const res = await fetch(`<?= site_url('analytics/live'); ?>?${q}`, {
                 cache: 'no-store',
@@ -648,8 +650,15 @@ tbody tr:hover {
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
 
-            const now = data.summaryNow || {},
-                prev = data.summaryPrev || {};
+            const now = data.summaryNow || {};
+            const prev = data.summaryPrev || {};
+
+            // KPI safe updates (tidak crash walau elemen tidak ada)
+            setTxt('#kpiTracking', fmtNum(now.total_tracking || 0));
+            setTxt('#kpiIp', fmtNum(now.total_ip_unik || 0));
+            setTxt('#kpiPath', fmtNum(now.total_path_unik || 0));
+            setTxt('#kpiDur', fmtNum(now.total_durasi || 0));
+
             const applyTrend = (sel, nowVal, prevVal) => {
                 const el = qs(sel);
                 if (!el) return;
@@ -659,15 +668,15 @@ tbody tr:hover {
                 el.textContent =
                     `${d>0?'+':(d<0?'-':'±')}${fmtNum(Math.abs(d))} (${pct(nowVal,prevVal)}) vs prev`;
             };
-            qs('#kpiTracking').textContent = fmtNum(now.total_tracking || 0);
-            qs('#kpiIp').textContent = fmtNum(now.total_ip_unik || 0);
-            qs('#kpiPath').textContent = fmtNum(now.total_path_unik || 0);
-            qs('#kpiDur').textContent = fmtNum(now.total_durasi || 0);
             applyTrend('#kpiTrackingTrend', now.total_tracking, prev.total_tracking);
             applyTrend('#kpiIpTrend', now.total_ip_unik, prev.total_ip_unik);
             applyTrend('#kpiPathTrend', now.total_path_unik, prev.total_path_unik);
             applyTrend('#kpiDurTrend', now.total_durasi, prev.total_durasi);
 
+            // Online sekarang (jika controller mengirimkan onlineNow)
+            if (typeof data.onlineNow !== 'undefined') setTxt('#kpiOnline', fmtNum(data.onlineNow));
+
+            // Chart
             const dailyNow = data.dailyNow || [];
             const dailyPrev = data.dailyPrev || [];
             const labels = [...new Set([...dailyPrev.map(d => d.tanggal), ...dailyNow.map(d => d.tanggal)])]
@@ -678,14 +687,13 @@ tbody tr:hover {
             chart.data.datasets[1].data = mapVal(dailyNow);
             chart.update('none');
 
+            // Top tables
             const renderTop = (root, rows) => {
                 const tbody = root.querySelector('tbody');
                 if (!tbody) return;
                 tbody.innerHTML = (rows || []).map(r =>
-                        `<tr><td>${(r.path||'/')
-          .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</td><td class="right">${fmtNum(r.jumlah||0)}</td></tr>`
-                    ).join('') ||
-                    '<tr><td colspan="2" class="right">—</td></tr>';
+                    `<tr><td>${(r.path||'/').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</td><td class="right">${fmtNum(r.jumlah||0)}</td></tr>`
+                ).join('') || '<tr><td colspan="2" class="right">—</td></tr>';
             };
             const wraps = document.querySelectorAll('.two-col .card .table-wrap');
             if (wraps[0]) renderTop(wraps[0], data.topNow || []);
@@ -698,6 +706,7 @@ tbody tr:hover {
         }
     }
 
+    // Quick Range
     function setDateRangeByDays(days) {
         const end = new Date();
         const start = new Date();
@@ -718,11 +727,26 @@ tbody tr:hover {
         updatePillActive(d);
         fetchLiveAndRender();
     }));
+
+    // Set aktif otomatis sesuai rentang saat ini
+    (function initPillFromCurrentRange() {
+        const f = getFilters();
+        if (f.start && f.end) {
+            const sd = new Date(f.start + 'T00:00:00'),
+                ed = new Date(f.end + 'T00:00:00');
+            const diff = Math.round((ed - sd) / 86400000) + 1;
+            const preset = [7, 14, 21, 30].find(d => d === diff);
+            if (preset) updatePillActive(preset);
+        }
+    })();
+
+    // Actions
     const btn = qs('#btnRefresh');
     if (btn) btn.addEventListener('click', fetchLiveAndRender);
 
+    // First load & auto refresh tiap 30 dtk
     fetchLiveAndRender();
-    setInterval(fetchLiveAndRender, 60000);
+    setInterval(fetchLiveAndRender, 30000);
 })();
 </script>
 
