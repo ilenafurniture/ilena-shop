@@ -192,12 +192,14 @@ $routes->post('/maket/submitorder', 'MarketplaceController::submitOrder', ['filt
 $routes->post('/ro/provinsi', 'MarketplaceController::submitOrder', ['filter' => 'marketFilter']);
 
 
-// Tracking
-$routes->get('analytics', 'Analytics::index' , ['filter' => 'adminFilter']);
-$routes->get('analytics/exportCsv', 'Analytics::exportCsv');
-$routes->get('analytics/exportPdf', 'Analytics::exportPdf');
-$routes->post('analytics/blacklist/add', 'Analytics::addBlacklist');
-$routes->get('analytics/blacklist/del/(:any)', 'Analytics::delBlacklist/$1');
+// Analytics (admin)
+$routes->get('analytics', 'Analytics::index', ['filter' => 'adminFilter']);
+$routes->get('analytics/live', 'Analytics::live', ['filter' => 'adminFilter']);
+$routes->get('analytics/exportCsv', 'Analytics::exportCsv', ['filter' => 'adminFilter']);
+$routes->get('analytics/exportPdf', 'Analytics::exportPdf', ['filter' => 'adminFilter']);
+$routes->post('analytics/blacklist/add', 'Analytics::addBlacklist', ['filter' => 'adminFilter']);
+$routes->get('analytics/blacklist/del/(:any)', 'Analytics::delBlacklist/$1', ['filter' => 'adminFilter']);
+
 
 
 

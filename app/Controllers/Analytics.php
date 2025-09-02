@@ -7,6 +7,10 @@ use Dompdf\Dompdf;
 
 class Analytics extends BaseController
 {
+    /**
+     * Ambil & normalisasi opsi filter dari query string.
+     * Default range = bulan ini.
+     */
     private function parseOpts(): array
     {
         // default: bulan ini
@@ -27,13 +31,17 @@ class Analytics extends BaseController
         return [
             'start' => $start,
             'end'   => $end,
-            'min_duration' => max(0, $minDur),
-            'exclude_low_avg_duration' => $lowAvg,  // 0 = off
-            'exclude_high_hits_per_day' => $maxDay,  // 0 = off
-            'exclude_ips' => $excludeIps, // empty => pakai blacklist table
+            'min_duration'              => max(0, $minDur),
+            'exclude_low_avg_duration'  => $lowAvg,   // 0 = off
+            'exclude_high_hits_per_day' => $maxDay,   // 0 = off
+            'exclude_ips'               => $excludeIps, // empty => pakai blacklist table
         ];
     }
 
+    /**
+     * Halaman utama tracing (admin).
+     * NOTE: view diganti ke 'admin/tracing'
+     */
     public function index()
     {
         $m = new M_Tracking();
@@ -45,7 +53,7 @@ class Analytics extends BaseController
 
         $startPrev = date('Y-m-d', strtotime($opt['start'].' -1 month'));
         $endPrev   = date('Y-m-d', strtotime($opt['end'].' -1 month'));
-        $optPrev          = $opt;
+        $optPrev   = $opt;
         $optPrev['start'] = $startPrev;
         $optPrev['end']   = $endPrev;
 
@@ -53,21 +61,12 @@ class Analytics extends BaseController
         $topPrev     = $m->getTopPaths($optPrev, 10);
         $dailyPrev   = $m->getDailySeries($optPrev);
 
-        // blacklist lengkap (ip + alasan) biar tabel admin enak
-        $db = \Config\Database::connect();
-        $blacklistFull = $db->table('tracking_ip_blacklist')
-                            ->select('ip, alasan')
-                            ->orderBy('ip', 'ASC')
-                            ->get()->getResultArray();
-
         return view('admin/tracing', [
             'title'       => 'Insights Analytics',
             'navbar'      => session()->get('menu') ?? [],
             'metaTitle'   => 'Insights | ILENA',
             'metaDesc'    => 'Dashboard analytics pengunjung manusia dengan filter anti-bot.',
             'metaKeyword' => 'analytics, ilena, tracking, human traffic',
-
-            'hideMegaNav' => true, // ⬅️ ini yang bikin mega-menu disembunyikan di navbar
 
             'opt'         => $opt,
             'optPrev'     => $optPrev,
@@ -77,11 +76,65 @@ class Analytics extends BaseController
             'topPrev'     => $topPrev,
             'dailyNow'    => $dailyNow,
             'dailyPrev'   => $dailyPrev,
-            'blacklist'   => $blacklistFull,
+            'blacklist'   => $m->getBlacklist(),
         ]);
     }
 
-    /** Export CSV dari rangkuman & top paths & daily */
+    /**
+     * ✅ Endpoint JSON realtime untuk auto-refresh front-end.
+     * End date fix ke HARI INI, dengan header no-cache.
+     */
+    public function live()
+    {
+        $m = new M_Tracking();
+
+        // Ambil query (kompatibel dengan form)
+        $q = $this->request->getGet();
+
+        // start ikut user / default bulan ini; end = hari ini (realtime)
+        $opt = [
+            'start' => $q['start'] ?? date('Y-m-01'),
+            'end'   => date('Y-m-d'),
+            'min_duration'              => isset($q['min_duration']) ? (int)$q['min_duration'] : 5,
+            'exclude_low_avg_duration'  => isset($q['exclude_low_avg_duration']) ? (int)$q['exclude_low_avg_duration'] : 0,
+            'exclude_high_hits_per_day' => isset($q['exclude_high_hits_per_day']) ? (int)$q['exclude_high_hits_per_day'] : 0,
+            'exclude_ips'               => !empty($q['exclude_ips'])
+                ? array_values(array_filter(array_map('trim', explode(',', $q['exclude_ips']))))
+                : [],
+        ];
+
+        $summaryNow = $m->getSummary($opt);
+        $topNow     = $m->getTopPaths($opt, 10);
+        $dailyNow   = $m->getDailySeries($opt);
+
+        $startPrev  = date('Y-m-d', strtotime($opt['start'].' -1 month'));
+        $endPrev    = date('Y-m-d', strtotime($opt['end'].' -1 month'));
+        $optPrev    = $opt;
+        $optPrev['start'] = $startPrev;
+        $optPrev['end']   = $endPrev;
+
+        $summaryPrev = $m->getSummary($optPrev);
+        $topPrev     = $m->getTopPaths($optPrev, 10);
+        $dailyPrev   = $m->getDailySeries($optPrev);
+
+        return $this->response
+            ->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->setHeader('Pragma', 'no-cache')
+            ->setJSON([
+                'server_time'  => date('Y-m-d H:i:s'),
+                'opt'          => $opt,
+                'summaryNow'   => $summaryNow,
+                'summaryPrev'  => $summaryPrev,
+                'topNow'       => $topNow,
+                'topPrev'      => $topPrev,
+                'dailyNow'     => $dailyNow,
+                'dailyPrev'    => $dailyPrev,
+            ]);
+    }
+
+    /**
+     * Export CSV dari summary + top paths + daily series.
+     */
     public function exportCsv()
     {
         $m = new M_Tracking();
@@ -95,17 +148,23 @@ class Analytics extends BaseController
         $fh = fopen('php://temp', 'w+');
 
         fputcsv($fh, ['Summary']);
-        foreach ($summary as $k=>$v) fputcsv($fh, [$k,$v]);
+        foreach ($summary as $k => $v) {
+            fputcsv($fh, [$k, $v]);
+        }
 
         fputcsv($fh, []);
         fputcsv($fh, ['Top Paths (max 100)']);
-        fputcsv($fh, ['path','jumlah']);
-        foreach ($top as $r) fputcsv($fh, [$r['path'] ?: '/', $r['jumlah']]);
+        fputcsv($fh, ['path', 'jumlah']);
+        foreach ($top as $r) {
+            fputcsv($fh, [$r['path'] ?: '/', $r['jumlah']]);
+        }
 
         fputcsv($fh, []);
         fputcsv($fh, ['Daily Series']);
-        fputcsv($fh, ['tanggal','hits']);
-        foreach ($daily as $r) fputcsv($fh, [$r['tanggal'], $r['hits']]);
+        fputcsv($fh, ['tanggal', 'hits']);
+        foreach ($daily as $r) {
+            fputcsv($fh, [$r['tanggal'], $r['hits']]);
+        }
 
         rewind($fh);
         $csv = stream_get_contents($fh);
@@ -117,7 +176,9 @@ class Analytics extends BaseController
             ->setBody($csv);
     }
 
-    /** Export PDF (simple) */
+    /**
+     * Export PDF sederhana (layout ada di view 'analytics/pdf').
+     */
     public function exportPdf()
     {
         $m = new M_Tracking();
@@ -128,41 +189,58 @@ class Analytics extends BaseController
         $daily   = $m->getDailySeries($opt);
 
         $html = view('analytics/pdf', [
-            'opt'=>$opt, 'summary'=>$summary, 'top'=>$top, 'daily'=>$daily
+            'opt'     => $opt,
+            'summary' => $summary,
+            'top'     => $top,
+            'daily'   => $daily,
         ]);
 
-        $dompdf = new Dompdf(['chroot'=>WRITEPATH]);
+        $dompdf = new Dompdf(['chroot' => WRITEPATH]);
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
 
         return $this->response
             ->setHeader('Content-Type', 'application/pdf')
-            ->setHeader('Content-Disposition', 'attachment; filename="analytics_'.$opt['start'].'_to_'.$opt['end'].'.pdf"')
+            ->setHeader(
+                'Content-Disposition',
+                'attachment; filename="analytics_'.$opt['start'].'_to_'.$opt['end'].'.pdf"'
+            )
             ->setBody($dompdf->output());
     }
 
-    /** Tambah IP ke blacklist (opsional, via form POST) */
+    /**
+     * Tambah IP ke blacklist (via form POST).
+     */
     public function addBlacklist()
     {
-        $ip = trim((string)$this->request->getPost('ip'));
+        $ip     = trim((string)$this->request->getPost('ip'));
         $alasan = trim((string)$this->request->getPost('alasan'));
 
-        if ($ip === '') return redirect()->back()->with('err','IP wajib diisi');
+        if ($ip === '') {
+            return redirect()->back()->with('err', 'IP wajib diisi');
+        }
 
         $db = \Config\Database::connect();
         try {
-            $db->table('tracking_ip_blacklist')->insert(['ip'=>$ip, 'alasan'=>$alasan ?: null]);
+            $db->table('tracking_ip_blacklist')->insert([
+                'ip'     => $ip,
+                'alasan' => $alasan ?: null,
+            ]);
         } catch (\Throwable $e) {
-            return redirect()->back()->with('err','Gagal menambah: '.$e->getMessage());
+            return redirect()->back()->with('err', 'Gagal menambah: '.$e->getMessage());
         }
-        return redirect()->back()->with('ok','IP ditambahkan ke blacklist');
+
+        return redirect()->back()->with('ok', 'IP ditambahkan ke blacklist');
     }
 
+    /**
+     * Hapus IP dari blacklist.
+     */
     public function delBlacklist($ip)
     {
         $db = \Config\Database::connect();
-        $db->table('tracking_ip_blacklist')->where('ip',$ip)->delete();
-        return redirect()->back()->with('ok','IP dihapus dari blacklist');
+        $db->table('tracking_ip_blacklist')->where('ip', $ip)->delete();
+        return redirect()->back()->with('ok', 'IP dihapus dari blacklist');
     }
 }
