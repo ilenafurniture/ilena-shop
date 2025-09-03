@@ -138,6 +138,9 @@
         <div class="d-flex justify-content-start mt-4 mb-4 flex-column">
             <p class="m-0 nt" style="max-width: 250px; font-size: 12px;">Kepada Yth.</p>
             <p class="m-0 tw-bold-italic" style="max-width: 250px; font-size: 12px;"><?= $pemesanan['nama_npwp']; ?></p>
+            <?php if (!empty($pemesanan['nohp'])): ?>
+            <p class="m-0"><?= $pemesanan['nohp']; ?></p>
+            <?php endif; ?>
             <p class="m-0" style="max-width: 250px; font-size: 12px;"><?= $pemesanan['alamat_tagihan']; ?></p>
             <!-- <div class="d-flex flex-column">
                 <div class="d-flex m-0 p-0">

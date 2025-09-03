@@ -52,6 +52,9 @@
             <div style="flex: 1" class="mb-5">
                 <p class="m-0">Kepada Yth.</p>
                 <p class="m-0"><?= $pemesanan['nama']; ?></p>
+                <?php if (!empty($pemesanan['nohp'])): ?>
+                <p class="m-0"><?= $pemesanan['nohp']; ?></p>
+                <?php endif; ?>
                 <p class="m-0"><?= $pemesanan['alamat_pengiriman']; ?></p>
             </div>
         </div>

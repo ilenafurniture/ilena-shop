@@ -13,9 +13,9 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
     <style>
-        * {
-            font-size: 14px;
-        }
+    * {
+        font-size: 14px;
+    }
     </style>
 </head>
 
@@ -46,6 +46,9 @@
             <div style="width: 300px;">
                 <p class="m-0">Kepada Yth.</p>
                 <p class="m-0"><?= $pemesanan['nama']; ?></p>
+                <?php if (!empty($pemesanan['nohp'])): ?>
+                <p class="m-0"><?= $pemesanan['nohp']; ?></p>
+                <?php endif; ?>
                 <p class="m-0"><?= $pemesanan['alamat_pengiriman']; ?></p>
             </div>
         </div>
@@ -67,16 +70,16 @@
                 <tbody>
                     <?php $no = 1; ?>
                     <?php foreach ($items as $t) { ?>
-                        <tr>
-                            <td class="text-center"><?= strtoupper($no++); ?></td>
-                            <td class="text-center"><?= strtoupper($t['id_barang']); ?></td>
-                            <td class="">
-                                <p class="m-0"><?= strtoupper($t['nama']); ?> (<?= strtoupper($t['varian']); ?>)</p>
-                                <p class="m-0"><?= $t['dimensi']['panjang'] ?> x <?= $t['dimensi']['lebar'] ?> x
-                                    <?= $t['dimensi']['tinggi'] ?></p>
-                            </td>
-                            <td class="text-center"><?= $t['jumlah']; ?></td>
-                        </tr>
+                    <tr>
+                        <td class="text-center"><?= strtoupper($no++); ?></td>
+                        <td class="text-center"><?= strtoupper($t['id_barang']); ?></td>
+                        <td class="">
+                            <p class="m-0"><?= strtoupper($t['nama']); ?> (<?= strtoupper($t['varian']); ?>)</p>
+                            <p class="m-0"><?= $t['dimensi']['panjang'] ?> x <?= $t['dimensi']['lebar'] ?> x
+                                <?= $t['dimensi']['tinggi'] ?></p>
+                        </td>
+                        <td class="text-center"><?= $t['jumlah']; ?></td>
+                    </tr>
                     <?php } ?>
                 </tbody>
             </table>
@@ -100,12 +103,12 @@
         </div>
     </div>
     <script>
-        // window.print();
-        // window.onafterprint = function() {
-        //     window.close(
-        //         window.location.href = "<?= base_url('/admin/order/offline/' . $pemesanan['jenis']); ?>"
-        //     );
-        // };
+    // window.print();
+    // window.onafterprint = function() {
+    //     window.close(
+    //         window.location.href = "<?= base_url('/admin/order/offline/' . $pemesanan['jenis']); ?>"
+    //     );
+    // };
     </script>
 </body>
 
