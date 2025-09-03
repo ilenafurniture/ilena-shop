@@ -491,7 +491,8 @@ p+small {
     bottom: 0;
     display: flex;
     gap: 10px;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .btn-ghost {
@@ -517,6 +518,14 @@ p+small {
 
 .btn-primary:hover {
     filter: brightness(.97);
+}
+
+.btn-copy {
+    border: 1px dashed #d1d5db;
+    background: #f9fafb;
+    padding: .6em .9em;
+    border-radius: 10px;
+    font-size: 12px;
 }
 
 .mono {
@@ -549,7 +558,7 @@ p+small {
 console.log(JSON.parse('<?= $produkJson; ?>'));
 </script>
 
-<!-- PENTING: tambahkan data-presets agar JSX & fitur modern jalan -->
+<!-- JSX & fitur modern -->
 <script type="text/babel" data-presets="env,react">
     const { useState, useEffect } = React;
   const produkSemua = JSON.parse('<?= $produkJson; ?>');
@@ -593,6 +602,18 @@ console.log(JSON.parse('<?= $produkJson; ?>'));
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewPayload, setPreviewPayload] = useState(null);
     const formatRupiah = (n) => `Rp ${Number(n||0).toLocaleString('id-ID')}`;
+
+    /* Helpers untuk preview */
+    const subtotalBarang = () => {
+      // Subtotal dihitung dari harga per item (yang sudah terkena potongan harga satuan) * qty
+      return (formData.items || []).reduce((acc, it) => acc + (Number(it.harga||0) * Number(it.jumlah||0)), 0);
+    };
+    const potonganFormNominal = () => {
+      const sub = subtotalBarang();
+      if(potongan.satuan === 'rupiah') return Number(potongan.nominal||0);
+      return (Number(potongan.nominal||0) / 100) * sub;
+    };
+    const sisaBayar = () => Math.max(0, Number(formData.totalAkhir||0) - Number(formData.downPayment||0));
 
     useEffect(()=>{
       if(formData.provinsi){
@@ -803,6 +824,22 @@ console.log(JSON.parse('<?= $produkJson; ?>'));
       fetchSubmit();
     };
 
+    /* 🔒 Escape & backdrop click untuk tutup preview */
+    useEffect(()=>{
+      const onKey = (e)=>{ if(e.key==='Escape') setPreviewOpen(false); };
+      window.addEventListener('keydown', onKey);
+      return ()=>window.removeEventListener('keydown', onKey);
+    },[]);
+
+    const copyPayload = () => {
+      try {
+        const p = buildPayload();
+        navigator.clipboard.writeText(JSON.stringify(p, null, 2));
+        setNotif({show:true, teks:'Payload tersalin'});
+        setTimeout(()=>setNotif({show:false, teks:''}), 2000);
+      } catch {}
+    };
+
     return (
       <>
         {modalKeranjang && (
@@ -843,13 +880,13 @@ console.log(JSON.parse('<?= $produkJson; ?>'));
                     </div>
                   </div>
                   <div className="container-pag">
-                    <a onClick={()=>setCurrentPage(prev=>Math.max(prev-1,1))} disabled={currentPage===1} className='item-pag'>
+                    <a onClick={()=>setCurrentPage(prev=>Math.max(prev-1,1))} className='item-pag'>
                       <i className="material-icons">chevron_left</i>
                     </a>
                     {pageNumbers.map(number=> (number>=currentPage-2 && number<=currentPage+2) && (
                       <a key={number} onClick={()=>setCurrentPage(number)} className={`item-pag ${currentPage===number?"active":""}`}>{number}</a>
                     ))}
-                    <a onClick={()=>setCurrentPage(prev=>Math.min(prev+1,pageNumbers.length))} disabled={currentPage===pageNumbers.length} className="item-pag">
+                    <a onClick={()=>setCurrentPage(prev=>Math.min(prev+1,pageNumbers.length))} className="item-pag">
                       <i className="material-icons">chevron_right</i>
                     </a>
                   </div>
@@ -890,185 +927,182 @@ console.log(JSON.parse('<?= $produkJson; ?>'));
         {/* Notif */}
         <div className={`notif ${notif.show ? 'show' : ''}`}>{notif.teks}</div>
 
-        {/* PREVIEW MODAL */}
+        {/* ===== PREVIEW MODAL (improved) ===== */}
         {previewOpen && previewPayload && (
-        <div className="preview-overlay" role="dialog" aria-modal="true" aria-labelledby="prevTitle">
-            <div className="preview-card">
+        <div className="preview-overlay" role="dialog" aria-modal="true" aria-labelledby="prevTitle" onClick={(e)=>{ if(e.target.classList.contains('preview-overlay')) closePreview(); }}>
+          <div className="preview-card" role="document">
             {/* Header */}
             <div className="preview-header">
-                <h3 id="prevTitle" className="preview-title">Preview Pesanan</h3>
-                <div style={{display:'flex', gap:8, alignItems:'center'}}>
+              <h3 id="prevTitle" className="preview-title">Preview Pesanan</h3>
+              <div style={{display:'flex', gap:8, alignItems:'center'}}>
                 <span className={`badge ${potonganHargaSatuan>25 ? 'warn':'ok'}`}>
-                    <i className="material-icons" style={{fontSize:16}}>local_offer</i>
-                    Potongan Satuan: {potonganHargaSatuan}%
+                  <i className="material-icons" style={{fontSize:16}}>local_offer</i>
+                  Potongan Satuan: {potonganHargaSatuan}%
                 </span>
                 {Number(formData.downPayment) > Number(formData.totalAkhir) && (
-                    <span className="badge warn">
+                  <span className="badge warn">
                     <i className="material-icons" style={{fontSize:16}}>warning</i>
                     DP melebihi total
-                    </span>
+                  </span>
                 )}
-                </div>
+              </div>
             </div>
 
             {/* Body */}
             <div className="preview-body">
-                <div className="preview-grid">
-                {/* KIRI: Data & Item */}
+              <div className="preview-grid">
+                {/* KIRI */}
                 <div className="preview-section">
-                    <div className="section-head">
+                  <div className="section-head">
                     <i className="material-icons" style={{fontSize:18}}>receipt_long</i> Rincian Pesanan
-                    </div>
-                    <div className="section-body">
+                  </div>
+                  <div className="section-body">
                     {/* Data pemesan & alamat */}
                     <div className="dl" style={{marginBottom:12}}>
-                        <b>Jenis</b><div>{previewPayload.jenis ? previewPayload.jenis.toUpperCase() : ''}</div>
-                        <b>Tanggal</b><div className="mono">{formData.tanggal || '-'}</div>
-                        <b>Nama</b><div>{previewPayload.nama || '-'}</div>
-                        <b>No HP</b><div className="mono">{previewPayload.nohp || '-'}</div>
-                        <b>NPWP</b><div className="mono">{previewPayload.npwp || '-'}</div>
-                        <b>PO</b><div className="mono">{previewPayload.po || '-'}</div>
-                        <b>Keterangan</b><div>{previewPayload.keterangan || '-'}</div>
-                        <b>Alamat Kirim</b>
-                        <div>
+                      <b>Jenis</b><div>{previewPayload.jenis ? previewPayload.jenis.toUpperCase() : ''}</div>
+                      <b>Tanggal</b><div className="mono">{formData.tanggal || '-'}</div>
+                      <b>Nama</b><div>{previewPayload.nama || '-'}</div>
+                      <b>No HP</b><div className="mono">{previewPayload.nohp || '-'}</div>
+                      <b>NPWP</b><div className="mono">{previewPayload.npwp || '-'}</div>
+                      <b>PO</b><div className="mono">{previewPayload.po || '-'}</div>
+                      <b>Keterangan</b><div>{previewPayload.keterangan || '-'}</div>
+                      <b>Alamat Kirim</b>
+                      <div>
                         {(formData.provinsi && formData.provinsi.split('-')[1]) || ''},
                         {' '}{(formData.kabupaten && formData.kabupaten.split('-')[1]) || ''},
                         {' '}{(formData.kecamatan && formData.kecamatan.split('-')[1]) || ''},
                         {' '}{(formData.kelurahan && formData.kelurahan.split('-')[0]) || ''} {formData.kodepos}
                         <br/>{formData.detail}
-                        </div>
-                        {formData.jenis === 'sale' && (
+                      </div>
+                      {formData.jenis === 'sale' && (
                         <>
-                            <b>Alamat Tagihan</b>
-                            <div>
+                          <b>Alamat Tagihan</b>
+                          <div>
                             {alamatTagihanSama ? <i>Disamakan dengan alamat kirim</i> : (
-                                <>
+                              <>
                                 {(formData.provinsiTagihan && formData.provinsiTagihan.split('-')[1]) || ''},
                                 {' '}{(formData.kabupatenTagihan && formData.kabupatenTagihan.split('-')[1]) || ''},
                                 {' '}{(formData.kecamatanTagihan && formData.kecamatanTagihan.split('-')[1]) || ''},
                                 {' '}{(formData.kelurahanTagihan && formData.kelurahanTagihan.split('-')[0]) || ''} {formData.kodeposTagihan}
                                 <br/>{formData.detailTagihan}
-                                </>
+                              </>
                             )}
-                            </div>
+                          </div>
                         </>
-                        )}
+                      )}
                     </div>
 
                     {/* Items */}
                     <div className="preview-section" style={{border:'0', marginTop:4}}>
-                        <div className="section-head" style={{borderRadius:'10px 10px 0 0'}}>
+                      <div className="section-head" style={{borderRadius:'10px 10px 0 0'}}>
                         <i className="material-icons" style={{fontSize:18}}>inventory_2</i> Item
-                        </div>
-                        <div className="section-body" style={{padding:'0'}}>
+                      </div>
+                      <div className="section-body" style={{padding:'0'}}>
                         <table className="items-table">
-                            <thead>
+                          <thead>
                             <tr>
-                                <th className="cell-thumb"></th>
-                                <th>Produk</th>
-                                <th>Varian</th>
-                                <th className="cell-center">Qty</th>
-                                <th className="cell-right">Harga</th>
-                                <th className="cell-right">Subtotal</th>
+                              <th className="cell-thumb"></th>
+                              <th>Produk</th>
+                              <th>Varian</th>
+                              <th className="cell-center">Qty</th>
+                              <th className="cell-right">Harga</th>
+                              <th className="cell-right">Subtotal</th>
                             </tr>
-                            </thead>
-                            <tbody>
+                          </thead>
+                          <tbody>
                             {previewPayload.items.map((it, idx) => (
-                                <tr key={idx}>
+                              <tr key={idx}>
                                 <td className="cell-thumb">
-                                    <img
-                                    className="thumb"
-                                    src={(formData.items[idx] && formData.items[idx].detail && formData.items[idx].detail.produk && formData.items[idx].detail.produk.gambar) || ''}
-                                    alt={it.nama}
-                                    />
+                                  <img className="thumb" src={(formData.items[idx] && formData.items[idx].detail && formData.items[idx].detail.produk && formData.items[idx].detail.produk.gambar) || ''} alt={it.nama}/>
                                 </td>
                                 <td>{it.nama}</td>
                                 <td className="mono">{it.varian}</td>
                                 <td className="cell-center">{it.jumlah}</td>
                                 <td className="cell-right mono">{formatRupiah(it.harga)}</td>
                                 <td className="cell-right mono">{formatRupiah(Number(it.harga) * Number(it.jumlah))}</td>
-                                </tr>
+                              </tr>
                             ))}
-                            </tbody>
+                          </tbody>
                         </table>
-                        </div>
+                      </div>
                     </div>
 
-                    {/* Catatan kebijakan */}
+                    {/* Catatan */}
                     <div className="note" style={{marginTop:12}}>
-                        <i className="material-icons" style={{fontSize:18}}>info</i>
-                        <div>
+                      <i className="material-icons" style={{fontSize:18}}>info</i>
+                      <div>
                         Periksa kembali <b>Qty</b>, <b>Harga Satuan</b>, dan <b>Alamat</b>. Klik <b>Kembali</b> untuk mengubah sebelum membuat pesanan.
-                        </div>
+                      </div>
                     </div>
-                    </div>
+                  </div>
                 </div>
 
                 {/* KANAN: Ringkasan */}
                 <div className="summary-card">
-                    <div className="section-head">
+                  <div className="section-head">
                     <i className="material-icons" style={{fontSize:18}}>payments</i> Ringkasan
-                    </div>
-                    <div className="summary-body">
+                  </div>
+                  <div className="summary-body">
+                    <div className="row-sum"><span className="label">Subtotal Barang</span><span className="value">{formatRupiah(subtotalBarang())}</span></div>
                     <div className="row-sum">
-                        <span className="label">Potongan (form)</span>
-                        <span className="value">
-                        {potongan.satuan === 'rupiah' ? formatRupiah(potongan.nominal) : `${potongan.nominal}%`}
-                        </span>
+                      <span className="label">Potongan (form)</span>
+                      <span className="value">{potongan.satuan === 'rupiah' ? formatRupiah(potongan.nominal) : `${potongan.nominal}%`}</span>
                     </div>
-                    <div className="row-sum">
-                        <span className="label">Potongan Harga Satuan</span>
-                        <span className="value">{potonganHargaSatuan}%</span>
-                    </div>
-                    <div className="row-sum">
-                        <span className="label">Down Payment</span>
-                        <span className="value">{formatRupiah(formData.downPayment)}</span>
-                    </div>
+                    <div className="row-sum"><span className="label">Potongan Harga Satuan</span><span className="value">{potonganHargaSatuan}%</span></div>
+                    <div className="row-sum"><span className="label">Down Payment</span><span className="value">{formatRupiah(formData.downPayment)}</span></div>
 
                     <div className="divider"></div>
 
                     <div className="total-line">
-                        <div className="ttl-label">Total Akhir</div>
-                        <div className="ttl-val">{formatRupiah(formData.totalAkhir)}</div>
+                      <div className="ttl-label">Total Akhir</div>
+                      <div className="ttl-val">{formatRupiah(formData.totalAkhir)}</div>
+                    </div>
+                    <div className="row-sum">
+                      <span className="label">Sisa Bayar</span>
+                      <span className="value">{formatRupiah(sisaBayar())}</span>
                     </div>
 
                     {/* Warning bisnis rules */}
                     {potonganHargaSatuan > 25 && (
-                        <div className="note" style={{marginTop:8}}>
+                      <div className="note" style={{marginTop:8}}>
                         <i className="material-icons" style={{fontSize:18, color:'#b42318'}}>warning</i>
                         Potongan harga satuan melebihi 25%. Backend akan menolak jika tetap dikirim.
-                        </div>
+                      </div>
                     )}
                     {Number(formData.downPayment) > Number(formData.totalAkhir) && (
-                        <div className="note" style={{marginTop:8}}>
+                      <div className="note" style={{marginTop:8}}>
                         <i className="material-icons" style={{fontSize:18, color:'#b45309'}}>report</i>
                         Down Payment tidak boleh melebihi Total Akhir. Sesuaikan nominalnya.
-                        </div>
+                      </div>
                     )}
-                    </div>
+                  </div>
                 </div>
-                </div>
+              </div>
             </div>
 
             {/* Footer */}
             <div className="preview-footer">
+              <button type="button" className="btn-copy" onClick={copyPayload} title="Salin JSON payload (debug)">
+                <i className="material-icons" style={{fontSize:16,verticalAlign:'-3px'}}>content_copy</i> Salin Data
+              </button>
+              <div style={{display:'flex', gap:10}}>
                 <button type="button" className="btn-ghost" onClick={closePreview}>Kembali</button>
                 <button
-                type="button"
-                className="btn-primary"
-                onClick={()=>{ closePreview(); handleSubmit(previewPayload); }}
-                disabled={Number(formData.downPayment) > Number(formData.totalAkhir) || potonganHargaSatuan > 25}
-                title={(Number(formData.downPayment) > Number(formData.totalAkhir) || potonganHargaSatuan > 25) ? 'Perbaiki data terlebih dahulu' : ''}
+                  type="button"
+                  className="btn-primary"
+                  onClick={()=>{ closePreview(); handleSubmit(previewPayload); }}
+                  disabled={Number(formData.downPayment) > Number(formData.totalAkhir) || potonganHargaSatuan > 25}
+                  title={(Number(formData.downPayment) > Number(formData.totalAkhir) || potonganHargaSatuan > 25) ? 'Perbaiki data terlebih dahulu' : ''}
                 >
-                Kirim / Buat
+                  Kirim / Buat
                 </button>
+              </div>
             </div>
-            </div>
+          </div>
         </div>
         )}
 
-
-        {/* MAIN */}
+        {/* ===== MAIN ===== */}
         <div className="d-flex gap-4 w-100" style={{height:'fit-content'}}>
           <div className="d-flex flex-column gap-4" style={{flex:1}}>
             <div style={{width:'100%',flex:1,position:'relative',minHeight:'400px'}} className="mb-1">
@@ -1116,8 +1150,8 @@ console.log(JSON.parse('<?= $produkJson; ?>'));
                     <p className="m-0" style={{fontSize:'14px',letterSpacing:'-1px'}}><b>Total Biaya</b></p>
                   </div>
                   <div className="d-flex flex-column align-items-end">
-                    <p className="m-0" style={{fontSize:'14px',letterSpacing:'-1px'}}><b>{potongan.satuan=='rupiah' ? `Rp ${potongan.nominal.toLocaleString('id-ID')}` : `${potongan.nominal}%`}</b></p>
-                    <p className="m-0" style={{fontSize:'14px',letterSpacing:'-1px'}}><b>Rp. {formData.totalAkhir.toLocaleString('id-ID')}</b></p>
+                    <p className="m-0" style={{fontSize:'14px',letterSpacing:'-1px'}}><b>{potongan.satuan=='rupiah' ? `Rp ${Number(potongan.nominal||0).toLocaleString('id-ID')}` : `${potongan.nominal}%`}</b></p>
+                    <p className="m-0" style={{fontSize:'14px',letterSpacing:'-1px'}}><b>Rp. {Number(formData.totalAkhir||0).toLocaleString('id-ID')}</b></p>
                   </div>
                 </div>
               </div>
@@ -1264,6 +1298,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'));
               type="button"
               onClick={()=>{ if(canSave) openPreview(); }}
               className={`btn-default-merah w-100 ${canSave ? '' : 'disabled'}`}
+              title={canSave ? 'Lihat preview pesanan' : 'Lengkapi data & item terlebih dahulu'}
             >
               Preview &amp; Buat
             </button>

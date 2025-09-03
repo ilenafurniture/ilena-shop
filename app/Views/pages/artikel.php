@@ -178,7 +178,6 @@
                 transition: 0.5s;
             }
 
-
             .container-artikel-list .artikel-list .judul {
                 font-weight: 600;
                 color: white;
@@ -264,10 +263,43 @@
                     display: flex;
                 }
             }
+
+            /* ===== Tambahan: pager artikel terkait (non-intrusif) ===== */
+            .rel-pager {
+                display: flex;
+                gap: 6px;
+                justify-content: center;
+                align-items: center;
+                margin-top: 6px;
+                flex-wrap: wrap;
+            }
+
+            .rel-pager button {
+                border: 1px solid #e5e7eb;
+                background: #fff;
+                padding: 6px 10px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 14px;
+            }
+
+            .rel-pager button[disabled] {
+                opacity: .5;
+                cursor: not-allowed;
+            }
+
+            .rel-pager .is-active {
+                background: var(--merah);
+                color: #fff;
+                border-color: var(--merah);
+            }
             </style>
+
             <div class="mb-5">
                 <h5 class="jdl-section mb-3">Artikel Serupa</h5>
-                <div class="container-artikel-list ubah-gap mb-5">
+
+                <!-- Desktop/Grid (ditambah id untuk pagination) -->
+                <div id="rel-container-desktop" class="container-artikel-list ubah-gap mb-3">
                     <?php foreach ($artikelTerkait as $ind_a => $a) { ?>
                     <a href="/article/<?= $a['path']; ?>" class="artikel-list"
                         style="background-image: url(<?= $a['header']; ?>);">
@@ -281,7 +313,10 @@
                     </a>
                     <?php } ?>
                 </div>
-                <div class="container-artikel-list-hp gap-3 mb-5">
+                <nav id="rel-pager-desktop" class="rel-pager"></nav>
+
+                <!-- Mobile/List (ditambah id untuk pagination) -->
+                <div id="rel-container-mobile" class="container-artikel-list-hp gap-3 mb-3">
                     <?php foreach ($artikelTerkait as $ind_a => $a) { ?>
                     <a href="/article/<?= $a['path']; ?>" class="artikel-list gap-3">
                         <div class="image">
@@ -299,8 +334,9 @@
                     </a>
                     <?php } ?>
                 </div>
+                <nav id="rel-pager-mobile" class="rel-pager"></nav>
 
-                <!-- ========== PAGINATION ARTIKEL TERKAIT (tambahan) ========== -->
+                <!-- ========== PAGINATION ARTIKEL TERKAIT (server-side, tetap dipertahankan jika dipakai) ========== -->
                 <?php if (!empty($pagerTerkait) && $pagerTerkait['lastPage'] > 1): ?>
                 <div class="d-flex justify-content-center my-4">
                     <nav aria-label="Pagination artikel terkait">
@@ -326,7 +362,7 @@
                     </nav>
                 </div>
                 <?php endif; ?>
-                <!-- ========== /PAGINATION ARTIKEL TERKAIT ========== -->
+                <!-- ========== /PAGINATION ARTIKEL TERKAIT (server-side) ========== -->
 
             </div>
             <?php if (count($produkTerkait) > 0) { ?>
@@ -417,4 +453,78 @@ ubahGapElm.forEach((e) => {
     e.classList.add(innerWidthClient > 700 ? 'gap-4' : 'gap-3')
 })
 </script>
+
+<!-- ===== Pagination client-side untuk "Artikel Serupa" (maks 10/halaman) ===== -->
+<script>
+(function() {
+    function setupPagination(containerSel, pagerSel, perPage) {
+        const container = document.querySelector(containerSel);
+        const pager = document.querySelector(pagerSel);
+        if (!container || !pager) return;
+
+        const items = Array.from(container.querySelectorAll('.artikel-list'));
+        const total = items.length;
+        if (total === 0) {
+            pager.innerHTML = '';
+            return;
+        }
+
+        const lastPage = Math.ceil(total / perPage);
+        let current = 1;
+
+        function renderPage(page) {
+            current = Math.max(1, Math.min(lastPage, page));
+            const start = (current - 1) * perPage;
+            const end = start + perPage;
+
+            items.forEach((el, idx) => {
+                el.style.display = (idx >= start && idx < end) ? '' : 'none';
+            });
+
+            renderPager();
+        }
+
+        function renderPager() {
+            if (lastPage <= 1) {
+                pager.innerHTML = '';
+                pager.style.display = 'none';
+                return;
+            }
+            pager.style.display = '';
+
+            let html = '';
+            html += `<button type="button" ${current===1?'disabled':''} data-act="prev">Prev</button>`;
+
+            const windowSize = 7;
+            let start = Math.max(1, current - Math.floor(windowSize / 2));
+            let end = Math.min(lastPage, start + windowSize - 1);
+            if (end - start + 1 < windowSize) start = Math.max(1, end - windowSize + 1);
+
+            for (let i = start; i <= end; i++) {
+                html +=
+                    `<button type="button" class="${i===current?'is-active':''}" data-page="${i}">${i}</button>`;
+            }
+
+            html += `<button type="button" ${current===lastPage?'disabled':''} data-act="next">Next</button>`;
+            pager.innerHTML = html;
+
+            pager.querySelectorAll('[data-page]').forEach(btn => {
+                btn.onclick = () => renderPage(parseInt(btn.getAttribute('data-page')));
+            });
+            const prev = pager.querySelector('[data-act="prev"]');
+            const next = pager.querySelector('[data-act="next"]');
+            if (prev) prev.onclick = () => renderPage(current - 1);
+            if (next) next.onclick = () => renderPage(current + 1);
+        }
+
+        renderPage(1);
+    }
+
+    // Set 10 item per halaman (desktop & mobile)
+    setupPagination('#rel-container-desktop', '#rel-pager-desktop', 10);
+    setupPagination('#rel-container-mobile', '#rel-pager-mobile', 10);
+})();
+</script>
+<!-- ===== /Pagination client-side ===== -->
+
 <?= $this->endSection(); ?>

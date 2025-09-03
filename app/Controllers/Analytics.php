@@ -94,17 +94,15 @@ class Analytics extends BaseController
     {
         $m = new M_Tracking();
 
-        // Ambil query (kompatibel dengan form)
         $q = $this->request->getGet();
 
-        // start ikut user / default bulan ini; end = hari ini (realtime)
         $opt = [
             'start' => $q['start'] ?? date('Y-m-01'),
-            'end'   => date('Y-m-d'),
+            'end'   => $q['end']   ?? date('Y-m-d'),
             'min_duration'              => isset($q['min_duration']) ? (int)$q['min_duration'] : 5,
             'exclude_low_avg_duration'  => isset($q['exclude_low_avg_duration']) ? (int)$q['exclude_low_avg_duration'] : 0,
             'exclude_high_hits_per_day' => isset($q['exclude_high_hits_per_day']) ? (int)$q['exclude_high_hits_per_day'] : 0,
-            'exclude_ips'               => !empty($q['exclude_ips'])
+            'exclude_ips' => !empty($q['exclude_ips'])
                 ? array_values(array_filter(array_map('trim', explode(',', $q['exclude_ips']))))
                 : [],
         ];
@@ -115,28 +113,28 @@ class Analytics extends BaseController
 
         $startPrev  = date('Y-m-d', strtotime($opt['start'].' -1 month'));
         $endPrev    = date('Y-m-d', strtotime($opt['end'].' -1 month'));
-        $optPrev    = $opt;
-        $optPrev['start'] = $startPrev;
-        $optPrev['end']   = $endPrev;
+        $optPrev    = $opt; $optPrev['start'] = $startPrev; $optPrev['end'] = $endPrev;
 
         $summaryPrev = $m->getSummary($optPrev);
         $topPrev     = $m->getTopPaths($optPrev, 10);
         $dailyPrev   = $m->getDailySeries($optPrev);
 
-        return $this->response
-            ->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
-            ->setHeader('Pragma', 'no-cache')
-            ->setJSON([
-                'server_time'  => date('Y-m-d H:i:s'),
-                'opt'          => $opt,
-                'summaryNow'   => $summaryNow,
-                'summaryPrev'  => $summaryPrev,
-                'topNow'       => $topNow,
-                'topPrev'      => $topPrev,
-                'dailyNow'     => $dailyNow,
-                'dailyPrev'    => $dailyPrev,
-            ]);
+        // (opsional) jika kamu punya fitur “onlineNow”
+        $onlineNow = $m->countOnlineNow(5);
+
+        return $this->response->setJSON([
+            'server_time'  => date('Y-m-d H:i:s'),
+            'opt'          => $opt,
+            'summaryNow'   => $summaryNow,
+            'summaryPrev'  => $summaryPrev,
+            'topNow'       => $topNow,
+            'topPrev'      => $topPrev,
+            'dailyNow'     => $dailyNow,
+            'dailyPrev'    => $dailyPrev,
+            'onlineNow'  => $onlineNow ?? null,
+        ]);
     }
+
 
     /**
      * Export CSV dari summary + top paths + daily series.

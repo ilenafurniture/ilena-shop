@@ -1976,7 +1976,8 @@ class AdminController extends BaseController
             }
         }
 
-        $diskon_koreksi = ($body['diskon'] ? (int)$body['diskon'] : 0) / 100 * $totalAkhir;
+        $diskonVal = isset($body['diskon']) && $body['diskon'] !== '' ? (float)$body['diskon'] : 0;
+        $diskon_koreksi = ($diskonVal / 100) * $totalAkhir;
         $dataSJ = [
             'nama' => $sp_current['nama'],
             'nohp' => $sp_current['nohp'],

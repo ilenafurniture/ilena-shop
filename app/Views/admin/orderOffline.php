@@ -5,6 +5,8 @@
     color: gray;
 }
 </style>
+
+<!-- MODAL: BUAT INVOICE -->
 <div id="input-buat-invoice" class="d-none justify-content-center align-items-center"
     style="position: fixed; left: 0; top: 0; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.5)">
     <div class="bg-white p-4 rounded" style="width: 80%; max-height: 90%; overflow-y:scroll;">
@@ -36,7 +38,8 @@
         </form>
     </div>
 </div>
-<!-- MODAL INPUT DP -->
+
+<!-- MODAL: INPUT DP -->
 <div id="input-buat-dp" class="d-none justify-content-center align-items-center"
     style="position: fixed; left: 0; top: 0; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.5)">
     <div class="bg-white p-4 rounded" style="width: 80%; max-height: 90%; overflow-y:scroll;">
@@ -73,9 +76,7 @@
                             <th class="text-end">Total Harga</th>
                         </tr>
                     </thead>
-                    <tbody id="table-dp">
-
-                    </tbody>
+                    <tbody id="table-dp"></tbody>
                 </table>
             </div>
             <div class="d-flex gap-1">
@@ -87,6 +88,7 @@
 </div>
 <!-- END MODAL INPUT DP -->
 
+<!-- MODAL: KOREKSI SP -->
 <div id="input-koreksi" class="d-none justify-content-center align-items-center"
     style="position: fixed; left: 0; top: 0; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.5)">
     <div class="bg-white p-4 rounded" style="width: 80%; max-height: 90%; overflow-y:scroll;">
@@ -167,6 +169,10 @@
                     </label>
                 </div>
             </div>
+
+            <!-- dibutuhkan agar backend tidak error jika diskon tidak diisi -->
+            <input type="hidden" name="diskon" value="0">
+
             <input type="text" name="index_items_selected" required class="d-none">
             <div class="d-flex gap-2 w-100">
                 <div class="mb-1" style="flex: 1;">
@@ -183,17 +189,16 @@
                     </small>
                     <input type="text" name="npwp" class="form-control" placeholder="kosongin kalau Invoice menyusul">
                 </div>
-                <!-- 
+                <!--
                 <div class="mb-1" style="flex: 1;">
                     <p class="mb-1">Diskon</p>
                     <small class="text-danger d-block mb-1">
                         *isi jika ada potongan harga
                     </small>
                     <input type="number" name="diskon" class="form-control" placeholder="Tulis jika ada diskon">
-                </div> 
+                </div>
                 -->
             </div>
-
 
             <div class="mb-3">
                 <p class="mb-1">Keterangan</p>
@@ -206,6 +211,8 @@
         </form>
     </div>
 </div>
+
+<!-- LIST PAGE -->
 <div style="padding: 2em;">
     <div class="mb-4 d-flex align-items-center justify-content-between gap-2">
         <div>
@@ -245,7 +252,9 @@
                     <td><?= $p['nama']; ?></td>
                     <td align="center">
                         <span
-                            class="badge <?= $p['status'] == 'pending' ? 'bg-secondary' : 'bg-success'; ?> rounded-pill"><?= ucfirst($p['status']); ?></span>
+                            class="badge <?= $p['status'] == 'pending' ? 'bg-secondary' : 'bg-success'; ?> rounded-pill">
+                            <?= ucfirst($p['status']); ?>
+                        </span>
                     </td>
                     <td>
                         <div class="d-flex gap-1 justify-content-center">
@@ -304,6 +313,7 @@
         </table>
     </div>
 </div>
+
 <script>
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
 const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
@@ -313,6 +323,7 @@ function selectJenis(event) {
     window.location.replace(`/admin/order/offline/${event.target.value}`)
 }
 </script>
+
 <script>
 const provElm = document.querySelector('select[name="provinsi"]');
 const kotaElm = document.querySelector('select[name="kota"]');
@@ -320,14 +331,9 @@ const kecElm = document.querySelector('select[name="kecamatan"]');
 const kodeElm = document.querySelector('select[name="kodepos"]');
 
 function titleCase(str = "") {
-    return String(str)
-        .toLowerCase()
-        .split(' ')
-        .map(s => s.charAt(0).toUpperCase() + s.substring(1))
-        .join(' ');
+    return String(str).toLowerCase().split(' ').map(s => s.charAt(0).toUpperCase() + s.substring(1)).join(' ');
 }
 
-// helper: ambil array dari berbagai kemungkinan bentuk payload
 function normalizeList(payload) {
     if (Array.isArray(payload)) return payload;
     if (Array.isArray(payload?.label)) return payload.label;
@@ -336,7 +342,6 @@ function normalizeList(payload) {
     return [];
 }
 
-// helper: aman split by "/" jika ada
 function safeStripSlash(text) {
     return String(text ?? "").split("/")[0].trim();
 }
@@ -348,23 +353,19 @@ async function getKota(idprov) {
         if (!res.ok) throw new Error(res.statusText);
         const payload = await res.json();
         const list = normalizeList(payload);
-
         kotaElm.innerHTML = '<option value="">-- Pilih kota --</option>';
         if (list.length === 0) {
             kotaElm.innerHTML = '<option value="">(Tidak ada kota)</option>';
             return;
         }
-
         list.forEach(item => {
-            // dukung berbagai key: {id,label}, atau {city_id, city_name, type}
             const id = item.city_id ?? item.id ?? item.value ?? "";
             const nama0 = item.city_name ?? item.label ?? item.name ?? "";
             const nama = safeStripSlash(nama0);
             const type = item.type === 'Kota' ? ' Kota' : '';
-
             const opt = document.createElement("option");
             opt.value = `${id}-${nama}`;
-            opt.textContent = (item.city_name ? `${nama}${type}` : nama); // kalau ada type baru tambahkan
+            opt.textContent = (item.city_name ? `${nama}${type}` : nama);
             kotaElm.appendChild(opt);
         });
     } catch (err) {
@@ -381,15 +382,12 @@ async function getKec(idkota) {
         if (!res.ok) throw new Error(res.statusText);
         const payload = await res.json();
         const list = normalizeList(payload);
-
         kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
         if (list.length === 0) {
             kecElm.innerHTML = '<option value="">(Tidak ada kecamatan)</option>';
             return;
         }
-
         list.forEach(item => {
-            // dukung {subdistrict_id, subdistrict_name} atau {id,label}
             const id = item.subdistrict_id ?? item.id ?? item.value ?? "";
             const nama = safeStripSlash(item.subdistrict_name ?? item.label ?? item.name ?? "");
             const opt = document.createElement("option");
@@ -410,15 +408,12 @@ async function getKode(kecNamaAtauId) {
         if (!res.ok) throw new Error(res.statusText);
         const payload = await res.json();
         const list = normalizeList(payload);
-
         kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
         if (list.length === 0) {
             kodeElm.innerHTML = '<option value="">(Tidak ada desa)</option>';
             return;
         }
-
         list.forEach(item => {
-            // contoh: { DesaKelurahan, KodePos } atau varian lain
             const desa = titleCase(safeStripSlash(item.DesaKelurahan ?? item.desa ?? item.label ?? item
                 .name ?? ""));
             const kp = String(item.KodePos ?? item.kodepos ?? item.zip ?? "").trim();
@@ -434,7 +429,7 @@ async function getKode(kecNamaAtauId) {
 }
 
 // EVENTS
-provElm.addEventListener("change", (e) => {
+provElm?.addEventListener("change", (e) => {
     kotaElm.innerHTML = '<option value="">Loading kota…</option>';
     kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
     kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
@@ -443,8 +438,7 @@ provElm.addEventListener("change", (e) => {
     if (idprov > 0) getKota(idprov);
     else kotaElm.innerHTML = '<option value="">-- Pilih kota --</option>';
 });
-
-kotaElm.addEventListener("change", (e) => {
+kotaElm?.addEventListener("change", (e) => {
     kecElm.innerHTML = '<option value="">Loading kecamatan…</option>';
     kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
     const [idkotaStr] = String(e.target.value || "").split("-");
@@ -452,13 +446,11 @@ kotaElm.addEventListener("change", (e) => {
     if (idkota > 0) getKec(idkota);
     else kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
 });
-
-kecElm.addEventListener("change", (e) => {
+kecElm?.addEventListener("change", (e) => {
     kodeElm.innerHTML = '<option value="">Loading desa…</option>';
     const parts = String(e.target.value || "").split("-");
     const idkec = Number(parts[0]);
     const namaKec = parts[0] ?? "";
-    // endpoint kamu tampaknya butuh NAMA kecamatan (bukan ID) → gunakan namaKec
     if (idkec > 0 || namaKec) getKode(namaKec);
     else kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
 });
@@ -507,26 +499,26 @@ function pilihPesanan(index) {
         fetchItemsJson.items.forEach((item, index) => {
             indexItemsSelectedElm.value += `${index == 0 ? '' : ','}${0}`
             containerItemsElm.innerHTML += `
-                    <label class="d-flex gap-3 align-items-center justify-content-between">
-                        <div class="d-flex gap-3 align-items-center">
-                            ${item.id_return == '' ? `
-                            <input type="checkbox" onchange="handleChangeInputItem(${index}, event)">
-                            ` : '<div style="width: 13px"></div>'
-                            }
-                            <div>
-                                <p class="fw-bold m-0">${item.nama} (${item.varian})</p>
-                                <p class="text-secondary text-sm m-0">${item.id_barang}</p>
-                            </div>
-                        </div>
-                        ${item.id_return != '' ? `
-                            <div class="d-flex flex-column align-items-end">
-                                <a href="/admin/surat-koreksi/${item.id_return}" class="btn-teks-aja">Lihat koreksi</a>
-                                <p class="text-secondary" style="font-size: 12px;">${item.id_return}</p>
-                            </div>
-                        ` : ''
+                <label class="d-flex gap-3 align-items-center justify-content-between">
+                    <div class="d-flex gap-3 align-items-center">
+                        ${item.id_return == '' ? `
+                        <input type="checkbox" onchange="handleChangeInputItem(${index}, event)">
+                        ` : '<div style="width: 13px"></div>'
                         }
-                    </label>
-                `
+                        <div>
+                            <p class="fw-bold m-0">${item.nama} (${item.varian})</p>
+                            <p class="text-secondary text-sm m-0">${item.id_barang}</p>
+                        </div>
+                    </div>
+                    ${item.id_return != '' ? `
+                        <div class="d-flex flex-column align-items-end">
+                            <a href="/admin/surat-koreksi/${item.id_return}" class="btn-teks-aja">Lihat koreksi</a>
+                            <p class="text-secondary" style="font-size: 12px;">${item.id_return}</p>
+                        </div>
+                    ` : ''
+                    }
+                </label>
+            `
         })
         inputIdpesananElm.forEach((e) => {
             e.value = pesananSelected.id_pesanan;
@@ -639,4 +631,466 @@ async function buatInvoiceDP(index) {
     inputBuatDPElm.classList.add('d-flex')
 }
 </script>
+
+<!-- =====[ PREVIEW UI ]===== -->
+<style>
+.preview-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(17, 24, 39, .45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(2px)
+}
+
+.preview-card {
+    width: min(980px, 94vw);
+    max-height: 90vh;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 24px 72px rgba(0, 0, 0, .35);
+    display: flex;
+    flex-direction: column
+}
+
+.preview-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px
+}
+
+.preview-title {
+    margin: 0;
+    font-size: 18px;
+    letter-spacing: -.2px;
+    font-weight: 800
+}
+
+.preview-body {
+    padding: 14px 20px;
+    overflow: auto;
+    flex: 1;
+    background: linear-gradient(#fff, #fff), radial-gradient(1200px 600px at 50% -40%, #fafafa 10%, transparent 70%) no-repeat
+}
+
+.preview-grid {
+    display: grid;
+    grid-template-columns: 1.3fr .7fr;
+    gap: 16px
+}
+
+@media (max-width:860px) {
+    .preview-grid {
+        grid-template-columns: 1fr
+    }
+}
+
+.preview-section {
+    border: 1px solid #eef2f7;
+    border-radius: 12px;
+    background: #fff;
+    overflow: hidden
+}
+
+.section-head {
+    padding: 10px 14px;
+    background: #f8fafc;
+    border-bottom: 1px solid #eef2f7;
+    font-weight: 700;
+    letter-spacing: -.2px;
+    display: flex;
+    align-items: center;
+    gap: 8px
+}
+
+.section-body {
+    padding: 12px 14px
+}
+
+.dl {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 8px 12px;
+    font-size: 13px;
+    line-height: 1.35
+}
+
+.dl b {
+    color: #0f172a;
+    font-weight: 700
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 13px
+}
+
+.items-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #f8fafc;
+    border-bottom: 1px solid #eef2f7;
+    padding: 10px 12px;
+    text-align: left
+}
+
+.items-table tbody td {
+    padding: 12px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle
+}
+
+.cell-right {
+    text-align: right
+}
+
+.cell-center {
+    text-align: center
+}
+
+.preview-footer {
+    padding: 12px 20px;
+    border-top: 1px solid #eef2f7;
+    background: #fff;
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end
+}
+
+.btn-ghost {
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    padding: .7em 1em;
+    border-radius: 10px
+}
+
+.btn-ghost:hover {
+    background: #e5e7eb
+}
+
+.btn-primary {
+    background: linear-gradient(180deg, var(--merah, #b31217), #a50e12);
+    color: #fff;
+    border: 0;
+    padding: .8em 1.2em;
+    border-radius: 10px;
+    font-weight: 700;
+    box-shadow: 0 8px 24px rgba(165, 14, 18, .25)
+}
+
+.btn-primary:hover {
+    filter: brightness(.97)
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    color: #111827
+}
+
+.badge.warn {
+    color: #b42318;
+    background: #feeaea;
+    border-color: #ffd3cf
+}
+
+.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Roboto Mono", "Liberation Mono", "Courier New", monospace
+}
+</style>
+
+<div id="preview-overlay" class="preview-overlay" style="display:none" role="dialog" aria-modal="true"
+    aria-labelledby="preview-title">
+    <div class="preview-card" role="document">
+        <div class="preview-header">
+            <h3 id="preview-title" class="preview-title">Preview</h3>
+            <span id="preview-badges" class="badge" style="display:none"></span>
+        </div>
+        <div class="preview-body">
+            <div class="preview-grid">
+                <div class="preview-section">
+                    <div class="section-head">
+                        <i class="material-icons" style="font-size:18px">receipt_long</i>
+                        <span id="preview-left-title">Ringkasan</span>
+                    </div>
+                    <div class="section-body" id="preview-left"></div>
+                </div>
+                <div class="preview-section">
+                    <div class="section-head"><i class="material-icons" style="font-size:18px">payments</i> Total</div>
+                    <div class="section-body" id="preview-right"></div>
+                </div>
+            </div>
+        </div>
+        <div class="preview-footer">
+            <button type="button" class="btn-ghost" id="btn-preview-cancel">Kembali</button>
+            <button type="button" class="btn-primary" id="btn-preview-submit">Kirim / Buat</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ==== Utility ==== */
+const showEl = (el) => el.style.display = '';
+const hideEl = (el) => el.style.display = 'none';
+
+/* ==== Elemen preview ==== */
+const elPrevOverlay = document.getElementById('preview-overlay');
+const elPrevLeft = document.getElementById('preview-left');
+const elPrevRight = document.getElementById('preview-right');
+const elPrevTitle = document.getElementById('preview-title');
+const elPrevBadges = document.getElementById('preview-badges');
+const elPrevLeftTitle = document.getElementById('preview-left-title');
+const btnPrevCancel = document.getElementById('btn-preview-cancel');
+const btnPrevSubmit = document.getElementById('btn-preview-submit');
+
+let currentPreview = {
+    type: null,
+    submit: null
+};
+
+function openPreview(opts) {
+    elPrevTitle.textContent = opts.title || 'Preview';
+    elPrevLeftTitle.textContent = opts.leftTitle || 'Rincian';
+    elPrevLeft.innerHTML = opts.leftHTML || '';
+    elPrevRight.innerHTML = opts.rightHTML || '';
+    if (opts.badgeText) {
+        elPrevBadges.textContent = opts.badgeText;
+        showEl(elPrevBadges);
+    } else {
+        hideEl(elPrevBadges);
+    }
+    currentPreview = {
+        type: opts.type || null,
+        submit: opts.onSubmit || null
+    };
+    showEl(elPrevOverlay);
+}
+
+function closePreview() {
+    hideEl(elPrevOverlay);
+    currentPreview = {
+        type: null,
+        submit: null
+    };
+}
+btnPrevCancel.onclick = closePreview;
+btnPrevSubmit.onclick = () => currentPreview.submit && currentPreview.submit();
+elPrevOverlay.addEventListener('click', (e) => {
+    if (e.target === elPrevOverlay) closePreview();
+});
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closePreview();
+});
+
+/* Helper: sisipkan tombol Preview sebelum tombol submit di dalam form */
+function injectPreviewButton(form, onClick) {
+    if (!form) return;
+    const btnSubmit = form.querySelector('button[type="submit"]');
+    const row = btnSubmit ? btnSubmit.parentElement : null;
+    if (!btnSubmit || !row) return;
+
+    // hindari duplikasi
+    if (row.querySelector('[data-role="btn-preview"]')) return;
+
+    const btnPrev = document.createElement('button');
+    btnPrev.type = 'button';
+    btnPrev.className = 'btn btn-default w-100';
+    btnPrev.textContent = 'Preview';
+    btnPrev.setAttribute('data-role', 'btn-preview');
+
+    row.insertBefore(btnPrev, btnSubmit); // taruh tepat sebelum submit
+    btnPrev.onclick = onClick;
+}
+
+/* ====== PREVIEW: BUAT INVOICE ====== */
+(function() {
+    const modal = document.getElementById('input-buat-invoice');
+    if (!modal) return;
+    const form = modal.querySelector('form[action="/admin/actionbuatinvoice"]');
+
+    injectPreviewButton(form, () => {
+        const id_pesanan = form.querySelector('input[name="id_pesanan"]').value;
+        const tanggal = form.querySelector('input[name="tanggal"]').value;
+        const alamat = form.querySelector('textarea[name="alamat"]').value;
+        const nama_npwp = form.querySelector('input[name="nama_npwp"]').value;
+        const npwp = form.querySelector('input[name="npwp"]').value;
+
+        const leftHTML = `
+          <div class="dl">
+            <b>ID Order</b><div class="mono">${id_pesanan||'-'}</div>
+            <b>Tanggal</b><div class="mono">${tanggal||'-'}</div>
+            <b>Nama (NPWP)</b><div>${nama_npwp||'-'}</div>
+            <b>NPWP</b><div class="mono">${npwp||'-'}</div>
+            <b>Alamat</b><div style="white-space:pre-wrap">${alamat||'-'}</div>
+          </div>`;
+        const rightHTML = `
+          <div style="font-size:13px;color:#334155">
+            <p class="m-0">Pastikan <b>Nama NPWP</b>, <b>NPWP</b>, dan <b>Alamat</b> sudah benar.</p>
+          </div>`;
+
+        openPreview({
+            type: 'invoice',
+            title: 'Preview Invoice',
+            leftTitle: 'Rincian Invoice',
+            leftHTML,
+            rightHTML,
+            onSubmit: () => form.submit()
+        });
+    });
+})();
+
+/* ====== PREVIEW: INVOICE DP ====== */
+(function() {
+    const modal = document.getElementById('input-buat-dp');
+    if (!modal) return;
+    const form = modal.querySelector('form[action="/admin/actionbuatdp"]');
+    const table = modal.querySelector('#table-dp');
+
+    injectPreviewButton(form, () => {
+        const id_pesanan = form.querySelector('input[name="id_pesanan"]').value;
+        const tanggal = form.querySelector('input[name="tanggal"]').value;
+        const nama_npwp = form.querySelector('input[name="nama_npwp"]').value;
+        const npwp = form.querySelector('input[name="npwp"]').value;
+
+        const rows = [...table.querySelectorAll('tr')].map(tr => [...tr.children].map(td => td.innerText
+            .trim()));
+        const itemsRows = rows
+            .filter(cols => cols.length === 3 && !/TOTAL|POTONGAN|DP|SISA/i.test(cols[0]))
+            .map(cols =>
+                `<tr><td>${cols[0]}</td><td class="cell-center">${cols[1]}</td><td class="cell-right mono">${cols[2]}</td></tr>`
+            )
+            .join('');
+        const totalsHTML = rows
+            .filter(cols => cols.length >= 2 && /TOTAL|POTONGAN|DP|SISA/i.test(cols[0]))
+            .map(cols => {
+                const label = cols[0].replace(/\s+/g, ' ').trim().toUpperCase();
+                const val = cols[cols.length - 1];
+                return `<div class="d-flex justify-content-between"><span>${label}</span><span class="mono" style="font-weight:700">${val}</span></div>`;
+            }).join('');
+
+        const leftHTML = `
+          <div class="dl" style="margin-bottom:12px">
+            <b>ID Order</b><div class="mono">${id_pesanan||'-'}</div>
+            <b>Tanggal</b><div class="mono">${tanggal||'-'}</div>
+            <b>Nama (NPWP)</b><div>${nama_npwp||'-'}</div>
+            <b>NPWP</b><div class="mono">${npwp||'-'}</div>
+          </div>
+          <div class="preview-section" style="border:0;padding:0;margin-top:6px">
+            <div class="section-head" style="border-radius:10px 10px 0 0"><i class="material-icons" style="font-size:18px">inventory_2</i> Rincian Barang</div>
+            <div class="section-body" style="padding:0">
+              <table class="items-table">
+                <thead><tr><th>Produk</th><th class="cell-center">Qty</th><th class="cell-right">Jumlah</th></tr></thead>
+                <tbody>${itemsRows || '<tr><td colspan="3"><i>Belum ada item</i></td></tr>'}</tbody>
+              </table>
+            </div>
+          </div>`;
+
+        const rightHTML = totalsHTML ||
+            '<div class="text-secondary">Ringkasan total belum terbentuk.</div>';
+
+        openPreview({
+            type: 'dp',
+            title: 'Preview Invoice DP',
+            leftTitle: 'Rincian DP',
+            leftHTML,
+            rightHTML,
+            onSubmit: () => form.submit()
+        });
+    });
+})();
+
+/* ====== PREVIEW: KOREKSI SP ====== */
+(function() {
+    const modal = document.getElementById('input-koreksi');
+    if (!modal) return;
+    const form = modal.querySelector('form[action="/admin/order-offline/koreksisp"]');
+    const itemsContainer = modal.querySelector('#container-items');
+    const indexSelected = modal.querySelector('input[name="index_items_selected"]');
+
+    injectPreviewButton(form, () => {
+        const id_pesanan = form.querySelector('input[name="id_pesanan"]').value;
+        const tanggal = form.querySelector('input[name="tanggal"]').value;
+        const nama_npwp = form.querySelector('input[name="nama_npwp"]').value;
+        const npwp = form.querySelector('input[name="npwp"]').value;
+        const ket = form.querySelector('input[name="keterangan"]').value;
+
+        const isSame = form.querySelector('input[name="checkAlamat"]')?.checked;
+        const prov = form.querySelector('select[name="provinsi"]')?.value || '';
+        const kota = form.querySelector('select[name="kota"]')?.value || '';
+        const kec = form.querySelector('select[name="kecamatan"]')?.value || '';
+        const kode = form.querySelector('select[name="kodepos"]')?.value || '';
+        const detail = form.querySelector('input[name="detail"]')?.value || '';
+        const alamatTextarea = form.querySelector('textarea[name="alamatTagihan"]')?.value || '';
+
+        const alamat = isSame ?
+            (alamatTextarea || '-') : [
+                prov?.split('-')[1] || '',
+                kota?.split('-')[1] || '',
+                kec?.split('-')[1] || '',
+                (kode?.split('-')[0] || '') + (kode?.split('-')[1] ? ` ${kode.split('-')[1]}` : '')
+            ].filter(Boolean).join(', ') + (detail ? `\n${detail}` : '');
+
+        const flags = (indexSelected.value || '').split(',');
+        const labels = [...itemsContainer.querySelectorAll('label')];
+        const chosen = labels
+            .map((lab, i) => ({
+                on: flags[i] === '1',
+                text: lab.querySelector('.fw-bold')?.innerText || ''
+            }))
+            .filter(x => x.on);
+
+        const leftHTML = `
+          <div class="dl" style="margin-bottom:12px">
+            <b>ID Order</b><div class="mono">${id_pesanan||'-'}</div>
+            <b>Tanggal</b><div class="mono">${tanggal||'-'}</div>
+            <b>Nama (NPWP)</b><div>${nama_npwp||'-'}</div>
+            <b>NPWP</b><div class="mono">${npwp||'-'}</div>
+            <b>Alamat Tagihan</b><div style="white-space:pre-wrap">${alamat||'-'}</div>
+            <b>Keterangan</b><div>${ket||'-'}</div>
+          </div>
+          <div class="preview-section" style="border:0;padding:0;margin-top:6px">
+            <div class="section-head" style="border-radius:10px 10px 0 0">
+              <i class="material-icons" style="font-size:18px">inventory_2</i> Item Dipilih
+            </div>
+            <div class="section-body" style="padding:0">
+              <table class="items-table">
+                <thead><tr><th>Produk</th></tr></thead>
+                <tbody>${chosen.length ? chosen.map(c=>`<tr><td>${c.text}</td></tr>`).join('') : '<tr><td><i>Tidak ada item dipilih</i></td></tr>'}</tbody>
+              </table>
+            </div>
+          </div>`;
+
+        const rightHTML =
+            `<div style="font-size:13px;color:#334155"><p class="m-0">Periksa kembali item dan alamat sebelum kirim koreksi SP.</p></div>`;
+
+        openPreview({
+            type: 'koreksi',
+            title: 'Preview Koreksi SP',
+            leftTitle: 'Rincian Koreksi',
+            leftHTML,
+            rightHTML,
+            onSubmit: () => form.submit()
+        });
+    });
+})();
+</script>
+<!-- =====[ END PREVIEW UI ]===== -->
+
 <?= $this->endSection(); ?>

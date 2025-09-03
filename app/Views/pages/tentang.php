@@ -1,161 +1,263 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <style>
-.container-toko::-webkit-scrollbar {
-    display: none;
+/* ====== Light minimalist tokens ====== */
+:root {
+    --bg: #fafafa;
+    --txt: #0f172a;
+    --muted: #64748b;
+    --accent: #e11d48;
+    /* merah */
+    --accent2: #f97316;
+    /* oranye */
+    --border: #e5e7eb;
 }
 
-.container-toko {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: 15px;
-    padding-bottom: 10px;
-    height: 100px;
+/* Halaman tipis, tanpa card */
+.container .konten {
+    background:
+        radial-gradient(900px 520px at 110% -8%, rgba(225, 29, 72, .05), transparent 60%),
+        radial-gradient(900px 520px at -10% -8%, rgba(249, 115, 22, .05), transparent 60%);
+    border-radius: 18px;
+    padding: 14px 14px 26px;
+}
+
+/* Breadcrumb */
+.breadcrumb a {
+    color: #334155;
+    text-decoration: none;
+}
+
+.breadcrumb .breadcrumb-item.active {
+    color: #64748b;
+}
+
+/* ===== Hero — flat, tanpa kartu */
+.hero {
+    text-align: center;
+    padding: 22px 8px 18px;
+}
+
+.hero h1 {
+    margin: 0;
+    font-weight: 900;
+    letter-spacing: -.4px;
+    color: var(--txt);
+}
+
+.hero p {
+    margin: 8px 0 0;
+    color: var(--muted);
+}
+
+.hero .underline {
+    position: relative;
+    display: inline-block;
+}
+
+.hero .underline::after {
+    content: "";
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    bottom: -8px;
+    height: 4px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    opacity: .25;
+}
+
+/* ===== Section spacing + pemisah halus */
+.section {
+    padding: 14px 6px;
+    border-bottom: 1px solid var(--border);
+}
+
+.section:last-of-type {
+    border-bottom: 0;
+}
+
+/* Paragraf pembuka */
+.lead {
+    margin: 0;
+    line-height: 1.85;
+    color: #111827;
+}
+
+/* ===== Blok media (gambar + teks) — tanpa card, grid saja */
+.media {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 24px;
+    align-items: center;
+}
+
+.media img {
     width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 14px;
 }
 
-.item-toko {
-    display: flex;
-    flex-direction: row;
-    background-color: white;
-    border-radius: 12px;
-    flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 5px;
-    transition: transform 0.3s ease-in-out;
+.media h2 {
+    margin: 0 0 10px;
+    font-weight: 800;
+    letter-spacing: -.2px;
+    color: var(--txt);
 }
 
-.item-toko:hover {
-    transform: translateY(-5px);
+.media p {
+    margin: 0;
+    color: #111827;
+    text-align: justify;
 }
 
-.item-toko img {
+/* Versi berpasangan kedua (teks dulu) */
+.media.reverse {
+    grid-template-columns: 1fr 1.05fr;
+}
+
+/* ===== Mobile block (class-mu tetap) */
+.hide-ke-show-block img {
+    border-radius: 14px;
+}
+
+/* ===== Clients — baris datar */
+.clients {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+    align-items: center;
+    justify-items: center;
+}
+
+.client-logo {
+    max-width: 160px;
+    width: 100%;
+    filter: grayscale(1) contrast(1.05) brightness(.95);
+    transition: .2s;
+}
+
+.client-logo:hover {
+    filter: none;
+    transform: translateY(-1px);
+}
+
+/* ===== Kontak — flat dua kolom */
+.contact {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 22px;
+}
+
+.contact .map {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.contact iframe {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    border-radius: 8px;
+    min-height: 280px;
+    border: 0;
 }
 
-.item-toko .nama {
-    font-size: 1.2rem;
-    font-weight: bold;
-    letter-spacing: -0.5px;
-    margin-bottom: 5px;
+.contact h5 {
+    margin: 0 0 8px;
+    font-weight: 800;
+    color: var(--txt);
 }
 
-.item-toko .alamat {
-    font-size: 12px;
-    color: #666;
-    line-height: 1.4;
+.contact p {
+    margin: 0;
+    color: #111827;
+}
+
+.contact .contact-link {
+    color: #0f172a;
+    text-decoration: none;
+}
+
+.contact .contact-link:hover {
+    text-decoration: underline;
+}
+
+.contact .faq-link {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.contact .faq-link:hover {
+    text-decoration: underline;
+}
+
+/* ===== Responsive */
+@media (max-width: 992px) {
+
+    .media,
+    .media.reverse {
+        grid-template-columns: 1fr;
+    }
+
+    .contact {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 768px) {
-    .container-toko {
-        flex-direction: row;
-        flex-wrap: nowrap;
-        gap: 10px;
-        height: 100px;
+    .clients {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
     }
 
-    .item-toko {
-        width: 100%;
-    }
-
-    .item-toko img {
-        height: 60px;
-        border-radius: 12px;
-        object-fit: cover;
-        width: 80px;
-    }
-
-    .item-toko .nama {
-        font-size: 10px;
-    }
-
-    .item-toko .alamat {
-        font-size: 8px;
-        font-style: normal;
-        line-height: 1;
-    }
-
-    #map {
-        height: 200px;
-    }
-}
-
-@media (max-width: 480px) {
-    .item-toko .nama {
-        font-size: 8px;
-    }
-
-    .item-toko .alamat {
-        font-size: 6px;
-        font-style: normal;
-    }
-
-    .container-toko {
-        padding-left: 5px;
-        padding-right: 5px;
-    }
-
-    .item-toko img {
-        height: 60px;
-        border-radius: 12px;
-        object-fit: cover;
-        width: 70px;
-    }
-
-    #map {
-        height: 200px;
+    .hero h1 {
+        font-size: 1.75rem;
     }
 }
 </style>
+
 <div class="container">
     <div class="konten mx-auto">
-
-        <!-- <img style="width: 100%; height: 50vh; object-fit: cover;" src="../img/foto/gambar-hero2.webp" alt="Hero Image"> -->
-        <!-- Lokasi Toko -->
-        <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+        <nav style="--bs-breadcrumb-divider:'>'" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">
-                    Tentang Kami
-                </li>
+                <li class="breadcrumb-item active" aria-current="page">Tentang Kami</li>
             </ol>
         </nav>
 
+        <!-- Hero -->
+        <div class="hero section">
+            <h1 class="teks-sedang underline">Cerita Kami</h1>
+            <p>Perjalanan Ilena: dari manufaktur kayu berpengalaman menuju ritel & interior modern.</p>
+        </div>
 
-        <hr>
-        <h1 class="teks-sedang mb-4 mt-4 text-center">Cerita Kami</h1>
-        <hr class="my-3">
-        <p class="text-justify" style="line-height: 1.8;">
-            Cerita lahirnya Ilena bermula pada tahun 2024 di bawah naungan CV Catur Bhakti Mandiri yang telah
-            berdiri sejak 30 tahun.
-            Ilena menandai dimulainya bisnis ritel dan interior. Dengan melebarnya industri yang didorong oleh
-            kebutuhan konsumen,
-            kami melakukan berbagai inovasi, keberlanjutan serta keinginan untuk terus konsisten berada di dekat
-            hati konsumen
-            dengan furniture berkualitas.
-        </p>
+        <!-- Paragraf pembuka -->
+        <div class="section">
+            <p class="lead">
+                Cerita lahirnya Ilena bermula pada tahun 2024 di bawah naungan CV Catur Bhakti Mandiri yang telah
+                berdiri sejak 30 tahun.
+                Ilena menandai dimulainya bisnis ritel dan interior. Dengan melebarnya industri yang didorong oleh
+                kebutuhan konsumen,
+                kami melakukan berbagai inovasi, keberlanjutan serta keinginan untuk terus konsisten berada di dekat
+                hati konsumen
+                dengan furniture berkualitas.
+            </p>
+        </div>
 
-        <!-- Bagian Windows -->
-        <div class="container show-block-ke-hide">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <img class="w-100 h-auto rounded-3 shadow-lg"
-                        src="https://img.ilenafurniture.com/image/1742450062282.webp/?apikey=<?= $apikey_img_ilena ?>"
-                        alt="Urban Design" style="object-fit: cover;">
+        <!-- Desktop blocks (tetap pakai class-mu show-block-ke-hide) -->
+        <div class="section show-block-ke-hide">
+            <div class="media">
+                <div>
+                    <img src="https://img.ilenafurniture.com/image/1742450062282.webp/?apikey=<?= $apikey_img_ilena ?>"
+                        alt="Urban Design">
                 </div>
-                <div class="col-md-6">
-                    <h2 class="mb-5" style="font-size: 2.5rem;">Crafted to Urban Design</h2>
-                    <p class="text-justify">
-                        Ilena hadir menjadi teman untuk menciptakan banyak kesan dan pesan dalam setiap sudut ruang
-                        yang
+                <div>
+                    <h2>Crafted to Urban Design</h2>
+                    <p>
+                        Ilena hadir menjadi teman untuk menciptakan banyak kesan dan pesan dalam setiap sudut ruang yang
                         menjadi indah dalam kenangan.
-                        Keberhasilan Ilena merupakan usaha menghadirkan furniture khas masyarakat urban yang cocok
-                        untuk
+                        Keberhasilan Ilena merupakan usaha menghadirkan furniture khas masyarakat urban yang cocok untuk
                         segala suasana.
                         Kami percaya bahwa setiap ruang kosong memiliki cerita yang diukir indah oleh individu dan
                         relasinya sebagai bentuk representasi tersendiri.
@@ -165,16 +267,14 @@
             </div>
         </div>
 
-        <div class="container show-block-ke-hide mt-5">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h2 class="mb-5" style="font-size: 2.5rem;">Profil Perusahaan</h2>
-                    <p class="text-justify">
-                        CV Catur Bhakti Mandiri merupakan produsen kayu ternama Indonesia yang berada di Semarang,
-                        Jawa
+        <div class="section show-block-ke-hide">
+            <div class="media reverse">
+                <div>
+                    <h2>Profil Perusahaan</h2>
+                    <p>
+                        CV Catur Bhakti Mandiri merupakan produsen kayu ternama Indonesia yang berada di Semarang, Jawa
                         Tengah.
-                        Selama 30 tahun lamanya berkomitmen untuk selalu memberikan kualitas dan terintegrasi
-                        terhadap
+                        Selama 30 tahun lamanya berkomitmen untuk selalu memberikan kualitas dan terintegrasi terhadap
                         keseimbangan kebutuhan konsumen
                         dan kesediaan sumber daya selama puluhan tahun lamanya.
                         Produk kami terdiri dari beragam furniture untuk mewujudkan interior ruang rumah tangga,
@@ -182,318 +282,105 @@
                         yang bersumber dari hutan berkelanjutan.
                     </p>
                 </div>
-                <div class="col-md-6">
-                    <img class="w-100 h-auto rounded-3 shadow-lg"
-                        src="https://img.ilenafurniture.com/image/1742450090380.webp/?apikey=<?= $apikey_img_ilena ?>"
-                        alt="Company Profile" style="object-fit: cover; filter: grayscale(1);">
-                </div>
-            </div>
-        </div>
-        <!-- END Bagian Windows -->
-
-        <!-- Bagian HP (Mobile view) -->
-        <div class="container hide-ke-show-block">
-            <div class="row mb-4">
-                <div class="col-12 mb-3">
-                    <img class="w-100 h-auto rounded-3 shadow-lg"
-                        src="https://img.ilenafurniture.com/image/1742450062282.webp/?apikey=<?= $apikey_img_ilena ?>"
-                        alt="Urban Design Mobile" style="object-fit: cover;">
-                </div>
-                <div class="col-12">
-                    <h2 class="mb-3" style="font-size: 2.5rem;">Crafted to Urban Design</h2>
-                    <p class="text-justify">
-                        Ilena hadir menjadi teman untuk menciptakan banyak kesan dan pesan dalam setiap sudut ruang
-                        yang
-                        menjadi indah dalam kenangan.
-                        Keberhasilan Ilena merupakan usaha menghadirkan furniture khas masyarakat urban yang cocok
-                        untuk
-                        segala suasana.
-                        Kami percaya bahwa setiap ruang kosong memiliki cerita yang diukir indah oleh individu dan
-                        relasinya sebagai bentuk representasi tersendiri.
-                        Bersama Ilena, wujudkan keindahan interior ruang impian Anda.
-                    </p>
-                </div>
-            </div>
-
-            <div class="row mb-4">
-                <div class="col-12 mb-3">
-                    <img class="w-100 h-auto rounded-3 shadow-lg"
-                        src="https://img.ilenafurniture.com/image/1742450090380.webp/?apikey=<?= $apikey_img_ilena ?>"
-                        alt="Company Profile Mobile" style="object-fit: cover; filter: grayscale(1);">
-                </div>
-                <div class="col-12">
-                    <h3 class="mb-3" style="font-size: 2.5rem;">Profil Perusahaan</h3>
-                    <p class="text-justify">
-                        CV Catur Bhakti Mandiri merupakan produsen kayu ternama Indonesia yang berada di Semarang,
-                        Jawa
-                        Tengah.
-                        Selama 30 tahun lamanya berkomitmen untuk selalu memberikan kualitas dan terintegrasi
-                        terhadap
-                        keseimbangan kebutuhan konsumen
-                        dan kesediaan sumber daya selama puluhan tahun lamanya.
-                        Produk kami terdiri dari beragam furniture untuk mewujudkan interior ruang rumah tangga,
-                        perkantoran & perhotelan berbahan dasar kayu
-                        yang bersumber dari hutan berkelanjutan.
-                    </p>
+                <div>
+                    <img src="https://img.ilenafurniture.com/image/1742450090380.webp/?apikey=<?= $apikey_img_ilena ?>"
+                        alt="Company Profile" style="filter:grayscale(1);">
                 </div>
             </div>
         </div>
 
+        <!-- Mobile blocks (tetap pakai class-mu hide-ke-show-block) -->
+        <div class="section hide-ke-show-block">
+            <div class="mb-4">
+                <img src="https://img.ilenafurniture.com/image/1742450062282.webp/?apikey=<?= $apikey_img_ilena ?>"
+                    alt="Urban Design Mobile">
+                <h2 class="mt-3" style="font-weight:800;">Crafted to Urban Design</h2>
+                <p style="text-align:justify;">
+                    Ilena hadir menjadi teman untuk menciptakan banyak kesan dan pesan dalam setiap sudut ruang yang
+                    menjadi indah dalam kenangan.
+                    Keberhasilan Ilena merupakan usaha menghadirkan furniture khas masyarakat urban yang cocok untuk
+                    segala suasana.
+                    Kami percaya bahwa setiap ruang kosong memiliki cerita yang diukir indah oleh individu dan relasinya
+                    sebagai bentuk representasi tersendiri.
+                    Bersama Ilena, wujudkan keindahan interior ruang impian Anda.
+                </p>
+            </div>
 
-        <!-- Bagian Klien -->
-
-        <hr>
-        <h2 class="teks-sedang mb-4 mt-4 text-center">Our Clients</h2>
-        <hr class="my-3">
-        <div class="d-flex gap-4 align-items-center justify-content-center flex-wrap">
-            <img src="https://img.ilenafurniture.com/image/1742450163897.webp/?apikey=<?= $apikey_img_ilena ?>"
-                alt="The Land of Nod" width="150px" class="client-logo">
-            <img src="https://img.ilenafurniture.com/image/1742450190985.webp/?apikey=<?= $apikey_img_ilena ?>"
-                alt="Crate and Barrel" width="150px" class="client-logo">
-            <img src="https://img.ilenafurniture.com/image/1742450222588.webp/?apikey=<?= $apikey_img_ilena ?>"
-                alt="West Elm" width="150px" class="client-logo">
-            <img src="https://img.ilenafurniture.com/image/1742450249426.webp/?apikey=<?= $apikey_img_ilena ?>"
-                alt="Williams Sonoma" width="150px" class="client-logo">
+            <div>
+                <img src="https://img.ilenafurniture.com/image/1742450090380.webp/?apikey=<?= $apikey_img_ilena ?>"
+                    alt="Company Profile Mobile" style="filter:grayscale(1);">
+                <h3 class="mt-3" style="font-weight:800;">Profil Perusahaan</h3>
+                <p style="text-align:justify;">
+                    CV Catur Bhakti Mandiri merupakan produsen kayu ternama Indonesia yang berada di Semarang, Jawa
+                    Tengah.
+                    Selama 30 tahun lamanya berkomitmen untuk selalu memberikan kualitas dan terintegrasi terhadap
+                    keseimbangan kebutuhan konsumen
+                    dan kesediaan sumber daya selama puluhan tahun lamanya.
+                    Produk kami terdiri dari beragam furniture untuk mewujudkan interior ruang rumah tangga, perkantoran
+                    & perhotelan berbahan dasar kayu
+                    yang bersumber dari hutan berkelanjutan.
+                </p>
+            </div>
         </div>
 
-        <hr>
-        <h1 class="teks-sedang mb-4 mt-4 text-center">Kontak Kami</h1>
-        <hr class="my-3">
-        <div class="py-4 gap-4 baris-ke-kolom">
-            <div style="flex:1;">
-                <!-- <h5><strong>Lokasi Kami</strong></h5> -->
-                <div style="border-radius:1em; overflow:hidden; height:100%;" class="mb-2">
+        <!-- Clients -->
+        <div class="section">
+            <h2 class="teks-sedang text-center mb-3" style="font-weight:800;">Our Clients</h2>
+            <div class="clients">
+                <img src="https://img.ilenafurniture.com/image/1742450163897.webp/?apikey=<?= $apikey_img_ilena ?>"
+                    alt="The Land of Nod" class="client-logo">
+                <img src="https://img.ilenafurniture.com/image/1742450190985.webp/?apikey=<?= $apikey_img_ilena ?>"
+                    alt="Crate and Barrel" class="client-logo">
+                <img src="https://img.ilenafurniture.com/image/1742450222588.webp/?apikey=<?= $apikey_img_ilena ?>"
+                    alt="West Elm" class="client-logo">
+                <img src="https://img.ilenafurniture.com/image/1742450249426.webp/?apikey=<?= $apikey_img_ilena ?>"
+                    alt="Williams Sonoma" class="client-logo">
+            </div>
+        </div>
+
+        <!-- Kontak -->
+        <div class="section">
+            <h1 class="teks-sedang text-center mb-3" style="font-weight:800;">Kontak Kami</h1>
+            <div class="contact">
+                <div class="map">
                     <iframe
                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3959.687866383162!2d110.32868959999999!3d-7.0459182!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7061e23055c8ed%3A0xa875b119e04372d4!2sCV.Catur%20Bhakti%20Mandiri!5e0!3m2!1sen!2sid!4v1723450895314!5m2!1sen!2sid"
-                        style="border:0; width:100%; height:100%;  " allowfullscreen="" loading="lazy" zoom="80"
-                        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
-                        referrerpolicy="no-referrer-when-downgrade">
-                    </iframe>
-                </div>
-                <p class="fw-normal" style="font-size:12px; color:red;"><strong>Lokasi:</strong> Jalan Lingkar Taman
-                    Industri,
-                    Jatibarang,
-                    Mijen,
-                    Kota
-                    Semarang, Jawa Tengah</p>
-            </div>
-            <div style="flex:1;">
-                <h5><strong>Customer Service</strong></h5>
-                <p class="my-2" style="font-size:14px;">Silakan ajukan pertanyaan Anda dengan menghubungi layanan
-                    customer service
-                    kami di bawah ini:
-                </p>
-                <div class="d-flex gap-2 mb-4">
-                    <div>
-                        <p style="color:black; font-size: 14px; padding:0;" class="m-0">Email</p>
-                        <p style="color:black; font-size: 14px; padding:0;" class="m-0">No. WhatsApp</p>
-                    </div>
-                    <div>
-                        <a class="d-block" style="color:black; font-size: 14px; padding:0; text-decoration:none;"
-                            href="mailto:cs@ilenafurniture.com">: cs@ilenafurniture.com</a>
-                        <a class="d-block" style="color:black; font-size: 14px; padding:0; text-decoration:none;"
-                            href="https://wa.me/+628112938158">: 08112938158</a>
-                    </div>
+                        loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <p class="mt-2" style="font-size:12px; color:#e11d48;">
+                        <strong>Lokasi:</strong> Jalan Lingkar Taman Industri, Jatibarang, Mijen, Kota Semarang, Jawa
+                        Tengah
+                    </p>
                 </div>
 
-                <h5><strong>Temukan Jawaban Cepat</strong></h5>
+                <div>
+                    <h5><strong>Customer Service</strong></h5>
+                    <p class="my-2" style="font-size:14px;">
+                        Silakan ajukan pertanyaan Anda dengan menghubungi layanan customer service kami di bawah ini:
+                    </p>
+                    <div class="d-flex gap-3 mb-3" style="align-items:baseline;">
+                        <div>
+                            <p class="m-0" style="font-size:14px; color:#0f172a;">Email</p>
+                            <p class="m-0" style="font-size:14px; color:#0f172a;">No. WhatsApp</p>
+                        </div>
+                        <div>
+                            <a class="contact-link d-block" href="mailto:cs@ilenafurniture.com">:
+                                cs@ilenafurniture.com</a>
+                            <a class="contact-link d-block" href="https://wa.me/+628112938158">: 08112938158</a>
+                        </div>
+                    </div>
 
-                <div>
-                    <a style="color:black; font-size: 14px;" href="<?= base_url('/faq#faqkedua') ?>"><strong>Apa metode
-                            pembayaran yang
-                            bisa
-                            digunakan?</strong></a>
-                </div>
-                <div>
-                    <a style="color:black; font-size: 14px;" href="<?= base_url('/faq#faqpertama') ?>"><strong>Bagaimana
-                            cara melakukan
-                            pemesanan & pembelian di website
-                            Ilena?</strong></a>
-                </div>
-                <div>
-                    <a href="<?= base_url('/faq') ?>" style="color:red; text-decoration:none;">Lihat Semua FAQ</a>
+                    <h5><strong>Temukan Jawaban Cepat</strong></h5>
+                    <div><a class="contact-link" style="font-size:14px;"
+                            href="<?= base_url('/faq#faqkedua') ?>"><strong>Apa metode pembayaran yang bisa
+                                digunakan?</strong></a></div>
+                    <div><a class="contact-link" style="font-size:14px;"
+                            href="<?= base_url('/faq#faqpertama') ?>"><strong>Bagaimana cara melakukan pemesanan &
+                                pembelian di website Ilena?</strong></a></div>
+                    <div class="mt-2"><a href="<?= base_url('/faq') ?>" class="faq-link">Lihat Semua FAQ</a></div>
                 </div>
             </div>
         </div>
+
     </div>
 </div>
-
-
-
-<!-- <script>
-// Map Initialization
-var map = L.map('map', {
-    center: [-7.614529, 110.712246],
-    zoom: 6.5,
-    dragging: false,
-    scrollWheelZoom: false,
-    doubleClickZoom: false,
-    boxZoom: false,
-    touchZoom: false
-});
-
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    maxZoom: 30
-}).addTo(map);
-
-var customIcon = L.icon({
-    iconUrl: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e84a49" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-map-pin">
-            <path d="M21 10c0 7.941-9 13-9 13S3 17.941 3 10a9 9 0 1 1 18 0z"></path>
-            <circle cx="12" cy="10" r="3"></circle>
-        </svg>
-    `),
-    iconSize: [14, 14],
-    iconAnchor: [10, 10],
-    popupAnchor: [0, 0]
-});
-
-var stores = [{
-    name: "Jempol Baru Furniture",
-    coords: [-7.565618587313341, 110.82431800071647]
-}, {
-    name: "Sumber Abadi Furniture",
-    coords: [-7.743324302431505, 110.3624866828005]
-}, {
-    name: "Home Gallery Furniture",
-    coords: [-7.2886288976515985, 112.67261790823825]
-}, {
-    name: "Pari Anom Jaya Furniture",
-    coords: [-7.264405907300976, 112.79562668327448]
-}, {
-    name: "Suri Mebel Semarang",
-    coords: [-6.985425332274277, 110.41746260495303]
-}, {
-    name: "Puri Mabel & Interior",
-    coords: [-6.9658085878072935, 110.39043865842983]
-}, {
-    name: "Victoria Furnicenter",
-    coords: [-7.310519605654715, 112.68303473759022]
-}];
-
-stores.forEach(store => {
-    var marker = L.marker(store.coords, {
-        icon: customIcon
-    }).addTo(map);
-    marker.bindPopup(
-        `<b>${store.name}</b>
-         `
-    );
-    marker.on('mouseover', function() {
-        marker.openPopup();
-    });
-    marker.on('mouseout', function() {
-        marker.closePopup();
-    });
-});
-</script> -->
-
-<script>
-var map = L.map('map').setView([-7.614529, 110.712246], 6.5);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
-
-var locations = [{
-        name: "Jempol Baru Furniture",
-        coords: [-7.565618587313341, 110.82431800071647]
-    },
-    {
-        name: "Cipta Bangun Jaya Furniture Jakarta",
-        coords: [-6.285266506836552, 106.84299483660007]
-    },
-    {
-        name: "Sumber Abadi Furniture",
-        coords: [-7.743532734851712, 110.36242217704519]
-    },
-    {
-        name: "Home Gallery Furniture",
-        coords: [-7.2886288976515985, 112.67261790823825]
-    },
-    {
-        name: "Pari Anom Jaya Furniture",
-        coords: [-7.241679877880819, 112.74470435104482]
-    },
-    {
-        name: "Suri Mebel Semarang",
-        coords: [-6.985425332274277, 110.41746260495303]
-    },
-    {
-        name: "Puri Mabel & Interior",
-        coords: [-6.9658085878072935, 110.39043865842983]
-    },
-    {
-        name: "Victoria Furnicenter",
-        coords: [-7.310519605654715, 112.68303473759022]
-    },
-    {
-        name: "Tunggal Jaya Furniture",
-        coords: [-7.98299983310868, 112.62939860029017]
-    },
-    {
-        name: "Cipta Bangun Jaya Furniture Magelang",
-        coords: [-7.497190468107969, 110.22351816365261]
-    },
-    {
-        name: "Homj Furniture",
-        coords: [-7.321151681470964, 112.7441071560504]
-    },
-    {
-        name: "Kasur Indah",
-        coords: [-8.696812172382534, 115.18640535462836]
-    },
-    {
-        name: "Kasur Indah",
-        coords: [-8.696614587200164, 115.18642372535126]
-    },
-];
-
-locations.forEach(function(store) {
-    var marker = L.circleMarker([store.coords[0], store.coords[1]], {
-        color: '#FF4D4D',
-        fillColor: '#FF4D4D',
-        fillOpacity: 0.2,
-        stroke: true,
-        strokeOpacity: 0.2,
-        weight: 0.2,
-        radius: 9
-    }).addTo(map);
-
-    var popupContent = "<b>" + store.name + "</b>";
-    marker.bindPopup(popupContent);
-
-    var circle = L.circle([store.coords[0], store.coords[1]], {
-        color: '#FF4D4D',
-        fillColor: '#FF4D4D',
-        fillOpacity: 0.2,
-        radius: 50
-    }).addTo(map);
-    marker.on('mouseover', function() {
-        marker.openPopup();
-    });
-    marker.on('mouseout', function() {
-        marker.closePopup();
-    });
-    marker.on('click', function() {
-        var lat = store.coords[0];
-        var lng = store.coords[1];
-        var googleMapsUrl = "https://www.google.com/maps?q=" + lat + "," + lng;
-        window.open(googleMapsUrl, "_blank");
-    });
-
-    circle.on('click', function() {
-        var lat = store.coords[0];
-        var lng = store.coords[1];
-        var googleMapsUrl = "https://www.google.com/maps?q=" + lat + "," + lng;
-        window.open(googleMapsUrl, "_blank");
-    });
-});
-map.on('click', function(e) {
-    var lat = e.latlng.lat;
-    var lng = e.latlng.lng;
-    var googleMapsUrl = "https://www.google.com/maps?q=" + lat + "," + lng;
-    window.open(googleMapsUrl, "_blank");
-});
-</script>
-
 <?= $this->endSection(); ?>
