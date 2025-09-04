@@ -63,14 +63,14 @@
                     <input name="email" type="email"
                         class="form-control <?= ($val['val_email']) ? "is-invalid" : ""; ?>"
                         placeholder="Masukkan Email" value="<?= old('email'); ?>">
-                    <div class="invalid-feedback">Mohon masukkan alamat email yang valid.</div>
+                    <div class="invalid-feedback">Email tidak valid atau telah terdaftar.</div>
                 </div>
 
                 <div class="mb-3">
                     <label for="nohp" class="form-label">Nomor Telepon</label>
                     <input name="nohp" type="text" class="form-control <?= ($val['val_nohp']) ? "is-invalid" : ""; ?>"
                         placeholder="Masukkan Nomor Telepon" value="<?= old('nohp'); ?>">
-                    <div class="invalid-feedback">Mohon masukkan nomor telepon yang valid.</div>
+                    <div class="invalid-feedback">Nomor telepon tidak valid atau telah terdaftar.</div>
                 </div>
 
                 <label for="sandi" class="form-label">Kata Sandi</label>
