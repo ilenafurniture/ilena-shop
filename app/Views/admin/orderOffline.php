@@ -466,7 +466,12 @@ const inputKoreksiElm = document.getElementById('input-koreksi');
 const inputBuatInvoiceElm = document.getElementById('input-buat-invoice');
 const inputBuatDPElm = document.getElementById('input-buat-dp');
 const inputAlamatInvoiceElm = document.getElementById('input-alamat-invoice');
-const pesanan = JSON.parse('<?= $pesananJson; ?>')
+
+/* ======== PERUBAHAN MINIMAL DI SINI ======== */
+/* Hindari TDZ: jadikan var (global) dan langsung echo JSON dari PHP */
+var pesanan = <?= $pesananJson ?>;
+/* ========================================== */
+
 const alamatTagihanElm = document.querySelector('textarea[name="alamatTagihan"]');
 let pesananSelected = {};
 console.log(pesanan)
@@ -485,6 +490,13 @@ function handleChangeInputItem(index, event) {
 }
 
 function pilihPesanan(index) {
+    /* guard ringan agar tidak meledak jika ada kondisi edge */
+    if (!window.pesanan || !Array.isArray(window.pesanan)) {
+        console.error('pesanan belum tersedia');
+        alert('Data pesanan belum siap. Coba reload halaman.');
+        return;
+    }
+
     console.log(pesanan[index])
     pesananSelected = pesanan[index];
     indexItemsSelectedElm.value = '';
