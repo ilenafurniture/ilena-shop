@@ -51,7 +51,6 @@
         left: 0;
         width: 100%;
         height: 20px;
-        /* background-color: aqua; */
         display: flex;
         justify-content: center;
         align-items: center;
@@ -63,13 +62,16 @@
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         font-weight: 900;
         margin: 0;
-        /* initial-letter-align: center; */
-        /* transform: rotate(-15deg) translateY(500px); */
         transform: translateY(500px) rotate(-15deg);
-
         border: 10px solid var(--merah);
         color: var(--merah);
         border-radius: 0.5em;
+    }
+
+    .badge-compact {
+        font-size: 11px;
+        padding: 4px 8px;
+        border-radius: 999px;
     }
     </style>
 
@@ -95,9 +97,7 @@
             </div>
         </div>
         <div class="d-flex">
-            <div style="flex: 1;">
-
-            </div>
+            <div style="flex: 1;"></div>
             <div class="d-flex gap-2 justify-content-end">
                 <div class="d-flex flex-column align-items-end">
                     <p class="nt">Nomor :</p>
@@ -109,26 +109,15 @@
                         <?= substr($pemesanan['id_pesanan'], 5); ?>/INV/CBM/<?= date('m', strtotime($tanggalFix)); ?>/<?= date('Y', strtotime($tanggalFix)); ?>
                     </p>
                     <p class="isint"><?php
-                                        $bulan_indonesia = [
-                                            1 => 'Januari',
-                                            2 => 'Februari',
-                                            3 => 'Maret',
-                                            4 => 'April',
-                                            5 => 'Mei',
-                                            6 => 'Juni',
-                                            7 => 'Juli',
-                                            8 => 'Agustus',
-                                            9 => 'September',
-                                            10 => 'Oktober',
-                                            11 => 'November',
-                                            12 => 'Desember'
-                                        ];
-                                        $tanggal = date('d', strtotime($tanggalFix));
-                                        $bulan = date('n', strtotime($tanggalFix));
-                                        $tahun = date('Y', strtotime($tanggalFix));
-                                        echo "$tanggal " . $bulan_indonesia[$bulan] . " $tahun";
-                                        ?>
-                    </p>
+                        $bulan_indonesia = [
+                            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni',
+                            7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                        ];
+                        $tanggal = date('d', strtotime($tanggalFix));
+                        $bulan = date('n', strtotime($tanggalFix));
+                        $tahun = date('Y', strtotime($tanggalFix));
+                        echo "$tanggal " . $bulan_indonesia[$bulan] . " $tahun";
+                    ?></p>
                 </div>
             </div>
         </div>
@@ -142,24 +131,6 @@
             <p class="m-0"><?= $pemesanan['nohp']; ?></p>
             <?php endif; ?>
             <p class="m-0" style="max-width: 250px; font-size: 12px;"><?= $pemesanan['alamat_tagihan']; ?></p>
-            <!-- <div class="d-flex flex-column">
-                <div class="d-flex m-0 p-0">
-                    <p class="m-0 tw-bold-italic" style="margin-right: 10px;"><span class="m-0" id="jalan"></span>,</p>
-                    <p class="m-0 tw-bold-italic" style="margin-right: 10px;"><span class="m-0" id="kelurahan"></span>,
-                    </p>
-                </div>
-
-                <div class="d-flex m-0 p-0">
-                    <p class="m-0 tw-bold-italic" style="margin-right: 10px;"><span class="m-0" id="kecamatan"></span>,
-                    </p>
-                    <p class="m-0 tw-bold-italic" style="margin-right: 10px;"><span class="m-0" id="kota"></span>,</p>
-                </div>
-
-                <div class="d-flex m-0 p-0">
-                    <p class="m-0 tw-bold-italic" style="margin-right: 10px;"><span id="provinsi"></span>,</p>
-                    <p class="m-0 tw-bold-italic"><span id="kodepos"></span>,</p>
-                </div>
-            </div> -->
             <p style="font-size: 12px;" class="isint">NPWP/NIK : <?= $pemesanan['npwp'] ? $pemesanan['npwp'] : '-'; ?>
             </p>
         </div>
@@ -179,30 +150,27 @@
                 </thead>
                 <tbody>
                     <?php
-                $totalHargaBarang = 0;
-                foreach ($items as $t) {
-                    $totalHargaBarang += $t['jumlah'] * $t['harga'];
-                }
-                $discountFactor = 1;
-                if ($pemesanan['total_akhir'] < $totalHargaBarang) {
-                    $discountFactor = $pemesanan['total_akhir'] / $totalHargaBarang;
-                }
-                $diskonPersen = round((1 - $discountFactor) * 100, 2);
-                ?>
+                    $totalHargaBarang = 0;
+                    foreach ($items as $t) { $totalHargaBarang += $t['jumlah'] * $t['harga']; }
+                    $discountFactor = 1;
+                    if ($pemesanan['total_akhir'] < $totalHargaBarang) {
+                        $discountFactor = $pemesanan['total_akhir'] / $totalHargaBarang;
+                    }
+                    $diskonPersen = round((1 - $discountFactor) * 100, 2);
+                    ?>
 
                     <?php if ($pemesanan['down_payment'] <= 0) { ?>
                     <?php $no = 1; ?>
                     <?php foreach ($items as $t) {
-                        $origPrice = $t['harga'];
-                        $origTotal = $t['jumlah'] * $origPrice;
-                        if ($discountFactor < 1) {
-                            $netPrice = round($origPrice * $discountFactor);
-                            $netTotal = $t['jumlah'] * $netPrice;
-                        } else {
-                            $netPrice = $origPrice;
-                            $netTotal = $origTotal;
-                        }
-                    ?>
+                            $origPrice = $t['harga'];
+                            $origTotal = $t['jumlah'] * $origPrice;
+                            if ($discountFactor < 1) {
+                                $netPrice = round($origPrice * $discountFactor);
+                                $netTotal = $t['jumlah'] * $netPrice;
+                            } else {
+                                $netPrice = $origPrice; $netTotal = $origTotal;
+                            }
+                        ?>
                     <tr>
                         <td class="text-center" style="font-size:11px;"><?= $no++; ?></td>
                         <td class="text-center" style="font-size:11px;"><?= strtoupper($t['id_baru']); ?></td>
@@ -223,8 +191,6 @@
                     </tr>
                     <?php } ?>
 
-
-
                     <?php if ($pemesanan['down_payment'] < 0) { ?>
                     <tr>
                         <td colspan="5" class="fw-bold" style="font-size:11px;">UANG MUKA YANG DITERIMA</td>
@@ -241,9 +207,7 @@
                         <td>UANG MUKA</td>
                         <td class="text-center"></td>
                         <td class="text-end"></td>
-                        <td class="text-end">
-                            Rp <?= number_format($pemesanan['down_payment'],0,',','.'); ?>
-                        </td>
+                        <td class="text-end">Rp <?= number_format($pemesanan['down_payment'],0,',','.'); ?></td>
                     </tr>
                     <?php } ?>
 
@@ -253,107 +217,107 @@
                         <td class="text-end fw-bold" style="font-size:11px; text-wrap: nowrap; ">
                             Rp
                             <?php
-                        if ($pemesanan['down_payment'] > 0) {
-                            echo number_format($pemesanan['down_payment'],0,',','.');
-                        } else {
-                            // totalAkhir minus DP (jika DP negatif)
-                            $net = $pemesanan['total_akhir'] - ( $pemesanan['down_payment'] < 0 ? abs($pemesanan['down_payment']) : 0 );
-                            echo number_format($net,0,',','.');
-                        }
-                        ?>
+                            if ($pemesanan['down_payment'] > 0) {
+                                echo number_format($pemesanan['down_payment'],0,',','.');
+                            } else {
+                                $net = $pemesanan['total_akhir'] - ( $pemesanan['down_payment'] < 0 ? abs($pemesanan['down_payment']) : 0 );
+                                echo number_format($net,0,',','.');
+                            }
+                            ?>
                         </td>
                     </tr>
                 </tbody>
-
             </table>
         </div>
         <!-- end Tabel Invoice -->
+
+        <?php
+        // === JT START ===
+        // JT dihitung dari tanggal SJ + 14 hari
+        $jtLabel = '-';
+        $jtBadgeHtml = '';
+        if ($pemesanan['down_payment'] <= 0) {
+            $sjDate = $pemesanan['tanggal'] ?? null; // tanggal SJ
+            if ($sjDate) {
+                $dueTs = strtotime($sjDate . ' +14 days');
+                $tglJT = date('d', $dueTs);
+                $blnJT = (int)date('n', $dueTs);
+                $thJT  = date('Y', $dueTs);
+                $jtLabel = $tglJT . ' ' . $bulan_indonesia[$blnJT] . ' ' . $thJT;
+
+                if ($pemesanan['status'] === 'success') {
+                    $jtBadgeHtml = '<span class="badge bg-success badge-compact">Lunas</span>';
+                } else {
+                    $todayTs = time();
+                    $selisihHari = (int)floor(($dueTs - $todayTs) / 86400);
+                    if ($selisihHari < 0) {
+                        $jtBadgeHtml = '<span class="badge bg-danger badge-compact">Terlambat ' . abs($selisihHari) . ' hari</span>';
+                    } elseif ($selisihHari <= 3) {
+                        $jtBadgeHtml = '<span class="badge bg-warning text-dark badge-compact">H-' . $selisihHari . '</span>';
+                    }
+                }
+            }
+        }
+        // === JT END ===
+        ?>
+
         <div>
             <?php
+            // ==== FUNGSI TERBILANG (dikembalikan) ====
             function terbilang($angka)
             {
                 $angka = (int) $angka;
-                $huruf = array(
-                    1 => 'Satu', 2 => 'Dua', 3 => 'Tiga', 4 => 'Empat', 5 => 'Lima',
-                    6 => 'Enam', 7 => 'Tujuh', 8 => 'Delapan', 9 => 'Sembilan', 0 => 'Nol'
-                );
-
                 $tingkat = array('', 'Ribu', 'Juta', 'Miliar', 'Triliun', 'Kuadriliun', 'Kuintiliun');
-
-                if ($angka == 0) {
-                    return "Nol Rupiah";
-                }
-
-                $kalimat = '';
-                $i = 0;
-
+                if ($angka == 0) return "Nol Rupiah";
+                $kalimat = ''; $i = 0;
                 while ($angka > 0) {
                     $bagian = $angka % 1000;
                     if ($bagian != 0) {
                         $kalimat = _terbilang_ratusan($bagian) . ' ' . $tingkat[$i] . ' ' . $kalimat;
                     }
-                    $angka = (int) ($angka / 1000);
-                    $i++;
+                    $angka = (int) ($angka / 1000); $i++;
                 }
-
                 return trim($kalimat) . ' Rupiah';
             }
-
             function _terbilang_ratusan($angka)
             {
-                $huruf = array(
-                    1 => 'Satu', 2 => 'Dua', 3 => 'Tiga', 4 => 'Empat', 5 => 'Lima',
-                    6 => 'Enam', 7 => 'Tujuh', 8 => 'Delapan', 9 => 'Sembilan', 0 => 'Nol'
-                );
-
                 $kalimat = '';
-
                 if ($angka >= 100) {
-                    if ((int)($angka / 100) == 1) {
-                        $kalimat .= 'Seratus ';
-                    } else {
+                    if ((int)($angka / 100) == 1) $kalimat .= 'Seratus ';
+                    else {
+                        $huruf = [1=>'Satu',2=>'Dua',3=>'Tiga',4=>'Empat',5=>'Lima',6=>'Enam',7=>'Tujuh',8=>'Delapan',9=>'Sembilan'];
                         $kalimat .= $huruf[(int)($angka / 100)] . ' Ratus ';
                     }
                     $angka %= 100;
                 }
-
-                if ($angka >= 10) {
-                    $kalimat .= _terbilang_puluhan($angka);
-                } elseif ($angka > 0) {
+                if ($angka >= 10) $kalimat .= _terbilang_puluhan($angka);
+                elseif ($angka > 0) {
+                    $huruf = [1=>'Satu',2=>'Dua',3=>'Tiga',4=>'Empat',5=>'Lima',6=>'Enam',7=>'Tujuh',8=>'Delapan',9=>'Sembilan',0=>'Nol'];
                     $kalimat .= $huruf[$angka];
                 }
-
                 return trim($kalimat);
             }
-
             function _terbilang_puluhan($angka)
             {
-                $huruf = array(
-                    10 => 'Sepuluh', 11 => 'Sebelas', 12 => 'Dua Belas', 13 => 'Tiga Belas', 14 => 'Empat Belas',
-                    15 => 'Lima Belas', 16 => 'Enam Belas', 17 => 'Tujuh Belas', 18 => 'Delapan Belas', 19 => 'Sembilan Belas',
-                    20 => 'Dua Puluh', 30 => 'Tiga Puluh', 40 => 'Empat Puluh', 50 => 'Lima Puluh',
-                    60 => 'Enam Puluh', 70 => 'Tujuh Puluh', 80 => 'Delapan Puluh', 90 => 'Sembilan Puluh'
-                );
-
-                if ($angka <= 9) {
-                    return '';
-                } elseif ($angka <= 19) {
-                    return $huruf[$angka];
-                } else {
+                $huruf = [
+                    10=>'Sepuluh',11=>'Sebelas',12=>'Dua Belas',13=>'Tiga Belas',14=>'Empat Belas',
+                    15=>'Lima Belas',16=>'Enam Belas',17=>'Tujuh Belas',18=>'Delapan Belas',19=>'Sembilan Belas',
+                    20=>'Dua Puluh',30=>'Tiga Puluh',40=>'Empat Puluh',50=>'Lima Puluh',
+                    60=>'Enam Puluh',70=>'Tujuh Puluh',80=>'Delapan Puluh',90=>'Sembilan Puluh'
+                ];
+                if ($angka <= 9) return '';
+                elseif ($angka <= 19) return $huruf[$angka];
+                else {
                     $puluhan = (int)($angka / 10) * 10;
                     return $huruf[$puluhan] . ' ' . _terbilang_satuan($angka % 10);
                 }
             }
-
             function _terbilang_satuan($angka)
             {
-                $huruf = array(
-                    1 => 'Satu', 2 => 'Dua', 3 => 'Tiga', 4 => 'Empat', 5 => 'Lima',
-                    6 => 'Enam', 7 => 'Tujuh', 8 => 'Delapan', 9 => 'Sembilan', 0 => ''
-                );
+                $huruf = [1=>'Satu',2=>'Dua',3=>'Tiga',4=>'Empat',5=>'Lima',6=>'Enam',7=>'Tujuh',8=>'Delapan',9=>'Sembilan',0=>''];
                 return $huruf[$angka];
             }
-        ?>
+            ?>
             <table>
                 <tbody>
                     <tr>
@@ -378,13 +342,21 @@
                     </tr>
                     <tr>
                         <td style="text-wrap: nowrap; font-size: 11px;" class="pe-3">Surat Jalan</td>
-                        <?php
-                        if ($pemesanan['down_payment']) { ?>
-                        <td style="text-wrap: nowrap; font-size: 11px;">: <?= substr($items[0]['id_return'], 5); ?></td>
+                        <?php if ($pemesanan['down_payment']) { ?>
+                        <td style="text-wrap: nowrap; font-size: 11px;">:
+                            <?= isset($items[0]['id_return']) && $items[0]['id_return'] ? substr($items[0]['id_return'], 5) : '-' ; ?>
+                        </td>
                         <?php } else { ?>
                         <td style="text-wrap: nowrap; font-size: 11px;">: <?= substr($pemesanan['id_pesanan'], 5); ?>
                         </td>
                         <?php } ?>
+                    </tr>
+                    <!-- BARIS BARU: JATUH TEMPO -->
+                    <tr>
+                        <td style="text-wrap: nowrap; font-size: 11px;" class="pe-3">Jatuh Tempo</td>
+                        <td style="text-wrap: nowrap; font-size: 11px;">:
+                            <?= $jtLabel; ?> <?= $jtBadgeHtml ? '&nbsp;'.$jtBadgeHtml : '' ?>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -393,15 +365,12 @@
 
         <div class="d-flex justify-content-between mt-5 mb-3">
             <div class="d-flex flex-column kotak-pembayaran">
-                <p class="m-0" style="font-size: 12px;"> Pembayaran mohon dapat ditransfer ke rekening: <br> <b
-                        style="font-size: 12px; color: red;">BCA/C 8715898787 an CATUR BHAKTI MANDIRI</b></p>
+                <p class="m-0" style="font-size: 12px;"> Pembayaran mohon dapat ditransfer ke rekening: <br>
+                    <b style="font-size: 12px; color: red;">BCA 8715898787 an CATUR BHAKTI MANDIRI</b>
+                </p>
             </div>
             <div class="d-flex flex-column align-items-center" style="width: 200px; font-size: 12px;">
-                Bagian Keuangan <br>
-                <br>
-                <br>
-                <br>
-                <br>
+                Bagian Keuangan <br><br><br><br><br>
                 <p class="tw-bold-italic" style="font-size: 12px;">Puspita Aprilia Damayanti</p>
             </div>
         </div>
@@ -416,17 +385,16 @@
     const kelurahan = alamatParts[1];
     const kecamatan = alamatParts[2];
     const kota = alamatParts[3];
-    const provinsiDanKodePos = alamatParts[4].split(' ');
-    const provinsi = provinsiDanKodePos[0];
-    const kodePos = provinsiDanKodePos[1];
-    document.getElementById('jalan').innerText = jalan;
-    document.getElementById('kelurahan').innerText = kelurahan;
-    document.getElementById('kecamatan').innerText = kecamatan;
-    document.getElementById('kota').innerText = kota;
-    document.getElementById('provinsi').innerText = provinsi;
-    document.getElementById('kodepos').innerText = kodePos;
+    const provinsiDanKodePos = (alamatParts[4] || '').split(' ');
+    const provinsi = provinsiDanKodePos[0] || '';
+    const kodePos = provinsiDanKodePos[1] || '';
+    document.getElementById('jalan')?.innerText = jalan;
+    document.getElementById('kelurahan')?.innerText = kelurahan;
+    document.getElementById('kecamatan')?.innerText = kecamatan;
+    document.getElementById('kota')?.innerText = kota;
+    document.getElementById('provinsi')?.innerText = provinsi;
+    document.getElementById('kodepos')?.innerText = kodePos;
     </script>
-
 
 </body>
 

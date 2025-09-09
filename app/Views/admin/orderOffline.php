@@ -1,8 +1,62 @@
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
+
+<?php
+// ===== Helper kecil untuk hitung JATUH TEMPO dari tanggal SJ =====
+// JT = tanggal SJ + 14 hari; kembalikan [tglJT(Format d M Y), sisaHari(int bisa negatif), status('ok'|'warning'|'overdue')]
+$jtInfo = function ($sjDateStr) {
+    if (empty($sjDateStr)) return [null, null, null];
+    try {
+        $tz = new DateTimeZone('Asia/Jakarta');
+        $sj = new DateTime($sjDateStr, $tz);
+        $jt = clone $sj;
+        $jt->modify('+14 days');
+
+        $now = new DateTime('now', $tz);
+        $diffDays = (int)$now->diff($jt)->format('%r%a'); // negatif jika lewat
+
+        $status = $diffDays < 0 ? 'overdue' : ($diffDays <= 3 ? 'warning' : 'ok');
+        return [$jt->format('d M Y'), $diffDays, $status];
+    } catch (\Throwable $e) {
+        return [null, null, null];
+    }
+};
+?>
+
 <style>
 [data-bs-toggle="tooltip"] {
     color: gray;
+}
+
+/* Badge JT */
+.badge-jt {
+    border-radius: 999px;
+    padding: .25rem .55rem;
+    font-size: 12px;
+    display: inline-block;
+}
+
+.badge-jt.ok {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.badge-jt.warning {
+    background: #fff7ed;
+    color: #9a3412;
+    border: 1px solid #fed7aa;
+}
+
+.badge-jt.overdue {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.text-muted-12 {
+    color: #6b7280;
+    font-size: 12px;
 }
 </style>
 
@@ -214,6 +268,12 @@
 
 <!-- LIST PAGE -->
 <div style="padding: 2em;">
+    <div class="mb-2">
+        <p class="text-muted-12" data-bs-toggle="tooltip" data-bs-title="JT = tanggal SJ + 14 hari.">
+            *JT mulai dihitung saat Surat Jalan (SJ) terbit, maksimal 14 hari.
+        </p>
+    </div>
+
     <div class="mb-4 d-flex align-items-center justify-content-between gap-2">
         <div>
             <div class="d-flex gap-2">
@@ -228,9 +288,11 @@
         </div>
         <a class="btn-default-merah" href="/admin/order-offline/add">Tambah</a>
     </div>
+
     <?php if ($msg) { ?>
     <div class="pemberitahuan"><?= $msg; ?></div>
     <?php } ?>
+
     <div class="table-responsive">
         <table class="table table-striped table-hover">
             <thead>
@@ -240,6 +302,7 @@
                     <th scope="col">TANGGAL</th>
                     <th scope="col">NAMA</th>
                     <th class="text-center" scope="col">STATUS</th>
+                    <th class="text-center" scope="col">JT</th>
                     <th class="text-center" scope="col">ACTION</th>
                 </tr>
             </thead>
@@ -250,12 +313,43 @@
                     <td><?= $p['id_pesanan']; ?></td>
                     <td><?= date("d M Y", strtotime($p['tanggal'])); ?></td>
                     <td><?= $p['nama']; ?></td>
+
                     <td align="center">
                         <span
                             class="badge <?= $p['status'] == 'pending' ? 'bg-secondary' : 'bg-success'; ?> rounded-pill">
                             <?= ucfirst($p['status']); ?>
                         </span>
                     </td>
+
+                    <?php
+                    // Ambil tanggal SJ dari data (ganti key jika berbeda)
+                    $tglSj = $p['tanggal_sj'] ?? ($p['sj_created_at'] ?? null);
+                    list($jtStr, $sisaHari, $jtStatus) = $jtInfo($tglSj);
+
+                    // Tentukan teks badge
+                    $jtBadgeText = '—';
+                    if ($jtStr) {
+                        if ($sisaHari < 0) {
+                            $jtBadgeText = "Lewat " . abs($sisaHari) . " hari";
+                        } elseif ($sisaHari === 0) {
+                            $jtBadgeText = "Hari ini";
+                        } else {
+                            $jtBadgeText = $sisaHari . " hari lagi";
+                        }
+                    }
+                    ?>
+                    <td class="text-center">
+                        <?php if ($jtStr) { ?>
+                        <div class="d-flex flex-column align-items-center" data-bs-toggle="tooltip"
+                            data-bs-title="Jatuh tempo dimulai saat SJ terbit. Maks 14 hari dari tanggal SJ.">
+                            <span class="badge-jt <?= $jtStatus; ?>"><?= $jtBadgeText; ?></span>
+                            <small class="text-muted-12"><?= $jtStr; ?></small>
+                        </div>
+                        <?php } else { ?>
+                        <span class="text-muted-12">—</span>
+                        <?php } ?>
+                    </td>
+
                     <td>
                         <div class="d-flex gap-1 justify-content-center">
                             <?php if ($jenis == 'sale') { ?>
@@ -467,10 +561,8 @@ const inputBuatInvoiceElm = document.getElementById('input-buat-invoice');
 const inputBuatDPElm = document.getElementById('input-buat-dp');
 const inputAlamatInvoiceElm = document.getElementById('input-alamat-invoice');
 
-/* ======== PERUBAHAN MINIMAL DI SINI ======== */
-/* Hindari TDZ: jadikan var (global) dan langsung echo JSON dari PHP */
+/* Hindari TDZ & tetap global agar aman untuk inline onclick */
 var pesanan = <?= $pesananJson ?>;
-/* ========================================== */
 
 const alamatTagihanElm = document.querySelector('textarea[name="alamatTagihan"]');
 let pesananSelected = {};
@@ -490,13 +582,11 @@ function handleChangeInputItem(index, event) {
 }
 
 function pilihPesanan(index) {
-    /* guard ringan agar tidak meledak jika ada kondisi edge */
     if (!window.pesanan || !Array.isArray(window.pesanan)) {
         console.error('pesanan belum tersedia');
         alert('Data pesanan belum siap. Coba reload halaman.');
         return;
     }
-
     console.log(pesanan[index])
     pesananSelected = pesanan[index];
     indexItemsSelectedElm.value = '';
@@ -911,23 +1001,18 @@ window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closePreview();
 });
 
-/* Helper: sisipkan tombol Preview sebelum tombol submit di dalam form */
 function injectPreviewButton(form, onClick) {
     if (!form) return;
     const btnSubmit = form.querySelector('button[type="submit"]');
     const row = btnSubmit ? btnSubmit.parentElement : null;
     if (!btnSubmit || !row) return;
-
-    // hindari duplikasi
     if (row.querySelector('[data-role="btn-preview"]')) return;
-
     const btnPrev = document.createElement('button');
     btnPrev.type = 'button';
     btnPrev.className = 'btn btn-default w-100';
     btnPrev.textContent = 'Preview';
     btnPrev.setAttribute('data-role', 'btn-preview');
-
-    row.insertBefore(btnPrev, btnSubmit); // taruh tepat sebelum submit
+    row.insertBefore(btnPrev, btnSubmit);
     btnPrev.onclick = onClick;
 }
 
@@ -936,14 +1021,12 @@ function injectPreviewButton(form, onClick) {
     const modal = document.getElementById('input-buat-invoice');
     if (!modal) return;
     const form = modal.querySelector('form[action="/admin/actionbuatinvoice"]');
-
     injectPreviewButton(form, () => {
         const id_pesanan = form.querySelector('input[name="id_pesanan"]').value;
         const tanggal = form.querySelector('input[name="tanggal"]').value;
         const alamat = form.querySelector('textarea[name="alamat"]').value;
         const nama_npwp = form.querySelector('input[name="nama_npwp"]').value;
         const npwp = form.querySelector('input[name="npwp"]').value;
-
         const leftHTML = `
           <div class="dl">
             <b>ID Order</b><div class="mono">${id_pesanan||'-'}</div>
@@ -952,11 +1035,8 @@ function injectPreviewButton(form, onClick) {
             <b>NPWP</b><div class="mono">${npwp||'-'}</div>
             <b>Alamat</b><div style="white-space:pre-wrap">${alamat||'-'}</div>
           </div>`;
-        const rightHTML = `
-          <div style="font-size:13px;color:#334155">
-            <p class="m-0">Pastikan <b>Nama NPWP</b>, <b>NPWP</b>, dan <b>Alamat</b> sudah benar.</p>
-          </div>`;
-
+        const rightHTML =
+            `<div style="font-size:13px;color:#334155"><p class="m-0">Pastikan <b>Nama NPWP</b>, <b>NPWP</b>, dan <b>Alamat</b> sudah benar.</p></div>`;
         openPreview({
             type: 'invoice',
             title: 'Preview Invoice',
@@ -974,29 +1054,23 @@ function injectPreviewButton(form, onClick) {
     if (!modal) return;
     const form = modal.querySelector('form[action="/admin/actionbuatdp"]');
     const table = modal.querySelector('#table-dp');
-
     injectPreviewButton(form, () => {
         const id_pesanan = form.querySelector('input[name="id_pesanan"]').value;
         const tanggal = form.querySelector('input[name="tanggal"]').value;
         const nama_npwp = form.querySelector('input[name="nama_npwp"]').value;
         const npwp = form.querySelector('input[name="npwp"]').value;
-
         const rows = [...table.querySelectorAll('tr')].map(tr => [...tr.children].map(td => td.innerText
             .trim()));
-        const itemsRows = rows
-            .filter(cols => cols.length === 3 && !/TOTAL|POTONGAN|DP|SISA/i.test(cols[0]))
+        const itemsRows = rows.filter(cols => cols.length === 3 && !/TOTAL|POTONGAN|DP|SISA/i.test(cols[0]))
             .map(cols =>
                 `<tr><td>${cols[0]}</td><td class="cell-center">${cols[1]}</td><td class="cell-right mono">${cols[2]}</td></tr>`
-            )
-            .join('');
-        const totalsHTML = rows
-            .filter(cols => cols.length >= 2 && /TOTAL|POTONGAN|DP|SISA/i.test(cols[0]))
+                ).join('');
+        const totalsHTML = rows.filter(cols => cols.length >= 2 && /TOTAL|POTONGAN|DP|SISA/i.test(cols[0]))
             .map(cols => {
                 const label = cols[0].replace(/\s+/g, ' ').trim().toUpperCase();
                 const val = cols[cols.length - 1];
                 return `<div class="d-flex justify-content-between"><span>${label}</span><span class="mono" style="font-weight:700">${val}</span></div>`;
             }).join('');
-
         const leftHTML = `
           <div class="dl" style="margin-bottom:12px">
             <b>ID Order</b><div class="mono">${id_pesanan||'-'}</div>
@@ -1013,10 +1087,8 @@ function injectPreviewButton(form, onClick) {
               </table>
             </div>
           </div>`;
-
         const rightHTML = totalsHTML ||
-            '<div class="text-secondary">Ringkasan total belum terbentuk.</div>';
-
+        '<div class="text-secondary">Ringkasan total belum terbentuk.</div>';
         openPreview({
             type: 'dp',
             title: 'Preview Invoice DP',
@@ -1035,7 +1107,6 @@ function injectPreviewButton(form, onClick) {
     const form = modal.querySelector('form[action="/admin/order-offline/koreksisp"]');
     const itemsContainer = modal.querySelector('#container-items');
     const indexSelected = modal.querySelector('input[name="index_items_selected"]');
-
     injectPreviewButton(form, () => {
         const id_pesanan = form.querySelector('input[name="id_pesanan"]').value;
         const tanggal = form.querySelector('input[name="tanggal"]').value;
@@ -1051,18 +1122,16 @@ function injectPreviewButton(form, onClick) {
         const detail = form.querySelector('input[name="detail"]')?.value || '';
         const alamatTextarea = form.querySelector('textarea[name="alamatTagihan"]')?.value || '';
 
-        const alamat = isSame ?
-            (alamatTextarea || '-') : [
-                prov?.split('-')[1] || '',
-                kota?.split('-')[1] || '',
-                kec?.split('-')[1] || '',
-                (kode?.split('-')[0] || '') + (kode?.split('-')[1] ? ` ${kode.split('-')[1]}` : '')
-            ].filter(Boolean).join(', ') + (detail ? `\n${detail}` : '');
+        const alamat = isSame ? (alamatTextarea || '-') : [
+            prov?.split('-')[1] || '',
+            kota?.split('-')[1] || '',
+            kec?.split('-')[1] || '',
+            (kode?.split('-')[0] || '') + (kode?.split('-')[1] ? ` ${kode.split('-')[1]}` : '')
+        ].filter(Boolean).join(', ') + (detail ? `\n${detail}` : '');
 
         const flags = (indexSelected.value || '').split(',');
         const labels = [...itemsContainer.querySelectorAll('label')];
-        const chosen = labels
-            .map((lab, i) => ({
+        const chosen = labels.map((lab, i) => ({
                 on: flags[i] === '1',
                 text: lab.querySelector('.fw-bold')?.innerText || ''
             }))
@@ -1088,10 +1157,8 @@ function injectPreviewButton(form, onClick) {
               </table>
             </div>
           </div>`;
-
         const rightHTML =
             `<div style="font-size:13px;color:#334155"><p class="m-0">Periksa kembali item dan alamat sebelum kirim koreksi SP.</p></div>`;
-
         openPreview({
             type: 'koreksi',
             title: 'Preview Koreksi SP',

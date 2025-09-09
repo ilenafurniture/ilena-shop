@@ -16,6 +16,12 @@
     * {
         font-size: 14px;
     }
+
+    .badge-compact {
+        font-size: 11px;
+        padding: 4px 8px;
+        border-radius: 999px;
+    }
     </style>
 </head>
 
@@ -31,8 +37,7 @@
                     </div>
                     <div class="d-flex flex-column justify-content-center gap-1">
                         <h5 class="tw-bold m-0" style="font-size: large;">CV.CATUR BHAKTI MANDIRI</h5>
-                        <h5 class="tw-bold m-0">Kawasan Industri BSB, A 3A, 5-6 Jatibarang,Mijen
-                            Semarang</h5>
+                        <h5 class="tw-bold m-0">Kawasan Industri BSB, A 3A, 5-6 Jatibarang,Mijen Semarang</h5>
                     </div>
                 </div>
                 <div style="flex: 1;" class="d-flex justify-content-end align-items-center">
@@ -52,11 +57,47 @@
                 <p class="m-0"><?= $pemesanan['alamat_pengiriman']; ?></p>
             </div>
         </div>
-        <p class="m-0 fw-bold">KOREKSI SURAT PENGANTAR NO.
+
+        <p class="m-0 fw-bold">
+            KOREKSI SURAT PENGANTAR NO.
             <?= substr($pemesanan['id_pesanan'], 5); ?>/SK/<?= date('m', strtotime($pemesanan['tanggal'])); ?>/<?= date('Y', strtotime($pemesanan['tanggal'])); ?>
-            </b>
         </p>
-        <!-- INI Table Pengantar -->
+
+        <!-- JT (Jatuh Tempo) -->
+        <?php
+            // Nama bulan Indonesia
+            $bulan_indonesia = [
+                1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',
+                7=>'Juli',8=>'Agustus',9=>'September',10=>'Oktober',11=>'November',12=>'Desember'
+            ];
+
+            // JT = tanggal dokumen + 14 hari
+            $dueTs   = strtotime(($pemesanan['tanggal'] ?? date('Y-m-d')) . ' +14 days');
+            $jtLabel = date('d', $dueTs) . ' ' . $bulan_indonesia[(int)date('n', $dueTs)] . ' ' . date('Y', $dueTs);
+
+            // Badge status (opsional)
+            $jtBadgeHtml = '';
+            if (($pemesanan['status'] ?? '') === 'success') {
+                $jtBadgeHtml = '<span class="badge bg-success badge-compact">Lunas</span>';
+            } else {
+                $selisihHari = (int)floor(($dueTs - time()) / 86400);
+                if ($selisihHari < 0) {
+                    $jtBadgeHtml = '<span class="badge bg-danger badge-compact">Terlambat ' . abs($selisihHari) . ' hari</span>';
+                } elseif ($selisihHari <= 3) {
+                    $jtBadgeHtml = '<span class="badge bg-warning text-dark badge-compact">H-' . $selisihHari . '</span>';
+                }
+            }
+        ?>
+        <div class="mt-2">
+            <table>
+                <tr>
+                    <td class="pe-2"><b>Jatuh Tempo</b></td>
+                    <td>: <?= $jtLabel; ?> <?= $jtBadgeHtml ? '&nbsp;'.$jtBadgeHtml : '' ?></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Tabel Pengantar -->
         <div class="table-responsive mt-3">
             <table class="table table-striped table-bordered">
                 <thead>
@@ -83,31 +124,31 @@
                     <?php } ?>
                 </tbody>
             </table>
-            <p class="m-0"><b>Keterangan : </b><span
-                    class="text-danger"><?= $pemesanan['keterangan'] ? '*' . $pemesanan['keterangan'] : '<i>Tidak ada keterangan</i>'; ?></span>
-            </p>
 
+            <p class="m-0">
+                <b>Keterangan : </b>
+                <span class="text-danger">
+                    <?= $pemesanan['keterangan'] ? '*' . $pemesanan['keterangan'] : '<i>Tidak ada keterangan</i>'; ?>
+                </span>
+            </p>
 
             <div class="d-flex justify-content-end mt-5">
                 <div style="width: 300px;">
-                    <p>Kendal, <?= date('d F Y', strtotime($pemesanan['tanggal'])); ?></p>
+                    <p>Kendal, <?= date('d', strtotime($pemesanan['tanggal'])); ?>
+                        <?= $bulan_indonesia[(int)date('n', strtotime($pemesanan['tanggal']))]; ?>
+                        <?= date('Y', strtotime($pemesanan['tanggal'])); ?></p>
                     <p class="m-0"><b>Dibuat Oleh :</b></p>
-                    <br>
-                    <br>
-                    <br>
+                    <br><br><br>
                     <p class="m-0"><b>Admin Ilena</b></p>
-                    <br>
-                    <!-- <p class="m-0"><b>____________________</b></p> -->
                 </div>
             </div>
         </div>
     </div>
+
     <script>
     // window.print();
     // window.onafterprint = function() {
-    //     window.close(
-    //         window.location.href = "<?= base_url('/admin/order/offline/' . $pemesanan['jenis']); ?>"
-    //     );
+    //   window.location.href = "<?= base_url('/admin/order/offline/' . $pemesanan['jenis']); ?>";
     // };
     </script>
 </body>
