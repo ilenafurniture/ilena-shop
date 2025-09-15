@@ -567,7 +567,7 @@
             <div class="view-meta"><span id="total-mitra">0 Mitra</span></div>
         </div>
 
-        <!-- ====== VIEW: RAIL (punyamu tetap) ====== -->
+        <!-- ====== VIEW: RAIL ====== -->
         <div class="toko-rail view-pane active" id="pane-rail">
             <div class="rail-head">
                 <div class="rail-meta">
@@ -585,11 +585,10 @@
             </div>
 
             <div class="container-toko" id="container-toko">
-                <!-- ==== DAFTAR MITRA ASLI (tidak diubah) ==== -->
-                <!-- ………………… (ITEM-ITEMMU persis seperti yang kamu kirim; aku biarkan sama) ………………… -->
-                <!-- Mulai -->
+                <!-- ==== DAFTAR MITRA (ASLI + TAMBAHAN) ==== -->
+
                 <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/KxVrTxNAJv8ub8YJA" class="info" style="text-decoration:none;">
+                    <a href="https://maps.app.goo.gl/LDNymAWjfyFijkZT7" class="info" style="text-decoration:none;">
                         <h3 class="nama">Jempol Baru Furniture</h3>
                         <p class="alamat m-0">Jl. R. M. Said No.4, RW.6, Keprabon, Kec. Banjarsari, Kota Surakarta</p>
                     </a>
@@ -599,6 +598,7 @@
                             alt="Jempol Baru Furniture">
                     </div>
                 </div>
+
                 <div class="item-toko">
                     <a href="https://maps.app.goo.gl/cBQGbHzKCgyoTAM29" class="info" style="text-decoration:none;">
                         <h3 class="nama">Sumber Abadi Furniture</h3>
@@ -610,9 +610,10 @@
                             alt="Sumber Abadi Furniture">
                     </div>
                 </div>
+
                 <div class="item-toko">
                     <a href="https://maps.app.goo.gl/2f6uDgjkd9SSwRnC8" class="info" style="text-decoration:none;">
-                        <h3 class="nama">SURI Meubel Furniture</h3>
+                        <h3 class="nama">Suri Meubel (Semarang)</h3>
                         <p class="alamat m-0">Jl. MH Thamrin, Sekayu, Kec. Semarang Tengah, Kota Semarang</p>
                     </a>
                     <div class="thumb">
@@ -621,6 +622,7 @@
                             alt="SURI Meubel Furniture">
                     </div>
                 </div>
+
                 <div class="item-toko">
                     <a href="https://maps.app.goo.gl/EJYp9pEmPZ3a7XASA" class="info" style="text-decoration:none;">
                         <h3 class="nama">Home Gallery Furniture</h3>
@@ -632,10 +634,12 @@
                             alt="Home Gallery Furniture">
                     </div>
                 </div>
+
                 <div class="item-toko">
                     <a href="https://maps.app.goo.gl/BPDJUK8MyRBFrJGW8" class="info" style="text-decoration:none;">
                         <h3 class="nama">Pari Anom Jaya Furniture</h3>
-                        <p class="alamat m-0">Jl. Bunguran No.45 Lantai 4, Bongkaran, Pabean Cantikan, Surabaya</p>
+                        <p class="alamat m-0">Pasar Atum, Jl. Bunguran No.45 Lantai 4, Bongkaran, Pabean Cantikan,
+                            Surabaya</p>
                     </a>
                     <div class="thumb">
                         <img loading="lazy" decoding="async"
@@ -643,17 +647,19 @@
                             alt="Pari Anom Jaya Furniture">
                     </div>
                 </div>
+
                 <div class="item-toko">
                     <a href="https://maps.app.goo.gl/BkiBFdCA4Rop3qHS7" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Puri Mabel & Interior</h3>
+                        <h3 class="nama">Puri Mebel & Interior (Semarang)</h3>
                         <p class="alamat m-0">Jl. Puri Anjasmoro Blk. H5 No.57, Tawangsari, Semarang</p>
                     </a>
                     <div class="thumb">
                         <img loading="lazy" decoding="async"
                             src="https://img.ilenafurniture.com/image/1742450004899.webp/?apikey=<?= $apikey_img_ilena ?>"
-                            alt="Puri Mabel & Interior">
+                            alt="Puri Mebel & Interior">
                     </div>
                 </div>
+
                 <div class="item-toko">
                     <a href="https://maps.app.goo.gl/5ZXJpa5BAFadgwAr5" class="info" style="text-decoration:none;">
                         <h3 class="nama">Victoria Furnicenter</h3>
@@ -665,17 +671,20 @@
                             alt="Victoria Furnicenter">
                     </div>
                 </div>
+
+                <!-- KOREKSI: Tunggal Jaya (Malang) -->
                 <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/5ZXJpa5BAFadgwAr5" class="info" style="text-decoration:none;">
+                    <a href="https://www.google.com/maps/search/?api=1&query=Jl.+Kauman+Dalam+No.6,+Kauman,+Klojen,+Malang+65119"
+                        class="info" style="text-decoration:none;">
                         <h3 class="nama">Tunggal Jaya Furniture</h3>
-                        <p class="alamat m-0">Wiyung, Surabaya</p>
+                        <p class="alamat m-0">Jl. Kauman Dalam No.6, Kauman, Kec. Klojen, Kota Malang 65119</p>
                     </a>
                     <div class="thumb">
-                        <img loading="lazy" decoding="async"
-                            src="https://img.ilenafurniture.com/image/1742450030786.webp/?apikey=<?= $apikey_img_ilena ?>"
+                        <img loading="lazy" decoding="async" src="/img/mitra/tunggal-jaya-malang.jpg"
                             alt="Tunggal Jaya Furniture">
                     </div>
                 </div>
+
                 <div class="item-toko">
                     <a href="https://maps.app.goo.gl/5ZXJpa5BAFadgwAr5" class="info" style="text-decoration:none;">
                         <h3 class="nama">Cipta Bangun Jaya Furniture Magelang</h3>
@@ -687,6 +696,7 @@
                             alt="CBJ Magelang">
                     </div>
                 </div>
+
                 <div class="item-toko">
                     <a href="https://maps.app.goo.gl/5ZXJpa5BAFadgwAr5" class="info" style="text-decoration:none;">
                         <h3 class="nama">Cipta Bangun Jaya Furniture Jakarta</h3>
@@ -698,6 +708,7 @@
                             alt="CBJ Jakarta">
                     </div>
                 </div>
+
                 <div class="item-toko">
                     <a href="https://maps.app.goo.gl/oumo8h2XUy32KH168" class="info" style="text-decoration:none;">
                         <h3 class="nama">Kasur Indah</h3>
@@ -707,6 +718,7 @@
                         <img loading="lazy" decoding="async" src="https://i.imgur.com/MwLYjVf.png" alt="Kasur Indah">
                     </div>
                 </div>
+
                 <div class="item-toko">
                     <a href="https://maps.app.goo.gl/MJ396VhceiHfGLBF6" class="info" style="text-decoration:none;">
                         <h3 class="nama">DM Mebel Supeno</h3>
@@ -717,9 +729,10 @@
                             src="https://i.ibb.co.com/q3vG29Bf/Screenshot-2025-08-06-102008.png" alt="DM Mebel Supeno">
                     </div>
                 </div>
+
                 <div class="item-toko">
                     <a href="https://maps.app.goo.gl/8a9karvqThnFXzX97" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Istana Meubel Cirebon</h3>
+                        <h3 class="nama">Istana Meubel (Cirebon)</h3>
                         <p class="alamat m-0">Jl. Pekarungan No.12-14, Lemahwungkuk, Cirebon</p>
                     </a>
                     <div class="thumb">
@@ -728,6 +741,7 @@
                             alt="Istana Meubel Cirebon">
                     </div>
                 </div>
+
                 <div class="item-toko">
                     <a href="https://maps.app.goo.gl/5QZ8tTaSVTmTtxHQ7" class="info" style="text-decoration:none;">
                         <h3 class="nama">Living Home Houseware & Furniture</h3>
@@ -738,6 +752,7 @@
                             src="https://i.ibb.co.com/TDFP36LD/Screenshot-2025-08-19-234119.png" alt="Living Home">
                     </div>
                 </div>
+
                 <div class="item-toko">
                     <a href="https://maps.app.goo.gl/cU4SfXLKjL9pV5uz8" class="info" style="text-decoration:none;">
                         <h3 class="nama">Vinetta Furniture Purwokerto</h3>
@@ -749,17 +764,73 @@
                             alt="Vinetta Purwokerto">
                     </div>
                 </div>
+
                 <div class="item-toko">
                     <a href="https://maps.app.goo.gl/17uAqPADuswiuxeG6" class="info" style="text-decoration:none;">
                         <h3 class="nama">FURNI CENTER Purwokerto</h3>
-                        <p class="alamat m-0">Purwokerto</p>
+                        <p class="alamat m-0">Jl. S. Parman No.125, Karangklesem, Purwokerto Selatan</p>
                     </a>
                     <div class="thumb">
                         <img loading="lazy" decoding="async"
                             src="https://i.ibb.co.com/JR7y1B3Y/Screenshot-2025-08-22-144249.png" alt="Furni Center">
                     </div>
                 </div>
-                <!-- Selesai -->
+
+                <!-- ===== TAMBAHAN BARU DARI DATA KAMU ===== -->
+
+                <div class="item-toko">
+                    <a href="https://maps.app.goo.gl/24PJYPuvbjqPbmUD6" class="info" style="text-decoration:none;">
+                        <h3 class="nama">Seruma Space</h3>
+                        <p class="alamat m-0">Sokowaten, Tamanan, Banguntapan, Bantul, DI Yogyakarta 55191</p>
+                    </a>
+                    <div class="thumb"><img loading="lazy" decoding="async"
+                            src="https://i.ibb.co.com/DfJyv5HL/Screenshot-2025-09-15-143349.png" alt="Seruma Space">
+                    </div>
+                </div>
+
+                <div class="item-toko">
+                    <a href="https://maps.app.goo.gl/HCJvNpPmpdARbHaGA" class="info" style="text-decoration:none;">
+                        <h3 class="nama">Toko Mebel Garuda Mas</h3>
+                        <p class="alamat m-0">Jl. Jend. Sudirman No.189, Tidar Sel., Magelang Selatan, Magelang 59214
+                        </p>
+                    </a>
+                    <div class="thumb"><img loading="lazy" decoding="async"
+                            src="https://i.ibb.co.com/JRhJFZSV/Screenshot-2025-09-15-143456.png"
+                            alt="Toko Mebel Garuda Mas"></div>
+                </div>
+
+                <div class="item-toko">
+                    <a href="https://maps.app.goo.gl/UHUoe8DMdio4mfoi9" class="info" style="text-decoration:none;">
+                        <h3 class="nama">Meubel Lisa Jaya</h3>
+                        <p class="alamat m-0">Timur Jl. SMPN 2, JL. K.H. Hasyim Asyari No.13, Demangan Barat, Bangkalan
+                            69115</p>
+                    </a>
+                    <div class="thumb"><img loading="lazy" decoding="async"
+                            src="https://i.ibb.co.com/ch0bNWzW/Screenshot-2025-09-15-143632.png" alt="Meubel Lisa Jaya">
+                    </div>
+                </div>
+
+                <div class="item-toko">
+                    <a href="https://maps.app.goo.gl/qcX5EL6n4PW72Xq57" class="info" style="text-decoration:none;">
+                        <h3 class="nama">Agrapana Furniture</h3>
+                        <p class="alamat m-0">Jl. Sidomoyo No.89, Sidoarum, Godean, Sleman, DI Yogyakarta 55264</p>
+                    </a>
+                    <div class="thumb"><img loading="lazy" decoding="async"
+                            src="https://i.ibb.co.com/fdsqzwFK/Screenshot-2025-09-15-143959.png"
+                            alt="Agrapana Furniture"></div>
+                </div>
+
+                <div class="item-toko">
+                    <a href="https://maps.app.goo.gl/YEY22dZeYKcbnXoD9" class="info" style="text-decoration:none;">
+                        <h3 class="nama">Elok Meubel</h3>
+                        <p class="alamat m-0">Jl. Mayjend DI. Panjaitan No.68 / 70, Tegalsari, Kec. Tegal Barat, Tegal
+                            52111</p>
+                    </a>
+                    <div class="thumb"><img loading="lazy" decoding="async"
+                            src="https://i.ibb.co.com/spnfJ946/Screenshot-2025-09-15-144115.png" alt="Elok Meubel">
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -816,6 +887,19 @@
         });
     });
     updateProg();
+
+    // blink kecil saat jumlah bertambah
+    totalLabel && totalLabel.animate(
+        [{
+            transform: "scale(1)"
+        }, {
+            transform: "scale(1.06)"
+        }, {
+            transform: "scale(1)"
+        }], {
+            duration: 360
+        }
+    );
 })();
 </script>
 
@@ -907,7 +991,7 @@
 })();
 </script>
 
-<!-- Map (tetap) -->
+<!-- Map (Leaflet) -->
 <script>
 var map = L.map('map').setView([-7.614529, 110.712246], 6.5);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -915,74 +999,92 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 var locations = [{
-        name: "Jempol Baru Furniture",
-        coords: [-7.565618587313341, 110.82431800071647]
+        name: "Jempol Baru Furniture (Solo)",
+        coords: [-7.565686761626352, 110.82430295467728]
     },
     {
-        name: "Cipta Bangun Jaya Furniture Jakarta",
-        coords: [-6.285266506836552, 106.84299483660007]
+        name: "Cipta Bangun Jaya Furniture (Jakarta)",
+        coords: [-6.285267, 106.842995]
     },
     {
-        name: "Sumber Abadi Furniture",
-        coords: [-7.743532734851712, 110.36242217704519]
+        name: "Sumber Abadi Furniture (Yogyakarta)",
+        coords: [-7.743533, 110.362422]
     },
     {
-        name: "Home Gallery Furniture",
-        coords: [-7.2886288976515985, 112.67261790823825]
+        name: "Home Gallery Furniture (Surabaya)",
+        coords: [-7.288629, 112.672618]
     },
     {
-        name: "Pari Anom Jaya Furniture",
-        coords: [-7.241679877880819, 112.74470435104482]
+        name: "Pari Anom Jaya (Surabaya)",
+        coords: [-7.241680, 112.744704]
     },
     {
-        name: "Suri Mebel Semarang",
-        coords: [-6.985425332274277, 110.41746260495303]
+        name: "Suri Meubel (Semarang)",
+        coords: [-6.985425, 110.417463]
     },
     {
-        name: "Puri Mabel & Interior",
-        coords: [-6.9658085878072935, 110.39043865842983]
+        name: "Puri Mebel & Interior (Semarang)",
+        coords: [-6.965809, 110.390439]
     },
     {
-        name: "Victoria Furnicenter",
-        coords: [-7.310519605654715, 112.68303473759022]
+        name: "Victoria Furnicenter (Surabaya)",
+        coords: [-7.310520, 112.683035]
     },
     {
-        name: "Tunggal Jaya Furniture",
-        coords: [-7.98299983310868, 112.62939860029017]
+        name: "Tunggal Jaya Furniture (Malang)",
+        coords: [-7.982, 112.630]
     },
     {
-        name: "Cipta Bangun Jaya Furniture Magelang",
-        coords: [-7.497190468107969, 110.22351816365261]
+        name: "Cipta Bangun Jaya Furniture (Magelang)",
+        coords: [-7.497190, 110.223518]
     },
     {
-        name: "Homj Furniture",
-        coords: [-7.321151681470964, 112.7441071560504]
+        name: "Homj Furniture (Surabaya)",
+        coords: [-7.321152, 112.744107]
     },
     {
-        name: "Kasur Indah",
-        coords: [-8.696614587200164, 115.18642372535126]
+        name: "Kasur Indah (Denpasar)",
+        coords: [-8.696615, 115.186424]
     },
     {
-        name: "DM Mebel Supeno",
-        coords: [-7.816169475560965, 110.38068786772793]
+        name: "DM Mebel Supeno (Yogyakarta)",
+        coords: [-7.816169, 110.380688]
     },
     {
-        name: "Istana Meubel CIREBON",
-        coords: [-6.715091293405323, 108.56476548596918]
+        name: "Istana Meubel (Cirebon)",
+        coords: [-6.715091, 108.564765]
     },
     {
-        name: "Living Home Houseware & Furniture",
-        coords: [-7.446178589024145, 109.24378085767192]
+        name: "Living Home (Purwokerto)",
+        coords: [-7.446179, 109.243781]
     },
     {
-        name: "Vinetta Furniture Purwokerto",
-        coords: [-7.42304698938314, 109.25023176982587]
+        name: "Vinetta Furniture (Purwokerto)",
+        coords: [-7.423047, 109.250232]
     },
     {
-        name: "Pusat Grosir & Eceran Meubel FURNI CENTER Purwokerto",
-        coords: [-7.438356338368611, 109.24430059470743]
+        name: "FURNI CENTER (Purwokerto)",
+        coords: [-7.438356, 109.244301]
     }
 ];
+
+// === TAMBAHAN MARKER BARU ===
+locations.push({
+    name: "Seruma Space (Banguntapan, Bantul)",
+    coords: [-7.8347557775250065, 110.37898663945798]
+}, {
+    name: "Toko Mebel Garuda Mas (Magelang)",
+    coords: [-7.497210712603127, 110.22352521039721]
+}, {
+    name: "Meubel Lisa Jaya (Bangkalan)",
+    coords: [-7.0282709675175585, 112.74647900288844]
+}, {
+    name: "Agrapana Furniture (Godean, Sleman)",
+    coords: [-6.859468184151993, 109.13567611808162]
+}, {
+    name: "Elok Meubel (Tegal)",
+    coords: [-6.859464477608871, 109.13568596532647]
+});
 
 locations.forEach(function(store) {
     var marker = L.circleMarker(store.coords, {
