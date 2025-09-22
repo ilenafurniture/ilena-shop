@@ -830,6 +830,17 @@
                             src="https://i.ibb.co.com/spnfJ946/Screenshot-2025-09-15-144115.png" alt="Elok Meubel">
                     </div>
                 </div>
+                <div class="item-toko">
+                    <a href="https://maps.app.goo.gl/3Dh2PnEv9zTdgeYo9" class="info" style="text-decoration:none;">
+                        <h3 class="nama">Meubel Murah</h3>
+                        <p class="alamat m-0">Jl. Raya Kalimalang No.37 1, RT.1/RW.7, Duren Sawit, Kec. Duren Sawit,
+                            Kota Jakarta Timur, Daerah Khusus Ibukota Jakarta 13440</p>
+                    </a>
+                    <div class="thumb"><img loading="lazy" decoding="async"
+                            src="https://i.ibb.co.com/0yc93DRK/Screenshot-2025-09-22-092249.png""
+                        alt=" Meubel Murah">
+                    </div>
+                </div>
 
             </div>
         </div>
@@ -1084,6 +1095,9 @@ locations.push({
 }, {
     name: "Elok Meubel (Tegal)",
     coords: [-6.859464477608871, 109.13568596532647]
+}, {
+    name: "Meubel Murah (Jakarta Timur)",
+    coords: [-6.247639456432581, 106.91847865337301]
 });
 
 locations.forEach(function(store) {
