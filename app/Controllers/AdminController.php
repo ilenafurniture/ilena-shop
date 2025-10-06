@@ -123,6 +123,7 @@ class AdminController extends BaseController
         ];
         return view('admin/allTable', $data);
     }
+    // === FORM TAMBAH PRODUK ===
     public function addProduct()
     {
         $koleksi = $this->koleksiModel->getKoleksi();
@@ -141,6 +142,8 @@ class AdminController extends BaseController
         ];
         return view('admin/add', $data);
     }
+
+    // === ACTION TAMBAH PRODUK ===
     public function actionAddProduct()
     {
         if (!$this->validate([
@@ -163,7 +166,6 @@ class AdminController extends BaseController
         $data               = $this->request->getVar();
         $data_gambar_mentah = $this->request->getFiles();
 
-        // ===== Hover image (opsional) =====
         if (isset($data_gambar_mentah['gambar_hover']) && $data_gambar_mentah['gambar_hover']->isValid()) {
             $fp = 'imgdum/barang/hover';
             $data_gambar_mentah['gambar_hover']->move($fp, $data['id'] . '.webp');
@@ -178,7 +180,6 @@ class AdminController extends BaseController
         }
         unset($data_gambar_mentah['gambar_hover']);
 
-        // ===== Kartu stok dari varian =====
         foreach (json_decode($data['varian'], true) as $varian) {
             $tanggalNoStrip = date("YmdHis", strtotime("+7 Hours"));
             $this->kartuStokModel->insert([
@@ -194,7 +195,6 @@ class AdminController extends BaseController
             ]);
         }
 
-        // ===== Mapping kategori & subkategori (ID -> Nama) =====
         $koleksiSelected = '';
         if (!empty($data['kategori'])) {
             $row = array_values(array_filter($koleksi, fn($v) => $v['id'] == $data['kategori']))[0] ?? null;
@@ -207,12 +207,10 @@ class AdminController extends BaseController
             $jenisSelected = $row ? $row['nama'] : '';
         }
 
-        // ===== Simpan gambar varian =====
         foreach ($data_gambar_mentah as $ind_g => $dG) {
             $urutan = (int)explode('_', $ind_g)[1];
             $dG->move('imgdum');
 
-            // 3000
             if (file_exists('img/barang/3000/' . $data['id'] . '-' . ($urutan + 1) . '.webp')) {
                 unlink('img/barang/3000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
             }
@@ -221,7 +219,6 @@ class AdminController extends BaseController
                 ->resize(3000, 3000, true, 'height')
                 ->save('img/barang/3000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
 
-            // 1000
             if (file_exists('img/barang/1000/' . $data['id'] . '-' . ($urutan + 1) . '.webp')) {
                 unlink('img/barang/1000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
             }
@@ -230,7 +227,6 @@ class AdminController extends BaseController
                 ->resize(1000, 1000, true, 'height')
                 ->save('img/barang/1000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
 
-            // thumbnail 300 utk urutan pertama
             if ($urutan <= 0) {
                 if (file_exists('img/barang/300/' . $data['id'] . '.webp')) {
                     unlink('img/barang/300/' . $data['id'] . '.webp');
@@ -243,12 +239,11 @@ class AdminController extends BaseController
             @unlink('imgdum/' . $dG->getName());
         }
 
-        // ====== Jadwal diskon (BARU) ======
-        $pakaiSchedule = !empty($data['pakai_jadwal_diskon']) ? 1 : 0;
-        $mulai   = $pakaiSchedule ? ($data['diskon_mulai']   ?? null) : null;
-        $selesai = $pakaiSchedule ? ($data['diskon_selesai'] ?? null) : null;
+        // ===== Jadwal diskon (baru, minimal patch) =====
+        $pakaiSchedule = !empty($this->request->getVar('pakai_jadwal_diskon')) ? 1 : 0;
+        $mulaiRaw      = (string) $this->request->getVar('diskon_mulai');    // ex: 2025-10-06T13:00
+        $selesaiRaw    = (string) $this->request->getVar('diskon_selesai');  // ex: 2025-10-06T23:00
 
-        // ===== Insert barang =====
         $insertDataBarang = [
             'id'            => $data['id'],
             'nama'          => $data['nama'],
@@ -268,10 +263,12 @@ class AdminController extends BaseController
             'ruang_keluarga'=> $data['ruang_keluarga'],
             'ruang_tidur'   => $data['ruang_tidur'],
 
-            // kolom jadwal diskon:
+            // simpan jadwal
             'pakai_jadwal_diskon' => $pakaiSchedule,
-            'diskon_mulai'        => $mulai,
-            'diskon_selesai'      => $selesai,
+            'diskon_mulai'        => $pakaiSchedule && $mulaiRaw
+                                        ? date('Y-m-d H:i:s', strtotime(str_replace('T',' ', $mulaiRaw))) : null,
+            'diskon_selesai'      => $pakaiSchedule && $selesaiRaw
+                                        ? date('Y-m-d H:i:s', strtotime(str_replace('T',' ', $selesaiRaw))) : null,
         ];
 
         $this->barangModel->insert($insertDataBarang);
@@ -284,6 +281,8 @@ class AdminController extends BaseController
             ]);
     }
 
+
+    // === FORM EDIT PRODUK ===
     public function editProduct($id_product)
     {
         $product = $this->barangModel->getBarangAdmin($id_product);
@@ -291,33 +290,26 @@ class AdminController extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Produk tidak ditemukan');
         }
 
-        // Decode JSON
         $product['deskripsi'] = json_decode($product['deskripsi'] ?? '[]', true);
         $product['varian']    = json_decode($product['varian'] ?? '[]', true);
 
-        // Ambil master
         $koleksi = $this->koleksiModel->getKoleksi();
         $jenis   = $this->jenisModel->getJenis();
 
-        // Bersihkan field yang tidak dipakai di form
         unset($product['gambar'], $product['tgl_update'], $product['active']);
 
-        // Boolean → JS
         $product['ruang_tamu']     = ($product['ruang_tamu'] ?? '0') == '1';
         $product['ruang_keluarga'] = ($product['ruang_keluarga'] ?? '0') == '1';
         $product['ruang_tidur']    = ($product['ruang_tidur'] ?? '0') == '1';
 
-        // Nama kategori/subkategori → id (untuk preselect di form)
         $katRow = $this->koleksiModel->where('nama', $product['kategori'] ?? '')->first();
         $jenRow = $this->jenisModel->where('nama', $product['subkategori'] ?? '')->first();
         $product['kategori']    = $katRow['id'] ?? '';
         $product['subkategori'] = $jenRow['id'] ?? '';
 
-        // ===== Tambahan: field jadwal diskon (biarkan null jika tidak pakai) =====
-        // Pastikan kolom ini memang ada di DB & di allowedFields:
-        // pakai_jadwal_diskon (tinyint1), diskon_mulai (datetime null), diskon_selesai (datetime null)
+        // field jadwal (pastikan ada kolomnya di DB)
         $product['pakai_jadwal_diskon'] = (int)($product['pakai_jadwal_diskon'] ?? 0);
-        $product['diskon_mulai']        = $product['diskon_mulai']   ?? null; // format: 'YYYY-MM-DD HH:MM:SS'
+        $product['diskon_mulai']        = $product['diskon_mulai']   ?? null; // 'YYYY-MM-DD HH:MM:SS'
         $product['diskon_selesai']      = $product['diskon_selesai'] ?? null;
 
         $data = [
@@ -333,31 +325,22 @@ class AdminController extends BaseController
             'val'              => ['msg' => session()->getFlashdata('val-id')],
         ];
 
-        // Optional: cek payload masuk (debug)
-        // log_message('error', print_r($this->request->getVar(), true));
-
         return view('admin/add', $data);
     }
 
 
+    // === ACTION EDIT PRODUK ===
     public function actionEditProduct($id_product)
     {
         try {
-            // -------------------------------------------------
-            // 0) Ambil data lama + guard not found
-            // -------------------------------------------------
             $barang = $this->barangModel->getBarangAdmin($id_product);
             if (!$barang) {
                 return $this->response->setStatusCode(404)->setJSON(['pesan' => 'Produk tidak ditemukan']);
             }
 
-            // -------------------------------------------------
-            // 1) Ambil request data & files
-            // -------------------------------------------------
             $data  = $this->request->getVar();
             $files = $this->request->getFiles();
 
-            // Helper: pastikan folder ada & writable
             $ensureDir = function (string $dir) {
                 if (!is_dir($dir)) { @mkdir($dir, 0775, true); }
                 if (!is_writable($dir)) { @chmod($dir, 0775); }
@@ -369,34 +352,23 @@ class AdminController extends BaseController
             $ensureDir('img/barang/3000');
             $ensureDir('img/barang/hover');
 
-            // -------------------------------------------------
-            // 2) Proses GAMBAR HOVER (opsional)
-            // -------------------------------------------------
             if (isset($files['gambar_hover']) && $files['gambar_hover'] && $files['gambar_hover']->isValid()) {
                 try {
                     $tmpPath = 'imgdum/barang/hover';
                     $files['gambar_hover']->move($tmpPath, $id_product . '.webp');
 
                     @unlink('img/barang/hover/' . $id_product . '.webp');
-                    $imgSvc = \Config\Services::image();
-                    if (!$imgSvc) {
-                        throw new \RuntimeException('Services::image() tidak tersedia (cek GD/Imagick).');
-                    }
-                    $imgSvc->withFile($tmpPath . '/' . $id_product . '.webp')
+                    \Config\Services::image()
+                        ->withFile($tmpPath . '/' . $id_product . '.webp')
                         ->resize(300, 300, true, 'height')
                         ->save('img/barang/hover/' . $id_product . '.webp');
 
                     @unlink($tmpPath . '/' . $id_product . '.webp');
                 } catch (\Throwable $e) {
-                    // Jangan bikin gagal total; log & teruskan
                     log_message('error', 'EDIT hover gagal: {msg}', ['msg' => $e->getMessage()]);
                 }
             }
 
-            // -------------------------------------------------
-            // 3) Proses GAMBAR VARIAN (opsional)
-            //    FE mengirim nama: gambar_0, gambar_1, ...
-            // -------------------------------------------------
             if (!empty($files)) {
                 foreach ($files as $field => $file) {
                     if ($field === 'gambar_hover') continue;
@@ -404,27 +376,23 @@ class AdminController extends BaseController
                     if (!$file || !$file->isValid()) continue;
 
                     try {
-                        // urutan dari nama field
                         $parts  = explode('_', $field);
                         $urutan = isset($parts[1]) ? (int)$parts[1] : 0;
 
-                        $file->move('imgdum'); // ke imgdum/NAME.xxx
+                        $file->move('imgdum');
 
-                        // 3000px
                         @unlink("img/barang/3000/{$id_product}-" . ($urutan + 1) . ".webp");
                         \Config\Services::image()
                             ->withFile('imgdum/' . $file->getName())
                             ->resize(3000, 3000, true, 'height')
                             ->save("img/barang/3000/{$id_product}-" . ($urutan + 1) . ".webp");
 
-                        // 1000px
                         @unlink("img/barang/1000/{$id_product}-" . ($urutan + 1) . ".webp");
                         \Config\Services::image()
                             ->withFile('imgdum/' . $file->getName())
                             ->resize(1000, 1000, true, 'height')
                             ->save("img/barang/1000/{$id_product}-" . ($urutan + 1) . ".webp");
 
-                        // thumb 300px untuk urutan pertama
                         if ($urutan <= 0) {
                             @unlink("img/barang/300/{$id_product}.webp");
                             \Config\Services::image()
@@ -435,7 +403,6 @@ class AdminController extends BaseController
 
                         @unlink('imgdum/' . $file->getName());
                     } catch (\Throwable $e) {
-                        // Jangan stop total; log & lanjut
                         log_message('error', 'EDIT varian gambar gagal ({field}): {msg}', [
                             'field' => $field,
                             'msg'   => $e->getMessage()
@@ -444,10 +411,6 @@ class AdminController extends BaseController
                 }
             }
 
-            // -------------------------------------------------
-            // 4) Map kategori/jenis dari ID -> nama (kalau dikirim)
-            //    Pada ADD kamu simpan NAMA ke DB, jadi EDIT juga konsisten NAMA.
-            // -------------------------------------------------
             $kategoriNama    = $barang['kategori'];
             $subkategoriNama = $barang['subkategori'];
 
@@ -460,17 +423,11 @@ class AdminController extends BaseController
                 if ($jenisRow) $subkategoriNama = $jenisRow['nama'];
             }
 
-            // -------------------------------------------------
-            // 5) Normalisasi deskripsi & varian ke JSON string
-            // -------------------------------------------------
             $deskripsi = $data['deskripsi'] ?? $barang['deskripsi'];
             if (is_array($deskripsi)) $deskripsi = json_encode($deskripsi);
             $varian = $data['varian'] ?? $barang['varian'];
             if (is_array($varian)) $varian = json_encode($varian);
 
-            // -------------------------------------------------
-            // 6) Coerce boolean ruangan -> '0'/'1'
-            // -------------------------------------------------
             $boolTo01 = fn($v) => (is_bool($v) ? ($v ? '1' : '0') : (string)$v);
 
             $payload = [
@@ -490,12 +447,20 @@ class AdminController extends BaseController
                 'ruang_tidur'    => $boolTo01($data['ruang_tidur']    ?? ($barang['ruang_tidur'] ?? '0')),
             ];
 
-            // (Opsional) kalau kamu tulis tgl_update:
-            // $payload['tgl_update'] = date('Y-m-d H:i:s');
+            // ===== PATCH PENTING: simpan jadwal diskon =====
+            if ($this->request->getVar('pakai_jadwal_diskon') !== null) {
+                $pakaiSchedule = !empty($this->request->getVar('pakai_jadwal_diskon')) ? 1 : 0;
+                $mulaiRaw      = (string) $this->request->getVar('diskon_mulai');    // 2025-10-06T13:00
+                $selesaiRaw    = (string) $this->request->getVar('diskon_selesai');  // 2025-10-06T23:00
 
-            // -------------------------------------------------
-            // 7) Update DB
-            // -------------------------------------------------
+                $payload['pakai_jadwal_diskon'] = $pakaiSchedule;
+                $payload['diskon_mulai']   = $pakaiSchedule && $mulaiRaw
+                    ? date('Y-m-d H:i:s', strtotime(str_replace('T',' ', $mulaiRaw))) : null;
+                $payload['diskon_selesai'] = $pakaiSchedule && $selesaiRaw
+                    ? date('Y-m-d H:i:s', strtotime(str_replace('T',' ', $selesaiRaw))) : null;
+            }
+            // ===== END PATCH =====
+
             $this->barangModel->update($id_product, $payload);
 
             return $this->response->setStatusCode(200)->setJSON([
@@ -503,7 +468,6 @@ class AdminController extends BaseController
                 'payload' => $payload,
             ]);
         } catch (\Throwable $e) {
-            // Tulis ke log + kirim detail ke FE biar gampang trace di Network tab
             log_message('error', 'EDIT PRODUCT ERROR: {msg} at {file}:{line}', [
                 'msg'  => $e->getMessage(),
                 'file' => $e->getFile(),
@@ -512,10 +476,11 @@ class AdminController extends BaseController
 
             return $this->response->setStatusCode(500)->setJSON([
                 'pesan' => 'Gagal mengubah produk.',
-                'error' => $e->getMessage(), // sengaja tampilkan saat debugging
+                'error' => $e->getMessage(),
             ]);
         }
     }
+
 
 
 

@@ -362,6 +362,17 @@ const koleksi = JSON.parse('<?= $koleksiJson; ?>');
 const jenis = JSON.parse('<?= $jenisJson; ?>');
 const idProduct = '<?= isset($idProduct) ? $idProduct : ''; ?>';
 
+// === PATCH: helper ubah "YYYY-MM-DD HH:MM:SS" -> "YYYY-MM-DDTHH:MM" ===
+function toInputDateTime(val) {
+  if (!val) return '';
+  const v = (val + '').trim().replace(' ', 'T'); // ganti spasi jadi 'T' kalau perlu
+  // pangkas detik kalau ada
+  const [d, t] = v.split('T');
+  if (!t) return '';
+  const [hh='00', mm='00'] = t.split(':');
+  return `${d}T${hh.padStart(2,'0')}:${mm.padStart(2,'0')}`;
+}
+
 async function urlToFile(url, filename, mimeType) {
   const res = await fetch(url);
   const buffer = await res.arrayBuffer();
@@ -464,10 +475,12 @@ const App = () => {
           kategori: currentProduct.kategori,
           subkategori: currentProduct.subkategori,
           diskon: currentProduct.diskon,
-          // >>> prefill jadwal kalau ada
-          pakai_jadwal_diskon: !!(currentProduct.diskon_mulai && currentProduct.diskon_selesai),
-          diskon_mulai: currentProduct.diskon_mulai || '',
-          diskon_selesai: currentProduct.diskon_selesai || '',
+          // >>> PATCH: prefill jadwal (gunakan flag DB kalau ada, dan konversi format)
+          pakai_jadwal_diskon:
+            (currentProduct.pakai_jadwal_diskon === 1 || currentProduct.pakai_jadwal_diskon === '1') ||
+            (!!currentProduct.diskon_mulai && !!currentProduct.diskon_selesai),
+          diskon_mulai: toInputDateTime(currentProduct.diskon_mulai),
+          diskon_selesai: toInputDateTime(currentProduct.diskon_selesai),
           // <<<
           varian: currentProduct.varian,
           shopee: currentProduct.shopee,
@@ -613,7 +626,7 @@ const App = () => {
     if (!formData.pakai_jadwal_diskon || !formData.diskon_mulai || !formData.diskon_selesai) return null;
     const now = new Date();
     const start = new Date(formData.diskon_mulai);
-    const end = new Date(formData.diskon_selesai);
+       const end = new Date(formData.diskon_selesai);
     const aktif = now >= start && now <= end;
     return (
       <span className={`badge ${aktif ? 'badge-aktif' : 'badge-non'}`}>

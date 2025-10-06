@@ -32,15 +32,12 @@ class BarangModel extends Model
         'ruang_keluarga',
         'tgl_update',
 
-        // === kolom baru untuk jadwal diskon ===
-        'pakai_jadwal_diskon',  // tinyint(1) 0/1
-        'diskon_mulai',         // datetime nullable
-        'diskon_selesai',       // datetime nullable
+        // kolom jadwal diskon (baru)
+        'pakai_jadwal_diskon',
+        'diskon_mulai',
+        'diskon_selesai',
     ];
 
-    // =========================
-    // Getter lama (tanpa perubahan perilaku)
-    // =========================
     public function getBarang($id = false)
     {
         if ($id == false) {
@@ -94,14 +91,7 @@ class BarangModel extends Model
         return $this->orderBy('nama', 'asc')->findAll(20, $offset);
     }
 
-    // =========================
-    // Opsional: helper buat cek diskon aktif & harga akhir
-    // (tidak mengubah sistem lama; pakai jika mau)
-    // =========================
-
-    /**
-     * True kalau diskon aktif sekarang (memperhitungkan jadwal bila diaktifkan).
-     */
+    // Opsional helper (boleh dipakai kalau butuh)
     public function isDiskonAktif(array $row): bool
     {
         $diskon = (float)($row['diskon'] ?? 0);
@@ -113,19 +103,15 @@ class BarangModel extends Model
         if (empty($row['diskon_mulai']) || empty($row['diskon_selesai'])) return false;
 
         try {
-            $now    = new \DateTime('now');
-            $mulai  = new \DateTime($row['diskon_mulai']);
-            $selesai= new \DateTime($row['diskon_selesai']);
+            $now     = new \DateTime('now');
+            $mulai   = new \DateTime($row['diskon_mulai']);
+            $selesai = new \DateTime($row['diskon_selesai']);
             return $now >= $mulai && $now <= $selesai;
         } catch (\Throwable $e) {
             return false;
         }
     }
 
-    /**
-     * Kembalikan row + field tambahan 'harga_akhir'
-     * (harga setelah diskon jika aktif).
-     */
     public function applyScheduleToPrice(array $row): array
     {
         $harga = (float)($row['harga'] ?? 0);
