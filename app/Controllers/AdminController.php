@@ -343,68 +343,111 @@ class AdminController extends BaseController
     public function actionEditProduct($id_product)
     {
         try {
-            // Ambil data lama
+            // -------------------------------------------------
+            // 0) Ambil data lama + guard not found
+            // -------------------------------------------------
             $barang = $this->barangModel->getBarangAdmin($id_product);
             if (!$barang) {
                 return $this->response->setStatusCode(404)->setJSON(['pesan' => 'Produk tidak ditemukan']);
             }
 
+            // -------------------------------------------------
+            // 1) Ambil request data & files
+            // -------------------------------------------------
             $data  = $this->request->getVar();
             $files = $this->request->getFiles();
 
-            // --- Hover (opsional) ---
-            if (isset($files['gambar_hover']) && $files['gambar_hover']->isValid()) {
-                $fpTmp = 'imgdum/barang/hover';
-                $files['gambar_hover']->move($fpTmp, $id_product . '.webp');
+            // Helper: pastikan folder ada & writable
+            $ensureDir = function (string $dir) {
+                if (!is_dir($dir)) { @mkdir($dir, 0775, true); }
+                if (!is_writable($dir)) { @chmod($dir, 0775); }
+            };
+            $ensureDir('imgdum');
+            $ensureDir('imgdum/barang/hover');
+            $ensureDir('img/barang/300');
+            $ensureDir('img/barang/1000');
+            $ensureDir('img/barang/3000');
+            $ensureDir('img/barang/hover');
 
-                @unlink('img/barang/hover/' . $id_product . '.webp');
-                \Config\Services::image()
-                    ->withFile($fpTmp . '/' . $id_product . '.webp')
-                    ->resize(300, 300, true, 'height')
-                    ->save('img/barang/hover/' . $id_product . '.webp');
+            // -------------------------------------------------
+            // 2) Proses GAMBAR HOVER (opsional)
+            // -------------------------------------------------
+            if (isset($files['gambar_hover']) && $files['gambar_hover'] && $files['gambar_hover']->isValid()) {
+                try {
+                    $tmpPath = 'imgdum/barang/hover';
+                    $files['gambar_hover']->move($tmpPath, $id_product . '.webp');
 
-                @unlink($fpTmp . '/' . $id_product . '.webp');
-            }
-
-            // --- Gambar varian (flatten: gambar_0, gambar_1, ...) ---
-            foreach ($files as $field => $file) {
-                if ($field === 'gambar_hover') continue;
-                if (strpos($field, 'gambar_') !== 0) continue;
-                if (!$file->isValid()) continue;
-
-                // urutan dari nama field
-                $parts  = explode('_', $field);
-                $urutan = isset($parts[1]) ? (int)$parts[1] : 0;
-
-                $file->move('imgdum');
-
-                // 3000px
-                @unlink("img/barang/3000/{$id_product}-" . ($urutan + 1) . ".webp");
-                \Config\Services::image()
-                    ->withFile('imgdum/' . $file->getName())
-                    ->resize(3000, 3000, true, 'height')
-                    ->save("img/barang/3000/{$id_product}-" . ($urutan + 1) . ".webp");
-
-                // 1000px
-                @unlink("img/barang/1000/{$id_product}-" . ($urutan + 1) . ".webp");
-                \Config\Services::image()
-                    ->withFile('imgdum/' . $file->getName())
-                    ->resize(1000, 1000, true, 'height')
-                    ->save("img/barang/1000/{$id_product}-" . ($urutan + 1) . ".webp");
-
-                // thumb 300px untuk urutan pertama
-                if ($urutan <= 0) {
-                    @unlink("img/barang/300/{$id_product}.webp");
-                    \Config\Services::image()
-                        ->withFile('imgdum/' . $file->getName())
+                    @unlink('img/barang/hover/' . $id_product . '.webp');
+                    $imgSvc = \Config\Services::image();
+                    if (!$imgSvc) {
+                        throw new \RuntimeException('Services::image() tidak tersedia (cek GD/Imagick).');
+                    }
+                    $imgSvc->withFile($tmpPath . '/' . $id_product . '.webp')
                         ->resize(300, 300, true, 'height')
-                        ->save("img/barang/300/{$id_product}.webp");
-                }
+                        ->save('img/barang/hover/' . $id_product . '.webp');
 
-                @unlink('imgdum/' . $file->getName());
+                    @unlink($tmpPath . '/' . $id_product . '.webp');
+                } catch (\Throwable $e) {
+                    // Jangan bikin gagal total; log & teruskan
+                    log_message('error', 'EDIT hover gagal: {msg}', ['msg' => $e->getMessage()]);
+                }
             }
 
-            // --- Map kategori/jenis dari ID ke nama (kalau dikirim) ---
+            // -------------------------------------------------
+            // 3) Proses GAMBAR VARIAN (opsional)
+            //    FE mengirim nama: gambar_0, gambar_1, ...
+            // -------------------------------------------------
+            if (!empty($files)) {
+                foreach ($files as $field => $file) {
+                    if ($field === 'gambar_hover') continue;
+                    if (strpos($field, 'gambar_') !== 0) continue;
+                    if (!$file || !$file->isValid()) continue;
+
+                    try {
+                        // urutan dari nama field
+                        $parts  = explode('_', $field);
+                        $urutan = isset($parts[1]) ? (int)$parts[1] : 0;
+
+                        $file->move('imgdum'); // ke imgdum/NAME.xxx
+
+                        // 3000px
+                        @unlink("img/barang/3000/{$id_product}-" . ($urutan + 1) . ".webp");
+                        \Config\Services::image()
+                            ->withFile('imgdum/' . $file->getName())
+                            ->resize(3000, 3000, true, 'height')
+                            ->save("img/barang/3000/{$id_product}-" . ($urutan + 1) . ".webp");
+
+                        // 1000px
+                        @unlink("img/barang/1000/{$id_product}-" . ($urutan + 1) . ".webp");
+                        \Config\Services::image()
+                            ->withFile('imgdum/' . $file->getName())
+                            ->resize(1000, 1000, true, 'height')
+                            ->save("img/barang/1000/{$id_product}-" . ($urutan + 1) . ".webp");
+
+                        // thumb 300px untuk urutan pertama
+                        if ($urutan <= 0) {
+                            @unlink("img/barang/300/{$id_product}.webp");
+                            \Config\Services::image()
+                                ->withFile('imgdum/' . $file->getName())
+                                ->resize(300, 300, true, 'height')
+                                ->save("img/barang/300/{$id_product}.webp");
+                        }
+
+                        @unlink('imgdum/' . $file->getName());
+                    } catch (\Throwable $e) {
+                        // Jangan stop total; log & lanjut
+                        log_message('error', 'EDIT varian gambar gagal ({field}): {msg}', [
+                            'field' => $field,
+                            'msg'   => $e->getMessage()
+                        ]);
+                    }
+                }
+            }
+
+            // -------------------------------------------------
+            // 4) Map kategori/jenis dari ID -> nama (kalau dikirim)
+            //    Pada ADD kamu simpan NAMA ke DB, jadi EDIT juga konsisten NAMA.
+            // -------------------------------------------------
             $kategoriNama    = $barang['kategori'];
             $subkategoriNama = $barang['subkategori'];
 
@@ -417,12 +460,18 @@ class AdminController extends BaseController
                 if ($jenisRow) $subkategoriNama = $jenisRow['nama'];
             }
 
-            // --- deskripsi & varian: pastikan string JSON (FE kirim string; kalau array -> json_encode) ---
+            // -------------------------------------------------
+            // 5) Normalisasi deskripsi & varian ke JSON string
+            // -------------------------------------------------
             $deskripsi = $data['deskripsi'] ?? $barang['deskripsi'];
-            if (is_array($deskripsi)) { $deskripsi = json_encode($deskripsi); }
-
+            if (is_array($deskripsi)) $deskripsi = json_encode($deskripsi);
             $varian = $data['varian'] ?? $barang['varian'];
-            if (is_array($varian)) { $varian = json_encode($varian); }
+            if (is_array($varian)) $varian = json_encode($varian);
+
+            // -------------------------------------------------
+            // 6) Coerce boolean ruangan -> '0'/'1'
+            // -------------------------------------------------
+            $boolTo01 = fn($v) => (is_bool($v) ? ($v ? '1' : '0') : (string)$v);
 
             $payload = [
                 'nama'           => $data['nama']        ?? $barang['nama'],
@@ -436,11 +485,17 @@ class AdminController extends BaseController
                 'shopee'         => $data['shopee']      ?? ($barang['shopee'] ?? ''),
                 'tokped'         => $data['tokped']      ?? ($barang['tokped'] ?? ''),
                 'tiktok'         => $data['tiktok']      ?? ($barang['tiktok'] ?? ''),
-                'ruang_tamu'     => isset($data['ruang_tamu'])     ? $data['ruang_tamu']     : ($barang['ruang_tamu'] ?? 0),
-                'ruang_keluarga' => isset($data['ruang_keluarga']) ? $data['ruang_keluarga'] : ($barang['ruang_keluarga'] ?? 0),
-                'ruang_tidur'    => isset($data['ruang_tidur'])    ? $data['ruang_tidur']    : ($barang['ruang_tidur'] ?? 0),
+                'ruang_tamu'     => $boolTo01($data['ruang_tamu']     ?? ($barang['ruang_tamu'] ?? '0')),
+                'ruang_keluarga' => $boolTo01($data['ruang_keluarga'] ?? ($barang['ruang_keluarga'] ?? '0')),
+                'ruang_tidur'    => $boolTo01($data['ruang_tidur']    ?? ($barang['ruang_tidur'] ?? '0')),
             ];
 
+            // (Opsional) kalau kamu tulis tgl_update:
+            // $payload['tgl_update'] = date('Y-m-d H:i:s');
+
+            // -------------------------------------------------
+            // 7) Update DB
+            // -------------------------------------------------
             $this->barangModel->update($id_product, $payload);
 
             return $this->response->setStatusCode(200)->setJSON([
@@ -448,17 +503,20 @@ class AdminController extends BaseController
                 'payload' => $payload,
             ]);
         } catch (\Throwable $e) {
-            log_message('error', 'EDIT PRODUCT ERROR: {msg} {file}:{line}', [
+            // Tulis ke log + kirim detail ke FE biar gampang trace di Network tab
+            log_message('error', 'EDIT PRODUCT ERROR: {msg} at {file}:{line}', [
                 'msg'  => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ]);
+
             return $this->response->setStatusCode(500)->setJSON([
                 'pesan' => 'Gagal mengubah produk.',
-                'error' => $e->getMessage(), // sementara untuk debug
+                'error' => $e->getMessage(), // sengaja tampilkan saat debugging
             ]);
         }
     }
+
 
 
     public function actionEditProductOld($pathname = false)
