@@ -343,19 +343,26 @@ class Pages extends BaseController
     public function product($nama = false, $ind_nama = false)
     {
         $wishlist = $this->session->get('wishlist');
-        $koleksi = $this->koleksiModel->findAll();
-        $jenis = $this->jenisModel->findAll();
-        $nama = str_replace('-', ' ', $nama);
+        $koleksi  = $this->koleksiModel->findAll();
+        $jenis    = $this->jenisModel->findAll();
+        $nama     = str_replace('-', ' ', $nama);
+
         if (!isset($wishlist)) {
             $wishlist = [];
         }
+
         if ($nama) {
             $productsemua = $this->barangModel->where(['nama' => $nama])->findAll();
-            $product = $productsemua[$ind_nama];
-            // dd($product);
+            $product      = $productsemua[$ind_nama];
             $product['deskripsi'] = json_decode($product['deskripsi'], true);
-            $product['varian'] = json_decode($product['varian'], true);
-            $produkSejenis = $this->barangModel->where(['subkategori' => $product['subkategori']])->where('id !=', $product['id'])->orderBy('pengunjung', 'desc')->findAll(8, 0);
+            $product['varian']    = json_decode($product['varian'], true);
+
+            $produkSejenis = $this->barangModel
+                ->where(['subkategori' => $product['subkategori']])
+                ->where('id !=', $product['id'])
+                ->orderBy('pengunjung', 'desc')
+                ->findAll(8, 0);
+
             $seluruhBarangFilter = [];
             $seluruhNama =  [];
             foreach ($produkSejenis as $s) {
@@ -364,48 +371,67 @@ class Pages extends BaseController
                     array_push($seluruhNama, $s['nama']);
                 }
             }
-            $data = [
-                'title' => ucwords($product['nama']),
 
-                'navbar' => $this->getNavbarData(),
+            $data = [
+                'title'         => ucwords($product['nama']),
+                'navbar'        => $this->getNavbarData(),
                 'apikey_img_ilena' => $this->apikey_img_ilena,
                 'produk'        => $product,
                 'wishlist'      => $wishlist,
-                // 'koleksi'       => $koleksi,
-                // 'jenis'         => $jenis,
                 'produkSejenis' => $seluruhBarangFilter,
                 'produkSemua'   => $productsemua,
                 'indexNama'     => $ind_nama,
-                'metaDeskripsi' => $product['nama'] . ' ' . 'ilena futniture' . ' ' . 'Ilena Semarang',
-                'metaKeyword'   => $product['kategori'] . ' ' . 'Ilena Semarang'
+                'metaDeskripsi' => $product['nama'] . ' ilena futniture Ilena Semarang',
+                'metaKeyword'   => $product['kategori'] . ' Ilena Semarang'
             ];
 
-            //menambah pengunjung
-            $this->barangModel->where(['id' => $product['id']])->set(['pengunjung' => (int)$product['pengunjung'] + 1])->update();
+            // menambah pengunjung
+            $this->barangModel->where(['id' => $product['id']])
+                            ->set(['pengunjung' => (int)$product['pengunjung'] + 1])
+                            ->update();
 
             return view('pages/product', $data);
         } else {
-            // dd([
-            //     'koleksi' => $koleksi,
-            //     'jenis' => $jenis,
-            // ]);
-            $product = $this->barangModel->getBarangNama();
-            $data = [
-                'title' => 'Produk Kami',
+            // ====== TAMBAHAN KECIL: dukung /product?jenis=diskon (atau bundling) ======
+            $jenisParam = strtolower(trim($this->request->getGet('jenis') ?? ''));
 
+            // ambil data default seperti sistem lama
+            $product = $this->barangModel->getBarangNama();
+
+            if ($jenisParam === 'diskon') {
+                // semua produk dengan diskon > 0
+                $product = array_values(array_filter($product, function ($row) {
+                    return (float)($row['diskon'] ?? 0) > 0;
+                }));
+                $titlePage = 'Produk Diskon';
+            } elseif ($jenisParam === 'bundling') {
+                // (opsional) produk yang namanya mengandung "bundling" dan sedang diskon
+                $product = array_values(array_filter($product, function ($row) {
+                    return (float)($row['diskon'] ?? 0) > 0
+                        && stripos($row['nama'] ?? '', 'bundling') !== false;
+                }));
+                $titlePage = 'Bundling Sedang Diskon';
+            } else {
+                $titlePage = 'Produk Kami'; // default persis seperti sistem lama
+            }
+            // ====== END TAMBAHAN ======
+
+            $data = [
+                'title' => $titlePage,
                 'navbar' => $this->getNavbarData(),
                 'apikey_img_ilena' => $this->apikey_img_ilena,
                 'produk' => $product,
                 'koleksiJenis' => [
                     'koleksi' => $koleksi,
-                    'jenis' => $jenis,
+                    'jenis'   => $jenis,
                 ],
                 'jenis' => $jenis,
-                'wishlist'      => $wishlist,
+                'wishlist' => $wishlist,
             ];
             return view('pages/all', $data);
         }
     }
+
 
     public function productCategory($kategori)
     {
@@ -1131,7 +1157,7 @@ class Pages extends BaseController
         }
         //voucher
         $voucher = [];
-        $emailUjiCoba = ['galihsuks123@gmail.com', 'ilenafurniture@gmail.com', 'galih8.4.2001@gmail.com'];
+        $emailUjiCoba = ['galihsuks123@gmail.com', 'ilenafurniture@gmail.com', 'galih8.4.2001@gmail.com','tipaun0605@gmail.com'];
         if (session()->get('isLogin') && in_array($alamatselected['email_pemesan'], $emailUjiCoba)) {
             //voucher member baru
             $voucherMemberBaru = $this->voucherModel->where(['id' => 1])->first();
