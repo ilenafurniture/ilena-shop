@@ -3394,103 +3394,213 @@ class Pages extends BaseController
         ];
         return view('pages/invoice', $data);
     }
+
     public function wishlist()
     {
         $wishlist = $this->session->get('wishlist');
-        $produk = [];
-        if (!isset($wishlist)) {
+        $produk   = [];
+
+        if (!is_array($wishlist)) {
             $wishlist = [];
         }
+
+        // Bersihkan ID wishlist yg tidak ditemukan
         $ketemuProdukNull = [];
         foreach ($wishlist as $index => $w) {
             $produkCek = $this->barangModel->getBarang($w);
             if (!$produkCek) {
-                array_push($ketemuProdukNull, $index);
+                $ketemuProdukNull[] = $index;
             }
         }
-        if (count($ketemuProdukNull) > 0) {
+
+        if (!empty($ketemuProdukNull)) {
             foreach ($ketemuProdukNull as $k) {
                 unset($wishlist[$k]);
-                $wishlistBaru = array_values($wishlist);
-                $this->session->set(['wishlist' => $wishlistBaru]);
-                $email = session()->get('email');
-                if ($email)
-                    $this->pembeliModel->where('email', $email)->set(['wishlist' => json_encode($wishlistBaru)])->update();
             }
+            $wishlistBaru = array_values($wishlist);
+            $this->session->set(['wishlist' => $wishlistBaru]);
+
+            $email = session()->get('email');
+            if ($email) {
+                $this->pembeliModel
+                    ->where('email', $email)
+                    ->set(['wishlist' => json_encode($wishlistBaru)])
+                    ->update();
+            }
+
             return redirect()->to('/wishlist');
         }
+
         foreach ($wishlist as $w) {
-            array_push($produk, $this->barangModel->getBarang($w));
+            $barang = $this->barangModel->getBarang($w);
+            if ($barang) {
+                $produk[] = $barang;
+            }
         }
+
         $data = [
-            'title' => 'Favorite',
-            'navbar' => $this->getNavbarData(),
+            'title'            => 'Favorite',
+            'navbar'           => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
-            'produk' => $produk,
-            'wishlist' => $wishlist
+            'produk'           => $produk,
+            'wishlist'         => $wishlist,
         ];
+
+        // (Opsional) Balas JSON bila AJAX minta data wishlist
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON([
+                'ok'       => true,
+                'count'    => count($wishlist),
+                'produk'   => $produk,
+                'wishlist' => array_values($wishlist),
+            ]);
+        }
+
         return view('pages/wishlist', $data);
     }
+
     public function addWishlist($id_barang)
     {
+        $id_barang = (string) $id_barang;
+
         $wishlist = $this->session->get('wishlist');
-        if (!isset($wishlist)) {
+        if (!is_array($wishlist)) {
             $wishlist = [];
         }
-        array_push($wishlist, $id_barang);
+
+        // tambah kalau belum ada
+        if ($id_barang !== '' && !in_array($id_barang, $wishlist, true)) {
+            $wishlist[] = $id_barang;
+        }
+
         $this->session->set(['wishlist' => $wishlist]);
 
         $email = session()->get('email');
-        if ($email)
-            $this->pembeliModel->where('email', $email)->set(['wishlist' => json_encode($wishlist)])->update();
+        if ($email) {
+            $this->pembeliModel
+                ->where('email', $email)
+                ->set(['wishlist' => json_encode($wishlist)])
+                ->update();
+        }
+
+        // Jika AJAX: kembalikan JSON (tidak redirect)
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON([
+                'ok'       => true,
+                'action'   => 'add',
+                'id'       => $id_barang,
+                'count'    => count($wishlist),
+                'wishlist' => array_values($wishlist),
+            ]);
+        }
+
+        // Non-AJAX: tetap seperti sistem lama (redirect ke product)
         $barang = $this->barangModel->getBarang($id_barang);
-        return redirect()->to('/product/' . str_replace(' ', '-', $barang['nama']));
+        if ($barang && !empty($barang['nama'])) {
+            return redirect()->to('/product/' . str_replace(' ', '-', $barang['nama']));
+        }
+        // Fallback aman jika barang sudah tidak ada
+        return redirect()->to('/wishlist');
     }
+
     public function delWishlist($id_barang)
     {
-        $wishlist = session()->get('wishlist');
-        if (($key = array_search($id_barang, $wishlist)) !== false) {
-            unset($wishlist[$key]);
+        $id_barang = (string) $id_barang;
+
+        $wishlist = $this->session->get('wishlist');
+        if (!is_array($wishlist)) {
+            $wishlist = [];
         }
-        session()->set(['wishlist' => $wishlist]);
+
+        $key = array_search($id_barang, $wishlist, true);
+        if ($key !== false) {
+            unset($wishlist[$key]);
+            $wishlist = array_values($wishlist);
+        }
+
+        $this->session->set(['wishlist' => $wishlist]);
+
         $email = session()->get('email');
-        if ($email)
-            $this->pembeliModel->where('email', $email)->set(['wishlist' => json_encode($wishlist)])->update();
+        if ($email) {
+            $this->pembeliModel
+                ->where('email', $email)
+                ->set(['wishlist' => json_encode($wishlist)])
+                ->update();
+        }
+
+        // Jika AJAX: balas JSON agar tidak dinavigasi SPA (hindari error dom.js)
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON([
+                'ok'       => true,
+                'action'   => 'del',
+                'id'       => $id_barang,
+                'count'    => count($wishlist),
+                'wishlist' => array_values($wishlist),
+            ]);
+        }
+
+        // Non-AJAX (tetap jalur lama): redirect ke halaman produk terkait
         $barang = $this->barangModel->getBarang($id_barang);
-        return redirect()->to('/product/' . str_replace(' ', '-', $barang['nama']));
+        if ($barang && !empty($barang['nama'])) {
+            return redirect()->to('/product/' . str_replace(' ', '-', $barang['nama']));
+        }
+        // Fallback aman
+        return redirect()->to('/wishlist');
     }
+
     public function wishlistToCart()
     {
-        $wishlist = $this->session->get('wishlist');
+        $wishlist  = $this->session->get('wishlist');
         $keranjang = $this->session->get('keranjang');
-        if (!isset($keranjang)) {
-            $keranjang = [];
-        }
+
+        if (!is_array($wishlist))  $wishlist  = [];
+        if (!is_array($keranjang)) $keranjang = [];
+
         foreach ($wishlist as $id_barang) {
             $produknya = $this->barangModel->getBarang($id_barang);
-            $varian = json_decode($produknya['varian'], true)[0]['nama'];
+            if (!$produknya) {
+                continue; // skip barang yg sudah tidak ada
+            }
+
+            // amankan varian
+            $varianArr = json_decode($produknya['varian'] ?? '[]', true) ?: [];
+            $varian    = $varianArr[0]['nama'] ?? 'default';
 
             $ketemu = false;
             foreach ($keranjang as $index => $k) {
-                if ($k['id_barang'] == $id_barang && $k['varian'] == $varian) {
-                    $keranjang[$index]['jumlah']++;
+                if (
+                    isset($k['id_barang'], $k['varian'])
+                    && (string)$k['id_barang'] === (string)$id_barang
+                    && (string)$k['varian'] === (string)$varian
+                ) {
+                    $keranjang[$index]['jumlah'] = (int)($keranjang[$index]['jumlah'] ?? 0) + 1;
                     $ketemu = true;
+                    break;
                 }
             }
+
             if (!$ketemu) {
-                array_push($keranjang, [
+                $keranjang[] = [
                     'id_barang' => $id_barang,
-                    'varian' => $varian,
-                    'jumlah' => 1
-                ]);
+                    'varian'    => $varian,
+                    'jumlah'    => 1,
+                ];
             }
         }
+
         $this->session->set(['keranjang' => $keranjang]);
+
         $email = session()->get('email');
-        if ($email)
-            $this->pembeliModel->where('email', $email)->set(['keranjang' => json_encode($keranjang)])->update();
+        if ($email) {
+            $this->pembeliModel
+                ->where('email', $email)
+                ->set(['keranjang' => json_encode($keranjang)])
+                ->update();
+        }
+
         return redirect()->to('/cart');
     }
+
 
     public function actionSearchArticle()
     {
