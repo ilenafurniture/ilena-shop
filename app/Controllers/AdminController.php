@@ -342,109 +342,124 @@ class AdminController extends BaseController
 
     public function actionEditProduct($id_product)
     {
-        $data               = $this->request->getVar();
-        $data_gambar_mentah = $this->request->getFiles();
-
-        // ===== HOVER (optional) =====
-        if (isset($data_gambar_mentah['gambar_hover']) && $data_gambar_mentah['gambar_hover']->isValid()) {
-            $fp = 'imgdum/barang/hover';
-            $data_gambar_mentah['gambar_hover']->move($fp, $id_product . '.webp');
-            if (file_exists('img/barang/hover/' . $id_product . '.webp')) {
-                unlink('img/barang/hover/' . $id_product . '.webp');
+        try {
+            // Ambil data lama
+            $barang = $this->barangModel->getBarangAdmin($id_product);
+            if (!$barang) {
+                return $this->response->setStatusCode(404)->setJSON(['pesan' => 'Produk tidak ditemukan']);
             }
-            \Config\Services::image()
-                ->withFile($fp . '/' . $id_product . '.webp')
-                ->resize(300, 300, true, 'height')
-                ->save('img/barang/hover/' . $id_product . '.webp');
-            @unlink($fp . '/' . $id_product . '.webp');
-        }
-        unset($data_gambar_mentah['gambar_hover']);
 
-        // ===== Gambar varian (optional) =====
-        foreach ($data_gambar_mentah as $ind_g => $dG) {
-            if (!$dG->isValid()) continue;
-            $urutan = (int)explode('_', $ind_g)[1];
-            $dG->move('imgdum');
+            $data  = $this->request->getVar();
+            $files = $this->request->getFiles();
 
-            // 3000
-            if (file_exists('img/barang/3000/' . $id_product . '-' . ($urutan + 1) . '.webp')) {
-                unlink('img/barang/3000/' . $id_product . '-' . ($urutan + 1) . '.webp');
-            }
-            \Config\Services::image()
-                ->withFile('imgdum/' . $dG->getName())
-                ->resize(3000, 3000, true, 'height')
-                ->save('img/barang/3000/' . $id_product . '-' . ($urutan + 1) . '.webp');
+            // --- Hover (opsional) ---
+            if (isset($files['gambar_hover']) && $files['gambar_hover']->isValid()) {
+                $fpTmp = 'imgdum/barang/hover';
+                $files['gambar_hover']->move($fpTmp, $id_product . '.webp');
 
-            // 1000
-            if (file_exists('img/barang/1000/' . $id_product . '-' . ($urutan + 1) . '.webp')) {
-                unlink('img/barang/1000/' . $id_product . '-' . ($urutan + 1) . '.webp');
-            }
-            \Config\Services::image()
-                ->withFile('imgdum/' . $dG->getName())
-                ->resize(1000, 1000, true, 'height')
-                ->save('img/barang/1000/' . $id_product . '-' . ($urutan + 1) . '.webp');
-
-            // thumb 300 untuk urutan pertama
-            if ($urutan <= 0) {
-                if (file_exists('img/barang/300/' . $id_product . '.webp')) {
-                    unlink('img/barang/300/' . $id_product . '.webp');
-                }
+                @unlink('img/barang/hover/' . $id_product . '.webp');
                 \Config\Services::image()
-                    ->withFile('imgdum/' . $dG->getName())
+                    ->withFile($fpTmp . '/' . $id_product . '.webp')
                     ->resize(300, 300, true, 'height')
-                    ->save('img/barang/300/' . $id_product . '.webp');
+                    ->save('img/barang/hover/' . $id_product . '.webp');
+
+                @unlink($fpTmp . '/' . $id_product . '.webp');
             }
-            @unlink('imgdum/' . $dG->getName());
+
+            // --- Gambar varian (flatten: gambar_0, gambar_1, ...) ---
+            foreach ($files as $field => $file) {
+                if ($field === 'gambar_hover') continue;
+                if (strpos($field, 'gambar_') !== 0) continue;
+                if (!$file->isValid()) continue;
+
+                // urutan dari nama field
+                $parts  = explode('_', $field);
+                $urutan = isset($parts[1]) ? (int)$parts[1] : 0;
+
+                $file->move('imgdum');
+
+                // 3000px
+                @unlink("img/barang/3000/{$id_product}-" . ($urutan + 1) . ".webp");
+                \Config\Services::image()
+                    ->withFile('imgdum/' . $file->getName())
+                    ->resize(3000, 3000, true, 'height')
+                    ->save("img/barang/3000/{$id_product}-" . ($urutan + 1) . ".webp");
+
+                // 1000px
+                @unlink("img/barang/1000/{$id_product}-" . ($urutan + 1) . ".webp");
+                \Config\Services::image()
+                    ->withFile('imgdum/' . $file->getName())
+                    ->resize(1000, 1000, true, 'height')
+                    ->save("img/barang/1000/{$id_product}-" . ($urutan + 1) . ".webp");
+
+                // thumb 300px untuk urutan pertama
+                if ($urutan <= 0) {
+                    @unlink("img/barang/300/{$id_product}.webp");
+                    \Config\Services::image()
+                        ->withFile('imgdum/' . $file->getName())
+                        ->resize(300, 300, true, 'height')
+                        ->save("img/barang/300/{$id_product}.webp");
+                }
+
+                @unlink('imgdum/' . $file->getName());
+            }
+
+            // --- Map kategori/jenis dari ID ke nama (kalau dikirim) ---
+            $kategoriNama    = $barang['kategori'];
+            $subkategoriNama = $barang['subkategori'];
+
+            if (!empty($data['kategori'])) {
+                $koleksiRow = $this->koleksiModel->where('id', $data['kategori'])->first();
+                if ($koleksiRow) $kategoriNama = $koleksiRow['nama'];
+            }
+            if (!empty($data['subkategori'])) {
+                $jenisRow = $this->jenisModel->where('id', $data['subkategori'])->first();
+                if ($jenisRow) $subkategoriNama = $jenisRow['nama'];
+            }
+
+            // --- deskripsi & varian: pastikan string JSON (FE kirim string; kalau array -> json_encode) ---
+            $deskripsi = $data['deskripsi'] ?? $barang['deskripsi'];
+            if (is_array($deskripsi)) { $deskripsi = json_encode($deskripsi); }
+
+            $varian = $data['varian'] ?? $barang['varian'];
+            if (is_array($varian)) { $varian = json_encode($varian); }
+
+            $payload = [
+                'nama'           => $data['nama']        ?? $barang['nama'],
+                'harga'          => $data['harga']       ?? $barang['harga'],
+                'pencarian'      => $barang['pencarian'] ?? '',
+                'deskripsi'      => $deskripsi,
+                'kategori'       => $kategoriNama,
+                'subkategori'    => $subkategoriNama,
+                'diskon'         => $data['diskon']      ?? $barang['diskon'],
+                'varian'         => $varian,
+                'shopee'         => $data['shopee']      ?? ($barang['shopee'] ?? ''),
+                'tokped'         => $data['tokped']      ?? ($barang['tokped'] ?? ''),
+                'tiktok'         => $data['tiktok']      ?? ($barang['tiktok'] ?? ''),
+                'ruang_tamu'     => isset($data['ruang_tamu'])     ? $data['ruang_tamu']     : ($barang['ruang_tamu'] ?? 0),
+                'ruang_keluarga' => isset($data['ruang_keluarga']) ? $data['ruang_keluarga'] : ($barang['ruang_keluarga'] ?? 0),
+                'ruang_tidur'    => isset($data['ruang_tidur'])    ? $data['ruang_tidur']    : ($barang['ruang_tidur'] ?? 0),
+            ];
+
+            $this->barangModel->update($id_product, $payload);
+
+            return $this->response->setStatusCode(200)->setJSON([
+                'pesan'   => 'Berhasil mengubah produk.',
+                'payload' => $payload,
+            ]);
+        } catch (\Throwable $e) {
+            log_message('error', 'EDIT PRODUCT ERROR: {msg} {file}:{line}', [
+                'msg'  => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            return $this->response->setStatusCode(500)->setJSON([
+                'pesan' => 'Gagal mengubah produk.',
+                'error' => $e->getMessage(), // sementara untuk debug
+            ]);
         }
-
-        // ===== Map kategori/subkategori ID -> Nama (kalau dikirim dari form) =====
-        $kategoriNama   = $data['kategori'] ?? null;
-        $subkategoriNama= $data['subkategori'] ?? null;
-
-        if (!empty($data['kategori'])) {
-            $row = $this->koleksiModel->where('id', $data['kategori'])->first();
-            $kategoriNama = $row['nama'] ?? $kategoriNama;
-        }
-        if (!empty($data['subkategori'])) {
-            $row = $this->jenisModel->where('id', $data['subkategori'])->first();
-            $subkategoriNama = $row['nama'] ?? $subkategoriNama;
-        }
-
-        // ===== Jadwal diskon =====
-        $pakaiSchedule = !empty($data['pakai_jadwal_diskon']) ? 1 : 0;
-        $mulai   = $pakaiSchedule ? ($data['diskon_mulai']   ?? null) : null;
-        $selesai = $pakaiSchedule ? ($data['diskon_selesai'] ?? null) : null;
-
-        // ===== Data update =====
-        $updateData = [
-            'nama'            => $data['nama'],
-            'harga'           => $data['harga'],
-            'deskripsi'       => $data['deskripsi'],
-            'diskon'          => $data['diskon'],
-            'varian'          => $data['varian'],
-            'shopee'          => $data['shopee'] ?? '',
-            'tokped'          => $data['tokped'] ?? '',
-            'tiktok'          => $data['tiktok'] ?? '',
-            'ruang_tamu'      => $data['ruang_tamu'] ?? 0,
-            'ruang_keluarga'  => $data['ruang_keluarga'] ?? 0,
-            'ruang_tidur'     => $data['ruang_tidur'] ?? 0,
-            // jadwal diskon
-            'pakai_jadwal_diskon' => $pakaiSchedule,
-            'diskon_mulai'        => $mulai,
-            'diskon_selesai'      => $selesai,
-        ];
-
-        // kategori/subkategori hanya di-set jika ada input (biar tidak ngerusak data lama)
-        if (!empty($kategoriNama))    $updateData['kategori']    = $kategoriNama;
-        if (!empty($subkategoriNama)) $updateData['subkategori'] = $subkategoriNama;
-
-        $this->barangModel->update($id_product, $updateData);
-
-        return $this->response->setStatusCode(200)->setJSON([
-            'pesan'  => 'Produk berhasil diubah',
-            'update' => $updateData
-        ]);
     }
+
 
     public function actionEditProductOld($pathname = false)
     {
