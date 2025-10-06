@@ -1,953 +1,1005 @@
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
 <style>
-.container-gambar-add-product {
+/* ====== Layout & Cards ====== */
+.page-wrap {
+    padding: 2em;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 24px;
+}
+
+@media (max-width: 992px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .06);
+    border: 1px solid rgba(0, 0, 0, .06);
+}
+
+.card-header {
+    padding: 18px 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, .06);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: .2px;
+}
+
+.card-body {
+    padding: 18px 20px;
+}
+
+.section-title {
+    margin: 18px 0 10px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: #6b7280;
+    font-weight: 700;
+}
+
+/* ====== Table-ish inputs (simplified) ====== */
+.table-input {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-input td {
+    padding: 8px 0;
+    vertical-align: top;
+}
+
+.table-input td:first-child {
+    width: 36%;
+    color: #374151;
+    font-weight: 500;
+    padding-right: 14px;
+}
+
+.form-control,
+.form-select,
+.input-group-text,
+.btn-default,
+.btn-default-merah,
+.btn-teks-aja {
+    border-radius: 12px !important;
+}
+
+.form-control,
+.form-select {
+    border: 1px solid #e5e7eb;
+    transition: box-shadow .2s, border-color .2s;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #3b82f6;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, .1);
+}
+
+.input-group {
+    display: flex;
+    align-items: stretch;
+}
+
+.input-group .form-control {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.input-group .input-group-text {
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-left: 0;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 12px;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
+/* ====== Buttons ====== */
+.btn-row {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.btn-default {
+    background: #111827;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    font-weight: 600;
+    transition: transform .05s ease, opacity .2s ease;
+}
+
+.btn-default:hover {
+    opacity: .92;
+}
+
+.btn-default:active {
+    transform: translateY(1px);
+}
+
+.btn-default[disabled] {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+.btn-default-merah {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    font-weight: 600;
+}
+
+.btn-teks-aja {
+    padding: 6px 8px;
+    border: none;
+    background: transparent;
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.page-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    margin: 0 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ====== Images & Variants ====== */
+.container-gambar {
     display: flex;
     flex-wrap: wrap;
+    gap: 10px;
+}
+
+.item-gambar {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    cursor: pointer;
+    transition: transform .15s;
+}
+
+.item-gambar:hover {
+    transform: translateY(-2px);
+}
+
+.item-gambar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.item-gambar p {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    margin: 0;
+    background: rgba(17, 24, 39, .85);
+    color: #fff;
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity .2s;
+}
+
+.item-gambar:hover p {
+    opacity: 1;
+}
+
+.add-thumb {
+    width: 96px;
+    height: 96px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    border: 1px dashed #cbd5e1;
+    color: #64748b;
+    background: #f8fafc;
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color .2s, color .2s, transform .15s;
+}
+
+.add-thumb:hover {
+    border-color: #3b82f6;
+    color: #3b82f6;
+    transform: translateY(-2px);
+}
+
+.preview-hover {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+/* ====== Chips (room checkboxes) ====== */
+.chk-row {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.chk {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    cursor: pointer;
+    user-select: none;
+}
+
+.chk input {
+    accent-color: #111827;
+}
+
+/* ====== Sticky bottom actions ====== */
+.bottom-bar {
+    position: sticky;
+    bottom: 0;
+    margin-top: 18px;
+    padding: 12px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #fff 30%);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* ====== Loading Overlay ====== */
+.loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(17, 24, 39, .45);
+    backdrop-filter: blur(2px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.loading-overlay.show {
+    display: flex;
+}
+
+.loading-card {
+    background: #111827;
+    color: #fff;
+    padding: 16px 18px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 220px;
+    justify-content: center;
+}
+
+.spinner {
+    width: 18px;
+    height: 18px;
+    border: 3px solid rgba(255, 255, 255, .25);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Badge status */
+.badge {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 12px;
+    border: 1px solid transparent;
+}
+
+.badge-aktif {
+    background: rgba(16, 185, 129, .12);
+    color: #065f46;
+    border-color: rgba(16, 185, 129, .35);
+}
+
+.badge-non {
+    background: rgba(107, 114, 128, .12);
+    color: #374151;
+    border-color: rgba(107, 114, 128, .35);
 }
 </style>
-<div style="padding: 2em;">
+
+<div class="page-wrap">
+    <h1 class="page-title"><?= isset($idProduct) ? 'Edit' : 'Tambah' ?> Produk</h1>
     <div id="container-react"></div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script type="text/babel">
     const { useState, useEffect, useRef } = React;
-    const koleksi = JSON.parse('<?= $koleksiJson; ?>')
-    const jenis = JSON.parse('<?= $jenisJson; ?>');
-    const idProduct = '<?= isset($idProduct) ? $idProduct : ''; ?>'
+const koleksi = JSON.parse('<?= $koleksiJson; ?>');
+const jenis = JSON.parse('<?= $jenisJson; ?>');
+const idProduct = '<?= isset($idProduct) ? $idProduct : ''; ?>';
 
-    async function urlToFile(url, filename, mimeType) {
-        const res = await fetch(url);
-        const buffer = await res.arrayBuffer();
-        return new File([buffer], filename, { type: mimeType });
+async function urlToFile(url, filename, mimeType) {
+  const res = await fetch(url);
+  const buffer = await res.arrayBuffer();
+  return new File([buffer], filename, { type: mimeType });
+}
+
+const App = () => {
+  const firstRender = useRef(true);
+  const [formData, setFormData] = useState({
+    id: idProduct || '',
+    nama: '',
+    harga: '',
+    deskripsi: {
+      deskripsi: '',
+      dimensi: {
+        asli: { panjang: "", lebar: "", tinggi: "", berat: "" },
+        paket: { panjang: "", lebar: "", tinggi: "", berat: "" }
+      },
+      perawatan: ''
+    },
+    kategori: '',
+    subkategori: '',
+    diskon: '',
+    // >>> Tambahan jadwal diskon
+    pakai_jadwal_diskon: false,
+    diskon_mulai: '',
+    diskon_selesai: '',
+    // <<<
+    varian: [],
+    shopee: '',
+    tokped: '',
+    tiktok: '',
+    ruang_tamu: false,
+    ruang_keluarga: false,
+    ruang_tidur: false
+  });
+  const [eror, setEror] = useState('');
+  const [hoverSrc, setHoverSrc] = useState(null);
+  const [hoverFile, setHoverFile] = useState(null);
+  const [gambarSrc, setGambarSrc] = useState([]);
+  const [gambarFile, setGambarFile] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const idStr = useRef("1-00-000-XX");
+
+  // loading overlay
+  useEffect(() => {
+    const id = "global-loading-overlay";
+    let overlay = document.getElementById(id);
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = id;
+      overlay.className = 'loading-overlay';
+      overlay.innerHTML = `
+        <div class="loading-card">
+          <div class="spinner"></div>
+          <div>Sedang menyimpan...</div>
+        </div>`;
+      document.body.appendChild(overlay);
     }
+    overlay.classList.toggle('show', loading);
+    document.body.style.cursor = loading ? 'wait' : '';
+  }, [loading]);
 
+  // edit: set hover preview
+  useEffect(() => {
+    if (idProduct) {
+      const currentProduct = JSON.parse(<?= json_encode($produkJson ?? '{}') ?>);
+      setHoverSrc('<?= base_url('img/barang/hover/' . ($produk ? $produk['id'] : '') . '.webp') ?>');
+    }
+  }, []);
 
-    const App = () => {
-        const firstRender = useRef(true);
-        const [formData, setFormData] = useState({
-            id: idProduct || '',
-            nama: '',
-            harga: '',
-            deskripsi: {
-                deskripsi: '',
-                dimensi: {
-                    asli: {
-                        panjang: "",
-                        lebar: "",
-                        tinggi: "",
-                        berat: ""
-                    },
-                    paket: {
-                        panjang: "",
-                        lebar: "",
-                        tinggi: "",
-                        berat: ""
-                    }
-                },
-                perawatan: ''
-            },
-            kategori: '',
-            subkategori: '',
-            diskon: '',
-            varian: [
-                // {
-                //     nama: "HITAM",
-                //     kode: "#000000",
-                //     stok: "2",
-                //     urutan_gambar: "1,2"
-                // }qwdqw
-            ],
-            shopee: '',
-            tokped: '',
-            tiktok: '',
-            ruang_tamu: false,
-            ruang_keluarga: false,
-            ruang_tidur: false
-        });
-        const [eror, setEror] = useState('');
-        const [hoverSrc, setHoverSrc] = useState(null);
-        const [hoverFile, setHoverFile] = useState(null);
-        const [gambarSrc, setGambarSrc] = useState([]);
-        const [gambarFile, setGambarFile] = useState([]);
-        const [loading, setLoading] = useState(false);
-        const idStr = useRef("1-00-000-XX");
+  // generate ID (ADD only)
+  useEffect(() => {
+    if (idProduct) return;
+    let arr = idStr.current.split("-");
+    arr[1] = (formData.kategori ?? "").toString().padStart(2, '0');
+    idStr.current = arr.join("-");
+    setFormData(prev => ({ ...prev, id: arr.join("") }));
+  }, [formData.kategori]);
 
-        useEffect(() => {
-            if(idProduct) {
-                const currentProduct = JSON.parse(<?= json_encode($produkJson ?? '{}') ?>);
-                setHoverSrc('<?= base_url('img/barang/hover/' . ($produk ? $produk['id'] : '') . '.webp') ?>');
-            }
-        }, [])
+  useEffect(() => {
+    if (idProduct) return;
+    let arr = idStr.current.split("-");
+    arr[2] = (formData.subkategori ?? "").toString().padStart(3, '0');
+    idStr.current = arr.join("-");
+    setFormData(prev => ({ ...prev, id: arr.join("") }));
+  }, [formData.subkategori]);
 
-        
-
-        useEffect(() => {
-            let idStrArr = idStr.current.split("-");
-            idStrArr[1] = formData.kategori.toString().padStart(2, '0');
-            idStr.current = idStrArr.join("-");
-            setFormData({
-                ...formData,
-                id: idStrArr.join("")
-            })
-        }, [formData.kategori])
-        useEffect(() => {
-            let idStrArr = idStr.current.split("-");
-            idStrArr[2] = formData.subkategori.toString().padStart(3, '0');
-            idStr.current = idStrArr.join("-");
-            setFormData({
-                ...formData,
-                id: idStrArr.join("")
-            })
-        }, [formData.subkategori])
-
-        
-
-        useEffect(() => {
-            if (firstRender.current) {
-                if (idProduct) {
-                    const currentProduct = JSON.parse(<?= json_encode($produkJson ?? '{}') ?>);
-                    setFormData({
-                        ...formData,
-                        nama: currentProduct.nama,
-                        harga: currentProduct.harga,
-                        deskripsi: currentProduct.deskripsi,
-                        kategori: currentProduct.kategori,
-                        subkategori: currentProduct.subkategori,
-                        diskon: currentProduct.diskon,
-                        varian: currentProduct.varian,
-                        shopee: currentProduct.shopee,
-                        tokped: currentProduct.tokped,
-                        tiktok: currentProduct.tiktok
-                    }); 
-                    setGambarSrc(currentProduct.varian.map((v) => {
-                        return v.urutan_gambar.split(',').map((item) => {
-                        return `<?= base_url('img/barang/1000/' . ($produk ? $produk['id'] : '') . '-') ?>${item}.webp`;
-                        });
-                    }));
-                    
-                    (async () => {
-                        const gambarFileBig = []; 
-                        for (let i = 0; i < currentProduct.varian.length; i++) {
-                            const v = currentProduct.varian[i];
-                            const gambarArray = v.urutan_gambar.split(',');
-                            const gambarFileDum = [];
-                            for (let j = 0; j < gambarArray.length; j++) {
-                                const g = gambarArray[j];
-                                const imageUrl = `<?= base_url('img/barang/3000/' . ($produk ? $produk['id'] : '') . '-') ?>${g}.webp`;
-                                const file = await urlToFile(imageUrl, `gambar-ku-${i}-${j}.webp`, 'image/webp');
-                                gambarFileDum.push(file);
-                                
-                            }
-                            gambarFileBig.push(gambarFileDum);
-                        }
-                        setGambarFile(gambarFileBig);
-                    })();
-                }
-                firstRender.current = false;
-                return;
-            }
-
-            setFormData({
-                ...formData,
-                varian: formData.varian.map((v, ind_v) => {
-                const gambarArray = gambarSrc[ind_v] || [];
-                return {
-                    ...v,
-                    urutan_gambar: ind_v === 0
-                    ? gambarArray.map((_, index) => index + 1).join(',')
-                    : gambarArray.map((_, index) => {
-                        const prev = formData.varian[ind_v - 1].urutan_gambar;
-                        const lastUrutan = parseInt(prev.split(',').pop() || "0");
-                        return lastUrutan + index + 1;
-                        }).join(',')
-                };
-                })
-            });
-        }, [gambarSrc]);
-
-
-        const handleSubmit = () => {
-                if (!formData.nama || !formData.harga) {
-                    setEror("Nama dan harga produk wajib diisi.");
-                    return;
-                }
-
-                if (formData.varian.length === 0) {
-                    setEror("Minimal 1 varian harus ditambahkan.");
-                    return;
-                }
-
-                if (!idProduct) {
-                    for (let i = 0; i < formData.varian.length; i++) {
-                    if (!gambarFile[i] || gambarFile[i].length === 0) {
-                        setEror(`Varian ke-${i + 1} belum memiliki gambar.`);
-                        return;
-                    }
-                    }
-                }
-
-                const form = new FormData();
-
-                form.append("id", formData.id);
-                form.append("nama", formData.nama);
-                form.append("harga", formData.harga);
-                form.append("diskon", formData.diskon || "0");
-                form.append("kategori", formData.kategori);
-                form.append("subkategori", formData.subkategori);
-                form.append("shopee", formData.shopee || "");
-                form.append("tokped", formData.tokped || "");
-                form.append("tiktok", formData.tiktok || "");
-
-                form.append("ruang_tamu", formData.ruang_tamu ? "1" : "0");
-                form.append("ruang_keluarga", formData.ruang_keluarga ? "1" : "0");
-                form.append("ruang_tidur", formData.ruang_tidur ? "1" : "0");
-
-                form.append("deskripsi", JSON.stringify(formData.deskripsi || {}));
-                form.append("varian", JSON.stringify(formData.varian || []));
-
-                
-
-                if (hoverFile) {
-                    form.append("gambar_hover", hoverFile);
-                }
-
-                const gambarFileFix = gambarFile.reduce((prev, curr) => prev.concat(curr), []);
-                if (!idProduct && gambarFileFix.length === 0) {
-                    setEror("Minimal upload satu gambar untuk varian pertama.");
-                    return;
-                }
-
-                gambarFileFix.forEach((file, idx) => {
-                    if (file instanceof File) {
-                    form.append(`gambar_${idx}`, file);
-                    }
-                });
-                setLoading(true);
-                setEror("");
-
-                (async () => {
-                    try {
-                        
-
-                        
-                    const response = await fetch(
-                        `<?= rtrim(base_url(), '/'); ?>/admin/product${idProduct ? `/${idProduct}` : ""}`,
-                        {
-                        method: "POST",
-                        headers: {
-                            Accept: "application/json",
-                        },
-                        body: form,
-                        }
-                    );
-                    
-                    const result = await response.json();
-                    setLoading(false);
-
-                    if (response.status != 200) {
-                        setEror(result.pesan || "Terjadi kesalahan saat menyimpan data.");
-                        return;
-                    }
-
-                    Swal.fire({
-                        title: "Berhasil!",
-                        text: `Produk berhasil {${idProduct ? "diubah" : "ditambahkan"}}.`,
-                        icon: "success",
-                        confirmButtonText: "OK",
-                    }).then(() => {
-                        window.location.href = `<?= base_url('admin/product'); ?>`;
-                    });
-                    } catch (err) {
-                    console.error("Gagal mengirim data:", err);
-                    setLoading(false);
-                    setEror("Gagal menghubungi server.");
-                    }
-                })();
-            };
-
-
-
-
-
-
-        return (
-            <>
-                <h1 className="teks-sedang mb-3">{idProduct ? "Edit" : "Tambah"} Produk</h1>
-                
-                <div className="baris-ke-kolom">
-                    <div className="limapuluh-ke-seratus">
-                        <table className="table-input w-100">
-                            <tbody>
-                                <tr>
-                                    <td>Nama Produk</td>
-                                    <td>
-                                        <div className="baris">
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                value={formData.nama}
-                                                onChange={(e) => {setFormData({...formData, nama: e.target.value})}}
-                                                required
-                                            />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Harga Produk</td>
-                                    <td>
-                                        <div className="baris">
-                                            <input
-                                                type="number"
-                                                className="form-control"
-                                                value={formData.harga}
-                                                onChange={(e) => {setFormData({...formData, harga: e.target.value})}}
-                                                required
-                                            />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Diskon Produk</td>
-                                    <td>
-                                        <div className="baris">
-                                            <div className="input-group">
-                                                <input
-                                                    type="number"
-                                                    className="form-control"
-                                                    step="any"
-                                                    value={formData.diskon}
-                                                    onChange={(e) => {setFormData({...formData, diskon: e.target.value})}}
-                                                    required
-                                                />
-                                                <span className="input-group-text">%</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                {!idProduct &&
-                                <>
-                                    <tr>
-                                        <td>Koleksi</td>
-                                        <td>
-                                            <div className="baris">
-                                                <select 
-                                                    className="form-select" 
-                                                    value={formData.kategori}
-                                                    onChange={(e) => {setFormData({...formData, kategori: e.target.value})}}
-                                                    required
-                                                >
-                                                    <option value="">-- Pilih koleksi --</option>
-                                                    {koleksi.map((k, ind_k) => (
-                                                        <option key={ind_k} value={k.id}>{k.nama}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Jenis</td>
-                                        <td>
-                                        <div className="baris">
-                                                <select 
-                                                    className="form-select" 
-                                                    value={formData.subkategori}
-                                                    onChange={(e) => {setFormData({...formData, subkategori: e.target.value})}}
-                                                    required
-                                                >
-                                                    <option value="">-- Pilih jenis --</option>
-                                                    {jenis.map((j, ind_j) => (
-                                                        <option key={ind_j} value={j.id}>{j.nama}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    
-                                    <tr>
-                                        <td>ID Produk</td>
-                                        <td>
-                                            <div className="baris">
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    value={formData.id}
-                                                    onChange={(e) => {setFormData({...formData, id: e.target.value})}}
-                                                    required
-                                                />
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </>
-                                }
-                                <tr>
-                                    <td>Link Shopee</td>
-                                    <td>
-                                        <div className="baris">
-                                            <input 
-                                                type="text" 
-                                                className="form-control"
-                                                value={formData.shopee}
-                                                onChange={(e) => {setFormData({...formData, shopee: e.target.value})}}
-                                            />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Link Tokopedia</td>
-                                    <td>
-                                        <div className="baris">
-                                            <input 
-                                                type="text" 
-                                                className="form-control"
-                                                value={formData.tokped}
-                                                onChange={(e) => {setFormData({...formData, tokped: e.target.value})}}
-                                            />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Link Tiktok</td>
-                                    <td>
-                                        <div className="baris">
-                                            <input 
-                                                type="text" 
-                                                className="form-control"
-                                                value={formData.tiktok}
-                                                onChange={(e) => {setFormData({...formData, tiktok: e.target.value})}}
-                                            />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Deskripsi</td>
-                                    <td>
-                                        <div className="baris">
-                                            <textarea
-                                                type="text"
-                                                className="form-control"
-                                                value={formData.deskripsi.deskripsi}
-                                                onChange={(e) => {setFormData({...formData, deskripsi: {
-                                                    ...formData.deskripsi,
-                                                    deskripsi: e.target.value
-                                                }})}}
-                                                required
-                                            />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Spesifikasi Produk</td>
-                                    <td>
-                                        <div className="baris">
-                                            <textarea
-                                                type="text"
-                                                className="form-control"
-                                                name="perawatan"
-                                                value={formData.deskripsi.perawatan}
-                                                onChange={(e) => {setFormData({...formData, deskripsi: {
-                                                    ...formData.deskripsi,
-                                                    perawatan: e.target.value
-                                                }})}}
-                                                required
-                                            />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Ruangan</td>
-                                    <td>
-                                        <div className="baris">
-                                            <div>
-                                                <input 
-                                                    type="checkbox" 
-                                                    id="check_tamu"
-                                                    checked={formData.ruang_tamu}
-                                                    onChange={(e) => {setFormData({...formData, ruang_tamu: e.target.checked})}}
-                                                />
-                                                <label htmlFor="check_tamu">Ruang Tamu</label>
-                                            </div>
-                                            <div>
-                                                <input
-                                                    type="checkbox"
-                                                    id="check_keluarga"
-                                                    checked={formData.ruang_keluarga}
-                                                    onChange={(e) => {setFormData({...formData, ruang_keluarga: e.target.checked})}}
-                                                />
-                                                <label htmlFor="check_keluarga">Ruang Keluarga</label>
-                                            </div>
-                                            <div>
-                                                <input
-                                                    type="checkbox"
-                                                    id="check_tidur"
-                                                    checked={formData.ruang_tidur}
-                                                    onChange={(e) => {setFormData({...formData, ruang_tidur: e.target.checked})}}
-                                                />
-                                                <label htmlFor="check_tidur">Ruang Tidur</label>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <h5 className="mt-4">Bentuk Paket</h5>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Dimensi Panjang (cm)</td>
-                                    <td>
-                                        <div className="baris">
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            value={formData.deskripsi.dimensi.paket.panjang}
-                                            onChange={(e) => {setFormData(
-                                                {
-                                                    ...formData, 
-                                                    deskripsi: {
-                                                        ...formData.deskripsi,
-                                                        dimensi: {
-                                                            ...formData.deskripsi.dimensi,
-                                                            paket: {
-                                                                ...formData.deskripsi.dimensi.paket,
-                                                                panjang: e.target.value
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            )}}
-                                            required
-                                        />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Dimensi Lebar (cm)</td>
-                                    <td>
-                                        <div className="baris">
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            value={formData.deskripsi.dimensi.paket.lebar}
-                                            onChange={(e) => {setFormData(
-                                                {
-                                                    ...formData, 
-                                                    deskripsi: {
-                                                        ...formData.deskripsi,
-                                                        dimensi: {
-                                                            ...formData.deskripsi.dimensi,
-                                                            paket: {
-                                                                ...formData.deskripsi.dimensi.paket,
-                                                                lebar: e.target.value
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            )}}
-                                            required
-                                        />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Dimensi Tinggi (cm)</td>
-                                    <td>
-                                        <div className="baris">
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            value={formData.deskripsi.dimensi.paket.tinggi}
-                                            onChange={(e) => {setFormData(
-                                                {
-                                                    ...formData, 
-                                                    deskripsi: {
-                                                        ...formData.deskripsi,
-                                                        dimensi: {
-                                                            ...formData.deskripsi.dimensi,
-                                                            paket: {
-                                                                ...formData.deskripsi.dimensi.paket,
-                                                                tinggi: e.target.value
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            )}}
-                                            required
-                                        />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Berat (kg)</td>
-                                    <td>
-                                        <div className="baris">
-                                        <input
-                                            type="number"
-                                            className="form-control"
-                                            step="any"
-                                            value={formData.deskripsi.dimensi.paket.berat}
-                                            onChange={(e) => {setFormData(
-                                                {
-                                                    ...formData, 
-                                                    deskripsi: {
-                                                        ...formData.deskripsi,
-                                                        dimensi: {
-                                                            ...formData.deskripsi.dimensi,
-                                                            paket: {
-                                                                ...formData.deskripsi.dimensi.paket,
-                                                                berat: e.target.value
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            )}}
-                                            required
-                                        />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <h5 className="mt-4">Bentuk Asli</h5>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Dimensi Panjang (cm)</td>
-                                    <td>
-                                        <div className="baris">
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            value={formData.deskripsi.dimensi.asli.panjang}
-                                            onChange={(e) => {setFormData(
-                                                {
-                                                    ...formData, 
-                                                    deskripsi: {
-                                                        ...formData.deskripsi,
-                                                        dimensi: {
-                                                            ...formData.deskripsi.dimensi,
-                                                            asli: {
-                                                                ...formData.deskripsi.dimensi.asli,
-                                                                panjang: e.target.value
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            )}}
-                                            required
-                                        />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Dimensi Lebar (cm)</td>
-                                    <td>
-                                        <div className="baris">
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            value={formData.deskripsi.dimensi.asli.lebar}
-                                            onChange={(e) => {setFormData(
-                                                {
-                                                    ...formData, 
-                                                    deskripsi: {
-                                                        ...formData.deskripsi,
-                                                        dimensi: {
-                                                            ...formData.deskripsi.dimensi,
-                                                            asli: {
-                                                                ...formData.deskripsi.dimensi.asli,
-                                                                lebar: e.target.value
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            )}}
-                                            required
-                                        />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Dimensi Tinggi (cm)</td>
-                                    <td>
-                                        <div className="baris">
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            value={formData.deskripsi.dimensi.asli.tinggi}
-                                            onChange={(e) => {setFormData(
-                                                {
-                                                    ...formData, 
-                                                    deskripsi: {
-                                                        ...formData.deskripsi,
-                                                        dimensi: {
-                                                            ...formData.deskripsi.dimensi,
-                                                            asli: {
-                                                                ...formData.deskripsi.dimensi.asli,
-                                                                tinggi: e.target.value
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            )}}
-                                            required
-                                        />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Berat (kg)</td>
-                                    <td>
-                                        <div className="baris">
-                                        <input
-                                            type="number"
-                                            className="form-control"
-                                            step="any"
-                                            value={formData.deskripsi.dimensi.asli.berat}
-                                            onChange={(e) => {setFormData(
-                                                {
-                                                    ...formData, 
-                                                    deskripsi: {
-                                                        ...formData.deskripsi,
-                                                        dimensi: {
-                                                            ...formData.deskripsi.dimensi,
-                                                            asli: {
-                                                                ...formData.deskripsi.dimensi.asli,
-                                                                berat: e.target.value
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            )}}
-                                            required
-                                        />
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div className=" show-flex-ke-hide mt-4 justify-content-center gap-2">
-                            <button className="btn-default" disabled={loading} onClick={() => {handleSubmit()}}>
-                                {loading ? 'Menyimpan...' : 'Simpan'}
-                            </button>
-                        </div>
-                    </div>
-                    <div className="limapuluh-ke-seratus">
-                        <h5 className="jdl=section">Gambar Hover</h5>
-                        <img
-                            id="imghover-preview"
-                            src={hoverSrc ? hoverSrc : "/img/nopic.jpg"}
-                            alt=""
-                            className="limapuluh-ke-seratus mb-1"
-                            style={{ aspectRatio: "1 / 1", objectFit: "cover" }}
-                        />
-                        <div className="mb-2">
-                            <input
-                                onChange={(e) => {
-                                    const file = e.target.files[0];
-                                    if(file) {
-                                        setHoverFile(e.target.files[0]);
-                                        const reader = new FileReader();
-                                        reader.onload = () => {
-                                            setHoverSrc(reader.result);
-                                        };
-                                        reader.readAsDataURL(file);
-                                    } else {
-                                        setHoverFile(null)
-                                    }
-                                }}
-                                name="gambar_hover"
-                                type="file"
-                                className="form-control"
-                            />
-                        </div>
-                        <h5 className="jdl-section">Varian</h5>
-                        <div id="container-varian">
-                            {formData.varian.map((v, ind_v) => (
-                                <div key={ind_v}>
-                                    <div className="container-gambar">
-                                        {gambarSrc.length > 0 && gambarSrc[ind_v].map((g, ind_g) => (
-                                            <div className="item-gambar" key={ind_g} onClick={() => {
-                                                setGambarSrc(gambarSrc.map((gg, ind_gg) => {
-                                                    if(ind_gg == ind_v) {
-                                                        return gg.filter((ggg, ind_ggg) => ind_ggg != ind_g);
-                                                    } else return gg;
-                                                }))
-                                                setGambarFile(gambarFile.map((gg, ind_gg) => {
-                                                    if(ind_gg == ind_v) {
-                                                        return gg.filter((ggg, ind_ggg) => ind_ggg != ind_g);
-                                                    } else return gg;
-                                                }))
-                                            }}>
-                                                <p>X</p>
-                                                <img src={g ? g : "/img/nopic.jpg"} alt="" />
-                                            </div>
-                                        ))}
-                                        <div>
-                                            <input
-                                                type="file"
-                                                id={ind_v}
-                                                style={{ display: "none" }}
-                                                onChange={(e) => {
-                                                    const file = e.target.files[0];
-                                                    if (file) {
-                                                        const reader = new FileReader();
-                                                        reader.onload = () => {
-                                                            const newGambarSrc = [...gambarSrc];
-                                                            const newGambarFile = [...gambarFile];
-
-                                                            // PASTIKAN array untuk varian ini SUDAH ADA
-                                                            if (!newGambarSrc[ind_v]) newGambarSrc[ind_v] = [];
-                                                            if (!newGambarFile[ind_v]) newGambarFile[ind_v] = [];
-
-                                                            newGambarSrc[ind_v].push(reader.result);
-                                                            newGambarFile[ind_v].push(file);
-
-                                                            setGambarSrc(newGambarSrc);
-                                                            setGambarFile(newGambarFile);
-                                                        };
-                                                        reader.readAsDataURL(file);
-                                                    }
-                                                }}
-                                            />
-                                            <label htmlFor={ind_v} className="btn-default">
-                                                +
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <table className="table-input w-100 mt-2">
-                                        <tbody>
-                                            <tr>
-                                                <td>Nama</td>
-                                                <td>
-                                                    <div className="baris">
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            onChange={(e) => {
-                                                                setFormData({
-                                                                    ...formData,
-                                                                    varian: formData.varian.map((vv, ind_vv) => {
-                                                                        if(ind_vv === ind_v) {
-                                                                            return {
-                                                                                ...vv,
-                                                                                nama: e.target.value
-                                                                            }
-                                                                        } else {
-                                                                            return vv
-                                                                        }
-                                                                    })
-                                                                })
-                                                            }}
-                                                            value={v.nama}
-                                                            required
-                                                        />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Kode Warna</td>
-                                                <td>
-                                                    <div className="baris">
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            required
-                                                            onChange={(e) => {
-                                                                setFormData({
-                                                                    ...formData,
-                                                                    varian: formData.varian.map((vv, ind_vv) => {
-                                                                        if(ind_vv === ind_v) {
-                                                                            return {
-                                                                                ...vv,
-                                                                                kode: e.target.value
-                                                                            }
-                                                                        } else {
-                                                                            return vv
-                                                                        }
-                                                                    })
-                                                                })
-                                                            }}
-                                                            value={v.kode}
-                                                        />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Stok</td>
-                                                <td>
-                                                    <div className="baris">
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            required
-                                                            onChange={(e) => {
-                                                                setFormData({
-                                                                    ...formData,
-                                                                    varian: formData.varian.map((vv, ind_vv) => {
-                                                                        if(ind_vv === ind_v) {
-                                                                            return {
-                                                                                ...vv,
-                                                                                stok: e.target.value
-                                                                            }
-                                                                        } else {
-                                                                            return vv
-                                                                        }
-                                                                    })
-                                                                })
-                                                            }}
-                                                            value={v.stok}
-                                                        />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <button
-                                        type="button"
-                                        className="btn-teks-aja m-0 ms-auto mt-1"
-                                        onClick={() => {
-                                            setFormData({
-                                                ...formData,
-                                                varian: formData.varian.filter((vv, ind_vv) => ind_vv !== ind_v)
-                                            })
-                                            setGambarFile(gambarFile.filter((vv, ind_vv) => ind_vv !== ind_v));
-                                            setGambarSrc(gambarSrc.filter((vv, ind_vv) => ind_vv !== ind_v));
-                                        }}
-                                    >Hapus</button>
-                                </div>
-                            ))}
-                        </div>
-                        <button
-                            className="btn-default-merah mt-2"
-                            type="button"
-                            onClick={() => {
-                                setFormData({
-                                    ...formData,
-                                    varian: [...formData.varian, { nama: "", kode: "", stok: "", urutan_gambar: "" }]
-                                })
-                                setGambarFile([...gambarFile, []]);
-                                setGambarSrc([...gambarSrc, []]);
-                            }}
-                        >
-                            Tambah Varian
-                        </button>
-                    </div>
-                </div>
-                <div className="hide-ke-show-flex justify-content-center mt-3">
-                    <button className="btn-default" onClick={() => {handleSubmit()}}>
-                        Simpan
-                    </button>
-                </div>
-                <input
-                    type="text"
-                    name="hitung-varian"
-                    style={{ display: "none" }}
-                    defaultValue={1}
-                />
-            </>
+  // preload edit + update urutan_gambar
+  useEffect(() => {
+    if (firstRender.current) {
+      if (idProduct) {
+        const currentProduct = JSON.parse(<?= json_encode($produkJson ?? '{}') ?>);
+        setFormData(prev => ({
+          ...prev,
+          id: idProduct,
+          nama: currentProduct.nama,
+          harga: currentProduct.harga,
+          deskripsi: currentProduct.deskripsi,
+          kategori: currentProduct.kategori,
+          subkategori: currentProduct.subkategori,
+          diskon: currentProduct.diskon,
+          // >>> prefill jadwal kalau ada
+          pakai_jadwal_diskon: !!(currentProduct.diskon_mulai && currentProduct.diskon_selesai),
+          diskon_mulai: currentProduct.diskon_mulai || '',
+          diskon_selesai: currentProduct.diskon_selesai || '',
+          // <<<
+          varian: currentProduct.varian,
+          shopee: currentProduct.shopee,
+          tokped: currentProduct.tokped,
+          tiktok: currentProduct.tiktok,
+          ruang_tamu: currentProduct.ruang_tamu,
+          ruang_keluarga: currentProduct.ruang_keluarga,
+          ruang_tidur: currentProduct.ruang_tidur
+        }));
+        setGambarSrc(
+          (currentProduct.varian || []).map(v =>
+            (v.urutan_gambar || '')
+              .split(',')
+              .filter(Boolean)
+              .map(item => `<?= base_url('img/barang/1000/' . ($produk ? $produk['id'] : '') . '-') ?>${item}.webp`)
+          )
         );
+        (async () => {
+          const gBig = [];
+          for (let i = 0; i < (currentProduct.varian || []).length; i++) {
+            const v = currentProduct.varian[i];
+            const arr = (v.urutan_gambar || '').split(',').filter(Boolean);
+            const gD = [];
+            for (let j = 0; j < arr.length; j++) {
+              const g = arr[j];
+              const imageUrl = `<?= base_url('img/barang/3000/' . ($produk ? $produk['id'] : '') . '-') ?>${g}.webp`;
+              const file = await urlToFile(imageUrl, `gambar-${i}-${j}.webp`, 'image/webp');
+              gD.push(file);
+            }
+            gBig.push(gD);
+          }
+          setGambarFile(gBig);
+        })();
+      }
+      firstRender.current = false;
+      return;
     }
-    ReactDOM.render(<App />, document.getElementById("container-react"));
+    setFormData(prev => ({
+      ...prev,
+      varian: (prev.varian || []).map((v, ind_v) => {
+        const arr = gambarSrc[ind_v] || [];
+        return {
+          ...v,
+          urutan_gambar:
+            ind_v === 0
+              ? arr.map((_, idx) => idx + 1).join(',')
+              : arr.map((_, idx) => {
+                  const prevVar = prev.varian[ind_v - 1]?.urutan_gambar || '';
+                  const last = parseInt(prevVar.split(',').pop() || "0");
+                  return last + idx + 1;
+                }).join(',')
+        };
+      })
+    }));
+  }, [gambarSrc]);
+
+  const handleSubmit = () => {
+    // Validasi dasar
+    if (!formData.nama || !formData.harga) { setEror("Nama dan harga produk wajib diisi."); return; }
+    if ((formData.varian || []).length === 0) { setEror("Minimal 1 varian harus ditambahkan."); return; }
+    if (!idProduct) {
+      for (let i = 0; i < formData.varian.length; i++) {
+        if (!gambarFile[i] || gambarFile[i].length === 0) { setEror(`Varian ke-${i + 1} belum memiliki gambar.`); return; }
+      }
+    }
+    // Validasi jadwal diskon (opsional)
+    if (formData.pakai_jadwal_diskon) {
+      if (!formData.diskon_mulai || !formData.diskon_selesai) {
+        setEror("Mohon isi tanggal mulai & selesai jadwal diskon."); return;
+      }
+      if (new Date(formData.diskon_mulai) >= new Date(formData.diskon_selesai)) {
+        setEror("Waktu mulai harus lebih awal dari waktu selesai."); return;
+      }
+    }
+
+    const form = new FormData();
+    form.append("id", formData.id);
+    form.append("nama", formData.nama);
+    form.append("harga", formData.harga);
+    form.append("diskon", formData.diskon || "0");
+    form.append("kategori", formData.kategori);
+    form.append("subkategori", formData.subkategori);
+    form.append("shopee", formData.shopee || "");
+    form.append("tokped", formData.tokped || "");
+    form.append("tiktok", formData.tiktok || "");
+    form.append("ruang_tamu", formData.ruang_tamu ? "1" : "0");
+    form.append("ruang_keluarga", formData.ruang_keluarga ? "1" : "0");
+    form.append("ruang_tidur", formData.ruang_tidur ? "1" : "0");
+    form.append("deskripsi", JSON.stringify(formData.deskripsi || {}));
+    form.append("varian", JSON.stringify(formData.varian || []));
+    // Hover image (opsional)
+    if (hoverFile) form.append("gambar_hover", hoverFile);
+
+    // Gambar varian (flatten)
+    const flat = (gambarFile || []).reduce((p, c) => p.concat(c), []);
+    if (!idProduct && flat.length === 0) { setEror("Minimal upload satu gambar untuk varian pertama."); return; }
+    flat.forEach((file, idx) => { if (file instanceof File) form.append(`gambar_${idx}`, file); });
+
+    // >>> Kirim jadwal diskon (opsional)
+    form.append("pakai_jadwal_diskon", formData.pakai_jadwal_diskon ? "1" : "0");
+    form.append("diskon_mulai", formData.diskon_mulai || "");
+    form.append("diskon_selesai", formData.diskon_selesai || "");
+    // <<<
+
+    // CSRF
+    const csrfName = '<?= csrf_token() ?>';
+    const csrfHash = '<?= csrf_hash() ?>';
+    form.append(csrfName, csrfHash);
+
+    setLoading(true);
+    setEror("");
+
+    (async () => {
+      try {
+        const url = `<?= rtrim(base_url(), '/'); ?>${idProduct ? `/admin/editproduct/${idProduct}` : `/admin/product`}`;
+        const response = await fetch(url, { method: "POST", headers: { Accept: "application/json" }, body: form });
+        const rawText = await response.clone().text();
+        let result; try { result = JSON.parse(rawText); } catch { result = { pesan: rawText }; }
+        setLoading(false);
+
+        if (!response.ok) {
+          setEror(result?.pesan || `Error ${response.status}. ${rawText?.slice(0, 500)}`);
+          console.error("Response error:", { status: response.status, result });
+          return;
+        }
+
+        Swal.fire({
+          title: "Berhasil!",
+          text: `Produk berhasil ${idProduct ? "diubah" : "ditambahkan"}.`,
+          icon: "success",
+          confirmButtonText: "OK",
+        }).then(() => { window.location.href = `<?= base_url('admin/product'); ?>`; });
+      } catch (err) {
+        console.error("Gagal mengirim data:", err);
+        setLoading(false);
+        setEror("Gagal menghubungi server.");
+      }
+    })();
+  };
+
+  // helper status jadwal
+  const renderBadgeJadwal = () => {
+    if (!formData.pakai_jadwal_diskon || !formData.diskon_mulai || !formData.diskon_selesai) return null;
+    const now = new Date();
+    const start = new Date(formData.diskon_mulai);
+    const end = new Date(formData.diskon_selesai);
+    const aktif = now >= start && now <= end;
+    return (
+      <span className={`badge ${aktif ? 'badge-aktif' : 'badge-non'}`}>
+        {aktif ? 'Aktif sekarang' : 'Belum aktif / di luar jadwal'}
+      </span>
+    );
+  };
+
+  return (
+    <>
+      <div className="form-grid" aria-busy={loading}>
+        {/* Kiri */}
+        <div className="card">
+          <div className="card-header"><h2>Data Produk</h2></div>
+          <div className="card-body">
+            <table className="table-input w-100">
+              <tbody>
+                <tr>
+                  <td>Nama Produk</td>
+                  <td>
+                    <input type="text" className="form-control"
+                      value={formData.nama} onChange={e => setFormData({ ...formData, nama: e.target.value })} required />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Harga Produk</td>
+                  <td>
+                    <input type="number" className="form-control"
+                      value={formData.harga} onChange={e => setFormData({ ...formData, harga: e.target.value })} required />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Diskon Produk</td>
+                  <td>
+                    <div className="input-group">
+                      <input type="number" className="form-control" step="any"
+                        value={formData.diskon} onChange={e => setFormData({ ...formData, diskon: e.target.value })} required />
+                      <span className="input-group-text">%</span>
+                    </div>
+                  </td>
+                </tr>
+
+                {/* Jadwal Diskon (opsional) */}
+                <tr>
+                  <td>Jadwalkan Diskon</td>
+                  <td>
+                    <label className="chk">
+                      <input
+                        type="checkbox"
+                        checked={formData.pakai_jadwal_diskon}
+                        onChange={(e) => setFormData({ ...formData, pakai_jadwal_diskon: e.target.checked })}
+                      />
+                      Aktifkan jadwal
+                    </label>
+                    {formData.pakai_jadwal_diskon && (
+                      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px', marginTop:'8px' }}>
+                        <div>
+                          <small className="section-title" style={{ margin:'0 0 6px' }}>Mulai</small>
+                          <input
+                            type="datetime-local"
+                            className="form-control"
+                            value={formData.diskon_mulai}
+                            onChange={(e) => setFormData({ ...formData, diskon_mulai: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <small className="section-title" style={{ margin:'0 0 6px' }}>Selesai</small>
+                          <input
+                            type="datetime-local"
+                            className="form-control"
+                            value={formData.diskon_selesai}
+                            onChange={(e) => setFormData({ ...formData, diskon_selesai: e.target.value })}
+                          />
+                        </div>
+                        <div style={{ gridColumn:'1 / -1' }}>{renderBadgeJadwal()}</div>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+
+                {!idProduct && (
+                  <>
+                    <tr>
+                      <td>Koleksi</td>
+                      <td>
+                        <select className="form-select" value={formData.kategori}
+                          onChange={e => setFormData({ ...formData, kategori: e.target.value })} required>
+                          <option value="">-- Pilih koleksi --</option>
+                          {koleksi.map((k, i) => <option key={i} value={k.id}>{k.nama}</option>)}
+                        </select>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Jenis</td>
+                      <td>
+                        <select className="form-select" value={formData.subkategori}
+                          onChange={e => setFormData({ ...formData, subkategori: e.target.value })} required>
+                          <option value="">-- Pilih jenis --</option>
+                          {jenis.map((j, i) => <option key={i} value={j.id}>{j.nama}</option>)}
+                        </select>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>ID Produk</td>
+                      <td>
+                        <input type="text" className="form-control"
+                          value={formData.id} onChange={e => setFormData({ ...formData, id: e.target.value })} required />
+                      </td>
+                    </tr>
+                  </>
+                )}
+
+                <tr>
+                  <td>Link Shopee</td>
+                  <td><input type="text" className="form-control"
+                    value={formData.shopee} onChange={e => setFormData({ ...formData, shopee: e.target.value })} /></td>
+                </tr>
+                <tr>
+                  <td>Link Tokopedia</td>
+                  <td><input type="text" className="form-control"
+                    value={formData.tokped} onChange={e => setFormData({ ...formData, tokped: e.target.value })} /></td>
+                </tr>
+                <tr>
+                  <td>Link Tiktok</td>
+                  <td><input type="text" className="form-control"
+                    value={formData.tiktok} onChange={e => setFormData({ ...formData, tiktok: e.target.value })} /></td>
+                </tr>
+
+                <tr><td colSpan="2" className="section-title">Deskripsi</td></tr>
+                <tr>
+                  <td>Deskripsi</td>
+                  <td>
+                    <textarea className="form-control" rows="3"
+                      value={formData.deskripsi.deskripsi}
+                      onChange={e => setFormData({ ...formData, deskripsi: { ...formData.deskripsi, deskripsi: e.target.value } })}
+                      required />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Spesifikasi</td>
+                  <td>
+                    <textarea className="form-control" rows="3"
+                      value={formData.deskripsi.perawatan}
+                      onChange={e => setFormData({ ...formData, deskripsi: { ...formData.deskripsi, perawatan: e.target.value } })}
+                      required />
+                  </td>
+                </tr>
+
+                <tr><td colSpan="2" className="section-title">Bentuk Paket</td></tr>
+                <tr>
+                  <td>Panjang (cm)</td>
+                  <td><input className="form-control" value={formData.deskripsi.dimensi.paket.panjang}
+                    onChange={e => setFormData({
+                      ...formData, deskripsi: { ...formData.deskripsi,
+                        dimensi: { ...formData.deskripsi.dimensi,
+                          paket: { ...formData.deskripsi.dimensi.paket, panjang: e.target.value } } }
+                    })} required /></td>
+                </tr>
+                <tr>
+                  <td>Lebar (cm)</td>
+                  <td><input className="form-control" value={formData.deskripsi.dimensi.paket.lebar}
+                    onChange={e => setFormData({
+                      ...formData, deskripsi: { ...formData.deskripsi,
+                        dimensi: { ...formData.deskripsi.dimensi,
+                          paket: { ...formData.deskripsi.dimensi.paket, lebar: e.target.value } } }
+                    })} required /></td>
+                </tr>
+                <tr>
+                  <td>Tinggi (cm)</td>
+                  <td><input className="form-control" value={formData.deskripsi.dimensi.paket.tinggi}
+                    onChange={e => setFormData({
+                      ...formData, deskripsi: { ...formData.deskripsi,
+                        dimensi: { ...formData.deskripsi.dimensi,
+                          paket: { ...formData.deskripsi.dimensi.paket, tinggi: e.target.value } } }
+                    })} required /></td>
+                </tr>
+                <tr>
+                  <td>Berat (kg)</td>
+                  <td><input type="number" step="any" className="form-control"
+                    value={formData.deskripsi.dimensi.paket.berat}
+                    onChange={e => setFormData({
+                      ...formData, deskripsi: { ...formData.deskripsi,
+                        dimensi: { ...formData.deskripsi.dimensi,
+                          paket: { ...formData.deskripsi.dimensi.paket, berat: e.target.value } } }
+                    })} required /></td>
+                </tr>
+
+                <tr><td colSpan="2" className="section-title">Bentuk Asli</td></tr>
+                <tr>
+                  <td>Panjang (cm)</td>
+                  <td><input className="form-control" value={formData.deskripsi.dimensi.asli.panjang}
+                    onChange={e => setFormData({
+                      ...formData, deskripsi: { ...formData.deskripsi,
+                        dimensi: { ...formData.deskripsi.dimensi,
+                          asli: { ...formData.deskripsi.dimensi.asli, panjang: e.target.value } } }
+                    })} required /></td>
+                </tr>
+                <tr>
+                  <td>Lebar (cm)</td>
+                  <td><input className="form-control" value={formData.deskripsi.dimensi.asli.lebar}
+                    onChange={e => setFormData({
+                      ...formData, deskripsi: { ...formData.deskripsi,
+                        dimensi: { ...formData.deskripsi.dimensi,
+                          asli: { ...formData.deskripsi.dimensi.asli, lebar: e.target.value } } }
+                    })} required /></td>
+                </tr>
+                <tr>
+                  <td>Tinggi (cm)</td>
+                  <td><input className="form-control" value={formData.deskripsi.dimensi.asli.tinggi}
+                    onChange={e => setFormData({
+                      ...formData, deskripsi: { ...formData.deskripsi,
+                        dimensi: { ...formData.deskripsi.dimensi,
+                          asli: { ...formData.deskripsi.dimensi.asli, tinggi: e.target.value } } }
+                    })} required /></td>
+                </tr>
+                <tr>
+                  <td>Berat (kg)</td>
+                  <td><input type="number" step="any" className="form-control"
+                    value={formData.deskripsi.dimensi.asli.berat}
+                    onChange={e => setFormData({
+                      ...formData, deskripsi: { ...formData.deskripsi,
+                        dimensi: { ...formData.deskripsi.dimensi,
+                          asli: { ...formData.deskripsi.dimensi.asli, berat: e.target.value } } }
+                    })} required /></td>
+                </tr>
+
+                <tr><td colSpan="2" className="section-title">Ruangan</td></tr>
+                <tr>
+                  <td>Tag Ruangan</td>
+                  <td>
+                    <div className="chk-row">
+                      <label className="chk"><input type="checkbox" checked={formData.ruang_tamu}
+                        onChange={e => setFormData({ ...formData, ruang_tamu: e.target.checked })} />Ruang Tamu</label>
+                      <label className="chk"><input type="checkbox" checked={formData.ruang_keluarga}
+                        onChange={e => setFormData({ ...formData, ruang_keluarga: e.target.checked })} />Ruang Keluarga</label>
+                      <label className="chk"><input type="checkbox" checked={formData.ruang_tidur}
+                        onChange={e => setFormData({ ...formData, ruang_tidur: e.target.checked })} />Ruang Tidur</label>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div className="bottom-bar">
+              <div className="btn-row">
+                <button className="btn-default" disabled={loading} onClick={handleSubmit}>
+                  <span style={{display:'inline-flex',alignItems:'center',gap:'8px'}}>
+                    {loading && <span className="spinner" style={{borderColor:'rgba(255,255,255,.35)', borderTopColor:'#fff'}}></span>}
+                    {loading ? 'Menyimpan...' : 'Simpan'}
+                  </span>
+                </button>
+              </div>
+            </div>
+            {eror && <p style={{ color: '#ef4444', marginTop: '8px', fontWeight: 600 }}>{eror}</p>}
+          </div>
+        </div>
+
+        {/* Kanan */}
+        <div className="card">
+          <div className="card-header"><h2>Media & Varian</h2></div>
+          <div className="card-body">
+            <div className="section-title">Gambar Hover</div>
+            <img className="preview-hover" src={hoverSrc || "/img/nopic.jpg"} alt="preview hover" />
+            <div style={{ margin: '10px 0 20px' }}>
+              <input
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    setHoverFile(file);
+                    const reader = new FileReader();
+                    reader.onload = () => setHoverSrc(reader.result);
+                    reader.readAsDataURL(file);
+                  } else { setHoverFile(null); }
+                }}
+                name="gambar_hover" type="file" className="form-control" />
+            </div>
+
+            <div className="section-title">Varian</div>
+            <div id="container-varian" style={{ display:'flex', flexDirection:'column', gap:'16px' }}>
+              {(formData.varian || []).map((v, ind_v) => (
+                <div key={ind_v} className="card" style={{ borderRadius:'12px' }}>
+                  <div className="card-body">
+                    <div className="container-gambar">
+                      {gambarSrc.length > 0 && (gambarSrc[ind_v] || []).map((g, ind_g) => (
+                        <div className="item-gambar" key={ind_g} title="Klik untuk hapus"
+                          onClick={() => {
+                            setGambarSrc(gambarSrc.map((gg, i) => i === ind_v ? gg.filter((_, j) => j !== ind_g) : gg));
+                            setGambarFile(gambarFile.map((gg, i) => i === ind_v ? gg.filter((_, j) => j !== ind_g) : gg));
+                          }}>
+                          <p>✕</p>
+                          <img src={g || "/img/nopic.jpg"} alt="" />
+                        </div>
+                      ))}
+                      <div>
+                        <input type="file" id={`file-${ind_v}`} style={{ display:'none' }}
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = () => {
+                                const newSrc = [...gambarSrc];
+                                const newFile = [...gambarFile];
+                                if (!newSrc[ind_v]) newSrc[ind_v] = [];
+                                if (!newFile[ind_v]) newFile[ind_v] = [];
+                                newSrc[ind_v].push(reader.result);
+                                newFile[ind_v].push(file);
+                                setGambarSrc(newSrc);
+                                setGambarFile(newFile);
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }} />
+                        <label htmlFor={`file-${ind_v}`} className="add-thumb">+</label>
+                      </div>
+                    </div>
+
+                    <table className="table-input w-100" style={{ marginTop:'12px' }}>
+                      <tbody>
+                        <tr>
+                          <td>Nama</td>
+                          <td>
+                            <input className="form-control" value={v.nama}
+                              onChange={e => setFormData({
+                                ...formData,
+                                varian: formData.varian.map((vv, i) => i === ind_v ? { ...vv, nama: e.target.value } : vv)
+                              })} required />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Kode Warna</td>
+                          <td>
+                            <input className="form-control" value={v.kode}
+                              onChange={e => setFormData({
+                                ...formData,
+                                varian: formData.varian.map((vv, i) => i === ind_v ? { ...vv, kode: e.target.value } : vv)
+                              })} required />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Stok</td>
+                          <td>
+                            <input className="form-control" value={v.stok}
+                              onChange={e => setFormData({
+                                ...formData,
+                                varian: formData.varian.map((vv, i) => i === ind_v ? { ...vv, stok: e.target.value } : vv)
+                              })} required />
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                    <div className="btn-row" style={{ marginTop:'8px' }}>
+                      <button type="button" className="btn-teks-aja"
+                        onClick={() => {
+                          setFormData({ ...formData, varian: formData.varian.filter((_, i) => i !== ind_v) });
+                          setGambarFile(gambarFile.filter((_, i) => i !== ind_v));
+                          setGambarSrc(gambarSrc.filter((_, i) => i !== ind_v));
+                        }}>
+                        Hapus Varian
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button className="btn-default-merah" type="button" style={{ marginTop:'12px' }}
+              onClick={() => {
+                setFormData({
+                  ...formData,
+                  varian: [...(formData.varian || []), { nama: "", kode: "", stok: "", urutan_gambar: "" }]
+                });
+                setGambarFile([...(gambarFile || []), []]);
+                setGambarSrc([...(gambarSrc || []), []]);
+              }}>
+              Tambah Varian
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <input type="text" name="hitung-varian" style={{ display: 'none' }} defaultValue={1} />
+    </>
+  );
+};
+
+ReactDOM.render(<App />, document.getElementById("container-react"));
 </script>
 <?= $this->endSection(); ?>

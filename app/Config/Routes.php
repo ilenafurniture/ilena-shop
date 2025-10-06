@@ -120,6 +120,7 @@ $routes->post('/admin/product/(:any)', 'AdminController::actionEditProduct/$1');
 $routes->post('/admin/product', 'AdminController::actionAddProduct');
 // $routes->match(['POST', 'PUT'], '/admin/product/(:any)', 'AdminController::actionEditProduct');
 $routes->get('/admin/editproduct/(:any)', 'AdminController::editProduct/$1', ['filter' => 'adminFilter']);
+$routes->post('/admin/editproduct/(:any)', 'AdminController::actionEditProduct/$1', ['filter' => 'adminFilter']);
 $routes->post('/admin/deleteproduct/(:any)', 'AdminController::deleteProduct/$1', ['filter' => 'adminFilter']);
 
 $routes->get('/admin/activeproduct/(:any)', 'AdminController::activeProduct/$1', ['filter' => 'adminFilter']);
