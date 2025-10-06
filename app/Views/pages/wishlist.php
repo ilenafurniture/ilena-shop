@@ -13,13 +13,12 @@ $wishlistCount = is_array($wishlist) ? count($wishlist) : 0;
         <div class="d-flex justify-content-between mb-4">
             <div>
                 <h1 class="teks-sedang">Produk tersimpan</h1>
-                <p class="js-wishlist-counter" style="color: grey;">
+                <p style="color: grey;">
                     <?= $wishlistCount <= 0 ? 'Tidak ada' : $wishlistCount ?> produk yang disimpan
                 </p>
             </div>
-            <div>
-                <?= $wishlistCount <= 0 ? '' : '<a class="btn-lonjong" href="/wishlisttocart">Beli semua</a>' ?>
-            </div>
+            <!-- Tombol "Beli semua" DIHILANGKAN -->
+            <div></div>
         </div>
 
         <?php if ($wishlistCount > 0): ?>
@@ -34,13 +33,9 @@ $wishlistCount = is_array($wishlist) ? count($wishlist) : 0;
             $p_gbrHover  = !empty($p['gambar_hover']); // boolean
             $varianList  = json_decode($p['varian'] ?? '[]', true) ?: [];
 
-            // Fallback varian pertama untuk Add to Cart
-            $firstVarNama = $varianList[0]['nama'] ?? 'default';
-
             // Element IDs unik
             $imgMainId  = "img{$ind_p}";
-            $cardBtnId  = "card{$ind_p}";
-            ?>
+          ?>
 
             <div class="card1">
                 <div style="position: relative;">
@@ -48,17 +43,7 @@ $wishlistCount = is_array($wishlist) ? count($wishlist) : 0;
                         <span <?= $p_diskon > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>>
                             <?= $p_diskon > 0 ? ($p_diskon . "%") : '' ?>
                         </span>
-
-                        <div class="d-flex flex-column gap-2">
-                            <?= in_array($p_id, $wishlist, true)
-                                ? '<a class="card1-btn-img js-wishlist-link" href="/delwishlist/' . $p_id . '"><i class="material-icons">bookmark</i></a>'
-                                : '<a class="card1-btn-img js-wishlist-link" href="/addwishlist/' . $p_id . '"><i class="material-icons">bookmark_border</i></a>'
-                            ?>
-                            <a id="<?= $cardBtnId ?>" class="card1-btn-img"
-                                href="/addcart/<?= $p_id ?>/<?= urlencode($firstVarNama) ?>/1">
-                                <i class="material-icons">shopping_cart</i>
-                            </a>
-                        </div>
+                        <!-- NOTE: tombol wishlist & cart DIHILANGKAN -->
                     </div>
 
                     <a href="/product/<?= str_replace(' ', '-', $p_nama); ?>" class="gambar">
@@ -74,14 +59,14 @@ $wishlistCount = is_array($wishlist) ? count($wishlist) : 0;
                     </a>
                 </div>
 
-                <!-- Varian -->
+                <!-- Varian (hanya untuk ganti foto, tidak mempengaruhi cart) -->
                 <div class="container-varian mb-1 d-flex">
                     <?php foreach ($varianList as $ind_v => $v):
-                        $kode   = $v['kode'] ?? '#ccc';
-                        $namaV  = $v['nama'] ?? 'default';
-                        $urut   = $v['urutan_gambar'] ?? '0';
-                        $inputId = "varian-{$ind_p}-{$ind_v}";
-                    ?>
+                $kode   = $v['kode'] ?? '#ccc';
+                $namaV  = $v['nama'] ?? 'default';
+                $urut   = $v['urutan_gambar'] ?? '0';
+                $inputId = "varian-{$ind_p}-{$ind_v}";
+              ?>
                     <input id="<?= $inputId ?>"
                         value="<?= htmlspecialchars($urut, ENT_QUOTES); ?>-<?= htmlspecialchars($namaV, ENT_QUOTES); ?>"
                         type="radio" name="varian<?= $ind_p ?>" <?= $ind_v === 0 ? 'checked' : '' ?>>
@@ -102,10 +87,9 @@ $wishlistCount = is_array($wishlist) ? count($wishlist) : 0;
                     <?php endif; ?>
                 </div>
 
-                <!-- Script untuk switching varian per kartu -->
+                <!-- Script: varian hanya untuk ganti foto -->
                 <script>
                 (function() {
-                    const btnKeranjang = document.getElementById("<?= $cardBtnId ?>");
                     const imgMain = document.getElementById("<?= $imgMainId ?>");
                     const radios = document.querySelectorAll('input[name="varian<?= $ind_p ?>"]');
 
@@ -114,14 +98,7 @@ $wishlistCount = is_array($wishlist) ? count($wishlist) : 0;
                             const val = String(e.target.value || "");
                             const parts = val.split("-");
                             const urutGambar = (parts[0] || "0").split(",")[0];
-                            const namaVar = parts.slice(1).join("-") || "default";
-
-                            // Ganti foto utama sesuai urutan varian (gunakan folder 1000 agar detail)
                             imgMain.src = "/img/barang/1000/<?= $p_id; ?>-" + urutGambar + ".webp";
-
-                            // Update link add to cart
-                            btnKeranjang.href = "/addcart/<?= $p_id ?>/" + encodeURIComponent(
-                                namaVar) + "/1";
                         });
                     });
                 })();
@@ -136,67 +113,5 @@ $wishlistCount = is_array($wishlist) ? count($wishlist) : 0;
         <?php endif; ?>
     </div>
 </div>
-
-<!-- ===== AJAX wishlist (non-intrusive). Jika gagal -> fallback redirect ===== -->
-<script>
-(function() {
-    // Delegasi klik hanya untuk link add/del wishlist
-    document.addEventListener('click', async function(e) {
-        const a = e.target.closest(
-            'a.js-wishlist-link[href^="/addwishlist/"], a.js-wishlist-link[href^="/delwishlist/"]');
-        if (!a) return;
-
-        // Coba fetch sebagai AJAX agar tidak dinavigasi oleh script SPA/prefetch
-        e.preventDefault();
-        const href = a.getAttribute('href');
-        const icon = a.querySelector('.material-icons');
-        const prevIcon = icon ? icon.textContent : null;
-
-        if (icon) icon.textContent = 'hourglass_empty';
-
-        try {
-            const resp = await fetch(href, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            });
-            if (!resp.ok) throw new Error('HTTP ' + resp.status);
-            const data = await resp.json();
-
-            // Update counter di header
-            const counterP = document.querySelector('.js-wishlist-counter');
-            if (counterP && typeof data.count === 'number') {
-                counterP.textContent = (data.count <= 0 ? 'Tidak ada' : data.count) +
-                    ' produk yang disimpan';
-            }
-
-            // Toggle UI ikon + href
-            const isAdd = href.startsWith('/addwishlist/');
-            const newHref = isAdd ? href.replace('/addwishlist/', '/delwishlist/') : href.replace(
-                '/delwishlist/', '/addwishlist/');
-            a.setAttribute('href', newHref);
-            if (icon) icon.textContent = isAdd ? 'bookmark' : 'bookmark_border';
-
-            // Kalau ini halaman wishlist dan action = del -> hapus kartu dari DOM
-            if (data.action === 'del') {
-                const card = a.closest('.card1');
-                if (card) {
-                    card.remove();
-                    // Jika sudah tidak ada kartu lagi -> tampilkan empty state
-                    const container = document.querySelector('.container-card1');
-                    if (container && container.children.length === 0) {
-                        container.outerHTML =
-                            '<div class="d-flex justify-content-center align-items-center"><img src="/img/sadface.webp" alt="Kosong" style="height: 100px; opacity: 0.5"></div>';
-                    }
-                }
-            }
-        } catch (err) {
-            // Gagal AJAX -> fallback ke navigasi biasa (perilaku lama)
-            if (icon && prevIcon) icon.textContent = prevIcon;
-            window.location.href = href;
-        }
-    }, true);
-})();
-</script>
 
 <?= $this->endSection(); ?>
