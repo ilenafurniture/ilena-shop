@@ -21,6 +21,10 @@
             <i class="material-icons">people</i>
             <p class="m-0">Produk</p>
         </a>
+        <a class="item-nav <?= str_contains(strtolower($title), 'voucher') ? 'active' : ''; ?>" href="/admin/voucher">
+            <i class="material-icons">confirmation_number</i>
+            <p class="m-0">Voucher</p>
+        </a>
 
         <!-- ===== Section Pesanan ===== -->
         <div class="nav-separator">

@@ -22,6 +22,8 @@ use App\Models\KartuStokModel;
 use App\Models\GambarHeaderModel;
 use App\Models\PemesananOfflineModel;
 use App\Models\PemesananOfflineItemModel;
+use App\Models\VoucherModel;
+use App\Models\VoucherUsageModel;
 
 class AdminController extends BaseController
 {
@@ -47,6 +49,8 @@ class AdminController extends BaseController
     protected $kabupatenModel;
     protected $kecamatanModel;
     protected $kelurahanModel;
+    protected $voucherModel;
+    protected $voucherUsageModel;
 
 
 
@@ -76,6 +80,8 @@ class AdminController extends BaseController
         $this->kabupatenModel = new KabupatenModel();
         $this->kecamatanModel = new KecamatanModel();
         $this->kelurahanModel = new KelurahanModel();
+        $this->voucherModel = new VoucherModel();
+        $this->voucherUsageModel = new VoucherUsageModel();
         
     }
     public function listProduct()
@@ -2130,4 +2136,128 @@ class AdminController extends BaseController
         session()->setFlashdata('msg', 'Invoice ' . $id_pesanan . ' sudah lunas');
         return redirect()->to('/admin/order/offline/sale');
     }
+
+
+    public function voucher()
+    {
+        $q = $this->request->getGet('q');
+        $builder = $this->voucherModel->orderBy('id','DESC');
+        if ($q) {
+            $builder->groupStart()
+                ->like('kode', $q)
+                ->orLike('nama', $q)
+                ->groupEnd();
+        }
+        $data = [
+            'title'   => 'Kelola Voucher',
+            'voucher' => $builder->findAll(),
+        ];
+        return view('admin/voucher', $data);
+    }
+
+    public function actionAddVoucher()
+    {
+        // normalisasi nilai & tipe
+        $tipe  = $this->request->getPost('tipe') ?: 'persen';
+        $nilai = (int)($this->request->getPost('nilai') ?? 0);
+
+        $data = [
+            'kode'   => strtoupper((string)$this->request->getPost('kode')),
+            'nama'   => (string)$this->request->getPost('nama'),
+            'deskripsi' => (string)$this->request->getPost('deskripsi'),
+            'tipe'   => $tipe,
+            'nilai'  => $nilai,
+            // fallback lama (optional): simpan juga nominal/satuan agar baris lama & baru konsisten
+            'satuan'  => ($tipe === 'persen') ? 'persen' : 'rupiah',
+            'nominal' => $nilai,
+
+            'minimal_belanja' => (int)($this->request->getPost('minimal_belanja') ?: 0),
+            'mulai'           => $this->request->getPost('mulai') ?: null,
+            'berakhir'        => $this->request->getPost('berakhir') ?: null,
+            'auto_apply'      => $this->request->getPost('auto_apply') ? 1 : 0,
+            'aktif'           => $this->request->getPost('aktif') ? 1 : 0,
+            'target'          => $this->request->getPost('target') ?: 'semua',
+            'max_pakai'       => (int)($this->request->getPost('max_pakai') ?: 0),
+            'sekali_pakai_per_user' => $this->request->getPost('sekali_pakai_per_user') ? 1 : 0,
+            // list_email biarkan null/[] di awal
+        ];
+
+        $this->voucherModel->insert($data);
+        return redirect()->to('/admin/voucher')->with('msg', 'Voucher berhasil ditambahkan!');
+    }
+
+    public function deleteVoucher($id)
+    {
+        $this->voucherModel->delete((int)$id);
+        return redirect()->to('/admin/voucher')->with('msg', 'Voucher berhasil dihapus!');
+    }
+
+    // Edit dari modal (POST /admin/voucher/edit/{id})
+    public function editVoucher($id)
+    {
+        $row = $this->voucherModel->find((int)$id);
+        if (!$row) {
+            return redirect()->to('/admin/voucher')->with('msg', 'Voucher tidak ditemukan.');
+        }
+
+        $tipe  = $this->request->getPost('tipe') ?: ($row['tipe'] ?? 'persen');
+        $nilai = (int)($this->request->getPost('nilai') ?? ($row['nilai'] ?? 0));
+
+        $payload = [
+            'kode'   => strtoupper((string)$this->request->getPost('kode')),
+            'nama'   => (string)$this->request->getPost('nama'),
+            'deskripsi' => (string)$this->request->getPost('deskripsi'),
+            'tipe'   => $tipe,
+            'nilai'  => $nilai,
+            'satuan'  => ($tipe === 'persen') ? 'persen' : 'rupiah', // fallback lama
+            'nominal' => $nilai,                                    // fallback lama
+
+            'minimal_belanja' => (int)($this->request->getPost('minimal_belanja') ?? 0),
+            'mulai'           => $this->request->getPost('mulai') ?: null,
+            'berakhir'        => $this->request->getPost('berakhir') ?: null,
+            'target'          => $this->request->getPost('target') ?: 'semua',
+            'auto_apply'      => $this->request->getPost('auto_apply') ? 1 : 0,
+            'sekali_pakai_per_user' => $this->request->getPost('sekali_pakai_per_user') ? 1 : 0,
+        ];
+
+        // bersihkan field yang semuanya null agar tidak kena "There is no data to update"
+        $payload = array_filter($payload, static function($v){ return $v !== null; });
+
+        if ($payload === []) {
+            return redirect()->to('/admin/voucher')->with('msg', 'Tidak ada perubahan.');
+        }
+
+        $this->voucherModel->update((int)$id, $payload);
+        return redirect()->to('/admin/voucher')->with('msg', 'Voucher berhasil diperbarui!');
+    }
+
+    // Toggle via AJAX (POST /admin/voucher/toggle/{id})
+    public function toggleVoucher($id)
+    {
+        if (!$this->request->is('post')) {
+            return $this->response->setStatusCode(405)->setJSON(['success'=>false,'message'=>'Method not allowed']);
+        }
+
+        $row = $this->voucherModel->find((int)$id);
+        if (!$row) {
+            return $this->response->setStatusCode(404)->setJSON(['success'=>false,'message'=>'Voucher tidak ditemukan']);
+        }
+
+        $aktifReq = $this->request->getPost('aktif');
+        $new = ($aktifReq === null) ? (int)!((int)($row['aktif'] ?? 0))
+                                    : ((int)$aktifReq ? 1 : 0);
+
+        if ((int)$row['aktif'] === $new) {
+            return $this->response->setJSON(['success'=>true,'message'=>'Tidak ada perubahan','data'=>['aktif'=>$new]]);
+        }
+
+        $ok = $this->voucherModel->update((int)$id, ['aktif' => $new]);
+        return $this->response->setJSON([
+            'success' => (bool)$ok,
+            'message' => $ok ? 'Berhasil mengubah status.' : 'Gagal mengubah status.',
+            'data'    => ['aktif' => $new]
+        ]);
+    }
+
+
 }

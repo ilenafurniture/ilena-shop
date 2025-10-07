@@ -160,6 +160,13 @@ $routes->post('/admin/actionbuatinvoice', 'AdminController::actionBuatInvoice');
 $routes->post('/admin/actionbuatdp', 'AdminController::actionBuatDP');
 $routes->get('/admin/actionaccorderoffline/(:any)', 'AdminController::actionAccOrderOffline/$1', ['filter' => 'adminFilter']);
 
+// === Voucher System ===
+$routes->get('/admin/voucher', 'AdminController::voucher', ['filter' => 'adminFilter']);
+$routes->post('/admin/voucher/add', 'AdminController::actionAddVoucher', ['filter' => 'adminFilter']);
+$routes->get('/admin/voucher/delete/(:any)', 'AdminController::deleteVoucher/$1', ['filter' => 'adminFilter']);
+$routes->get('/admin/voucher/edit/(:any)', 'AdminController::editVoucher/$1', ['filter' => 'adminFilter']);
+$routes->post('/admin/voucher/toggle/(:num)', 'AdminController::toggleVoucher/$1', ['filter' => 'adminFilter']);
+
 #region GUDANG
 $routes->get('/gudang/listorder', 'GudangController::listOrder', ['filter' => 'gudangFilter']);
 $routes->get('/gudang/listordertable', 'GudangController::listOrderTable');
