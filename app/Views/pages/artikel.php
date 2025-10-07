@@ -32,10 +32,12 @@
     }
 }
 </style>
+
 <div class="container artikel d-flex justify-content-center">
     <div class="konten">
         <div class="artikel">
             <img src="<?= $artikel['header']; ?>" alt="<?= $artikel['judul'] ?>" class="header">
+
             <div class="mb-4 hide-ke-show-block">
                 <div class="p-4 mx-4"
                     style="background-color: white; box-shadow: 5px 5px 20px rgba(0,0,0,0.1); position: relative; margin-top: -15svh">
@@ -47,15 +49,17 @@
                         </div>
                         <div class="d-flex gap-2 align-items-center">
                             <div class="d-flex gap-1 align-items-center">
-                                <a href="/addlikearticle/<?= $artikel['id'] ?>" class="btn-sm"><i
-                                        class="material-icons text-secondary" style="font-size: 13px;">thumb_up</i></a>
+                                <a href="/addlikearticle/<?= $artikel['id'] ?>" class="btn-sm">
+                                    <i class="material-icons text-secondary" style="font-size: 13px;">thumb_up</i>
+                                </a>
                                 <?php if ($artikel['suka'] > 0) { ?>
                                 <p class="m-0" style="font-size: 13px;"><?= $artikel['suka']; ?></p>
                                 <?php } ?>
                             </div>
                             <div class="d-flex gap-1 align-items-center">
-                                <a href="/addsharearticle/<?= $artikel['id'] ?>" class="btn-sm"><i
-                                        class="material-icons text-secondary" style="font-size: 13px;">share</i></a>
+                                <a href="/addsharearticle/<?= $artikel['id'] ?>" class="btn-sm">
+                                    <i class="material-icons text-secondary" style="font-size: 13px;">share</i>
+                                </a>
                                 <?php if ($artikel['bagikan'] > 0) { ?>
                                 <p class="m-0" style="font-size: 13px;"><?= $artikel['bagikan']; ?></p>
                                 <?php } ?>
@@ -76,6 +80,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="mb-5 show-block-ke-hide">
                 <div class="p-5 mx-5"
                     style="background-color: white; box-shadow: 5px 5px 20px rgba(0,0,0,0.1); position: relative; margin-top: -10svh">
@@ -87,19 +92,13 @@
                         </div>
                         <div class="d-flex gap-2 align-items-center">
                             <div class="d-flex gap-1 align-items-center">
-                                <a href="/addlikearticle/<?= $artikel['id'] ?>" class="btn"><i
-                                        class="material-icons text-secondary">thumb_up</i></a>
+                                <a href="/addlikearticle/<?= $artikel['id'] ?>" class="btn">
+                                    <i class="material-icons text-secondary">thumb_up</i>
+                                </a>
                                 <?php if ($artikel['suka'] > 0) { ?>
                                 <p class="m-0"><?= $artikel['suka']; ?></p>
                                 <?php } ?>
                             </div>
-                            <!-- <div class="d-flex gap-1 align-items-center">
-                                <a href="/addsharearticle/<?= $artikel['id'] ?>" class="btn"><i
-                                        class="material-icons text-secondary">share</i></a>
-                                <?php if ($artikel['bagikan'] > 0) { ?>
-                                <p class="m-0"><?= $artikel['bagikan']; ?></p>
-                                <?php } ?>
-                            </div> -->
                             <?php if (session()->get('role') == 1) { ?>
                             <a href="/admin/editarticle/<?= $artikel['id'] ?>" class="btn btn-default">Edit</a>
                             <button
@@ -119,6 +118,7 @@
                     </div>
                 </div>
             </div>
+
             <style>
             .container-artikel-list {
                 display: grid;
@@ -135,7 +135,6 @@
                 background-position: center;
                 background-size: 100%;
                 border-radius: 15px;
-                /* min-width: 425px; */
                 cursor: pointer;
                 transition: 0.5s;
                 position: relative;
@@ -263,42 +262,12 @@
                     display: flex;
                 }
             }
-
-            /* ===== Tambahan: pager artikel terkait (non-intrusif) ===== */
-            .rel-pager {
-                display: flex;
-                gap: 6px;
-                justify-content: center;
-                align-items: center;
-                margin-top: 6px;
-                flex-wrap: wrap;
-            }
-
-            .rel-pager button {
-                border: 1px solid #e5e7eb;
-                background: #fff;
-                padding: 6px 10px;
-                border-radius: 8px;
-                cursor: pointer;
-                font-size: 14px;
-            }
-
-            .rel-pager button[disabled] {
-                opacity: .5;
-                cursor: not-allowed;
-            }
-
-            .rel-pager .is-active {
-                background: var(--merah);
-                color: #fff;
-                border-color: var(--merah);
-            }
             </style>
 
             <div class="mb-5">
                 <h5 class="jdl-section mb-3">Artikel Serupa</h5>
 
-                <!-- Desktop/Grid (ditambah id untuk pagination) -->
+                <!-- Desktop/Grid -->
                 <div id="rel-container-desktop" class="container-artikel-list ubah-gap mb-3">
                     <?php foreach ($artikelTerkait as $ind_a => $a) { ?>
                     <a href="/article/<?= $a['path']; ?>" class="artikel-list"
@@ -313,9 +282,8 @@
                     </a>
                     <?php } ?>
                 </div>
-                <nav id="rel-pager-desktop" class="rel-pager"></nav>
 
-                <!-- Mobile/List (ditambah id untuk pagination) -->
+                <!-- Mobile/List -->
                 <div id="rel-container-mobile" class="container-artikel-list-hp gap-3 mb-3">
                     <?php foreach ($artikelTerkait as $ind_a => $a) { ?>
                     <a href="/article/<?= $a['path']; ?>" class="artikel-list gap-3">
@@ -326,61 +294,41 @@
                             <div class="mb-1 tanggal">
                                 <span><?= ucwords($a['kategori'][0]); ?></span>
                                 <span class="text-secondary">•</span>
-                                <span
-                                    class="text-secondary"><?= date("d", strtotime($a['waktu'])) . " " . $bulan[date("m", strtotime($a['waktu'])) - 1] . " " . date("Y", strtotime($a['waktu'])); ?></span>
+                                <span class="text-secondary">
+                                    <?= date("d", strtotime($a['waktu'])) . " " . $bulan[date("m", strtotime($a['waktu'])) - 1] . " " . date("Y", strtotime($a['waktu'])); ?>
+                                </span>
                             </div>
                             <p class="m-0 fw-bold judul"><?= $a['judul']; ?></p>
                         </div>
                     </a>
                     <?php } ?>
                 </div>
-                <nav id="rel-pager-mobile" class="rel-pager"></nav>
 
-                <!-- ========== PAGINATION ARTIKEL TERKAIT (server-side, tetap dipertahankan jika dipakai) ========== -->
-                <?php if (!empty($pagerTerkait) && $pagerTerkait['lastPage'] > 1): ?>
-                <div class="d-flex justify-content-center my-4">
-                    <nav aria-label="Pagination artikel terkait">
-                        <ul class="pagination">
-                            <?php if ($pagerTerkait['current'] > 1): ?>
-                            <li class="page-item">
-                                <a class="page-link" href="?rpage=<?= $pagerTerkait['current'] - 1 ?>">Previous</a>
-                            </li>
-                            <?php endif; ?>
-
-                            <?php for ($i = 1; $i <= $pagerTerkait['lastPage']; $i++): ?>
-                            <li class="page-item <?= ($pagerTerkait['current'] == $i ? 'active' : '') ?>">
-                                <a class="page-link" href="?rpage=<?= $i ?>"><?= $i ?></a>
-                            </li>
-                            <?php endfor; ?>
-
-                            <?php if ($pagerTerkait['current'] < $pagerTerkait['lastPage']): ?>
-                            <li class="page-item">
-                                <a class="page-link" href="?rpage=<?= $pagerTerkait['current'] + 1 ?>">Next</a>
-                            </li>
-                            <?php endif; ?>
-                        </ul>
-                    </nav>
-                </div>
-                <?php endif; ?>
-                <!-- ========== /PAGINATION ARTIKEL TERKAIT (server-side) ========== -->
-
+                <!-- Pagination SERVER-SIDE sebelumnya dihapus sesuai permintaan -->
             </div>
+
             <?php if (count($produkTerkait) > 0) { ?>
             <div class="mb-5">
                 <h5 class="jdl-section">Produk Terkait</h5>
-                <!-- <h1 class="mb-1">Mencari produk terkait artikel diatas</h1> -->
                 <div class="container-card1">
                     <?php foreach ($produkTerkait as $ind_p => $p) { ?>
                     <div class="card1">
                         <div style="position: relative;">
                             <span class="card1-content-img-kiri"
-                                <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
+                                <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>>
+                                <?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?>
+                            </span>
                             <div class="d-flex flex-column gap-2 card1-content-img-kanan">
-                                <?= session()->get('role') == '1' ? '<a class="card1-btn-img" href="/admin/editproduct/' . $p['id'] . '"><i class="material-icons">edit</i></a>' : '' ?>
-                                <?= in_array($p['id'], $wishlist) ? '<a class="card1-btn-img" href="/delwishlist/' . $p['id'] . '"><i class="material-icons">bookmark</i></a>' : '<a class="card1-btn-img" href="/addwishlist/' . $p['id'] . '"><i class="material-icons">bookmark_border</i></a>' ?>
+                                <?= session()->get('role') == '1'
+                                            ? '<a class="card1-btn-img" href="/admin/editproduct/' . $p['id'] . '"><i class="material-icons">edit</i></a>'
+                                            : '' ?>
+                                <?= in_array($p['id'], $wishlist)
+                                            ? '<a class="card1-btn-img" href="/delwishlist/' . $p['id'] . '"><i class="material-icons">bookmark</i></a>'
+                                            : '<a class="card1-btn-img" href="/addwishlist/' . $p['id'] . '"><i class="material-icons">bookmark_border</i></a>' ?>
                                 <a id="card<?= $ind_p ?>" class="card1-btn-img"
-                                    href="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'], true)[0]['nama'] ?>/1"><i
-                                        class="material-icons">shopping_cart</i></a>
+                                    href="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'], true)[0]['nama'] ?>/1">
+                                    <i class="material-icons">shopping_cart</i>
+                                </a>
                             </div>
                             <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="gambar">
                                 <img class="<?= $p['gambar_hover'] ? '' : 'nonhover'; ?> img-pic" id="img<?= $ind_p ?>"
@@ -394,8 +342,9 @@
                             <input id="varian-<?= $ind_p ?>-<?= $ind_v ?>"
                                 value="<?= $v['urutan_gambar'] ?>-<?= $v['nama'] ?>" type="radio"
                                 name="varian<?= $ind_p ?>">
-                            <label for="varian-<?= $ind_p ?>-<?= $ind_v ?>"><span
-                                    style="background-color: <?= $v['kode'] ?>"></span></label>
+                            <label for="varian-<?= $ind_p ?>-<?= $ind_v ?>">
+                                <span style="background-color: <?= $v['kode'] ?>"></span>
+                            </label>
                             <?php } ?>
                             <script>
                             const btnKeranjang<?= $ind_p ?>Elm = document.getElementById("card<?= $ind_p ?>");
@@ -403,18 +352,12 @@
                                 'input[name="varian<?= $ind_p ?>"]');
                             varian<?= $ind_p ?>Elm.forEach(elm => {
                                 elm.addEventListener('change', (e) => {
-                                    console.log(e.target.value)
                                     const img<?= $ind_p ?>Elm = document.getElementById(
                                         "img<?= $ind_p ?>");
-                                    img<?= $ind_p ?>Elm.src =
-                                        "/viewvar/<?= $p['id']; ?>/" + e.target.value.split("-")[0]
-                                        .split(
-                                            ",")[
-                                            0];
-
+                                    img<?= $ind_p ?>Elm.src = "/viewvar/<?= $p['id']; ?>/" + e.target
+                                        .value.split("-")[0].split(",")[0];
                                     btnKeranjang<?= $ind_p ?>Elm.href = "/addcart/<?= $p['id'] ?>/" + e
-                                        .target
-                                        .value.split("-")[1] + "/1";
+                                        .target.value.split("-")[1] + "/1";
                                 })
                             });
                             </script>
@@ -435,96 +378,24 @@
                 </div>
             </div>
             <?php } ?>
+
             <div class="mx-auto mt-2" style="width: fit-content;">
-                <a href="/product" class="btn mx-auto btn-default" style="width: fit-content;">Lihat Semua
-                    Produk</a>
+                <a href="/product" class="btn mx-auto btn-default" style="width: fit-content;">Lihat Semua Produk</a>
             </div>
         </div>
     </div>
 </div>
+
 <script>
-const ubahPaddingElm = document.querySelectorAll('.ubah-padding')
+const ubahPaddingElm = document.querySelectorAll('.ubah-padding');
 const innerWidthClient = window.innerWidth;
 ubahPaddingElm.forEach((e) => {
     e.classList.add(innerWidthClient > 700 ? 'py-4' : 'py-3')
-})
-const ubahGapElm = document.querySelectorAll('.ubah-gap')
+});
+const ubahGapElm = document.querySelectorAll('.ubah-gap');
 ubahGapElm.forEach((e) => {
     e.classList.add(innerWidthClient > 700 ? 'gap-4' : 'gap-3')
-})
+});
 </script>
-
-<!-- ===== Pagination client-side untuk "Artikel Serupa" (maks 10/halaman) ===== -->
-<script>
-(function() {
-    function setupPagination(containerSel, pagerSel, perPage) {
-        const container = document.querySelector(containerSel);
-        const pager = document.querySelector(pagerSel);
-        if (!container || !pager) return;
-
-        const items = Array.from(container.querySelectorAll('.artikel-list'));
-        const total = items.length;
-        if (total === 0) {
-            pager.innerHTML = '';
-            return;
-        }
-
-        const lastPage = Math.ceil(total / perPage);
-        let current = 1;
-
-        function renderPage(page) {
-            current = Math.max(1, Math.min(lastPage, page));
-            const start = (current - 1) * perPage;
-            const end = start + perPage;
-
-            items.forEach((el, idx) => {
-                el.style.display = (idx >= start && idx < end) ? '' : 'none';
-            });
-
-            renderPager();
-        }
-
-        function renderPager() {
-            if (lastPage <= 1) {
-                pager.innerHTML = '';
-                pager.style.display = 'none';
-                return;
-            }
-            pager.style.display = '';
-
-            let html = '';
-            html += `<button type="button" ${current===1?'disabled':''} data-act="prev">Prev</button>`;
-
-            const windowSize = 7;
-            let start = Math.max(1, current - Math.floor(windowSize / 2));
-            let end = Math.min(lastPage, start + windowSize - 1);
-            if (end - start + 1 < windowSize) start = Math.max(1, end - windowSize + 1);
-
-            for (let i = start; i <= end; i++) {
-                html +=
-                    `<button type="button" class="${i===current?'is-active':''}" data-page="${i}">${i}</button>`;
-            }
-
-            html += `<button type="button" ${current===lastPage?'disabled':''} data-act="next">Next</button>`;
-            pager.innerHTML = html;
-
-            pager.querySelectorAll('[data-page]').forEach(btn => {
-                btn.onclick = () => renderPage(parseInt(btn.getAttribute('data-page')));
-            });
-            const prev = pager.querySelector('[data-act="prev"]');
-            const next = pager.querySelector('[data-act="next"]');
-            if (prev) prev.onclick = () => renderPage(current - 1);
-            if (next) next.onclick = () => renderPage(current + 1);
-        }
-
-        renderPage(1);
-    }
-
-    // Set 10 item per halaman (desktop & mobile)
-    setupPagination('#rel-container-desktop', '#rel-pager-desktop', 10);
-    setupPagination('#rel-container-mobile', '#rel-pager-mobile', 10);
-})();
-</script>
-<!-- ===== /Pagination client-side ===== -->
 
 <?= $this->endSection(); ?>

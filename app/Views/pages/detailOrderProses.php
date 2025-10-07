@@ -12,6 +12,7 @@ if(in_array($pemesananSelected['status'], $statusSelain)){
     header('Location: '.'/orderdetail/'.strtolower($pemesananSelected['status']).'?idorder='.$id_order);
     die();
 }
+
 $dataMid = $pemesananSelected['data_mid'];
 $biller_code = "";
 $bank = "";
@@ -51,378 +52,430 @@ switch ($dataMid['payment_type']) {
         break;
 }
 $items = $pemesananSelected['items'];
-$carapembayaranSelected = $carapembayaran[$bank];
+$carapembayaranSelected = $carapembayaran[$bank] ?? [];
+
+// waktu (pakai settlement/transaction kalau ada untuk halaman sukses)
+$bulan = $bulan ?? ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
 $waktuExpire = strtotime($dataMid['expiry_time']);
 $waktuCurr = strtotime("+7 Hours");
 $waktuSelisih = $waktuExpire - $waktuCurr;
 $waktu = date("H:i:s", $waktuSelisih);
 $waktuExpireFix = date("d", $waktuExpire) . " " . $bulan[(int)date("m", $waktuExpire) - 1] . " " . date("Y H:i:s", $waktuExpire);
+
+$tsTransaksiRaw = $dataMid['settlement_time'] ?? ($dataMid['transaction_time'] ?? null);
+$waktuTransaksiFix = null;
+if ($tsTransaksiRaw) {
+    $tsTr = strtotime($tsTransaksiRaw);
+    $waktuTransaksiFix = date("d", $tsTr) . " " . $bulan[(int)date("m", $tsTr) - 1] . " " . date("Y H:i:s", $tsTr) . " WIB";
+}
+
+// kurir aman
+$kurir = $pemesananSelected['kurir'] ?? [];
+if (!is_array($kurir)) {
+    $kurir = json_decode($kurir, true) ?: [];
+}
+
+// filter hanya produk
+$excludeNames = ['voucher','flash sale','biaya admin','biaya ongkir'];
+$showItems = array_values(array_filter($items, function($it) use ($excludeNames){
+    $nm = strtolower($it['name']);
+    if (in_array($nm, $excludeNames)) return false;
+    if (strpos($nm, 'potongan') !== false) return false;
+    return true;
+}));
+$grossAmount = (int)($dataMid['gross_amount'] ?? 0);
 ?>
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
+
 <style>
-.order-content {
-    width: 100%;
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 20px;
+/* ===== Scoped: order-success (modern & responsif) ===== */
+.order-success {
+    max-width: 980px;
+    margin: 16px auto 28px;
+    padding: 0 12px;
+    font-size: 13.5px;
+    color: #111827
 }
 
-.row-info {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
+.order-success .card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px
 }
 
-.header-title {
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
+.order-success .pad {
+    padding: 14px
 }
 
-.transaction-info {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+.order-success .hr {
+    border: 0;
+    border-top: 1px dashed #e5e7eb;
+    margin: 12px 0
 }
 
-.transaction-info .payment-method {
-    margin-top: 1rem;
-}
-
-.tracking-number {
-    font-size: 16px;
-}
-
-.copy-btn {
-    font-size: 18px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    color: #333;
-}
-
-.courier-image {
-    width: 100px;
-    object-fit: contain;
-    margin-bottom: 10px;
-}
-
-.btn-order {
-    text-decoration: none;
-    display: inline-block;
-    padding: 12px 24px;
-    background-color: #ff4747;
-    color: white;
-    border-radius: 5px;
-    text-align: center;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
-
-.btn-order:hover {
-    background-color: #e04040;
-}
-
-.content-text {
-    font-size: 16px;
-    line-height: 1.5;
-    color: #333;
-}
-
-.buyer-info {
-    padding: 10px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-}
-
-.buyer-info h4 {
-    font-size: 18px;
-    color: #333;
-    margin-bottom: 15px;
-}
-
-.buyer-info p {
+.order-success .title {
     font-size: 14px;
-    color: #555;
-    margin-bottom: 8px;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    margin: 0 0 6px
 }
 
-.buyer-details,
-.buyer-address {
-    flex: 1;
+.order-success .muted {
+    color: #6b7280
 }
 
-/* Payment Section */
-.payment-info {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
+.order-success .center {
+    text-align: center
 }
 
-.payment-row {
+.order-success .between {
     display: flex;
+    align-items: flex-start;
     justify-content: space-between;
-    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap
 }
 
-.payment-detail,
-.payment-method {
-    flex: 1;
-    padding: 15px;
+.order-success .chip {
+    background: var(--dark);
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    display: inline-flex;
+    gap: 6px;
+    align-items: center
 }
 
-.payment-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 10px;
+.order-success .pill {
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 12px
 }
 
-.payment-method {
-    text-align: center;
+.order-success .num-lg {
+    font-size: clamp(16px, 2.6vw, 18px);
+    font-weight: 800;
+    letter-spacing: -.02em;
+    margin: 0
 }
 
-.payment-icon {
-    width: 50px;
-    margin-top: 10px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.payment-method-logo {
-    max-width: 150px;
-    margin-top: 10px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.copy-btn {
-    font-size: 18px;
-    border: none;
-    background: transparent;
+.order-success .copy-btn {
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    border-radius: 8px;
+    padding: 6px 8px;
     cursor: pointer;
-    color: #ff4747;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #374151
 }
 
-/* Responsiveness */
-@media (max-width: 768px) {
-    .payment-row {
-        flex-direction: column;
-        text-align: center;
-    }
+.order-success .copy-btn:hover {
+    background: #f9fafb
+}
 
-    .payment-detail,
-    .payment-method {
-        padding: 10px;
-        text-align: center;
-    }
+/* Grid auto-fit → rapi di berbagai lebar */
+.order-success .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px
+}
 
-    .payment-method-logo {
-        max-width: 120px;
-    }
+/* Tabel item: bisa scroll horizontal di layar kecil */
+.order-success .table-mini {
+    overflow-x: auto;
+    border-radius: 8px
+}
 
-    .payment-title {
-        font-size: 16px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+.order-success .table-mini .head,
+.order-success .table-mini .row {
+    display: grid;
+    grid-template-columns: minmax(140px, 1fr) 80px 140px;
+    gap: 8px;
+    align-items: center;
+    min-width: 420px
+}
 
-    }
+.order-success .table-mini .head {
+    padding: 8px 6px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    color: #6b7280;
+    background: #fafafa
+}
 
-    .payment-detail h3 {
-        font-size: 24px;
-    }
+.order-success .table-mini .row {
+    padding: 10px 6px;
+    border-bottom: 1px solid #fafafa
+}
 
-    .buyer-info {
-        padding: 8px;
-    }
+.order-success .table-mini .row:last-child {
+    border-bottom: 0
+}
 
-    .buyer-info h4 {
-        font-size: 16px;
-    }
+/* Info pembeli: alamat & ID wrap aman */
+.order-success .kv {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 8px;
+    padding: 5px 0
+}
 
-    .buyer-info p {
-        font-size: 13px;
-    }
+.order-success .kv span:last-child {
+    word-break: break-word;
+    white-space: pre-line
+}
 
-    .copy-btn {
-        margin-top: 10px;
+@media (max-width:560px) {
+    .order-success .kv {
+        grid-template-columns: 1fr
     }
 }
 
-/* Animasi Sukses */
-.success-animation i {
-    font-size: 50px;
-    color: green;
-    animation: bounce 1s ease infinite;
+.order-success .method-logo {
+    width: 84px;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    margin: 6px auto 10px
 }
 
-@keyframes bounce {
-    0% {
-        transform: translateY(0);
+/* Toast copy */
+.order-success .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    background: #111827;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transition: .25s ease;
+    z-index: 9999
+}
+
+.order-success .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-4px)
+}
+
+/* Success icon */
+.order-success .success i {
+    font-size: 42px;
+    color: #22c55e
+}
+
+/* Header ID band: biar ID panjang nggak pecah layout */
+.idband {
+    overflow-wrap: anywhere
+}
+
+/* Fine tune mobile */
+@media (max-width:420px) {
+    .order-success .copy-btn {
+        padding: 5px 7px
     }
 
-    50% {
-        transform: translateY(-10px);
-    }
-
-    100% {
-        transform: translateY(0);
+    .order-success .table-mini .head,
+    .order-success .table-mini .row {
+        grid-template-columns: minmax(120px, 1fr) 64px 120px;
+        min-width: 360px
     }
 }
 </style>
 
-<h1 class="header-title text-center mb-4 mt-4">Pembayaran Berhasil</h1>
 
-<!-- Animasi Success -->
-<div class="success-animation text-center">
-    <i class="material-icons">check_circle</i>
-</div>
 
-<div class="content-center mb-3">
-    <p class="text-center content-text">Pesanan akan segera kami proses. Simpan URL halaman ini untuk melihat status
-        pesanan. Atau dapat login sebagai member kami untuk melihat seluruh pesanan Anda.</p>
-</div>
+<div class="order-success">
 
-<div class="py-2 text-light w-100 text-center" style="background-color: var(--dark); letter-spacing: -1px;">
-    ID Pesanan : <b id="transaction_id"><?= $pemesananSelected['id_midtrans']; ?></b>
-    <button class="copy-btn" onclick="copytext('<?= $pemesananSelected['id_midtrans']; ?>')">
-        <i class="material-icons">content_copy</i></button>
-</div>
+    <div class="py-2 text-light w-100 text-center"
+        style="letter-spacing:-.2px;border-radius:8px;color: #000000   ;background: var(--dark);">
+        ID Pesanan : <span id="transaction_id" class="fw-bold"
+            style="color: var(--primary);"><?= $pemesananSelected['id_midtrans']; ?></span>
+        <button class="copy-btn" onclick="copytext('<?= $pemesananSelected['id_midtrans']; ?>')"
+            aria-label="Salin ID Pesanan">
+            <i class="material-icons" style="font-size:16px;">content_copy</i>
+        </button>
+    </div>
+    <hr>
+    <h1 class="header-title text-center mb-3 mt-4" style="font-size:22px;letter-spacing:-.5px;">Pembayaran Berhasil</h1>
+    <div class="success center mb-2"><i class="material-icons">check_circle</i></div>
+    <hr>
 
-<div class="order-content mx-auto">
     <!-- Identitas Pembeli -->
-    <div class="buyer-info mb-4 border-bottom pb-3">
-        <h4 class="mb-3 text-center">Identitas Pembeli</h4>
-        <div class="d-flex flex-column flex-md-row justify-content-between">
-            <div class="buyer-details">
-                <p id="buyer_name"><strong>Nama:</strong> <?= $pemesananSelected['nama']; ?></p>
-                <p id="buyer_email"><strong>Email:</strong> <?= $pemesananSelected['email']; ?></p>
-                <p id="buyer_phone"><strong>Telepon:</strong> <?= $pemesananSelected['nohp']; ?></p>
-            </div>
-            <div class="buyer-address mt-3 mt-md-0">
-                <p id="buyer_address"><strong>Alamat:</strong> <?= $pemesananSelected['alamat']; ?></p>
-            </div>
-        </div>
+    <div class="card pad mb-3">
+        <p class="title center">Identitas Pembeli</p>
+        <div class="kv"><span class="muted">Nama</span><span><b><?= $pemesananSelected['nama']; ?></b></span></div>
+        <div class="kv"><span class="muted">Email</span><span><?= $pemesananSelected['email']; ?></span></div>
+        <div class="kv"><span class="muted">Telepon</span><span><?= $pemesananSelected['nohp']; ?></span></div>
+        <div class="kv"><span class="muted">Alamat</span><span><?= $pemesananSelected['alamat']; ?></span></div>
     </div>
 
-    <!-- Jumlah Tagihan dan Metode Pembayaran -->
-    <div class="payment-info mb-4">
-        <div class="payment-row d-flex justify-content-center align-items-center">
-            <!-- Jumlah Tagihan -->
-            <div class="payment-detail text-center">
-                <p class="payment-title">Jumlah Tagihan</p>
-                <div class="d-flex align-items-end justify-content-center gap-2">
-                    <div id="transaction_value" class="d-none"><?= (int)$dataMid['gross_amount']; ?></div>
-                    <h3 class="m-0">Rp <?= number_format($dataMid['gross_amount'], 0, ',', '.'); ?></h3>
-                    <button class="copy-btn mb-1" onclick="copytext('<?= (int)$dataMid['gross_amount']; ?>')">
-                        <i class="material-icons">content_copy</i>
+    <!-- Nominal + Metode -->
+    <div class="card pad mb-3">
+        <div class="grid">
+            <div class="center">
+                <p class="muted m-0" style="font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;">Jumlah
+                    Tagihan</p>
+                <div style="display:inline-flex;align-items:center;gap:8px;margin-top:4px;">
+                    <div id="transaction_value" class="d-none"><?= (int)$grossAmount; ?></div>
+                    <p class="num-lg m-0">Rp <?= number_format($grossAmount, 0, ',', '.'); ?></p>
+                    <button class="copy-btn" onclick="copytext('<?= (int)$grossAmount; ?>')" title="Salin nominal"
+                        aria-label="Salin jumlah tagihan">
+                        <i class="material-icons" style="font-size:16px;">content_copy</i>
                     </button>
                 </div>
             </div>
-
-            <!-- Metode Pembayaran -->
-            <div class="payment-method text-center">
-                <p class="payment-title">Metode Pembayaran</p>
-                <?php if ($dataMid['payment_type'] == 'credit_card') { ?>
-                <h4 class="m-0">Kartu Kredit</h4>
-                <img class="payment-icon" src="/img/pembayaran/kartu_kredit_icon.png" alt="Kartu Kredit">
+            <div class="center">
+                <p class="muted m-0" style="font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;">Metode
+                    Pembayaran</p>
+                <?php if (($dataMid['payment_type'] ?? '') === 'credit_card') { ?>
+                <p class="m-0" style="font-weight:700;">Kartu Kredit/Debit</p>
                 <?php } else { ?>
-                <img class="payment-method-logo" src="/img/pembayaran/<?= $bank; ?>.webp" alt="">
+                <img class="method-logo" src="/img/pembayaran/<?= $bank; ?>.webp" alt="<?= $bank; ?>">
                 <?php } ?>
+                <?php if ($waktuTransaksiFix): ?>
+                <p class="muted m-0">Waktu transaksi: <?= $waktuTransaksiFix; ?></p>
+                <?php else: ?>
+                <p class="muted m-0">Waktu transaksi: -</p>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 
-    <!-- Daftar Item -->
-    <div class="order-items">
-        <div id="item-list">
-            <div class="d-flex mb-1 border-bottom pb-1">
-                <p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1;">Nama</p>
-                <p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1;">Jumlah</p>
-                <p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1;">Harga</p>
+    <!-- Ringkasan Item -->
+    <div class="card pad mb-3">
+        <p class="title">Ringkasan Item</p>
+        <?php if (count($showItems) > 0): ?>
+        <div class="table-mini mt-1">
+            <div class="head">
+                <div class="center">Nama</div>
+                <div class="center">Jumlah</div>
+                <div class="center">Harga</div>
             </div>
-            <?php foreach ($items as $i) { ?>
-            <div class="d-flex py-2">
-                <p class="d-block fw-bold m-0 text-center" style="flex: 1;"><?= $i['name']; ?></p>
-                <p class="d-block fw-bold m-0 text-center" style="flex: 1;"><?= $i['quantity']; ?></p>
-                <p class="d-block fw-bold m-0 text-center" style="flex: 1;">Rp
-                    <?= number_format($i['price'], 0, ',', '.'); ?></p>
+            <?php foreach ($showItems as $i) { ?>
+            <div class="row">
+                <p class="m-0 center fw-bold"><?= $i['name']; ?></p>
+                <p class="m-0 center fw-bold"><?= (int)$i['quantity']; ?></p>
+                <p class="m-0 center fw-bold">Rp <?= number_format((int)$i['price'], 0, ',', '.'); ?></p>
             </div>
             <?php } ?>
         </div>
+        <?php else: ?>
+        <p class="muted m-0">Tidak ada item produk untuk ditampilkan.</p>
+        <?php endif; ?>
     </div>
 
-    <!-- Ekspedisi dan Resi -->
-    <div class="row-info justify-content-between w-100 mb-4 pb-3">
-        <div style="flex: 1">
-            <p class="mb-2">Ekspedisi</p>
-            <?php if ($pemesananSelected['resi'] != 'Menunggu pengiriman') { ?>
-            <div class="d-flex justify-content-between gap-2">
-                <img src="/img/kurir/<?= strtolower(explode(" ", $kurir['nama'])[0]); ?>.png" alt=""
-                    class="courier-image">
-                <div style="flex: 1;">
-                    <p class="mb-0 fw-bold"><?= strtoupper($kurir['nama']) ?> <?= $kurir['deskripsi'] ?></p>
-                    <?php if (isset($kurir['estimasi'])) { ?>
-                    <p class="m-0">Estimasi pengiriman <?= $kurir['estimasi'] ?> Hari</p>
-                    <?php } ?>
+    <!-- Ekspedisi & Resi -->
+    <div class="card pad mb-3">
+        <p class="title">Pengiriman</p>
+        <div>
+            <p class="m-0 muted">Ekspedisi</p>
+            <?php if ($pemesananSelected['resi'] != 'Menunggu pengiriman' && !empty($kurir) && !empty($kurir['nama'])) { ?>
+            <div class="between" style="gap:10px;margin-top:6px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <img src="/img/kurir/<?= strtolower(explode(" ", $kurir['nama'])[0]); ?>.png" alt=""
+                        style="width:70px;object-fit:contain">
+                    <div>
+                        <p class="m-0 fw-bold"><?= strtoupper($kurir['nama']); ?> <?= $kurir['deskripsi'] ?? ''; ?></p>
+                        <?php if (isset($kurir['estimasi'])) { ?>
+                        <p class="m-0 muted">Estimasi <?= $kurir['estimasi']; ?> hari</p>
+                        <?php } ?>
+                    </div>
                 </div>
             </div>
             <?php } else { ?>
-            <div>
-                <p class="m-0">Barang masih kami proses untuk pengiriman</p>
-                <p class="m-0 text-secondary">*Jika pemesanan lebih dari jam 12:00 akan kami proses di esok harinya</p>
+            <div style="margin-top:6px;">
+                <p class="m-0">Barang masih kami proses untuk pengiriman.</p>
+                <p class="m-0 muted" style="font-size:12.5px">*Pesanan setelah jam 12:00 diproses di hari berikutnya.
+                </p>
             </div>
             <?php } ?>
-            <p class="mb-0 mt-3">Resi</p>
-            <div class="d-flex gap-1">
-                <p class="tracking-number"><?= $pemesananSelected['resi']; ?></p>
-                <?php if ($pemesananSelected['resi'] != 'Menunggu pengiriman') { ?>
-                <button class="copy-btn mb-1" onclick="copytext('<?= $pemesananSelected['resi']; ?>')"><i
-                        class="material-icons">content_copy</i></button>
-                <?php } ?>
+
+            <div style="margin-top:10px;">
+                <p class="m-0 muted">Resi</p>
+                <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
+                    <span style="font-weight:700;word-break:break-word"><?= $pemesananSelected['resi']; ?></span>
+                    <?php if ($pemesananSelected['resi'] != 'Menunggu pengiriman') { ?>
+                    <button class="copy-btn" onclick="copytext('<?= $pemesananSelected['resi']; ?>')" title="Salin Resi"
+                        aria-label="Salin nomor resi">
+                        <i class="material-icons" style="font-size:16px;">content_copy</i>
+                    </button>
+                    <?php } ?>
+                </div>
             </div>
-            <p class="mb-0 mt-3">Status Pesanan</p>
-            <span
-                class="badge rounded-pill <?= getStatusClass($pemesananSelected['status']); ?>"><?= ucfirst($pemesananSelected['status']); ?></span>
+
+            <div style="margin-top:10px;">
+                <p class="m-0 muted">Status Pesanan</p>
+                <span class="badge rounded-pill <?= getStatusClass($pemesananSelected['status']); ?>"
+                    style="margin-top:4px;">
+                    <?= ucfirst($pemesananSelected['status']); ?>
+                </span>
+            </div>
         </div>
     </div>
 
     <?php if (session()->get('isLogin')) { ?>
-    <div class="w-100 d-flex justify-content-center mt-4">
-        <a href="/order" class="btn-order">Pesanan Saya</a>
+    <div class="center">
+        <a href="/order" class="btn-order"
+            style="display:inline-block;padding:10px 18px;background:#ff4747;color:#fff;border-radius:8px;text-decoration:none;font-size:14px;">
+            Pesanan Saya
+        </a>
     </div>
     <?php } ?>
 </div>
 
-<!-- PHP Function untuk Status -->
 <?php
 function getStatusClass($status) {
     switch ($status) {
-        case 'Menunggu Pembayaran':
-            return "text-bg-primary";
-        case 'Proses':
-            return "text-bg-warning";
-        case 'Dikirim':
-            return "text-bg-info";
-        case 'Selesai':
-            return "text-bg-success";
+        case 'Menunggu Pembayaran': return "text-bg-primary";
+        case 'Proses': return "text-bg-warning";
+        case 'Dikirim': return "text-bg-info";
+        case 'Selesai': return "text-bg-success";
         case 'Dibatalkan':
-            return "text-bg-danger";
-        case 'Gagal':
-            return "text-bg-danger";
-        default:
-            return "text-bg-dark";
+        case 'Gagal': return "text-bg-danger";
+        default: return "text-bg-dark";
     }
 }
 ?>
 
+<div id="toastCopy" class="order-success toast">Disalin</div>
 
-
+<script>
+// helper copy + toast
+function copytext(text) {
+    if (!text) return;
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(String(text));
+    } else {
+        const ta = document.createElement('textarea');
+        ta.value = String(text);
+        ta.style.position = 'fixed';
+        ta.style.top = '-1000px';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        try {
+            document.execCommand('copy');
+        } catch (e) {}
+        document.body.removeChild(ta);
+    }
+    const toast = document.getElementById('toastCopy');
+    if (!toast) return;
+    toast.textContent = 'Disalin';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1200);
+}
+</script>
 
 <?= $this->endSection(); ?>

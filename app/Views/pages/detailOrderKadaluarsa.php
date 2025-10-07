@@ -57,6 +57,8 @@ switch ($dataMid['payment_type']) {
 }
 $items = $pemesananSelected['items'];
 $carapembayaranSelected = $carapembayaran[$bank];
+
+$bulan = $bulan ?? ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
 $waktuExpire = strtotime($dataMid['expiry_time']);
 $waktuCurr = strtotime("+7 Hours");
 $waktuSelisih = $waktuExpire - $waktuCurr;
@@ -68,312 +70,373 @@ $waktuExpireFix = date("d", $waktuExpire) . " " . $bulan[(int)date("m", $waktuEx
 <?= $this->section("content"); ?>
 
 <style>
-.order-content {
-    width: 100%;
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 20px;
+/* ===== Scoped: order-expired (tidak ganggu halaman lain) ===== */
+.order-expired {
+    max-width: 980px;
+    margin: 18px auto 28px;
+    padding: 0 12px;
+    color: #111827;
+    font-size: 13.5px;
 }
 
-.row-info {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-
-.header-title {
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-}
-
-.transaction-info {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-}
-
-.transaction-info .payment-method {
-    margin-top: 1rem;
-}
-
-.tracking-number {
-    font-size: 16px;
-}
-
-.copy-btn {
-    font-size: 18px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    color: #333;
-}
-
-.courier-image {
-    width: 100px;
-    object-fit: contain;
-    margin-bottom: 10px;
-}
-
-.btn-order {
-    text-decoration: none;
-    display: inline-block;
-    padding: 12px 24px;
-    background-color: #ff4747;
-    color: white;
-    border-radius: 5px;
+.order-expired .title {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -.02em;
     text-align: center;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
+    margin: 6px 0 10px;
 }
 
-.btn-order:hover {
-    background-color: #e04040;
+.order-expired .subtitle {
+    text-align: center;
+    color: #6b7280;
+    margin-bottom: 12px;
 }
 
-.content-text {
-    font-size: 16px;
-    line-height: 1.5;
-    color: #333;
-}
-
-.buyer-info {
-    padding: 10px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-}
-
-.buyer-info h4 {
-    font-size: 18px;
-    color: #333;
-    margin-bottom: 15px;
-}
-
-.buyer-info p {
-    font-size: 14px;
-    color: #555;
-    margin-bottom: 8px;
-}
-
-.buyer-details,
-.buyer-address {
-    flex: 1;
-}
-
-/* Payment Section */
-.payment-info {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
-}
-
-.payment-row {
+.order-expired .bar {
     display: flex;
+    align-items: center;
     justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.order-expired .chip {
+    background: var(--dark);
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    display: inline-flex;
+    gap: 6px;
     align-items: center;
 }
 
-.payment-detail,
-.payment-method {
-    flex: 1;
-    padding: 15px;
+.order-expired .badge-expired {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
 }
 
-.payment-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.payment-method {
-    text-align: center;
-}
-
-.payment-icon {
-    width: 50px;
-    margin-top: 10px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.payment-method-logo {
-    max-width: 150px;
-    margin-top: 10px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.copy-btn {
-    font-size: 18px;
-    border: none;
-    background: transparent;
+.order-expired .copy-btn {
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    border-radius: 8px;
+    padding: 6px 8px;
     cursor: pointer;
-    color: #ff4747;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #374151;
 }
 
-/* Responsiveness */
-@media (max-width: 768px) {
-    .payment-row {
-        flex-direction: column;
-        text-align: center;
-    }
+.order-expired .copy-btn:hover {
+    background: #f9fafb;
+}
 
-    .payment-detail,
-    .payment-method {
-        padding: 10px;
-        text-align: center;
-    }
+.order-expired .card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+}
 
-    .payment-method-logo {
-        max-width: 120px;
-    }
+.order-expired .pad {
+    padding: 14px;
+}
 
-    .payment-title {
-        font-size: 16px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+.order-expired .hr {
+    border: 0;
+    border-top: 1px dashed #e5e7eb;
+    margin: 12px 0;
+}
 
-    }
+.order-expired .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
 
-    .payment-detail h3 {
-        font-size: 24px;
-    }
-
-    .buyer-info {
-        padding: 8px;
-    }
-
-    .buyer-info h4 {
-        font-size: 16px;
-    }
-
-    .buyer-info p {
-        font-size: 13px;
-    }
-
-    .copy-btn {
-        margin-top: 10px;
+@media (max-width: 992px) {
+    .order-expired .grid {
+        grid-template-columns: 1fr;
     }
 }
 
-/* Animasi Sukses */
-.success-animation i {
-    font-size: 50px;
-    color: green;
-    animation: bounce 1s ease infinite;
+.order-expired .label {
+    font-size: 11.5px;
+    letter-spacing: .06em;
+    color: #6b7280;
+    text-transform: uppercase;
 }
 
-@keyframes bounce {
-    0% {
-        transform: translateY(0);
-    }
+.order-expired .num {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -.02em;
+}
 
-    50% {
-        transform: translateY(-10px);
-    }
+.order-expired .text {
+    font-size: 14px;
+    margin: 0;
+}
 
-    100% {
-        transform: translateY(0);
-    }
+.order-expired .muted {
+    color: #6b7280;
+}
+
+.order-expired .method-logo {
+    width: 90px;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    margin: 6px auto 10px;
+}
+
+.order-expired .kvs {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: center;
+    padding: 10px 12px;
+    border: 1px dashed #e5e7eb;
+    border-radius: 10px;
+    background: #fafafa;
+}
+
+.order-expired .kvs .k {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.order-expired .kvs .v {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: .2px;
+}
+
+.order-expired .dim {
+    opacity: .65;
+}
+
+.order-expired .note {
+    background: #fff7ed;
+    border: 1px solid #ffedd5;
+    color: #9a3412;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+}
+
+.order-expired .accordion-button {
+    font-size: 13px;
+}
+
+.order-expired .actions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.order-expired .btn-order {
+    text-decoration: none;
+    padding: 10px 18px;
+    background: #ff4747;
+    color: #fff;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 14px;
+    display: inline-block;
+}
+
+.order-expired .btn-order:hover {
+    background: #e04040;
+}
+
+.order-expired .btn-ghost {
+    text-decoration: none;
+    padding: 10px 18px;
+    background: #fff;
+    color: #111827;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+/* Toast copy */
+.order-expired .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    background: #111827;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transition: .25s ease;
+    z-index: 9999;
+}
+
+.order-expired .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-4px);
 }
 </style>
 
-<h1 class="header-title text-center mb-4 mt-4">Pesanan kedaluwarsa</h1>
-<div class="py-1 text-light w-100 text-center" style="background-color: var(--dark); letter-spacing: -1px;">
-    ID Pesanan : <b><?= $pemesananSelected['id_midtrans']; ?></b>
-</div>
+<div class="order-expired">
+    <h1 class="title">Pesanan Kedaluwarsa</h1>
+    <p class="subtitle">Waktu pembayaran untuk pesanan ini sudah berakhir.</p>
 
-<div class="container">
-    <div class="konten mx-auto" style="max-width: 1000px;">
-        <!-- Menampilkan informasi tagihan -->
-        <div class="payment-row d-flex justify-content-center align-items-center">
-            <div class="payment-detail text-center">
-                <p class="payment-title">Jumlah Tagihan</p>
-                <div class="d-flex align-items-end justify-content-center gap-2">
-                    <div id="transaction_value" class="d-none"><?= (int)$dataMid['gross_amount']; ?></div>
-                    <h3 class="m-0">Rp <?= number_format($dataMid['gross_amount'], 0, ',', '.'); ?></h3>
-                    <button class="copy-btn mb-1" onclick="copytext('<?= (int)$dataMid['gross_amount']; ?>')">
-                        <i class="material-icons">content_copy</i>
-                    </button>
-                </div>
-            </div>
-            <div class="payment-detail text-center">
-                <p class="m-0">Waktu kedaluwarsa</p>
-                <h5 class="m-0"><?= $waktuExpireFix; ?></h5> <!-- Menampilkan waktu kedaluwarsa -->
-            </div>
+    <!-- Bar: ID + status + copy -->
+    <div class="bar">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <span class="chip">
+                <i class="material-icons" style="font-size:16px;">receipt_long</i>
+                ID: <b><?= $pemesananSelected['id_midtrans']; ?></b>
+            </span>
+            <span class="badge-expired">Kedaluwarsa</span>
         </div>
+        <button class="copy-btn" onclick="copytext('<?= $pemesananSelected['id_midtrans']; ?>')"
+            title="Salin ID Pesanan">
+            <i class="material-icons" style="font-size:16px;">content_copy</i> Salin
+        </button>
+    </div>
 
-        <!-- Menampilkan nomor virtual account -->
-        <div style="flex: 1">
+    <div class="card pad">
+        <!-- Ringkasan 2 kolom -->
+        <div class="grid">
             <div>
-                <p class="payment-method text-center">Nomor Virtual Account</p>
-                <img class="payment-method-logo" src="/img/pembayaran/<?= $bank; ?>.webp" alt="">
-                <div class="d-flex align-items-end justify-content-center gap-2 my-4">
-                    <h3 class="m-0" style=" letter-spacing: -3px; font-weight:600;">
-                        <?= $va_number; ?></h3>
-                    <button class="copy-btn mb-1" onclick="copytext('<?= $va_number; ?>')"><i
-                            class="material-icons">content_copy</i></button>
-                </div>
+                <p class="label m-0">Jumlah Tagihan</p>
+                <p class="num m-0">Rp <?= number_format($dataMid['gross_amount'], 0, ',', '.'); ?></p>
             </div>
-            <p class="mb-3 text-center">Simpan nomor virtual account diatas
-                untuk melakukan pembayaran sesuai bank yang telah
-                dipilih</p>
+            <div>
+                <p class="label m-0">Waktu Kedaluwarsa</p>
+                <p class="text m-0"><b><?= $waktuExpireFix; ?> WIB</b></p>
+            </div>
         </div>
 
-        <!-- Petunjuk Pembayaran -->
-        <p class="text-center" style="font-size: 20px; letter-spacing: -1px; font-weight:600;">Petunjuk Pembayaran</p>
-        <div class="accordion accordion-flush" id="accordionFlushExample">
-            <?php foreach ($carapembayaranSelected as $ind_c => $c) { ?>
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#flush-collapse<?= $ind_c ?>" aria-expanded="false"
-                        aria-controls="flush-collapse1">
-                        <?= $c['nama']; ?>
-                    </button>
-                </h2>
-                <div id="flush-collapse<?= $ind_c ?>" class="accordion-collapse collapse"
-                    data-bs-parent="#accordionFlushExample">
-                    <div class="accordion-body">
-                        <p class="mb-0"><?= $c['isi']; ?></p>
+        <hr class="hr">
+
+        <!-- Metode & VA (dinonaktifkan secara visual) -->
+        <div class="grid">
+            <div class="card pad">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+                    <div>
+                        <p class="text m-0"><b>Metode Pembayaran</b></p>
+                        <p class="muted m-0">Nomor/QR di bawah sudah tidak aktif.</p>
                     </div>
+                    <span class="badge-expired">Tidak Aktif</span>
+                </div>
+                <img class="method-logo dim" src="/img/pembayaran/<?= $bank; ?>.webp" alt="<?= $bank; ?>">
+                <?php if ($bank === 'mandiri' && !empty($biller_code)): ?>
+                <div class="kvs dim" style="margin-top:6px;">
+                    <div>
+                        <div class="k">Biller Code</div>
+                        <div class="v"><?= $biller_code; ?></div>
+                    </div>
+                    <button class="copy-btn" onclick="copytext('<?= $biller_code; ?>')" title="Salin Biller Code">
+                        <i class="material-icons" style="font-size:16px;">content_copy</i>
+                    </button>
+                </div>
+                <?php endif; ?>
+                <?php if ($va_number !== '' && $bank !== 'card'): ?>
+                <div class="kvs dim" style="margin-top:6px;">
+                    <div>
+                        <div class="k">
+                            <?= ($bank === 'toko' || $bank === 'market') ? 'Keterangan' : 'Virtual Account'; ?></div>
+                        <div class="v"><?= $va_number; ?></div>
+                    </div>
+                    <?php if($bank !== 'toko' && $bank !== 'market'): ?>
+                    <button class="copy-btn" onclick="copytext('<?= $va_number; ?>')" title="Salin">
+                        <i class="material-icons" style="font-size:16px;">content_copy</i>
+                    </button>
+                    <?php endif; ?>
+                </div>
+                <?php else: ?>
+                <p class="muted m-0 dim" style="margin-top:6px;">Tidak ada nomor yang ditampilkan untuk metode ini.</p>
+                <?php endif; ?>
+            </div>
+
+            <!-- Petunjuk (tetap ditampilkan jika ingin melakukan pembayaran baru) -->
+            <div class="card pad">
+                <p class="text m-0"><b>Petunjuk Pembayaran</b></p>
+                <p class="muted m-0">Gunakan panduan berikut bila membuat pembayaran baru.</p>
+                <div class="accordion accordion-flush mt-2" id="accordionFlushExample">
+                    <?php foreach ($carapembayaranSelected as $ind_c => $c) { ?>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-semibold" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#flush-collapse<?= $ind_c ?>"
+                                aria-expanded="false" aria-controls="flush-collapse<?= $ind_c ?>">
+                                <?= $c['nama']; ?>
+                            </button>
+                        </h2>
+                        <div id="flush-collapse<?= $ind_c ?>" class="accordion-collapse collapse"
+                            data-bs-parent="#accordionFlushExample">
+                            <div class="accordion-body" style="font-size:13px; line-height:1.5;">
+                                <p class="mb-0"><?= $c['isi']; ?></p>
+                            </div>
+                        </div>
+                    </div>
+                    <?php } ?>
                 </div>
             </div>
-            <?php } ?>
+        </div>
+
+        <hr class="hr">
+
+        <!-- Catatan & Aksi -->
+        <div class="note">
+            Nomor pembayaran pada pesanan ini sudah kedaluwarsa. Jika kamu ingin melanjutkan, silakan buat pesanan baru.
+            Jika kamu sudah membayar sebelumnya, status akan diperbarui otomatis setelah diverifikasi.
+        </div>
+
+        <hr class="hr">
+
+        <div class="actions">
+            <a href="/order" class="btn-order">Kembali ke Pesanan Saya</a>
+            <a href="/" class="btn-ghost">Belanja Lagi</a>
         </div>
     </div>
 </div>
 
+<!-- Toast copy -->
+<div id="toastCopy" class="order-expired toast">Disalin</div>
+
 <?= $this->endSection(); ?>
 
 <script>
-// Membuat fungsi countdown untuk waktu kedaluwarsa (jika dibutuhkan)
-const expiryTimeElm = document.querySelectorAll(".waktu");
-const de = new Date('<?= $dataMid['expiry_time']; ?>');
-const expireTime = de.getTime();
-const dc = new Date();
-
-setInterval(() => {
-    const currTime = new Date().getTime();
-    let dselisih = expireTime - currTime;
-
-    const hours = String(Math.floor(dselisih / (1000 * 60 * 60))).padStart(2, '0');
-    dselisih %= (1000 * 60 * 60);
-    const minutes = String(Math.floor(dselisih / (1000 * 60))).padStart(2, '0');
-    dselisih %= (1000 * 60);
-    const seconds = String(Math.floor(dselisih / 1000)).padStart(2, '0');
-
-    expiryTimeElm.forEach(elm => {
-        elm.innerHTML = `${hours}: ${minutes}: ${seconds}`;
-    })
-    if (Number(hours) < 0 && Number(minutes) < 0 && Number(seconds) < 0) {
-        window.location.reload();
+// Helper copy + toast (UI saja, tidak mengubah flow)
+function copytext(text) {
+    if (!text) return;
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(String(text));
+    } else {
+        const el = document.createElement('textarea');
+        el.value = String(text);
+        el.style.position = 'fixed';
+        el.style.top = '-1000px';
+        document.body.appendChild(el);
+        el.select();
+        try {
+            document.execCommand('copy');
+        } catch (e) {}
+        document.body.removeChild(el);
     }
-}, 1000);
+    const toast = document.getElementById('toastCopy');
+    if (!toast) return;
+    toast.textContent = 'Disalin';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1200);
+}
 </script>
