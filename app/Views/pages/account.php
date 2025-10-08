@@ -31,6 +31,254 @@
     </div>
 </div>
 
+<style>
+:root {
+    --ink: #111827;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --card: #fff;
+    --card-weak: #fafafa;
+    --brand: var(--merah);
+    --fs-base: 15px;
+    --fs-small: 13.5px;
+    --fs-xsmall: 13px;
+}
+
+.konten {
+    max-width: 1100px
+}
+
+.baris-ke-kolom {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start
+}
+
+.baris-ke-kolom>.tigapuluh-ke-seratus {
+    width: 360px
+}
+
+.baris-ke-kolom>div[style*="flex:1"] {
+    flex: 1
+}
+
+@media (max-width:992px) {
+    .baris-ke-kolom {
+        flex-direction: column
+    }
+
+    .baris-ke-kolom>.tigapuluh-ke-seratus {
+        width: 100%
+    }
+}
+
+/* Card & buttons */
+.card {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--card);
+    box-shadow: 0 1px 10px rgba(0, 0, 0, .03)
+}
+
+.garis {
+    display: block;
+    height: 1px;
+    background: var(--line)
+}
+
+.teks-sedang {
+    font-weight: 800;
+    letter-spacing: -.02em
+}
+
+.btn-default-merah {
+    background: var(--brand);
+    border: 1px solid var(--brand);
+    color: #fff;
+    border-radius: 10px;
+    padding: .6rem 1rem;
+    font-weight: 700
+}
+
+.btn-default-abu {
+    background: #f3f4f6;
+    border: 1px solid var(--line);
+    color: #111827;
+    border-radius: 10px;
+    padding: .6rem 1rem;
+    font-weight: 700
+}
+
+.btn-teks-aja {
+    border: none;
+    background: transparent;
+    color: var(--brand);
+    font-weight: 600
+}
+
+/* Address list */
+.container-address {
+    display: flex;
+    flex-direction: column;
+    gap: 10px
+}
+
+.item-address {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+    transition: .15s
+}
+
+.item-address .nama {
+    font-weight: 800;
+    letter-spacing: -.01em;
+    font-size: clamp(1rem, 0.95rem + .3vw, 1.08rem);
+    margin-bottom: .25rem
+}
+
+.item-address:hover {
+    background: #fafafa
+}
+
+/* Voucher grid */
+.vch-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px
+}
+
+@media (max-width:768px) {
+    .vch-grid {
+        grid-template-columns: 1fr
+    }
+}
+
+.vch-card {
+    border: 1px dashed var(--line);
+    border-radius: 12px;
+    padding: 12px;
+    background: var(--card-weak)
+}
+
+.vch-hd {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px
+}
+
+.vch-code {
+    font-weight: 900;
+    letter-spacing: .06em;
+    font-size: 1rem
+}
+
+.vch-badge {
+    border-radius: 999px;
+    padding: .2rem .5rem;
+    font-size: .75rem;
+    font-weight: 700;
+    background: #eef2ff;
+    color: #4338ca;
+    border: 1px dashed #c7d2fe
+}
+
+.vch-body {
+    font-size: .92rem;
+    color: #374151;
+    margin-top: 6px
+}
+
+.vch-meta {
+    font-size: .8rem;
+    color: var(--muted)
+}
+
+.vch-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px
+}
+
+.btn-chip {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: .4rem .7rem;
+    font-weight: 700;
+    background: #fff
+}
+
+.btn-chip.primary {
+    border-color: var(--brand);
+    color: var(--brand)
+}
+
+.path {
+    font-size: .95rem;
+    color: var(--muted)
+}
+
+.path a {
+    text-decoration: none
+}
+
+/* Base font */
+.container,
+.card {
+    font-size: var(--fs-base);
+}
+
+/* ===== Mobile: kecilkan font & hilangkan bold ===== */
+@media (max-width:768px) {
+
+    .container,
+    .card {
+        font-size: var(--fs-small);
+    }
+
+    .btn-default-merah,
+    .btn-default-abu {
+        font-size: .92rem;
+        padding: .55rem .9rem;
+    }
+
+    /* turunkan bold di HP */
+    .fw-bold,
+    .teks-sedang,
+    .item-address .nama,
+    .vch-code,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    b,
+    strong {
+        font-weight: 500 !important;
+    }
+}
+
+@media (max-width:360px) {
+
+    .container,
+    .card {
+        font-size: var(--fs-xsmall);
+    }
+
+    .btn-default-merah,
+    .btn-default-abu {
+        font-size: .9rem
+    }
+}
+</style>
+
 <div class="container konten baris-ke-kolom">
     <div class="tigapuluh-ke-seratus">
         <div class="card p-4">
@@ -85,7 +333,7 @@
 
         <div class="container-address my-4">
             <?php foreach ($alamat as $ind_a => $a) { ?>
-            <div for="address<?= $ind_a ?>" class="item-address">
+            <div class="item-address">
                 <div style="flex: 1;">
                     <p class="mb-1 nama"><?= esc($a['nama_penerima']) ?></p>
                     <p class="mb-1"><?= esc($a['alamat_lengkap']) ?></p>
@@ -105,6 +353,94 @@
         <button type="button" class="btn-teks-aja" data-bs-toggle="modal" data-bs-target="#exampleModal">
             <i class="material-icons">add</i> Tambah Alamat
         </button>
+
+        <!-- ====== Voucher Saya ====== -->
+        <?php
+          $voucherUser = isset($voucherUser) && is_array($voucherUser) ? $voucherUser : [];
+          $claimedIds = (array)(session()->get('voucher_claimed') ?? []);
+          $voucherClaimedDetail = isset($voucherClaimedDetail) && is_array($voucherClaimedDetail) ? $voucherClaimedDetail : [];
+          $showVoucherSection = (count($voucherUser) > 0) || (count($voucherClaimedDetail) > 0) || (count($claimedIds) > 0);
+        ?>
+
+        <?php if ($showVoucherSection): ?>
+        <div class="my-4">
+            <h1 class="teks-sedang">Voucher Saya</h1>
+            <p style="color: grey;">Voucher yang terikat akun / sudah kamu klaim.</p>
+
+            <div class="vch-grid">
+                <?php if (count($voucherUser) > 0): ?>
+                <?php foreach ($voucherUser as $v): 
+                $kode = $v['kode'] ?? '';
+                $nama = $v['nama'] ?? 'Voucher';
+                $tipe = ($v['tipe'] ?? ($v['satuan'] ?? 'persen')) === 'persen' ? 'persen' : 'nominal';
+                $nilai= (float)($v['nilai'] ?? ($v['nominal'] ?? 0));
+                $target = strtolower($v['target'] ?? 'semua');
+                $aktif = !empty($v['aktif']);
+                $mulai = !empty($v['mulai']) ? substr($v['mulai'],0,10) : '';
+                $akhir = !empty($v['berakhir']) ? substr($v['berakhir'],0,10) : '';
+              ?>
+                <div class="vch-card">
+                    <div class="vch-hd">
+                        <div class="vch-code"><?= esc($kode) ?></div>
+                        <?php if($target==='baru'): ?><span class="vch-badge">Member Baru</span><?php endif; ?>
+                    </div>
+                    <div class="vch-body"><b><?= esc($nama) ?></b></div>
+                    <div class="vch-meta">
+                        Tipe:
+                        <?= $tipe==='persen' ? (number_format($nilai,0).'%') : ('Rp '.number_format($nilai,0,',','.')) ?>
+                        <?php if($mulai || $akhir): ?> · Periode: <?= esc($mulai) ?> – <?= esc($akhir) ?><?php endif; ?>
+                        · Status: <?= $aktif ? 'Aktif' : 'Nonaktif'; ?>
+                    </div>
+                    <div class="vch-actions">
+                        <button class="btn-chip primary" type="button"
+                            onclick="salinKode('<?= esc($kode, 'attr') ?>')">Salin Kode</button>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+                <?php endif; ?>
+
+                <?php if (count($voucherClaimedDetail) > 0): ?>
+                <?php foreach ($voucherClaimedDetail as $v):
+                $kode = $v['kode'] ?? '';
+                $nama = $v['nama'] ?? 'Voucher';
+                $tipe = ($v['tipe'] ?? ($v['satuan'] ?? 'persen')) === 'persen' ? 'persen' : 'nominal';
+                $nilai= (float)($v['nilai'] ?? ($v['nominal'] ?? 0));
+                $mulai = !empty($v['mulai']) ? substr($v['mulai'],0,10) : '';
+                $akhir = !empty($v['berakhir']) ? substr($v['berakhir'],0,10) : '';
+              ?>
+                <div class="vch-card">
+                    <div class="vch-hd">
+                        <div class="vch-code"><?= esc($kode) ?></div>
+                        <span class="vch-badge">Diklaim</span>
+                    </div>
+                    <div class="vch-body"><b><?= esc($nama) ?></b></div>
+                    <div class="vch-meta">
+                        Tipe:
+                        <?= $tipe==='persen' ? (number_format($nilai,0).'%') : ('Rp '.number_format($nilai,0,',','.')) ?>
+                        <?php if($mulai || $akhir): ?> · Periode: <?= esc($mulai) ?> – <?= esc($akhir) ?><?php endif; ?>
+                    </div>
+                    <div class="vch-actions">
+                        <button class="btn-chip primary" type="button"
+                            onclick="salinKode('<?= esc($kode, 'attr') ?>')">Salin Kode</button>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+                <?php elseif (count($claimedIds) > 0 && count($voucherClaimedDetail) === 0 && count($voucherUser)===0): ?>
+                <?php foreach ($claimedIds as $cid): ?>
+                <div class="vch-card">
+                    <div class="vch-hd">
+                        <div class="vch-code">#<?= (int)$cid ?></div>
+                        <span class="vch-badge">Diklaim</span>
+                    </div>
+                    <div class="vch-body"><b>Voucher diklaim</b></div>
+                    <div class="vch-meta">Detail voucher akan tampil saat checkout.</div>
+                </div>
+                <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php endif; ?>
+        <!-- ====== End Voucher ====== -->
 
         <!-- Add Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -340,52 +676,80 @@ function titleCase(str = '') {
     return String(str).toLowerCase().split(' ').map(s => s.charAt(0).toUpperCase() + s.substring(1)).join(' ');
 }
 
+/* ======= Helper: Salin Kode Voucher ======= */
+async function salinKode(k) {
+    try {
+        await navigator.clipboard.writeText(k);
+        alert('Kode ' + k + ' disalin.');
+    } catch (e) {
+        alert('Gagal menyalin kode.');
+    }
+}
+
 /* ---------- FETCH DAERAH (ADD) ---------- */
+/* gunakan path absolut supaya tidak gagal saat berada di sub-route */
 async function getKota(idprov) {
-    const res = await fetch("getkota/" + idprov);
-    const json = await res.json();
-    const hasil = json?.rajaongkir?.results ?? json?.results ?? json?.data?.results ?? [];
-    kotaElm.innerHTML = '<option value="">-- Pilih kota --</option>';
-    hasil.forEach(el => {
-        const id = el.city_id ?? el.id ?? el.value;
-        const nama0 = el.city_name ?? el.label ?? el.name ?? '';
-        const nama = String(nama0).split('/')[0];
-        const type = el.type === 'Kota' ? ' Kota' : '';
-        const opt = document.createElement("option");
-        opt.value = id + "-" + nama;
-        opt.innerHTML = el.city_name ? `${nama}${type}` : nama;
-        kotaElm.appendChild(opt);
-    });
+    try {
+        const res = await fetch(`/getkota/${idprov}`);
+        const json = await res.json();
+        const hasil = json?.rajaongkir?.results ?? json?.results ?? json?.data?.results ?? [];
+        kotaElm.innerHTML = '<option value="">-- Pilih kota --</option>';
+        kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
+        kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        hasil.forEach(el => {
+            const id = el.city_id ?? el.id ?? el.value;
+            const nama0 = el.city_name ?? el.label ?? el.name ?? '';
+            const nama = String(nama0).split('/')[0];
+            const type = el.type === 'Kota' ? ' Kota' : '';
+            const opt = document.createElement("option");
+            opt.value = id + "-" + nama;
+            opt.innerHTML = el.city_name ? `${nama}${type}` : nama;
+            kotaElm.appendChild(opt);
+        });
+    } catch (e) {
+        kotaElm.innerHTML = '<option value="">(Gagal memuat kota)</option>';
+        console.error(e);
+    }
 }
 async function getKec(idkota) {
-    const res = await fetch("getkec/" + idkota);
-    const json = await res.json();
-    const hasil = json?.rajaongkir?.results ?? json?.results ?? json?.data?.results ?? [];
-    kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
-    kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
-    hasil.forEach(el => {
-        const id = el.subdistrict_id ?? el.id ?? el.value;
-        const nama = String(el.subdistrict_name ?? el.label ?? el.name ?? '').split('/')[0];
-        const opt = document.createElement("option");
-        opt.value = id + "-" + nama;
-        opt.innerHTML = nama;
-        kecElm.appendChild(opt);
-    });
+    try {
+        const res = await fetch(`/getkec/${idkota}`);
+        const json = await res.json();
+        const hasil = json?.rajaongkir?.results ?? json?.results ?? json?.data?.results ?? [];
+        kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
+        kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        hasil.forEach(el => {
+            const id = el.subdistrict_id ?? el.id ?? el.value;
+            const nama = String(el.subdistrict_name ?? el.label ?? el.name ?? '').split('/')[0];
+            const opt = document.createElement("option");
+            opt.value = id + "-" + nama; // simpan "id-nama"
+            opt.innerHTML = nama;
+            kecElm.appendChild(opt);
+        });
+    } catch (e) {
+        kecElm.innerHTML = '<option value="">(Gagal memuat kecamatan)</option>';
+        console.error(e);
+    }
 }
-async function getKode(kec) {
-    const res = await fetch("getkode/" + kec);
-    const json = await res.json();
-    const hasil = json?.results ?? json?.data?.results ?? json ?? [];
-    kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
-    hasil.forEach(el => {
-        const desa = titleCase(String(el.DesaKelurahan ?? el.desa ?? el.label ?? el.name ?? '').split('/')[
-            0]);
-        const kp = String(el.KodePos ?? el.kodepos ?? el.zip ?? '');
-        const opt = document.createElement("option");
-        opt.value = desa + "-" + kp;
-        opt.innerHTML = desa;
-        kodeElm.appendChild(opt);
-    });
+async function getKode(kecId) {
+    try {
+        const res = await fetch(`/getkode/${kecId}`); // kirim ID kecamatan
+        const json = await res.json();
+        const hasil = json?.results ?? json?.data?.results ?? json ?? [];
+        kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        hasil.forEach(el => {
+            const desa = titleCase(String(el.DesaKelurahan ?? el.desa ?? el.label ?? el.name ?? '').split(
+                '/')[0]);
+            const kp = String(el.KodePos ?? el.kodepos ?? el.zip ?? '');
+            const opt = document.createElement("option");
+            opt.value = desa + "-" + kp;
+            opt.innerHTML = desa;
+            kodeElm.appendChild(opt);
+        });
+    } catch (e) {
+        kodeElm.innerHTML = '<option value="">(Gagal memuat desa)</option>';
+        console.error(e);
+    }
 }
 provElm?.addEventListener("change", (e) => {
     kotaElm.innerHTML = '<option value="">Loading..</option>';
@@ -402,57 +766,73 @@ kotaElm?.addEventListener("change", (e) => {
 });
 kecElm?.addEventListener("change", (e) => {
     kodeElm.innerHTML = '<option value="">Loading..</option>';
-    const parts = String(e.target.value || '').split("-");
-    const namaKec = parts[1] ?? '';
-    if (namaKec) getKode(namaKec);
+    const idkec = String(e.target.value || '').split("-")[0]; // kirim ID kecamatan ke endpoint
+    if (idkec) getKode(idkec);
 });
 
 /* ---------- FETCH DAERAH (EDIT) ---------- */
 async function getKotaEdit(idprov) {
-    const res = await fetch("getkota/" + idprov);
-    const json = await res.json();
-    const hasil = json?.rajaongkir?.results ?? json?.results ?? json?.data?.results ?? [];
-    kotaElmEdit.innerHTML = '<option value="">-- Pilih kota --</option>';
-    hasil.forEach(el => {
-        const id = el.city_id ?? el.id ?? el.value;
-        const nama0 = el.city_name ?? el.label ?? el.name ?? '';
-        const nama = String(nama0).split('/')[0];
-        const type = el.type === 'Kota' ? ' Kota' : '';
-        const opt = document.createElement("option");
-        opt.value = id + "-" + nama;
-        opt.innerHTML = el.city_name ? `${nama}${type}` : nama;
-        kotaElmEdit.appendChild(opt);
-    });
+    try {
+        const res = await fetch(`/getkota/${idprov}`);
+        const json = await res.json();
+        const hasil = json?.rajaongkir?.results ?? json?.results ?? json?.data?.results ?? [];
+        kotaElmEdit.innerHTML = '<option value="">-- Pilih kota --</option>';
+        kecElmEdit.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
+        kodeElmEdit.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        hasil.forEach(el => {
+            const id = el.city_id ?? el.id ?? el.value;
+            const nama0 = el.city_name ?? el.label ?? el.name ?? '';
+            const nama = String(nama0).split('/')[0];
+            const type = el.type === 'Kota' ? ' Kota' : '';
+            const opt = document.createElement("option");
+            opt.value = id + "-" + nama;
+            opt.innerHTML = el.city_name ? `${nama}${type}` : nama;
+            kotaElmEdit.appendChild(opt);
+        });
+    } catch (e) {
+        kotaElmEdit.innerHTML = '<option value="">(Gagal memuat kota)</option>';
+        console.error(e);
+    }
 }
 async function getKecEdit(idkota) {
-    const res = await fetch("getkec/" + idkota);
-    const json = await res.json();
-    const hasil = json?.rajaongkir?.results ?? json?.results ?? json?.data?.results ?? [];
-    kecElmEdit.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
-    kodeElmEdit.innerHTML = '<option value="">-- Pilih Desa --</option>';
-    hasil.forEach(el => {
-        const id = el.subdistrict_id ?? el.id ?? el.value;
-        const nama = String(el.subdistrict_name ?? el.label ?? el.name ?? '').split('/')[0];
-        const opt = document.createElement("option");
-        opt.value = id + "-" + nama;
-        opt.innerHTML = nama;
-        kecElmEdit.appendChild(opt);
-    });
+    try {
+        const res = await fetch(`/getkec/${idkota}`);
+        const json = await res.json();
+        const hasil = json?.rajaongkir?.results ?? json?.results ?? json?.data?.results ?? [];
+        kecElmEdit.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
+        kodeElmEdit.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        hasil.forEach(el => {
+            const id = el.subdistrict_id ?? el.id ?? el.value;
+            const nama = String(el.subdistrict_name ?? el.label ?? el.name ?? '').split('/')[0];
+            const opt = document.createElement("option");
+            opt.value = id + "-" + nama; // simpan "id-nama"
+            opt.innerHTML = nama;
+            kecElmEdit.appendChild(opt);
+        });
+    } catch (e) {
+        kecElmEdit.innerHTML = '<option value="">(Gagal memuat kecamatan)</option>';
+        console.error(e);
+    }
 }
-async function getKodeEdit(kec) {
-    const res = await fetch("getkode/" + kec);
-    const json = await res.json();
-    const hasil = json?.results ?? json?.data?.results ?? json ?? [];
-    kodeElmEdit.innerHTML = '<option value="">-- Pilih Desa --</option>';
-    hasil.forEach(el => {
-        const desa = titleCase(String(el.DesaKelurahan ?? el.desa ?? el.label ?? el.name ?? '').split('/')[
-            0]);
-        const kp = String(el.KodePos ?? el.kodepos ?? el.zip ?? '');
-        const opt = document.createElement("option");
-        opt.value = desa + "-" + kp;
-        opt.innerHTML = desa;
-        kodeElmEdit.appendChild(opt);
-    });
+async function getKodeEdit(kecId) {
+    try {
+        const res = await fetch(`/getkode/${kecId}`);
+        const json = await res.json();
+        const hasil = json?.results ?? json?.data?.results ?? json ?? [];
+        kodeElmEdit.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        hasil.forEach(el => {
+            const desa = titleCase(String(el.DesaKelurahan ?? el.desa ?? el.label ?? el.name ?? '').split(
+                '/')[0]);
+            const kp = String(el.KodePos ?? el.kodepos ?? el.zip ?? '');
+            const opt = document.createElement("option");
+            opt.value = desa + "-" + kp;
+            opt.innerHTML = desa;
+            kodeElmEdit.appendChild(opt);
+        });
+    } catch (e) {
+        kodeElmEdit.innerHTML = '<option value="">(Gagal memuat desa)</option>';
+        console.error(e);
+    }
 }
 provElmEdit?.addEventListener("change", (e) => {
     kotaElmEdit.innerHTML = '<option value="">Loading..</option>';
@@ -469,14 +849,13 @@ kotaElmEdit?.addEventListener("change", (e) => {
 });
 kecElmEdit?.addEventListener("change", (e) => {
     kodeElmEdit.innerHTML = '<option value="">Loading..</option>';
-    const parts = String(e.target.value || '').split("-");
-    const namaKec = parts[1] ?? '';
-    if (namaKec) getKodeEdit(namaKec);
+    const idkec = String(e.target.value || '').split("-")[0]; // kirim ID kecamatan
+    if (idkec) getKodeEdit(idkec);
 });
 
 /* ---------- EDIT modal bind ---------- */
 function openEditModal(ind_add) {
-    const a = alamatJson[ind_add];
+    const a = (<?= $alamatJson ?>)[ind_add] || {};
     inputEmailElm.value = a.email_pemesan || '';
     inputNamaElm.value = a.nama_penerima || '';
     inputNohpElm.value = a.nohp_penerima || '';

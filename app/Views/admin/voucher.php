@@ -1,20 +1,82 @@
 <?= $this->extend('admin/template'); ?>
 <?= $this->section('content'); ?>
 
+<?php
+// === Urutkan "terbaru duluan": created_at DESC -> fallback id DESC ===
+$voucherSorted = $voucher ?? [];
+usort($voucherSorted, function($a,$b){
+    $ca = strtotime($a['created_at'] ?? '');
+    $cb = strtotime($b['created_at'] ?? '');
+    if ($ca && $cb) return $cb <=> $ca;              // created_at yang baru duluan
+    return ((int)($b['id'] ?? 0)) <=> ((int)($a['id'] ?? 0)); // fallback by id desc
+});
+?>
+
 <style>
-/* ==== THEME HOOKS: gunakan variabel warna milikmu ==== */
 :root {
     --brand: var(--merah);
-    /* warna utama */
     --brand-weak: color-mix(in oklab, var(--merah) 15%, white);
     --ink: #111827;
     --muted: #6b7280;
     --line: #e5e7eb;
-    --card: #ffffff;
+    --card: #fff;
     --card-weak: #fafafa;
 }
 
-/* tombol tema merah */
+/* ====== Halaman ====== */
+.vouch-page .title {
+    letter-spacing: -.02em;
+    color: var(--ink);
+}
+
+.vouch-page .hint {
+    font-size: .82rem;
+    color: var(--muted);
+}
+
+.vouch-page .toolbar {
+    gap: .6rem
+}
+
+/* ====== Kartu ====== */
+.vouch-page .card {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--card);
+}
+
+.vouch-page .card-header {
+    background: linear-gradient(180deg, var(--card) 0%, var(--card-weak) 100%);
+    border-bottom: 1px solid #eef0f3;
+    border-top-left-radius: 14px !important;
+    border-top-right-radius: 14px !important;
+}
+
+.vouch-page .card-header h5 {
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: -.01em;
+}
+
+.vouch-page .soft {
+    background: #f8fafc;
+    border: 1px dashed var(--line);
+    border-radius: 12px
+}
+
+/* ====== Form ====== */
+.vouch-page .form-label {
+    font-weight: 600;
+    font-size: .9rem;
+    color: #374151;
+}
+
+.vouch-page .form-control,
+.vouch-page .form-select {
+    border-radius: 10px
+}
+
+/* ====== Tombol ====== */
 .btn-merah {
     background: var(--brand);
     border: 1px solid var(--brand);
@@ -41,54 +103,32 @@
     color: var(--brand);
 }
 
-/* ====== Scoped styling ====== */
-.vouch-page .card {
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    background: var(--card);
+.btn-chip {
+    border-radius: 10px;
+    padding: .4rem .7rem
 }
 
-.vouch-page .card-header {
-    background: linear-gradient(180deg, var(--card) 0%, var(--card-weak) 100%);
-    border-bottom: 1px solid #eef0f3;
-    border-top-left-radius: 14px !important;
-    border-top-right-radius: 14px !important;
+/* ====== Table ====== */
+.vouch-page .table-responsive {
+    border-radius: 12px;
+    overflow: auto;
+    border: 1px solid var(--line)
 }
 
-.vouch-page .form-label {
-    font-weight: 600;
-    font-size: .9rem;
-    color: #374151;
-}
-
-.vouch-page .hint {
-    font-size: .78rem;
-    color: var(--muted);
-}
-
-.vouch-page .title {
-    letter-spacing: -.02em;
-    color: var(--ink);
-}
-
-.vouch-page .badge-chip {
-    border-radius: 999px;
-    padding: .35rem .7rem;
-    font-weight: 600;
-    background: var(--brand-weak);
-    color: var(--brand);
-    border: 1px dashed var(--brand);
-}
-
-.vouch-page .table thead th {
+.vouch-page table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #101828;
+    color: #fff;
     font-size: .82rem;
     text-transform: uppercase;
     letter-spacing: .06em;
+    border: 0 !important;
 }
 
-.vouch-page .table td,
-.vouch-page .table th {
-    vertical-align: middle;
+.vouch-page table tbody tr:hover {
+    background: #fafafa
 }
 
 .vouch-page .pill {
@@ -100,68 +140,48 @@
     border: 1px solid var(--line);
 }
 
-.vouch-page .toolbar {
-    gap: .6rem;
+.vouch-page .badge-chip {
+    border-radius: 999px;
+    padding: .35rem .7rem;
+    font-weight: 600;
+    background: var(--brand-weak);
+    color: var(--brand);
+    border: 1px dashed var(--brand);
 }
 
-.vouch-page .search-input {
-    border-radius: 10px;
-    padding-left: 40px;
+/* ====== Emphasis Nama Voucher ====== */
+.voucher-name-xl {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: -.01em;
+    color: var(--ink);
+    line-height: 1.2;
 }
 
-.vouch-page .search-icon {
-    position: absolute;
-    left: 12px;
-    top: 9px;
-    color: #9ca3af;
-}
-
-.vouch-page .soft {
-    background: #f8fafc;
-    border: 1px dashed var(--line);
-    border-radius: 12px;
-}
-
-.vouch-page .table-responsive {
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-@media (max-width: 992px) {
-    .vouch-page .grid-2 {
-        grid-template-columns: 1fr !important;
+@media (max-width:768px) {
+    .voucher-name-xl {
+        font-size: 1.02rem;
     }
 }
 
-/* Modal look */
-.modal-modern .modal-content {
-    border-radius: 16px;
-    border: 1px solid var(--line);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, .06);
+.voucher-meta {
+    font-size: .82rem;
+    color: var(--muted);
+    margin-top: .15rem
 }
 
-.modal-modern .modal-header {
-    border-bottom: 1px solid #eef0f3;
-}
-
-.modal-modern .modal-title {
-    font-weight: 700;
-    letter-spacing: -.02em;
-    color: var(--ink);
-}
-
-/* Toggle switch (pakai warna tema) */
+/* ====== Switch ====== */
 .switch {
     position: relative;
     display: inline-block;
     width: 48px;
-    height: 26px;
+    height: 26px
 }
 
 .switch input {
     opacity: 0;
     width: 0;
-    height: 0;
+    height: 0
 }
 
 .slider {
@@ -170,54 +190,145 @@
     inset: 0;
     background: #e5e7eb;
     transition: .2s;
-    border-radius: 24px;
+    border-radius: 24px
 }
 
 .slider:before {
-    position: absolute;
     content: "";
+    position: absolute;
     height: 20px;
     width: 20px;
     left: 3px;
     bottom: 3px;
-    background: white;
+    background: #fff;
     transition: .2s;
     border-radius: 50%;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, .15);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .15)
 }
 
 input:checked+.slider {
-    background: var(--brand);
+    background: var(--brand)
 }
 
 input:checked+.slider:before {
-    transform: translateX(22px);
+    transform: translateX(22px)
 }
 
-/* Tombol kecil tabel, tetap tema */
-.btn-chip {
+.switch.is-loading .slider {
+    filter: grayscale(.2);
+    opacity: .7
+}
+
+/* ====== Search ====== */
+.search-wrap {
+    min-width: 260px;
+    position: relative
+}
+
+.search-input {
     border-radius: 10px;
-    padding: .4rem .7rem;
+    padding-left: 40px
 }
 
-.btn-outline-primary {
-    border-color: var(--brand);
-    color: var(--brand);
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af
 }
 
-.btn-outline-primary:hover {
-    background: var(--brand-weak);
-    color: var(--brand);
+/* ====== Toasts ====== */
+.toast-stack {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 9999;
+    pointer-events: none;
 }
 
-.btn-outline-danger {
-    border-color: #ef4444;
-    color: #ef4444;
+.toast-item {
+    pointer-events: auto;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    min-width: 280px;
+    max-width: 360px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 10px 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
+    animation: toastIn .18s ease-out;
 }
 
-.btn-outline-danger:hover {
-    background: #fee2e2;
-    color: #ef4444;
+.toast-item .ti {
+    font-size: 20px;
+    line-height: 1;
+    margin-top: 2px
+}
+
+.toast-item .tc {
+    flex: 1
+}
+
+.toast-item .tt {
+    font-weight: 700;
+    letter-spacing: -.01em;
+    margin-bottom: 2px
+}
+
+.toast-item.success {
+    border-color: #10b98133
+}
+
+.toast-item.success .ti {
+    color: #059669
+}
+
+.toast-item.error {
+    border-color: #ef444433
+}
+
+.toast-item.error .ti {
+    color: #ef4444
+}
+
+.toast-item.info {
+    border-color: #3b82f633
+}
+
+.toast-item.info .ti {
+    color: #2563eb
+}
+
+.toast-close {
+    border: none;
+    background: transparent;
+    color: #9ca3af;
+    cursor: pointer
+}
+
+@keyframes toastIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px)
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0)
+    }
+}
+
+/* ====== Responsive grid ====== */
+@media (max-width: 992px) {
+    .vouch-page .grid-2 {
+        grid-template-columns: 1fr !important
+    }
 }
 </style>
 
@@ -239,7 +350,7 @@ input:checked+.slider:before {
     </div>
 
     <?php if(session()->getFlashdata('msg')): ?>
-    <div class="alert alert-success border-0 shadow-sm"><?= session()->getFlashdata('msg'); ?></div>
+    <div class="d-none" id="__flash_msg"><?= esc(session()->getFlashdata('msg')) ?></div>
     <?php endif; ?>
 
     <div class="row g-3">
@@ -360,13 +471,13 @@ input:checked+.slider:before {
 
     <!-- List Voucher -->
     <div class="card shadow-sm mt-4">
-        <div class="card-header d-flex align-items-center justify-content-between">
+        <div class="card-header d-flex flex-wrap gap-2 align-items-center justify-content-between">
             <div>
                 <h5 class="mb-0">Daftar Voucher</h5>
-                <div class="hint">Edit cepat via popup, toggle aktif/nonaktif, atau hapus jika diperlukan.</div>
+                <div class="hint">Urut terbaru, dengan nama voucher lebih besar. Nomor urut tidak memakai ID.</div>
             </div>
             <!-- Search mini -->
-            <form method="get" action="/admin/voucher" class="position-relative" style="min-width:260px;">
+            <form method="get" action="/admin/voucher" class="search-wrap">
                 <i class="material-icons search-icon">search</i>
                 <input type="text" name="q" value="<?= esc(service('request')->getGet('q') ?? '') ?>"
                     class="form-control search-input" placeholder="Cari kode/nama voucher...">
@@ -374,10 +485,10 @@ input:checked+.slider:before {
         </div>
 
         <div class="table-responsive">
-            <table class="table table-striped mb-0">
-                <thead class="table-dark text-center">
+            <table class="table table-striped mb-0 align-middle">
+                <thead class="text-center">
                     <tr>
-                        <th>ID</th>
+                        <th style="width:64px">No.</th>
                         <th>Kode</th>
                         <th>Nama</th>
                         <th>Tipe</th>
@@ -390,20 +501,31 @@ input:checked+.slider:before {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if(isset($voucher) && count($voucher) > 0): ?>
-                    <?php foreach($voucher as $v): ?>
+                    <?php if(count($voucherSorted) > 0): ?>
+                    <?php $no=1; foreach($voucherSorted as $v): ?>
                     <tr class="text-center" data-row-id="<?= $v['id']; ?>">
-                        <td class="text-muted"><?= $v['id']; ?></td>
-                        <td><span class="pill"><?= esc($v['kode']); ?></span></td>
+                        <td class="text-muted fw-bold"><?= $no++; ?></td>
+                        <td>
+                            <span class="pill" title="Klik untuk menyalin" role="button"
+                                onclick="copyText('<?= esc($v['kode'], 'attr'); ?>')">
+                                <?= esc($v['kode']); ?>
+                            </span>
+                        </td>
                         <td class="text-start">
-                            <div class="fw-semibold"><?= esc($v['nama']); ?></div>
-                            <?php if(!empty($v['deskripsi'])): ?>
-                            <div class="hint"><?= esc($v['deskripsi']); ?></div>
-                            <?php endif; ?>
-                            <?php if(($v['target'] ?? '') === 'baru'): ?>
-                            <span class="badge" style="background:var(--brand-weak); color:var(--brand)">Voucher Member
-                                Baru</span>
-                            <?php endif; ?>
+                            <div class="voucher-name-xl"><?= esc($v['nama']); ?></div>
+                            <div class="voucher-meta">
+                                <?php if(!empty($v['deskripsi'])): ?>
+                                <?= esc($v['deskripsi']); ?> ·
+                                <?php endif; ?>
+                                <?php if(!empty($v['created_at'])): ?>
+                                dibuat: <?= date('d M Y', strtotime($v['created_at'])) ?>
+                                <?php else: ?>
+                                dibuat: —
+                                <?php endif; ?>
+                                <?php if(($v['target'] ?? '') === 'baru'): ?>
+                                · <span class="badge badge-chip">Member Baru</span>
+                                <?php endif; ?>
+                            </div>
                         </td>
                         <td><?= ucfirst($v['tipe']); ?></td>
                         <td>
@@ -416,7 +538,6 @@ input:checked+.slider:before {
                         <td><?= ucfirst($v['target']); ?></td>
                         <td><?= !empty($v['auto_apply']) ? '✅' : '❌'; ?></td>
                         <td>
-                            <!-- Toggle Aktif/Nonaktif -->
                             <label class="switch" title="Aktifkan / Nonaktifkan">
                                 <input type="checkbox" class="toggle-aktif" data-id="<?= $v['id']; ?>"
                                     <?= !empty($v['aktif']) ? 'checked' : '' ?>>
@@ -425,7 +546,6 @@ input:checked+.slider:before {
                         </td>
                         <td><?= ((int)$v['max_pakai']>0)? (int)$v['max_pakai'] : '∞'; ?></td>
                         <td class="text-nowrap">
-                            <!-- EDIT => Modal -->
                             <button type="button" class="btn btn-sm btn-outline-primary me-1 btn-chip btn-edit-voucher"
                                 data-bs-toggle="modal" data-bs-target="#editVoucherModal" data-id="<?= $v['id']; ?>"
                                 data-kode="<?= esc($v['kode'], 'attr'); ?>" data-nama="<?= esc($v['nama'], 'attr'); ?>"
@@ -453,8 +573,9 @@ input:checked+.slider:before {
                     <?php endforeach; ?>
                     <?php else: ?>
                     <tr>
-                        <td colspan="10" class="text-center text-muted py-4">Belum ada voucher. Tambahkan lewat formulir
-                            di atas.</td>
+                        <td colspan="10" class="text-center text-muted py-4">
+                            Belum ada voucher. Tambahkan lewat formulir di atas.
+                        </td>
                     </tr>
                     <?php endif; ?>
                 </tbody>
@@ -463,7 +584,7 @@ input:checked+.slider:before {
     </div>
 </div>
 
-<!-- ===== Modal Edit Voucher (Popup) ===== -->
+<!-- ===== Modal Edit Voucher ===== -->
 <div class="modal fade modal-modern" id="editVoucherModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
@@ -555,16 +676,48 @@ input:checked+.slider:before {
     </div>
 </div>
 
-<!-- ===== Inline Script (layout admin/template tidak punya section scripts) ===== -->
+<!-- ===== Toast Container ===== -->
+<div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="true"></div>
+
 <script>
 (() => {
-    // (Opsional) kalau kamu pakai CSRF, taruh <meta name="csrf-token" content="<?= csrf_hash() ?>"> di admin/template.php
     const getCsrf = () => {
         const m = document.querySelector('meta[name="csrf-token"]');
         return m ? m.getAttribute('content') : '';
     };
 
-    // ====== Isi Modal Edit dari tombol ======
+    function showToast(type = 'success', title = 'Berhasil', message = '') {
+        const stack = document.getElementById('toastStack');
+        if (!stack) return;
+        const el = document.createElement('div');
+        el.className = `toast-item ${type}`;
+        el.innerHTML = `
+      <div class="ti material-icons">
+        ${type === 'success' ? 'check_circle' : (type === 'error' ? 'error' : 'info')}
+      </div>
+      <div class="tc">
+        <div class="tt">${title}</div>
+        <div class="tm">${message}</div>
+      </div>
+      <button class="toast-close material-icons" aria-label="Tutup">close</button>
+    `;
+        stack.appendChild(el);
+        const remove = () => el.remove();
+        el.querySelector('.toast-close').addEventListener('click', remove);
+        setTimeout(remove, 3500);
+    }
+    if (typeof window.callNotif !== 'function') {
+        window.callNotif = (msg, type = 'success') => showToast(type, type === 'error' ? 'Gagal' : 'Berhasil',
+            msg || '');
+    }
+
+    // Flash message -> toast
+    const flashEl = document.getElementById('__flash_msg');
+    if (flashEl && flashEl.textContent.trim() !== '') {
+        callNotif(flashEl.textContent.trim(), 'success');
+    }
+
+    // Isi modal edit
     const form = document.getElementById('formEditVoucher');
     document.querySelectorAll('.btn-edit-voucher').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -580,27 +733,27 @@ input:checked+.slider:before {
             form.querySelector('[name="minimal_belanja"]').value = btn.getAttribute(
                 'data-minimal_belanja') || 0;
             form.querySelector('[name="max_pakai"]').value = btn.getAttribute('data-max_pakai') ||
-            0;
-
-            const mulai = (btn.getAttribute('data-mulai') || '').substring(0, 10);
-            const akhir = (btn.getAttribute('data-berakhir') || '').substring(0, 10);
-            form.querySelector('[name="mulai"]').value = mulai;
-            form.querySelector('[name="berakhir"]').value = akhir;
-
+                0;
+            form.querySelector('[name="mulai"]').value = (btn.getAttribute('data-mulai') || '')
+                .substring(0, 10);
+            form.querySelector('[name="berakhir"]').value = (btn.getAttribute('data-berakhir') ||
+                '').substring(0, 10);
             form.querySelector('[name="target"]').value = btn.getAttribute('data-target') ||
-            'semua';
-
-            form.querySelector('#edit_auto_apply').checked = btn.getAttribute('data-auto_apply') ===
-                '1';
-            form.querySelector('#edit_once').checked = btn.getAttribute(
+                'semua';
+            document.getElementById('edit_auto_apply').checked = btn.getAttribute(
+                'data-auto_apply') === '1';
+            document.getElementById('edit_once').checked = btn.getAttribute(
                 'data-sekali_pakai_per_user') === '1';
-            form.querySelector('#edit_aktif').checked = btn.getAttribute('data-aktif') === '1';
+            document.getElementById('edit_aktif').checked = btn.getAttribute('data-aktif') === '1';
         });
     });
 
-    // ====== Toggle Aktif / Nonaktif (AJAX) ======
+    // Toggle aktif/nonaktif (AJAX)
     document.querySelectorAll('.toggle-aktif').forEach(chk => {
         chk.addEventListener('change', async (e) => {
+            const wrap = e.target.closest('.switch');
+            wrap && wrap.classList.add('is-loading');
+
             const id = e.target.getAttribute('data-id');
             const aktif = e.target.checked ? 1 : 0;
             const body = new URLSearchParams();
@@ -618,16 +771,26 @@ input:checked+.slider:before {
                 const json = await res.json();
                 if (!json.success) throw new Error(json.message || 'Gagal update status');
 
-                // gunakan helper notif dari layout kamu
-                if (typeof callNotif === 'function') callNotif(
-                    `Voucher #${id} ${aktif? 'diaktifkan' : 'dinonaktifkan'}.`);
+                callNotif(`Voucher #${id} ${aktif ? 'diaktifkan' : 'dinonaktifkan'}.`,
+                    'success');
             } catch (err) {
-                // rollback UI jika gagal
-                e.target.checked = !aktif;
-                alert(err.message || 'Gagal mengubah status voucher');
+                e.target.checked = !aktif; // rollback UI
+                callNotif(err.message || 'Gagal mengubah status voucher', 'error');
+            } finally {
+                wrap && wrap.classList.remove('is-loading');
             }
         });
     });
+
+    // Copy kode voucher
+    window.copyText = async (txt) => {
+        try {
+            await navigator.clipboard.writeText(txt);
+            callNotif(`Kode "${txt}" disalin.`, 'info');
+        } catch (_) {
+            callNotif('Tidak dapat menyalin kode.', 'error');
+        }
+    };
 })();
 </script>
 

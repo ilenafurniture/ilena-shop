@@ -3,21 +3,21 @@
 
 <?php
 // ====== Guard & fallback supaya view aman ======
-$voucher         = isset($voucher) && is_array($voucher) ? $voucher : [];
-$selected        = $voucher['selected'] ?? null;
-$list            = isset($voucher['list']) && is_array($voucher['list']) ? $voucher['list'] : [];
-$user            = isset($user) && is_array($user) ? $user : ['nama'=>'', 'no_hp'=>'', 'email'=>'', 'alamat'=>''];
-$keranjang       = isset($keranjang) && is_array($keranjang) ? $keranjang : [];
+$voucher           = isset($voucher) && is_array($voucher) ? $voucher : [];
+$selected          = $voucher['selected'] ?? null;
+$list              = isset($voucher['list']) && is_array($voucher['list']) ? $voucher['list'] : [];
+$user              = isset($user) && is_array($user) ? $user : ['nama'=>'', 'no_hp'=>'', 'email'=>'', 'alamat'=>''];
+$keranjang         = isset($keranjang) && is_array($keranjang) ? $keranjang : [];
 $listPaymentMethod = isset($listPaymentMethod) && is_array($listPaymentMethod) ? $listPaymentMethod : [];
-$paymentMethod   = $paymentMethod ?? '';
-$indexAddress    = (int)($indexAddress ?? 0);
-$hargaTotal      = (float)($hargaTotal ?? 0);
-$flashSale       = (float)($flashSale ?? 0);
-$biayaAdmin      = (int)($biayaAdmin ?? 0);
-$grossAmount     = (int)($grossAmount ?? 0);
-$msg             = $msg ?? '';
+$paymentMethod     = $paymentMethod ?? '';
+$indexAddress      = (int)($indexAddress ?? 0);
+$hargaTotal        = (float)($hargaTotal ?? 0);
+$flashSale         = (float)($flashSale ?? 0);
+$biayaAdmin        = (int)($biayaAdmin ?? 0);
+$grossAmount       = (int)($grossAmount ?? 0);
+$msg               = $msg ?? '';
 
-// deteksi “voucher member baru” (target == 'baru' atau nama mengandung 'member baru')
+// badge “member baru” hanya untuk informasi (tidak auto-apply)
 $isMemberBaruSelected = false;
 if (is_array($selected)) {
     $selTarget = strtolower($selected['target'] ?? '');
@@ -26,98 +26,420 @@ if (is_array($selected)) {
 }
 ?>
 
-<div class="container konten baris-ke-kolom">
-    <div style="flex:1;">
-        <h5 style="letter-spacing: -1px; font-weight:100;" class="path">
-            <a href="/address" class="me-3 text-secondary" style="text-decoration: none;">Alamat</a> >
-            <a class="mx-3 text-dark fw-bold" style="text-decoration: none;">Rincian Pembayaran</a>
-        </h5>
+<style>
+/* ================= THEME-COMPAT (ikut gaya kamu) ================= */
+:root {
+    --ink: #111827;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --card: #fff;
+    --card-weak: #fafafa;
+    --brand: var(--merah);
+}
 
-        <?php if (!empty($msg)) : ?>
-        <div class="pemberitahuan my-1 w-100" style="width: fit-content;" role="alert">
-            <?= esc($msg); ?>
-        </div>
-        <?php endif; ?>
+.payment-shell {
+    font-size: 14px;
+    color: var(--ink);
+}
 
-        <div class="my-4">
+.payment-bc {
+    font-size: 12px;
+    color: var(--muted);
+    margin: 8px 0 14px;
+}
+
+.payment-bc a {
+    color: var(--muted);
+    text-decoration: none;
+}
+
+.payment-bc .active {
+    color: var(--ink);
+    font-weight: 600;
+}
+
+.grid-two {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1.15fr .85fr;
+}
+
+@media (max-width:992px) {
+    .grid-two {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Card */
+.card-soft {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--card);
+    box-shadow: 0 1px 10px rgba(0, 0, 0, .03);
+}
+
+.card-soft .hd {
+    padding: 10px 14px;
+    background: linear-gradient(180deg, var(--card) 0%, var(--card-weak) 100%);
+    border-bottom: 1px solid #eef0f3;
+    border-radius: 12px 12px 0 0;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    color: var(--ink);
+    font-size: 14px;
+}
+
+.card-soft .bd {
+    padding: 12px 14px;
+}
+
+/* Key-value */
+.kv {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 8px 14px;
+}
+
+.kv .k {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.kv .v {
+    color: var(--ink);
+    font-weight: 600;
+}
+
+@media (max-width:576px) {
+    .kv {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Item keranjang */
+.item-row {
+    display: flex;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--line);
+}
+
+.item-row:last-child {
+    border-bottom: 0;
+}
+
+.item-row img {
+    width: 74px;
+    height: 74px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex: 0 0 74px;
+}
+
+.item-info {
+    display: flex;
+    gap: 12px;
+    font-size: 13px;
+}
+
+.item-info .k {
+    color: var(--muted);
+    min-width: 100px;
+}
+
+.item-info .v {
+    color: var(--ink);
+    font-weight: 600;
+}
+
+/* ================== METODE PEMBAYARAN (stabil & responsif) ================== */
+.container-pembayaran {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(98px, 1fr));
+    gap: 10px;
+}
+
+.item-logo-pembayaran {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 54px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+    transition: box-shadow .15s, border-color .15s, transform .08s;
+    padding: 8px 10px;
+    text-decoration: none;
+}
+
+.item-logo-pembayaran:hover {
+    transform: translateY(-1px);
+}
+
+.item-logo-pembayaran.active {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--brand) 16%, transparent);
+}
+
+.item-logo-pembayaran img {
+    width: 100%;
+    height: 100%;
+    max-width: 82px;
+    max-height: 28px;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+    filter: saturate(.95) contrast(1.02);
+}
+
+@media (max-width:480px) {
+    .container-pembayaran {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Toggle section (Redeem & Daftar Voucher) */
+.section-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.section-toggle p {
+    margin: 0;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.section-toggle i {
+    color: var(--muted);
+    font-size: 20px;
+}
+
+/* Redeem box */
+.redeem-box {
+    display: none;
+    padding: 12px;
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    background: var(--card-weak);
+}
+
+.redeem-box .form-control {
+    height: 38px;
+    font-size: 14px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+}
+
+/* Daftar Voucher */
+.voucher-list {
+    display: none;
+    margin-top: 10px;
+}
+
+.voucher-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border: 1px solid var(--line);
+    background: #fff;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+}
+
+.voucher-item.active {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--brand) 15%, transparent);
+}
+
+.voucher-item .name {
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -.02em;
+}
+
+.voucher-item .meta {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+.voucher-item .badge {
+    background: color-mix(in oklab, var(--brand) 15%, white);
+    color: var(--brand);
+    border: 1px dashed var(--brand);
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.voucher-item .rec {
+    background: #eef6ff;
+    color: #1d4ed8;
+    border: 1px dashed #93c5fd;
+}
+
+/* Ringkasan */
+.sum-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 4px 0;
+}
+
+.sum-row .k {
+    color: var(--ink);
+}
+
+.sum-row .v {
+    color: var(--ink);
+    font-weight: 700;
+}
+
+.sum-total {
+    font-size: 15px;
+}
+
+/* Buttons */
+.btn-default-merah {
+    background: var(--brand);
+    border: 1px solid var(--brand);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.btn-default-merah:hover {
+    filter: brightness(.96);
+    color: #fff;
+}
+
+.btn-plain {
+    display: inline-block;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--brand);
+    text-decoration: none;
+}
+
+/* Alerts */
+.alert-soft {
+    background: color-mix(in oklab, var(--brand) 6%, white);
+    border: 1px solid color-mix(in oklab, var(--brand) 18%, white);
+    color: var(--ink);
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+/* Utilities */
+.small {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+hr {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 8px 0;
+}
+
+.mt-2 {
+    margin-top: 8px;
+}
+
+.mb-2 {
+    margin-bottom: 8px;
+}
+</style>
+
+<div class="payment-shell container">
+    <div class="payment-bc">
+        <a href="/address">Alamat</a> &nbsp;>&nbsp; <span class="active">Rincian Pembayaran</span>
+    </div>
+
+    <?php if (!empty($msg)) : ?>
+    <div class="pemberitahuan my-1 w-100" style="width:fit-content" role="alert"><?= esc($msg); ?></div>
+    <?php endif; ?>
+
+    <div class="grid-two">
+        <!-- =================== LEFT =================== -->
+        <div>
             <!-- Informasi Pembeli -->
-            <div class="mb-1">
-                <div class="item-pembayaran" data-bs-toggle="collapse" href="#collapseExample3" aria-expanded="true"
-                    aria-controls="collapseExample3">
-                    Informasi Pembeli
-                </div>
-                <div class="collapse py-2 show" id="collapseExample3">
-                    <hr>
-                    <div class="d-flex">
-                        <div style="flex:1" class="my-2">
-                            <p class="m-0 fw-normal">Nama</p>
-                            <p class="m-0 fw-normal">No Handphone</p>
-                            <p class="m-0 fw-normal">Email</p>
-                            <p class="m-0 fw-normal">Alamat</p>
-                        </div>
-                        <div style="flex:4" class="my-2">
-                            <p class="m-0 fw-bold">: <?= esc($user['nama'] ?? ''); ?></p>
-                            <p class="m-0 fw-bold">: <?= esc($user['no_hp'] ?? ''); ?></p>
-                            <p class="m-0 fw-bold">: <?= esc($user['email'] ?? ''); ?></p>
-                            <p class="m-0 fw-bold">: <?= esc($user['alamat'] ?? ''); ?></p>
-                        </div>
+            <div class="card-soft mb-2">
+                <div class="hd">Informasi Pembeli</div>
+                <div class="bd">
+                    <div class="kv">
+                        <div class="k">Nama</div>
+                        <div class="v"><?= esc($user['nama'] ?? ''); ?></div>
+                        <div class="k">No HP</div>
+                        <div class="v"><?= esc($user['no_hp'] ?? ''); ?></div>
+                        <div class="k">Email</div>
+                        <div class="v"><?= esc($user['email'] ?? ''); ?></div>
+                        <div class="k">Alamat</div>
+                        <div class="v"><?= esc($user['alamat'] ?? ''); ?></div>
                     </div>
-                    <hr>
                 </div>
             </div>
 
             <!-- Informasi Barang -->
-            <div class="mb-1">
-                <div class="item-pembayaran" data-bs-toggle="collapse" href="#collapseExample2" aria-expanded="true"
-                    aria-controls="collapseExample2">
-                    Informasi Barang
-                </div>
-                <div class="collapse py-2 show" id="collapseExample2">
-                    <hr>
+            <div class="card-soft mb-2">
+                <div class="hd">Informasi Barang</div>
+                <div class="bd">
                     <?php if (count($keranjang) > 0): ?>
-                    <?php foreach ($keranjang as $index_k => $k) :
-                            $nama    = $k['detail']['nama']   ?? '';
-                            $varian  = $k['varian']            ?? '';
-                            $jumlah  = (int)($k['jumlah']      ?? 0);
-                            $harga   = (float)($k['detail']['harga']  ?? 0);
-                            $diskon  = (float)($k['detail']['diskon'] ?? 0);
-                            $src     = $k['src_gambar']        ?? '';
-                            $hargaSatuan = (int)round($harga * (100 - $diskon) / 100);
-                        ?>
-                    <div class="d-flex gap-3 m-2">
-                        <img src="<?= esc($src); ?>" style="width:100px; height:100px; border-radius:8px;"
-                            alt="gambar-produk">
-                        <div class="d-flex gap-3">
-                            <div class="my-2">
-                                <p class="m-0 fw-normal">Nama</p>
-                                <p class="m-0 fw-normal">Varian</p>
-                                <p class="m-0 fw-normal">Jumlah</p>
-                                <p class="m-0 fw-normal">Harga Satuan</p>
+                    <?php foreach ($keranjang as $k):
+              $nama    = $k['detail']['nama']   ?? '';
+              $varian  = $k['varian']            ?? '';
+              $jumlah  = (int)($k['jumlah']      ?? 0);
+              $harga   = (float)($k['detail']['harga']  ?? 0);
+              $diskon  = (float)($k['detail']['diskon'] ?? 0);
+              $src     = $k['src_gambar']        ?? '';
+              $hargaSatuan = (int)round($harga * (100 - $diskon) / 100);
+            ?>
+                    <div class="item-row">
+                        <img src="<?= esc($src); ?>" alt="produk">
+                        <div style="flex:1">
+                            <div style="font-weight:700;color:var(--ink);letter-spacing:-.02em;"><?= esc($nama); ?>
                             </div>
-                            <div class="my-2">
-                                <p class="m-0 fw-bold">: <?= esc($nama); ?></p>
-                                <p class="m-0 fw-bold">: <?= esc($varian); ?></p>
-                                <p class="m-0 fw-bold">: <?= $jumlah; ?> Buah</p>
-                                <p class="m-0 fw-bold">: Rp <?= number_format($hargaSatuan, 0, ',', '.'); ?></p>
+                            <div class="item-info mt-1">
+                                <div class="k">Varian</div>
+                                <div class="v"><?= esc($varian); ?></div>
+                            </div>
+                            <div class="item-info">
+                                <div class="k">Jumlah</div>
+                                <div class="v"><?= $jumlah; ?> buah</div>
+                            </div>
+                            <div class="item-info">
+                                <div class="k">Harga</div>
+                                <div class="v">Rp <?= number_format($hargaSatuan, 0, ',', '.'); ?></div>
                             </div>
                         </div>
                     </div>
                     <?php endforeach; ?>
                     <?php else: ?>
-                    <div class="m-2 text-muted">Keranjang kosong.</div>
+                    <div class="small">Keranjang kosong.</div>
                     <?php endif; ?>
-                    <hr>
                 </div>
             </div>
 
             <!-- Metode Pembayaran -->
-            <div class="container-pembayaran mb-1">
-                <div class="item-pembayaran" data-bs-toggle="collapse" href="#collapseExample4" aria-expanded="true"
-                    aria-controls="collapseExample4">
-                    Metode Pembayaran
-                </div>
-                <div class="pemberitahuan my-1 d-none" id="alert-cc" role="alert">cek</div>
-                <div class="collapse py-2 show" id="collapseExample4">
+            <div class="card-soft">
+                <div class="hd">Metode Pembayaran</div>
+                <div class="bd">
                     <div class="container-pembayaran">
                         <?php foreach ($listPaymentMethod as $l) : ?>
                         <a href="/payment/method/<?= esc($l);  ?>/<?= $indexAddress; ?>"
@@ -126,142 +448,122 @@ if (is_array($selected)) {
                         </a>
                         <?php endforeach; ?>
                     </div>
+                    <div id="alert-cc" class="small mt-2 d-none">cek</div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Kolom kanan -->
-    <div class="tigapuluh-ke-seratus">
+        <!-- =================== RIGHT =================== -->
+        <div>
+            <!-- Redeem Voucher -->
+            <div class="section-toggle mb-2" onclick="toggleRedeem()">
+                <p class="m-0">Redeem Kode Voucher</p>
+                <i class="material-icons">expand_more</i>
+            </div>
+            <div id="redeemBox" class="redeem-box mb-2">
+                <form action="/redeemvoucher/<?= $indexAddress; ?>" method="post" class="d-flex gap-2 flex-wrap"
+                    novalidate>
+                    <?= function_exists('csrf_field') ? csrf_field() : '' ?>
+                    <input type="text" name="code" class="form-control" placeholder="Masukkan kode voucher" required
+                        style="flex:1;min-width:180px;">
+                    <button type="submit" class="btn-default-merah">Terapkan</button>
+                </form>
+                <div class="small mt-2">
+                    Kode valid akan ditambahkan ke pilihan voucher. Kamu tetap memilih sendiri (hanya 1 voucher aktif).
+                </div>
+            </div>
 
-        <?php if (count($list) > 0) : ?>
-        <!-- Tombol Voucher (dengan badge Member Baru bila applicable) -->
-        <div class="btn-voucher mb-2" onclick="openVoucher()" style="cursor:pointer;">
-            <?php if (is_array($selected)) : ?>
-            <div class="d-flex align-items-center justify-content-between w-100">
-                <p class="m-0" style="color: var(--merah)">
-                    <?= ucwords(esc($selected['nama'] ?? 'Voucher')); ?>
+
+            <!-- Daftar Voucher -->
+            <?php if (count($list) > 0) : ?>
+            <div class="section-toggle mb-2" onclick="toggleVoucherList()">
+                <p class="m-0">
+                    <?= is_array($selected) ? ucwords(esc($selected['nama'] ?? 'Voucher')) : 'Pilih Voucher'; ?>
                 </p>
-                <?php if ($isMemberBaruSelected): ?>
-                <span class="badge bg-success text-white ms-2"
-                    style="font-size:.75rem;padding:4px 8px;border-radius:6px;">
-                    🎁 Voucher Member Baru
-                </span>
-                <?php endif; ?>
+                <i class="material-icons">chevron_right</i>
             </div>
-            <?php else : ?>
-            <p class="m-0">Pilih voucher</p>
-            <?php endif; ?>
-            <i class="material-icons">chevron_right</i>
-        </div>
-
-        <!-- Daftar Voucher -->
-        <div class="container-voucher">
-            <?php foreach ($list as $v) :
-                $vId     = (int)($v['id'] ?? 0);
-                $vNama   = (string)($v['nama'] ?? '');
-                $vNom    = (string)($v['nominal'] ?? '0');
-                $vSat    = (string)($v['satuan'] ?? '');
-                $vTarget = strtolower($v['target'] ?? '');
-                $isMemberBaru = ($vTarget === 'baru') || str_contains(strtolower($vNama), 'member baru');
-                $isActive     = (is_array($selected) && ((int)($selected['id'] ?? 0) === $vId));
-            ?>
-            <?php if ($isActive) : ?>
-            <div class="item-voucher active">
-                <div>
-                    <p class="m-0 fw-bold" style="color: var(--merah);">Active</p>
-                    <p class="m-0 fw-bold">
-                        <?= ucwords(esc($vNama)); ?>
-                        <?php if ($isMemberBaru): ?>
-                        <span class="badge bg-success text-white ms-2" style="font-size:.7rem;">🎁 Member Baru</span>
-                        <?php endif; ?>
-                    </p>
-                    <p class="m-0">Potongan sebesar <?= esc($vNom); ?> <?= esc($vSat); ?></p>
+            <div id="voucherList" class="voucher-list">
+                <?php foreach ($list as $v):
+            $vId     = (int)($v['id'] ?? 0);
+            $vNama   = (string)($v['nama'] ?? '');
+            // fallback nominal/nilai + satuan/tipe
+            $vNom    = (string)($v['nominal'] ?? ($v['nilai'] ?? '0'));
+            $vSatRaw = (string)($v['satuan'] ?? ($v['tipe'] ?? 'persen'));
+            $vSat    = ($vSatRaw === 'persen') ? 'persen' : 'rupiah';
+            $vTarget = strtolower($v['target'] ?? '');
+            $isMemberBaru = ($vTarget === 'baru') || str_contains(strtolower($vNama), 'member baru');
+            $isActive     = (is_array($selected) && ((int)($selected['id'] ?? 0) === $vId));
+            $isRec        = !empty($v['recommended']);
+            $estCut       = isset($v['estimated_cut']) ? (int)$v['estimated_cut'] : null;
+          ?>
+                <div class="voucher-item <?= $isActive ? 'active' : ''; ?>">
+                    <div>
+                        <div class="name">
+                            <?= ucwords(esc($vNama)); ?>
+                            <?php if ($isMemberBaru): ?><span class="badge">Member Baru</span><?php endif; ?>
+                            <?php if ($isRec): ?><span class="badge rec">Direkomendasikan</span><?php endif; ?>
+                        </div>
+                        <div class="meta">
+                            Potongan <?= esc($vNom).' '.esc($vSat); ?>
+                            <?php if ($estCut !== null): ?> · Potensi hemat: Rp
+                            <?= number_format($estCut,0,',','.'); ?><?php endif; ?>
+                        </div>
+                    </div>
+                    <?php if ($isActive): ?>
+                    <a class="btn-plain" href="/cancelvoucher/<?= $vId . "-" . $indexAddress; ?>">Lepas</a>
+                    <?php else: ?>
+                    <a class="btn-plain" href="/usevoucher/<?= $vId . "-" . $indexAddress; ?>">Pakai</a>
+                    <?php endif; ?>
                 </div>
-                <a href="/cancelvoucher/<?= $vId . "-" . $indexAddress; ?>">Lepas</a>
+                <?php endforeach; ?>
             </div>
-            <?php else : ?>
-            <div class="item-voucher">
-                <div>
-                    <p class="m-0 fw-bold">
-                        <?= ucwords(esc($vNama)); ?>
-                        <?php if ($isMemberBaru): ?>
-                        <span class="badge bg-success text-white ms-2" style="font-size:.7rem;">🎁 Member Baru</span>
-                        <?php endif; ?>
-                    </p>
-                    <p class="m-0">Potongan sebesar <?= esc($vNom); ?> <?= esc($vSat); ?></p>
+            <?php endif; ?>
+
+            <!-- Ringkasan -->
+            <div class="card-soft mt-2">
+                <div class="hd">Ringkasan Pesanan</div>
+                <div class="bd">
+                    <?php if ($isMemberBaruSelected): ?>
+                    <div class="alert-soft mb-2">🎉 Selamat! Kamu mendapatkan <b>Voucher Member Baru</b>.</div>
+                    <?php endif; ?>
+
+                    <div class="sum-row">
+                        <div class="k">Harga</div>
+                        <div class="v">Rp <?= number_format((int)$hargaTotal, 0, ',', '.'); ?></div>
+                    </div>
+
+                    <?php if (is_array($selected)) : ?>
+                    <div class="sum-row">
+                        <div class="k">Potongan Voucher</div>
+                        <div class="v">- Rp <?= number_format((int)($selected['rupiah'] ?? 0), 0, ',', '.'); ?></div>
+                    </div>
+                    <?php endif; ?>
+
+                    <?php if ($flashSale > 0) : ?>
+                    <div class="sum-row">
+                        <div class="k">Potongan Flash Sale</div>
+                        <div class="v">- Rp <?= number_format((int)$flashSale, 0, ',', '.'); ?></div>
+                    </div>
+                    <?php endif; ?>
+
+                    <div class="sum-row">
+                        <div class="k">Biaya Admin</div>
+                        <div class="v">Rp <?= number_format((int)$biayaAdmin, 0, ',', '.'); ?></div>
+                    </div>
+                    <hr>
+                    <div class="sum-row sum-total">
+                        <div class="k">TOTAL</div>
+                        <div class="v">Rp <?= number_format((int)$grossAmount, 0, ',', '.'); ?></div>
+                    </div>
+
+                    <?php if ((string)session()->get('role') === '4') : ?>
+                    <a href="/admin/ordertoko/<?= $indexAddress; ?>" class="btn-default-merah w-100 mt-2 text-center"
+                        style="text-decoration:none;">Pesankan</a>
+                    <?php else : ?>
+                    <button onclick="bayar(event)" class="btn-default-merah w-100 mt-2">Bayar</button>
+                    <?php endif; ?>
                 </div>
-                <!-- (fix) harus ada slash setelah /usevoucher -->
-                <a href="/usevoucher/<?= $vId . "-" . $indexAddress; ?>">Pakai</a>
             </div>
-            <?php endif; ?>
-            <?php endforeach; ?>
-            <hr>
-        </div>
-        <?php endif; ?>
-
-        <!-- Ringkasan Pesanan -->
-        <div class="card p-4">
-            <h4 style="letter-spacing: -1px">Pesanan</h4>
-
-            <!-- Notifikasi BESAR jika voucher member baru aktif -->
-            <?php if ($isMemberBaruSelected): ?>
-            <div class="alert alert-success py-2 px-3 mb-3"
-                style="background-color:#eaffea;border:1px solid #b7f0b7;border-radius:6px;">
-                🎉 Selamat! Kamu mendapatkan <b>Voucher Member Baru</b>
-                sebesar
-                <?php
-                    // rupiah final (sudah dihitung controller) bila ada
-                    $pot = (int)($selected['rupiah'] ?? 0);
-                    if ($pot > 0) {
-                        echo 'Rp ' . number_format($pot, 0, ',', '.');
-                    } else {
-                        // fallback: tampilkan deskripsi nominal+satuan
-                        $nom = $selected['nominal'] ?? 0;
-                        $sat = $selected['satuan']  ?? '';
-                        echo esc($nom) . ' ' . esc($sat);
-                    }
-                ?>
-                untuk transaksi ini.
-            </div>
-            <?php endif; ?>
-
-            <div class="mt-2 d-flex justify-content-between py-1">
-                <p class="m-0">Harga</p>
-                <p class="fw-bold m-0">Rp <?= number_format((int)$hargaTotal, 0, ',', '.'); ?></p>
-            </div>
-
-            <?php if (is_array($selected)) : ?>
-            <div class="d-flex justify-content-between py-1">
-                <p class="m-0">Potongan Voucher</p>
-                <p class="fw-bold m-0">- Rp <?= number_format((int)($selected['rupiah'] ?? 0), 0, ',', '.'); ?></p>
-            </div>
-            <?php endif; ?>
-
-            <?php if ($flashSale > 0) : ?>
-            <div class="d-flex justify-content-between py-1">
-                <p class="m-0">Potongan Flashsale</p>
-                <p class="fw-bold m-0">- Rp <?= number_format((int)$flashSale, 0, ',', '.'); ?></p>
-            </div>
-            <?php endif; ?>
-
-            <div class="d-flex justify-content-between py-1">
-                <p class="m-0">Biaya Admin</p>
-                <p class="fw-bold m-0">Rp <?= number_format((int)$biayaAdmin, 0, ',', '.'); ?></p>
-            </div>
-
-            <span class="garis my-2"></span>
-
-            <div class="d-flex justify-content-between py-1">
-                <p class="m-0">TOTAL</p>
-                <p class="fw-bold m-0">Rp <?= number_format((int)$grossAmount, 0, ',', '.'); ?></p>
-            </div>
-
-            <?php if ((string)session()->get('role') === '4') : ?>
-            <a href="/admin/ordertoko/<?= $indexAddress; ?>" class="btn-default-merah">Pesankan</a>
-            <?php else : ?>
-            <button onclick="bayar(event)" class="btn-default-merah w-100 mt-4 text-center">Bayar</button>
-            <?php endif; ?>
         </div>
     </div>
 </div>
@@ -273,19 +575,33 @@ function bayar(e) {
     window.location.href = "/actionpaycore/" + btoa(timeStamp + ":" + "<?= $indexAddress; ?>");
 }
 
-let voucherDibuka = false;
+function toggleRedeem() {
+    const box = document.getElementById('redeemBox');
+    if (!box) return;
+    box.style.display = (box.style.display === 'none' || box.style.display === '') ? 'block' : 'none';
+}
 
-function openVoucher() {
-    const containerVoucherElm = document.querySelector('.container-voucher');
-    if (!containerVoucherElm) return;
-    if (voucherDibuka) {
-        containerVoucherElm.classList.remove('show');
-        voucherDibuka = false;
-    } else {
-        containerVoucherElm.classList.add('show');
-        voucherDibuka = true;
-    }
+function toggleVoucherList() {
+    const list = document.getElementById('voucherList');
+    if (!list) return;
+    list.style.display = (list.style.display === 'none' || list.style.display === '') ? 'block' : 'none';
 }
 </script>
+<script>
+(function() {
+    const hasMsg = "<?= $msg ? '1':'0' ?>";
+    if (hasMsg === '1') {
+        const box = document.getElementById('redeemBox');
+        if (box && (box.style.display === '' || box.style.display === 'none')) box.style.display = 'block';
+    }
+    const hasVoucherList = <?= count($list) > 0 ? 'true' : 'false' ?>;
+    if (hasVoucherList) {
+        const list = document.getElementById('voucherList');
+        const hasSelected = <?= is_array($selected) ? 'true' : 'false' ?>;
+        if (list && (hasSelected || hasMsg === '1')) list.style.display = 'block';
+    }
+})();
+</script>
+
 
 <?= $this->endSection(); ?>

@@ -51,8 +51,11 @@ $routes->post('/editaddress/(:any)', 'Pages::editAddress/$1', ['filter' => 'cust
 // $routes->get('/shipping/(:any)', 'Pages::shipping/$1', ['filter' => 'customerShippingFilter']);
 // $routes->get('/tracking', 'Pages::tracking', ['filter' => 'customerFilter']);
 
+// Voucher
+$routes->post('/redeemvoucher/(:num)', 'Pages::redeemVoucher/$1');
 $routes->get('/usevoucher/(:any)', 'Pages::useVoucher/$1');
 $routes->get('/cancelvoucher/(:any)', 'Pages::cancelVoucher/$1');
+$routes->get('/removevoucher/(:num)', 'Pages::removeVoucher/$1');
 $routes->get('/payment/method/(:any)/(:any)', 'Pages::paymentMethod/$1/$2', ['filter' => 'customerShippingFilter']);
 $routes->get('/payment/(:any)', 'Pages::payment/$1', ['filter' => 'customerShippingFilter']);
 $routes->get('/actionpay/(:any)', 'Pages::actionPay/$1');
@@ -164,8 +167,14 @@ $routes->get('/admin/actionaccorderoffline/(:any)', 'AdminController::actionAccO
 $routes->get('/admin/voucher', 'AdminController::voucher', ['filter' => 'adminFilter']);
 $routes->post('/admin/voucher/add', 'AdminController::actionAddVoucher', ['filter' => 'adminFilter']);
 $routes->get('/admin/voucher/delete/(:any)', 'AdminController::deleteVoucher/$1', ['filter' => 'adminFilter']);
-$routes->get('/admin/voucher/edit/(:any)', 'AdminController::editVoucher/$1', ['filter' => 'adminFilter']);
+$routes->get('/admin/voucher/edit/(:num)', 'AdminController::editVoucher/$1', ['filter' => 'adminFilter']);
+$routes->post('/admin/voucher/edit/(:num)', 'AdminController::editVoucher/$1', ['filter' => 'adminFilter']);
 $routes->post('/admin/voucher/toggle/(:num)', 'AdminController::toggleVoucher/$1', ['filter' => 'adminFilter']);
+
+$routes->get('/admin/voucher/usage', 'AdminController::voucherUsage', ['filter' => 'adminFilter']);
+$routes->get('/admin/voucher/usage/delete/(:num)', 'AdminController::deleteVoucherUsage/$1', ['filter' => 'adminFilter']);
+
+
 
 #region GUDANG
 $routes->get('/gudang/listorder', 'GudangController::listOrder', ['filter' => 'gudangFilter']);

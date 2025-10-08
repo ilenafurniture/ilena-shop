@@ -2259,5 +2259,37 @@ class AdminController extends BaseController
         ]);
     }
 
+    public function voucherUsage()
+    {
+        $db = \Config\Database::connect();
+
+        $builder = $db->table('voucher_usage vu')
+            ->select('vu.id, vu.kode_voucher, vu.email, vu.used_at, v.nama as nama_voucher')
+            ->join('voucher v', 'v.kode = vu.kode_voucher', 'left')
+            ->orderBy('vu.id', 'DESC');
+
+        $q = $this->request->getGet('q');
+        if ($q) {
+            $builder->groupStart()
+                ->like('vu.kode_voucher', $q)
+                ->orLike('vu.email', $q)
+                ->orLike('v.nama', $q)
+                ->groupEnd();
+        }
+
+        $rows = $builder->get()->getResultArray();
+
+        return view('admin/voucher_usage', [
+            'title' => 'Pemakaian Voucher',
+            'rows'  => $rows,
+            'q'     => $q
+        ]);
+    }
+
+    public function deleteVoucherUsage($id)
+    {
+        $this->voucherUsageModel->delete((int)$id);
+        return redirect()->to('/admin/voucher/usage')->with('msg','Log penggunaan dihapus.');
+    }
 
 }

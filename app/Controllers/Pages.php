@@ -1124,8 +1124,7 @@ class Pages extends BaseController
                         $urutan = explode(',', $v['urutan_gambar'] ?? '');
                         $first  = trim($urutan[0] ?? '');
                         if ($first !== '') {
-                            $keranjang[$index]['src_gambar'] =
-                                "/img/barang/1000/{$k['id_barang']}-{$first}.webp";
+                            $keranjang[$index]['src_gambar'] = "/img/barang/1000/{$k['id_barang']}-{$first}.webp";
                         }
                         break;
                     }
@@ -1147,7 +1146,7 @@ class Pages extends BaseController
             }
         }
 
-        // voucher manual lama (opsional)
+        // ====== legacy voucher untuk email uji (tetap, tidak auto-apply) ======
         $voucher      = [];
         $emailUjiCoba = ['galihsuks123@gmail.com','ilenafurniture@gmail.com','galih8.4.2001@gmail.com','tipaun0605@gmail.com'];
         if (session()->get('isLogin') && in_array($alamatselected['email_pemesan'], $emailUjiCoba, true)) {
@@ -1161,7 +1160,76 @@ class Pages extends BaseController
             }
         }
 
-        // diskon voucher (session) – kompatibel lama/baru
+        // ====== voucher hasil klaim (redeem) — ditampilkan sebagai pilihan, bukan auto apply ======
+        $claimedIds = (array)(session()->get('voucher_claimed') ?? []);
+        if (!empty($claimedIds)) {
+            $claimedRows = $this->voucherModel->whereIn('id', array_map('intval', $claimedIds))->findAll();
+            foreach ($claimedRows as $cr) {
+                $tipe  = $cr['tipe']  ?? ($cr['satuan']  ?? 'persen');
+                $nilai = $cr['nilai'] ?? ($cr['nominal'] ?? 0);
+                $voucher[] = [
+                    'id'          => (int)$cr['id'],
+                    'kode'        => $cr['kode'],
+                    'nama'        => $cr['nama'],
+                    'deskripsi'   => $cr['deskripsi'] ?? '',
+                    'tipe'        => $tipe,
+                    'nilai'       => (float)$nilai,
+                    'nominal'     => $nilai,
+                    'satuan'      => ($tipe === 'persen') ? 'persen' : 'rupiah',
+                    'target'      => $cr['target'] ?? 'semua',
+                    'auto_apply'  => $cr['auto_apply'] ?? 0,
+                    'aktif'       => $cr['aktif'] ?? 1,
+                    'minimal_belanja' => (int)($cr['minimal_belanja'] ?? 0),
+                    'mulai'       => $cr['mulai'] ?? null,
+                    'berakhir'    => $cr['berakhir'] ?? null,
+                ];
+            }
+            // dedupe by id
+            $voucher = array_values(array_reduce($voucher, function($acc,$v){ $acc[$v['id']]=$v; return $acc; }, []));
+        }
+
+        // ====== Rekomendasi voucher eligible (pakai helper yang sama!) ======
+        $email    = $alamatselected['email_pemesan'];
+        $subtotal = $hargaTotal;
+
+        try {
+            $autoRows = $this->voucherModel->where(['aktif'=>1, 'auto_apply'=>1])->findAll();
+        } catch (\Throwable $th) {
+            $autoRows = [];
+        }
+
+        foreach ($autoRows as $row) {
+            $elig = $this->checkVoucherEligibility($row, $email, $subtotal);
+            if (!$elig['ok']) continue;
+
+            $vRecord = [
+                'id'            => (int)$row['id'],
+                'kode'          => $row['kode'],
+                'nama'          => $row['nama'],
+                'deskripsi'     => $row['deskripsi'] ?? '',
+                'tipe'          => $row['tipe'] ?? ($row['satuan'] ?? 'persen'),
+                'nilai'         => (float)($row['nilai'] ?? ($row['nominal'] ?? 0)),
+                'nominal'       => ($row['nilai'] ?? ($row['nominal'] ?? 0)),
+                'satuan'        => (($row['tipe'] ?? ($row['satuan'] ?? 'persen')) === 'persen') ? 'persen' : 'rupiah',
+                'target'        => $row['target'] ?? 'semua',
+                'auto_apply'    => (int)($row['auto_apply'] ?? 0),
+                'aktif'         => (int)($row['aktif'] ?? 1),
+                'minimal_belanja'=> (int)($row['minimal_belanja'] ?? 0),
+                'mulai'         => $row['mulai'] ?? null,
+                'berakhir'      => $row['berakhir'] ?? null,
+                'recommended'   => true,
+                'estimated_cut' => (int)$elig['cut'],
+            ];
+
+            // hindari duplikat (jika sudah ada dari claimed/legacy)
+            $exists = false;
+            foreach ($voucher as $vx) {
+                if ((int)($vx['id'] ?? 0) === (int)$vRecord['id']) { $exists = true; break; }
+            }
+            if (!$exists) $voucher[] = $vRecord;
+        }
+
+        // ====== Diskon voucher yg DIPILIH user (bukan auto-apply) ======
         $diskonVoucher = 0; $voucherSelected = false;
         if (session()->get('voucher')) {
             $vd = $this->voucherModel->find((int)session()->get('voucher'));
@@ -1175,28 +1243,11 @@ class Pages extends BaseController
             }
         }
 
-        // auto voucher (ambil terbesar)
-        $email    = $alamatselected['email_pemesan'];
-        $subtotal = $hargaTotal;
-        $voucherAuto = null; $diskonAuto = 0;
+        // ====== (Opsional) auto pilih yg terbesar — TAPI TIDAK auto-apply.
+        //      Kita hanya "merekomendasikan" di UI (kamu sudah punya UI pilih voucher).
+        //      Jadi bagian ini sengaja tidak override pilihan user. ======
 
-        if (method_exists($this, 'getEligibleVoucher')) {
-            $vBaru = $this->getEligibleVoucher($email, $subtotal);
-            if ($vBaru && !empty($vBaru['tipe'])) {
-                if ($vBaru['tipe'] === 'persen') $diskonAuto = (int) floor($subtotal * ((float)$vBaru['nilai'] / 100));
-                else $diskonAuto = (int)$vBaru['nilai'];
-                $diskonAuto  = max(0, min($diskonAuto, (int)$subtotal));
-                $voucherAuto = ['id'=>$vBaru['id'],'kode'=>$vBaru['kode'],'nama'=>$vBaru['nama'],'rupiah'=>$diskonAuto];
-            }
-        }
-
-        if ($voucherAuto && $voucherAuto['rupiah'] > $diskonVoucher) {
-            $voucherSelected = $voucherAuto;
-            $diskonVoucher   = $voucherAuto['rupiah'];
-            session()->set('voucher', $voucherAuto['id']); // sinkron dgn actionPayCore
-        }
-
-        // biaya admin
+        // Biaya admin (tetap sesuai sistem kamu)
         $fees = [
             'bca'=>['type'=>'flat','value'=>4000,'taxable'=>true],
             'bri'=>['type'=>'flat','value'=>4000,'taxable'=>true],
@@ -1265,6 +1316,8 @@ class Pages extends BaseController
         return view('pages/payment', $data);
     }
 
+
+
     public function paymentMethod($method, $ind_add)
     {
         session()->set('payment_method', $method);
@@ -1285,7 +1338,277 @@ class Pages extends BaseController
         return redirect()->to('/payment/' . $ind_address);
     }
 
-    // ====== CORE CHARGE ======
+    private function validateVoucherByCode(string $code, string $email, float $subtotal): array
+    {
+        $code = strtoupper(trim($code));
+        if ($code === '') return ['ok'=>false,'msg'=>'Kode voucher kosong.'];
+
+        $row = $this->voucherModel->where(['kode' => $code])->first();
+        if (!$row) return ['ok'=>false,'msg'=>'Voucher tidak ditemukan.'];
+
+        if (empty($row['aktif'])) {
+            return ['ok'=>false,'msg'=>'Voucher sedang nonaktif.'];
+        }
+
+        $today = date('Y-m-d');
+        if (!empty($row['mulai']) && $today < substr($row['mulai'],0,10)) {
+            return ['ok'=>false,'msg'=>'Voucher belum mulai berlaku.'];
+        }
+        if (!empty($row['berakhir']) && $today > substr($row['berakhir'],0,10)) {
+            return ['ok'=>false,'msg'=>'Voucher sudah berakhir.'];
+        }
+
+        $minBelanja = (float)($row['minimal_belanja'] ?? 0);
+        if ($subtotal < $minBelanja) {
+            return ['ok'=>false,'msg'=>'Belanja belum mencapai minimal voucher.'];
+        }
+
+        // Limit global
+        $maxPakai = (int)($row['max_pakai'] ?? 0);
+        if ($maxPakai > 0) {
+            $usedCount = $this->voucherUsageModel
+                ->where('kode_voucher', $row['kode'])
+                ->countAllResults();
+            if ($usedCount >= $maxPakai) {
+                return ['ok'=>false,'msg'=>'Voucher sudah mencapai limit pemakaian.'];
+            }
+        }
+
+        // Sekali per user?
+        $onceUser = !empty($row['sekali_pakai_per_user']);
+        if ($onceUser) {
+            $already = $this->voucherUsageModel
+                ->where(['kode_voucher'=>$row['kode'], 'email'=>$email])
+                ->countAllResults();
+            if ($already > 0) {
+                return ['ok'=>false,'msg'=>'Voucher ini hanya bisa dipakai sekali per pengguna.'];
+            }
+        }
+
+        // Target user
+        $target = strtolower($row['target'] ?? 'semua');
+        if ($target === 'baru') {
+            $isFirst = $this->isFirstOrderByEmail($email);
+            if (!$isFirst) return ['ok'=>false,'msg'=>'Voucher khusus member baru.'];
+        } elseif ($target === 'lama') {
+            $isFirst = $this->isFirstOrderByEmail($email);
+            if ($isFirst) return ['ok'=>false,'msg'=>'Voucher khusus member lama.'];
+        } elseif ($target === 'spesifik') {
+            $list = json_decode($row['list_email'] ?? '[]', true);
+            if (is_array($list) && !in_array($email, $list, true)) {
+                return ['ok'=>false,'msg'=>'Voucher ini khusus pengguna tertentu.'];
+            }
+        }
+
+        // Hitung diskon
+        $tipe  = $row['tipe']  ?? ($row['satuan']  ?? 'persen');
+        $nilai = (float)($row['nilai'] ?? ($row['nominal'] ?? 0));
+        $rupiah = 0;
+        if ($tipe === 'persen') $rupiah = (int) floor(($nilai / 100.0) * $subtotal);
+        else $rupiah = (int) $nilai;
+        $rupiah = max(0, min($rupiah, (int)$subtotal));
+
+        return ['ok'=>true, 'msg'=>'Voucher berhasil diterapkan.', 'voucher'=>$row, 'rupiah'=>$rupiah];
+    }
+
+    /**
+     * Hook sederhana untuk deteksi first order.
+     * Ganti dengan query ke Order/Pemesanan model kamu agar akurat.
+     */
+    private function isFirstOrderByEmail(string $email): bool
+    {
+        try {
+            if (property_exists($this, 'pemesananModel') && $this->pemesananModel) {
+                $cnt = $this->pemesananModel->where('email', $email)->countAllResults();
+                return $cnt === 0;
+            }
+        } catch (\Throwable $th) {}
+        return true; // fallback: anggap baru
+    }
+
+    /**
+     * POST /redeemvoucher/{ind_add}
+     * Simpan voucher ke session (kompat dengan flow lama).
+     */
+    public function redeemVoucher($ind_add)
+    {
+        log_message('debug', '[REDEEM] method='.$this->request->getMethod().' ind_add='.$ind_add);
+
+        if (strtolower($this->request->getMethod()) !== 'post') {
+            return redirect()->to('/payment/'.$ind_add);
+        }
+
+        // Terima `code` atau `kode` (kompat semua view)
+        $rawCode = (string)($this->request->getPost('code') ?? $this->request->getPost('kode') ?? '');
+        $code = strtoupper(trim($rawCode));
+        log_message('debug', '[REDEEM] input code="'.$rawCode.'" normalized="'.$code.'"');
+
+        if ($code === '') {
+            session()->setFlashdata('msg','Kode voucher kosong.');
+            return redirect()->to('/payment/'.$ind_add);
+        }
+
+        // Cek alamat & keranjang
+        $alamat = $this->session->get('alamat');
+        if (!is_array($alamat) || !array_key_exists($ind_add, $alamat)) {
+            session()->setFlashdata('msg','Alamat tidak valid.');
+            return redirect()->to('/payment/'.$ind_add);
+        }
+        $email = (string)($alamat[$ind_add]['email_pemesan'] ?? '');
+
+        $keranjang = $this->session->get('keranjang');
+        if (!is_array($keranjang) || empty($keranjang)) {
+            session()->setFlashdata('msg','Keranjang kosong.');
+            return redirect()->to('/payment/'.$ind_add);
+        }
+
+        // Hitung subtotal (setara payment())
+        $subtotal = 0.0;
+        foreach ($keranjang as $k) {
+            $produk = $this->barangModel->getBarang($k['id_barang']);
+            if (!$produk) continue;
+            $harga  = (float)($produk['harga'] ?? 0);
+            $diskon = (float)($produk['diskon'] ?? 0);
+            $jumlah = (int)($k['jumlah'] ?? 0);
+            $subtotal += $harga * $jumlah * (100 - $diskon) / 100;
+        }
+        $subtotal = max(0, $subtotal);
+        log_message('debug', '[REDEEM] subtotal='.$subtotal.' email='.$email);
+
+        // Ambil voucher by kode (case-insensitive aman di semua collation)
+        $row = $this->voucherModel->where('LOWER(kode)', strtolower($code))->first();
+        if (!$row) {
+            session()->setFlashdata('msg','Kode voucher tidak ditemukan.');
+            return redirect()->to('/payment/'.$ind_add);
+        }
+        log_message('debug', '[REDEEM] voucher found id='.$row['id'].' kode='.$row['kode']);
+
+        // Validasi eligibility (satu sumber kebenaran)
+        $elig = $this->checkVoucherEligibility($row, $email, $subtotal);
+        if (empty($elig['ok'])) {
+            // Pesan dari helper sudah spesifik (periode/min belanja/sekali user/dll)
+            $reason = (string)($elig['msg'] ?? 'Voucher tidak memenuhi syarat.');
+            session()->setFlashdata('msg', $reason);
+            log_message('debug', '[REDEEM] not eligible: '.$reason);
+            return redirect()->to('/payment/'.$ind_add);
+        }
+
+        // CLAIM BERHASIL → tambahkan ke daftar pilihan (bukan auto-apply)
+        $claimed = (array)(session()->get('voucher_claimed') ?? []);
+        $id = (int)$row['id'];
+        if (!in_array($id, $claimed, true)) {
+            $claimed[] = $id;
+            session()->set('voucher_claimed', $claimed);
+        }
+
+        // Jangan pilih otomatis—biarkan user memilih
+        $pot = (int)($elig['cut'] ?? 0);
+        $msg = 'Voucher "'.$row['kode'].'" berhasil diklaim.';
+        session()->setFlashdata('msg', $msg);
+
+        return redirect()->to('/payment/'.$ind_add);
+    }
+
+
+    private function checkVoucherEligibility(array $row, string $email, float $subtotal): array
+    {
+        $tipe  = $row['tipe']  ?? ($row['satuan'] ?? 'persen');
+        $nilai = (float)($row['nilai'] ?? ($row['nominal'] ?? 0));
+        $today = date('Y-m-d');
+
+        // 1) Aktif
+        if (empty($row['aktif'])) {
+            return ['ok'=>false,'msg'=>'Voucher sedang nonaktif.'];
+        }
+
+        // 2) Periode
+        $mulai = !empty($row['mulai']) ? substr($row['mulai'],0,10) : null;
+        $akhir = !empty($row['berakhir']) ? substr($row['berakhir'],0,10) : null;
+        if ($mulai && $today < $mulai) {
+            return ['ok'=>false,'msg'=>'Voucher belum mulai berlaku (mulai '.$mulai.').'];
+        }
+        if ($akhir && $today > $akhir) {
+            return ['ok'=>false,'msg'=>'Voucher sudah berakhir (berlaku sampai '.$akhir.').'];
+        }
+
+        // 3) Minimal belanja
+        $minBelanja = (float)($row['minimal_belanja'] ?? 0);
+        if ($subtotal < $minBelanja) {
+            return [
+                'ok'=>false,
+                'msg'=>'Belanja belum mencapai minimal voucher: Rp '.number_format($minBelanja,0,',','.').
+                    '. Subtotal kamu: Rp '.number_format($subtotal,0,',','.')
+            ];
+        }
+
+        // 4) Limit global
+        try {
+            $maxPakai = (int)($row['max_pakai'] ?? 0);
+            if ($maxPakai > 0 && isset($this->voucherUsageModel)) {
+                $usedCount = $this->voucherUsageModel
+                    ->where('kode_voucher', $row['kode'])
+                    ->countAllResults();
+                if ($usedCount >= $maxPakai) {
+                    return ['ok'=>false,'msg'=>'Voucher sudah mencapai limit pemakaian.'];
+                }
+            }
+        } catch (\Throwable $th) {}
+
+        // 5) Sekali per user
+        if (!empty($row['sekali_pakai_per_user'])) {
+            try {
+                if (isset($this->voucherUsageModel)) {
+                    $already = $this->voucherUsageModel
+                        ->where(['kode_voucher'=>$row['kode'], 'email'=>$email])
+                        ->countAllResults();
+                    if ($already > 0) {
+                        return ['ok'=>false,'msg'=>'Voucher ini hanya dapat digunakan sekali per pengguna.'];
+                    }
+                }
+            } catch (\Throwable $th) {}
+
+            // fallback list_email (kalau dipakai tracking)
+            $listEmail = json_decode($row['list_email'] ?? '[]', true);
+            if (is_array($listEmail) && in_array($email, $listEmail, true)) {
+                return ['ok'=>false,'msg'=>'Voucher ini sudah pernah kamu pakai.'];
+            }
+        }
+
+        // 6) Target
+        $target = strtolower($row['target'] ?? 'semua');
+        if ($target === 'baru' && !$this->isFirstOrderByEmail($email)) {
+            return ['ok'=>false,'msg'=>'Voucher khusus member baru.'];
+        }
+        if ($target === 'lama' && $this->isFirstOrderByEmail($email)) {
+            return ['ok'=>false,'msg'=>'Voucher khusus member lama.'];
+        }
+        if ($target === 'spesifik') {
+            $wl = json_decode($row['list_email'] ?? '[]', true);
+            if (is_array($wl) && !in_array($email, $wl, true)) {
+                return ['ok'=>false,'msg'=>'Voucher ini khusus pengguna tertentu.'];
+            }
+        }
+
+        // 7) Estimasi potongan
+        $rupiah = ($tipe === 'persen')
+            ? (int) floor(($nilai / 100.0) * $subtotal)
+            : (int) $nilai;
+        $rupiah = max(0, min($rupiah, (int)$subtotal));
+
+        return ['ok'=>true,'msg'=>'Voucher valid.','cut'=>$rupiah];
+    }
+
+
+    public function removeVoucher($ind_add)
+    {
+        $this->session->remove('voucher');
+        return redirect()->to('/payment/'.$ind_add);
+    }
+
+    // ========================================================================
+    // ======================  actionPayCore() — FULL  ========================
+    // ========================================================================
+
     public function actionPayCore($token)
     {
         $deCodeToken = base64_decode($token);
@@ -1352,7 +1675,7 @@ class Pages extends BaseController
             }
         }
 
-        // voucher dari session (kompat lama/baru) + 1x per user
+        // voucher dari session (kompat lama/baru) + guard sekali per user
         $diskonVoucher = 0; $voucherSelected = false;
         if (session()->get('voucher')) {
             $vd = $this->voucherModel->find((int)session()->get('voucher'));
@@ -1364,13 +1687,25 @@ class Pages extends BaseController
                 $diskonVoucher   = max(0, min($diskonVoucher, (int)$subtotal));
                 $voucherSelected = $vd + ['rupiah' => $diskonVoucher];
 
+                // Guard tambahan: cek voucher_usage bila sekali per user
                 if ((int)($vd['sekali_pakai_per_user'] ?? 0) === 1) {
+                    // 1) cek list_email (logika lama) — tetap dipertahankan
                     $listEmail = json_decode($vd['list_email'] ?? '[]', true);
                     if (!is_array($listEmail)) $listEmail = [];
                     if (in_array($email, $listEmail, true)) {
                         session()->setFlashdata('msg','Voucher ini sudah pernah kamu pakai.');
                         return redirect()->to('/payment/' . $ind_add);
                     }
+                    // 2) cek voucher_usage (logika baru) — lebih akurat
+                    try {
+                        $sudahPakai = $this->voucherUsageModel
+                            ->where(['kode_voucher' => $vd['kode'], 'email' => $email])
+                            ->countAllResults();
+                        if ($sudahPakai > 0) {
+                            session()->setFlashdata('msg','Voucher ini sudah pernah kamu pakai.');
+                            return redirect()->to('/payment/' . $ind_add);
+                        }
+                    } catch (\Throwable $th) { /* abaikan jika table belum siap */ }
                 }
             }
         }
@@ -1518,11 +1853,10 @@ class Pages extends BaseController
                 $vNama   = strtolower($vRec['nama']   ?? '');
                 $isWelcome = ($vTarget === 'baru') || str_contains($vNama, 'member baru');
 
-                // hanya kalau model & field tersedia
                 if ($isWelcome && property_exists($this, 'pembeliModel') && method_exists($this->pembeliModel, 'where')) {
                     try {
                         $this->pembeliModel->where('email', $email)->set(['welcome_used'=>1])->update();
-                    } catch (\Throwable $th) { /* abaikan kalau tidak ada kolomnya */ }
+                    } catch (\Throwable $th) {}
                 }
             }
         }
@@ -1540,6 +1874,21 @@ class Pages extends BaseController
             'status'=> $status,
             'data_mid'=> json_encode($hasilMidtrans),
         ]);
+
+        // ===== CATAT PEMAKAIAN VOUCHER KE voucher_usage (hanya jika ada voucher) =====
+        if ($voucher) {
+            try {
+                $vRec = $this->voucherModel->find($voucher['id']);
+                if ($vRec && !empty($email)) {
+                    $this->voucherUsageModel->insert([
+                        'kode_voucher' => $vRec['kode'],
+                        'email'        => $email,
+                        'used_at'      => date('Y-m-d H:i:s'),
+                    ]);
+                }
+            } catch (\Throwable $th) { /* ignore: UNIQUE akan cegah double */ }
+            session()->remove('voucher'); // optional: bersihkan setelah sukses
+        }
 
         // kurangi stok
         $trx = $this->pemesananModel->where('id_midtrans', $idFix)->first();
@@ -1562,6 +1911,7 @@ class Pages extends BaseController
 
         return redirect()->to('/orderdetail/' . strtolower($status) . '?idorder=' . $idFix);
     }
+
 
 
     #region PEMBAYARAN CORE SENG FIX
