@@ -147,6 +147,7 @@ $routes->get('/admin/changepic', 'AdminController::changePic', ['filter' => 'adm
 $routes->get('/admin/order/offline/(:any)', 'AdminController::orderOffline/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/getitemsoffline/(:any)', 'AdminController::getItemsOffline/$1');
 $routes->get('/admin/order-offline/add', 'AdminController::orderOfflineAdd', ['filter' => 'adminFilter']);
+$routes->post('admin/order-offline/update', 'AdminController::orderOfflineUpdate');
 $routes->get('/admin/invoice-offline/(:any)', 'AdminController::suratInvoice/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/invoice-offline-dp/(:any)', 'AdminController::suratInvoiceDP/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/surat-offline/(:any)', 'AdminController::suratOffline/$1', ['filter' => 'adminFilter']);

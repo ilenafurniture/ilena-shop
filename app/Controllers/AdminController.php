@@ -1720,6 +1720,57 @@ class AdminController extends BaseController
         return view('admin/orderOffline', $data);
     }
 
+    public function orderOfflineUpdate()
+    {
+        $req = $this->request;
+        $id  = trim((string)$req->getPost('id_pesanan'));
+        $jenis = trim((string)$req->getPost('jenis')); // biar redirect balik ke tab yg sama
+
+        if ($id === '') {
+            return redirect()->back()->with('msg', 'ID pesanan tidak valid.');
+        }
+
+        // normalisasi DP (boleh kosong)
+        $dpRaw = $req->getPost('down_payment');
+        $dp    = null;
+        if ($dpRaw !== null && $dpRaw !== '') {
+            // hapus pemisah ribuan
+            $dp = (int)preg_replace('/[^\d\-]/', '', (string)$dpRaw);
+        }
+
+        // normalisasi tanggal ke format DB (YYYY-mm-dd HH:ii:ss)
+        $tgl = $req->getPost('tanggal'); // bisa dari datetime-local atau date
+        if ($tgl) {
+            // format dari input datetime-local biasanya "YYYY-mm-ddTHH:ii"
+            $tgl = str_replace('T', ' ', $tgl);
+            // pastikan komponennya lengkap (tambahkan :00 kalau perlu)
+            if (preg_match('/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}$/', $tgl)) {
+                $tgl .= ':00';
+            }
+        }
+
+        $payload = array_filter([
+            'tanggal'            => $tgl ?: null,
+            'nama'               => $req->getPost('nama') ?: null,
+            'nohp'               => $req->getPost('nohp') ?: null,
+            'alamat_pengiriman'  => $req->getPost('alamat_pengiriman') ?: null,
+            'keterangan'         => $req->getPost('keterangan') ?: null,
+            'npwp'               => $req->getPost('npwp') ?: null,
+            'down_payment'       => $dp,
+        ], function($v){ return $v !== null; });
+
+        // cek exist
+        $order = $this->pemesananOfflineModel->where('id_pesanan', $id)->first();
+        if (!$order) {
+            return redirect()->back()->with('msg', 'Order tidak ditemukan.');
+        }
+
+        // update aman
+        $this->pemesananOfflineModel->where('id_pesanan', $id)->set($payload)->update();
+
+        return redirect()->to('/admin/order/offline/'.($jenis ?: 'sale'))->with('msg', 'Data berhasil diperbarui.');
+    }
+
     public function getItemsOffline($id_pesanan)
     {
         $items = $this->pemesananOfflineItemModel

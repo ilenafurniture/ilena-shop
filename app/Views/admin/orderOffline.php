@@ -251,7 +251,8 @@ h5 {
 /* ====== Modal sheet (tanpa ganti id/struktur) ====== */
 #input-buat-invoice,
 #input-buat-dp,
-#input-koreksi {
+#input-koreksi,
+#input-edit-order {
     backdrop-filter: blur(4px);
 }
 
@@ -512,6 +513,64 @@ hr {
     </div>
 </div>
 
+<!-- ===================== MODAL: EDIT ORDER (BARU) ===================== -->
+<div id="input-edit-order" class="d-none justify-content-center align-items-center"
+    style="position: fixed; left: 0; top: 0; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.45)">
+    <div class="bg-white p-4 rounded modal-card-modern">
+        <form method="post" action="/admin/order-offline/update">
+            <h5 class="m-0 fw-bold">Edit Order</h5>
+            <p class="mb-3 text-sm" style="color: var(--brand); font-size: 12px">
+                ID Order :
+                <input type="text" name="id_pesanan" style="border: none; color: var(--brand); pointer-events: none;"
+                    class="fw-bold">
+            </p>
+
+            <!-- kirim jenis agar redirect balik ke tab yang sama -->
+            <input type="hidden" name="jenis" value="<?= esc($jenis) ?>">
+
+            <div class="row g-2">
+                <div class="col-12 col-md-4">
+                    <label class="mb-1">Tanggal</label>
+                    <input type="datetime-local" name="tanggal" class="form-control">
+                </div>
+                <div class="col-12 col-md-4">
+                    <label class="mb-1">Nama</label>
+                    <input type="text" name="nama" class="form-control" required>
+                </div>
+                <div class="col-12 col-md-4">
+                    <label class="mb-1">No HP</label>
+                    <input type="text" name="nohp" class="form-control">
+                </div>
+
+                <div class="col-12">
+                    <label class="mb-1">Alamat Pengiriman</label>
+                    <textarea name="alamat_pengiriman" class="form-control" rows="3" required></textarea>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label class="mb-1">NPWP (opsional)</label>
+                    <input type="text" name="npwp" class="form-control">
+                </div>
+                <div class="col-12 col-md-6">
+                    <label class="mb-1">Down Payment (opsional)</label>
+                    <input type="text" name="down_payment" class="form-control" placeholder="contoh: 1.500.000">
+                </div>
+
+                <div class="col-12">
+                    <label class="mb-1">Keterangan</label>
+                    <input type="text" name="keterangan" class="form-control">
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-3">
+                <button type="button" class="btn btn-default w-100" onclick="closeModal()">Tutup</button>
+                <button type="submit" class="btn btn-default-merah w-100">Simpan Perubahan</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- ===================== END MODAL: EDIT ORDER ===================== -->
+
 <!-- LIST PAGE -->
 <div style="padding: 2em;">
     <div class="page-card">
@@ -678,6 +737,10 @@ hr {
                                     <?php endif; ?>
 
                                     <?php endif; ?>
+
+                                    <!-- ===== Tambahan tombol EDIT (selalu ada) ===== -->
+                                    <a class="btn" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit"
+                                        onclick="openEdit(<?= $ind_p; ?>)"><i class="material-icons">edit</i></a>
                                 </div>
                             </td>
                         </tr>
@@ -918,6 +981,7 @@ function closeModal() {
     inputKoreksiElm.classList.remove('d-flex')
     inputBuatInvoiceElm.classList.add('d-none')
     inputBuatInvoiceElm.classList.remove('d-flex')
+    // modal edit ditutup di override di bawah
     indexItemsSelectedElm.value = '';
 }
 
@@ -1452,5 +1516,56 @@ function injectPreviewButton(form, onClick) {
 })();
 </script>
 <!-- =====[ END PREVIEW UI ]===== -->
+
+<!-- ========== JS TAMBAHAN: EDIT ORDER ========== -->
+<script>
+const inputEditOrderElm = document.getElementById('input-edit-order');
+
+function toValueDatetimeLocal(dbDateStr) {
+    // terima "YYYY-mm-dd HH:ii:ss" -> "YYYY-mm-ddTHH:ii"
+    if (!dbDateStr) return '';
+    const s = String(dbDateStr).trim().replace('T', ' ');
+    const core = s.substring(0, 16).replace(' ', 'T');
+    return core;
+}
+
+function rupiah(x) {
+    if (x === null || x === undefined || x === '') return '';
+    const n = String(x).replace(/[^\d\-]/g, '');
+    return n.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+function openEdit(index) {
+    if (!Array.isArray(window.pesanan)) return alert('Data belum siap');
+    const p = window.pesanan[index];
+    if (!p) return;
+
+    const form = inputEditOrderElm.querySelector('form');
+
+    // isi field
+    form.querySelector('input[name="id_pesanan"]').value = p.id_pesanan || '';
+    form.querySelector('input[name="tanggal"]').value = toValueDatetimeLocal(p.tanggal || '');
+    form.querySelector('input[name="nama"]').value = p.nama || '';
+    form.querySelector('input[name="nohp"]').value = p.nohp || '';
+    form.querySelector('textarea[name="alamat_pengiriman"]').value = p.alamat_pengiriman || '';
+    form.querySelector('input[name="npwp"]').value = p.npwp || '';
+    form.querySelector('input[name="down_payment"]').value = (p.down_payment !== undefined && p.down_payment !== null) ?
+        rupiah(p.down_payment) : '';
+    form.querySelector('input[name="keterangan"]').value = p.keterangan || '';
+
+    inputEditOrderElm.classList.remove('d-none');
+    inputEditOrderElm.classList.add('d-flex');
+}
+
+// extend closeModal agar modal edit ikut nutup
+(function() {
+    const _close = window.closeModal;
+    window.closeModal = function() {
+        _close && _close();
+        inputEditOrderElm.classList.add('d-none');
+        inputEditOrderElm.classList.remove('d-flex');
+    }
+})();
+</script>
 
 <?= $this->endSection(); ?>
