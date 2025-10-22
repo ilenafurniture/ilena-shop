@@ -1,3 +1,5 @@
+<!-- View/Admin/OrderOffline -->
+
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
 
@@ -23,70 +25,326 @@ $jtInfo = function ($sjDateStr) {
 };
 ?>
 
+<!-- ===== Modern Look & Feel (tanpa ubah sistem) ===== -->
 <style>
-[data-bs-toggle="tooltip"] {
-    color: gray;
+:root {
+    --ink: #0f172a;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --line2: #f3f4f6;
+    --brand: #b31217;
+    --brand-600: #a50e12;
+    --surface: #ffffff;
+    --surface-2: #fafafa;
+    --shadow: 0 10px 30px rgba(2, 6, 23, .06), 0 2px 6px rgba(2, 6, 23, .04);
 }
 
-/* Badge JT */
+html,
+body {
+    color: var(--ink);
+    background: #f7f7fb
+}
+
+* {
+    font-size: 13px;
+    line-height: 1.42
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    letter-spacing: -.2px
+}
+
+/* ====== Page chrome ====== */
+.page-card {
+    background: var(--surface);
+    border: 1px solid var(--line2);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 1.2rem 1.4rem;
+}
+
+.page-head {
+    display: flex;
+    gap: .8rem;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.page-title {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+}
+
+.page-title h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.page-sub {
+    margin: .15rem 0 0;
+    color: var(--muted);
+    font-size: 12px
+}
+
+.toolbar {
+    display: flex;
+    gap: .6rem;
+    align-items: center;
+}
+
+.toolbar .form-select {
+    min-width: 240px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    padding: .5rem .9rem;
+    background: #fff;
+    box-shadow: inset 0 1px 0 rgba(2, 6, 23, .02);
+}
+
+/* ====== Buttons ====== */
+.btn-default-merah {
+    --tw: var(--brand);
+    background: linear-gradient(180deg, var(--tw), var(--brand-600));
+    color: #fff !important;
+    border: 0;
+    border-radius: 12px;
+    padding: .7rem 1rem;
+    font-weight: 700;
+    box-shadow: 0 8px 24px rgba(179, 18, 23, .22);
+    transition: .18s ease;
+}
+
+.btn-default-merah:hover {
+    filter: brightness(.97);
+    transform: translateY(-1px)
+}
+
+.btn-default {
+    background: #fff;
+    border: 1px solid var(--line);
+    padding: .7rem 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.btn-teks-aja {
+    color: var(--brand);
+    text-decoration: none;
+    font-weight: 600
+}
+
+.btn-teks-aja:hover {
+    text-decoration: underline
+}
+
+/* Icon-only buttons (ACTION kolom) */
+.table .btn {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: #fff;
+    transition: .16s ease;
+}
+
+.table .btn:hover {
+    box-shadow: 0 8px 20px rgba(2, 6, 23, .08);
+    transform: translateY(-1px)
+}
+
+/* ====== Table modern ====== */
+.table-wrap {
+    border: 1px solid var(--line2);
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: var(--shadow)
+}
+
+.table {
+    margin: 0;
+}
+
+.table thead th {
+    background: linear-gradient(#f8fafc, #f4f6fa) !important;
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #0f172a;
+    border-bottom: 1px solid var(--line);
+    padding: .65rem .8rem;
+}
+
+.table tbody td,
+.table tbody th {
+    vertical-align: middle;
+    border-color: var(--line2);
+    padding: .7rem .8rem;
+    background: #fff;
+}
+
+.table tbody tr:hover td {
+    background: #fcfcff
+}
+
+.table-striped>tbody>tr:nth-of-type(odd)>* {
+    --bs-table-accent-bg: #fafbff;
+}
+
+/* Status badge */
+.badge.rounded-pill {
+    font-weight: 700;
+    letter-spacing: .02em;
+    padding: .45rem .7rem;
+    border: 1px solid rgba(15, 23, 42, .06)
+}
+
+/* Keterangan kecil */
+.text-muted-12 {
+    color: var(--muted);
+    font-size: 12px
+}
+
+/* JT Pills */
 .badge-jt {
     border-radius: 999px;
-    padding: .25rem .55rem;
+    padding: .25rem .6rem;
     font-size: 12px;
     display: inline-block;
+    border: 1px solid;
 }
 
 .badge-jt.ok {
     background: #ecfdf5;
     color: #065f46;
-    border: 1px solid #a7f3d0;
+    border-color: #a7f3d0
 }
 
 .badge-jt.warning {
     background: #fff7ed;
     color: #9a3412;
-    border: 1px solid #fed7aa;
+    border-color: #fed7aa
 }
 
 .badge-jt.overdue {
     background: #fee2e2;
     color: #991b1b;
-    border: 1px solid #fecaca;
+    border-color: #fecaca
 }
 
-.text-muted-12 {
-    color: #6b7280;
-    font-size: 12px;
+/* Tooltips trigger */
+[data-bs-toggle="tooltip"] {
+    color: #64748b
+}
+
+/* ====== Modal sheet (tanpa ganti id/struktur) ====== */
+#input-buat-invoice,
+#input-buat-dp,
+#input-koreksi {
+    backdrop-filter: blur(4px);
+}
+
+.modal-card-modern {
+    width: min(960px, 88vw) !important;
+    max-height: 90vh !important;
+    overflow: hidden !important;
+    border-radius: 16px !important;
+    border: 1px solid var(--line2) !important;
+    box-shadow: 0 24px 72px rgba(2, 6, 23, .20) !important;
+    background: #fff !important;
+}
+
+.modal-card-modern form {
+    overflow: auto;
+    max-height: calc(90vh - 2rem)
+}
+
+.modal-card-modern h5 {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -.2px
+}
+
+.modal-card-modern .form-control,
+.modal-card-modern .form-select,
+.modal-card-modern textarea {
+    border-radius: 12px;
+    border: 1px solid var(--line);
+}
+
+.modal-card-modern .btn-default {
+    border-radius: 12px
+}
+
+.modal-card-modern .btn-default-merah {
+    border-radius: 12px
+}
+
+/* Divider halus */
+hr {
+    border-color: var(--line2)
+}
+
+/* ===== Preview overlay (sudah ada, poles tipis) ===== */
+.preview-overlay {
+    backdrop-filter: blur(3px)
+}
+
+.preview-card {
+    border: 1px solid var(--line2)
+}
+
+.section-head {
+    background: #f8fafc
+}
+
+/* ==== Small helpers ==== */
+.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Roboto Mono", "Liberation Mono", "Courier New", monospace
 }
 </style>
 
-<!-- MODAL: BUAT INVOICE -->
+<!-- MODAL: BUAT INVOICE (UI only enhanced) -->
 <div id="input-buat-invoice" class="d-none justify-content-center align-items-center"
-    style="position: fixed; left: 0; top: 0; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.5)">
-    <div class="bg-white p-4 rounded" style="width: 80%; max-height: 90%; overflow-y:scroll;">
+    style="position: fixed; left: 0; top: 0; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.45)">
+    <div class="bg-white p-4 rounded modal-card-modern">
         <form method="post" action="/admin/actionbuatinvoice">
             <h5 class="m-0 fw-bold">Buat Invoice</h5>
-            <p class="mb-3 text-sm" style="color: var(--merah); font-size: 12px">ID Order : <input type="text"
-                    name="id_pesanan" id="input-idpesanan"
-                    style="border: none; color: var(--merah); pointer-events: none;" class="fw-bold"></p>
-            <div class="mb-1">
+            <p class="mb-3 text-sm" style="color: var(--brand); font-size: 12px">
+                ID Order : <input type="text" name="id_pesanan" id="input-idpesanan"
+                    style="border: none; color: var(--brand); pointer-events: none;" class="fw-bold">
+            </p>
+            <div class="mb-2">
                 <p class="mb-1">Tanggal</p>
                 <input type="datetime-local" name="tanggal" class="form-control" required>
             </div>
-            <div class="mb-1">
+            <div class="mb-2">
                 <p class="mb-1">Alamat</p>
-                <textarea name="alamat" id="input-alamat-invoice" required class="form-control"></textarea>
+                <textarea name="alamat" id="input-alamat-invoice" required class="form-control" rows="3"></textarea>
             </div>
-            <div class="mb-3">
-                <p class="mb-1">Nama</p>
-                <input type="text" name="nama_npwp" placeholder="Nama sesuai di NPWP" class="form-control" required>
+            <div class="row g-2 mb-3">
+                <div class="col-12 col-md-6">
+                    <p class="mb-1">Nama</p>
+                    <input type="text" name="nama_npwp" placeholder="Nama sesuai di NPWP" class="form-control" required>
+                </div>
+                <div class="col-12 col-md-6">
+                    <p class="mb-1">NPWP</p>
+                    <input type="text" name="npwp" class="form-control" required>
+                </div>
             </div>
-            <div class="mb-3">
-                <p class="mb-1">NPWP</p>
-                <input type="text" name="npwp" class="form-control" required>
-            </div>
-            <div class="d-flex gap-1">
-                <button type="button" class="btn btn-default w-100" onclick="closeModal()">Closes</button>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-default w-100" onclick="closeModal()">Tutup</button>
                 <button type="submit" class="btn btn-default-merah w-100">Submit</button>
             </div>
         </form>
@@ -95,33 +353,34 @@ $jtInfo = function ($sjDateStr) {
 
 <!-- MODAL: INPUT DP -->
 <div id="input-buat-dp" class="d-none justify-content-center align-items-center"
-    style="position: fixed; left: 0; top: 0; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.5)">
-    <div class="bg-white p-4 rounded" style="width: 80%; max-height: 90%; overflow-y:scroll;">
+    style="position: fixed; left: 0; top: 0; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.45)">
+    <div class="bg-white p-4 rounded modal-card-modern">
         <form method="post" action="/admin/actionbuatdp">
-            <h5 class="m-0 fw-bold">Buat Invoice</h5>
-            <p class="mb-3 text-sm" style="color: var(--merah); font-size: 12px">ID Order : <input type="text"
-                    name="id_pesanan" id="input-idpesanan"
-                    style="border: none; color: var(--merah); pointer-events: none;" class="fw-bold"></p>
-            <div class="d-flex gap-3 mb-4">
-                <div class="d-flex flex-column gap-2" style="flex: 1;">
-                    <div style="flex: 1;">
+            <h5 class="m-0 fw-bold">Buat Invoice DP</h5>
+            <p class="mb-3 text-sm" style="color: var(--brand); font-size: 12px">ID Order :
+                <input type="text" name="id_pesanan" id="input-idpesanan"
+                    style="border: none; color: var(--brand); pointer-events: none;" class="fw-bold">
+            </p>
+            <div class="d-flex flex-column flex-md-row gap-3 mb-3">
+                <div class="d-flex flex-column gap-2" style="flex:1">
+                    <div>
                         <p class="mb-1">Nama</p>
                         <input type="text" name="nama_npwp" placeholder="Nama sesuai di NPWP" class="form-control">
                     </div>
-                    <div style="flex: 1;">
+                    <div>
                         <p class="mb-1">NPWP</p>
                         <input type="text" name="npwp" class="form-control"
                             placeholder="kosongin kalau Invoice menyusul">
                     </div>
                 </div>
-                <div class="d-flex flex-column gap-2" style="flex: 1;">
-                    <div style="flex: 1;">
+                <div class="d-flex flex-column gap-2" style="flex:1">
+                    <div>
                         <p class="mb-1">Tanggal</p>
                         <input type="datetime-local" name="tanggal" class="form-control" required>
                     </div>
                 </div>
             </div>
-            <div class="mb-4">
+            <div class="mb-3 table-wrap">
                 <table class="table">
                     <thead>
                         <tr>
@@ -133,8 +392,8 @@ $jtInfo = function ($sjDateStr) {
                     <tbody id="table-dp"></tbody>
                 </table>
             </div>
-            <div class="d-flex gap-1">
-                <button type="button" class="btn btn-default w-100" onclick="closeModal()">Closes</button>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-default w-100" onclick="closeModal()">Tutup</button>
                 <button type="submit" class="btn btn-default-merah w-100">Submit</button>
             </div>
         </form>
@@ -144,12 +403,13 @@ $jtInfo = function ($sjDateStr) {
 
 <!-- MODAL: KOREKSI SP -->
 <div id="input-koreksi" class="d-none justify-content-center align-items-center"
-    style="position: fixed; left: 0; top: 0; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.5)">
-    <div class="bg-white p-4 rounded" style="width: 80%; max-height: 90%; overflow-y:scroll;">
+    style="position: fixed; left: 0; top: 0; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.45)">
+    <div class="bg-white p-4 rounded modal-card-modern">
         <form method="post" action="/admin/order-offline/koreksisp">
             <h5 class="m-0 fw-bold">Koreksi Surat Pengantar</h5>
-            <p class="m-0 text-sm" style="color: var(--merah); font-size: 12px">ID Order : <input type="text"
-                    name="id_pesanan" style="border: none; color: var(--merah); pointer-events: none;" class="fw-bold">
+            <p class="m-0 text-sm" style="color: var(--brand); font-size: 12px">ID Order :
+                <input type="text" name="id_pesanan" style="border: none; color: var(--brand); pointer-events: none;"
+                    class="fw-bold">
             </p>
             <hr>
             <div class="mb-3">
@@ -157,21 +417,19 @@ $jtInfo = function ($sjDateStr) {
                 <input type="datetime-local" name="tanggal" class="form-control" required>
             </div>
             <p class="mb-1 fw-bold">Alamat Tagihan</p>
-            <div class="ps-3 alamat-taghihan" style="border-left: 1px solid black;">
-                <div class="d-flex gap-2 mb-1">
+            <div class="ps-3 alamat-taghihan" style="border-left: 1px solid var(--line);">
+                <div class="d-flex flex-column flex-md-row gap-2 mb-1">
                     <select name="provinsi" class="form-select">
                         <option value="">-- Pilih provinsi --</option>
                         <?php foreach ($provinsi as $p) { ?>
-                        <option value="<?= $p['id']; ?>-<?= $p['label']; ?>">
-                            <?= $p['label']; ?>
-                        </option>
+                        <option value="<?= $p['id']; ?>-<?= $p['label']; ?>"><?= $p['label']; ?></option>
                         <?php } ?>
                     </select>
                     <select name="kota" class="form-select">
                         <option value="">-- Pilih kabupaten --</option>
                     </select>
                 </div>
-                <div class="d-flex gap-2 mb-1">
+                <div class="d-flex flex-column flex-md-row gap-2 mb-1">
                     <select name="kecamatan" class="form-select">
                         <option value="">-- Pilih kecamatan --</option>
                     </select>
@@ -183,8 +441,8 @@ $jtInfo = function ($sjDateStr) {
                     <input type="text" placeholder="Detail" class="form-control" name="detail">
                 </div>
             </div>
-            <div class="ps-3 d-none alamat-taghihan" style="border-left: 1px solid black;">
-                <textarea name="alamatTagihan" class="info-pesanan form-control"></textarea>
+            <div class="ps-3 d-none alamat-taghihan" style="border-left: 1px solid var(--line);">
+                <textarea name="alamatTagihan" class="info-pesanan form-control" rows="3"></textarea>
             </div>
             <label class="d-flex gap-2 align-items-center mb-3">
                 <input name="checkAlamat" type="checkbox" onchange="handleChangeAlamatTagihan(event)">
@@ -193,7 +451,8 @@ $jtInfo = function ($sjDateStr) {
 
             <div class="mb-3">
                 <p class="mb-1">Pilih barang</p>
-                <div id="container-items" class="d-flex flex-column gap-1">
+                <div id="container-items" class="d-flex flex-column gap-2">
+                    <!-- placeholder awal (tidak diubah; akan diisi JS) -->
                     <label class="d-flex gap-3 align-items-center justify-content-between">
                         <div class="d-flex gap-3 align-items-center">
                             <input type="checkbox" onchange="handleChangeInputItem(0, event)">
@@ -228,38 +487,25 @@ $jtInfo = function ($sjDateStr) {
             <input type="hidden" name="diskon" value="0">
 
             <input type="text" name="index_items_selected" required class="d-none">
-            <div class="d-flex gap-2 w-100">
+            <div class="d-flex flex-column flex-md-row gap-2 w-100">
                 <div class="mb-1" style="flex: 1;">
                     <p class="mb-1">Nama NPWP</p>
-                    <small class="text-danger d-block mb-1">
-                        *ini adalah nama untuk di SJ
-                    </small>
+                    <small class="text-danger d-block mb-1">*ini adalah nama untuk di SJ</small>
                     <input type="text" name="nama_npwp" class="form-control" placeholder="Nama yang ada di NPWP">
                 </div>
                 <div class="mb-1" style="flex: 1;">
                     <p class="mb-1">NPWP</p>
-                    <small class="text-danger d-block mb-1">
-                        *ini adalah nomor NPWP yang dipakai di Invoice
-                    </small>
+                    <small class="text-danger d-block mb-1">*ini adalah nomor NPWP yang dipakai di Invoice</small>
                     <input type="text" name="npwp" class="form-control" placeholder="kosongin kalau Invoice menyusul">
                 </div>
-                <!--
-                <div class="mb-1" style="flex: 1;">
-                    <p class="mb-1">Diskon</p>
-                    <small class="text-danger d-block mb-1">
-                        *isi jika ada potongan harga
-                    </small>
-                    <input type="number" name="diskon" class="form-control" placeholder="Tulis jika ada diskon">
-                </div>
-                -->
             </div>
 
             <div class="mb-3">
                 <p class="mb-1">Keterangan</p>
                 <input type="text" name="keterangan" class="form-control" required>
             </div>
-            <div class="d-flex gap-1">
-                <button type="button" class="btn btn-default w-100" onclick="closeModal()">Closes</button>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-default w-100" onclick="closeModal()">Tutup</button>
                 <button type="submit" class="btn btn-default-merah w-100">Submit</button>
             </div>
         </form>
@@ -268,143 +514,178 @@ $jtInfo = function ($sjDateStr) {
 
 <!-- LIST PAGE -->
 <div style="padding: 2em;">
-    <div class="mb-2">
-        <p class="text-muted-12" data-bs-toggle="tooltip" data-bs-title="JT = tanggal SJ + 14 hari.">
-            *JT mulai dihitung saat Surat Jalan (SJ) terbit, maksimal 14 hari.
-        </p>
-    </div>
-
-    <div class="mb-4 d-flex align-items-center justify-content-between gap-2">
-        <div>
-            <div class="d-flex gap-2">
-                <h1 class="teks-sedang" style="text-wrap: nowrap;">Pesanan Offline</h1>
-                <select class="form-select" onchange="selectJenis(event)">
-                    <option value="sale" class="fw-bold" <?= $jenis == 'sale' ? 'selected' : ''; ?>>Sale</option>
-                    <option value="display" class="fw-bold" <?= $jenis == 'display' ? 'selected' : ''; ?>>Display
-                    </option>
-                </select>
-            </div>
-            <p style="color: grey;"><?= count($pesanan) <= 0 ? 'Tidak Ada' : count($pesanan) ?> Pesanan</p>
+    <div class="page-card">
+        <div class="mb-2">
+            <p class="text-muted-12" data-bs-toggle="tooltip" data-bs-title="JT = tanggal SJ + 14 hari.">
+                *JT mulai dihitung saat Surat Jalan (SJ) terbit, maksimal 14 hari.
+            </p>
         </div>
-        <a class="btn-default-merah" href="/admin/order-offline/add">Tambah</a>
-    </div>
 
-    <?php if ($msg) { ?>
-    <div class="pemberitahuan"><?= $msg; ?></div>
-    <?php } ?>
+        <div class="page-head">
+            <div class="page-title">
+                <div>
+                    <h1>Pesanan Offline</h1>
+                    <p class="page-sub"><?= count($pesanan) <= 0 ? 'Tidak Ada' : count($pesanan) ?> Pesanan</p>
+                </div>
+                <div class="toolbar">
+                    <select class="form-select" onchange="selectJenis(event)">
+                        <option value="sale" class="fw-bold" <?= $jenis == 'sale' ? 'selected' : ''; ?>>Surat Jalan
+                            (SALE)</option>
+                        <option value="sp" class="fw-bold" <?= $jenis == 'sp'   ? 'selected' : ''; ?>>Surat Pengantar
+                            (SP)</option>
+                        <option value="nf" class="fw-bold" <?= $jenis == 'nf'   ? 'selected' : ''; ?>>Non Faktur (NF)
+                        </option>
+                    </select>
+                    <a class="btn-default-merah" href="/admin/order-offline/add">Tambah</a>
+                </div>
+            </div>
+        </div>
 
-    <div class="table-responsive">
-        <table class="table table-striped table-hover">
-            <thead>
-                <tr>
-                    <th scope="col">No</th>
-                    <th scope="col">ID ORDER</th>
-                    <th scope="col">TANGGAL</th>
-                    <th scope="col">NAMA</th>
-                    <th class="text-center" scope="col">STATUS</th>
-                    <th class="text-center" scope="col">JT</th>
-                    <th class="text-center" scope="col">ACTION</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($pesanan as $ind_p => $p) { ?>
-                <tr>
-                    <th scope="row"><?= $ind_p + 1; ?></th>
-                    <td><?= $p['id_pesanan']; ?></td>
-                    <td><?= date("d M Y", strtotime($p['tanggal'])); ?></td>
-                    <td><?= $p['nama']; ?></td>
+        <?php if ($msg) { ?>
+        <div class="pemberitahuan"
+            style="border:1px solid #fde68a;background:#fffbeb;border-radius:12px;padding:.6rem .8rem; color:#92400e">
+            <?= $msg; ?>
+        </div>
+        <?php } ?>
 
-                    <td align="center">
-                        <span
-                            class="badge <?= $p['status'] == 'pending' ? 'bg-secondary' : 'bg-success'; ?> rounded-pill">
-                            <?= ucfirst($p['status']); ?>
-                        </span>
-                    </td>
+        <div class="table-wrap mt-3">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">No</th>
+                            <th scope="col">ID ORDER</th>
+                            <th scope="col">TANGGAL</th>
+                            <th scope="col">NAMA</th>
+                            <th class="text-center" scope="col">STATUS</th>
+                            <th class="text-center" scope="col">JT</th>
+                            <th class="text-center" scope="col">ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($pesanan as $ind_p => $p) { ?>
+                        <tr>
+                            <th scope="row"><?= $ind_p + 1; ?></th>
+                            <td class="mono"><?= $p['id_pesanan']; ?></td>
+                            <td><?= date("d M Y", strtotime($p['tanggal'])); ?></td>
+                            <td><?= $p['nama']; ?></td>
 
-                    <?php
-                    // Ambil tanggal SJ dari data (ganti key jika berbeda)
-                    $tglSj = $p['tanggal_sj'] ?? ($p['sj_created_at'] ?? null);
-                    list($jtStr, $sisaHari, $jtStatus) = $jtInfo($tglSj);
+                            <td align="center">
+                                <?php
+                  $st = strtolower((string)($p['status'] ?? ''));
+                  $badgeClass = [
+                    'pending'  => 'bg-secondary',
+                    'dp'       => 'bg-warning text-dark',
+                    'dp paid'  => 'bg-info text-dark',
+                    'success'  => 'bg-success',
+                    'return'   => 'bg-danger',
+                  ][$st] ?? 'bg-secondary';
+                ?>
+                                <span
+                                    class="badge <?= $badgeClass; ?> rounded-pill"><?= strtoupper($st ?: '-'); ?></span>
+                            </td>
 
-                    // Tentukan teks badge
-                    $jtBadgeText = '—';
-                    if ($jtStr) {
-                        if ($sisaHari < 0) {
-                            $jtBadgeText = "Lewat " . abs($sisaHari) . " hari";
-                        } elseif ($sisaHari === 0) {
-                            $jtBadgeText = "Hari ini";
-                        } else {
-                            $jtBadgeText = $sisaHari . " hari lagi";
-                        }
-                    }
-                    ?>
-                    <td class="text-center">
-                        <?php if ($jtStr) { ?>
-                        <div class="d-flex flex-column align-items-center" data-bs-toggle="tooltip"
-                            data-bs-title="Jatuh tempo dimulai saat SJ terbit. Maks 14 hari dari tanggal SJ.">
-                            <span class="badge-jt <?= $jtStatus; ?>"><?= $jtBadgeText; ?></span>
-                            <small class="text-muted-12"><?= $jtStr; ?></small>
-                        </div>
-                        <?php } else { ?>
-                        <span class="text-muted-12">—</span>
+                            <?php
+                // JT dihitung dari tanggal SJ (tanggal transaksi untuk NF/SALE).
+                // - SALE & NF: jika status DP → SJ belum ada, JT = —; selain itu pakai $p['tanggal']
+                // - SP: tidak ada SJ → JT = —
+                $tglSj = null;
+                if ($jenis === 'sale' || $jenis === 'nf') {
+                    $tglSj = (strtoupper((string)($p['status'] ?? '')) === 'DP') ? null : ($p['tanggal'] ?? null);
+                } else {
+                    $tglSj = null; // SP
+                }
+                list($jtStr, $sisaHari, $jtStatus) = $jtInfo($tglSj);
+
+                $jtBadgeText = '—';
+                if ($jtStr) {
+                    if ($sisaHari < 0)      $jtBadgeText = "Lewat " . abs($sisaHari) . " hari";
+                    elseif ($sisaHari === 0) $jtBadgeText = "Hari ini";
+                    else                      $jtBadgeText = $sisaHari . " hari lagi";
+                }
+              ?>
+                            <td class="text-center">
+                                <?php if ($jtStr) { ?>
+                                <div class="d-flex flex-column align-items-center" data-bs-toggle="tooltip"
+                                    data-bs-title="Jatuh tempo dimulai saat SJ terbit. Maks 14 hari dari tanggal SJ.">
+                                    <span class="badge-jt <?= $jtStatus; ?>"><?= $jtBadgeText; ?></span>
+                                    <small class="text-muted-12"><?= $jtStr; ?></small>
+                                </div>
+                                <?php } else { ?>
+                                <span class="text-muted-12">—</span>
+                                <?php } ?>
+                            </td>
+
+                            <td>
+                                <div class="d-flex gap-1 justify-content-center">
+                                    <?php
+                    $downPayment = (int)($p['down_payment'] ?? 0);
+                    $hasDP       = $downPayment !== 0;
+                    $dpIsNegative= $downPayment < 0; // setelah “Buat SJ” dari DP
+                    $isSaleLike  = ($jenis === 'sale' || $jenis === 'nf');
+                  ?>
+
+                                    <?php if ($isSaleLike): ?>
+                                    <?php if ($hasDP): ?>
+                                    <?php if ($dpIsNegative): /* SJ SUDAH TERBIT SETELAH DP */ ?>
+                                    <a class="btn" href="/admin/surat-offline/<?= $p['id_pesanan']; ?>"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Surat Jalan"><i
+                                            class="material-icons">local_shipping</i></a>
+                                    <a class="btn <?= ($p['npwp'] ?? null) ? '' : 'text-danger'; ?>"
+                                        <?= ($p['npwp'] ?? null) ? 'href="/admin/invoice-offline/' . $p['id_pesanan'] . '"' : 'onclick="buatInvoice(' . $ind_p . ')"'; ?>
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        data-bs-title="<?= ($p['npwp'] ?? null) ? 'Invoice' : 'Buat invoice'; ?>"><i
+                                            class="material-icons">description</i></a>
+                                    <?php if (strtolower((string)($p['status'] ?? '')) === 'pending'): ?>
+                                    <a class="btn" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        onclick="alertSuccess('<?= $p['id_pesanan']; ?>')"
+                                        data-bs-title="Tandai lunas"><i class="material-icons">check</i></a>
+                                    <?php endif; ?>
+                                    <?php else: /* BARU DP, SJ BELUM TERBIT */ ?>
+                                    <a class="btn" href="/admin/invoice-offline-dp/<?= $p['id_pesanan']; ?>"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Invoice DP"><i
+                                            class="material-icons">description</i></a>
+                                    <?php if (strtoupper((string)($p['status'] ?? '')) === 'DP'): ?>
+                                    <a class="btn text-danger" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        onclick="buatInvoiceDP(<?= $ind_p; ?>)" data-bs-title="Buat Surat Jalan"><i
+                                            class="material-icons">note_add</i></a>
+                                    <?php endif; ?>
+                                    <?php endif; ?>
+                                    <?php else: /* TANPA DP (cash) */ ?>
+                                    <a class="btn" href="/admin/surat-offline/<?= $p['id_pesanan']; ?>"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Surat Jalan"><i
+                                            class="material-icons">local_shipping</i></a>
+                                    <a class="btn <?= ($p['npwp'] ?? null) ? '' : 'text-danger'; ?>"
+                                        <?= ($p['npwp'] ?? null) ? 'href="/admin/invoice-offline/' . $p['id_pesanan'] . '"' : 'onclick="buatInvoice(' . $ind_p . ')"'; ?>
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        data-bs-title="<?= ($p['npwp'] ?? null) ? 'Invoice' : 'Buat invoice'; ?>"><i
+                                            class="material-icons">description</i></a>
+                                    <?php if (strtolower((string)($p['status'] ?? '')) === 'pending'): ?>
+                                    <a class="btn" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        onclick="alertSuccess('<?= $p['id_pesanan']; ?>')"
+                                        data-bs-title="Tandai lunas"><i class="material-icons">check</i></a>
+                                    <?php endif; ?>
+                                    <?php endif; ?>
+
+                                    <?php elseif ($jenis === 'sp'): ?>
+                                    <a class="btn" href="/admin/surat-offline/<?= $p['id_pesanan']; ?>"
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        data-bs-title="Surat Pengantar"><i class="material-icons">description</i></a>
+                                    <?php if (($p['status'] ?? '') != 'return'): ?>
+                                    <a class="btn" onclick="pilihPesanan(<?= $ind_p; ?>)" data-bs-toggle="tooltip"
+                                        data-bs-placement="top" data-bs-title="Buat Surat Jalan"><i
+                                            class="material-icons">insert_drive_file</i></a>
+                                    <?php endif; ?>
+
+                                    <?php endif; ?>
+                                </div>
+                            </td>
+                        </tr>
                         <?php } ?>
-                    </td>
-
-                    <td>
-                        <div class="d-flex gap-1 justify-content-center">
-                            <?php if ($jenis == 'sale') { ?>
-                            <?php if($p['down_payment']) { ?>
-                            <?php if((int)$p['down_payment'] < 0) { ?>
-                            <a class="btn" href="/admin/surat-offline/<?= $p['id_pesanan']; ?>" data-bs-toggle="tooltip"
-                                data-bs-placement="top" data-bs-title="Surat Jalan"><i
-                                    class="material-icons">local_shipping</i></a>
-                            <a class="btn <?= $p['npwp'] ? '' : 'text-danger'; ?>"
-                                <?= $p['npwp'] ? 'href="/admin/invoice-offline/' . $p['id_pesanan'] . '"' : 'onclick="buatInvoice(' . $ind_p . ')"'; ?>
-                                data-bs-toggle="tooltip" data-bs-placement="top"
-                                data-bs-title="<?= $p['npwp'] ? 'Invoice' : 'Buat invoice'; ?>"><i
-                                    class="material-icons">description</i></a>
-
-                            <?php if($p['status'] == 'pending') { ?>
-                            <a class="btn" data-bs-toggle="tooltip" data-bs-placement="top"
-                                onclick="alertSuccess('<?= $p['id_pesanan']; ?>')" data-bs-title="Surat Jalan"><i
-                                    class="material-icons">check</i></a>
-                            <?php } ?>
-                            <?php } else { ?>
-                            <a class="btn" href="/admin/invoice-offline-dp/<?= $p['id_pesanan']; ?>"
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Invoice DP"><i
-                                    class="material-icons">description</i></a>
-                            <?php if($p['status'] == 'DP') { ?>
-                            <a class="btn text-danger" data-bs-toggle="tooltip" data-bs-placement="top"
-                                onclick="buatInvoiceDP(<?= $ind_p; ?>)" data-bs-title="Buat Surat Jalan"><i
-                                    class="material-icons">note_add</i></a>
-                            <?php } ?>
-                            <?php } ?>
-                            <?php } else { ?>
-                            <a class="btn" href="/admin/surat-offline/<?= $p['id_pesanan']; ?>" data-bs-toggle="tooltip"
-                                data-bs-placement="top" data-bs-title="Surat Jalan"><i
-                                    class="material-icons">local_shipping</i></a>
-                            <a class="btn <?= $p['npwp'] ? '' : 'text-danger'; ?>"
-                                <?= $p['npwp'] ? 'href="/admin/invoice-offline/' . $p['id_pesanan'] . '"' : 'onclick="buatInvoice(' . $ind_p . ')"'; ?>
-                                data-bs-toggle="tooltip" data-bs-placement="top"
-                                data-bs-title="<?= $p['npwp'] ? 'Invoice' : 'Buat invoice'; ?>"><i
-                                    class="material-icons">description</i></a>
-                            <?php } ?>
-                            <?php } else { ?>
-                            <a class="btn" href="/admin/surat-offline/<?= $p['id_pesanan']; ?>" data-bs-toggle="tooltip"
-                                data-bs-placement="top" data-bs-title="Surat Pengantar"><i
-                                    class="material-icons">description</i></a>
-                            <?php if ($p['status'] != 'return') { ?>
-                            <a class="btn" onclick="pilihPesanan(<?= $ind_p; ?>)" data-bs-toggle="tooltip"
-                                data-bs-placement="top" data-bs-title="Buat Surat Jalan"><i
-                                    class="material-icons">insert_drive_file</i></a>
-                            <?php } ?>
-                            <?php } ?>
-                        </div>
-                    </td>
-                </tr>
-                <?php } ?>
-            </tbody>
-        </table>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -707,26 +988,30 @@ async function buatInvoiceDP(index) {
         <td colspan="2" class="fw-bold">TOTAL HARGA BARANG</td>
         <td class="text-end fw-bold" colspan=" 2">Rp ${totalHargaBarang.toLocaleString('id-ID')}</td>
     </tr>`
-    if (totalHargaBarang - parseInt(pesananInvoice.total_akhir) > 0) {
+    if (totalHargaBarang - Number(pesananInvoice.total_akhir || 0) > 0) {
         tableDpElm.innerHTML += `
         <tr>
             <td colspan="2" class="fw-bold">POTONGAN</td>
-            <td class="text-end fw-bold" colspan=" 2">Rp ${(totalHargaBarang - parseInt(pesananInvoice.total_akhir)).toLocaleString('id-ID')}</td>
+            <td class="text-end fw-bold" colspan=" 2">Rp ${(totalHargaBarang - Number(pesananInvoice.total_akhir || 0)).toLocaleString('id-ID')}</td>
         </tr>
         <tr>
             <td colspan="2" class="fw-bold">TOTAL TAGIHAN</td>
-            <td class="text-end fw-bold" colspan=" 2">Rp ${parseInt(pesananInvoice.total_akhir).toLocaleString('id-ID')}</td>
+            <td class="text-end fw-bold" colspan=" 2">Rp ${Number(pesananInvoice.total_akhir || 0).toLocaleString('id-ID')}</td>
         </tr>
         `
     }
+
+    const totalAkhir = Number(pesananInvoice.total_akhir || 0);
+    const dpAbs = Math.abs(Number(pesananInvoice.down_payment || 0));
+
     tableDpElm.innerHTML += `
     <tr>
         <td colspan="2" class="fw-bold">DP</td>
-        <td class="text-end fw-bold" colspan=" 2">Rp ${parseInt(pesananInvoice.down_payment.replace('-', '')).toLocaleString('id-ID')}</td>
+        <td class="text-end fw-bold" colspan=" 2">Rp ${dpAbs.toLocaleString('id-ID')}</td>
     </tr>
     <tr>
         <td colspan="2" class="fw-bold">SISA TAGIHAN</td>
-        <td class="text-end fw-bold" colspan=" 2">Rp ${(parseInt(pesananInvoice.total_akhir) - parseInt(pesananInvoice.down_payment.replace('-', ''))).toLocaleString('id-ID')}</td>
+        <td class="text-end fw-bold" colspan=" 2">Rp ${(totalAkhir - dpAbs).toLocaleString('id-ID')}</td>
     </tr>
     `
     inputBuatDPElm.classList.remove('d-none')
@@ -882,7 +1167,7 @@ async function buatInvoiceDP(index) {
 }
 
 .btn-primary {
-    background: linear-gradient(180deg, var(--merah, #b31217), #a50e12);
+    background: linear-gradient(180deg, var(--brand, #b31217), #a50e12);
     color: #fff;
     border: 0;
     padding: .8em 1.2em;
@@ -911,10 +1196,6 @@ async function buatInvoiceDP(index) {
     color: #b42318;
     background: #feeaea;
     border-color: #ffd3cf
-}
-
-.mono {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Roboto Mono", "Liberation Mono", "Courier New", monospace
 }
 </style>
 
@@ -1064,7 +1345,7 @@ function injectPreviewButton(form, onClick) {
         const itemsRows = rows.filter(cols => cols.length === 3 && !/TOTAL|POTONGAN|DP|SISA/i.test(cols[0]))
             .map(cols =>
                 `<tr><td>${cols[0]}</td><td class="cell-center">${cols[1]}</td><td class="cell-right mono">${cols[2]}</td></tr>`
-                ).join('');
+            ).join('');
         const totalsHTML = rows.filter(cols => cols.length >= 2 && /TOTAL|POTONGAN|DP|SISA/i.test(cols[0]))
             .map(cols => {
                 const label = cols[0].replace(/\s+/g, ' ').trim().toUpperCase();
@@ -1088,7 +1369,7 @@ function injectPreviewButton(form, onClick) {
             </div>
           </div>`;
         const rightHTML = totalsHTML ||
-        '<div class="text-secondary">Ringkasan total belum terbentuk.</div>';
+            '<div class="text-secondary">Ringkasan total belum terbentuk.</div>';
         openPreview({
             type: 'dp',
             title: 'Preview Invoice DP',

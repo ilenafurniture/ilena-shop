@@ -1,3 +1,4 @@
+<!-- app/Views/admin/add.php -->
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
 <style>
@@ -53,7 +54,7 @@
     font-weight: 700;
 }
 
-/* ====== Table-ish inputs (simplified) ====== */
+/* ====== Table-ish inputs ====== */
 .table-input {
     width: 100%;
     border-collapse: collapse;
@@ -248,7 +249,7 @@
     background: #f9fafb;
 }
 
-/* ====== Chips (room checkboxes) ====== */
+/* ====== Chips ====== */
 .chk-row {
     display: flex;
     gap: 14px;
@@ -358,21 +359,28 @@
 
 <script type="text/babel">
     const { useState, useEffect, useRef } = React;
-const koleksi = JSON.parse('<?= $koleksiJson; ?>');
-const jenis = JSON.parse('<?= $jenisJson; ?>');
-const idProduct = '<?= isset($idProduct) ? $idProduct : ''; ?>';
 
-// === PATCH: helper ubah "YYYY-MM-DD HH:MM:SS" -> "YYYY-MM-DDTHH:MM" ===
+// ==== Data dari PHP (pastikan admin/template sudah load React + Babel UMD) ====
+const koleksi = <?= $koleksiJson ?>;
+const jenis   = <?= $jenisJson ?>;
+const idProduct = '<?= isset($idProduct) ? $idProduct : '' ?>';
+const produk   = <?= isset($produkJson) ? $produkJson : 'null' ?>;
+
+// Prefix URL gambar (hanya dipakai saat edit)
+const URL_1000_PREFIX = "<?= base_url('img/barang/1000/' . ($produk ? $produk['id'] : '') . '-') ?>";
+const URL_3000_PREFIX = "<?= base_url('img/barang/3000/' . ($produk ? $produk['id'] : '') . '-') ?>";
+const URL_HOVER       = "<?= base_url('img/barang/hover/' . ($produk ? $produk['id'] : '') . '.webp') ?>";
+
+// === Helper: format waktu untuk input[type=datetime-local] ===
 function toInputDateTime(val) {
   if (!val) return '';
-  const v = (val + '').trim().replace(' ', 'T'); // ganti spasi jadi 'T' kalau perlu
-  // pangkas detik kalau ada
-  const [d, t] = v.split('T');
-  if (!t) return '';
+  const v = (val + '').trim().replace(' ', 'T');
+  const [d, t=''] = v.split('T');
   const [hh='00', mm='00'] = t.split(':');
   return `${d}T${hh.padStart(2,'0')}:${mm.padStart(2,'0')}`;
 }
 
+// === Helper: fetch URL -> File (supaya gambar lama ikut terkirim saat edit) ===
 async function urlToFile(url, filename, mimeType) {
   const res = await fetch(url);
   const buffer = await res.arrayBuffer();
@@ -388,19 +396,18 @@ const App = () => {
     deskripsi: {
       deskripsi: '',
       dimensi: {
-        asli: { panjang: "", lebar: "", tinggi: "", berat: "" },
-        paket: { panjang: "", lebar: "", tinggi: "", berat: "" }
+        asli:  { panjang:"", lebar:"", tinggi:"", berat:"" },
+        paket: { panjang:"", lebar:"", tinggi:"", berat:"" }
       },
       perawatan: ''
     },
     kategori: '',
     subkategori: '',
     diskon: '',
-    // >>> Tambahan jadwal diskon
+    // Jadwal diskon
     pakai_jadwal_diskon: false,
     diskon_mulai: '',
     diskon_selesai: '',
-    // <<<
     varian: [],
     shopee: '',
     tokped: '',
@@ -412,12 +419,12 @@ const App = () => {
   const [eror, setEror] = useState('');
   const [hoverSrc, setHoverSrc] = useState(null);
   const [hoverFile, setHoverFile] = useState(null);
-  const [gambarSrc, setGambarSrc] = useState([]);
-  const [gambarFile, setGambarFile] = useState([]);
+  const [gambarSrc, setGambarSrc] = useState([]);   // preview base64 per varian
+  const [gambarFile, setGambarFile] = useState([]); // File[] per varian
   const [loading, setLoading] = useState(false);
   const idStr = useRef("1-00-000-XX");
 
-  // loading overlay
+  // Loading overlay
   useEffect(() => {
     const id = "global-loading-overlay";
     let overlay = document.getElementById(id);
@@ -436,15 +443,7 @@ const App = () => {
     document.body.style.cursor = loading ? 'wait' : '';
   }, [loading]);
 
-  // edit: set hover preview
-  useEffect(() => {
-    if (idProduct) {
-      const currentProduct = JSON.parse(<?= json_encode($produkJson ?? '{}') ?>);
-      setHoverSrc('<?= base_url('img/barang/hover/' . ($produk ? $produk['id'] : '') . '.webp') ?>');
-    }
-  }, []);
-
-  // generate ID (ADD only)
+  // ADD: generate ID berdasarkan kategori/jenis
   useEffect(() => {
     if (idProduct) return;
     let arr = idStr.current.split("-");
@@ -461,84 +460,88 @@ const App = () => {
     setFormData(prev => ({ ...prev, id: arr.join("") }));
   }, [formData.subkategori]);
 
-  // preload edit + update urutan_gambar
+  // EDIT: preload data & gambar
   useEffect(() => {
-    if (firstRender.current) {
-      if (idProduct) {
-        const currentProduct = JSON.parse(<?= json_encode($produkJson ?? '{}') ?>);
-        setFormData(prev => ({
-          ...prev,
-          id: idProduct,
-          nama: currentProduct.nama,
-          harga: currentProduct.harga,
-          deskripsi: currentProduct.deskripsi,
-          kategori: currentProduct.kategori,
-          subkategori: currentProduct.subkategori,
-          diskon: currentProduct.diskon,
-          // >>> PATCH: prefill jadwal (gunakan flag DB kalau ada, dan konversi format)
-          pakai_jadwal_diskon:
-            (currentProduct.pakai_jadwal_diskon === 1 || currentProduct.pakai_jadwal_diskon === '1') ||
-            (!!currentProduct.diskon_mulai && !!currentProduct.diskon_selesai),
-          diskon_mulai: toInputDateTime(currentProduct.diskon_mulai),
-          diskon_selesai: toInputDateTime(currentProduct.diskon_selesai),
-          // <<<
-          varian: currentProduct.varian,
-          shopee: currentProduct.shopee,
-          tokped: currentProduct.tokped,
-          tiktok: currentProduct.tiktok,
-          ruang_tamu: currentProduct.ruang_tamu,
-          ruang_keluarga: currentProduct.ruang_keluarga,
-          ruang_tidur: currentProduct.ruang_tidur
-        }));
-        setGambarSrc(
-          (currentProduct.varian || []).map(v =>
-            (v.urutan_gambar || '')
-              .split(',')
-              .filter(Boolean)
-              .map(item => `<?= base_url('img/barang/1000/' . ($produk ? $produk['id'] : '') . '-') ?>${item}.webp`)
-          )
-        );
-        (async () => {
-          const gBig = [];
-          for (let i = 0; i < (currentProduct.varian || []).length; i++) {
-            const v = currentProduct.varian[i];
-            const arr = (v.urutan_gambar || '').split(',').filter(Boolean);
-            const gD = [];
-            for (let j = 0; j < arr.length; j++) {
-              const g = arr[j];
-              const imageUrl = `<?= base_url('img/barang/3000/' . ($produk ? $produk['id'] : '') . '-') ?>${g}.webp`;
-              const file = await urlToFile(imageUrl, `gambar-${i}-${j}.webp`, 'image/webp');
-              gD.push(file);
-            }
-            gBig.push(gD);
+    if (!firstRender.current) return;
+    firstRender.current = false;
+
+    if (idProduct && produk) {
+      // Prefill form
+      setFormData(prev => ({
+        ...prev,
+        id: idProduct,
+        nama: produk.nama ?? '',
+        harga: produk.harga ?? '',
+        deskripsi: produk.deskripsi ?? prev.deskripsi,
+        kategori: produk.kategori ?? '',
+        subkategori: produk.subkategori ?? '',
+        diskon: produk.diskon ?? '',
+        // Jadwal
+        pakai_jadwal_diskon:
+          (produk.pakai_jadwal_diskon === 1 || produk.pakai_jadwal_diskon === '1') ||
+          (!!produk.diskon_mulai && !!produk.diskon_selesai),
+        diskon_mulai: toInputDateTime(produk.diskon_mulai),
+        diskon_selesai: toInputDateTime(produk.diskon_selesai),
+        varian: produk.varian ?? [],
+        shopee: produk.shopee ?? '',
+        tokped: produk.tokped ?? '',
+        tiktok: produk.tiktok ?? '',
+        ruang_tamu: (produk.ruang_tamu === '1' || produk.ruang_tamu === 1 || produk.ruang_tamu === true),
+        ruang_keluarga: (produk.ruang_keluarga === '1' || produk.ruang_keluarga === 1 || produk.ruang_keluarga === true),
+        ruang_tidur: (produk.ruang_tidur === '1' || produk.ruang_tidur === 1 || produk.ruang_tidur === true),
+      }));
+
+      // Hover preview
+      setHoverSrc(URL_HOVER);
+
+      // Preview 1000px untuk tiap varian
+      const src = (produk.varian || []).map(v =>
+        (v.urutan_gambar || '')
+          .split(',')
+          .filter(Boolean)
+          .map(n => `${URL_1000_PREFIX}${n}.webp`)
+      );
+      setGambarSrc(src);
+
+      // Konversi 3000px -> File supaya ikut terkirim saat submit
+      (async () => {
+        const filesPerVarian = [];
+        for (let i = 0; i < (produk.varian || []).length; i++) {
+          const v = produk.varian[i];
+          const nums = (v.urutan_gambar || '').split(',').filter(Boolean);
+          const fileList = [];
+          for (let j = 0; j < nums.length; j++) {
+            const n = nums[j];
+            const imageUrl = `${URL_3000_PREFIX}${n}.webp`;
+            const f = await urlToFile(imageUrl, `gambar-${i}-${j}.webp`, 'image/webp');
+            fileList.push(f);
           }
-          setGambarFile(gBig);
-        })();
-      }
-      firstRender.current = false;
-      return;
+          filesPerVarian.push(fileList);
+        }
+        setGambarFile(filesPerVarian);
+      })();
     }
+  }, []);
+
+  // Set urutan_gambar otomatis saat gambarSrc berubah
+  useEffect(() => {
     setFormData(prev => ({
       ...prev,
       varian: (prev.varian || []).map((v, ind_v) => {
         const arr = gambarSrc[ind_v] || [];
-        return {
-          ...v,
-          urutan_gambar:
-            ind_v === 0
-              ? arr.map((_, idx) => idx + 1).join(',')
-              : arr.map((_, idx) => {
-                  const prevVar = prev.varian[ind_v - 1]?.urutan_gambar || '';
-                  const last = parseInt(prevVar.split(',').pop() || "0");
-                  return last + idx + 1;
-                }).join(',')
-        };
+        if (ind_v === 0) {
+          return { ...v, urutan_gambar: arr.map((_, idx) => idx + 1).join(',') };
+        }
+        // lanjutkan penomoran setelah varian sebelumnya
+        const prevStr = prev.varian[ind_v - 1]?.urutan_gambar || '';
+        const last = parseInt(prevStr.split(',').pop() || '0');
+        return { ...v, urutan_gambar: arr.map((_, idx) => last + idx + 1).join(',') };
       })
     }));
   }, [gambarSrc]);
 
   const handleSubmit = () => {
-    // Validasi dasar
+    // Validasi
     if (!formData.nama || !formData.harga) { setEror("Nama dan harga produk wajib diisi."); return; }
     if ((formData.varian || []).length === 0) { setEror("Minimal 1 varian harus ditambahkan."); return; }
     if (!idProduct) {
@@ -546,14 +549,9 @@ const App = () => {
         if (!gambarFile[i] || gambarFile[i].length === 0) { setEror(`Varian ke-${i + 1} belum memiliki gambar.`); return; }
       }
     }
-    // Validasi jadwal diskon (opsional)
     if (formData.pakai_jadwal_diskon) {
-      if (!formData.diskon_mulai || !formData.diskon_selesai) {
-        setEror("Mohon isi tanggal mulai & selesai jadwal diskon."); return;
-      }
-      if (new Date(formData.diskon_mulai) >= new Date(formData.diskon_selesai)) {
-        setEror("Waktu mulai harus lebih awal dari waktu selesai."); return;
-      }
+      if (!formData.diskon_mulai || !formData.diskon_selesai) { setEror("Mohon isi tanggal mulai & selesai jadwal diskon."); return; }
+      if (new Date(formData.diskon_mulai) >= new Date(formData.diskon_selesai)) { setEror("Waktu mulai harus lebih awal dari waktu selesai."); return; }
     }
 
     const form = new FormData();
@@ -571,19 +569,18 @@ const App = () => {
     form.append("ruang_tidur", formData.ruang_tidur ? "1" : "0");
     form.append("deskripsi", JSON.stringify(formData.deskripsi || {}));
     form.append("varian", JSON.stringify(formData.varian || []));
-    // Hover image (opsional)
+
     if (hoverFile) form.append("gambar_hover", hoverFile);
 
-    // Gambar varian (flatten)
+    // Flatten semua gambar varian
     const flat = (gambarFile || []).reduce((p, c) => p.concat(c), []);
     if (!idProduct && flat.length === 0) { setEror("Minimal upload satu gambar untuk varian pertama."); return; }
     flat.forEach((file, idx) => { if (file instanceof File) form.append(`gambar_${idx}`, file); });
 
-    // >>> Kirim jadwal diskon (opsional)
+    // Jadwal Diskon
     form.append("pakai_jadwal_diskon", formData.pakai_jadwal_diskon ? "1" : "0");
     form.append("diskon_mulai", formData.diskon_mulai || "");
     form.append("diskon_selesai", formData.diskon_selesai || "");
-    // <<<
 
     // CSRF
     const csrfName = '<?= csrf_token() ?>';
@@ -621,12 +618,12 @@ const App = () => {
     })();
   };
 
-  // helper status jadwal
+  // Badge status jadwal diskon
   const renderBadgeJadwal = () => {
     if (!formData.pakai_jadwal_diskon || !formData.diskon_mulai || !formData.diskon_selesai) return null;
     const now = new Date();
     const start = new Date(formData.diskon_mulai);
-       const end = new Date(formData.diskon_selesai);
+    const end = new Date(formData.diskon_selesai);
     const aktif = now >= start && now <= end;
     return (
       <span className={`badge ${aktif ? 'badge-aktif' : 'badge-non'}`}>
@@ -648,14 +645,18 @@ const App = () => {
                   <td>Nama Produk</td>
                   <td>
                     <input type="text" className="form-control"
-                      value={formData.nama} onChange={e => setFormData({ ...formData, nama: e.target.value })} required />
+                      value={formData.nama}
+                      onChange={e => setFormData({ ...formData, nama: e.target.value })}
+                      required />
                   </td>
                 </tr>
                 <tr>
                   <td>Harga Produk</td>
                   <td>
                     <input type="number" className="form-control"
-                      value={formData.harga} onChange={e => setFormData({ ...formData, harga: e.target.value })} required />
+                      value={formData.harga}
+                      onChange={e => setFormData({ ...formData, harga: e.target.value })}
+                      required />
                   </td>
                 </tr>
                 <tr>
@@ -663,13 +664,15 @@ const App = () => {
                   <td>
                     <div className="input-group">
                       <input type="number" className="form-control" step="any"
-                        value={formData.diskon} onChange={e => setFormData({ ...formData, diskon: e.target.value })} required />
+                        value={formData.diskon}
+                        onChange={e => setFormData({ ...formData, diskon: e.target.value })}
+                        required />
                       <span className="input-group-text">%</span>
                     </div>
                   </td>
                 </tr>
 
-                {/* Jadwal Diskon (opsional) */}
+                {/* Jadwal Diskon */}
                 <tr>
                   <td>Jadwalkan Diskon</td>
                   <td>
@@ -733,7 +736,9 @@ const App = () => {
                       <td>ID Produk</td>
                       <td>
                         <input type="text" className="form-control"
-                          value={formData.id} onChange={e => setFormData({ ...formData, id: e.target.value })} required />
+                          value={formData.id}
+                          onChange={e => setFormData({ ...formData, id: e.target.value })}
+                          required />
                       </td>
                     </tr>
                   </>
@@ -927,9 +932,9 @@ const App = () => {
                             if (file) {
                               const reader = new FileReader();
                               reader.onload = () => {
-                                const newSrc = [...gambarSrc];
+                                const newSrc  = [...gambarSrc];
                                 const newFile = [...gambarFile];
-                                if (!newSrc[ind_v]) newSrc[ind_v] = [];
+                                if (!newSrc[ind_v])  newSrc[ind_v]  = [];
                                 if (!newFile[ind_v]) newFile[ind_v] = [];
                                 newSrc[ind_v].push(reader.result);
                                 newFile[ind_v].push(file);
