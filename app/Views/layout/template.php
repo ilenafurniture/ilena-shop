@@ -77,7 +77,7 @@
     gtag('config', 'G-Y4Z51NJ3QM');
     </script>
     <!-- Google Tag Manager -->
-    <script>
+    <!-- <script>
     (function(w, d, s, l, i) {
         w[l] = w[l] || [];
         w[l].push({
@@ -92,7 +92,7 @@
             'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
         f.parentNode.insertBefore(j, f);
     })(window, document, 'script', 'dataLayer', 'GTM-P2Q6W4SH');
-    </script>
+    </script> -->
     <!-- End Google Tag Manager -->
 
     <!-- Google tag (gtag.js) -->

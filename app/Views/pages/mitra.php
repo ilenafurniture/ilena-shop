@@ -841,12 +841,33 @@
                         alt=" Meubel Murah">
                     </div>
                 </div>
+                <div class="item-toko">
+                    <a href="https://maps.app.goo.gl/DH44urdPfvjmFjmz8" class="info" style="text-decoration:none;">
+                        <h3 class="nama"></h3>
+                        <p class="alamat m-0">Jl. Proklamasi, Jayaraga, Kec. Tarogong Kidul, Kabupaten Garut, Jawa Barat
+                            44151</p>
+                    </a>
+                    <div class="thumb"><img loading="lazy" decoding="async"
+                            src="https://i.ibb.co.com/Mx8y2Rn9/DSCF1260.webp""
+                        alt=" Agrapana Furniture">
+                    </div>
+                </div>
+                <div class="item-toko">
+                    <a href="https://maps.app.goo.gl/nNFvjabtjVnvwJek9" class="info" style="text-decoration:none;">
+                        <h3 class="nama"></h3>
+                        <p class="alamat m-0">Jl. Kabupaten, Sumur Putih, Bugih, Kec. Pamekasan, Kabupaten Pamekasan,
+                            Jawa Timur 69316</p>
+                    </a>
+                    <div class="thumb"><img loading="lazy" decoding="async" src="https://i.ibb.co.com/BHGNqyR6/JK.webp""
+                        alt=" Raja Mebel Pamekasan">
+                    </div>
+                </div>
 
             </div>
         </div>
 
         <!-- ====== VIEW: GRID (baru) ====== -->
-        <div class="view-pane" id="pane-grid">
+        <div class=" view-pane" id="pane-grid">
             <div class="grid-wrap" id="gridWrap"></div>
         </div>
 
@@ -1098,6 +1119,12 @@ locations.push({
 }, {
     name: "Meubel Murah (Jakarta Timur)",
     coords: [-6.247639456432581, 106.91847865337301]
+}, {
+    name: "Raja Mebel (Pamekasan)",
+    coords: [-7.157671151259155, 113.47468982883595]
+}, {
+    name: "Toko Agrapana Furniture (Garut)",
+    coords: [-7.196089263091836, 107.89847351344686]
 });
 
 locations.forEach(function(store) {
@@ -1120,7 +1147,8 @@ locations.forEach(function(store) {
     marker.on('mouseout', () => marker.closePopup());
 
     function go() {
-        window.open("https://www.google.com/maps?q=" + store.coords[0] + "," + store.coords[1], "_blank");
+        window.open("https://www.google.com/maps?q=" + store.coords[0] + "," + store.coords[1],
+            "_blank");
     }
     marker.on('click', go);
     circle.on('click', go);
