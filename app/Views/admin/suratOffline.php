@@ -283,10 +283,10 @@
     </div>
 
     <script>
-    window.print();
-    window.onafterprint = function() {
-        window.location.href = "<?= base_url('admin/order/offline/sale'); ?>";
-    };
+    // window.print();
+    // window.onafterprint = function() {
+    //     window.location.href = "<?= base_url('admin/order/offline/sale'); ?>";
+    // };
     </script>
 </body>
 
