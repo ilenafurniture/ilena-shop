@@ -455,7 +455,6 @@
     </div>
 
     <script>
-    /* Parser alamat opsional (tidak mengubah layout) */
     const alamatLengkap =
         "<?= $pemesanan['alamat_tagihan'] ? $pemesanan['alamat_tagihan'] : $pemesanan['alamat_pengiriman']; ?>";
     const alamatParts = alamatLengkap.split(', ');
@@ -474,12 +473,12 @@
     document.getElementById('kodepos')?.innerText = kodePos;
     </script>
 
-    <script>
+    <!-- <script>
     window.print();
     window.onafterprint = function() {
         window.location.href = "<?= base_url('admin/order/offline/sale'); ?>";
     };
-    </script>
+    </script> -->
 </body>
 
 </html>
