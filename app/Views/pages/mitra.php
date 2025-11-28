@@ -862,6 +862,17 @@
                         alt=" Raja Mebel Pamekasan">
                     </div>
                 </div>
+                <div class="item-toko">
+                    <a href="https://maps.app.goo.gl/ReYpF7b6S5GSvczZ6" class="info" style="text-decoration:none;">
+                        <h3 class="nama">Terus Jaya Abadi Furniture</h3>
+                        <p class="alamat m-0">Jl. Ampera 1 No.11, Ciamis, Kec. Ciamis, Kabupaten Ciamis, Jawa Barat
+                            46211</p>
+                    </a>
+                    <div class="thumb"><img loading="lazy" decoding="async"
+                            src="https://i.ibb.co/0yc93DRK/Screenshot-2025-09-22-092249.png""
+                        alt=" Terus Jaya Abadi Furniture">
+                    </div>
+                </div>
 
             </div>
         </div>
@@ -1125,6 +1136,9 @@ locations.push({
 }, {
     name: "Toko Agrapana Furniture (Garut)",
     coords: [-7.196089263091836, 107.89847351344686]
+}, {
+    name: "Terus Jaya Abadi Furniture (Ciamis)",
+    coords: [-7.325319385884007, 108.35351280846814]
 });
 
 locations.forEach(function(store) {
