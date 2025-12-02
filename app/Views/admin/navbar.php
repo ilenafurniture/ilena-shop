@@ -1,3 +1,15 @@
+<?php
+    // Biar gampang dipakai di banyak tempat
+    $lowerTitle = strtolower($title ?? '');
+
+    // Section "Pesanan" dianggap aktif kalau:
+    // - title persis "Pesanan" (online/offline lama)
+    // - atau ada teks "project interior" di title
+    $isPesananSection =
+        $lowerTitle === 'pesanan' ||
+        str_contains($lowerTitle, 'project interior');
+?>
+
 <div class="admin-nav show-block-ke-hide">
     <div style="padding: 2em;">
         <h1 class="teks-sedang mb-4">Admin Ilena</h1>
@@ -21,7 +33,7 @@
             <i class="material-icons">people</i>
             <p class="m-0">Produk</p>
         </a>
-        <a class="item-nav <?= str_contains(strtolower($title), 'voucher') ? 'active' : ''; ?>" href="/admin/voucher">
+        <a class="item-nav <?= str_contains($lowerTitle, 'voucher') ? 'active' : ''; ?>" href="/admin/voucher">
             <i class="material-icons">confirmation_number</i>
             <p class="m-0">Voucher</p>
         </a>
@@ -30,14 +42,19 @@
         <div class="nav-separator">
             <span class="line"></span><span class="label">Pesanan</span><span class="line"></span>
         </div>
-        <div class="item-nav <?= $title == 'Pesanan' ? 'active' : ''; ?>">
+
+        <!-- Parent toggle -->
+        <div class="item-nav <?= $isPesananSection ? 'active' : ''; ?>">
             <label for="navbar-admin-pesanan">
                 <i class="material-icons">shopping_cart</i>
                 <p class="m-0" style="flex: 1">Pesanan</p>
                 <i class="material-icons arrow">arrow_right</i>
             </label>
         </div>
-        <input type="checkbox" id="navbar-admin-pesanan">
+
+        <!-- Checkbox untuk expand/collapse; "checked" kalau sedang di halaman pesanan / project interior -->
+        <input type="checkbox" id="navbar-admin-pesanan" <?= $isPesananSection ? 'checked' : ''; ?>>
+
         <div class="item-nav-expand">
             <a class="item-nav <?= $title == 'Pesanan' ? 'active' : ''; ?>" href="/admin/order/online">
                 <i class="material-icons">language</i>
@@ -47,33 +64,18 @@
                 <i class="material-icons">store</i>
                 <p class="m-0">Offline</p>
             </a>
+            <a class="item-nav <?= str_contains($lowerTitle, 'project interior') ? 'active' : ''; ?>"
+                href="/admin/project-interior">
+                <i class="material-icons">home</i>
+                <p class="m-0">Interior</p>
+            </a>
         </div>
-
-        <!-- <a class="item-nav <?= $title == 'Pengajuan Print Ulang' ? 'active' : ''; ?>" href="/admin/reprint">
-            <i class="material-icons">assignment</i>
-            <p class="m-0">Pengajuan Print</p>
-        </a> -->
-
-        <!-- <a class="item-nav <?= $title == 'Konfirmasi Marketplace' ? 'active' : ''; ?>" href="/admin/marketplace">
-            <i class="material-icons">assignment_turned_in</i>
-            <p class="m-0">Konfirmasi Marketplace</p>
-        </a> -->
-
-        <!-- <a class="item-nav <?= $title == 'Konfirm Mutasi' ? 'active' : ''; ?>" href="/admin/mutasiconfirm">
-            <i class="material-icons">description</i>
-            <p class="m-0">Konfirm Mutasi</p>
-        </a> -->
-
-        <!-- <a class="item-nav <?= $title == 'Mutasi' ? 'active' : ''; ?>" href="/admin/mutasi">
-            <i class="material-icons">library_books</i>
-            <p class="m-0">Mutasi</p>
-        </a> -->
 
         <!-- ===== Section Konten ===== -->
         <div class="nav-separator">
             <span class="line"></span><span class="label">Konten</span><span class="line"></span>
         </div>
-        <a class="item-nav <?= str_contains(strtolower($title), 'artikel') ? 'active' : ''; ?>" href="/admin/article">
+        <a class="item-nav <?= str_contains($lowerTitle, 'artikel') ? 'active' : ''; ?>" href="/admin/article">
             <i class="material-icons">book</i>
             <p class="m-0">Artikel</p>
         </a>
@@ -87,7 +89,6 @@
         <div class="nav-separator">
             <span class="line"></span><span class="label">Analytics &amp; Tools</span><span class="line"></span>
         </div>
-        <!-- Tambah menu Analytics -->
         <a class="item-nav <?= $title == 'Insights Analytics' ? 'active' : ''; ?>" href="/analytics">
             <i class="material-icons">insights</i>
             <p class="m-0">Analytics</p>

@@ -1,3 +1,4 @@
+<!-- // app/Views/admin/suratOffline.php -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -195,16 +196,31 @@
             $noBase = substr($rawId, 5);
         }
 
-        $kodeDok = ($jenisLower === 'sale' ? 'SJ' : 'SP');
+        // ===== Kode dokumen & label (support sale, sp, nf) =====
+        $kodeDok    = 'SP';
+        $labelSurat = 'PENGANTAR';
+
+        // 'sale' atau 'nf' → Surat Jalan (SJ)
+        if ($jenisLower === 'sale' || $jenisLower === 'nf') {
+            $kodeDok    = 'SJ';
+            $labelSurat = 'JALAN';
+        } elseif ($jenisLower === 'sp') {
+            $kodeDok    = 'SP';
+            $labelSurat = 'PENGANTAR';
+        }
+
         $tgl      = strtotime($pemesanan['tanggal']);
-        $bulan_id = [1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',7=>'Juli',8=>'Agustus',9=>'September',10=>'Oktober',11=>'November',12=>'Desember'];
+        $bulan_id = [
+            1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',
+            7=>'Juli',8=>'Agustus',9=>'September',10=>'Oktober',11=>'November',12=>'Desember'
+        ];
         $tgl_indo = date('d', $tgl) . ' ' . $bulan_id[(int)date('n',$tgl)] . ' ' . date('Y', $tgl);
         ?>
 
         <div class="d-flex justify-content-between align-items-end">
             <div style="flex:1">
                 <p class="m-0 title-doc">
-                    SURAT <?= ($jenisLower === 'sale' ? 'JALAN' : 'PENGANTAR'); ?> NO.
+                    SURAT <?= $labelSurat; ?> NO.
                     <?= $noBase; ?>/<?= $kodeDok; ?>/<?= date('m', $tgl); ?>/<?= date('Y', $tgl); ?>
                 </p>
                 <div class="divider"></div>

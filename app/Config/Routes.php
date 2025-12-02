@@ -158,6 +158,7 @@ $routes->get('/admin/benerinsurat', 'AdminController::benerinSurat');
 $routes->post('/admin/actionbuatinvoice', 'AdminController::actionBuatInvoice');
 $routes->post('/admin/actionbuatdp', 'AdminController::actionBuatDP');
 $routes->get('/admin/actionaccorderoffline/(:any)', 'AdminController::actionAccOrderOffline/$1', ['filter' => 'adminFilter']);
+$routes->get('/admin/order/offline/interior', 'AdminController::interiorList'); // masih boleh dipakai / legacy redirect kalau mau
 
 // SEO helper (admin) — optional
 $routes->get('/admin/seo-check/(:any)', 'AdminController::seoCheck/$1', ['filter' => 'adminFilter']);
@@ -215,6 +216,20 @@ $routes->get('analytics/blacklist/del/(:any)', 'Analytics::delBlacklist/$1', ['f
 
 // Tracking
 $routes->post('track/hit', 'Track::hit'); // endpoint tracking
+
+// ==================== PROJECT INTERIOR (ADMIN) ====================
+$routes->get('admin/project-interior', 'AdminController::projectInteriorList', ['filter' => 'adminFilter']);
+$routes->get('admin/project-interior/add', 'AdminController::projectInteriorAdd', ['filter' => 'adminFilter']);
+$routes->post('admin/project-interior/add', 'AdminController::actionProjectInteriorAdd', ['filter' => 'adminFilter']);
+$routes->get('admin/project-interior/(:segment)', 'AdminController::projectInteriorDetail/$1', ['filter' => 'adminFilter']);
+$routes->post('admin/project-interior/(:segment)/payment', 'AdminController::actionProjectInteriorAddPayment/$1', ['filter' => 'adminFilter']);
+$routes->get('admin/project-interior/(:segment)/invoice', 'AdminController::projectInteriorCreateInvoice/$1', ['filter' => 'adminFilter']);
+$routes->get('admin/project-interior/(:segment)/sj', 'AdminController::projectInteriorSuratJalan/$1', ['filter' => 'adminFilter']);
+$routes->get(
+    'admin/project-interior/(:segment)/payment-invoice/(:num)',
+    'AdminController::projectInteriorPaymentInvoice/$1/$2'
+);
+
 
 // 404 fallback
 $routes->get('/(:any)', 'Pages::notFound');

@@ -24,6 +24,8 @@ use App\Models\PemesananOfflineModel;
 use App\Models\PemesananOfflineItemModel;
 use App\Models\VoucherModel;
 use App\Models\VoucherUsageModel;
+use App\Models\ProjectInteriorModel;
+use App\Models\ProjectInteriorPaymentModel;
 
 class AdminController extends BaseController
 {
@@ -51,6 +53,8 @@ class AdminController extends BaseController
     protected $kelurahanModel;
     protected $voucherModel;
     protected $voucherUsageModel;
+    protected $projectInteriorModel;
+    protected $projectInteriorPaymentModel;
 
 
 
@@ -525,9 +529,6 @@ class AdminController extends BaseController
             ]);
         }
     }
-
-
-
 
     public function actionEditProductOld($pathname = false)
     {
@@ -2453,5 +2454,645 @@ class AdminController extends BaseController
         $this->voucherUsageModel->delete((int)$id);
         return redirect()->to('/admin/voucher/usage')->with('msg','Log penggunaan dihapus.');
     }
+
+
+    // ====== PROJECT INTERIOR ======
+protected function generateNextOfflineCode(string $prefix): string
+{
+    $row = $this->pemesananOfflineModel
+        ->like('id_pesanan', $prefix, 'after')
+        ->orderBy('id', 'desc')
+        ->first();
+
+    $next = $row ? ((int)substr($row['id_pesanan'], 2) + 1) : 1;
+
+    return $prefix . sprintf('%08d', $next);
+}
+// ====== PROJECT INTERIOR ======
+
+public function projectInteriorAdd()
+{
+    $data = [
+        'title'            => 'Project Interior Baru',
+        'apikey_img_ilena' => $this->apikey_img_ilena,
+        'msg'              => session()->getFlashdata('msg'),
+    ];
+
+    return view('admin/projectInteriorAdd', $data);
+}
+
+public function actionProjectInteriorAdd()
+{
+    $req = $this->request;
+
+    // --- Data project dasar ---
+    $namaProject  = trim((string)$req->getPost('nama_project'));
+
+    // CATATAN:
+    // nilai_kontrak DI SINI = TOTAL TAGIHAN KE KLIEN (SUDAH termasuk PPN 11%)
+    $nilaiKontrakInput = (int)preg_replace('/[^\d]/', '', (string)$req->getPost('nilai_kontrak'));
+
+    // DP yang direncanakan (opsional)
+    $dpPlanned = (int)preg_replace('/[^\d]/', '', (string)$req->getPost('dp'));
+
+    // === DATA PRODUK BARU ===
+    $namaBarang = trim((string)$req->getPost('nama_barang'));
+
+    // CATATAN:
+    // harga_satuan di form = DPP (BELUM termasuk PPN 11%)
+    $hargaSatuanDpp = (int)preg_replace('/[^\d]/', '', (string)$req->getPost('harga_satuan'));
+
+    $qty = (int)$req->getPost('qty');
+    if ($qty <= 0) {
+        $qty = 1;
+    }
+
+    // --- SINKRONISASI nilai_kontrak & harga_satuan (dua arah) ---
+
+    // 1) Kalau admin isi HARGA SATUAN (DPP) tapi nilai kontrak dikosongkan:
+    //    nilai_kontrak = harga_satuan_dpp * qty * 1.11
+    if ($nilaiKontrakInput <= 0 && $hargaSatuanDpp > 0) {
+        $nilaiKontrakInput = (int)round($hargaSatuanDpp * $qty * 1.11);
+    }
+
+    // 2) Kalau admin isi NILAI KONTRAK (grand total) tapi harga satuan dikosongkan:
+    //    DPP total ≈ nilai_kontrak / 1.11, lalu dibagi qty
+    if ($hargaSatuanDpp <= 0 && $nilaiKontrakInput > 0) {
+        $dppTotal = (int)round($nilaiKontrakInput / 1.11);
+        $hargaSatuanDpp = (int)round($dppTotal / $qty);
+    }
+
+    // Setelah sinkron, pakai satu variabel final
+    $nilaiKontrak = $nilaiKontrakInput;
+    $hargaSatuan  = $hargaSatuanDpp; // disimpan sebagai DPP per unit
+
+    // Jenis dokumen utama: 'sale' (SJ/Faktur) atau 'nf' (Non Faktur)
+    $jenisFakturInput = (string)$req->getPost('jenis_faktur');
+    $jenisFaktur      = $jenisFakturInput === 'nf' ? 'nf' : 'sale'; // default sale
+
+    // --- Data klien (ikut sistem pemesanan_offline yang lama) ---
+    $namaCustomer     = trim((string)$req->getPost('nama_customer'));
+    $nohp             = trim((string)$req->getPost('nohp'));
+    $namaNpwp         = trim((string)$req->getPost('nama_npwp'));
+    $npwp             = trim((string)$req->getPost('npwp'));
+    $alamatPengiriman = trim((string)$req->getPost('alamat_pengiriman'));
+    $alamatTagihan    = trim((string)$req->getPost('alamat_tagihan'));
+    $catatanInternal  = trim((string)$req->getPost('catatan'));
+
+    if ($namaProject === '' || $nilaiKontrak <= 0) {
+        return redirect()->back()->with('msg', 'Nama project dan nilai kontrak wajib diisi (boleh dihitung otomatis dari harga satuan).');
+    }
+
+    if ($namaCustomer === '' || $nohp === '') {
+        return redirect()->back()->with('msg', 'Nama klien dan No HP wajib diisi.');
+    }
+
+    if ($namaBarang === '') {
+        return redirect()->back()->with('msg', 'Nama barang / produk wajib diisi.');
+    }
+
+    $db = \Config\Database::connect();
+
+    // === Generate kode project: PI00000001, dst ===
+    $builderProject = $db->table('project_interior');
+    $lastProject    = $builderProject->orderBy('id', 'DESC')->get(1)->getRowArray();
+    $nextNo         = $lastProject ? ($lastProject['id'] + 1) : 1;
+    $kodeProject    = 'PI' . sprintf('%08d', $nextNo);
+
+    // === Claim nomor SP (tetap) ===
+    $kodeSP = $this->generateNextOfflineCode('SP');
+
+    // === Claim nomor dokumen utama: SJ (sale) atau NF (nf) ===
+    $prefixInvoice = $jenisFaktur === 'nf' ? 'NF' : 'SJ';
+    $kodeInvoice   = $this->generateNextOfflineCode($prefixInvoice);
+
+    $now = date('Y-m-d H:i:s', strtotime('+7 hours'));
+
+    // Data dasar pemesanan_offline (status reserved khusus interior)
+    // total_akhir DIISI dengan nilaiKontrak (TOTAL termasuk PPN 11%)
+    $baseData = [
+        'nama'              => $namaCustomer,
+        'nohp'              => $nohp,
+        'alamat_pengiriman' => $alamatPengiriman !== '' ? $alamatPengiriman : null,
+        'alamat_tagihan'    => $alamatTagihan !== '' ? $alamatTagihan : null,
+        'npwp'              => $npwp !== '' ? $npwp : null,
+        'nama_npwp'         => $namaNpwp !== '' ? $namaNpwp : null,
+        'tanggal'           => $now,
+        'tanggal_inv'       => null,
+        'status'            => 'reserved', // status khusus interior
+        'total_akhir'       => $nilaiKontrak, // TOTAL termasuk PPN 11%
+        'keterangan'        => '[INTERIOR] ' . $kodeProject . ' - ' . $namaBarang . ($catatanInternal ? ' | ' . $catatanInternal : ''),
+        'po'                => null,
+        'down_payment'      => $dpPlanned > 0 ? $dpPlanned : null,
+    ];
+
+    // === 1) SP (surat pesanan) ===
+    $this->pemesananOfflineModel->insert(array_merge($baseData, [
+        'id_pesanan' => $kodeSP,
+        'jenis'      => 'sp',
+    ]));
+
+    // === 2) Dokumen utama: SJ (sale) ATAU NF (non faktur) ===
+    $this->pemesananOfflineModel->insert(array_merge($baseData, [
+        'id_pesanan' => $kodeInvoice,
+        'jenis'      => $jenisFaktur, // 'sale' atau 'nf'
+    ]));
+
+    // === Simpan project interior ===
+    $builderProject->insert([
+        'kode_project'  => $kodeProject,
+        'nama_project'  => $namaProject,
+        'nilai_kontrak' => $nilaiKontrak,  // TOTAL termasuk PPN 11%
+        'kode_sp'       => $kodeSP,
+        'kode_sj'       => $kodeInvoice,   // bisa SJ atau NF
+        'total_dp'      => $dpPlanned,
+        'total_bayar'   => 0,
+        'status'        => 'draft',
+
+        // FIELD BARU
+        'nama_barang'   => $namaBarang,
+        'harga_satuan'  => $hargaSatuan,   // DPP per unit (belum PPN)
+        'qty'           => $qty,
+    ]);
+
+    $labelDok = $jenisFaktur === 'nf' ? 'NF' : 'SJ';
+
+    return redirect()
+        ->to('/admin/project-interior/' . $kodeProject)
+        ->with(
+            'msg',
+            'Project interior berhasil dibuat. SP: ' . $kodeSP . ' | ' . $labelDok . ': ' . $kodeInvoice
+        );
+}
+
+public function projectInteriorDetail(string $kodeProject)
+{
+    $projectModel  = new ProjectInteriorModel();
+    $paymentModel  = new ProjectInteriorPaymentModel();
+
+    // Cari project berdasarkan kode_project
+    $project = $projectModel
+        ->where('kode_project', $kodeProject)
+        ->first();
+
+    if (!$project) {
+        return redirect()->to(site_url('admin/project-interior'))
+            ->with('msg', 'Project tidak ditemukan.');
+    }
+
+    $projectId = (int) $project['id'];
+
+    // Ambil semua pembayaran berdasarkan project_id
+    $payments = $paymentModel->getByProjectId($projectId);
+
+    $data = [
+        'title'    => 'Detail Project Interior',
+        'project'  => $project,
+        'payments' => $payments,
+        'msg'      => session()->getFlashdata('msg'),
+    ];
+
+    return view('admin/projectInteriorDetail', $data);
+}
+
+public function projectInteriorPaymentInvoice(string $kodeProject, int $paymentId)
+{
+    $projectModel = new ProjectInteriorModel();
+    $paymentModel = new ProjectInteriorPaymentModel();
+    $offlineModel = $this->pemesananOfflineModel;
+
+    // 1. Ambil project
+    $project = $projectModel
+        ->where('kode_project', $kodeProject)
+        ->first();
+
+    if (!$project) {
+        throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound(
+            "Project interior dengan kode {$kodeProject} tidak ditemukan."
+        );
+    }
+
+    // 2. Ambil pembayaran yang mau dicetak
+    $payment = $paymentModel
+        ->where('project_id', $project['id'])
+        ->where('id', $paymentId)
+        ->first();
+
+    if (!$payment) {
+        return redirect()
+            ->to(site_url('admin/project-interior/' . $kodeProject))
+            ->with('msg', 'Pembayaran tidak ditemukan untuk project ini.');
+    }
+
+    // 3. Histori pembayaran SEBELUM pembayaran ini (DP, Termin sebelumnya, dll)
+    $historyBefore = $paymentModel
+        ->where('project_id', $project['id'])
+        ->where('id <', $payment['id'])
+        ->orderBy('tanggal', 'ASC')
+        ->findAll();
+
+    // 4. Ambil data pemesanan_offline untuk data customer (alamat, NPWP, dsb)
+    $offline = $offlineModel
+        ->where('id_pesanan', $project['kode_sj'])
+        ->whereIn('jenis', ['sale', 'nf'])
+        ->first();
+
+    if (!$offline) {
+        return redirect()
+            ->to(site_url('admin/project-interior/' . $kodeProject))
+            ->with('msg', 'Data pemesanan offline untuk dokumen utama tidak ditemukan.');
+    }
+
+    // 5. Fake id_pesanan untuk penomoran invoice pembayaran
+    //    Supaya logic "NFxxxxx" di suratInvoice tetap jalan
+    $idPesananFake = 'NF' . sprintf('%08d', (int)$payment['id']);
+
+    // 6. Hitung total yang SUDAH dibayar sampai payment ini
+    $totalPaidUntilThis = 0;
+    foreach ($historyBefore as $h) {
+        $totalPaidUntilThis += (int)($h['nominal'] ?? 0);
+    }
+    $totalPaidUntilThis += (int)($payment['nominal'] ?? 0);
+
+    // 7. Build $pemesanan untuk view suratInvoice
+    $nilaiKontrakTotal = (int)($project['nilai_kontrak'] ?? 0);
+    $nominalPembayaran = (int)($payment['nominal'] ?? 0);
+
+    $pemesanan = [
+        'id_pesanan'        => $idPesananFake,
+        'jenis'             => 'nf',             // supaya format NF dipakai di nomor
+        'status'            => 'payment',        // BUKAN "success"/"DP paid" → supaya watermark LUNAS TIDAK muncul
+
+        'down_payment'      => 0,                // tidak pakai mekanisme DP lama di view
+        'total_akhir'       => $nilaiKontrakTotal,
+
+        'tanggal'           => $payment['tanggal'] ?? date('Y-m-d'),
+        'tanggal_inv'       => $payment['tanggal'] ?? date('Y-m-d'),
+
+        // Data customer: ikut offline
+        'nama_npwp'         => $offline['nama_npwp'] ?: ($offline['nama'] ?? ($project['nama_project'] ?? '-')),
+        'nohp'              => $offline['nohp'] ?? '',
+        'alamat_tagihan'    => $offline['alamat_tagihan'] ?: ($offline['alamat_pengiriman'] ?? ''),
+        'alamat_pengiriman' => $offline['alamat_pengiriman'] ?? '',
+        'npwp'              => $offline['npwp'] ?? null,
+        'po'                => $offline['po'] ?? null,
+        'keterangan'        => trim(
+            (($offline['keterangan'] ?? '') ? $offline['keterangan'] . ' | ' : '') .
+            'Pembayaran: ' . strtoupper($payment['jenis']) . ' ' . number_format($nominalPembayaran, 0, ',', '.')
+        ),
+    ];
+
+    // 8. Items: kosong (mode ini tabelnya kita bangun dari history & payment)
+    $items = [];
+
+    // 9. Kirim ke view suratInvoice dalam mode "invoice pembayaran"
+    $data = [
+        'title'               => 'Invoice Pembayaran Project Interior',
+        'pemesanan'           => $pemesanan,
+        'items'               => $items,
+        'project'             => $project,
+
+        'is_payment_invoice'  => true,            // FLAG: invoice per pembayaran
+        'payment'             => $payment,
+        'history_before'      => $historyBefore,
+        'total_paid_until'    => $totalPaidUntilThis, // dipakai untuk TOTAL INVOICE & Terbilang
+        // TIDAK kirim 'is_project_interior' di sini → ini bukan invoice final.
+    ];
+
+    return view('admin/suratInvoice', $data);
+}
+
+
+
+
+public function actionProjectInteriorAddPayment(string $kodeProject)
+{
+    $db = \Config\Database::connect();
+
+    $project = $db->table('project_interior')
+        ->where('kode_project', $kodeProject)
+        ->get()->getRowArray();
+
+    if (!$project) {
+        return redirect()->back()->with('msg', 'Project interior tidak ditemukan.');
+    }
+
+    $req     = $this->request;
+    $jenis   = $req->getPost('jenis'); // 'dp' | 'termin' | 'pelunasan'
+    $nominal = (int)preg_replace('/[^\d]/', '', (string)$req->getPost('nominal'));
+    $catatan = $req->getPost('catatan');
+
+    if (!in_array($jenis, ['dp', 'termin', 'pelunasan'], true)) {
+        return redirect()->back()->with('msg', 'Jenis pembayaran tidak valid.');
+    }
+
+    // Total yang sudah dibayar SEBELUM pembayaran baru
+    $sumBefore = $db->table('project_interior_payment')
+        ->selectSum('nominal', 'total')
+        ->where('project_id', $project['id'])
+        ->get()->getRowArray();
+    $alreadyPaid = (int)($sumBefore['total'] ?? 0);
+
+    // CATATAN:
+    // nilai_kontrak di tabel project_interior = TOTAL KONTRAK (sudah termasuk PPN 11%)
+    $nilaiKontrak = (int)$project['nilai_kontrak'];
+    $sisaTagihan  = max(0, $nilaiKontrak - $alreadyPaid);
+
+    if ($nominal <= 0) {
+        return redirect()->back()->with('msg', 'Nominal pembayaran harus lebih dari 0.');
+    }
+
+    if ($sisaTagihan <= 0) {
+        return redirect()->back()->with('msg', 'Project sudah lunas, tidak bisa menambah pembayaran lagi.');
+    }
+
+    // Cegah nominal lebih besar dari sisa tagihan
+    if ($nominal > $sisaTagihan) {
+        return redirect()->back()->with(
+            'msg',
+            'Nominal melebihi sisa tagihan. Sisa saat ini: Rp ' . number_format($sisaTagihan, 0, ',', '.')
+        );
+    }
+
+    $now = date('Y-m-d H:i:s', strtotime('+7 hours'));
+
+    // Insert ke tabel pembayaran
+    $db->table('project_interior_payment')->insert([
+        'project_id' => $project['id'],
+        'tanggal'    => $now,
+        'jenis'      => $jenis,
+        'nominal'    => $nominal,
+        'catatan'    => $catatan,
+    ]);
+
+    // Total bayar setelah transaksi ini
+    $totalBayar = $alreadyPaid + $nominal;
+
+    // Tentukan status: draft / dp / termin / lunas
+    $status = 'draft';
+    if ($totalBayar > 0 && $totalBayar < $nilaiKontrak) {
+        $status = ($jenis === 'dp') ? 'dp' : 'termin';
+    } elseif ($totalBayar >= $nilaiKontrak) {
+        $status = 'lunas';
+    }
+
+    $db->table('project_interior')
+        ->where('id', $project['id'])
+        ->update([
+            'total_bayar' => $totalBayar,
+            'status'      => $status,
+        ]);
+
+    return redirect()
+        ->to('/admin/project-interior/' . $kodeProject)
+        ->with('msg', 'Pembayaran berhasil ditambahkan. Status sekarang: ' . $status);
+}
+
+public function projectInteriorCreateInvoice(string $kodeProject)
+{
+    $projectModel  = new ProjectInteriorModel();
+    $offlineModel  = $this->pemesananOfflineModel;
+    $paymentModel  = new ProjectInteriorPaymentModel(); // pastikan sudah use di atas
+
+    // 1. Ambil project
+    $project = $projectModel
+        ->where('kode_project', $kodeProject)
+        ->first();
+
+    if (!$project) {
+        throw PageNotFoundException::forPageNotFound(
+            "Project interior dengan kode {$kodeProject} tidak ditemukan."
+        );
+    }
+
+    // 2. Pastikan status LUNAS
+    if (($project['status'] ?? '') !== 'lunas') {
+        return redirect()
+            ->to(site_url('admin/project-interior/' . $kodeProject))
+            ->with('msg', 'Project belum LUNAS, invoice belum bisa dibuat.');
+    }
+
+    // 3. Ambil pemesanan_offline untuk dokumen utama (SJ / NF) → IKUT SISTEM LAMA
+    $offline = $offlineModel
+        ->where('id_pesanan', $project['kode_sj'])
+        ->whereIn('jenis', ['sale', 'nf'])
+        ->first();
+
+    if (!$offline) {
+        return redirect()
+            ->to(site_url('admin/project-interior/' . $kodeProject))
+            ->with('msg', 'Data pemesanan offline untuk dokumen utama tidak ditemukan.');
+    }
+
+    // === NILAI KONTRAK (TOTAL, SUDAH TERMASUK PPN 11%) ===
+    $nilaiKontrakTotal = (int)($project['nilai_kontrak'] ?? 0);
+
+    // Pecah DPP + PPN 11% untuk ditampilkan di ringkasan
+    $dpp   = $nilaiKontrakTotal > 0 ? (int)round($nilaiKontrakTotal / 1.11) : 0;
+    $ppn11 = $nilaiKontrakTotal - $dpp;
+
+    // === DETAIL PRODUK / PEKERJAAN ===
+    $qty = (int)($project['qty'] ?? 1);
+    if ($qty <= 0) {
+        $qty = 1;
+    }
+
+    // harga_satuan di tabel = DPP per unit
+    $hargaSatuanDpp = (int)($project['harga_satuan'] ?? 0);
+
+    // Kalau harga_satuan kosong, hitung dari DPP total
+    if ($hargaSatuanDpp <= 0 && $nilaiKontrakTotal > 0) {
+        $dppTotal      = (int)round($nilaiKontrakTotal / 1.11);
+        $hargaSatuanDpp = (int)round($dppTotal / $qty);
+    }
+
+    $namaBarang = $project['nama_barang'] ?: ('PEKERJAAN INTERIOR - ' . $project['nama_project']);
+
+    // 4. Build items → 1 baris produk (HARGA = DPP per unit)
+    $items = [
+        [
+            'id_baru'       => strtoupper($project['kode_project']),
+            'nama'          => $namaBarang,
+            'varian'        => $project['nama_project'] ?? '',
+            'dimensi'       => [
+                'panjang' => '-',
+                'lebar'   => '-',
+                'tinggi'  => '-',
+            ],
+            'jumlah'        => $qty,
+            'harga'         => $hargaSatuanDpp, // DPP per unit
+            'special_price' => 0,
+        ],
+    ];
+
+    // 5. AMBIL RINGKASAN PEMBAYARAN DARI project_interior_payment
+    $projectId = (int) $project['id'];
+
+    $payments = $paymentModel
+        ->where('project_id', $projectId)
+        ->orderBy('tanggal', 'ASC')
+        ->findAll();
+
+    $sumDp        = 0;
+    $sumTermin    = 0;
+    $sumPelunasan = 0;
+
+    foreach ($payments as $p) {
+        $nominal = (int) ($p['nominal'] ?? 0);
+
+        switch ($p['jenis']) {
+            case 'dp':
+                $sumDp += $nominal;
+                break;
+            case 'termin':
+                $sumTermin += $nominal;
+                break;
+            case 'pelunasan':
+                $sumPelunasan += $nominal;
+                break;
+        }
+    }
+
+    $totalBayar  = $sumDp + $sumTermin + $sumPelunasan;
+
+    // Sisa tagihan dibandingkan dengan TOTAL KONTRAK (sudah termasuk PPN 11%)
+    $sisaTagihan = max(0, $nilaiKontrakTotal - $totalBayar);
+
+    // 6. Tanggal invoice & SJ: ikut data offline (biar konsisten sistem lama)
+    $tanggalSj  = $offline['tanggal'] ?? date('Y-m-d');
+    $tanggalInv = $offline['tanggal_inv'] ?? $tanggalSj;
+
+    // 7. Build $pemesanan untuk view suratInvoice.php
+    // total_akhir = TOTAL KONTRAK (incl PPN 11%) → dipakai TOTAL INVOICE & TERBILANG
+    $pemesanan = [
+        'id_pesanan'        => $project['kode_sj'],  // kode NF/SJ yang sudah di-reserve
+        'jenis'             => 'nf',                 // supaya format nomor NF dipakai
+        'status'            => 'success',
+
+        'down_payment'      => 0,                    // supaya lewat branch "bukan DP"
+        'total_akhir'       => $nilaiKontrakTotal,   // TOTAL (incl PPN 11%)
+
+        'tanggal'           => $tanggalSj,
+        'tanggal_inv'       => $tanggalInv,
+
+        // Data customer dari pemesanan_offline (supaya alamat & NPWP konsisten)
+        'nama_npwp'         => $offline['nama_npwp'] ?: ($offline['nama'] ?? ($project['nama_project'] ?? '-')),
+        'nohp'              => $offline['nohp'] ?? '',
+        'alamat_tagihan'    => $offline['alamat_tagihan'] ?: ($offline['alamat_pengiriman'] ?? ''),
+        'alamat_pengiriman' => $offline['alamat_pengiriman'] ?? '',
+        'npwp'              => $offline['npwp'] ?? null,
+        'po'                => $offline['po'] ?? null,
+        'keterangan'        => $offline['keterangan'] ?? null,
+    ];
+
+    $data = [
+        'title'               => 'Invoice Project Interior',
+        'pemesanan'           => $pemesanan,
+        'items'               => $items,
+
+        // FLAG & RINGKASAN KHUSUS INTERIOR
+        'is_project_interior' => true,
+
+        // Nilai kontrak & breakdown buat ringkasan di view
+        'nilai_kontrak'       => $nilaiKontrakTotal, // TOTAL (incl PPN 11%)
+        'dpp'                 => $dpp,               // sebelum PPN
+        'ppn_11'              => $ppn11,             // porsi pajak
+
+        'dp_total'            => $sumDp,
+        'termin_total'        => $sumTermin,
+        'pelunasan_total'     => $sumPelunasan,
+        'total_bayar'         => $totalBayar,
+        'sisa_tagihan'        => $sisaTagihan,
+    ];
+
+    // Pakai view yang SAMA dengan offline lama
+    return view('admin/suratInvoice', $data);
+}
+
+public function projectInteriorSuratJalan(string $kodeProject)
+{
+    $projectModel  = new ProjectInteriorModel();
+    $offlineModel  = $this->pemesananOfflineModel;
+
+    // Ambil project
+    $project = $projectModel
+        ->where('kode_project', $kodeProject)
+        ->first();
+
+    if (!$project) {
+        throw PageNotFoundException::forPageNotFound(
+            "Project interior dengan kode {$kodeProject} tidak ditemukan."
+        );
+    }
+
+    // Ambil pemesanan_offline untuk dokumen utama (SJ / NF)
+    $offline = $offlineModel
+        ->where('id_pesanan', $project['kode_sj'])
+        ->whereIn('jenis', ['sale', 'nf'])
+        ->first();
+
+    // Qty & nama barang
+    $qty        = (int)($project['qty'] ?? 1);
+    if ($qty <= 0) $qty = 1;
+    $namaBarang = $project['nama_barang'] ?: ('PEKERJAAN INTERIOR - ' . $project['nama_project']);
+
+    // Build item 1 baris
+    $items = [
+        [
+            'id_baru'  => strtoupper($project['kode_project']),
+            'nama'     => $namaBarang,
+            'varian'   => $project['nama_project'] ?? '',
+            'dimensi'  => [
+                'panjang' => '-',
+                'lebar'   => '-',
+                'tinggi'  => '-',
+            ],
+            'jumlah'   => $qty,
+        ],
+    ];
+
+    // Tanggal surat jalan pakai tanggal pemesanan offline kalau ada
+    $tanggalSj = $offline['tanggal'] ?? date('Y-m-d');
+
+    // Bentuk pemesanan mirip struktur offline
+    $pemesanan = [
+        'id_pesanan'        => $project['kode_sj'],
+        'jenis'             => $offline['jenis'] ?? 'sale',
+        'tanggal'           => $tanggalSj,
+
+        // Penerima dari pemesanan_offline
+        'nama'              => $offline['nama'] ?? ($project['nama_project'] ?? '-'),
+        'nohp'              => $offline['nohp'] ?? '',
+        'alamat_pengiriman' => $offline['alamat_pengiriman'] ?? '',
+        'keterangan'        => $offline['keterangan'] ?? null,
+    ];
+
+    $data = [
+        'title'     => 'Surat Jalan Project Interior',
+        'pemesanan' => $pemesanan,
+        'items'     => $items,
+    ];
+
+    return view('admin/suratOffline', $data);
+}
+
+public function projectInteriorList()
+{
+    $db = \Config\Database::connect();
+
+    $projects = $db->table('project_interior')
+        ->orderBy('id', 'DESC')
+        ->get()->getResultArray();
+
+    $data = [
+        'title'            => 'Project Interior',
+        'apikey_img_ilena' => $this->apikey_img_ilena,
+        'msg'              => session()->getFlashdata('msg'),
+        'projects'         => $projects,
+    ];
+
+    return view('admin/projectInteriorList', $data);
+}
+
 
 }

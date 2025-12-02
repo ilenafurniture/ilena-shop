@@ -1,3 +1,4 @@
+<!-- //views/admin/suratInvoice.php -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -92,7 +93,7 @@
         user-select: none;
     }
 
-    /* Tabel (struktur asli) */
+    /* Tabel */
     .table {
         border-color: var(--line);
     }
@@ -213,17 +214,17 @@
 
                 <?php
                 // Pilih tanggal untuk nomor & tampilan tanggal
-                $tanggalFix = $pemesanan['down_payment'] > 0 ? $pemesanan['tanggal'] : $pemesanan['tanggal_inv'];
+                $tanggalFix = $pemesanan['tanggal_inv'] ?? $pemesanan['tanggal'];
 
                 // ====== LOGIC NOMOR (NF menampilkan 5 digit saja setelah NF) ======
-                $rawId = (string)($pemesanan['id_pesanan'] ?? '');
+                $rawId      = (string)($pemesanan['id_pesanan'] ?? '');
                 $jenisLower = strtolower(trim($pemesanan['jenis'] ?? ''));
                 $nomorDisplay = '';
 
                 if (preg_match('/^NF(\d+)$/i', $rawId, $m)) {
                     // id_pesanan sudah NF + angka => gunakan 5 digit terakhir
                     $digits = $m[1];
-                    $last5 = substr($digits, -5);
+                    $last5  = substr($digits, -5);
                     $nomorDisplay = 'NF' . str_pad($last5, 5, '0', STR_PAD_LEFT);
                 } else {
                     // Perilaku lama: ambil substr(5) sebagai dasar
@@ -232,14 +233,12 @@
                         // Jika jenis nf, ambil digit dari nomorBase, lalu 5 digit terakhir
                         if (preg_match('/(\d+)/', $nomorBase, $m2)) {
                             $digits2 = $m2[1];
-                            $last5 = substr($digits2, -5);
+                            $last5   = substr($digits2, -5);
                             $nomorDisplay = 'NF' . str_pad($last5, 5, '0', STR_PAD_LEFT);
                         } else {
-                            // fallback jika tidak ada digit sama sekali
                             $nomorDisplay = 'NF' . $nomorBase;
                         }
                     } else {
-                        // Bukan NF => tampilkan seperti biasa
                         $nomorDisplay = $nomorBase;
                     }
                 }
@@ -251,7 +250,10 @@
                     </p>
                     <p class="isint">
                         <?php
-                        $bulan_indonesia = [1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',7=>'Juli',8=>'Agustus',9=>'September',10=>'Oktober',11=>'November',12=>'Desember'];
+                        $bulan_indonesia = [
+                            1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',
+                            7=>'Juli',8=>'Agustus',9=>'September',10=>'Oktober',11=>'November',12=>'Desember'
+                        ];
                         $tanggal = date('d', strtotime($tanggalFix));
                         $bulan   = date('n', strtotime($tanggalFix));
                         $tahun   = date('Y', strtotime($tanggalFix));
@@ -271,7 +273,9 @@
         <div class="d-flex justify-content-start mt-4 mb-4 flex-column">
             <p class="m-0 nt" style="max-width:260px; font-size:12px;">Kepada Yth.</p>
             <p class="m-0 tw-bold-italic" style="max-width:260px; font-size:12px;"><?= $pemesanan['nama_npwp']; ?></p>
-            <?php if (!empty($pemesanan['nohp'])): ?><p class="m-0"><?= $pemesanan['nohp']; ?></p><?php endif; ?>
+            <?php if (!empty($pemesanan['nohp'])): ?>
+            <p class="m-0"><?= $pemesanan['nohp']; ?></p>
+            <?php endif; ?>
             <p class="m-0" style="max-width:260px; font-size:12px;"><?= $pemesanan['alamat_tagihan']; ?></p>
             <p style="font-size:12px;" class="isint">NPWP/NIK : <?= $pemesanan['npwp'] ? $pemesanan['npwp'] : '-'; ?>
             </p>
@@ -291,21 +295,107 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <?php if (!empty($is_payment_invoice)): ?>
                     <?php
-                    $totalHargaBarang = 0;
-                    foreach ($items as $t) { $totalHargaBarang += $t['jumlah'] * $t['harga']; }
-                    $discountFactor = 1;
-                    if ($pemesanan['total_akhir'] < $totalHargaBarang) {
-                        $discountFactor = $pemesanan['total_akhir'] / $totalHargaBarang;
-                    }
-                    ?>
+                        // === MODE INVOICE PEMBAYARAN (DP / TERMIN / PELUNASAN) ===
+                        $no = 1;
+                        $kodeDisplay = strtoupper($pemesanan['id_pesanan'] ?? ($project['kode_project'] ?? ''));
+                        $totalHistBefore = 0;
+                        ?>
+
+                    <?php if (!empty($history_before) && is_array($history_before)): ?>
+                    <?php foreach ($history_before as $h): ?>
+                    <?php
+                                $labelHist   = 'PEMBAYARAN ' . strtoupper($h['jenis'] ?? '-');
+                                $nomHist     = (int)($h['nominal'] ?? 0);
+                                $catHist     = trim((string)($h['catatan'] ?? ''));
+                                $totalHistBefore += $nomHist;
+                                ?>
+                    <tr>
+                        <td class="text-center"><?= $no++; ?></td>
+                        <td class="text-center"><?= $kodeDisplay; ?></td>
+                        <td>
+                            <p class="m-0" style="font-size:11.5px;">
+                                <?= $labelHist; ?> PROJECT INTERIOR
+                                <?= !empty($project['nama_project']) ? ' - ' . strtoupper($project['nama_project']) : ''; ?>
+                            </p>
+                            <?php if ($catHist !== ''): ?>
+                            <p class="m-0" style="font-size:11.5px;">
+                                Catatan: <?= esc($catHist); ?>
+                            </p>
+                            <?php endif; ?>
+                        </td>
+                        <td class="text-center nowrap">1</td>
+                        <td class="num nowrap">Rp <?= number_format($nomHist, 0, ',', '.'); ?></td>
+                        <td class="num nowrap">Rp <?= number_format($nomHist, 0, ',', '.'); ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                    <?php endif; ?>
+
+                    <?php
+                        // Baris pembayaran SEKARANG (DP / TERMIN / PELUNASAN)
+                        $labelNow   = 'PEMBAYARAN ' . strtoupper($payment['jenis'] ?? '-');
+                        $nominalNow = (int)($payment['nominal'] ?? 0);
+                        $catNow     = trim((string)($payment['catatan'] ?? ''));
+
+                        // TOTAL yang sudah dibayar sampai saat ini (DP + termin-termin + pembayaran ini)
+                        $totalUntilNow      = $totalHistBefore + $nominalNow;
+                        $totalPaidUntilNow  = $totalUntilNow; // untuk terbilang di bawah
+                        ?>
+                    <tr>
+                        <td class="text-center"><?= $no++; ?></td>
+                        <td class="text-center"><?= $kodeDisplay; ?></td>
+                        <td>
+                            <p class="m-0" style="font-size:11.5px;">
+                                <?= $labelNow; ?> PROJECT INTERIOR
+                                <?= !empty($project['nama_project']) ? ' - ' . strtoupper($project['nama_project']) : ''; ?>
+                            </p>
+                            <?php if ($catNow !== ''): ?>
+                            <p class="m-0" style="font-size:11.5px;">
+                                Catatan: <?= esc($catNow); ?>
+                            </p>
+                            <?php endif; ?>
+                        </td>
+                        <td class="text-center nowrap">1</td>
+                        <td class="num nowrap">Rp <?= number_format($nominalNow, 0, ',', '.'); ?></td>
+                        <td class="num nowrap">Rp <?= number_format($nominalNow, 0, ',', '.'); ?></td>
+                    </tr>
+
+                    <!-- TOTAL INVOICE untuk invoice pembayaran = TOTAL yang sudah dibayar (DP + termin + pembayaran ini) -->
+                    <tr>
+                        <td colspan="5" class="fw-semibold">TOTAL INVOICE</td>
+                        <td class="num fw-semibold">
+                            Rp <?= number_format($totalUntilNow, 0, ',', '.'); ?>
+                        </td>
+                    </tr>
+
+                    <?php else: ?>
+                    <?php
+                        // === MODE LAMA (OFFLINE / INVOICE INTERIOR FINAL) ===
+                        $totalHargaBarang = 0;
+                        foreach ($items as $t) {
+                            $totalHargaBarang += $t['jumlah'] * $t['harga'];
+                        }
+                        $discountFactor = 1;
+                        if ($pemesanan['total_akhir'] < $totalHargaBarang) {
+                            $discountFactor = $pemesanan['total_akhir'] / $totalHargaBarang;
+                        }
+                        ?>
 
                     <?php if ($pemesanan['down_payment'] <= 0) { ?>
-                    <?php $no = 1; foreach ($items as $t) {
-                        $origPrice = $t['harga']; $origTotal = $t['jumlah'] * $origPrice;
-                        if ($discountFactor < 1) { $netPrice = round($origPrice * $discountFactor); $netTotal = $t['jumlah'] * $netPrice; }
-                        else { $netPrice = $origPrice; $netTotal = $origTotal; }
-                    ?>
+                    <?php
+                            $no = 1;
+                            foreach ($items as $t) {
+                                $origPrice = $t['harga'];
+                                $origTotal = $t['jumlah'] * $origPrice;
+                                if ($discountFactor < 1) {
+                                    $netPrice = round($origPrice * $discountFactor);
+                                    $netTotal = $t['jumlah'] * $netPrice;
+                                } else {
+                                    $netPrice = $origPrice;
+                                    $netTotal = $origTotal;
+                                }
+                            ?>
                     <tr>
                         <td class="text-center"><?= $no++; ?></td>
                         <td class="text-center"><?= strtoupper($t['id_baru']); ?></td>
@@ -342,37 +432,138 @@
                     </tr>
                     <?php } ?>
 
-                    <!-- TOTAL INVOICE -->
+                    <!-- TOTAL INVOICE MODE LAMA -->
                     <tr>
                         <td colspan="5" class="fw-semibold">TOTAL INVOICE</td>
                         <td class="num fw-semibold">
                             Rp
                             <?php
-                            if ($pemesanan['down_payment'] > 0) {
-                                echo number_format($pemesanan['down_payment'],0,',','.');
-                            } else {
-                                $net = $pemesanan['total_akhir'] - ( $pemesanan['down_payment'] < 0 ? abs($pemesanan['down_payment']) : 0 );
-                                echo number_format($net,0,',','.');
-                            }
-                            ?>
+                                if (!empty($is_project_interior)) {
+                                    // Interior: total invoice = nilai kontrak total (sudah termasuk PPN 11%)
+                                    $totalInvoiceVal = isset($nilai_kontrak)
+                                        ? (int)$nilai_kontrak
+                                        : (int)$pemesanan['total_akhir'];
+                                    echo number_format($totalInvoiceVal, 0, ',', '.');
+                                } else {
+                                    // Sistem lama
+                                    if ($pemesanan['down_payment'] > 0) {
+                                        echo number_format($pemesanan['down_payment'],0,',','.');
+                                    } else {
+                                        $net = $pemesanan['total_akhir'] - (
+                                            $pemesanan['down_payment'] < 0
+                                                ? abs($pemesanan['down_payment'])
+                                                : 0
+                                        );
+                                        echo number_format($net,0,',','.');
+                                    }
+                                }
+                                ?>
                         </td>
                     </tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
 
+        <?php if (!empty($is_project_interior)): ?>
         <?php
-        // === JATUH TEMPO: tanggal SJ + 14 hari (tanpa badge) ===
+        // == RINGKASAN KHUSUS INTERIOR: NILAI KONTRAK + PPN 11% + RINCIAN PEMBAYARAN ==
+        $nilaiKontrakTotal = isset($nilai_kontrak)
+            ? (int)$nilai_kontrak
+            : (int)$pemesanan['total_akhir'];
+
+        if (isset($dpp) && isset($ppn_11)) {
+            $dppLocal  = (int)$dpp;
+            $ppnLocal  = (int)$ppn_11;
+        } else {
+            $dppLocal = $nilaiKontrakTotal > 0 ? (int)round($nilaiKontrakTotal / 1.11) : 0;
+            $ppnLocal = $nilaiKontrakTotal - $dppLocal;
+        }
+
+        if (isset($dp_total)) {
+            $sumDpLocal        = (int)$dp_total;
+            $sumTerminLocal    = (int)($termin_total ?? 0);
+            $sumPelunasanLocal = (int)($pelunasan_total ?? 0);
+            $totalBayarLocal   = (int)($total_bayar ?? ($sumDpLocal + $sumTerminLocal + $sumPelunasanLocal));
+            $sisaTagihanLocal  = (int)($sisa_tagihan ?? max(0, $nilaiKontrakTotal - $totalBayarLocal));
+        } else {
+            $sumDpLocal        = 0;
+            $sumTerminLocal    = 0;
+            $sumPelunasanLocal = 0;
+
+            foreach ($items as $t) {
+                $namaUpper = strtoupper($t['nama'] ?? '');
+                $nom       = (int)$t['harga'] * (int)$t['jumlah'];
+
+                if (strpos($namaUpper, 'DP') !== false) {
+                    $sumDpLocal += $nom;
+                } elseif (strpos($namaUpper, 'TERMIN') !== false) {
+                    $sumTerminLocal += $nom;
+                } elseif (strpos($namaUpper, 'PELUNASAN') !== false) {
+                    $sumPelunasanLocal += $nom;
+                }
+            }
+
+            $totalBayarLocal  = $sumDpLocal + $sumTerminLocal + $sumPelunasanLocal;
+            $sisaTagihanLocal = max(0, $nilaiKontrakTotal - $totalBayarLocal);
+        }
+        ?>
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <table class="table table-sm table-bordered" style="font-size:11.5px;">
+                    <tbody>
+                        <tr>
+                            <td>Nilai Kontrak (sudah termasuk PPN 11%)</td>
+                            <td class="num">Rp <?= number_format($nilaiKontrakTotal, 0, ',', '.'); ?></td>
+                        </tr>
+                        <tr>
+                            <td>PPN 11% (porsi pajak dari nilai kontrak)</td>
+                            <td class="num">Rp <?= number_format($ppnLocal, 0, ',', '.'); ?></td>
+                        </tr>
+                        <tr>
+                            <td>Total DP</td>
+                            <td class="num">Rp <?= number_format($sumDpLocal, 0, ',', '.'); ?></td>
+                        </tr>
+                        <tr>
+                            <td>Total Termin</td>
+                            <td class="num">Rp <?= number_format($sumTerminLocal, 0, ',', '.'); ?></td>
+                        </tr>
+                        <tr>
+                            <td>Pelunasan</td>
+                            <td class="num">Rp <?= number_format($sumPelunasanLocal, 0, ',', '.'); ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total Pembayaran</strong></td>
+                            <td class="num"><strong>Rp <?= number_format($totalBayarLocal, 0, ',', '.'); ?></strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Sisa Tagihan</td>
+                            <td class="num">Rp <?= number_format($sisaTagihanLocal, 0, ',', '.'); ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <?php
+        // === JATUH TEMPO: untuk invoice pembayaran biar "-" saja ===
         $jtLabel = '-';
-        if ($pemesanan['down_payment'] <= 0) {
-            $sjDate = $pemesanan['tanggal'] ?? null;
-            if ($sjDate) {
-                $dueTs = strtotime($sjDate . ' +14 days');
-                $tglJT = date('d', $dueTs);
-                $blnJT = (int)date('n', $dueTs);
-                $thJT  = date('Y', $dueTs);
-                $bulan_indonesia = [1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',7=>'Juli',8=>'Agustus',9=>'September',10=>'Oktober',11=>'November',12=>'Desember'];
-                $jtLabel = $tglJT . ' ' . $bulan_indonesia[$blnJT] . ' ' . $thJT;
+        if (empty($is_payment_invoice)) {
+            if ($pemesanan['down_payment'] <= 0) {
+                $sjDate = $pemesanan['tanggal'] ?? null;
+                if ($sjDate) {
+                    $dueTs = strtotime($sjDate . ' +14 days');
+                    $tglJT = date('d', $dueTs);
+                    $blnJT = (int)date('n', $dueTs);
+                    $thJT  = date('Y', $dueTs);
+                    $bulan_indonesia = [
+                        1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',
+                        7=>'Juli',8=>'Agustus',9=>'September',10=>'Oktober',11=>'November',12=>'Desember'
+                    ];
+                    $jtLabel = $tglJT . ' ' . $bulan_indonesia[$blnJT] . ' ' . $thJT;
+                }
             }
         }
         ?>
@@ -383,37 +574,94 @@
             function terbilang($angka){
                 $angka=(int)$angka; $tingkat=['','Ribu','Juta','Miliar','Triliun','Kuadriliun','Kuintiliun'];
                 if($angka==0) return "Nol Rupiah"; $kalimat=''; $i=0;
-                while($angka>0){ $bagian=$angka%1000; if($bagian!=0){ $kalimat=_terbilang_ratusan($bagian).' '.$tingkat[$i].' '.$kalimat; } $angka=(int)($angka/1000); $i++; }
+                while($angka>0){
+                    $bagian=$angka%1000;
+                    if($bagian!=0){ $kalimat=_terbilang_ratusan($bagian).' '.$tingkat[$i].' '.$kalimat; }
+                    $angka=(int)($angka/1000); $i++;
+                }
                 return trim($kalimat).' Rupiah';
             }
             function _terbilang_ratusan($angka){
-                $kalimat=''; if($angka>=100){ if((int)($angka/100)==1) $kalimat.='Seratus '; else{ $huruf=[1=>'Satu',2=>'Dua',3=>'Tiga',4=>'Empat',5=>'Lima',6=>'Enam',7=>'Tujuh',8=>'Delapan',9=>'Sembilan']; $kalimat.=$huruf[(int)($angka/100)].' Ratus '; } $angka%=100; }
+                $kalimat='';
+                if($angka>=100){
+                    if((int)($angka/100)==1) $kalimat.='Seratus ';
+                    else{
+                        $huruf=[1=>'Satu',2=>'Dua',3=>'Tiga',4=>'Empat',5=>'Lima',6=>'Enam',7=>'Tujuh',8=>'Delapan',9=>'Sembilan'];
+                        $kalimat.=$huruf[(int)($angka/100)].' Ratus ';
+                    }
+                    $angka%=100;
+                }
                 if($angka>=10) $kalimat.=_terbilang_puluhan($angka);
-                elseif($angka>0){ $huruf=[1=>'Satu',2=>'Dua',3=>'Tiga',4=>'Empat',5=>'Lima',6=>'Enam',7=>'Tujuh',8=>'Delapan',9=>'Sembilan',0=>'Nol']; $kalimat.=$huruf[$angka]; }
+                elseif($angka>0){
+                    $huruf=[1=>'Satu',2=>'Dua',3=>'Tiga',4=>'Empat',5=>'Lima',6=>'Enam',7=>'Tujuh',8=>'Delapan',9=>'Sembilan',0=>'Nol'];
+                    $kalimat.=$huruf[$angka];
+                }
                 return trim($kalimat);
             }
             function _terbilang_puluhan($angka){
-                $huruf=[10=>'Sepuluh',11=>'Sebelas',12=>'Dua Belas',13=>'Tiga Belas',14=>'Empat Belas',15=>'Lima Belas',16=>'Enam Belas',17=>'Tujuh Belas',18=>'Delapan Belas',19=>'Sembilan Belas',20=>'Dua Puluh',30=>'Tiga Puluh',40=>'Empat Puluh',50=>'Lima Puluh',60=>'Enam Puluh',70=>'Tujuh Puluh',80=>'Delapan Puluh',90=>'Sembilan Puluh'];
-                if($angka<=9) return ''; elseif($angka<=19) return $huruf[$angka]; else{ $puluhan=(int)($angka/10)*10; return $huruf[$puluhan].' '._terbilang_satuan($angka%10); }
+                $huruf=[
+                    10=>'Sepuluh',11=>'Sebelas',12=>'Dua Belas',13=>'Tiga Belas',14=>'Empat Belas',
+                    15=>'Lima Belas',16=>'Enam Belas',17=>'Tujuh Belas',18=>'Delapan Belas',19=>'Sembilan Belas',
+                    20=>'Dua Puluh',30=>'Tiga Puluh',40=>'Empat Puluh',50=>'Lima Puluh',
+                    60=>'Enam Puluh',70=>'Tujuh Puluh',80=>'Delapan Puluh',90=>'Sembilan Puluh'
+                ];
+                if($angka<=9) return '';
+                elseif($angka<=19) return $huruf[$angka];
+                else{
+                    $puluhan=(int)($angka/10)*10;
+                    return $huruf[$puluhan].' '._terbilang_satuan($angka%10);
+                }
             }
-            function _terbilang_satuan($angka){ $huruf=[1=>'Satu',2=>'Dua',3=>'Tiga',4=>'Empat',5=>'Lima',6=>'Enam',7=>'Tujuh',8=>'Delapan',9=>'Sembilan',0=>'']; return $huruf[$angka]; }
+            function _terbilang_satuan($angka){
+                $huruf=[1=>'Satu',2=>'Dua',3=>'Tiga',4=>'Empat',5=>'Lima',6=>'Enam',7=>'Tujuh',8=>'Delapan',9=>'Sembilan',0=>''];
+                return $huruf[$angka];
+            }
+
+            // Angka untuk terbilang:
+            if (!empty($is_payment_invoice)) {
+                // Invoice pembayaran: TERBILANG = total semua yang SUDAH dibayar (DP + termin + pembayaran ini)
+                if (isset($totalPaidUntilNow)) {
+                    $angkaTerbilang = (int)$totalPaidUntilNow;
+                } else {
+                    // fallback kalau variabel belum ada, pakai yang dikirim controller
+                    $angkaTerbilang = (int)($total_paid_until ?? ($payment['nominal'] ?? 0));
+                }
+            } elseif (!empty($is_project_interior)) {
+                // Interior final: terbilang TOTAL kontrak (sudah termasuk PPN 11%)
+                $nilaiKontrakTotalTb = isset($nilai_kontrak)
+                    ? (int)$nilai_kontrak
+                    : (int)$pemesanan['total_akhir'];
+                $angkaTerbilang = $nilaiKontrakTotalTb;
+            } else {
+                // Sistem lama
+                if ($pemesanan['down_payment'] > 0) {
+                    $angkaTerbilang = (int)$pemesanan['down_payment'];
+                } else {
+                    $angkaTerbilang = (int)(
+                        $pemesanan['total_akhir']
+                        - ($pemesanan['down_payment'] < 0 ? abs($pemesanan['down_payment']) : 0)
+                    );
+                }
+            }
             ?>
             <table>
                 <tbody>
                     <tr>
                         <td style="font-size:11.5px;" class="pe-3">Terbilang
-                            <?= $pemesanan['down_payment'] > 0 ? 'DP' : '' ?></td>
-                        <?php if ($pemesanan['down_payment'] > 0) { ?>
-                        <td style="font-size:11.5px;">:
-                            <i
-                                style="font-size:11.5px;"><?= ucwords(strtolower(terbilang($pemesanan['down_payment']))); ?></i>
+                            <?php
+                            if (!empty($is_payment_invoice)) {
+                                // invoice pembayaran: cukup "Terbilang"
+                                echo '';
+                            } else {
+                                echo (!empty($is_project_interior) ? '' : ($pemesanan['down_payment'] > 0 ? 'DP' : ''));
+                            }
+                            ?>
                         </td>
-                        <?php } else { ?>
                         <td style="font-size:11.5px;">:
-                            <i
-                                style="font-size:11.5px;"><?= ucwords(strtolower(terbilang($pemesanan['total_akhir'] - ($pemesanan['down_payment'] < 0 ? abs($pemesanan['down_payment']) : 0)))); ?></i>
+                            <i style="font-size:11.5px;">
+                                <?= ucwords(strtolower(terbilang($angkaTerbilang))); ?>
+                            </i>
                         </td>
-                        <?php } ?>
                     </tr>
                     <tr>
                         <td class="pe-3" style="white-space:nowrap; font-size:11.5px;">PO</td>
@@ -422,7 +670,9 @@
                     </tr>
                     <tr>
                         <td class="pe-3" style="white-space:nowrap; font-size:11.5px;">Surat Jalan</td>
-                        <?php if ($pemesanan['down_payment']) { ?>
+                        <?php if (!empty($is_payment_invoice)) { ?>
+                        <td style="white-space:nowrap; font-size:11.5px;">: -</td>
+                        <?php } elseif ($pemesanan['down_payment']) { ?>
                         <td style="white-space:nowrap; font-size:11.5px;">:
                             <?= isset($items[0]['id_return']) && $items[0]['id_return'] ? substr($items[0]['id_return'], 5) : '-' ; ?>
                         </td>
@@ -473,12 +723,14 @@
     document.getElementById('kodepos')?.innerText = kodePos;
     </script>
 
-    <!-- <script>
+    <!--
+    <script>
     window.print();
     window.onafterprint = function() {
         window.location.href = "<?= base_url('admin/order/offline/sale'); ?>";
     };
-    </script> -->
+    </script>
+    -->
 </body>
 
 </html>
