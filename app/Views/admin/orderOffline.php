@@ -484,6 +484,22 @@ hr {
                 </div>
             </div>
 
+            <!-- ====== JENIS TUJUAN: SALE / NF ====== -->
+            <div class="mb-3">
+                <p class="mb-1">Koreksi ini akan dibuat menjadi</p>
+                <div class="d-flex flex-wrap gap-3">
+                    <label class="d-flex align-items-center gap-2">
+                        <input type="radio" name="convert_to" value="sale" checked>
+                        <span>Surat Jalan (SALE)</span>
+                    </label>
+                    <label class="d-flex align-items-center gap-2">
+                        <input type="radio" name="convert_to" value="nf">
+                        <span>Non Faktur (NF)</span>
+                    </label>
+                </div>
+            </div>
+            <!-- /END JENIS TUJUAN -->
+
             <!-- dibutuhkan agar backend tidak error jika diskon tidak diisi -->
             <input type="hidden" name="diskon" value="0">
 
@@ -1531,6 +1547,9 @@ function injectPreviewButton(form, onClick) {
         const npwp = form.querySelector('input[name="npwp"]').value;
         const ket = form.querySelector('input[name="keterangan"]').value;
 
+        const convertTo = form.querySelector('input[name="convert_to"]:checked')?.value || 'sale';
+        const jenisTujuanLabel = convertTo === 'nf' ? 'Non Faktur (NF)' : 'Surat Jalan (SALE)';
+
         const isSame = form.querySelector('input[name="checkAlamat"]')?.checked;
         const prov = form.querySelector('select[name="provinsi"]')?.value || '';
         const kota = form.querySelector('select[name="kota"]')?.value || '';
@@ -1558,6 +1577,7 @@ function injectPreviewButton(form, onClick) {
           <div class="dl" style="margin-bottom:12px">
             <b>ID Order</b><div class="mono">${id_pesanan||'-'}</div>
             <b>Tanggal</b><div class="mono">${tanggal||'-'}</div>
+            <b>Jenis Tujuan</b><div>${jenisTujuanLabel}</div>
             <b>Nama (NPWP)</b><div>${nama_npwp||'-'}</div>
             <b>NPWP</b><div class="mono">${npwp||'-'}</div>
             <b>Alamat Tagihan</b><div style="white-space:pre-wrap">${alamat||'-'}</div>
@@ -1575,13 +1595,14 @@ function injectPreviewButton(form, onClick) {
             </div>
           </div>`;
         const rightHTML =
-            `<div style="font-size:13px;color:#334155"><p class="m-0">Periksa kembali item dan alamat sebelum kirim koreksi SP.</p></div>`;
+            `<div style="font-size:13px;color:#334155"><p class="m-0">Periksa kembali jenis tujuan (SJ / NF), item, dan alamat sebelum kirim koreksi SP.</p></div>`;
         openPreview({
             type: 'koreksi',
             title: 'Preview Koreksi SP',
             leftTitle: 'Rincian Koreksi',
             leftHTML,
             rightHTML,
+            badgeText: jenisTujuanLabel,
             onSubmit: () => form.submit()
         });
     });

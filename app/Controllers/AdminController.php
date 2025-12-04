@@ -2168,134 +2168,195 @@ class AdminController extends BaseController
     public function actionKoreksiSP()
     {
         $body = $this->request->getVar();
+
+        // 1) Tentukan jenis tujuan dari form (sale / nf)
+        $convertTo = $body['convert_to'] ?? 'sale';              // dari radio di form
+        $normJenisTarget = $this->normalizeJenis($convertTo);    // hasilnya 'sale' | 'nf' | 'sp'
+        if (!in_array($normJenisTarget, ['sale', 'nf'], true)) {
+            $normJenisTarget = 'sale';
+        }
+
+        // Prefix ID pesanan baru (SJ / NF)
+        $prefixTarget = $this->prefixByJenis($normJenisTarget);  // 'SJ' atau 'NF'
+
+        // --- isiBody ini sepertinya hanya buat debug/log kalau mau ---
         $isiBody = [
             'index_items_selected' => $body['index_items_selected'],
-            'id_pesanan' => $body['id_pesanan'],
-            'tanggal' => $body['tanggal'],
-            'provinsiTagihan' => $body['provinsi'],
-            'kabupatenTagihan' => $body['kota'],
-            'kecamatanTagihan' => $body['kecamatan'],
-            'kodeposTagihan' => $body['kodepos'],
-            'detailTagihan' => $body['detail'],
-            'alamatTagihan' => $body['alamatTagihan'],
-            'npwp' => $body['npwp'],
-            'keterangan' => $body['keterangan'],
+            'id_pesanan'          => $body['id_pesanan'],
+            'tanggal'             => $body['tanggal'],
+            'provinsiTagihan'     => $body['provinsi'],
+            'kabupatenTagihan'    => $body['kota'],
+            'kecamatanTagihan'    => $body['kecamatan'],
+            'kodeposTagihan'      => $body['kodepos'],
+            'detailTagihan'       => $body['detail'],
+            'alamatTagihan'       => $body['alamatTagihan'],
+            'npwp'                => $body['npwp'],
+            'keterangan'          => $body['keterangan'],
+            'convert_to'          => $normJenisTarget,
         ];
 
         $id_pesanan_SP = $body['id_pesanan'];
         $sp_current = $this->pemesananOfflineModel->getPemesanan($id_pesanan_SP);
+
         $items = $this->pemesananOfflineItemModel
             ->select('pemesanan_offline_item.*')
             ->select('barang.nama')
             ->join('barang', 'barang.id = pemesanan_offline_item.id_barang')
             ->where(['id_pesanan' => $id_pesanan_SP])
             ->findAll();
+
         $alamatTagihan = $body['provinsi'] ? [
-            'provinsi' => explode('-', $body['provinsi'])[1],
+            'provinsi'  => explode('-', $body['provinsi'])[1],
             'kabupaten' => explode('-', $body['kota'])[1],
             'kecamatan' => explode('-', $body['kecamatan'])[1],
             'kelurahan' => explode('-', $body['kodepos'])[0],
-            'kodepos' => explode('-', $body['kodepos'])[1],
-            'detail' => $body['detail'],
+            'kodepos'   => explode('-', $body['kodepos'])[1],
+            'detail'    => $body['detail'],
         ] : [];
 
-        //generate id
-        $dataTerbaru = $this->pemesananOfflineModel->like('id_pesanan', 'SJ', 'after')->orderBy('id', 'desc')->first();
-        $dataTerbaruSK = $this->pemesananOfflineModel->like('id_pesanan', 'SK', 'after')->orderBy('id', 'desc')->first();
-        $idSJ = 'SJ' . (sprintf("%08d", $dataTerbaru ? ((int)substr($dataTerbaru['id_pesanan'], 2) + 1) : 1));
-        $idSK = 'SK' . (sprintf("%08d", $dataTerbaruSK ? ((int)substr($dataTerbaruSK['id_pesanan'], 2) + 1) : 1));
+        // 2) Generate ID: satu untuk pesanan baru (SJ / NF), satu untuk SK
+        $dataTerbaru   = $this->pemesananOfflineModel
+            ->like('id_pesanan', $prefixTarget, 'after')
+            ->orderBy('id', 'desc')
+            ->first();
+        $dataTerbaruSK = $this->pemesananOfflineModel
+            ->like('id_pesanan', 'SK', 'after')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $idSJ = $prefixTarget . sprintf(
+            "%08d",
+            $dataTerbaru ? ((int)substr($dataTerbaru['id_pesanan'], 2) + 1) : 1
+        );
+        $idSK = 'SK' . sprintf(
+            "%08d",
+            $dataTerbaruSK ? ((int)substr($dataTerbaruSK['id_pesanan'], 2) + 1) : 1
+        );
+
         $tanggalNoStrip = date('Ymd', strtotime($body['tanggal']));
 
         $indexItems = explode(',', $body['index_items_selected']);
         $totalAkhir = 0;
+
         foreach ($items as $ind_i => $item) {
             if ($indexItems[$ind_i] == '1') {
                 $produkCur = $this->barangModel->getBarang($item['id_barang']);
-                $varian = json_decode($produkCur['varian'], true);
-                $saldo = 0;
+                $varian    = json_decode($produkCur['varian'], true);
+                $saldo     = 0;
                 $varianBaru = $varian;
+
                 foreach ($varian as $ind => $v) {
                     if ($v['nama'] == $item['varian']) {
                         $saldo = (int)$v['stok'];
+                        // NOTE: di kode lama stok barang tidak diupdate (varianBaru tidak dipakai),
+                        // jadi di sini juga kita biarkan sama, hanya dipakai untuk saldo di kartu_stok.
                         $varianBaru[$ind]['stok'] = (string)((int)$v['stok'] - 1);
                     }
                 }
-                $this->pemesananOfflineItemModel->where(['id' => $item['id']])->set(['id_return' => $idSK])->update();
+
+                // tandai item lama: id_return = id SK
+                $this->pemesananOfflineItemModel
+                    ->where(['id' => $item['id']])
+                    ->set(['id_return' => $idSK])
+                    ->update();
+
+                // item untuk pesanan baru (SJ / NF)
                 $this->pemesananOfflineItemModel->insert([
                     'id_pesanan' => $idSJ,
-                    'id_barang' => $item['id_barang'],
-                    'harga' => $item['harga'],
-                    'varian' => $item['varian'],
-                    'id_return' => $idSK
+                    'id_barang'  => $item['id_barang'],
+                    'harga'      => $item['harga'],
+                    'varian'     => $item['varian'],
+                    'id_return'  => $idSK
                 ]);
+
+                // item untuk SK (koreksi)
                 $this->pemesananOfflineItemModel->insert([
                     'id_pesanan' => $idSK,
+                    'id_barang'  => $item['id_barang'],
+                    'harga'      => $item['harga'],
+                    'varian'     => $item['varian'],
+                    'id_return'  => ''
+                ]);
+
+                // kartu stok (masuk ke SK, keluar ke SJ/NF)
+                $this->kartuStokModel->insert([
                     'id_barang' => $item['id_barang'],
-                    'harga' => $item['harga'],
-                    'varian' => $item['varian'],
-                    'id_return' => ''
+                    'tanggal'   => $body['tanggal'],
+                    'keterangan'=> $tanggalNoStrip . "-" . $item['id_barang'] . "-" . str_replace(' ', '-', strtoupper($item['varian'])) . "-" . $idSK,
+                    'debit'     => 1,
+                    'kredit'    => 0,
+                    'saldo'     => $saldo + 1,
+                    'pending'   => false,
+                    'id_pesanan'=> $idSK,
+                    'varian'    => $item['varian'],
                 ]);
                 $this->kartuStokModel->insert([
                     'id_barang' => $item['id_barang'],
-                    'tanggal' => $body['tanggal'],
-                    'keterangan' => $tanggalNoStrip . "-" . $item['id_barang'] . "-" . str_replace(' ', '-', strtoupper($item['varian'])) . "-" . $idSK,
-                    'debit' => 1,
-                    'kredit' => 0,
-                    'saldo' => $saldo + 1,
-                    'pending' => false,
-                    'id_pesanan' => $idSK,
-                    'varian' => $item['varian'],
+                    'tanggal'   => $body['tanggal'],
+                    'keterangan'=> $tanggalNoStrip . "-" . $item['id_barang'] . "-" . str_replace(' ', '-', strtoupper($item['varian'])) . "-" . $idSJ,
+                    'debit'     => 0,
+                    'kredit'    => 1,
+                    'saldo'     => $saldo,
+                    'pending'   => false,
+                    'id_pesanan'=> $idSJ,
+                    'varian'    => $item['varian'],
                 ]);
-                $this->kartuStokModel->insert([
-                    'id_barang' => $item['id_barang'],
-                    'tanggal' => $body['tanggal'],
-                    'keterangan' => $tanggalNoStrip . "-" . $item['id_barang'] . "-" . str_replace(' ', '-', strtoupper($item['varian'])) . "-" . $idSJ,
-                    'debit' => 0,
-                    'kredit' => 1,
-                    'saldo' => $saldo,
-                    'pending' => false,
-                    'id_pesanan' => $idSJ,
-                    'varian' => $item['varian'],
-                ]);
+
                 $totalAkhir += (int)$item['harga'];
             }
         }
 
-        $diskonVal = isset($body['diskon']) && $body['diskon'] !== '' ? (float)$body['diskon'] : 0;
-        $diskon_koreksi = ($diskonVal / 100) * $totalAkhir;
+        $diskonVal       = isset($body['diskon']) && $body['diskon'] !== '' ? (float)$body['diskon'] : 0;
+        $diskon_koreksi  = ($diskonVal / 100) * $totalAkhir;
+        $totalSetelahDiskon = $totalAkhir - $diskon_koreksi;
+
+        // tanggal_inv: di sistem-mu sale & nf sama-sama boleh punya tanggal_inv kalau ada NPWP
+        $tanggal_inv = $body['npwp'] ? $body['tanggal'] : null;
+
+        // 3) Data pesanan baru (SJ / NF)
         $dataSJ = [
-            'nama' => $sp_current['nama'],
-            'nohp' => $sp_current['nohp'],
+            'nama'              => $sp_current['nama'],
+            'nohp'              => $sp_current['nohp'],
             'alamat_pengiriman' => $sp_current['alamat_pengiriman'],
-            'alamat_tagihan' => $body['npwp'] ? (isset($body['checkAlamat']) ? $body['alamatTagihan'] : $this->generateAlamat($alamatTagihan)) : null,
-            'npwp' => $body['npwp'] ? $body['npwp'] : null,
-            'nama_npwp' => $body['npwp'] ? $body['nama_npwp'] : null,
-            'tanggal' => $body['tanggal'],
-            'tanggal_inv' => $body['npwp'] ? $body['tanggal'] : null,
-            'id_pesanan' => $idSJ,
-            'status' => 'pending',
-            'jenis' => 'sale',
-            'total_akhir' => $totalAkhir - $diskon_koreksi,
-            'keterangan' => $body['keterangan'],
-            'po' => $sp_current['po'],
+            'alamat_tagihan'    => $body['npwp']
+                ? (isset($body['checkAlamat'])
+                    ? $body['alamatTagihan']
+                    : $this->generateAlamat($alamatTagihan))
+                : null,
+            'npwp'              => $body['npwp'] ? $body['npwp'] : null,
+            'nama_npwp'         => $body['npwp'] ? $body['nama_npwp'] : null,
+            'tanggal'           => $body['tanggal'],
+            'tanggal_inv'       => $tanggal_inv,
+            'id_pesanan'        => $idSJ,
+            'status'            => 'pending',
+            'jenis'             => $normJenisTarget,   // <--- sale atau nf
+            'total_akhir'       => $totalSetelahDiskon,
+            'keterangan'        => $body['keterangan'],
+            'po'                => $sp_current['po'],
         ];
+
+        // 4) Data SK (tetap 'sale' seperti sebelumnya, kalau mau bisa dipikir ulang nanti)
         $dataSK = [
-            'nama' => $sp_current['nama'],
-            'nohp' => $sp_current['nohp'],
+            'nama'              => $sp_current['nama'],
+            'nohp'              => $sp_current['nohp'],
             'alamat_pengiriman' => $sp_current['alamat_pengiriman'],
-            // 'alamat_tagihan' => isset($body['checkAlamat']) ? $body['alamatTagihan'] : $this->generateAlamat($alamatTagihan),
-            'tanggal' => $body['tanggal'],
-            'id_pesanan' => $idSK,
-            'status' => 'success',
-            'jenis' => 'sale',
-            'total_akhir' => $totalAkhir,
-            'keterangan' => $body['keterangan'],
-            'po' => $sp_current['po'],
+            'tanggal'           => $body['tanggal'],
+            'id_pesanan'        => $idSK,
+            'status'            => 'success',
+            'jenis'             => 'sale',
+            'total_akhir'       => $totalAkhir,
+            'keterangan'        => $body['keterangan'],
+            'po'                => $sp_current['po'],
         ];
+
         $this->pemesananOfflineModel->insert($dataSJ);
         $this->pemesananOfflineModel->insert($dataSK);
-        return redirect()->to('/admin/order/offline/sale');
+
+        // 5) Redirect ke tab sesuai jenis tujuan
+        $seg = ($normJenisTarget === 'nf') ? 'nf' : 'sale';
+        return redirect()->to('/admin/order/offline/' . $seg);
     }
+
     public function actionBuatInvoice()
     {
         $tanggal = $this->request->getVar('tanggal');
