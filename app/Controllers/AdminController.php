@@ -1854,19 +1854,31 @@ class AdminController extends BaseController
         $body = $this->request->getBody();
         $body = json_decode($body, true);
 
+        if (!is_array($body)) {
+            return $this->response->setStatusCode(400)->setJSON([
+                'success' => false,
+                'pesan'   => 'Payload tidak valid',
+            ]);
+        }
+
+        // ==== FLAG DRAFT ====
+        // kirim dari frontend: isDraft = true/false (atau 1/0)
+        $isDraft = !empty($body['isDraft']);
+
         // --- harden default supaya tidak Notice/Warning ---
         $body['downPayment']          = (int)($body['downPayment']          ?? 0);
         $body['potonganHargaSatuan']  = (int)($body['potonganHargaSatuan']  ?? 0);
         $body['jenis']                = $body['jenis'] ?? 'sp'; // default-kan ke SP kalau tidak dikirim
         $body['npwp']                 = isset($body['npwp']) ? ($body['npwp'] == '-' ? null : $body['npwp']) : null;
 
-        if ($body['downPayment'] > $body['totalAkhir']) {
+        // VALIDASI HANYA UNTUK FINAL, DRAFT BISA LEBIH LENTUR
+        if (!$isDraft && $body['downPayment'] > $body['totalAkhir']) {
             return $this->response->setStatusCode(400)->setJSON([
                 'success' => false,
                 'pesan' => 'Down Payment melebihi total akhir',
             ]);
         }
-        if ($body['potonganHargaSatuan'] > 25) {
+        if (!$isDraft && $body['potonganHargaSatuan'] > 25) {
             return $this->response->setStatusCode(400)->setJSON([
                 'success' => false,
                 'pesan' => 'Potongan harga satuan melebihi 25%',
@@ -1874,20 +1886,20 @@ class AdminController extends BaseController
         }
 
         $alamatPengiriman = [
-            'provinsi' => $body['provinsi'],
-            'kabupaten' => $body['kabupaten'],
-            'kecamatan' => $body['kecamatan'],
-            'kelurahan' => $body['kelurahan'],
-            'kodepos' => $body['kodepos'],
-            'detail' => $body['detail'],
+            'provinsi'  => $body['provinsi']       ?? null,
+            'kabupaten' => $body['kabupaten']      ?? null,
+            'kecamatan' => $body['kecamatan']      ?? null,
+            'kelurahan' => $body['kelurahan']      ?? null,
+            'kodepos'   => $body['kodepos']        ?? null,
+            'detail'    => $body['detail']         ?? null,
         ];
         $alamatTagihan = [
-            'provinsi' => $body['provinsiTagihan'] ?? null,
-            'kabupaten' => $body['kabupatenTagihan'] ?? null,
-            'kecamatan' => $body['kecamatanTagihan'] ?? null,
-            'kelurahan' => $body['kelurahanTagihan'] ?? null,
-            'kodepos' => $body['kodeposTagihan'] ?? null,
-            'detail' => $body['detailTagihan'] ?? null,
+            'provinsi'  => $body['provinsiTagihan']   ?? null,
+            'kabupaten' => $body['kabupatenTagihan']  ?? null,
+            'kecamatan' => $body['kecamatanTagihan']  ?? null,
+            'kelurahan' => $body['kelurahanTagihan']  ?? null,
+            'kodepos'   => $body['kodeposTagihan']    ?? null,
+            'detail'    => $body['detailTagihan']     ?? null,
         ];
         $totalAkhir = $body['totalAkhir'];
 
@@ -1898,13 +1910,20 @@ class AdminController extends BaseController
         $dataTerbaru = $this->pemesananOfflineModel
             ->like('id_pesanan', $KODE_AWAL, 'after')
             ->orderBy('id', 'desc')->first();
-        $idFix = $KODE_AWAL . (sprintf("%08d", $dataTerbaru ? ((int)substr($dataTerbaru['id_pesanan'], 2) + 1) : 1));
+        $idFix = $KODE_AWAL . sprintf("%08d", $dataTerbaru ? ((int)substr($dataTerbaru['id_pesanan'], 2) + 1) : 1);
 
         $tanggalNoStrip = date('Ymd', strtotime($body['tanggal']));
 
         // --- loop items ---
         foreach ($body['items'] as $item) {
             $produkCur = $this->barangModel->getBarang($item['id']);
+            if (!$produkCur) {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'success' => false,
+                    'message' => 'Produk dengan ID ' . $item['id'] . ' tidak ditemukan',
+                ]);
+            }
+
             $varian    = json_decode($produkCur['varian'], true);
             $saldo     = 0;
             $varianBaru = $varian;
@@ -1913,40 +1932,46 @@ class AdminController extends BaseController
                 if ($v['nama'] == $item['varian']) {
                     $saldo = (int)$v['stok'];
                     // potong stok sekarang jika perlu (sale tanpa DP / NF)
-                    if ($this->shouldDeductStockNow($normJenis, $body['downPayment'])) {
+                    if (!$isDraft && $this->shouldDeductStockNow($normJenis, $body['downPayment'])) {
                         $varianBaru[$ind]['stok'] = (string)((int)$v['stok'] - $item['jumlah']);
                     }
                 }
             }
 
             $saldoAkhir = $saldo - $item['jumlah'];
-            if ($this->shouldDeductStockNow($normJenis, $body['downPayment']) && $saldoAkhir < 0) {
+
+            // kalau FINAL dan memang harus potong stok sekarang → cek stok cukup
+            if (
+                !$isDraft &&
+                $this->shouldDeductStockNow($normJenis, $body['downPayment']) &&
+                $saldoAkhir < 0
+            ) {
                 return $this->response->setStatusCode(400)->setJSON([
                     'success' => false,
                     'message' => 'Stok tidak mencukupi untuk produk ' . $item['varian'] . ' pada barang ' . $produkCur['nama'],
                 ], false);
             }
 
-            // update stok + kartu_stok HANYA jika harus potong sekarang
-            if ($this->shouldDeductStockNow($normJenis, $body['downPayment'])) {
+            // update stok + kartu_stok HANYA kalau FINAL & harus potong stok sekarang
+            if (!$isDraft && $this->shouldDeductStockNow($normJenis, $body['downPayment'])) {
                 $this->barangModel->where('id', $item['id'])->set([
                     'varian' => json_encode($varianBaru)
                 ])->update();
 
                 $this->kartuStokModel->insert([
-                    'id_barang' => $item['id'],
-                    'tanggal'   => $body['tanggal'],
-                    'keterangan'=> $tanggalNoStrip . "-" . $item['id'] . "-" . str_replace(' ', '-', strtoupper($item['varian'])) . "-" . $idFix,
-                    'debit'     => 0,
-                    'kredit'    => $item['jumlah'],
-                    'saldo'     => $saldoAkhir,
-                    'pending'   => false,
-                    'id_pesanan'=> $idFix,
-                    'varian'    => $item['varian'],
+                    'id_barang'  => $item['id'],
+                    'tanggal'    => $body['tanggal'],
+                    'keterangan' => $tanggalNoStrip . "-" . $item['id'] . "-" . str_replace(' ', '-', strtoupper($item['varian'])) . "-" . $idFix,
+                    'debit'      => 0,
+                    'kredit'     => $item['jumlah'],
+                    'saldo'      => $saldoAkhir,
+                    'pending'    => false,
+                    'id_pesanan' => $idFix,
+                    'varian'     => $item['varian'],
                 ]);
             }
 
-            // simpan detail items (tetap disimpan untuk semua jenis)
+            // simpan detail items (tetap disimpan untuk semua jenis, termasuk DRAFT)
             for ($i = 0; $i < $item['jumlah']; $i++) {
                 $this->pemesananOfflineItemModel->insert([
                     'id_pesanan'    => $idFix,
@@ -1960,12 +1985,18 @@ class AdminController extends BaseController
         }
 
         // --- tentukan tanggal_inv sesuai jenis ---
-        // sale: pakai aturan lama (hanya kalau ada NPWP dan tanpa DP)
-        // sp & nf: tidak ada faktur -> null
         $tanggal_inv = null;
-        if ($normJenis === 'sale' || $normJenis === 'nf') {
+        if (!$isDraft && ($normJenis === 'sale' || $normJenis === 'nf')) {
             $tanggal_inv = $body['npwp'] ? ($body['downPayment'] > 0 ? null : $body['tanggal']) : null;
         }
+
+        // --- status tergantung DRAFT atau FINAL ---
+        $status = $isDraft
+            ? 'draft'
+            : $this->defaultStatusByJenis($normJenis, $body['downPayment']);
+
+        // simpan DP-nya (boleh juga dibikin null kalau draft nggak mau simpan DP)
+        $downPaymentValue = (int)$body['downPayment'];
 
         $data = [
             'nama'               => $body['nama'],
@@ -1977,20 +2008,27 @@ class AdminController extends BaseController
             'tanggal'            => $body['tanggal'],
             'tanggal_inv'        => $tanggal_inv,
             'id_pesanan'         => $idFix,
-            'status'             => $this->defaultStatusByJenis($normJenis, $body['downPayment']),
+            'status'             => $status,
             'jenis'              => $normJenis, // simpan 'sale' | 'sp' | 'nf'
             'total_akhir'        => $totalAkhir,
             'keterangan'         => $body['keterangan'],
             'po'                 => $body['po'] ? $body['po'] : null,
-            'down_payment'       => (($normJenis === 'sale' || $normJenis === 'nf') && $body['downPayment'] > 0) ? $body['downPayment'] : null,
+            'down_payment'       => (($normJenis === 'sale' || $normJenis === 'nf') && $downPaymentValue > 0)
+                                    ? $downPaymentValue
+                                    : null,
+            // kalau kamu sudah bikin kolom is_draft di DB, boleh hidupkan ini:
+            'is_draft'          => $isDraft ? 1 : 0,
         ];
+
         $this->pemesananOfflineModel->insert($data);
 
         return $this->response->setStatusCode(200)->setJSON([
             'success'    => true,
             'id_pesanan' => $idFix,
+            'is_draft'   => $isDraft,
         ], false);
     }
+
 
     public function actionBuatDP()
     {
@@ -2055,8 +2093,6 @@ class AdminController extends BaseController
             ->where(['id_pesanan' => $idPesanan])
             ->set(['status' => 'DP paid'])
             ->update();
-
-        // Kelompokkan items untuk pemotongan stok & duplikasi item
         $filter         = [];
         $itemsFiltered  = [];
         $counterJumlah  = [];
@@ -2125,8 +2161,6 @@ class AdminController extends BaseController
                 ]);
             }
         }
-
-        // Kembali ke listing sesuai jenis asal
         $segmentJenis = $jenisAsal === 'nf' ? 'nf' : 'sale';
         return redirect()->to('/admin/order/offline/' . $segmentJenis);
     }
@@ -2300,7 +2334,105 @@ class AdminController extends BaseController
 
     }
 
+    public function orderOfflineFinalize()
+    {
+        $req = $this->request;
+        $id  = trim((string)$req->getPost('id_pesanan'));
 
+        if ($id === '') {
+            return redirect()->back()->with('msg', 'ID pesanan tidak valid.');
+        }
+
+        $order = $this->pemesananOfflineModel->where('id_pesanan', $id)->first();
+        if (!$order) {
+            return redirect()->back()->with('msg', 'Order tidak ditemukan.');
+        }
+
+        if ((int)($order['is_draft'] ?? 0) !== 1) {
+            return redirect()->back()->with('msg', 'Order ini bukan draft.');
+        }
+
+        $items = $this->pemesananOfflineItemModel
+            ->where('id_pesanan', $id)
+            ->findAll();
+
+        $normJenis   = $order['jenis'] ?: 'sale';
+        $downPayment = (int)($order['down_payment'] ?? 0);
+        $tanggal     = $order['tanggal'];
+        $tanggalNoStrip = date('Ymd', strtotime($tanggal));
+
+        // === PROSES STOK & KARTU STOK (mirip actionAddOrderOffline) ===
+        if ($this->shouldDeductStockNow($normJenis, $downPayment)) {
+            foreach ($items as $item) {
+                $produkCur = $this->barangModel->getBarang($item['id_barang']);
+                $varian    = json_decode($produkCur['varian'], true);
+                $saldo     = 0;
+                $varianBaru = $varian;
+
+                foreach ($varian as $ind => $v) {
+                    if ($v['nama'] == $item['varian']) {
+                        $saldo = (int)$v['stok'];
+                        $varianBaru[$ind]['stok'] = (string)((int)$v['stok'] - 1);
+                    }
+                }
+
+                $saldoAkhir = $saldo - 1;
+                if ($saldoAkhir < 0) {
+                    return redirect()->back()->with('msg',
+                        'Stok tidak mencukupi untuk varian ' . $item['varian'] . ' (' . $produkCur['nama'] . ')');
+                }
+
+                // update stok barang
+                $this->barangModel->where('id', $item['id_barang'])->set([
+                    'varian' => json_encode($varianBaru)
+                ])->update();
+
+                // kartu stok
+                $this->kartuStokModel->insert([
+                    'id_barang' => $item['id_barang'],
+                    'tanggal'   => $tanggal,
+                    'keterangan'=> $tanggalNoStrip . "-" . $item['id_barang'] . "-" .
+                                str_replace(' ', '-', strtoupper($item['varian'])) . "-" . $id,
+                    'debit'     => 0,
+                    'kredit'    => 1,
+                    'saldo'     => $saldoAkhir,
+                    'pending'   => false,
+                    'id_pesanan'=> $id,
+                    'varian'    => $item['varian'],
+                ]);
+            }
+        }
+
+        // === Ubah status draft -> normal ===
+        $statusFinal = $this->defaultStatusByJenis($normJenis, $downPayment);
+
+        // tanggal_inv: pakai aturan yang sama seperti di actionAddOrderOffline
+        $tanggal_inv = $order['tanggal_inv'];
+        if (($normJenis === 'sale' || $normJenis === 'nf')
+            && ($order['npwp'] ?? null)
+            && $downPayment <= 0
+            && !$tanggal_inv
+        ) {
+            $tanggal_inv = $tanggal;
+        }
+
+        $this->pemesananOfflineModel
+            ->where('id_pesanan', $id)
+            ->set([
+                'is_draft'    => 0,
+                'status'      => $statusFinal,
+                'tanggal_inv' => $tanggal_inv,
+            ])->update();
+
+        $seg = ($normJenis === 'nf') ? 'nf' : ($normJenis === 'sp' ? 'sp' : 'sale');
+
+        return redirect()->to('/admin/order/offline/' . $seg)
+            ->with('msg', 'Draft ' . $id . ' berhasil difinalisasi.');
+    }
+
+
+
+    // ========== VOUCHER ==========
     public function voucher()
     {
         $q = $this->request->getGet('q');
@@ -2456,18 +2588,17 @@ class AdminController extends BaseController
     }
 
 
-    // ====== PROJECT INTERIOR ======
-protected function generateNextOfflineCode(string $prefix): string
-{
-    $row = $this->pemesananOfflineModel
-        ->like('id_pesanan', $prefix, 'after')
-        ->orderBy('id', 'desc')
-        ->first();
+    protected function generateNextOfflineCode(string $prefix): string
+    {
+        $row = $this->pemesananOfflineModel
+            ->like('id_pesanan', $prefix, 'after')
+            ->orderBy('id', 'desc')
+            ->first();
 
-    $next = $row ? ((int)substr($row['id_pesanan'], 2) + 1) : 1;
+        $next = $row ? ((int)substr($row['id_pesanan'], 2) + 1) : 1;
 
-    return $prefix . sprintf('%08d', $next);
-}
+        return $prefix . sprintf('%08d', $next);
+    }
 // ====== PROJECT INTERIOR ======
 
 public function projectInteriorAdd()
@@ -2488,6 +2619,9 @@ public function actionProjectInteriorAdd()
     // --- Data project dasar ---
     $namaProject  = trim((string)$req->getPost('nama_project'));
 
+    // NEW: Nomor PO (opsional)
+    $noPo         = trim((string)$req->getPost('no_po'));
+
     // CATATAN:
     // nilai_kontrak DI SINI = TOTAL TAGIHAN KE KLIEN (SUDAH termasuk PPN 11%)
     $nilaiKontrakInput = (int)preg_replace('/[^\d]/', '', (string)$req->getPost('nilai_kontrak'));
@@ -2497,6 +2631,9 @@ public function actionProjectInteriorAdd()
 
     // === DATA PRODUK BARU ===
     $namaBarang = trim((string)$req->getPost('nama_barang'));
+
+    // NEW: Keterangan Barang (opsional)
+    $keteranganBarang = trim((string)$req->getPost('keterangan_barang'));
 
     // CATATAN:
     // harga_satuan di form = DPP (BELUM termasuk PPN 11%)
@@ -2518,7 +2655,7 @@ public function actionProjectInteriorAdd()
     // 2) Kalau admin isi NILAI KONTRAK (grand total) tapi harga satuan dikosongkan:
     //    DPP total ≈ nilai_kontrak / 1.11, lalu dibagi qty
     if ($hargaSatuanDpp <= 0 && $nilaiKontrakInput > 0) {
-        $dppTotal = (int)round($nilaiKontrakInput / 1.11);
+        $dppTotal       = (int)round($nilaiKontrakInput / 1.11);
         $hargaSatuanDpp = (int)round($dppTotal / $qty);
     }
 
@@ -2568,6 +2705,18 @@ public function actionProjectInteriorAdd()
 
     $now = date('Y-m-d H:i:s', strtotime('+7 hours'));
 
+    // Build keterangan gabungan (kode project + nama barang + keterangan barang + catatan internal)
+    $ketParts = [
+        $kodeProject . ' - ' . $namaBarang,
+    ];
+    if ($keteranganBarang !== '') {
+        $ketParts[] = '[' . $keteranganBarang . ']';
+    }
+    if ($catatanInternal !== '') {
+        $ketParts[] = $catatanInternal;
+    }
+    $keteranganFinal = implode(' | ', $ketParts);
+
     // Data dasar pemesanan_offline (status reserved khusus interior)
     // total_akhir DIISI dengan nilaiKontrak (TOTAL termasuk PPN 11%)
     $baseData = [
@@ -2579,10 +2728,10 @@ public function actionProjectInteriorAdd()
         'nama_npwp'         => $namaNpwp !== '' ? $namaNpwp : null,
         'tanggal'           => $now,
         'tanggal_inv'       => null,
-        'status'            => 'reserved', // status khusus interior
-        'total_akhir'       => $nilaiKontrak, // TOTAL termasuk PPN 11%
-        'keterangan'        => '[INTERIOR] ' . $kodeProject . ' - ' . $namaBarang . ($catatanInternal ? ' | ' . $catatanInternal : ''),
-        'po'                => null,
+        'status'            => 'reserved',
+        'total_akhir'       => $nilaiKontrak,
+        'keterangan'        => $keteranganFinal,
+        'po'                => $noPo !== '' ? $noPo : null,
         'down_payment'      => $dpPlanned > 0 ? $dpPlanned : null,
     ];
 
@@ -2600,19 +2749,22 @@ public function actionProjectInteriorAdd()
 
     // === Simpan project interior ===
     $builderProject->insert([
-        'kode_project'  => $kodeProject,
-        'nama_project'  => $namaProject,
-        'nilai_kontrak' => $nilaiKontrak,  // TOTAL termasuk PPN 11%
-        'kode_sp'       => $kodeSP,
-        'kode_sj'       => $kodeInvoice,   // bisa SJ atau NF
-        'total_dp'      => $dpPlanned,
-        'total_bayar'   => 0,
-        'status'        => 'draft',
+        'kode_project'       => $kodeProject,
+        'nama_project'       => $namaProject,
+        'nilai_kontrak'      => $nilaiKontrak,  // TOTAL termasuk PPN 11%
+        'kode_sp'            => $kodeSP,
+        'kode_sj'            => $kodeInvoice,   // bisa SJ atau NF
+        'total_dp'           => $dpPlanned,
+        'total_bayar'        => 0,
+        'status'             => 'draft',
 
-        // FIELD BARU
-        'nama_barang'   => $namaBarang,
-        'harga_satuan'  => $hargaSatuan,   // DPP per unit (belum PPN)
-        'qty'           => $qty,
+        // FIELD BARU / DETAIL
+        'no_po'              => $noPo !== '' ? $noPo : null,
+        'nama_barang'        => $namaBarang,
+        'harga_satuan'       => $hargaSatuan,          // DPP per unit (belum PPN)
+        'qty'                => $qty,
+        // 'keterangan_barang'  => $keteranganBarang !== '' ? $keteranganBarang : null,
+        'catatan'            => $catatanInternal !== '' ? $catatanInternal : null,
     ]);
 
     $labelDok = $jenisFaktur === 'nf' ? 'NF' : 'SJ';
@@ -3003,6 +3155,9 @@ public function projectInteriorCreateInvoice(string $kodeProject)
         'pelunasan_total'     => $sumPelunasan,
         'total_bayar'         => $totalBayar,
         'sisa_tagihan'        => $sisaTagihan,
+
+        // >>> DITAMBAH <<<
+        'payments'            => $payments,
     ];
 
     // Pakai view yang SAMA dengan offline lama

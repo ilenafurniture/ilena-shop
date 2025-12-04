@@ -98,6 +98,20 @@ textarea.form-control {
     pointer-events: none;
 }
 
+/* section title */
+.section-title {
+    font-weight: 700;
+    font-size: 13px;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+.section-subtitle {
+    font-size: 11.5px;
+    color: #64748b;
+    margin-bottom: 10px;
+}
+
 /* notif */
 .notif {
     position: fixed;
@@ -149,39 +163,53 @@ textarea.form-control {
                 <?= csrf_field(); ?>
 
                 <!-- ===== Mode Pengisian Nilai ===== -->
-                <div class="row g-3 mb-2">
-                    <div class="col-12">
-                        <label class="form-label mb-1" style="font-size:13px;font-weight:600;">
-                            Mode pengisian nilai
+                <div class="mb-3">
+                    <div class="section-title">Mode Pengisian Nilai</div>
+                    <div class="section-subtitle">
+                        Pilih cara input: langsung nilai kontrak (grand total) atau harga satuan (DPP).
+                    </div>
+                    <div class="d-flex flex-column gap-1" style="font-size:13px;">
+                        <label class="d-flex align-items-start gap-2">
+                            <input type="radio" name="mode_nilai" value="kontrak" checked style="margin-top:3px;">
+                            <span>
+                                <b>Isi Nilai Kontrak</b> (grand total sudah termasuk PPN 11%).<br>
+                                Sistem akan otomatis menghitung <b>Harga Satuan (DPP)</b>.
+                            </span>
                         </label>
-                        <div class="d-flex flex-column gap-1" style="font-size:13px;">
-                            <label class="d-flex align-items-center gap-2">
-                                <input type="radio" name="mode_nilai" value="kontrak" checked style="margin:0;">
-                                <span>
-                                    <b>Isi Nilai Kontrak</b> (grand total sudah termasuk PPN 11%).<br>
-                                    Sistem akan otomatis menghitung <b>Harga Satuan (DPP)</b>.
-                                </span>
-                            </label>
-                            <label class="d-flex align-items-center gap-2">
-                                <input type="radio" name="mode_nilai" value="satuan" style="margin:0;">
-                                <span>
-                                    <b>Isi Harga Satuan (DPP)</b> per unit.<br>
-                                    Sistem akan otomatis menghitung <b>Nilai Kontrak (total + PPN 11%)</b>.
-                                </span>
-                            </label>
-                        </div>
+                        <label class="d-flex align-items-start gap-2">
+                            <input type="radio" name="mode_nilai" value="satuan" style="margin-top:3px;">
+                            <span>
+                                <b>Isi Harga Satuan (DPP)</b> per unit.<br>
+                                Sistem akan otomatis menghitung <b>Nilai Kontrak (total + PPN 11%)</b>.
+                            </span>
+                        </label>
                     </div>
                 </div>
 
                 <!-- ===== Baris Project & Kontrak ===== -->
+                <div class="section-title">Info Project & Kontrak</div>
+                <div class="section-subtitle">
+                    Lengkapi nama project, nilai kontrak, dan (jika ada) nomor PO dari klien.
+                </div>
                 <div class="row g-3 mb-3">
-                    <div class="col-md-6">
+                    <div class="col-md-5">
                         <label class="form-label mb-1" style="font-size:13px;font-weight:600;">Nama Project</label>
                         <input type="text" name="nama_project" class="form-control"
                             placeholder="Misal: Interior Kantor PT Maju Jaya" required>
                     </div>
 
+                    <!-- Nomor PO -->
                     <div class="col-md-3">
+                        <label class="form-label mb-1" style="font-size:13px;font-weight:600;">
+                            Nomor PO (opsional)
+                        </label>
+                        <input type="text" name="no_po" class="form-control" placeholder="Misal: PO-001/IX/2025">
+                        <small class="text-muted" style="font-size:11.5px;">
+                            Diisi sesuai Purchase Order dari klien.
+                        </small>
+                    </div>
+
+                    <div class="col-md-2">
                         <label class="form-label mb-1" style="font-size:13px;font-weight:600;">
                             Nilai Kontrak (Rp, sudah termasuk PPN 11%)
                         </label>
@@ -193,7 +221,7 @@ textarea.form-control {
                         </small>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label class="form-label mb-1" style="font-size:13px;font-weight:600;">Rencana DP
                             (opsional)</label>
                         <input type="text" name="dp" class="form-control rupiah" placeholder="Misal: 50.000.000">
@@ -204,18 +232,31 @@ textarea.form-control {
                 </div>
 
                 <!-- ===== Detail Produk yang Ditawarkan ===== -->
-                <h6 class="mb-2" style="font-weight:700;font-size:13px;color:#0f172a;">Detail Produk / Pekerjaan</h6>
-                <div class="row g-3 mb-3">
-                    <div class="col-md-6">
+                <div class="section-title">Detail Produk / Pekerjaan</div>
+                <div class="section-subtitle">
+                    Data ini jadi referensi admin dan akan muncul sebagai ringkasan di dokumen (SP / SJ / Invoice).
+                </div>
+
+                <div class="row g-3 mb-2">
+                    <div class="col-md-5">
                         <label class="form-label mb-1" style="font-size:13px;font-weight:600;">Nama Barang /
                             Produk</label>
                         <input type="text" name="nama_barang" class="form-control"
                             placeholder="Misal: Kitchen Set Full + Wardrobe" required>
                         <small class="text-muted" style="font-size:11.5px;">
-                            Ini yang akan tampil di kolom <b>Nama Barang</b> di Surat Jalan / Invoice.
+                            Ditampilkan di kolom <b>Nama Barang</b> di Surat Jalan / Invoice.
                         </small>
                     </div>
-                    <div class="col-md-3">
+
+                    <div class="col-md-2">
+                        <label class="form-label mb-1" style="font-size:13px;font-weight:600;">Jumlah</label>
+                        <input type="number" name="qty" id="qty" class="form-control" value="1" min="1">
+                        <small class="text-muted" style="font-size:11.5px;">
+                            Dipakai dalam perhitungan otomatis Nilai Kontrak / Harga Satuan.
+                        </small>
+                    </div>
+
+                    <div class="col-md-5">
                         <label class="form-label mb-1" style="font-size:13px;font-weight:600;">
                             Harga Satuan Barang (Rp, <u>belum termasuk PPN 11%</u>)
                         </label>
@@ -226,29 +267,40 @@ textarea.form-control {
                             Jika mode ini aktif, kolom <b>Nilai Kontrak</b> akan dihitung otomatis.
                         </small>
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label mb-1" style="font-size:13px;font-weight:600;">Jumlah</label>
-                        <input type="number" name="qty" id="qty" class="form-control" value="1" min="1">
+                </div>
+
+                <!-- Keterangan Barang full width -->
+                <div class="row g-3 mb-3">
+                    <div class="col-12">
+                        <label class="form-label mb-1" style="font-size:13px;font-weight:600;">
+                            Keterangan Barang (opsional)
+                        </label>
+                        <textarea name="keterangan_barang" class="form-control"
+                            placeholder="Contoh: Finishing HPL + duco, include top table granit, aksesoris soft closing, dll."></textarea>
                         <small class="text-muted" style="font-size:11.5px;">
-                            Dipakai dalam perhitungan otomatis Nilai Kontrak / Harga Satuan.
+                            Untuk detail teknis / spek barang (internal admin). Bisa jadi referensi saat menyusun SP /
+                            SJ / invoice,
+                            tapi tidak harus ditampilkan semua di dokumen.
                         </small>
                     </div>
                 </div>
 
                 <!-- ===== Jenis Dokumen Utama (SJ vs NF) ===== -->
+                <div class="section-title">Jenis Dokumen Utama</div>
+                <div class="section-subtitle">
+                    Pilih apakah dokumen utama project menggunakan SJ (dengan faktur pajak) atau NF (non faktur).
+                </div>
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
-                        <label class="form-label mb-1" style="font-size:13px;font-weight:600;">Jenis Dokumen
-                            Utama</label>
                         <div class="d-flex flex-column gap-1" style="font-size:13px;">
-                            <label class="d-flex align-items-center gap-2">
-                                <input type="radio" name="jenis_faktur" value="sale" checked style="margin:0;">
+                            <label class="d-flex align-items-start gap-2">
+                                <input type="radio" name="jenis_faktur" value="sale" checked style="margin-top:3px;">
                                 <span>
                                     <b>SJ (Faktur Pajak)</b> &mdash; dokumen utama menggunakan SJ, dengan faktur pajak.
                                 </span>
                             </label>
-                            <label class="d-flex align-items-center gap-2">
-                                <input type="radio" name="jenis_faktur" value="nf" style="margin:0;">
+                            <label class="d-flex align-items-start gap-2">
+                                <input type="radio" name="jenis_faktur" value="nf" style="margin-top:3px;">
                                 <span>
                                     <b>NF (Non Faktur)</b> &mdash; dokumen utama Non Faktur (tanpa faktur pajak).
                                 </span>
@@ -260,7 +312,11 @@ textarea.form-control {
                 <hr class="my-3">
 
                 <!-- ===== Data Klien (mengikuti sistem lama) ===== -->
-                <h6 class="mb-2" style="font-weight:700;font-size:13px;color:#0f172a;">Data Klien</h6>
+                <div class="section-title">Data Klien</div>
+                <div class="section-subtitle">
+                    Data ini akan muncul di SP / SJ / Invoice sebagai identitas penagihan dan pengiriman.
+                </div>
+
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
                         <label class="form-label mb-1" style="font-size:13px;font-weight:600;">Nama Klien</label>
@@ -323,13 +379,11 @@ textarea.form-control {
 
                 <hr class="my-4">
 
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <span class="badge-soft">
-                            <i class="material-icons" style="font-size:16px;">info</i>
-                            SP &amp; SJ / NF akan langsung direservasi dan tidak bisa dipakai order lain.
-                        </span>
-                    </div>
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <span class="badge-soft">
+                        <i class="material-icons" style="font-size:16px;">info</i>
+                        SP &amp; SJ / NF akan langsung direservasi dan tidak bisa dipakai order lain.
+                    </span>
                     <button type="submit" class="btn-default-merah">
                         Simpan Project &amp; Klaim SP/SJ atau NF
                     </button>
@@ -423,7 +477,6 @@ function syncFromHargaSatuan() {
 modeRadios.forEach(function(r) {
     r.addEventListener('change', function() {
         setReadonlyState();
-        // setiap ganti mode, hitung ulang biar konsisten
         const mode = this.value;
         if (mode === 'kontrak') {
             syncFromNilaiKontrak();

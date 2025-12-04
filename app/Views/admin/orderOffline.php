@@ -571,12 +571,52 @@ hr {
 </div>
 <!-- ===================== END MODAL: EDIT ORDER ===================== -->
 
+<!-- ===================== MODAL: DETAIL PESANAN (BARU) ===================== -->
+<div class="modal fade" id="modalDetail" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    Detail Pesanan <span class="mono" id="detail-id-pesanan"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-2">
+                    <small class="text-muted">Berikut daftar item untuk pesanan ini.</small>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Barang</th>
+                                <th>Varian</th>
+                                <th class="text-center">Dimensi</th>
+                                <th class="text-end">Harga</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detail-items-body">
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">Memuat data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ===================== END MODAL: DETAIL PESANAN ===================== -->
+
 <!-- LIST PAGE -->
 <div style="padding: 2em;">
     <div class="page-card">
         <div class="mb-2">
             <p class="text-muted-12" data-bs-toggle="tooltip" data-bs-title="JT = tanggal SJ + 14 hari.">
-                *JT mulai dihitung saat Surat Jalan (SJ) terbit, maksimal 14 hari.
+                *JT mulai dihitung saat Surat Jalan (SJ) terbit, maksimal 14 hari. Draft belum dihitung JT.
             </p>
         </div>
 
@@ -623,7 +663,7 @@ hr {
                     </thead>
                     <tbody>
                         <?php foreach ($pesanan as $ind_p => $p) { ?>
-                        <tr>
+                        <tr <?= (($p['is_draft'] ?? 0) == 1) ? 'class="table-warning"' : ''; ?>>
                             <th scope="row"><?= $ind_p + 1; ?></th>
                             <td class="mono"><?= $p['id_pesanan']; ?></td>
                             <td><?= date("d M Y", strtotime($p['tanggal'])); ?></td>
@@ -638,19 +678,28 @@ hr {
                     'dp paid'  => 'bg-info text-dark',
                     'success'  => 'bg-success',
                     'return'   => 'bg-danger',
+                    'draft'    => 'bg-light text-dark',
                   ][$st] ?? 'bg-secondary';
                 ?>
-                                <span
-                                    class="badge <?= $badgeClass; ?> rounded-pill"><?= strtoupper($st ?: '-'); ?></span>
+                                <span class="badge <?= $badgeClass; ?> rounded-pill">
+                                    <?= strtoupper($st ?: '-'); ?>
+                                    <?php if (($p['is_draft'] ?? 0) == 1): ?>
+                                    &nbsp;• DRAFT
+                                    <?php endif; ?>
+                                </span>
                             </td>
 
                             <?php
                 // JT dihitung dari tanggal SJ (tanggal transaksi untuk NF/SALE).
-                // - SALE & NF: jika status DP → SJ belum ada, JT = —; selain itu pakai $p['tanggal']
+                // - SALE & NF: jika status DP atau DRAFT → SJ belum ada, JT = —; selain itu pakai $p['tanggal']
                 // - SP: tidak ada SJ → JT = —
                 $tglSj = null;
                 if ($jenis === 'sale' || $jenis === 'nf') {
-                    $tglSj = (strtoupper((string)($p['status'] ?? '')) === 'DP') ? null : ($p['tanggal'] ?? null);
+                    if ($st === 'dp' || $st === 'draft') {
+                        $tglSj = null;
+                    } else {
+                        $tglSj = $p['tanggal'] ?? null;
+                    }
                 } else {
                     $tglSj = null; // SP
                 }
@@ -678,11 +727,33 @@ hr {
                             <td>
                                 <div class="d-flex gap-1 justify-content-center">
                                     <?php
+                    $isDraft     = isset($p['is_draft']) && (int)$p['is_draft'] === 1;
                     $downPayment = (int)($p['down_payment'] ?? 0);
                     $hasDP       = $downPayment !== 0;
                     $dpIsNegative= $downPayment < 0; // setelah “Buat SJ” dari DP
                     $isSaleLike  = ($jenis === 'sale' || $jenis === 'nf');
                   ?>
+
+                                    <!-- Tombol DETAIL (selalu ada) -->
+                                    <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        data-bs-title="Detail pesanan"
+                                        onclick="openDetail('<?= esc($p['id_pesanan']); ?>')">
+                                        <i class="material-icons">visibility</i>
+                                    </button>
+
+                                    <?php if ($isDraft): ?>
+                                    <!-- DRAFT MODE: hanya bisa finalisasi + edit -->
+                                    <form method="post" action="/admin/order-offline/finalize"
+                                        onsubmit="return confirm('Finalisasi draft <?= esc($p['id_pesanan']); ?> ? Stok akan dipotong dan status berubah. Lanjutkan?');"
+                                        style="display:inline;">
+                                        <input type="hidden" name="id_pesanan" value="<?= esc($p['id_pesanan']); ?>">
+                                        <button type="submit" class="btn" data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            data-bs-title="Finalisasi draft (potong stok & ubah status)">
+                                            <i class="material-icons">rocket_launch</i>
+                                        </button>
+                                    </form>
+                                    <?php else: ?>
 
                                     <?php if ($isSaleLike): ?>
                                     <?php if ($hasDP): ?>
@@ -736,6 +807,7 @@ hr {
                                             class="material-icons">insert_drive_file</i></a>
                                     <?php endif; ?>
 
+                                    <?php endif; ?>
                                     <?php endif; ?>
 
                                     <!-- ===== Tambahan tombol EDIT (selalu ada) ===== -->
@@ -1566,6 +1638,60 @@ function openEdit(index) {
         inputEditOrderElm.classList.remove('d-flex');
     }
 })();
+</script>
+
+<!-- ========== JS TAMBAHAN: DETAIL PESANAN ========== -->
+<script>
+function openDetail(idPesanan) {
+    const tbody = document.getElementById('detail-items-body');
+    const titleId = document.getElementById('detail-id-pesanan');
+
+    titleId.textContent = idPesanan || '';
+    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Memuat data...</td></tr>';
+
+    fetch(`/admin/getitemsoffline/${idPesanan}`)
+        .then(r => r.json())
+        .then(res => {
+            if (!res.success) {
+                tbody.innerHTML =
+                    '<tr><td colspan="4" class="text-center text-danger">Gagal mengambil data item.</td></tr>';
+                return;
+            }
+            const items = res.items || [];
+            if (!items.length) {
+                tbody.innerHTML =
+                    '<tr><td colspan="4" class="text-center text-muted">Tidak ada item untuk pesanan ini.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            items.forEach(i => {
+                const dim = i.dimensi || {};
+                const dimStr = (dim.panjang && dim.lebar && dim.tinggi) ?
+                    `${dim.panjang} × ${dim.lebar} × ${dim.tinggi}` :
+                    '-';
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${i.nama || '-'}</td>
+                        <td>${i.varian || '-'}</td>
+                        <td class="text-center">${dimStr}</td>
+                        <td class="text-end">Rp ${parseInt(i.harga || 0).toLocaleString('id-ID')}</td>
+                    </tr>
+                `;
+            });
+        })
+        .catch(err => {
+            console.error(err);
+            tbody.innerHTML =
+                '<tr><td colspan="4" class="text-center text-danger">Terjadi kesalahan saat memuat data.</td></tr>';
+        })
+        .finally(() => {
+            const modalEl = document.getElementById('modalDetail');
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+        });
+}
 </script>
 
 <?= $this->endSection(); ?>

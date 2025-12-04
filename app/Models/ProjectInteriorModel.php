@@ -30,7 +30,6 @@ class ProjectInteriorModel extends Model
         'npwp',
         'no_po',
         'keterangan',
-
         'tanggal_invoice',
         'tanggal_sj',
     ];

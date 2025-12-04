@@ -1,3 +1,4 @@
+<!-- app/Views/admin/orderOfflineAdd.php -->
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
 <style>
@@ -539,6 +540,17 @@ input {
     box-shadow: 0 6px 16px rgba(165, 14, 18, .22)
 }
 
+/* versi abu-abu untuk draft */
+.btn-primary-secondary {
+    background: #e5e7eb;
+    color: #111827;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, .15);
+}
+
+.btn-primary-secondary:hover {
+    background: #d4d4d8;
+}
+
 .btn-copy {
     border: 1px dashed var(--slate-300);
     background: #f9fafb;
@@ -739,7 +751,7 @@ h1.teks-sedang::after {
 console.log(<?= $produkJson ?>);
 </script>
 
-<!-- JSX & fitur modern (LOGIKA TIDAK DIUBAH) -->
+<!-- JSX & fitur modern (LOGIKA UTAMA TETAP, DITAMBAH FLAG isDraft) -->
 <script type="text/babel" data-presets="env,react">
     const { useState, useEffect } = React;
 const produkSemua = <?= $produkJson ?>;
@@ -758,7 +770,7 @@ const App = () => {
   const [currentItems, setCurrentItems] = useState([]);
   const [cari, setCari] = useState('');
   const [modalKeranjang, setModalKeranjang] = useState(false);
-  const [keranjang, setKeranjang] = useState([]); // (tidak dipakai, tetap dipertahankan)
+  const [keranjang, setKeranjang] = useState([]); // (masih dipertahankan)
   const [notif, setNotif] = useState({ show: false, teks: 'Stok tidak cukup' });
   const [totalHarga, setTotalHarga] = useState(0);
   const [formData, setFormData] = useState({
@@ -784,10 +796,9 @@ const App = () => {
   const [previewPayload, setPreviewPayload] = useState(null);
   const formatRupiah = (n) => `Rp ${Number(n||0).toLocaleString('id-ID')}`;
 
-  /* === Helper: aturan "seperti Sale" juga untuk NF === */
+  /* Aturan “SALE-like” juga utk NF */
   const isInvoiceLike = (j) => j === 'sale' || j === 'nf';
 
-  /* Helpers untuk preview */
   const subtotalBarang = () => {
     return (formData.items || []).reduce((acc, it) => acc + (Number(it.harga||0) * Number(it.jumlah||0)), 0);
   };
@@ -798,72 +809,108 @@ const App = () => {
   };
   const sisaBayar = () => Math.max(0, Number(formData.totalAkhir||0) - Number(formData.downPayment||0));
 
+  /* ========= DEPENDENCY ADDRESS (kirim) ========= */
   useEffect(()=>{
     if(formData.provinsi){
       const idprov=formData.provinsi.split("-")[0];
-      async function fetchRajaOngkir(){ const r=await fetch("/getkota/"+idprov); const kota=await r.json(); setKabupaten(kota); }
+      async function fetchRajaOngkir(){
+        const r=await fetch("/getkota/"+idprov);
+        const kota=await r.json();
+        setKabupaten(kota);
+      }
       fetchRajaOngkir();
     }
-    setFormData({...formData,kabupaten:'',kecamatan:'',kelurahan:'',kodepos:''});
+    setFormData(prev=>({...prev,kabupaten:'',kecamatan:'',kelurahan:'',kodepos:''}));
     setKecamatan([]); setKelurahan([]);
   },[formData.provinsi]);
 
   useEffect(()=>{
     if(formData.kabupaten){
       const idkab=formData.kabupaten.split("-")[0];
-      async function fetchRajaOngkir(){ const r=await fetch("/getkec/"+idkab); const kota=await r.json(); setKecamatan(kota); }
+      async function fetchRajaOngkir(){
+        const r=await fetch("/getkec/"+idkab);
+        const kota=await r.json();
+        setKecamatan(kota);
+      }
       fetchRajaOngkir();
     }
-    setFormData({...formData,kecamatan:'',kelurahan:'',kodepos:''});
+    setFormData(prev=>({...prev,kecamatan:'',kelurahan:'',kodepos:''}));
     setKelurahan([]);
   },[formData.kabupaten]);
 
   useEffect(()=>{
     if(formData.kecamatan){
       const idkec=formData.kecamatan.split("-")[0];
-      async function fetchRajaOngkir(){ const r=await fetch("/getkode/"+idkec); const hasil=await r.json(); setKelurahan(hasil); }
+      async function fetchRajaOngkir(){
+        const r=await fetch("/getkode/"+idkec);
+        const hasil=await r.json();
+        setKelurahan(hasil);
+      }
       fetchRajaOngkir();
     }
-    setFormData({...formData,kelurahan:'',kodepos:''});
+    setFormData(prev=>({...prev,kelurahan:'',kodepos:''}));
   },[formData.kecamatan]);
 
-  useEffect(()=>{ if(formData.kelurahan){ setFormData({...formData, kodepos: formData.kelurahan.split('-')[1]}); } },[formData.kelurahan]);
+  useEffect(()=>{
+    if(formData.kelurahan){
+      setFormData(prev=>({...prev, kodepos: prev.kelurahan.split('-')[1]}));
+    }
+  },[formData.kelurahan]);
 
-  /* TAGIHAN */
+  /* ========= DEPENDENCY ADDRESS (tagihan) ========= */
   useEffect(()=>{
     if(formData.provinsiTagihan){
       const idprov=formData.provinsiTagihan.split("-")[0];
-      async function fetchRajaOngkir(){ const r=await fetch("/getkota/"+idprov); const kota=await r.json(); setKabupatenTagihan(kota); }
+      async function fetchRajaOngkir(){
+        const r=await fetch("/getkota/"+idprov);
+        const kota=await r.json();
+        setKabupatenTagihan(kota);
+      }
       fetchRajaOngkir();
     }
-    setFormData({...formData,kabupatenTagihan:'',kecamatanTagihan:'',kelurahanTagihan:'',kodeposTagihan:''});
+    setFormData(prev=>({...prev,kabupatenTagihan:'',kecamatanTagihan:'',kelurahanTagihan:'',kodeposTagihan:''}));
     setKecamatanTagihan([]); setKelurahanTagihan([]);
   },[formData.provinsiTagihan]);
 
   useEffect(()=>{
     if(formData.kabupatenTagihan){
       const idkab=formData.kabupatenTagihan.split("-")[0];
-      async function fetchRajaOngkir(){ const r=await fetch("/getkec/"+idkab); const kota=await r.json(); setKecamatanTagihan(kota); }
+      async function fetchRajaOngkir(){
+        const r=await fetch("/getkec/"+idkab);
+        const kota=await r.json();
+        setKecamatanTagihan(kota);
+      }
       fetchRajaOngkir();
     }
-    setFormData({...formData,kecamatanTagihan:'',kelurahanTagihan:'',kodeposTagihan:''});
+    setFormData(prev=>({...prev,kecamatanTagihan:'',kelurahanTagihan:'',kodeposTagihan:''}));
     setKelurahanTagihan([]);
   },[formData.kabupatenTagihan]);
 
   useEffect(()=>{
     if(formData.kecamatanTagihan){
       const idkec=formData.kecamatanTagihan.split("-")[0];
-      async function fetchRajaOngkir(){ const r=await fetch("/getkode/"+idkec); const hasil=await r.json(); setKelurahanTagihan(hasil); }
+      async function fetchRajaOngkir(){
+        const r=await fetch("/getkode/"+idkec);
+        const hasil=await r.json();
+        setKelurahanTagihan(hasil);
+      }
       fetchRajaOngkir();
     }
-    setFormData({...formData,kelurahanTagihan:'',kodeposTagihan:''});
+    setFormData(prev=>({...prev,kelurahanTagihan:'',kodeposTagihan:''}));
   },[formData.kecamatanTagihan]);
 
-  useEffect(()=>{ if(formData.kelurahanTagihan){ setFormData({...formData, kodeposTagihan: formData.kelurahanTagihan.split('-')[1]}); } },[formData.kelurahanTagihan]);
+  useEffect(()=>{
+    if(formData.kelurahanTagihan){
+      setFormData(prev=>({...prev, kodeposTagihan: prev.kelurahanTagihan.split('-')[1]}));
+    }
+  },[formData.kelurahanTagihan]);
 
+  /* ========= Pagination & filter produk ========= */
   useEffect(()=>{ setCurrentPage(1); },[pageNumbers]);
 
-  useEffect(()=>{ setPageNumbers(Array.from({length: Math.ceil(listProduk.length/20)},(_,i)=>i+1)); },[listProduk]);
+  useEffect(()=>{
+    setPageNumbers(Array.from({length: Math.ceil(listProduk.length/20)},(_,i)=>i+1));
+  },[listProduk]);
 
   useEffect(()=>{
     const indexOfLast=currentPage*20;
@@ -876,34 +923,41 @@ const App = () => {
     setListProduk(listBaru);
   },[cari]);
 
+  /* ========= Validasi form utk aktifkan Preview ========= */
   useEffect(()=>{
     const {provinsi,kabupaten,kecamatan,kelurahan,kodepos,detail,totalAkhir,jenis,tanggal,items,nama,nohp,
-      provinsiTagihan,kabupatenTagihan,kecamatanTagihan,kelurahanTagihan,kodeposTagihan,detailTagihan}=formData;
+      provinsiTagihan,kabupatenTagihan,kecamatanTagihan,kelurahanTagihan,kodeposTagihan,detailTagihan} = formData;
 
     const isFormValidKhusus=()=>{
       if(isInvoiceLike(jenis) && !alamatTagihanSama){
         const ok=[provinsiTagihan,kabupatenTagihan,kecamatanTagihan,kelurahanTagihan,kodeposTagihan,detailTagihan].every(v=>v&&v!=='');
         return ok;
-      } return true;
-    }
+      }
+      return true;
+    };
     const isFormValid=()=>{
       const filled=[provinsi,kabupaten,kecamatan,kelurahan,kodepos,detail,jenis,tanggal,nama,nohp].every(v=>v&&v!=='');
       const totalValid=totalAkhir>0;
       const itemsValid=items.length>0;
       return filled && totalValid && itemsValid;
     };
-    setCanSave(isFormValid(formData) && isFormValidKhusus(jenis));
+    setCanSave(isFormValid() && isFormValidKhusus());
   },[formData,alamatTagihanSama]);
 
+  /* ========= Hitung totalAkhir ketika items / potongan berubah ========= */
   useEffect(()=>{
     if(formData.items.length>0){
       const hargaTotal=formData.items.map(k=>Number(k.harga)*Number(k.jumlah)).reduce((a,b)=>a+b,0);
-      setFormData({...formData, totalAkhir: Math.ceil(hargaTotal - (potongan.satuan=='rupiah' ? potongan.nominal : potongan.nominal/100*hargaTotal))});
+      setFormData(prev=>({
+        ...prev,
+        totalAkhir: Math.ceil(hargaTotal - (potongan.satuan=='rupiah' ? potongan.nominal : potongan.nominal/100*hargaTotal))
+      }));
     } else {
-      setFormData({...formData, totalAkhir: 0});
+      setFormData(prev=>({...prev, totalAkhir: 0}));
     }
   },[formData.items, potongan]);
 
+  /* ========= Keranjang ========= */
   const handlePilih=(produk,varian)=>{
     const stok=Number(varian.stok);
     const exist=formData.items.find(k=>k.id==produk.id && k.varian==varian.nama);
@@ -918,13 +972,14 @@ const App = () => {
         items: formData.items.map(item=>{
           if(item.id==produk.id && item.varian==varian.nama){
             return { ...item, jumlah: (item.jumlah+1)>stok ? item.jumlah : (item.jumlah+1) }
-          } return item;
+          }
+          return item;
         })
       });
     } else {
       setFormData({
         ...formData,
-        items:[...formData.items,{
+        items:[...formData.items, {
           id:produk.id, nama:produk.nama, jumlah:1, varian:varian.nama,
           harga: produk.harga * (potonganHargaSatuan>0 ? (100-potonganHargaSatuan) : 75) / 100,
           detail:{produk,varian}
@@ -934,25 +989,25 @@ const App = () => {
   };
 
   useEffect(()=>{
-    setFormData({
-      ...formData,
-      items: formData.items.map(item=>({
+    setFormData(prev=>({
+      ...prev,
+      items: prev.items.map(item=>({
         ...item,
         harga: item.detail.produk.harga * (potonganHargaSatuan>0 ? (100-potonganHargaSatuan) : 75) / 100
       }))
-    });
+    }));
   },[potonganHargaSatuan]);
 
   const handleCount=(index,max,tambah)=>{
-    setFormData({
-      ...formData,
-      items: formData.items
+    setFormData(prev=>({
+      ...prev,
+      items: prev.items
         .map((item,ind_i)=> index==ind_i ? { ...item, jumlah: (item.jumlah+tambah)>max ? item.jumlah : (item.jumlah+tambah) } : item)
         .filter(item=>item.jumlah>0)
-    });
+    }));
   };
 
-  /* Build payload (sesuai sistem) */
+  /* ========= Build payload (sesuai backend) ========= */
   const buildPayload=()=>{
     const fAkhir={
       ...formData,
@@ -971,7 +1026,7 @@ const App = () => {
     };
     const fAkhir1={
       ...fAkhir,
-      // display → kosongkan field faktur/npwp
+      // DISPLAY → kosongkan field faktur/npwp
       provinsiTagihan: fAkhir.jenis=='display' ? null : fAkhir.provinsiTagihan,
       kabupatenTagihan: fAkhir.jenis=='display' ? null : fAkhir.kabupatenTagihan,
       kecamatanTagihan: fAkhir.jenis=='display' ? null : fAkhir.kecamatanTagihan,
@@ -983,29 +1038,47 @@ const App = () => {
     return fAkhir1;
   };
 
-  const openPreview=()=>{ const payload=buildPayload(); setPreviewPayload(payload); setPreviewOpen(true); };
+  /* ========= PREVIEW ========= */
+  const openPreview=()=>{
+    const payload=buildPayload();
+    setPreviewPayload(payload);
+    setPreviewOpen(true);
+  };
   const closePreview=()=>setPreviewOpen(false);
 
-  const handleSubmit=(payloadFromPreview=null)=>{
-    const formDataAkhir1 = payloadFromPreview ?? buildPayload();
+  /* ========= SUBMIT KE BACKEND (SINI MASUK isDraft) ========= */
+  const handleSubmit=(payloadFromPreview=null, isDraft=false)=>{
+    const basePayload = payloadFromPreview ?? buildPayload();
+    const formDataAkhir1 = {
+      ...basePayload,
+      // flag baru: dikirim ke PHP -> $body['isDraft']
+      isDraft: isDraft ? 1 : 0,
+    };
+
     async function fetchSubmit(){
       const response = await fetch(`/admin/order-offline/add`,{
-        method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(formDataAkhir1),
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify(formDataAkhir1),
       });
       const responseJson = await response.json();
       if(response.status==200){
-        window.alert('Berhasil menambahkan pesanan');
+        window.alert(isDraft ? 'Draft pesanan tersimpan' : 'Berhasil menambahkan pesanan');
         const seg = formData.jenis === 'display' ? 'sp' : formData.jenis; // display → sp
         window.location.href = `/admin/order/offline/${seg}`;
       } else {
-        window.alert(responseJson.pesan);
+        window.alert(responseJson.pesan || 'Gagal menyimpan pesanan');
       }
     }
     fetchSubmit();
   };
 
-  /* 🔒 Escape untuk tutup preview */
-  useEffect(()=>{ const onKey = (e)=>{ if(e.key==='Escape') setPreviewOpen(false); }; window.addEventListener('keydown', onKey); return ()=>window.removeEventListener('keydown', onKey); },[]);
+  /* Escape utk tutup preview */
+  useEffect(()=>{
+    const onKey = (e)=>{ if(e.key==='Escape') setPreviewOpen(false); };
+    window.addEventListener('keydown', onKey);
+    return ()=>window.removeEventListener('keydown', onKey);
+  },[]);
 
   const copyPayload = () => {
     try {
@@ -1016,12 +1089,15 @@ const App = () => {
     } catch {}
   };
 
-  // Helper penjelasan jenis dokumen
   const jenisInfo = (j) => {
     if(j==='sale') return 'SALE: Pesanan dengan faktur & pajak; butuh data penagihan/NPWP.';
     if(j==='nf')   return 'NF (Non Faktur): Pesanan tanpa faktur pajak, tetap butuh alamat penagihan.';
     return 'DISPLAY: SP untuk kebutuhan display; tanpa tagihan & NPWP.';
   };
+
+  const invalidFinancial =
+    Number(formData.downPayment) > Number(formData.totalAkhir) ||
+    potonganHargaSatuan > 25;
 
   return (
     <>
@@ -1266,14 +1342,26 @@ const App = () => {
             </button>
             <div style={{display:'flex', gap:10}}>
               <button type="button" className="btn-ghost" onClick={closePreview}>Kembali</button>
+
+              {/* === TOMBOL DRAFT & FINAL DI SINI === */}
+              <button
+                type="button"
+                className="btn-primary btn-primary-secondary"
+                onClick={()=>{ if(!invalidFinancial){ closePreview(); handleSubmit(previewPayload, true); } }}
+                disabled={invalidFinancial}
+                title={invalidFinancial ? 'Perbaiki DP / potongan terlebih dahulu' : 'Simpan sebagai draft (tanpa potong stok)'}
+              >
+                Simpan Draft
+              </button>
+
               <button
                 type="button"
                 className="btn-primary"
-                onClick={()=>{ closePreview(); handleSubmit(previewPayload); }}
-                disabled={Number(formData.downPayment) > Number(formData.totalAkhir) || potonganHargaSatuan > 25}
-                title={(Number(formData.downPayment) > Number(formData.totalAkhir) || potonganHargaSatuan > 25) ? 'Perbaiki data terlebih dahulu' : ''}
+                onClick={()=>{ if(!invalidFinancial){ closePreview(); handleSubmit(previewPayload, false); } }}
+                disabled={invalidFinancial}
+                title={invalidFinancial ? 'Perbaiki DP / potongan terlebih dahulu' : 'Simpan & finalisasi pesanan'}
               >
-                Kirim / Buat
+                Simpan &amp; Finalisasi
               </button>
             </div>
           </div>

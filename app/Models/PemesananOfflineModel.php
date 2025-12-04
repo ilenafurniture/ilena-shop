@@ -23,6 +23,7 @@ class PemesananOfflineModel extends Model
         'jenis',
         'keterangan',
         'po',
+        'is_draft',
     ];
 
     public function getPemesanan($id_pesanan)

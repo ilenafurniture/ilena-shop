@@ -158,7 +158,12 @@ $routes->get('/admin/benerinsurat', 'AdminController::benerinSurat');
 $routes->post('/admin/actionbuatinvoice', 'AdminController::actionBuatInvoice');
 $routes->post('/admin/actionbuatdp', 'AdminController::actionBuatDP');
 $routes->get('/admin/actionaccorderoffline/(:any)', 'AdminController::actionAccOrderOffline/$1', ['filter' => 'adminFilter']);
-$routes->get('/admin/order/offline/interior', 'AdminController::interiorList'); // masih boleh dipakai / legacy redirect kalau mau
+$routes->get('/admin/order/offline/interior', 'AdminController::interiorList');
+$routes->post('admin/order-offline/finalize', 'AdminController::orderOfflineFinalize');
+$routes->get('admin/getitemsoffline/(:segment)', 'AdminController::getItemsOffline/$1');
+
+
+
 
 // SEO helper (admin) — optional
 $routes->get('/admin/seo-check/(:any)', 'AdminController::seoCheck/$1', ['filter' => 'adminFilter']);
