@@ -194,16 +194,16 @@ textarea.form-control {
                 <div class="row g-3 mb-3">
                     <div class="col-md-5">
                         <label class="form-label mb-1" style="font-size:13px;font-weight:600;">Nama Project</label>
-                        <input type="text" name="nama_project" class="form-control"
-                            placeholder="Misal: Interior Kantor PT Maju Jaya" required>
+                        <input type="text" name="nama_project" class="form-control" placeholder="Misal: KOSQ" required>
                     </div>
 
                     <!-- Nomor PO -->
                     <div class="col-md-3">
                         <label class="form-label mb-1" style="font-size:13px;font-weight:600;">
-                            Nomor PO (opsional)
+                            Nomor PO / SPK
                         </label>
-                        <input type="text" name="no_po" class="form-control" placeholder="Misal: PO-001/IX/2025">
+                        <input type="text" name="no_po" class="form-control"
+                            placeholder="Misal: 018/SPK/CVSIP-CVCBM/XI/2025">
                         <small class="text-muted" style="font-size:11.5px;">
                             Diisi sesuai Purchase Order dari klien.
                         </small>
@@ -238,13 +238,23 @@ textarea.form-control {
                 </div>
 
                 <div class="row g-3 mb-2">
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         <label class="form-label mb-1" style="font-size:13px;font-weight:600;">Nama Barang /
                             Produk</label>
                         <input type="text" name="nama_barang" class="form-control"
-                            placeholder="Misal: Kitchen Set Full + Wardrobe" required>
+                            placeholder="Misal: Furniture Interior Lokal" required>
                         <small class="text-muted" style="font-size:11.5px;">
-                            Ditampilkan di kolom <b>Nama Barang</b> di Surat Jalan / Invoice.
+                            Ditampilkan di kolom <b>Nama / Keterangan Barang</b> di Surat Jalan / Invoice.
+                        </small>
+                    </div>
+
+                    <!-- FIELD BARU: KODE BARANG -->
+                    <div class="col-md-3">
+                        <label class="form-label mb-1" style="font-size:13px;font-weight:600;">Kode Barang</label>
+                        <input type="text" name="kode_barang" class="form-control" placeholder="Misal: CI001122025"
+                            required>
+                        <small class="text-muted" style="font-size:11.5px;">
+                            Kode unik yang akan dipakai konsisten di semua dokumen project interior.
                         </small>
                     </div>
 
@@ -256,7 +266,7 @@ textarea.form-control {
                         </small>
                     </div>
 
-                    <div class="col-md-5">
+                    <div class="col-md-3">
                         <label class="form-label mb-1" style="font-size:13px;font-weight:600;">
                             Harga Satuan Barang (Rp, <u>belum termasuk PPN 11%</u>)
                         </label>
@@ -269,7 +279,7 @@ textarea.form-control {
                     </div>
                 </div>
 
-                <!-- Keterangan Barang full width -->
+                <!-- (opsional) keterangan barang
                 <div class="row g-3 mb-3">
                     <div class="col-12">
                         <label class="form-label mb-1" style="font-size:13px;font-weight:600;">
@@ -278,12 +288,11 @@ textarea.form-control {
                         <textarea name="keterangan_barang" class="form-control"
                             placeholder="Contoh: Finishing HPL + duco, include top table granit, aksesoris soft closing, dll."></textarea>
                         <small class="text-muted" style="font-size:11.5px;">
-                            Untuk detail teknis / spek barang (internal admin). Bisa jadi referensi saat menyusun SP /
-                            SJ / invoice,
-                            tapi tidak harus ditampilkan semua di dokumen.
+                            Untuk detail teknis / spek barang (internal admin).
                         </small>
                     </div>
                 </div>
+                -->
 
                 <!-- ===== Jenis Dokumen Utama (SJ vs NF) ===== -->
                 <div class="section-title">Jenis Dokumen Utama</div>
@@ -396,7 +405,7 @@ textarea.form-control {
 <script>
 // format angka >> rupiah saat ketik
 function formatRupiah(val) {
-    val = val.replace(/[^\d]/g, '');
+    val = (val || '').replace(/[^\d]/g, '');
     if (!val) return '';
     return val.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
@@ -420,30 +429,45 @@ const inputHargaSatuan = document.getElementById('harga_satuan');
 const inputQty = document.getElementById('qty');
 const modeRadios = document.querySelectorAll('input[name="mode_nilai"]');
 
+function getCurrentMode() {
+    const checked = document.querySelector('input[name="mode_nilai"]:checked');
+    return checked ? checked.value : 'kontrak';
+}
+
 function setReadonlyState() {
-    const mode = document.querySelector('input[name="mode_nilai"]:checked')?.value || 'kontrak';
+    const mode = getCurrentMode();
 
     if (mode === 'kontrak') {
         // User input Nilai Kontrak, Harga Satuan auto
-        inputNilaiKontrak.readOnly = false;
-        inputNilaiKontrak.style.backgroundColor = '#ffffff';
+        if (inputNilaiKontrak) {
+            inputNilaiKontrak.readOnly = false;
+            inputNilaiKontrak.style.backgroundColor = '#ffffff';
+        }
 
-        inputHargaSatuan.readOnly = true;
-        inputHargaSatuan.style.backgroundColor = '#f9fafb';
+        if (inputHargaSatuan) {
+            inputHargaSatuan.readOnly = true;
+            inputHargaSatuan.style.backgroundColor = '#f9fafb';
+        }
     } else {
         // User input Harga Satuan, Nilai Kontrak auto
-        inputNilaiKontrak.readOnly = true;
-        inputNilaiKontrak.style.backgroundColor = '#f9fafb';
+        if (inputNilaiKontrak) {
+            inputNilaiKontrak.readOnly = true;
+            inputNilaiKontrak.style.backgroundColor = '#f9fafb';
+        }
 
-        inputHargaSatuan.readOnly = false;
-        inputHargaSatuan.style.backgroundColor = '#ffffff';
+        if (inputHargaSatuan) {
+            inputHargaSatuan.readOnly = false;
+            inputHargaSatuan.style.backgroundColor = '#ffffff';
+        }
     }
 }
 
 // hitung harga_satuan (DPP/unit) dari nilai_kontrak (total incl PPN)
 function syncFromNilaiKontrak() {
+    if (!inputNilaiKontrak || !inputHargaSatuan) return;
+
     const total = getIntFromRupiah(inputNilaiKontrak);
-    let qty = parseInt(inputQty.value || '1', 10);
+    let qty = parseInt(inputQty?.value || '1', 10);
     if (!qty || qty <= 0) qty = 1;
 
     if (total <= 0) {
@@ -460,8 +484,10 @@ function syncFromNilaiKontrak() {
 
 // hitung nilai_kontrak (total incl PPN) dari harga_satuan (DPP/unit)
 function syncFromHargaSatuan() {
+    if (!inputNilaiKontrak || !inputHargaSatuan) return;
+
     const dppPerUnit = getIntFromRupiah(inputHargaSatuan);
-    let qty = parseInt(inputQty.value || '1', 10);
+    let qty = parseInt(inputQty?.value || '1', 10);
     if (!qty || qty <= 0) qty = 1;
 
     if (dppPerUnit <= 0) {
@@ -477,7 +503,7 @@ function syncFromHargaSatuan() {
 modeRadios.forEach(function(r) {
     r.addEventListener('change', function() {
         setReadonlyState();
-        const mode = this.value;
+        const mode = getCurrentMode();
         if (mode === 'kontrak') {
             syncFromNilaiKontrak();
         } else {
@@ -489,8 +515,7 @@ modeRadios.forEach(function(r) {
 // listener perubahan nilai_kontrak & qty saat mode "kontrak"
 if (inputNilaiKontrak) {
     inputNilaiKontrak.addEventListener('input', function() {
-        const mode = document.querySelector('input[name="mode_nilai"]:checked')?.value || 'kontrak';
-        if (mode === 'kontrak') {
+        if (getCurrentMode() === 'kontrak') {
             syncFromNilaiKontrak();
         }
     });
@@ -499,8 +524,7 @@ if (inputNilaiKontrak) {
 // listener perubahan harga_satuan & qty saat mode "satuan"
 if (inputHargaSatuan) {
     inputHargaSatuan.addEventListener('input', function() {
-        const mode = document.querySelector('input[name="mode_nilai"]:checked')?.value || 'kontrak';
-        if (mode === 'satuan') {
+        if (getCurrentMode() === 'satuan') {
             syncFromHargaSatuan();
         }
     });
@@ -508,7 +532,7 @@ if (inputHargaSatuan) {
 
 if (inputQty) {
     inputQty.addEventListener('input', function() {
-        const mode = document.querySelector('input[name="mode_nilai"]:checked')?.value || 'kontrak';
+        const mode = getCurrentMode();
         if (mode === 'kontrak') {
             syncFromNilaiKontrak();
         } else {

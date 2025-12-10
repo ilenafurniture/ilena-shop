@@ -267,12 +267,29 @@
                 </tbody>
             </table>
 
+            <?php
+                // Deteksi kalau ini surat hasil relasi Project Interior
+                $isInterior = (!empty($is_project_interior))
+                    || (!empty($project) && isset($project['kode_project']));
+
+                $ketRaw = trim((string)($pemesanan['keterangan'] ?? ''));
+
+                // KHUSUS INTERIOR:
+                // walaupun kolom keterangan terisi auto (misal: CI0011... - Furniture Interior Lokal ...),
+                // JANGAN dipakai; anggap kosong saja supaya output "Tidak ada keterangan"
+                if ($isInterior) {
+                    $ketRaw = '';
+                }
+            ?>
             <p class="m-0">
                 <b style="font-weight:600;">Keterangan : </b>
                 <span class="text-danger">
-                    <?= $pemesanan['keterangan'] ? '*'.$pemesanan['keterangan'] : '<i style="color:inherit;">Tidak ada keterangan</i>'; ?>
+                    <?= $ketRaw !== '' 
+                        ? '*'.esc($ketRaw) 
+                        : '<i style="color:inherit;">Tidak ada keterangan</i>'; ?>
                 </span>
             </p>
+
 
             <p class="mt-4" style="font-weight:500;">Kendal, <?= $tgl_indo; ?></p>
 

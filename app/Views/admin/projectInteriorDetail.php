@@ -161,6 +161,24 @@ h1.teks-sedang::after {
 
     $nilaiKontrak = (int)$project['nilai_kontrak'];
     $sisa = max(0, $nilaiKontrak - (int)$project['total_bayar']);
+
+    // ===== INFO STATUS PEMBAYARAN (UNTUK VALIDASI JS) =====
+    $hasDp = false;
+    $terminCount = 0;
+    $hasPelunasan = false;
+
+    if (!empty($payments) && is_array($payments)) {
+        foreach ($payments as $p) {
+            $jenis = strtolower($p['jenis'] ?? '');
+            if ($jenis === 'dp') {
+                $hasDp = true;
+            } elseif ($jenis === 'termin') {
+                $terminCount++;
+            } elseif ($jenis === 'pelunasan') {
+                $hasPelunasan = true;
+            }
+        }
+    }
 ?>
 
 <div style="padding: 2em;" class="h-100 d-flex flex-column">
@@ -276,8 +294,11 @@ h1.teks-sedang::after {
                                     <?= $p['catatan'] ? esc($p['catatan']) : '<span class="text-muted">-</span>'; ?>
                                 </td>
                                 <td class="text-center" style="font-size:12px;">
-                                    <a href="<?= site_url('admin/project-interior/' . $project['kode_project'] . '/payment-invoice/' . $p['id']); ?>"
-                                        class="btn-ghost" target="_blank" style="padding:.25rem .6rem;font-size:11px;">
+                                    <!-- UPDATED: pakai JS + SweetAlert untuk opsi tampilkan SJ -->
+                                    <a href="#" class="btn-ghost btn-print-payment"
+                                        data-url="<?= site_url('admin/project-interior/' . $project['kode_project'] . '/payment-invoice/' . $p['id']); ?>"
+                                        data-jenis="<?= esc(strtolower($p['jenis'])); ?>"
+                                        style="padding:.25rem .6rem;font-size:11px;">
                                         Cetak Invoice
                                     </a>
                                 </td>
@@ -315,13 +336,13 @@ h1.teks-sedang::after {
                         </select>
                     </div>
 
-                    <!-- DP by persen -->
+                    <!-- DP / TERMIN by persen -->
                     <div class="mb-2" id="wrap-dp-percent" style="display:none;">
-                        <label class="form-label mb-1" style="font-size:13px;font-weight:600;">DP (Persen dari nilai
-                            kontrak)</label>
+                        <label class="form-label mb-1" id="label-percent" style="font-size:13px;font-weight:600;">DP
+                            (Persen dari nilai kontrak)</label>
                         <div class="d-flex gap-2 align-items-center">
                             <select class="form-select" id="dp-percent">
-                                <option value="">-- Pilih % DP --</option>
+                                <option value="">-- Pilih % --</option>
                                 <option value="10">10%</option>
                                 <option value="20">20%</option>
                                 <option value="25">25%</option>
@@ -330,7 +351,7 @@ h1.teks-sedang::after {
                                 <option value="50">50%</option>
                                 <option value="60">60%</option>
                             </select>
-                            <small style="font-size:11px;color:#6b7280;">
+                            <small id="help-percent" style="font-size:11px;color:#6b7280;">
                                 Nominal akan dihitung otomatis dari nilai kontrak.
                             </small>
                         </div>
@@ -354,7 +375,7 @@ h1.teks-sedang::after {
                     <div class="mb-3">
                         <label class="form-label mb-1" style="font-size:13px;font-weight:600;">Catatan
                             (opsional)</label>
-                        <textarea name="catatan" class="form-control"
+                        <textarea name="catatan" id="catatan-input" class="form-control"
                             placeholder="Misal: DP 30%, Termin 1, dll."></textarea>
                     </div>
 
@@ -379,7 +400,7 @@ h1.teks-sedang::after {
                         Dokumen utama project ini:
                         <code><?= esc($project['kode_sj']); ?></code>
                     </p>
-                    <!-- UPDATED: pakai route khusus SJ project interior -->
+                    <!-- route khusus SJ project interior -->
                     <a href="<?= site_url('admin/project-interior/' . $project['kode_project'] . '/sj'); ?>"
                         target="_blank" class="btn-ghost w-100" style="margin-bottom:.35rem;">
                         Cetak Surat Jalan / SP (<?= esc($project['kode_sj']); ?>)
@@ -413,6 +434,11 @@ h1.teks-sedang::after {
 const NILAI_KONTRAK = <?= (int)$nilaiKontrak; ?>;
 let sisaTagihan = <?= (int)$sisa; ?>;
 
+// info status pembayaran dari PHP
+const HAS_DP = <?= $hasDp ? 'true' : 'false'; ?>;
+const TERMIN_COUNT = <?= (int)$terminCount; ?>;
+const HAS_PELUNASAN = <?= $hasPelunasan ? 'true' : 'false'; ?>;
+
 // format rupiah
 function formatRupiah(val) {
     val = val.replace(/[^\d]/g, '');
@@ -433,38 +459,137 @@ if (notif) {
     }, 3500);
 }
 
-// DP persen logic + isi sisa otomatis
+// helper SweetAlert
+function saWarning(title, text) {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            icon: 'warning',
+            title: title,
+            text: text,
+        });
+    } else {
+        alert(title + ' - ' + text);
+    }
+}
+
+// DP / Termin persen logic + isi sisa otomatis
 const jenisSelect = document.getElementById('jenis-pembayaran');
 const dpWrap = document.getElementById('wrap-dp-percent');
 const dpPercent = document.getElementById('dp-percent');
 const inputNom = document.getElementById('input-nominal');
 const btnSisa = document.getElementById('btn-fill-sisa');
+const catatanInput = document.getElementById('catatan-input');
+const labelPercent = document.getElementById('label-percent');
+const helpPercent = document.getElementById('help-percent');
 
 if (jenisSelect) {
     jenisSelect.addEventListener('change', function() {
         const jenis = this.value;
 
-        // Kalau DP -> tampilkan pilihan persen
-        if (jenis === 'dp') {
-            dpWrap.style.display = '';
-        } else {
-            dpWrap.style.display = 'none';
-            dpPercent.value = '';
+        // reset tampilan dasar
+        dpWrap.style.display = 'none';
+        if (dpPercent) dpPercent.value = '';
+
+        // kalau sudah ada pelunasan, tidak boleh input apa-apa lagi (fallback)
+        if (HAS_PELUNASAN && jenis) {
+            saWarning(
+                'Sudah Pelunasan',
+                'Project sudah memiliki pembayaran Pelunasan. Tidak dapat menambah pembayaran baru.'
+            );
+            this.value = '';
+            return;
         }
 
-        // Kalau pelunasan -> isi sisa otomatis (kalau ada sisa)
-        if (jenis === 'pelunasan' && sisaTagihan > 0 && inputNom) {
-            inputNom.value = formatRupiah(String(sisaTagihan));
+        // DP sudah pernah dibuat → larang DP kedua
+        if (jenis === 'dp') {
+            if (HAS_DP) {
+                saWarning(
+                    'DP sudah ada',
+                    'DP sudah pernah dibuat untuk project ini. Tidak bisa menambah DP lagi.'
+                );
+                this.value = '';
+                return;
+            }
+            // tampilkan persen dengan label DP
+            if (labelPercent) {
+                labelPercent.textContent = 'DP (Persen dari nilai kontrak)';
+            }
+            if (helpPercent) {
+                helpPercent.textContent = 'Nominal akan dihitung otomatis dari nilai kontrak.';
+            }
+            dpWrap.style.display = '';
+            if (catatanInput && !catatanInput.value.trim()) {
+                catatanInput.value = 'Uang Muka';
+            }
+            return;
+        }
+
+        // Termin & pelunasan wajib punya DP dulu
+        if ((jenis === 'termin' || jenis === 'pelunasan') && !HAS_DP) {
+            saWarning(
+                'Belum ada DP',
+                'Tidak bisa menambahkan Termin atau Pelunasan sebelum ada pembayaran DP/Uang Muka.'
+            );
+            this.value = '';
+            return;
+        }
+
+        if (jenis === 'termin') {
+            // tampilkan persen dengan basis sisa tagihan
+            if (labelPercent) {
+                labelPercent.textContent = 'Termin (Persen dari sisa tagihan)';
+            }
+            if (helpPercent) {
+                helpPercent.textContent = 'Nominal akan dihitung otomatis dari sisa tagihan saat ini.';
+            }
+            dpWrap.style.display = '';
+
+            // auto catatan: Termin n
+            const nextTermin = (TERMIN_COUNT || 0) + 1;
+            if (catatanInput && !catatanInput.value.trim()) {
+                catatanInput.value = 'Termin ' + nextTermin;
+            }
+            return;
+        }
+
+        if (jenis === 'pelunasan') {
+            // auto catatan & isi nominal dengan sisa
+            if (catatanInput && !catatanInput.value.trim()) {
+                catatanInput.value = 'Pelunasan';
+            }
+            if (sisaTagihan > 0 && inputNom) {
+                inputNom.value = formatRupiah(String(sisaTagihan));
+            }
+            return;
         }
     });
 }
 
-// ketika pilih persen DP → hitung nominal otomatis
+// ketika pilih persen DP / Termin → hitung nominal otomatis
 if (dpPercent && inputNom) {
     dpPercent.addEventListener('change', function() {
         const persen = parseInt(this.value || '0', 10);
-        if (!persen || !NILAI_KONTRAK) return;
-        const nominal = Math.round(NILAI_KONTRAK * (persen / 100));
+        if (!persen) return;
+
+        const jenis = jenisSelect ? jenisSelect.value : '';
+
+        let basis = 0;
+        if (jenis === 'dp') {
+            basis = NILAI_KONTRAK;
+        } else if (jenis === 'termin') {
+            // termin pakai sisa tagihan saat ini
+            basis = sisaTagihan;
+        }
+
+        if (!basis) return;
+
+        let nominal = Math.round(basis * (persen / 100));
+
+        // jaga-jaga: jangan sampai lebih besar dari sisa
+        if (nominal > sisaTagihan) {
+            nominal = sisaTagihan;
+        }
+
         inputNom.value = formatRupiah(String(nominal));
     });
 }
@@ -475,6 +600,74 @@ if (btnSisa && inputNom) {
         if (sisaTagihan > 0) {
             inputNom.value = formatRupiah(String(sisaTagihan));
         }
+    });
+}
+
+/* ===========================
+   POPUP CETAK INVOICE PAYMENT
+   =========================== */
+const printButtons = document.querySelectorAll('.btn-print-payment');
+
+if (printButtons && printButtons.length) {
+    printButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const url = this.getAttribute('data-url');
+            const jenis = (this.getAttribute('data-jenis') || '').toLowerCase();
+
+            // DP: langsung buka invoice tanpa opsi SJ
+            if (jenis === 'dp') {
+                window.open(url, '_blank');
+                return;
+            }
+
+            // Termin / Pelunasan: tampilkan opsi "Tampilkan Surat Jalan"
+            if (typeof Swal === 'undefined') {
+                // fallback kalau Swal belum tersedia
+                const includeSj = confirm('Tampilkan Surat Jalan di invoice juga?');
+                let finalUrl = url;
+                if (includeSj && (jenis === 'termin' || jenis === 'pelunasan')) {
+                    finalUrl += (url.indexOf('?') === -1 ? '?show_sj=1' : '&show_sj=1');
+                }
+                window.open(finalUrl, '_blank');
+                return;
+            }
+
+            Swal.fire({
+                title: 'Cetak Invoice',
+                html: `
+                    <div style="text-align:left;font-size:13px;">
+                        <p style="margin-bottom:8px;">
+                            Jenis pembayaran: <b>${jenis.toUpperCase()}</b>
+                        </p>
+                        <label style="display:flex;align-items:center;gap:6px;font-size:13px;">
+                            <input type="checkbox" id="swal-show-sj" ${ (jenis === 'termin' || jenis === 'pelunasan') ? 'checked' : '' }>
+                            <span>Tampilkan nomor Surat Jalan di invoice</span>
+                        </label>
+                        <p style="margin-top:8px;color:#6b7280;font-size:11.5px;">
+                            Opsi ini hanya berlaku untuk Termin / Pelunasan. Untuk DP, Surat Jalan tetap tidak ditampilkan.
+                        </p>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Cetak',
+                cancelButtonText: 'Batal',
+            }).then(result => {
+                if (!result.isConfirmed) return;
+
+                const cb = document.getElementById('swal-show-sj');
+                const includeSj = cb && cb.checked && (jenis === 'termin' || jenis ===
+                    'pelunasan');
+
+                let finalUrl = url;
+                if (includeSj) {
+                    finalUrl += (url.indexOf('?') === -1 ? '?show_sj=1' : '&show_sj=1');
+                }
+
+                window.open(finalUrl, '_blank');
+            });
+        });
     });
 }
 </script>

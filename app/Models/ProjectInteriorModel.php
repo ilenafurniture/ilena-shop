@@ -15,6 +15,7 @@ class ProjectInteriorModel extends Model
         'kode_project',
         'kode_sp',
         'kode_sj',
+        'kode_barang',
         'nama_project',
         'status',          // draft / dp / termin / lunas
         'nilai_kontrak',
@@ -29,6 +30,7 @@ class ProjectInteriorModel extends Model
         'alamat',
         'npwp',
         'no_po',
+        
         'keterangan',
         'tanggal_invoice',
         'tanggal_sj',
