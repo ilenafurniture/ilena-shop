@@ -73,7 +73,7 @@ h5 {
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    margin-bottom: 1rem;
+    margin-bottom: .5rem;
 }
 
 .page-title {
@@ -94,11 +94,13 @@ h5 {
     font-size: 12px
 }
 
+/* ====== Toolbar atas (jenis + tambah) ====== */
 .toolbar {
     display: flex;
     gap: .6rem;
     align-items: center;
     flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 .toolbar .form-select {
@@ -110,9 +112,20 @@ h5 {
     box-shadow: inset 0 1px 0 rgba(2, 6, 23, .02);
 }
 
-/* ====== Toolbar Search ====== */
+/* ====== Filter bar (search di bawah judul) ====== */
+.page-filters {
+    margin-top: .5rem;
+    margin-bottom: 1rem;
+}
+
+.page-filters-inner {
+    display: flex;
+    justify-content: flex-start;
+}
+
 .toolbar-search {
     position: relative;
+    width: min(380px, 100%);
 }
 
 .toolbar-search .material-icons {
@@ -125,13 +138,14 @@ h5 {
     pointer-events: none;
 }
 
-.toolbar .search-input {
-    min-width: 220px;
+.toolbar-search .search-input {
+    width: 100%;
     border-radius: 999px;
     border: 1px solid var(--line);
     padding: .45rem .9rem .45rem 2.1rem;
     box-shadow: inset 0 1px 0 rgba(2, 6, 23, .02);
     font-size: 13px;
+    background: #fff;
 }
 
 /* ====== Buttons ====== */
@@ -669,24 +683,27 @@ hr {
                         <?= count($pesanan) <= 0 ? 'Tidak Ada' : count($pesanan) ?> Pesanan
                     </p>
                 </div>
-                <div class="toolbar">
-                    <select class="form-select" onchange="selectJenis(event)">
-                        <option value="sale" class="fw-bold" <?= $jenis == 'sale' ? 'selected' : ''; ?>>Surat Jalan
-                            (SALE)</option>
-                        <option value="sp" class="fw-bold" <?= $jenis == 'sp'   ? 'selected' : ''; ?>>Surat Pengantar
-                            (SP)</option>
-                        <option value="nf" class="fw-bold" <?= $jenis == 'nf'   ? 'selected' : ''; ?>>Non Faktur (NF)
-                        </option>
-                    </select>
+            </div>
+            <div class="toolbar">
+                <select class="form-select" onchange="selectJenis(event)">
+                    <option value="sale" class="fw-bold" <?= $jenis == 'sale' ? 'selected' : ''; ?>>Surat Jalan
+                        (SALE)</option>
+                    <option value="sp" class="fw-bold" <?= $jenis == 'sp'   ? 'selected' : ''; ?>>Surat Pengantar
+                        (SP)</option>
+                    <option value="nf" class="fw-bold" <?= $jenis == 'nf'   ? 'selected' : ''; ?>>Non Faktur (NF)
+                    </option>
+                </select>
+                <a class="btn-default-merah" href="/admin/order-offline/add">Tambah</a>
+            </div>
+        </div>
 
-                    <!-- SEARCH BAR BARU -->
-                    <div class="toolbar-search">
-                        <span class="material-icons">search</span>
-                        <input type="search" id="order-search" class="search-input"
-                            placeholder="Cari ID, nama, status, atau tanggal..." autocomplete="off">
-                    </div>
-
-                    <a class="btn-default-merah" href="/admin/order-offline/add">Tambah</a>
+        <!-- FILTER BAR (SEARCH) -->
+        <div class="page-filters">
+            <div class="page-filters-inner">
+                <div class="toolbar-search">
+                    <span class="material-icons">search</span>
+                    <input type="search" id="order-search" class="search-input"
+                        placeholder="Cari ID, nama, status, atau tanggal..." autocomplete="off">
                 </div>
             </div>
         </div>
@@ -1587,7 +1604,7 @@ function injectPreviewButton(form, onClick) {
 
         const isSame = form.querySelector('input[name="checkAlamat"]')?.checked;
         const prov = form.querySelector('select[name="provinsi"]')?.value || '';
-        const kota = form.querySelector('select[name="kota"]')?.value || '';
+        the kota = form.querySelector('select[name="kota"]')?.value || '';
         const kec = form.querySelector('select[name="kecamatan"]')?.value || '';
         const kode = form.querySelector('select[name="kodepos"]')?.value || '';
         const detail = form.querySelector('input[name="detail"]')?.value || '';
