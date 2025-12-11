@@ -98,15 +98,40 @@ h5 {
     display: flex;
     gap: .6rem;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .toolbar .form-select {
-    min-width: 240px;
+    min-width: 200px;
     border-radius: 10px;
     border: 1px solid var(--line);
     padding: .5rem .9rem;
     background: #fff;
     box-shadow: inset 0 1px 0 rgba(2, 6, 23, .02);
+}
+
+/* ====== Toolbar Search ====== */
+.toolbar-search {
+    position: relative;
+}
+
+.toolbar-search .material-icons {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: var(--muted);
+    pointer-events: none;
+}
+
+.toolbar .search-input {
+    min-width: 220px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    padding: .45rem .9rem .45rem 2.1rem;
+    box-shadow: inset 0 1px 0 rgba(2, 6, 23, .02);
+    font-size: 13px;
 }
 
 /* ====== Buttons ====== */
@@ -640,7 +665,9 @@ hr {
             <div class="page-title">
                 <div>
                     <h1>Pesanan Offline</h1>
-                    <p class="page-sub"><?= count($pesanan) <= 0 ? 'Tidak Ada' : count($pesanan) ?> Pesanan</p>
+                    <p class="page-sub" id="page-subtitle">
+                        <?= count($pesanan) <= 0 ? 'Tidak Ada' : count($pesanan) ?> Pesanan
+                    </p>
                 </div>
                 <div class="toolbar">
                     <select class="form-select" onchange="selectJenis(event)">
@@ -651,6 +678,14 @@ hr {
                         <option value="nf" class="fw-bold" <?= $jenis == 'nf'   ? 'selected' : ''; ?>>Non Faktur (NF)
                         </option>
                     </select>
+
+                    <!-- SEARCH BAR BARU -->
+                    <div class="toolbar-search">
+                        <span class="material-icons">search</span>
+                        <input type="search" id="order-search" class="search-input"
+                            placeholder="Cari ID, nama, status, atau tanggal..." autocomplete="off">
+                    </div>
+
                     <a class="btn-default-merah" href="/admin/order-offline/add">Tambah</a>
                 </div>
             </div>
@@ -677,7 +712,7 @@ hr {
                             <th class="text-center" scope="col">ACTION</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="tbody-pesanan">
                         <?php foreach ($pesanan as $ind_p => $p) { ?>
                         <tr <?= (($p['is_draft'] ?? 0) == 1) ? 'class="table-warning"' : ''; ?>>
                             <th scope="row"><?= $ind_p + 1; ?></th>
@@ -1713,6 +1748,41 @@ function openDetail(idPesanan) {
             modal.show();
         });
 }
+</script>
+
+<!-- ========== JS TAMBAHAN: SEARCH / FILTER PESANAN ========== -->
+<script>
+(function() {
+    const inputSearch = document.getElementById('order-search');
+    const tbody = document.getElementById('tbody-pesanan');
+    const subtitle = document.getElementById('page-subtitle');
+    if (!inputSearch || !tbody) return;
+
+    const allRows = [...tbody.querySelectorAll('tr')];
+    const total = allRows.length;
+    const defaultSubtitle = subtitle ? subtitle.textContent : '';
+
+    function applyFilter() {
+        const q = (inputSearch.value || '').toLowerCase().trim();
+        let visible = 0;
+
+        allRows.forEach((row) => {
+            const text = row.innerText.toLowerCase();
+            const match = !q || text.includes(q);
+            row.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+
+        if (!subtitle) return;
+        if (!q) {
+            subtitle.textContent = defaultSubtitle || (total <= 0 ? 'Tidak Ada Pesanan' : total + ' Pesanan');
+        } else {
+            subtitle.textContent = `${visible} dari ${total} pesanan sesuai filter`;
+        }
+    }
+
+    inputSearch.addEventListener('input', applyFilter);
+})();
 </script>
 
 <?= $this->endSection(); ?>
