@@ -307,17 +307,39 @@
         <!-- Tujuan -->
         <div class="d-flex justify-content-start mt-4 mb-4 flex-column">
             <p class="m-0 nt" style="max-width:260px; font-size:12px;">Kepada Yth.</p>
-            <p class="m-0 tw-bold-italic" style="max-width:260px; font-size:12px;"><?= $pemesanan['nama_npwp']; ?></p>
-            <?php if (!empty($pemesanan['nohp'])): ?>
-            <p class="m-0"><?= $pemesanan['nohp']; ?></p>
-            <?php endif; ?>
+            <?php
+                $namaNpwpCetak = trim((string)($pemesanan['nama_npwp'] ?? ''));
+
+                if ($namaNpwpCetak === '' && !empty($project) && !empty($project['nama_npwp'])) {
+                    $namaNpwpCetak = trim((string)$project['nama_npwp']);
+                }
+
+                if ($namaNpwpCetak === '' && !empty($project) && !empty($project['nama_customer'])) {
+                    $namaNpwpCetak = trim((string)$project['nama_customer']);
+                }
+            ?>
+            <p class="m-0 tw-bold-italic" style="max-width:260px; font-size:12px;">
+                <?= esc($namaNpwpCetak); ?>
+            </p>
+
+
             <p class="m-0" style="max-width:260px; font-size:12px;"><?= $pemesanan['alamat_tagihan']; ?></p>
 
             <?php if (empty($is_payment_invoice)): ?>
+            <?php
+                    // Ambil NPWP dari pemesanan dulu
+                    $npwpCetak = trim((string)($pemesanan['npwp'] ?? ''));
+
+                    // Kalau interior dan npwp di pemesanan kosong, ambil dari project
+                    if ($npwpCetak === '' && !empty($project) && !empty($project['npwp'])) {
+                        $npwpCetak = trim((string)$project['npwp']);
+                    }
+                ?>
             <p style="font-size:12px;" class="isint">
-                NPWP/NIK : <?= $pemesanan['npwp'] ? $pemesanan['npwp'] : '-'; ?>
+                NPWP/NIK : <?= $npwpCetak !== '' ? esc($npwpCetak) : '-'; ?>
             </p>
             <?php endif; ?>
+
         </div>
 
         <!-- Tabel Invoice -->
