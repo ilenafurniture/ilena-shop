@@ -325,7 +325,7 @@
 
             <p class="m-0" style="max-width:260px; font-size:12px;"><?= $pemesanan['alamat_tagihan']; ?></p>
 
-            <?php if (empty($is_payment_invoice)): ?>
+
             <?php
                     // Ambil NPWP dari pemesanan dulu
                     $npwpCetak = trim((string)($pemesanan['npwp'] ?? ''));
@@ -338,7 +338,6 @@
             <p style="font-size:12px;" class="isint">
                 NPWP/NIK : <?= $npwpCetak !== '' ? esc($npwpCetak) : '-'; ?>
             </p>
-            <?php endif; ?>
 
         </div>
 
