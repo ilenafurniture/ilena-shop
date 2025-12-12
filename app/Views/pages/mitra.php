@@ -1,5 +1,6 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
+
 <style>
 /* ===== Tokens Light (tetap) ===== */
 :root {
@@ -11,14 +12,11 @@
     --txt: #0f172a;
     --muted: #64748b;
     --brand: #e11d48;
-    /* merah */
     --brand-2: #f97316;
-    /* oranye */
     --glass: rgba(255, 255, 255, .86);
     --shadow-1: 0 10px 24px rgba(2, 6, 23, .08);
     --shadow-2: 0 18px 46px rgba(2, 6, 23, .12);
     --gap: 16px;
-    --card-h: 110px;
 }
 
 /* halaman */
@@ -53,12 +51,14 @@
     font-weight: 900;
     letter-spacing: -.5px;
     color: var(--txt);
+    margin: 0;
+    font-size: 1.25rem;
 }
 
 .section-sub {
     text-align: center;
     color: var(--muted);
-    margin-top: 4px;
+    margin-top: 6px;
     font-size: .95rem;
 }
 
@@ -76,7 +76,92 @@
     min-height: 300px;
 }
 
-/* ===== View Toolbar (baru) ===== */
+/* ===== Toolbar filter ===== */
+.filterbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 10px 0 4px 0;
+    padding: 10px;
+    border: 1px solid var(--ring);
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: var(--shadow-1);
+}
+
+.filter-left {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.f-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--ring-2);
+    background: #fff;
+    box-shadow: 0 6px 16px rgba(2, 6, 23, .06);
+}
+
+.f-field i {
+    color: var(--muted);
+    font-size: 18px;
+}
+
+.f-field input {
+    border: 0;
+    outline: none;
+    width: min(320px, 70vw);
+    font-weight: 800;
+    color: var(--txt);
+    font-size: .95rem;
+}
+
+.f-field input::placeholder {
+    color: #94a3b8;
+    font-weight: 700;
+}
+
+.f-select {
+    border: 1px solid var(--ring-2);
+    border-radius: 12px;
+    padding: 9px 10px;
+    background: #fff;
+    font-weight: 800;
+    color: var(--txt);
+    box-shadow: 0 6px 16px rgba(2, 6, 23, .06);
+    font-size: .95rem;
+}
+
+.kpi-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 900;
+    color: var(--txt);
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--ring);
+    background: linear-gradient(180deg, #fff, #fbfdff);
+    box-shadow: 0 6px 18px rgba(2, 6, 23, .06);
+    white-space: nowrap;
+}
+
+.kpi-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--brand), var(--brand-2));
+    box-shadow: 0 0 0 3px rgba(225, 29, 72, .12);
+}
+
+/* ===== View Toolbar ===== */
 .view-toolbar {
     display: flex;
     align-items: center;
@@ -95,6 +180,7 @@
     display: flex;
     gap: 8px;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .view-btn {
@@ -107,7 +193,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-weight: 700;
+    font-weight: 800;
     cursor: pointer;
     transition: .2s;
     box-shadow: 0 4px 10px rgba(2, 6, 23, .06);
@@ -144,6 +230,7 @@
     gap: 12px;
     justify-content: space-between;
     margin-bottom: 10px;
+    flex-wrap: wrap;
 }
 
 .rail-meta {
@@ -168,6 +255,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-wrap: wrap;
 }
 
 .rail-progress {
@@ -231,21 +319,34 @@
     border-radius: 999px;
 }
 
-/* Card toko (sumber) */
+/* Card toko */
 .item-toko {
     scroll-snap-align: start;
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: center;
     min-width: min(560px, 92vw);
-    height: var(--card-h);
-    padding: 10px;
-    border-radius: 14px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, .9), rgba(255, 255, 255, .86)), radial-gradient(400px 120px at 80% -20%, rgba(225, 29, 72, .06), transparent 55%), var(--glass);
+    padding: 12px;
+    border-radius: 16px;
+    background:
+        radial-gradient(450px 140px at 88% -30%, rgba(225, 29, 72, .10), transparent 60%),
+        radial-gradient(450px 140px at 10% 130%, rgba(249, 115, 22, .10), transparent 60%),
+        linear-gradient(180deg, rgba(255, 255, 255, .92), rgba(255, 255, 255, .86));
     border: 1px solid var(--ring);
     box-shadow: var(--shadow-1);
     backdrop-filter: blur(5px);
     transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.item-toko:before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(225, 29, 72, .08), rgba(249, 115, 22, .06));
+    opacity: 0;
+    transition: .22s;
 }
 
 .item-toko:hover {
@@ -254,20 +355,51 @@
     box-shadow: var(--shadow-2);
 }
 
+.item-toko:hover:before {
+    opacity: 1;
+}
+
 .item-toko .info {
+    position: relative;
+    z-index: 1;
     min-width: 0;
-    padding: 4px 8px 4px 10px;
+    padding: 6px 8px 6px 10px;
     display: flex;
     flex-direction: column;
+    gap: 8px;
+}
+
+.chips {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.chip-city {
+    display: inline-flex;
+    align-items: center;
     gap: 6px;
+    font-size: .72rem;
+    font-weight: 900;
+    color: var(--txt);
+    background: rgba(225, 29, 72, .08);
+    border: 1px solid rgba(225, 29, 72, .14);
+    padding: .28rem .62rem;
+    border-radius: 999px;
+}
+
+.chip-city i {
+    font-size: 16px;
+    color: var(--brand);
 }
 
 .item-toko .nama {
     color: #0f172a;
     margin: 0;
-    font-weight: 900;
+    font-weight: 950;
     letter-spacing: -.3px;
-    font-size: 1.05rem;
+    font-size: 1.08rem;
     line-height: 1.15;
     white-space: nowrap;
     overflow: hidden;
@@ -277,12 +409,47 @@
 .item-toko .alamat {
     color: var(--muted);
     margin: 0;
-    font-size: .84rem;
+    font-size: .88rem;
     line-height: 1.25;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     overflow: hidden;
+}
+
+.mini-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.mini-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: .46rem .68rem;
+    border-radius: 11px;
+    border: 1px solid var(--ring-2);
+    background: #fff;
+    font-weight: 900;
+    color: var(--txt);
+    text-decoration: none;
+    cursor: pointer;
+    transition: .2s;
+    box-shadow: 0 6px 16px rgba(2, 6, 23, .06);
+    user-select: none;
+    font-size: .92rem;
+}
+
+.mini-btn i {
+    font-size: 18px;
+}
+
+.mini-btn:hover {
+    border-color: transparent;
+    background: linear-gradient(90deg, var(--brand), var(--brand-2));
+    color: #fff;
 }
 
 .badge-mini {
@@ -291,7 +458,7 @@
     gap: 6px;
     color: #fff;
     font-size: .7rem;
-    font-weight: 700;
+    font-weight: 800;
     background: linear-gradient(180deg, var(--brand), var(--brand-2));
     padding: .32rem .6rem;
     border-radius: 999px;
@@ -299,6 +466,8 @@
 }
 
 .item-toko .thumb {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -306,18 +475,18 @@
 }
 
 .item-toko img {
-    width: 96px;
-    height: 82px;
+    width: 104px;
+    height: 86px;
     object-fit: cover;
-    border-radius: 12px;
+    border-radius: 14px;
     border: 1px solid var(--ring);
     filter: saturate(.96) contrast(1.02);
     transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
-    box-shadow: 0 8px 18px rgba(2, 6, 23, .12);
+    box-shadow: 0 10px 22px rgba(2, 6, 23, .14);
 }
 
 .item-toko:hover img {
-    transform: translateY(-1px) scale(1.01);
+    transform: translateY(-1px) scale(1.03);
     filter: saturate(1) contrast(1.04);
 }
 
@@ -331,7 +500,7 @@
     color: #64748b;
 }
 
-/* ====== GRID & LIST (baru) ====== */
+/* ====== GRID & LIST ====== */
 .view-pane {
     display: none;
 }
@@ -353,18 +522,38 @@
     align-items: center;
     padding: 12px;
     border: 1px solid var(--ring);
-    background: #fff;
-    border-radius: 14px;
+    background:
+        radial-gradient(400px 120px at 90% -10%, rgba(225, 29, 72, .06), transparent 55%),
+        linear-gradient(180deg, #fff, #fbfdff);
+    border-radius: 16px;
     box-shadow: var(--shadow-1);
+    transition: .2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.grid-card:before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(225, 29, 72, .08), rgba(249, 115, 22, .06));
+    opacity: 0;
     transition: .2s;
 }
 
 .grid-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-2);
+    border-color: rgba(2, 6, 23, .16);
+}
+
+.grid-card:hover:before {
+    opacity: 1;
 }
 
 .grid-card .g-info {
+    position: relative;
+    z-index: 1;
     min-width: 0;
     display: flex;
     flex-direction: column;
@@ -373,7 +562,7 @@
 
 .grid-card .g-name {
     margin: 0;
-    font-weight: 800;
+    font-weight: 900;
     color: #0f172a;
     letter-spacing: -.2px;
     white-space: nowrap;
@@ -392,12 +581,34 @@
     overflow: hidden;
 }
 
+.grid-card .g-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .72rem;
+    font-weight: 900;
+    color: var(--txt);
+    background: rgba(249, 115, 22, .08);
+    border: 1px solid rgba(249, 115, 22, .14);
+    padding: .24rem .55rem;
+    border-radius: 999px;
+    width: fit-content;
+}
+
+.grid-card .g-chip i {
+    font-size: 16px;
+    color: var(--brand-2);
+}
+
 .grid-card img {
-    width: 110px;
-    height: 90px;
-    border-radius: 12px;
+    position: relative;
+    z-index: 1;
+    width: 112px;
+    height: 92px;
+    border-radius: 14px;
     object-fit: cover;
     border: 1px solid var(--ring);
+    box-shadow: 0 10px 22px rgba(2, 6, 23, .12);
 }
 
 /* List */
@@ -409,35 +620,84 @@
 
 .list-row {
     display: grid;
-    grid-template-columns: 72px 1fr auto;
+    grid-template-columns: 76px 1fr auto;
     align-items: center;
     gap: 12px;
     padding: 10px;
     border: 1px solid var(--ring);
-    border-radius: 12px;
-    background: #fff;
+    border-radius: 14px;
+    background:
+        radial-gradient(300px 120px at 95% -20%, rgba(249, 115, 22, .08), transparent 60%),
+        linear-gradient(180deg, #fff, #fbfdff);
     box-shadow: var(--shadow-1);
+    transition: .2s;
+}
+
+.list-row:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-2);
+    border-color: rgba(2, 6, 23, .16);
 }
 
 .list-row img {
-    width: 72px;
-    height: 60px;
+    width: 76px;
+    height: 64px;
     object-fit: cover;
-    border-radius: 10px;
+    border-radius: 12px;
     border: 1px solid var(--ring);
+    box-shadow: 0 10px 20px rgba(2, 6, 23, .10);
 }
 
 .list-row .l-title {
-    font-weight: 800;
+    font-weight: 900;
     margin: 0;
     color: #0f172a;
     letter-spacing: -.2px;
 }
 
 .list-row .l-addr {
-    margin: 2px 0 0 0;
+    margin: 4px 0 0 0;
     color: var(--muted);
     font-size: .9rem;
+    line-height: 1.25;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.list-row .l-meta {
+    margin: 6px 0 0 0;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.list-row .l-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .72rem;
+    font-weight: 900;
+    color: var(--txt);
+    background: rgba(225, 29, 72, .08);
+    border: 1px solid rgba(225, 29, 72, .14);
+    padding: .24rem .55rem;
+    border-radius: 999px;
+}
+
+.list-row .l-chip i {
+    font-size: 16px;
+    color: var(--brand);
+}
+
+.list-row .l-cta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
 }
 
 .list-row .l-cta a {
@@ -445,10 +705,14 @@
     align-items: center;
     gap: 6px;
     padding: 8px 10px;
-    border-radius: 10px;
-    border: 1px solid var(--ring);
+    border-radius: 12px;
+    border: 1px solid var(--ring-2);
     text-decoration: none;
     color: #0f172a;
+    font-weight: 900;
+    box-shadow: 0 6px 16px rgba(2, 6, 23, .06);
+    transition: .2s;
+    white-space: nowrap;
 }
 
 .list-row .l-cta a:hover {
@@ -457,16 +721,15 @@
     color: #fff;
 }
 
-/* Responsive */
-@media (max-width: 1200px) {
+/* ============ RESPONSIVE ============ */
+@media (max-width:1200px) {
     .grid-wrap {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
-@media (max-width: 992px) {
+@media (max-width:992px) {
     :root {
-        --card-h: 100px;
         --gap: 14px;
     }
 
@@ -475,27 +738,75 @@
     }
 }
 
-@media (max-width: 768px) {
-    :root {
-        --card-h: 92px;
-        --gap: 12px;
+/* HP / tablet kecil */
+@media (max-width:768px) {
+
+    /* kecilkan headline & sub */
+    .section-title {
+        font-size: 1.1rem;
+        gap: 8px;
     }
 
+    .section-sub {
+        font-size: .85rem;
+    }
+
+    /* filterbar rapet & input lebih kecil */
+    .filterbar {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .f-field {
+        padding: 8px 10px;
+        border-radius: 12px;
+    }
+
+    .f-field input {
+        width: min(220px, 70vw);
+        font-size: .9rem;
+    }
+
+    .f-select {
+        font-size: .9rem;
+        padding: 8px 10px;
+    }
+
+    /* tombol view lebih compact */
+    .view-btn {
+        padding: 7px 10px;
+        font-size: .92rem;
+    }
+
+    .view-btn i {
+        font-size: 17px;
+    }
+
+    /* rail: card mengecil */
     .item-toko {
         min-width: min(480px, 92vw);
+        padding: 10px;
+        border-radius: 14px;
     }
 
     .item-toko .nama {
-        font-size: 1rem;
+        font-size: .98rem;
     }
 
     .item-toko .alamat {
-        font-size: .8rem;
+        font-size: .82rem;
+    }
+
+    .mini-btn {
+        font-size: .88rem;
+        padding: .42rem .6rem;
+        border-radius: 10px;
     }
 
     .item-toko img {
-        width: 86px;
-        height: 74px;
+        width: 92px;
+        height: 78px;
+        border-radius: 12px;
     }
 
     #map {
@@ -503,31 +814,170 @@
     }
 
     .grid-card img {
-        width: 96px;
-        height: 80px;
+        width: 98px;
+        height: 82px;
     }
 }
 
-@media (max-width: 520px) {
-    :root {
-        --card-h: 86px;
+/* HP kecil banget */
+@media (max-width:520px) {
+
+    /* container lebih hemat */
+    .container .konten {
+        padding: 10px 10px 18px 10px;
+        border-radius: 16px;
     }
 
+    /* filterbar jadi stack full width */
+    .filterbar {
+        align-items: stretch;
+    }
+
+    .filter-left {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .f-field,
+    .f-select {
+        width: 100%;
+    }
+
+    .f-field input {
+        width: 100%;
+    }
+
+    /* KPI pindah ke kanan bawah/akhir (tetap rapi) */
+    .kpi-pill {
+        width: fit-content;
+        align-self: flex-end;
+    }
+
+    /* view toolbar: tab wrap rapi */
+    .view-tabs {
+        width: 100%;
+    }
+
+    .view-meta {
+        width: 100%;
+        justify-content: flex-end;
+        font-size: .85rem;
+    }
+
+    /* rail header: progress full width */
+    .rail-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .rail-progress {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .toko-nav-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+    }
+
+    /* rail card: lebih kecil + teks lebih kecil */
     .item-toko {
-        min-width: 88vw;
+        min-width: 92vw;
+        grid-template-columns: 1fr auto;
+        padding: 10px;
+    }
+
+    .chip-city {
+        font-size: .68rem;
+        padding: .22rem .5rem;
+    }
+
+    .item-toko .nama {
+        font-size: .95rem;
+    }
+
+    .item-toko .alamat {
+        font-size: .78rem;
+        -webkit-line-clamp: 2;
+    }
+
+    .mini-btn {
+        font-size: .84rem;
+        padding: .38rem .55rem;
+    }
+
+    .item-toko img {
+        width: 82px;
+        height: 68px;
+    }
+
+    /* map lebih pendek biar gak “full film” */
+    #map {
+        height: 240px;
+        min-height: 220px;
+    }
+
+    /* grid jadi 1 kolom */
+    .grid-wrap {
+        grid-template-columns: 1fr;
+    }
+
+    /* list: jadi 2 kolom + CTA full width */
+    .list-row {
+        grid-template-columns: 72px 1fr;
+        grid-auto-rows: auto;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .list-row img {
+        width: 72px;
+        height: 60px;
+        border-radius: 12px;
+    }
+
+    .list-row .l-title {
+        font-size: .95rem;
+    }
+
+    .list-row .l-addr {
+        font-size: .82rem;
+    }
+
+    .list-row .l-cta {
+        grid-column: 1 / -1;
+        width: 100%;
+        justify-content: stretch;
+    }
+
+    .list-row .l-cta a {
+        width: 100%;
+        justify-content: center;
+        padding: 10px 12px;
+        /* lebih enak dipencet */
+    }
+}
+
+/* super kecil (opsional, biar aman) */
+@media (max-width:380px) {
+    .section-title {
+        font-size: 1.02rem;
+    }
+
+    .badge-mini {
+        font-size: .66rem;
+    }
+
+    .view-btn {
+        padding: 7px 9px;
+        font-size: .88rem;
     }
 
     .item-toko img {
         width: 78px;
-        height: 66px;
-    }
-
-    #map {
-        height: 260px;
-    }
-
-    .grid-wrap {
-        grid-template-columns: 1fr;
+        height: 64px;
     }
 }
 </style>
@@ -554,20 +1004,49 @@
             <div id="map"></div>
         </div>
 
-        <!-- ===== Toolbar View ===== -->
+        <!-- Filterbar -->
+        <div class="filterbar">
+            <div class="filter-left">
+                <div class="f-field" title="Cari nama/alamat/kota">
+                    <i class="material-icons">search</i>
+                    <input id="q" type="text" placeholder="Cari mitra… (contoh: Surabaya / Ragunan / Agrapana)">
+                </div>
+
+                <select id="city" class="f-select" title="Filter kota">
+                    <option value="">Semua Kota</option>
+                </select>
+
+                <select id="sort" class="f-select" title="Urutkan">
+                    <option value="name_asc">Nama A–Z</option>
+                    <option value="name_desc">Nama Z–A</option>
+                    <option value="city_asc">Kota A–Z</option>
+                    <option value="city_desc">Kota Z–A</option>
+                </select>
+            </div>
+
+            <div class="kpi-pill">
+                <span class="kpi-dot"></span>
+                <span id="kpiCount">0 Mitra</span>
+            </div>
+        </div>
+
+        <!-- Toolbar View -->
         <div class="view-toolbar">
             <div class="view-tabs" role="tablist" aria-label="Jenis tampilan">
-                <button id="btnViewRail" class="view-btn" type="button" aria-pressed="true"><i
-                        class="material-icons">view_carousel</i>Rail</button>
-                <button id="btnViewGrid" class="view-btn" type="button" aria-pressed="false"><i
-                        class="material-icons">grid_view</i>Grid</button>
-                <button id="btnViewList" class="view-btn" type="button" aria-pressed="false"><i
-                        class="material-icons">view_list</i>List</button>
+                <button id="btnViewRail" class="view-btn" type="button" aria-pressed="true">
+                    <i class="material-icons">view_carousel</i>Rail
+                </button>
+                <button id="btnViewGrid" class="view-btn" type="button" aria-pressed="false">
+                    <i class="material-icons">grid_view</i>Grid
+                </button>
+                <button id="btnViewList" class="view-btn" type="button" aria-pressed="false">
+                    <i class="material-icons">view_list</i>List
+                </button>
             </div>
             <div class="view-meta"><span id="total-mitra">0 Mitra</span></div>
         </div>
 
-        <!-- ====== VIEW: RAIL ====== -->
+        <!-- VIEW: RAIL -->
         <div class="toko-rail view-pane active" id="pane-rail">
             <div class="rail-head">
                 <div class="rail-meta">
@@ -577,312 +1056,24 @@
                 <div class="rail-actions">
                     <input id="railProgress" type="range" min="0" max="100" value="0" class="rail-progress"
                         aria-label="Scroll progress">
-                    <button class="toko-nav-btn toko-prev" type="button" aria-label="Sebelumnya"><i
-                            class="material-icons" style="font-size:18px">chevron_left</i></button>
-                    <button class="toko-nav-btn toko-next" type="button" aria-label="Berikutnya"><i
-                            class="material-icons" style="font-size:18px">chevron_right</i></button>
+                    <button class="toko-nav-btn toko-prev" type="button" aria-label="Sebelumnya">
+                        <i class="material-icons" style="font-size:18px">chevron_left</i>
+                    </button>
+                    <button class="toko-nav-btn toko-next" type="button" aria-label="Berikutnya">
+                        <i class="material-icons" style="font-size:18px">chevron_right</i>
+                    </button>
                 </div>
             </div>
 
-            <div class="container-toko" id="container-toko">
-                <!-- ==== DAFTAR MITRA (ASLI + TAMBAHAN) ==== -->
-
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/LDNymAWjfyFijkZT7" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Jempol Baru Furniture</h3>
-                        <p class="alamat m-0">Jl. R. M. Said No.4, RW.6, Keprabon, Kec. Banjarsari, Kota Surakarta</p>
-                    </a>
-                    <div class="thumb">
-                        <img loading="lazy" decoding="async"
-                            src="https://img.ilenafurniture.com/image/1742449816363.webp/?apikey=<?= $apikey_img_ilena ?>"
-                            alt="Jempol Baru Furniture">
-                    </div>
-                </div>
-
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/cBQGbHzKCgyoTAM29" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Sumber Abadi Furniture</h3>
-                        <p class="alamat m-0">Jl. Magelang No.km7, Mlati Beningan, Sendangadi, Sleman, DIY</p>
-                    </a>
-                    <div class="thumb">
-                        <img loading="lazy" decoding="async"
-                            src="https://img.ilenafurniture.com/image/1742449853266.webp/?apikey=<?= $apikey_img_ilena ?>"
-                            alt="Sumber Abadi Furniture">
-                    </div>
-                </div>
-
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/2f6uDgjkd9SSwRnC8" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Suri Meubel (Semarang)</h3>
-                        <p class="alamat m-0">Jl. MH Thamrin, Sekayu, Kec. Semarang Tengah, Kota Semarang</p>
-                    </a>
-                    <div class="thumb">
-                        <img loading="lazy" decoding="async"
-                            src="https://img.ilenafurniture.com/image/1742449882169.webp/?apikey=<?= $apikey_img_ilena ?>"
-                            alt="SURI Meubel Furniture">
-                    </div>
-                </div>
-
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/EJYp9pEmPZ3a7XASA" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Home Gallery Furniture</h3>
-                        <p class="alamat m-0">Jl. Puncak Permai Utara I A No.5, Babatan, Wiyung, Surabaya</p>
-                    </a>
-                    <div class="thumb">
-                        <img loading="lazy" decoding="async"
-                            src="https://img.ilenafurniture.com/image/1742449923158.webp/?apikey=<?= $apikey_img_ilena ?>"
-                            alt="Home Gallery Furniture">
-                    </div>
-                </div>
-
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/BPDJUK8MyRBFrJGW8" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Pari Anom Jaya Furniture</h3>
-                        <p class="alamat m-0">Pasar Atum, Jl. Bunguran No.45 Lantai 4, Bongkaran, Pabean Cantikan,
-                            Surabaya</p>
-                    </a>
-                    <div class="thumb">
-                        <img loading="lazy" decoding="async"
-                            src="https://img.ilenafurniture.com/image/1742449972596.webp/?apikey=<?= $apikey_img_ilena ?>"
-                            alt="Pari Anom Jaya Furniture">
-                    </div>
-                </div>
-
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/BkiBFdCA4Rop3qHS7" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Puri Mebel & Interior (Semarang)</h3>
-                        <p class="alamat m-0">Jl. Puri Anjasmoro Blk. H5 No.57, Tawangsari, Semarang</p>
-                    </a>
-                    <div class="thumb">
-                        <img loading="lazy" decoding="async"
-                            src="https://img.ilenafurniture.com/image/1742450004899.webp/?apikey=<?= $apikey_img_ilena ?>"
-                            alt="Puri Mebel & Interior">
-                    </div>
-                </div>
-
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/5ZXJpa5BAFadgwAr5" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Victoria Furnicenter</h3>
-                        <p class="alamat m-0">Jl. Raya Menganti Karangan No.578, Babatan, Wiyung, Surabaya</p>
-                    </a>
-                    <div class="thumb">
-                        <img loading="lazy" decoding="async"
-                            src="https://img.ilenafurniture.com/image/1742450030786.webp/?apikey=<?= $apikey_img_ilena ?>"
-                            alt="Victoria Furnicenter">
-                    </div>
-                </div>
-
-                <!-- KOREKSI: Tunggal Jaya (Malang) -->
-                <div class="item-toko">
-                    <a href="https://www.google.com/maps/search/?api=1&query=Jl.+Kauman+Dalam+No.6,+Kauman,+Klojen,+Malang+65119"
-                        class="info" style="text-decoration:none;">
-                        <h3 class="nama">Tunggal Jaya Furniture</h3>
-                        <p class="alamat m-0">Jl. Kauman Dalam No.6, Kauman, Kec. Klojen, Kota Malang 65119</p>
-                    </a>
-                    <div class="thumb">
-                        <img loading="lazy" decoding="async" src="/img/mitra/tunggal-jaya-malang.jpg"
-                            alt="Tunggal Jaya Furniture">
-                    </div>
-                </div>
-
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/5ZXJpa5BAFadgwAr5" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Cipta Bangun Jaya Furniture Magelang</h3>
-                        <p class="alamat m-0">Jl. Jend. Sudirman No.189, Magelang Selatan</p>
-                    </a>
-                    <div class="thumb">
-                        <img loading="lazy" decoding="async"
-                            src="https://lh3.googleusercontent.com/p/AF1QipMWUmj6bwLhOk3oi1hkWM-kq86aSIa5cQ8IAIFW=w427-h240-k-no"
-                            alt="CBJ Magelang">
-                    </div>
-                </div>
-
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/5ZXJpa5BAFadgwAr5" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Cipta Bangun Jaya Furniture Jakarta</h3>
-                        <p class="alamat m-0">Jl. Raya Ragunan No.51, Pasar Minggu, Jakarta Selatan</p>
-                    </a>
-                    <div class="thumb">
-                        <img loading="lazy" decoding="async"
-                            src="https://lh3.googleusercontent.com/gps-cs-s/AC9h4npIeYybVsaWPUt8J9SFrLRy5WsNFexTWw-Rb2GMXlC2Yi91DkFi1opmxP210dhgxOpHqxdFomlQPgPdZR07yllFb7BXcw0n9VxnIKy56Ld__02l6lQUBJ2jtT5du7rGXr0BnJqveA=w408-h306-k-no"
-                            alt="CBJ Jakarta">
-                    </div>
-                </div>
-
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/oumo8h2XUy32KH168" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Kasur Indah</h3>
-                        <p class="alamat m-0">Jl. Imam Bonjol No.403, Denpasar</p>
-                    </a>
-                    <div class="thumb">
-                        <img loading="lazy" decoding="async" src="https://i.imgur.com/MwLYjVf.png" alt="Kasur Indah">
-                    </div>
-                </div>
-
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/MJ396VhceiHfGLBF6" class="info" style="text-decoration:none;">
-                        <h3 class="nama">DM Mebel Supeno</h3>
-                        <p class="alamat m-0">Jl. Menteri Supeno No.73, Umbulharjo, Yogyakarta</p>
-                    </a>
-                    <div class="thumb">
-                        <img loading="lazy" decoding="async"
-                            src="https://i.ibb.co.com/q3vG29Bf/Screenshot-2025-08-06-102008.png" alt="DM Mebel Supeno">
-                    </div>
-                </div>
-
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/8a9karvqThnFXzX97" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Istana Meubel (Cirebon)</h3>
-                        <p class="alamat m-0">Jl. Pekarungan No.12-14, Lemahwungkuk, Cirebon</p>
-                    </a>
-                    <div class="thumb">
-                        <img loading="lazy" decoding="async"
-                            src="https://i.ibb.co.com/Q7HV0b1v/Screenshot-2025-08-19-233904.png"
-                            alt="Istana Meubel Cirebon">
-                    </div>
-                </div>
-
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/5QZ8tTaSVTmTtxHQ7" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Living Home Houseware & Furniture</h3>
-                        <p class="alamat m-0">Jl. KH. Wahid Hasyim No.88, Purwokerto</p>
-                    </a>
-                    <div class="thumb">
-                        <img loading="lazy" decoding="async"
-                            src="https://i.ibb.co.com/TDFP36LD/Screenshot-2025-08-19-234119.png" alt="Living Home">
-                    </div>
-                </div>
-
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/cU4SfXLKjL9pV5uz8" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Vinetta Furniture Purwokerto</h3>
-                        <p class="alamat m-0">Jl. Komisaris Bambang Suprapto No.99, Purwokerto</p>
-                    </a>
-                    <div class="thumb">
-                        <img loading="lazy" decoding="async"
-                            src="https://i.ibb.co.com/v4VDntfc/Screenshot-2025-08-22-142911.png"
-                            alt="Vinetta Purwokerto">
-                    </div>
-                </div>
-
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/17uAqPADuswiuxeG6" class="info" style="text-decoration:none;">
-                        <h3 class="nama">FURNI CENTER Purwokerto</h3>
-                        <p class="alamat m-0">Jl. S. Parman No.125, Karangklesem, Purwokerto Selatan</p>
-                    </a>
-                    <div class="thumb">
-                        <img loading="lazy" decoding="async"
-                            src="https://i.ibb.co.com/JR7y1B3Y/Screenshot-2025-08-22-144249.png" alt="Furni Center">
-                    </div>
-                </div>
-
-                <!-- ===== TAMBAHAN BARU DARI DATA KAMU ===== -->
-
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/24PJYPuvbjqPbmUD6" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Seruma Space</h3>
-                        <p class="alamat m-0">Sokowaten, Tamanan, Banguntapan, Bantul, DI Yogyakarta 55191</p>
-                    </a>
-                    <div class="thumb"><img loading="lazy" decoding="async"
-                            src="https://i.ibb.co.com/DfJyv5HL/Screenshot-2025-09-15-143349.png" alt="Seruma Space">
-                    </div>
-                </div>
-
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/HCJvNpPmpdARbHaGA" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Toko Mebel Garuda Mas</h3>
-                        <p class="alamat m-0">Jl. Jend. Sudirman No.189, Tidar Sel., Magelang Selatan, Magelang 59214
-                        </p>
-                    </a>
-                    <div class="thumb"><img loading="lazy" decoding="async"
-                            src="https://i.ibb.co.com/JRhJFZSV/Screenshot-2025-09-15-143456.png"
-                            alt="Toko Mebel Garuda Mas"></div>
-                </div>
-
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/UHUoe8DMdio4mfoi9" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Meubel Lisa Jaya</h3>
-                        <p class="alamat m-0">Timur Jl. SMPN 2, JL. K.H. Hasyim Asyari No.13, Demangan Barat, Bangkalan
-                            69115</p>
-                    </a>
-                    <div class="thumb"><img loading="lazy" decoding="async"
-                            src="https://i.ibb.co.com/ch0bNWzW/Screenshot-2025-09-15-143632.png" alt="Meubel Lisa Jaya">
-                    </div>
-                </div>
-
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/qcX5EL6n4PW72Xq57" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Agrapana Furniture</h3>
-                        <p class="alamat m-0">Jl. Sidomoyo No.89, Sidoarum, Godean, Sleman, DI Yogyakarta 55264</p>
-                    </a>
-                    <div class="thumb"><img loading="lazy" decoding="async"
-                            src="https://i.ibb.co.com/fdsqzwFK/Screenshot-2025-09-15-143959.png"
-                            alt="Agrapana Furniture"></div>
-                </div>
-
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/YEY22dZeYKcbnXoD9" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Elok Meubel</h3>
-                        <p class="alamat m-0">Jl. Mayjend DI. Panjaitan No.68 / 70, Tegalsari, Kec. Tegal Barat, Tegal
-                            52111</p>
-                    </a>
-                    <div class="thumb"><img loading="lazy" decoding="async"
-                            src="https://i.ibb.co.com/spnfJ946/Screenshot-2025-09-15-144115.png" alt="Elok Meubel">
-                    </div>
-                </div>
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/3Dh2PnEv9zTdgeYo9" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Meubel Murah</h3>
-                        <p class="alamat m-0">Jl. Raya Kalimalang No.37 1, RT.1/RW.7, Duren Sawit, Kec. Duren Sawit,
-                            Kota Jakarta Timur, Daerah Khusus Ibukota Jakarta 13440</p>
-                    </a>
-                    <div class="thumb"><img loading="lazy" decoding="async"
-                            src="https://i.ibb.co.com/0yc93DRK/Screenshot-2025-09-22-092249.png""
-                        alt=" Meubel Murah">
-                    </div>
-                </div>
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/DH44urdPfvjmFjmz8" class="info" style="text-decoration:none;">
-                        <h3 class="nama"></h3>
-                        <p class="alamat m-0">Jl. Proklamasi, Jayaraga, Kec. Tarogong Kidul, Kabupaten Garut, Jawa Barat
-                            44151</p>
-                    </a>
-                    <div class="thumb"><img loading="lazy" decoding="async"
-                            src="https://i.ibb.co.com/Mx8y2Rn9/DSCF1260.webp""
-                        alt=" Agrapana Furniture">
-                    </div>
-                </div>
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/nNFvjabtjVnvwJek9" class="info" style="text-decoration:none;">
-                        <h3 class="nama"></h3>
-                        <p class="alamat m-0">Jl. Kabupaten, Sumur Putih, Bugih, Kec. Pamekasan, Kabupaten Pamekasan,
-                            Jawa Timur 69316</p>
-                    </a>
-                    <div class="thumb"><img loading="lazy" decoding="async" src="https://i.ibb.co.com/BHGNqyR6/JK.webp""
-                        alt=" Raja Mebel Pamekasan">
-                    </div>
-                </div>
-                <div class="item-toko">
-                    <a href="https://maps.app.goo.gl/ReYpF7b6S5GSvczZ6" class="info" style="text-decoration:none;">
-                        <h3 class="nama">Terus Jaya Abadi Furniture</h3>
-                        <p class="alamat m-0">Jl. Ampera 1 No.11, Ciamis, Kec. Ciamis, Kabupaten Ciamis, Jawa Barat
-                            46211</p>
-                    </a>
-                    <div class="thumb"><img loading="lazy" decoding="async"
-                            src="https://i.ibb.co/0yc93DRK/Screenshot-2025-09-22-092249.png""
-                        alt=" Terus Jaya Abadi Furniture">
-                    </div>
-                </div>
-
-            </div>
+            <div class="container-toko" id="container-toko"></div>
         </div>
 
-        <!-- ====== VIEW: GRID (baru) ====== -->
-        <div class=" view-pane" id="pane-grid">
+        <!-- VIEW: GRID -->
+        <div class="view-pane" id="pane-grid">
             <div class="grid-wrap" id="gridWrap"></div>
         </div>
 
-        <!-- ====== VIEW: LIST (baru) ====== -->
+        <!-- VIEW: LIST -->
         <div class="view-pane" id="pane-list">
             <div class="list-wrap" id="listWrap"></div>
         </div>
@@ -890,20 +1081,533 @@
     </div>
 </div>
 
-<!-- Scroll helpers (rail tetap) -->
+<script>
+/**
+ * ====== SATU SUMBER DATA (MASTER) ======
+ * Semua view + marker map akan dibangun dari sini.
+ */
+const MITRA = [{
+        name: "Sumber Abadi Furniture",
+        city: "Yogyakarta",
+        address: "Jl. Magelang No. Km7, SENDANGADI, Mlati, Sleman, DI Yogyakarta 55285",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Magelang No. Km7, Sendangadi, Mlati, Sleman, DI Yogyakarta 55285"),
+        img: "https://img.ilenafurniture.com/image/1742449853266.webp/?apikey=<?= $apikey_img_ilena ?>",
+        coords: [-7.743533, 110.362422]
+    },
+    {
+        name: "Tunggal Jaya Furniture",
+        city: "Malang",
+        address: "Jl. Kauman Dalam No.6, Kauman, Kec. Klojen, Kota Malang, Jawa Timur 65119",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Kauman Dalam No.6, Kauman, Klojen, Kota Malang, Jawa Timur 65119"),
+        img: "https://i.ibb.co.com/tpBL6KrY/Screenshot-2025-12-13-034900.png",
+        coords: [-7.982988941336538, 112.62939908349134]
+    },
+    {
+        name: "Jempol Baru Furniture",
+        city: "Solo",
+        address: "Jl. R. M. Said, Keprabon, Banjarsari, Surakarta (Solo), Jawa Tengah 57131",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "JL RM. SAID, Keprabon, Banjarsari, Surakarta (Solo), Jawa Tengah 57131"),
+        img: "https://img.ilenafurniture.com/image/1742449816363.webp/?apikey=<?= $apikey_img_ilena ?>",
+        coords: [-7.565692379905529, 110.82430179811045]
+    },
+    {
+        name: "Home Gallery",
+        city: "Surabaya",
+        address: "Pakuwon Trade Center Lantai LG Stand Promo Indah Lontar No 2, Jl. Puncak Permai Utara I A No.5, Babatan, Wiyung, Surabaya, Jawa Timur 60123",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Pakuwon Trade Center Lantai LG, Jl. Puncak Permai Utara I A No.5, Babatan, Wiyung, Surabaya"),
+        img: "https://img.ilenafurniture.com/image/1742449923158.webp/?apikey=<?= $apikey_img_ilena ?>",
+        coords: [-7.288629, 112.672618]
+    },
+    {
+        name: "Pari Anom Jaya",
+        city: "Surabaya",
+        address: "Pasar Atum, Jl. Bunguran No.45 Lantai 4, Bongkaran, Pabean Cantikan, Surabaya, Jawa Timur 60161",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Pasar Atum, Jl. Bunguran No.45 Lantai 4, Surabaya"),
+        img: "https://img.ilenafurniture.com/image/1742449972596.webp/?apikey=<?= $apikey_img_ilena ?>",
+        coords: [-7.241680, 112.744704]
+    },
+    {
+        name: "Suri Meubel",
+        city: "Semarang",
+        address: "Jl. MH Thamrin, Sekayu, Kec Semarang Tengah",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. MH Thamrin, Sekayu, Semarang Tengah, Semarang"),
+        img: "https://img.ilenafurniture.com/image/1742449882169.webp/?apikey=<?= $apikey_img_ilena ?>",
+        coords: [-6.985425, 110.417463]
+    },
+    {
+        name: "Victoria Furnicenter",
+        city: "Surabaya",
+        address: "Jl. Raya Menganti Karangan No.578, Babatan, Wiyung, Surabaya, Jawa Timur 60227",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Raya Menganti Karangan No.578, Babatan, Wiyung, Surabaya, Jawa Timur 60227"),
+        img: "https://img.ilenafurniture.com/image/1742450030786.webp/?apikey=<?= $apikey_img_ilena ?>",
+        coords: [-7.310520, 112.683035]
+    },
+    {
+        name: "Puri Mebel & Interior",
+        city: "Semarang",
+        address: "Jl. Puri Anjasmoro Blk. H5 No.57, Tawangsari, Semarang, Jawa Tengah 50144",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Puri Anjasmoro Blk. H5 No.57, Tawangsari, Semarang, Jawa Tengah 50144"),
+        img: "https://img.ilenafurniture.com/image/1742450004899.webp/?apikey=<?= $apikey_img_ilena ?>",
+        coords: [-6.965809, 110.390439]
+    },
+    {
+        name: "Toko Mebel Garuda Mas",
+        city: "Magelang",
+        address: "Jl. Jend. Sudirman No.189, Tidar Sel., Kec. Magelang Sel., Kota Magelang, Jawa Tengah 59214",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Jend. Sudirman No.189, Tidar Selatan, Magelang Selatan, Kota Magelang"),
+        img: "https://i.ibb.co.com/JRhJFZSV/Screenshot-2025-09-15-143456.png",
+        coords: [-7.497210712603127, 110.22352521039721]
+    },
+    {
+        name: "Cipta Bangun Jaya Furniture",
+        city: "Jakarta Selatan",
+        address: "Jl. Raya Ragunan No.51, Ps. Minggu, Kota Jakarta Selatan, DKI Jakarta 12520",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Raya Ragunan No.51, Pasar Minggu, Jakarta Selatan 12520"),
+        img: "https://i.ibb.co.com/4R1CNqBL/Screenshot-2025-12-13-035035.png",
+        coords: [-6.285252355503124, 106.84299797668308]
+    },
+    {
+        name: "Homj Furniture",
+        city: "Surabaya",
+        address: "Jl. Jemusari III No.25, Jemur Wonosari, Kec. Wonocolo, Surabaya, Jawa Timur 60237",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Jemusari III No. 25, Jemur Wonosari, Wonocolo, Surabaya, Jawa Timur 60237"),
+        img: "https://i.ibb.co.com/93zBts4Q/Screenshot-2025-12-13-035158.png",
+        coords: [-7.321175506922994, 112.74408773425009]
+    },
+    {
+        name: "Kasur Indah",
+        city: "Denpasar",
+        address: "Jl. Imam Bonjol No.403, Pemecutan Klod, Denpasar Barat, Bali 80119",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Imam Bonjol No.403, Pemecutan Klod, Denpasar Barat, Bali 80119"),
+        img: "https://i.imgur.com/MwLYjVf.png",
+        coords: [-8.696615, 115.186424]
+    },
+    {
+        name: "Seruma Space",
+        city: "Yogyakarta",
+        address: "Sokowaten, Tamanan, Kec. Banguntapan, Kabupaten Bantul, DI Yogyakarta 55191",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Sokowaten, Tamanan, Banguntapan, Bantul, DI Yogyakarta 55191"),
+        img: "https://i.ibb.co.com/DfJyv5HL/Screenshot-2025-09-15-143349.png",
+        coords: [-7.8347557775250065, 110.37898663945798]
+    },
+    {
+        name: "Living Home Houseware & Furniture",
+        city: "Purwokerto",
+        address: "Jl. KH. Wahid Hasyim No.88, Windusara, Karangklesem, Purwokerto Selatan, Banyumas, Jawa Tengah 53144",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. KH. Wahid Hasyim No.88, Windusara, Karangklesem, Purwokerto Selatan, Banyumas 53144"),
+        img: "https://i.ibb.co.com/TDFP36LD/Screenshot-2025-08-19-234119.png",
+        coords: [-7.446179, 109.243781]
+    },
+    {
+        name: "Vinetta Furniture",
+        city: "Purwokerto",
+        address: "Jl. Komisaris Bambang Suprapto No.99, Cigrobak, Purwokerto Lor, Purwokerto Timur, Banyumas, Jawa Tengah 53114",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Komisaris Bambang Suprapto No.99, Purwokerto, Banyumas 53114"),
+        img: "https://i.ibb.co.com/v4VDntfc/Screenshot-2025-08-22-142911.png",
+        coords: [-7.423047, 109.250232]
+    },
+    {
+        name: "Furni Center",
+        city: "Purwokerto",
+        address: "Jl. S. Parman No.125, Windusara, Karangklesem, Purwokerto Selatan, Banyumas, Jawa Tengah 53144",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. S. Parman No.125, Karangklesem, Purwokerto Selatan, Banyumas 53144"),
+        img: "https://i.ibb.co.com/JR7y1B3Y/Screenshot-2025-08-22-144249.png",
+        coords: [-7.438356, 109.244301]
+    },
+    {
+        name: "Meubel Lisa Jaya",
+        city: "Bangkalan (Madura)",
+        address: "Timur Jalan SMPN 2 Bangkalan, JL. K.H. Hasyim Asyari No.13, Demangan Barat, Bangkalan, Jawa Timur 69115",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "JL. K.H. Hasyim Asyari No.13, Demangan Barat, Bangkalan, Jawa Timur 69115"),
+        img: "https://i.ibb.co.com/ch0bNWzW/Screenshot-2025-09-15-143632.png",
+        coords: [-7.0282709675175585, 112.74647900288844]
+    },
+    {
+        name: "Agrapana Furniture (Godean)",
+        city: "Yogyakarta",
+        address: "Jl. Sidomoyo No.89, Cokro Konteng, Sidoarum, Kec. Godean, Sleman, DI Yogyakarta 55264",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Sidomoyo No.89, Sidoarum, Godean, Sleman, DI Yogyakarta 55264"),
+        img: "https://i.ibb.co.com/fdsqzwFK/Screenshot-2025-09-15-143959.png",
+        coords: [-7.196062871164613, 107.8984975832736]
+    },
+    {
+        name: "Elok Meubel",
+        city: "Tegal",
+        address: "Jl. Mayjend DI. Panjaitan No.68/70, Tegalsari, Tegal Barat, Kota Tegal, Jawa Tengah 52111",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Mayjend DI. Panjaitan No.68/70, Tegalsari, Tegal Barat, Kota Tegal 52111"),
+        img: "https://i.ibb.co.com/spnfJ946/Screenshot-2025-09-15-144115.png",
+        coords: [-6.859464477608871, 109.13568596532647]
+    },
+    {
+        name: "Meubel Murah",
+        city: "Jakarta Timur",
+        address: "Jl. Raya Kalimalang No.37 1, Duren Sawit, Jakarta Timur, DKI Jakarta 13440",
+        href: "https://maps.app.goo.gl/37sFgPYmeYhp6Hvj8?g_st=aw",
+        img: "https://i.ibb.co.com/0yc93DRK/Screenshot-2025-09-22-092249.png",
+        coords: [-6.247639456432581, 106.91847865337301]
+    },
+    {
+        name: "Terus Jaya Abadi Furniture",
+        city: "Kab. Ciamis",
+        address: "Jl. Ampera 1 No.11, Ciamis, Kec. Ciamis, Kabupaten Ciamis, Jawa Barat 46211",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Ampera 1 No.11, Ciamis, Jawa Barat 46211"),
+        img: "https://i.ibb.co.com/zhzGJ0NT/Screenshot-2025-12-13-035311.png",
+        coords: [-7.325306216951325, 108.35359338015712]
+    },
+    {
+        name: "Agrapana Furniture (Garut)",
+        city: "Garut",
+        address: "Jl. Proklamasi, Jayaraga, Kec. Tarogong Kidul, Kabupaten Garut, Jawa Barat 44151",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Proklamasi, Jayaraga, Tarogong Kidul, Garut, Jawa Barat 44151"),
+        img: "https://i.ibb.co.com/Mx8y2Rn9/DSCF1260.webp",
+        coords: [-7.196089263091836, 107.89847351344686]
+    },
+    {
+        name: "Raja Mebel Pamekasan",
+        city: "Pamekasan (Madura)",
+        address: "Jl. Kabupaten, Sumur Putih, Bugih, Kec. Pamekasan, Kabupaten Pamekasan, Jawa Timur 69316",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Kabupaten, Sumur Putih, Bugih, Pamekasan, Jawa Timur 69316"),
+        img: "https://i.ibb.co.com/BHGNqyR6/JK.webp",
+        coords: [-7.157671151259155, 113.47468982883595]
+    },
+    {
+        name: "Mebel Irian",
+        city: "Pasuruan",
+        address: "Jl. Kh. Wachid Hasyim No.123, Kebonsari, Kec. Panggungrejo, Kota Pasuruan, Jawa Timur 67114",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Kh. Wachid Hasyim No.123, Kebonsari, Panggungrejo, Kota Pasuruan, Jawa Timur 67114"),
+        img: "https://i.ibb.co.com/gF6bCFw3/Screenshot-2025-12-13-035417.png",
+        coords: [-7.644566586400122, 112.90469485825982]
+    },
+    {
+        name: "Sumber Rejeki Furniture",
+        city: "Tasikmalaya",
+        address: "Jl. Perintis Kemerdekaan No.51, Sambongjaya, Kec. Mangkubumi, Kab. Tasikmalaya, Jawa Barat 46181",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Perintis Kemerdekaan No.51, Sambongjaya, Mangkubumi, Tasikmalaya, Jawa Barat 46181"),
+        img: "https://i.ibb.co.com/zVrDthFH/Screenshot-2025-12-13-035528.png",
+        coords: [-7.357534958851788, 108.21717233004006]
+    },
+    {
+        name: "Suka Indah",
+        city: "Bandung",
+        address: "Jl. Jend. Sudirman No.494, Ciroyom, Kec. Babakan Ciparay, Kota Bandung, Jawa Barat 40221",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Jend. Sudirman No.494, Ciroyom, Babakan Ciparay, Kota Bandung, Jawa Barat 40221"),
+        img: "https://i.ibb.co.com/29Y8gR8/Screenshot-2025-12-13-035656.png",
+        coords: [-6.918514533963292, 107.58623480039284]
+    },
+    {
+        name: "Makmur Furni-store",
+        city: "Cilacap",
+        address: "Jl. Tugu Barat No.25, Sampang Selatan, Sampang, Kec. Sampang, Kabupaten Cilacap, Jawa Tengah 53273",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Tugu Barat No.25, Sampang Selatan, Sampang, Cilacap, Jawa Tengah 53273"),
+        img: "https://i.ibb.co.com/0Rgz9Nqr/Screenshot-2025-12-13-035809.png",
+        coords: [-7.563000989154064, 109.19923900428012]
+    },
+];
+
+function safeText(s) {
+    return (s ?? "").toString();
+}
+
+function norm(s) {
+    return safeText(s).toLowerCase().trim();
+}
+
+let state = {
+    q: "",
+    city: "",
+    sort: "name_asc"
+};
+let viewItems = [...MITRA];
+
+function uniqueCities(items) {
+    const set = new Set(items.map(x => safeText(x.city)).filter(Boolean));
+    return Array.from(set).sort((a, b) => a.localeCompare(b, 'id'));
+}
+
+function applyFilters() {
+    let items = [...MITRA];
+    const q = norm(state.q);
+    if (q) {
+        items = items.filter(m => (`${m.name} ${m.city} ${m.address}`.toLowerCase()).includes(q));
+    }
+    if (state.city) {
+        items = items.filter(m => safeText(m.city) === state.city);
+    }
+
+    const byName = (a, b) => safeText(a.name).localeCompare(safeText(b.name), 'id');
+    const byCity = (a, b) => safeText(a.city).localeCompare(safeText(b.city), 'id');
+
+    switch (state.sort) {
+        case "name_desc":
+            items.sort((a, b) => byName(b, a));
+            break;
+        case "city_asc":
+            items.sort((a, b) => byCity(a, b) || byName(a, b));
+            break;
+        case "city_desc":
+            items.sort((a, b) => byCity(b, a) || byName(a, b));
+            break;
+        default:
+            items.sort((a, b) => byName(a, b));
+            break;
+    }
+    return items;
+}
+
+function buildRail(items) {
+    const rail = document.getElementById("container-toko");
+    rail.innerHTML = "";
+
+    items.forEach((m) => {
+        const div = document.createElement("div");
+        div.className = "item-toko";
+        div.innerHTML = `
+      <div class="info">
+        <div class="chips">
+          <span class="chip-city"><i class="material-icons">location_on</i>${safeText(m.city)}</span>
+        </div>
+        <a href="${m.href}" style="text-decoration:none;" target="_blank" rel="noopener">
+          <h3 class="nama">${safeText(m.name)}</h3>
+          <p class="alamat m-0">${safeText(m.address)}</p>
+        </a>
+        <div class="mini-actions">
+          <span class="mini-btn" data-open="${encodeURIComponent(m.href)}">
+            <i class="material-icons">map</i> Maps
+          </span>
+          ${m.coords ? `
+            <span class="mini-btn" data-fly="${m.coords[0]},${m.coords[1]}">
+              <i class="material-icons">near_me</i> Fokus
+            </span>
+          ` : ``}
+        </div>
+      </div>
+      <div class="thumb">
+        <img loading="lazy" decoding="async" src="${m.img}" alt="${safeText(m.name)}">
+      </div>
+    `;
+        rail.appendChild(div);
+    });
+
+    rail.querySelectorAll("[data-open]").forEach(el => {
+        el.addEventListener("click", (e) => {
+            e.preventDefault();
+            const url = decodeURIComponent(el.getAttribute("data-open"));
+            window.open(url, "_blank");
+        });
+    });
+
+    rail.querySelectorAll("[data-fly]").forEach(el => {
+        el.addEventListener("click", (e) => {
+            e.preventDefault();
+            const [lat, lng] = el.getAttribute("data-fly").split(",").map(Number);
+            if (window.__ILENAMAP && Number.isFinite(lat) && Number.isFinite(lng)) {
+                window.__ILENAMAP.setView([lat, lng], 14, {
+                    animate: true
+                });
+            }
+        });
+    });
+}
+
+function buildGridList(items) {
+    const gridWrap = document.getElementById("gridWrap");
+    const listWrap = document.getElementById("listWrap");
+    gridWrap.innerHTML = "";
+    listWrap.innerHTML = "";
+
+    items.forEach((m) => {
+        const g = document.createElement("a");
+        g.className = "grid-card";
+        g.href = m.href;
+        g.target = "_blank";
+        g.rel = "noopener";
+        g.style.textDecoration = "none";
+        g.innerHTML = `
+      <div class="g-info">
+        <span class="g-chip"><i class="material-icons">location_on</i>${safeText(m.city)}</span>
+        <p class="g-name">${safeText(m.name)}</p>
+        <p class="g-addr">${safeText(m.address)}</p>
+      </div>
+      <img loading="lazy" decoding="async" src="${m.img}" alt="${safeText(m.name)}">
+    `;
+        gridWrap.appendChild(g);
+
+        const l = document.createElement("div");
+        l.className = "list-row";
+        l.innerHTML = `
+      <img loading="lazy" decoding="async" src="${m.img}" alt="${safeText(m.name)}">
+      <div>
+        <p class="l-title m-0">${safeText(m.name)}</p>
+        <div class="l-meta">
+          <span class="l-chip"><i class="material-icons">location_on</i>${safeText(m.city)}</span>
+          ${m.coords ? `<span class="l-chip" style="background:rgba(249,115,22,.08);border-color:rgba(249,115,22,.14)"><i class="material-icons" style="color:var(--brand-2)">my_location</i>Map</span>` : ``}
+        </div>
+        <p class="l-addr">${safeText(m.address)}</p>
+      </div>
+      <div class="l-cta">
+        ${m.coords ? `<a href="javascript:void(0)" data-fly="${m.coords[0]},${m.coords[1]}"><i class="material-icons" style="font-size:18px">near_me</i> Fokus</a>` : ``}
+        <a href="${m.href}" target="_blank" rel="noopener">
+          <i class="material-icons" style="font-size:18px">map</i> Lihat Peta
+        </a>
+      </div>
+    `;
+        listWrap.appendChild(l);
+    });
+
+    listWrap.querySelectorAll("[data-fly]").forEach(el => {
+        el.addEventListener("click", () => {
+            const [lat, lng] = el.getAttribute("data-fly").split(",").map(Number);
+            if (window.__ILENAMAP && Number.isFinite(lat) && Number.isFinite(lng)) {
+                window.__ILENAMAP.setView([lat, lng], 14, {
+                    animate: true
+                });
+            }
+        });
+    });
+}
+
+function updateCounts(items) {
+    const label = document.getElementById("label-count");
+    const totalLabel = document.getElementById("total-mitra");
+    const kpi = document.getElementById("kpiCount");
+    const count = items.length;
+
+    if (label) label.textContent = count ? `${count} Mitra Ditampilkan` : "0 Mitra";
+    if (totalLabel) totalLabel.textContent = count ? `${count} Mitra` : "0 Mitra";
+    if (kpi) kpi.textContent = count ? `${count} Mitra` : "0 Mitra";
+}
+
+function renderMap(items) {
+    if (!window.__ILENAMAP) return;
+
+    if (window.__ILENA_LAYERS) {
+        window.__ILENA_LAYERS.forEach(x => window.__ILENAMAP.removeLayer(x));
+    }
+    window.__ILENA_LAYERS = [];
+
+    items.forEach(function(store) {
+        if (!store.coords || !Array.isArray(store.coords)) return;
+
+        var brand = getComputedStyle(document.documentElement).getPropertyValue('--brand').trim() || '#e11d48';
+        var brand2 = getComputedStyle(document.documentElement).getPropertyValue('--brand-2').trim() ||
+            '#f97316';
+
+        var marker = L.circleMarker(store.coords, {
+            color: brand,
+            fillColor: brand,
+            fillOpacity: 0.18,
+            stroke: true,
+            weight: 0.8,
+            radius: 10
+        }).addTo(window.__ILENAMAP);
+
+        var circle = L.circle(store.coords, {
+            color: brand2,
+            fillColor: brand2,
+            fillOpacity: 0.14,
+            radius: 70
+        }).addTo(window.__ILENAMAP);
+
+        const pop = `
+      <div style="min-width:220px;font-family:system-ui">
+        <div style="font-weight:900;color:#0f172a">${safeText(store.name)}</div>
+        <div style="margin-top:4px;color:#64748b;font-weight:800;font-size:12px">${safeText(store.city)}</div>
+        <div style="margin-top:8px;color:#475569;font-weight:700;font-size:12px;line-height:1.25">${safeText(store.address)}</div>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+          <a href="${store.href}" target="_blank" rel="noopener"
+             style="text-decoration:none;font-weight:900;padding:.45rem .7rem;border-radius:10px;border:1px solid rgba(15,23,42,.14);color:#0f172a;">
+             Open Maps
+          </a>
+          <a href="https://www.google.com/maps?q=${store.coords[0]},${store.coords[1]}" target="_blank" rel="noopener"
+             style="text-decoration:none;font-weight:900;padding:.45rem .7rem;border-radius:10px;border:0;color:#fff;background:linear-gradient(90deg,var(--brand),var(--brand-2));">
+             Navigate
+          </a>
+        </div>
+      </div>
+    `;
+        marker.bindPopup(pop);
+
+        marker.on('mouseover', () => marker.openPopup());
+        marker.on('mouseout', () => marker.closePopup());
+
+        function go() {
+            window.open("https://www.google.com/maps?q=" + store.coords[0] + "," + store.coords[1], "_blank");
+        }
+        marker.on('click', go);
+        circle.on('click', go);
+
+        window.__ILENA_LAYERS.push(marker, circle);
+    });
+}
+
+function renderAll() {
+    viewItems = applyFilters();
+    buildRail(viewItems);
+    buildGridList(viewItems);
+    updateCounts(viewItems);
+    renderMap(viewItems);
+}
+
+/* init filters */
+(function() {
+    const citySel = document.getElementById("city");
+    uniqueCities(MITRA).forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.textContent = c;
+        citySel.appendChild(opt);
+    });
+
+    document.getElementById("q").addEventListener("input", (e) => {
+        state.q = e.target.value || "";
+        renderAll();
+    });
+    document.getElementById("city").addEventListener("change", (e) => {
+        state.city = e.target.value || "";
+        renderAll();
+    });
+    document.getElementById("sort").addEventListener("change", (e) => {
+        state.sort = e.target.value || "name_asc";
+        renderAll();
+    });
+})();
+</script>
+
+<!-- Scroll helpers (rail) -->
 <script>
 (function() {
     const rail = document.getElementById('container-toko');
     const prev = document.querySelector('.toko-prev');
     const next = document.querySelector('.toko-next');
     const prog = document.getElementById('railProgress');
-    const label = document.getElementById('label-count');
-    const totalLabel = document.getElementById('total-mitra');
-    const count = rail ? rail.querySelectorAll('.item-toko').length : 0;
-    if (label) label.textContent = count ? `${count} Mitra Terdaftar` : '0 Mitra';
-    if (totalLabel) totalLabel.textContent = count ? `${count} Mitra` : '0 Mitra';
-
     if (!rail || !prev || !next || !prog) return;
+
     const step = () => Math.min(rail.clientWidth * 0.8, 520);
     prev.addEventListener('click', () => rail.scrollBy({
         left: -step(),
@@ -930,23 +1634,10 @@
         });
     });
     updateProg();
-
-    // blink kecil saat jumlah bertambah
-    totalLabel && totalLabel.animate(
-        [{
-            transform: "scale(1)"
-        }, {
-            transform: "scale(1.06)"
-        }, {
-            transform: "scale(1)"
-        }], {
-            duration: 360
-        }
-    );
 })();
 </script>
 
-<!-- View toggle + builder Grid/List (BARU) -->
+<!-- View toggle -->
 <script>
 (function() {
     const btnRail = document.getElementById('btnViewRail');
@@ -956,10 +1647,6 @@
     const paneRail = document.getElementById('pane-rail');
     const paneGrid = document.getElementById('pane-grid');
     const paneList = document.getElementById('pane-list');
-
-    const rail = document.getElementById('container-toko');
-    const gridWrap = document.getElementById('gridWrap');
-    const listWrap = document.getElementById('listWrap');
 
     function setPressed(target) {
         [btnRail, btnGrid, btnList].forEach(b => b.setAttribute('aria-pressed', 'false'));
@@ -971,64 +1658,16 @@
         p.classList.add('active');
     }
 
-    // Builder dari item rail -> grid/list (sekali saja)
-    let built = false;
-
-    function buildAltViews() {
-        if (built) return;
-        const items = rail.querySelectorAll('.item-toko');
-        items.forEach((it) => {
-            const name = it.querySelector('.nama')?.textContent?.trim() || '';
-            const addr = it.querySelector('.alamat')?.textContent?.trim() || '';
-            const href = it.querySelector('a.info')?.getAttribute('href') || '#';
-            const imgSrc = it.querySelector('img')?.getAttribute('src') || '';
-
-            // Grid card
-            const g = document.createElement('a');
-            g.className = 'grid-card';
-            g.href = href;
-            g.style.textDecoration = 'none';
-            g.innerHTML = `
-        <div class="g-info">
-          <p class="g-name">${name}</p>
-          <p class="g-addr">${addr}</p>
-        </div>
-        <img loading="lazy" decoding="async" src="${imgSrc}" alt="${name}">
-      `;
-            gridWrap.appendChild(g);
-
-            // List row
-            const l = document.createElement('div');
-            l.className = 'list-row';
-            l.innerHTML = `
-        <img loading="lazy" decoding="async" src="${imgSrc}" alt="${name}">
-        <div>
-          <p class="l-title m-0">${name}</p>
-          <p class="l-addr">${addr}</p>
-        </div>
-        <div class="l-cta">
-          <a href="${href}" target="_blank" rel="noopener">
-            <i class="material-icons" style="font-size:18px">map</i> Lihat Peta
-          </a>
-        </div>
-      `;
-            listWrap.appendChild(l);
-        });
-        built = true;
-    }
-
     btnRail.addEventListener('click', () => {
         setPressed(btnRail);
         showPane(paneRail);
     });
     btnGrid.addEventListener('click', () => {
         setPressed(btnGrid);
-        buildAltViews();
         showPane(paneGrid);
     });
     btnList.addEventListener('click', () => {
         setPressed(btnList);
-        buildAltViews();
         showPane(paneList);
     });
 })();
@@ -1036,140 +1675,16 @@
 
 <!-- Map (Leaflet) -->
 <script>
-var map = L.map('map').setView([-7.614529, 110.712246], 6.5);
+window.__ILENAMAP = L.map('map').setView([-7.614529, 110.712246], 6.5);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-}).addTo(map);
+}).addTo(window.__ILENAMAP);
 
-var locations = [{
-        name: "Jempol Baru Furniture (Solo)",
-        coords: [-7.565686761626352, 110.82430295467728]
-    },
-    {
-        name: "Cipta Bangun Jaya Furniture (Jakarta)",
-        coords: [-6.285267, 106.842995]
-    },
-    {
-        name: "Sumber Abadi Furniture (Yogyakarta)",
-        coords: [-7.743533, 110.362422]
-    },
-    {
-        name: "Home Gallery Furniture (Surabaya)",
-        coords: [-7.288629, 112.672618]
-    },
-    {
-        name: "Pari Anom Jaya (Surabaya)",
-        coords: [-7.241680, 112.744704]
-    },
-    {
-        name: "Suri Meubel (Semarang)",
-        coords: [-6.985425, 110.417463]
-    },
-    {
-        name: "Puri Mebel & Interior (Semarang)",
-        coords: [-6.965809, 110.390439]
-    },
-    {
-        name: "Victoria Furnicenter (Surabaya)",
-        coords: [-7.310520, 112.683035]
-    },
-    {
-        name: "Tunggal Jaya Furniture (Malang)",
-        coords: [-7.982, 112.630]
-    },
-    {
-        name: "Cipta Bangun Jaya Furniture (Magelang)",
-        coords: [-7.497190, 110.223518]
-    },
-    {
-        name: "Homj Furniture (Surabaya)",
-        coords: [-7.321152, 112.744107]
-    },
-    {
-        name: "Kasur Indah (Denpasar)",
-        coords: [-8.696615, 115.186424]
-    },
-    {
-        name: "DM Mebel Supeno (Yogyakarta)",
-        coords: [-7.816169, 110.380688]
-    },
-    {
-        name: "Istana Meubel (Cirebon)",
-        coords: [-6.715091, 108.564765]
-    },
-    {
-        name: "Living Home (Purwokerto)",
-        coords: [-7.446179, 109.243781]
-    },
-    {
-        name: "Vinetta Furniture (Purwokerto)",
-        coords: [-7.423047, 109.250232]
-    },
-    {
-        name: "FURNI CENTER (Purwokerto)",
-        coords: [-7.438356, 109.244301]
-    }
-];
-
-// === TAMBAHAN MARKER BARU ===
-locations.push({
-    name: "Seruma Space (Banguntapan, Bantul)",
-    coords: [-7.8347557775250065, 110.37898663945798]
-}, {
-    name: "Toko Mebel Garuda Mas (Magelang)",
-    coords: [-7.497210712603127, 110.22352521039721]
-}, {
-    name: "Meubel Lisa Jaya (Bangkalan)",
-    coords: [-7.0282709675175585, 112.74647900288844]
-}, {
-    name: "Agrapana Furniture (Godean, Sleman)",
-    coords: [-6.859468184151993, 109.13567611808162]
-}, {
-    name: "Elok Meubel (Tegal)",
-    coords: [-6.859464477608871, 109.13568596532647]
-}, {
-    name: "Meubel Murah (Jakarta Timur)",
-    coords: [-6.247639456432581, 106.91847865337301]
-}, {
-    name: "Raja Mebel (Pamekasan)",
-    coords: [-7.157671151259155, 113.47468982883595]
-}, {
-    name: "Toko Agrapana Furniture (Garut)",
-    coords: [-7.196089263091836, 107.89847351344686]
-}, {
-    name: "Terus Jaya Abadi Furniture (Ciamis)",
-    coords: [-7.325319385884007, 108.35351280846814]
-});
-
-locations.forEach(function(store) {
-    var marker = L.circleMarker(store.coords, {
-        color: '#e11d48',
-        fillColor: '#e11d48',
-        fillOpacity: 0.18,
-        stroke: true,
-        weight: 0.6,
-        radius: 10
-    }).addTo(map);
-    var circle = L.circle(store.coords, {
-        color: '#f97316',
-        fillColor: '#f97316',
-        fillOpacity: 0.15,
-        radius: 60
-    }).addTo(map);
-    marker.bindPopup("<b>" + store.name + "</b>");
-    marker.on('mouseover', () => marker.openPopup());
-    marker.on('mouseout', () => marker.closePopup());
-
-    function go() {
-        window.open("https://www.google.com/maps?q=" + store.coords[0] + "," + store.coords[1],
-            "_blank");
-    }
-    marker.on('click', go);
-    circle.on('click', go);
-});
-map.on('click', function(e) {
+window.__ILENAMAP.on('click', function(e) {
     window.open("https://www.google.com/maps?q=" + e.latlng.lat + "," + e.latlng.lng, "_blank");
 });
+
+renderAll();
 </script>
 
 <?= $this->endSection(); ?>
