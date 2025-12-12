@@ -222,41 +222,28 @@
             $digits = substr($angka, -5);
         }
 
-        // tentukan prefix sesuai jenis dokumen utama:
-        // - nf   => NF
-        // - sale/sj => SJ
-        // lainnya => tanpa prefix khusus
-        $prefix = '';
+        // ==========================================================
+        // FIX UTAMA:
+        // - OFFLINE SALE (SJ...) => tampil 00002 (tanpa SJ)
+        // - OFFLINE NF           => tampil NF00002
+        // ==========================================================
+        $nomorDisplayBase = str_pad($digits, 5, '0', STR_PAD_LEFT);
         if ($docType === 'nf') {
-            $prefix = 'NF';
-        } elseif ($docType === 'sale' || $docType === 'sj') {
-            $prefix = 'SJ';
-        }
-
-        if ($prefix !== '') {
-            $nomorDisplayBase = $prefix . str_pad($digits, 5, '0', STR_PAD_LEFT);
-        } else {
-            // fallback: cuma angka
-            $nomorDisplayBase = str_pad($digits, 5, '0', STR_PAD_LEFT);
+            $nomorDisplayBase = 'NF' . $nomorDisplayBase;
         }
 
         // === NOMOR HEADER YANG DITAMPILKAN ===
         if (!empty($is_payment_invoice)) {
-            // INVOICE PEMBAYARAN: pakai nomor khusus payment
-            if (!empty($payment['no_invoice'])) {
-                $nomorInvoiceHeader = $payment['no_invoice'];
-            } elseif (!empty($payment['kode_invoice'])) {
-                $nomorInvoiceHeader = $payment['kode_invoice'];
-            } else {
-                $idPay = (int)($payment['id'] ?? 0);
-                $nomorInvoiceHeader = 'PMT-' . str_pad((string)$idPay, 4, '0', STR_PAD_LEFT);
+            $nomorDasar = preg_replace('/[^0-9]/', '', $nomorDisplayBase);
+            $paymentSequence = 1;
+            if (!empty($history_before) && is_array($history_before)) {
+                $paymentSequence = count($history_before) + 1;
             }
+            $nomorInvoiceHeader = $nomorDasar . '-' . $paymentSequence;
         } else {
-            // INVOICE FINAL / LAMA: pakai nomor SJxxxx atau NFxxxx sesuai docType
             $nomorInvoiceHeader = $nomorDisplayBase;
         }
 
-        // flag: ini FINAL INVOICE PROJECT INTERIOR (bukan invoice per pembayaran)
         $isFinalInteriorInvoice = !empty($is_project_interior) && empty($is_payment_invoice);
         ?>
 
@@ -322,19 +309,17 @@
                 <?= esc($namaNpwpCetak); ?>
             </p>
 
-
             <p class="m-0" style="max-width:260px; font-size:12px;"><?= $pemesanan['alamat_tagihan']; ?></p>
 
-
             <?php
-                    // Ambil NPWP dari pemesanan dulu
-                    $npwpCetak = trim((string)($pemesanan['npwp'] ?? ''));
+                // Ambil NPWP dari pemesanan dulu
+                $npwpCetak = trim((string)($pemesanan['npwp'] ?? ''));
 
-                    // Kalau interior dan npwp di pemesanan kosong, ambil dari project
-                    if ($npwpCetak === '' && !empty($project) && !empty($project['npwp'])) {
-                        $npwpCetak = trim((string)$project['npwp']);
-                    }
-                ?>
+                // Kalau interior dan npwp di pemesanan kosong, ambil dari project
+                if ($npwpCetak === '' && !empty($project) && !empty($project['npwp'])) {
+                    $npwpCetak = trim((string)$project['npwp']);
+                }
+            ?>
             <p style="font-size:12px;" class="isint">
                 NPWP/NIK : <?= $npwpCetak !== '' ? esc($npwpCetak) : '-'; ?>
             </p>
@@ -618,9 +603,8 @@
                         </td>
                     </tr>
                     <?php endif; ?>
-
-                    <?php endif; // end non-interior ?>
-                    <?php endif; // end !is_payment_invoice ?>
+                    <?php endif; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
