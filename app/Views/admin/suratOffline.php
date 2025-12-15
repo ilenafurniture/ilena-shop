@@ -298,7 +298,7 @@
                 <div class="text-center" style="min-width:180px;">
                     <p class="m-0 sig-title">Dibuat Oleh :</p>
                     <br><br><br>
-                    <p class="m-0 sig-name">Admin Ilena</p>
+                    <p class="m-0 sig-name">Admin</p>
                     <p class="m-0 sig-name">____________________</p>
                 </div>
                 <div class="text-center" style="min-width:180px;">
