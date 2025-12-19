@@ -362,8 +362,10 @@ hr {
         <form method="post" action="/admin/actionbuatinvoice">
             <h5 class="m-0 fw-bold">Buat Invoice</h5>
             <p class="mb-3 text-sm" style="color: var(--brand); font-size: 12px">
-                ID Order : <input type="text" name="id_pesanan" id="input-idpesanan"
-                    style="border: none; color: var(--brand); pointer-events: none;" class="fw-bold">
+                ID Order :
+                <!-- NOTE: id dihapus agar tidak duplikat -->
+                <input type="text" name="id_pesanan" style="border: none; color: var(--brand); pointer-events: none;"
+                    class="fw-bold">
             </p>
             <div class="mb-2">
                 <p class="mb-1">Tanggal</p>
@@ -398,8 +400,9 @@ hr {
         <form method="post" action="/admin/actionbuatdp">
             <h5 class="m-0 fw-bold">Buat Invoice DP</h5>
             <p class="mb-3 text-sm" style="color: var(--brand); font-size: 12px">ID Order :
-                <input type="text" name="id_pesanan" id="input-idpesanan"
-                    style="border: none; color: var(--brand); pointer-events: none;" class="fw-bold">
+                <!-- NOTE: id dihapus agar tidak duplikat -->
+                <input type="text" name="id_pesanan" style="border: none; color: var(--brand); pointer-events: none;"
+                    class="fw-bold">
             </p>
             <div class="d-flex flex-column flex-md-row gap-3 mb-3">
                 <div class="d-flex flex-column gap-2" style="flex:1">
@@ -504,20 +507,6 @@ hr {
                         <div class="d-flex flex-column align-items-end">
                             <a href="/admin/surat-koreksi/" class="btn-teks-aja">Lihat koreksi</a>
                             <p class="text-secondary" style="font-size: 12px;">SK0000001</p>
-                        </div>
-                    </label>
-                    <label class="d-flex gap-3 align-items-center">
-                        <input type="checkbox" onchange="handleChangeInputItem(1, event)">
-                        <div>
-                            <p class="fw-bold m-0">Coffe table (HITAM)</p>
-                            <p class="text-secondary text-sm m-0">1023142</p>
-                        </div>
-                    </label>
-                    <label class="d-flex gap-3 align-items-center">
-                        <input type="checkbox" onchange="handleChangeInputItem(2, event)">
-                        <div>
-                            <p class="fw-bold m-0">Coffe table (HITAM)</p>
-                            <p class="text-secondary text-sm m-0">1023142</p>
                         </div>
                     </label>
                 </div>
@@ -739,16 +728,16 @@ hr {
 
                             <td align="center">
                                 <?php
-                  $st = strtolower((string)($p['status'] ?? ''));
-                  $badgeClass = [
-                    'pending'  => 'bg-secondary',
-                    'dp'       => 'bg-warning text-dark',
-                    'dp paid'  => 'bg-info text-dark',
-                    'success'  => 'bg-success',
-                    'return'   => 'bg-danger',
-                    'draft'    => 'bg-light text-dark',
-                  ][$st] ?? 'bg-secondary';
-                ?>
+                                    $st = strtolower((string)($p['status'] ?? ''));
+                                    $badgeClass = [
+                                        'pending'  => 'bg-secondary',
+                                        'dp'       => 'bg-warning text-dark',
+                                        'dp paid'  => 'bg-info text-dark',
+                                        'success'  => 'bg-success',
+                                        'return'   => 'bg-danger',
+                                        'draft'    => 'bg-light text-dark',
+                                    ][$st] ?? 'bg-secondary';
+                                ?>
                                 <span class="badge <?= $badgeClass; ?> rounded-pill">
                                     <?= strtoupper($st ?: '-'); ?>
                                     <?php if (($p['is_draft'] ?? 0) == 1): ?>
@@ -758,28 +747,27 @@ hr {
                             </td>
 
                             <?php
-                // JT dihitung dari tanggal SJ (tanggal transaksi untuk NF/SALE).
-                // - SALE & NF: jika status DP atau DRAFT → SJ belum ada, JT = —; selain itu pakai $p['tanggal']
-                // - SP: tidak ada SJ → JT = —
-                $tglSj = null;
-                if ($jenis === 'sale' || $jenis === 'nf') {
-                    if ($st === 'dp' || $st === 'draft') {
-                        $tglSj = null;
-                    } else {
-                        $tglSj = $p['tanggal'] ?? null;
-                    }
-                } else {
-                    $tglSj = null; // SP
-                }
-                list($jtStr, $sisaHari, $jtStatus) = $jtInfo($tglSj);
+                                // JT dihitung dari tanggal SJ (tanggal transaksi untuk NF/SALE).
+                                // NOTE: Idealnya pakai tanggal_sj_terbit dari tabel SJ, tapi tetap pakai $p['tanggal'] untuk sementara.
+                                $tglSj = null;
+                                if ($jenis === 'sale' || $jenis === 'nf') {
+                                    if ($st === 'dp' || $st === 'draft') {
+                                        $tglSj = null;
+                                    } else {
+                                        $tglSj = $p['tanggal'] ?? null;
+                                    }
+                                } else {
+                                    $tglSj = null; // SP
+                                }
+                                list($jtStr, $sisaHari, $jtStatus) = $jtInfo($tglSj);
 
-                $jtBadgeText = '—';
-                if ($jtStr) {
-                    if ($sisaHari < 0)      $jtBadgeText = "Lewat " . abs($sisaHari) . " hari";
-                    elseif ($sisaHari === 0) $jtBadgeText = "Hari ini";
-                    else                      $jtBadgeText = $sisaHari . " hari lagi";
-                }
-              ?>
+                                $jtBadgeText = '—';
+                                if ($jtStr) {
+                                    if ($sisaHari < 0)       $jtBadgeText = "Lewat " . abs($sisaHari) . " hari";
+                                    elseif ($sisaHari === 0) $jtBadgeText = "Hari ini";
+                                    else                     $jtBadgeText = $sisaHari . " hari lagi";
+                                }
+                            ?>
                             <td class="text-center">
                                 <?php if ($jtStr) { ?>
                                 <div class="d-flex flex-column align-items-center" data-bs-toggle="tooltip"
@@ -795,12 +783,12 @@ hr {
                             <td>
                                 <div class="d-flex gap-1 justify-content-center">
                                     <?php
-                    $isDraft     = isset($p['is_draft']) && (int)$p['is_draft'] === 1;
-                    $downPayment = (int)($p['down_payment'] ?? 0);
-                    $hasDP       = $downPayment !== 0;
-                    $dpIsNegative= $downPayment < 0; // setelah “Buat SJ” dari DP
-                    $isSaleLike  = ($jenis === 'sale' || $jenis === 'nf');
-                  ?>
+                                        $isDraft      = isset($p['is_draft']) && (int)$p['is_draft'] === 1;
+                                        $downPayment  = (int)($p['down_payment'] ?? 0);
+                                        $hasDP        = $downPayment !== 0;
+                                        $dpIsNegative = $downPayment < 0; // setelah “Buat SJ” dari DP
+                                        $isSaleLike   = ($jenis === 'sale' || $jenis === 'nf');
+                                    ?>
 
                                     <!-- Tombol DETAIL (selalu ada) -->
                                     <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top"
@@ -845,8 +833,10 @@ hr {
                                             class="material-icons">description</i></a>
                                     <?php if (strtoupper((string)($p['status'] ?? '')) === 'DP'): ?>
                                     <a class="btn text-danger" data-bs-toggle="tooltip" data-bs-placement="top"
-                                        onclick="buatInvoiceDP(<?= $ind_p; ?>)" data-bs-title="Buat Surat Jalan"><i
-                                            class="material-icons">note_add</i></a>
+                                        onclick="buatInvoiceDP(<?= $ind_p; ?>)"
+                                        data-bs-title="Buat Surat Jalan dari DP">
+                                        <i class="material-icons">local_shipping</i>
+                                    </a>
                                     <?php endif; ?>
                                     <?php endif; ?>
                                     <?php else: /* TANPA DP (cash) */ ?>
@@ -874,8 +864,8 @@ hr {
                                         data-bs-placement="top" data-bs-title="Buat Surat Jalan"><i
                                             class="material-icons">insert_drive_file</i></a>
                                     <?php endif; ?>
-
                                     <?php endif; ?>
+
                                     <?php endif; ?>
 
                                     <!-- ===== Tambahan tombol EDIT (selalu ada) ===== -->
@@ -893,9 +883,13 @@ hr {
 </div>
 
 <script>
-const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+/* init tooltips (bootstrap) */
+(function() {
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    window.tooltipList = [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el))
+})();
 </script>
+
 <script>
 function selectJenis(event) {
     window.location.replace(`/admin/order/offline/${event.target.value}`)
@@ -903,6 +897,7 @@ function selectJenis(event) {
 </script>
 
 <script>
+/* ===== Address dropdown chain ===== */
 const provElm = document.querySelector('select[name="provinsi"]');
 const kotaElm = document.querySelector('select[name="kota"]');
 const kecElm = document.querySelector('select[name="kecamatan"]');
@@ -979,10 +974,10 @@ async function getKec(idkota) {
     }
 }
 
-async function getKode(kecNamaAtauId) {
+async function getKode(idkecOrName) {
     kodeElm.innerHTML = '<option value="">Loading desa…</option>';
     try {
-        const res = await fetch(`/getkode/${encodeURIComponent(kecNamaAtauId)}`);
+        const res = await fetch(`/getkode/${encodeURIComponent(idkecOrName)}`);
         if (!res.ok) throw new Error(res.statusText);
         const payload = await res.json();
         const list = normalizeList(payload);
@@ -1006,7 +1001,7 @@ async function getKode(kecNamaAtauId) {
     }
 }
 
-// EVENTS
+/* EVENTS */
 provElm?.addEventListener("change", (e) => {
     kotaElm.innerHTML = '<option value="">Loading kota…</option>';
     kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
@@ -1016,6 +1011,7 @@ provElm?.addEventListener("change", (e) => {
     if (idprov > 0) getKota(idprov);
     else kotaElm.innerHTML = '<option value="">-- Pilih kota --</option>';
 });
+
 kotaElm?.addEventListener("change", (e) => {
     kecElm.innerHTML = '<option value="">Loading kecamatan…</option>';
     kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
@@ -1024,17 +1020,18 @@ kotaElm?.addEventListener("change", (e) => {
     if (idkota > 0) getKec(idkota);
     else kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
 });
+
 kecElm?.addEventListener("change", (e) => {
     kodeElm.innerHTML = '<option value="">Loading desa…</option>';
     const parts = String(e.target.value || "").split("-");
-    const idkec = Number(parts[0]);
-    const namaKec = parts[0] ?? "";
-    if (idkec > 0 || namaKec) getKode(namaKec);
+    const idkec = parts[0]; // FIX: kirim ID kecamatan (bukan “namaKec” palsu)
+    if (idkec) getKode(idkec);
     else kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
 });
 </script>
 
 <script>
+/* ===== Core modal controls ===== */
 const tableDpElm = document.getElementById('table-dp');
 const containerItemsElm = document.getElementById('container-items');
 const indexItemsSelectedElm = document.querySelector('input[name="index_items_selected"]');
@@ -1045,12 +1042,10 @@ const inputBuatInvoiceElm = document.getElementById('input-buat-invoice');
 const inputBuatDPElm = document.getElementById('input-buat-dp');
 const inputAlamatInvoiceElm = document.getElementById('input-alamat-invoice');
 
-/* Hindari TDZ & tetap global agar aman untuk inline onclick */
 var pesanan = <?= $pesananJson ?>;
 
 const alamatTagihanElm = document.querySelector('textarea[name="alamatTagihan"]');
 let pesananSelected = {};
-console.log(pesanan)
 
 function alertSuccess(idPesanan) {
     const check = window.confirm(`ID pesanan ${idPesanan} sudah lunas?`);
@@ -1060,7 +1055,7 @@ function alertSuccess(idPesanan) {
 }
 
 function handleChangeInputItem(index, event) {
-    let arrIndexItem = indexItemsSelectedElm.value.split(',');
+    let arrIndexItem = (indexItemsSelectedElm.value || '').split(',');
     arrIndexItem[index] = event.target.checked ? '1' : '0';
     indexItemsSelectedElm.value = arrIndexItem.join(',');
 }
@@ -1071,26 +1066,27 @@ function pilihPesanan(index) {
         alert('Data pesanan belum siap. Coba reload halaman.');
         return;
     }
-    console.log(pesanan[index])
     pesananSelected = pesanan[index];
     indexItemsSelectedElm.value = '';
     containerItemsElm.innerHTML = '';
+
     (async () => {
         const fetchItems = await fetch(`/admin/getitemsoffline/${pesananSelected.id_pesanan}`);
         const fetchItemsJson = await fetchItems.json();
-        console.log(fetchItemsJson)
-        if (fetchItemsJson.items.length == 0) {
+
+        const items = fetchItemsJson.items || fetchItemsJson.data?.items || [];
+        if (!items.length) {
             return window.alert('Produk sudah di beli semua');
         }
-        fetchItemsJson.items.forEach((item, index) => {
-            indexItemsSelectedElm.value += `${index == 0 ? '' : ','}${0}`
+
+        items.forEach((item, idx) => {
+            indexItemsSelectedElm.value += `${idx == 0 ? '' : ','}${0}`
             containerItemsElm.innerHTML += `
                 <label class="d-flex gap-3 align-items-center justify-content-between">
                     <div class="d-flex gap-3 align-items-center">
                         ${item.id_return == '' ? `
-                        <input type="checkbox" onchange="handleChangeInputItem(${index}, event)">
-                        ` : '<div style="width: 13px"></div>'
-                        }
+                        <input type="checkbox" onchange="handleChangeInputItem(${idx}, event)">
+                        ` : '<div style="width: 13px"></div>'}
                         <div>
                             <p class="fw-bold m-0">${item.nama} (${item.varian})</p>
                             <p class="text-secondary text-sm m-0">${item.id_barang}</p>
@@ -1101,14 +1097,15 @@ function pilihPesanan(index) {
                             <a href="/admin/surat-koreksi/${item.id_return}" class="btn-teks-aja">Lihat koreksi</a>
                             <p class="text-secondary" style="font-size: 12px;">${item.id_return}</p>
                         </div>
-                    ` : ''
-                    }
+                    ` : ''}
                 </label>
             `
         })
+
         inputIdpesananElm.forEach((e) => {
             e.value = pesananSelected.id_pesanan;
         })
+
         inputKoreksiElm.classList.remove('d-none')
         inputKoreksiElm.classList.add('d-flex')
     })();
@@ -1121,7 +1118,6 @@ function closeModal() {
     inputKoreksiElm.classList.remove('d-flex')
     inputBuatInvoiceElm.classList.add('d-none')
     inputBuatInvoiceElm.classList.remove('d-flex')
-    // modal edit ditutup di override di bawah
     indexItemsSelectedElm.value = '';
 }
 
@@ -1138,7 +1134,6 @@ function handleChangeAlamatTagihan(event) {
 
 function buatInvoice(index) {
     const pesananInvoice = pesanan[index]
-    console.log(pesananInvoice)
     inputAlamatInvoiceElm.value = pesananInvoice.alamat_pengiriman
     inputIdpesananElm.forEach((e) => {
         e.value = pesananInvoice.id_pesanan;
@@ -1149,7 +1144,6 @@ function buatInvoice(index) {
 
 async function buatInvoiceDP(index) {
     const pesananInvoice = pesanan[index]
-    console.log(pesananInvoice)
     inputIdpesananElm.forEach((e) => {
         e.value = pesananInvoice.id_pesanan;
     })
@@ -1158,8 +1152,9 @@ async function buatInvoiceDP(index) {
 
     const fetchItems = await fetch(`/admin/getitemsoffline/${pesananInvoice.id_pesanan}`);
     const fetchItemsJson = await fetchItems.json();
-    console.log(fetchItemsJson.items)
-    const result = fetchItemsJson.items.reduce((acc, item) => {
+
+    const items = fetchItemsJson.items || fetchItemsJson.data?.items || [];
+    const result = items.reduce((acc, item) => {
         const key = `${item.id_barang}-${item.varian}`;
         const existingItem = acc.find(i => i.key === key);
         if (existingItem) {
@@ -1173,36 +1168,38 @@ async function buatInvoiceDP(index) {
         }
         return acc;
     }, []);
+
     let totalHargaBarang = 0;
-    result.forEach((item, index) => {
+    result.forEach((item) => {
         tableDpElm.innerHTML += `
         <tr>
             <td>
                 <p class="m-0">${item.nama} (${item.varian})</p>
-                <p class="m-0">${item.dimensi.panjang} x ${item.dimensi.lebar} x ${item.dimensi.tinggi}</p>
+                <p class="m-0">${item.dimensi?.panjang ?? '-'} x ${item.dimensi?.lebar ?? '-'} x ${item.dimensi?.tinggi ?? '-'}</p>
             </td>
             <td class="text-center">${item.jumlah}</td>
-            <td class="text-end">Rp ${parseInt(item.harga).toLocaleString('id-ID')}</td>
+            <td class="text-end">Rp ${parseInt(item.harga || 0).toLocaleString('id-ID')}</td>
         </tr>
         `
-        totalHargaBarang += item.jumlah * parseInt(item.harga)
+        totalHargaBarang += item.jumlah * parseInt(item.harga || 0)
     })
+
     tableDpElm.innerHTML += `
     <tr>
         <td colspan="2" class="fw-bold">TOTAL HARGA BARANG</td>
-        <td class="text-end fw-bold" colspan=" 2">Rp ${totalHargaBarang.toLocaleString('id-ID')}</td>
+        <td class="text-end fw-bold" colspan="2">Rp ${totalHargaBarang.toLocaleString('id-ID')}</td>
     </tr>`
+
     if (totalHargaBarang - Number(pesananInvoice.total_akhir || 0) > 0) {
         tableDpElm.innerHTML += `
         <tr>
             <td colspan="2" class="fw-bold">POTONGAN</td>
-            <td class="text-end fw-bold" colspan=" 2">Rp ${(totalHargaBarang - Number(pesananInvoice.total_akhir || 0)).toLocaleString('id-ID')}</td>
+            <td class="text-end fw-bold" colspan="2">Rp ${(totalHargaBarang - Number(pesananInvoice.total_akhir || 0)).toLocaleString('id-ID')}</td>
         </tr>
         <tr>
             <td colspan="2" class="fw-bold">TOTAL TAGIHAN</td>
-            <td class="text-end fw-bold" colspan=" 2">Rp ${Number(pesananInvoice.total_akhir || 0).toLocaleString('id-ID')}</td>
-        </tr>
-        `
+            <td class="text-end fw-bold" colspan="2">Rp ${Number(pesananInvoice.total_akhir || 0).toLocaleString('id-ID')}</td>
+        </tr>`
     }
 
     const totalAkhir = Number(pesananInvoice.total_akhir || 0);
@@ -1211,16 +1208,31 @@ async function buatInvoiceDP(index) {
     tableDpElm.innerHTML += `
     <tr>
         <td colspan="2" class="fw-bold">DP</td>
-        <td class="text-end fw-bold" colspan=" 2">Rp ${dpAbs.toLocaleString('id-ID')}</td>
+        <td class="text-end fw-bold" colspan="2">Rp ${dpAbs.toLocaleString('id-ID')}</td>
     </tr>
     <tr>
         <td colspan="2" class="fw-bold">SISA TAGIHAN</td>
-        <td class="text-end fw-bold" colspan=" 2">Rp ${(totalAkhir - dpAbs).toLocaleString('id-ID')}</td>
+        <td class="text-end fw-bold" colspan="2">Rp ${(totalAkhir - dpAbs).toLocaleString('id-ID')}</td>
     </tr>
     `
+
     inputBuatDPElm.classList.remove('d-none')
     inputBuatDPElm.classList.add('d-flex')
 }
+</script>
+
+<script>
+/* ===== Modal overlay click-to-close (UX) ===== */
+(function() {
+    const overlays = ['input-buat-invoice', 'input-buat-dp', 'input-koreksi', 'input-edit-order'];
+    overlays.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('click', (e) => {
+            if (e.target === el) closeModal();
+        });
+    });
+})();
 </script>
 
 <!-- =====[ PREVIEW UI ]===== -->
@@ -1544,18 +1556,24 @@ function injectPreviewButton(form, onClick) {
         const tanggal = form.querySelector('input[name="tanggal"]').value;
         const nama_npwp = form.querySelector('input[name="nama_npwp"]').value;
         const npwp = form.querySelector('input[name="npwp"]').value;
+
         const rows = [...table.querySelectorAll('tr')].map(tr => [...tr.children].map(td => td.innerText
             .trim()));
-        const itemsRows = rows.filter(cols => cols.length === 3 && !/TOTAL|POTONGAN|DP|SISA/i.test(cols[0]))
+        const itemsRows = rows
+            .filter(cols => cols.length === 3 && !/TOTAL|POTONGAN|DP|SISA/i.test(cols[0]))
             .map(cols =>
                 `<tr><td>${cols[0]}</td><td class="cell-center">${cols[1]}</td><td class="cell-right mono">${cols[2]}</td></tr>`
-            ).join('');
-        const totalsHTML = rows.filter(cols => cols.length >= 2 && /TOTAL|POTONGAN|DP|SISA/i.test(cols[0]))
+            )
+            .join('');
+
+        const totalsHTML = rows
+            .filter(cols => cols.length >= 2 && /TOTAL|POTONGAN|DP|SISA/i.test(cols[0]))
             .map(cols => {
                 const label = cols[0].replace(/\s+/g, ' ').trim().toUpperCase();
                 const val = cols[cols.length - 1];
                 return `<div class="d-flex justify-content-between"><span>${label}</span><span class="mono" style="font-weight:700">${val}</span></div>`;
             }).join('');
+
         const leftHTML = `
           <div class="dl" style="margin-bottom:12px">
             <b>ID Order</b><div class="mono">${id_pesanan||'-'}</div>
@@ -1574,6 +1592,7 @@ function injectPreviewButton(form, onClick) {
           </div>`;
         const rightHTML = totalsHTML ||
             '<div class="text-secondary">Ringkasan total belum terbentuk.</div>';
+
         openPreview({
             type: 'dp',
             title: 'Preview Invoice DP',
@@ -1592,6 +1611,7 @@ function injectPreviewButton(form, onClick) {
     const form = modal.querySelector('form[action="/admin/order-offline/koreksisp"]');
     const itemsContainer = modal.querySelector('#container-items');
     const indexSelected = modal.querySelector('input[name="index_items_selected"]');
+
     injectPreviewButton(form, () => {
         const id_pesanan = form.querySelector('input[name="id_pesanan"]').value;
         const tanggal = form.querySelector('input[name="tanggal"]').value;
@@ -1604,7 +1624,7 @@ function injectPreviewButton(form, onClick) {
 
         const isSame = form.querySelector('input[name="checkAlamat"]')?.checked;
         const prov = form.querySelector('select[name="provinsi"]')?.value || '';
-        the kota = form.querySelector('select[name="kota"]')?.value || '';
+        const kota = form.querySelector('select[name="kota"]')?.value || '';
         const kec = form.querySelector('select[name="kecamatan"]')?.value || '';
         const kode = form.querySelector('select[name="kodepos"]')?.value || '';
         const detail = form.querySelector('input[name="detail"]')?.value || '';
@@ -1648,6 +1668,7 @@ function injectPreviewButton(form, onClick) {
           </div>`;
         const rightHTML =
             `<div style="font-size:13px;color:#334155"><p class="m-0">Periksa kembali jenis tujuan (SJ / NF), item, dan alamat sebelum kirim koreksi SP.</p></div>`;
+
         openPreview({
             type: 'koreksi',
             title: 'Preview Koreksi SP',
@@ -1667,7 +1688,6 @@ function injectPreviewButton(form, onClick) {
 const inputEditOrderElm = document.getElementById('input-edit-order');
 
 function toValueDatetimeLocal(dbDateStr) {
-    // terima "YYYY-mm-dd HH:ii:ss" -> "YYYY-mm-ddTHH:ii"
     if (!dbDateStr) return '';
     const s = String(dbDateStr).trim().replace('T', ' ');
     const core = s.substring(0, 16).replace(' ', 'T');
@@ -1687,7 +1707,6 @@ function openEdit(index) {
 
     const form = inputEditOrderElm.querySelector('form');
 
-    // isi field
     form.querySelector('input[name="id_pesanan"]').value = p.id_pesanan || '';
     form.querySelector('input[name="tanggal"]').value = toValueDatetimeLocal(p.tanggal || '');
     form.querySelector('input[name="nama"]').value = p.nama || '';
@@ -1702,7 +1721,7 @@ function openEdit(index) {
     inputEditOrderElm.classList.add('d-flex');
 }
 
-// extend closeModal agar modal edit ikut nutup
+/* extend closeModal agar modal edit ikut nutup */
 (function() {
     const _close = window.closeModal;
     window.closeModal = function() {
@@ -1713,7 +1732,7 @@ function openEdit(index) {
 })();
 </script>
 
-<!-- ========== JS TAMBAHAN: DETAIL PESANAN ========== -->
+<!-- ========== JS TAMBAHAN: DETAIL PESANAN (UPDATED: tolerant response) ========== -->
 <script>
 function openDetail(idPesanan) {
     const tbody = document.getElementById('detail-items-body');
@@ -1725,12 +1744,7 @@ function openDetail(idPesanan) {
     fetch(`/admin/getitemsoffline/${idPesanan}`)
         .then(r => r.json())
         .then(res => {
-            if (!res.success) {
-                tbody.innerHTML =
-                    '<tr><td colspan="4" class="text-center text-danger">Gagal mengambil data item.</td></tr>';
-                return;
-            }
-            const items = res.items || [];
+            const items = res?.items || res?.data?.items || [];
             if (!items.length) {
                 tbody.innerHTML =
                     '<tr><td colspan="4" class="text-center text-muted">Tidak ada item untuk pesanan ini.</td></tr>';
@@ -1741,8 +1755,7 @@ function openDetail(idPesanan) {
             items.forEach(i => {
                 const dim = i.dimensi || {};
                 const dimStr = (dim.panjang && dim.lebar && dim.tinggi) ?
-                    `${dim.panjang} × ${dim.lebar} × ${dim.tinggi}` :
-                    '-';
+                    `${dim.panjang} × ${dim.lebar} × ${dim.tinggi}` : '-';
 
                 tbody.innerHTML += `
                     <tr>

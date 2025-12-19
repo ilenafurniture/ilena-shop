@@ -803,7 +803,7 @@ body {
 .btn-default {
     display: block;
     background-color: black;
-    color: black;
+    color: white;
     font-weight: 500;
     letter-spacing: -1px;
     text-decoration: none;

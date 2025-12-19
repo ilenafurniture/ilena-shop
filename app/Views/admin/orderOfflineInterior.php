@@ -41,7 +41,7 @@ h1.teks-sedang::after {
 /* table */
 .table-sm th,
 .table-sm td {
-    padding: .5rem .6rem;
+    padding: .55rem .7rem;
     font-size: 13px;
     vertical-align: middle;
 }
@@ -49,17 +49,21 @@ h1.teks-sedang::after {
 .table-sm thead th {
     background: #f9fafb;
     border-bottom: 1px solid var(--slate-100);
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
 /* status badge */
 .badge-status {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
     font-size: 11px;
-    padding: 3px 8px;
+    padding: 4px 10px;
     border-radius: 999px;
     border: 1px solid transparent;
+    letter-spacing: .02em;
 }
 
 .badge-status.draft {
@@ -84,6 +88,12 @@ h1.teks-sedang::after {
     background: #ecfdf3;
     border-color: #4ade80;
     color: #166534;
+}
+
+.badge-status.unknown {
+    background: #fff7ed;
+    border-color: #fed7aa;
+    color: #9a3412;
 }
 
 /* buttons */
@@ -117,10 +127,13 @@ h1.teks-sedang::after {
     border-radius: 10px;
     font-weight: 600;
     font-size: 13px;
+    text-decoration: none;
+    color: #111827;
 }
 
 .btn-ghost:hover {
     background: #e5e7eb;
+    color: #111827;
 }
 
 /* search & filter */
@@ -131,6 +144,7 @@ h1.teks-sedang::after {
     padding: 4px 10px;
     background: #f9fafb;
     cursor: pointer;
+    user-select: none;
 }
 
 .filter-chip.active {
@@ -152,28 +166,109 @@ h1.teks-sedang::after {
     color: #9ca3af;
     margin-bottom: 6px;
 }
+
+/* kecil-kecil tapi ngaruh */
+.meta-top {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+}
+
+.meta-pill b {
+    color: #0f172a;
+}
+
+/* responsive */
+@media (max-width: 768px) {
+    .hide-md {
+        display: none !important;
+    }
+
+    .btn-default-merah {
+        padding: .6em .9em;
+        font-size: 12px;
+    }
+
+    .btn-ghost {
+        padding: .5em .75em;
+        font-size: 12px;
+    }
+}
 </style>
 
 <?php
-    // ekspektasi dari controller:
-    // $title = 'Pesanan';
-    // $projects = [...]; // array project interior
-    // tiap item minimal: kode_project, nama_project, nilai_kontrak, total_bayar, status, created_at
-    $formatter = new \NumberFormatter('id_ID', \NumberFormatter::CURRENCY);
-    $formatter->setTextAttribute(\NumberFormatter::CURRENCY_CODE, 'IDR');
-    $formatter->setAttribute(\NumberFormatter::FRACTION_DIGITS, 0);
+  // ekspektasi dari controller:
+  // $projects = [...];
+  // tiap item minimal:
+  // kode_project, nama_project, nilai_kontrak, total_bayar, status, created_at
 
-    function rupiah_local($n, $formatter) {
-        return $formatter->formatCurrency((int)$n, 'IDR');
+  $formatter = new \NumberFormatter('id_ID', \NumberFormatter::CURRENCY);
+  $formatter->setTextAttribute(\NumberFormatter::CURRENCY_CODE, 'IDR');
+  $formatter->setAttribute(\NumberFormatter::FRACTION_DIGITS, 0);
+
+  function rupiah_local($n, $formatter){
+    return $formatter->formatCurrency((int)$n, 'IDR');
+  }
+
+  function status_norm($s){
+    $s = strtolower(trim((string)$s));
+    // normalisasi kalau dari DB pakai variasi
+    if ($s === 'paid' || $s === 'lunas') return 'lunas';
+    if ($s === 'downpayment' || $s === 'dp') return 'dp';
+    if ($s === 'term' || $s === 'termin') return 'termin';
+    if ($s === 'draft') return 'draft';
+    return $s ?: 'unknown';
+  }
+
+  function status_icon($s){
+    $s = status_norm($s);
+    if ($s === 'lunas') return 'verified';
+    if ($s === 'draft') return 'hourglass_empty';
+    if ($s === 'termin') return 'schedule';
+    if ($s === 'dp') return 'payments';
+    return 'help';
+  }
+
+  // ringkasan cepat
+  $countAll = is_array($projects) ? count($projects) : 0;
+  $sumKontrak = 0; $sumBayar = 0;
+  if (!empty($projects)){
+    foreach ($projects as $p){
+      $sumKontrak += (int)($p['nilai_kontrak'] ?? 0);
+      $sumBayar   += (int)($p['total_bayar'] ?? 0);
     }
+  }
+  $sumSisa = max(0, $sumKontrak - $sumBayar);
 ?>
 
-<div style="padding: 2em;" class="h-100 d-flex flex-column">
+<div style="padding:2em;" class="h-100 d-flex flex-column">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="teks-sedang mb-0">
-            Pesanan Interior
-        </h1>
+        <div class="d-flex flex-column gap-1">
+            <h1 class="teks-sedang mb-0">Pesanan Interior</h1>
+            <div class="meta-top">
+                <span class="meta-pill"><i class="material-icons" style="font-size:16px;">fact_check</i> Total Project:
+                    <b><?= (int)$countAll; ?></b></span>
+                <span class="meta-pill hide-md"><i class="material-icons" style="font-size:16px;">description</i> Nilai
+                    Kontrak: <b><?= rupiah_local($sumKontrak, $formatter); ?></b></span>
+                <span class="meta-pill hide-md"><i class="material-icons" style="font-size:16px;">payments</i> Total
+                    Bayar: <b><?= rupiah_local($sumBayar, $formatter); ?></b></span>
+                <span class="meta-pill"><i class="material-icons" style="font-size:16px;">pending_actions</i> Sisa:
+                    <b><?= rupiah_local($sumSisa, $formatter); ?></b></span>
+            </div>
+        </div>
 
         <div class="d-flex gap-2">
             <a href="<?= site_url('admin/order/offline/sale'); ?>" class="btn-ghost">
@@ -215,63 +310,90 @@ h1.teks-sedang::after {
             <table class="table table-sm mb-0 align-middle" id="table-interior">
                 <thead>
                     <tr>
-                        <th style="width: 80px;">Kode</th>
+                        <th style="width:90px;">Kode</th>
                         <th>Nama Project</th>
-                        <th style="width: 130px;" class="text-end">Nilai Kontrak</th>
-                        <th style="width: 130px;" class="text-end">Total Bayar</th>
-                        <th style="width: 130px;" class="text-end">Sisa</th>
-                        <th style="width: 110px;">Status</th>
-                        <th style="width: 120px;">Dibuat</th>
-                        <th style="width: 90px;" class="text-end">Aksi</th>
+                        <th style="width:140px;" class="text-end">Nilai Kontrak</th>
+                        <th style="width:140px;" class="text-end">Total Bayar</th>
+                        <th style="width:140px;" class="text-end">Sisa</th>
+                        <th style="width:120px;">Status</th>
+                        <th style="width:120px;" class="hide-md">Dibuat</th>
+                        <th style="width:100px;" class="text-end">Aksi</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     <?php foreach ($projects as $p): ?>
                     <?php
-                                $sisa = max(0, (int)$p['nilai_kontrak'] - (int)$p['total_bayar']);
-                            ?>
-                    <tr data-status="<?= esc(strtolower($p['status'])); ?>"
-                        data-search="<?= strtolower(trim($p['kode_project'].' '.$p['nama_project'])); ?>">
+                $nilai = (int)($p['nilai_kontrak'] ?? 0);
+                $bayar = (int)($p['total_bayar'] ?? 0);
+                $sisa  = max(0, $nilai - $bayar);
+
+                $st = status_norm($p['status'] ?? '');
+                $stClass = in_array($st, ['draft','dp','termin','lunas'], true) ? $st : 'unknown';
+
+                $kodeProject = (string)($p['kode_project'] ?? '');
+                $namaProject = (string)($p['nama_project'] ?? '');
+                $searchKey = strtolower(trim($kodeProject . ' ' . $namaProject));
+
+                $createdAt = $p['created_at'] ?? null;
+                $createdText = '-';
+                if (!empty($createdAt)){
+                  $ts = strtotime((string)$createdAt);
+                  if ($ts) $createdText = date('d/m/Y', $ts);
+                }
+              ?>
+
+                    <tr data-status="<?= esc($st); ?>" data-search="<?= esc($searchKey); ?>">
+                        <td><code><?= esc($kodeProject ?: '-'); ?></code></td>
+
                         <td>
-                            <code><?= esc($p['kode_project']); ?></code>
+                            <div style="font-size:13px;font-weight:700;letter-spacing:-.1px;">
+                                <?= esc($namaProject ?: '-'); ?>
+                            </div>
                         </td>
-                        <td>
-                            <div style="font-size:13px;font-weight:600;"><?= esc($p['nama_project']); ?></div>
+
+                        <td class="text-end" style="font-weight:700;">
+                            <?= rupiah_local($nilai, $formatter); ?>
                         </td>
-                        <td class="text-end" style="font-weight:600;">
-                            <?= rupiah_local($p['nilai_kontrak'], $formatter); ?>
-                        </td>
+
                         <td class="text-end" style="font-size:12.5px;">
-                            <?= rupiah_local($p['total_bayar'], $formatter); ?>
+                            <?= rupiah_local($bayar, $formatter); ?>
                         </td>
-                        <td class="text-end" style="font-size:12.5px;color:<?= $sisa>0?'#b91c1c':'#16a34a'; ?>;">
+
+                        <td class="text-end"
+                            style="font-size:12.5px;color:<?= $sisa>0 ? '#b91c1c' : '#16a34a'; ?>;font-weight:700;">
                             <?= rupiah_local($sisa, $formatter); ?>
                         </td>
+
                         <td>
-                            <span class="badge-status <?= esc(strtolower($p['status'])); ?>">
-                                <i class="material-icons" style="font-size:14px;">
-                                    <?php if ($p['status'] === 'lunas'): ?>
-                                    verified
-                                    <?php elseif ($p['status'] === 'draft'): ?>
-                                    hourglass_empty
-                                    <?php else: ?>
-                                    payments
-                                    <?php endif; ?>
-                                </i>
-                                <?= strtoupper($p['status']); ?>
+                            <span class="badge-status <?= esc($stClass); ?>">
+                                <i class="material-icons" style="font-size:14px;"><?= esc(status_icon($st)); ?></i>
+                                <?= strtoupper($st ?: 'UNKNOWN'); ?>
                             </span>
                         </td>
-                        <td style="font-size:12px;">
-                            <?= esc(date('d/m/Y', strtotime($p['created_at'] ?? 'now'))); ?>
+
+                        <td class="hide-md" style="font-size:12px;color:#64748b;">
+                            <?= esc($createdText); ?>
                         </td>
+
                         <td class="text-end">
-                            <a href="<?= site_url('admin/project-interior/' . $p['kode_project']); ?>" class="btn-ghost"
-                                style="padding:.35em .6em;font-size:12px;">
+                            <a href="<?= site_url('admin/project-interior/' . rawurlencode($kodeProject)); ?>"
+                                class="btn-ghost" style="padding:.35em .6em;font-size:12px;"
+                                title="Buka detail project">
                                 Detail
                             </a>
                         </td>
                     </tr>
                     <?php endforeach; ?>
+
+                    <!-- baris "tidak ada hasil" -->
+                    <tr id="row-empty-filter" style="display:none;">
+                        <td colspan="8" class="text-center" style="padding:18px;color:#6b7280;font-size:13px;">
+                            <i class="material-icons"
+                                style="font-size:18px;vertical-align:-4px;color:#9ca3af;">search_off</i>
+                            Tidak ada data yang cocok dengan filter / pencarian.
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -281,41 +403,55 @@ h1.teks-sedang::after {
 </div>
 
 <script>
-// filter status
-const chips = document.querySelectorAll('.filter-chip');
-const rows = document.querySelectorAll('#table-interior tbody tr');
-const searchInput = document.getElementById('search-input');
+(function() {
+    const chips = document.querySelectorAll('.filter-chip');
+    const table = document.getElementById('table-interior');
+    const searchInput = document.getElementById('search-input');
 
-let currentStatus = 'all';
+    if (!table) return;
 
-chips.forEach(chip => {
-    chip.addEventListener('click', () => {
-        chips.forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        currentStatus = chip.getAttribute('data-status') || 'all';
-        applyFilter();
+    const rows = Array.from(table.querySelectorAll('tbody tr')).filter(r => r.id !== 'row-empty-filter');
+    const emptyRow = document.getElementById('row-empty-filter');
+
+    let currentStatus = 'all';
+
+    function applyFilter() {
+        const q = (searchInput?.value || '').toLowerCase().trim();
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            const rowStatus = (row.getAttribute('data-status') || '').toLowerCase().trim();
+            const text = (row.getAttribute('data-search') || '').toLowerCase();
+
+            const matchStatus = (currentStatus === 'all') || (rowStatus === currentStatus);
+            const matchSearch = (!q) || text.includes(q);
+
+            const show = matchStatus && matchSearch;
+            row.style.display = show ? '' : 'none';
+            if (show) visibleCount++;
+        });
+
+        if (emptyRow) {
+            emptyRow.style.display = (visibleCount === 0) ? '' : 'none';
+        }
+    }
+
+    chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            chips.forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            currentStatus = (chip.getAttribute('data-status') || 'all').toLowerCase().trim();
+            applyFilter();
+        });
     });
-});
 
-if (searchInput) {
-    searchInput.addEventListener('input', () => {
-        applyFilter();
-    });
-}
+    if (searchInput) {
+        searchInput.addEventListener('input', applyFilter);
+    }
 
-function applyFilter() {
-    const q = (searchInput?.value || '').toLowerCase().trim();
-
-    rows.forEach(row => {
-        const rowStatus = row.getAttribute('data-status') || '';
-        const text = row.getAttribute('data-search') || '';
-
-        const matchStatus = (currentStatus === 'all') || (rowStatus === currentStatus);
-        const matchSearch = !q || text.includes(q);
-
-        row.style.display = matchStatus && matchSearch ? '' : 'none';
-    });
-}
+    // initial
+    applyFilter();
+})();
 </script>
 
 <?= $this->endSection(); ?>

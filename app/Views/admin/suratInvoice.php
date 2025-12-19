@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
-    <title><?= $title; ?> | Ilena Furniture</title>
+    <title><?= esc($title ?? 'Invoice'); ?> | Ilena Furniture</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -182,7 +182,7 @@
 <?php setlocale(LC_TIME, 'id_ID'); ?>
 
 <body>
-    <?php if ($pemesanan['status'] == "success" || $pemesanan['status'] == "DP paid") { ?>
+    <?php if (($pemesanan['status'] ?? '') == "success" || ($pemesanan['status'] ?? '') == "DP paid") { ?>
     <div class="print-lunas">
         <p>L U N A S</p>
     </div>
@@ -202,7 +202,7 @@
 
         <?php
         // ===== LOGIKA NOMOR & FLAG SUMMARY INVOICE INTERIOR =====
-        $tanggalFix = $pemesanan['tanggal_inv'] ?? $pemesanan['tanggal'];
+        $tanggalFix = $pemesanan['tanggal_inv'] ?? $pemesanan['tanggal'] ?? date('Y-m-d');
 
         $rawId      = (string)($pemesanan['id_pesanan'] ?? '');
         $jenisLower = strtolower(trim($pemesanan['jenis'] ?? ''));
@@ -214,6 +214,13 @@
 
         // prioritas: jenis_faktur project interior, kalau kosong pakai jenis dari pemesanan_offline
         $docType = $jenisFakturProject !== '' ? $jenisFakturProject : $jenisLower;
+
+        // ==== KUNCI KONSEP: SP BUKAN INVOICE/TAGIHAN ====
+        // Kalau yang dipanggil adalah SP, stop (kecuali memang kasus interior/payment invoice yang kamu pakai untuk reporting).
+        if ($docType === 'sp' && empty($is_project_interior) && empty($is_payment_invoice)) {
+            echo "<div class='alert alert-warning'>Dokumen SP bukan Invoice/Tagihan. Invoice hanya untuk SJ/NF.</div>";
+            exit;
+        }
 
         // ambil 5 digit terakhir dari angka di id_pesanan
         $digits = '00001';
@@ -233,13 +240,14 @@
         }
 
         // === NOMOR HEADER YANG DITAMPILKAN ===
+        // FIX: Jangan buang "NF" untuk invoice pembayaran.
         if (!empty($is_payment_invoice)) {
-            $nomorDasar = preg_replace('/[^0-9]/', '', $nomorDisplayBase);
             $paymentSequence = 1;
             if (!empty($history_before) && is_array($history_before)) {
                 $paymentSequence = count($history_before) + 1;
             }
-            $nomorInvoiceHeader = $nomorDasar . '-' . $paymentSequence;
+            // contoh: NF00002-1 atau 00002-1
+            $nomorInvoiceHeader = $nomorDisplayBase . '-' . $paymentSequence;
         } else {
             $nomorInvoiceHeader = $nomorDisplayBase;
         }
@@ -261,7 +269,7 @@
                 <div class="d-flex flex-column align-items-start">
                     <?php if (!$isFinalInteriorInvoice): ?>
                     <p class="isint" style="font-weight:600;">
-                        <?= $nomorInvoiceHeader; ?>/INV/CBM/<?= date('m', strtotime($tanggalFix)); ?>/<?= date('Y', strtotime($tanggalFix)); ?>
+                        <?= esc($nomorInvoiceHeader); ?>/INV/CBM/<?= date('m', strtotime($tanggalFix)); ?>/<?= date('Y', strtotime($tanggalFix)); ?>
                     </p>
                     <?php endif; ?>
                     <p class="isint">
@@ -273,7 +281,7 @@
                         $tanggal = date('d', strtotime($tanggalFix));
                         $bulan   = date('n', strtotime($tanggalFix));
                         $tahun   = date('Y', strtotime($tanggalFix));
-                        echo "$tanggal " . $bulan_indonesia[$bulan] . " $tahun";
+                        echo $tanggal . " " . $bulan_indonesia[$bulan] . " " . $tahun;
                         ?>
                     </p>
                 </div>
@@ -306,10 +314,10 @@
                 }
             ?>
             <p class="m-0 tw-bold-italic" style="max-width:260px; font-size:12px;">
-                <?= esc($namaNpwpCetak); ?>
+                <?= esc($namaNpwpCetak ?: '-'); ?>
             </p>
 
-            <p class="m-0" style="max-width:260px; font-size:12px;"><?= $pemesanan['alamat_tagihan']; ?></p>
+            <p class="m-0" style="max-width:260px; font-size:12px;"><?= esc($pemesanan['alamat_tagihan'] ?? '-'); ?></p>
 
             <?php
                 // Ambil NPWP dari pemesanan dulu
@@ -411,9 +419,9 @@
                     ?>
                     <tr>
                         <td class="text-center"><?= $no++; ?></td>
-                        <td class="text-center"><?= $kodeDisplay; ?></td>
+                        <td class="text-center"><?= esc($kodeDisplay); ?></td>
                         <td>
-                            <p class="m-0" style="font-size:11.5px;"><?= $namaBarangNow; ?></p>
+                            <p class="m-0" style="font-size:11.5px;"><?= esc($namaBarangNow); ?></p>
                             <?php if ($catNow !== '' && !$isInteriorPayment): ?>
                             <p class="m-0" style="font-size:11.5px;">
                                 Catatan: <?= esc($catNow); ?>
@@ -440,7 +448,7 @@
 
                         $nilaiKontrakTotal = isset($nilai_kontrak)
                             ? (int)$nilai_kontrak
-                            : (int)$pemesanan['total_akhir'];
+                            : (int)($pemesanan['total_akhir'] ?? 0);
 
                         if (isset($dpp) && isset($ppn_11)) {
                             $dppLocal = (int)$dpp;
@@ -459,7 +467,6 @@
                             $sumDpLocal        = 0;
                             $sumTerminLocal    = 0;
                             $sumPelunasanLocal = 0;
-                            $terminIndex       = 0;
 
                             foreach ($payments as $p) {
                                 $jenisP = strtolower($p['jenis'] ?? '');
@@ -468,7 +475,6 @@
                                 if ($jenisP === 'dp') {
                                     $sumDpLocal += $nomP;
                                 } elseif ($jenisP === 'termin') {
-                                    $terminIndex++;
                                     $sumTerminLocal += $nomP;
                                 } elseif ($jenisP === 'pelunasan') {
                                     $sumPelunasanLocal += $nomP;
@@ -482,25 +488,25 @@
                             : max(0, $nilaiKontrakTotal - $totalBayarLocal);
 
                         foreach ($items as $t):
-                            $jumlahRow = (int)$t['jumlah'] * (int)$t['harga'];
+                            $jumlahRow = (int)($t['jumlah'] ?? 0) * (int)($t['harga'] ?? 0);
 
                             // KODE BARANG: pakai field kode_barang dari project kalau ada
                             if (!empty($project['kode_barang'])) {
                                 $kodeBarangCetak = strtoupper($project['kode_barang']);
                             } else {
-                                $kodeBarangCetak = strtoupper($t['id_baru']);
+                                $kodeBarangCetak = strtoupper($t['id_baru'] ?? '');
                             }
                     ?>
                     <tr>
                         <td class="text-center"><?= $no++; ?></td>
-                        <td class="text-center"><?= $kodeBarangCetak; ?></td>
+                        <td class="text-center"><?= esc($kodeBarangCetak); ?></td>
                         <td>
                             <p class="m-0" style="font-size:11.5px;">
-                                <?= strtoupper($t['nama']); ?><?= $t['varian'] ? ' ('.strtoupper($t['varian']).')' : ''; ?>
+                                <?= esc(strtoupper($t['nama'] ?? '')); ?><?= !empty($t['varian']) ? ' ('.esc(strtoupper($t['varian'])).')' : ''; ?>
                             </p>
                         </td>
-                        <td class="text-center nowrap"><?= $t['jumlah']; ?></td>
-                        <td class="num nowrap">Rp <?= number_format($t['harga'], 0, ',', '.'); ?></td>
+                        <td class="text-center nowrap"><?= (int)($t['jumlah'] ?? 0); ?></td>
+                        <td class="num nowrap">Rp <?= number_format((int)($t['harga'] ?? 0), 0, ',', '.'); ?></td>
                         <td class="num nowrap">Rp <?= number_format($jumlahRow, 0, ',', '.'); ?></td>
                     </tr>
                     <?php endforeach; ?>
@@ -524,24 +530,25 @@
                     <?php
                         // ===== MODE LAMA (OFFLINE BIASA) =====
                         $totalHargaBarang = 0;
-                        foreach ($items as $t) {
-                            $totalHargaBarang += $t['jumlah'] * $t['harga'];
+                        foreach (($items ?? []) as $t) {
+                            $totalHargaBarang += (int)($t['jumlah'] ?? 0) * (int)($t['harga'] ?? 0);
                         }
                         $discountFactor = 1;
-                        if ($pemesanan['total_akhir'] < $totalHargaBarang) {
+                        if (!empty($pemesanan['total_akhir']) && $pemesanan['total_akhir'] < $totalHargaBarang && $totalHargaBarang > 0) {
                             $discountFactor = $pemesanan['total_akhir'] / $totalHargaBarang;
                         }
                     ?>
 
-                    <?php if ($pemesanan['down_payment'] <= 0) { ?>
+                    <?php if (($pemesanan['down_payment'] ?? 0) <= 0) { ?>
                     <?php
                             $no = 1;
-                            foreach ($items as $t) {
-                                $origPrice = $t['harga'];
-                                $origTotal = $t['jumlah'] * $origPrice;
+                            foreach (($items ?? []) as $t) {
+                                $origPrice = (int)($t['harga'] ?? 0);
+                                $origTotal = (int)($t['jumlah'] ?? 0) * $origPrice;
+
                                 if ($discountFactor < 1) {
-                                    $netPrice = round($origPrice * $discountFactor);
-                                    $netTotal = $t['jumlah'] * $netPrice;
+                                    $netPrice = (int)round($origPrice * $discountFactor);
+                                    $netTotal = (int)($t['jumlah'] ?? 0) * $netPrice;
                                 } else {
                                     $netPrice = $origPrice;
                                     $netTotal = $origTotal;
@@ -549,26 +556,26 @@
                     ?>
                     <tr>
                         <td class="text-center"><?= $no++; ?></td>
-                        <td class="text-center"><?= strtoupper($t['id_baru']); ?></td>
+                        <td class="text-center"><?= esc(strtoupper($t['id_baru'] ?? '')); ?></td>
                         <td>
                             <p class="m-0" style="font-size:11.5px;">
-                                <?= $t['special_price'] > 0 ? "[SPECIAL PRICE] " : ""; ?>
-                                <?= strtoupper($t['nama']); ?> (<?= strtoupper($t['varian']); ?>)
+                                <?= ((int)($t['special_price'] ?? 0) > 0) ? "[SPECIAL PRICE] " : ""; ?>
+                                <?= esc(strtoupper($t['nama'] ?? '')); ?> (<?= esc(strtoupper($t['varian'] ?? '')); ?>)
                             </p>
                             <p class="m-0" style="font-size:11.5px;">
-                                <?= "{$t['dimensi']['panjang']} x {$t['dimensi']['lebar']} x {$t['dimensi']['tinggi']}"; ?>
+                                <?= esc(($t['dimensi']['panjang'] ?? '-') . " x " . ($t['dimensi']['lebar'] ?? '-') . " x " . ($t['dimensi']['tinggi'] ?? '-')); ?>
                             </p>
                         </td>
-                        <td class="text-center nowrap"><?= $t['jumlah']; ?></td>
+                        <td class="text-center nowrap"><?= (int)($t['jumlah'] ?? 0); ?></td>
                         <td class="num nowrap">Rp <?= number_format($netPrice,0,',','.'); ?></td>
                         <td class="num nowrap">Rp <?= number_format($netTotal,0,',','.'); ?></td>
                     </tr>
                     <?php } ?>
 
-                    <?php if ($pemesanan['down_payment'] < 0) { ?>
+                    <?php if (($pemesanan['down_payment'] ?? 0) < 0) { ?>
                     <tr>
                         <td colspan="5" class="fw-semibold">UANG MUKA YANG DITERIMA</td>
-                        <td class="num">Rp <?= number_format(abs($pemesanan['down_payment']),0,',','.'); ?></td>
+                        <td class="num">Rp <?= number_format(abs((int)$pemesanan['down_payment']),0,',','.'); ?></td>
                     </tr>
                     <?php } ?>
 
@@ -579,7 +586,7 @@
                         <td>UANG MUKA</td>
                         <td class="text-center"></td>
                         <td class="num"></td>
-                        <td class="num">Rp <?= number_format($pemesanan['down_payment'],0,',','.'); ?></td>
+                        <td class="num">Rp <?= number_format((int)$pemesanan['down_payment'],0,',','.'); ?></td>
                     </tr>
                     <?php } ?>
 
@@ -589,12 +596,12 @@
                         <td class="num fw-semibold">
                             Rp
                             <?php
-                                if ($pemesanan['down_payment'] > 0) {
-                                    echo number_format($pemesanan['down_payment'],0,',','.');
+                                if (($pemesanan['down_payment'] ?? 0) > 0) {
+                                    echo number_format((int)$pemesanan['down_payment'],0,',','.');
                                 } else {
-                                    $net = $pemesanan['total_akhir'] - (
-                                        $pemesanan['down_payment'] < 0
-                                            ? abs($pemesanan['down_payment'])
+                                    $net = (int)($pemesanan['total_akhir'] ?? 0) - (
+                                        (($pemesanan['down_payment'] ?? 0) < 0)
+                                            ? abs((int)$pemesanan['down_payment'])
                                             : 0
                                     );
                                     echo number_format($net,0,',','.');
@@ -613,7 +620,7 @@
         // === JATUH TEMPO ===
         $jtLabel = '-';
         if (empty($is_payment_invoice)) {
-            if ($pemesanan['down_payment'] <= 0) {
+            if (($pemesanan['down_payment'] ?? 0) <= 0) {
                 $sjDate = $pemesanan['tanggal'] ?? null;
                 if ($sjDate) {
                     $dueTs = strtotime($sjDate . ' +14 days');
@@ -694,15 +701,15 @@
             } elseif (!empty($is_project_interior)) {
                 $nilaiKontrakTotalTb = isset($nilai_kontrak)
                     ? (int)$nilai_kontrak
-                    : (int)$pemesanan['total_akhir'];
+                    : (int)($pemesanan['total_akhir'] ?? 0);
                 $angkaTerbilang = $nilaiKontrakTotalTb;
             } else {
-                if ($pemesanan['down_payment'] > 0) {
+                if (($pemesanan['down_payment'] ?? 0) > 0) {
                     $angkaTerbilang = (int)$pemesanan['down_payment'];
                 } else {
                     $angkaTerbilang = (int)(
-                        $pemesanan['total_akhir']
-                        - ($pemesanan['down_payment'] < 0 ? abs($pemesanan['down_payment']) : 0)
+                        (int)($pemesanan['total_akhir'] ?? 0)
+                        - ((($pemesanan['down_payment'] ?? 0) < 0) ? abs((int)$pemesanan['down_payment']) : 0)
                     );
                 }
             }
@@ -713,14 +720,14 @@
                         <td style="font-size:11.5px;" class="pe-3">Terbilang</td>
                         <td style="font-size:11.5px;">:
                             <i style="font-size:11.5px;">
-                                <?= ucwords(strtolower(terbilang($angkaTerbilang))); ?>
+                                <?= esc(ucwords(strtolower(terbilang($angkaTerbilang)))); ?>
                             </i>
                         </td>
                     </tr>
                     <tr>
                         <td class="pe-3" style="white-space:nowrap; font-size:11.5px;">PO</td>
                         <td style="white-space:nowrap; font-size:11.5px;">:
-                            <?= $pemesanan['po'] ? $pemesanan['po'] : '-'; ?></td>
+                            <?= !empty($pemesanan['po']) ? esc($pemesanan['po']) : '-'; ?></td>
                     </tr>
                     <tr>
                         <td class="pe-3" style="white-space:nowrap; font-size:11.5px;">Surat Jalan</td>
@@ -731,9 +738,9 @@
                             <?php
                                 // Prioritas: kode_sj dari project interior kalau ada
                                 if (!empty($project['kode_sj'])) {
-                                    echo substr($project['kode_sj'],5);
+                                    echo esc(substr($project['kode_sj'],5));
                                 } elseif (!empty($pemesanan['id_pesanan'])) {
-                                    echo substr($pemesanan['id_pesanan'], 5);
+                                    echo esc(substr($pemesanan['id_pesanan'], 5));
                                 } else {
                                     echo '-';
                                 }
@@ -744,18 +751,19 @@
                         <td style="white-space:nowrap; font-size:11.5px;">: -</td>
                         <?php endif; ?>
 
-                        <?php elseif ($pemesanan['down_payment']): ?>
+                        <?php elseif (!empty($pemesanan['down_payment'])): ?>
                         <td style="white-space:nowrap; font-size:11.5px;">:
-                            <?= isset($items[0]['id_return']) && $items[0]['id_return'] ? substr($items[0]['id_return'], 5) : '-' ; ?>
+                            <?= (isset($items[0]['id_return']) && $items[0]['id_return']) ? esc(substr($items[0]['id_return'], 5)) : '-' ; ?>
                         </td>
                         <?php else: ?>
-                        <td style="white-space:nowrap; font-size:11.5px;">: <?= substr($pemesanan['id_pesanan'], 5); ?>
+                        <td style="white-space:nowrap; font-size:11.5px;">:
+                            <?= !empty($pemesanan['id_pesanan']) ? esc(substr($pemesanan['id_pesanan'], 5)) : '-'; ?>
                         </td>
                         <?php endif; ?>
                     </tr>
                     <tr>
                         <td class="pe-3" style="white-space:nowrap; font-size:11.5px;">Jatuh Tempo</td>
-                        <td style="white-space:nowrap; font-size:11.5px;">: <?= $jtLabel; ?></td>
+                        <td style="white-space:nowrap; font-size:11.5px;">: <?= esc($jtLabel); ?></td>
                     </tr>
                 </tbody>
             </table>
@@ -778,7 +786,7 @@
 
     <script>
     const alamatLengkap =
-        "<?= $pemesanan['alamat_tagihan'] ? $pemesanan['alamat_tagihan'] : $pemesanan['alamat_pengiriman']; ?>";
+        "<?= esc(($pemesanan['alamat_tagihan'] ?? '') ? $pemesanan['alamat_tagihan'] : ($pemesanan['alamat_pengiriman'] ?? '')); ?>";
     const alamatParts = alamatLengkap.split(', ');
     const jalan = alamatParts[0],
         kelurahan = alamatParts[1],
@@ -787,12 +795,12 @@
     const provinsiDanKodePos = (alamatParts[4] || '').split(' ');
     const provinsi = provinsiDanKodePos[0] || '';
     const kodePos = provinsiDanKodePos[1] || '';
-    document.getElementById('jalan')?.innerText = jalan;
-    document.getElementById('kelurahan')?.innerText = kelurahan;
-    document.getElementById('kecamatan')?.innerText = kecamatan;
-    document.getElementById('kota')?.innerText = kota;
-    document.getElementById('provinsi')?.innerText = provinsi;
-    document.getElementById('kodepos')?.innerText = kodePos;
+    document.getElementById('jalan')?.innerText = jalan || '';
+    document.getElementById('kelurahan')?.innerText = kelurahan || '';
+    document.getElementById('kecamatan')?.innerText = kecamatan || '';
+    document.getElementById('kota')?.innerText = kota || '';
+    document.getElementById('provinsi')?.innerText = provinsi || '';
+    document.getElementById('kodepos')?.innerText = kodePos || '';
     </script>
 
     <!--

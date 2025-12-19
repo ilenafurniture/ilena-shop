@@ -13,7 +13,6 @@ class ProjectInteriorModel extends Model
 
     protected $allowedFields    = [
         'kode_project',
-        'kode_sp',
         'kode_sj',
         'kode_barang',
         'nama_project',

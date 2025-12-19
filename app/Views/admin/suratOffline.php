@@ -1,11 +1,11 @@
-<!-- // app/Views/admin/suratOffline.php -->
+<!-- //views/admin/suratOffline.php -->
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8" />
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
-    <title><?= $title; ?> | Ilena Furniture</title>
+    <title><?= esc($title ?? 'Surat'); ?> | Ilena Furniture</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -14,7 +14,6 @@
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
     </script>
 
-    <!-- Font (ringan & aman untuk print) -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
@@ -35,13 +34,11 @@
         background: #fff;
     }
 
-    /* tipografi global: kecil & rapi */
     * {
         font-size: 12px;
         line-height: 1.35;
     }
 
-    /* Headline perusahaan */
     h5 {
         font-size: 14.25px;
         font-weight: 600;
@@ -56,7 +53,6 @@
         margin: 0;
     }
 
-    /* Judul baris nomor dokumen */
     .title-doc {
         font-size: 13.25px;
         font-weight: 600;
@@ -69,7 +65,6 @@
         margin: .4rem 0 .8rem;
     }
 
-    /* Tabel (rapi & hemat tinta) */
     .table {
         border-color: var(--line);
     }
@@ -97,11 +92,6 @@
         --bs-table-accent-bg: #fcfdff;
     }
 
-    .nowrap {
-        white-space: nowrap;
-    }
-
-    /* Area penerima/telepon lebih kalem */
     .to-name {
         font-weight: 600;
     }
@@ -110,22 +100,16 @@
         color: var(--muted);
     }
 
-    /* Spasi luar dokumen */
     .container {
         margin-top: 20px !important;
         margin-bottom: 20px !important;
     }
 
-    /* Signature blocks */
-    .sig-title {
-        font-weight: 600;
-    }
-
+    .sig-title,
     .sig-name {
         font-weight: 600;
     }
 
-    /* Print setup */
     @page {
         size: A4;
         margin: 14mm 14mm 16mm;
@@ -175,67 +159,83 @@
         </div>
 
         <?php
-        // ===== Nomor Dokumen (NF menampilkan 5 digit setelah 'NF') =====
+        // ==========================================================
+        // KONSEP (konsisten dengan controller):
+        // - jenis sp      => SP (Surat Pengantar)
+        // - jenis sale/nf => SJ (Surat Jalan)
+        // - NF tetap SJ, bedanya nomor pakai prefix "NF"
+        // - Nomor dasar ambil 4 digit terakhir dari angka id_pesanan
+        // - Pecah SJ pakai sj_ke dari tabel surat_jalan (controller kirim $sj)
+        // ==========================================================
+
         $jenisLower = strtolower(trim($pemesanan['jenis'] ?? ''));
-        $rawId = (string)($pemesanan['id_pesanan'] ?? '');
-        $noBase = '';
 
-        if (preg_match('/^NF(\d+)$/i', $rawId, $m)) {
-            $digits = $m[1];
-            $last5  = substr($digits, -5);
-            $noBase = 'NF' . str_pad($last5, 5, '0', STR_PAD_LEFT);
-        } else if ($jenisLower === 'nf') {
-            $nomorBase = substr($rawId, 5);
-            if (preg_match('/(\d+)/', $nomorBase, $m2)) {
-                $last5  = substr($m2[1], -5);
-                $noBase = 'NF' . str_pad($last5, 5, '0', STR_PAD_LEFT);
-            } else {
-                $noBase = 'NF' . $nomorBase;
-            }
-        } else {
-            $noBase = substr($rawId, 5);
+        // tanggal dokumen: gunakan tanggal pemesanan (kalau ada), fallback sekarang
+        $tanggalFix = $pemesanan['tanggal'] ?? date('Y-m-d');
+        $tglTs = strtotime($tanggalFix);
+
+        // ambil 4 digit terakhir dari id_pesanan (angka mana pun yang muncul)
+        $rawId  = (string)($pemesanan['id_pesanan'] ?? '');
+        $digits = '0001';
+        if (preg_match('/(\d+)/', $rawId, $mDigits)) {
+            $angka  = $mDigits[1];
+            $digits = substr($angka, -4);
         }
+        $base4 = str_pad($digits, 4, '0', STR_PAD_LEFT);
 
-        // ===== Kode dokumen & label (support sale, sp, nf) =====
+        // nomor dasar tampil: NFxxxx atau xxxx
+        $noBase = ($jenisLower === 'nf') ? ('NF' . $base4) : $base4;
+
+        // dokumen type
         $kodeDok    = 'SP';
         $labelSurat = 'PENGANTAR';
-
-        // 'sale' atau 'nf' → Surat Jalan (SJ)
-        if ($jenisLower === 'sale' || $jenisLower === 'nf') {
+        if (in_array($jenisLower, ['sale','nf'], true)) {
             $kodeDok    = 'SJ';
             $labelSurat = 'JALAN';
-        } elseif ($jenisLower === 'sp') {
-            $kodeDok    = 'SP';
-            $labelSurat = 'PENGANTAR';
         }
 
-        $tgl      = strtotime($pemesanan['tanggal']);
+        // sequence SJ:
+        // utamakan dari controller: $sj['sj_ke']
+        // fallback: ?seq=2 (kalau memang manual)
+        $sjSequence = 1;
+        if (isset($sj) && is_array($sj) && !empty($sj['sj_ke']) && (int)$sj['sj_ke'] > 0) {
+            $sjSequence = (int)$sj['sj_ke'];
+        } elseif (isset($_GET['seq']) && (int)$_GET['seq'] > 0) {
+            $sjSequence = (int)$_GET['seq'];
+        }
+
+        // nomor dokumen:
+        // SJ => NF0012-2  / 0012-1
+        // SP => NF0012 atau 0012 (umumnya SP bukan NF, tapi aman saja)
+        $noDoc = ($kodeDok === 'SJ') ? ($noBase . '-' . $sjSequence) : $noBase;
+
         $bulan_id = [
             1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',
             7=>'Juli',8=>'Agustus',9=>'September',10=>'Oktober',11=>'November',12=>'Desember'
         ];
-        $tgl_indo = date('d', $tgl) . ' ' . $bulan_id[(int)date('n',$tgl)] . ' ' . date('Y', $tgl);
+        $tgl_indo = date('d', $tglTs) . ' ' . $bulan_id[(int)date('n',$tglTs)] . ' ' . date('Y', $tglTs);
         ?>
 
         <div class="d-flex justify-content-between align-items-end">
             <div style="flex:1">
                 <p class="m-0 title-doc">
-                    SURAT <?= $labelSurat; ?> NO.
-                    <?= $noBase; ?>/<?= $kodeDok; ?>/<?= date('m', $tgl); ?>/<?= date('Y', $tgl); ?>
+                    SURAT <?= esc($labelSurat); ?> NO.
+                    <?= esc($noDoc); ?>/<?= esc($kodeDok); ?>/<?= date('m', $tglTs); ?>/<?= date('Y', $tglTs); ?>
                 </p>
                 <div class="divider"></div>
             </div>
+
             <div style="flex:1" class="mb-4">
                 <p class="m-0" style="font-weight:500;">Kepada Yth.</p>
-                <p class="m-0 to-name"><?= $pemesanan['nama']; ?></p>
+                <p class="m-0 to-name"><?= esc($pemesanan['nama'] ?? '-'); ?></p>
                 <?php if (!empty($pemesanan['nohp'])): ?>
-                <p class="m-0 to-phone"><?= $pemesanan['nohp']; ?></p>
+                <p class="m-0 to-phone"><?= esc($pemesanan['nohp']); ?></p>
                 <?php endif; ?>
-                <p class="m-0"><?= $pemesanan['alamat_pengiriman']; ?></p>
+                <p class="m-0"><?= esc($pemesanan['alamat_pengiriman'] ?? '-'); ?></p>
             </div>
         </div>
 
-        <!-- Tabel Pengantar -->
+        <!-- Tabel -->
         <div class="table-responsive mt-2">
             <table class="table table-striped table-bordered">
                 <thead>
@@ -247,51 +247,54 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <?php if (!empty($items) && is_array($items)): ?>
                     <?php $no = 1; foreach ($items as $t): ?>
                     <tr>
                         <td class="text-center"><?= $no++; ?></td>
-                        <!-- PAKAI id_baru -->
-                        <td class="text-center"><?= strtoupper($t['id_baru']); ?></td>
+                        <td class="text-center">
+                            <?= esc(strtoupper((string)($t['id_baru'] ?? ''))); ?>
+                        </td>
                         <td>
                             <p class="m-0" style="font-size:10.9px; font-weight:500;">
-                                <?= strtoupper($t['nama']); ?> (<?= strtoupper($t['varian']); ?>)
+                                <?= esc(strtoupper((string)($t['nama'] ?? ''))); ?>
+                                <?php if (!empty($t['varian'])): ?>
+                                (<?= esc(strtoupper((string)$t['varian'])); ?>)
+                                <?php endif; ?>
                             </p>
                             <p class="m-0" style="font-size:10.6px; color:var(--muted);">
-                                <?= $t['dimensi']['panjang']; ?> x <?= $t['dimensi']['lebar']; ?> x
-                                <?= $t['dimensi']['tinggi']; ?>
+                                <?php
+                                            $dim = $t['dimensi'] ?? [];
+                                            $p = $dim['panjang'] ?? '-';
+                                            $l = $dim['lebar'] ?? '-';
+                                            $tg = $dim['tinggi'] ?? '-';
+                                        ?>
+                                <?= esc($p . ' x ' . $l . ' x ' . $tg); ?>
                             </p>
                         </td>
-                        <td class="text-center"><?= $t['jumlah']; ?></td>
+                        <td class="text-center"><?= (int)($t['jumlah'] ?? 0); ?></td>
                     </tr>
                     <?php endforeach; ?>
+                    <?php else: ?>
+                    <tr>
+                        <td colspan="4" class="text-center" style="color:var(--muted);">
+                            Tidak ada item.
+                        </td>
+                    </tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
 
-            <?php
-                // Deteksi kalau ini surat hasil relasi Project Interior
-                $isInterior = (!empty($is_project_interior))
-                    || (!empty($project) && isset($project['kode_project']));
-
-                $ketRaw = trim((string)($pemesanan['keterangan'] ?? ''));
-
-                // KHUSUS INTERIOR:
-                // walaupun kolom keterangan terisi auto (misal: CI0011... - Furniture Interior Lokal ...),
-                // JANGAN dipakai; anggap kosong saja supaya output "Tidak ada keterangan"
-                if ($isInterior) {
-                    $ketRaw = '';
-                }
-            ?>
+            <?php $ketRaw = trim((string)($pemesanan['keterangan'] ?? '')); ?>
             <p class="m-0">
                 <b style="font-weight:600;">Keterangan : </b>
                 <span class="text-danger">
-                    <?= $ketRaw !== '' 
-                        ? '*'.esc($ketRaw) 
+                    <?= $ketRaw !== ''
+                        ? '*'.esc($ketRaw)
                         : '<i style="color:inherit;">Tidak ada keterangan</i>'; ?>
                 </span>
             </p>
 
-
-            <p class="mt-4" style="font-weight:500;">Kendal, <?= $tgl_indo; ?></p>
+            <p class="mt-4" style="font-weight:500;">Kendal, <?= esc($tgl_indo); ?></p>
 
             <!-- Tanda Tangan -->
             <div class="d-flex justify-content-between mt-4">
@@ -314,13 +317,6 @@
             </div>
         </div>
     </div>
-
-    <script>
-    // window.print();
-    // window.onafterprint = function() {
-    //     window.location.href = "<?= base_url('admin/order/offline/sale'); ?>";
-    // };
-    </script>
 </body>
 
 </html>

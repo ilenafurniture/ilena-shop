@@ -26,6 +26,9 @@ use App\Models\VoucherModel;
 use App\Models\VoucherUsageModel;
 use App\Models\ProjectInteriorModel;
 use App\Models\ProjectInteriorPaymentModel;
+use App\Models\SuratJalanModel;
+use App\Models\SuratJalanItemModel;
+
 
 class AdminController extends BaseController
 {
@@ -55,6 +58,8 @@ class AdminController extends BaseController
     protected $voucherUsageModel;
     protected $projectInteriorModel;
     protected $projectInteriorPaymentModel;
+    protected $suratJalanModel;
+    protected $suratJalanItemModel;
 
 
 
@@ -86,8 +91,50 @@ class AdminController extends BaseController
         $this->kelurahanModel = new KelurahanModel();
         $this->voucherModel = new VoucherModel();
         $this->voucherUsageModel = new VoucherUsageModel();
+        $this->projectInteriorModel = new ProjectInteriorModel();
+        $this->projectInteriorPaymentModel = new ProjectInteriorPaymentModel();
+        $this->suratJalanModel = new SuratJalanModel();
+        $this->suratJalanItemModel = new SuratJalanItemModel();
         
     }
+
+
+    // ==== Helper untuk tipe offline (SJ / SP / NF) ====
+    private function groupOrderItems(string $idPesanan): array
+    {
+        $rows = $this->pemesananOfflineItemModel
+            ->select('id_barang, varian, COUNT(*) as qty')
+            ->where('id_pesanan', $idPesanan)
+            ->groupBy('id_barang, varian')
+            ->findAll();
+
+        $out = [];
+        foreach ($rows as $r) {
+            $out[] = [
+                'id_barang' => (int)$r['id_barang'],
+                'varian'    => (string)$r['varian'],
+                'qty'       => (int)$r['qty'],
+            ];
+        }
+        return $out;
+    }
+    private function shippedQtyMap(string $idPesanan): array
+    {
+        $rows = $this->suratJalanItemModel
+            ->select('surat_jalan_item.id_barang, surat_jalan_item.varian, SUM(surat_jalan_item.qty) as shipped_qty')
+            ->join('surat_jalan', 'surat_jalan.id = surat_jalan_item.surat_jalan_id')
+            ->where('surat_jalan.id_pesanan', $idPesanan)
+            ->groupBy('surat_jalan_item.id_barang, surat_jalan_item.varian')
+            ->findAll();
+
+        $map = [];
+        foreach ($rows as $r) {
+            $key = (int)$r['id_barang'] . '||' . (string)$r['varian'];
+            $map[$key] = (int)($r['shipped_qty'] ?? 0);
+        }
+        return $map;
+    }
+
 
     // ==== Helper untuk tipe offline (SJ / SP / NF) ====
     protected function normalizeJenis($jenis): string
@@ -1856,17 +1903,25 @@ class AdminController extends BaseController
     }
 
 
-    protected function generateNextOfflineCode(string $prefix): string
+    private function generateNextOfflineCode(string $prefix): string
     {
-        $row = $this->pemesananOfflineModel
+        $prefix = strtoupper(trim($prefix));
+        if ($prefix === '') return '';
+
+        $last = $this->pemesananOfflineModel
             ->like('id_pesanan', $prefix, 'after')
-            ->orderBy('id', 'desc')
+            ->orderBy('id', 'DESC')
             ->first();
 
-        $next = $row ? ((int)substr($row['id_pesanan'], 2) + 1) : 1;
+        $nextNum = 1;
+        if ($last && !empty($last['id_pesanan'])) {
+            $digits = preg_replace('/\D+/', '', substr($last['id_pesanan'], strlen($prefix)));
+            if ($digits !== '') $nextNum = ((int)$digits) + 1;
+        }
 
-        return $prefix . sprintf('%08d', $next);
+        return $prefix . sprintf('%08d', $nextNum);
     }
+
 
     // OFFLINE 
     public function orderOffline($jenis)
@@ -1883,7 +1938,7 @@ class AdminController extends BaseController
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'pesanan'       => $pesanan,
             'pesananJson'   => json_encode($pesanan),
-            'jenis'         => $this->normalizeJenis($jenis),  // 'sale' | 'sp' | 'nf'
+            'jenis'         => $this->normalizeJenis($jenis), 
             'msg'           => session()->getFlashdata('msg'),
             'provinsi'      => $provinsi
         ];
@@ -2706,34 +2761,28 @@ class AdminController extends BaseController
         $hargaSatuanDpp = (int)preg_replace('/[^\d]/', '', (string)$req->getPost('harga_satuan'));
 
         $qty = (int)$req->getPost('qty');
-        if ($qty <= 0) {
-            $qty = 1;
-        }
+        if ($qty <= 0) $qty = 1;
 
         // --- SINKRONISASI nilai_kontrak & harga_satuan (dua arah) ---
-
-        // 1) Kalau admin isi HARGA SATUAN (DPP) tapi nilai kontrak dikosongkan:
-        //    nilai_kontrak = harga_satuan_dpp * qty * 1.11
+        // 1) Jika harga_satuan diisi tapi nilai_kontrak kosong: nilai_kontrak = dpp * qty * 1.11
         if ($nilaiKontrakInput <= 0 && $hargaSatuanDpp > 0) {
             $nilaiKontrakInput = (int)round($hargaSatuanDpp * $qty * 1.11);
         }
 
-        // 2) Kalau admin isi NILAI KONTRAK (grand total) tapi harga satuan dikosongkan:
-        //    DPP total ≈ nilai_kontrak / 1.11, lalu dibagi qty
+        // 2) Jika nilai_kontrak diisi tapi harga_satuan kosong: dppTotal ≈ nilai_kontrak/1.11 lalu /qty
         if ($hargaSatuanDpp <= 0 && $nilaiKontrakInput > 0) {
             $dppTotal       = (int)round($nilaiKontrakInput / 1.11);
             $hargaSatuanDpp = (int)round($dppTotal / $qty);
         }
 
-        // Setelah sinkron, pakai satu variabel final
         $nilaiKontrak = $nilaiKontrakInput;
         $hargaSatuan  = $hargaSatuanDpp; // disimpan sebagai DPP per unit
 
-        // Jenis dokumen utama: 'sale' (SJ/Faktur) atau 'nf' (Non Faktur)
+        // Jenis dokumen utama: 'sale' (SJ) atau 'nf' (Non Faktur)
         $jenisFakturInput = (string)$req->getPost('jenis_faktur');
-        $jenisFaktur      = $jenisFakturInput === 'nf' ? 'nf' : 'sale'; // default sale
+        $jenisFaktur      = $jenisFakturInput === 'nf' ? 'nf' : 'sale';
 
-        // --- Data klien (ikut sistem pemesanan_offline yang lama) ---
+        // --- Data klien ---
         $namaCustomer     = trim((string)$req->getPost('nama_customer'));
         $nohp             = trim((string)$req->getPost('nohp'));
         $namaNpwp         = trim((string)$req->getPost('nama_npwp'));
@@ -2742,19 +2791,16 @@ class AdminController extends BaseController
         $alamatTagihan    = trim((string)$req->getPost('alamat_tagihan'));
         $catatanInternal  = trim((string)$req->getPost('catatan'));
 
+        // --- Validasi ---
         if ($namaProject === '' || $nilaiKontrak <= 0) {
             return redirect()->back()->with('msg', 'Nama project dan nilai kontrak wajib diisi (boleh dihitung otomatis dari harga satuan).');
         }
-
         if ($namaCustomer === '' || $nohp === '') {
             return redirect()->back()->with('msg', 'Nama klien dan No HP wajib diisi.');
         }
-
         if ($namaBarang === '') {
             return redirect()->back()->with('msg', 'Nama barang / produk wajib diisi.');
         }
-
-        // NEW: validasi kode_barang wajib
         if ($kodeBarang === '') {
             return redirect()->back()->with('msg', 'Kode barang wajib diisi untuk project interior.');
         }
@@ -2767,9 +2813,6 @@ class AdminController extends BaseController
         $nextNo         = $lastProject ? ($lastProject['id'] + 1) : 1;
         $kodeProject    = 'PI' . sprintf('%08d', $nextNo);
 
-        // === Claim nomor SP (tetap) ===
-        $kodeSP = $this->generateNextOfflineCode('SP');
-
         // === Claim nomor dokumen utama: SJ (sale) atau NF (nf) ===
         $prefixInvoice = $jenisFaktur === 'nf' ? 'NF' : 'SJ';
         $kodeInvoice   = $this->generateNextOfflineCode($prefixInvoice);
@@ -2777,20 +2820,15 @@ class AdminController extends BaseController
         $now = date('Y-m-d H:i:s', strtotime('+7 hours'));
 
         // Build keterangan gabungan
-        // Disini kita tampilkan: [KODE BARANG] Nama Barang - KODE PROJECT dll
         $ketParts = [
             $kodeBarang . ' - ' . $namaBarang . ' (' . $kodeProject . ')',
         ];
-        if ($keteranganBarang !== '') {
-            $ketParts[] = '[' . $keteranganBarang . ']';
-        }
-        if ($catatanInternal !== '') {
-            $ketParts[] = $catatanInternal;
-        }
+        if ($keteranganBarang !== '') $ketParts[] = '[' . $keteranganBarang . ']';
+        if ($catatanInternal !== '')  $ketParts[] = $catatanInternal;
+
         $keteranganFinal = implode(' | ', $ketParts);
 
         // Data dasar pemesanan_offline (status reserved khusus interior)
-        // total_akhir DIISI dengan nilaiKontrak (TOTAL termasuk PPN 11%)
         $baseData = [
             'nama'              => $namaCustomer,
             'nohp'              => $nohp,
@@ -2805,15 +2843,11 @@ class AdminController extends BaseController
             'keterangan'        => $keteranganFinal,
             'po'                => $noPo !== '' ? $noPo : null,
             'down_payment'      => $dpPlanned > 0 ? $dpPlanned : null,
+            // 'is_draft'        => 0, // kalau mau eksplisit
         ];
 
-        // === 1) SP (surat pesanan) ===
-        $this->pemesananOfflineModel->insert(array_merge($baseData, [
-            'id_pesanan' => $kodeSP,
-            'jenis'      => 'sp',
-        ]));
-
-        // === 2) Dokumen utama: SJ (sale) ATAU NF (non faktur) ===
+        // === (UPDATED) Interior hanya reserve DOKUMEN UTAMA: SJ atau NF ===
+        // Tidak membuat SP sama sekali.
         $this->pemesananOfflineModel->insert(array_merge($baseData, [
             'id_pesanan' => $kodeInvoice,
             'jenis'      => $jenisFaktur, // 'sale' atau 'nf'
@@ -2823,20 +2857,22 @@ class AdminController extends BaseController
         $builderProject->insert([
             'kode_project'       => $kodeProject,
             'nama_project'       => $namaProject,
-            'nilai_kontrak'      => $nilaiKontrak,  // TOTAL termasuk PPN 11%
-            'kode_sp'            => $kodeSP,
-            'kode_sj'            => $kodeInvoice,   // bisa SJ atau NF
+            'nilai_kontrak'      => $nilaiKontrak,  
+            'kode_sp'            => null,
+
+            // Dokumen utama: SJ atau NF (disimpan di kode_sj biar kompatibel)
+            'kode_sj'            => $kodeInvoice,
+
             'total_dp'           => $dpPlanned,
             'total_bayar'        => 0,
             'status'             => 'draft',
 
-            // DETAIL BARU
+            // detail
             'no_po'              => $noPo !== '' ? $noPo : null,
             'nama_barang'        => $namaBarang,
-            'kode_barang'        => $kodeBarang,          // NEW: simpan kode barang
-            'harga_satuan'       => $hargaSatuan,         // DPP per unit (belum PPN)
+            'kode_barang'        => $kodeBarang,
+            'harga_satuan'       => $hargaSatuan,     // DPP per unit
             'qty'                => $qty,
-            // 'keterangan_barang'  => $keteranganBarang !== '' ? $keteranganBarang : null,
             'catatan'            => $catatanInternal !== '' ? $catatanInternal : null,
         ]);
 
@@ -2844,11 +2880,9 @@ class AdminController extends BaseController
 
         return redirect()
             ->to('/admin/project-interior/' . $kodeProject)
-            ->with(
-                'msg',
-                'Project interior berhasil dibuat. SP: ' . $kodeSP . ' | ' . $labelDok . ': ' . $kodeInvoice
-            );
+            ->with('msg', 'Project interior berhasil dibuat. ' . $labelDok . ': ' . $kodeInvoice);
     }
+
 
     public function projectInteriorDetail(string $kodeProject)
     {
@@ -3362,7 +3396,457 @@ class AdminController extends BaseController
         return view('admin/projectInteriorList', $data);
     }
 
+    // ===== END PROJECT INTERIOR ======
+
+    // ===== SURAT JALAN  ======
+    public function projectInteriorCreateSuratJalan(string $kodeProject)
+    {
+        $projectModel = new ProjectInteriorModel();
+        $project = $projectModel->where('kode_project', $kodeProject)->first();
+        if (!$project) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound("Project {$kodeProject} tidak ditemukan.");
+        }
+
+        $idPesanan = $project['kode_sj']; // bisa SJxxxx atau NFxxxx (id_pesanan pemesanan_offline)
+
+        // ambil sj_ke terakhir
+        $lastKe = $this->suratJalanModel->getLastSjKe($idPesanan);
+        $sjKe   = $lastKe + 1;
+
+        // buat header SJ
+        $now = date('Y-m-d H:i:s', strtotime('+7 hours'));
+        $this->suratJalanModel->insert([
+            'id_pesanan' => $idPesanan,
+            'sj_ke'      => $sjKe,
+            'tanggal'    => $now,
+            'status'     => 'draft',
+        ]);
+        $sjId = (int)$this->suratJalanModel->getInsertID();
+
+        // ===== hitung sisa qty interior (total qty - shipped qty) =====
+        $qtyTotal = (int)($project['qty'] ?? 1);
+        if ($qtyTotal <= 0) $qtyTotal = 1;
+
+        // total shipped dari SJ item custom interior
+        $shipped = (int)($this->suratJalanItemModel
+            ->selectSum('qty', 'total')
+            ->join('surat_jalan sj', 'sj.id = surat_jalan_item.surat_jalan_id')
+            ->where('sj.id_pesanan', $idPesanan)
+            ->get()->getRowArray()['total'] ?? 0);
+
+        $remain = max(0, $qtyTotal - $shipped);
+
+        // default item: isi sisa qty (admin bisa edit nanti)
+        if ($remain > 0) {
+            $kodeBarang = !empty($project['kode_barang']) ? $project['kode_barang'] : $project['kode_project'];
+            $namaBarang = !empty($project['nama_barang']) ? $project['nama_barang'] : ('PEKERJAAN INTERIOR - ' . $project['nama_project']);
+
+            $this->suratJalanItemModel->insert([
+                'surat_jalan_id' => $sjId,
+                'id_barang'      => null, // interior: custom
+                'kode_barang'    => $kodeBarang,
+                'nama_barang'    => $namaBarang,
+                'varian'         => (string)($project['nama_project'] ?? ''),
+                'qty'            => $remain,
+                'dimensi_json'   => json_encode(['panjang'=>'-','lebar'=>'-','tinggi'=>'-']),
+            ]);
+        }
+
+        return redirect()->to('/admin/surat-jalan/offline/' . $sjId)
+            ->with('msg', 'SJ Interior ke-' . $sjKe . ' dibuat. Silakan cek qty sebelum print.');
+    }
+
+    public function createSuratJalanOffline(string $idPesanan)
+    {
+        // Pastikan order ada
+        $order = $this->pemesananOfflineModel->where('id_pesanan', $idPesanan)->first();
+        if (!$order) {
+            return redirect()->back()->with('msg', 'Pesanan tidak ditemukan.');
+        }
+
+        // sj_ke berikutnya
+        $lastKe = $this->suratJalanModel->getLastSjKe($idPesanan);
+        $sjKe   = $lastKe + 1;
+
+        // buat header SJ
+        $now = date('Y-m-d H:i:s', strtotime('+7 hours'));
+        $this->suratJalanModel->insert([
+            'id_pesanan' => $idPesanan,
+            'sj_ke'      => $sjKe,
+            'tanggal'    => $now,
+            'status'     => 'draft',
+        ]);
+        $sjId = (int)$this->suratJalanModel->getInsertID();
+
+        // default item: isi dengan SISA qty (biar gampang, tinggal edit kalau mau partial)
+        $ordered = $this->groupOrderItems($idPesanan);
+        $shippedMap = $this->shippedQtyMap($idPesanan);
+
+        foreach ($ordered as $o) {
+            $key = $o['id_barang'] . '||' . $o['varian'];
+            $already = (int)($shippedMap[$key] ?? 0);
+            $remain  = max(0, (int)$o['qty'] - $already);
+
+            if ($remain <= 0) continue;
+
+            $this->suratJalanItemModel->insert([
+                'surat_jalan_id' => $sjId,
+                'id_barang'      => (int)$o['id_barang'],
+                'varian'         => (string)$o['varian'],
+                'qty'            => $remain,
+            ]);
+        }
+
+        return redirect()->to('/admin/surat-jalan/offline/' . $sjId . '/edit')
+        ->with('msg', 'SJ ke-' . $sjKe . ' dibuat. Silakan cek qty sebelum print.');
+
+    }
+
+    public function suratJalanOffline(int $suratJalanId)
+    {
+        $sj = $this->suratJalanModel->where('id', $suratJalanId)->first();
+        if (!$sj) {
+            return redirect()->back()->with('msg', 'Surat jalan tidak ditemukan.');
+        }
+
+        $pemesanan = $this->pemesananOfflineModel
+            ->where('id_pesanan', $sj['id_pesanan'])
+            ->first();
+
+        if (!$pemesanan) {
+            return redirect()->back()->with('msg', 'Pesanan sumber SJ tidak ditemukan.');
+        }
+
+        
+        $rows = $this->suratJalanItemModel
+            ->select('surat_jalan_item.*, barang.nama, barang.deskripsi')
+            ->join('barang', 'barang.id = surat_jalan_item.id_barang')
+            ->where('surat_jalan_item.surat_jalan_id', $suratJalanId)
+            ->findAll();
+
+        $items = [];
+        foreach ($rows as $r) {
+            $dim = ['panjang'=>'-','lebar'=>'-','tinggi'=>'-'];
+
+            // kalau ada dimensi_json (custom interior), pakai itu
+            if (!empty($r['dimensi_json'])) {
+                $dj = json_decode($r['dimensi_json'], true);
+                if (is_array($dj)) $dim = array_merge($dim, $dj);
+            } else {
+                // fallback offline lama: ambil dari deskripsi barang
+                $d = json_decode($r['deskripsi'] ?? '', true);
+                if (is_array($d) && isset($d['dimensi']['asli'])) {
+                    $dim = $d['dimensi']['asli'];
+                }
+            }
+
+            // kode & nama: prioritas custom dulu, baru dari join barang
+            $kode = !empty($r['kode_barang']) ? $r['kode_barang'] : (string)$r['id_barang'];
+            $nama = !empty($r['nama_barang']) ? $r['nama_barang'] : ($r['nama'] ?? '-');
+
+            $items[] = [
+                'id_baru'  => (string)$kode,
+                'nama'     => (string)$nama,
+                'varian'   => (string)$r['varian'],
+                'dimensi'  => $dim,
+                'jumlah'   => (int)$r['qty'],
+            ];
+        }
 
 
+        $data = [
+            'title'     => 'Surat Jalan',
+            'pemesanan' => $pemesanan,
+            'items'     => $items,
+            'sj'        => $sj,
+        ];
+
+        return view('admin/suratOffline', $data);
+    }
+    
+    // ====== EDIT SJ ======
+public function suratJalanOfflineEdit(int $suratJalanId)
+{
+    $sj = $this->suratJalanModel->where('id', $suratJalanId)->first();
+    if (!$sj) return redirect()->back()->with('msg', 'Surat jalan tidak ditemukan.');
+
+    $pemesanan = $this->pemesananOfflineModel
+        ->where('id_pesanan', $sj['id_pesanan'])
+        ->first();
+    if (!$pemesanan) return redirect()->back()->with('msg', 'Pesanan sumber tidak ditemukan.');
+
+    // rows item SJ (gabungan: offline/interior)
+    $rows = $this->suratJalanItemModel
+        ->select('surat_jalan_item.*')
+        ->select('barang.nama as barang_nama, barang.deskripsi as barang_deskripsi')
+        ->join('barang', 'barang.id = surat_jalan_item.id_barang', 'left')
+        ->where('surat_jalan_item.surat_jalan_id', $suratJalanId)
+        ->orderBy('surat_jalan_item.id', 'ASC')
+        ->findAll();
+
+    // detect: interior kalau semua item id_barang null, atau id_pesanan prefix NF/SJ juga boleh
+    $isInteriorSj = false;
+    foreach ($rows as $r) {
+        if (empty($r['id_barang'])) { $isInteriorSj = true; break; }
+    }
+
+    // ambil “ordered” untuk offline: total qty per barang+varian dari pemesanan_offline_item
+    // untuk interior: pakai 1 item (kode_barang, nama_barang, qty dari project / invoice reserved) -> kita hitung dari shipped map saja.
+    $ordered = [];
+    if (!$isInteriorSj) {
+        $ordered = $this->groupOrderItems($sj['id_pesanan']); // kamu sudah punya helper ini
+    }
+
+    // shipped map: total qty yang sudah dikirim pada semua SJ untuk id_pesanan ini (kecuali SJ yg sedang diedit)
+    $shippedMap = $this->shippedQtyMapExceptSj($sj['id_pesanan'], $suratJalanId);
+
+    $data = [
+        'title'        => 'Edit Surat Jalan',
+        'sj'           => $sj,
+        'pemesanan'    => $pemesanan,
+        'rows'         => $rows,
+        'ordered'      => $ordered,
+        'shippedMap'   => $shippedMap,
+        'isInteriorSj' => $isInteriorSj,
+        'msg'          => session()->getFlashdata('msg'),
+    ];
+    return view('admin/suratJalanEdit', $data);
+}
+
+public function suratJalanOfflineEditSave(int $suratJalanId)
+{
+    $sj = $this->suratJalanModel->where('id', $suratJalanId)->first();
+    if (!$sj) return redirect()->back()->with('msg', 'Surat jalan tidak ditemukan.');
+
+    if (($sj['status'] ?? '') === 'final') {
+        return redirect()->back()->with('msg', 'SJ sudah final, tidak bisa diedit.');
+    }
+
+    $req = $this->request;
+
+    // update tanggal jika dikirim
+    $tanggal = $req->getPost('tanggal');
+    if ($tanggal) {
+        $tanggal = str_replace('T', ' ', $tanggal);
+        if (preg_match('/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}$/', $tanggal)) $tanggal .= ':00';
+
+        $this->suratJalanModel->where('id', $suratJalanId)->set(['tanggal' => $tanggal])->update();
+    }
+
+    // update qty items
+    $itemIds = $req->getPost('item_id');   // array
+    $qtys    = $req->getPost('qty');       // array
+
+    if (!is_array($itemIds) || !is_array($qtys) || count($itemIds) !== count($qtys)) {
+        return redirect()->back()->with('msg', 'Payload item tidak valid.');
+    }
+
+    // untuk validasi sisa:
+    // shippedMap total shipped semua SJ lain (kecuali sj ini)
+    $shippedMap = $this->shippedQtyMapExceptSj($sj['id_pesanan'], $suratJalanId);
+
+    // ambil semua row item yang ada sekarang
+    $rows = $this->suratJalanItemModel
+        ->where('surat_jalan_id', $suratJalanId)
+        ->findAll();
+
+    // index rows by id
+    $byId = [];
+    foreach ($rows as $r) $byId[(int)$r['id']] = $r;
+
+    // DETECT interior
+    $isInteriorSj = false;
+    foreach ($rows as $r) { if (empty($r['id_barang'])) { $isInteriorSj = true; break; } }
+
+    // OFFLINE: orderedMap qty dari pemesanan_offline_item
+    $orderedMap = [];
+    if (!$isInteriorSj) {
+        $ordered = $this->groupOrderItems($sj['id_pesanan']);
+        foreach ($ordered as $o) {
+            $key = $o['id_barang'].'||'.$o['varian'];
+            $orderedMap[$key] = (int)$o['qty'];
+        }
+    } else {
+        // INTERIOR: total qty yang boleh dikirim = shipped(sebelumnya) + qty yang sekarang akan diset,
+        // tapi batas totalnya harus diambil dari sumber (project qty).
+        // Cara paling aman: simpan total qty "allowed" di pemesanan_offline.total_akhir? (nggak)
+        // Jadi kita ambil dari semua SJ + SJ sekarang dibandingkan dengan “qty total interior” di project_interior.
+        // Kita cari project by kode_sj = id_pesanan
+        $db = \Config\Database::connect();
+        $proj = $db->table('project_interior')->where('kode_sj', $sj['id_pesanan'])->get()->getRowArray();
+        $qtyTotal = (int)($proj['qty'] ?? 1);
+        if ($qtyTotal <= 0) $qtyTotal = 1;
+        $orderedMap['__INTERIOR__'] = $qtyTotal;
+    }
+
+    // hitung total qty baru per key (untuk validasi)
+    $newTotals = [];
+    for ($i=0; $i<count($itemIds); $i++) {
+        $id  = (int)$itemIds[$i];
+        $qty = (int)$qtys[$i];
+
+        if (!isset($byId[$id])) continue;
+        if ($qty < 0) $qty = 0;
+
+        $r = $byId[$id];
+
+        if ($isInteriorSj) {
+            $key = '__INTERIOR__';
+        } else {
+            $key = (int)$r['id_barang'].'||'.(string)$r['varian'];
+        }
+
+        $newTotals[$key] = ($newTotals[$key] ?? 0) + $qty;
+    }
+
+    // VALIDASI
+    foreach ($newTotals as $key => $qtyNew) {
+        $already = (int)($shippedMap[$key] ?? 0);
+        $allowed = (int)($orderedMap[$key] ?? 0);
+
+        if (($already + $qtyNew) > $allowed) {
+            $remain = max(0, $allowed - $already);
+            return redirect()->back()->with(
+                'msg',
+                'Qty melebihi sisa. Sisa yang boleh dikirim: ' . $remain
+            );
+        }
+    }
+
+    // SAVE qty
+    for ($i=0; $i<count($itemIds); $i++) {
+        $id  = (int)$itemIds[$i];
+        $qty = (int)$qtys[$i];
+        if ($qty < 0) $qty = 0;
+
+        $this->suratJalanItemModel->where('id', $id)->set(['qty' => $qty])->update();
+    }
+
+    return redirect()->to('/admin/surat-jalan/offline/'.$suratJalanId.'/edit')
+        ->with('msg', 'SJ berhasil disimpan.');
+    }
+
+    // ====== ADD ITEM ======
+    public function suratJalanOfflineItemAdd(int $suratJalanId)
+    {
+        $sj = $this->suratJalanModel->where('id', $suratJalanId)->first();
+        if (!$sj) return redirect()->back()->with('msg', 'Surat jalan tidak ditemukan.');
+
+        if (($sj['status'] ?? '') === 'final') {
+            return redirect()->back()->with('msg', 'SJ sudah final, tidak bisa ditambah item.');
+        }
+
+        $req = $this->request;
+
+        // mode: offline / interior
+        $mode = $req->getPost('mode'); // 'offline'|'interior'
+        $qty  = (int)$req->getPost('qty');
+        if ($qty <= 0) $qty = 1;
+
+        if ($mode === 'interior') {
+            $kodeBarang = trim((string)$req->getPost('kode_barang'));
+            $namaBarang = trim((string)$req->getPost('nama_barang'));
+            $varian     = trim((string)$req->getPost('varian'));
+
+            if ($kodeBarang === '' || $namaBarang === '') {
+                return redirect()->back()->with('msg', 'Kode barang & nama barang wajib diisi.');
+            }
+
+            $this->suratJalanItemModel->insert([
+                'surat_jalan_id' => $suratJalanId,
+                'id_barang'      => null,
+                'kode_barang'    => $kodeBarang,
+                'nama_barang'    => $namaBarang,
+                'varian'         => $varian,
+                'qty'            => $qty,
+                'dimensi_json'   => json_encode(['panjang'=>'-','lebar'=>'-','tinggi'=>'-']),
+            ]);
+
+            return redirect()->to('/admin/surat-jalan/offline/'.$suratJalanId.'/edit')
+                ->with('msg', 'Item interior ditambahkan.');
+        }
+
+        // OFFLINE
+        $idBarang = (int)$req->getPost('id_barang');
+        $varian   = trim((string)$req->getPost('varian'));
+
+        if ($idBarang <= 0 || $varian === '') {
+            return redirect()->back()->with('msg', 'Barang & varian wajib dipilih.');
+        }
+
+        $this->suratJalanItemModel->insert([
+            'surat_jalan_id' => $suratJalanId,
+            'id_barang'      => $idBarang,
+            'kode_barang'    => null,
+            'nama_barang'    => null,
+            'varian'         => $varian,
+            'qty'            => $qty,
+            'dimensi_json'   => null,
+        ]);
+
+        return redirect()->to('/admin/surat-jalan/offline/'.$suratJalanId.'/edit')
+            ->with('msg', 'Item offline ditambahkan.');
+    }
+
+    // ====== DELETE ITEM ======
+    public function suratJalanOfflineItemDelete(int $suratJalanId)
+    {
+        $sj = $this->suratJalanModel->where('id', $suratJalanId)->first();
+        if (!$sj) return redirect()->back()->with('msg', 'Surat jalan tidak ditemukan.');
+
+        if (($sj['status'] ?? '') === 'final') {
+            return redirect()->back()->with('msg', 'SJ sudah final, tidak bisa hapus item.');
+        }
+
+        $itemId = (int)$this->request->getPost('item_id');
+        if ($itemId <= 0) return redirect()->back()->with('msg', 'Item tidak valid.');
+
+        $this->suratJalanItemModel->where('id', $itemId)->where('surat_jalan_id', $suratJalanId)->delete();
+
+        return redirect()->to('/admin/surat-jalan/offline/'.$suratJalanId.'/edit')
+            ->with('msg', 'Item dihapus.');
+    }
+
+    // ====== FINALIZE SJ ======
+    public function suratJalanOfflineFinalize(int $suratJalanId)
+    {
+        $sj = $this->suratJalanModel->where('id', $suratJalanId)->first();
+        if (!$sj) return redirect()->back()->with('msg', 'Surat jalan tidak ditemukan.');
+
+        if (($sj['status'] ?? '') === 'final') {
+            return redirect()->back()->with('msg', 'SJ sudah final.');
+        }
+
+        $sum = (int)($this->suratJalanItemModel
+            ->selectSum('qty','total')
+            ->where('surat_jalan_id', $suratJalanId)
+            ->get()->getRowArray()['total'] ?? 0);
+
+        if ($sum <= 0) {
+            return redirect()->back()->with('msg', 'Tidak ada qty untuk diprint. Isi qty dulu.');
+        }
+
+        $this->suratJalanModel->where('id', $suratJalanId)->set(['status' => 'final'])->update();
+
+        return redirect()->to('/admin/surat-jalan/offline/'.$suratJalanId)
+            ->with('msg', 'SJ di-finalize. Siap print.');
+    }
+    private function shippedQtyMapExceptSj(string $idPesanan, int $excludeSjId): array
+    {
+        $rows = $this->suratJalanItemModel
+            ->select('surat_jalan_item.id_barang, surat_jalan_item.varian, surat_jalan_item.qty, surat_jalan_item.kode_barang')
+            ->join('surat_jalan sj', 'sj.id = surat_jalan_item.surat_jalan_id')
+            ->where('sj.id_pesanan', $idPesanan)
+            ->where('sj.id !=', $excludeSjId)
+            ->findAll();
+
+        $map = [];
+        foreach ($rows as $r) {
+            $isInterior = empty($r['id_barang']);
+            $key = $isInterior ? '__INTERIOR__' : ((int)$r['id_barang'].'||'.(string)$r['varian']);
+            $map[$key] = (int)($map[$key] ?? 0) + (int)$r['qty'];
+        }
+        return $map;
+    }
 
 }

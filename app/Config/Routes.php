@@ -1,11 +1,12 @@
 <?php
 
-use App\Controllers\GambarController;
 use CodeIgniter\Router\RouteCollection;
 
 /**
  * @var RouteCollection $routes
  */
+
+// ==================== Frontend ====================
 $routes->get('/faq', 'Pages::faq', ['filter' => 'customerFilter']);
 
 // Artikel (frontend)
@@ -17,7 +18,6 @@ $routes->get('/article/(:any)', 'Pages::article/$1', ['filter' => 'customerFilte
 
 $routes->get('/tentang', 'Pages::tentang', ['filter' => 'customerFilter']);
 $routes->get('/partner', 'Pages::partner', ['filter' => 'customerFilter']);
-// $routes->get('/contact', 'Pages::contact', ['filter' => 'customerFilter']);
 $routes->get('/syarat', 'Pages::syarat', ['filter' => 'customerFilter']);
 $routes->get('/kebijakan', 'Pages::kebijakan', ['filter' => 'customerFilter']);
 $routes->get('/visimisi', 'Pages::visiMisi', ['filter' => 'customerFilter']);
@@ -50,6 +50,7 @@ $routes->post('/redeemvoucher/(:num)', 'Pages::redeemVoucher/$1');
 $routes->get('/usevoucher/(:any)', 'Pages::useVoucher/$1');
 $routes->get('/cancelvoucher/(:any)', 'Pages::cancelVoucher/$1');
 $routes->get('/removevoucher/(:num)', 'Pages::removeVoucher/$1');
+
 $routes->get('/payment/method/(:any)/(:any)', 'Pages::paymentMethod/$1/$2', ['filter' => 'customerShippingFilter']);
 $routes->get('/payment/(:any)', 'Pages::payment/$1', ['filter' => 'customerShippingFilter']);
 $routes->get('/actionpay/(:any)', 'Pages::actionPay/$1');
@@ -77,11 +78,8 @@ $routes->get('/kirimotp', 'Pages::kirimOTP', ['filter' => 'customerFilter']);
 $routes->post('/editsandi/(:any)', 'Pages::editSandi/$1', ['filter' => 'customerFilter']);
 $routes->get('/logout', 'Pages::actionLogout');
 
-// GambarController
-// $routes->get('/viewpic/(:any)', 'GambarController::tampilGambarBarang/$1');
-// $routes->get('/viewpichover/(:any)', 'GambarController::tampilGambarBarangHover/$1');
-// $routes->get('/viewvar/(:any)/(:any)', 'GambarController::tampilGambarVarian/$1/$2');
-// $routes->get('/viewvar3000/(:any)/(:any)', 'GambarController::tampilGambarVarian3000/$1/$2');
+
+// ==================== GambarController ====================
 $routes->get('/changepic/(:any)', 'GambarController::gantiUkuran/$1', ['filter' => 'corsFilter']);
 $routes->get('/gantilokasi/(:any)', 'GambarController::gantiLokasi/$1', ['filter' => 'corsFilter']);
 $routes->get('/cobainput', 'GambarController::actionCobaInput');
@@ -90,6 +88,7 @@ $routes->get('/imgart/(:any)', 'GambarController::tampilGambarArtikel/$1');
 $routes->get('/imgart/(:any)/(:any)', 'GambarController::tampilGambarArtikel/$1/$2');
 $routes->get('/imgheader/(:any)', 'GambarController::tampilGambarHeader/$1');
 $routes->get('/imgheaderhp/(:any)', 'GambarController::tampilGambarHeaderHp/$1');
+
 
 // ==================== Admin Controller ====================
 $routes->get('/admin/producttable', 'AdminController::listProductTable', ['filter' => 'adminFilter']);
@@ -140,44 +139,63 @@ $routes->get('/admin/labelbarang/(:any)', 'AdminController::labelBarang/$1', ['f
 // Home layout (admin)
 $routes->get('/admin/homelayout', 'AdminController::homeLayout', ['filter' => 'adminFilter']);
 $routes->post('/admin/homelayout', 'AdminController::actionHomeLayout', ['filter' => 'adminFilter']);
-
 $routes->get('/admin/changepic', 'AdminController::changePic', ['filter' => 'adminFilter']);
 
-// Offline order (admin)
+
+// ==================== Offline order (admin) ====================
 $routes->get('/admin/order/offline/(:any)', 'AdminController::orderOffline/$1', ['filter' => 'adminFilter']);
-$routes->get('/admin/getitemsoffline/(:any)', 'AdminController::getItemsOffline/$1');
+
+// API ambil items offline (buat modal/detail)
+$routes->get('/admin/getitemsoffline/(:segment)', 'AdminController::getItemsOffline/$1', ['filter' => 'adminFilter']);
+
 $routes->get('/admin/order-offline/add', 'AdminController::orderOfflineAdd', ['filter' => 'adminFilter']);
-$routes->post('admin/order-offline/update', 'AdminController::orderOfflineUpdate');
+$routes->post('/admin/order-offline/update', 'AdminController::orderOfflineUpdate', ['filter' => 'adminFilter']);
+
 $routes->get('/admin/invoice-offline/(:any)', 'AdminController::suratInvoice/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/invoice-offline-dp/(:any)', 'AdminController::suratInvoiceDP/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/surat-offline/(:any)', 'AdminController::suratOffline/$1', ['filter' => 'adminFilter']);
-$routes->post('/admin/order-offline/add', 'AdminController::actionAddOrderOffline');
-$routes->post('/admin/order-offline/koreksisp', 'AdminController::actionKoreksiSP');
-$routes->get('/admin/surat-koreksi/(:any)', 'AdminController::suratKoreksi/$1');
-$routes->get('/admin/benerinsurat', 'AdminController::benerinSurat');
-$routes->post('/admin/actionbuatinvoice', 'AdminController::actionBuatInvoice');
-$routes->post('/admin/actionbuatdp', 'AdminController::actionBuatDP');
+
+$routes->post('/admin/order-offline/add', 'AdminController::actionAddOrderOffline', ['filter' => 'adminFilter']);
+$routes->post('/admin/order-offline/koreksisp', 'AdminController::actionKoreksiSP', ['filter' => 'adminFilter']);
+$routes->get('/admin/surat-koreksi/(:any)', 'AdminController::suratKoreksi/$1', ['filter' => 'adminFilter']);
+
+$routes->get('/admin/benerinsurat', 'AdminController::benerinSurat', ['filter' => 'adminFilter']);
+$routes->post('/admin/actionbuatinvoice', 'AdminController::actionBuatInvoice', ['filter' => 'adminFilter']);
+$routes->post('/admin/actionbuatdp', 'AdminController::actionBuatDP', ['filter' => 'adminFilter']);
 $routes->get('/admin/actionaccorderoffline/(:any)', 'AdminController::actionAccOrderOffline/$1', ['filter' => 'adminFilter']);
-$routes->get('/admin/order/offline/interior', 'AdminController::interiorList');
-$routes->post('admin/order-offline/finalize', 'AdminController::orderOfflineFinalize');
-$routes->get('admin/getitemsoffline/(:segment)', 'AdminController::getItemsOffline/$1');
+
+$routes->post('/admin/order-offline/finalize', 'AdminController::orderOfflineFinalize', ['filter' => 'adminFilter']);
+
+// (kalau route ini memang ada di controller kamu, ok. kalau enggak, hapus)
+$routes->get('/admin/order/offline/interior', 'AdminController::interiorList', ['filter' => 'adminFilter']);
 
 
+// ==================== Surat Jalan Offline (admin) ====================
+// Buat SJ ke-n dari sebuah id_pesanan (auto isi sisa qty)
+$routes->post('/admin/surat-jalan/offline/create/(:segment)', 'AdminController::createSuratJalanOffline/$1', ['filter' => 'adminFilter']);
+$routes->get('admin/project-interior/(:segment)/surat-jalan/create', 'AdminController::projectInteriorCreateSuratJalan/$1',['filter' => 'adminFilter']);
+$routes->get('admin/surat-jalan/offline/(:num)', 'AdminController::suratJalanOffline/$1',['filter' => 'adminFilter']);
+$routes->get('admin/surat-jalan/offline/create/(:segment)', 'AdminController::createSuratJalanOffline/$1',['filter' => 'adminFilter']);
 
 
-// SEO helper (admin) — optional
+// Buka halaman SJ (edit/print)
+$routes->get('/admin/surat-jalan/offline/(:num)', 'AdminController::suratJalanOffline/$1', ['filter' => 'adminFilter']);
+
+
+// ==================== SEO helper (admin) — optional ====================
 $routes->get('/admin/seo-check/(:any)', 'AdminController::seoCheck/$1', ['filter' => 'adminFilter']);
 
-// === Voucher System (admin) ===
+
+// ==================== Voucher System (admin) ====================
 $routes->get('/admin/voucher', 'AdminController::voucher', ['filter' => 'adminFilter']);
 $routes->post('/admin/voucher/add', 'AdminController::actionAddVoucher', ['filter' => 'adminFilter']);
 $routes->get('/admin/voucher/delete/(:any)', 'AdminController::deleteVoucher/$1', ['filter' => 'adminFilter']);
 $routes->get('/admin/voucher/edit/(:num)', 'AdminController::editVoucher/$1', ['filter' => 'adminFilter']);
 $routes->post('/admin/voucher/edit/(:num)', 'AdminController::editVoucher/$1', ['filter' => 'adminFilter']);
 $routes->post('/admin/voucher/toggle/(:num)', 'AdminController::toggleVoucher/$1', ['filter' => 'adminFilter']);
-
 $routes->get('/admin/voucher/usage', 'AdminController::voucherUsage', ['filter' => 'adminFilter']);
 $routes->get('/admin/voucher/usage/delete/(:num)', 'AdminController::deleteVoucherUsage/$1', ['filter' => 'adminFilter']);
+
 
 // ==================== Gudang ====================
 $routes->get('/gudang/listorder', 'GudangController::listOrder', ['filter' => 'gudangFilter']);
@@ -190,6 +208,7 @@ $routes->post('/gudang/actionaddmutasi', 'GudangController::actionAddMutasi', ['
 $routes->get('/gudang/suratjalan/(:any)', 'GudangController::suratJalan/$1', ['filter' => 'gudangFilter']);
 $routes->post('/gudang/ajukanprint', 'GudangController::ajukanPrint', ['filter' => 'gudangFilter']);
 
+
 // ==================== Fixing ====================
 $routes->get('/fixmutasi', 'GudangController::fixMutasi');
 $routes->get('/fixnama', 'Pages::fixNama');
@@ -198,6 +217,7 @@ $routes->get('/gantijenis/(:any)/(:any)', 'Pages::gantiJenis/$1/$2');
 $routes->get('/fixset', 'Pages::fixSet');
 $routes->get('/gantinamakekecil', 'Pages::gantinamakekecil');
 $routes->get('/fix-id-barang', 'FixingController::fixIdBarang');
+
 
 // ==================== Marketplace ====================
 $routes->get('/market/product', 'MarketplaceController::product', ['filter' => 'marketFilter']);
@@ -208,33 +228,33 @@ $routes->get('/market/addcart/(:any)/(:any)', 'MarketplaceController::addCart/$1
 $routes->get('/market/reducecart/(:any)', 'MarketplaceController::reduceCart/$1', ['filter' => 'marketFilter']);
 $routes->post('/maket/submitorder', 'MarketplaceController::submitOrder', ['filter' => 'marketFilter']);
 
-// routes untuk nyolong raja ongkir
+// routes untuk nyolong raja ongkir (seperti punya kamu)
 $routes->post('/ro/provinsi', 'MarketplaceController::submitOrder', ['filter' => 'marketFilter']);
 
+
 // ==================== Analytics (admin) ====================
-$routes->get('analytics', 'Analytics::index', ['filter' => 'adminFilter']);
-$routes->get('analytics/live', 'Analytics::live', ['filter' => 'adminFilter']);
-$routes->get('analytics/exportCsv', 'Analytics::exportCsv', ['filter' => 'adminFilter']);
-$routes->get('analytics/exportPdf', 'Analytics::exportPdf', ['filter' => 'adminFilter']);
-$routes->post('analytics/blacklist/add', 'Analytics::addBlacklist', ['filter' => 'adminFilter']);
-$routes->get('analytics/blacklist/del/(:any)', 'Analytics::delBlacklist/$1', ['filter' => 'adminFilter']);
+$routes->get('/analytics', 'Analytics::index', ['filter' => 'adminFilter']);
+$routes->get('/analytics/live', 'Analytics::live', ['filter' => 'adminFilter']);
+$routes->get('/analytics/exportCsv', 'Analytics::exportCsv', ['filter' => 'adminFilter']);
+$routes->get('/analytics/exportPdf', 'Analytics::exportPdf', ['filter' => 'adminFilter']);
+$routes->post('/analytics/blacklist/add', 'Analytics::addBlacklist', ['filter' => 'adminFilter']);
+$routes->get('/analytics/blacklist/del/(:any)', 'Analytics::delBlacklist/$1', ['filter' => 'adminFilter']);
+
 
 // Tracking
-$routes->post('track/hit', 'Track::hit'); // endpoint tracking
+$routes->post('/track/hit', 'Track::hit'); // endpoint tracking
+
 
 // ==================== PROJECT INTERIOR (ADMIN) ====================
-$routes->get('admin/project-interior', 'AdminController::projectInteriorList', ['filter' => 'adminFilter']);
-$routes->get('admin/project-interior/add', 'AdminController::projectInteriorAdd', ['filter' => 'adminFilter']);
-$routes->post('admin/project-interior/add', 'AdminController::actionProjectInteriorAdd', ['filter' => 'adminFilter']);
-$routes->get('admin/project-interior/(:segment)', 'AdminController::projectInteriorDetail/$1', ['filter' => 'adminFilter']);
-$routes->post('admin/project-interior/(:segment)/payment', 'AdminController::actionProjectInteriorAddPayment/$1', ['filter' => 'adminFilter']);
-$routes->get('admin/project-interior/(:segment)/invoice', 'AdminController::projectInteriorCreateInvoice/$1', ['filter' => 'adminFilter']);
-$routes->get('admin/project-interior/(:segment)/sj', 'AdminController::projectInteriorSuratJalan/$1', ['filter' => 'adminFilter']);
-$routes->get(
-    'admin/project-interior/(:segment)/payment-invoice/(:num)',
-    'AdminController::projectInteriorPaymentInvoice/$1/$2'
-);
+$routes->get('/admin/project-interior', 'AdminController::projectInteriorList', ['filter' => 'adminFilter']);
+$routes->get('/admin/project-interior/add', 'AdminController::projectInteriorAdd', ['filter' => 'adminFilter']);
+$routes->post('/admin/project-interior/add', 'AdminController::actionProjectInteriorAdd', ['filter' => 'adminFilter']);
+$routes->get('/admin/project-interior/(:segment)', 'AdminController::projectInteriorDetail/$1', ['filter' => 'adminFilter']);
+$routes->post('/admin/project-interior/(:segment)/payment', 'AdminController::actionProjectInteriorAddPayment/$1', ['filter' => 'adminFilter']);
+$routes->get('/admin/project-interior/(:segment)/invoice', 'AdminController::projectInteriorCreateInvoice/$1', ['filter' => 'adminFilter']);
+$routes->get('/admin/project-interior/(:segment)/sj', 'AdminController::projectInteriorSuratJalan/$1', ['filter' => 'adminFilter']);
+$routes->get('/admin/project-interior/(:segment)/payment-invoice/(:num)', 'AdminController::projectInteriorPaymentInvoice/$1/$2', ['filter' => 'adminFilter']);
 
 
-// 404 fallback
+// ==================== 404 fallback ====================
 $routes->get('/(:any)', 'Pages::notFound');
