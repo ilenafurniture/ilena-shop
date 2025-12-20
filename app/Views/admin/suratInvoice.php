@@ -779,7 +779,7 @@
             </div>
             <div class="d-flex flex-column align-items-center" style="width:200px; font-size:12px;">
                 Bagian Keuangan <br><br><br><br><br>
-                <p class="tw-bold-italic" style="font-size:12px;">Puspita Aprilia Damayanti</p>
+                <p class="tw-bold-italic" style="font-size:12px;">Amaroh U'un Setiawan</p>
             </div>
         </div>
     </div>
