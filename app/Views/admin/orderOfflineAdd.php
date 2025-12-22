@@ -1336,7 +1336,7 @@ const App = () => {
                                 <td className="cell-thumb">
                                   <img className="thumb" src={getThumbByItem(it)} alt={it.nama}/>
                                 </td>
-                                <td>{Number(potongan.nominal) > 0 && (<b style={{color:'#b31217'}}>[SPESIAL PRICE]</b>)}{it.nama}</td>
+                                <td>{Number(potongan.nominal) > 0 && (<b style={{color:'#b31217'}}>{it.nama}</b>)}{it.nama}</td>
                                 <td className="mono">{it.varian}</td>
                                 <td className="cell-center">{it.jumlah}</td>
                                 <td className="cell-right mono">{formatRupiah(it.harga)}</td>

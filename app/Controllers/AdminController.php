@@ -1511,15 +1511,6 @@ class AdminController extends BaseController
         return view('gudang/suratJalan', $data);
     }
 
-/*************  ✨ Windsurf Command ⭐  *************/
-/**
- * Generate Surat Invoice DP
- *
- * @param int $id_pesanan id pemesanan
- *
- * @return \Illuminate\Http\Response
- */
-/*******  3afb5aec-567d-41d2-ae78-a1f8c9a04f6e  *******/
     public function suratInvoice($id_pesanan)
     {
         $pemesanan = $this->pemesananOfflineModel->getPemesanan($id_pesanan);
