@@ -1511,13 +1511,100 @@ class AdminController extends BaseController
         return view('gudang/suratJalan', $data);
     }
 
+/*************  ✨ Windsurf Command ⭐  *************/
+/**
+ * Generate Surat Invoice DP
+ *
+ * @param int $id_pesanan id pemesanan
+ *
+ * @return \Illuminate\Http\Response
+ */
+/*******  3afb5aec-567d-41d2-ae78-a1f8c9a04f6e  *******/
     public function suratInvoice($id_pesanan)
     {
         $pemesanan = $this->pemesananOfflineModel->getPemesanan($id_pesanan);
-        if (!$pemesanan['tanggal_inv']) {
+
+        // kalau belum ada tanggal invoice, balik ke list
+        if (empty($pemesanan['tanggal_inv'])) {
             $seg = ($pemesanan['jenis'] === 'nf') ? 'nf' : 'sale';
             return redirect()->to('/admin/order/offline/' . $seg);
         }
+
+        // ambil semua item (per pcs)
+        $items = $this->pemesananOfflineItemModel
+            ->select('pemesanan_offline_item.*')
+            ->select('barang.nama')
+            ->select('barang.deskripsi')
+            ->select('barang.varian as barang_varian')
+            ->join('barang', 'barang.id = pemesanan_offline_item.id_barang')
+            ->where(['id_pesanan' => $id_pesanan])
+            ->findAll();
+
+        /**
+         * =====================================================
+         * GROUP ITEM:
+         * - qty dihitung dari jumlah baris
+         * - special_price = MAX (kalau ada 1 aja → SPECIAL PRICE)
+         * =====================================================
+         */
+        $groupMap = [];
+
+        foreach ($items as $i) {
+            $key = $i['id_barang'] . '-' . $i['varian'];
+
+            if (!isset($groupMap[$key])) {
+                $dimensi = ['panjang'=>'-','lebar'=>'-','tinggi'=>'-'];
+                $desc = json_decode($i['deskripsi'] ?? '', true);
+                if (isset($desc['dimensi']['asli'])) {
+                    $dimensi = $desc['dimensi']['asli'];
+                }
+
+                $groupMap[$key] = [
+                    'id_barang'     => $i['id_barang'],
+                    'varian'        => $i['varian'],
+                    'nama'          => $i['nama'],
+                    'barang_varian' => $i['barang_varian'],
+                    'harga'         => (int)$i['harga'],
+                    'dimensi'       => $dimensi,
+                    'jumlah'        => 0,
+                    'special_price' => (int)($i['special_price'] ?? 0),
+                ];
+            }
+
+            // qty = jumlah baris
+            $groupMap[$key]['jumlah']++;
+
+            // ambil special_price TERBESAR
+            $sp = (int)($i['special_price'] ?? 0);
+            if ($sp > $groupMap[$key]['special_price']) {
+                $groupMap[$key]['special_price'] = $sp;
+            }
+        }
+
+        $itemsFiltered = array_values($groupMap);
+
+        // generate id_baru (kode barang + id varian)
+        foreach ($itemsFiltered as $idx => $i) {
+            $varian = json_decode($i['barang_varian'] ?? '[]', true);
+            $found  = array_values(array_filter($varian, function ($v) use ($i) {
+                return ($v['nama'] ?? '') === $i['varian'];
+            }));
+
+            $idVar = $found[0]['id'] ?? '';
+            $itemsFiltered[$idx]['id_baru'] = $i['id_barang'] . $idVar;
+        }
+
+        return view('admin/suratInvoice', [
+            'title'              => 'Surat Invoice',
+            'apikey_img_ilena'   => $this->apikey_img_ilena,
+            'pemesanan'          => $pemesanan,
+            'items'              => $itemsFiltered,
+        ]);
+    }
+
+    public function suratInvoiceDP($id_pesanan)
+    {
+        $pemesanan = $this->pemesananOfflineModel->getPemesanan($id_pesanan);
 
         $items = $this->pemesananOfflineItemModel
             ->select('pemesanan_offline_item.*')
@@ -1527,83 +1614,60 @@ class AdminController extends BaseController
             ->join('barang', 'barang.id = pemesanan_offline_item.id_barang')
             ->where(['id_pesanan' => $id_pesanan])
             ->findAll();
-        $filter = [];
-        $itemsFiltered = [];
-        $counterJumlah = [];
-        foreach ($items as $i) {
-            if (!in_array($i['id_barang'] . '-' . $i['varian'], $filter)) {
-                array_push($filter, $i['id_barang'] . '-' . $i['varian']);
-                array_push($counterJumlah, 1);
-            } else {
-                $counterJumlah[count($counterJumlah) - 1] += 1;
-            }
-        }
-        $filter = [];
-        foreach ($items as $i) {
-            if (!in_array($i['id_barang'] . '-' . $i['varian'], $filter)) {
-                array_push($itemsFiltered, array_merge($i, [
-                    'dimensi' => json_decode($i['deskripsi'], true)['dimensi']['asli'],
-                    'jumlah' => $counterJumlah[count($itemsFiltered)]
-                ]));
-                array_push($filter, $i['id_barang'] . '-' . $i['varian']);
-            }
-        }
-        foreach ($itemsFiltered as $ind_i => $i) {
-            $varian = json_decode($i['barang_varian'], true);
-            $varianSelected = array_values(array_filter($varian, function ($v) use ($i) {
-                return $v['nama'] == $i['varian'];
-            }))[0];
-            $itemsFiltered[$ind_i]['id_baru'] = $i['id_barang'] . $varianSelected['id'];
-            // dd($varianSelected);
-        }
-        $data = [
-            'title' => 'Surat Invoice',
-            'apikey_img_ilena' => $this->apikey_img_ilena,
-            'pemesanan' => $pemesanan,
-            'items' => $itemsFiltered,
-        ];
-        return view('admin/suratInvoice', $data);
-    }
-    public function suratInvoiceDP($id_pesanan)
-    {
-        $pemesanan = $this->pemesananOfflineModel->getPemesanan($id_pesanan);
 
-        $items = $this->pemesananOfflineItemModel
-            ->select('pemesanan_offline_item.*')
-            ->select('barang.nama')
-            ->select('barang.deskripsi')
-            ->join('barang', 'barang.id = pemesanan_offline_item.id_barang')
-            ->where(['id_pesanan' => $id_pesanan])
-            ->findAll();
-        $filter = [];
-        $itemsFiltered = [];
-        $counterJumlah = [];
+        // === GROUP ITEM (SAMA PERSIS DENGAN suratInvoice) ===
+        $groupMap = [];
+
         foreach ($items as $i) {
-            if (!in_array($i['id_barang'] . '-' . $i['varian'], $filter)) {
-                array_push($filter, $i['id_barang'] . '-' . $i['varian']);
-                array_push($counterJumlah, 1);
-            } else {
-                $counterJumlah[count($counterJumlah) - 1] += 1;
+            $key = $i['id_barang'] . '-' . $i['varian'];
+
+            if (!isset($groupMap[$key])) {
+                $dimensi = ['panjang'=>'-','lebar'=>'-','tinggi'=>'-'];
+                $desc = json_decode($i['deskripsi'] ?? '', true);
+                if (isset($desc['dimensi']['asli'])) {
+                    $dimensi = $desc['dimensi']['asli'];
+                }
+
+                $groupMap[$key] = [
+                    'id_barang'     => $i['id_barang'],
+                    'varian'        => $i['varian'],
+                    'nama'          => $i['nama'],
+                    'barang_varian' => $i['barang_varian'],
+                    'harga'         => (int)$i['harga'],
+                    'dimensi'       => $dimensi,
+                    'jumlah'        => 0,
+                    'special_price' => (int)($i['special_price'] ?? 0),
+                ];
+            }
+
+            $groupMap[$key]['jumlah']++;
+
+            $sp = (int)($i['special_price'] ?? 0);
+            if ($sp > $groupMap[$key]['special_price']) {
+                $groupMap[$key]['special_price'] = $sp;
             }
         }
-        $filter = [];
-        foreach ($items as $i) {
-            if (!in_array($i['id_barang'] . '-' . $i['varian'], $filter)) {
-                array_push($itemsFiltered, array_merge($i, [
-                    'dimensi' => json_decode($i['deskripsi'], true)['dimensi']['asli'],
-                    'jumlah' => $counterJumlah[count($itemsFiltered)]
-                ]));
-                array_push($filter, $i['id_barang'] . '-' . $i['varian']);
-            }
+
+        $itemsFiltered = array_values($groupMap);
+
+        foreach ($itemsFiltered as $idx => $i) {
+            $varian = json_decode($i['barang_varian'] ?? '[]', true);
+            $found  = array_values(array_filter($varian, function ($v) use ($i) {
+                return ($v['nama'] ?? '') === $i['varian'];
+            }));
+
+            $idVar = $found[0]['id'] ?? '';
+            $itemsFiltered[$idx]['id_baru'] = $i['id_barang'] . $idVar;
         }
-        $data = [
-            'title' => 'Surat Invoice DP',
-            'apikey_img_ilena' => $this->apikey_img_ilena,
-            'pemesanan' => $pemesanan,
-            'items' => $itemsFiltered,
-        ];
-        return view('admin/suratInvoice', $data);
+
+        return view('admin/suratInvoice', [
+            'title'              => 'Surat Invoice DP',
+            'apikey_img_ilena'   => $this->apikey_img_ilena,
+            'pemesanan'          => $pemesanan,
+            'items'              => $itemsFiltered,
+        ]);
     }
+
 
     public function suratOffline($sjOffline)
     {

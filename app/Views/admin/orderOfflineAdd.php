@@ -1047,8 +1047,15 @@ const App = () => {
 
   /* ========= Build payload ========= */
   const buildPayload = ()=>{
+  
+    const specialPriceActive = Number(potongan.nominal) > 0 ? 1 : 0;
     const fAkhir = {
       ...formData,
+
+      specialPriceActive: specialPriceActive,
+      specialPriceNominal : Number(potongan.nominal || 0),
+      specialPriceSatuan : potongan.satuan,
+
       provinsi: formData.provinsi.split("-")[1],
       kabupaten: formData.kabupaten.split("-")[1],
       kecamatan: formData.kecamatan.split("-")[1],
@@ -1329,7 +1336,7 @@ const App = () => {
                                 <td className="cell-thumb">
                                   <img className="thumb" src={getThumbByItem(it)} alt={it.nama}/>
                                 </td>
-                                <td>{it.nama}</td>
+                                <td>{Number(potongan.nominal) > 0 && (<b style={{color:'#b31217'}}>{it.nama}</b>)}{it.nama}</td>
                                 <td className="mono">{it.varian}</td>
                                 <td className="cell-center">{it.jumlah}</td>
                                 <td className="cell-right mono">{formatRupiah(it.harga)}</td>
