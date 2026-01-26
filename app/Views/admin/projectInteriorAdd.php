@@ -1,41 +1,17 @@
-<!-- app/Views/admin/projectInteriorAdd.php -->
-<?= $this->extend("admin/template"); ?>
-<?= $this->section("content"); ?>
+<?php
+// app/Views/admin/projectInteriorAdd.php
+?>
+
+<?= $this->extend('admin/template'); ?>
+<?= $this->section('content'); ?>
 
 <style>
 :root {
     --merah: #b31217;
     --merah-600: #a50e12;
-    --slate-50: #f8fafc;
     --slate-100: #f1f5f9;
     --slate-200: #e5e7eb;
-    --slate-300: #d1d5db;
-    --slate-700: #334155;
-    --slate-800: #1f2937;
     --ring: rgba(255, 180, 180, .35);
-    --ok: #16a34a;
-    --warn: #b91c1c;
-    --info: #2563eb;
-}
-
-* {
-    box-sizing: border-box;
-}
-
-h1.teks-sedang {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 800;
-    letter-spacing: -.2px;
-}
-
-h1.teks-sedang::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, rgba(179, 18, 23, .25), transparent);
-    border-radius: 999px;
 }
 
 .card-soft {
@@ -43,6 +19,58 @@ h1.teks-sedang::after {
     border: 1px solid var(--slate-100);
     background: #fff;
     box-shadow: 0 10px 26px rgba(2, 8, 23, .06);
+    overflow: hidden
+}
+
+.card-head {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--slate-100);
+    background: linear-gradient(180deg, #fff, #fafafa);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px
+}
+
+.card-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #0f172a
+}
+
+.btn-ghost {
+    background: #f3f4f6;
+    border: 1px solid var(--slate-200);
+    padding: .55em .9em;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px
+}
+
+.btn-ghost:hover {
+    background: #e5e7eb
+}
+
+.btn-default-merah {
+    border: 0;
+    background: linear-gradient(180deg, var(--merah), var(--merah-600));
+    color: #fff;
+    font-weight: 900;
+    padding: .75em 1.1em;
+    border-radius: 12px;
+    box-shadow: 0 10px 28px rgba(165, 14, 18, .22)
+}
+
+.btn-default-merah[disabled] {
+    opacity: .55;
+    pointer-events: none
 }
 
 .form-control,
@@ -51,807 +79,633 @@ h1.teks-sedang::after {
     border-radius: 10px;
     height: 38px;
     padding: 8px 12px;
-    transition: border-color .15s, box-shadow .15s, background .15s;
     background: #fff;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 13px
 }
 
 .form-control:focus,
 .form-select:focus {
     border-color: #ffb4b4;
     box-shadow: 0 0 0 4px var(--ring);
-    outline: none;
+    outline: none
 }
 
 textarea.form-control {
     height: auto;
-    min-height: 88px;
-    resize: vertical;
-    font-weight: 600;
-}
-
-.btn-default-merah {
-    border: 0;
-    background: linear-gradient(180deg, var(--merah), var(--merah-600));
-    color: #fff;
-    font-weight: 800;
-    padding: .9em 1.1em;
-    border-radius: 12px;
-    box-shadow: 0 14px 36px rgba(179, 18, 23, .28);
-    transition: transform .08s, filter .08s, box-shadow .18s, opacity .2s;
-}
-
-.btn-default-merah:hover {
-    filter: brightness(.98);
-}
-
-.btn-default-merah:active {
-    transform: translateY(1px);
-    box-shadow: 0 10px 22px rgba(179, 18, 23, .24);
-}
-
-.btn-default-merah[disabled] {
-    opacity: .55;
-    pointer-events: none;
-}
-
-.btn-ghost {
-    background: #f3f4f6;
-    border: 1px solid var(--slate-200);
-    padding: .65em .95em;
-    border-radius: 12px;
-    font-weight: 800;
-    font-size: 13px;
-}
-
-.btn-ghost:hover {
-    background: #e5e7eb;
-}
-
-.badge-soft {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    padding: 6px 10px;
-    border-radius: 999px;
-    border: 1px solid #e5e7eb;
-    background: #f9fafb;
-    color: #111827;
-}
-
-.section-title {
-    font-weight: 900;
-    font-size: 13px;
-    color: #0f172a;
-    margin-bottom: 4px;
-}
-
-.section-subtitle {
-    font-size: 11.5px;
-    color: #64748b;
-    margin-bottom: 10px;
-}
-
-.step {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 14px;
-    border: 1px solid var(--slate-100);
-    background: linear-gradient(180deg, #fff, #fafafa);
-    margin-bottom: 10px;
-}
-
-.step .num {
-    width: 28px;
-    height: 28px;
-    border-radius: 999px;
-    display: grid;
-    place-items: center;
-    background: #fee2e2;
-    border: 1px solid #fecaca;
-    color: #b91c1c;
-    font-weight: 900;
-    font-size: 12px;
-}
-
-.step .txt {
-    line-height: 1.2;
-}
-
-.step .txt b {
-    font-weight: 900;
+    min-height: 86px
 }
 
 .helper {
-    position: relative;
-    display: block;
-    margin: 8px 0 0;
-    padding: 8px 12px 8px 36px;
-    font-size: 12px;
-    line-height: 1.35;
-    letter-spacing: -.2px;
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid #cfe7ff;
     background: #e8f4ff;
     color: #1e4e79;
-    border: 1px solid #cfe7ff;
-    border-radius: 10px;
-}
-
-.helper:before {
-    content: "info";
-    font-family: "Material Icons";
-    font-size: 18px;
-    line-height: 1;
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    opacity: .9;
+    font-size: 12px;
+    line-height: 1.35
 }
 
 .helper.warn {
-    background: #ffe8e8;
     border-color: #ffc9c9;
-    color: #8b2a2b;
+    background: #ffe8e8;
+    color: #8b2a2b
 }
 
-.helper.warn:before {
-    content: "priority_high";
-}
-
-.helper.ok {
-    background: #ecfdf3;
-    border-color: #4ade80;
-    color: #166534;
-}
-
-.helper.ok:before {
-    content: "check_circle";
-}
-
-.preview-box {
-    border: 1px solid var(--slate-100);
-    background: linear-gradient(180deg, #fff, #fafafa);
-    border-radius: 14px;
-    padding: 12px;
-    display: grid;
-    gap: 10px;
-}
-
-.preview-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 10px;
-    border: 1px solid var(--slate-100);
-    border-radius: 12px;
-    background: #fff;
-}
-
-.preview-item .k {
-    font-size: 11.5px;
-    color: #64748b;
-}
-
-.preview-item .v {
-    font-weight: 900;
+.mono {
     font-variant-numeric: tabular-nums;
-    font-size: 12.5px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace
 }
 
-.preview-item .v.good {
-    color: var(--ok);
+.addr-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px
 }
 
-.preview-item .v.bad {
-    color: var(--warn);
-}
-
-.inline-radio {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    font-size: 13px;
-    padding: 10px 12px;
-    border: 1px solid var(--slate-100);
-    border-radius: 14px;
-    background: #fff;
-}
-
-.inline-radio label {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    margin: 0;
-}
-
-.inline-radio input {
-    margin-top: 3px;
-}
-
-.readonly {
-    background: #f9fafb !important;
-    border-style: dashed;
-}
-
-.notif {
-    position: fixed;
-    bottom: 50px;
-    right: 0;
-    padding: .6em 2em;
-    color: #e84a49;
-    border-radius: 10px;
-    font-weight: 700;
-    letter-spacing: -.2px;
-    font-size: 13.5px;
-    background: #fff8f8;
-    border: 1px solid #ffd0d0;
-    box-shadow: 0 10px 30px rgba(184, 27, 29, .15);
-    transition: .5s;
-    transform: translateX(100%);
-    z-index: 9999;
-}
-
-.notif.show {
-    right: 50px;
-    transform: translateX(0%);
-}
-
-@media (max-width: 768px) {
-    .btn-default-merah {
-        width: 100%;
+@media(max-width:992px) {
+    .addr-grid {
+        grid-template-columns: 1fr
     }
 }
 </style>
 
 <div style="padding:2em;" class="h-100 d-flex flex-column">
-    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-        <h1 class="teks-sedang mb-0">Buat Project Interior</h1>
-        <a href="<?= site_url('admin/project-interior'); ?>" class="btn-ghost">
-            <i class="material-icons" style="font-size:16px;vertical-align:-3px;">arrow_back</i>
-            Kembali
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="mb-1" style="font-weight:900;margin:0;letter-spacing:-.2px;">Tambah Project Interior</h1>
+            <div style="font-size:12.5px;color:#64748b;">Multi item + ringkasan DPP/PPN otomatis.</div>
+        </div>
+        <a class="btn-ghost" href="<?= site_url('admin/project-interior') ?>">
+            <i class="material-icons" style="font-size:16px;vertical-align:-3px;">arrow_back</i> Kembali
         </a>
     </div>
 
     <?php if (!empty($msg)) : ?>
-    <div class="notif show" id="notif-msg"><?= esc($msg) ?></div>
+    <div class="helper warn"><?= esc($msg) ?></div>
     <?php endif; ?>
 
-    <div class="card-soft">
-        <div class="card-body p-3 p-md-4">
+    <form method="post" action="<?= site_url('admin/project-interior/add') ?>" id="form-interior">
+        <?= csrf_field() ?>
 
-            <!-- Step guidance -->
-            <div class="row g-3 mb-3">
-                <div class="col-lg-8">
-                    <div class="step">
-                        <div class="num">1</div>
-                        <div class="txt"><b>Isi Info Utama</b><br><span style="font-size:12px;color:#64748b;">Nama
-                                project + data klien (ini yang paling sering dipakai di dokumen).</span></div>
+        <div class="row g-3">
+            <div class="col-lg-7">
+                <div class="card-soft">
+                    <div class="card-head">
+                        <div class="card-title"><i class="material-icons"
+                                style="font-size:18px;color:#64748b;">assignment</i> Data Project</div>
                     </div>
-                    <div class="step">
-                        <div class="num">2</div>
-                        <div class="txt"><b>Isi Barang & Qty</b><br><span style="font-size:12px;color:#64748b;">Nama
-                                barang + kode barang + jumlah unit.</span></div>
-                    </div>
-                    <div class="step">
-                        <div class="num">3</div>
-                        <div class="txt"><b>Isi Nilai</b><br><span style="font-size:12px;color:#64748b;">Pilih: isi
-                                total kontrak <i>atau</i> isi harga satuan (yang lain otomatis).</span></div>
-                    </div>
-                    <div class="step">
-                        <div class="num">4</div>
-                        <div class="txt"><b>Pilih Dokumen Utama</b><br><span style="font-size:12px;color:#64748b;">SJ
-                                (pakai faktur) atau NF (tanpa faktur).</span></div>
-                    </div>
+                    <div class="p-3">
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label class="form-label">Nama Project *</label>
+                                <input class="form-control" name="nama_project" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">No. PO (opsional)</label>
+                                <input class="form-control" name="no_po" placeholder="PO-001">
+                            </div>
 
-                    <span class="helper">
-                        Form ini akan <b>mengklaim nomor SP &amp; SJ/NF</b> (status <code>reserved</code>) di pemesanan
-                        offline.
-                        Invoice akhir baru bisa dibuat saat project <b>LUNAS</b>.
-                    </span>
+                            <div class="col-md-6">
+                                <label class="form-label">Nama Customer / Client *</label>
+                                <input class="form-control" name="nama_customer" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">No HP *</label>
+                                <input class="form-control" name="nohp" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Jenis Faktur *</label>
+                                <select class="form-select" name="jenis_faktur" required>
+                                    <option value="sale" selected>SJ (Surat Jalan)</option>
+                                    <option value="nf">NF (Non Faktur)</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Mode PPN *</label>
+                                <select class="form-select" id="ppn_mode" name="ppn_mode" required>
+                                    <option value="non">Tanpa PPN (0%)</option>
+                                    <option value="ppn10">PPN 10%</option>
+                                    <option value="ppn11" selected>PPN 11%</option>
+                                </select>
+                                <div class="helper">Harga item = DPP (belum termasuk PPN).</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">NPWP (opsional)</label>
+                                <input class="form-control" name="npwp">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Nama NPWP (opsional)</label>
+                                <input class="form-control" name="nama_npwp">
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">Alamat (pakai pilihan seperti Offline)</label>
+                                <div class="addr-grid">
+                                    <div>
+                                        <div style="font-size:12px;font-weight:900;color:#64748b;margin-bottom:6px;">
+                                            Pengiriman</div>
+                                        <div class="row g-2">
+                                            <div class="col-12">
+                                                <select class="form-select" id="prov_pengiriman">
+                                                    <option value="">Pilih Provinsi</option>
+                                                    <?php foreach (($provinsi ?? []) as $p): ?>
+                                                    <option value="<?= esc($p['id']) ?>"><?= esc($p['label']) ?>
+                                                    </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </div>
+                                            <div class="col-12">
+                                                <select class="form-select" id="kota_pengiriman" disabled>
+                                                    <option value="">Pilih Kota/Kab</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12">
+                                                <select class="form-select" id="kec_pengiriman" disabled>
+                                                    <option value="">Pilih Kecamatan</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12">
+                                                <input class="form-control mono" id="kodepos_pengiriman"
+                                                    placeholder="Kode pos" inputmode="numeric">
+                                            </div>
+                                            <div class="col-12">
+                                                <textarea class="form-control" id="detail_pengiriman" rows="2"
+                                                    placeholder="Detail alamat (jalan/RT/RW/no rumah)"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="d-flex justify-content-between align-items-center"
+                                            style="margin-bottom:6px;">
+                                            <div style="font-size:12px;font-weight:900;color:#64748b;">Tagihan</div>
+                                            <label class="d-flex gap-2 align-items-center"
+                                                style="font-weight:800;font-size:12.5px;">
+                                                <input type="checkbox" id="same-billing"> Samakan
+                                            </label>
+                                        </div>
+                                        <div class="row g-2">
+                                            <div class="col-12">
+                                                <select class="form-select" id="prov_tagihan">
+                                                    <option value="">Pilih Provinsi</option>
+                                                    <?php foreach (($provinsi ?? []) as $p): ?>
+                                                    <option value="<?= esc($p['id']) ?>"><?= esc($p['label']) ?>
+                                                    </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </div>
+                                            <div class="col-12">
+                                                <select class="form-select" id="kota_tagihan" disabled>
+                                                    <option value="">Pilih Kota/Kab</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12">
+                                                <select class="form-select" id="kec_tagihan" disabled>
+                                                    <option value="">Pilih Kecamatan</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12">
+                                                <input class="form-control mono" id="kodepos_tagihan"
+                                                    placeholder="Kode pos" inputmode="numeric">
+                                            </div>
+                                            <div class="col-12">
+                                                <textarea class="form-control" id="detail_tagihan" rows="2"
+                                                    placeholder="Detail alamat (jalan/RT/RW/no rumah)"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- yang dikirim ke controller -->
+                                <textarea name="alamat_pengiriman" id="alamat_pengiriman" class="d-none"></textarea>
+                                <textarea name="alamat_tagihan" id="alamat_tagihan" class="d-none"></textarea>
+
+                                <div class="helper" style="margin-top:10px;">
+                                    Jika dropdown kota/kec tidak muncul, biasanya karena endpoint <span
+                                        class="mono">/getkota</span> dll tidak bisa diakses dari admin (filter). Bilang
+                                    ya, nanti aku buat route admin khusus.
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">Catatan (opsional)</label>
+                                <textarea class="form-control" rows="2" name="catatan"></textarea>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="col-lg-4">
-                    <div class="preview-box">
-                        <div style="font-weight:900; display:flex; align-items:center; gap:6px;">
-                            <i class="material-icons" style="font-size:18px;color:#64748b;">analytics</i>
-                            Ringkasan Otomatis
-                        </div>
-                        <div class="preview-item">
-                            <div class="k">Mode</div>
-                            <div class="v" id="pv-mode">KONTRAK</div>
-                        </div>
-                        <div class="preview-item">
-                            <div class="k">Qty</div>
-                            <div class="v" id="pv-qty">1</div>
-                        </div>
-                        <div class="preview-item">
-                            <div class="k">DPP Total</div>
-                            <div class="v" id="pv-dpp-total">Rp 0</div>
-                        </div>
-                        <div class="preview-item">
-                            <div class="k">PPN 11%</div>
-                            <div class="v" id="pv-ppn">Rp 0</div>
-                        </div>
-                        <div class="preview-item">
-                            <div class="k">Grand Total</div>
-                            <div class="v" id="pv-grand">Rp 0</div>
+                <div class="card-soft mt-3">
+                    <div class="card-head">
+                        <div class="card-title"><i class="material-icons"
+                                style="font-size:18px;color:#64748b;">inventory_2</i> Item Project (Multi Item)</div>
+                        <button type="button" class="btn-ghost" id="btn-add-item">
+                            <i class="material-icons" style="font-size:16px;vertical-align:-3px;">add</i> Tambah Item
+                        </button>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-2" id="items-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:140px;">Kode *</th>
+                                        <th>Nama Item *</th>
+                                        <th style="width:150px" class="text-end">Harga Satuan (DPP) *</th>
+                                        <th style="width:90px" class="text-center">Qty *</th>
+                                        <th style="width:160px" class="text-end">Subtotal</th>
+                                        <th style="width:54px"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="items-body"></tbody>
+                            </table>
                         </div>
 
-                        <span class="helper ok" style="margin:0;">
-                            Nilai kontrak = <b>Grand Total</b> (DPP + PPN 11%).<br>
-                            Harga satuan = <b>DPP per unit</b> (tanpa PPN).
-                        </span>
+                        <div class="helper">Qty total per item akan dikirim bertahap lewat SJ (per item).</div>
+                        <input type="hidden" name="items_json" id="items_json" value="[]">
                     </div>
                 </div>
             </div>
 
-            <form id="form-project" action="<?= site_url('admin/project-interior/add'); ?>" method="post">
-                <?= csrf_field(); ?>
-
-                <!-- ================= STEP 1: INFO UTAMA ================= -->
-                <div class="section-title">1) Info Utama</div>
-                <div class="section-subtitle">Isi identitas project dan klien. Ini yang paling sering muncul di dokumen.
-                </div>
-
-                <div class="row g-3 mb-3">
-                    <div class="col-md-4">
-                        <label class="form-label mb-1" style="font-size:13px;font-weight:800;">Nama Project <span
-                                style="color:#ef4444;">*</span></label>
-                        <input type="text" name="nama_project" class="form-control"
-                            placeholder="Misal: Renovasi Lobby - KOSQ" required>
+            <div class="col-lg-5">
+                <div class="card-soft">
+                    <div class="card-head">
+                        <div class="card-title"><i class="material-icons"
+                                style="font-size:18px;color:#64748b;">payments</i> Ringkasan &amp; Pajak</div>
                     </div>
+                    <div class="p-3">
+                        <div class="d-flex justify-content-between"><span>Subtotal DPP</span><b class="mono"
+                                id="pv_dpp">Rp 0</b></div>
+                        <div class="d-flex justify-content-between mt-1"><span>PPN</span><b class="mono" id="pv_ppn">Rp
+                                0</b></div>
+                        <div style="height:1px;background:var(--slate-100);margin:10px 0"></div>
+                        <div class="d-flex justify-content-between"><span style="font-weight:900">Grand Total</span><b
+                                class="mono" id="pv_grand" style="font-size:18px">Rp 0</b></div>
 
-                    <div class="col-md-4">
-                        <label class="form-label mb-1" style="font-size:13px;font-weight:800;">Nama Klien <span
-                                style="color:#ef4444;">*</span></label>
-                        <input type="text" name="nama_customer" class="form-control"
-                            placeholder="Nama yang tampil di SP/SJ" required>
-                    </div>
+                        <div class="helper warn mt-2" id="warn" style="display:none">Item masih kosong / ada data tidak
+                            valid.</div>
 
-                    <div class="col-md-4">
-                        <label class="form-label mb-1" style="font-size:13px;font-weight:800;">No HP Kontak <span
-                                style="color:#ef4444;">*</span></label>
-                        <input type="text" name="nohp" class="form-control" placeholder="Misal: 0812xxxxxxx" required>
-                        <small class="text-muted" style="font-size:11.5px;">Wajib diisi (kolom <code>nohp</code> tidak
-                            boleh kosong).</small>
-                    </div>
-                </div>
-
-                <div class="row g-3 mb-3">
-                    <div class="col-md-4">
-                        <label class="form-label mb-1" style="font-size:13px;font-weight:800;">Nomor PO / SPK
-                            (opsional)</label>
-                        <input type="text" name="no_po" class="form-control"
-                            placeholder="Misal: 018/SPK/CVSIP-CVCBM/XI/2025">
-                        <small class="text-muted" style="font-size:11.5px;">Kalau klien kasih nomor PO/SPK, isi di
-                            sini.</small>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label mb-1" style="font-size:13px;font-weight:800;">Alamat Pengiriman
-                            (opsional)</label>
-                        <textarea name="alamat_pengiriman" id="alamat_pengiriman" class="form-control"
-                            placeholder="Alamat lengkap pengiriman / lokasi project"></textarea>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <label class="form-label mb-1" style="font-size:13px;font-weight:800;">Alamat Tagihan
-                                (opsional)</label>
-                            <label class="d-flex align-items-center gap-1" style="font-size:11.5px;cursor:pointer;">
-                                <input type="checkbox" id="same-billing" style="margin:0;">
-                                <span>Samakan</span>
-                            </label>
+                        <div class="mt-3">
+                            <button class="btn-default-merah w-100" id="btn-submit" type="submit">Simpan
+                                Project</button>
                         </div>
-                        <textarea name="alamat_tagihan" id="alamat_tagihan" class="form-control"
-                            placeholder="Kosongkan jika sama dengan alamat pengiriman"></textarea>
-                    </div>
-                </div>
 
-                <div class="row g-3 mb-4">
-                    <div class="col-md-6">
-                        <label class="form-label mb-1" style="font-size:13px;font-weight:800;">Nama NPWP
-                            (opsional)</label>
-                        <input type="text" name="nama_npwp" class="form-control"
-                            placeholder="Nama sesuai NPWP (jika ada)">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label mb-1" style="font-size:13px;font-weight:800;">No NPWP
-                            (opsional)</label>
-                        <input type="text" name="npwp" class="form-control"
-                            placeholder="NPWP untuk penagihan (jika ada)">
-                    </div>
-                </div>
-
-                <!-- ================= STEP 2: BARANG & QTY ================= -->
-                <div class="section-title">2) Barang / Pekerjaan</div>
-                <div class="section-subtitle">Isi barang utama yang jadi ringkasan dokumen (boleh generik).</div>
-
-                <div class="row g-3 mb-4">
-                    <div class="col-md-5">
-                        <label class="form-label mb-1" style="font-size:13px;font-weight:800;">Nama Barang / Produk
-                            <span style="color:#ef4444;">*</span></label>
-                        <input type="text" name="nama_barang" class="form-control"
-                            placeholder="Misal: Furniture Interior Lokal" required>
-                        <small class="text-muted" style="font-size:11.5px;">Tampil di kolom keterangan barang di
-                            SJ/Invoice.</small>
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label mb-1" style="font-size:13px;font-weight:800;">Kode Barang <span
-                                style="color:#ef4444;">*</span></label>
-                        <input type="text" name="kode_barang" class="form-control" placeholder="Misal: CI001122025"
-                            required>
-                        <small class="text-muted" style="font-size:11.5px;">Kode unik yang konsisten di dokumen.</small>
-                    </div>
-
-                    <div class="col-md-2">
-                        <label class="form-label mb-1" style="font-size:13px;font-weight:800;">Jumlah (Qty)</label>
-                        <input type="number" name="qty" id="qty" class="form-control" value="1" min="1">
-                        <small class="text-muted" style="font-size:11.5px;">Dipakai untuk hitung otomatis.</small>
-                    </div>
-
-                    <div class="col-md-2">
-                        <label class="form-label mb-1" style="font-size:13px;font-weight:800;">Rencana DP
-                            (opsional)</label>
-                        <input type="text" name="dp" id="dp" class="form-control rupiah"
-                            placeholder="Misal: 50.000.000">
-                        <small class="text-muted" style="font-size:11.5px;">Hanya catatan awal (bukan
-                            transaksi).</small>
-                    </div>
-                </div>
-
-                <!-- ================= STEP 3: NILAI ================= -->
-                <div class="section-title">3) Nilai & Perhitungan</div>
-                <div class="section-subtitle">Pilih salah satu: isi total kontrak <b>atau</b> isi harga satuan (DPP).
-                    Yang lain otomatis.</div>
-
-                <div class="row g-3 mb-2">
-                    <div class="col-md-5">
-                        <div class="inline-radio">
-                            <label>
-                                <input type="radio" name="mode_nilai" value="kontrak" checked>
-                                <span><b>Isi Nilai Kontrak (Grand Total)</b><br><span
-                                        style="font-size:12px;color:#64748b;">Sudah termasuk PPN 11%.</span></span>
-                            </label>
-                            <label>
-                                <input type="radio" name="mode_nilai" value="satuan">
-                                <span><b>Isi Harga Satuan (DPP)</b><br><span style="font-size:12px;color:#64748b;">Per
-                                        unit, belum termasuk PPN.</span></span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label mb-1" style="font-size:13px;font-weight:800;">Nilai Kontrak (Rp) <span
-                                style="color:#ef4444;">*</span></label>
-                        <input type="text" name="nilai_kontrak" id="nilai_kontrak" class="form-control rupiah"
-                            placeholder="Contoh: 150.000.000">
-                        <small class="text-muted" style="font-size:11.5px;">Grand total (DPP + PPN 11%).</small>
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label mb-1" style="font-size:13px;font-weight:800;">Harga Satuan (Rp) <span
-                                style="color:#ef4444;">*</span></label>
-                        <input type="text" name="harga_satuan" id="harga_satuan" class="form-control rupiah"
-                            placeholder="Misal: 100.000.000">
-                        <small class="text-muted" style="font-size:11.5px;">DPP per unit (tanpa PPN).</small>
-                    </div>
-                </div>
-
-                <span class="helper warn" id="warn-negative" style="display:none;">
-                    Nilai tidak valid (qty harus ≥ 1 dan angka tidak boleh negatif). Jangan bikin project dari angka
-                    “khayalan”, nanti invoice-nya ikut halu.
-                </span>
-
-                <!-- ================= STEP 4: DOKUMEN UTAMA ================= -->
-                <div class="section-title mt-4">4) Dokumen Utama</div>
-                <div class="section-subtitle">Pilih jenis dokumen utama yang akan di-reserve saat project dibuat.</div>
-
-                <div class="row g-3 mb-4">
-                    <div class="col-md-6">
-                        <div class="inline-radio">
-                            <label>
-                                <input type="radio" name="jenis_faktur" value="sale" checked>
-                                <span><b>SJ (Faktur)</b><br><span style="font-size:12px;color:#64748b;">Dipakai kalau
-                                        transaksi pakai faktur pajak.</span></span>
-                            </label>
-                            <label>
-                                <input type="radio" name="jenis_faktur" value="nf">
-                                <span><b>NF (Non Faktur)</b><br><span style="font-size:12px;color:#64748b;">Dipakai
-                                        kalau tanpa faktur pajak.</span></span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="helper" style="margin-top:0;">
-                            Setelah disimpan: sistem langsung <b>klaim nomor SP &amp; SJ/NF</b> agar tidak dipakai order
-                            lain.
-                            Surat Jalan pengiriman bisa banyak (parsial). Invoice akhir dibuat saat <b>LUNAS</b>.
+                        <div class="helper" style="margin-top:10px;">
+                            Alur: Create Project → input DP (minimal) → buat SJ Draft per item → finalize SJ per
+                            pengiriman → Lunas → buat Invoice Akhir.
                         </div>
                     </div>
                 </div>
-
-                <!-- ================= CATATAN INTERNAL ================= -->
-                <div class="section-title">Catatan Internal (opsional)</div>
-                <div class="section-subtitle">Tidak muncul di invoice, hanya untuk catatan admin.</div>
-
-                <div class="row g-3 mb-4">
-                    <div class="col-12">
-                        <textarea name="catatan" class="form-control"
-                            placeholder="Catatan internal project..."></textarea>
-                    </div>
-                </div>
-
-                <hr class="my-3">
-
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <span class="badge-soft">
-                        <i class="material-icons" style="font-size:16px;">info</i>
-                        SP &amp; SJ/NF langsung di-reserve. Tidak bisa dipakai order lain.
-                    </span>
-                    <button type="submit" class="btn-default-merah" id="btn-submit">
-                        Simpan Project &amp; Klaim SP/SJ atau NF
-                    </button>
-                </div>
-            </form>
+            </div>
 
         </div>
-    </div>
+    </form>
 </div>
 
 <script>
-/* =================== Rupiah helpers =================== */
-function stripNonDigit(v) {
-    return (v || '').toString().replace(/[^\d]/g, '');
-}
+(function() {
+    const toNum = (v) => Number(String(v || '').replace(/[^\d]/g, '') || 0);
+    const rupiah = (n) => 'Rp ' + (Number(n || 0)).toLocaleString('id-ID');
 
-function formatRupiah(val) {
-    const raw = stripNonDigit(val);
-    if (!raw) return '';
-    return raw.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-}
+    // =========================
+    // PPN
+    // =========================
+    const ppnMode = document.getElementById('ppn_mode');
 
-function toInt(v) {
-    const raw = stripNonDigit(v);
-    return raw ? parseInt(raw, 10) : 0;
-}
+    function ppnRate() {
+        const m = (ppnMode?.value || 'non').toLowerCase();
+        if (m === 'ppn10') return 10;
+        if (m === 'ppn11') return 11;
+        return 0;
+    }
 
-function formatIDR(n) {
-    const x = Number(n || 0);
-    return 'Rp ' + x.toLocaleString('id-ID');
-}
+    // =========================
+    // ADDRESS
+    // =========================
+    const outPeng = document.getElementById('alamat_pengiriman');
+    const outTag = document.getElementById('alamat_tagihan');
+    const sameBilling = document.getElementById('same-billing');
 
-/* format saat ketik */
-document.querySelectorAll('.rupiah').forEach((el) => {
-    el.addEventListener('input', function() {
-        this.value = formatRupiah(this.value);
-    });
-});
+    const provPeng = document.getElementById('prov_pengiriman');
+    const kotaPeng = document.getElementById('kota_pengiriman');
+    const kecPeng = document.getElementById('kec_pengiriman');
+    const kpPeng = document.getElementById('kodepos_pengiriman');
+    const detPeng = document.getElementById('detail_pengiriman');
 
-/* =================== Mode nilai =================== */
-const inputNilaiKontrak = document.getElementById('nilai_kontrak');
-const inputHargaSatuan = document.getElementById('harga_satuan');
-const inputQty = document.getElementById('qty');
-const modeRadios = document.querySelectorAll('input[name="mode_nilai"]');
+    const provTag = document.getElementById('prov_tagihan');
+    const kotaTag = document.getElementById('kota_tagihan');
+    const kecTag = document.getElementById('kec_tagihan');
+    const kpTag = document.getElementById('kodepos_tagihan');
+    const detTag = document.getElementById('detail_tagihan');
 
-const pvMode = document.getElementById('pv-mode');
-const pvQty = document.getElementById('pv-qty');
-const pvDppT = document.getElementById('pv-dpp-total');
-const pvPpn = document.getElementById('pv-ppn');
-const pvGrand = document.getElementById('pv-grand');
-
-const warnNegative = document.getElementById('warn-negative');
-const btnSubmit = document.getElementById('btn-submit');
-
-function getCurrentMode() {
-    return (document.querySelector('input[name="mode_nilai"]:checked')?.value) || 'kontrak';
-}
-
-/* ===== Aturan hitung =====
- - Nilai Kontrak = Grand Total (DPP total + PPN 11%)
- - Harga Satuan = DPP per unit
-*/
-function computeFromGrand(grandIncl, qty) {
-    if (grandIncl <= 0 || qty <= 0) return {
-        dppTotal: 0,
-        ppn: 0,
-        grand: 0,
-        perUnit: 0
-    };
-    const dppTotal = Math.ceil(grandIncl / 1.11);
-    const ppn = Math.max(0, grandIncl - dppTotal);
-    const perUnit = Math.round(dppTotal / qty);
-    return {
-        dppTotal,
-        ppn,
-        grand: grandIncl,
-        perUnit
-    };
-}
-
-function computeFromUnit(dppPerUnit, qty) {
-    if (dppPerUnit <= 0 || qty <= 0) return {
-        dppTotal: 0,
-        ppn: 0,
-        grand: 0,
-        perUnit: 0
-    };
-    const dppTotal = dppPerUnit * qty;
-    const grand = Math.ceil(dppTotal * 1.11);
-    const ppn = Math.max(0, grand - dppTotal);
-    return {
-        dppTotal,
-        ppn,
-        grand,
-        perUnit: dppPerUnit
-    };
-}
-
-/* disable + style biar jelas mana yang diisi */
-function setFieldMode() {
-    const mode = getCurrentMode();
-
-    if (mode === 'kontrak') {
-        if (inputNilaiKontrak) {
-            inputNilaiKontrak.disabled = false;
-            inputNilaiKontrak.readOnly = false;
-            inputNilaiKontrak.classList.remove('readonly');
+    function setOpts(sel, items, placeholder) {
+        sel.innerHTML = '';
+        const o0 = document.createElement('option');
+        o0.value = '';
+        o0.textContent = placeholder;
+        sel.appendChild(o0);
+        (items || []).forEach(it => {
+            const o = document.createElement('option');
+            o.value = String(it.id ?? it.kode ?? '');
+            o.textContent = String(it.nama ?? it.label ?? it.name ?? '-');
+            sel.appendChild(o);
+        });
+    }
+    async function fetchJson(url) {
+        const res = await fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return await res.json();
+    }
+    async function loadKota(provId, kotaSel, kecSel) {
+        if (!provId) {
+            kotaSel.disabled = true;
+            setOpts(kotaSel, [], 'Pilih Kota/Kab');
+            kecSel.disabled = true;
+            setOpts(kecSel, [], 'Pilih Kecamatan');
+            return;
         }
-        if (inputHargaSatuan) {
-            inputHargaSatuan.disabled = true;
-            inputHargaSatuan.readOnly = true;
-            inputHargaSatuan.classList.add('readonly');
-            inputHargaSatuan.value = inputHargaSatuan.value; // keep
+        kotaSel.disabled = true;
+        setOpts(kotaSel, [], 'Loading...');
+        kecSel.disabled = true;
+        setOpts(kecSel, [], 'Pilih Kecamatan');
+        const data = await fetchJson('<?= base_url('getkota') ?>/' + encodeURIComponent(provId));
+        const rows = Array.isArray(data) ? data : (data.kota || data.data || []);
+        setOpts(kotaSel, rows, 'Pilih Kota/Kab');
+        kotaSel.disabled = false;
+    }
+    async function loadKec(kotaId, kecSel) {
+        if (!kotaId) {
+            kecSel.disabled = true;
+            setOpts(kecSel, [], 'Pilih Kecamatan');
+            return;
         }
-    } else {
-        if (inputNilaiKontrak) {
-            inputNilaiKontrak.disabled = true;
-            inputNilaiKontrak.readOnly = true;
-            inputNilaiKontrak.classList.add('readonly');
+        kecSel.disabled = true;
+        setOpts(kecSel, [], 'Loading...');
+        const data = await fetchJson('<?= base_url('getkec') ?>/' + encodeURIComponent(kotaId));
+        const rows = Array.isArray(data) ? data : (data.kec || data.data || []);
+        setOpts(kecSel, rows, 'Pilih Kecamatan');
+        kecSel.disabled = false;
+    }
+    async function loadKodePos(kecId, kpInput) {
+        if (!kecId) {
+            kpInput.value = '';
+            return;
         }
-        if (inputHargaSatuan) {
-            inputHargaSatuan.disabled = false;
-            inputHargaSatuan.readOnly = false;
-            inputHargaSatuan.classList.remove('readonly');
+        const data = await fetchJson('<?= base_url('getkode') ?>/' + encodeURIComponent(kecId));
+        let kp = '';
+        if (typeof data === 'string' || typeof data === 'number') kp = String(data);
+        else if (Array.isArray(data) && data.length) kp = String(data[0].kodepos ?? data[0].kode_pos ?? '');
+        else kp = String(data.kodepos ?? data.kode_pos ?? (data.data?.kodepos ?? data.data?.kode_pos ?? ''));
+        kpInput.value = kp || '';
+    }
+
+    function pickText(sel) {
+        return sel?.options?. [sel.selectedIndex]?.text ? String(sel.options[sel.selectedIndex].text) : '';
+    }
+
+    function compose(provSel, kotaSel, kecSel, kpEl, detEl) {
+        const det = (detEl?.value || '').trim();
+        const prov = pickText(provSel),
+            kota = pickText(kotaSel),
+            kec = pickText(kecSel);
+        const kp = (kpEl?.value || '').trim();
+        const lines = [];
+        if (det) lines.push(det);
+        const line2 = [kec, kota, prov].filter(Boolean).join(', ');
+        if (line2) lines.push(line2);
+        if (kp) lines.push('Kode Pos: ' + kp);
+        return lines.join('\n');
+    }
+
+    function syncAddr() {
+        if (outPeng) outPeng.value = compose(provPeng, kotaPeng, kecPeng, kpPeng, detPeng);
+        if (outTag) {
+            outTag.value = sameBilling?.checked ? (outPeng?.value || '') : compose(provTag, kotaTag, kecTag, kpTag,
+                detTag);
         }
     }
 
-    if (pvMode) pvMode.textContent = mode.toUpperCase();
-}
-
-function syncFromNilaiKontrak() {
-    if (!inputNilaiKontrak || !inputHargaSatuan) return;
-    const grand = toInt(inputNilaiKontrak.value);
-    let qty = parseInt(inputQty?.value || '1', 10);
-    if (!qty || qty <= 0) qty = 1;
-
-    if (grand <= 0) {
-        inputHargaSatuan.value = '';
-        return;
+    async function mirrorPengToTag() {
+        if (!sameBilling?.checked) return;
+        provTag.value = provPeng.value || '';
+        await loadKota(provTag.value, kotaTag, kecTag);
+        kotaTag.value = kotaPeng.value || '';
+        await loadKec(kotaTag.value, kecTag);
+        kecTag.value = kecPeng.value || '';
+        await loadKodePos(kecTag.value, kpTag);
+        kpTag.value = kpPeng.value || '';
+        detTag.value = detPeng.value || '';
+        [provTag, kotaTag, kecTag, kpTag, detTag].forEach(el => {
+            if (el) el.disabled = true;
+        });
+        syncAddr();
     }
-    const r = computeFromGrand(grand, qty);
-    inputHargaSatuan.value = formatRupiah(String(r.perUnit));
-}
 
-function syncFromHargaSatuan() {
-    if (!inputNilaiKontrak || !inputHargaSatuan) return;
-    const unit = toInt(inputHargaSatuan.value);
-    let qty = parseInt(inputQty?.value || '1', 10);
-    if (!qty || qty <= 0) qty = 1;
-
-    if (unit <= 0) {
-        inputNilaiKontrak.value = '';
-        return;
+    function unlockTag() {
+        [provTag, kotaTag, kecTag, kpTag, detTag].forEach(el => {
+            if (el) el.disabled = false;
+        });
     }
-    const r = computeFromUnit(unit, qty);
-    inputNilaiKontrak.value = formatRupiah(String(r.grand));
-}
 
-function updatePreview() {
-    const mode = getCurrentMode();
-    let qty = parseInt(inputQty?.value || '1', 10);
-    if (!qty || qty <= 0) qty = 0;
+    if (provPeng) {
+        provPeng.addEventListener('change', async () => {
+            try {
+                await loadKota(provPeng.value, kotaPeng, kecPeng);
+            } catch (e) {
+                console.warn(e);
+            }
+            syncAddr();
+            await mirrorPengToTag();
+        });
+    }
+    if (kotaPeng) {
+        kotaPeng.addEventListener('change', async () => {
+            try {
+                await loadKec(kotaPeng.value, kecPeng);
+            } catch (e) {
+                console.warn(e);
+            }
+            syncAddr();
+            await mirrorPengToTag();
+        });
+    }
+    if (kecPeng) {
+        kecPeng.addEventListener('change', async () => {
+            try {
+                await loadKodePos(kecPeng.value, kpPeng);
+            } catch (e) {
+                console.warn(e);
+            }
+            syncAddr();
+            await mirrorPengToTag();
+        });
+    }
+    [kpPeng, detPeng].forEach(el => el && el.addEventListener('input', async () => {
+        syncAddr();
+        await mirrorPengToTag();
+    }));
 
-    const grand = toInt(inputNilaiKontrak?.value || '');
-    const unit = toInt(inputHargaSatuan?.value || '');
+    if (sameBilling) {
+        sameBilling.addEventListener('change', async () => {
+            if (sameBilling.checked) await mirrorPengToTag();
+            else {
+                unlockTag();
+                syncAddr();
+            }
+        });
+    }
+    if (provTag) {
+        provTag.addEventListener('change', async () => {
+            if (sameBilling?.checked) return;
+            try {
+                await loadKota(provTag.value, kotaTag, kecTag);
+            } catch (e) {}
+            syncAddr();
+        });
+    }
+    if (kotaTag) {
+        kotaTag.addEventListener('change', async () => {
+            if (sameBilling?.checked) return;
+            try {
+                await loadKec(kotaTag.value, kecTag);
+            } catch (e) {}
+            syncAddr();
+        });
+    }
+    if (kecTag) {
+        kecTag.addEventListener('change', async () => {
+            if (sameBilling?.checked) return;
+            try {
+                await loadKodePos(kecTag.value, kpTag);
+            } catch (e) {}
+            syncAddr();
+        });
+    }
+    [kpTag, detTag].forEach(el => el && el.addEventListener('input', () => {
+        if (!sameBilling?.checked) syncAddr();
+    }));
 
-    let r = {
-        dppTotal: 0,
-        ppn: 0,
-        grand: 0,
-        perUnit: 0
-    };
-    if (mode === 'kontrak') r = computeFromGrand(grand, qty || 1);
-    else r = computeFromUnit(unit, qty || 1);
+    syncAddr();
 
-    if (pvQty) pvQty.textContent = String(qty || 0);
-    if (pvDppT) pvDppT.textContent = formatIDR(r.dppTotal);
-    if (pvPpn) pvPpn.textContent = formatIDR(r.ppn);
-    if (pvGrand) pvGrand.textContent = formatIDR(r.grand);
+    // =========================
+    // ITEMS + SUMMARY
+    // =========================
+    const body = document.getElementById('items-body');
+    const btnAdd = document.getElementById('btn-add-item');
+    const itemsJson = document.getElementById('items_json');
+    const pvDpp = document.getElementById('pv_dpp');
+    const pvPpn = document.getElementById('pv_ppn');
+    const pvGrand = document.getElementById('pv_grand');
+    const warn = document.getElementById('warn');
+    const btnSubmit = document.getElementById('btn-submit');
 
-    const invalid = (qty <= 0) || (mode === 'kontrak' ? grand < 0 : unit < 0);
-    if (warnNegative) warnNegative.style.display = invalid ? '' : 'none';
-    if (btnSubmit) btnSubmit.disabled = invalid;
-}
+    function rowTpl() {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+      <td><input class="form-control mono" placeholder="KODE" data-k="kode" required></td>
+      <td><input class="form-control" placeholder="Nama item" data-k="nama" required></td>
+      <td class="text-end"><input class="form-control mono text-end" placeholder="0" data-k="harga" inputmode="numeric"></td>
+      <td class="text-center"><input class="form-control mono text-center" placeholder="1" data-k="qty" value="1" inputmode="numeric"></td>
+      <td class="text-end mono"><span data-k="sub">Rp 0</span></td>
+      <td class="text-end"><button type="button" class="btn-ghost" data-act="del" title="Hapus">✕</button></td>
+    `;
+        return tr;
+    }
 
-function recompute() {
-    const mode = getCurrentMode();
-    if (mode === 'kontrak') syncFromNilaiKontrak();
-    else syncFromHargaSatuan();
-    updatePreview();
-}
+    function getItems() {
+        const rows = [...body.querySelectorAll('tr')];
+        return rows.map(tr => {
+            const kode = (tr.querySelector('[data-k="kode"]')?.value || '').trim();
+            const nama = (tr.querySelector('[data-k="nama"]')?.value || '').trim();
+            const harga = toNum(tr.querySelector('[data-k="harga"]')?.value || '');
+            let qty = parseInt(tr.querySelector('[data-k="qty"]')?.value || '0', 10);
+            if (!qty || qty < 0) qty = 0;
+            return {
+                kode_barang: kode,
+                nama_barang: nama,
+                harga_satuan: harga,
+                qty: qty,
+                subtotal: harga * qty
+            };
+        });
+    }
 
-modeRadios.forEach(r => r.addEventListener('change', () => {
-    setFieldMode();
-    recompute();
-}));
-
-if (inputNilaiKontrak) inputNilaiKontrak.addEventListener('input', () => {
-    if (getCurrentMode() === 'kontrak') syncFromNilaiKontrak();
-    updatePreview();
-});
-if (inputHargaSatuan) inputHargaSatuan.addEventListener('input', () => {
-    if (getCurrentMode() === 'satuan') syncFromHargaSatuan();
-    updatePreview();
-});
-if (inputQty) inputQty.addEventListener('input', recompute);
-
-/* init */
-setFieldMode();
-recompute();
-
-/* =================== Same billing =================== */
-const alamatPengiriman = document.getElementById('alamat_pengiriman');
-const alamatTagihan = document.getElementById('alamat_tagihan');
-const sameBilling = document.getElementById('same-billing');
-
-if (alamatPengiriman && alamatTagihan && sameBilling) {
-    const syncBilling = () => {
-        if (sameBilling.checked) alamatTagihan.value = alamatPengiriman.value || '';
-    };
-
-    sameBilling.addEventListener('change', function() {
-        if (this.checked) {
-            syncBilling();
-            alamatTagihan.readOnly = true;
-            alamatTagihan.classList.add('readonly');
-        } else {
-            alamatTagihan.readOnly = false;
-            alamatTagihan.classList.remove('readonly');
-        }
-    });
-
-    alamatPengiriman.addEventListener('input', syncBilling);
-}
-
-/* =================== Sanitize before submit ===================
-   Pastikan backend dapat angka murni (tanpa titik).
-*/
-const form = document.getElementById('form-project');
-if (form) {
-    form.addEventListener('submit', function() {
-        ['nilai_kontrak', 'dp', 'harga_satuan'].forEach((id) => {
-            const el = document.getElementById(id);
-            if (el) el.value = stripNonDigit(el.value);
+    function syncSummary() {
+        const items = getItems();
+        [...body.querySelectorAll('tr')].forEach((tr, i) => {
+            const sub = items[i]?.subtotal || 0;
+            const el = tr.querySelector('[data-k="sub"]');
+            if (el) el.textContent = rupiah(sub);
         });
 
-        if (inputQty) {
-            const q = parseInt(inputQty.value || '1', 10);
-            if (!q || q <= 0) inputQty.value = '1';
-        }
-    });
-}
+        const dpp = items.reduce((a, b) => a + (b.subtotal || 0), 0);
+        const ppn = Math.round(dpp * ppnRate() / 100);
+        const grand = dpp + ppn;
 
-/* auto hide notif */
-const notif = document.getElementById('notif-msg');
-if (notif) setTimeout(() => notif.classList.remove('show'), 3500);
+        pvDpp.textContent = rupiah(dpp);
+        pvPpn.textContent = rupiah(ppn);
+        pvGrand.textContent = rupiah(grand);
+
+        itemsJson.value = JSON.stringify(items);
+
+        const valid = items.length > 0 && items.every(x => x.kode_barang && x.nama_barang && x.harga_satuan > 0 && x
+            .qty > 0);
+        warn.style.display = valid ? 'none' : 'block';
+        btnSubmit.disabled = !valid;
+        btnSubmit.style.opacity = valid ? '1' : '.6';
+    }
+
+    function addRow(prefill) {
+        const tr = rowTpl();
+        body.appendChild(tr);
+
+        if (prefill && typeof prefill === 'object') {
+            tr.querySelector('[data-k="kode"]').value = (prefill.kode_barang || '');
+            tr.querySelector('[data-k="nama"]').value = (prefill.nama_barang || '');
+            tr.querySelector('[data-k="harga"]').value = String(toNum(prefill.harga_satuan || 0));
+            tr.querySelector('[data-k="qty"]').value = String(parseInt(prefill.qty || 1, 10) || 1);
+        }
+
+        tr.addEventListener('input', (e) => {
+            if (!e.target || !e.target.dataset) return;
+            if (e.target.dataset.k === 'harga' || e.target.dataset.k === 'qty') {
+                e.target.value = String(toNum(e.target.value));
+            }
+            syncSummary();
+        });
+
+        tr.querySelector('[data-act="del"]').addEventListener('click', () => {
+            tr.remove();
+            syncSummary();
+        });
+
+        syncSummary();
+    }
+
+    btnAdd && btnAdd.addEventListener('click', () => addRow());
+    ppnMode && ppnMode.addEventListener('change', syncSummary);
+
+    // 1 row awal
+    addRow();
+
+    // sebelum submit: pastikan alamat ter-compose
+    const form = document.getElementById('form-interior');
+    form && form.addEventListener('submit', () => {
+        syncAddr();
+        if (sameBilling?.checked && outPeng && outTag) outTag.value = outPeng.value;
+    });
+
+    syncSummary();
+})();
 </script>
 
 <?= $this->endSection(); ?>

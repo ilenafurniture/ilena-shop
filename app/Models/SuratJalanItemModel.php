@@ -10,9 +10,12 @@ class SuratJalanItemModel extends Model
     protected $primaryKey       = 'id';
     protected $allowedFields    = [
         'surat_jalan_id',
-        'id_barang',
+        'id_barang',      // nullable untuk item interior
+        'kode_barang',    // khusus interior (opsional)
+        'nama_barang',    // khusus interior (opsional)
         'varian',
         'qty',
+        'dimensi_json',   // khusus interior (opsional)
     ];
     protected $useTimestamps    = false;
 }

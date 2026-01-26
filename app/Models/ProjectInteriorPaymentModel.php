@@ -6,22 +6,19 @@ use CodeIgniter\Model;
 
 class ProjectInteriorPaymentModel extends Model
 {
-    protected $table            = 'project_interior_payment'; // <== sesuai DB
+    protected $table            = 'project_interior_payment';
     protected $primaryKey       = 'id';
     protected $returnType       = 'array';
     protected $allowedFields    = [
-        'project_id',   // relasi ke project_interior.id
+        'project_id',
         'tanggal',
-        'jenis',        // enum: dp, termin, pelunasan
+        'jenis',        // dp|termin|pelunasan
         'nominal',
         'catatan',
     ];
 
     protected $useTimestamps = false;
 
-    /**
-     * Ambil semua pembayaran berdasarkan ID project (project_interior.id)
-     */
     public function getByProjectId(int $projectId): array
     {
         return $this->where('project_id', $projectId)
@@ -29,9 +26,6 @@ class ProjectInteriorPaymentModel extends Model
                     ->findAll();
     }
 
-    /**
-     * Hitung total nominal pembayaran untuk 1 project.
-     */
     public function getTotalPaidForProject(int $projectId): int
     {
         $row = $this->selectSum('nominal', 'total')

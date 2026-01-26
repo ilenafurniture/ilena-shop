@@ -11,7 +11,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNxj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
     </script>
 
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -110,6 +110,121 @@
         font-weight: 600;
     }
 
+    .badge-draft {
+        display: inline-block;
+        padding: .18rem .5rem;
+        border: 1px solid var(--line);
+        background: #fff7ed;
+        color: #9a3412;
+        border-radius: 999px;
+        font-size: 10.5px;
+        font-weight: 600;
+        margin-left: .4rem;
+        vertical-align: middle;
+    }
+
+    /* ========================= */
+    /* TANDA TANGAN (FIX SEJAJAR) */
+    /* ========================= */
+    .sig-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        align-items: flex-start;
+        margin-top: 1rem;
+    }
+
+    .sig-box {
+        min-width: 180px;
+        text-align: center;
+    }
+
+    /* area cap (tingginya disamakan) */
+    .sig-body {
+        height: 86px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* kasih "kertas" halus biar cap lebih natural */
+        background: transparent;
+    }
+
+    /* tekstur halus (bukan kotak) */
+    .sig-body::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+            radial-gradient(circle at 18% 35%, rgba(0, 0, 0, .025), transparent 58%),
+            radial-gradient(circle at 72% 65%, rgba(0, 0, 0, .018), transparent 60%),
+            radial-gradient(circle at 45% 82%, rgba(0, 0, 0, .012), transparent 55%);
+        opacity: .55;
+    }
+
+    /*
+      ✅ EFEK "BARU DI CAP" (tanpa miring, tanpa melebar)
+      - base: lebih tegas + pressure
+      - rough: bleed tipis + blur
+      - edge: drop-shadow halus
+    */
+    .sig-stamp,
+    .sig-stamp-rough {
+        width: 112px;
+        /* FIX: ukuran pasti biar gak melebar */
+        height: auto;
+        display: block;
+        object-fit: contain;
+        pointer-events: none;
+
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%) scale(.98);
+        /* tidak miring */
+        background: transparent;
+
+        mix-blend-mode: multiply;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .sig-stamp {
+        z-index: 1;
+        opacity: .62;
+        filter:
+            contrast(1.65) saturate(1.10) brightness(.90) blur(.06px) drop-shadow(0 .20px .25px rgba(0, 0, 0, .10)) drop-shadow(0 1.1px 1.4px rgba(0, 0, 0, .06));
+    }
+
+    .sig-stamp-rough {
+        z-index: 2;
+        opacity: .20;
+        /* bleed + pressure random-ish */
+        transform: translate(-50%, -50%) scale(1.01);
+        filter:
+            blur(.34px) contrast(1.20) brightness(.92);
+    }
+
+
+    .sig-footer {
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        line-height: 1;
+        margin-top: 2px;
+    }
+
+    .sig-line {
+        font-weight: 600;
+        letter-spacing: .02em;
+        margin: 0;
+    }
+
     @page {
         size: A4;
         margin: 14mm 14mm 16mm;
@@ -131,6 +246,12 @@
 
         .table-striped>tbody>tr:nth-of-type(odd)>* {
             --bs-table-accent-bg: transparent;
+        }
+
+        .badge-draft {
+            border: 1px solid #f59e0b;
+            background: transparent;
+            color: #9a3412;
         }
     }
     </style>
@@ -154,84 +275,58 @@
                 </div>
             </div>
             <div style="flex:1;" class="d-flex justify-content-end align-items-center">
-                <img src="<?= base_url('img/LogoIlena.png'); ?>" alt="logo Ilena" style="width:56mm; height:auto">
+                <!-- Optional right header -->
             </div>
         </div>
 
         <?php
-        // ==========================================================
-        // KONSEP (konsisten dengan controller):
-        // - jenis sp      => SP (Surat Pengantar)
-        // - jenis sale/nf => SJ (Surat Jalan)
-        // - NF tetap SJ, bedanya nomor pakai prefix "NF"
-        // - Nomor dasar ambil 4 digit terakhir dari angka id_pesanan
-        // - Pecah SJ pakai sj_ke dari tabel surat_jalan (controller kirim $sj)
-        // ==========================================================
-
         $jenisLower = strtolower(trim($pemesanan['jenis'] ?? ''));
 
-        // tanggal dokumen: gunakan tanggal pemesanan (kalau ada), fallback sekarang
-        $tanggalFix = $pemesanan['tanggal'] ?? date('Y-m-d');
-        $tglTs = strtotime($tanggalFix);
+        $tanggalFix = $sj['tanggal'] ?? ($pemesanan['tanggal'] ?? date('Y-m-d'));
+        $tglTs      = strtotime($tanggalFix);
 
-        // ambil 4 digit terakhir dari id_pesanan (angka mana pun yang muncul)
-        $rawId  = (string)($pemesanan['id_pesanan'] ?? '');
-        $digits = '0001';
-        if (preg_match('/(\d+)/', $rawId, $mDigits)) {
-            $angka  = $mDigits[1];
-            $digits = substr($angka, -4);
-        }
-        $base4 = str_pad($digits, 4, '0', STR_PAD_LEFT);
-
-        // nomor dasar tampil: NFxxxx atau xxxx
-        $noBase = ($jenisLower === 'nf') ? ('NF' . $base4) : $base4;
-
-        // dokumen type
-        $kodeDok    = 'SP';
-        $labelSurat = 'PENGANTAR';
-        if (in_array($jenisLower, ['sale','nf'], true)) {
-            $kodeDok    = 'SJ';
-            $labelSurat = 'JALAN';
+        $kodeDok    = 'SJ';
+        $labelSurat = 'JALAN';
+        // OFFLINE/INTERIOR: DISPLAY juga tetap Surat Jalan (tidak ada Surat Pengantar)
+$noSjDb = '';
+        if (isset($sj) && is_array($sj) && !empty($sj['no_sj'])) {
+            $noSjDb = (string)$sj['no_sj'];
         }
 
-        // sequence SJ:
-        // utamakan dari controller: $sj['sj_ke']
-        // fallback: ?seq=2 (kalau memang manual)
-        $sjSequence = 1;
-        if (isset($sj) && is_array($sj) && !empty($sj['sj_ke']) && (int)$sj['sj_ke'] > 0) {
-            $sjSequence = (int)$sj['sj_ke'];
-        } elseif (isset($_GET['seq']) && (int)$_GET['seq'] > 0) {
-            $sjSequence = (int)$_GET['seq'];
-        }
-
-        // nomor dokumen:
-        // SJ => NF0012-2  / 0012-1
-        // SP => NF0012 atau 0012 (umumnya SP bukan NF, tapi aman saja)
-        $noDoc = ($kodeDok === 'SJ') ? ($noBase . '-' . $sjSequence) : $noBase;
+        $isFinal = isset($sj['status']) && strtolower((string)$sj['status']) === 'final';
+        $showDraftBadge = !$noSjDb;
 
         $bulan_id = [
             1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',
             7=>'Juli',8=>'Agustus',9=>'September',10=>'Oktober',11=>'November',12=>'Desember'
         ];
         $tgl_indo = date('d', $tglTs) . ' ' . $bulan_id[(int)date('n',$tglTs)] . ' ' . date('Y', $tglTs);
+
+        $nomorTampil = $noSjDb ?: 'DRAFT (belum final)';
         ?>
 
         <div class="d-flex justify-content-between align-items-end">
             <div style="flex:1">
                 <p class="m-0 title-doc">
                     SURAT <?= esc($labelSurat); ?> NO.
-                    <?= esc($noDoc); ?>/<?= esc($kodeDok); ?>/<?= date('m', $tglTs); ?>/<?= date('Y', $tglTs); ?>
+                    <?= esc($nomorTampil); ?>
+                    <?php if ($showDraftBadge): ?>
+                    <span class="badge-draft">DRAFT</span>
+                    <?php endif; ?>
                 </p>
                 <div class="divider"></div>
+
+                <?php if ($isFinal && !$noSjDb): ?>
+                <p class="m-0" style="color:#b91c1c; font-weight:600;">
+                    *WARNING: Status FINAL tapi no_sj kosong. Cek data surat_jalan.no_sj.
+                </p>
+                <?php endif; ?>
             </div>
 
-            <div style="flex:1" class="mb-4">
+            <div style="flex:1" class="mb-5">
                 <p class="m-0" style="font-weight:500;">Kepada Yth.</p>
-                <p class="m-0 to-name"><?= esc($pemesanan['nama'] ?? '-'); ?></p>
-                <?php if (!empty($pemesanan['nohp'])): ?>
-                <p class="m-0 to-phone"><?= esc($pemesanan['nohp']); ?></p>
-                <?php endif; ?>
-                <p class="m-0"><?= esc($pemesanan['alamat_pengiriman'] ?? '-'); ?></p>
+                <p class="m-0 to-name"><?= esc($pemesanan['nama'] ?? ' '); ?></p>
+                <p class="m-0"><?= esc($pemesanan['alamat_pengiriman'] ?? ' '); ?></p>
             </div>
         </div>
 
@@ -263,11 +358,11 @@
                             </p>
                             <p class="m-0" style="font-size:10.6px; color:var(--muted);">
                                 <?php
-                                            $dim = $t['dimensi'] ?? [];
-                                            $p = $dim['panjang'] ?? '-';
-                                            $l = $dim['lebar'] ?? '-';
-                                            $tg = $dim['tinggi'] ?? '-';
-                                        ?>
+                                    $dim = $t['dimensi'] ?? [];
+                                    $p  = $dim['panjang'] ?? '-';
+                                    $l  = $dim['lebar'] ?? '-';
+                                    $tg = $dim['tinggi'] ?? '-';
+                                ?>
                                 <?= esc($p . ' x ' . $l . ' x ' . $tg); ?>
                             </p>
                         </td>
@@ -288,31 +383,61 @@
             <p class="m-0">
                 <b style="font-weight:600;">Keterangan : </b>
                 <span class="text-danger">
-                    <?= $ketRaw !== ''
-                        ? '*'.esc($ketRaw)
-                        : '<i style="color:inherit;">Tidak ada keterangan</i>'; ?>
+                    <?= $ketRaw !== '' ? '*'.esc($ketRaw) : '<i style="color:inherit;">Tidak ada keterangan</i>'; ?>
+                </span>
+            </p>
+
+            <p class="m-0">
+                <b style="font-weight:600;">Nama Penerima : </b>
+                <span class="text-danger">
+                    <?= esc($pemesanan['nama'] ?? ' '); ?>
+                </span>
+            </p>
+
+            <p class="m-0">
+                <b style="font-weight:600;">Nomor Penerima : </b>
+                <span class="text-danger">
+                    <?php if (!empty($pemesanan['nohp'])): ?>
+                    <?= esc($pemesanan['nohp'] ?? ' '); ?>
+                    <?php endif; ?>
                 </span>
             </p>
 
             <p class="mt-4" style="font-weight:500;">Kendal, <?= esc($tgl_indo); ?></p>
 
             <!-- Tanda Tangan -->
-            <div class="d-flex justify-content-between mt-4">
-                <div class="text-center" style="min-width:180px;">
+            <div class="sig-row">
+                <!-- Dibuat -->
+                <div class="sig-box">
                     <p class="m-0 sig-title">Dibuat Oleh :</p>
-                    <br><br><br>
-                    <p class="m-0 sig-name">Admin</p>
-                    <p class="m-0 sig-name">____________________</p>
+
+                    <div class="sig-body">
+                        <img src="<?= base_url('img/logo/stampelfix.png'); ?>" alt="Stempel" class="sig-stamp" />
+                        <img src="<?= base_url('img/logo/stampelfix.png'); ?>" alt="" class="sig-stamp-rough" />
+                    </div>
+
+                    <div class="sig-footer">Admin</div>
+                    <p class="m-0 sig-name sig-line">____________________</p>
                 </div>
-                <div class="text-center" style="min-width:180px;">
+
+                <!-- Dibawa -->
+                <div class="sig-box">
                     <p class="m-0 sig-title">Dibawa Oleh :</p>
-                    <br><br><br><br>
-                    <p class="m-0 sig-name">____________________</p>
+
+                    <div class="sig-body"></div>
+
+                    <div class="sig-footer">&nbsp;</div>
+                    <p class="m-0 sig-name sig-line">____________________</p>
                 </div>
-                <div class="text-center" style="min-width:180px;">
+
+                <!-- Diterima -->
+                <div class="sig-box">
                     <p class="m-0 sig-title">Diterima Oleh :</p>
-                    <br><br><br><br>
-                    <p class="m-0 sig-name">____________________</p>
+
+                    <div class="sig-body"></div>
+
+                    <div class="sig-footer">&nbsp;</div>
+                    <p class="m-0 sig-name sig-line">____________________</p>
                 </div>
             </div>
         </div>

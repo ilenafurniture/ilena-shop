@@ -8,12 +8,15 @@ class SuratJalanModel extends Model
 {
     protected $table            = 'surat_jalan';
     protected $primaryKey       = 'id';
-    protected $allowedFields    = [
+    protected $allowedFields = [
         'id_pesanan',
+        'no_sj',
         'sj_ke',
         'tanggal',
         'status',
+        'finalized_at',
     ];
+
     protected $useTimestamps    = false;
 
     public function getLastSjKe(string $idPesanan): int

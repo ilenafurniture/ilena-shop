@@ -323,10 +323,7 @@ h5 {
     border: 1px solid var(--line);
 }
 
-.modal-card-modern .btn-default {
-    border-radius: 12px
-}
-
+.modal-card-modern .btn-default,
 .modal-card-modern .btn-default-merah {
     border-radius: 12px
 }
@@ -336,26 +333,13 @@ hr {
     border-color: var(--line2)
 }
 
-/* ===== Preview overlay (sudah ada, poles tipis) ===== */
-.preview-overlay {
-    backdrop-filter: blur(3px)
-}
-
-.preview-card {
-    border: 1px solid var(--line2)
-}
-
-.section-head {
-    background: #f8fafc
-}
-
 /* ==== Small helpers ==== */
 .mono {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Roboto Mono", "Liberation Mono", "Courier New", monospace
 }
 </style>
 
-<!-- MODAL: BUAT INVOICE (UI only enhanced) -->
+<!-- MODAL: BUAT INVOICE -->
 <div id="input-buat-invoice" class="d-none justify-content-center align-items-center"
     style="position: fixed; left: 0; top: 0; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.45)">
     <div class="bg-white p-4 rounded modal-card-modern">
@@ -363,7 +347,6 @@ hr {
             <h5 class="m-0 fw-bold">Buat Invoice</h5>
             <p class="mb-3 text-sm" style="color: var(--brand); font-size: 12px">
                 ID Order :
-                <!-- NOTE: id dihapus agar tidak duplikat -->
                 <input type="text" name="id_pesanan" style="border: none; color: var(--brand); pointer-events: none;"
                     class="fw-bold">
             </p>
@@ -400,7 +383,6 @@ hr {
         <form method="post" action="/admin/actionbuatdp">
             <h5 class="m-0 fw-bold">Buat Invoice DP</h5>
             <p class="mb-3 text-sm" style="color: var(--brand); font-size: 12px">ID Order :
-                <!-- NOTE: id dihapus agar tidak duplikat -->
                 <input type="text" name="id_pesanan" style="border: none; color: var(--brand); pointer-events: none;"
                     class="fw-bold">
             </p>
@@ -442,7 +424,6 @@ hr {
         </form>
     </div>
 </div>
-<!-- END MODAL INPUT DP -->
 
 <!-- MODAL: KOREKSI SP -->
 <div id="input-koreksi" class="d-none justify-content-center align-items-center"
@@ -495,7 +476,6 @@ hr {
             <div class="mb-3">
                 <p class="mb-1">Pilih barang</p>
                 <div id="container-items" class="d-flex flex-column gap-2">
-                    <!-- placeholder awal (tidak diubah; akan diisi JS) -->
                     <label class="d-flex gap-3 align-items-center justify-content-between">
                         <div class="d-flex gap-3 align-items-center">
                             <input type="checkbox" onchange="handleChangeInputItem(0, event)">
@@ -512,7 +492,6 @@ hr {
                 </div>
             </div>
 
-            <!-- ====== JENIS TUJUAN: SALE / NF ====== -->
             <div class="mb-3">
                 <p class="mb-1">Koreksi ini akan dibuat menjadi</p>
                 <div class="d-flex flex-wrap gap-3">
@@ -526,12 +505,10 @@ hr {
                     </label>
                 </div>
             </div>
-            <!-- /END JENIS TUJUAN -->
 
-            <!-- dibutuhkan agar backend tidak error jika diskon tidak diisi -->
             <input type="hidden" name="diskon" value="0">
-
             <input type="text" name="index_items_selected" required class="d-none">
+
             <div class="d-flex flex-column flex-md-row gap-2 w-100">
                 <div class="mb-1" style="flex: 1;">
                     <p class="mb-1">Nama NPWP</p>
@@ -557,7 +534,7 @@ hr {
     </div>
 </div>
 
-<!-- ===================== MODAL: EDIT ORDER (BARU) ===================== -->
+<!-- MODAL: EDIT ORDER -->
 <div id="input-edit-order" class="d-none justify-content-center align-items-center"
     style="position: fixed; left: 0; top: 0; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.45)">
     <div class="bg-white p-4 rounded modal-card-modern">
@@ -569,7 +546,6 @@ hr {
                     class="fw-bold">
             </p>
 
-            <!-- kirim jenis agar redirect balik ke tab yang sama -->
             <input type="hidden" name="jenis" value="<?= esc($jenis) ?>">
 
             <div class="row g-2">
@@ -613,9 +589,8 @@ hr {
         </form>
     </div>
 </div>
-<!-- ===================== END MODAL: EDIT ORDER ===================== -->
 
-<!-- ===================== MODAL: DETAIL PESANAN (BARU) ===================== -->
+<!-- MODAL: DETAIL PESANAN -->
 <div class="modal fade" id="modalDetail" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -653,14 +628,13 @@ hr {
         </div>
     </div>
 </div>
-<!-- ===================== END MODAL: DETAIL PESANAN ===================== -->
 
 <!-- LIST PAGE -->
 <div style="padding: 2em;">
     <div class="page-card">
         <div class="mb-2">
             <p class="text-muted-12" data-bs-toggle="tooltip" data-bs-title="JT = tanggal SJ + 14 hari.">
-                *JT mulai dihitung saat Surat Jalan (SJ) terbit, maksimal 14 hari. Draft belum dihitung JT.
+                *JT mulai dihitung saat Surat Jalan (SJ) FINAL terbit, maksimal 14 hari. Draft belum dihitung JT.
             </p>
         </div>
 
@@ -675,11 +649,14 @@ hr {
             </div>
             <div class="toolbar">
                 <select class="form-select" onchange="selectJenis(event)">
-                    <option value="sale" class="fw-bold" <?= $jenis == 'sale' ? 'selected' : ''; ?>>Surat Jalan
-                        (SALE)</option>
-                    <option value="sp" class="fw-bold" <?= $jenis == 'sp'   ? 'selected' : ''; ?>>Surat Pengantar
-                        (SP)</option>
-                    <option value="nf" class="fw-bold" <?= $jenis == 'nf'   ? 'selected' : ''; ?>>Non Faktur (NF)
+                    <option value="sale" class="fw-bold" <?= $jenis == 'sale' ? 'selected' : ''; ?>>Surat Jalan (FAKTUR)
+                    </option>
+                    <option value="display" class="fw-bold" <?= $jenis == 'display'   ? 'selected' : ''; ?>>Surat
+                        Display
+                        (DISPLAY)
+                    </option>
+                    <option value="nf" class="fw-bold" <?= $jenis == 'nf'   ? 'selected' : ''; ?>>Non Faktur (NON
+                        FAKTUR)
                     </option>
                 </select>
                 <a class="btn-default-merah" href="/admin/order-offline/add">Tambah</a>
@@ -722,9 +699,9 @@ hr {
                         <?php foreach ($pesanan as $ind_p => $p) { ?>
                         <tr <?= (($p['is_draft'] ?? 0) == 1) ? 'class="table-warning"' : ''; ?>>
                             <th scope="row"><?= $ind_p + 1; ?></th>
-                            <td class="mono"><?= $p['id_pesanan']; ?></td>
-                            <td><?= date("d M Y", strtotime($p['tanggal'])); ?></td>
-                            <td><?= $p['nama']; ?></td>
+                            <td class="mono"><?= esc($p['id_pesanan']); ?></td>
+                            <td><?= !empty($p['tanggal']) ? date("d M Y", strtotime($p['tanggal'])) : '-'; ?></td>
+                            <td><?= esc($p['nama'] ?? '-'); ?></td>
 
                             <td align="center">
                                 <?php
@@ -744,21 +721,47 @@ hr {
                                     &nbsp;• DRAFT
                                     <?php endif; ?>
                                 </span>
+
+                                <?php if ($jenis === 'sale' || $jenis === 'nf'): ?>
+                                <?php
+                                        $sjNo   = $p['sj_last_no'] ?? null;
+                                        $sjStat = strtolower((string)($p['sj_last_status'] ?? ''));
+                                    ?>
+                                <div class="mt-1">
+                                    <?php if (!empty($sjNo)): ?>
+                                    <span class="badge rounded-pill bg-light text-dark">
+                                        SJ: <span class="mono"><?= esc($sjNo) ?></span>
+                                    </span>
+                                    <?php elseif ($sjStat === 'draft'): ?>
+                                    <span class="badge rounded-pill bg-warning text-dark">SJ: DRAFT</span>
+                                    <?php else: ?>
+                                    <span class="badge rounded-pill bg-light text-muted">SJ: —</span>
+                                    <?php endif; ?>
+                                </div>
+                                <?php endif; ?>
                             </td>
 
                             <?php
-                                // JT dihitung dari tanggal SJ (tanggal transaksi untuk NF/SALE).
-                                // NOTE: Idealnya pakai tanggal_sj_terbit dari tabel SJ, tapi tetap pakai $p['tanggal'] untuk sementara.
+                                // ===== JT START ONLY WHEN SJ FINAL EXISTS =====
                                 $tglSj = null;
-                                if ($jenis === 'sale' || $jenis === 'nf') {
-                                    if ($st === 'dp' || $st === 'draft') {
-                                        $tglSj = null;
+                                $isSaleLike = ($jenis === 'sale' || $jenis === 'nf');
+
+                                if ($isSaleLike) {
+                                    $sjLastStatus  = strtolower((string)($p['sj_last_status'] ?? ''));
+                                    $sjFinalTgl    = $p['sj_final_tanggal'] ?? null;
+                                    $sjLastTgl     = $p['sj_last_tanggal'] ?? null;
+
+                                    if (!empty($sjFinalTgl)) {
+                                        $tglSj = $sjFinalTgl;
+                                    } elseif ($sjLastStatus === 'final' && !empty($sjLastTgl)) {
+                                        $tglSj = $sjLastTgl;
                                     } else {
-                                        $tglSj = $p['tanggal'] ?? null;
+                                        $tglSj = null; // draft / belum ada SJ
                                     }
                                 } else {
                                     $tglSj = null; // SP
                                 }
+
                                 list($jtStr, $sisaHari, $jtStatus) = $jtInfo($tglSj);
 
                                 $jtBadgeText = '—';
@@ -771,9 +774,9 @@ hr {
                             <td class="text-center">
                                 <?php if ($jtStr) { ?>
                                 <div class="d-flex flex-column align-items-center" data-bs-toggle="tooltip"
-                                    data-bs-title="Jatuh tempo dimulai saat SJ terbit. Maks 14 hari dari tanggal SJ.">
-                                    <span class="badge-jt <?= $jtStatus; ?>"><?= $jtBadgeText; ?></span>
-                                    <small class="text-muted-12"><?= $jtStr; ?></small>
+                                    data-bs-title="Jatuh tempo dimulai saat SJ FINAL terbit. Maks 14 hari dari tanggal SJ.">
+                                    <span class="badge-jt <?= esc($jtStatus); ?>"><?= esc($jtBadgeText); ?></span>
+                                    <small class="text-muted-12"><?= esc($jtStr); ?></small>
                                 </div>
                                 <?php } else { ?>
                                 <span class="text-muted-12">—</span>
@@ -786,11 +789,16 @@ hr {
                                         $isDraft      = isset($p['is_draft']) && (int)$p['is_draft'] === 1;
                                         $downPayment  = (int)($p['down_payment'] ?? 0);
                                         $hasDP        = $downPayment !== 0;
-                                        $dpIsNegative = $downPayment < 0; // setelah “Buat SJ” dari DP
+                                        $dpIsNegative = $downPayment < 0;
                                         $isSaleLike   = ($jenis === 'sale' || $jenis === 'nf');
+
+                                        // data SJ (optional)
+                                        $sjId   = $p['sj_last_id'] ?? null;
+                                        $sjNo   = $p['sj_last_no'] ?? null;
+                                        $sjStat = strtolower((string)($p['sj_last_status'] ?? ''));
                                     ?>
 
-                                    <!-- Tombol DETAIL (selalu ada) -->
+                                    <!-- Tombol DETAIL -->
                                     <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="top"
                                         data-bs-title="Detail pesanan"
                                         onclick="openDetail('<?= esc($p['id_pesanan']); ?>')">
@@ -798,7 +806,7 @@ hr {
                                     </button>
 
                                     <?php if ($isDraft): ?>
-                                    <!-- DRAFT MODE: hanya bisa finalisasi + edit -->
+                                    <!-- DRAFT MODE: finalisasi draft + edit -->
                                     <form method="post" action="/admin/order-offline/finalize"
                                         onsubmit="return confirm('Finalisasi draft <?= esc($p['id_pesanan']); ?> ? Stok akan dipotong dan status berubah. Lanjutkan?');"
                                         style="display:inline;">
@@ -812,55 +820,81 @@ hr {
                                     <?php else: ?>
 
                                     <?php if ($isSaleLike): ?>
+                                    <!-- ====== SJ BUTTONS (NEW) ====== -->
+                                    <?php if (!empty($sjId)): ?>
+                                    <!-- Edit SJ -->
+                                    <a class="btn"
+                                        href="<?= base_url('admin/surat-jalan/offline/' . $sjId . '/edit') ?>"
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        data-bs-title="Edit Surat Jalan (<?= $sjNo ? esc($sjNo) : 'Draft' ?>)">
+                                        <i class="material-icons">local_shipping</i>
+                                    </a>
+
+                                    <?php if (!empty($sjNo)): ?>
+                                    <!-- Print SJ (only final) -->
+                                    <a class="btn" href="<?= base_url('admin/surat-jalan/offline/' . $sjId) ?>"
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        data-bs-title="Preview/Print SJ (Final)">
+                                        <i class="material-icons">print</i>
+                                    </a>
+                                    <?php endif; ?>
+                                    <?php else: ?>
+                                    <!-- Buat SJ (FINAL, nomor global) -->
+                                    <a class="btn text-danger"
+                                        href="<?= base_url('admin/surat-jalan/offline/create/' . urlencode($p['id_pesanan'])) ?>"
+                                        onclick="return confirm('Buat Surat Jalan (FINAL) sekarang? Nomor SJ global akan dibuat. Lanjutkan?')"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Buat SJ">
+                                        <i class="material-icons">add</i>
+                                    </a>
+                                    <?php endif; ?>
+
+                                    <!-- ====== INVOICE BUTTONS (existing behavior) ====== -->
                                     <?php if ($hasDP): ?>
-                                    <?php if ($dpIsNegative): /* SJ SUDAH TERBIT SETELAH DP */ ?>
-                                    <a class="btn" href="/admin/surat-offline/<?= $p['id_pesanan']; ?>"
-                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Surat Jalan"><i
-                                            class="material-icons">local_shipping</i></a>
+                                    <?php if ($dpIsNegative): ?>
                                     <a class="btn <?= ($p['npwp'] ?? null) ? '' : 'text-danger'; ?>"
                                         <?= ($p['npwp'] ?? null) ? 'href="/admin/invoice-offline/' . $p['id_pesanan'] . '"' : 'onclick="buatInvoice(' . $ind_p . ')"'; ?>
                                         data-bs-toggle="tooltip" data-bs-placement="top"
-                                        data-bs-title="<?= ($p['npwp'] ?? null) ? 'Invoice' : 'Buat invoice'; ?>"><i
-                                            class="material-icons">description</i></a>
+                                        data-bs-title="<?= ($p['npwp'] ?? null) ? 'Invoice' : 'Buat invoice'; ?>">
+                                        <i class="material-icons">description</i>
+                                    </a>
                                     <?php if (strtolower((string)($p['status'] ?? '')) === 'pending'): ?>
                                     <a class="btn" data-bs-toggle="tooltip" data-bs-placement="top"
-                                        onclick="alertSuccess('<?= $p['id_pesanan']; ?>')"
+                                        onclick="alertSuccess('<?= esc($p['id_pesanan']); ?>')"
                                         data-bs-title="Tandai lunas"><i class="material-icons">check</i></a>
                                     <?php endif; ?>
-                                    <?php else: /* BARU DP, SJ BELUM TERBIT */ ?>
-                                    <a class="btn" href="/admin/invoice-offline-dp/<?= $p['id_pesanan']; ?>"
-                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Invoice DP"><i
-                                            class="material-icons">description</i></a>
+                                    <?php else: ?>
+                                    <a class="btn" href="/admin/invoice-offline-dp/<?= esc($p['id_pesanan']); ?>"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Invoice DP">
+                                        <i class="material-icons">description</i>
+                                    </a>
                                     <?php if (strtoupper((string)($p['status'] ?? '')) === 'DP'): ?>
                                     <a class="btn text-danger" data-bs-toggle="tooltip" data-bs-placement="top"
-                                        onclick="buatInvoiceDP(<?= $ind_p; ?>)"
+                                        onclick="buatInvoiceDP(<?= (int)$ind_p; ?>)"
                                         data-bs-title="Buat Surat Jalan dari DP">
                                         <i class="material-icons">local_shipping</i>
                                     </a>
                                     <?php endif; ?>
                                     <?php endif; ?>
-                                    <?php else: /* TANPA DP (cash) */ ?>
-                                    <a class="btn" href="/admin/surat-offline/<?= $p['id_pesanan']; ?>"
-                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Surat Jalan"><i
-                                            class="material-icons">local_shipping</i></a>
+                                    <?php else: ?>
                                     <a class="btn <?= ($p['npwp'] ?? null) ? '' : 'text-danger'; ?>"
                                         <?= ($p['npwp'] ?? null) ? 'href="/admin/invoice-offline/' . $p['id_pesanan'] . '"' : 'onclick="buatInvoice(' . $ind_p . ')"'; ?>
                                         data-bs-toggle="tooltip" data-bs-placement="top"
-                                        data-bs-title="<?= ($p['npwp'] ?? null) ? 'Invoice' : 'Buat invoice'; ?>"><i
-                                            class="material-icons">description</i></a>
+                                        data-bs-title="<?= ($p['npwp'] ?? null) ? 'Invoice' : 'Buat invoice'; ?>">
+                                        <i class="material-icons">description</i>
+                                    </a>
                                     <?php if (strtolower((string)($p['status'] ?? '')) === 'pending'): ?>
                                     <a class="btn" data-bs-toggle="tooltip" data-bs-placement="top"
-                                        onclick="alertSuccess('<?= $p['id_pesanan']; ?>')"
+                                        onclick="alertSuccess('<?= esc($p['id_pesanan']); ?>')"
                                         data-bs-title="Tandai lunas"><i class="material-icons">check</i></a>
                                     <?php endif; ?>
                                     <?php endif; ?>
 
-                                    <?php elseif ($jenis === 'sp'): ?>
-                                    <a class="btn" href="/admin/surat-offline/<?= $p['id_pesanan']; ?>"
+                                    <?php elseif ($jenis === 'display'): ?>
+                                    <a class="btn" href="/admin/surat-offline/<?= esc($p['id_pesanan']); ?>"
                                         data-bs-toggle="tooltip" data-bs-placement="top"
                                         data-bs-title="Surat Pengantar"><i class="material-icons">description</i></a>
                                     <?php if (($p['status'] ?? '') != 'return'): ?>
-                                    <a class="btn" onclick="pilihPesanan(<?= $ind_p; ?>)" data-bs-toggle="tooltip"
+                                    <a class="btn" onclick="pilihPesanan(<?= (int)$ind_p; ?>)" data-bs-toggle="tooltip"
                                         data-bs-placement="top" data-bs-title="Buat Surat Jalan"><i
                                             class="material-icons">insert_drive_file</i></a>
                                     <?php endif; ?>
@@ -868,9 +902,9 @@ hr {
 
                                     <?php endif; ?>
 
-                                    <!-- ===== Tambahan tombol EDIT (selalu ada) ===== -->
+                                    <!-- Tombol EDIT (selalu ada) -->
                                     <a class="btn" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit"
-                                        onclick="openEdit(<?= $ind_p; ?>)"><i class="material-icons">edit</i></a>
+                                        onclick="openEdit(<?= (int)$ind_p; ?>)"><i class="material-icons">edit</i></a>
                                 </div>
                             </td>
                         </tr>
@@ -888,9 +922,7 @@ hr {
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
     window.tooltipList = [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el))
 })();
-</script>
 
-<script>
 function selectJenis(event) {
     window.location.replace(`/admin/order/offline/${event.target.value}`)
 }
@@ -1011,7 +1043,6 @@ provElm?.addEventListener("change", (e) => {
     if (idprov > 0) getKota(idprov);
     else kotaElm.innerHTML = '<option value="">-- Pilih kota --</option>';
 });
-
 kotaElm?.addEventListener("change", (e) => {
     kecElm.innerHTML = '<option value="">Loading kecamatan…</option>';
     kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
@@ -1020,11 +1051,10 @@ kotaElm?.addEventListener("change", (e) => {
     if (idkota > 0) getKec(idkota);
     else kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
 });
-
 kecElm?.addEventListener("change", (e) => {
     kodeElm.innerHTML = '<option value="">Loading desa…</option>';
     const parts = String(e.target.value || "").split("-");
-    const idkec = parts[0]; // FIX: kirim ID kecamatan (bukan “namaKec” palsu)
+    const idkec = parts[0];
     if (idkec) getKode(idkec);
     else kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
 });
@@ -1179,8 +1209,7 @@ async function buatInvoiceDP(index) {
             </td>
             <td class="text-center">${item.jumlah}</td>
             <td class="text-end">Rp ${parseInt(item.harga || 0).toLocaleString('id-ID')}</td>
-        </tr>
-        `
+        </tr>`
         totalHargaBarang += item.jumlah * parseInt(item.harga || 0)
     })
 
@@ -1213,8 +1242,7 @@ async function buatInvoiceDP(index) {
     <tr>
         <td colspan="2" class="fw-bold">SISA TAGIHAN</td>
         <td class="text-end fw-bold" colspan="2">Rp ${(totalAkhir - dpAbs).toLocaleString('id-ID')}</td>
-    </tr>
-    `
+    </tr>`
 
     inputBuatDPElm.classList.remove('d-none')
     inputBuatDPElm.classList.add('d-flex')
@@ -1235,454 +1263,6 @@ async function buatInvoiceDP(index) {
 })();
 </script>
 
-<!-- =====[ PREVIEW UI ]===== -->
-<style>
-.preview-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(17, 24, 39, .45);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    backdrop-filter: blur(2px)
-}
-
-.preview-card {
-    width: min(980px, 94vw);
-    max-height: 90vh;
-    overflow: hidden;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 24px 72px rgba(0, 0, 0, .35);
-    display: flex;
-    flex-direction: column
-}
-
-.preview-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid #f1f5f9;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px
-}
-
-.preview-title {
-    margin: 0;
-    font-size: 18px;
-    letter-spacing: -.2px;
-    font-weight: 800
-}
-
-.preview-body {
-    padding: 14px 20px;
-    overflow: auto;
-    flex: 1;
-    background: linear-gradient(#fff, #fff), radial-gradient(1200px 600px at 50% -40%, #fafafa 10%, transparent 70%) no-repeat
-}
-
-.preview-grid {
-    display: grid;
-    grid-template-columns: 1.3fr .7fr;
-    gap: 16px
-}
-
-@media (max-width:860px) {
-    .preview-grid {
-        grid-template-columns: 1fr
-    }
-}
-
-.preview-section {
-    border: 1px solid #eef2f7;
-    border-radius: 12px;
-    background: #fff;
-    overflow: hidden
-}
-
-.section-head {
-    padding: 10px 14px;
-    background: #f8fafc;
-    border-bottom: 1px solid #eef2f7;
-    font-weight: 700;
-    letter-spacing: -.2px;
-    display: flex;
-    align-items: center;
-    gap: 8px
-}
-
-.section-body {
-    padding: 12px 14px
-}
-
-.dl {
-    display: grid;
-    grid-template-columns: 140px 1fr;
-    gap: 8px 12px;
-    font-size: 13px;
-    line-height: 1.35
-}
-
-.dl b {
-    color: #0f172a;
-    font-weight: 700
-}
-
-.items-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    font-size: 13px
-}
-
-.items-table thead th {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    background: #f8fafc;
-    border-bottom: 1px solid #eef2f7;
-    padding: 10px 12px;
-    text-align: left
-}
-
-.items-table tbody td {
-    padding: 12px;
-    border-bottom: 1px solid #f1f5f9;
-    vertical-align: middle
-}
-
-.cell-right {
-    text-align: right
-}
-
-.cell-center {
-    text-align: center
-}
-
-.preview-footer {
-    padding: 12px 20px;
-    border-top: 1px solid #eef2f7;
-    background: #fff;
-    position: sticky;
-    bottom: 0;
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end
-}
-
-.btn-ghost {
-    background: #f3f4f6;
-    border: 1px solid #e5e7eb;
-    padding: .7em 1em;
-    border-radius: 10px
-}
-
-.btn-ghost:hover {
-    background: #e5e7eb
-}
-
-.btn-primary {
-    background: linear-gradient(180deg, var(--brand, #b31217), #a50e12);
-    color: #fff;
-    border: 0;
-    padding: .8em 1.2em;
-    border-radius: 10px;
-    font-weight: 700;
-    box-shadow: 0 8px 24px rgba(165, 14, 18, .25)
-}
-
-.btn-primary:hover {
-    filter: brightness(.97)
-}
-
-.badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    padding: 6px 10px;
-    border-radius: 999px;
-    border: 1px solid #e5e7eb;
-    background: #f9fafb;
-    color: #111827
-}
-
-.badge.warn {
-    color: #b42318;
-    background: #feeaea;
-    border-color: #ffd3cf
-}
-</style>
-
-<div id="preview-overlay" class="preview-overlay" style="display:none" role="dialog" aria-modal="true"
-    aria-labelledby="preview-title">
-    <div class="preview-card" role="document">
-        <div class="preview-header">
-            <h3 id="preview-title" class="preview-title">Preview</h3>
-            <span id="preview-badges" class="badge" style="display:none"></span>
-        </div>
-        <div class="preview-body">
-            <div class="preview-grid">
-                <div class="preview-section">
-                    <div class="section-head">
-                        <i class="material-icons" style="font-size:18px">receipt_long</i>
-                        <span id="preview-left-title">Ringkasan</span>
-                    </div>
-                    <div class="section-body" id="preview-left"></div>
-                </div>
-                <div class="preview-section">
-                    <div class="section-head"><i class="material-icons" style="font-size:18px">payments</i> Total</div>
-                    <div class="section-body" id="preview-right"></div>
-                </div>
-            </div>
-        </div>
-        <div class="preview-footer">
-            <button type="button" class="btn-ghost" id="btn-preview-cancel">Kembali</button>
-            <button type="button" class="btn-primary" id="btn-preview-submit">Kirim / Buat</button>
-        </div>
-    </div>
-</div>
-
-<script>
-/* ==== Utility ==== */
-const showEl = (el) => el.style.display = '';
-const hideEl = (el) => el.style.display = 'none';
-
-/* ==== Elemen preview ==== */
-const elPrevOverlay = document.getElementById('preview-overlay');
-const elPrevLeft = document.getElementById('preview-left');
-const elPrevRight = document.getElementById('preview-right');
-const elPrevTitle = document.getElementById('preview-title');
-const elPrevBadges = document.getElementById('preview-badges');
-const elPrevLeftTitle = document.getElementById('preview-left-title');
-const btnPrevCancel = document.getElementById('btn-preview-cancel');
-const btnPrevSubmit = document.getElementById('btn-preview-submit');
-
-let currentPreview = {
-    type: null,
-    submit: null
-};
-
-function openPreview(opts) {
-    elPrevTitle.textContent = opts.title || 'Preview';
-    elPrevLeftTitle.textContent = opts.leftTitle || 'Rincian';
-    elPrevLeft.innerHTML = opts.leftHTML || '';
-    elPrevRight.innerHTML = opts.rightHTML || '';
-    if (opts.badgeText) {
-        elPrevBadges.textContent = opts.badgeText;
-        showEl(elPrevBadges);
-    } else {
-        hideEl(elPrevBadges);
-    }
-    currentPreview = {
-        type: opts.type || null,
-        submit: opts.onSubmit || null
-    };
-    showEl(elPrevOverlay);
-}
-
-function closePreview() {
-    hideEl(elPrevOverlay);
-    currentPreview = {
-        type: null,
-        submit: null
-    };
-}
-btnPrevCancel.onclick = closePreview;
-btnPrevSubmit.onclick = () => currentPreview.submit && currentPreview.submit();
-elPrevOverlay.addEventListener('click', (e) => {
-    if (e.target === elPrevOverlay) closePreview();
-});
-window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closePreview();
-});
-
-function injectPreviewButton(form, onClick) {
-    if (!form) return;
-    const btnSubmit = form.querySelector('button[type="submit"]');
-    const row = btnSubmit ? btnSubmit.parentElement : null;
-    if (!btnSubmit || !row) return;
-    if (row.querySelector('[data-role="btn-preview"]')) return;
-    const btnPrev = document.createElement('button');
-    btnPrev.type = 'button';
-    btnPrev.className = 'btn btn-default w-100';
-    btnPrev.textContent = 'Preview';
-    btnPrev.setAttribute('data-role', 'btn-preview');
-    row.insertBefore(btnPrev, btnSubmit);
-    btnPrev.onclick = onClick;
-}
-
-/* ====== PREVIEW: BUAT INVOICE ====== */
-(function() {
-    const modal = document.getElementById('input-buat-invoice');
-    if (!modal) return;
-    const form = modal.querySelector('form[action="/admin/actionbuatinvoice"]');
-    injectPreviewButton(form, () => {
-        const id_pesanan = form.querySelector('input[name="id_pesanan"]').value;
-        const tanggal = form.querySelector('input[name="tanggal"]').value;
-        const alamat = form.querySelector('textarea[name="alamat"]').value;
-        const nama_npwp = form.querySelector('input[name="nama_npwp"]').value;
-        const npwp = form.querySelector('input[name="npwp"]').value;
-        const leftHTML = `
-          <div class="dl">
-            <b>ID Order</b><div class="mono">${id_pesanan||'-'}</div>
-            <b>Tanggal</b><div class="mono">${tanggal||'-'}</div>
-            <b>Nama (NPWP)</b><div>${nama_npwp||'-'}</div>
-            <b>NPWP</b><div class="mono">${npwp||'-'}</div>
-            <b>Alamat</b><div style="white-space:pre-wrap">${alamat||'-'}</div>
-          </div>`;
-        const rightHTML =
-            `<div style="font-size:13px;color:#334155"><p class="m-0">Pastikan <b>Nama NPWP</b>, <b>NPWP</b>, dan <b>Alamat</b> sudah benar.</p></div>`;
-        openPreview({
-            type: 'invoice',
-            title: 'Preview Invoice',
-            leftTitle: 'Rincian Invoice',
-            leftHTML,
-            rightHTML,
-            onSubmit: () => form.submit()
-        });
-    });
-})();
-
-/* ====== PREVIEW: INVOICE DP ====== */
-(function() {
-    const modal = document.getElementById('input-buat-dp');
-    if (!modal) return;
-    const form = modal.querySelector('form[action="/admin/actionbuatdp"]');
-    const table = modal.querySelector('#table-dp');
-    injectPreviewButton(form, () => {
-        const id_pesanan = form.querySelector('input[name="id_pesanan"]').value;
-        const tanggal = form.querySelector('input[name="tanggal"]').value;
-        const nama_npwp = form.querySelector('input[name="nama_npwp"]').value;
-        const npwp = form.querySelector('input[name="npwp"]').value;
-
-        const rows = [...table.querySelectorAll('tr')].map(tr => [...tr.children].map(td => td.innerText
-            .trim()));
-        const itemsRows = rows
-            .filter(cols => cols.length === 3 && !/TOTAL|POTONGAN|DP|SISA/i.test(cols[0]))
-            .map(cols =>
-                `<tr><td>${cols[0]}</td><td class="cell-center">${cols[1]}</td><td class="cell-right mono">${cols[2]}</td></tr>`
-            )
-            .join('');
-
-        const totalsHTML = rows
-            .filter(cols => cols.length >= 2 && /TOTAL|POTONGAN|DP|SISA/i.test(cols[0]))
-            .map(cols => {
-                const label = cols[0].replace(/\s+/g, ' ').trim().toUpperCase();
-                const val = cols[cols.length - 1];
-                return `<div class="d-flex justify-content-between"><span>${label}</span><span class="mono" style="font-weight:700">${val}</span></div>`;
-            }).join('');
-
-        const leftHTML = `
-          <div class="dl" style="margin-bottom:12px">
-            <b>ID Order</b><div class="mono">${id_pesanan||'-'}</div>
-            <b>Tanggal</b><div class="mono">${tanggal||'-'}</div>
-            <b>Nama (NPWP)</b><div>${nama_npwp||'-'}</div>
-            <b>NPWP</b><div class="mono">${npwp||'-'}</div>
-          </div>
-          <div class="preview-section" style="border:0;padding:0;margin-top:6px">
-            <div class="section-head" style="border-radius:10px 10px 0 0"><i class="material-icons" style="font-size:18px">inventory_2</i> Rincian Barang</div>
-            <div class="section-body" style="padding:0">
-              <table class="items-table">
-                <thead><tr><th>Produk</th><th class="cell-center">Qty</th><th class="cell-right">Jumlah</th></tr></thead>
-                <tbody>${itemsRows || '<tr><td colspan="3"><i>Belum ada item</i></td></tr>'}</tbody>
-              </table>
-            </div>
-          </div>`;
-        const rightHTML = totalsHTML ||
-            '<div class="text-secondary">Ringkasan total belum terbentuk.</div>';
-
-        openPreview({
-            type: 'dp',
-            title: 'Preview Invoice DP',
-            leftTitle: 'Rincian DP',
-            leftHTML,
-            rightHTML,
-            onSubmit: () => form.submit()
-        });
-    });
-})();
-
-/* ====== PREVIEW: KOREKSI SP ====== */
-(function() {
-    const modal = document.getElementById('input-koreksi');
-    if (!modal) return;
-    const form = modal.querySelector('form[action="/admin/order-offline/koreksisp"]');
-    const itemsContainer = modal.querySelector('#container-items');
-    const indexSelected = modal.querySelector('input[name="index_items_selected"]');
-
-    injectPreviewButton(form, () => {
-        const id_pesanan = form.querySelector('input[name="id_pesanan"]').value;
-        const tanggal = form.querySelector('input[name="tanggal"]').value;
-        const nama_npwp = form.querySelector('input[name="nama_npwp"]').value;
-        const npwp = form.querySelector('input[name="npwp"]').value;
-        const ket = form.querySelector('input[name="keterangan"]').value;
-
-        const convertTo = form.querySelector('input[name="convert_to"]:checked')?.value || 'sale';
-        const jenisTujuanLabel = convertTo === 'nf' ? 'Non Faktur (NF)' : 'Surat Jalan (SALE)';
-
-        const isSame = form.querySelector('input[name="checkAlamat"]')?.checked;
-        const prov = form.querySelector('select[name="provinsi"]')?.value || '';
-        const kota = form.querySelector('select[name="kota"]')?.value || '';
-        const kec = form.querySelector('select[name="kecamatan"]')?.value || '';
-        const kode = form.querySelector('select[name="kodepos"]')?.value || '';
-        const detail = form.querySelector('input[name="detail"]')?.value || '';
-        const alamatTextarea = form.querySelector('textarea[name="alamatTagihan"]')?.value || '';
-
-        const alamat = isSame ? (alamatTextarea || '-') : [
-            prov?.split('-')[1] || '',
-            kota?.split('-')[1] || '',
-            kec?.split('-')[1] || '',
-            (kode?.split('-')[0] || '') + (kode?.split('-')[1] ? ` ${kode.split('-')[1]}` : '')
-        ].filter(Boolean).join(', ') + (detail ? `\n${detail}` : '');
-
-        const flags = (indexSelected.value || '').split(',');
-        const labels = [...itemsContainer.querySelectorAll('label')];
-        const chosen = labels.map((lab, i) => ({
-                on: flags[i] === '1',
-                text: lab.querySelector('.fw-bold')?.innerText || ''
-            }))
-            .filter(x => x.on);
-
-        const leftHTML = `
-          <div class="dl" style="margin-bottom:12px">
-            <b>ID Order</b><div class="mono">${id_pesanan||'-'}</div>
-            <b>Tanggal</b><div class="mono">${tanggal||'-'}</div>
-            <b>Jenis Tujuan</b><div>${jenisTujuanLabel}</div>
-            <b>Nama (NPWP)</b><div>${nama_npwp||'-'}</div>
-            <b>NPWP</b><div class="mono">${npwp||'-'}</div>
-            <b>Alamat Tagihan</b><div style="white-space:pre-wrap">${alamat||'-'}</div>
-            <b>Keterangan</b><div>${ket||'-'}</div>
-          </div>
-          <div class="preview-section" style="border:0;padding:0;margin-top:6px">
-            <div class="section-head" style="border-radius:10px 10px 0 0">
-              <i class="material-icons" style="font-size:18px">inventory_2</i> Item Dipilih
-            </div>
-            <div class="section-body" style="padding:0">
-              <table class="items-table">
-                <thead><tr><th>Produk</th></tr></thead>
-                <tbody>${chosen.length ? chosen.map(c=>`<tr><td>${c.text}</td></tr>`).join('') : '<tr><td><i>Tidak ada item dipilih</i></td></tr>'}</tbody>
-              </table>
-            </div>
-          </div>`;
-        const rightHTML =
-            `<div style="font-size:13px;color:#334155"><p class="m-0">Periksa kembali jenis tujuan (SJ / NF), item, dan alamat sebelum kirim koreksi SP.</p></div>`;
-
-        openPreview({
-            type: 'koreksi',
-            title: 'Preview Koreksi SP',
-            leftTitle: 'Rincian Koreksi',
-            leftHTML,
-            rightHTML,
-            badgeText: jenisTujuanLabel,
-            onSubmit: () => form.submit()
-        });
-    });
-})();
-</script>
-<!-- =====[ END PREVIEW UI ]===== -->
-
 <!-- ========== JS TAMBAHAN: EDIT ORDER ========== -->
 <script>
 const inputEditOrderElm = document.getElementById('input-edit-order');
@@ -1690,8 +1270,7 @@ const inputEditOrderElm = document.getElementById('input-edit-order');
 function toValueDatetimeLocal(dbDateStr) {
     if (!dbDateStr) return '';
     const s = String(dbDateStr).trim().replace('T', ' ');
-    const core = s.substring(0, 16).replace(' ', 'T');
-    return core;
+    return s.substring(0, 16).replace(' ', 'T');
 }
 
 function rupiah(x) {
@@ -1713,8 +1292,8 @@ function openEdit(index) {
     form.querySelector('input[name="nohp"]').value = p.nohp || '';
     form.querySelector('textarea[name="alamat_pengiriman"]').value = p.alamat_pengiriman || '';
     form.querySelector('input[name="npwp"]').value = p.npwp || '';
-    form.querySelector('input[name="down_payment"]').value = (p.down_payment !== undefined && p.down_payment !== null) ?
-        rupiah(p.down_payment) : '';
+    form.querySelector('input[name="down_payment"]').value =
+        (p.down_payment !== undefined && p.down_payment !== null) ? rupiah(p.down_payment) : '';
     form.querySelector('input[name="keterangan"]').value = p.keterangan || '';
 
     inputEditOrderElm.classList.remove('d-none');
@@ -1732,7 +1311,7 @@ function openEdit(index) {
 })();
 </script>
 
-<!-- ========== JS TAMBAHAN: DETAIL PESANAN (UPDATED: tolerant response) ========== -->
+<!-- ========== JS TAMBAHAN: DETAIL PESANAN ========== -->
 <script>
 function openDetail(idPesanan) {
     const tbody = document.getElementById('detail-items-body');
@@ -1763,8 +1342,7 @@ function openDetail(idPesanan) {
                         <td>${i.varian || '-'}</td>
                         <td class="text-center">${dimStr}</td>
                         <td class="text-end">Rp ${parseInt(i.harga || 0).toLocaleString('id-ID')}</td>
-                    </tr>
-                `;
+                    </tr>`;
             });
         })
         .catch(err => {

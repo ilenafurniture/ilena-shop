@@ -167,7 +167,7 @@ h1.teks-sedang::after {
     margin-bottom: 6px;
 }
 
-/* kecil-kecil tapi ngaruh */
+/* meta */
 .meta-top {
     display: flex;
     gap: 10px;
@@ -191,7 +191,7 @@ h1.teks-sedang::after {
 }
 
 /* responsive */
-@media (max-width: 768px) {
+@media (max-width:768px) {
     .hide-md {
         display: none !important;
     }
@@ -219,14 +219,16 @@ h1.teks-sedang::after {
   $formatter->setAttribute(\NumberFormatter::FRACTION_DIGITS, 0);
 
   function rupiah_local($n, $formatter){
-    return $formatter->formatCurrency((int)$n, 'IDR');
+    $out = $formatter->formatCurrency((int)$n, 'IDR');
+    // normalisasi kecil biar tampilan tetap "Rp"
+    $out = str_replace('IDR', 'Rp', $out);
+    return trim($out);
   }
 
   function status_norm($s){
     $s = strtolower(trim((string)$s));
-    // normalisasi kalau dari DB pakai variasi
     if ($s === 'paid' || $s === 'lunas') return 'lunas';
-    if ($s === 'downpayment' || $s === 'dp') return 'dp';
+    if ($s === 'downpayment' || $s === 'down payment' || $s === 'dp') return 'dp';
     if ($s === 'term' || $s === 'termin') return 'termin';
     if ($s === 'draft') return 'draft';
     return $s ?: 'unknown';
@@ -241,7 +243,6 @@ h1.teks-sedang::after {
     return 'help';
   }
 
-  // ringkasan cepat
   $countAll = is_array($projects) ? count($projects) : 0;
   $sumKontrak = 0; $sumBayar = 0;
   if (!empty($projects)){
@@ -258,15 +259,24 @@ h1.teks-sedang::after {
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div class="d-flex flex-column gap-1">
             <h1 class="teks-sedang mb-0">Pesanan Interior</h1>
+
             <div class="meta-top">
-                <span class="meta-pill"><i class="material-icons" style="font-size:16px;">fact_check</i> Total Project:
-                    <b><?= (int)$countAll; ?></b></span>
-                <span class="meta-pill hide-md"><i class="material-icons" style="font-size:16px;">description</i> Nilai
-                    Kontrak: <b><?= rupiah_local($sumKontrak, $formatter); ?></b></span>
-                <span class="meta-pill hide-md"><i class="material-icons" style="font-size:16px;">payments</i> Total
-                    Bayar: <b><?= rupiah_local($sumBayar, $formatter); ?></b></span>
-                <span class="meta-pill"><i class="material-icons" style="font-size:16px;">pending_actions</i> Sisa:
-                    <b><?= rupiah_local($sumSisa, $formatter); ?></b></span>
+                <span class="meta-pill">
+                    <i class="material-icons" style="font-size:16px;">fact_check</i>
+                    Total Project: <b><?= (int)$countAll; ?></b>
+                </span>
+                <span class="meta-pill hide-md">
+                    <i class="material-icons" style="font-size:16px;">description</i>
+                    Nilai Kontrak: <b><?= rupiah_local($sumKontrak, $formatter); ?></b>
+                </span>
+                <span class="meta-pill hide-md">
+                    <i class="material-icons" style="font-size:16px;">payments</i>
+                    Total Bayar: <b><?= rupiah_local($sumBayar, $formatter); ?></b>
+                </span>
+                <span class="meta-pill">
+                    <i class="material-icons" style="font-size:16px;">pending_actions</i>
+                    Sisa: <b><?= rupiah_local($sumSisa, $formatter); ?></b>
+                </span>
             </div>
         </div>
 
@@ -333,6 +343,7 @@ h1.teks-sedang::after {
 
                 $kodeProject = (string)($p['kode_project'] ?? '');
                 $namaProject = (string)($p['nama_project'] ?? '');
+
                 $searchKey = strtolower(trim($kodeProject . ' ' . $namaProject));
 
                 $createdAt = $p['created_at'] ?? null;
@@ -341,9 +352,12 @@ h1.teks-sedang::after {
                   $ts = strtotime((string)$createdAt);
                   if ($ts) $createdText = date('d/m/Y', $ts);
                 }
+
+                // safe kode buat link
+                $safeKode = $kodeProject ?: 'unknown';
               ?>
 
-                    <tr data-status="<?= esc($st); ?>" data-search="<?= esc($searchKey); ?>">
+                    <tr data-status="<?= esc($stClass); ?>" data-search="<?= esc($searchKey); ?>">
                         <td><code><?= esc($kodeProject ?: '-'); ?></code></td>
 
                         <td>
@@ -368,7 +382,7 @@ h1.teks-sedang::after {
                         <td>
                             <span class="badge-status <?= esc($stClass); ?>">
                                 <i class="material-icons" style="font-size:14px;"><?= esc(status_icon($st)); ?></i>
-                                <?= strtoupper($st ?: 'UNKNOWN'); ?>
+                                <?= strtoupper($stClass ?: 'UNKNOWN'); ?>
                             </span>
                         </td>
 
@@ -377,16 +391,19 @@ h1.teks-sedang::after {
                         </td>
 
                         <td class="text-end">
-                            <a href="<?= site_url('admin/project-interior/' . rawurlencode($kodeProject)); ?>"
+                            <?php if (!empty($kodeProject)): ?>
+                            <a href="<?= site_url('admin/project-interior/' . rawurlencode($safeKode)); ?>"
                                 class="btn-ghost" style="padding:.35em .6em;font-size:12px;"
                                 title="Buka detail project">
                                 Detail
                             </a>
+                            <?php else: ?>
+                            <span class="text-secondary" style="font-size:12px;">-</span>
+                            <?php endif; ?>
                         </td>
                     </tr>
                     <?php endforeach; ?>
 
-                    <!-- baris "tidak ada hasil" -->
                     <tr id="row-empty-filter" style="display:none;">
                         <td colspan="8" class="text-center" style="padding:18px;color:#6b7280;font-size:13px;">
                             <i class="material-icons"
@@ -407,7 +424,6 @@ h1.teks-sedang::after {
     const chips = document.querySelectorAll('.filter-chip');
     const table = document.getElementById('table-interior');
     const searchInput = document.getElementById('search-input');
-
     if (!table) return;
 
     const rows = Array.from(table.querySelectorAll('tbody tr')).filter(r => r.id !== 'row-empty-filter');
@@ -420,8 +436,8 @@ h1.teks-sedang::after {
         let visibleCount = 0;
 
         rows.forEach(row => {
-            const rowStatus = (row.getAttribute('data-status') || '').toLowerCase().trim();
-            const text = (row.getAttribute('data-search') || '').toLowerCase();
+            const rowStatus = (row.dataset.status || '').toLowerCase().trim(); // <- pakai normalized status
+            const text = (row.dataset.search || ''); // <- sudah lowercase dari PHP
 
             const matchStatus = (currentStatus === 'all') || (rowStatus === currentStatus);
             const matchSearch = (!q) || text.includes(q);
@@ -440,7 +456,7 @@ h1.teks-sedang::after {
         chip.addEventListener('click', () => {
             chips.forEach(c => c.classList.remove('active'));
             chip.classList.add('active');
-            currentStatus = (chip.getAttribute('data-status') || 'all').toLowerCase().trim();
+            currentStatus = (chip.dataset.status || 'all').toLowerCase().trim();
             applyFilter();
         });
     });
@@ -449,7 +465,6 @@ h1.teks-sedang::after {
         searchInput.addEventListener('input', applyFilter);
     }
 
-    // initial
     applyFilter();
 })();
 </script>

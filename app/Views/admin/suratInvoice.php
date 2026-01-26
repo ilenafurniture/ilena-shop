@@ -215,7 +215,18 @@
         // prioritas: jenis_faktur project interior, kalau kosong pakai jenis dari pemesanan_offline
         $docType = $jenisFakturProject !== '' ? $jenisFakturProject : $jenisLower;
 
-        // ==== KUNCI KONSEP: SP BUKAN INVOICE/TAGIHAN ====
+// ==== AUTO DETECT DARI PREFIX ID PESANAN (BIAR NF TIDAK SALAH JENIS) ====
+$rawIdUpper = strtoupper($rawId);
+if ($docType === '' || $docType === 'sp' || $docType === 'display') {
+    if (strpos($rawIdUpper, 'NF') === 0) {
+        $docType = 'nf';
+    } elseif (strpos($rawIdUpper, 'SJ') === 0) {
+        $docType = 'sale';
+    } elseif (strpos($rawIdUpper, 'DP') === 0) {
+        $docType = 'display';
+    }
+}
+// ==== KUNCI KONSEP: SP BUKAN INVOICE/TAGIHAN ====
         // Kalau yang dipanggil adalah SP, stop (kecuali memang kasus interior/payment invoice yang kamu pakai untuk reporting).
         if ($docType === 'sp' && empty($is_project_interior) && empty($is_payment_invoice)) {
             echo "<div class='alert alert-warning'>Dokumen SP bukan Invoice/Tagihan. Invoice hanya untuk SJ/NF.</div>";
@@ -246,8 +257,8 @@
             if (!empty($history_before) && is_array($history_before)) {
                 $paymentSequence = count($history_before) + 1;
             }
-            // contoh: NF00002-1 atau 00002-1
-            $nomorInvoiceHeader = $nomorDisplayBase . '-' . $paymentSequence;
+            // nomor invoice pembayaran: tetap konsisten TANPA strip
+            $nomorInvoiceHeader = $nomorDisplayBase;
         } else {
             $nomorInvoiceHeader = $nomorDisplayBase;
         }
@@ -260,18 +271,18 @@
             <div style="flex:1;"></div>
             <div class="d-flex gap-2 justify-content-end">
                 <div class="d-flex flex-column align-items-end">
-                    <?php if (!$isFinalInteriorInvoice): ?>
+
                     <p class="nt">Nomor :</p>
-                    <?php endif; ?>
+
                     <p class="nt">Tanggal :</p>
                 </div>
 
                 <div class="d-flex flex-column align-items-start">
-                    <?php if (!$isFinalInteriorInvoice): ?>
+
                     <p class="isint" style="font-weight:600;">
                         <?= esc($nomorInvoiceHeader); ?>/INV/CBM/<?= date('m', strtotime($tanggalFix)); ?>/<?= date('Y', strtotime($tanggalFix)); ?>
                     </p>
-                    <?php endif; ?>
+
                     <p class="isint">
                         <?php
                         $bulan_indonesia = [
@@ -296,6 +307,7 @@
                 <?php else: ?>
                 INVOICE
                 <?php endif; ?>
+
             </h3>
         </div>
 
@@ -610,6 +622,10 @@
                         </td>
                     </tr>
                     <?php endif; ?>
+
+
+
+
                     <?php endif; ?>
                     <?php endif; ?>
                 </tbody>
@@ -731,35 +747,37 @@
                     </tr>
                     <tr>
                         <td class="pe-3" style="white-space:nowrap; font-size:11.5px;">Surat Jalan</td>
-
-                        <?php if (!empty($is_payment_invoice)): ?>
-                        <?php if ($showSjOnPayment): ?>
                         <td style="white-space:nowrap; font-size:11.5px;">:
+                            <?php if (!empty($is_project_interior) && empty($is_payment_invoice)): ?>
+                            <?= !empty($summary_sj_numbers) ? esc($summary_sj_numbers) : '<span class="text-muted">-</span>'; ?>
+                            <?php elseif (!empty($is_payment_invoice) && !empty($showSjOnPayment)): ?>
                             <?php
-                                // Prioritas: kode_sj dari project interior kalau ada
-                                if (!empty($project['kode_sj'])) {
-                                    echo esc(substr($project['kode_sj'],5));
-                                } elseif (!empty($pemesanan['id_pesanan'])) {
-                                    echo esc(substr($pemesanan['id_pesanan'], 5));
-                                } else {
-                                    echo '-';
-                                }
-                            ?>
-                        </td>
-                        <?php else: ?>
-                        <!-- Invoice pembayaran (DP / Termin / Pelunasan) tanpa show_sj -->
-                        <td style="white-space:nowrap; font-size:11.5px;">: -</td>
-                        <?php endif; ?>
+                                    // Prioritas: kode_sj dari project interior kalau ada
+                                    $sjKey = '';
+                                    if (!empty($project['kode_sj'])) {
+                                        $sjKey = (string)$project['kode_sj'];
+                                    } elseif (!empty($pemesanan['id_pesanan'])) {
+                                        $sjKey = (string)$pemesanan['id_pesanan'];
+                                    }
 
-                        <?php elseif (!empty($pemesanan['down_payment'])): ?>
-                        <td style="white-space:nowrap; font-size:11.5px;">:
-                            <?= (isset($items[0]['id_return']) && $items[0]['id_return']) ? esc(substr($items[0]['id_return'], 5)) : '-' ; ?>
+                                    if ($sjKey !== '') {
+                                        $sjDigits = '00001';
+                                        if (preg_match('/(\d+)/', $sjKey, $mSj)) {
+                                            $sjDigits = substr($mSj[1], -5);
+                                        }
+                                        $sjBase = str_pad($sjDigits, 5, '0', STR_PAD_LEFT);
+                                        if (strpos(strtoupper($sjKey), 'NF') === 0) {
+                                            $sjBase = 'NF' . $sjBase;
+                                        }
+                                        echo esc($sjBase);
+                                    } else {
+                                        echo '<span class="text-muted">-</span>';
+                                    }
+                                ?>
+                            <?php else: ?>
+                            <span class="text-muted">-</span>
+                            <?php endif; ?>
                         </td>
-                        <?php else: ?>
-                        <td style="white-space:nowrap; font-size:11.5px;">:
-                            <?= !empty($pemesanan['id_pesanan']) ? esc(substr($pemesanan['id_pesanan'], 5)) : '-'; ?>
-                        </td>
-                        <?php endif; ?>
                     </tr>
                     <tr>
                         <td class="pe-3" style="white-space:nowrap; font-size:11.5px;">Jatuh Tempo</td>

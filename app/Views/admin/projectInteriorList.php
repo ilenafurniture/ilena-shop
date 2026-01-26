@@ -1,4 +1,3 @@
-<!-- app/Views/admin/projectInteriorList.php -->
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
 
@@ -9,19 +8,18 @@
     --slate-50: #f8fafc;
     --slate-100: #f1f5f9;
     --slate-200: #e5e7eb;
-    --slate-300: #d1d5db;
     --slate-700: #334155;
     --slate-800: #1f2937;
     --ring: rgba(255, 180, 180, .35);
 }
 
-/* judul */
+/* ===== Judul ===== */
 h1.teks-sedang {
     display: flex;
     align-items: center;
     gap: 10px;
     font-weight: 700;
-    letter-spacing: -.2px;
+    letter-spacing: -.2px
 }
 
 h1.teks-sedang::after {
@@ -32,7 +30,7 @@ h1.teks-sedang::after {
     border-radius: 999px;
 }
 
-/* card */
+/* ===== Card ===== */
 .card-soft {
     border-radius: 16px;
     border: 1px solid var(--slate-100);
@@ -40,16 +38,14 @@ h1.teks-sedang::after {
     box-shadow: 0 10px 28px rgba(2, 6, 23, .06);
 }
 
-/* search input (biar nyatu style) */
+/* ===== Input ===== */
 .form-control {
     border: 1px solid var(--slate-200);
     border-radius: 10px;
     height: 38px;
     padding: 8px 12px;
-    transition: border-color .15s, box-shadow .15s, background .15s;
-    background: #fff;
-    font-weight: 500;
     font-size: 13px;
+    font-weight: 500;
 }
 
 .form-control:focus {
@@ -58,24 +54,24 @@ h1.teks-sedang::after {
     outline: none;
 }
 
-/* table */
+/* ===== Table ===== */
 .table-sm th,
 .table-sm td {
     padding: .5rem .6rem;
     font-size: 13px;
-    vertical-align: middle;
+    vertical-align: middle
 }
 
 .table-sm thead th {
     background: #f9fafb;
-    border-bottom: 1px solid var(--slate-100);
+    border-bottom: 1px solid var(--slate-100)
 }
 
 .table-sm tbody tr:hover {
-    background: #fafafa;
+    background: #fafafa
 }
 
-/* badge status */
+/* ===== Badge Status ===== */
 .badge-status {
     display: inline-flex;
     align-items: center;
@@ -83,56 +79,47 @@ h1.teks-sedang::after {
     font-size: 11px;
     padding: 3px 8px;
     border-radius: 999px;
-    border: 1px solid transparent;
-    white-space: nowrap;
 }
 
 .badge-status.draft {
     background: #f9fafb;
-    border-color: #e5e7eb;
-    color: #4b5563;
+    border: 1px solid #e5e7eb;
+    color: #4b5563
 }
 
 .badge-status.dp {
     background: #ecfeff;
-    border-color: #a5f3fc;
-    color: #0369a1;
+    border: 1px solid #a5f3fc;
+    color: #0369a1
 }
 
 .badge-status.termin {
     background: #fef9c3;
-    border-color: #facc15;
-    color: #854d0e;
+    border: 1px solid #facc15;
+    color: #854d0e
 }
 
 .badge-status.lunas {
     background: #ecfdf3;
-    border-color: #4ade80;
-    color: #166534;
+    border: 1px solid #4ade80;
+    color: #166534
 }
 
-/* buttons */
+.badge-status.unknown {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #9a3412
+}
+
+/* ===== Buttons ===== */
 .btn-default-merah {
     border: 0;
     background: linear-gradient(180deg, var(--merah), var(--merah-600));
     color: #fff;
     font-weight: 800;
-    letter-spacing: .05em;
+    font-size: 13px;
     padding: .65em 1.1em;
     border-radius: 10px;
-    box-shadow: 0 10px 26px rgba(179, 18, 23, .26);
-    transition: transform .08s, filter .08s, box-shadow .18s, opacity .2s;
-    font-size: 13px;
-    text-transform: uppercase;
-}
-
-.btn-default-merah:hover {
-    filter: brightness(.98);
-}
-
-.btn-default-merah:active {
-    transform: translateY(1px);
-    box-shadow: 0 7px 18px rgba(179, 18, 23, .22);
 }
 
 .btn-ghost {
@@ -140,15 +127,11 @@ h1.teks-sedang::after {
     border: 1px solid var(--slate-200);
     padding: .55em .9em;
     border-radius: 10px;
-    font-weight: 700;
     font-size: 13px;
+    font-weight: 700;
 }
 
-.btn-ghost:hover {
-    background: #e5e7eb;
-}
-
-/* filter chip */
+/* ===== Filter Chip ===== */
 .filter-chip {
     font-size: 11.5px;
     border-radius: 999px;
@@ -156,36 +139,15 @@ h1.teks-sedang::after {
     padding: 4px 10px;
     background: #f9fafb;
     cursor: pointer;
-    user-select: none;
 }
 
 .filter-chip.active {
     background: #fee2e2;
     border-color: #fecaca;
-    color: #b91c1c;
+    color: #b91c1c
 }
 
-/* empty state */
-.empty-state {
-    padding: 2.5rem 1.5rem;
-    text-align: center;
-    color: #6b7280;
-    font-size: 13px;
-}
-
-.empty-state i {
-    font-size: 32px;
-    color: #9ca3af;
-    margin-bottom: 6px;
-}
-
-/* little counter */
-.small-counter {
-    font-size: 12px;
-    color: #64748b;
-}
-
-/* doc badge kecil */
+/* ===== Doc Pill ===== */
 .doc-pill {
     display: inline-flex;
     align-items: center;
@@ -195,87 +157,47 @@ h1.teks-sedang::after {
     border: 1px solid #e5e7eb;
     background: #f8fafc;
     font-size: 11.5px;
-    color: #334155;
-    white-space: nowrap;
-}
-
-.doc-pill code {
-    font-size: 11.5px;
 }
 </style>
 
 <?php
-  // Ekspektasi dari controller:
-  // $projects = [ ['kode_project','nama_project','kode_sj','nilai_kontrak','total_bayar','status','created_at'], ... ]
-  // $msg = optional
+$formatter = new \NumberFormatter('id_ID', \NumberFormatter::CURRENCY);
+$formatter->setAttribute(\NumberFormatter::FRACTION_DIGITS, 0);
 
-  $formatter = new \NumberFormatter('id_ID', \NumberFormatter::CURRENCY);
-  $formatter->setTextAttribute(\NumberFormatter::CURRENCY_CODE, 'IDR');
-  $formatter->setAttribute(\NumberFormatter::FRACTION_DIGITS, 0);
+function rupiah($n,$f){ return $f->formatCurrency((int)$n,'IDR'); }
+function st($s){ return strtolower(trim((string)$s)); }
+function icon($s){ return $s==='lunas'?'verified':($s==='draft'?'hourglass_empty':'payments'); }
+function docLabel($k){
+  $k=strtoupper($k);
+  if(!$k) return '';
+  if(str_starts_with($k,'SJ')) return 'SJ';
+  if(str_starts_with($k,'NF')) return 'NF';
+  return 'DOC';
+}
 
-  function rupiah_local($n, $formatter){
-    return $formatter->formatCurrency((int)$n, 'IDR');
-  }
-
-  function status_norm($s){
-    return strtolower(trim((string)$s));
-  }
-
-  function status_icon($s){
-    $s = status_norm($s);
-    if ($s === 'lunas') return 'verified';
-    if ($s === 'draft') return 'hourglass_empty';
-    return 'payments'; // dp / termin / lainnya
-  }
-
-  function doc_label($kodeDok){
-    $k = strtoupper(trim((string)$kodeDok));
-    if ($k === '') return 'Dokumen Utama';
-    if (preg_match('/^NF/', $k)) return 'NF';
-    if (preg_match('/^SJ/', $k)) return 'SJ';
-    return 'Dokumen Utama';
-  }
-
-  // hitung ringkas
-  $countAll = is_array($projects ?? null) ? count($projects) : 0;
+$countAll = is_array($projects??null) ? count($projects) : 0;
 ?>
 
-<div style="padding: 2em;" class="h-100 d-flex flex-column">
+<div style="padding:2em">
 
-    <?php if (!empty($msg)): ?>
-    <div class="alert alert-info py-2 mb-3" style="font-size:13px;">
-        <?= esc($msg); ?>
-    </div>
-    <?php endif; ?>
-
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="d-flex flex-column">
+    <div class="d-flex justify-content-between mb-3">
+        <div>
             <h1 class="teks-sedang mb-0">Project Interior</h1>
-            <span class="small-counter mt-1">
-                Total: <b id="count-visible"><?= (int)$countAll; ?></b> / <?= (int)$countAll; ?> project
-            </span>
+            <small class="text-muted">Total: <b id="count-visible"><?= $countAll ?></b> / <?= $countAll ?></small>
         </div>
-
         <div class="d-flex gap-2">
-            <a href="<?= site_url('admin/order/offline/sale'); ?>" class="btn-ghost">
-                <i class="material-icons" style="font-size:16px;vertical-align:-3px;">store</i>
-                Offline (Sale)
-            </a>
-            <a href="<?= site_url('admin/project-interior/add'); ?>" class="btn-default-merah">
-                <i class="material-icons" style="font-size:16px;vertical-align:-3px;">add</i>
-                Project Baru
-            </a>
+            <a href="<?= site_url('admin/order/offline/sale') ?>" class="btn-ghost">Offline</a>
+            <a href="<?= site_url('admin/project-interior/add') ?>" class="btn-default-merah">+ Project</a>
         </div>
     </div>
 
     <div class="card-soft p-3 mb-3">
-        <div class="row g-2 align-items-center">
+        <div class="row g-2">
             <div class="col-md-4">
-                <input type="text" id="search-input" class="form-control"
-                    placeholder="Cari nama / kode / dokumen... (Ctrl+K juga boleh 😄)">
+                <input id="search-input" class="form-control" placeholder="Cari kode / nama / SJ / NF (Ctrl+K)">
             </div>
             <div class="col-md-8 d-flex justify-content-end gap-2 flex-wrap">
-                <span class="filter-chip active" data-status="all">Semua Status</span>
+                <span class="filter-chip active" data-status="all">Semua</span>
                 <span class="filter-chip" data-status="draft">Draft</span>
                 <span class="filter-chip" data-status="dp">DP</span>
                 <span class="filter-chip" data-status="termin">Termin</span>
@@ -285,166 +207,101 @@ h1.teks-sedang::after {
     </div>
 
     <div class="card-soft p-0">
-        <?php if (empty($projects)): ?>
-        <div class="empty-state">
-            <i class="material-icons">home</i>
-            <div class="mb-1"><b>Belum ada project interior.</b></div>
-            <div>Buat project baru untuk mulai mengelola pesanan interior.</div>
-        </div>
+        <?php if(empty($projects)): ?>
+        <div class="p-4 text-center text-muted">Belum ada project interior</div>
         <?php else: ?>
         <div class="table-responsive">
-            <table class="table table-sm mb-0 align-middle" id="table-interior">
+            <table class="table table-sm mb-0" id="table-interior">
                 <thead>
                     <tr>
-                        <th style="width:80px;">Kode</th>
-                        <th>Nama Project</th>
-                        <th style="width:160px;">Dokumen Utama (SJ/NF)</th>
-                        <th style="width:140px;" class="text-end">Nilai Kontrak</th>
-                        <th style="width:140px;" class="text-end">Total Bayar</th>
-                        <th style="width:130px;" class="text-end">Sisa</th>
-                        <th style="width:110px;">Status</th>
-                        <th style="width:120px;">Dibuat</th>
-                        <th style="width:90px;" class="text-end">Aksi</th>
+                        <th>Kode</th>
+                        <th>Nama</th>
+                        <th>Dokumen</th>
+                        <th class="text-end">Kontrak</th>
+                        <th class="text-end">Bayar</th>
+                        <th class="text-end">Sisa</th>
+                        <th>Status</th>
+                        <th>Dibuat</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($projects as $p): ?>
-                    <?php
-                        $nilai   = (int)($p['nilai_kontrak'] ?? 0);
-                        $bayar   = (int)($p['total_bayar'] ?? 0);
-                        $sisa    = max(0, $nilai - $bayar);
-
-                        $status  = status_norm($p['status'] ?? 'draft');
-                        $created = $p['created_at'] ?? null;
-
-                        $kode = (string)($p['kode_project'] ?? '');
-                        $nama = (string)($p['nama_project'] ?? '');
-                        $kodeDok = (string)($p['kode_sj'] ?? ''); // dokumen utama (SJ/NF)
-                        $dokLabel = doc_label($kodeDok);
-
-                        $searchKey = strtolower(trim(preg_replace('/\s+/', ' ', $kode.' '.$nama.' '.$kodeDok)));
-                    ?>
-                    <tr data-status="<?= esc($status); ?>" data-search="<?= esc($searchKey); ?>">
-                        <td><code><?= esc($kode ?: '-'); ?></code></td>
-
+                    <?php foreach($projects as $p):
+          $nilai=(int)($p['nilai_kontrak']??0);
+          $bayar=(int)($p['total_bayar']??0);
+          $sisa=max(0,$nilai-$bayar);
+          $status=st($p['status']??'draft');
+          $kode=$p['kode_project']??'';
+          $dok=$p['kode_sj']??'';
+          $search=strtolower($kode.' '.$p['nama_project'].' '.$dok);
+        ?>
+                    <tr data-status="<?= esc($status) ?>" data-search="<?= esc($search) ?>">
+                        <td><code><?= esc($kode) ?></code></td>
+                        <td><b><?= esc($p['nama_project']) ?></b></td>
                         <td>
-                            <div style="font-size:13px;font-weight:700;"><?= esc($nama ?: '-'); ?></div>
+                            <?php if($dok): ?>
+                            <span class="doc-pill"><?= docLabel($dok) ?> <code><?= esc($dok) ?></code></span>
+                            <?php else: ?><span class="text-muted">-</span><?php endif ?>
                         </td>
-
-                        <td style="font-size:12px;">
-                            <?php if (!empty($kodeDok)): ?>
-                            <span class="doc-pill">
-                                <i class="material-icons" style="font-size:14px;color:#64748b;">description</i>
-                                <span style="font-weight:800;"><?= esc($dokLabel); ?></span>
-                                <code><?= esc($kodeDok); ?></code>
-                            </span>
-                            <?php else: ?>
-                            <span class="text-muted">-</span>
-                            <?php endif; ?>
+                        <td class="text-end"><?= rupiah($nilai,$formatter) ?></td>
+                        <td class="text-end"><?= rupiah($bayar,$formatter) ?></td>
+                        <td class="text-end" style="color:<?= $sisa? '#b91c1c':'#16a34a' ?>">
+                            <?= rupiah($sisa,$formatter) ?>
                         </td>
-
-                        <td class="text-end" style="font-weight:700;"><?= rupiah_local($nilai, $formatter); ?></td>
-                        <td class="text-end" style="font-size:12.5px;"><?= rupiah_local($bayar, $formatter); ?></td>
-
-                        <td class="text-end" style="font-size:12.5px;color:<?= $sisa>0?'#b91c1c':'#16a34a'; ?>;">
-                            <?= rupiah_local($sisa, $formatter); ?>
-                        </td>
-
                         <td>
-                            <span class="badge-status <?= esc($status); ?>">
-                                <i class="material-icons" style="font-size:14px;"><?= esc(status_icon($status)); ?></i>
-                                <?= strtoupper($status ?: 'UNKNOWN'); ?>
+                            <span class="badge-status <?= esc($status) ?>">
+                                <i class="material-icons" style="font-size:13px"><?= icon($status) ?></i>
+                                <?= strtoupper($status) ?>
                             </span>
                         </td>
-
-                        <td style="font-size:12px;">
-                            <?= $created ? esc(date('d/m/Y', strtotime($created))) : '-'; ?>
-                        </td>
-
+                        <td><?= !empty($p['created_at']) ? date('d/m/Y',strtotime($p['created_at'])):'-' ?></td>
                         <td class="text-end">
-                            <a href="<?= site_url('admin/project-interior/' . rawurlencode($kode)); ?>"
-                                class="btn-ghost" style="padding:.35em .6em;font-size:12px;">
-                                Detail
-                            </a>
+                            <a href="<?= site_url('admin/project-interior/'.$kode) ?>"
+                                class="btn-ghost btn-sm">Detail</a>
                         </td>
                     </tr>
-                    <?php endforeach; ?>
+                    <?php endforeach ?>
                 </tbody>
             </table>
         </div>
-        <?php endif; ?>
+        <?php endif ?>
     </div>
-
 </div>
 
 <script>
 (() => {
-    const chips = document.querySelectorAll('.filter-chip');
-    const table = document.getElementById('table-interior');
-    const rows = table ? Array.from(table.querySelectorAll('tbody tr')) : [];
-    const searchInput = document.getElementById('search-input');
-    const countVisibleEl = document.getElementById('count-visible');
+    const rows = [...document.querySelectorAll('#table-interior tbody tr')];
+    const chips = [...document.querySelectorAll('.filter-chip')];
+    const search = document.getElementById('search-input');
+    const count = document.getElementById('count-visible');
+    let status = 'all';
 
-    // persist filter (biar balik lagi tetap ingat)
-    const LS_STATUS = 'pi_filter_status';
-    const LS_QUERY = 'pi_filter_query';
-
-    let currentStatus = localStorage.getItem(LS_STATUS) || 'all';
-
-    function setActiveChip(status) {
-        chips.forEach(c => c.classList.toggle('active', (c.getAttribute('data-status') || 'all') === status));
-    }
-
-    function applyFilter() {
-        const q = (searchInput?.value || '').toLowerCase().trim();
-        let visible = 0;
-
-        rows.forEach(row => {
-            const rowStatus = (row.getAttribute('data-status') || '').toLowerCase().trim();
-            const text = (row.getAttribute('data-search') || '').toLowerCase();
-
-            const matchStatus = (currentStatus === 'all') || (rowStatus === currentStatus);
-            const matchSearch = !q || text.includes(q);
-
-            const show = matchStatus && matchSearch;
-            row.style.display = show ? '' : 'none';
-            if (show) visible++;
+    function apply() {
+        const q = (search.value || '').toLowerCase();
+        let v = 0;
+        rows.forEach(r => {
+            const okS = status === 'all' || r.dataset.status === status;
+            const okQ = r.dataset.search.includes(q);
+            r.style.display = (okS && okQ) ? '' : 'none';
+            if (okS && okQ) v++;
         });
-
-        if (countVisibleEl) countVisibleEl.textContent = String(visible);
-
-        localStorage.setItem(LS_STATUS, currentStatus);
-        localStorage.setItem(LS_QUERY, q);
+        count.textContent = v;
     }
 
-    // init saved query
-    if (searchInput) {
-        const savedQ = localStorage.getItem(LS_QUERY) || '';
-        if (savedQ) searchInput.value = savedQ;
-    }
-
-    setActiveChip(currentStatus);
-    applyFilter();
-
-    chips.forEach(chip => {
-        chip.addEventListener('click', () => {
-            currentStatus = (chip.getAttribute('data-status') || 'all').toLowerCase().trim();
-            setActiveChip(currentStatus);
-            applyFilter();
-        });
+    chips.forEach(c => c.onclick = () => {
+        chips.forEach(x => x.classList.remove('active'));
+        c.classList.add('active');
+        status = c.dataset.status;
+        apply();
     });
+    search.oninput = apply;
 
-    if (searchInput) {
-        // Ctrl+K fokus search (biar berasa dashboard pro 😄)
-        window.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-                e.preventDefault();
-                searchInput.focus();
-            }
-        });
-
-        searchInput.addEventListener('input', applyFilter);
-    }
+    window.addEventListener('keydown', e => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            search.focus();
+        }
+    });
 })();
 </script>
 

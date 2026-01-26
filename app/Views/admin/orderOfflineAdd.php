@@ -339,7 +339,7 @@ input:focus {
     border: 1px solid var(--slate-200);
     padding: .7em 1em;
     border-radius: 10px;
-    font-weight: 800
+    font-weight: 800;
 }
 
 .btn-ghost:hover {
@@ -700,8 +700,8 @@ input:focus {
             </div>
             <div class="step mt-2">
                 <div class="num">3</div>
-                <div class="txt"><b>Isi Alamat</b><br><span class="muted">Alamat pengiriman wajib. Alamat tagihan wajib
-                        untuk Sale/NF.</span></div>
+                <div class="txt"><b>Isi Alamat</b><br><span class="muted">Alamat kirim wajib. Alamat tagihan wajib untuk
+                        Sale/NF.</span></div>
             </div>
             <span class="helper info">Shortcut aman: isi keranjang → isi penerima → pilih jenis → isi alamat →
                 preview.</span>
@@ -711,7 +711,6 @@ input:focus {
             <div class="card-soft">
                 <div class="card-head">
                     <div class="card-title">
-                        <!-- INI HTML biasa, boleh pakai style string -->
                         <i class="material-icons" style="font-size:18px;color:#64748b;">shopping_cart</i>
                         Ringkasan
                     </div>
@@ -731,6 +730,7 @@ input:focus {
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 <script>
+// debug produkJson
 console.log(<?= $produkJson ?>);
 </script>
 
@@ -744,8 +744,31 @@ function nowLocalDatetimeValue(){
   const pad = (n)=>String(n).padStart(2,'0');
   return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
+
 const clamp = (n,min,max)=>Math.min(max, Math.max(min, Number(n||0)));
 const toNum = (x)=>Number(x||0);
+
+// ===== Normalizer: biar endpoint kamu fleksibel (array / {label:[]} / {results:[]} / dll) =====
+const normalizeList = (payload) => {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.label)) return payload.label;
+  if (Array.isArray(payload?.results)) return payload.results;
+  if (Array.isArray(payload?.data?.results)) return payload.data.results;
+  return [];
+};
+const pickIdLabel = (item) => {
+  const id = item.city_id ?? item.id ?? item.value ?? item.subdistrict_id ?? item.kecamatan_id ?? '';
+  const labelRaw = item.city_name ?? item.subdistrict_name ?? item.label ?? item.name ?? item.DesaKelurahan ?? item.desa ?? '';
+  const label = String(labelRaw).split('/')[0].trim();
+  return { id: String(id), label };
+};
+const pickDesaKodepos = (item) => {
+  const desaRaw = item.DesaKelurahan ?? item.desa ?? item.label ?? item.name ?? '';
+  const kodeposRaw = item.KodePos ?? item.kodepos ?? item.zip ?? '';
+  const desa = String(desaRaw).split('/')[0].trim();
+  const kodepos = String(kodeposRaw).trim();
+  return { desa, kodepos };
+};
 
 const StepBadge = ({ n }) => (
   <span style={{
@@ -782,9 +805,11 @@ const App = () => {
   const [kabupaten, setKabupaten] = useState([]);
   const [kecamatan, setKecamatan] = useState([]);
   const [kelurahan, setKelurahan] = useState([]);
+
   const [kabupatenTagihan, setKabupatenTagihan] = useState([]);
   const [kecamatanTagihan, setKecamatanTagihan] = useState([]);
   const [kelurahanTagihan, setKelurahanTagihan] = useState([]);
+
   const [canSave, setCanSave] = useState(false);
   const [potongan, setPotongan] = useState({ nominal:0, satuan:'persen' });
   const [alamatTagihanSama, setAlamatTagihanSama] = useState(false);
@@ -792,6 +817,7 @@ const App = () => {
   /* PREVIEW */
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewPayload, setPreviewPayload] = useState(null);
+
   const formatRupiah = (n)=>`Rp ${Number(n||0).toLocaleString('id-ID')}`;
   const isInvoiceLike = (j)=> j==='sale' || j==='nf';
 
@@ -827,7 +853,7 @@ const App = () => {
     if(fixed !== formData.downPayment) setFormData(prev=>({...prev, downPayment: fixed}));
   },[formData.downPayment, formData.totalAkhir]);
 
-  /* ===== ringkasan di kanan atas (HTML biasa via innerHTML aman) ===== */
+  /* ===== ringkasan di kanan atas ===== */
   useEffect(()=>{
     const el = document.getElementById('ringkasan-top');
     if(!el) return;
@@ -847,8 +873,8 @@ const App = () => {
       (async ()=>{
         try{
           const r = await fetch("/getkota/"+idprov);
-          const kota = await r.json();
-          setKabupaten(Array.isArray(kota)?kota:(kota?.label||kota?.results||[]));
+          const payload = await r.json();
+          setKabupaten(normalizeList(payload).map(pickIdLabel));
         }catch{ setKabupaten([]); }
       })();
     }
@@ -862,8 +888,8 @@ const App = () => {
       (async ()=>{
         try{
           const r = await fetch("/getkec/"+idkab);
-          const kota = await r.json();
-          setKecamatan(Array.isArray(kota)?kota:(kota?.label||kota?.results||[]));
+          const payload = await r.json();
+          setKecamatan(normalizeList(payload).map(pickIdLabel));
         }catch{ setKecamatan([]); }
       })();
     }
@@ -877,8 +903,15 @@ const App = () => {
       (async ()=>{
         try{
           const r = await fetch("/getkode/"+idkec);
-          const hasil = await r.json();
-          setKelurahan(Array.isArray(hasil)?hasil:(hasil?.label||hasil?.results||[]));
+          const payload = await r.json();
+          const list = normalizeList(payload)
+            .map(pickDesaKodepos)
+            .map(x => ({
+              label: x.desa,
+              kodepos: x.kodepos,
+              value: `${x.desa}__${x.kodepos}`
+            }));
+          setKelurahan(list);
         }catch{ setKelurahan([]); }
       })();
     }
@@ -887,8 +920,8 @@ const App = () => {
 
   useEffect(()=>{
     if(formData.kelurahan){
-      const parts = formData.kelurahan.split('-');
-      setFormData(prev=>({...prev, kodepos: parts[1] || ''}));
+      const [desa, kp] = String(formData.kelurahan).split('__');
+      setFormData(prev=>({...prev, kodepos: kp || prev.kodepos, kelurahan: `${desa || ''}__${kp || ''}`}));
     }
   },[formData.kelurahan]);
 
@@ -899,8 +932,8 @@ const App = () => {
       (async ()=>{
         try{
           const r = await fetch("/getkota/"+idprov);
-          const kota = await r.json();
-          setKabupatenTagihan(Array.isArray(kota)?kota:(kota?.label||kota?.results||[]));
+          const payload = await r.json();
+          setKabupatenTagihan(normalizeList(payload).map(pickIdLabel));
         }catch{ setKabupatenTagihan([]); }
       })();
     }
@@ -914,8 +947,8 @@ const App = () => {
       (async ()=>{
         try{
           const r = await fetch("/getkec/"+idkab);
-          const kota = await r.json();
-          setKecamatanTagihan(Array.isArray(kota)?kota:(kota?.label||kota?.results||[]));
+          const payload = await r.json();
+          setKecamatanTagihan(normalizeList(payload).map(pickIdLabel));
         }catch{ setKecamatanTagihan([]); }
       })();
     }
@@ -929,8 +962,15 @@ const App = () => {
       (async ()=>{
         try{
           const r = await fetch("/getkode/"+idkec);
-          const hasil = await r.json();
-          setKelurahanTagihan(Array.isArray(hasil)?hasil:(hasil?.label||hasil?.results||[]));
+          const payload = await r.json();
+          const list = normalizeList(payload)
+            .map(pickDesaKodepos)
+            .map(x => ({
+              label: x.desa,
+              kodepos: x.kodepos,
+              value: `${x.desa}__${x.kodepos}`
+            }));
+          setKelurahanTagihan(list);
         }catch{ setKelurahanTagihan([]); }
       })();
     }
@@ -939,8 +979,8 @@ const App = () => {
 
   useEffect(()=>{
     if(formData.kelurahanTagihan){
-      const parts = formData.kelurahanTagihan.split('-');
-      setFormData(prev=>({...prev, kodeposTagihan: parts[1] || ''}));
+      const [desa, kp] = String(formData.kelurahanTagihan).split('__');
+      setFormData(prev=>({...prev, kodeposTagihan: kp || prev.kodeposTagihan, kelurahanTagihan: `${desa || ''}__${kp || ''}`}));
     }
   },[formData.kelurahanTagihan]);
 
@@ -972,8 +1012,11 @@ const App = () => {
 
   /* ========= Validasi form ========= */
   useEffect(()=>{
-    const {provinsi,kabupaten,kecamatan,kelurahan,kodepos,detail,jenis,tanggal,items,nama,nohp,
-      provinsiTagihan,kabupatenTagihan,kecamatanTagihan,kelurahanTagihan,kodeposTagihan,detailTagihan} = formData;
+    const {
+      provinsi,kabupaten,kecamatan,kelurahan,kodepos,detail,
+      jenis,tanggal,items,nama,nohp,
+      provinsiTagihan,kabupatenTagihan,kecamatanTagihan,kelurahanTagihan,kodeposTagihan,detailTagihan
+    } = formData;
 
     const isFormValidKhusus = ()=>{
       if(isInvoiceLike(jenis) && !alamatTagihanSama){
@@ -1047,24 +1090,35 @@ const App = () => {
 
   /* ========= Build payload ========= */
   const buildPayload = ()=>{
-  
     const specialPriceActive = Number(potongan.nominal) > 0 ? 1 : 0;
+
+    const provKirimLabel = formData.provinsi ? formData.provinsi.split("-")[1] : null;
+    const kabKirimLabel  = formData.kabupaten ? formData.kabupaten.split("-")[1] : null;
+    const kecKirimLabel  = formData.kecamatan ? formData.kecamatan.split("-")[1] : null;
+
+    const [desaKirim] = String(formData.kelurahan || '').split('__');
+
+    const provTagihLabel = formData.provinsiTagihan ? formData.provinsiTagihan.split("-")[1] : null;
+    const kabTagihLabel  = formData.kabupatenTagihan ? formData.kabupatenTagihan.split("-")[1] : null;
+    const kecTagihLabel  = formData.kecamatanTagihan ? formData.kecamatanTagihan.split("-")[1] : null;
+    const [desaTagih]    = String(formData.kelurahanTagihan || '').split('__');
+
     const fAkhir = {
       ...formData,
 
-      specialPriceActive: specialPriceActive,
-      specialPriceNominal : Number(potongan.nominal || 0),
-      specialPriceSatuan : potongan.satuan,
+      specialPriceActive,
+      specialPriceNominal: Number(potongan.nominal || 0),
+      specialPriceSatuan: potongan.satuan,
 
-      provinsi: formData.provinsi.split("-")[1],
-      kabupaten: formData.kabupaten.split("-")[1],
-      kecamatan: formData.kecamatan.split("-")[1],
-      kelurahan: formData.kelurahan.split("-")[0],
+      provinsi: provKirimLabel,
+      kabupaten: kabKirimLabel,
+      kecamatan: kecKirimLabel,
+      kelurahan: desaKirim || null,
 
-      provinsiTagihan: alamatTagihanSama ? (formData.provinsi.split("-")[1]) : (formData.provinsiTagihan ? formData.provinsiTagihan.split("-")[1] : null),
-      kabupatenTagihan: alamatTagihanSama ? (formData.kabupaten.split("-")[1]) : (formData.kabupatenTagihan ? formData.kabupatenTagihan.split("-")[1] : null),
-      kecamatanTagihan: alamatTagihanSama ? (formData.kecamatan.split("-")[1]) : (formData.kecamatanTagihan ? formData.kecamatanTagihan.split("-")[1] : null),
-      kelurahanTagihan: alamatTagihanSama ? (formData.kelurahan.split("-")[0]) : (formData.kelurahanTagihan ? formData.kelurahanTagihan.split("-")[0] : null),
+      provinsiTagihan: alamatTagihanSama ? provKirimLabel : provTagihLabel,
+      kabupatenTagihan: alamatTagihanSama ? kabKirimLabel : kabTagihLabel,
+      kecamatanTagihan: alamatTagihanSama ? kecKirimLabel : kecTagihLabel,
+      kelurahanTagihan: alamatTagihanSama ? (desaKirim || null) : (desaTagih || null),
       kodeposTagihan: alamatTagihanSama ? formData.kodepos : formData.kodeposTagihan,
       detailTagihan: alamatTagihanSama ? formData.detail : formData.detailTagihan,
 
@@ -1074,14 +1128,14 @@ const App = () => {
 
     const fAkhir1 = {
       ...fAkhir,
-      provinsiTagihan: fAkhir.jenis=='display' ? null : fAkhir.provinsiTagihan,
-      kabupatenTagihan: fAkhir.jenis=='display' ? null : fAkhir.kabupatenTagihan,
-      kecamatanTagihan: fAkhir.jenis=='display' ? null : fAkhir.kecamatanTagihan,
-      kelurahanTagihan: fAkhir.jenis=='display' ? null : fAkhir.kelurahanTagihan,
-      kodeposTagihan: fAkhir.jenis=='display' ? null : fAkhir.kodeposTagihan,
-      detailTagihan: fAkhir.jenis=='display' ? null : fAkhir.detailTagihan,
-      npwp: fAkhir.jenis=='display' ? null : fAkhir.npwp,
-      nama_npwp: fAkhir.jenis=='display' ? null : fAkhir.nama_npwp,
+      provinsiTagihan: fAkhir.jenis==='display' ? null : fAkhir.provinsiTagihan,
+      kabupatenTagihan: fAkhir.jenis==='display' ? null : fAkhir.kabupatenTagihan,
+      kecamatanTagihan: fAkhir.jenis==='display' ? null : fAkhir.kecamatanTagihan,
+      kelurahanTagihan: fAkhir.jenis==='display' ? null : fAkhir.kelurahanTagihan,
+      kodeposTagihan: fAkhir.jenis==='display' ? null : fAkhir.kodeposTagihan,
+      detailTagihan: fAkhir.jenis==='display' ? null : fAkhir.detailTagihan,
+      npwp: fAkhir.jenis==='display' ? null : fAkhir.npwp,
+      nama_npwp: fAkhir.jenis==='display' ? null : fAkhir.nama_npwp,
     };
 
     return fAkhir1;
@@ -1114,8 +1168,8 @@ const App = () => {
 
         if(response.status==200){
           window.alert(isDraft ? 'Draft pesanan tersimpan' : 'Berhasil menambahkan pesanan');
-          const seg = formData.jenis === 'display' ? 'sp' : formData.jenis;
-          window.location.href = `/admin/order/offline/${seg}`;
+          const seg = formData.jenis;
+          window.location.href = `/admin/order/offline/${formData.jenis}`;
         } else {
           window.alert(responseJson.pesan || 'Gagal menyimpan pesanan');
         }
@@ -1292,7 +1346,7 @@ const App = () => {
                         {(formData.provinsi && formData.provinsi.split('-')[1]) || ''},
                         {' '}{(formData.kabupaten && formData.kabupaten.split('-')[1]) || ''},
                         {' '}{(formData.kecamatan && formData.kecamatan.split('-')[1]) || ''},
-                        {' '}{(formData.kelurahan && formData.kelurahan.split('-')[0]) || ''} {formData.kodepos}
+                        {' '}{String(formData.kelurahan||'').split('__')[0] || ''} {formData.kodepos}
                         <br/>{formData.detail}
                       </div>
 
@@ -1305,7 +1359,7 @@ const App = () => {
                                 {(formData.provinsiTagihan && formData.provinsiTagihan.split('-')[1]) || ''},
                                 {' '}{(formData.kabupatenTagihan && formData.kabupatenTagihan.split('-')[1]) || ''},
                                 {' '}{(formData.kecamatanTagihan && formData.kecamatanTagihan.split('-')[1]) || ''},
-                                {' '}{(formData.kelurahanTagihan && formData.kelurahanTagihan.split('-')[0]) || ''} {formData.kodeposTagihan}
+                                {' '}{String(formData.kelurahanTagihan||'').split('__')[0] || ''} {formData.kodeposTagihan}
                                 <br/>{formData.detailTagihan}
                               </>
                             )}
@@ -1336,7 +1390,7 @@ const App = () => {
                                 <td className="cell-thumb">
                                   <img className="thumb" src={getThumbByItem(it)} alt={it.nama}/>
                                 </td>
-                                <td>{Number(potongan.nominal) > 0 && (<b style={{color:'#b31217'}}>{it.nama}</b>)}{it.nama}</td>
+                                <td>{Number(potongan.nominal) > 0 ? (<b style={{color:'#b31217'}}>{it.nama}</b>) : it.nama}</td>
                                 <td className="mono">{it.varian}</td>
                                 <td className="cell-center">{it.jumlah}</td>
                                 <td className="cell-right mono">{formatRupiah(it.harga)}</td>
@@ -1583,7 +1637,7 @@ const App = () => {
                   <select className="form-select" value={formData.kelurahan} onChange={(e)=>setFormData({...formData, kelurahan:e.target.value})}>
                     <option value="">-- Pilih kelurahan --</option>
                     {kelurahan.map((k,ind_k)=>(
-                      <option key={ind_k} value={`${k.label}-${k.kodepos}`}>{k.label}</option>
+                      <option key={ind_k} value={k.value}>{k.label}{k.kodepos ? ` (${k.kodepos})` : ''}</option>
                     ))}
                   </select>
                 </div>
@@ -1651,7 +1705,7 @@ const App = () => {
                         <select className="form-select" value={formData.kelurahanTagihan} onChange={(e)=>setFormData({...formData, kelurahanTagihan:e.target.value})}>
                           <option value="">-- Pilih kelurahan --</option>
                           {kelurahanTagihan.map((k,ind_k)=>(
-                            <option key={ind_k} value={`${k.label}-${k.kodepos}`}>{k.label}</option>
+                            <option key={ind_k} value={k.value}>{k.label}{k.kodepos ? ` (${k.kodepos})` : ''}</option>
                           ))}
                         </select>
                       </div>

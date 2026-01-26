@@ -1328,6 +1328,34 @@ const MITRA = [{
         img: "https://i.ibb.co.com/0Rgz9Nqr/Screenshot-2025-12-13-035809.png",
         coords: [-7.563000989154064, 109.19923900428012]
     },
+    {
+        name: "Zenna Furniture",
+        city: "Bandung",
+        address: "Jl. AH. Nasution No.107, Karang Pamulang, Kec. Mandalajati, Kota Bandung, Jawa Barat 40294",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. AH. Nasution No.107, Karang Pamulang, Mandalajati, Kota Bandung, Jawa Barat 40294"),
+        img: "https://i.ibb.co.com/VWTs6fSs/unnamed.webp",
+        coords: [-6.9038594301077785, 107.67414009116175]
+    },
+    {
+        name: "Sri Katon Ponorogo",
+        city: "Ponorogo",
+        address: "Jl. Urip Sumoharjo No.106, Banyudono, Kec. Ponorogo, Kabupaten Ponorogo, Jawa Timur 63411",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Urip Sumoharjo No.106, Banyudono, Kec. Ponorogo, Kabupaten Ponorogo, Jawa Timur 63411"),
+        img: "https://i.ibb.co.com/nqN1DKhx/Screenshot-2026-01-26-083107.png",
+        coords: [-7.865228634016636, 111.46784535330907]
+    },
+    {
+        name: "Simple Art Living",
+        city: "Jakarta Utara",
+        address: "Jl. Pluit Indah Jl. Pluit Village, RT.1/RW.4, Pluit, Kecamatan Penjaringan, Jkt Utara, Daerah Khusus Ibukota Jakarta 14450",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Pluit Indah Jl. Pluit Village, RT.1/RW.4, Pluit, Kecamatan Penjaringan, Jkt Utara, Daerah Khusus Ibukota Jakarta 14450"
+        ),
+        img: "https://i.ibb.co.com/0j4J3Ypz/Screenshot-2026-01-26-083015.png",
+        coords: [-6.116766892238295, 106.78958499562087]
+    },
 ];
 
 function safeText(s) {

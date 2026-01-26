@@ -1431,7 +1431,7 @@ class AdminController extends BaseController
         $data = [
             'title' => 'Surat Jalan',
             'apikey_img_ilena' => $this->apikey_img_ilena,
-            'pemesanan'           => $pemesanan,
+            'pemesanan' => $pemesanan,
             'tanggal' => date("d", $tsPemesanan) . " " . $bulan[(int)date("m", $tsPemesanan) - 1] . " " . date("Y", $tsPemesanan),
             'items' => $items
         ];
@@ -3010,15 +3010,8 @@ public function projectInteriorDetail(string $kodeProject)
         // aturan: boleh buat SJ hanya jika sudah ada DP (bisa kamu ubah ke false kalau mau bebas)
         $requireDpForSj = true;
 
-        $hasDp = false;
-        if (is_array($payments)) {
-            foreach ($payments as $p) {
-                if (strtolower((string)($p['jenis'] ?? '')) === 'dp') {
-                    $hasDp = true;
-                    break;
-                }
-            }
-        }
+        $hasDp = $this->interiorHasDp($projectId);
+
 
         return view('admin/projectInteriorDetail', [
             'title'            => 'Detail Project Interior',
@@ -3428,48 +3421,6 @@ if (!$offline) {
             'keterangan'        => $offline['keterangan'] ?? null,
         ];
 
-        
-        // ===== SUMMARY INVOICE (INTERIOR): gabungkan semua nomor SJ dalam project ini =====
-        $summary_sj_numbers = '';
-        try {
-            $sjKey = (string)($project['kode_sj'] ?? '');
-            if ($sjKey !== '') {
-                $sjRows = $this->suratJalanModel
-                    ->select('no_sj')
-                    ->where('id_pesanan', $sjKey)
-                    ->where('status', 'final')
-                    ->where('no_sj IS NOT NULL', null, false)
-                    ->orderBy('id', 'ASC')
-                    ->findAll();
-
-                $nums = [];
-                foreach ($sjRows as $r) {
-                    $no = (string)($r['no_sj'] ?? '');
-                    if ($no === '') continue;
-                    // contoh: NF0003/SJ/CBM/1/2026 atau 00003/SJ/CBM/1/2026
-                    if (preg_match('/^(?:NF)?([^\/]+)/i', $no, $mm)) {
-                        $base = trim((string)($mm[1] ?? ''));
-                        // pastikan hanya angka (tanpa NF)
-                        if (preg_match('/(\d+)/', $base, $m2)) {
-                            $nums[] = $m2[1];
-                        }
-                    }
-                }
-                if (!empty($nums)) {
-                    // urutkan secara numerik tanpa mengubah padding asli secara brutal
-                    // (kita simpan string apa adanya, tapi sort by integer value)
-                    usort($nums, function($a, $b) {
-                        return ((int)$a) <=> ((int)$b);
-                    });
-                    // pertahankan padding: kembalikan ke string asli (kalau ada leading zero sudah ikut di $a)
-                    $summary_sj_numbers = implode(',', $nums);
-                }
-            }
-        } catch (\Throwable $e) {
-            // diamkan, biar invoice tetap bisa dicetak
-            $summary_sj_numbers = '';
-        }
-
         return view('admin/suratInvoice', [
             'title'               => 'Invoice Project Interior',
             'pemesanan'           => $pemesanan,
@@ -3484,7 +3435,6 @@ if (!$offline) {
             'total_bayar'         => $totalBayar,
             'sisa_tagihan'        => $sisaTagihan,
             'payments'            => $payments,
-            'summary_sj_numbers'  => $summary_sj_numbers,
         ]);
     }
 
@@ -3563,143 +3513,93 @@ $qty        = (int)($project['qty'] ?? 1);
     // ============ SURAT JALAN OFFLINE (shared) =================
     // =========================================================
 public function projectInteriorCreateSuratJalan(string $kodeProject)
-{
-    $kodeProject = trim($kodeProject);
-    if ($kodeProject === '') {
-        return redirect()->back()->with('msg', 'Kode project tidak valid.');
-    }
-
-    $req = $this->request;
-
-    // 1) Ambil project
-    $project = $this->projectInteriorModel->where('kode_project', $kodeProject)->first();
-    if (!$project) {
-        return redirect()->back()->with('msg', 'Project interior tidak ditemukan.');
-    }
-
-    // 2) DP gate (wajib DP dulu) — kompatibel jika tabel payment pakai kolom berbeda
-    $dpTotal = 0;
-    try {
-        $dpTotal = (int)($this->projectInteriorPaymentModel
-            ->selectSum('nominal', 'total')
+    {
+        $project = $this->projectInteriorModel
             ->where('kode_project', $kodeProject)
-            ->whereIn('jenis', ['dp','DP','down payment','uang muka','deposit'])
-            ->get()->getRowArray()['total'] ?? 0);
-    } catch (\Throwable $e) {
-        // fallback: beberapa schema pakai project_id
-        try {
-            $dpTotal = (int)($this->projectInteriorPaymentModel
-                ->selectSum('nominal', 'total')
-                ->where('project_id', (int)($project['id'] ?? 0))
-                ->whereIn('jenis', ['dp','DP','down payment','uang muka','deposit'])
-                ->get()->getRowArray()['total'] ?? 0);
-        } catch (\Throwable $e2) {
-            // kalau dua-duanya gagal, biarkan 0 (akan tertahan DP gate)
-            $dpTotal = 0;
+            ->first();
+
+        if (!$project) {
+            return redirect()->back()->with('msg', 'Project interior tidak ditemukan.');
         }
-    }
 
-    if ($dpTotal <= 0) {
-        return redirect()->to(site_url('admin/project-interior/'.$kodeProject))
-            ->with('msg', 'Wajib DP dulu sebelum membuat Surat Jalan (SJ).');
-    }
+        // aturan: wajib DP dulu sebelum boleh bikin SJ (ubah ke false kalau kamu mau bebas)
+        $requireDpForSj = true;
+        if ($requireDpForSj) {
+            $projectId = (int)($project['id'] ?? 0);
+            $hasDp = $this->interiorHasDp($projectId);
 
-    // 3) Ambil item yang dipilih dari form (checkbox)
-    $itemKeys = $req->getPost('item_keys');
-    if (!is_array($itemKeys)) $itemKeys = [];
-    $itemKeys = array_values(array_filter(array_map('trim', $itemKeys)));
+            if (!$hasDp) {
+                return redirect()->to(site_url('admin/project-interior/' . $kodeProject))
+                    ->with('msg', 'Tidak bisa membuat Surat Jalan sebelum ada pembayaran DP.');
+            }
+        }
 
-    if (count($itemKeys) <= 0) {
-        return redirect()->to(site_url('admin/project-interior/'.$kodeProject))
-            ->with('msg', 'Pilih minimal 1 item yang akan dibuatkan SJ.');
-    }
+        $idPesanan = (string)($project['kode_sj'] ?? '');
+        if ($idPesanan === '') {
+            return redirect()->to(site_url('admin/project-interior/' . $kodeProject))
+                ->with('msg', 'Kode dokumen utama (SJ/NF) belum tersedia.');
+        }
 
-    $db = \Config\Database::connect();
+        // kalau ada draft SJ untuk id_pesanan ini, langsung buka draft itu
+        $draft = $this->suratJalanModel
+            ->where('id_pesanan', $idPesanan)
+            ->where('status', 'draft')
+            ->orderBy('id', 'DESC')
+            ->first();
 
-    try {
-        $db->transBegin();
+        if ($draft) {
+            return redirect()->to(site_url('admin/surat-jalan/offline/' . $draft['id'] . '/edit'));
+        }
 
-        // 4) Tentukan SJ ke- (boleh banyak SJ per project)
+        // next sj_ke untuk id_pesanan yang sama
         $last = $this->suratJalanModel
-            ->selectMax('pengiriman_ke', 'maxk')
-            ->where('project_id', (int)($project['id'] ?? 0))
-            ->get()->getRowArray();
+            ->where('id_pesanan', $idPesanan)
+            ->orderBy('sj_ke', 'DESC')
+            ->first();
 
-        $pengirimanKe = (int)($last['maxk'] ?? 0) + 1;
+        $nextKe = $last ? ((int)$last['sj_ke'] + 1) : 1;
 
-        // 5) Buat header SJ (draft)
-        $insertOk = $this->suratJalanModel->insert([
-            'project_id'    => (int)($project['id'] ?? 0),
-            'id_pesanan'    => $kodeProject, // key project (PI0000...)
-            'pengiriman_ke' => $pengirimanKe,
-            'status'        => 'draft',
-            'tanggal'       => date('Y-m-d H:i:s', strtotime('+7 hours')),
+        $now = date('Y-m-d H:i:s', strtotime('+7 hours'));
+
+        $sjId = (int)$this->suratJalanModel->insert([
+            'id_pesanan' => $idPesanan,
+            'sj_ke'      => $nextKe,
+            'tanggal'    => $now,
+            'status'     => 'draft',
         ], true);
 
-        if (!$insertOk) {
-            throw new \RuntimeException('Gagal membuat header Surat Jalan.');
+        // ambil items interior
+        $projectId = (int)($project['id'] ?? 0);
+        $items = $this->projectInteriorItemModel
+            ->where('project_id', $projectId)
+            ->orderBy('id', 'ASC')
+            ->findAll();
+
+        if (empty($items)) {
+            // tetap bikin SJ kosong, tapi kasih pesan
+            return redirect()->to(site_url('admin/surat-jalan/offline/' . $sjId . '/edit'))
+                ->with('msg', 'SJ draft dibuat, tapi item project masih kosong.');
         }
 
-        $sjId = (int)$this->suratJalanModel->getInsertID();
-        if ($sjId <= 0) {
-            throw new \RuntimeException('Gagal mendapatkan ID Surat Jalan.');
-        }
-
-        // 6) Ambil item project (kompatibel kalau kolom relasi beda)
-        try {
-            $projectItems = $this->projectInteriorItemModel
-                ->where('kode_project', $kodeProject)
-                ->findAll();
-        } catch (\Throwable $e) {
-            $projectItems = $this->projectInteriorItemModel
-                ->where('project_id', (int)($project['id'] ?? 0))
-                ->findAll();
-        }
-
-        // Map key => row (key = kode_barang||varian)
-        $map = [];
-        foreach (($projectItems ?? []) as $pi) {
-            $k = (string)($pi['kode_barang'] ?? $pi['id_barang'] ?? '');
-            $v = (string)($pi['varian'] ?? '');
-            $map[$k.'||'.$v] = $pi;
-        }
-
-        // 7) Insert hanya item yang dipilih (qty awal 0, nanti diisi di edit SJ)
-        $inserted = 0;
-        foreach ($itemKeys as $key) {
-            if (!isset($map[$key])) continue;
-
-            $pi = $map[$key];
+        // insert SJ items qty default 0 (nanti diedit sesuai barang ready)
+        foreach ($items as $it) {
+            $kode = trim((string)($it['kode_barang'] ?? ''));
+            $nama = trim((string)($it['nama_barang'] ?? ''));
+            if ($kode === '' && $nama === '') continue;
 
             $this->suratJalanItemModel->insert([
                 'surat_jalan_id' => $sjId,
-                // NOTE: schema kamu kemungkinan id_barang int (FK barang).
-                // untuk interior kamu sebelumnya pakai kode_barang, jadi kita fallback.
-                'id_barang'      => $pi['id_barang'] ?? $pi['kode_barang'] ?? null,
-                'varian'         => $pi['varian'] ?? '',
+                'id_barang'      => null,   // interior = null
+                'varian'         => $nama,  // biar kompatibel (kalau ada view lama)
                 'qty'            => 0,
+                'kode_barang'    => $kode !== '' ? $kode : null,
+                'nama_barang'    => $nama !== '' ? $nama : null,
             ]);
-
-            $inserted++;
         }
 
-        if ($inserted <= 0) {
-            throw new \RuntimeException('Tidak ada item yang valid untuk dibuatkan SJ (cek mapping item_keys).');
-        }
-
-        $db->transCommit();
-
-        // arahkan ke edit SJ (offline edit) agar isi qty lalu finalize
         return redirect()->to(site_url('admin/surat-jalan/offline/' . $sjId . '/edit'))
-            ->with('msg', 'SJ draft berhasil dibuat. Isi qty per item lalu Simpan/Finalize.');
-    } catch (\Throwable $e) {
-        if ($db->transStatus()) $db->transRollback();
-
-        return redirect()->to(site_url('admin/project-interior/'.$kodeProject))
-            ->with('msg', 'Gagal membuat SJ: ' . $e->getMessage());
+            ->with('msg', 'SJ draft berhasil dibuat. Isi qty yang siap dikirim lalu Simpan/Finalize.');
     }
-}
-
 
 
 
@@ -4332,7 +4232,52 @@ private function interiorShippedQtyMap(string $idPesanan): array
         }
         return $idPesanan;
     }
-    private function ppnRateFromMode(string $mode): int
+
+
+
+
+
+/**
+ * INTERIOR: cek apakah project sudah memiliki pembayaran DP.
+ * Toleran terhadap variasi penulisan jenis (dp/DP/down payment/uang muka/deposit).
+ */
+private function interiorHasDp(int $projectId): bool
+{
+    try {
+        $rows = $this->projectInteriorPaymentModel
+            ->where('project_id', $projectId)
+            ->orderBy('id', 'ASC')
+            ->findAll();
+    } catch (\Throwable $e) {
+        return false;
+    }
+
+    if (!$rows || !is_array($rows)) return false;
+
+    foreach ($rows as $p) {
+        // flag eksplisit
+        if (!empty($p['is_dp'])) return true;
+
+        $jenis = strtolower(trim((string)($p['jenis'] ?? $p['tipe'] ?? $p['kategori'] ?? '')));
+        $jenis = preg_replace('/\s+/', ' ', $jenis);
+
+        // variasi umum
+        if (in_array($jenis, ['dp', 'down payment', 'uang muka', 'uangmuka', 'deposit'], true)) {
+            return true;
+        }
+
+        // jika jenis kosong tapi ini pembayaran pertama dan nominal > 0, anggap DP (fallback aman)
+        $nom = (float)($p['nominal'] ?? $p['jumlah'] ?? $p['bayar'] ?? 0);
+        if ($jenis === '' && $nom > 0) {
+            // fallback: pembayaran pertama biasanya DP
+            return true;
+        }
+    }
+
+    return false;
+}
+
+private function ppnRateFromMode(string $mode): int
     {
         switch ($mode) {
             case 'ppn11':
@@ -4344,7 +4289,4 @@ private function interiorShippedQtyMap(string $idPesanan): array
                 return 0;
         }
     }
-
-
-
 }

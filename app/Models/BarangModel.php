@@ -14,8 +14,6 @@ class BarangModel extends Model
         'id',
         'nama',
         'pencarian',
-        // 'gambar',
-        // 'gambar_hover',
         'harga',
         'deskripsi',
         'kategori',
@@ -32,7 +30,7 @@ class BarangModel extends Model
         'ruang_keluarga',
         'tgl_update',
 
-        // kolom jadwal diskon (baru)
+        // kolom jadwal diskon
         'pakai_jadwal_diskon',
         'diskon_mulai',
         'diskon_selesai',
@@ -91,7 +89,7 @@ class BarangModel extends Model
         return $this->orderBy('nama', 'asc')->findAll(20, $offset);
     }
 
-    // Opsional helper (boleh dipakai kalau butuh)
+    // Opsional helper
     public function isDiskonAktif(array $row): bool
     {
         $diskon = (float)($row['diskon'] ?? 0);
