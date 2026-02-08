@@ -281,13 +281,22 @@
 
         <?php
         $jenisLower = strtolower(trim($pemesanan['jenis'] ?? ''));
+        $idPesanan = strtoupper(trim($pemesanan['id_pesanan'] ?? ''));
 
         $tanggalFix = $sj['tanggal'] ?? ($pemesanan['tanggal'] ?? date('Y-m-d'));
         $tglTs      = strtotime($tanggalFix);
 
-        $kodeDok    = 'SJ';
-        $labelSurat = 'JALAN';
-        // OFFLINE/INTERIOR: DISPLAY juga tetap Surat Jalan (tidak ada Surat Pengantar)
+        // Determine document type based on order jenis OR id_pesanan prefix
+        // SP orders can have jenis='display' but id_pesanan starts with 'SP'
+        $isSP = ($jenisLower === 'sp') || (strpos($idPesanan, 'SP') === 0);
+        
+        if ($isSP) {
+            $kodeDok    = 'SP';
+            $labelSurat = 'PENGANTAR';
+        } else {
+            $kodeDok    = 'SJ';
+            $labelSurat = 'JALAN';
+        }
 $noSjDb = '';
         if (isset($sj) && is_array($sj) && !empty($sj['no_sj'])) {
             $noSjDb = (string)$sj['no_sj'];
@@ -387,6 +396,7 @@ $noSjDb = '';
                 </span>
             </p>
 
+            <?php if (!$isSP): ?>
             <p class="m-0">
                 <b style="font-weight:600;">Nama Penerima : </b>
                 <span class="text-danger">
@@ -402,6 +412,8 @@ $noSjDb = '';
                     <?php endif; ?>
                 </span>
             </p>
+            <?php endif; ?>
+
 
             <p class="mt-4" style="font-weight:500;">Kendal, <?= esc($tgl_indo); ?></p>
 

@@ -30,9 +30,31 @@ use App\Models\SuratJalanModel;
 use App\Models\SuratJalanItemModel;
 use App\Models\ProjectInteriorItemModel;
 
+// Import Traits for modular organization
+use App\Controllers\Admin\Traits\ProductTrait;
+use App\Controllers\Admin\Traits\ArticleTrait;
+use App\Controllers\Admin\Traits\VoucherTrait;
+use App\Controllers\Admin\Traits\MutasiTrait;
+use App\Controllers\Admin\Traits\OrderOnlineTrait;
+use App\Controllers\Admin\Traits\OrderOfflineTrait;
+use App\Controllers\Admin\Traits\SuratJalanTrait;
+use App\Controllers\Admin\Traits\HelperTrait;
+use App\Controllers\Admin\Traits\ProjectInteriorTrait;
 
 class AdminController extends BaseController
 {
+    // Use Traits for code organization
+    use ProductTrait;
+    use ArticleTrait;
+    use VoucherTrait;
+    use MutasiTrait;
+    use OrderOnlineTrait;
+    use OrderOfflineTrait;
+    use SuratJalanTrait;
+    use HelperTrait;
+    use ProjectInteriorTrait;
+
+
     protected $barangModel;
     protected $gambarBarangModel;
     protected $gambarHeaderModel;
@@ -1641,10 +1663,18 @@ class AdminController extends BaseController
         if (!$sj) {
             $nowDb = date('Y-m-d H:i:s', strtotime('+7 hours'));
             $jenisDb = $this->normalizeJenis($pemesanan['jenis'] ?? 'sp');
+            
+            // Detect SP from id_pesanan prefix (e.g., 'SP00000002')
+            $isSP = ($jenisDb === 'sp') || (stripos($sjOffline, 'SP') === 0);
 
-            $noSj = ($jenisDb === 'nf')
-                ? $this->generateSjNumberGlobalNF($nowDb)
-                : $this->generateSjNumberGlobal($nowDb);
+            // Use appropriate number generator based on order type
+            if ($jenisDb === 'nf') {
+                $noSj = $this->generateSjNumberGlobalNF($nowDb);
+            } elseif ($isSP) {
+                $noSj = $this->generateSpNumberGlobal($nowDb);
+            } else {
+                $noSj = $this->generateSjNumberGlobal($nowDb);
+            }
 
             $this->suratJalanModel->insert([
                 'id_pesanan'   => $sjOffline,
