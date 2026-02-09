@@ -102,6 +102,37 @@ trait HelperTrait
     }
 
     /**
+     * Generate Invoice number for Interior: 00001/INV/CBM/mm/yyyy
+     * Global sequential per month
+     */
+    protected function generateInvoiceNumberGlobal(string $tanggalDb = null): string
+    {
+        $ts   = strtotime($tanggalDb ?: 'now');
+        $mm   = str_pad((string)date('n', $ts), 2, '0', STR_PAD_LEFT);
+        $yyyy = date('Y', $ts);
+
+        $db = \Config\Database::connect();
+        
+        // Look for existing invoices this month
+        $pattern = '%/INV/CBM/' . $mm . '/' . $yyyy;
+        $last = $db->table('interior_invoice')
+            ->select('no_invoice')
+            ->like('no_invoice', $pattern, 'before')
+            ->orderBy('id', 'DESC')
+            ->get(1)->getRowArray();
+
+        $next = 1;
+        if ($last && !empty($last['no_invoice'])) {
+            $parts = explode('/', $last['no_invoice']);
+            $num   = (int)($parts[0] ?? 0);
+            $next  = $num + 1;
+        }
+
+        $urut = str_pad((string)$next, 5, '0', STR_PAD_LEFT);
+        return $urut . '/INV/CBM/' . $mm . '/' . $yyyy;
+    }
+
+    /**
      * Generate simple SJ code for interior: SJ000001
      */
     protected function generateSjCodeSimple(): string

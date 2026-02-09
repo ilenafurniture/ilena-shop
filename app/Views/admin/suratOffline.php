@@ -396,24 +396,6 @@ $noSjDb = '';
                 </span>
             </p>
 
-            <?php if (!$isSP): ?>
-            <p class="m-0">
-                <b style="font-weight:600;">Nama Penerima : </b>
-                <span class="text-danger">
-                    <?= esc($pemesanan['nama'] ?? ' '); ?>
-                </span>
-            </p>
-
-            <p class="m-0">
-                <b style="font-weight:600;">Nomor Penerima : </b>
-                <span class="text-danger">
-                    <?php if (!empty($pemesanan['nohp'])): ?>
-                    <?= esc($pemesanan['nohp'] ?? ' '); ?>
-                    <?php endif; ?>
-                </span>
-            </p>
-            <?php endif; ?>
-
 
             <p class="mt-4" style="font-weight:500;">Kendal, <?= esc($tgl_indo); ?></p>
 

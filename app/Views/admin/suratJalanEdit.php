@@ -211,7 +211,26 @@ input:focus {
                 <?= ($isInteriorSj ?? false) ? 'INTERIOR' : 'OFFLINE' ?>
             </span>
 
-            <a href="<?= base_url('/admin/surat-jalan/offline') ?>" class="btn-ghost"
+            <?php if (($sj['status'] ?? '') === 'final' && !empty($sj['no_sj'])): ?>
+            <!-- Print button for final SJ -->
+            <a href="<?= base_url('/admin/surat-jalan/offline/' . $sj['id']) ?>" class="btn-primary" target="_blank"
+                style="text-decoration:none;display:inline-flex;align-items:center;gap:8px;">
+                <i class="material-icons" style="font-size:18px;">print</i> Print SJ
+            </a>
+            <?php elseif (($sj['status'] ?? '') !== 'final'): ?>
+            <!-- Finalize button for draft -->
+            <form method="post" action="<?= base_url('/admin/surat-jalan/offline/' . $sj['id'] . '/finalize') ?>"
+                onsubmit="return confirm('Finalize SJ ini? Nomor SJ global akan dibuat dan status berubah menjadi FINAL.');"
+                style="display:inline;">
+                <?= csrf_field() ?>
+                <button type="submit" class="btn-primary"
+                    style="display:inline-flex;align-items:center;gap:8px;">
+                    <i class="material-icons" style="font-size:18px;">check_circle</i> Finalize SJ
+                </button>
+            </form>
+            <?php endif; ?>
+
+            <a href="<?= $backUrl ?? base_url('/admin/order/offline/sale') ?>" class="btn-ghost"
                 style="text-decoration:none;display:inline-flex;align-items:center;gap:8px;">
                 <i class="material-icons" style="font-size:18px;">arrow_back</i> Kembali
             </a>

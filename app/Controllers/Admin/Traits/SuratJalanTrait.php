@@ -18,6 +18,8 @@ trait SuratJalanTrait
 {
     /**
      * Create SJ for offline order
+     * For regular offline orders: only 1 SJ per order
+     * If SJ already exists, redirect to existing SJ
      */
     public function createSuratJalanOffline(string $idPesanan)
     {
@@ -26,8 +28,30 @@ trait SuratJalanTrait
             return redirect()->back()->with('msg', 'Pesanan tidak ditemukan.');
         }
 
-        $lastKe = $this->suratJalanModel->getLastSjKe($idPesanan);
-        $sjKe   = $lastKe + 1;
+        // Check if SJ already exists for this order
+        $existingSj = $this->suratJalanModel
+            ->where('id_pesanan', $idPesanan)
+            ->orderBy('id', 'DESC')
+            ->first();
+        
+        if ($existingSj) {
+            // SJ already exists - redirect to existing SJ
+            $sjId = (int)$existingSj['id'];
+            $status = strtolower($existingSj['status'] ?? 'draft');
+            
+            if ($status === 'final' || $status === 'printed') {
+                // Already finalized - redirect to print view
+                return redirect()->to('/admin/surat-jalan/offline/' . $sjId)
+                    ->with('msg', 'SJ sudah ada dan sudah final. Nomor: ' . ($existingSj['no_sj'] ?? '-'));
+            } else {
+                // Still draft - redirect to edit
+                return redirect()->to('/admin/surat-jalan/offline/' . $sjId . '/edit')
+                    ->with('msg', 'SJ sudah ada (draft). Silakan edit atau finalize.');
+            }
+        }
+
+        // No existing SJ - create new one
+        $sjKe = 1; // First and only SJ for offline orders
 
         $now = date('Y-m-d H:i:s', strtotime('+7 hours'));
         $normJenis = $this->normalizeJenis($order['jenis'] ?? 'sale');
@@ -61,7 +85,7 @@ trait SuratJalanTrait
         }
 
         return redirect()->to('/admin/surat-jalan/offline/' . $sjId . '/edit')
-            ->with('msg', 'SJ ke-' . $sjKe . ' dibuat (DRAFT). Cek qty lalu finalize untuk nomor SJ.');
+            ->with('msg', 'SJ dibuat. Nomor: ' . $noSj);
     }
 
     /**
@@ -150,6 +174,23 @@ trait SuratJalanTrait
 
         $shippedMap = $this->shippedQtyMapExceptSj($sj['id_pesanan'], $suratJalanId);
 
+        // Determine Back URL
+        // Priority: Check if this SJ ID belongs to a Project Interior
+        $db = \Config\Database::connect();
+        $proj = $db->table('project_interior')->where('kode_sj', $sj['id_pesanan'])->get()->getRowArray();
+
+        if ($proj) {
+            // It is an interior project
+            $backUrl = base_url('admin/project-interior/' . $proj['kode_project']);
+            $isInteriorSj = true; // Ensure this is set correctly for view logic too if needed
+        } else {
+            // It is a regular offline order
+            $backUrl = base_url('admin/order/offline/' . $sj['id_pesanan']);
+        }
+        
+        // Debug
+        // log_message('error', 'SJ Edit: ID='.$suratJalanId.' BackURL='.$backUrl);
+
         return view('admin/suratJalanEdit', [
             'title'        => 'Edit Surat Jalan',
             'sj'           => $sj,
@@ -158,6 +199,7 @@ trait SuratJalanTrait
             'ordered'      => $ordered,
             'shippedMap'   => $shippedMap,
             'isInteriorSj' => $isInteriorSj,
+            'backUrl'      => $backUrl,
             'msg'          => session()->getFlashdata('msg'),
         ]);
     }

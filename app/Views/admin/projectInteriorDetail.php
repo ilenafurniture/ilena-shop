@@ -602,8 +602,14 @@ $kodeProject = (string)($project['kode_project'] ?? '');
                                     </a>
                                     <a class="btn-ghost" style="padding:.25rem .6rem;font-size:11px;" target="_blank"
                                         href="<?= site_url('admin/surat-jalan/offline/' . ($sj['id'] ?? 0)); ?>">
-                                        Print
+                                        Print SJ
                                     </a>
+                                    <?php if ($st === 'final' || $st === 'printed'): ?>
+                                    <a class="btn-ghost" style="padding:.25rem .6rem;font-size:11px;background:#fff8f8;border-color:#ffb4b4;color:#b31217;" target="_blank"
+                                        href="<?= site_url('admin/project-interior/' . $kodeProject . '/invoice-pengiriman/' . ($sj['id'] ?? 0)); ?>">
+                                        Invoice
+                                    </a>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                             <?php endforeach; ?>

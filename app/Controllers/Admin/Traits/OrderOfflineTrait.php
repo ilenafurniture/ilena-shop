@@ -89,6 +89,10 @@ trait OrderOfflineTrait
         }
         $pesanan = $builder->findAll();
         $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+        
+        // Query SJ data untuk semua order sekaligus
+        $db = \Config\Database::connect();
+        
         foreach ($pesanan as $ind_p => $p) {
             $d = strtotime($p['tanggal']);
             $pesanan[$ind_p]['tanggal_format'] = date('d', $d) . ' ' . $bulan[date('m', $d) - 1] . ' ' . date('Y', $d);
@@ -97,6 +101,27 @@ trait OrderOfflineTrait
                 ->join('barang', 'barang.id = pemesanan_offline_item.id_barang')
                 ->where('id_pesanan', $p['id_pesanan'])
                 ->findAll();
+            
+            // Query SJ data untuk order ini
+            $idPesananEsc = $db->escape($p['id_pesanan']);
+            $sjLast = $db->query("SELECT * FROM surat_jalan WHERE id_pesanan = {$idPesananEsc} ORDER BY id DESC LIMIT 1")->getRowArray();
+            
+            if ($sjLast) {
+                $pesanan[$ind_p]['sj_last_id'] = $sjLast['id'];
+                $pesanan[$ind_p]['sj_last_no'] = $sjLast['no_sj'];
+                $pesanan[$ind_p]['sj_last_status'] = $sjLast['status'];
+                $pesanan[$ind_p]['sj_last_tanggal'] = $sjLast['tanggal'];
+                
+                // Jika ada SJ final, ambil tanggal terakhir yang final
+                $sjFinal = $db->query("SELECT tanggal FROM surat_jalan WHERE id_pesanan = {$idPesananEsc} AND status = 'final' ORDER BY id DESC LIMIT 1")->getRowArray();
+                $pesanan[$ind_p]['sj_final_tanggal'] = $sjFinal['tanggal'] ?? null;
+            } else {
+                $pesanan[$ind_p]['sj_last_id'] = null;
+                $pesanan[$ind_p]['sj_last_no'] = null;
+                $pesanan[$ind_p]['sj_last_status'] = null;
+                $pesanan[$ind_p]['sj_last_tanggal'] = null;
+                $pesanan[$ind_p]['sj_final_tanggal'] = null;
+            }
         }
         $provinsi = $this->provinsiModel->findAll();
         $data = [
