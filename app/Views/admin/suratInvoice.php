@@ -792,7 +792,11 @@ if ($docType === '' || $docType === 'sp' || $docType === 'display') {
             <div class="d-flex flex-column kotak-pembayaran">
                 <p class="m-0" style="font-size:12px;">
                     Pembayaran mohon dapat ditransfer ke rekening: <br>
+                    <?php if ($docType === 'nf'): ?>
+                    <b style="font-size:12px; color:#ef4444;">BCA 8715883488 a.n. EL LIE PURNAMA</b>
+                    <?php else: ?>
                     <b style="font-size:12px; color:#ef4444;">BCA 8715898787 a.n. CATUR BHAKTI MANDIRI</b>
+                    <?php endif; ?>
                 </p>
             </div>
             <div class="d-flex flex-column align-items-center" style="width:200px; font-size:12px;">
