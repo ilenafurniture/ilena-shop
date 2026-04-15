@@ -980,6 +980,61 @@
         height: 64px;
     }
 }
+
+/* ===== No-image placeholder ===== */
+.img-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border-radius: 14px;
+    border: 1px solid var(--ring);
+    background:
+        radial-gradient(160px 90px at 0% 0%, rgba(225,29,72,.18), transparent 70%),
+        radial-gradient(160px 90px at 100% 100%, rgba(249,115,22,.15), transparent 70%),
+        linear-gradient(135deg, #fef2f2 0%, #fff7ed 100%);
+    box-shadow: 0 10px 22px rgba(2,6,23,.10);
+    transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
+    color: var(--brand);
+}
+.img-placeholder .ph-icon {
+    font-size: 28px;
+    opacity: .7;
+}
+.img-placeholder .ph-label {
+    font-size: .62rem;
+    font-weight: 900;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    opacity: .55;
+    color: var(--txt);
+    text-align: center;
+    line-height: 1.2;
+    padding: 0 4px;
+}
+/* ukuran sesuai konteks */
+.item-toko .img-placeholder  { width:104px; height:86px; }
+.grid-card  .img-placeholder  { width:112px; height:92px; }
+.list-row   .img-placeholder  { width: 76px; height:64px; border-radius:12px; }
+
+/* hover sinkron */
+.item-toko:hover .img-placeholder,
+.grid-card:hover .img-placeholder  { transform:translateY(-1px) scale(1.03); }
+.list-row:hover  .img-placeholder  { transform:translateY(-1px) scale(1.02); }
+
+/* responsive kecil */
+@media (max-width:768px) {
+    .item-toko .img-placeholder { width:92px;  height:78px; }
+    .grid-card  .img-placeholder { width:98px;  height:82px; }
+}
+@media (max-width:520px) {
+    .item-toko .img-placeholder { width:82px;  height:68px; }
+    .list-row   .img-placeholder { width:72px;  height:60px; border-radius:12px; }
+}
+@media (max-width:380px) {
+    .item-toko .img-placeholder { width:78px;  height:64px; }
+}
 </style>
 
 <div class="container">
@@ -1356,6 +1411,60 @@ const MITRA = [{
         img: "https://i.ibb.co.com/0j4J3Ypz/Screenshot-2026-01-26-083015.png",
         coords: [-6.116766892238295, 106.78958499562087]
     },
+    {
+        name: "Subur Furniture",
+        city: "Jakarta Pusat",
+        address: "Jl. KH. Hasyim Ashari No.71 ab, Cideng, Kecamatan Gambir, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10150",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. KH. Hasyim Ashari No.71 ab, Cideng, Kecamatan Gambir, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10150"),
+        img: "",
+        coords: [-6.16609273479948, 106.80707802210122]
+    },
+    {
+        name: "Okabawes Furniture Centre",
+        city: "Malang",
+        address: "Jl. Jaksa Agung Suprapto No.42, Rampal Celaket, Kec. Klojen, Kota Malang, Jawa Timur",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Jaksa Agung Suprapto No.42, Rampal Celaket, Kec. Klojen, Kota Malang, Jawa Timur"),
+        img: "",
+        coords: [-7.966788128840692, 112.63384571075709]
+    },
+    {
+        name: "Harmonis Furniture",
+        city: "Surabaya",
+        address: "Jl. Kertajaya No.90, Kertajaya, Kec. Gubeng, Surabaya, Jawa Timur 60282",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Kertajaya No.90, Kertajaya, Kec. Gubeng, Surabaya, Jawa Timur 60282"),
+        img: "",
+        coords: [-7.278300705792361, 112.75391797636945]
+    },
+    {
+        name: "Wohap Meubel",
+        city: "Garut",
+        address: "Jl. Ahmad Yani No.172 & 193, Ciwalen, Kec. Garut Kota, Kabupaten Garut, Jawa Barat 44116",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Ahmad Yani No.172 & 193, Ciwalen, Kec. Garut Kota, Kabupaten Garut, Jawa Barat 44116"),
+        img: "",
+        coords: [-7.215715063961234, 107.90960390922645]
+    },
+    {
+        name: "Karya Ruang Furniture",
+        city: "Tasikmalaya",
+        address: "Ruko Plaza Asia Tasikmalaya Blok E1-E3A, Jl. HZ. Mustofa No.326, Tasikmalaya Regency, West Java 46126",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Ruko Plaza Asia Tasikmalaya Blok E1-E3A, Jl. HZ. Mustofa No.326, Tasikmalaya Regency, West Java 46126"),
+        img: "",
+        coords: [-7.342526526769639, 108.21515448422011]
+    },
+    {
+        name: "Dunia Mebel Bali",
+        city: "Denpasar",
+        address: "Jl. Teuku Umar Barat No.386, Padangsambian Klod, Kec. Denpasar Bar., Kota Denpasar, Bali 80117",
+        href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(
+            "Jl. Teuku Umar Barat No.386, Padangsambian Klod, Kec. Denpasar Bar., Kota Denpasar, Bali 80117"),
+        img: "",
+        coords: [-8.674787398225718, 115.18479436414849]
+    },
 ];
 
 function safeText(s) {
@@ -1364,6 +1473,24 @@ function safeText(s) {
 
 function norm(s) {
     return safeText(s).toLowerCase().trim();
+}
+
+/**
+ * Kembalikan HTML gambar atau placeholder premium jika img kosong.
+ * @param {string} src  - URL gambar
+ * @param {string} alt  - teks alt
+ * @param {string} cls  - class tambahan (opsional)
+ */
+function thumbHTML(src, alt, cls = "") {
+    if (src && src.trim() !== "") {
+        return `<img loading="lazy" decoding="async" src="${src}" alt="${alt}" ${cls ? `class="${cls}"` : ""}>`;
+    }
+    const initials = safeText(alt).split(" ").slice(0, 2).map(w => w[0] || "").join("").toUpperCase();
+    return `
+        <div class="img-placeholder ${cls}" aria-label="Foto belum tersedia">
+            <span class="material-icons ph-icon">storefront</span>
+            <span class="ph-label">${initials || "?"}</span>
+        </div>`;
 }
 
 let state = {
@@ -1436,7 +1563,7 @@ function buildRail(items) {
         </div>
       </div>
       <div class="thumb">
-        <img loading="lazy" decoding="async" src="${m.img}" alt="${safeText(m.name)}">
+        ${thumbHTML(m.img, safeText(m.name))}
       </div>
     `;
         rail.appendChild(div);
@@ -1482,14 +1609,14 @@ function buildGridList(items) {
         <p class="g-name">${safeText(m.name)}</p>
         <p class="g-addr">${safeText(m.address)}</p>
       </div>
-      <img loading="lazy" decoding="async" src="${m.img}" alt="${safeText(m.name)}">
+      ${thumbHTML(m.img, safeText(m.name))}
     `;
         gridWrap.appendChild(g);
 
         const l = document.createElement("div");
         l.className = "list-row";
         l.innerHTML = `
-      <img loading="lazy" decoding="async" src="${m.img}" alt="${safeText(m.name)}">
+      ${thumbHTML(m.img, safeText(m.name))}
       <div>
         <p class="l-title m-0">${safeText(m.name)}</p>
         <div class="l-meta">
