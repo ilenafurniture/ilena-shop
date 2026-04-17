@@ -92,9 +92,11 @@ class Pages extends BaseController
                     ->select('nama')
                     ->select('deskripsi')
                     ->where(['subkategori' => $j['jenis'], 'kategori' => $k])->first();
-                $deskripsi = json_decode($produk['deskripsi'], true);
+                if (!$produk) continue;
+                $deskripsi = json_decode($produk['deskripsi'], true) ?? [];
                 $deskripsi['perawatan'] = '';
-                $text = strip_tags($deskripsi['deskripsi']);
+                $rawText = $deskripsi['deskripsi'] ?? '';
+                $text = strip_tags($rawText);
                 $text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
                 $text = trim($text);
                 $text = str_replace(["\r\n", "\r", "\n"], ' ', $text);
