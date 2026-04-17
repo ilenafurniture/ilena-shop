@@ -50,9 +50,10 @@ trait ProductTrait
     {
         $product = $this->barangModel->orderBy('nama', 'asc')->findAll();
         foreach ($product as $index_p => $p) {
-            $deskripsiArr = json_decode($p['deskripsi'], true);
-            $deskripsi = str_replace('</p>', '', str_replace('<br>', '', str_replace('<p>', '', $deskripsiArr['deskripsi'])));
-            $dimensi = 'Dimensi : P(' . $deskripsiArr['dimensi']['asli']['panjang'] . 'mm) x L(' . $deskripsiArr['dimensi']['asli']['lebar'] . 'mm) x T(' . $deskripsiArr['dimensi']['asli']['tinggi'] . 'mm) dengan berat ' . $deskripsiArr['dimensi']['asli']['berat'] . 'kg';
+            $deskripsiArr = json_decode($p['deskripsi'] ?? '{}', true) ?? [];
+            $deskripsi = str_replace('</p>', '', str_replace('<br>', '', str_replace('<p>', '', $deskripsiArr['deskripsi'] ?? '')));
+            $asli = $deskripsiArr['dimensi']['asli'] ?? ['panjang' => 0, 'lebar' => 0, 'tinggi' => 0, 'berat' => 0];
+            $dimensi = 'Dimensi : P(' . $asli['panjang'] . 'mm) x L(' . $asli['lebar'] . 'mm) x T(' . $asli['tinggi'] . 'mm) dengan berat ' . $asli['berat'] . 'kg';
             $product[$index_p]['deskripsi_nonhtml'] = $deskripsi . ' ' . $dimensi;
             $product[$index_p]['gambar'] = 'https://ilenafurniture.com/viewpichover/' . $p['id'];
             $product[$index_p]['varian'] = json_decode($p['varian'], true);

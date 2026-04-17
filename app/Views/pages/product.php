@@ -84,7 +84,7 @@
                     <div class="d-flex gap-1 mb-2">
                         <?php foreach ($produkSemua as $ind_ps => $ps) { ?>
                         <a href="/product/<?= strtolower(str_replace(' ', '-', $ps['nama'])) ?>/<?= $ind_ps ?>"
-                            class="btn-default-abu <?= $ind_ps == $indexNama ? 'border border-dark' : '' ?>"><?= json_decode($ps['deskripsi'], true)['dimensi']['asli']['panjang'] ?>
+                            class="btn-default-abu <?= $ind_ps == $indexNama ? 'border border-dark' : '' ?>"><?= (json_decode($ps['deskripsi'] ?? '{}', true) ?? [])['dimensi']['asli']['panjang'] ?? '-' ?>
                             mm</a>
                         <?php } ?>
                     </div>
@@ -289,7 +289,7 @@
                     <div class="d-flex gap-1 mb-2">
                         <?php foreach ($produkSemua as $ind_ps => $ps) { ?>
                         <a href="/product/<?= strtolower(str_replace(' ', '-', $ps['nama'])) ?>/<?= $ind_ps ?>"
-                            class="btn-default-abu <?= $ind_ps == $indexNama ? 'border border-dark' : '' ?>"><?= json_decode($ps['deskripsi'], true)['dimensi']['asli']['panjang'] ?>
+                            class="btn-default-abu <?= $ind_ps == $indexNama ? 'border border-dark' : '' ?>"><?= (json_decode($ps['deskripsi'] ?? '{}', true) ?? [])['dimensi']['asli']['panjang'] ?? '-' ?>
                             mm</a>
                         <?php } ?>
                     </div>

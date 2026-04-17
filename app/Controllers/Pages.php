@@ -420,8 +420,8 @@ class Pages extends BaseController
         if ($nama) {
             $productsemua = $this->barangModel->where(['nama' => $nama])->findAll();
             $product      = $productsemua[$ind_nama];
-            $product['deskripsi'] = json_decode($product['deskripsi'], true);
-            $product['varian']    = json_decode($product['varian'], true);
+            $product['deskripsi'] = json_decode($product['deskripsi'] ?? '{}', true) ?? [];
+            $product['varian']    = json_decode($product['varian'] ?? '[]', true) ?? [];
 
             $produkSejenis = $this->barangModel
                 ->where(['subkategori' => $product['subkategori']])
@@ -919,7 +919,7 @@ class Pages extends BaseController
             }
             $keranjang[$index]['detail'] = $produk;
             $hargaTotal += $produk['harga'] * $k['jumlah'] * (100 - $produk['diskon']) / 100;
-            $dimensiPaket = json_decode($produk['deskripsi'], true)['dimensi']['paket'];
+            $dimensiPaket = (json_decode($produk['deskripsi'] ?? '{}', true) ?? [])['dimensi']['paket'] ?? ['panjang' => 0, 'lebar' => 0, 'tinggi' => 0, 'berat' => 0];
             $beratVolume = ceil((float)$dimensiPaket['panjang'] / 10 * (float)$dimensiPaket['lebar'] / 10 * (float)$dimensiPaket['tinggi'] / 10 / 3500); //kg
             $beratAsli = (float)$dimensiPaket['berat'];
             $beratAkhir += ($beratVolume > $beratAsli ? $beratVolume : $beratAsli) * $k['jumlah'];
