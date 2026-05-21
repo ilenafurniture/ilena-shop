@@ -21,6 +21,15 @@ jobs:
     - name: Deploy to VPS
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }} << 'EOF'
+          set -e
           cd /mine/ilenafurniture.com
+          STASHED=0
+          if ! git diff --quiet || ! git diff --cached --quiet || [ -n "$(git ls-files --others --exclude-standard)" ]; then
+            git stash push --include-untracked -m "auto-deploy-$(date +%s)"
+            STASHED=1
+          fi
           git pull
+          if [ "$STASHED" = "1" ]; then
+            git stash pop || echo "WARN: stash pop conflict, perubahan lokal tersimpan di git stash list"
+          fi
         EOF
