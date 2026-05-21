@@ -4704,6 +4704,45 @@ class Pages extends BaseController
         ];
         return view('pages/mitra', $data);
     }
+    public function iklan()
+    {
+        $series = [
+            [
+                'nama'      => 'Cody Series',
+                'gaya'      => 'Japandi · Hangat & Estetik',
+                'deskripsi' => 'Perpaduan kayu solid dan garis bersih ala Japandi. Cocok untuk ruang tamu yang ingin tampil hangat tanpa kesan ramai.',
+                'image'     => 'https://img.ilenafurniture.com/image/1748318610868.jpg/?apikey=' . $this->apikey_img_ilena,
+                'link'      => base_url('/product/coffee-table-ilena-cody'),
+            ],
+            [
+                'nama'      => 'Plint Base Series',
+                'gaya'      => 'Modern · Elegan & Premium',
+                'deskripsi' => 'Desain minimalis dengan finishing premium. Pilihan tepat untuk rumah modern yang mengutamakan estetika & ketahanan.',
+                'image'     => 'https://img.ilenafurniture.com/image/1748320128043.jpg/?apikey=' . $this->apikey_img_ilena,
+                'link'      => base_url('/product/bufet-tv-ilena-plint-base'),
+            ],
+            [
+                'nama'      => 'Cabana Series',
+                'gaya'      => 'Timeless · Simply & Tahan Lama',
+                'deskripsi' => 'Bentuk simpel dengan storage maksimal. Series yang akan tetap relevan walau tren interior berganti.',
+                'image'     => 'https://img.ilenafurniture.com/image/1742973475864.png/?apikey=' . $this->apikey_img_ilena,
+                'link'      => base_url('/product/bufet-tv-ilena-cabana'),
+            ],
+        ];
+
+        $data = [
+            'title'             => 'Promo Furniture Sepaket — Gratis Ongkir',
+            'navbar'            => $this->getNavbarData(),
+            'apikey_img_ilena'  => $this->apikey_img_ilena,
+            'metaTitle'         => 'Promo Furniture Sepaket Ilena — Gratis Ongkir',
+            'metaDeskripsi'     => 'Desain interior rumah baru jadi mudah! Pilih furniture sepaket Ilena: estetik, premium, dan saat ini gratis ongkir ke seluruh Indonesia.',
+            'metaKeyword'       => 'promo furniture, furniture sepaket, gratis ongkir, ilena furniture, jasa interior rumah baru',
+            'metaImage'         => 'https://img.ilenafurniture.com/image/1748320128043.jpg/?apikey=' . $this->apikey_img_ilena,
+            'series'            => $series,
+            'msg_active'        => false,
+        ];
+        return view('pages/iklan', $data);
+    }
     public function contact()
     {
         $data = [
