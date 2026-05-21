@@ -23,13 +23,11 @@ jobs:
         ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }} << 'EOF'
           set -e
           cd /mine/ilenafurniture.com
-          STASHED=0
           if ! git diff --quiet || ! git diff --cached --quiet || [ -n "$(git ls-files --others --exclude-standard)" ]; then
-            git stash push --include-untracked -m "auto-deploy-$(date +%s)"
-            STASHED=1
+            STASH_MSG="auto-deploy-$(date +%Y%m%d-%H%M%S)"
+            git stash push --include-untracked -m "$STASH_MSG"
+            echo "INFO: perubahan lokal di-stash dengan label: $STASH_MSG"
+            echo "INFO: cek dengan 'git stash list' & restore manual 'git stash pop' kalau perlu"
           fi
           git pull
-          if [ "$STASHED" = "1" ]; then
-            git stash pop || echo "WARN: stash pop conflict, perubahan lokal tersimpan di git stash list"
-          fi
         EOF
