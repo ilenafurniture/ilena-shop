@@ -12,6 +12,8 @@
 
     gtag('config', 'AW-16806007994');
     </script>
+    <!-- TikTok Pixel Code Start -->
+    <meta name="facebook-domain-verification" content="7gteseil6x5vlinogoixcvrdb7zoci" />
     <script>
     ! function(w, d, t) {
         w.TiktokAnalyticsObject = t;
