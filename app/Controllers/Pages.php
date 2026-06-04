@@ -906,12 +906,7 @@ class Pages extends BaseController
         $kurir = $shippingService->rates($alamatselected, $keranjang);
 
         if (empty($kurir)) {
-            $reason = $shippingService->lastError();
-            session()->setFlashdata(
-                'msg',
-                'Pilihan kurir belum tersedia untuk alamat ini.'
-                . ($reason !== '' ? ' Penyebab: ' . $reason : ' Pastikan konfigurasi pengiriman aktif atau hubungi admin.')
-            );
+            session()->setFlashdata('msg', 'Pilihan kurir belum tersedia untuk alamat ini. Silakan cek alamat atau hubungi admin.');
             return redirect()->to('/address');
         }
 
