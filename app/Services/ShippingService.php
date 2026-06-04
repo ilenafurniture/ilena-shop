@@ -95,7 +95,7 @@ class ShippingService
 
         $decoded = json_decode((string) $response, true);
         if ($httpCode < 200 || $httpCode >= 300 || !is_array($decoded)) {
-            $message = is_array($decoded) ? (string) ($decoded['message'] ?? '') : '';
+            $message = is_array($decoded) ? $this->biteshipErrorMessage($decoded) : '';
             $this->lastError = 'Biteship HTTP ' . $httpCode . ($message !== '' ? ': ' . $message : '.');
             log_message('error', 'Biteship shipping gagal. ' . $this->lastError . ' Response: ' . substr((string) $response, 0, 500));
             return [];
@@ -141,6 +141,37 @@ class ShippingService
         }
 
         return $rates;
+    }
+
+    private function biteshipErrorMessage(array $response): string
+    {
+        $parts = [];
+
+        foreach (['code', 'message', 'error'] as $key) {
+            if (!empty($response[$key]) && is_scalar($response[$key])) {
+                $parts[] = (string) $response[$key];
+            }
+        }
+
+        $errors = $response['errors'] ?? null;
+        if (is_array($errors)) {
+            foreach ($errors as $error) {
+                if (is_scalar($error)) {
+                    $parts[] = (string) $error;
+                    continue;
+                }
+
+                if (is_array($error)) {
+                    foreach (['field', 'code', 'message', 'error'] as $key) {
+                        if (!empty($error[$key]) && is_scalar($error[$key])) {
+                            $parts[] = (string) $error[$key];
+                        }
+                    }
+                }
+            }
+        }
+
+        return implode(' - ', array_unique(array_filter($parts)));
     }
 
     private function biteshipItems(array $cart): array
