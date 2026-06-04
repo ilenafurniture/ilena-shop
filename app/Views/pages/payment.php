@@ -548,12 +548,23 @@ hr {
                     <?php endif; ?>
 
                     <div class="sum-row">
-                        <div class="k">Biaya Ongkir</div>
+                        <div class="k">
+                            Biaya Ongkir
+                            <?php if (!empty($kurir) && is_array($kurir)): ?>
+                            <div class="small">
+                                <?= strtoupper(esc($kurir['nama'] ?? '')); ?>
+                                <?= esc($kurir['deskripsi'] ?? ''); ?>
+                            </div>
+                            <?php endif; ?>
+                        </div>
                         <div class="v">Rp <?= number_format((int)$hargaOngkir, 0, ',', '.'); ?></div>
                     </div>
 
                     <div class="sum-row">
-                        <div class="k">Biaya Admin</div>
+                        <div class="k">
+                            Biaya Admin Pembayaran
+                            <div class="small"><?= strtoupper(esc($paymentMethod)); ?></div>
+                        </div>
                         <div class="v">Rp <?= number_format((int)$biayaAdmin, 0, ',', '.'); ?></div>
                     </div>
                     <hr>

@@ -917,7 +917,7 @@ class Pages extends BaseController
             'alamat' => $alamat[$ind_add],
             'keranjang' => $keranjang,
             'hargaTotal' => $hargaTotal,
-            'hargaKeseluruhan' => $hargaTotal + 5000 + $kurir[0]['harga'],
+            'hargaKeseluruhan' => $hargaTotal + $kurir[0]['harga'],
             'kurir' => $kurir,
         ];
 

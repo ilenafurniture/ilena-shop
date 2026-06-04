@@ -39,20 +39,23 @@
             </div>
             <div class="d-flex justify-content-between py-1">
                 <p class="m-0">
-                    Biaya Admin
-                </p>
-                <p class="fw-bold m-0">
-                    Rp 5,000
-                </p>
-            </div>
-            <div class="d-flex justify-content-between py-1">
-                <p class="m-0">
                     Biaya Ongkir
                 </p>
                 <p id="harga-ongkir" class="fw-bold m-0">
                     Rp <?= number_format($kurir[0]['harga'], 0, ',', '.'); ?>
                 </p>
             </div>
+            <div class="d-flex justify-content-between py-1">
+                <p class="m-0">
+                    Biaya Admin Pembayaran
+                </p>
+                <p class="fw-bold m-0 text-secondary">
+                    Dihitung nanti
+                </p>
+            </div>
+            <p class="m-0 text-secondary" style="font-size: 12px;">
+                Biaya admin mengikuti metode pembayaran yang dipilih di halaman berikutnya.
+            </p>
             <span class="garis my-2"></span>
             <div class="d-flex justify-content-between py-1">
                 <p class="m-0">
@@ -78,7 +81,7 @@ radioKurirElm.forEach((element, ind) => {
     element.addEventListener('change', (e) => {
         hargaOngkirElm.innerHTML = 'Rp ' + e.target.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g,
             ".");
-        hargaKeseluruhan.innerHTML = 'Rp ' + (Number(e.target.value) + <?= $hargaTotal + 5000 ?>)
+        hargaKeseluruhan.innerHTML = 'Rp ' + (Number(e.target.value) + <?= $hargaTotal ?>)
             .toString().replace(/\B(?=(\d{3})+(?!\d))/g,
                 ".");
         btnPaymentElm.href = '/payment/' + ind;
