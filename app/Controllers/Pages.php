@@ -21,6 +21,7 @@ use App\Models\JenisModel;
 use App\Models\VoucherModel;
 use App\Models\GambarHeaderModel;
 use App\Models\VoucherUsageModel;
+use App\Services\ShippingService;
 
 
 class Pages extends BaseController
@@ -889,7 +890,6 @@ class Pages extends BaseController
         }
 
         $alamatselected = $alamat[$ind_add];
-        $beratAkhir = 0;
         $keranjang = $this->session->get('keranjang');
         if (!isset($keranjang)) {
             return redirect()->to('/product');
@@ -902,105 +902,10 @@ class Pages extends BaseController
         $keranjang = $cartCheck['cart'];
         $hargaTotal = $cartCheck['subtotal'];
 
-        foreach ($keranjang as $k) {
-            $produk = $k['detail'];
-            $dimensiPaket = (json_decode($produk['deskripsi'] ?? '{}', true) ?? [])['dimensi']['paket'] ?? ['panjang' => 0, 'lebar' => 0, 'tinggi' => 0, 'berat' => 0];
-            $beratVolume = ceil((float)$dimensiPaket['panjang'] / 10 * (float)$dimensiPaket['lebar'] / 10 * (float)$dimensiPaket['tinggi'] / 10 / 3500); //kg
-            $beratAsli = (float)$dimensiPaket['berat'];
-            $beratAkhir += ($beratVolume > $beratAsli ? $beratVolume : $beratAsli) * $k['jumlah'];
-        }
-
-        $kurir = [];
-        $curl_kurir = curl_init();
-        curl_setopt_array($curl_kurir, array(
-            CURLOPT_URL => "https://pro.rajaongkir.com/api/cost",
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_CONNECTTIMEOUT => 5,
-            CURLOPT_TIMEOUT => 10,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => "origin=5504&originType=subdistrict&destination=" . $alamatselected['kec_id'] . "&destinationType=subdistrict&weight=" . $beratAkhir * 1000 . "&courier=jne:jnt:wahana:sentral",
-            CURLOPT_HTTPHEADER => array(
-                "content-type: application/x-www-form-urlencoded",
-                "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
-            ),
-        ));
-        $response = curl_exec($curl_kurir);
-        $err = curl_error($curl_kurir);
-        curl_close($curl_kurir);
-        if ($err) {
-            log_message('error', 'RajaOngkir timeout/error untuk shipping: ' . $err);
-        } else {
-            $rajaOngkirCost = json_decode($response, true);
-            $rajaResults = $rajaOngkirCost['rajaongkir']['results'] ?? [];
-            if (is_array($rajaResults)) {
-                foreach ($rajaResults as $k) {
-                    foreach (($k['costs'] ?? []) as $c) {
-                        $cost = $c['cost'][0] ?? null;
-                        if (!$cost) continue;
-
-                        $item_kurir = [
-                            'nama' => $k['code'],
-                            'deskripsi' => $c['description'],
-                            'harga' => $cost['value'],
-                            'estimasi' => $cost['etd'],
-                        ];
-                        array_push($kurir, $item_kurir);
-                    }
-                }
-            }
-        }
-
-        $curl_dakota = curl_init();
-        $data_dakota = [
-            'prov' => $alamatselected['prov'],
-            'kab' => $alamatselected['kab'],
-            'kec' => $alamatselected['kec'],
-        ];
-        curl_setopt_array($curl_dakota, array(
-            CURLOPT_URL => "https://api.jasminefurniture.co.id/dakota",
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_CONNECTTIMEOUT => 5,
-            CURLOPT_TIMEOUT => 10,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => json_encode($data_dakota),
-            CURLOPT_HTTPHEADER => array(
-                "content-type: application/json"
-            ),
-        ));
-        $response = curl_exec($curl_dakota);
-        $err = curl_error($curl_dakota);
-        curl_close($curl_dakota);
-        if ($err) {
-            log_message('error', 'Dakota timeout/error untuk shipping: ' . $err);
-        } else {
-            $dakota = json_decode($response, true);
-            if (isset($dakota['data']) && is_array($dakota['data'])) {
-                foreach ($dakota['data'] as $deskripsi => $value_dakota) {
-                    if ($deskripsi != 'UNIT' && isset($value_dakota[0])) {
-                        $item_kurir = [
-                            'nama' => 'dakota',
-                            'deskripsi' => ucwords($deskripsi),
-                            'harga' => $beratAkhir > (int)$value_dakota[0]['minkg'] ? (int)$value_dakota[0]['kgnext'] * $beratAkhir : (int)$value_dakota[0]['pokok'],
-                            'estimasi' => $value_dakota[0]['LT'],
-                        ];
-                        array_push($kurir, $item_kurir);
-                    }
-                }
-            }
-        }
+        $kurir = (new ShippingService())->rates($alamatselected, $keranjang);
 
         if (empty($kurir)) {
-            session()->setFlashdata('msg', 'Pilihan kurir belum tersedia untuk alamat ini. Silakan cek alamat atau hubungi admin.');
+            session()->setFlashdata('msg', 'Pilihan kurir belum tersedia untuk alamat ini. Pastikan konfigurasi pengiriman aktif atau hubungi admin.');
             return redirect()->to('/address');
         }
 
@@ -3840,28 +3745,6 @@ class Pages extends BaseController
     }
     public function account()
     {
-        //Dapatkan data provinsi
-        // $curl = curl_init();
-        // curl_setopt_array($curl, array(
-        //     CURLOPT_URL => "https://pro.rajaongkir.com/api/province",
-        //     CURLOPT_SSL_VERIFYHOST => 0,
-        //     CURLOPT_SSL_VERIFYPEER => 0,
-        //     CURLOPT_RETURNTRANSFER => true,
-        //     CURLOPT_ENCODING => "",
-        //     CURLOPT_MAXREDIRS => 10,
-        //     CURLOPT_TIMEOUT => 30,
-        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        //     CURLOPT_CUSTOMREQUEST => "GET",
-        //     CURLOPT_HTTPHEADER => array(
-        //         "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
-        //     ),
-        // ));
-        // $response = curl_exec($curl);
-        // $err = curl_error($curl);
-        // curl_close($curl);
-        // if ($err) {
-        //     return "cURL Error #:" . $err;
-        // }
         $provinsi = $this->provinsiModel->findAll();
 
         $alamat = $this->session->get('alamat');

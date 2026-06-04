@@ -20,7 +20,7 @@
                     <p class="mb-1" style="font-weight: 600;">Rp <?= number_format($k['harga'], 0, ',', '.'); ?></p>
                 </div>
                 <div style="width:fit-content" class="show-block-ke-hide">
-                    <img src="/img/kurir/<?= $k['nama'] ?>.png" alt="">
+                    <img src="/img/kurir/<?= $k['nama'] ?>.png" alt="" onerror="this.style.display='none'">
                 </div>
             </label>
             <?php } ?>

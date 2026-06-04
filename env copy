@@ -141,3 +141,21 @@
 #--------------------------------------------------------------------
 
 # curlrequest.shareOptions = false
+
+#--------------------------------------------------------------------
+# SHIPPING
+#--------------------------------------------------------------------
+SHIPPING_PROVIDER = biteship
+BITESHIP_API_KEY =
+SHIPPING_ORIGIN_POSTAL_CODE =
+BITESHIP_COURIERS = jne,jnt,sicepat,anteraja,wahana,tiki,lion,paxel
+SHIPPING_CONNECT_TIMEOUT = 5
+SHIPPING_TIMEOUT = 12
+
+# Fallback manual hanya aktif kalau tarifnya sudah ditentukan.
+SHIPPING_MANUAL_FALLBACK_ENABLED = false
+SHIPPING_MANUAL_DEFAULT_PRICE = 0
+SHIPPING_MANUAL_PRICE_PER_KG = 0
+SHIPPING_MANUAL_ESTIMATE = "3 - 10"
+SHIPPING_MANUAL_COURIER_CODE = manual
+SHIPPING_MANUAL_COURIER_NAME = "Pengiriman Manual"
