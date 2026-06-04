@@ -902,10 +902,16 @@ class Pages extends BaseController
         $keranjang = $cartCheck['cart'];
         $hargaTotal = $cartCheck['subtotal'];
 
-        $kurir = (new ShippingService())->rates($alamatselected, $keranjang);
+        $shippingService = new ShippingService();
+        $kurir = $shippingService->rates($alamatselected, $keranjang);
 
         if (empty($kurir)) {
-            session()->setFlashdata('msg', 'Pilihan kurir belum tersedia untuk alamat ini. Pastikan konfigurasi pengiriman aktif atau hubungi admin.');
+            $reason = $shippingService->lastError();
+            session()->setFlashdata(
+                'msg',
+                'Pilihan kurir belum tersedia untuk alamat ini.'
+                . ($reason !== '' ? ' Penyebab: ' . $reason : ' Pastikan konfigurasi pengiriman aktif atau hubungi admin.')
+            );
             return redirect()->to('/address');
         }
 

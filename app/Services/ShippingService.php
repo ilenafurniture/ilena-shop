@@ -7,6 +7,7 @@ use Config\Shipping as ShippingConfig;
 class ShippingService
 {
     private ShippingConfig $config;
+    private string $lastError = '';
 
     public function __construct(?ShippingConfig $config = null)
     {
@@ -15,6 +16,7 @@ class ShippingService
 
     public function rates(array $address, array $cart): array
     {
+        $this->lastError = '';
         $rates = [];
 
         if ($this->config->provider === 'biteship') {
@@ -30,16 +32,23 @@ class ShippingService
         return $rates;
     }
 
+    public function lastError(): string
+    {
+        return $this->lastError;
+    }
+
     private function biteshipRates(array $address, array $cart): array
     {
         if ($this->config->biteshipApiKey === '' || $this->config->originPostalCode === '') {
-            log_message('warning', 'Biteship shipping dilewati: BITESHIP_API_KEY atau SHIPPING_ORIGIN_POSTAL_CODE belum diisi.');
+            $this->lastError = 'BITESHIP_API_KEY atau SHIPPING_ORIGIN_POSTAL_CODE belum terbaca.';
+            log_message('warning', 'Biteship shipping dilewati: ' . $this->lastError);
             return [];
         }
 
         $destinationPostalCode = preg_replace('/\D+/', '', (string) ($address['kodepos'] ?? ''));
         if ($destinationPostalCode === '') {
-            log_message('warning', 'Biteship shipping dilewati: kode pos tujuan kosong.');
+            $this->lastError = 'Kode pos tujuan di alamat pembeli kosong.';
+            log_message('warning', 'Biteship shipping dilewati: ' . $this->lastError);
             return [];
         }
 
@@ -51,7 +60,8 @@ class ShippingService
         ];
 
         if (empty($payload['items'])) {
-            log_message('warning', 'Biteship shipping dilewati: item checkout kosong.');
+            $this->lastError = 'Item checkout kosong.';
+            log_message('warning', 'Biteship shipping dilewati: ' . $this->lastError);
             return [];
         }
 
@@ -78,18 +88,23 @@ class ShippingService
         curl_close($curl);
 
         if ($error) {
+            $this->lastError = 'Koneksi ke Biteship gagal: ' . $error;
             log_message('error', 'Biteship shipping error: ' . $error);
             return [];
         }
 
         $decoded = json_decode((string) $response, true);
         if ($httpCode < 200 || $httpCode >= 300 || !is_array($decoded)) {
-            log_message('error', 'Biteship shipping gagal. HTTP ' . $httpCode . ' response: ' . substr((string) $response, 0, 500));
+            $message = is_array($decoded) ? (string) ($decoded['message'] ?? '') : '';
+            $this->lastError = 'Biteship HTTP ' . $httpCode . ($message !== '' ? ': ' . $message : '.');
+            log_message('error', 'Biteship shipping gagal. ' . $this->lastError . ' Response: ' . substr((string) $response, 0, 500));
             return [];
         }
 
         $pricing = $decoded['pricing'] ?? [];
         if (!is_array($pricing)) {
+            $this->lastError = 'Response Biteship tidak berisi data pricing.';
+            log_message('error', 'Biteship shipping gagal: ' . $this->lastError . ' Response: ' . substr((string) $response, 0, 500));
             return [];
         }
 
@@ -112,6 +127,17 @@ class ShippingService
                 'provider' => 'biteship',
                 'service_code' => (string) ($rate['courier_service_code'] ?? ''),
             ];
+        }
+
+        if (empty($rates)) {
+            $this->lastError = 'Biteship tidak mengembalikan tarif untuk kode pos/courier ini.';
+            log_message(
+                'warning',
+                'Biteship shipping kosong. Origin: ' . $payload['origin_postal_code']
+                . ', destination: ' . $payload['destination_postal_code']
+                . ', couriers: ' . $payload['couriers']
+                . ', response: ' . substr((string) $response, 0, 500)
+            );
         }
 
         return $rates;
