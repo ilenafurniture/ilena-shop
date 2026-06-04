@@ -919,7 +919,8 @@ class Pages extends BaseController
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_TIMEOUT => 10,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "POST",
             CURLOPT_POSTFIELDS => "origin=5504&originType=subdistrict&destination=" . $alamatselected['kec_id'] . "&destinationType=subdistrict&weight=" . $beratAkhir * 1000 . "&courier=jne:jnt:wahana:sentral",
@@ -932,19 +933,24 @@ class Pages extends BaseController
         $err = curl_error($curl_kurir);
         curl_close($curl_kurir);
         if ($err) {
-            return "cURL Error #:" . $err;
-        }
-        $rajaOngkirCost = json_decode($response, true);
-        if (isset($rajaOngkirCost)) {
-            foreach ($rajaOngkirCost['rajaongkir']['results'] as $k) {
-                foreach ($k['costs'] as $c) {
-                    $item_kurir = [
-                        'nama' => $k['code'],
-                        'deskripsi' => $c['description'],
-                        'harga' => $c['cost'][0]['value'],
-                        'estimasi' => $c['cost'][0]['etd'],
-                    ];
-                    array_push($kurir, $item_kurir);
+            log_message('error', 'RajaOngkir timeout/error untuk shipping: ' . $err);
+        } else {
+            $rajaOngkirCost = json_decode($response, true);
+            $rajaResults = $rajaOngkirCost['rajaongkir']['results'] ?? [];
+            if (is_array($rajaResults)) {
+                foreach ($rajaResults as $k) {
+                    foreach (($k['costs'] ?? []) as $c) {
+                        $cost = $c['cost'][0] ?? null;
+                        if (!$cost) continue;
+
+                        $item_kurir = [
+                            'nama' => $k['code'],
+                            'deskripsi' => $c['description'],
+                            'harga' => $cost['value'],
+                            'estimasi' => $cost['etd'],
+                        ];
+                        array_push($kurir, $item_kurir);
+                    }
                 }
             }
         }
@@ -962,7 +968,8 @@ class Pages extends BaseController
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_TIMEOUT => 10,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "POST",
             CURLOPT_POSTFIELDS => json_encode($data_dakota),
@@ -974,19 +981,20 @@ class Pages extends BaseController
         $err = curl_error($curl_dakota);
         curl_close($curl_dakota);
         if ($err) {
-            return "cURL Error #:" . $err;
-        }
-        $dakota = json_decode($response, true);
-        if (isset($dakota['data']) && is_array($dakota['data'])) {
-            foreach ($dakota['data'] as $deskripsi => $value_dakota) {
-                if ($deskripsi != 'UNIT' && isset($value_dakota[0])) {
-                    $item_kurir = [
-                        'nama' => 'dakota',
-                        'deskripsi' => ucwords($deskripsi),
-                        'harga' => $beratAkhir > (int)$value_dakota[0]['minkg'] ? (int)$value_dakota[0]['kgnext'] * $beratAkhir : (int)$value_dakota[0]['pokok'],
-                        'estimasi' => $value_dakota[0]['LT'],
-                    ];
-                    array_push($kurir, $item_kurir);
+            log_message('error', 'Dakota timeout/error untuk shipping: ' . $err);
+        } else {
+            $dakota = json_decode($response, true);
+            if (isset($dakota['data']) && is_array($dakota['data'])) {
+                foreach ($dakota['data'] as $deskripsi => $value_dakota) {
+                    if ($deskripsi != 'UNIT' && isset($value_dakota[0])) {
+                        $item_kurir = [
+                            'nama' => 'dakota',
+                            'deskripsi' => ucwords($deskripsi),
+                            'harga' => $beratAkhir > (int)$value_dakota[0]['minkg'] ? (int)$value_dakota[0]['kgnext'] * $beratAkhir : (int)$value_dakota[0]['pokok'],
+                            'estimasi' => $value_dakota[0]['LT'],
+                        ];
+                        array_push($kurir, $item_kurir);
+                    }
                 }
             }
         }
