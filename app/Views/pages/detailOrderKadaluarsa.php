@@ -64,6 +64,25 @@ $waktuCurr = strtotime("+7 Hours");
 $waktuSelisih = $waktuExpire - $waktuCurr;
 $waktu = date("H:i:s", $waktuSelisih);
 $waktuExpireFix = date("d", $waktuExpire) . " " . $bulan[(int)date("m", $waktuExpire) - 1] . " " . date("Y H:i:s", $waktuExpire);
+$subtotal = 0;
+$diskonVoucher = 0;
+$diskonFlash = 0;
+$biayaOngkir = 0;
+$biayaAdmin = 0;
+foreach ($items as $it) {
+    $name = strtolower(trim($it['name'] ?? $it['id'] ?? ''));
+    if ($name === 'voucher') {
+        $diskonVoucher += abs((int)$it['price']);
+    } elseif ($name === 'flash sale') {
+        $diskonFlash += abs((int)$it['price']);
+    } elseif ($name === 'biaya ongkir') {
+        $biayaOngkir += (int)$it['price'];
+    } elseif ($name === 'biaya admin') {
+        $biayaAdmin += (int)$it['price'];
+    } else {
+        $subtotal += ((int)$it['price'] * (int)$it['quantity']);
+    }
+}
 ?>
 
 <?= $this->extend("layout/template"); ?>
@@ -221,6 +240,20 @@ $waktuExpireFix = date("d", $waktuExpire) . " " . $bulan[(int)date("m", $waktuEx
     letter-spacing: .2px;
 }
 
+.order-expired .list-line {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 6px 0;
+}
+
+.order-expired .list-line.total {
+    border-top: 1px dashed #e5e7eb;
+    margin-top: 6px;
+    padding-top: 10px;
+    font-weight: 800;
+}
+
 .order-expired .dim {
     opacity: .65;
 }
@@ -323,6 +356,32 @@ $waktuExpireFix = date("d", $waktuExpire) . " " . $bulan[(int)date("m", $waktuEx
                 <p class="label m-0">Waktu Kedaluwarsa</p>
                 <p class="text m-0"><b><?= $waktuExpireFix; ?> WIB</b></p>
             </div>
+        </div>
+
+        <hr class="hr">
+
+        <div>
+            <p class="text m-0"><b>Rincian Pembayaran</b></p>
+            <div class="list-line"><span class="muted">Subtotal</span><span>Rp
+                    <?= number_format($subtotal, 0, ',', '.'); ?></span></div>
+            <?php if ($diskonVoucher > 0): ?>
+            <div class="list-line"><span class="muted">Diskon Voucher</span><span>- Rp
+                    <?= number_format($diskonVoucher, 0, ',', '.'); ?></span></div>
+            <?php endif; ?>
+            <?php if ($diskonFlash > 0): ?>
+            <div class="list-line"><span class="muted">Flash Sale</span><span>- Rp
+                    <?= number_format($diskonFlash, 0, ',', '.'); ?></span></div>
+            <?php endif; ?>
+            <?php if ($biayaOngkir > 0): ?>
+            <div class="list-line"><span class="muted">Biaya Ongkir</span><span>Rp
+                    <?= number_format($biayaOngkir, 0, ',', '.'); ?></span></div>
+            <?php endif; ?>
+            <?php if ($biayaAdmin > 0): ?>
+            <div class="list-line"><span class="muted">Biaya Admin Pembayaran</span><span>Rp
+                    <?= number_format($biayaAdmin, 0, ',', '.'); ?></span></div>
+            <?php endif; ?>
+            <div class="list-line total"><span>Total Tagihan</span><span>Rp
+                    <?= number_format($dataMid['gross_amount'], 0, ',', '.'); ?></span></div>
         </div>
 
         <hr class="hr">

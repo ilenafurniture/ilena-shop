@@ -471,7 +471,8 @@ function openDetail(indP) {
         '</div>';
 
     (p.items || []).forEach(el => {
-        if (el.name !== 'Biaya Ongkir' && el.name !== 'Biaya Admin') {
+        const lineName = String(el.name || '').toLowerCase();
+        if (!['biaya ongkir', 'biaya admin', 'voucher', 'flash sale'].includes(lineName)) {
             itemElm.innerHTML +=
                 '<div class="d-flex py-1">' +
                 '<p class="d-block fw-bold m-0 text-center" style="flex: 1; letter-spacing: -1px;">' + (el

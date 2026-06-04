@@ -112,13 +112,33 @@
             </div>
             <?php
             $totalHarga = 0;
+            $biayaOngkir = 0;
+            $biayaAdmin = 0;
+            $diskonVoucher = 0;
+            $diskonFlash = 0;
             foreach ($transaksi['items'] as $item) {
+                $itemName = strtolower((string)($item['name'] ?? $item['id'] ?? ''));
+                if ($itemName == 'biaya ongkir') {
+                    $biayaOngkir += (int)$item['price'];
+                    continue;
+                }
+                if ($itemName == 'biaya admin') {
+                    $biayaAdmin += (int)$item['price'];
+                    continue;
+                }
+                if ($itemName == 'voucher') {
+                    $diskonVoucher += abs((int)$item['price']);
+                    continue;
+                }
+                if ($itemName == 'flash sale') {
+                    $diskonFlash += abs((int)$item['price']);
+                    continue;
+                }
                 $totalHarga += $item['price'] * $item['quantity'];
-                if ($item['id'] != 'Voucher' && $item['id'] != 'Biaya Admin'&& $item['id'] != 'Flash Sale') {
             ?>
             <div class="w-100 d-flex">
                 <div style="flex: 3">
-                    <p class="mb-0">| <?= strtoupper($item['collection']) ?> | <?= $item['name']; ?></p>
+                    <p class="mb-0">| <?= strtoupper($item['collection'] ?? '') ?> | <?= $item['name']; ?></p>
                 </div>
                 <div style="flex: 1">
                     <p class="text-center mb-0"><?= $item['quantity']; ?></p>
@@ -131,8 +151,7 @@
                     </p>
                 </div>
             </div>
-            <?php }
-            } ?>
+            <?php } ?>
         </div>
 
         <!-- Container perhitungan -->
@@ -150,15 +169,46 @@
                             </p>
                         </div>
                     </div>
-                    <?php if (substr($transaksi['id_midtrans'], -2) == 'IL') { ?>
+                    <?php if ($diskonVoucher > 0) { ?>
                     <div class="w-100 d-flex">
                         <div style="flex: 2">
-                            <p class="mb-0">Biaya Admin</p>
+                            <p class="mb-0">Diskon Voucher</p>
                         </div>
                         <div style="flex: 1">
-                            <p class="text-end mb-0">Rp 5.000</p>
+                            <p class="text-end mb-0">- Rp <?= number_format($diskonVoucher, 0, ",", "."); ?></p>
                         </div>
                     </div>
+                    <?php } ?>
+                    <?php if ($diskonFlash > 0) { ?>
+                    <div class="w-100 d-flex">
+                        <div style="flex: 2">
+                            <p class="mb-0">Flash Sale</p>
+                        </div>
+                        <div style="flex: 1">
+                            <p class="text-end mb-0">- Rp <?= number_format($diskonFlash, 0, ",", "."); ?></p>
+                        </div>
+                    </div>
+                    <?php } ?>
+                    <?php if ($biayaOngkir > 0) { ?>
+                    <div class="w-100 d-flex">
+                        <div style="flex: 2">
+                            <p class="mb-0">Biaya Ongkir</p>
+                        </div>
+                        <div style="flex: 1">
+                            <p class="text-end mb-0">Rp <?= number_format($biayaOngkir, 0, ",", "."); ?></p>
+                        </div>
+                    </div>
+                    <?php } ?>
+                    <?php if ($biayaAdmin > 0) { ?>
+                    <div class="w-100 d-flex">
+                        <div style="flex: 2">
+                            <p class="mb-0">Biaya Admin Pembayaran</p>
+                        </div>
+                        <div style="flex: 1">
+                            <p class="text-end mb-0">Rp <?= number_format($biayaAdmin, 0, ",", "."); ?></p>
+                        </div>
+                    </div>
+                    <?php } ?>
                     <div class="w-100 d-flex">
                         <div style="flex: 2">
                             <p class="mb-0 fw-bold">TOTAL TAGIHAN</p>
@@ -169,7 +219,6 @@
                             </p>
                         </div>
                     </div>
-                    <?php } ?>
                 </div>
             </div>
         </div>

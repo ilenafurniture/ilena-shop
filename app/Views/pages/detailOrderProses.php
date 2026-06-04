@@ -83,6 +83,25 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
     if (strpos($nm, 'potongan') !== false) return false;
     return true;
 }));
+$subtotal = 0;
+$diskonVoucher = 0;
+$diskonFlash = 0;
+$biayaOngkir = 0;
+$biayaAdmin = 0;
+foreach ($items as $it) {
+    $name = strtolower(trim($it['name']));
+    if ($name === 'voucher') {
+        $diskonVoucher += abs((int)$it['price']);
+    } elseif ($name === 'flash sale') {
+        $diskonFlash += abs((int)$it['price']);
+    } elseif ($name === 'biaya ongkir') {
+        $biayaOngkir += (int)$it['price'];
+    } elseif ($name === 'biaya admin') {
+        $biayaAdmin += (int)$it['price'];
+    } else {
+        $subtotal += ((int)$it['price'] * (int)$it['quantity']);
+    }
+}
 $grossAmount = (int)($dataMid['gross_amount'] ?? 0);
 ?>
 <?= $this->extend("layout/template"); ?>
@@ -233,6 +252,20 @@ $grossAmount = (int)($dataMid['gross_amount'] ?? 0);
     white-space: pre-line
 }
 
+.order-success .list-line {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 6px 0;
+}
+
+.order-success .list-line.total {
+    border-top: 1px dashed #e5e7eb;
+    margin-top: 6px;
+    padding-top: 10px;
+    font-weight: 800;
+}
+
 @media (max-width:560px) {
     .order-success .kv {
         grid-template-columns: 1fr
@@ -374,6 +407,31 @@ $grossAmount = (int)($dataMid['gross_amount'] ?? 0);
         <?php else: ?>
         <p class="muted m-0">Tidak ada item produk untuk ditampilkan.</p>
         <?php endif; ?>
+    </div>
+
+    <!-- Rincian Pembayaran -->
+    <div class="card pad mb-3">
+        <p class="title">Rincian Pembayaran</p>
+        <div class="list-line"><span class="muted">Subtotal</span><span><b>Rp
+                    <?= number_format($subtotal, 0, ',', '.'); ?></b></span></div>
+        <?php if ($diskonVoucher > 0): ?>
+        <div class="list-line"><span class="muted">Diskon Voucher</span><span>- Rp
+                <?= number_format($diskonVoucher, 0, ',', '.'); ?></span></div>
+        <?php endif; ?>
+        <?php if ($diskonFlash > 0): ?>
+        <div class="list-line"><span class="muted">Flash Sale</span><span>- Rp
+                <?= number_format($diskonFlash, 0, ',', '.'); ?></span></div>
+        <?php endif; ?>
+        <?php if ($biayaOngkir > 0): ?>
+        <div class="list-line"><span class="muted">Biaya Ongkir</span><span>Rp
+                <?= number_format($biayaOngkir, 0, ',', '.'); ?></span></div>
+        <?php endif; ?>
+        <?php if ($biayaAdmin > 0): ?>
+        <div class="list-line"><span class="muted">Biaya Admin Pembayaran</span><span>Rp
+                <?= number_format($biayaAdmin, 0, ',', '.'); ?></span></div>
+        <?php endif; ?>
+        <div class="list-line total"><span>Total Bayar</span><span>Rp
+                <?= number_format($grossAmount, 0, ',', '.'); ?></span></div>
     </div>
 
     <!-- Ekspedisi & Resi -->

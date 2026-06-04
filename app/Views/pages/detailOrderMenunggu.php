@@ -70,6 +70,7 @@ $waktuExpireFix = date("d", $waktuExpire) . " " . $bulan[(int)date("m", $waktuEx
 $subtotal = 0;
 $diskonVoucher = 0;
 $diskonFlash = 0;
+$biayaOngkir = 0;
 $biayaAdmin = 0;
 foreach ($items as $it) {
     $name = strtolower($it['name']);
@@ -79,10 +80,10 @@ foreach ($items as $it) {
         $diskonFlash += abs((int)$it['price']);
     } elseif ($name === 'biaya admin') {
         $biayaAdmin += (int)$it['price'];
+    } elseif ($name === 'biaya ongkir') {
+        $biayaOngkir += (int)$it['price'];
     } else {
-        if ($name !== 'biaya ongkir') {
-            $subtotal += ((int)$it['price'] * (int)$it['quantity']);
-        }
+        $subtotal += ((int)$it['price'] * (int)$it['quantity']);
     }
 }
 $grossAmount = (int)($dataMid['gross_amount'] ?? ($subtotal - $diskonVoucher - $diskonFlash + $biayaAdmin));
@@ -502,9 +503,15 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
                         <span>- Rp <?= number_format($diskonFlash, 0, ',', '.'); ?></span>
                     </div>
                     <?php endif; ?>
+                    <?php if ($biayaOngkir > 0): ?>
+                    <div class="list-line">
+                        <span class="muted">Biaya Ongkir</span>
+                        <span>Rp <?= number_format($biayaOngkir, 0, ',', '.'); ?></span>
+                    </div>
+                    <?php endif; ?>
                     <?php if ($biayaAdmin > 0): ?>
                     <div class="list-line">
-                        <span class="muted">Biaya Admin</span>
+                        <span class="muted">Biaya Admin Pembayaran</span>
                         <span>Rp <?= number_format($biayaAdmin, 0, ',', '.'); ?></span>
                     </div>
                     <?php endif; ?>

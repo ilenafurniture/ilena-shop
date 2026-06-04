@@ -6,6 +6,7 @@
 $subtotal = 0;
 $diskonVoucher = 0;
 $diskonFlash = 0;
+$biayaOngkir = 0;
 $biayaAdmin = 0;
 
 foreach ($items as $it) {
@@ -16,10 +17,10 @@ foreach ($items as $it) {
         $diskonFlash += abs((int)$it['price']);
     } elseif ($name === 'biaya admin') {
         $biayaAdmin += (int)$it['price'];
+    } elseif ($name === 'biaya ongkir') {
+        $biayaOngkir += (int)$it['price'];
     } else {
-        if ($name !== 'biaya ongkir') {
-            $subtotal += ((int)$it['price'] * (int)$it['quantity']);
-        }
+        $subtotal += ((int)$it['price'] * (int)$it['quantity']);
     }
 }
 $totalBayar = (int)$dataMid['gross_amount'];
@@ -390,8 +391,12 @@ $totalBayar = (int)$dataMid['gross_amount'];
                     <div class="list-line"><span class="muted">Flash Sale</span><span>- Rp
                             <?= number_format($diskonFlash, 0, ',', '.'); ?></span></div>
                     <?php endif; ?>
+                    <?php if ($biayaOngkir > 0): ?>
+                    <div class="list-line"><span class="muted">Biaya Ongkir</span><span>Rp
+                            <?= number_format($biayaOngkir, 0, ',', '.'); ?></span></div>
+                    <?php endif; ?>
                     <?php if ($biayaAdmin > 0): ?>
-                    <div class="list-line"><span class="muted">Biaya Admin</span><span>Rp
+                    <div class="list-line"><span class="muted">Biaya Admin Pembayaran</span><span>Rp
                             <?= number_format($biayaAdmin, 0, ',', '.'); ?></span></div>
                     <?php endif; ?>
                     <div class="list-line total"><span>Total Bayar</span><span>Rp
