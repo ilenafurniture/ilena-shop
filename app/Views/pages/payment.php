@@ -12,6 +12,7 @@ $listPaymentMethod = isset($listPaymentMethod) && is_array($listPaymentMethod) ?
 $paymentMethod     = $paymentMethod ?? '';
 $indexAddress      = (int)($indexAddress ?? 0);
 $hargaTotal        = (float)($hargaTotal ?? 0);
+$hargaOngkir       = (float)($hargaOngkir ?? 0);
 $flashSale         = (float)($flashSale ?? 0);
 $biayaAdmin        = (int)($biayaAdmin ?? 0);
 $grossAmount       = (int)($grossAmount ?? 0);
@@ -545,6 +546,11 @@ hr {
                         <div class="v">- Rp <?= number_format((int)$flashSale, 0, ',', '.'); ?></div>
                     </div>
                     <?php endif; ?>
+
+                    <div class="sum-row">
+                        <div class="k">Biaya Ongkir</div>
+                        <div class="v">Rp <?= number_format((int)$hargaOngkir, 0, ',', '.'); ?></div>
+                    </div>
 
                     <div class="sum-row">
                         <div class="k">Biaya Admin</div>

@@ -735,10 +735,14 @@ trait OrderOfflineTrait
     public function benerinSurat()
     {
         $pemesanan = $this->pemesananOfflineModel->findAll();
+        $updated = 0;
         foreach ($pemesanan as $p) {
             $this->pemesananOfflineModel->where(['id' => $p['id']])->set(['tanggal_inv' => $p['tanggal']])->update();
+            $updated++;
         }
-        dd('done');
+
+        session()->setFlashdata('msg', 'Tanggal invoice berhasil disinkronkan untuk ' . $updated . ' pesanan.');
+        return redirect()->to('/admin/order/offline/sale');
     }
 
     /**

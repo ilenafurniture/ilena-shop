@@ -292,7 +292,8 @@
                             <a class="btn" href="/invoice/<?= $p['id_midtrans']; ?>"><i
                                     class="material-icons">description</i></a>
                             <?php if ($p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
-                            <a class="btn" href="/editresi/<?= $p['id_midtrans']; ?>"><i
+                            <a class="btn" href="javascript:void(0)"
+                                onclick="openEditResi('<?= $p['id_midtrans']; ?>')"><i
                                     class="material-icons">edit</i></a>
                             <?php } ?>
                             <?php if ($p['status'] == 'Menunggu Pembayaran' || $p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
@@ -405,7 +406,10 @@ function openDetail(indP, event) {
             element.price + '</p></div>';
     });
     btnBawahElm[0].href = "/invoice/" + pesananSelected.id_midtrans
-    btnBawahElm[1].href = "/editresi/" + pesananSelected.id_midtrans
+    btnBawahElm[1].href = "javascript:void(0)"
+    btnBawahElm[1].onclick = function() {
+        openEditResi(pesananSelected.id_midtrans)
+    }
     btnBawahElm[2].href = "/cancelorder/" + pesananSelected.id_midtrans
     btnBawahElm[3].href = "/order/" + pesananSelected.id_midtrans
     containerOffcanvasElm.classList.add("show")

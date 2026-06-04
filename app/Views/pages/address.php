@@ -624,7 +624,7 @@ input[type="radio"][name="address"]:checked+.item-address {
                     <p class="fw-bold m-0">Rp <?= number_format($hargaKeseluruhan, 0, ',', '.'); ?></p>
                 </div>
 
-                <a id="btn-shipping" <?= count($alamat) > 0 ? 'href="/payment/0"' : '' ?>
+                <a id="btn-shipping" <?= count($alamat) > 0 ? 'href="/shipping/0"' : '' ?>
                     class="btn-default-merah <?= count($alamat) > 0 ? '' : 'disabled' ?> w-100 mt-4 text-center">
                     Pilih Rincian Pembayaran
                 </a>
@@ -689,7 +689,7 @@ btnAddAddressElm.addEventListener("click", () => {
 });
 radioAddressElm.forEach((elm, ind_radio) => {
     elm.addEventListener('change', () => {
-        btnShippingElm.href = "/payment/" + ind_radio;
+        btnShippingElm.href = "/shipping/" + ind_radio;
     });
 });
 

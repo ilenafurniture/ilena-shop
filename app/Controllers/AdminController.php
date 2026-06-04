@@ -1038,6 +1038,13 @@ class AdminController extends BaseController
         $this->kartuStokModel->where(['id_pesanan' => $id_midtrans])->set(['pending' => true])->update();
         return redirect()->to('/admin/reprint');
     }
+
+    public function denyReprint($id_midtrans)
+    {
+        $this->ajukanPrintModel->where(['id_midtrans' => $id_midtrans])->delete();
+        return redirect()->to('/admin/reprint');
+    }
+
     public function marketplace()
     {
         $pemesanan = $this->pemesananModel->getPemesananMarket();
@@ -1072,6 +1079,13 @@ class AdminController extends BaseController
             'pemesananJson' => json_encode($pemesananBelumKonfirmasi),
         ];
         return view('admin/marketplace', $data);
+    }
+
+    public function editMarketplace($id)
+    {
+        return redirect()
+            ->to('/admin/marketplace')
+            ->with('msg', 'Form edit marketplace belum tersedia. Gunakan detail order atau konfirmasi marketplace.');
     }
 
     public function confirmMarketplace($id)
