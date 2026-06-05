@@ -93,6 +93,10 @@ $routes->get('/changepic/(:any)', 'GambarController::gantiUkuran/$1', ['filter' 
 $routes->get('/gantilokasi/(:any)', 'GambarController::gantiLokasi/$1', ['filter' => 'corsFilter']);
 $routes->get('/cobainput', 'GambarController::actionCobaInput');
 $routes->get('/gamwm', 'GambarController::tampilGambarVarWM');
+$routes->get('/viewpic/(:segment)', 'GambarController::tampilGambarBarang/$1');
+$routes->get('/viewpichover/(:segment)', 'GambarController::tampilGambarBarangHover/$1');
+$routes->get('/viewvar/(:segment)/(:num)', 'GambarController::tampilGambarVarian/$1/$2');
+$routes->get('/viewvar3000/(:segment)/(:num)', 'GambarController::tampilGambarVarian3000/$1/$2');
 $routes->get('/imgart/(:any)', 'GambarController::tampilGambarArtikel/$1');
 $routes->get('/imgart/(:any)/(:any)', 'GambarController::tampilGambarArtikel/$1/$2');
 $routes->get('/imgheader/(:any)', 'GambarController::tampilGambarHeader/$1');

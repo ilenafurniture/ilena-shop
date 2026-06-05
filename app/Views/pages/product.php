@@ -1,5 +1,6 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
+<?php $punyaGambarHoverDetail = is_file(FCPATH . 'img/barang/hover/' . $produk['id'] . '.webp'); ?>
 <div class="container d-flex flex-column align-items-center">
     <div class="konten w-100">
         <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb" class="show-block-ke-hide">
@@ -257,12 +258,26 @@
                         <label class="img-detail-select" for="gambar<?= $indx ?>"><img
                                 src="<?= base_url('img/barang/1000/' . $produk['id'] .'-'.$p_v. '.webp') ?>"></label>
                         <?php } ?>
+                        <?php if ($punyaGambarHoverDetail) { ?>
+                        <input id="gambar-hover" type="radio" name="gambar" value="hover">
+                        <label class="img-detail-select" for="gambar-hover"><img
+                                src="<?= base_url('img/barang/hover/' . $produk['id'] . '.webp') ?>"></label>
+                        <?php } ?>
                         <script>
                         const radioImgElm = document.querySelectorAll('input[name="gambar"]');
                         radioImgElm.forEach(elm => {
                             elm.addEventListener('change', (e) => {
                                 const imgElm = document.querySelector("figure.img-detail-prev");
                                 const imgFixElm = document.querySelector("img.img-detail-prev");
+                                if (e.target.value === "hover") {
+                                    window.isHoverDetailSelected = true;
+                                    imgElm.classList.add("d-none");
+                                    imgElm.style =
+                                        "background-image: url('/img/barang/hover/<?= $produk['id']; ?>.webp'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
+                                    imgFixElm.src = "/img/barang/hover/<?= $produk['id']; ?>.webp";
+                                    return;
+                                }
+                                window.isHoverDetailSelected = false;
                                 imgElm.style =
                                     "background-image: url('" +
                                     "/img/barang/3000/<?= $produk['id']; ?>-" +
@@ -407,11 +422,16 @@ radioVarianElm.forEach(elm => {
         const urutanGambar = e.target.value.split("-")[0].split(",");
         urutanGambar.forEach((urutan, ind_x) => {
             containerImgDetailElm.innerHTML += '<input id="gambar' + ind_x +
-                '" type="radio" name="gambar" value="' + urutan +
+                '" type="radio" name="gambar" value="' + urutan + '"' + (ind_x === 0 ? ' checked' : '') +
                 '"><label class="img-detail-select" for="gambar' + ind_x +
                 '"><img src="/img/barang/1000/<?= $produk['id'] ?>-' + urutan +
                 '.webp"></label>'
         })
+        <?php if ($punyaGambarHoverDetail) { ?>
+        containerImgDetailElm.innerHTML += '<input id="gambar-hover" type="radio" name="gambar" value="hover">' +
+            '<label class="img-detail-select" for="gambar-hover">' +
+            '<img src="/img/barang/hover/<?= $produk['id'] ?>.webp"></label>';
+        <?php } ?>
 
         if (Number(varianFullSelected.stok) <= 0) {
             imgFixElm.style = 'filter: grayscale(90%)';
@@ -447,6 +467,15 @@ radioVarianElm.forEach(elm => {
             elm1.addEventListener('change', (elmVar) => {
                 const imgElm = document.querySelector("figure.img-detail-prev");
                 const imgFixElm = document.querySelector("img.img-detail-prev");
+                if (elmVar.target.value === "hover") {
+                    window.isHoverDetailSelected = true;
+                    imgElm.classList.add("d-none");
+                    imgElm.style =
+                        "background-image: url('/img/barang/hover/<?= $produk['id']; ?>.webp'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
+                    imgFixElm.src = "/img/barang/hover/<?= $produk['id']; ?>.webp";
+                    return;
+                }
+                window.isHoverDetailSelected = false;
                 imgElm.style =
                     "background-image: url('" +
                     "/img/barang/3000/<?= $produk['id']; ?>-" +
@@ -482,7 +511,7 @@ function tambahJumlah() {
 }
 
 function zoom(e) {
-    if (window.innerWidth > 600) {
+    if (window.innerWidth > 600 && !window.isHoverDetailSelected) {
         figureElm.classList.remove('d-none')
         figureElm.style.backgroundSize = "auto"
         const widthGambar = e.target.offsetWidth;

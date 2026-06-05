@@ -141,6 +141,42 @@ class GambarController extends BaseController
     //     echo $data;
     // }
 
+    private function tampilFileGambar(string $relativePath)
+    {
+        $path = FCPATH . ltrim(str_replace('/', DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
+
+        if (!is_file($path)) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Gambar tidak ditemukan');
+        }
+
+        $mime = function_exists('mime_content_type') ? mime_content_type($path) : 'image/webp';
+
+        return $this->response
+            ->setHeader('Content-Type', $mime ?: 'image/webp')
+            ->setHeader('Cache-Control', 'public, max-age=86400')
+            ->setBody(file_get_contents($path));
+    }
+
+    public function tampilGambarBarang($idBarang)
+    {
+        return $this->tampilFileGambar('img/barang/300/' . $idBarang . '.webp');
+    }
+
+    public function tampilGambarBarangHover($idBarang)
+    {
+        return $this->tampilFileGambar('img/barang/hover/' . $idBarang . '.webp');
+    }
+
+    public function tampilGambarVarian($idBarang, $urutan)
+    {
+        return $this->tampilFileGambar('img/barang/1000/' . $idBarang . '-' . $urutan . '.webp');
+    }
+
+    public function tampilGambarVarian3000($idBarang, $urutan)
+    {
+        return $this->tampilFileGambar('img/barang/3000/' . $idBarang . '-' . $urutan . '.webp');
+    }
+
     public function tampilGambarVarWM($idBarang, $urutan)
     {
         $data = $this->file_get_contents_curl(
