@@ -127,6 +127,19 @@
                                 src="<?= base_url('img/logo/midtrans 2.png') ?>" style="width: 100px" /></a>
                     </div>
                 </div>
+                <div class="footer-div show-block-ke-hide" style="flex:1;">
+                    <h5><strong>Our Brand</strong></h5>
+                    <div class="footer__brand-list">
+                        <a class="footer__brand-link" href="https://lunareafurniture.com" target="_blank"
+                            rel="noopener noreferrer" aria-label="Lunarea Furniture">
+                            <img src="<?= base_url('img/logolunareaputih.webp') ?>" alt="Lunarea Furniture">
+                        </a>
+                        <a class="footer__brand-link" href="https://ilenafurniture.com" target="_blank"
+                            rel="noopener noreferrer" aria-label="Ilena Furniture">
+                            <img src="<?= base_url('img/logoilenaputih.png') ?>" alt="Ilena Furniture">
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -171,6 +184,20 @@
                 <p class="m-0">Pembayaran dilindungi oleh</p>
                 <a href="https://midtrans.com" target="_blank"><img src="<?= base_url('img/logo/midtrans 2.png') ?>"
                         style="width: 100px" /></a>
+            </div>
+        </div>
+
+        <div class="footer-div hide-ke-show-block mt-4" style="flex:1;">
+            <h5><strong>Our Brand</strong></h5>
+            <div class="footer__brand-list">
+                <a class="footer__brand-link" href="https://lunareafurniture.com" target="_blank"
+                    rel="noopener noreferrer" aria-label="Lunarea Furniture">
+                    <img src="<?= base_url('img/logolunareaputih.webp') ?>" alt="Lunarea Furniture">
+                </a>
+                <a class="footer__brand-link" href="https://ilenafurniture.com" target="_blank"
+                    rel="noopener noreferrer" aria-label="Ilena Furniture">
+                    <img src="<?= base_url('img/logoilenaputih.png') ?>" alt="Ilena Furniture">
+                </a>
             </div>
         </div>
 

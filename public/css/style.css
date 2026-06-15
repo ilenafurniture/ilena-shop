@@ -1885,6 +1885,30 @@ body {
     color: rgb(255, 94, 94);
     opacity: 1;
 }
+.footer__brand-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+.footer__brand-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 104px;
+    min-height: 44px;
+    opacity: 0.75;
+    transition: opacity 0.2s ease;
+}
+.footer__brand-link:hover,
+.footer__brand-link:focus {
+    opacity: 1;
+}
+.footer__brand-link img {
+    max-width: 120px;
+    max-height: 28px;
+    object-fit: contain;
+}
 /*END FOOTER*/
 
 /*EKTERNAL ELEMENT */
