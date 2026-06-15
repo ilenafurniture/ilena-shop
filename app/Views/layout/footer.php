@@ -136,7 +136,7 @@
                         </a>
                         <a class="footer__brand-link" href="https://ilenafurniture.com" target="_blank"
                             rel="noopener noreferrer" aria-label="Ilena Furniture">
-                            <img src="<?= base_url('img/logoilenaputih.png') ?>" alt="Ilena Furniture">
+                            <img src="<?= base_url('img/LogoIlena.png') ?>" alt="Ilena Furniture">
                         </a>
                     </div>
                 </div>
@@ -196,7 +196,7 @@
                 </a>
                 <a class="footer__brand-link" href="https://ilenafurniture.com" target="_blank"
                     rel="noopener noreferrer" aria-label="Ilena Furniture">
-                    <img src="<?= base_url('img/logoilenaputih.png') ?>" alt="Ilena Furniture">
+                    <img src="<?= base_url('img/LogoIlena.png') ?>" alt="Ilena Furniture">
                 </a>
             </div>
         </div>
