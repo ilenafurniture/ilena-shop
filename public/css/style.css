@@ -1885,35 +1885,47 @@ body {
     color: rgb(255, 94, 94);
     opacity: 1;
 }
+.footer__payment-brand-wrap {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+.footer__payment-block {
+    flex: 1 1 220px;
+    min-width: 0;
+}
+.footer__brand-block {
+    flex: 0 0 112px;
+}
 .footer__brand-list {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
 }
 .footer__brand-link {
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 88px;
-    height: 32px;
-    padding: 6px 8px;
-    background-color: #f5f1ea;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 4px;
-    opacity: 0.9;
-    transition: background-color 0.2s ease, opacity 0.2s ease;
+    min-height: 28px;
+    opacity: 0.72;
+    transition: opacity 0.2s ease;
 }
 .footer__brand-link:hover,
 .footer__brand-link:focus {
-    background-color: #ffffff;
     opacity: 1;
 }
-.footer__brand-link img {
+.footer__brand-logo {
     display: block;
-    max-width: 72px;
-    max-height: 18px;
+    width: auto;
+    height: auto;
     object-fit: contain;
+}
+.footer__brand-logo--lunarea {
+    width: 96px;
+    filter: brightness(0) invert(1);
+}
+.footer__brand-logo--ilena {
+    width: 92px;
 }
 /*END FOOTER*/
 
@@ -2163,6 +2175,14 @@ body {
     h5 {
         font-size: 16px;
         letter-spacing: -1px;
+    }
+    .footer__brand-list {
+        flex-direction: row;
+        gap: 18px;
+        align-items: center;
+    }
+    .footer__brand-link {
+        min-height: 32px;
     }
     /* ESSENSIAL */
     .hide-ke-show-flex {

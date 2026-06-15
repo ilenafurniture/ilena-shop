@@ -84,60 +84,64 @@
                         </div>
                     </div>
                 </div>
-                <div class="footer-div show-block-ke-hide" style="flex:1;">
-                    <h5><strong>Metode Pembayaran</strong></h5>
-                    <div class="footer__partner__payment">
-                        <div class="footer__partner__img">
-                            <img src="<?= base_url('img/pembayaran/bca.png') ?>" />
+                <div class="footer-div footer__payment-brand-wrap show-block-ke-hide" style="flex:1;">
+                    <div class="footer__payment-block">
+                        <h5><strong>Metode Pembayaran</strong></h5>
+                        <div class="footer__partner__payment">
+                            <div class="footer__partner__img">
+                                <img src="<?= base_url('img/pembayaran/bca.png') ?>" />
+                            </div>
+                            <div class="footer__partner__img">
+                                <img src="<?= base_url('img/pembayaran/bni.png') ?>" />
+                            </div>
+                            <div class="footer__partner__img">
+                                <img src="<?= base_url('img/pembayaran/bri.png') ?>" />
+                            </div>
+                            <div class="footer__partner__img">
+                                <img src="<?= base_url('img/pembayaran/mandiri.png') ?>" />
+                            </div>
+                            <div class="footer__partner__img">
+                                <img src="<?= base_url('img/pembayaran/permata.png') ?>" />
+                            </div>
+                            <div class="footer__partner__img">
+                                <img src="<?= base_url('img/pembayaran/cimb1.png') ?>" />
+                            </div>
+                            <div class="footer__partner__img">
+                                <img src="<?= base_url('img/pembayaran/mastercard.png') ?>" />
+                            </div>
+                            <div class="footer__partner__img">
+                                <img src="<?= base_url('img/pembayaran/visa.png') ?>" />
+                            </div>
+                            <div class="footer__partner__img">
+                                <img src="<?= base_url('img/pembayaran/qris.png') ?>" />
+                            </div>
+                            <div class="footer__partner__img">
+                                <img src="<?= base_url('img/pembayaran/shopeepay.png') ?>" />
+                            </div>
+                            <div class="footer__partner__img">
+                                <img src="<?= base_url('img/pembayaran/gopay.png') ?>" />
+                            </div>
                         </div>
-                        <div class="footer__partner__img">
-                            <img src="<?= base_url('img/pembayaran/bni.png') ?>" />
-                        </div>
-                        <div class="footer__partner__img">
-                            <img src="<?= base_url('img/pembayaran/bri.png') ?>" />
-                        </div>
-                        <div class="footer__partner__img">
-                            <img src="<?= base_url('img/pembayaran/mandiri.png') ?>" />
-                        </div>
-                        <div class="footer__partner__img">
-                            <img src="<?= base_url('img/pembayaran/permata.png') ?>" />
-                        </div>
-                        <div class="footer__partner__img">
-                            <img src="<?= base_url('img/pembayaran/cimb1.png') ?>" />
-                        </div>
-                        <div class="footer__partner__img">
-                            <img src="<?= base_url('img/pembayaran/mastercard.png') ?>" />
-                        </div>
-                        <div class="footer__partner__img">
-                            <img src="<?= base_url('img/pembayaran/visa.png') ?>" />
-                        </div>
-                        <div class="footer__partner__img">
-                            <img src="<?= base_url('img/pembayaran/qris.png') ?>" />
-                        </div>
-                        <div class="footer__partner__img">
-                            <img src="<?= base_url('img/pembayaran/shopeepay.png') ?>" />
-                        </div>
-                        <div class="footer__partner__img">
-                            <img src="<?= base_url('img/pembayaran/gopay.png') ?>" />
+                        <div class="d-flex gap-1 align-items-center">
+                            <p class="m-0">Pembayaran aman dengan</p>
+                            <a href="https://midtrans.com" target="_blank"><img
+                                    src="<?= base_url('img/logo/midtrans 2.png') ?>" style="width: 100px" /></a>
                         </div>
                     </div>
-                    <div class="d-flex gap-1 align-items-center">
-                        <p class="m-0">Pembayaran aman dengan</p>
-                        <a href="https://midtrans.com" target="_blank"><img
-                                src="<?= base_url('img/logo/midtrans 2.png') ?>" style="width: 100px" /></a>
-                    </div>
-                </div>
-                <div class="footer-div show-block-ke-hide" style="flex:1;">
-                    <h5><strong>Our Brand</strong></h5>
-                    <div class="footer__brand-list">
-                        <a class="footer__brand-link" href="https://lunareafurniture.com" target="_blank"
-                            rel="noopener noreferrer" aria-label="Lunarea Furniture">
-                            <img src="<?= base_url('img/logolunareaputih.webp') ?>" alt="Lunarea Furniture">
-                        </a>
-                        <a class="footer__brand-link" href="https://ilenafurniture.com" target="_blank"
-                            rel="noopener noreferrer" aria-label="Ilena Furniture">
-                            <img src="<?= base_url('img/LogoIlena.png') ?>" alt="Ilena Furniture">
-                        </a>
+                    <div class="footer__brand-block">
+                        <h5><strong>Our Brand</strong></h5>
+                        <div class="footer__brand-list">
+                            <a class="footer__brand-link" href="https://lunareafurniture.com" target="_blank"
+                                rel="noopener noreferrer" aria-label="Lunarea Furniture">
+                                <img class="footer__brand-logo footer__brand-logo--lunarea"
+                                    src="<?= base_url('img/logolunareaputih.webp') ?>" alt="Lunarea Furniture">
+                            </a>
+                            <a class="footer__brand-link" href="https://ilenafurniture.com" target="_blank"
+                                rel="noopener noreferrer" aria-label="Ilena Furniture">
+                                <img class="footer__brand-logo footer__brand-logo--ilena"
+                                    src="<?= base_url('img/logoilenaputih.png') ?>" alt="Ilena Furniture">
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -192,11 +196,13 @@
             <div class="footer__brand-list">
                 <a class="footer__brand-link" href="https://lunareafurniture.com" target="_blank"
                     rel="noopener noreferrer" aria-label="Lunarea Furniture">
-                    <img src="<?= base_url('img/logolunareaputih.webp') ?>" alt="Lunarea Furniture">
+                    <img class="footer__brand-logo footer__brand-logo--lunarea"
+                        src="<?= base_url('img/logolunareaputih.webp') ?>" alt="Lunarea Furniture">
                 </a>
                 <a class="footer__brand-link" href="https://ilenafurniture.com" target="_blank"
                     rel="noopener noreferrer" aria-label="Ilena Furniture">
-                    <img src="<?= base_url('img/LogoIlena.png') ?>" alt="Ilena Furniture">
+                    <img class="footer__brand-logo footer__brand-logo--ilena"
+                        src="<?= base_url('img/logoilenaputih.png') ?>" alt="Ilena Furniture">
                 </a>
             </div>
         </div>
