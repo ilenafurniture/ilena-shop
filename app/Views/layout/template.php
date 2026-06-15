@@ -195,7 +195,7 @@
     </script>
     <?php } ?>
 
-    <link rel="stylesheet" href="<?= base_url('css/style.css?v=' . date('d-m-Y')); ?>">
+    <link rel="stylesheet" href="<?= base_url('css/style.css?v=' . filemtime(FCPATH . 'css/style.css')); ?>">
     <link rel="icon" href="<?= base_url('img/logo/N.png?v=' . date('d-m-Y')); ?>" type="image/png">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
