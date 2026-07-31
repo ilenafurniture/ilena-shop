@@ -22,6 +22,7 @@ use App\Models\VoucherModel;
 use App\Models\GambarHeaderModel;
 use App\Models\VoucherUsageModel;
 use App\Services\ShippingService;
+use App\Services\FreeShippingService;
 
 
 class Pages extends BaseController
@@ -904,6 +905,7 @@ class Pages extends BaseController
 
         $shippingService = new ShippingService();
         $kurir = $shippingService->rates($alamatselected, $keranjang);
+        $kurir = (new FreeShippingService())->applyToRates($alamatselected, $kurir);
 
         if (empty($kurir)) {
             session()->setFlashdata('msg', 'Pilihan kurir belum tersedia untuk alamat ini. Silakan cek alamat atau hubungi admin.');
@@ -1073,6 +1075,7 @@ class Pages extends BaseController
         $hargaTotal = (float)$cartCheck['subtotal'];
         $flashSale = (float)$cartCheck['flashSale'];
         $kurirTerpilih = $kurir[$index_kurir];
+        $kurirTerpilih = (new FreeShippingService())->applyToRates($alamatselected, [$kurirTerpilih])[0] ?? $kurirTerpilih;
         $hargaOngkir = (float)($kurirTerpilih['harga'] ?? 0);
 
         // ====== legacy voucher untuk email uji (tetap, tidak auto-apply) ======
@@ -1747,6 +1750,7 @@ class Pages extends BaseController
         $nohp = $alamatselected['nohp_penerima'];
         $alamat = $alamatselected['alamat_lengkap'];
         $kurirTerpilih = $kurir[$index_kurir];
+        $kurirTerpilih = (new FreeShippingService())->applyToRates($alamatselected, [$kurirTerpilih])[0] ?? $kurirTerpilih;
         $emailUjiCoba = $this->midtransTestEmails();
 
         $cartCheck = $this->validateCheckoutCart((array)(session()->get('keranjang') ?? []));

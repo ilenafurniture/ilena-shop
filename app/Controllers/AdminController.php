@@ -29,6 +29,7 @@ use App\Models\ProjectInteriorPaymentModel;
 use App\Models\SuratJalanModel;
 use App\Models\SuratJalanItemModel;
 use App\Models\ProjectInteriorItemModel;
+use App\Services\FreeShippingService;
 
 // Import Traits for modular organization
 use App\Controllers\Admin\Traits\ProductTrait;
@@ -3061,6 +3062,41 @@ private function interiorShippedQtyMap(string $idPesanan): array
             default:
                 return 0;
         }
+    }
+
+    public function freeShipping()
+    {
+        $service = new FreeShippingService();
+
+        try {
+            $provinsi = $this->provinsiModel->orderBy('label', 'asc')->findAll();
+        } catch (\Throwable $th) {
+            $provinsi = [];
+        }
+
+        return view('admin/freeShipping', [
+            'title' => 'Gratis Ongkir',
+            'config' => $service->getConfig(),
+            'provinsi' => $provinsi,
+            'msg' => session()->getFlashdata('msg'),
+        ]);
+    }
+
+    public function actionFreeShipping()
+    {
+        $names = preg_split('/[\r\n,]+/', (string)$this->request->getPost('province_names'));
+        $names = array_values(array_filter(array_map('trim', $names ?: [])));
+
+        $service = new FreeShippingService();
+        $service->save([
+            'active' => (bool)$this->request->getPost('active'),
+            'label' => $this->request->getPost('label'),
+            'province_ids' => (array)$this->request->getPost('province_ids'),
+            'province_names' => $names,
+        ]);
+
+        session()->setFlashdata('msg', 'Pengaturan gratis ongkir berhasil disimpan.');
+        return redirect()->to('/admin/free-shipping');
     }
 
 

@@ -557,7 +557,16 @@ hr {
                             </div>
                             <?php endif; ?>
                         </div>
-                        <div class="v">Rp <?= number_format((int)$hargaOngkir, 0, ',', '.'); ?></div>
+                        <div class="v">
+                            <?php if (!empty($kurir['gratis_ongkir'])): ?>
+                                <span class="text-success fw-bold">Gratis</span>
+                                <div class="small text-secondary text-decoration-line-through">
+                                    Rp <?= number_format((int)($kurir['harga_asli'] ?? 0), 0, ',', '.'); ?>
+                                </div>
+                            <?php else: ?>
+                                Rp <?= number_format((int)$hargaOngkir, 0, ',', '.'); ?>
+                            <?php endif; ?>
+                        </div>
                     </div>
 
                     <div class="sum-row">

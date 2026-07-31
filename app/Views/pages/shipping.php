@@ -17,7 +17,21 @@
                     <?php if($k['estimasi']) { ?>
                     <p class="mb-1">Estimasi pengiriman <?= $k['estimasi'] ?> Hari</p>
                     <?php } ?>
-                    <p class="mb-1" style="font-weight: 600;">Rp <?= number_format($k['harga'], 0, ',', '.'); ?></p>
+                    <p class="mb-1" style="font-weight: 600;">
+                        <?php if (!empty($k['gratis_ongkir'])): ?>
+                            <span class="text-success">Gratis</span>
+                            <span class="text-secondary text-decoration-line-through ms-2">
+                                Rp <?= number_format((int)($k['harga_asli'] ?? 0), 0, ',', '.'); ?>
+                            </span>
+                        <?php else: ?>
+                            Rp <?= number_format($k['harga'], 0, ',', '.'); ?>
+                        <?php endif; ?>
+                    </p>
+                    <?php if (!empty($k['gratis_ongkir_label'])): ?>
+                        <p class="mb-1 text-success" style="font-size: 12px; font-weight: 600;">
+                            <?= esc($k['gratis_ongkir_label']); ?>
+                        </p>
+                    <?php endif; ?>
                 </div>
                 <div style="width:fit-content" class="show-block-ke-hide">
                     <img src="/img/kurir/<?= $k['nama'] ?>.png" alt="" onerror="this.style.display='none'">
@@ -42,7 +56,7 @@
                     Biaya Ongkir
                 </p>
                 <p id="harga-ongkir" class="fw-bold m-0">
-                    Rp <?= number_format($kurir[0]['harga'], 0, ',', '.'); ?>
+                    <?= !empty($kurir[0]['gratis_ongkir']) ? 'Gratis' : 'Rp ' . number_format($kurir[0]['harga'], 0, ',', '.'); ?>
                 </p>
             </div>
             <div class="d-flex justify-content-between py-1">
@@ -79,8 +93,7 @@ const btnPaymentElm = document.getElementById('btn-payment');
 
 radioKurirElm.forEach((element, ind) => {
     element.addEventListener('change', (e) => {
-        hargaOngkirElm.innerHTML = 'Rp ' + e.target.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g,
-            ".");
+        hargaOngkirElm.innerHTML = Number(e.target.value) <= 0 ? 'Gratis' : 'Rp ' + e.target.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         hargaKeseluruhan.innerHTML = 'Rp ' + (Number(e.target.value) + <?= $hargaTotal ?>)
             .toString().replace(/\B(?=(\d{3})+(?!\d))/g,
                 ".");

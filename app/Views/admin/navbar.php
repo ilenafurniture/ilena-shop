@@ -85,6 +85,11 @@
             <p class="m-0">Home Layout</p>
         </a>
 
+        <a class="item-nav <?= $title == 'Gratis Ongkir' ? 'active' : ''; ?>" href="/admin/free-shipping">
+            <i class="material-icons">local_shipping</i>
+            <p class="m-0">Gratis Ongkir</p>
+        </a>
+
         <!-- ===== Section Analytics ===== -->
         <div class="nav-separator">
             <span class="line"></span><span class="label">Analytics &amp; Tools</span><span class="line"></span>

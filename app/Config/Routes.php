@@ -161,6 +161,10 @@ $routes->group('admin', ['filter' => 'adminFilter'], static function($routes) {
     $routes->post('homelayout', 'AdminController::actionHomeLayout');
     $routes->get('changepic', 'AdminController::changePic');
 
+    // Gratis ongkir per wilayah
+    $routes->get('free-shipping', 'AdminController::freeShipping');
+    $routes->post('free-shipping', 'AdminController::actionFreeShipping');
+
     // ==================== OFFLINE ORDER (admin) ====================
 
     // Alias lama untuk halaman Project Interior.
