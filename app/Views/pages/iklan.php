@@ -306,7 +306,7 @@
         <p class="iklan-sub">Pilih furniture sepaket dari Ilena — modern, premium, dan saat ini <b>gratis ongkir</b> ke seluruh Indonesia. Tinggal pasang, rumah langsung jadi.</p>
         <div class="d-flex gap-3 flex-wrap">
             <a href="#series" class="iklan-btn-primary">Lihat Koleksi Series</a>
-            <a href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20mau%20tanya-tanya%20koleksinya" class="iklan-btn-outline" target="_blank" rel="noopener">Klaim Gratis Ongkir</a>
+            <a data-kbot-wa href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20mau%20tanya-tanya%20koleksinya" class="iklan-btn-outline" target="_blank" rel="noopener">Klaim Gratis Ongkir</a>
         </div>
     </div>
 </section>
@@ -476,7 +476,7 @@
         <p class="iklan-sub mx-auto" style="color:#d4d4d4;">Promo gratis ongkir berlaku selama stok masih tersedia. Konsultasikan kebutuhanmu langsung ke tim kami via WhatsApp.</p>
         <div class="d-flex gap-3 flex-wrap justify-content-center mb-4">
             <a href="<?= base_url('/product') ?>" class="iklan-btn-primary">Belanja Sekarang</a>
-            <a href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20mau%20tanya-tanya%20koleksinya" class="iklan-btn-outline" target="_blank" rel="noopener">Chat WhatsApp</a>
+            <a data-kbot-wa href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20mau%20tanya-tanya%20koleksinya" class="iklan-btn-outline" target="_blank" rel="noopener">Chat WhatsApp</a>
         </div>
         <div class="mt-3">
             <span class="cta-mini-benefit"><i class="material-icons">local_shipping</i> Gratis Ongkir</span>
