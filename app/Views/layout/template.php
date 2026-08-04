@@ -249,8 +249,8 @@
         </div>
         <div class="d-flex flex-column gap-2">
             <!--<a class="btn-circle" href="/form"><i class="material-icons">insert_comment</i></a>-->
-            <a class="btn-circle hitam" id="btn-wa"
-                href="https://api.whatsapp.com/send?phone=628112938158&text=Hi%2C%20CS%20Ilena%21%0D%0ASaya%20tertarik%20untuk%20beli%3A%0D%0ANama%20produk%3A%0D%0AVarian%20%3A%0D%0AJumlah%20%3A%0D%0ABantu%20saya%20untuk%20melakukan%20proses%20checkout%20nya%21">
+            <a class="btn-circle hitam" id="btn-wa" data-kbot-wa
+                href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20mau%20tanya-tanya%20koleksinya">
                 <i class="material-icons text-light">phone</i>
             </a>
         </div>
@@ -370,6 +370,7 @@
     })();
     </script>
 
+    <script src="https://go.kreasibot.com/k.js" data-kreasibot="ilenafurniture" defer></script>
 </body>
 
 </html>
