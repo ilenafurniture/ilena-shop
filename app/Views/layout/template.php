@@ -249,7 +249,7 @@
         </div>
         <div class="d-flex flex-column gap-2">
             <!--<a class="btn-circle" href="/form"><i class="material-icons">insert_comment</i></a>-->
-            <a class="btn-circle hitam" id="btn-wa" data-kbot-wa aria-label="Chat Ilena Furniture via WhatsApp"
+            <a data-kbot-wa class="btn-circle hitam" id="btn-wa" aria-label="Chat Ilena Furniture via WhatsApp"
                 href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20mau%20tanya-tanya%20koleksinya">
                 <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
                     <path
