@@ -98,6 +98,10 @@
             <i class="material-icons">insights</i>
             <p class="m-0">Analytics</p>
         </a>
+        <a class="item-nav <?= $title == 'Log Aktivitas Admin' ? 'active' : ''; ?>" href="/admin/activity-log">
+            <i class="material-icons">history</i>
+            <p class="m-0">Log Aktivitas</p>
+        </a>
 
         <!-- ===== Section Sistem ===== -->
         <div class="nav-separator">

@@ -29,6 +29,7 @@ use App\Models\ProjectInteriorPaymentModel;
 use App\Models\SuratJalanModel;
 use App\Models\SuratJalanItemModel;
 use App\Models\ProjectInteriorItemModel;
+use App\Services\AuditLogService;
 use App\Services\FreeShippingService;
 
 // Import Traits for modular organization
@@ -3097,6 +3098,16 @@ private function interiorShippedQtyMap(string $idPesanan): array
 
         session()->setFlashdata('msg', 'Pengaturan gratis ongkir berhasil disimpan.');
         return redirect()->to('/admin/free-shipping');
+    }
+
+    public function activityLog()
+    {
+        $service = new AuditLogService();
+
+        return view('admin/activityLog', [
+            'title' => 'Log Aktivitas Admin',
+            'logs' => $service->getRecent(250),
+        ]);
     }
 
 

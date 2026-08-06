@@ -164,6 +164,7 @@ $routes->group('admin', ['filter' => 'adminFilter'], static function($routes) {
     // Gratis ongkir per wilayah
     $routes->get('free-shipping', 'AdminController::freeShipping');
     $routes->post('free-shipping', 'AdminController::actionFreeShipping');
+    $routes->get('activity-log', 'AdminController::activityLog');
 
     // ==================== OFFLINE ORDER (admin) ====================
 

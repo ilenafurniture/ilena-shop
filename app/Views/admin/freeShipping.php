@@ -5,6 +5,12 @@
 $config = $config ?? [];
 $selectedIds = array_map('strval', (array)($config['province_ids'] ?? []));
 $selectedNames = (array)($config['province_names'] ?? []);
+$normalizeRegionName = static function ($value): string {
+    $value = strtolower(trim((string)$value));
+    $value = str_replace(['provinsi', 'propinsi'], '', $value);
+    return preg_replace('/[^a-z0-9]+/i', '', $value) ?? '';
+};
+$selectedNormalizedNames = array_values(array_filter(array_map($normalizeRegionName, $selectedNames)));
 $javaBaliNames = [
     'DKI Jakarta',
     'Banten',
@@ -121,10 +127,12 @@ $javaBaliNames = [
                         <?php
                             $id = (string)($p['id'] ?? '');
                             $label = (string)($p['label'] ?? $id);
+                            $isChecked = in_array($id, $selectedIds, true)
+                                || in_array($normalizeRegionName($label), $selectedNormalizedNames, true);
                         ?>
                         <label class="province-option" data-name="<?= esc($label); ?>">
                             <input type="checkbox" name="province_ids[]" value="<?= esc($id); ?>"
-                                <?= in_array($id, $selectedIds, true) ? 'checked' : ''; ?>>
+                                <?= $isChecked ? 'checked' : ''; ?>>
                             <span><?= esc($label); ?></span>
                         </label>
                     <?php endforeach; ?>

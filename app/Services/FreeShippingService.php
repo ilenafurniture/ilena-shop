@@ -5,6 +5,8 @@ namespace App\Services;
 class FreeShippingService
 {
     private string $path;
+    private string $table = 'app_settings';
+    private string $settingKey = 'free_shipping_regions';
 
     public function __construct(?string $path = null)
     {
@@ -13,42 +15,73 @@ class FreeShippingService
 
     public function getConfig(): array
     {
-        $default = [
+        $dbConfig = $this->readFromDatabase();
+        if (is_array($dbConfig)) {
+            return $this->normalizeConfig($dbConfig);
+        }
+
+        $fileConfig = $this->readFromFile();
+        if (is_array($fileConfig)) {
+            // Migrasi otomatis dari file lama ke database saat database sudah siap.
+            $this->saveToDatabase($fileConfig);
+            return $this->normalizeConfig($fileConfig);
+        }
+
+        return $this->defaultConfig();
+    }
+
+    public function save(array $config): bool
+    {
+        $payload = $this->normalizeConfig(array_merge($config, [
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]));
+
+        $savedToDatabase = $this->saveToDatabase($payload);
+        $savedToFile = $this->saveToFile($payload);
+
+        return $savedToDatabase || $savedToFile;
+    }
+
+    private function defaultConfig(): array
+    {
+        return [
             'active' => false,
             'label' => 'Gratis ongkir wilayah',
             'province_ids' => [],
             'province_names' => [],
             'updated_at' => null,
         ];
+    }
 
+    private function normalizeConfig(array $config): array
+    {
+        $default = $this->defaultConfig();
+
+        return array_merge($default, [
+            'active' => !empty($config['active']),
+            'label' => trim((string)($config['label'] ?? $default['label'])) ?: $default['label'],
+            'province_ids' => array_values(array_unique(array_filter(array_map('strval', (array)($config['province_ids'] ?? []))))),
+            'province_names' => array_values(array_unique(array_filter(array_map('trim', (array)($config['province_names'] ?? []))))),
+            'updated_at' => $config['updated_at'] ?? null,
+        ]);
+    }
+
+    private function readFromFile(): ?array
+    {
         if (!is_file($this->path)) {
-            return $default;
+            return null;
         }
 
         $json = json_decode((string) file_get_contents($this->path), true);
         if (!is_array($json)) {
-            return $default;
+            return null;
         }
 
-        return array_merge($default, [
-            'active' => (bool)($json['active'] ?? false),
-            'label' => trim((string)($json['label'] ?? $default['label'])),
-            'province_ids' => array_values(array_unique(array_map('strval', (array)($json['province_ids'] ?? [])))),
-            'province_names' => array_values(array_unique(array_filter(array_map('trim', (array)($json['province_names'] ?? []))))),
-            'updated_at' => $json['updated_at'] ?? null,
-        ]);
+        return $json;
     }
 
-    public function save(array $config): bool
+    private function saveToFile(array $payload): bool
     {
-        $payload = [
-            'active' => !empty($config['active']),
-            'label' => trim((string)($config['label'] ?? 'Gratis ongkir wilayah')) ?: 'Gratis ongkir wilayah',
-            'province_ids' => array_values(array_unique(array_filter(array_map('strval', (array)($config['province_ids'] ?? []))))),
-            'province_names' => array_values(array_unique(array_filter(array_map('trim', (array)($config['province_names'] ?? []))))),
-            'updated_at' => date('Y-m-d H:i:s'),
-        ];
-
         $dir = dirname($this->path);
         if (!is_dir($dir)) {
             mkdir($dir, 0775, true);
@@ -58,6 +91,89 @@ class FreeShippingService
             $this->path,
             json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
         );
+    }
+
+    private function readFromDatabase(): ?array
+    {
+        try {
+            $db = \Config\Database::connect();
+            if (!$this->ensureTable($db)) {
+                return null;
+            }
+
+            $row = $db->table($this->table)
+                ->select('setting_value')
+                ->where('setting_key', $this->settingKey)
+                ->get()
+                ->getRowArray();
+
+            if (!$row || !isset($row['setting_value'])) {
+                return null;
+            }
+
+            $config = json_decode((string)$row['setting_value'], true);
+            return is_array($config) ? $config : null;
+        } catch (\Throwable $th) {
+            log_message('error', 'Gagal membaca gratis ongkir dari database: ' . $th->getMessage());
+            return null;
+        }
+    }
+
+    private function saveToDatabase(array $payload): bool
+    {
+        try {
+            $db = \Config\Database::connect();
+            if (!$this->ensureTable($db)) {
+                return false;
+            }
+
+            $data = [
+                'setting_key' => $this->settingKey,
+                'setting_value' => json_encode($payload, JSON_UNESCAPED_UNICODE),
+                'updated_at' => $payload['updated_at'] ?? date('Y-m-d H:i:s'),
+            ];
+
+            $exists = $db->table($this->table)
+                ->where('setting_key', $this->settingKey)
+                ->countAllResults() > 0;
+
+            if ($exists) {
+                return (bool)$db->table($this->table)
+                    ->where('setting_key', $this->settingKey)
+                    ->update($data);
+            }
+
+            return (bool)$db->table($this->table)->insert($data);
+        } catch (\Throwable $th) {
+            log_message('error', 'Gagal menyimpan gratis ongkir ke database: ' . $th->getMessage());
+            return false;
+        }
+    }
+
+    private function ensureTable($db): bool
+    {
+        if ($db->tableExists($this->table)) {
+            return true;
+        }
+
+        $forge = \Config\Database::forge();
+        $forge->addField([
+            'setting_key' => [
+                'type' => 'VARCHAR',
+                'constraint' => 100,
+            ],
+            'setting_value' => [
+                'type' => 'TEXT',
+                'null' => true,
+            ],
+            'updated_at' => [
+                'type' => 'DATETIME',
+                'null' => true,
+            ],
+        ]);
+        $forge->addKey('setting_key', true);
+
+        return (bool)$forge->createTable($this->table, true);
     }
 
     public function isEligible(array $address): bool

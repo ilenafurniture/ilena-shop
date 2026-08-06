@@ -2,6 +2,7 @@
 
 namespace App\Filters;
 
+use App\Services\AuditLogService;
 use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -20,6 +21,35 @@ class AdminFilter implements FilterInterface
     }
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        // Do something here
+        try {
+            if ($response->getStatusCode() >= 400) {
+                return;
+            }
+
+            $audit = new AuditLogService();
+            $method = strtoupper($request->getMethod());
+            $path = $request->getUri()->getPath();
+
+            if (!$audit->shouldRecord($method, $path)) {
+                return;
+            }
+
+            $activity = $audit->makeHumanActivity($method, $path);
+            $requestData = in_array($method, ['POST', 'PUT', 'PATCH', 'DELETE'], true) && method_exists($request, 'getPost')
+                ? (array)$request->getPost()
+                : [];
+
+            $audit->record(array_merge($audit->currentActorData(), [
+                'activity' => $activity,
+                'description' => $audit->makeHumanDescription($activity, $method, $path, $requestData),
+                'method' => $method,
+                'url' => (string)$request->getUri(),
+                'ip_address' => $request->getIPAddress(),
+                'user_agent' => method_exists($request, 'getUserAgent') ? (string)$request->getUserAgent() : '',
+                'request_data' => $requestData,
+            ]));
+        } catch (\Throwable $th) {
+            log_message('error', 'Audit log filter error: ' . $th->getMessage());
+        }
     }
 }
