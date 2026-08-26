@@ -64,6 +64,7 @@ $routes->get('/payment/error', 'Pages::paymentErrorRedirect');
 $routes->get('/payment/(:any)', 'Pages::payment/$1', ['filter' => 'customerShippingFilter']);
 $routes->get('/actionpaycore/(:any)', 'Pages::actionPayCore/$1', ['filter' => 'customerShippingFilter']);
 $routes->post('/updatetransaction', 'Pages::updateTransaction');
+$routes->post('/midtrans/notification', 'Pages::midtransNotificationDispatcher');
 
 $routes->get('/wishlist', 'Pages::wishlist', ['filter' => 'customerFilter']);
 $routes->post('/addwishlist/(:any)', 'Pages::addWishlist/$1', ['filter' => 'customerFilter']);

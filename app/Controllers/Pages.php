@@ -1961,6 +1961,57 @@ class Pages extends BaseController
         return $this->response->setJSON(['success' => true]);
     }
 
+    public function midtransNotificationDispatcher()
+    {
+        $bodyJson = $this->request->getBody();
+        $body = json_decode($bodyJson, true);
+        if (!is_array($body)) {
+            return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'Invalid JSON']);
+        }
+
+        $orderId = (string)($body['order_id'] ?? '');
+        if ($this->isLunareaOrderId($orderId)) {
+            return $this->forwardMidtransNotificationToLunarea($bodyJson);
+        }
+
+        return $this->updateTransaction();
+    }
+
+    private function isLunareaOrderId(string $orderId): bool
+    {
+        return $orderId !== '' && str_starts_with(strtoupper($orderId), 'L') && !str_starts_with(strtoupper($orderId), 'IL');
+    }
+
+    private function forwardMidtransNotificationToLunarea(string $bodyJson)
+    {
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL => 'https://lunareafurniture.com/updatetransaction',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => $bodyJson,
+            CURLOPT_HTTPHEADER => ['Accept: application/json', 'Content-Type: application/json'],
+            CURLOPT_TIMEOUT => 30,
+        ]);
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        $httpCode = (int)curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+
+        if ($err) {
+            log_message('error', 'Forward Midtrans notification to Lunarea failed: {err}', ['err' => $err]);
+            return $this->response->setStatusCode(502)->setJSON([
+                'success' => false,
+                'message' => 'Forward to Lunarea failed',
+            ]);
+        }
+
+        return $this->response
+            ->setStatusCode($httpCode >= 200 && $httpCode < 600 ? $httpCode : 200)
+            ->setBody($response ?: json_encode(['success' => true]));
+    }
+
     public function paymentFinishRedirect()
     {
         return $this->redirectFromMidtrans('Menunggu Pembayaran');
@@ -1999,6 +2050,10 @@ class Pages extends BaseController
             if ($mappedStatus !== 'No Status' && $mappedStatus !== 'Forbidden') {
                 $status = $mappedStatus;
             }
+        }
+
+        if ($this->isLunareaOrderId($orderId)) {
+            return redirect()->to('https://lunareafurniture.com/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId));
         }
 
         return redirect()->to('/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId));
