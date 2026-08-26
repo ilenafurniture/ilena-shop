@@ -2027,6 +2027,27 @@ class Pages extends BaseController
         return $this->redirectFromMidtrans('Gagal');
     }
 
+    public function paymentStatus($orderId)
+    {
+        $orderId = (string)$orderId;
+        $order = $this->pemesananModel->getPemesanan($orderId);
+        if (!$order) {
+            return $this->response->setStatusCode(404)->setJSON([
+                'success' => false,
+                'message' => 'Order not found',
+            ]);
+        }
+
+        $status = (string)($order['status'] ?? 'Menunggu Pembayaran');
+        return $this->response->setJSON([
+            'success' => true,
+            'order_id' => $orderId,
+            'status' => $status,
+            'paid' => $status === 'Proses',
+            'detail_url' => site_url('/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId)),
+        ]);
+    }
+
     private function redirectFromMidtrans(string $fallbackStatus = 'Menunggu Pembayaran')
     {
         $orderId = (string)(

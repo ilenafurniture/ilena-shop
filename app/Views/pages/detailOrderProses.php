@@ -534,6 +534,37 @@ function copytext(text) {
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 1200);
 }
+
+// Pixel Purchase hanya ditembak saat order benar-benar sudah berstatus Proses
+// (status ini diubah oleh webhook/notifikasi Midtrans, bukan dari klik "Saya sudah membayar").
+(function () {
+    const orderId = <?= json_encode($id_order) ?>;
+    const value = <?= json_encode((int)$grossAmount) ?>;
+    const eventId = 'purchase_' + orderId;
+    const storageKey = 'ilena_purchase_pixel_' + orderId;
+
+    if (!orderId || sessionStorage.getItem(storageKey)) return;
+    sessionStorage.setItem(storageKey, '1');
+
+    if (typeof fbq === 'function') {
+        fbq('track', 'Purchase', {
+            value: value,
+            currency: 'IDR',
+            content_type: 'product',
+            order_id: orderId
+        }, {
+            eventID: eventId
+        });
+    }
+
+    if (typeof gtag === 'function') {
+        gtag('event', 'purchase', {
+            transaction_id: orderId,
+            value: value,
+            currency: 'IDR'
+        });
+    }
+})();
 </script>
 
 <?= $this->endSection(); ?>

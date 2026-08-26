@@ -567,7 +567,7 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
 
         <!-- CTA -->
         <div class="pad cta-sticky" style="padding-top:0;">
-            <a href="" class="btn-default-merah">Saya sudah membayar</a>
+            <a href="#" id="btnCekPembayaran" class="btn-default-merah">Saya sudah membayar</a>
         </div>
     </div>
 </div>
@@ -621,6 +621,48 @@ function copytext(text) {
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 1200);
 }
+
+const orderId = <?= json_encode($id_order) ?>;
+const btnCekPembayaran = document.getElementById('btnCekPembayaran');
+
+function showOrderToast(text) {
+    const toast = document.getElementById('toastCopy');
+    if (!toast) return;
+    toast.textContent = text;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1800);
+}
+
+async function cekStatusPembayaran(manual = false) {
+    if (!orderId) return;
+    try {
+        const res = await fetch('/payment/status/' + encodeURIComponent(orderId), {
+            headers: { 'Accept': 'application/json' },
+            cache: 'no-store'
+        });
+        const data = await res.json();
+        if (data && data.success && data.paid && data.detail_url) {
+            window.location.href = data.detail_url;
+            return;
+        }
+        if (manual) {
+            showOrderToast('Pembayaran belum terkonfirmasi. Jika sudah transfer, tunggu notifikasi bank/Midtrans masuk.');
+        }
+    } catch (e) {
+        if (manual) showOrderToast('Status belum bisa dicek. Coba beberapa saat lagi.');
+    }
+}
+
+if (btnCekPembayaran) {
+    btnCekPembayaran.addEventListener('click', function(e) {
+        e.preventDefault();
+        showOrderToast('Mengecek status pembayaran...');
+        cekStatusPembayaran(true);
+    });
+}
+
+// Auto pindah ke halaman sukses hanya setelah webhook Midtrans mengubah status jadi Proses.
+setInterval(() => cekStatusPembayaran(false), 10000);
 </script>
 
 <?= $this->endSection(); ?>
