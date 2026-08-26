@@ -58,6 +58,9 @@ $routes->get('/removevoucher/(:num)', 'Pages::removeVoucher/$1', ['filter' => 'c
 
 $routes->get('/shipping/(:any)', 'Pages::shipping/$1', ['filter' => 'customerShippingFilter']);
 $routes->get('/payment/method/(:any)/(:any)', 'Pages::paymentMethod/$1/$2', ['filter' => 'customerShippingFilter']);
+$routes->get('/payment/finish', 'Pages::paymentFinishRedirect');
+$routes->get('/payment/unfinish', 'Pages::paymentUnfinishRedirect');
+$routes->get('/payment/error', 'Pages::paymentErrorRedirect');
 $routes->get('/payment/(:any)', 'Pages::payment/$1', ['filter' => 'customerShippingFilter']);
 $routes->get('/actionpaycore/(:any)', 'Pages::actionPayCore/$1', ['filter' => 'customerShippingFilter']);
 $routes->post('/updatetransaction', 'Pages::updateTransaction');

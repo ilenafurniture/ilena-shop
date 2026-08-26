@@ -1961,6 +1961,49 @@ class Pages extends BaseController
         return $this->response->setJSON(['success' => true]);
     }
 
+    public function paymentFinishRedirect()
+    {
+        return $this->redirectFromMidtrans('Menunggu Pembayaran');
+    }
+
+    public function paymentUnfinishRedirect()
+    {
+        return $this->redirectFromMidtrans('Menunggu Pembayaran');
+    }
+
+    public function paymentErrorRedirect()
+    {
+        return $this->redirectFromMidtrans('Gagal');
+    }
+
+    private function redirectFromMidtrans(string $fallbackStatus = 'Menunggu Pembayaran')
+    {
+        $orderId = (string)(
+            $this->request->getGet('order_id')
+            ?? $this->request->getGet('idorder')
+            ?? ''
+        );
+
+        if ($orderId === '') {
+            return redirect()->to('/order');
+        }
+
+        $status = $fallbackStatus;
+        $order = $this->pemesananModel->getPemesanan($orderId);
+        if ($order && !empty($order['status'])) {
+            $status = (string)$order['status'];
+        } else {
+            $transactionStatus = (string)($this->request->getGet('transaction_status') ?? '');
+            $fraudStatus = (string)($this->request->getGet('fraud_status') ?? 'accept');
+            $mappedStatus = $this->midtransStatusToOrderStatus($transactionStatus, $fraudStatus);
+            if ($mappedStatus !== 'No Status' && $mappedStatus !== 'Forbidden') {
+                $status = $mappedStatus;
+            }
+        }
+
+        return redirect()->to('/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId));
+    }
+
     public function cancelOrder($id_midtrans)
     {
         $auth = base64_encode("SB-Mid-server-3M67g25LgovNPlwdS4WfiMsh" . ":");
