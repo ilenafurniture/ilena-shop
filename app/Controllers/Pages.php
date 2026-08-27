@@ -21,6 +21,7 @@ use App\Models\JenisModel;
 use App\Models\VoucherModel;
 use App\Models\GambarHeaderModel;
 use App\Models\VoucherUsageModel;
+use App\Libraries\MetaCapi;
 use App\Services\ShippingService;
 use App\Services\FreeShippingService;
 
@@ -1679,6 +1680,19 @@ class Pages extends BaseController
         }
 
         $this->markVoucherUsed($order);
+        $this->sendMetaCapiPurchase($order);
+    }
+
+    private function sendMetaCapiPurchase(array $order): void
+    {
+        try {
+            (new MetaCapi())->sendPurchase($order);
+        } catch (\Throwable $th) {
+            log_message('error', 'Meta CAPI Purchase error for order {order}: {error}', [
+                'order' => (string)($order['id_midtrans'] ?? ''),
+                'error' => $th->getMessage(),
+            ]);
+        }
     }
 
     private function restorePaidOrderStock(array $order): void
