@@ -46,6 +46,12 @@
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
+        <a class="item-navhp <?= $title == 'Meta CAPI' ? 'active' : ''; ?>" href="/admin/meta-capi">
+            <i class="material-icons">track_changes</i>
+            <!-- <p class="m-0">Meta CAPI</p> -->
+        </a>
+    </div>
+    <div style="flex:1;" class="d-flex justify-content-center align-content-center">
         <a class="item-navhp" href="/logout">
             <i class="material-icons">exit_to_app</i>
             <!-- <p class="m-0">Keluar</p> -->

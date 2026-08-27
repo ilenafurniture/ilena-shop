@@ -102,6 +102,10 @@
             <i class="material-icons">history</i>
             <p class="m-0">Log Aktivitas</p>
         </a>
+        <a class="item-nav <?= $title == 'Meta CAPI' ? 'active' : ''; ?>" href="/admin/meta-capi">
+            <i class="material-icons">track_changes</i>
+            <p class="m-0">Meta CAPI</p>
+        </a>
 
         <!-- ===== Section Sistem ===== -->
         <div class="nav-separator">

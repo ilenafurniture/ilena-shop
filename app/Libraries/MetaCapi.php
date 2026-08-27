@@ -2,6 +2,8 @@
 
 namespace App\Libraries;
 
+use App\Services\MetaCapiSettingsService;
+
 class MetaCapi
 {
     private bool $enabled;
@@ -12,11 +14,13 @@ class MetaCapi
 
     public function __construct()
     {
-        $this->enabled = filter_var(env('META_CAPI_ENABLED', false), FILTER_VALIDATE_BOOLEAN);
-        $this->pixelId = trim((string) env('META_PIXEL_ID', ''));
-        $this->accessToken = trim((string) env('META_ACCESS_TOKEN', ''));
-        $this->graphVersion = trim((string) env('META_GRAPH_VERSION', 'v20.0')) ?: 'v20.0';
-        $this->testEventCode = trim((string) env('META_TEST_EVENT_CODE', ''));
+        $config = (new MetaCapiSettingsService())->getConfig();
+
+        $this->enabled = !empty($config['enabled']);
+        $this->pixelId = trim((string)($config['pixel_id'] ?? ''));
+        $this->accessToken = trim((string)($config['access_token'] ?? ''));
+        $this->graphVersion = trim((string)($config['graph_version'] ?? 'v20.0')) ?: 'v20.0';
+        $this->testEventCode = trim((string)($config['test_event_code'] ?? ''));
     }
 
     public function sendPurchase(array $order): bool

@@ -31,6 +31,7 @@ use App\Models\SuratJalanItemModel;
 use App\Models\ProjectInteriorItemModel;
 use App\Services\AuditLogService;
 use App\Services\FreeShippingService;
+use App\Services\MetaCapiSettingsService;
 
 // Import Traits for modular organization
 use App\Controllers\Admin\Traits\ProductTrait;
@@ -3098,6 +3099,44 @@ private function interiorShippedQtyMap(string $idPesanan): array
 
         session()->setFlashdata('msg', 'Pengaturan gratis ongkir berhasil disimpan.');
         return redirect()->to('/admin/free-shipping');
+    }
+
+
+    public function metaCapi()
+    {
+        $service = new MetaCapiSettingsService();
+        $config = $service->getConfig();
+
+        return view('admin/metaCapi', [
+            'title' => 'Meta CAPI',
+            'config' => $config,
+            'maskedToken' => $service->maskedToken((string)($config['access_token'] ?? '')),
+            'msg' => session()->getFlashdata('msg'),
+            'err' => session()->getFlashdata('err'),
+        ]);
+    }
+
+    public function actionMetaCapi()
+    {
+        $service = new MetaCapiSettingsService();
+        $current = $service->getConfig();
+
+        $newToken = trim((string)$this->request->getPost('access_token'));
+        $config = [
+            'enabled' => (bool)$this->request->getPost('enabled'),
+            'pixel_id' => $this->request->getPost('pixel_id'),
+            'access_token' => $newToken !== '' ? $newToken : ($current['access_token'] ?? ''),
+            'graph_version' => $this->request->getPost('graph_version'),
+            'test_event_code' => $this->request->getPost('test_event_code'),
+        ];
+
+        $saved = $service->save($config);
+        session()->setFlashdata(
+            $saved ? 'msg' : 'err',
+            $saved ? 'Pengaturan Meta CAPI berhasil disimpan.' : 'Pengaturan Meta CAPI gagal disimpan.'
+        );
+
+        return redirect()->to('/admin/meta-capi');
     }
 
     public function activityLog()
