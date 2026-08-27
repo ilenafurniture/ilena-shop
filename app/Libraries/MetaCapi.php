@@ -19,7 +19,7 @@ class MetaCapi
         $this->enabled = !empty($config['enabled']);
         $this->pixelId = trim((string)($config['pixel_id'] ?? ''));
         $this->accessToken = trim((string)($config['access_token'] ?? ''));
-        $this->graphVersion = trim((string)($config['graph_version'] ?? 'v20.0')) ?: 'v20.0';
+        $this->graphVersion = trim((string)($config['graph_version'] ?? 'v26.0')) ?: 'v26.0';
         $this->testEventCode = trim((string)($config['test_event_code'] ?? ''));
     }
 

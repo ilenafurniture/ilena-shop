@@ -42,18 +42,18 @@ class MetaCapiSettingsService
             'enabled' => filter_var(env('META_CAPI_ENABLED', false), FILTER_VALIDATE_BOOLEAN),
             'pixel_id' => env('META_PIXEL_ID', ''),
             'access_token' => env('META_ACCESS_TOKEN', ''),
-            'graph_version' => env('META_GRAPH_VERSION', 'v20.0'),
-            'test_event_code' => env('META_TEST_EVENT_CODE', ''),
+            'graph_version' => env('META_GRAPH_VERSION', 'v26.0'),
+            'test_event_code' => env('META_TEST_EVENT_CODE', 'TEST90559'),
             'updated_at' => null,
         ]);
     }
 
     private function normalizeConfig(array $config): array
     {
-        $graphVersion = trim((string)($config['graph_version'] ?? 'v20.0')) ?: 'v20.0';
+        $graphVersion = trim((string)($config['graph_version'] ?? 'v26.0')) ?: 'v26.0';
         $graphVersion = ltrim($graphVersion, '/');
         if (!preg_match('/^v\d+\.\d+$/', $graphVersion)) {
-            $graphVersion = 'v20.0';
+            $graphVersion = 'v26.0';
         }
 
         return [

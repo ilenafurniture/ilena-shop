@@ -115,10 +115,10 @@ $isEnabled = !empty($config['enabled']);
                     id="graph_version"
                     name="graph_version"
                     class="form-control"
-                    value="<?= esc($config['graph_version'] ?? 'v20.0'); ?>"
-                    placeholder="v20.0"
+                    value="<?= esc($config['graph_version'] ?? 'v26.0'); ?>"
+                    placeholder="v26.0"
                     autocomplete="off">
-                <div class="form-text">Default: v20.0.</div>
+                <div class="form-text">Default: v26.0.</div>
             </div>
         </div>
 
