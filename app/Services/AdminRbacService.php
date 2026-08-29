@@ -21,6 +21,7 @@ class AdminRbacService
             'analytics' => ['label' => 'Analytics', 'description' => 'Akses analytics, export, blacklist analytics.'],
             'meta_capi' => ['label' => 'Meta CAPI', 'description' => 'Atur Pixel ID, token, Graph API, dan test event code.'],
             'activity_log' => ['label' => 'Log Aktivitas', 'description' => 'Lihat log aktivitas admin.'],
+            'spam_cleanup' => ['label' => 'Cleanup Spam Akun', 'description' => 'Lihat dan hapus akun register spam/injection.'],
             'rbac' => ['label' => 'Role & Akses Admin', 'description' => 'Buat role dan atur akses user admin.'],
         ];
     }
@@ -78,6 +79,7 @@ class AdminRbacService
             'admin/free-shipping' => 'shipping',
             'admin/meta-capi' => 'meta_capi',
             'admin/activity-log' => 'activity_log',
+            'admin/spam-cleanup' => 'spam_cleanup',
             'analytics' => 'analytics',
         ];
 
@@ -128,6 +130,7 @@ class AdminRbacService
             'analytics' => '/analytics',
             'meta_capi' => '/admin/meta-capi',
             'activity_log' => '/admin/activity-log',
+            'spam_cleanup' => '/admin/spam-cleanup',
             'rbac' => '/admin/rbac',
         ];
 

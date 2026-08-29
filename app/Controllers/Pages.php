@@ -3724,9 +3724,12 @@ class Pages extends BaseController
                 ]
             ],
             'email' => [
-                'rules' => 'required|is_unique[user.email]',
+                'rules' => 'required|valid_email|max_length[191]|regex_match[/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/]|is_unique[user.email]',
                 'errors' => [
                     'required' => 'Email harus diisi',
+                    'valid_email' => 'Format email tidak valid',
+                    'max_length' => 'Email terlalu panjang',
+                    'regex_match' => 'Format email tidak valid',
                     'is_unique' => 'Email sudah terdaftar',
                 ]
             ],
@@ -3764,15 +3767,19 @@ class Pages extends BaseController
         $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
         $waktu_otp_tanggal = date("d", $d) . " " . $bulan[date("m", $d) - 1] . " " . date("Y H:i:s", $d);
 
+        $emailUser = strtolower(trim((string)$this->request->getVar('email')));
+        $namaUser = trim((string)$this->request->getVar('nama'));
+        $nohpUser = preg_replace('/[^\d+]/', '', (string)$this->request->getVar('nohp'));
+
         $email = \Config\Services::email();
         $email->setFrom('no-reply@ilenafurniture.com', 'Ilena Furniture');
-        $email->setTo($this->request->getVar('email'));
+        $email->setTo($emailUser);
         $email->setSubject('ILENA Store - Verifikasi OTP');
         $email->setMessage("<p>Berikut kode OTP verifikasi</p><h1>" . $otp_number . "</h1><p>Kode ini berlaku hingga " . $waktu_otp_tanggal . "</p>");
         $email->send();
 
         $this->userModel->insert([
-            'email' => $this->request->getVar('email'),
+            'email' => $emailUser,
             'sandi' => password_hash($this->request->getVar('sandi'), PASSWORD_DEFAULT),
             'role' => '0',
             'otp' => $otp_number,
@@ -3780,15 +3787,14 @@ class Pages extends BaseController
             'waktu_otp' => $waktu_otp
         ]);
         $this->pembeliModel->insert([
-            'nama' => $this->request->getVar('nama'),
-            'email' => $this->request->getVar('email'),
-            'nohp' => $this->request->getVar('nohp'),
+            'nama' => $namaUser,
+            'email' => $emailUser,
+            'nohp' => $nohpUser,
             'alamat' => json_encode([]),
             'wishlist' => json_encode([]),
             'keranjang' => json_encode([])
         ]);
 
-        $emailUser = $this->request->getVar('email');
         $getUser = $this->userModel->getUser($emailUser);
         $ses_data = ['alamat', 'wishlist', 'keranjang'];
         session()->remove($ses_data);

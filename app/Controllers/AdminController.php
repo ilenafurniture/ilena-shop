@@ -33,6 +33,7 @@ use App\Services\AuditLogService;
 use App\Services\FreeShippingService;
 use App\Services\MetaCapiSettingsService;
 use App\Services\AdminRbacService;
+use App\Services\SpamAccountCleanupService;
 
 // Import Traits for modular organization
 use App\Controllers\Admin\Traits\ProductTrait;
@@ -3287,6 +3288,32 @@ private function interiorShippedQtyMap(string $idPesanan): array
         $deleted = (new AdminRbacService())->removeAssignment($email);
         session()->setFlashdata($deleted ? 'msg' : 'err', $deleted ? 'Akses user berhasil dihapus.' : 'Akses user gagal dihapus.');
         return redirect()->to('/admin/rbac');
+    }
+
+
+    public function spamCleanup()
+    {
+        $service = new SpamAccountCleanupService();
+
+        return view('admin/spamCleanup', [
+            'title' => 'Cleanup Spam Akun',
+            'candidates' => $service->candidates(1000),
+            'msg' => session()->getFlashdata('msg'),
+            'err' => session()->getFlashdata('err'),
+        ]);
+    }
+
+    public function actionSpamCleanup()
+    {
+        $emails = (array)$this->request->getPost('emails');
+        $deleted = (new SpamAccountCleanupService())->deleteEmails($emails);
+
+        session()->setFlashdata(
+            $deleted > 0 ? 'msg' : 'err',
+            $deleted > 0 ? $deleted . ' akun spam berhasil dihapus.' : 'Belum ada akun spam yang dipilih/dihapus.'
+        );
+
+        return redirect()->to('/admin/spam-cleanup');
     }
 
     public function activityLog()

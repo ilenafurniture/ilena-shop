@@ -65,6 +65,13 @@ $can = static fn(string $permission): bool => $rbacService->hasPermission(sessio
         </a>
     </div>
     <?php endif; ?>
+    <?php if ($can('spam_cleanup')): ?>
+    <div style="flex:1;" class="d-flex justify-content-center align-content-center">
+        <a class="item-navhp <?= $title == 'Cleanup Spam Akun' ? 'active' : ''; ?>" href="/admin/spam-cleanup">
+            <i class="material-icons">cleaning_services</i>
+        </a>
+    </div>
+    <?php endif; ?>
     <?php if ($can('meta_capi')): ?>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
         <a class="item-navhp <?= $title == 'Meta CAPI' ? 'active' : ''; ?>" href="/admin/meta-capi">

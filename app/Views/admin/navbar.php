@@ -111,7 +111,7 @@
         <?php endif; ?>
 
         <!-- ===== Section Analytics ===== -->
-        <?php if ($can('analytics') || $can('activity_log') || $can('meta_capi') || $can('rbac')): ?>
+        <?php if ($can('analytics') || $can('activity_log') || $can('meta_capi') || $can('spam_cleanup') || $can('rbac')): ?>
         <div class="nav-separator">
             <span class="line"></span><span class="label">Analytics &amp; Tools</span><span class="line"></span>
         </div>
@@ -126,6 +126,12 @@
         <a class="item-nav <?= $title == 'Log Aktivitas Admin' ? 'active' : ''; ?>" href="/admin/activity-log">
             <i class="material-icons">history</i>
             <p class="m-0">Log Aktivitas</p>
+        </a>
+        <?php endif; ?>
+        <?php if ($can('spam_cleanup')): ?>
+        <a class="item-nav <?= $title == 'Cleanup Spam Akun' ? 'active' : ''; ?>" href="/admin/spam-cleanup">
+            <i class="material-icons">cleaning_services</i>
+            <p class="m-0">Cleanup Spam</p>
         </a>
         <?php endif; ?>
         <?php if ($can('meta_capi')): ?>
