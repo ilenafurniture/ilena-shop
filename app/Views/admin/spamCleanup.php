@@ -19,7 +19,7 @@
     <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
         <div>
             <h1 class="spam-title mb-1">Cleanup Spam Akun</h1>
-            <p class="spam-muted mb-0">Preview akun register mencurigakan sebelum dihapus dari tabel user dan pembeli.</p>
+            <p class="spam-muted mb-0">Preview akun register mencurigakan, payload injection, dan tempmail sebelum dihapus dari tabel user dan pembeli.</p>
         </div>
         <span class="spam-badge"><?= count($candidates); ?> kandidat spam</span>
     </div>

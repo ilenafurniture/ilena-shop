@@ -25,6 +25,7 @@ use App\Libraries\MetaCapi;
 use App\Services\ShippingService;
 use App\Services\FreeShippingService;
 use App\Services\AdminRbacService;
+use App\Services\SpamAccountCleanupService;
 
 
 class Pages extends BaseController
@@ -3761,13 +3762,18 @@ class Pages extends BaseController
             return redirect()->to('/register')->withInput();
         }
 
+        $emailUser = strtolower(trim((string)$this->request->getVar('email')));
+        if ((new SpamAccountCleanupService())->isDisposableEmail($emailUser)) {
+            session()->setFlashdata('val-email', 'Email sementara/tempmail tidak bisa digunakan');
+            return redirect()->to('/register')->withInput();
+        }
+
         $otp_number = rand(100000, 999999);
         $waktu_otp = time() + 300;
         $d = strtotime("+425 Minutes");
         $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
         $waktu_otp_tanggal = date("d", $d) . " " . $bulan[date("m", $d) - 1] . " " . date("Y H:i:s", $d);
 
-        $emailUser = strtolower(trim((string)$this->request->getVar('email')));
         $namaUser = trim((string)$this->request->getVar('nama'));
         $nohpUser = preg_replace('/[^\d+]/', '', (string)$this->request->getVar('nohp'));
 
