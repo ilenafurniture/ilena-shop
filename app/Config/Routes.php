@@ -178,6 +178,7 @@ $routes->group('admin', ['filter' => 'adminFilter'], static function($routes) {
     $routes->post('rbac/role/delete/(:num)', 'AdminController::deleteRbacRole/$1');
     $routes->post('rbac/assign', 'AdminController::assignRbacRole');
     $routes->post('rbac/assign/delete', 'AdminController::deleteRbacAssignment');
+    $routes->post('rbac/sync-users', 'AdminController::syncRbacUserRoles');
     $routes->get('spam-cleanup', 'AdminController::spamCleanup');
     $routes->post('spam-cleanup', 'AdminController::actionSpamCleanup');
 

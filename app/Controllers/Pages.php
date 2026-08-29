@@ -3623,7 +3623,12 @@ class Pages extends BaseController
             return redirect()->to('/verify');
         }
         $rbacService = new AdminRbacService();
-        if (!in_array((string)$getUser['role'], ['1', '2', '3'], true) && $rbacService->hasAnyAdminAccess((string)$getUser['email'])) {
+        if ((string)$getUser['role'] === '5' || (!in_array((string)$getUser['role'], ['1', '2', '3'], true) && $rbacService->hasAnyAdminAccess((string)$getUser['email']))) {
+            if (!$rbacService->hasAnyAdminAccess((string)$getUser['email'])) {
+                session()->setFlashdata('msg', 'Akses admin belum aktif untuk email ini.');
+                return redirect()->to('/login');
+            }
+
             $ses_data = [
                 'active' => '1',
                 'nama' => 'Admin Ilena',

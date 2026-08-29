@@ -1447,6 +1447,34 @@ class AdminController extends BaseController
         return view('admin/homeLayout', $data);
     }
 
+    private function simpanFileHeaderSlider($image, int $id, string $device): ?string
+    {
+        if (!$image || !$image->isValid()) {
+            return null;
+        }
+
+        $allowedMimes = [
+            'image/jpeg' => 'jpg',
+            'image/png'  => 'png',
+            'image/webp' => 'webp',
+            'image/avif' => 'avif',
+        ];
+        $mime = $image->getMimeType();
+        if (!isset($allowedMimes[$mime])) {
+            return null;
+        }
+
+        $uploadDir = FCPATH . 'uploads' . DIRECTORY_SEPARATOR . 'slider';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $filename = 'header-' . $id . '-' . $device . '-' . date('YmdHis') . '-' . bin2hex(random_bytes(4)) . '.' . $allowedMimes[$mime];
+        $image->move($uploadDir, $filename);
+
+        return 'uploads/slider/' . $filename;
+    }
+
     public function actionHomeLayout()
     {
         $image1 = $this->request->getFile('image1');
@@ -1466,26 +1494,26 @@ class AdminController extends BaseController
         $url4 = $this->request->getVar('url4');
 
         $dataUpdate = [];
-        if ($image1->isValid()) $dataUpdate['foto'] = file_get_contents($image1);
-        if ($image1hp->isValid()) $dataUpdate['foto_hp'] = file_get_contents($image1hp);
+        if ($path = $this->simpanFileHeaderSlider($image1, 1, 'desktop')) $dataUpdate['foto'] = $path;
+        if ($path = $this->simpanFileHeaderSlider($image1hp, 1, 'mobile')) $dataUpdate['foto_hp'] = $path;
         $dataUpdate['url'] = $url1 ? $url1 : null;
         $this->gambarHeaderModel->where(['id' => 1])->set($dataUpdate)->update();
 
         $dataUpdate = [];
-        if ($image2->isValid()) $dataUpdate['foto'] = file_get_contents($image2);
-        if ($image2hp->isValid()) $dataUpdate['foto_hp'] = file_get_contents($image2hp);
+        if ($path = $this->simpanFileHeaderSlider($image2, 2, 'desktop')) $dataUpdate['foto'] = $path;
+        if ($path = $this->simpanFileHeaderSlider($image2hp, 2, 'mobile')) $dataUpdate['foto_hp'] = $path;
         $dataUpdate['url'] = $url2 ? $url2 : null;
         $this->gambarHeaderModel->where(['id' => 2])->set($dataUpdate)->update();
 
         $dataUpdate = [];
-        if ($image3->isValid()) $dataUpdate['foto'] = file_get_contents($image3);
-        if ($image3hp->isValid()) $dataUpdate['foto_hp'] = file_get_contents($image3hp);
+        if ($path = $this->simpanFileHeaderSlider($image3, 3, 'desktop')) $dataUpdate['foto'] = $path;
+        if ($path = $this->simpanFileHeaderSlider($image3hp, 3, 'mobile')) $dataUpdate['foto_hp'] = $path;
         $dataUpdate['url'] = $url3 ? $url3 : null;
         $this->gambarHeaderModel->where(['id' => 3])->set($dataUpdate)->update();
 
         $dataUpdate = [];
-        if ($image4->isValid()) $dataUpdate['foto'] = file_get_contents($image4);
-        if ($image4hp->isValid()) $dataUpdate['foto_hp'] = file_get_contents($image4hp);
+        if ($path = $this->simpanFileHeaderSlider($image4, 4, 'desktop')) $dataUpdate['foto'] = $path;
+        if ($path = $this->simpanFileHeaderSlider($image4hp, 4, 'mobile')) $dataUpdate['foto_hp'] = $path;
         $dataUpdate['url'] = $url4 ? $url4 : null;
         $this->gambarHeaderModel->where(['id' => 4])->set($dataUpdate)->update();
 
@@ -3180,7 +3208,6 @@ private function interiorShippedQtyMap(string $idPesanan): array
         return redirect()->to('/admin/free-shipping');
     }
 
-
     public function metaCapi()
     {
         $service = new MetaCapiSettingsService();
@@ -3217,7 +3244,6 @@ private function interiorShippedQtyMap(string $idPesanan): array
 
         return redirect()->to('/admin/meta-capi');
     }
-
 
     public function rbac()
     {
@@ -3290,6 +3316,12 @@ private function interiorShippedQtyMap(string $idPesanan): array
         return redirect()->to('/admin/rbac');
     }
 
+    public function syncRbacUserRoles()
+    {
+        $count = (new AdminRbacService())->syncAssignedUserRoles();
+        session()->setFlashdata('msg', $count . ' akun RBAC disinkronkan ke role staff admin.');
+        return redirect()->to('/admin/rbac');
+    }
 
     public function spamCleanup()
     {

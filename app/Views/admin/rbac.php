@@ -34,7 +34,12 @@ $decodePermissions = $decodePermissions ?? static fn($v) => [];
             <h1 class="rbac-title mb-1">Role & Akses Admin</h1>
             <p class="rbac-muted mb-0">Buat role, centang fitur yang boleh diakses, lalu assign ke email user.</p>
         </div>
-        <a href="/admin/product" class="btn btn-light border">Kembali</a>
+        <div class="d-flex flex-wrap gap-2">
+            <form action="/admin/rbac/sync-users" method="post">
+                <button class="btn btn-dark" type="submit">Sinkronkan User RBAC</button>
+            </form>
+            <a href="/admin/product" class="btn btn-light border">Kembali</a>
+        </div>
     </div>
 
     <?php if (!empty($msg)): ?><div class="alert alert-success"><?= esc($msg); ?></div><?php endif; ?>

@@ -206,6 +206,27 @@ class AdminRbacService
             ->getResultArray();
     }
 
+    public function syncAssignedUserRoles(): int
+    {
+        $this->ensureTables();
+        $db = \Config\Database::connect();
+        $rows = $db->table($this->userRolesTable)->select('email')->get()->getResultArray();
+
+        $count = 0;
+        foreach ($rows as $row) {
+            $email = strtolower(trim((string)($row['email'] ?? '')));
+            if ($email === '') continue;
+
+            $user = $db->table('user')->select('role')->where('email', $email)->get()->getRowArray();
+            if ($user && in_array((string)($user['role'] ?? ''), ['0', '4', '5'], true)) {
+                $db->table('user')->where('email', $email)->update(['role' => '5']);
+                $count++;
+            }
+        }
+
+        return $count;
+    }
+
     public function assignRole(string $email, int $roleId): bool
     {
         $this->ensureTables();
@@ -222,20 +243,38 @@ class AdminRbacService
         ];
 
         $exists = $db->table($this->userRolesTable)->where('email', $email)->countAllResults() > 0;
-        if ($exists) {
-            return (bool)$db->table($this->userRolesTable)->where('email', $email)->update($data);
+        $saved = $exists
+            ? (bool)$db->table($this->userRolesTable)->where('email', $email)->update($data)
+            : (bool)$db->table($this->userRolesTable)->insert($data);
+
+        if ($saved && $db->tableExists('user')) {
+            $user = $db->table('user')->select('role')->where('email', $email)->get()->getRowArray();
+            if ($user && in_array((string)($user['role'] ?? ''), ['0', '4', '5'], true)) {
+                $db->table('user')->where('email', $email)->update(['role' => '5']);
+            }
         }
 
-        return (bool)$db->table($this->userRolesTable)->insert($data);
+        return $saved;
     }
 
     public function removeAssignment(string $email): bool
     {
         $this->ensureTables();
-        return (bool)\Config\Database::connect()
+        $email = strtolower(trim($email));
+        $db = \Config\Database::connect();
+        $deleted = (bool)$db
             ->table($this->userRolesTable)
-            ->where('email', strtolower(trim($email)))
+            ->where('email', $email)
             ->delete();
+
+        if ($deleted && $db->tableExists('user')) {
+            $user = $db->table('user')->select('role')->where('email', $email)->get()->getRowArray();
+            if ($user && (string)($user['role'] ?? '') === '5') {
+                $db->table('user')->where('email', $email)->update(['role' => '0']);
+            }
+        }
+
+        return $deleted;
     }
 
     public function userPermissions(string $email): array
