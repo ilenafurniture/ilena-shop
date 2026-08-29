@@ -213,6 +213,15 @@ class AdminController extends BaseController
 
         $data               = $this->request->getVar();
         $data_gambar_mentah = $this->request->getFiles();
+        $this->ensureProductStorageReady();
+        $this->ensureBarangScheduleColumns();
+
+        $variants = json_decode($data['varian'] ?? '[]', true);
+        if (!is_array($variants)) {
+            return $this->response->setStatusCode(400)->setJSON([
+                'pesan' => 'Data varian tidak valid'
+            ]);
+        }
 
         if (isset($data_gambar_mentah['gambar_hover']) && $data_gambar_mentah['gambar_hover']->isValid()) {
             $fp = 'imgdum/barang/hover';
@@ -228,7 +237,7 @@ class AdminController extends BaseController
         }
         unset($data_gambar_mentah['gambar_hover']);
 
-        foreach (json_decode($data['varian'], true) as $varian) {
+        foreach ($variants as $varian) {
             $tanggalNoStrip = date("YmdHis", strtotime("+7 Hours"));
             $this->kartuStokModel->insert([
                 'id_barang'   => $data['id'],
@@ -256,7 +265,12 @@ class AdminController extends BaseController
         }
 
         foreach ($data_gambar_mentah as $ind_g => $dG) {
-            $urutan = (int)explode('_', $ind_g)[1];
+            if ($ind_g === 'gambar_hover') continue;
+            if (!str_starts_with((string)$ind_g, 'gambar_')) continue;
+            if (!$dG || !$dG->isValid()) continue;
+
+            $parts = explode('_', (string)$ind_g);
+            $urutan = (int)($parts[1] ?? 0);
             $dG->move('imgdum');
 
             if (file_exists('img/barang/3000/' . $data['id'] . '-' . ($urutan + 1) . '.webp')) {
@@ -327,6 +341,69 @@ class AdminController extends BaseController
                 'dataYgDiInsertKeBarang' => $insertDataBarang,
                 'pesan' => 'Berhasil menambahkan produk ' . $data['nama']
             ]);
+    }
+
+
+    private function ensureProductStorageReady(): void
+    {
+        foreach ([
+            'imgdum',
+            'imgdum/barang',
+            'imgdum/barang/hover',
+            'img/barang',
+            'img/barang/300',
+            'img/barang/1000',
+            'img/barang/3000',
+            'img/barang/hover',
+        ] as $dir) {
+            if (!is_dir($dir)) {
+                @mkdir($dir, 0775, true);
+            }
+            if (is_dir($dir) && !is_writable($dir)) {
+                @chmod($dir, 0775);
+            }
+        }
+    }
+
+    private function ensureBarangScheduleColumns(): void
+    {
+        try {
+            $db = \Config\Database::connect();
+            if (!$db->tableExists('barang')) {
+                return;
+            }
+
+            $forge = \Config\Database::forge();
+            $fields = [];
+            if (!$db->fieldExists('pakai_jadwal_diskon', 'barang')) {
+                $fields['pakai_jadwal_diskon'] = [
+                    'type' => 'TINYINT',
+                    'constraint' => 1,
+                    'default' => 0,
+                    'null' => false,
+                ];
+            }
+            if (!$db->fieldExists('diskon_mulai', 'barang')) {
+                $fields['diskon_mulai'] = [
+                    'type' => 'DATETIME',
+                    'null' => true,
+                ];
+            }
+            if (!$db->fieldExists('diskon_selesai', 'barang')) {
+                $fields['diskon_selesai'] = [
+                    'type' => 'DATETIME',
+                    'null' => true,
+                ];
+            }
+
+            if (!empty($fields)) {
+                $forge->addColumn('barang', $fields);
+            }
+        } catch (\Throwable $th) {
+            log_message('error', 'Gagal memastikan kolom jadwal diskon barang: {err}', [
+                'err' => $th->getMessage(),
+            ]);
+        }
     }
 
 
