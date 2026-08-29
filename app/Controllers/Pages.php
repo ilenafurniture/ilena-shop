@@ -3836,6 +3836,12 @@ class Pages extends BaseController
     }
     public function verify()
     {
+        $email = session()->get('email');
+        if (!$email || !$this->userModel->getUser($email)) {
+            session()->setFlashdata('msg', 'Sesi verifikasi sudah berakhir. Silakan daftar/login ulang.');
+            return redirect()->to('/login');
+        }
+
         $data = [
             'title' => 'Verifikasi',
             'navbar' => $this->getNavbarData(),
@@ -3852,6 +3858,11 @@ class Pages extends BaseController
         $otp = $this->request->getVar("otp");
         $email = session()->get("email");
         $getUser = $this->userModel->getUser($email);
+        if (!$email || !$getUser) {
+            session()->setFlashdata('msg', 'Sesi verifikasi sudah berakhir. Silakan daftar/login ulang.');
+            return redirect()->to('/login');
+        }
+
         if ($otp != $getUser['otp']) {
             session()->setFlashdata('val_verify', "OTP salah");
             return redirect()->to("/verify");
@@ -3880,14 +3891,26 @@ class Pages extends BaseController
         }
 
         $getPembeli = $this->pembeliModel->getPembeli($email);
+        if (!$getPembeli) {
+            $this->pembeliModel->insert([
+                'nama' => ucwords(str_replace(['_', '.'], ' ', strtok((string)$email, '@') ?: 'Customer')),
+                'email' => $email,
+                'nohp' => '',
+                'alamat' => json_encode([]),
+                'wishlist' => json_encode([]),
+                'keranjang' => json_encode([]),
+            ]);
+            $getPembeli = $this->pembeliModel->getPembeli($email);
+        }
+
         $ses_data = [
             'active' => '1',
             'role' => $getUser['role'],
-            'nama' => $getPembeli['nama'],
-            'alamat' => json_decode($getPembeli['alamat'], true),
-            'nohp' => $getPembeli['nohp'],
-            'wishlist' => json_decode($getPembeli['wishlist'], true),
-            'keranjang' => json_decode($getPembeli['keranjang'], true)
+            'nama' => $getPembeli['nama'] ?? '',
+            'alamat' => json_decode($getPembeli['alamat'] ?? '[]', true) ?: [],
+            'nohp' => $getPembeli['nohp'] ?? '',
+            'wishlist' => json_decode($getPembeli['wishlist'] ?? '[]', true) ?: [],
+            'keranjang' => json_decode($getPembeli['keranjang'] ?? '[]', true) ?: []
         ];
         $this->userModel->where('email', $email)->set([
             'active' => '1',
@@ -3901,6 +3924,12 @@ class Pages extends BaseController
     public function kirimOTP()
     {
         $emailUser = session()->get('email');
+        $getUser = $this->userModel->getUser($emailUser);
+        if (!$emailUser || !$getUser) {
+            session()->setFlashdata('msg', 'Sesi verifikasi sudah berakhir. Silakan daftar/login ulang.');
+            return redirect()->to('/login');
+        }
+
         $otp_number = rand(100000, 999999);
         $waktu_otp = time() + 300;
         $d = strtotime("+425 Minutes");
