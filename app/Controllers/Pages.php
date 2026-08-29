@@ -3792,14 +3792,35 @@ class Pages extends BaseController
             'active' => '0',
             'waktu_otp' => $waktu_otp
         ]);
-        $this->pembeliModel->insert([
+        $pembeliPayload = [
             'nama' => $namaUser,
             'email' => $emailUser,
             'nohp' => $nohpUser,
             'alamat' => json_encode([]),
             'wishlist' => json_encode([]),
             'keranjang' => json_encode([])
-        ]);
+        ];
+
+        try {
+            $existingPembeli = $this->pembeliModel->getPembeli($emailUser);
+            if ($existingPembeli) {
+                $this->pembeliModel->where('email', $emailUser)->set([
+                    'nama' => $namaUser,
+                    'nohp' => $nohpUser,
+                ])->update();
+            } else {
+                $this->pembeliModel->insert($pembeliPayload);
+            }
+        } catch (\Throwable $th) {
+            if (str_contains(strtolower($th->getMessage()), 'duplicate')) {
+                $this->pembeliModel->where('email', $emailUser)->set([
+                    'nama' => $namaUser,
+                    'nohp' => $nohpUser,
+                ])->update();
+            } else {
+                throw $th;
+            }
+        }
 
         $getUser = $this->userModel->getUser($emailUser);
         $ses_data = ['alamat', 'wishlist', 'keranjang'];
