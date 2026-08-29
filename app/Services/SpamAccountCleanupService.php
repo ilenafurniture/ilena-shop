@@ -115,7 +115,7 @@ class SpamAccountCleanupService
     public function candidates(int $limit = 500, int $inactiveOlderThanDays = 7): array
     {
         $db = \Config\Database::connect();
-        $rows = $db->table('user')
+        $userRows = $db->table('user')
             ->select('email, role, active, waktu_otp')
             ->orderBy('email', 'asc')
             ->limit($limit)
@@ -123,7 +123,8 @@ class SpamAccountCleanupService
             ->getResultArray();
 
         $out = [];
-        foreach ($rows as $row) {
+        $seen = [];
+        foreach ($userRows as $row) {
             $email = (string)($row['email'] ?? '');
             $isSuspicious = $this->isSuspiciousEmail($email);
             $isInactiveExpired = $this->isInactiveExpiredAccount($row, $inactiveOlderThanDays);
@@ -134,6 +135,7 @@ class SpamAccountCleanupService
 
             $out[] = [
                 'email' => $email,
+                'source' => 'user + pembeli',
                 'role' => $row['role'] ?? '',
                 'active' => $row['active'] ?? '',
                 'waktu_otp' => $row['waktu_otp'] ?? '',
@@ -141,6 +143,40 @@ class SpamAccountCleanupService
                     ? $this->reason($email)
                     : 'Akun belum aktif dan OTP kadaluarsa lebih dari ' . $inactiveOlderThanDays . ' hari',
             ];
+            $seen[strtolower($email)] = true;
+        }
+
+        $pembeliRows = $db->table('pembeli p')
+            ->select('p.email, u.email AS user_email')
+            ->join('user u', 'u.email = p.email', 'left')
+            ->orderBy('p.email', 'asc')
+            ->limit($limit)
+            ->get()
+            ->getResultArray();
+
+        foreach ($pembeliRows as $row) {
+            $email = (string)($row['email'] ?? '');
+            $emailKey = strtolower($email);
+            if (isset($seen[$emailKey])) {
+                continue;
+            }
+
+            $isSuspicious = $this->isSuspiciousEmail($email);
+            $isOrphan = empty($row['user_email']);
+
+            if (!$isSuspicious && !$isOrphan) {
+                continue;
+            }
+
+            $out[] = [
+                'email' => $email,
+                'source' => $isOrphan ? 'pembeli tanpa user' : 'pembeli',
+                'role' => '-',
+                'active' => '-',
+                'waktu_otp' => '-',
+                'reason' => $isSuspicious ? $this->reason($email) : 'Data pembeli tidak punya pasangan akun user',
+            ];
+            $seen[$emailKey] = true;
         }
 
         return $out;
@@ -153,14 +189,19 @@ class SpamAccountCleanupService
 
         $safeToDelete = [];
         foreach ($emails as $email) {
-            $row = \Config\Database::connect()
+            $db = \Config\Database::connect();
+            $row = $db
                 ->table('user')
                 ->select('email, role, active, waktu_otp')
                 ->where('email', $email)
                 ->get()
                 ->getRowArray();
+            $hasPembeli = $db->table('pembeli')->where('email', $email)->countAllResults() > 0;
 
-            if ($this->isSuspiciousEmail($email) || ($row && $this->isInactiveExpiredAccount($row, 1))) {
+            if ($this->isSuspiciousEmail($email)
+                || ($row && $this->isInactiveExpiredAccount($row, 1))
+                || (!$row && $hasPembeli)
+            ) {
                 $safeToDelete[] = $email;
             }
         }

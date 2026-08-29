@@ -65,6 +65,7 @@ $inactiveDays = (int)($inactiveDays ?? 7);
                         <tr>
                             <th style="width:44px"></th>
                             <th>Email</th>
+                            <th>Sumber</th>
                             <th>Role</th>
                             <th>Active</th>
                             <th>Alasan</th>
@@ -75,6 +76,7 @@ $inactiveDays = (int)($inactiveDays ?? 7);
                             <tr>
                                 <td><input class="spam-check" type="checkbox" name="emails[]" value="<?= esc($row['email']); ?>" checked></td>
                                 <td class="spam-email"><?= esc($row['email']); ?></td>
+                                <td><?= esc($row['source'] ?? '-'); ?></td>
                                 <td><?= esc($row['role']); ?></td>
                                 <td><?= esc($row['active']); ?></td>
                                 <td><?= esc($row['reason']); ?></td>
