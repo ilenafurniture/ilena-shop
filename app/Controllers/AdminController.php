@@ -3294,10 +3294,12 @@ private function interiorShippedQtyMap(string $idPesanan): array
     public function spamCleanup()
     {
         $service = new SpamAccountCleanupService();
+        $inactiveDays = max(1, (int)($this->request->getGet('inactive_days') ?? 7));
 
         return view('admin/spamCleanup', [
             'title' => 'Cleanup Spam Akun',
-            'candidates' => $service->candidates(1000),
+            'candidates' => $service->candidates(1000, $inactiveDays),
+            'inactiveDays' => $inactiveDays,
             'msg' => session()->getFlashdata('msg'),
             'err' => session()->getFlashdata('err'),
         ]);

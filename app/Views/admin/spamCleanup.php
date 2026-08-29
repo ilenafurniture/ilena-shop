@@ -1,7 +1,10 @@
 <?= $this->extend('admin/template'); ?>
 <?= $this->section('content'); ?>
 
-<?php $candidates = $candidates ?? []; ?>
+<?php
+$candidates = $candidates ?? [];
+$inactiveDays = (int)($inactiveDays ?? 7);
+?>
 
 <style>
 .spam-page { max-width: 1100px; margin: 0 auto; }
@@ -19,13 +22,32 @@
     <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
         <div>
             <h1 class="spam-title mb-1">Cleanup Spam Akun</h1>
-            <p class="spam-muted mb-0">Preview akun register mencurigakan, payload injection, dan tempmail sebelum dihapus dari tabel user dan pembeli.</p>
+            <p class="spam-muted mb-0">Preview akun register mencurigakan, payload injection, tempmail, dan akun belum aktif yang OTP-nya sudah lama kadaluarsa.</p>
         </div>
         <span class="spam-badge"><?= count($candidates); ?> kandidat spam</span>
     </div>
 
     <?php if (!empty($msg)): ?><div class="alert alert-success"><?= esc($msg); ?></div><?php endif; ?>
     <?php if (!empty($err)): ?><div class="alert alert-danger"><?= esc($err); ?></div><?php endif; ?>
+
+    <form method="get" action="/admin/spam-cleanup" class="spam-card p-4 mb-3">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-8">
+                <label for="inactive_days" class="form-label fw-bold">Tampilkan akun belum aktif</label>
+                <select id="inactive_days" name="inactive_days" class="form-select">
+                    <?php foreach ([1, 7, 30, 90] as $day): ?>
+                        <option value="<?= $day; ?>" <?= $inactiveDays === $day ? 'selected' : ''; ?>>
+                            OTP kadaluarsa lebih dari <?= $day; ?> hari
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <div class="form-text">Akun customer role 0, active 0, dan OTP sudah lewat akan masuk kandidat cleanup.</div>
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-dark w-100">Refresh Kandidat</button>
+            </div>
+        </div>
+    </form>
 
     <form method="post" action="/admin/spam-cleanup" class="spam-card p-4">
         <?php if (empty($candidates)): ?>

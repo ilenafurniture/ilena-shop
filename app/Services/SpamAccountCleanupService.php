@@ -99,7 +99,20 @@ class SpamAccountCleanupService
         return false;
     }
 
-    public function candidates(int $limit = 500): array
+    public function isInactiveExpiredAccount(array $row, int $olderThanDays = 7): bool
+    {
+        $active = (string)($row['active'] ?? '');
+        $role = (string)($row['role'] ?? '');
+        $otpExpiresAt = (int)($row['waktu_otp'] ?? 0);
+        $cutoff = time() - (max(0, $olderThanDays) * 86400);
+
+        return $role === '0'
+            && $active === '0'
+            && $otpExpiresAt > 0
+            && $otpExpiresAt < $cutoff;
+    }
+
+    public function candidates(int $limit = 500, int $inactiveOlderThanDays = 7): array
     {
         $db = \Config\Database::connect();
         $rows = $db->table('user')
@@ -112,7 +125,10 @@ class SpamAccountCleanupService
         $out = [];
         foreach ($rows as $row) {
             $email = (string)($row['email'] ?? '');
-            if (!$this->isSuspiciousEmail($email)) {
+            $isSuspicious = $this->isSuspiciousEmail($email);
+            $isInactiveExpired = $this->isInactiveExpiredAccount($row, $inactiveOlderThanDays);
+
+            if (!$isSuspicious && !$isInactiveExpired) {
                 continue;
             }
 
@@ -121,7 +137,9 @@ class SpamAccountCleanupService
                 'role' => $row['role'] ?? '',
                 'active' => $row['active'] ?? '',
                 'waktu_otp' => $row['waktu_otp'] ?? '',
-                'reason' => $this->reason($email),
+                'reason' => $isSuspicious
+                    ? $this->reason($email)
+                    : 'Akun belum aktif dan OTP kadaluarsa lebih dari ' . $inactiveOlderThanDays . ' hari',
             ];
         }
 
@@ -135,7 +153,14 @@ class SpamAccountCleanupService
 
         $safeToDelete = [];
         foreach ($emails as $email) {
-            if ($this->isSuspiciousEmail($email)) {
+            $row = \Config\Database::connect()
+                ->table('user')
+                ->select('email, role, active, waktu_otp')
+                ->where('email', $email)
+                ->get()
+                ->getRowArray();
+
+            if ($this->isSuspiciousEmail($email) || ($row && $this->isInactiveExpiredAccount($row, 1))) {
                 $safeToDelete[] = $email;
             }
         }
