@@ -3,6 +3,7 @@
 namespace App\Filters;
 
 use App\Services\AuditLogService;
+use App\Services\AdminRbacService;
 use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -11,12 +12,25 @@ class AdminFilter implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        if(session()->get('role') == '0' || !session()->get('role')){
+        if (!session()->get('isLogin')) {
             return redirect()->to('/');
-        }else if(session()->get('role') == '2'){
+        } else if(session()->get('role') == '2'){
             return redirect()->to('/gudang/listorder');
         }else if(session()->get('role') == '3'){
             return redirect()->to('/market/product');
+        }
+
+        $rbac = new AdminRbacService();
+        $email = (string)session()->get('email');
+        $isSuperAdmin = (string)session()->get('role') === '1';
+        $hasRbacAccess = $rbac->hasAnyAdminAccess($email);
+
+        if (!$isSuperAdmin && !$hasRbacAccess) {
+            return redirect()->to('/');
+        }
+
+        if (!$rbac->canAccessPath($email, $request->getUri()->getPath())) {
+            return redirect()->to($rbac->firstAllowedAdminUrl($email));
         }
     }
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)

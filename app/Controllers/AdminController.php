@@ -32,6 +32,7 @@ use App\Models\ProjectInteriorItemModel;
 use App\Services\AuditLogService;
 use App\Services\FreeShippingService;
 use App\Services\MetaCapiSettingsService;
+use App\Services\AdminRbacService;
 
 // Import Traits for modular organization
 use App\Controllers\Admin\Traits\ProductTrait;
@@ -3214,6 +3215,78 @@ private function interiorShippedQtyMap(string $idPesanan): array
         );
 
         return redirect()->to('/admin/meta-capi');
+    }
+
+
+    public function rbac()
+    {
+        $service = new AdminRbacService();
+
+        return view('admin/rbac', [
+            'title' => 'Role & Akses Admin',
+            'permissions' => $service->permissions(),
+            'roles' => $service->roles(),
+            'assignments' => $service->assignments(),
+            'decodePermissions' => fn($value) => $service->decodePermissions($value),
+            'msg' => session()->getFlashdata('msg'),
+            'err' => session()->getFlashdata('err'),
+        ]);
+    }
+
+    public function actionRbacRole($id = null)
+    {
+        $service = new AdminRbacService();
+        $name = trim((string)$this->request->getPost('role_name'));
+        $permissions = (array)$this->request->getPost('permissions');
+
+        if ($name === '') {
+            session()->setFlashdata('err', 'Nama role harus diisi.');
+            return redirect()->to('/admin/rbac');
+        }
+
+        $saved = $service->saveRole($id ? (int)$id : null, $name, $permissions);
+        session()->setFlashdata($saved ? 'msg' : 'err', $saved ? 'Role berhasil disimpan.' : 'Role gagal disimpan.');
+        return redirect()->to('/admin/rbac');
+    }
+
+    public function deleteRbacRole($id)
+    {
+        $deleted = (new AdminRbacService())->deleteRole((int)$id);
+        session()->setFlashdata($deleted ? 'msg' : 'err', $deleted ? 'Role berhasil dihapus.' : 'Role gagal dihapus.');
+        return redirect()->to('/admin/rbac');
+    }
+
+    public function assignRbacRole()
+    {
+        $emailRaw = trim((string)$this->request->getPost('email'));
+        $roleId = (int)$this->request->getPost('role_id');
+
+        if ($emailRaw === '' || $roleId <= 0) {
+            session()->setFlashdata('err', 'Email dan role harus diisi.');
+            return redirect()->to('/admin/rbac');
+        }
+
+        $emails = preg_split('/[\r\n,;]+/', $emailRaw);
+        $emails = array_values(array_filter(array_map('trim', $emails ?: [])));
+        $service = new AdminRbacService();
+        $savedCount = 0;
+        foreach ($emails as $email) {
+            if (filter_var($email, FILTER_VALIDATE_EMAIL) && $service->assignRole($email, $roleId)) {
+                $savedCount++;
+            }
+        }
+
+        $saved = $savedCount > 0;
+        session()->setFlashdata($saved ? 'msg' : 'err', $saved ? 'Akses user berhasil disimpan.' : 'Akses user gagal disimpan.');
+        return redirect()->to('/admin/rbac');
+    }
+
+    public function deleteRbacAssignment()
+    {
+        $email = trim((string)$this->request->getPost('email'));
+        $deleted = (new AdminRbacService())->removeAssignment($email);
+        session()->setFlashdata($deleted ? 'msg' : 'err', $deleted ? 'Akses user berhasil dihapus.' : 'Akses user gagal dihapus.');
+        return redirect()->to('/admin/rbac');
     }
 
     public function activityLog()

@@ -172,6 +172,12 @@ $routes->group('admin', ['filter' => 'adminFilter'], static function($routes) {
     $routes->get('meta-capi', 'AdminController::metaCapi');
     $routes->post('meta-capi', 'AdminController::actionMetaCapi');
     $routes->get('activity-log', 'AdminController::activityLog');
+    $routes->get('rbac', 'AdminController::rbac');
+    $routes->post('rbac/role', 'AdminController::actionRbacRole');
+    $routes->post('rbac/role/(:num)', 'AdminController::actionRbacRole/$1');
+    $routes->post('rbac/role/delete/(:num)', 'AdminController::deleteRbacRole/$1');
+    $routes->post('rbac/assign', 'AdminController::assignRbacRole');
+    $routes->post('rbac/assign/delete', 'AdminController::deleteRbacAssignment');
 
     // ==================== OFFLINE ORDER (admin) ====================
 

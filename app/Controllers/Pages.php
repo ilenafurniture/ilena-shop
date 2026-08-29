@@ -24,6 +24,7 @@ use App\Models\VoucherUsageModel;
 use App\Libraries\MetaCapi;
 use App\Services\ShippingService;
 use App\Services\FreeShippingService;
+use App\Services\AdminRbacService;
 
 
 class Pages extends BaseController
@@ -3620,6 +3621,20 @@ class Pages extends BaseController
             session()->setFlashdata('msg', "Email " . $email . " perlu diverifikasi");
             return redirect()->to('/verify');
         }
+        $rbacService = new AdminRbacService();
+        if (!in_array((string)$getUser['role'], ['1', '2', '3'], true) && $rbacService->hasAnyAdminAccess((string)$getUser['email'])) {
+            $ses_data = [
+                'active' => '1',
+                'nama' => 'Admin Ilena',
+                'email' => $getUser['email'],
+                'role' => '5',
+                'admin_rbac' => true,
+                'isLogin' => true
+            ];
+            session()->set($ses_data);
+            return redirect()->to($rbacService->firstAllowedAdminUrl((string)$getUser['email']));
+        }
+
         if ($getUser['role'] == '0' || $getUser['role'] == '4') {
             $getPembeli = $this->pembeliModel->getPembeli($email);
             $ses_data = [
