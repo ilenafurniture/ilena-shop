@@ -69,7 +69,7 @@
                         <div class="d-flex gap-2">
                             <a href=" https://tokopedia.link/GNcLHtigJLb"><img
                                     src="<?= base_url('img/logo/Logo Tokped.png') ?>" style="height: 23px"></a>
-                            <a href="https://s.shopee.co.id/1qI8YxbdwR"><img
+                            <a href="https://shopee.co.id/ilenafurnitureofficial"><img
                                     src="<?= base_url('img/logo/Logo Shopee.png') ?>" style="height: 23px"></a>
                             <a href="https://www.tiktok.com/@ilenafurnitureofficial"><img
                                     src="<?= base_url('img/logo/tiktok.png') ?>" style="height: 23px"></a>

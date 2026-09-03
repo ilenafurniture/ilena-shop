@@ -313,7 +313,7 @@
                     <p>Saat ini produk Ilena hanya dapat dipesan melalui website dan platform e-commerce
                         (<a href="https://www.tiktok.com/@ilenafurnitureofficial"
                             style="text-decoration:none; color:red; font-size:13px;">Tiktok</a>, <a
-                            href="https://shopee.co.id/ilenafurnitureoffficial?entryPoint=ShopBySearch&searchKeyword=ilena%20furniture"
+                            href="https://shopee.co.id/ilenafurnitureofficial"
                             style="text-decoration:none; color:red; font-size:13px;">Shopee</a>, dan <a
                             href="https://www.tokopedia.com/ilenafurnitureofficial?source=universe&st=product"
                             style="text-decoration:none; color:red; font-size:13px;">Tokopedia</a>)</p>

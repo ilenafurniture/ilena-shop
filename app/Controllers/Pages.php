@@ -3250,10 +3250,18 @@ class Pages extends BaseController
             'data_mid' => json_decode($transaksi['data_mid'], true),
         ];
         foreach ($arr['items'] as $ind_i => $i) {
-            if ($i['id'] != 'Voucher' && $i['id'] != 'Biaya Admin' && $i['id'] != 'Flash Sale') {
-                $barangCur = $this->barangModel->getBarang($i['id']);
-                $arr['items'][$ind_i]['collection'] = $barangCur['kategori'];
-                $arr['items'][$ind_i]['detail'] = $barangCur;
+            $itemId = $i['id'] ?? null;
+            if (!in_array($itemId, ['Voucher', 'Biaya Admin', 'Flash Sale'], true)) {
+                $barangCur = $this->barangModel->getBarang($itemId);
+
+                // Jika produk sudah nonaktif / terhapus, getBarang() bisa mengembalikan null.
+                // Ambil juga dari getBarangAdmin() agar invoice order lama tetap bisa dibuka.
+                if (!$barangCur && $itemId) {
+                    $barangCur = $this->barangModel->getBarangAdmin($itemId);
+                }
+
+                $arr['items'][$ind_i]['collection'] = $barangCur['kategori'] ?? ($i['collection'] ?? '');
+                $arr['items'][$ind_i]['detail'] = $barangCur ?? [];
             }
         }
 

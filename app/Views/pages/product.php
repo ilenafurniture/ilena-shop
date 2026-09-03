@@ -140,7 +140,7 @@
                                 src="/img/logo/tokopedia.png" class="marketplace"></a>
                         <?php } ?>
                         <?php if ($produk['shopee']) { ?>
-                        <a href="<?= $produk['shopee']; ?>" title="Shopee" target="_blank"><img
+                        <a href="https://shopee.co.id/ilenafurnitureofficial" title="Shopee" target="_blank"><img
                                 src="/img/logo/shopee.png" class="marketplace"></a>
                         <?php } ?>
                         <?php if ($produk['tiktok']) { ?>
