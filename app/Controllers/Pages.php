@@ -3722,6 +3722,7 @@ class Pages extends BaseController
                 'val_email' => session()->getFlashdata('val-email'),
                 'val_sandi' => session()->getFlashdata('val-sandi'),
                 'val_nohp' => session()->getFlashdata('val-nohp'),
+                'val_syarat' => session()->getFlashdata('val-syarat'),
                 'msg' => session()->getFlashdata('msg'),
                 // 'val_alamat' => session()->getFlashdata('val-alamat'),
             ]
@@ -3760,9 +3761,10 @@ class Pages extends BaseController
                 ]
             ],
             'validasi-syarat' => [
-                'rules' => 'required',
+                'rules' => 'required|in_list[1]',
                 'errors' => [
-                    'required' => 'Anda belum menyetujui syarat dan ketentuan pendaftaran'
+                    'required' => 'Anda belum menyetujui syarat dan ketentuan pendaftaran',
+                    'in_list' => 'Persetujuan syarat dan ketentuan tidak valid'
                 ]
             ],
         ])) {

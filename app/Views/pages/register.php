@@ -24,6 +24,35 @@
 #ab-msg.show {
     display: block;
 }
+
+.agreement-box {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #fafafa;
+}
+
+.agreement-box input {
+    width: 18px;
+    height: 18px;
+    margin-top: 3px;
+    accent-color: var(--merah);
+    cursor: pointer;
+}
+
+.agreement-box label {
+    line-height: 1.45;
+    cursor: pointer;
+}
+
+.agreement-box a {
+    color: var(--merah);
+    font-weight: 700;
+    text-decoration: underline;
+}
 </style>
 
 <div class="container d-flex justify-content-center align-items-center">
@@ -86,10 +115,18 @@
                     <div class="invalid-feedback">Mohon masukkan kata sandi.</div>
                 </div>
 
-                <div class="d-flex gap-2 mb-3">
-                    <input type="checkbox" id="validation-syarat" name="validasi-syarat" required>
-                    <label for="validation-syarat" class="m-0">Dengan ini Anda menyetujui syarat dan ketentuan
-                        pendaftaran.</label>
+                <div class="mb-3">
+                    <div class="agreement-box <?= ($val['val_syarat'] ?? false) ? "is-invalid" : ""; ?>">
+                        <input type="checkbox" id="validation-syarat" name="validasi-syarat" value="1" required
+                            <?= old('validasi-syarat') ? 'checked' : ''; ?>>
+                        <label for="validation-syarat" class="m-0">
+                            Dengan ini Anda menyetujui
+                            <a href="/syarat" target="_blank" rel="noopener">syarat dan ketentuan pendaftaran</a>.
+                        </label>
+                    </div>
+                    <div class="invalid-feedback d-block" id="syarat-feedback">
+                        <?= $val['val_syarat'] ?? ''; ?>
+                    </div>
                 </div>
 
                 <div class="mb-3 d-flex w-100 justify-content-center">
@@ -126,6 +163,8 @@ function togglePassword(e) {
     const hp2 = form.querySelector('input[name="ref_code"]');
     const tkn = form.querySelector('input[name="abt_token"]');
     const elps = form.querySelector('input[name="abt_elapsed"]');
+    const agreement = document.getElementById('validation-syarat');
+    const syaratFeedback = document.getElementById('syarat-feedback');
 
     const start = Date.now();
     const minWaitMs = 4000;
@@ -150,12 +189,16 @@ function togglePassword(e) {
     });
 
     function maybeEnable() {
-        if (enabled) return;
         const waited = Date.now() - start;
-        if (interacted && waited >= minWaitMs) {
+        const canSubmit = interacted && waited >= minWaitMs && agreement.checked;
+        if (canSubmit) {
             btn.removeAttribute('disabled');
             enabled = true;
             showMsg('');
+            if (syaratFeedback) syaratFeedback.textContent = '';
+        } else {
+            btn.setAttribute('disabled', 'disabled');
+            enabled = false;
         }
     }
     const iv = setInterval(() => {
@@ -180,8 +223,19 @@ function togglePassword(e) {
         }
     } catch (e) {}
 
+    agreement.addEventListener('change', () => {
+        if (agreement.checked && syaratFeedback) syaratFeedback.textContent = '';
+        maybeEnable();
+    });
+
     form.addEventListener('submit', function(e) {
         elps.value = String(Date.now() - start);
+        if (!agreement.checked) {
+            e.preventDefault();
+            if (syaratFeedback) syaratFeedback.textContent = 'Centang persetujuan syarat dan ketentuan terlebih dahulu.';
+            showMsg('Centang persetujuan syarat dan ketentuan terlebih dahulu.');
+            return;
+        }
         if (hp1.value.trim() !== '' || hp2.value.trim() !== '') {
             e.preventDefault();
             showMsg('Pendaftaran diblokir. (indikasi bot)');
