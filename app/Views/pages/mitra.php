@@ -1035,6 +1035,293 @@
 @media (max-width:380px) {
     .item-toko .img-placeholder { width:78px;  height:64px; }
 }
+
+
+/* ===== Partner UI Refresh 2026 ===== */
+.container .konten {
+    background:
+        radial-gradient(900px 540px at 106% -8%, rgba(225, 29, 72, .10), transparent 62%),
+        radial-gradient(900px 560px at -8% -8%, rgba(249, 115, 22, .11), transparent 60%),
+        linear-gradient(180deg, #fffaf7 0%, #ffffff 38%, #f8fafc 100%);
+    border: 1px solid rgba(15, 23, 42, .06);
+    border-radius: 24px;
+    padding: 16px 16px 28px;
+}
+
+.partner-hero {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: minmax(0, 1.42fr) minmax(280px, .58fr);
+    gap: 22px;
+    align-items: stretch;
+    padding: clamp(22px, 4vw, 46px);
+    border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, .76);
+    background:
+        radial-gradient(560px 320px at 88% 8%, rgba(255, 255, 255, .30), transparent 64%),
+        linear-gradient(135deg, #7f1d1d 0%, #be123c 48%, #f97316 100%);
+    box-shadow: 0 24px 70px rgba(127, 29, 29, .24);
+    color: #fff;
+}
+
+.partner-hero:before,
+.partner-hero:after {
+    content: "";
+    position: absolute;
+    border-radius: 999px;
+    pointer-events: none;
+}
+
+.partner-hero:before {
+    width: 340px;
+    height: 340px;
+    right: -130px;
+    top: -130px;
+    background: rgba(255, 255, 255, .18);
+}
+
+.partner-hero:after {
+    width: 220px;
+    height: 220px;
+    left: -90px;
+    bottom: -100px;
+    background: rgba(255, 255, 255, .12);
+}
+
+.partner-hero__content,
+.partner-hero__panel {
+    position: relative;
+    z-index: 1;
+}
+
+.partner-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    min-height: 36px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .16);
+    border: 1px solid rgba(255, 255, 255, .30);
+    color: #fff;
+    font-size: .82rem;
+    font-weight: 900;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    backdrop-filter: blur(10px);
+}
+
+.partner-eyebrow i { font-size: 18px; }
+
+.partner-hero h1 {
+    max-width: 780px;
+    margin: 18px 0 0;
+    color: #fff;
+    font-size: clamp(2rem, 5vw, 4.3rem);
+    line-height: .98;
+    font-weight: 950;
+    letter-spacing: -.06em;
+}
+
+.partner-hero p {
+    max-width: 650px;
+    margin: 18px 0 0;
+    color: rgba(255, 255, 255, .88);
+    font-size: clamp(1rem, 1.5vw, 1.12rem);
+    line-height: 1.75;
+}
+
+.partner-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 26px;
+}
+
+.partner-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 46px;
+    padding: 12px 16px;
+    border-radius: 999px;
+    font-weight: 900;
+    text-decoration: none;
+    transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.partner-cta:hover { transform: translateY(-2px); }
+.partner-cta i { font-size: 20px; }
+.partner-cta--primary {
+    background: #fff;
+    color: #9f1239;
+    box-shadow: 0 14px 32px rgba(2, 6, 23, .18);
+}
+.partner-cta--ghost {
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, .35);
+    background: rgba(255, 255, 255, .13);
+    backdrop-filter: blur(10px);
+}
+
+.partner-hero__panel {
+    align-self: center;
+    display: grid;
+    gap: 12px;
+}
+
+.partner-stat,
+.partner-mini-note {
+    border: 1px solid rgba(255, 255, 255, .26);
+    background: rgba(255, 255, 255, .15);
+    border-radius: 22px;
+    padding: 16px;
+    backdrop-filter: blur(14px);
+}
+
+.partner-stat strong {
+    display: block;
+    color: #fff;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1;
+    letter-spacing: -.04em;
+}
+
+.partner-stat span,
+.partner-mini-note {
+    color: rgba(255, 255, 255, .88);
+    font-weight: 800;
+}
+
+.partner-mini-note {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1.45;
+}
+
+.partner-map-section,
+.partner-directory {
+    margin-top: 18px;
+}
+
+.partner-section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 16px;
+    margin: 0 2px 12px;
+}
+
+.partner-section-head h2 {
+    margin: 2px 0 0;
+    color: var(--txt);
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
+    font-weight: 950;
+    letter-spacing: -.04em;
+}
+
+.partner-section-kicker {
+    color: var(--brand);
+    font-size: .78rem;
+    font-weight: 950;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.partner-map-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--ring);
+    box-shadow: var(--shadow-1);
+    color: var(--txt);
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.partner-map-badge i { font-size: 18px; color: var(--brand); }
+.map-wrap {
+    border-radius: 24px;
+    border: 1px solid rgba(15, 23, 42, .08);
+    box-shadow: 0 22px 60px rgba(2, 6, 23, .12);
+}
+#map { height: clamp(320px, 42vw, 520px); }
+.filterbar,
+.view-toolbar {
+    border-radius: 20px;
+    padding: 12px;
+    border-color: rgba(15, 23, 42, .08);
+}
+.f-field,
+.f-select,
+.view-btn,
+.mini-btn,
+.list-row .l-cta a,
+.toko-nav-btn {
+    min-height: 44px;
+}
+.f-field:focus-within,
+.f-select:focus,
+.view-btn:focus-visible,
+.partner-cta:focus-visible,
+.toko-nav-btn:focus-visible,
+.mini-btn:focus-visible,
+.list-row .l-cta a:focus-visible,
+.grid-card:focus-visible {
+    outline: 3px solid rgba(225, 29, 72, .22);
+    outline-offset: 2px;
+}
+.view-btn[aria-pressed="true"] {
+    background: linear-gradient(90deg, var(--brand), var(--brand-2));
+    color: #fff;
+    border: 1px solid transparent;
+}
+.item-toko,
+.grid-card,
+.list-row {
+    border-radius: 22px;
+    background:
+        radial-gradient(420px 140px at 92% -20%, rgba(225, 29, 72, .08), transparent 62%),
+        linear-gradient(180deg, rgba(255, 255, 255, .96), rgba(255, 255, 255, .90));
+}
+.grid-card { min-height: 148px; }
+.list-row { padding: 14px; }
+
+@media (max-width: 992px) {
+    .partner-hero { grid-template-columns: 1fr; }
+    .partner-hero__panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .partner-mini-note { grid-column: 1 / -1; }
+}
+
+@media (max-width: 576px) {
+    .container .konten { padding: 12px 10px 22px; border-radius: 20px; }
+    .breadcrumb { font-size: .88rem; }
+    .partner-hero { padding: 22px 16px; border-radius: 24px; }
+    .partner-hero__panel { grid-template-columns: 1fr; }
+    .partner-hero__actions { flex-direction: column; }
+    .partner-cta { width: 100%; }
+    .partner-section-head { align-items: flex-start; flex-direction: column; }
+    .partner-map-badge { width: 100%; justify-content: center; }
+    #map { height: 300px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+    }
+}
+
 </style>
 
 <div class="container">
@@ -1046,18 +1333,63 @@
             </ol>
         </nav>
 
-        <div class="section-hero">
-            <h2 class="section-title">
-                <span class="badge-mini"><i class="material-icons" style="font-size:16px">location_on</i> Mitra</span>
-                <span>•</span>
-                <span>Mitra Kami</span>
-            </h2>
-            <p class="section-sub">Temukan produk Ilena di jaringan partner tepercaya kami di berbagai kota.</p>
-        </div>
+        <section class="partner-hero" aria-labelledby="partner-title">
+            <div class="partner-hero__content">
+                <span class="partner-eyebrow">
+                    <i class="material-icons" aria-hidden="true">verified</i>
+                    Partner resmi Ilena
+                </span>
+                <h1 id="partner-title">Temukan Ilena Furniture di Kota Terdekat</h1>
+                <p>Jelajahi jaringan partner tepercaya Ilena untuk melihat produk pilihan, mengecek lokasi toko, dan langsung membuka rute via Maps.</p>
 
-        <div class="map-wrap my-3">
-            <div id="map"></div>
-        </div>
+                <div class="partner-hero__actions">
+                    <a class="partner-cta partner-cta--primary" href="#partner-directory">
+                        <i class="material-icons" aria-hidden="true">storefront</i>
+                        Lihat Daftar Mitra
+                    </a>
+                    <a class="partner-cta partner-cta--ghost" href="#map">
+                        <i class="material-icons" aria-hidden="true">map</i>
+                        Buka Peta
+                    </a>
+                </div>
+            </div>
+
+            <div class="partner-hero__panel" aria-label="Ringkasan partner">
+                <div class="partner-stat">
+                    <strong id="heroPartnerCount">0</strong>
+                    <span>Mitra aktif</span>
+                </div>
+                <div class="partner-stat">
+                    <strong id="heroCityCount">0</strong>
+                    <span>Kota tersedia</span>
+                </div>
+                <div class="partner-mini-note">
+                    <i class="material-icons" aria-hidden="true">near_me</i>
+                    Filter berdasarkan kota, nama toko, atau alamat.
+                </div>
+            </div>
+        </section>
+
+        <section class="partner-map-section" aria-label="Peta lokasi partner Ilena">
+            <div class="partner-section-head">
+                <div>
+                    <span class="partner-section-kicker">Peta Lokasi</span>
+                    <h2>Partner Ilena di Indonesia</h2>
+                </div>
+                <span class="partner-map-badge"><i class="material-icons" aria-hidden="true">touch_app</i>Klik marker untuk rute</span>
+            </div>
+            <div class="map-wrap my-3">
+                <div id="map"></div>
+            </div>
+        </section>
+
+        <section id="partner-directory" class="partner-directory" aria-label="Direktori partner Ilena">
+            <div class="partner-section-head partner-section-head--compact">
+                <div>
+                    <span class="partner-section-kicker">Direktori Partner</span>
+                    <h2>Pilih tampilan yang paling nyaman</h2>
+                </div>
+            </div>
 
         <!-- Filterbar -->
         <div class="filterbar">
@@ -1132,6 +1464,7 @@
         <div class="view-pane" id="pane-list">
             <div class="list-wrap" id="listWrap"></div>
         </div>
+        </section>
 
     </div>
 </div>
@@ -1656,6 +1989,11 @@ function updateCounts(items) {
     if (label) label.textContent = count ? `${count} Mitra Ditampilkan` : "0 Mitra";
     if (totalLabel) totalLabel.textContent = count ? `${count} Mitra` : "0 Mitra";
     if (kpi) kpi.textContent = count ? `${count} Mitra` : "0 Mitra";
+
+    const heroPartnerCount = document.getElementById("heroPartnerCount");
+    const heroCityCount = document.getElementById("heroCityCount");
+    if (heroPartnerCount) heroPartnerCount.textContent = MITRA.length;
+    if (heroCityCount) heroCityCount.textContent = uniqueCities(MITRA).length;
 }
 
 function renderMap(items) {
