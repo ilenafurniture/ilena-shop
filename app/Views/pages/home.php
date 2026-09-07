@@ -169,18 +169,17 @@ function closeSecondAd() {
     transition: 0.3s;
 }
 
+.slides a picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
 .slides a img {
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
-}
-
-.slides a img.ls {
-    display: block;
-}
-
-.slides a img.pt {
-    display: none;
 }
 
 .slider .material-icons {
@@ -228,24 +227,29 @@ function closeSecondAd() {
         aspect-ratio: 1080 / 1200;
     }
 
-    .slides a img.ls {
-        display: none;
-    }
-
-    .slides a img.pt {
-        display: block;
-    }
 }
 </style>
 
 <div class="slider">
     <div class="slides">
         <?php foreach ($sliders as $ind_s => $slider): ?>
-        <a <?= $slider['url'] ? 'href="' . $slider['url'] . '"' : ''; ?>
-            class="<?= $ind_s === 0 ? 'active' : 'kanan'; ?>">
-            <!-- Menampilkan gambar dengan data URL -->
-            <img class="ls" src="data:image/jpeg;base64,<?= base64_encode($slider['foto']); ?>" alt="Slide">
-            <img class="pt" src="data:image/jpeg;base64,<?= base64_encode($slider['foto_hp']); ?>" alt="Slide">
+        <?php
+            $sliderId = preg_replace('/[^0-9]/', '', (string) ($slider['id'] ?? ''));
+            if ($sliderId === '') {
+                continue;
+            }
+            $desktopVersion = substr(md5((string) ($slider['foto'] ?? '')), 0, 12);
+            $mobileVersion = substr(md5((string) ($slider['foto_hp'] ?? '')), 0, 12);
+            $desktopSrc = '/imgheader/' . $sliderId . '?v=' . $desktopVersion;
+            $mobileSrc = '/imgheaderhp/' . $sliderId . '?v=' . $mobileVersion;
+            $isFirstSlide = $ind_s === 0;
+        ?>
+        <a <?= !empty($slider['url']) ? 'href="' . esc($slider['url'], 'attr') . '"' : ''; ?>
+            class="<?= $isFirstSlide ? 'active' : 'kanan'; ?>">
+            <picture>
+                <source media="(max-width: 700px)" srcset="<?= esc($mobileSrc, 'attr'); ?>">
+                <img src="<?= esc($desktopSrc, 'attr'); ?>" alt="Slide" decoding="async"<?= $isFirstSlide ? ' fetchpriority="high"' : ' loading="lazy"'; ?>>
+            </picture>
         </a>
         <?php endforeach; ?>
     </div>
@@ -768,11 +772,10 @@ function closeSecondAd() {
                     <h1 class="teks-besar m-0">Cody</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo labore quaerat
-                    culpa minima
-                    numquam quasi blanditiis voluptatibus fugit quam eum molestiae, tempora veniam sed saepe
-                    dolorum,
-                    nulla qui totam hic!</p>
+                <p class="m-0">Menghadirkan karakter Japandi yang hangat melalui garis desain bersih,
+                    material kayu yang natural, dan proporsi yang ringan. Series Cody cocok untuk Anda
+                    yang ingin menciptakan ruang modern, nyaman, dan tetap terasa homey untuk aktivitas
+                    sehari-hari.</p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
@@ -796,11 +799,10 @@ function closeSecondAd() {
                     <h1 class="teks-besar m-0">Metal Frame</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo labore quaerat
-                    culpa minima
-                    numquam quasi blanditiis voluptatibus fugit quam eum molestiae, tempora veniam sed saepe
-                    dolorum,
-                    nulla qui totam hic!</p>
+                <p class="m-0">Dirancang untuk menghadirkan kesan modern industrial yang kokoh tanpa
+                    mengurangi sisi elegan pada ruangan. Perpaduan rangka metal dan material kayu
+                    memberi tampilan tegas, tahan lama, serta mudah dipadukan dengan berbagai konsep
+                    interior masa kini.</p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
@@ -824,11 +826,10 @@ function closeSecondAd() {
                     <h1 class="teks-besar m-0">Socoplate</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo labore quaerat
-                    culpa minima
-                    numquam quasi blanditiis voluptatibus fugit quam eum molestiae, tempora veniam sed saepe
-                    dolorum,
-                    nulla qui totam hic!</p>
+                <p class="m-0">Series Socoplate menonjolkan desain modern minimalis dengan aksen logam
+                    sebagai highlight yang memperkuat karakter furniture. Sentuhan detailnya membuat
+                    ruangan terlihat lebih rapi, berkelas, dan fungsional untuk kebutuhan rumah
+                    modern.</p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
@@ -851,11 +852,10 @@ function closeSecondAd() {
                     <h1 class="teks-besar m-0">Cabana</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo labore quaerat
-                    culpa minima
-                    numquam quasi blanditiis voluptatibus fugit quam eum molestiae, tempora veniam sed saepe
-                    dolorum,
-                    nulla qui totam hic!</p>
+                <p class="m-0">Cabana hadir dengan bentuk simpel, storage maksimal, dan tampilan timeless
+                    yang mudah menyatu dengan berbagai gaya interior. Pilihan tepat untuk Anda yang
+                    membutuhkan furniture praktis, elegan, serta tetap relevan digunakan dalam jangka
+                    panjang.</p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
