@@ -1037,175 +1037,179 @@
 }
 
 
-/* ===== Partner UI Refresh 2026 ===== */
+
+/* ===== Partner UI selaras Home ===== */
 .container .konten {
-    background:
-        radial-gradient(900px 540px at 106% -8%, rgba(225, 29, 72, .10), transparent 62%),
-        radial-gradient(900px 560px at -8% -8%, rgba(249, 115, 22, .11), transparent 60%),
-        linear-gradient(180deg, #fffaf7 0%, #ffffff 38%, #f8fafc 100%);
-    border: 1px solid rgba(15, 23, 42, .06);
-    border-radius: 24px;
-    padding: 16px 16px 28px;
-}
-
-.partner-hero {
-    position: relative;
-    overflow: hidden;
-    display: grid;
-    grid-template-columns: minmax(0, 1.42fr) minmax(280px, .58fr);
-    gap: 22px;
-    align-items: stretch;
-    padding: clamp(22px, 4vw, 46px);
-    border-radius: 28px;
-    border: 1px solid rgba(255, 255, 255, .76);
-    background:
-        radial-gradient(560px 320px at 88% 8%, rgba(255, 255, 255, .30), transparent 64%),
-        linear-gradient(135deg, #7f1d1d 0%, #be123c 48%, #f97316 100%);
-    box-shadow: 0 24px 70px rgba(127, 29, 29, .24);
-    color: #fff;
-}
-
-.partner-hero:before,
-.partner-hero:after {
-    content: "";
-    position: absolute;
-    border-radius: 999px;
-    pointer-events: none;
-}
-
-.partner-hero:before {
-    width: 340px;
-    height: 340px;
-    right: -130px;
-    top: -130px;
-    background: rgba(255, 255, 255, .18);
-}
-
-.partner-hero:after {
-    width: 220px;
-    height: 220px;
-    left: -90px;
-    bottom: -100px;
-    background: rgba(255, 255, 255, .12);
-}
-
-.partner-hero__content,
-.partner-hero__panel {
-    position: relative;
-    z-index: 1;
-}
-
-.partner-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    width: fit-content;
-    min-height: 36px;
-    padding: 8px 12px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, .16);
-    border: 1px solid rgba(255, 255, 255, .30);
-    color: #fff;
-    font-size: .82rem;
-    font-weight: 900;
-    letter-spacing: .02em;
-    text-transform: uppercase;
-    backdrop-filter: blur(10px);
-}
-
-.partner-eyebrow i { font-size: 18px; }
-
-.partner-hero h1 {
-    max-width: 780px;
-    margin: 18px 0 0;
-    color: #fff;
-    font-size: clamp(2rem, 5vw, 4.3rem);
-    line-height: .98;
-    font-weight: 950;
-    letter-spacing: -.06em;
-}
-
-.partner-hero p {
-    max-width: 650px;
-    margin: 18px 0 0;
-    color: rgba(255, 255, 255, .88);
-    font-size: clamp(1rem, 1.5vw, 1.12rem);
-    line-height: 1.75;
-}
-
-.partner-hero__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 26px;
-}
-
-.partner-cta {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 9px;
-    min-height: 46px;
-    padding: 12px 16px;
-    border-radius: 999px;
-    font-weight: 900;
-    text-decoration: none;
-    transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
-}
-
-.partner-cta:hover { transform: translateY(-2px); }
-.partner-cta i { font-size: 20px; }
-.partner-cta--primary {
     background: #fff;
-    color: #9f1239;
-    box-shadow: 0 14px 32px rgba(2, 6, 23, .18);
+    border-radius: 0;
+    padding: 0 0 28px;
 }
-.partner-cta--ghost {
+
+.partner-home-hero {
+    position: relative;
+    min-height: 72svh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background:
+        linear-gradient(90deg, rgba(0, 0, 0, .46), rgba(0, 0, 0, .10) 58%, rgba(0, 0, 0, .26)),
+        url('https://img.ilenafurniture.com/image/1742972542166.png/?apikey=<?= $apikey_img_ilena ?>');
+    background-size: cover;
+    background-position: center;
+}
+
+.partner-home-hero__inner {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: clamp(34px, 7vw, 86px);
     color: #fff;
-    border: 1px solid rgba(255, 255, 255, .35);
-    background: rgba(255, 255, 255, .13);
-    backdrop-filter: blur(10px);
 }
 
-.partner-hero__panel {
-    align-self: center;
-    display: grid;
-    gap: 12px;
+.partner-home-hero .kicker {
+    margin: 0 0 8px;
+    font-weight: 600;
+    letter-spacing: .28em;
+    text-transform: uppercase;
+    font-size: .78rem;
 }
 
-.partner-stat,
-.partner-mini-note {
-    border: 1px solid rgba(255, 255, 255, .26);
-    background: rgba(255, 255, 255, .15);
-    border-radius: 22px;
-    padding: 16px;
-    backdrop-filter: blur(14px);
-}
-
-.partner-stat strong {
-    display: block;
+.partner-home-hero h1 {
     color: #fff;
-    font-size: clamp(2rem, 4vw, 3rem);
-    line-height: 1;
+    margin: 0;
+    font-weight: 600;
+    font-size: clamp(42px, 7vw, 86px);
+    line-height: .95;
     letter-spacing: -.04em;
 }
 
-.partner-stat span,
-.partner-mini-note {
-    color: rgba(255, 255, 255, .88);
-    font-weight: 800;
+.partner-home-hero .handwrite {
+    display: inline-block;
+    margin: 8px 0 0 72px;
+    color: #fff;
+    font-size: clamp(22px, 3vw, 34px);
+    transform: rotate(-10deg);
 }
 
-.partner-mini-note {
+.partner-home-hero .desc {
+    max-width: 520px;
+    margin: 26px 0 0;
+    color: rgba(255,255,255,.92);
+    line-height: 1.8;
+}
+
+.partner-home-hero__actions {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    gap: 18px;
+    margin-top: 34px;
+}
+
+.partner-home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: #fff;
+    text-decoration: none;
+    border-bottom: 1px solid #fff;
+    padding-bottom: 7px;
+    font-weight: 700;
+    transition: .25s;
+}
+
+.partner-home-link:hover {
+    color: #fff;
+    transform: translateX(4px);
+}
+
+.partner-home-link i { font-size: 20px; }
+
+.partner-home-stats {
+    display: flex;
     gap: 10px;
-    line-height: 1.45;
+    flex-wrap: wrap;
+}
+
+.partner-home-stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 7px;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,.72);
+    padding: 8px 12px;
+    background: rgba(0,0,0,.12);
+}
+
+.partner-home-stat strong {
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.partner-home-stat span {
+    font-size: .82rem;
+    opacity: .92;
+}
+
+.partner-intro-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    min-height: 220px;
+}
+
+.partner-intro-text {
+    background: #7B441c;
+    color: #fff;
+    padding: clamp(28px, 4vw, 48px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.partner-intro-text p {
+    margin: 0 0 12px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    font-size: .74rem;
+}
+
+.partner-intro-text h2 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(28px, 4vw, 52px);
+    font-weight: 600;
+    line-height: 1;
+}
+
+.partner-intro-year {
+    background: #fff;
+    color: #7B441c;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 28px;
+}
+
+.partner-intro-year .est { margin: 0; }
+.partner-intro-year strong {
+    font-size: clamp(54px, 7vw, 96px);
+    line-height: .95;
+    font-weight: 600;
+}
+.partner-intro-year .brand { margin: 4px 0 0; font-weight: 700; letter-spacing: .8em; text-indent: .8em; }
+.partner-intro-photo {
+    background: url('https://img.ilenafurniture.com/image/1742449659675.webp/?apikey=<?= $apikey_img_ilena ?>');
+    background-size: cover;
+    background-position: top center;
 }
 
 .partner-map-section,
 .partner-directory {
-    margin-top: 18px;
+    max-width: 1180px;
+    margin: 48px auto 0;
+    padding: 0 14px;
 }
 
 .partner-section-head {
@@ -1213,104 +1217,142 @@
     justify-content: space-between;
     align-items: end;
     gap: 16px;
-    margin: 0 2px 12px;
-}
-
-.partner-section-head h2 {
-    margin: 2px 0 0;
-    color: var(--txt);
-    font-size: clamp(1.25rem, 2vw, 1.75rem);
-    font-weight: 950;
-    letter-spacing: -.04em;
+    margin-bottom: 14px;
 }
 
 .partner-section-kicker {
-    color: var(--brand);
-    font-size: .78rem;
-    font-weight: 950;
-    letter-spacing: .08em;
+    display: block;
+    color: #7B441c;
+    font-weight: 700;
+    letter-spacing: .2em;
     text-transform: uppercase;
+    font-size: .76rem;
+    margin-bottom: 6px;
+}
+
+.partner-section-head h2 {
+    margin: 0;
+    color: #111;
+    font-weight: 600;
+    font-size: clamp(28px, 4vw, 48px);
+    line-height: 1.05;
 }
 
 .partner-map-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 38px;
-    padding: 8px 12px;
-    border-radius: 999px;
-    background: #fff;
-    border: 1px solid var(--ring);
-    box-shadow: var(--shadow-1);
-    color: var(--txt);
-    font-weight: 900;
+    color: #111;
+    border-bottom: 1px solid #111;
+    font-weight: 700;
     white-space: nowrap;
+    display: inline-flex;
+    gap: 7px;
+    align-items: center;
 }
 
-.partner-map-badge i { font-size: 18px; color: var(--brand); }
 .map-wrap {
-    border-radius: 24px;
-    border: 1px solid rgba(15, 23, 42, .08);
-    box-shadow: 0 22px 60px rgba(2, 6, 23, .12);
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
 }
-#map { height: clamp(320px, 42vw, 520px); }
+
+#map {
+    height: 500px;
+    min-height: 320px;
+}
+
 .filterbar,
 .view-toolbar {
-    border-radius: 20px;
+    border-radius: 0;
+    border: 1px solid #e5e5e5;
+    box-shadow: none;
+    background: #fff;
     padding: 12px;
-    border-color: rgba(15, 23, 42, .08);
 }
+
 .f-field,
 .f-select,
 .view-btn,
+.toko-nav-btn,
 .mini-btn,
-.list-row .l-cta a,
-.toko-nav-btn {
+.list-row .l-cta a {
+    border-radius: 0;
+    box-shadow: none;
     min-height: 44px;
 }
+
 .f-field:focus-within,
 .f-select:focus,
 .view-btn:focus-visible,
-.partner-cta:focus-visible,
+.partner-home-link:focus-visible,
 .toko-nav-btn:focus-visible,
 .mini-btn:focus-visible,
 .list-row .l-cta a:focus-visible,
 .grid-card:focus-visible {
-    outline: 3px solid rgba(225, 29, 72, .22);
+    outline: 2px solid #7B441c;
     outline-offset: 2px;
 }
-.view-btn[aria-pressed="true"] {
-    background: linear-gradient(90deg, var(--brand), var(--brand-2));
-    color: #fff;
-    border: 1px solid transparent;
+
+.kpi-pill,
+.badge-mini,
+.chip-city,
+.grid-card .g-chip,
+.list-row .l-chip {
+    border-radius: 0;
+    box-shadow: none;
+    background: #f6f1ec;
+    color: #7B441c;
+    border-color: #eadfd4;
 }
+
+.kpi-dot,
+.count-dot { background: #7B441c; box-shadow: none; }
+.view-btn[aria-pressed="true"],
+.mini-btn:hover,
+.list-row .l-cta a:hover {
+    background: #111;
+    color: #fff;
+    border-color: #111;
+}
+
 .item-toko,
 .grid-card,
 .list-row {
-    border-radius: 22px;
-    background:
-        radial-gradient(420px 140px at 92% -20%, rgba(225, 29, 72, .08), transparent 62%),
-        linear-gradient(180deg, rgba(255, 255, 255, .96), rgba(255, 255, 255, .90));
-}
-.grid-card { min-height: 148px; }
-.list-row { padding: 14px; }
-
-@media (max-width: 992px) {
-    .partner-hero { grid-template-columns: 1fr; }
-    .partner-hero__panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .partner-mini-note { grid-column: 1 / -1; }
+    border-radius: 0;
+    box-shadow: none;
+    border: 1px solid #e6e0da;
+    background: #fff;
 }
 
-@media (max-width: 576px) {
-    .container .konten { padding: 12px 10px 22px; border-radius: 20px; }
-    .breadcrumb { font-size: .88rem; }
-    .partner-hero { padding: 22px 16px; border-radius: 24px; }
-    .partner-hero__panel { grid-template-columns: 1fr; }
-    .partner-hero__actions { flex-direction: column; }
-    .partner-cta { width: 100%; }
+.item-toko:hover,
+.grid-card:hover,
+.list-row:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 34px rgba(0,0,0,.08);
+}
+
+.item-toko:before,
+.grid-card:before { display: none; }
+.item-toko img,
+.grid-card img,
+.list-row img,
+.img-placeholder { border-radius: 0 !important; }
+
+@media (max-width: 768px) {
+    .partner-home-hero { min-height: 60svh; }
+    .partner-home-hero__inner { padding: 44px 28px; }
+    .partner-home-hero .handwrite { margin-left: 44px; }
+    .partner-intro-strip { grid-template-columns: 1fr; }
+    .partner-intro-photo { min-height: 220px; order: -1; }
     .partner-section-head { align-items: flex-start; flex-direction: column; }
-    .partner-map-badge { width: 100%; justify-content: center; }
-    #map { height: 300px; }
+    #map { height: 340px; }
+}
+
+@media (max-width: 520px) {
+    .partner-home-hero__inner { padding: 36px 22px; }
+    .partner-home-hero .desc { font-size: .92rem; }
+    .partner-home-hero__actions { align-items: flex-start; flex-direction: column; }
+    .partner-home-stat { width: 100%; justify-content: space-between; }
+    .partner-map-section,
+    .partner-directory { margin-top: 34px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1321,7 +1363,6 @@
         transition-duration: .01ms !important;
     }
 }
-
 </style>
 
 <div class="container">
@@ -1333,40 +1374,35 @@
             </ol>
         </nav>
 
-        <section class="partner-hero" aria-labelledby="partner-title">
-            <div class="partner-hero__content">
-                <span class="partner-eyebrow">
-                    <i class="material-icons" aria-hidden="true">verified</i>
-                    Partner resmi Ilena
-                </span>
-                <h1 id="partner-title">Temukan Ilena Furniture di Kota Terdekat</h1>
-                <p>Jelajahi jaringan partner tepercaya Ilena untuk melihat produk pilihan, mengecek lokasi toko, dan langsung membuka rute via Maps.</p>
+        <section class="partner-home-hero" aria-labelledby="partner-title">
+            <div class="partner-home-hero__inner">
+                <p class="kicker">Partner resmi Ilena</p>
+                <h1 id="partner-title">Modern & Stylish<br>Furniture</h1>
+                <span class="text-handwrite handwrite">Near to you</span>
+                <p class="desc">Temukan produk Ilena di jaringan partner tepercaya kami. Pilih kota, cari nama toko, lalu buka rute Maps ke lokasi terdekat.</p>
 
-                <div class="partner-hero__actions">
-                    <a class="partner-cta partner-cta--primary" href="#partner-directory">
-                        <i class="material-icons" aria-hidden="true">storefront</i>
-                        Lihat Daftar Mitra
+                <div class="partner-home-hero__actions">
+                    <a class="partner-home-link" href="#partner-directory">
+                        <span>Telusuri Mitra</span><i class="material-icons" aria-hidden="true">arrow_forward</i>
                     </a>
-                    <a class="partner-cta partner-cta--ghost" href="#map">
-                        <i class="material-icons" aria-hidden="true">map</i>
-                        Buka Peta
-                    </a>
+                    <div class="partner-home-stats" aria-label="Ringkasan partner">
+                        <span class="partner-home-stat"><strong id="heroPartnerCount">0</strong><span>Mitra</span></span>
+                        <span class="partner-home-stat"><strong id="heroCityCount">0</strong><span>Kota</span></span>
+                    </div>
                 </div>
             </div>
+        </section>
 
-            <div class="partner-hero__panel" aria-label="Ringkasan partner">
-                <div class="partner-stat">
-                    <strong id="heroPartnerCount">0</strong>
-                    <span>Mitra aktif</span>
-                </div>
-                <div class="partner-stat">
-                    <strong id="heroCityCount">0</strong>
-                    <span>Kota tersedia</span>
-                </div>
-                <div class="partner-mini-note">
-                    <i class="material-icons" aria-hidden="true">near_me</i>
-                    Filter berdasarkan kota, nama toko, atau alamat.
-                </div>
+        <section class="partner-intro-strip" aria-label="Tentang partner Ilena">
+            <div class="partner-intro-photo"></div>
+            <div class="partner-intro-text">
+                <p>Tersedia Di</p>
+                <h2>Mitra Kami</h2>
+            </div>
+            <div class="partner-intro-year">
+                <p class="est">EST</p>
+                <strong>2024</strong>
+                <p class="brand">ILENA</p>
             </div>
         </section>
 
