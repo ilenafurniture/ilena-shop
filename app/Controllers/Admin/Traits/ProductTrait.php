@@ -294,8 +294,47 @@ trait ProductTrait
             $files = $this->request->getFiles();
 
             $ensureDir = function (string $dir) {
-                if (!is_dir($dir)) { @mkdir($dir, 0775, true); }
-                if (!is_writable($dir)) { @chmod($dir, 0775); }
+                $path = rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . trim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $dir), DIRECTORY_SEPARATOR);
+                if (!is_dir($path)) { @mkdir($path, 0775, true); }
+                if (!is_writable($path)) { @chmod($path, 0775); }
+            };
+            $publicPath = function (string $path): string {
+                return rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path), DIRECTORY_SEPARATOR);
+            };
+            $processUploadedImage = function ($file, array $outputs) use ($publicPath): void {
+                $tmpDir = $publicPath('imgdum');
+                $tmpName = uniqid('upload_', true) . '.' . ($file->guessExtension() ?: $file->getExtension() ?: 'img');
+                $file->move($tmpDir, $tmpName, true);
+                $tmpFile = $tmpDir . DIRECTORY_SEPARATOR . $tmpName;
+
+                foreach ($outputs as $output) {
+                    [$destination, $width, $height] = $output;
+                    $destFile = $publicPath($destination);
+                    $destDir = dirname($destFile);
+                    if (!is_dir($destDir)) { @mkdir($destDir, 0775, true); }
+
+                    $stagingFile = $destDir . DIRECTORY_SEPARATOR . '.tmp-' . uniqid('', true) . '.webp';
+                    \Config\Services::image()
+                        ->withFile($tmpFile)
+                        ->resize($width, $height, true, 'height')
+                        ->save($stagingFile);
+
+                    if (!is_file($stagingFile) || filesize($stagingFile) <= 0) {
+                        @unlink($stagingFile);
+                        @unlink($tmpFile);
+                        throw new \RuntimeException('File hasil resize kosong: ' . $destination);
+                    }
+
+                    @unlink($destFile);
+                    if (!@rename($stagingFile, $destFile)) {
+                        @unlink($stagingFile);
+                        @unlink($tmpFile);
+                        throw new \RuntimeException('File hasil resize tidak tersimpan: ' . $destination);
+                    }
+                    @touch($destFile);
+                }
+
+                @unlink($tmpFile);
             };
             $ensureDir('imgdum');
             $ensureDir('imgdum/barang/hover');
@@ -306,18 +345,12 @@ trait ProductTrait
 
             if (isset($files['gambar_hover']) && $files['gambar_hover'] && $files['gambar_hover']->isValid()) {
                 try {
-                    $tmpPath = 'imgdum/barang/hover';
-                    $files['gambar_hover']->move($tmpPath, $id_product . '.webp');
-
-                    @unlink('img/barang/hover/' . $id_product . '.webp');
-                    \Config\Services::image()
-                        ->withFile($tmpPath . '/' . $id_product . '.webp')
-                        ->resize(300, 300, true, 'height')
-                        ->save('img/barang/hover/' . $id_product . '.webp');
-
-                    @unlink($tmpPath . '/' . $id_product . '.webp');
+                    $processUploadedImage($files['gambar_hover'], [
+                        ["img/barang/hover/{$id_product}.webp", 300, 300],
+                    ]);
                 } catch (\Throwable $e) {
                     log_message('error', 'EDIT hover gagal: {msg}', ['msg' => $e->getMessage()]);
+                    throw $e;
                 }
             }
 
@@ -331,34 +364,22 @@ trait ProductTrait
                         $parts  = explode('_', $field);
                         $urutan = isset($parts[1]) ? (int)$parts[1] : 0;
 
-                        $file->move('imgdum');
-
-                        @unlink("img/barang/3000/{$id_product}-" . ($urutan + 1) . ".webp");
-                        \Config\Services::image()
-                            ->withFile('imgdum/' . $file->getName())
-                            ->resize(3000, 3000, true, 'height')
-                            ->save("img/barang/3000/{$id_product}-" . ($urutan + 1) . ".webp");
-
-                        @unlink("img/barang/1000/{$id_product}-" . ($urutan + 1) . ".webp");
-                        \Config\Services::image()
-                            ->withFile('imgdum/' . $file->getName())
-                            ->resize(1000, 1000, true, 'height')
-                            ->save("img/barang/1000/{$id_product}-" . ($urutan + 1) . ".webp");
+                        $outputs = [
+                            ["img/barang/3000/{$id_product}-" . ($urutan + 1) . ".webp", 3000, 3000],
+                            ["img/barang/1000/{$id_product}-" . ($urutan + 1) . ".webp", 1000, 1000],
+                        ];
 
                         if ($urutan <= 0) {
-                            @unlink("img/barang/300/{$id_product}.webp");
-                            \Config\Services::image()
-                                ->withFile('imgdum/' . $file->getName())
-                                ->resize(300, 300, true, 'height')
-                                ->save("img/barang/300/{$id_product}.webp");
+                            $outputs[] = ["img/barang/300/{$id_product}.webp", 300, 300];
                         }
 
-                        @unlink('imgdum/' . $file->getName());
+                        $processUploadedImage($file, $outputs);
                     } catch (\Throwable $e) {
                         log_message('error', 'EDIT varian gambar gagal ({field}): {msg}', [
                             'field' => $field,
                             'msg'   => $e->getMessage()
                         ]);
+                        throw $e;
                     }
                 }
             }

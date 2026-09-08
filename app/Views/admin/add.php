@@ -380,11 +380,10 @@ function toInputDateTime(val) {
   return `${d}T${hh.padStart(2,'0')}:${mm.padStart(2,'0')}`;
 }
 
-// === Helper: fetch URL -> File (supaya gambar lama ikut terkirim saat edit) ===
-async function urlToFile(url, filename, mimeType) {
-  const res = await fetch(url);
-  const buffer = await res.arrayBuffer();
-  return new File([buffer], filename, { type: mimeType });
+// === Helper: cache buster untuk preview gambar lama ===
+function withCacheBuster(url) {
+  if (!url) return url;
+  return `${url}${url.includes('?') ? '&' : '?'}v=${Date.now()}`;
 }
 
 const App = () => {
@@ -492,34 +491,23 @@ const App = () => {
       }));
 
       // Hover preview
-      setHoverSrc(URL_HOVER);
+      setHoverSrc(withCacheBuster(URL_HOVER));
 
       // Preview 1000px untuk tiap varian
       const src = (produk.varian || []).map(v =>
         (v.urutan_gambar || '')
           .split(',')
           .filter(Boolean)
-          .map(n => `${URL_1000_PREFIX}${n}.webp`)
+          .map(n => withCacheBuster(`${URL_1000_PREFIX}${n}.webp`))
       );
       setGambarSrc(src);
 
-      // Konversi 3000px -> File supaya ikut terkirim saat submit
-      (async () => {
-        const filesPerVarian = [];
-        for (let i = 0; i < (produk.varian || []).length; i++) {
-          const v = produk.varian[i];
-          const nums = (v.urutan_gambar || '').split(',').filter(Boolean);
-          const fileList = [];
-          for (let j = 0; j < nums.length; j++) {
-            const n = nums[j];
-            const imageUrl = `${URL_3000_PREFIX}${n}.webp`;
-            const f = await urlToFile(imageUrl, `gambar-${i}-${j}.webp`, 'image/webp');
-            fileList.push(f);
-          }
-          filesPerVarian.push(fileList);
-        }
-        setGambarFile(filesPerVarian);
-      })();
+      // Gambar lama cukup ditampilkan sebagai preview.
+      // Saat edit, hanya file baru yang dikirim supaya gambar lama tidak menimpa upload baru
+      // dan tidak gagal diam-diam ketika browser/server mengembalikan cache/404/html.
+      setGambarFile((produk.varian || []).map(v =>
+        (v.urutan_gambar || '').split(',').filter(Boolean).map(() => null)
+      ));
     }
   }, []);
 
@@ -574,7 +562,7 @@ const App = () => {
 
     // Flatten semua gambar varian
     const flat = (gambarFile || []).reduce((p, c) => p.concat(c), []);
-    if (!idProduct && flat.length === 0) { setEror("Minimal upload satu gambar untuk varian pertama."); return; }
+    if (!idProduct && flat.filter(file => file instanceof File).length === 0) { setEror("Minimal upload satu gambar untuk varian pertama."); return; }
     flat.forEach((file, idx) => { if (file instanceof File) form.append(`gambar_${idx}`, file); });
 
     // Jadwal Diskon

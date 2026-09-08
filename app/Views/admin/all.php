@@ -26,6 +26,12 @@ for ($i = 0; $i < 10; $i++) {
     if (isset($produkLama[$i]))
         array_push($produk, $produkLama[$i]);
 }
+$barangThumbUrl = function ($id) {
+    $relative = 'img/barang/300/' . $id . '.webp';
+    $absolute = FCPATH . $relative;
+    $version = is_file($absolute) ? filemtime($absolute) : time();
+    return base_url($relative) . '?v=' . $version;
+};
 ?>
 
 <style>
@@ -366,7 +372,7 @@ for ($i = 0; $i < 10; $i++) {
         <div class="isi-table" data-filter="<?= strtolower($p['nama'].' '.$p['kategori'].' '.$p['id']); ?>">
             <div style="flex: .8; cursor:pointer" onclick="pergiKeProduct('<?= str_replace(' ', '-', $p['nama']); ?>')">
                 <img style="width: 70px; height: 70px; object-fit:cover; border-radius:12px; border:1px solid var(--slate-200)"
-                    id="img<?= $ind_p ?>" src="<?= base_url('img/barang/300/' . $p['id'] . '.webp'); ?>"
+                    id="img<?= $ind_p ?>" src="<?= $barangThumbUrl($p['id']); ?>"
                     alt="<?= htmlspecialchars($p['nama'], ENT_QUOTES); ?>">
             </div>
 
@@ -424,7 +430,7 @@ for ($i = 0; $i < 10; $i++) {
                 <div style="flex: 1; cursor:pointer"
                     onclick="pergiKeProduct('<?= str_replace(' ', '-', $p['nama']); ?>')">
                     <img style="width: 50px; height: 50px; object-fit:cover; border-radius:10px; border:1px solid var(--slate-200)"
-                        id="img<?= $ind_p ?>" src="<?= base_url('img/barang/300/' . $p['id'] . '.webp'); ?>"
+                        id="img<?= $ind_p ?>" src="<?= $barangThumbUrl($p['id']); ?>"
                         alt="<?= htmlspecialchars($p['nama'], ENT_QUOTES); ?>">
                 </div>
 
