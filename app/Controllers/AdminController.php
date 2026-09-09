@@ -468,32 +468,65 @@ class AdminController extends BaseController
             $data  = $this->request->getVar();
             $files = $this->request->getFiles();
 
-            $ensureDir = function (string $dir) {
-                if (!is_dir($dir)) { @mkdir($dir, 0775, true); }
-                if (!is_writable($dir)) { @chmod($dir, 0775); }
+            $publicPath = function (string $path): string {
+                return rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path), DIRECTORY_SEPARATOR);
             };
-            $ensureDir('imgdum');
-            $ensureDir('imgdum/barang/hover');
+            $ensureDir = function (string $dir) use ($publicPath) {
+                $path = $publicPath($dir);
+                if (!is_dir($path)) { @mkdir($path, 0775, true); }
+                if (!is_writable($path)) { @chmod($path, 0775); }
+                if (!is_dir($path) || !is_writable($path)) {
+                    throw new \RuntimeException('Folder gambar belum writable: ' . $dir);
+                }
+            };
+            $processUploadedImage = function ($file, array $outputs) use ($publicPath): void {
+                $tmpDir = rtrim(WRITEPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'cache';
+                if (!is_dir($tmpDir)) { @mkdir($tmpDir, 0775, true); }
+                $tmpName = uniqid('product-upload-', true) . '.' . ($file->guessExtension() ?: $file->getExtension() ?: 'img');
+                $file->move($tmpDir, $tmpName, true);
+                $tmpFile = $tmpDir . DIRECTORY_SEPARATOR . $tmpName;
+
+                foreach ($outputs as $output) {
+                    [$destination, $width, $height] = $output;
+                    $destFile = $publicPath($destination);
+                    $destDir = dirname($destFile);
+                    if (!is_dir($destDir)) { @mkdir($destDir, 0775, true); }
+                    if (!is_writable($destDir)) { @chmod($destDir, 0775); }
+                    if (!is_writable($destDir)) {
+                        throw new \RuntimeException('Folder tujuan gambar belum writable: ' . $destination);
+                    }
+
+                    $stagingFile = $tmpDir . DIRECTORY_SEPARATOR . 'resize-' . uniqid('', true) . '.webp';
+                    \Config\Services::image()
+                        ->withFile($tmpFile)
+                        ->resize($width, $height, true, 'height')
+                        ->save($stagingFile);
+
+                    if (!is_file($stagingFile) || filesize($stagingFile) <= 0) {
+                        @unlink($stagingFile);
+                        throw new \RuntimeException('File hasil resize kosong: ' . $destination);
+                    }
+
+                    @unlink($destFile);
+                    if (!@copy($stagingFile, $destFile)) {
+                        @unlink($stagingFile);
+                        throw new \RuntimeException('File hasil resize tidak tersimpan: ' . $destination);
+                    }
+                    @touch($destFile);
+                    @unlink($stagingFile);
+                }
+
+                @unlink($tmpFile);
+            };
             $ensureDir('img/barang/300');
             $ensureDir('img/barang/1000');
             $ensureDir('img/barang/3000');
             $ensureDir('img/barang/hover');
 
             if (isset($files['gambar_hover']) && $files['gambar_hover'] && $files['gambar_hover']->isValid()) {
-                try {
-                    $tmpPath = 'imgdum/barang/hover';
-                    $files['gambar_hover']->move($tmpPath, $id_product . '.webp');
-
-                    @unlink('img/barang/hover/' . $id_product . '.webp');
-                    \Config\Services::image()
-                        ->withFile($tmpPath . '/' . $id_product . '.webp')
-                        ->resize(300, 300, true, 'height')
-                        ->save('img/barang/hover/' . $id_product . '.webp');
-
-                    @unlink($tmpPath . '/' . $id_product . '.webp');
-                } catch (\Throwable $e) {
-                    log_message('error', 'EDIT hover gagal: {msg}', ['msg' => $e->getMessage()]);
-                }
+                $processUploadedImage($files['gambar_hover'], [
+                    ["img/barang/hover/{$id_product}.webp", 300, 300],
+                ]);
             }
 
             if (!empty($files)) {
@@ -502,39 +535,13 @@ class AdminController extends BaseController
                     if (strpos($field, 'gambar_') !== 0) continue;
                     if (!$file || !$file->isValid()) continue;
 
-                    try {
-                        $parts  = explode('_', $field);
-                        $urutan = isset($parts[1]) ? (int)$parts[1] : 0;
-
-                        $file->move('imgdum');
-
-                        @unlink("img/barang/3000/{$id_product}-" . ($urutan + 1) . ".webp");
-                        \Config\Services::image()
-                            ->withFile('imgdum/' . $file->getName())
-                            ->resize(3000, 3000, true, 'height')
-                            ->save("img/barang/3000/{$id_product}-" . ($urutan + 1) . ".webp");
-
-                        @unlink("img/barang/1000/{$id_product}-" . ($urutan + 1) . ".webp");
-                        \Config\Services::image()
-                            ->withFile('imgdum/' . $file->getName())
-                            ->resize(1000, 1000, true, 'height')
-                            ->save("img/barang/1000/{$id_product}-" . ($urutan + 1) . ".webp");
-
-                        if ($urutan <= 0) {
-                            @unlink("img/barang/300/{$id_product}.webp");
-                            \Config\Services::image()
-                                ->withFile('imgdum/' . $file->getName())
-                                ->resize(300, 300, true, 'height')
-                                ->save("img/barang/300/{$id_product}.webp");
-                        }
-
-                        @unlink('imgdum/' . $file->getName());
-                    } catch (\Throwable $e) {
-                        log_message('error', 'EDIT varian gambar gagal ({field}): {msg}', [
-                            'field' => $field,
-                            'msg'   => $e->getMessage()
-                        ]);
-                    }
+                    $parts  = explode('_', $field);
+                    $urutan = isset($parts[1]) ? (int)$parts[1] : 0;
+                    $slot = $urutan + 1;
+                    $processUploadedImage($file, [
+                        ["img/barang/3000/{$id_product}-{$slot}.webp", 3000, 3000],
+                        ["img/barang/1000/{$id_product}-{$slot}.webp", 1000, 1000],
+                    ]);
                 }
             }
 

@@ -4364,7 +4364,27 @@ class Pages extends BaseController
         $source1000 = $publicPath("img/barang/1000/{$safeId}-{$slot}.webp");
         $source3000 = $publicPath("img/barang/3000/{$safeId}-{$slot}.webp");
         $fallback300 = $publicPath("img/barang/300/{$safeId}.webp");
-        $source = is_file($source1000) ? $source1000 : (is_file($source3000) ? $source3000 : (is_file($fallback300) ? $fallback300 : null));
+        $source = is_file($source1000) ? $source1000 : (is_file($source3000) ? $source3000 : null);
+
+        if (!$source && $product && !empty($product['varian'])) {
+            $varian = json_decode($product['varian'], true) ?: [];
+            foreach ($varian as $v) {
+                $slots = array_values(array_filter(array_map('trim', explode(',', (string)($v['urutan_gambar'] ?? '')))));
+                foreach ($slots as $candidateSlot) {
+                    $candidate1000 = $publicPath("img/barang/1000/{$safeId}-{$candidateSlot}.webp");
+                    $candidate3000 = $publicPath("img/barang/3000/{$safeId}-{$candidateSlot}.webp");
+                    if (is_file($candidate1000) || is_file($candidate3000)) {
+                        $slot = $candidateSlot;
+                        $source = is_file($candidate1000) ? $candidate1000 : $candidate3000;
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        if (!$source) {
+            $source = is_file($fallback300) ? $fallback300 : null;
+        }
 
         if (!$source) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Gambar tidak ditemukan');

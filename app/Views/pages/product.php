@@ -2,9 +2,20 @@
 <?= $this->section("content"); ?>
 <?php
 $punyaGambarHoverDetail = is_file(FCPATH . 'img/barang/hover/' . $produk['id'] . '.webp');
+$imageSlotExists = function (string $slot) use ($produk): bool {
+    $slot = trim($slot);
+    if ($slot === '') return false;
+    return is_file(FCPATH . 'img/barang/1000/' . $produk['id'] . '-' . $slot . '.webp')
+        || is_file(FCPATH . 'img/barang/3000/' . $produk['id'] . '-' . $slot . '.webp');
+};
+$filterExistingSlots = function ($urutan) use ($imageSlotExists): array {
+    $slots = array_values(array_filter(array_map('trim', explode(',', (string) $urutan))));
+    $existing = array_values(array_filter($slots, $imageSlotExists));
+    return $existing ?: ($slots ?: ['1']);
+};
 $gambarAwalDetail = '1';
 if (!empty($produk['varian'][0]['urutan_gambar'])) {
-    $urutanAwal = array_values(array_filter(array_map('trim', explode(',', (string) $produk['varian'][0]['urutan_gambar']))));
+    $urutanAwal = $filterExistingSlots($produk['varian'][0]['urutan_gambar']);
     $gambarAwalDetail = $urutanAwal[0] ?? '1';
 }
 $assetVersion = function (string $relativePath): string {
@@ -291,7 +302,7 @@ $productCoverUrl = function (array $product): string {
                 <div class="mb-3 mt-3" style="overflow: auto">
                     <div class="container-img-detail-select"
                         <?= $produk['varian'][0]['stok'] <= 0 ? 'style="filter: grayscale(90%)"' : ''; ?>>
-                        <?php foreach (explode(",", $produk['varian'][0]['urutan_gambar']) as $indx => $p_v) { ?>
+                        <?php foreach ($filterExistingSlots($produk['varian'][0]['urutan_gambar']) as $indx => $p_v) { ?>
                         <input <?= $indx == 0 ? 'checked' : '' ?> id="gambar<?= $indx ?>" type="radio" name="gambar"
                             value="<?= $p_v ?>">
                         <label class="img-detail-select" for="gambar<?= $indx ?>"><img
