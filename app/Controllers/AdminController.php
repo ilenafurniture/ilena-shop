@@ -576,15 +576,20 @@ class AdminController extends BaseController
                     if (!is_writable($thumbDir)) { @chmod($thumbDir, 0775); }
                     $thumbSource = is_file($thumbSource1000) ? $thumbSource1000 : (is_file($thumbSource3000) ? $thumbSource3000 : null);
                     if ($thumbSource && is_writable($thumbDir)) {
-                        $thumbTmp = $thumbDir . DIRECTORY_SEPARATOR . '.tmp-thumb-' . uniqid('', true) . '.webp';
+                        $tmpDir = rtrim(WRITEPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'cache';
+                        if (!is_dir($tmpDir)) { @mkdir($tmpDir, 0775, true); }
+                        $thumbTmp = $tmpDir . DIRECTORY_SEPARATOR . 'thumb-' . $id_product . '-' . uniqid('', true) . '.webp';
                         \Config\Services::image()
                             ->withFile($thumbSource)
                             ->resize(300, 300, true, 'height')
                             ->save($thumbTmp);
                         if (is_file($thumbTmp) && filesize($thumbTmp) > 0) {
                             @unlink($thumbDest);
-                            @rename($thumbTmp, $thumbDest);
+                            if (!@copy($thumbTmp, $thumbDest)) {
+                                throw new \RuntimeException('Thumbnail cover tidak tersalin ke ' . $thumbDest);
+                            }
                             @touch($thumbDest);
+                            @unlink($thumbTmp);
                         } else {
                             @unlink($thumbTmp);
                         }

@@ -9,10 +9,10 @@ $productCoverUrl = function (array $product): string {
         $slots = array_values(array_filter(array_map('trim', explode(',', (string) $varian[0]['urutan_gambar']))));
         $slot = $slots[0] ?? '1';
     }
-    $relative = 'img/barang/1000/' . $id . '-' . $slot . '.webp';
+    $relative = 'img/barang/300/' . $id . '.webp';
     $absolute = FCPATH . $relative;
     if (!is_file($absolute)) {
-        $relative = 'img/barang/300/' . $id . '.webp';
+        $relative = 'img/barang/1000/' . $id . '-' . $slot . '.webp';
         $absolute = FCPATH . $relative;
     }
     return base_url($relative) . '?v=' . (is_file($absolute) ? filemtime($absolute) : time());
@@ -575,9 +575,9 @@ if (isset($_GET['ruang'])) {
                         </div>
                         <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="gambar">
                             <img class="img-pic" id="img<?= $ind_p ?>"
-                                src="<?= $productCoverUrl($p) ?>" alt="">
+                                src="<?= $productCoverUrl($p) ?>" alt="" loading="lazy" decoding="async">
                             <img class="img-pic-hover" id="img<?= $ind_p ?>"
-                                src="<?= base_url('img/barang/hover/' . $p['id'] . '.webp') ?>" alt="">
+                                src="<?= base_url('img/barang/hover/' . $p['id'] . '.webp') ?>" alt="" loading="lazy" decoding="async"> 
                         </a>
                     </div>
                     <div class="container-varian mb-1 d-flex">

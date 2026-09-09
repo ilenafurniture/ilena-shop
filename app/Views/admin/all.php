@@ -35,10 +35,10 @@ $barangThumbUrl = function ($product) {
         $slots = array_values(array_filter(array_map('trim', explode(',', (string) $varian[0]['urutan_gambar']))));
         $slot = $slots[0] ?? '1';
     }
-    $relative = 'img/barang/1000/' . $id . '-' . $slot . '.webp';
+    $relative = 'img/barang/300/' . $id . '.webp';
     $absolute = FCPATH . $relative;
     if (!is_file($absolute)) {
-        $relative = 'img/barang/300/' . $id . '.webp';
+        $relative = 'img/barang/1000/' . $id . '-' . $slot . '.webp';
         $absolute = FCPATH . $relative;
     }
     $version = is_file($absolute) ? filemtime($absolute) : time();
@@ -385,7 +385,7 @@ $barangThumbUrl = function ($product) {
             <div style="flex: .8; cursor:pointer" onclick="pergiKeProduct('<?= str_replace(' ', '-', $p['nama']); ?>')">
                 <img style="width: 70px; height: 70px; object-fit:cover; border-radius:12px; border:1px solid var(--slate-200)"
                     id="img<?= $ind_p ?>" src="<?= $barangThumbUrl($p); ?>"
-                    alt="<?= htmlspecialchars($p['nama'], ENT_QUOTES); ?>">
+                    alt="<?= htmlspecialchars($p['nama'], ENT_QUOTES); ?>" loading="lazy" decoding="async">
             </div>
 
             <div style="flex: 2; cursor:pointer" class="d-flex flex-column align-items-start justify-content-center"
@@ -443,7 +443,7 @@ $barangThumbUrl = function ($product) {
                     onclick="pergiKeProduct('<?= str_replace(' ', '-', $p['nama']); ?>')">
                     <img style="width: 50px; height: 50px; object-fit:cover; border-radius:10px; border:1px solid var(--slate-200)"
                         id="img<?= $ind_p ?>" src="<?= $barangThumbUrl($p); ?>"
-                        alt="<?= htmlspecialchars($p['nama'], ENT_QUOTES); ?>">
+                        alt="<?= htmlspecialchars($p['nama'], ENT_QUOTES); ?>" loading="lazy" decoding="async">
                 </div>
 
                 <div style="flex: 1.4; cursor:pointer"
