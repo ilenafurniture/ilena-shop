@@ -193,6 +193,15 @@
     transform: translateY(-2px);
 }
 
+.item-gambar.selected {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .18);
+}
+
+.item-gambar.dragging {
+    opacity: .55;
+}
+
 .item-gambar img {
     width: 100%;
     height: 100%;
@@ -276,6 +285,14 @@
     color: #64748b;
     font-size: 12px;
     line-height: 1.45;
+}
+
+.image-tile {
+    width: 112px;
+}
+
+.image-tile input[type=file] {
+    display: none;
 }
 
 .add-thumb {
@@ -497,6 +514,7 @@ const App = () => {
   const [gambarSrc, setGambarSrc] = useState([]);
   const [gambarFile, setGambarFile] = useState([]); // dipertahankan untuk kompatibilitas state lama
   const [loading, setLoading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
   const idStr = useRef("1-00-000-XX");
 
   // Loading overlay
@@ -720,8 +738,49 @@ const App = () => {
     });
   };
 
+  const moveImageToIndex = (variantIndex, fromIndex, toIndex) => {
+    if (fromIndex === toIndex) return;
+    updateVariantImages(variantIndex, list => {
+      if (fromIndex < 0 || toIndex < 0 || fromIndex >= list.length || toIndex >= list.length) return list;
+      const copy = [...list];
+      const [item] = copy.splice(fromIndex, 1);
+      copy.splice(toIndex, 0, item);
+      return copy;
+    });
+    setSelectedImage(null);
+  };
+
+  const swapImage = (variantIndex, fromIndex, toIndex) => {
+    if (fromIndex === toIndex) return;
+    updateVariantImages(variantIndex, list => {
+      if (fromIndex < 0 || toIndex < 0 || fromIndex >= list.length || toIndex >= list.length) return list;
+      const copy = [...list];
+      [copy[fromIndex], copy[toIndex]] = [copy[toIndex], copy[fromIndex]];
+      return copy;
+    });
+    setSelectedImage(null);
+  };
+
   const removeImage = (variantIndex, imageIndex) => {
     updateVariantImages(variantIndex, list => list.filter((_, i) => i !== imageIndex));
+    setSelectedImage(null);
+  };
+
+  const handleImageClick = (variantIndex, imageIndex) => {
+    if (selectedImage && selectedImage.variantIndex === variantIndex && selectedImage.imageIndex !== imageIndex) {
+      swapImage(variantIndex, selectedImage.imageIndex, imageIndex);
+      return;
+    }
+    setSelectedImage({ variantIndex, imageIndex });
+  };
+
+  const handleImageDrop = (event, variantIndex, imageIndex) => {
+    event.preventDefault();
+    event.currentTarget.classList.remove('dragging');
+    let payload = null;
+    try { payload = JSON.parse(event.dataTransfer.getData('text/plain') || '{}'); } catch (_) {}
+    if (!payload || payload.variantIndex !== variantIndex) return;
+    moveImageToIndex(variantIndex, payload.imageIndex, imageIndex);
   };
 
   const addOrReplaceImage = (variantIndex, file, imageIndex = null) => {
@@ -736,6 +795,19 @@ const App = () => {
     };
     reader.readAsDataURL(file);
   };
+
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (!selectedImage) return;
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        e.preventDefault();
+        removeImage(selectedImage.variantIndex, selectedImage.imageIndex);
+      }
+      if (e.key === 'Escape') setSelectedImage(null);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [selectedImage, gambarSrc]);
 
   // Badge status jadwal diskon
   const renderBadgeJadwal = () => {
@@ -1036,30 +1108,40 @@ const App = () => {
                     <div className="variant-tools">
                       <div>
                         <div className="section-title" style={{ margin:0 }}>Varian #{ind_v + 1}</div>
-                        <div className="variant-help">Atur foto dengan tombol panah. Klik “Foto 1” untuk menjadikan gambar utama. “Ganti” menimpa foto di posisi itu.</div>
+                        <div className="variant-help">Drag foto untuk geser urutan. Klik 2 foto untuk tukar posisi. Double click foto untuk ganti file.</div>
                       </div>
                     </div>
 
                     <div className="container-gambar">
-                      {gambarSrc.length > 0 && (gambarSrc[ind_v] || []).map((g, ind_g) => (
-                        <div key={ind_g} style={{ width: 112 }}>
-                          <div className="item-gambar" title={`Foto tampilan ke-${ind_g + 1}`}>
+                      {gambarSrc.length > 0 && (gambarSrc[ind_v] || []).map((g, ind_g) => {
+                        const isSelected = selectedImage && selectedImage.variantIndex === ind_v && selectedImage.imageIndex === ind_g;
+                        return (
+                        <div key={ind_g} className="image-tile">
+                          <input id={`replace-file-${ind_v}-${ind_g}`} type="file" onChange={(e) => { addOrReplaceImage(ind_v, e.target.files[0], ind_g); e.target.value = ''; }} />
+                          <div
+                            className={`item-gambar${isSelected ? ' selected' : ''}`}
+                            title="Drag untuk pindah, klik 2 foto untuk tukar, double click untuk ganti"
+                            draggable="true"
+                            tabIndex="0"
+                            onClick={() => handleImageClick(ind_v, ind_g)}
+                            onDoubleClick={() => document.getElementById(`replace-file-${ind_v}-${ind_g}`)?.click()}
+                            onDragStart={(e) => {
+                              e.dataTransfer.setData('text/plain', JSON.stringify({ variantIndex: ind_v, imageIndex: ind_g }));
+                              e.currentTarget.classList.add('dragging');
+                            }}
+                            onDragEnd={(e) => e.currentTarget.classList.remove('dragging')}
+                            onDragOver={(e) => e.preventDefault()}
+                            onDrop={(e) => handleImageDrop(e, ind_v, ind_g)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleImageClick(ind_v, ind_g); }
+                            }}>
                             <span className="img-no">#{ind_g + 1}{getImageSlot(g) ? ` / file ${getImageSlot(g)}` : ' / baru'}</span>
                             <p>{getImageFile(g) instanceof File ? 'baru' : 'lama'}</p>
                             <img src={getImageSrc(g) || "/img/nopic.jpg"} alt={`Foto varian ${ind_v + 1} nomor ${ind_g + 1}`} />
                           </div>
-                          <div className="image-actions">
-                            <button type="button" title="Geser kiri" disabled={ind_g === 0} onClick={() => moveImage(ind_v, ind_g, -1)}>←</button>
-                            <button type="button" title="Geser kanan" disabled={ind_g === (gambarSrc[ind_v] || []).length - 1} onClick={() => moveImage(ind_v, ind_g, 1)}>→</button>
-                            <label title="Ganti foto">
-                              Ganti
-                              <input type="file" style={{ display:'none' }} onChange={(e) => { addOrReplaceImage(ind_v, e.target.files[0], ind_g); e.target.value = ''; }} />
-                            </label>
-                            <button type="button" className="danger" title="Hapus foto" onClick={() => removeImage(ind_v, ind_g)}>Hapus</button>
-                            {ind_g > 0 && <button type="button" style={{ gridColumn:'1 / -1' }} onClick={() => moveImageToFirst(ind_v, ind_g)}>Jadikan Foto 1</button>}
-                          </div>
                         </div>
-                      ))}
+                        );
+                      })}
                       <div>
                         <input type="file" id={`file-${ind_v}`} style={{ display:'none' }}
                           onChange={(e) => { addOrReplaceImage(ind_v, e.target.files[0]); e.target.value = ''; }} />
