@@ -401,6 +401,34 @@ trait ProductTrait
             $varian = $data['varian'] ?? $barang['varian'];
             if (is_array($varian)) $varian = json_encode($varian);
 
+            // Jika admin menggeser foto 5 menjadi Foto 1, thumbnail katalog 300px ikut memakai foto pertama terbaru.
+            $varianArrForThumb = json_decode((string)$varian, true) ?: [];
+            $firstImageSlot = null;
+            if (!empty($varianArrForThumb[0]['urutan_gambar'])) {
+                $slots = array_values(array_filter(array_map('trim', explode(',', (string)$varianArrForThumb[0]['urutan_gambar']))));
+                $firstImageSlot = isset($slots[0]) ? (int)$slots[0] : null;
+            }
+            if ($firstImageSlot) {
+                $thumbSource1000 = $publicPath("img/barang/1000/{$id_product}-{$firstImageSlot}.webp");
+                $thumbSource3000 = $publicPath("img/barang/3000/{$id_product}-{$firstImageSlot}.webp");
+                $thumbDest = $publicPath("img/barang/300/{$id_product}.webp");
+                $thumbSource = is_file($thumbSource1000) ? $thumbSource1000 : (is_file($thumbSource3000) ? $thumbSource3000 : null);
+                if ($thumbSource) {
+                    $thumbTmp = dirname($thumbDest) . DIRECTORY_SEPARATOR . '.tmp-thumb-' . uniqid('', true) . '.webp';
+                    \Config\Services::image()
+                        ->withFile($thumbSource)
+                        ->resize(300, 300, true, 'height')
+                        ->save($thumbTmp);
+                    if (is_file($thumbTmp) && filesize($thumbTmp) > 0) {
+                        @unlink($thumbDest);
+                        @rename($thumbTmp, $thumbDest);
+                        @touch($thumbDest);
+                    } else {
+                        @unlink($thumbTmp);
+                    }
+                }
+            }
+
             $boolTo01 = fn($v) => (is_bool($v) ? ($v ? '1' : '0') : (string)$v);
 
             $payload = [

@@ -219,6 +219,65 @@
     opacity: 1;
 }
 
+.item-gambar .img-no {
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    background: rgba(255, 255, 255, .92);
+    color: #111827;
+    border-radius: 999px;
+    padding: 2px 7px;
+    font-size: 11px;
+    font-weight: 800;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, .18);
+}
+
+.image-actions {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.image-actions button,
+.image-actions label {
+    min-height: 32px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #fff;
+    color: #374151;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.image-actions button:hover,
+.image-actions label:hover {
+    border-color: #3b82f6;
+    color: #2563eb;
+}
+
+.image-actions .danger {
+    color: #dc2626;
+}
+
+.variant-tools {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.variant-help {
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
 .add-thumb {
     width: 96px;
     height: 96px;
@@ -386,6 +445,22 @@ function withCacheBuster(url) {
   return `${url}${url.includes('?') ? '&' : '?'}v=${Date.now()}`;
 }
 
+function makeImageItem(src, file = null, slot = null) {
+  return { src, file, slot: slot ? Number(slot) : null };
+}
+
+function getImageSrc(item) {
+  return (item && typeof item === 'object') ? item.src : item;
+}
+
+function getImageFile(item) {
+  return (item && typeof item === 'object') ? item.file : null;
+}
+
+function getImageSlot(item) {
+  return (item && typeof item === 'object') ? item.slot : null;
+}
+
 const App = () => {
   const firstRender = useRef(true);
   const [formData, setFormData] = useState({
@@ -418,8 +493,9 @@ const App = () => {
   const [eror, setEror] = useState('');
   const [hoverSrc, setHoverSrc] = useState(null);
   const [hoverFile, setHoverFile] = useState(null);
-  const [gambarSrc, setGambarSrc] = useState([]);   // preview base64 per varian
-  const [gambarFile, setGambarFile] = useState([]); // File[] per varian
+  // gambarSrc berisi object: { src, file, slot }. slot = nomor file fisik (1,2,3...) agar foto lama bisa dipindah/ditukar tanpa upload ulang.
+  const [gambarSrc, setGambarSrc] = useState([]);
+  const [gambarFile, setGambarFile] = useState([]); // dipertahankan untuk kompatibilitas state lama
   const [loading, setLoading] = useState(false);
   const idStr = useRef("1-00-000-XX");
 
@@ -498,33 +574,21 @@ const App = () => {
         (v.urutan_gambar || '')
           .split(',')
           .filter(Boolean)
-          .map(n => withCacheBuster(`${URL_1000_PREFIX}${n}.webp`))
+          .map(n => makeImageItem(withCacheBuster(`${URL_1000_PREFIX}${n}.webp`), null, n))
       );
       setGambarSrc(src);
-
-      // Gambar lama cukup ditampilkan sebagai preview.
-      // Saat edit, hanya file baru yang dikirim supaya gambar lama tidak menimpa upload baru
-      // dan tidak gagal diam-diam ketika browser/server mengembalikan cache/404/html.
-      setGambarFile((produk.varian || []).map(v =>
-        (v.urutan_gambar || '').split(',').filter(Boolean).map(() => null)
-      ));
+      setGambarFile(src.map(group => group.map(item => item.file)));
     }
   }, []);
 
-  // Set urutan_gambar otomatis saat gambarSrc berubah
+  // Sinkronkan urutan gambar dari posisi kartu. Foto lama memakai slot asli, foto baru diberi slot saat submit.
   useEffect(() => {
     setFormData(prev => ({
       ...prev,
-      varian: (prev.varian || []).map((v, ind_v) => {
-        const arr = gambarSrc[ind_v] || [];
-        if (ind_v === 0) {
-          return { ...v, urutan_gambar: arr.map((_, idx) => idx + 1).join(',') };
-        }
-        // lanjutkan penomoran setelah varian sebelumnya
-        const prevStr = prev.varian[ind_v - 1]?.urutan_gambar || '';
-        const last = parseInt(prevStr.split(',').pop() || '0');
-        return { ...v, urutan_gambar: arr.map((_, idx) => last + idx + 1).join(',') };
-      })
+      varian: (prev.varian || []).map((v, ind_v) => ({
+        ...v,
+        urutan_gambar: (gambarSrc[ind_v] || []).map(getImageSlot).filter(Boolean).join(',')
+      }))
     }));
   }, [gambarSrc]);
 
@@ -532,10 +596,8 @@ const App = () => {
     // Validasi
     if (!formData.nama || !formData.harga) { setEror("Nama dan harga produk wajib diisi."); return; }
     if ((formData.varian || []).length === 0) { setEror("Minimal 1 varian harus ditambahkan."); return; }
-    if (!idProduct) {
-      for (let i = 0; i < formData.varian.length; i++) {
-        if (!gambarFile[i] || gambarFile[i].length === 0) { setEror(`Varian ke-${i + 1} belum memiliki gambar.`); return; }
-      }
+    for (let i = 0; i < formData.varian.length; i++) {
+      if (!(gambarSrc[i] || []).length) { setEror(`Varian ke-${i + 1} belum memiliki gambar.`); return; }
     }
     if (formData.pakai_jadwal_diskon) {
       if (!formData.diskon_mulai || !formData.diskon_selesai) { setEror("Mohon isi tanggal mulai & selesai jadwal diskon."); return; }
@@ -556,14 +618,35 @@ const App = () => {
     form.append("ruang_keluarga", formData.ruang_keluarga ? "1" : "0");
     form.append("ruang_tidur", formData.ruang_tidur ? "1" : "0");
     form.append("deskripsi", JSON.stringify(formData.deskripsi || {}));
-    form.append("varian", JSON.stringify(formData.varian || []));
 
     if (hoverFile) form.append("gambar_hover", hoverFile);
 
-    // Flatten semua gambar varian
-    const flat = (gambarFile || []).reduce((p, c) => p.concat(c), []);
-    if (!idProduct && flat.filter(file => file instanceof File).length === 0) { setEror("Minimal upload satu gambar untuk varian pertama."); return; }
-    flat.forEach((file, idx) => { if (file instanceof File) form.append(`gambar_${idx}`, file); });
+    // Simpan sesuai urutan visual. Foto lama tetap memakai nomor file aslinya,
+    // foto baru/replacement dikirim ke slot tepat: gambar_0 => foto 1, gambar_4 => foto 5, dst.
+    const usedSlots = new Set();
+    (gambarSrc || []).forEach(group => (group || []).forEach(item => {
+      const slot = getImageSlot(item);
+      if (slot) usedSlots.add(Number(slot));
+    }));
+    let nextSlot = Math.max(0, ...Array.from(usedSlots)) + 1;
+    const takeSlot = () => {
+      while (usedSlots.has(nextSlot)) nextSlot++;
+      usedSlots.add(nextSlot);
+      return nextSlot++;
+    };
+
+    const varianPayload = (formData.varian || []).map((v, ind_v) => {
+      const images = (gambarSrc[ind_v] || []).map(item => {
+        const existingSlot = getImageSlot(item);
+        return { ...item, slot: existingSlot || takeSlot() };
+      });
+      images.forEach(item => {
+        const file = getImageFile(item);
+        if (file instanceof File) form.append(`gambar_${Number(item.slot) - 1}`, file);
+      });
+      return { ...v, id: String(ind_v + 1), urutan_gambar: images.map(item => item.slot).join(',') };
+    });
+    form.append("varian", JSON.stringify(varianPayload));
 
     // Jadwal Diskon
     form.append("pakai_jadwal_diskon", formData.pakai_jadwal_diskon ? "1" : "0");
@@ -604,6 +687,54 @@ const App = () => {
         setEror("Gagal menghubungi server.");
       }
     })();
+  };
+
+  const syncLegacyGambarFile = (nextSrc) => {
+    setGambarFile((nextSrc || []).map(group => (group || []).map(getImageFile)));
+  };
+
+  const updateVariantImages = (variantIndex, updater) => {
+    const nextSrc = (gambarSrc || []).map(group => [...(group || [])]);
+    nextSrc[variantIndex] = updater(nextSrc[variantIndex] || []);
+    setGambarSrc(nextSrc);
+    syncLegacyGambarFile(nextSrc);
+  };
+
+  const moveImage = (variantIndex, imageIndex, direction) => {
+    updateVariantImages(variantIndex, list => {
+      const target = imageIndex + direction;
+      if (target < 0 || target >= list.length) return list;
+      const copy = [...list];
+      [copy[imageIndex], copy[target]] = [copy[target], copy[imageIndex]];
+      return copy;
+    });
+  };
+
+  const moveImageToFirst = (variantIndex, imageIndex) => {
+    updateVariantImages(variantIndex, list => {
+      if (imageIndex <= 0) return list;
+      const copy = [...list];
+      const [item] = copy.splice(imageIndex, 1);
+      copy.unshift(item);
+      return copy;
+    });
+  };
+
+  const removeImage = (variantIndex, imageIndex) => {
+    updateVariantImages(variantIndex, list => list.filter((_, i) => i !== imageIndex));
+  };
+
+  const addOrReplaceImage = (variantIndex, file, imageIndex = null) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      updateVariantImages(variantIndex, list => {
+        const item = makeImageItem(reader.result, file, imageIndex === null ? null : getImageSlot(list[imageIndex]));
+        if (imageIndex === null) return [...list, item];
+        return list.map((oldItem, i) => i === imageIndex ? item : oldItem);
+      });
+    };
+    reader.readAsDataURL(file);
   };
 
   // Badge status jadwal diskon
@@ -902,37 +1033,37 @@ const App = () => {
               {(formData.varian || []).map((v, ind_v) => (
                 <div key={ind_v} className="card" style={{ borderRadius:'12px' }}>
                   <div className="card-body">
+                    <div className="variant-tools">
+                      <div>
+                        <div className="section-title" style={{ margin:0 }}>Varian #{ind_v + 1}</div>
+                        <div className="variant-help">Atur foto dengan tombol panah. Klik “Foto 1” untuk menjadikan gambar utama. “Ganti” menimpa foto di posisi itu.</div>
+                      </div>
+                    </div>
+
                     <div className="container-gambar">
                       {gambarSrc.length > 0 && (gambarSrc[ind_v] || []).map((g, ind_g) => (
-                        <div className="item-gambar" key={ind_g} title="Klik untuk hapus"
-                          onClick={() => {
-                            setGambarSrc(gambarSrc.map((gg, i) => i === ind_v ? gg.filter((_, j) => j !== ind_g) : gg));
-                            setGambarFile(gambarFile.map((gg, i) => i === ind_v ? gg.filter((_, j) => j !== ind_g) : gg));
-                          }}>
-                          <p>✕</p>
-                          <img src={g || "/img/nopic.jpg"} alt="" />
+                        <div key={ind_g} style={{ width: 112 }}>
+                          <div className="item-gambar" title={`Foto tampilan ke-${ind_g + 1}`}>
+                            <span className="img-no">#{ind_g + 1}{getImageSlot(g) ? ` / file ${getImageSlot(g)}` : ' / baru'}</span>
+                            <p>{getImageFile(g) instanceof File ? 'baru' : 'lama'}</p>
+                            <img src={getImageSrc(g) || "/img/nopic.jpg"} alt={`Foto varian ${ind_v + 1} nomor ${ind_g + 1}`} />
+                          </div>
+                          <div className="image-actions">
+                            <button type="button" title="Geser kiri" disabled={ind_g === 0} onClick={() => moveImage(ind_v, ind_g, -1)}>←</button>
+                            <button type="button" title="Geser kanan" disabled={ind_g === (gambarSrc[ind_v] || []).length - 1} onClick={() => moveImage(ind_v, ind_g, 1)}>→</button>
+                            <label title="Ganti foto">
+                              Ganti
+                              <input type="file" style={{ display:'none' }} onChange={(e) => { addOrReplaceImage(ind_v, e.target.files[0], ind_g); e.target.value = ''; }} />
+                            </label>
+                            <button type="button" className="danger" title="Hapus foto" onClick={() => removeImage(ind_v, ind_g)}>Hapus</button>
+                            {ind_g > 0 && <button type="button" style={{ gridColumn:'1 / -1' }} onClick={() => moveImageToFirst(ind_v, ind_g)}>Jadikan Foto 1</button>}
+                          </div>
                         </div>
                       ))}
                       <div>
                         <input type="file" id={`file-${ind_v}`} style={{ display:'none' }}
-                          onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) {
-                              const reader = new FileReader();
-                              reader.onload = () => {
-                                const newSrc  = [...gambarSrc];
-                                const newFile = [...gambarFile];
-                                if (!newSrc[ind_v])  newSrc[ind_v]  = [];
-                                if (!newFile[ind_v]) newFile[ind_v] = [];
-                                newSrc[ind_v].push(reader.result);
-                                newFile[ind_v].push(file);
-                                setGambarSrc(newSrc);
-                                setGambarFile(newFile);
-                              };
-                              reader.readAsDataURL(file);
-                            }
-                          }} />
-                        <label htmlFor={`file-${ind_v}`} className="add-thumb">+</label>
+                          onChange={(e) => { addOrReplaceImage(ind_v, e.target.files[0]); e.target.value = ''; }} />
+                        <label htmlFor={`file-${ind_v}`} className="add-thumb">+ Foto</label>
                       </div>
                     </div>
 
