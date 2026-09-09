@@ -99,6 +99,7 @@ $routes->get('/gantilokasi/(:any)', 'GambarController::gantiLokasi/$1', ['filter
 $routes->get('/cobainput', 'GambarController::actionCobaInput');
 $routes->get('/gamwm', 'GambarController::tampilGambarVarWM');
 $routes->get('/viewpic/(:segment)', 'GambarController::tampilGambarBarang/$1');
+$routes->get('/product-cover/(:segment)', 'Pages::productCoverImage/$1');
 $routes->get('/viewpichover/(:segment)', 'GambarController::tampilGambarBarangHover/$1');
 $routes->get('/viewvar/(:segment)/(:num)', 'GambarController::tampilGambarVarian/$1/$2');
 $routes->get('/viewvar3000/(:segment)/(:num)', 'GambarController::tampilGambarVarian3000/$1/$2');

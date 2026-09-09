@@ -17,13 +17,17 @@ $productCoverUrl = function (string $id, array $varianList): string {
     $slots = array_values(array_filter(array_map('trim', explode(',', (string) $varianList[0]['urutan_gambar']))));
     $slot = $slots[0] ?? '1';
   }
-  $relative = 'img/barang/300/' . $id . '.webp';
-  $absolute = FCPATH . $relative;
-  if (!is_file($absolute)) {
-    $relative = 'img/barang/1000/' . $id . '-' . $slot . '.webp';
-    $absolute = FCPATH . $relative;
+  $sourceRelative = 'img/barang/1000/' . $id . '-' . $slot . '.webp';
+  $sourceAbsolute = FCPATH . $sourceRelative;
+  if (!is_file($sourceAbsolute)) {
+    $sourceRelative = 'img/barang/3000/' . $id . '-' . $slot . '.webp';
+    $sourceAbsolute = FCPATH . $sourceRelative;
   }
-  return base_url($relative) . '?v=' . (is_file($absolute) ? filemtime($absolute) : time());
+  if (!is_file($sourceAbsolute)) {
+    $sourceRelative = 'img/barang/300/' . $id . '.webp';
+    $sourceAbsolute = FCPATH . $sourceRelative;
+  }
+  return base_url('product-cover/' . $id) . '?slot=' . urlencode($slot) . '&v=' . (is_file($sourceAbsolute) ? filemtime($sourceAbsolute) : time());
 };
 ?>
 

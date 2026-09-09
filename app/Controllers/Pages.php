@@ -4339,6 +4339,71 @@ class Pages extends BaseController
     }
 
 
+
+    public function productCoverImage($idBarang)
+    {
+        $safeId = preg_replace('/[^A-Za-z0-9_-]/', '', (string) $idBarang);
+        if ($safeId === '') {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Gambar tidak ditemukan');
+        }
+
+        $product = $this->barangModel->getBarangAdmin($safeId) ?: $this->barangModel->where('id', $safeId)->first();
+        $slot = preg_replace('/[^0-9]/', '', (string) $this->request->getGet('slot')) ?: '1';
+        if ($product && !empty($product['varian']) && !$this->request->getGet('slot')) {
+            $varian = json_decode($product['varian'], true) ?: [];
+            if (!empty($varian[0]['urutan_gambar'])) {
+                $slots = array_values(array_filter(array_map('trim', explode(',', (string) $varian[0]['urutan_gambar']))));
+                $slot = $slots[0] ?? '1';
+            }
+        }
+
+        $publicPath = function (string $relativePath): string {
+            return rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
+        };
+
+        $source1000 = $publicPath("img/barang/1000/{$safeId}-{$slot}.webp");
+        $source3000 = $publicPath("img/barang/3000/{$safeId}-{$slot}.webp");
+        $fallback300 = $publicPath("img/barang/300/{$safeId}.webp");
+        $source = is_file($source1000) ? $source1000 : (is_file($source3000) ? $source3000 : (is_file($fallback300) ? $fallback300 : null));
+
+        if (!$source) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Gambar tidak ditemukan');
+        }
+
+        $mtime = (string) filemtime($source);
+        $cacheDir = rtrim(WRITEPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'product-covers';
+        if (!is_dir($cacheDir)) { @mkdir($cacheDir, 0775, true); }
+        $cacheFile = $cacheDir . DIRECTORY_SEPARATOR . $safeId . '-' . $slot . '-' . $mtime . '.webp';
+
+        if (!is_file($cacheFile) && is_writable($cacheDir)) {
+            try {
+                \Config\Services::image()
+                    ->withFile($source)
+                    ->resize(300, 300, true, 'height')
+                    ->save($cacheFile);
+            } catch (\Throwable $e) {
+                log_message('error', 'Product cover cache gagal: {msg}', ['msg' => $e->getMessage()]);
+                $cacheFile = $source;
+            }
+        }
+
+        $serveFile = is_file($cacheFile) ? $cacheFile : $source;
+        $etag = '"' . md5($serveFile . '|' . filemtime($serveFile) . '|' . filesize($serveFile)) . '"';
+        if ($this->request->getHeaderLine('If-None-Match') === $etag) {
+            return $this->response
+                ->setStatusCode(304)
+                ->setHeader('ETag', $etag)
+                ->setHeader('Cache-Control', 'public, max-age=86400');
+        }
+
+        return $this->response
+            ->setHeader('Content-Type', 'image/webp')
+            ->setHeader('Content-Length', (string) filesize($serveFile))
+            ->setHeader('Cache-Control', 'public, max-age=86400')
+            ->setHeader('ETag', $etag)
+            ->setBody(file_get_contents($serveFile));
+    }
+
     public function notFound()
     {
         $data = [

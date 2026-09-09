@@ -298,7 +298,7 @@
                                             width: '100%',
                                             height: '100%',
                                             }}
-                                            src={`/img/barang/300/${productSelected.id}.webp?v=${Date.now()}`}
+                                            src={`/product-cover/${productSelected.id}?slot=${productSelected.cover_slot || '1'}&v=${Date.now()}`}
                                             loading="lazy" decoding="async" alt={`${productSelected.nama} ${productSelected.koleksi}`}
                                         />
                                     </div>
