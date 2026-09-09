@@ -401,32 +401,43 @@ trait ProductTrait
             $varian = $data['varian'] ?? $barang['varian'];
             if (is_array($varian)) $varian = json_encode($varian);
 
-            // Jika admin menggeser foto 5 menjadi Foto 1, thumbnail katalog 300px ikut memakai foto pertama terbaru.
-            $varianArrForThumb = json_decode((string)$varian, true) ?: [];
-            $firstImageSlot = null;
-            if (!empty($varianArrForThumb[0]['urutan_gambar'])) {
-                $slots = array_values(array_filter(array_map('trim', explode(',', (string)$varianArrForThumb[0]['urutan_gambar']))));
-                $firstImageSlot = isset($slots[0]) ? (int)$slots[0] : null;
-            }
-            if ($firstImageSlot) {
-                $thumbSource1000 = $publicPath("img/barang/1000/{$id_product}-{$firstImageSlot}.webp");
-                $thumbSource3000 = $publicPath("img/barang/3000/{$id_product}-{$firstImageSlot}.webp");
-                $thumbDest = $publicPath("img/barang/300/{$id_product}.webp");
-                $thumbSource = is_file($thumbSource1000) ? $thumbSource1000 : (is_file($thumbSource3000) ? $thumbSource3000 : null);
-                if ($thumbSource) {
-                    $thumbTmp = dirname($thumbDest) . DIRECTORY_SEPARATOR . '.tmp-thumb-' . uniqid('', true) . '.webp';
-                    \Config\Services::image()
-                        ->withFile($thumbSource)
-                        ->resize(300, 300, true, 'height')
-                        ->save($thumbTmp);
-                    if (is_file($thumbTmp) && filesize($thumbTmp) > 0) {
-                        @unlink($thumbDest);
-                        @rename($thumbTmp, $thumbDest);
-                        @touch($thumbDest);
-                    } else {
-                        @unlink($thumbTmp);
+            // Cover/thumbnail katalog mengikuti foto pertama dari urutan varian pertama.
+            // Dibuat non-fatal: kalau folder 300 belum writable, data produk & gambar utama tetap tersimpan.
+            try {
+                $varianArrForThumb = json_decode((string)$varian, true) ?: [];
+                $firstImageSlot = null;
+                if (!empty($varianArrForThumb[0]['urutan_gambar'])) {
+                    $slots = array_values(array_filter(array_map('trim', explode(',', (string)$varianArrForThumb[0]['urutan_gambar']))));
+                    $firstImageSlot = isset($slots[0]) ? (int)$slots[0] : null;
+                }
+                if ($firstImageSlot) {
+                    $toPublicPath = function (string $relativePath): string {
+                        return rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
+                    };
+                    $thumbSource1000 = $toPublicPath("img/barang/1000/{$id_product}-{$firstImageSlot}.webp");
+                    $thumbSource3000 = $toPublicPath("img/barang/3000/{$id_product}-{$firstImageSlot}.webp");
+                    $thumbDest = $toPublicPath("img/barang/300/{$id_product}.webp");
+                    $thumbDir = dirname($thumbDest);
+                    if (!is_dir($thumbDir)) { @mkdir($thumbDir, 0775, true); }
+                    if (!is_writable($thumbDir)) { @chmod($thumbDir, 0775); }
+                    $thumbSource = is_file($thumbSource1000) ? $thumbSource1000 : (is_file($thumbSource3000) ? $thumbSource3000 : null);
+                    if ($thumbSource && is_writable($thumbDir)) {
+                        $thumbTmp = $thumbDir . DIRECTORY_SEPARATOR . '.tmp-thumb-' . uniqid('', true) . '.webp';
+                        \Config\Services::image()
+                            ->withFile($thumbSource)
+                            ->resize(300, 300, true, 'height')
+                            ->save($thumbTmp);
+                        if (is_file($thumbTmp) && filesize($thumbTmp) > 0) {
+                            @unlink($thumbDest);
+                            @rename($thumbTmp, $thumbDest);
+                            @touch($thumbDest);
+                        } else {
+                            @unlink($thumbTmp);
+                        }
                     }
                 }
+            } catch (\Throwable $e) {
+                log_message('error', 'EDIT thumbnail cover gagal: {msg}', ['msg' => $e->getMessage()]);
             }
 
             $boolTo01 = fn($v) => (is_bool($v) ? ($v ? '1' : '0') : (string)$v);
