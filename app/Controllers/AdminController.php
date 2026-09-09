@@ -518,7 +518,7 @@ class AdminController extends BaseController
 
                 @unlink($tmpFile);
             };
-            $ensureDir('img/barang/300');
+            // Thumbnail 300px dibuat lewat cache cover/list; folder ini non-fatal saat edit produk.
             $ensureDir('img/barang/1000');
             $ensureDir('img/barang/3000');
             $ensureDir('img/barang/hover');

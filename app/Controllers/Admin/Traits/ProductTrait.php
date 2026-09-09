@@ -338,7 +338,7 @@ trait ProductTrait
             };
             $ensureDir('imgdum');
             $ensureDir('imgdum/barang/hover');
-            $ensureDir('img/barang/300');
+            // Thumbnail 300px dibuat lewat cache cover/list; folder ini non-fatal saat edit produk.
             $ensureDir('img/barang/1000');
             $ensureDir('img/barang/3000');
             $ensureDir('img/barang/hover');
@@ -369,9 +369,8 @@ trait ProductTrait
                             ["img/barang/1000/{$id_product}-" . ($urutan + 1) . ".webp", 1000, 1000],
                         ];
 
-                        if ($urutan <= 0) {
-                            $outputs[] = ["img/barang/300/{$id_product}.webp", 300, 300];
-                        }
+                        // Thumbnail list 300px tidak dibuat di flow upload utama agar simpan produk tidak berat.
+                        // Cover list di-serve lewat endpoint /product-cover dan cache 300px.
 
                         $processUploadedImage($file, $outputs);
                     } catch (\Throwable $e) {
