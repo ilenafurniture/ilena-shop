@@ -298,7 +298,7 @@
                                             width: '100%',
                                             height: '100%',
                                             }}
-                                            src={`/img/barang/300/${productSelected.id}.webp`}
+                                            src={`/img/barang/1000/${productSelected.id}-${productSelected.cover_slot || '1'}.webp?v=${Date.now()}`}
                                             alt={`${productSelected.nama} ${productSelected.koleksi}`}
                                         />
                                     </div>

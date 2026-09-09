@@ -11,6 +11,20 @@ $wishlistCount = is_array($wishlist) ? count($wishlist) : 0;
 $isInWishlist = function($id) use ($wishlist) {
   return in_array((string)$id, array_map('strval', $wishlist), true);
 };
+$productCoverUrl = function (string $id, array $varianList): string {
+  $slot = '1';
+  if (!empty($varianList[0]['urutan_gambar'])) {
+    $slots = array_values(array_filter(array_map('trim', explode(',', (string) $varianList[0]['urutan_gambar']))));
+    $slot = $slots[0] ?? '1';
+  }
+  $relative = 'img/barang/1000/' . $id . '-' . $slot . '.webp';
+  $absolute = FCPATH . $relative;
+  if (!is_file($absolute)) {
+    $relative = 'img/barang/300/' . $id . '.webp';
+    $absolute = FCPATH . $relative;
+  }
+  return base_url($relative) . '?v=' . (is_file($absolute) ? filemtime($absolute) : time());
+};
 ?>
 
 <div class="container">
@@ -50,7 +64,7 @@ $isInWishlist = function($id) use ($wishlist) {
 
                     <a href="/product/<?= str_replace(' ', '-', $p_nama); ?>" class="gambar">
                         <img class="<?= $p_gbrHover ? '' : 'nonhover'; ?> img-pic" id="<?= $imgMainId ?>"
-                            src="/img/barang/300/<?= $p_id; ?>.webp"
+                            src="<?= $productCoverUrl((string)$p_id, $varianList); ?>"
                             alt="<?= htmlspecialchars($p_nama, ENT_QUOTES); ?>">
                         <?php if ($p_gbrHover): ?>
                         <img class="img-pic-hover" src="/img/barang/hover/<?= $p_id; ?>.webp"

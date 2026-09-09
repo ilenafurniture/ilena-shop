@@ -96,6 +96,7 @@ class Pages extends BaseController
                     ->select('id')
                     ->select('nama')
                     ->select('deskripsi')
+                    ->select('varian')
                     ->where(['subkategori' => $j['jenis'], 'kategori' => $k])->first();
                 if (!$produk) continue;
                 $deskripsi = json_decode($produk['deskripsi'], true) ?? [];
@@ -106,11 +107,18 @@ class Pages extends BaseController
                 $text = trim($text);
                 $text = str_replace(["\r\n", "\r", "\n"], ' ', $text);
                 $deskripsi['deskripsi'] = $text;
+                $varian = json_decode($produk['varian'] ?? '[]', true) ?: [];
+                $coverSlot = '1';
+                if (!empty($varian[0]['urutan_gambar'])) {
+                    $slots = array_values(array_filter(array_map('trim', explode(',', (string) $varian[0]['urutan_gambar']))));
+                    $coverSlot = $slots[0] ?? '1';
+                }
                 $itemKoleksi = [
                     'id' => $produk['id'],
                     'nama' => $produk['nama'],
                     'deskripsi' => $deskripsi,
-                    'koleksi' => $k
+                    'koleksi' => $k,
+                    'cover_slot' => $coverSlot
                 ];
                 array_push($arrKoleksi, $itemKoleksi);
             }

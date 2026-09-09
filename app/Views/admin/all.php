@@ -26,9 +26,21 @@ for ($i = 0; $i < 10; $i++) {
     if (isset($produkLama[$i]))
         array_push($produk, $produkLama[$i]);
 }
-$barangThumbUrl = function ($id) {
-    $relative = 'img/barang/300/' . $id . '.webp';
+$barangThumbUrl = function ($product) {
+    $id = is_array($product) ? ($product['id'] ?? '') : (string) $product;
+    $varian = is_array($product) ? ($product['varian'] ?? []) : [];
+    if (is_string($varian)) $varian = json_decode($varian, true) ?: [];
+    $slot = '1';
+    if (!empty($varian[0]['urutan_gambar'])) {
+        $slots = array_values(array_filter(array_map('trim', explode(',', (string) $varian[0]['urutan_gambar']))));
+        $slot = $slots[0] ?? '1';
+    }
+    $relative = 'img/barang/1000/' . $id . '-' . $slot . '.webp';
     $absolute = FCPATH . $relative;
+    if (!is_file($absolute)) {
+        $relative = 'img/barang/300/' . $id . '.webp';
+        $absolute = FCPATH . $relative;
+    }
     $version = is_file($absolute) ? filemtime($absolute) : time();
     return base_url($relative) . '?v=' . $version;
 };
@@ -372,7 +384,7 @@ $barangThumbUrl = function ($id) {
         <div class="isi-table" data-filter="<?= strtolower($p['nama'].' '.$p['kategori'].' '.$p['id']); ?>">
             <div style="flex: .8; cursor:pointer" onclick="pergiKeProduct('<?= str_replace(' ', '-', $p['nama']); ?>')">
                 <img style="width: 70px; height: 70px; object-fit:cover; border-radius:12px; border:1px solid var(--slate-200)"
-                    id="img<?= $ind_p ?>" src="<?= $barangThumbUrl($p['id']); ?>"
+                    id="img<?= $ind_p ?>" src="<?= $barangThumbUrl($p); ?>"
                     alt="<?= htmlspecialchars($p['nama'], ENT_QUOTES); ?>">
             </div>
 
@@ -430,7 +442,7 @@ $barangThumbUrl = function ($id) {
                 <div style="flex: 1; cursor:pointer"
                     onclick="pergiKeProduct('<?= str_replace(' ', '-', $p['nama']); ?>')">
                     <img style="width: 50px; height: 50px; object-fit:cover; border-radius:10px; border:1px solid var(--slate-200)"
-                        id="img<?= $ind_p ?>" src="<?= $barangThumbUrl($p['id']); ?>"
+                        id="img<?= $ind_p ?>" src="<?= $barangThumbUrl($p); ?>"
                         alt="<?= htmlspecialchars($p['nama'], ENT_QUOTES); ?>">
                 </div>
 

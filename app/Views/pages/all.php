@@ -1,6 +1,24 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <?php
+$productCoverUrl = function (array $product): string {
+    $id = $product['id'] ?? '';
+    $varian = json_decode($product['varian'] ?? '[]', true) ?: [];
+    $slot = '1';
+    if (!empty($varian[0]['urutan_gambar'])) {
+        $slots = array_values(array_filter(array_map('trim', explode(',', (string) $varian[0]['urutan_gambar']))));
+        $slot = $slots[0] ?? '1';
+    }
+    $relative = 'img/barang/1000/' . $id . '-' . $slot . '.webp';
+    $absolute = FCPATH . $relative;
+    if (!is_file($absolute)) {
+        $relative = 'img/barang/300/' . $id . '.webp';
+        $absolute = FCPATH . $relative;
+    }
+    return base_url($relative) . '?v=' . (is_file($absolute) ? filemtime($absolute) : time());
+};
+?>
+<?php
 if (isset($kategori)) $_GET['koleksi'] = $kategori;
 if (isset($_GET['koleksi'])) {
     if ($_GET['koleksi'] != '') {
@@ -557,7 +575,7 @@ if (isset($_GET['ruang'])) {
                         </div>
                         <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="gambar">
                             <img class="img-pic" id="img<?= $ind_p ?>"
-                                src="<?= base_url('img/barang/300/' . $p['id'] . '.webp') ?>" alt="">
+                                src="<?= $productCoverUrl($p) ?>" alt="">
                             <img class="img-pic-hover" id="img<?= $ind_p ?>"
                                 src="<?= base_url('img/barang/hover/' . $p['id'] . '.webp') ?>" alt="">
                         </a>
