@@ -241,6 +241,36 @@
     box-shadow: 0 1px 4px rgba(15, 23, 42, .18);
 }
 
+.item-gambar .quick-delete {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(220, 38, 38, .92);
+    color: #fff;
+    font-size: 16px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    cursor: pointer;
+    transition: opacity .15s, transform .15s;
+}
+
+.item-gambar:hover .quick-delete,
+.item-gambar:focus-within .quick-delete,
+.item-gambar.selected .quick-delete {
+    opacity: 1;
+}
+
+.item-gambar .quick-delete:hover {
+    transform: scale(1.06);
+}
+
 .image-actions {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -476,6 +506,47 @@ function getImageFile(item) {
 
 function getImageSlot(item) {
   return (item && typeof item === 'object') ? item.slot : null;
+}
+
+const MAX_UPLOAD_MB = 12;
+const PREVIEW_REVOKE_DELAY = 1500;
+
+function fileTooLarge(file) {
+  return file && file.size > MAX_UPLOAD_MB * 1024 * 1024;
+}
+
+function resizeImageBeforeUpload(file, maxSize = 2200, quality = 0.82) {
+  return new Promise((resolve) => {
+    if (!file || !file.type || !file.type.startsWith('image/')) return resolve(file);
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      try {
+        const ratio = Math.min(1, maxSize / Math.max(img.width, img.height));
+        if (ratio >= 1 && file.size <= 2 * 1024 * 1024) {
+          URL.revokeObjectURL(url);
+          resolve(file);
+          return;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(img.width * ratio));
+        canvas.height = Math.max(1, Math.round(img.height * ratio));
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob((blob) => {
+          URL.revokeObjectURL(url);
+          if (!blob) return resolve(file);
+          const safeName = (file.name || 'product-image').replace(/\.[^.]+$/, '') + '.webp';
+          resolve(new File([blob], safeName, { type: 'image/webp', lastModified: Date.now() }));
+        }, 'image/webp', quality);
+      } catch (e) {
+        URL.revokeObjectURL(url);
+        resolve(file);
+      }
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+    img.src = url;
+  });
 }
 
 const App = () => {
@@ -783,17 +854,22 @@ const App = () => {
     moveImageToIndex(variantIndex, payload.imageIndex, imageIndex);
   };
 
-  const addOrReplaceImage = (variantIndex, file, imageIndex = null) => {
+  const addOrReplaceImage = async (variantIndex, file, imageIndex = null) => {
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      updateVariantImages(variantIndex, list => {
-        const item = makeImageItem(reader.result, file, imageIndex === null ? null : getImageSlot(list[imageIndex]));
-        if (imageIndex === null) return [...list, item];
-        return list.map((oldItem, i) => i === imageIndex ? item : oldItem);
-      });
-    };
-    reader.readAsDataURL(file);
+    if (fileTooLarge(file)) {
+      setEror(`Ukuran foto maksimal ${MAX_UPLOAD_MB}MB. Kompres dulu fotonya atau pilih file yang lebih kecil.`);
+      return;
+    }
+    setEror('');
+    const optimizedFile = await resizeImageBeforeUpload(file);
+    const previewUrl = URL.createObjectURL(optimizedFile);
+    updateVariantImages(variantIndex, list => {
+      const oldSrc = imageIndex === null ? null : getImageSrc(list[imageIndex]);
+      const item = makeImageItem(previewUrl, optimizedFile, imageIndex === null ? null : getImageSlot(list[imageIndex]));
+      if (oldSrc && oldSrc.startsWith('blob:')) setTimeout(() => URL.revokeObjectURL(oldSrc), PREVIEW_REVOKE_DELAY);
+      if (imageIndex === null) return [...list, item];
+      return list.map((oldItem, i) => i === imageIndex ? item : oldItem);
+    });
   };
 
   useEffect(() => {
@@ -1088,16 +1164,23 @@ const App = () => {
             <img className="preview-hover" src={hoverSrc || "/img/nopic.jpg"} alt="preview hover" />
             <div style={{ margin: '10px 0 20px' }}>
               <input
-                onChange={(e) => {
+                onChange={async (e) => {
                   const file = e.target.files[0];
+                  if (fileTooLarge(file)) {
+                    setEror(`Ukuran foto maksimal ${MAX_UPLOAD_MB}MB. Kompres dulu fotonya atau pilih file yang lebih kecil.`);
+                    e.target.value = '';
+                    return;
+                  }
                   if (file) {
-                    setHoverFile(file);
-                    const reader = new FileReader();
-                    reader.onload = () => setHoverSrc(reader.result);
-                    reader.readAsDataURL(file);
+                    const optimizedFile = await resizeImageBeforeUpload(file, 1200, 0.82);
+                    setHoverFile(optimizedFile);
+                    const oldHover = hoverSrc;
+                    const nextHover = URL.createObjectURL(optimizedFile);
+                    setHoverSrc(nextHover);
+                    if (oldHover && oldHover.startsWith('blob:')) setTimeout(() => URL.revokeObjectURL(oldHover), PREVIEW_REVOKE_DELAY);
                   } else { setHoverFile(null); }
                 }}
-                name="gambar_hover" type="file" className="form-control" />
+                name="gambar_hover" type="file" accept="image/*" className="form-control" />
             </div>
 
             <div className="section-title">Varian</div>
@@ -1108,7 +1191,7 @@ const App = () => {
                     <div className="variant-tools">
                       <div>
                         <div className="section-title" style={{ margin:0 }}>Varian #{ind_v + 1}</div>
-                        <div className="variant-help">Drag foto untuk geser urutan. Klik 2 foto untuk tukar posisi. Double click foto untuk ganti file.</div>
+                        <div className="variant-help">Drag foto untuk geser urutan. Klik 2 foto untuk tukar posisi. Double click untuk ganti. Arahkan mouse untuk hapus.</div>
                       </div>
                     </div>
 
@@ -1117,7 +1200,7 @@ const App = () => {
                         const isSelected = selectedImage && selectedImage.variantIndex === ind_v && selectedImage.imageIndex === ind_g;
                         return (
                         <div key={ind_g} className="image-tile">
-                          <input id={`replace-file-${ind_v}-${ind_g}`} type="file" onChange={(e) => { addOrReplaceImage(ind_v, e.target.files[0], ind_g); e.target.value = ''; }} />
+                          <input id={`replace-file-${ind_v}-${ind_g}`} type="file" accept="image/*" onChange={(e) => { addOrReplaceImage(ind_v, e.target.files[0], ind_g); e.target.value = ''; }} />
                           <div
                             className={`item-gambar${isSelected ? ' selected' : ''}`}
                             title="Drag untuk pindah, klik 2 foto untuk tukar, double click untuk ganti"
@@ -1137,13 +1220,14 @@ const App = () => {
                             }}>
                             <span className="img-no">#{ind_g + 1}{getImageSlot(g) ? ` / file ${getImageSlot(g)}` : ' / baru'}</span>
                             <p>{getImageFile(g) instanceof File ? 'baru' : 'lama'}</p>
-                            <img src={getImageSrc(g) || "/img/nopic.jpg"} alt={`Foto varian ${ind_v + 1} nomor ${ind_g + 1}`} />
+                            <button type="button" className="quick-delete" title="Hapus foto" aria-label={`Hapus foto ${ind_g + 1}`} onClick={(e) => { e.stopPropagation(); removeImage(ind_v, ind_g); }}>×</button>
+                            <img src={getImageSrc(g) || "/img/nopic.jpg"} alt={`Foto varian ${ind_v + 1} nomor ${ind_g + 1}`} loading="lazy" decoding="async" />
                           </div>
                         </div>
                         );
                       })}
                       <div>
-                        <input type="file" id={`file-${ind_v}`} style={{ display:'none' }}
+                        <input type="file" accept="image/*" id={`file-${ind_v}`} style={{ display:'none' }}
                           onChange={(e) => { addOrReplaceImage(ind_v, e.target.files[0]); e.target.value = ''; }} />
                         <label htmlFor={`file-${ind_v}`} className="add-thumb">+ Foto</label>
                       </div>
