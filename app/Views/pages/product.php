@@ -357,9 +357,7 @@ $productCoverUrl = function (array $product): string {
                         <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
                     <div class="d-flex flex-column gap-2 card1-content-img-kanan">
                         <?php if (session()->get('role') == '1') { ?>
-                        <form action="/admin/editproduct/<?= $p['id'] ?>" method="post">
-                            <button type="submit" class="card1-btn-img"><i class="material-icons">edit</i></button>
-                        </form>
+                        <a class="card1-btn-img" href="/admin/editproduct/<?= $p['id'] ?>" title="Edit produk"><i class="material-icons">edit</i></a>
                         <?php }
                                 if (in_array($p['id'], $wishlist)) { ?>
                         <form action="/delwishlist/<?= $p['id'] ?>" method="post">
@@ -372,8 +370,7 @@ $productCoverUrl = function (array $product): string {
                         </form>
                         <?php } ?>
                         <form method="post" id="card<?= $ind_p ?>"
-                            action="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'], true)[0]['nama'] ?>/1"
-                            type="submit"><button class="card1-btn-img"><i class="material-icons">shopping_cart</i>
+                            action="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'], true)[0]['nama'] ?>/1"><button class="card1-btn-img"><i class="material-icons">shopping_cart</i>
                             </button>
                         </form>
                     </div>
