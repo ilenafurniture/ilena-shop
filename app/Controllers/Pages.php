@@ -1693,6 +1693,95 @@ class Pages extends BaseController
         $this->sendMetaCapiPurchase($order);
     }
 
+    private function sendOrderPaymentEmail(array $order, string $status): void
+    {
+        $emailCus = (string)($order['email'] ?? '');
+        if (!filter_var($emailCus, FILTER_VALIDATE_EMAIL)) {
+            return;
+        }
+
+        $orderId = (string)($order['id_midtrans'] ?? '');
+        $nama = (string)($order['nama'] ?? 'Customer');
+        $statusText = $status;
+        $subjectStatus = $status === 'Proses' ? 'Pembayaran Berhasil' : 'Status Pembayaran ' . $status;
+
+        if ($status === 'Proses') {
+            $pesan = 'Pembayaran kamu sudah berhasil kami terima. Pesanan akan segera kami proses.';
+        } elseif ($status === 'Menunggu Pembayaran') {
+            $pesan = 'Pesanan kamu sudah dibuat dan sedang menunggu pembayaran.';
+        } elseif (in_array($status, ['Kadaluarsa', 'Ditolak', 'Gagal', 'Dibatalkan'], true)) {
+            $pesan = 'Pembayaran pesanan kamu berstatus ' . strtolower($status) . '. Silakan cek halaman pesanan untuk detailnya.';
+        } else {
+            $pesan = 'Status pembayaran pesanan kamu telah berubah menjadi ' . $status . '.';
+        }
+
+        $email = \Config\Services::email();
+        $email->clear(true);
+        $email->setFrom('no-reply@ilenafurniture.com', 'Ilena Furniture');
+        $email->setReplyTo('info@ilenafurniture.com', 'Customer Care Ilena Furniture');
+        $email->setTo($emailCus);
+        $email->setSubject('ILENA Store - ' . $subjectStatus . ' #' . $orderId);
+        $email->setMessage('
+            <div style="font-family:Arial,sans-serif;color:#222;line-height:1.6">
+                <h2>Halo ' . esc($nama) . ',</h2>
+                <p>' . esc($pesan) . '</p>
+                <p><b>Kode Pesanan:</b> ' . esc($orderId) . '</p>
+                <p><b>Status:</b> ' . esc($statusText) . '</p>
+                <p><a href="https://ilenafurniture.com/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId) . '">Lihat detail pesanan</a></p>
+                <p>Terima kasih sudah berbelanja di Ilena Furniture.</p>
+            </div>
+        ');
+        $email->setAltMessage("Halo {$nama}, {$pesan}\nKode Pesanan: {$orderId}\nStatus: {$statusText}\nhttps://ilenafurniture.com/orderdetail/" . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId));
+
+        if (!$email->send(false)) {
+            log_message('error', 'Gagal mengirim email status pembayaran Ilena ke {email}: {debug}', [
+                'email' => $emailCus,
+                'debug' => $email->printDebugger(['headers']),
+            ]);
+        }
+    }
+
+    private function sendAdminOrderPaymentEmail(array $order, string $status): void
+    {
+        $adminEmail = (string)env('ORDER_ADMIN_EMAIL', 'info@ilenafurniture.com');
+        if (!filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {
+            return;
+        }
+
+        $orderId = (string)($order['id_midtrans'] ?? '');
+        $nama = (string)($order['nama'] ?? '-');
+        $emailCus = (string)($order['email'] ?? '-');
+        $dataMid = json_decode($order['data_mid'] ?? '[]', true);
+        $total = number_format((float)($dataMid['gross_amount'] ?? 0), 0, ',', '.');
+
+        $email = \Config\Services::email();
+        $email->clear(true);
+        $email->setFrom('no-reply@ilenafurniture.com', 'Ilena Furniture');
+        $email->setReplyTo('info@ilenafurniture.com', 'Customer Care Ilena Furniture');
+        $email->setTo($adminEmail);
+        $email->setSubject('Admin Ilena - Update Pembayaran #' . $orderId);
+        $email->setMessage('
+            <div style="font-family:Arial,sans-serif;color:#222;line-height:1.6">
+                <h2>Update pembayaran masuk</h2>
+                <p>Midtrans mengirim perubahan status pembayaran untuk pesanan berikut:</p>
+                <p><b>Kode Pesanan:</b> ' . esc($orderId) . '</p>
+                <p><b>Status:</b> ' . esc($status) . '</p>
+                <p><b>Customer:</b> ' . esc($nama) . '</p>
+                <p><b>Email Customer:</b> ' . esc($emailCus) . '</p>
+                <p><b>Total:</b> Rp ' . esc($total) . '</p>
+                <p><a href="https://ilenafurniture.com/admin/order/online">Buka admin order</a></p>
+            </div>
+        ');
+        $email->setAltMessage("Update pembayaran masuk\nKode Pesanan: {$orderId}\nStatus: {$status}\nCustomer: {$nama}\nEmail: {$emailCus}\nTotal: Rp {$total}");
+
+        if (!$email->send(false)) {
+            log_message('error', 'Gagal mengirim email status pembayaran admin Ilena ke {email}: {debug}', [
+                'email' => $adminEmail,
+                'debug' => $email->printDebugger(['headers']),
+            ]);
+        }
+    }
+
     private function sendMetaCapiPurchase(array $order): void
     {
         try {
@@ -1980,6 +2069,11 @@ class Pages extends BaseController
 
         if (in_array($newStatus, ['Kadaluarsa', 'Ditolak', 'Gagal', 'Dibatalkan'], true) && $oldStatus === 'Proses' && $updatedOrder) {
             $this->restorePaidOrderStock($updatedOrder);
+        }
+
+        if ($updatedOrder && $newStatus !== $oldStatus) {
+            $this->sendOrderPaymentEmail($updatedOrder, $newStatus);
+            $this->sendAdminOrderPaymentEmail($updatedOrder, $newStatus);
         }
 
         return $this->response->setJSON(['success' => true]);
