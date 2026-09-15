@@ -1698,6 +1698,74 @@ class Pages extends BaseController
         $this->sendMetaCapiPurchase($order);
     }
 
+    private function syncOrderToIlenaSistem(array $order): void
+    {
+        if ((string)env('ILENA_SYSTEM_WEB_ORDER_ENABLED', 'false') !== 'true') {
+            return;
+        }
+
+        $url = trim((string)env('ILENA_SYSTEM_WEB_ORDER_URL', ''));
+        $token = trim((string)env('ILENA_SYSTEM_WEB_ORDER_TOKEN', ''));
+        if ($url === '' || $token === '') {
+            log_message('error', 'Sync Sistem Ilena dilewati: URL/token belum diisi.');
+            return;
+        }
+
+        $items = json_decode($order['items'] ?? '[]', true);
+        if (!is_array($items)) $items = [];
+
+        $kurir = json_decode($order['kurir'] ?? '[]', true);
+        if (!is_array($kurir)) $kurir = [];
+
+        $dataMid = json_decode($order['data_mid'] ?? '[]', true);
+        if (!is_array($dataMid)) $dataMid = [];
+
+        $payload = [
+            'order_id' => (string)($order['id_midtrans'] ?? ''),
+            'status' => (string)($order['status'] ?? ''),
+            'nama_pen' => (string)($order['nama'] ?? ''),
+            'email' => (string)($order['email'] ?? ''),
+            'hp_pen' => (string)($order['nohp'] ?? ''),
+            'alamat_pen' => (string)($order['alamat'] ?? ''),
+            'items' => $items,
+            'kurir' => $kurir,
+            'data_mid' => $dataMid,
+            'is_test' => $this->isSandboxOrder($order),
+            'source' => 'ilenafurniture.com',
+        ];
+
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => json_encode($payload),
+            CURLOPT_HTTPHEADER => [
+                'Accept: application/json',
+                'Content-Type: application/json',
+                'X-Ilena-Webhook-Token: ' . $token,
+            ],
+            CURLOPT_TIMEOUT => 20,
+        ]);
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        $httpCode = (int)curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+
+        if ($err || $httpCode < 200 || $httpCode >= 300) {
+            log_message('error', 'Sync order ke Sistem Ilena gagal untuk {order}: HTTP {http} ERR {err} RESP {resp}', [
+                'order' => (string)($order['id_midtrans'] ?? ''),
+                'http' => $httpCode,
+                'err' => $err,
+                'resp' => substr((string)$response, 0, 500),
+            ]);
+            return;
+        }
+
+        log_message('info', 'Sync order ke Sistem Ilena berhasil untuk ' . (string)($order['id_midtrans'] ?? ''));
+    }
+
     private function sendOrderPaymentEmail(array $order, string $status): void
     {
         $emailCus = (string)($order['email'] ?? '');
@@ -2035,6 +2103,9 @@ class Pages extends BaseController
         if ($status === 'Proses' && $trx && !$this->isSandboxOrder($trx)) {
             $this->processPaidOrder($trx);
         }
+        if ($status === 'Proses' && $trx) {
+            $this->syncOrderToIlenaSistem($trx);
+        }
 
         session()->remove(['voucher', 'voucher_claimed', 'keranjang', 'kurir', 'kurirTerpilih', 'alamatTerpilih', 'hargaKeseluruhan']);
         $this->syncCartToUser([]);
@@ -2087,6 +2158,9 @@ class Pages extends BaseController
 
         if (!$isSandboxOrder && $newStatus === 'Proses' && $oldStatus !== 'Proses' && $updatedOrder) {
             $this->processPaidOrder($updatedOrder);
+        }
+        if ($newStatus === 'Proses' && $oldStatus !== 'Proses' && $updatedOrder) {
+            $this->syncOrderToIlenaSistem($updatedOrder);
         }
 
         if (!$isSandboxOrder && in_array($newStatus, ['Kadaluarsa', 'Ditolak', 'Gagal', 'Dibatalkan'], true) && $oldStatus === 'Proses' && $updatedOrder) {

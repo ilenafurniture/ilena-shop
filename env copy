@@ -159,3 +159,10 @@ SHIPPING_MANUAL_PRICE_PER_KG = 0
 SHIPPING_MANUAL_ESTIMATE = "3 - 10"
 SHIPPING_MANUAL_COURIER_CODE = manual
 SHIPPING_MANUAL_COURIER_NAME = "Pengiriman Manual"
+
+#--------------------------------------------------------------------
+# SISTEM ILENA INTEGRATION
+#--------------------------------------------------------------------
+ILENA_SYSTEM_WEB_ORDER_ENABLED = false
+ILENA_SYSTEM_WEB_ORDER_URL = https://sistem.ilenafurniture.com/api/integrations/ilena-web-order
+ILENA_SYSTEM_WEB_ORDER_TOKEN = isi_token_rahasia_yang_sama_dengan_sistem_ilena
