@@ -3899,7 +3899,8 @@ class Pages extends BaseController
         $nohpUser = preg_replace('/[^\d+]/', '', (string)$this->request->getVar('nohp'));
 
         $email = \Config\Services::email();
-        $email->setFrom('no-reply@ilenafurniture.com', 'Ilena Furniture');
+        $emailConfig = config('Email');
+        $email->setFrom($emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com', 'Ilena Furniture');
         $email->setTo($emailUser);
         $email->setSubject('ILENA Store - Verifikasi OTP');
         $email->setMessage("<p>Berikut kode OTP verifikasi</p><h1>" . $otp_number . "</h1><p>Kode ini berlaku hingga " . $waktu_otp_tanggal . "</p>");
@@ -3997,7 +3998,8 @@ class Pages extends BaseController
             $waktu_otp_tanggal = date("d", $d) . " " . $bulan[date("m", $d) - 1] . " " . date("Y H:i:s", $d);
 
             $sendemail = \Config\Services::email();
-            $sendemail->setFrom('no-reply@ilenafurniture.com', 'Ilena Furniture');
+            $emailConfig = config('Email');
+            $sendemail->setFrom($emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com', 'Ilena Furniture');
             $sendemail->setTo($email);
             $sendemail->setSubject('ILENA Store - Verifikasi OTP');
             $sendemail->setMessage("<p>Berikut kode OTP verifikasi</p><h1>" . $otp_number . "</h1><p>Kode ini berlaku hingga " . $waktu_otp_tanggal . "</p>");
@@ -4058,7 +4060,8 @@ class Pages extends BaseController
         $waktu_otp_tanggal = date("d", $d) . " " . $bulan[date("m", $d) - 1] . " " . date("Y H:i:s", $d);
 
         $email = \Config\Services::email();
-        $email->setFrom('no-reply@ilenafurniture.com', 'Ilena Furniture');
+        $emailConfig = config('Email');
+        $email->setFrom($emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com', 'Ilena Furniture');
         $email->setTo($emailUser);
         $email->setSubject('ILENA Store - Verifikasi OTP');
         $email->setMessage("<p>Berikut kode OTP verifikasi</p><h1>" . $otp_number . "</h1><p>Kode ini berlaku hingga " . $waktu_otp_tanggal . "</p>");
