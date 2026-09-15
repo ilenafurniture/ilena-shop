@@ -1091,7 +1091,7 @@ class Pages extends BaseController
 
         // ====== legacy voucher untuk email uji (tetap, tidak auto-apply) ======
         $voucher      = [];
-        $emailUjiCoba = ['galihsuks123@gmail.com','ilenafurniture@gmail.com','galih8.4.2001@gmail.com','tipaun0605@gmail.com'];
+        $emailUjiCoba = ['galihsuks123@gmail.com','ilenafurniture@gmail.com','galih8.4.2001@gmail.com','tipaun0605@gmail.com','uuua5021@gmail.com'];
         if (session()->get('isLogin') && in_array($alamatselected['email_pemesan'], $emailUjiCoba, true)) {
             $voucherMemberBaru = $this->voucherModel->where(['id'=>1])->first();
             if ($voucherMemberBaru) {
@@ -1536,7 +1536,7 @@ class Pages extends BaseController
 
     private function midtransTestEmails(): array
     {
-        return ['galihsuks123@gmail.com','ilenafurniture@gmail.com','galih8.4.2001@gmail.com','adityaanugrah494@gmail.com','tipaun0605@gmail.com'];
+        return ['galihsuks123@gmail.com','ilenafurniture@gmail.com','galih8.4.2001@gmail.com','adityaanugrah494@gmail.com','tipaun0605@gmail.com','uuua5021@gmail.com'];
     }
 
     private function midtransServerKey(string $email = ''): string
@@ -1716,8 +1716,10 @@ class Pages extends BaseController
         }
 
         $email = \Config\Services::email();
+        $emailConfig = config('Email');
+        $fromEmail = $emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com';
         $email->clear(true);
-        $email->setFrom('no-reply@ilenafurniture.com', 'Ilena Furniture');
+        $email->setFrom($fromEmail, 'Ilena Furniture');
         $email->setReplyTo('info@ilenafurniture.com', 'Customer Care Ilena Furniture');
         $email->setTo($emailCus);
         $email->setSubject('ILENA Store - ' . $subjectStatus . ' #' . $orderId);
@@ -1755,8 +1757,10 @@ class Pages extends BaseController
         $total = number_format((float)($dataMid['gross_amount'] ?? 0), 0, ',', '.');
 
         $email = \Config\Services::email();
+        $emailConfig = config('Email');
+        $fromEmail = $emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com';
         $email->clear(true);
-        $email->setFrom('no-reply@ilenafurniture.com', 'Ilena Furniture');
+        $email->setFrom($fromEmail, 'Ilena Furniture');
         $email->setReplyTo('info@ilenafurniture.com', 'Customer Care Ilena Furniture');
         $email->setTo($adminEmail);
         $email->setSubject('Admin Ilena - Update Pembayaran #' . $orderId);
