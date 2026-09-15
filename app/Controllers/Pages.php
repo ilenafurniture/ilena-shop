@@ -1935,13 +1935,24 @@ class Pages extends BaseController
         $itemDetails[] = ['id'=>'Biaya Admin','price'=>$biayaAdmin,'quantity'=>1,'name'=>'Biaya Admin'];
         $total += $biayaAdmin;
 
+        $total = 0;
+        foreach ($itemDetails as &$item) {
+            $item['id'] = substr((string)($item['id'] ?? ''), 0, 64);
+            $item['price'] = (int)round((float)($item['price'] ?? 0));
+            $item['quantity'] = max(1, (int)($item['quantity'] ?? 1));
+            $item['name'] = substr((string)($item['name'] ?? $item['id']), 0, 50);
+            unset($item['packed']);
+            $total += $item['price'] * $item['quantity'];
+        }
+        unset($item);
+
         $last = $this->pemesananModel->orderBy('id','desc')->first();
         $idAsli = "IL".sprintf("%08d", $last ? ((int)$last['id']+1) : 1);
         $idFix = in_array($email, $emailUjiCoba, true) ? ("IL".rand()) : $idAsli;
 
         $customField = json_encode(['e'=>$email,'n'=>$nama,'h'=>$nohp,'a'=>$alamat,'i'=>session()->get('keranjang'),'k'=>$kurirTerpilih,'v'=>$voucher]);
         $arrPostField = [
-            "transaction_details" => ["order_id"=>$idFix, "gross_amount"=>$total],
+            "transaction_details" => ["order_id"=>$idFix, "gross_amount"=>(int)$total],
             "customer_details" => ["email"=>$email,"phone"=>$nohp,"first_name"=>$nama],
             "item_details" => $itemDetails,
             "custom_field1" => substr($customField, 0, 255),
