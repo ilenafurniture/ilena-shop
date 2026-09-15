@@ -999,7 +999,10 @@ class AdminController extends BaseController
     }
     public function order()
     {
-        $pesanan = $this->pemesananModel->getPemesanan();
+        $pesanan = $this->pemesananModel
+            ->whereNotIn('email', ['galihsuks123@gmail.com','ilenafurniture@gmail.com','galih8.4.2001@gmail.com','adityaanugrah494@gmail.com','tipaun0605@gmail.com','uuua5021@gmail.com'])
+            ->orderBy('id', 'desc')
+            ->findAll();
         foreach ($pesanan as $ind_p => $p) {
             $pesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
             if (isset($pesanan[$ind_p]['data_mid']['custom_field1']))

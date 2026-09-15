@@ -1548,6 +1548,11 @@ class Pages extends BaseController
         return (string)env('MIDTRANS_PRODUCTION_KEY', 'DefaultValue');
     }
 
+    private function isSandboxOrder(array $order): bool
+    {
+        return in_array((string)($order['email'] ?? ''), $this->midtransTestEmails(), true);
+    }
+
     private function midtransStatusToOrderStatus(string $transactionStatus, string $fraudStatus = 'accept'): string
     {
         if ($fraudStatus !== '' && $fraudStatus !== 'accept') {
@@ -2016,7 +2021,7 @@ class Pages extends BaseController
         ]);
 
         $trx = $this->pemesananModel->where('id_midtrans', $idFix)->first();
-        if ($status === 'Proses' && $trx) {
+        if ($status === 'Proses' && $trx && !$this->isSandboxOrder($trx)) {
             $this->processPaidOrder($trx);
         }
 
@@ -2067,17 +2072,21 @@ class Pages extends BaseController
         ])->update();
 
         $updatedOrder = $this->pemesananModel->getPemesanan($orderId);
-        if ($newStatus === 'Proses' && $oldStatus !== 'Proses' && $updatedOrder) {
+        $isSandboxOrder = $updatedOrder ? $this->isSandboxOrder($updatedOrder) : false;
+
+        if (!$isSandboxOrder && $newStatus === 'Proses' && $oldStatus !== 'Proses' && $updatedOrder) {
             $this->processPaidOrder($updatedOrder);
         }
 
-        if (in_array($newStatus, ['Kadaluarsa', 'Ditolak', 'Gagal', 'Dibatalkan'], true) && $oldStatus === 'Proses' && $updatedOrder) {
+        if (!$isSandboxOrder && in_array($newStatus, ['Kadaluarsa', 'Ditolak', 'Gagal', 'Dibatalkan'], true) && $oldStatus === 'Proses' && $updatedOrder) {
             $this->restorePaidOrderStock($updatedOrder);
         }
 
         if ($updatedOrder && $newStatus !== $oldStatus) {
             $this->sendOrderPaymentEmail($updatedOrder, $newStatus);
-            $this->sendAdminOrderPaymentEmail($updatedOrder, $newStatus);
+            if (!$isSandboxOrder) {
+                $this->sendAdminOrderPaymentEmail($updatedOrder, $newStatus);
+            }
         }
 
         return $this->response->setJSON(['success' => true]);
