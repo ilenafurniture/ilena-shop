@@ -16,10 +16,13 @@
     <!-- Layout guard supaya konten & sticky element ga tabrakan -->
     <style>
     :root {
-        --adminSidebarW: 300px;
-        /* lebar sidebar admin */
-        --adminPad: 16px;
-        /* spacing dalam konten */
+        --adminSidebarW: 292px;
+        --adminPad: 24px;
+        --adminSurface: #ffffff;
+        --adminBg: #f6f7fb;
+        --adminBorder: #eef2f7;
+        --adminInk: #0f172a;
+        --adminMuted: #64748b;
     }
 
     html,
@@ -28,7 +31,10 @@
     }
 
     body {
-        background: #f5f6f8;
+        background: var(--adminBg);
+        color: var(--adminInk);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: geometricPrecision;
     }
 
     /* Shell responsive: sidebar kiri + konten kanan */
@@ -36,18 +42,26 @@
         display: flex;
         min-height: 100svh;
         width: 100%;
+        background:
+            radial-gradient(circle at top right, rgba(179, 18, 23, .07), transparent 28rem),
+            linear-gradient(180deg, #fbfcff 0%, var(--adminBg) 45%, #f8fafc 100%);
     }
 
     .admin-sidebar {
         width: var(--adminSidebarW);
-        background: #fff;
-        border-right: 1px solid #eee;
+        min-width: var(--adminSidebarW);
+        background: var(--adminSurface);
+        border-right: 1px solid var(--adminBorder);
         overflow-y: auto;
+        position: sticky;
+        top: 0;
+        height: 100svh;
+        z-index: 20;
     }
 
     .admin-content {
         flex: 1;
-        background: whitesmoke;
+        background: transparent;
         display: flex;
         flex-direction: column;
         /* ini scroller utama agar position:sticky di halaman (analytics) bekerja */
@@ -57,7 +71,18 @@
     .admin-content-inner {
         padding: var(--adminPad);
         position: relative;
-        min-height: 500px;
+        min-height: 100svh;
+        width: 100%;
+    }
+
+    .admin-content-inner > * {
+        max-width: 100%;
+    }
+
+    .admin-content-inner .page-wrap,
+    .admin-content-inner .container-table,
+    .admin-content-inner .container {
+        background-clip: padding-box;
     }
 
     /* Toast & notif tetap di atas konten */
@@ -93,9 +118,21 @@
             flex-direction: column;
         }
 
+        .admin-sidebar {
+            position: static;
+            width: 100%;
+            min-width: 0;
+            height: auto;
+        }
+
         .admin-content {
             width: 100%;
             flex: 1;
+        }
+
+        .admin-content-inner {
+            padding: 14px 12px 96px;
+            min-height: auto;
         }
     }
     </style>

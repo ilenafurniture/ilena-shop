@@ -17,7 +17,10 @@ if (isset($_GET['koleksi'])) {
     }
 }
 
-$hitungPag = ceil(count($produk) / 10);
+$totalProdukFiltered = count($produk);
+$totalProdukAktif = count(array_filter($produk, static fn($item) => !empty($item['active'])));
+$totalKoleksi = count($koleksi ?? []);
+$hitungPag = ceil($totalProdukFiltered / 10);
 $pag = 1;
 if (isset($_GET['pag'])) $pag = (int)$_GET['pag'];
 $produkLama = array_slice($produk, ($pag - 1) * 10);
@@ -65,7 +68,16 @@ $barangThumbUrl = function ($product) {
 }
 
 .page-wrap {
-    padding: 2rem;
+    padding: 4px 2px 2rem;
+}
+
+.admin-product-hero {
+    background: rgba(255, 255, 255, .86);
+    border: 1px solid #eef2f7;
+    border-radius: 22px;
+    padding: 20px;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, .06);
+    margin-bottom: 16px;
 }
 
 .page-head {
@@ -73,17 +85,52 @@ $barangThumbUrl = function ($product) {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 }
 
 .page-title {
-    margin: 0;
-    line-height: 1.2
+    margin: 0 0 6px;
+    line-height: 1.1;
+    font-size: 28px;
+    font-weight: 850;
+    letter-spacing: -.045em;
+    color: #0f172a;
 }
 
 .meta-line {
     color: var(--slate-600);
     font-size: 13px
+}
+
+.admin-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.admin-stat-card {
+    padding: 13px 14px;
+    border-radius: 16px;
+    border: 1px solid #eef2f7;
+    background: #f8fafc;
+}
+
+.admin-stat-card span {
+    display: block;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 4px;
+}
+
+.admin-stat-card strong {
+    display: block;
+    font-size: 22px;
+    line-height: 1;
+    color: #111827;
+    letter-spacing: -.04em;
 }
 
 /* Toolbar */
@@ -92,7 +139,7 @@ $barangThumbUrl = function ($product) {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin: 10px 0 4px;
+    margin: 14px 0 14px;
     flex-wrap: wrap;
 }
 
@@ -153,10 +200,10 @@ $barangThumbUrl = function ($product) {
 /* Table-like cards (desktop) */
 .container-table {
     background: #fff;
-    border: 1px solid var(--slate-200);
-    border-radius: 14px;
+    border: 1px solid #eef2f7;
+    border-radius: 18px;
     overflow: hidden;
-    box-shadow: 0 12px 28px rgba(0, 0, 0, .04);
+    box-shadow: 0 16px 42px rgba(15, 23, 42, .05);
 }
 
 .header-table,
@@ -276,6 +323,37 @@ $barangThumbUrl = function ($product) {
 }
 
 @media (max-width: 860px) {
+    .admin-product-hero {
+        padding: 16px;
+        border-radius: 18px;
+    }
+
+    .page-head {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .toolbar-right {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 2px;
+    }
+
+    .admin-stat-grid {
+        grid-template-columns: repeat(3, minmax(96px, 1fr));
+        overflow-x: auto;
+    }
+
+    .toolbar-left,
+    .searchbox {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .filter-select {
+        min-width: 140px;
+    }
+
     .show-block-ke-hide {
         display: none;
     }
@@ -337,17 +415,32 @@ $barangThumbUrl = function ($product) {
 <div class="page-wrap">
 
     <!-- Header -->
-    <div class="page-head">
-        <div>
-            <h1 class="teks-sedang page-title">Produk Saya</h1>
-            <div class="meta-line"><?= count($produk); ?> Produk pada halaman
-                ini<?= $koleksiterpilih ? " • Koleksi: <b>".htmlspecialchars(str_replace('-', ' ', $koleksiterpilih))."</b>" : '' ?>
+    <div class="admin-product-hero">
+        <div class="page-head">
+            <div>
+                <h1 class="page-title">Produk Saya</h1>
+                <div class="meta-line"><?= $totalProdukFiltered; ?> produk ditemukan<?= $koleksiterpilih ? " • Koleksi: <b>".htmlspecialchars(str_replace('-', ' ', $koleksiterpilih))."</b>" : '' ?></div>
+            </div>
+            <div class="toolbar-right">
+                <a href="/admin/producttable" class="btn btn-outline-dark">Export</a>
+                <a href="/admin/addproduct" class="btn-default-merah">Tambah Produk</a>
+                <a href="/admin/changepic" class="btn-default-merah">Resize Img</a>
             </div>
         </div>
-        <div class="toolbar-right">
-            <a href="/admin/producttable" class="btn btn-outline-dark">Export</a>
-            <a href="/admin/addproduct" class="btn-default-merah">Tambah Produk</a>
-            <a href="/admin/changepic" class="btn-default-merah">Resize Img</a>
+
+        <div class="admin-stat-grid">
+            <div class="admin-stat-card">
+                <span>Total Produk</span>
+                <strong><?= number_format($totalProdukFiltered, 0, ',', '.'); ?></strong>
+            </div>
+            <div class="admin-stat-card">
+                <span>Produk Aktif</span>
+                <strong><?= number_format($totalProdukAktif, 0, ',', '.'); ?></strong>
+            </div>
+            <div class="admin-stat-card">
+                <span>Koleksi</span>
+                <strong><?= number_format($totalKoleksi, 0, ',', '.'); ?></strong>
+            </div>
         </div>
     </div>
 
