@@ -1766,6 +1766,64 @@ class Pages extends BaseController
         log_message('info', 'Sync order ke Sistem Ilena berhasil untuk ' . (string)($order['id_midtrans'] ?? ''));
     }
 
+    private function deleteOrderFromIlenaSistem(array $order): void
+    {
+        if ((string)env('ILENA_SYSTEM_WEB_ORDER_ENABLED', 'false') !== 'true') {
+            return;
+        }
+
+        $baseUrl = trim((string)env('ILENA_SYSTEM_WEB_ORDER_URL', ''));
+        $token = trim((string)env('ILENA_SYSTEM_WEB_ORDER_TOKEN', ''));
+        $orderId = (string)($order['id_midtrans'] ?? '');
+        if ($baseUrl === '' || $token === '' || $orderId === '') {
+            return;
+        }
+
+        $url = rtrim($baseUrl, '/');
+        if (str_ends_with($url, '/ilena-web-order')) {
+            $url .= '/' . rawurlencode($orderId);
+        } else {
+            $url .= '/ilena-web-order/' . rawurlencode($orderId);
+        }
+
+        $payload = [
+            'email' => (string)($order['email'] ?? ''),
+            'is_test' => $this->isSandboxOrder($order),
+            'reason' => (string)($order['status'] ?? 'Dibatalkan'),
+        ];
+
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => 'DELETE',
+            CURLOPT_POSTFIELDS => json_encode($payload),
+            CURLOPT_HTTPHEADER => [
+                'Accept: application/json',
+                'Content-Type: application/json',
+                'X-Ilena-Webhook-Token: ' . $token,
+            ],
+            CURLOPT_TIMEOUT => 20,
+        ]);
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        $httpCode = (int)curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+
+        if ($err || $httpCode < 200 || $httpCode >= 300) {
+            log_message('error', 'Hapus order dari Sistem Ilena gagal untuk {order}: HTTP {http} ERR {err} RESP {resp}', [
+                'order' => $orderId,
+                'http' => $httpCode,
+                'err' => $err,
+                'resp' => substr((string)$response, 0, 500),
+            ]);
+            return;
+        }
+
+        log_message('info', 'Order ' . $orderId . ' dihapus dari Sistem Ilena karena status website batal/gagal.');
+    }
+
     private function sendOrderPaymentEmail(array $order, string $status): void
     {
         $emailCus = (string)($order['email'] ?? '');
@@ -2103,7 +2161,7 @@ class Pages extends BaseController
         if ($status === 'Proses' && $trx && !$this->isSandboxOrder($trx)) {
             $this->processPaidOrder($trx);
         }
-        if ($status === 'Proses' && $trx) {
+        if (in_array($status, ['Proses', 'Menunggu Pembayaran'], true) && $trx) {
             $this->syncOrderToIlenaSistem($trx);
         }
 
@@ -2163,8 +2221,16 @@ class Pages extends BaseController
             $this->syncOrderToIlenaSistem($updatedOrder);
         }
 
+        if ($newStatus === 'Menunggu Pembayaran' && $oldStatus !== 'Menunggu Pembayaran' && $updatedOrder) {
+            $this->syncOrderToIlenaSistem($updatedOrder);
+        }
+
         if (!$isSandboxOrder && in_array($newStatus, ['Kadaluarsa', 'Ditolak', 'Gagal', 'Dibatalkan'], true) && $oldStatus === 'Proses' && $updatedOrder) {
             $this->restorePaidOrderStock($updatedOrder);
+        }
+
+        if (in_array($newStatus, ['Kadaluarsa', 'Ditolak', 'Gagal', 'Dibatalkan'], true) && $updatedOrder) {
+            $this->deleteOrderFromIlenaSistem($updatedOrder);
         }
 
         if ($updatedOrder && $newStatus !== $oldStatus) {

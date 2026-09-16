@@ -14,7 +14,7 @@
     if ($can('orders_online')) {
         $testEmails = ['galihsuks123@gmail.com','ilenafurniture@gmail.com','galih8.4.2001@gmail.com','adityaanugrah494@gmail.com','tipaun0605@gmail.com','uuua5021@gmail.com'];
         $websiteOrderTodoCount = (new \App\Models\PemesananModel())
-            ->where('status', 'Proses')
+            ->whereIn('status', ['Proses', 'Menunggu Pembayaran'])
             ->like('id_midtrans', 'IL', 'after')
             ->whereNotIn('email', $testEmails)
             ->countAllResults();
