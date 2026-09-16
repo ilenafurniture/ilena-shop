@@ -24,12 +24,11 @@ if ($can('orders_online')) {
 }
 
 $mobileItems = [
+    ['show' => true, 'label' => 'Home', 'icon' => 'space_dashboard', 'href' => '/admin', 'active' => $currentPath === 'admin' || $currentPath === 'admin/'],
     ['show' => $can('products'), 'label' => 'Produk', 'icon' => 'inventory_2', 'href' => '/admin/product', 'active' => $isActivePrefix(['admin/product']) || ($title ?? '') === 'Produk Kami'],
     ['show' => $can('orders_online'), 'label' => 'Pesanan', 'icon' => 'shopping_bag', 'href' => '/admin/order/online', 'active' => $isActivePrefix(['admin/order/online']), 'badge' => $websiteOrderTodoCount],
     ['show' => $can('vouchers'), 'label' => 'Voucher', 'icon' => 'confirmation_number', 'href' => '/admin/voucher', 'active' => $isActivePrefix(['admin/voucher']) || str_contains($lowerTitle, 'voucher')],
     ['show' => $can('content'), 'label' => 'Konten', 'icon' => 'dashboard_customize', 'href' => '/admin/homelayout', 'active' => $isActivePrefix(['admin/homelayout', 'admin/article'])],
-    ['show' => $can('rbac'), 'label' => 'Akses', 'icon' => 'admin_panel_settings', 'href' => '/admin/rbac', 'active' => $isActivePrefix(['admin/rbac']) || ($title ?? '') === 'Role & Akses Admin'],
-    ['show' => true, 'label' => 'Keluar', 'icon' => 'logout', 'href' => '/logout', 'active' => false],
 ];
 $mobileItems = array_slice(array_values(array_filter($mobileItems, static fn($item) => $item['show'])), 0, 5);
 ?>

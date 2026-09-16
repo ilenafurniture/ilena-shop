@@ -25,6 +25,9 @@
     }
 
     $navGroups = [
+        'Utama' => [
+            ['show' => true, 'label' => 'Dashboard', 'icon' => 'space_dashboard', 'href' => '/admin', 'active' => $currentPath === 'admin' || $currentPath === 'admin/'],
+        ],
         'Produk' => [
             ['show' => $can('products'), 'label' => 'Produk', 'icon' => 'inventory_2', 'href' => '/admin/product', 'active' => $isActivePrefix(['admin/product']) || ($title ?? '') === 'Produk Kami'],
             ['show' => $can('vouchers'), 'label' => 'Voucher', 'icon' => 'confirmation_number', 'href' => '/admin/voucher', 'active' => $isActivePrefix(['admin/voucher']) || str_contains($lowerTitle, 'voucher')],

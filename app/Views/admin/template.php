@@ -7,6 +7,9 @@
     <title><?= $title; ?> | I L E N A</title>
 
     <link href="<?= base_url('css/bootstrap.min.css'); ?>" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="<?= base_url('css/style.css?v=23-04-2025'); ?>">
     <link rel="icon" href="<?= base_url('img/logo/N.png?v=11-03-2025'); ?>" type="image/png">
@@ -33,8 +36,24 @@
     body {
         background: var(--adminBg);
         color: var(--adminInk);
+        font-family: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         -webkit-font-smoothing: antialiased;
         text-rendering: geometricPrecision;
+    }
+
+    body button,
+    body input,
+    body select,
+    body textarea {
+        font-family: inherit;
+    }
+
+    .btn-default-merah,
+    .btn,
+    button {
+        border-radius: 12px;
+        font-weight: 800;
+        letter-spacing: -.01em;
     }
 
     /* Shell responsive: sidebar kiri + konten kanan */

@@ -112,6 +112,9 @@ $routes->get('/imgheaderhp/(:any)', 'GambarController::tampilGambarHeaderHp/$1')
 // ==================== Admin Controller ====================
 $routes->group('admin', ['filter' => 'adminFilter'], static function($routes) {
 
+    // Dashboard website admin
+    $routes->get('', 'AdminController::dashboard');
+
     // Produk
     $routes->get('producttable', 'AdminController::listProductTable');
     $routes->get('product', 'AdminController::listProduct');

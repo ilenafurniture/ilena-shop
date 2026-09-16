@@ -127,6 +127,66 @@ class AdminController extends BaseController
         $this->projectInteriorItemModel = new ProjectInteriorItemModel();
         
     }
+
+    public function dashboard()
+    {
+        $testEmails = ['galihsuks123@gmail.com','ilenafurniture@gmail.com','galih8.4.2001@gmail.com','adityaanugrah494@gmail.com','tipaun0605@gmail.com','uuua5021@gmail.com'];
+        $websiteOrderBase = static function () use ($testEmails) {
+            return (new PemesananModel())
+                ->like('id_midtrans', 'IL', 'after')
+                ->whereNotIn('email', $testEmails);
+        };
+
+        $allProducts = $this->barangModel->findAll();
+        $activeProducts = array_values(array_filter($allProducts, static fn($item) => !empty($item['active'])));
+        $lowStockProducts = [];
+        foreach ($allProducts as $product) {
+            $variants = json_decode($product['varian'] ?? '[]', true) ?: [];
+            $totalStock = 0;
+            foreach ($variants as $variant) {
+                $totalStock += (int)($variant['stok'] ?? 0);
+            }
+            if ($totalStock <= 3) {
+                $lowStockProducts[] = [
+                    'id' => $product['id'] ?? '',
+                    'nama' => $product['nama'] ?? '-',
+                    'stok' => $totalStock,
+                ];
+            }
+        }
+
+        $recentOrders = $websiteOrderBase()
+            ->orderBy('id', 'desc')
+            ->findAll(6);
+
+        $paidOrders = $websiteOrderBase()
+            ->whereIn('status', ['Proses', 'Selesai'])
+            ->findAll();
+        $revenue = 0;
+        foreach ($paidOrders as $order) {
+            $mid = json_decode($order['data_mid'] ?? '{}', true) ?: [];
+            $revenue += (int) round((float)($mid['gross_amount'] ?? 0));
+        }
+
+        $stats = [
+            'totalProducts' => count($allProducts),
+            'activeProducts' => count($activeProducts),
+            'lowStock' => count($lowStockProducts),
+            'websiteOrdersTodo' => $websiteOrderBase()->whereIn('status', ['Proses', 'Menunggu Pembayaran'])->countAllResults(),
+            'waitingPayment' => $websiteOrderBase()->where('status', 'Menunggu Pembayaran')->countAllResults(),
+            'paidOrders' => count($paidOrders),
+            'revenue' => $revenue,
+            'articles' => $this->artikelModel->countAllResults(),
+            'activeVouchers' => (new VoucherModel())->where('aktif', 1)->countAllResults(),
+        ];
+
+        return view('admin/dashboard', [
+            'title' => 'Dashboard Admin',
+            'stats' => $stats,
+            'recentOrders' => $recentOrders,
+            'lowStockProducts' => array_slice($lowStockProducts, 0, 6),
+        ]);
+    }
     
     public function listProduct()
     {
