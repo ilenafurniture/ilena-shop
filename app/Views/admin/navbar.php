@@ -30,9 +30,7 @@
             ['show' => $can('vouchers'), 'label' => 'Voucher', 'icon' => 'confirmation_number', 'href' => '/admin/voucher', 'active' => $isActivePrefix(['admin/voucher']) || str_contains($lowerTitle, 'voucher')],
         ],
         'Pesanan' => [
-            ['show' => $can('orders_online'), 'label' => 'Online', 'icon' => 'language', 'href' => '/admin/order/online', 'active' => $isActivePrefix(['admin/order/online']), 'badge' => $websiteOrderTodoCount],
-            ['show' => $can('orders_offline'), 'label' => 'Offline', 'icon' => 'storefront', 'href' => '/admin/order/offline/sale', 'active' => $isActivePrefix(['admin/order/offline'])],
-            ['show' => $can('project_interior'), 'label' => 'Interior', 'icon' => 'chair', 'href' => '/admin/project-interior', 'active' => $isActivePrefix(['admin/project-interior']) || str_contains($lowerTitle, 'project interior')],
+            ['show' => $can('orders_online'), 'label' => 'Pesanan Online', 'icon' => 'shopping_bag', 'href' => '/admin/order/online', 'active' => $isActivePrefix(['admin/order/online']), 'badge' => $websiteOrderTodoCount],
         ],
         'Konten' => [
             ['show' => $can('content'), 'label' => 'Artikel', 'icon' => 'article', 'href' => '/admin/article', 'active' => $isActivePrefix(['admin/article']) || str_contains($lowerTitle, 'artikel')],
@@ -42,7 +40,6 @@
         'Tools' => [
             ['show' => $can('analytics'), 'label' => 'Analytics', 'icon' => 'insights', 'href' => '/analytics', 'active' => $isActivePrefix(['analytics']) || ($title ?? '') === 'Insights Analytics'],
             ['show' => $can('activity_log'), 'label' => 'Log Aktivitas', 'icon' => 'history', 'href' => '/admin/activity-log', 'active' => $isActivePrefix(['admin/activity-log']) || ($title ?? '') === 'Log Aktivitas Admin'],
-            ['show' => $can('spam_cleanup'), 'label' => 'Cleanup Spam', 'icon' => 'cleaning_services', 'href' => '/admin/spam-cleanup', 'active' => $isActivePrefix(['admin/spam-cleanup']) || ($title ?? '') === 'Cleanup Spam Akun'],
             ['show' => $can('meta_capi'), 'label' => 'Meta CAPI', 'icon' => 'track_changes', 'href' => '/admin/meta-capi', 'active' => $isActivePrefix(['admin/meta-capi']) || ($title ?? '') === 'Meta CAPI'],
             ['show' => $can('rbac'), 'label' => 'Role & Akses', 'icon' => 'admin_panel_settings', 'href' => '/admin/rbac', 'active' => $isActivePrefix(['admin/rbac']) || ($title ?? '') === 'Role & Akses Admin'],
         ],
