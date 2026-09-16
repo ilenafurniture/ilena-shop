@@ -10,6 +10,15 @@
         str_contains($lowerTitle, 'project interior');
     $rbacService = new \App\Services\AdminRbacService();
     $can = static fn(string $permission): bool => $rbacService->hasPermission(session()->get('email'), $permission);
+    $websiteOrderTodoCount = 0;
+    if ($can('orders_online')) {
+        $testEmails = ['galihsuks123@gmail.com','ilenafurniture@gmail.com','galih8.4.2001@gmail.com','adityaanugrah494@gmail.com','tipaun0605@gmail.com','uuua5021@gmail.com'];
+        $websiteOrderTodoCount = (new \App\Models\PemesananModel())
+            ->where('status', 'Proses')
+            ->like('id_midtrans', 'IL', 'after')
+            ->whereNotIn('email', $testEmails)
+            ->countAllResults();
+    }
 ?>
 
 <div class="admin-nav show-block-ke-hide">
@@ -66,7 +75,12 @@
             <?php if ($can('orders_online')): ?>
             <a class="item-nav <?= $title == 'Pesanan' ? 'active' : ''; ?>" href="/admin/order/online">
                 <i class="material-icons">language</i>
-                <p class="m-0">Online</p>
+                <p class="m-0" style="flex:1;">Online</p>
+                <?php if ($websiteOrderTodoCount > 0): ?>
+                <span class="order-alert-badge" title="<?= esc($websiteOrderTodoCount); ?> pesanan website perlu diurus">
+                    <?= esc($websiteOrderTodoCount > 99 ? '99+' : $websiteOrderTodoCount); ?>
+                </span>
+                <?php endif; ?>
             </a>
             <?php endif; ?>
             <?php if ($can('orders_offline')): ?>
@@ -183,5 +197,21 @@
 
 .nav-separator+.item-nav {
     margin-top: 4px;
+}
+
+.order-alert-badge {
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: #dc2626;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+    box-shadow: 0 6px 16px rgba(220, 38, 38, .28);
 }
 </style>

@@ -1,6 +1,15 @@
 <?php
 $rbacService = new \App\Services\AdminRbacService();
 $can = static fn(string $permission): bool => $rbacService->hasPermission(session()->get('email'), $permission);
+$websiteOrderTodoCount = 0;
+if ($can('orders_online')) {
+    $testEmails = ['galihsuks123@gmail.com','ilenafurniture@gmail.com','galih8.4.2001@gmail.com','adityaanugrah494@gmail.com','tipaun0605@gmail.com','uuua5021@gmail.com'];
+    $websiteOrderTodoCount = (new \App\Models\PemesananModel())
+        ->where('status', 'Proses')
+        ->like('id_midtrans', 'IL', 'after')
+        ->whereNotIn('email', $testEmails)
+        ->countAllResults();
+}
 ?>
 
 <div class="header-hp w-100 hide-ke-show-block">
@@ -36,8 +45,13 @@ $can = static fn(string $permission): bool => $rbacService->hasPermission(sessio
     <?php endif; ?>
     <?php if ($can('orders_online')): ?>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
-        <a class="item-navhp <?= $title == 'Pesanan' ? 'active' : ''; ?>" href="/admin/order">
+        <a class="item-navhp position-relative <?= $title == 'Pesanan' ? 'active' : ''; ?>" href="/admin/order">
             <i class="material-icons">shopping_cart</i>
+            <?php if ($websiteOrderTodoCount > 0): ?>
+            <span class="order-alert-badge-hp" title="<?= esc($websiteOrderTodoCount); ?> pesanan website perlu diurus">
+                <?= esc($websiteOrderTodoCount > 99 ? '99+' : $websiteOrderTodoCount); ?>
+            </span>
+            <?php endif; ?>
             <!-- <p class="m-0">Pesanan</p> -->
         </a>
     </div>
@@ -87,3 +101,24 @@ $can = static fn(string $permission): bool => $rbacService->hasPermission(sessio
         </a>
     </div>
 </div>
+
+<style>
+.order-alert-badge-hp {
+    position: absolute;
+    top: -6px;
+    right: -9px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #dc2626;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+    border: 2px solid #fff;
+}
+</style>
