@@ -508,11 +508,17 @@ function getImageSlot(item) {
   return (item && typeof item === 'object') ? item.slot : null;
 }
 
-const MAX_UPLOAD_MB = 12;
+const MAX_UPLOAD_MB = 4;
+const MAX_PRODUCT_IMAGES = 25;
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
 const PREVIEW_REVOKE_DELAY = 1500;
 
 function fileTooLarge(file) {
   return file && file.size > MAX_UPLOAD_MB * 1024 * 1024;
+}
+
+function fileTypeInvalid(file) {
+  return file && !ALLOWED_IMAGE_TYPES.includes(file.type);
 }
 
 function resizeImageBeforeUpload(file, maxSize = 2200, quality = 0.82) {
@@ -685,6 +691,11 @@ const App = () => {
     // Validasi
     if (!formData.nama || !formData.harga) { setEror("Nama dan harga produk wajib diisi."); return; }
     if ((formData.varian || []).length === 0) { setEror("Minimal 1 varian harus ditambahkan."); return; }
+    const totalFotoProduk = (gambarSrc || []).reduce((total, group) => total + ((group || []).length), 0);
+    if (totalFotoProduk > MAX_PRODUCT_IMAGES) {
+      setEror(`Maksimal ${MAX_PRODUCT_IMAGES} foto produk dalam 1 produk. Saat ini ada ${totalFotoProduk} foto.`);
+      return;
+    }
     for (let i = 0; i < formData.varian.length; i++) {
       if (!(gambarSrc[i] || []).length) { setEror(`Varian ke-${i + 1} belum memiliki gambar.`); return; }
     }
@@ -856,6 +867,10 @@ const App = () => {
 
   const addOrReplaceImage = async (variantIndex, file, imageIndex = null) => {
     if (!file) return;
+    if (fileTypeInvalid(file)) {
+      setEror('Format foto harus JPG, PNG, WebP, atau AVIF.');
+      return;
+    }
     if (fileTooLarge(file)) {
       setEror(`Ukuran foto maksimal ${MAX_UPLOAD_MB}MB. Kompres dulu fotonya atau pilih file yang lebih kecil.`);
       return;
@@ -1160,12 +1175,21 @@ const App = () => {
         <div className="card">
           <div className="card-header"><h2>Media & Varian</h2></div>
           <div className="card-body">
+            <div style={{padding:'10px 12px', borderRadius:'12px', background:'#f8fafc', border:'1px solid #e5e7eb', marginBottom:'14px', color:'#475569', fontSize:'13px', lineHeight:1.55}}>
+              <b>Aturan upload foto:</b> maksimal {MAX_UPLOAD_MB}MB per foto, maksimal {MAX_PRODUCT_IMAGES} foto produk, format JPG/PNG/WebP/AVIF.
+              Sistem akan mengompres foto otomatis sebelum disimpan.
+            </div>
             <div className="section-title">Gambar Hover</div>
             <img className="preview-hover" src={hoverSrc || "/img/nopic.jpg"} alt="preview hover" />
             <div style={{ margin: '10px 0 20px' }}>
               <input
                 onChange={async (e) => {
                   const file = e.target.files[0];
+                  if (fileTypeInvalid(file)) {
+                    setEror('Format foto hover harus JPG, PNG, WebP, atau AVIF.');
+                    e.target.value = '';
+                    return;
+                  }
                   if (fileTooLarge(file)) {
                     setEror(`Ukuran foto maksimal ${MAX_UPLOAD_MB}MB. Kompres dulu fotonya atau pilih file yang lebih kecil.`);
                     e.target.value = '';
@@ -1180,7 +1204,7 @@ const App = () => {
                     if (oldHover && oldHover.startsWith('blob:')) setTimeout(() => URL.revokeObjectURL(oldHover), PREVIEW_REVOKE_DELAY);
                   } else { setHoverFile(null); }
                 }}
-                name="gambar_hover" type="file" accept="image/*" className="form-control" />
+                name="gambar_hover" type="file" accept="image/jpeg,image/png,image/webp,image/avif" className="form-control" />
             </div>
 
             <div className="section-title">Varian</div>
@@ -1200,7 +1224,7 @@ const App = () => {
                         const isSelected = selectedImage && selectedImage.variantIndex === ind_v && selectedImage.imageIndex === ind_g;
                         return (
                         <div key={ind_g} className="image-tile">
-                          <input id={`replace-file-${ind_v}-${ind_g}`} type="file" accept="image/*" onChange={(e) => { addOrReplaceImage(ind_v, e.target.files[0], ind_g); e.target.value = ''; }} />
+                          <input id={`replace-file-${ind_v}-${ind_g}`} type="file" accept="image/jpeg,image/png,image/webp,image/avif" onChange={(e) => { addOrReplaceImage(ind_v, e.target.files[0], ind_g); e.target.value = ''; }} />
                           <div
                             className={`item-gambar${isSelected ? ' selected' : ''}`}
                             title="Drag untuk pindah, klik 2 foto untuk tukar, double click untuk ganti"
@@ -1227,7 +1251,7 @@ const App = () => {
                         );
                       })}
                       <div>
-                        <input type="file" accept="image/*" id={`file-${ind_v}`} style={{ display:'none' }}
+                        <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" id={`file-${ind_v}`} style={{ display:'none' }}
                           onChange={(e) => { addOrReplaceImage(ind_v, e.target.files[0]); e.target.value = ''; }} />
                         <label htmlFor={`file-${ind_v}`} className="add-thumb">+ Foto</label>
                       </div>

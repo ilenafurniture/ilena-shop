@@ -48,6 +48,11 @@ use App\Controllers\Admin\Traits\ProjectInteriorTrait;
 
 class AdminController extends BaseController
 {
+    private const PRODUCT_IMAGE_MAX_BYTES = 4 * 1024 * 1024;
+    private const PRODUCT_IMAGE_MAX_MB = 4;
+    private const PRODUCT_IMAGE_MAX_FILES = 25;
+    private const PRODUCT_IMAGE_ALLOWED_MIMES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+
     // Use Traits for code organization
     use ProductTrait;
     use ArticleTrait;
@@ -254,6 +259,41 @@ class AdminController extends BaseController
     }
 
     // === ACTION TAMBAH PRODUK ===
+    private function validateProductImageUploads(array $files)
+    {
+        $imageCount = 0;
+        foreach ($files as $field => $file) {
+            if (!$file || !str_starts_with((string)$field, 'gambar_')) {
+                continue;
+            }
+
+            if (method_exists($file, 'getError') && $file->getError() === UPLOAD_ERR_NO_FILE) {
+                continue;
+            }
+
+            $imageCount++;
+            if ($imageCount > self::PRODUCT_IMAGE_MAX_FILES + 1) {
+                return 'Maksimal ' . self::PRODUCT_IMAGE_MAX_FILES . ' foto produk + 1 foto hover dalam sekali simpan.';
+            }
+
+            if (!$file->isValid()) {
+                $error = method_exists($file, 'getErrorString') ? $file->getErrorString() : 'file tidak valid';
+                return 'Upload gambar gagal pada ' . $field . ': ' . $error;
+            }
+
+            if ($file->getSize() > self::PRODUCT_IMAGE_MAX_BYTES) {
+                return 'Ukuran gambar ' . $field . ' terlalu besar. Maksimal ' . self::PRODUCT_IMAGE_MAX_MB . 'MB per foto.';
+            }
+
+            $mime = $file->getMimeType();
+            if (!in_array($mime, self::PRODUCT_IMAGE_ALLOWED_MIMES, true)) {
+                return 'Format gambar ' . $field . ' tidak didukung. Gunakan JPG, PNG, WebP, atau AVIF.';
+            }
+        }
+
+        return null;
+    }
+
     public function actionAddProduct()
     {
         if (!$this->validate([
@@ -277,6 +317,10 @@ class AdminController extends BaseController
         $data_gambar_mentah = $this->request->getFiles();
         $this->ensureProductStorageReady();
         $this->ensureBarangScheduleColumns();
+
+        if ($uploadError = $this->validateProductImageUploads($data_gambar_mentah)) {
+            return $this->response->setStatusCode(413)->setJSON(['pesan' => $uploadError]);
+        }
 
         $variants = json_decode($data['varian'] ?? '[]', true);
         if (!is_array($variants)) {
@@ -528,6 +572,10 @@ class AdminController extends BaseController
 
             $data  = $this->request->getVar();
             $files = $this->request->getFiles();
+
+            if ($uploadError = $this->validateProductImageUploads($files)) {
+                return $this->response->setStatusCode(413)->setJSON(['pesan' => $uploadError]);
+            }
 
             $publicPath = function (string $path): string {
                 return rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path), DIRECTORY_SEPARATOR);

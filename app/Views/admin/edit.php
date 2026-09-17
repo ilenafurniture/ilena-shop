@@ -273,7 +273,7 @@ body {
 <div class="page">
     <div class="title">Anjayy Produk</div>
 
-    <form method="post"
+    <form method="post" id="product-edit-form"
         action="/admin/editproduct/<?= $produk['id']; ?><?= isset($_GET['sblm']) ? '/' . $_GET['sblm'] : ''; ?>"
         enctype="multipart/form-data">
         <?= csrf_field(); ?>
@@ -434,11 +434,14 @@ body {
             <div class="stack">
                 <div class="card">
                     <div class="section-title">Gambar Hover</div>
+                    <div class="hint" style="margin-bottom:10px;">
+                        Maksimal 4MB per foto. Format: JPG, PNG, WebP, atau AVIF. Sistem akan menyimpan ulang ke WebP.
+                    </div>
                     <img id="imghover-preview" class="img-preview" src="/viewpichover/<?= $produk['id']; ?>" alt="">
                     <div class="uploader" style="margin-top:10px;">
                         <label class="btn">Pilih File</label>
-                        <input name="gambar_hover" type="file" onchange="uploadFileGambarHover(event)">
-                        <span class="muted">Format disarankan: .webp</span>
+                        <input name="gambar_hover" type="file" accept="image/jpeg,image/png,image/webp,image/avif" onchange="uploadFileGambarHover(event)">
+                        <span class="muted">Maks. 4MB</span>
                     </div>
                 </div>
 
@@ -467,6 +470,7 @@ body {
                                     <input type="file"
                                         id="input-gambar-<?= $ind_v + 1; ?>-<?= $ind_urutanGambar + 1; ?>"
                                         name="gambar-<?= $ind_v + 1; ?>-<?= $ind_urutanGambar + 1; ?>"
+                                        accept="image/jpeg,image/png,image/webp,image/avif"
                                         onchange="uploadFile(event)">
                                 </label>
                                 <?php } ?>
@@ -475,6 +479,7 @@ body {
                                     <input type="file"
                                         id="input-gambar-<?= $ind_v + 1; ?>-<?= count(explode(",", $v['urutan_gambar'])) + 1; ?>"
                                         name="gambar-<?= $ind_v + 1; ?>-<?= count(explode(",", $v['urutan_gambar'])) + 1; ?>"
+                                        accept="image/jpeg,image/png,image/webp,image/avif"
                                         onchange="uploadFile(event)">
                                 </label>
                             </div>
@@ -520,6 +525,22 @@ body {
 <script>
 let counterJmlVarian = <?= count($produk['varian']); ?>;
 const hitungVarianInputElm = document.querySelector('input[name="hitung-varian"]');
+const MAX_UPLOAD_MB = 4;
+const MAX_PRODUCT_IMAGES = 25;
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+
+function validasiFileGambar(file) {
+    if (!file) return true;
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+        alert('Format foto harus JPG, PNG, WebP, atau AVIF.');
+        return false;
+    }
+    if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
+        alert(`Ukuran foto maksimal ${MAX_UPLOAD_MB}MB per file. Kompres dulu fotonya atau pilih file yang lebih kecil.`);
+        return false;
+    }
+    return true;
+}
 
 function buatElementDariHTML(htmlString) {
     var div = document.createElement('div');
@@ -531,6 +552,10 @@ function uploadFileGambarHover(event) {
     const imgHoverPreviewElm = document.getElementById('imghover-preview');
     const file = event.target.files?. [0];
     if (!file) return;
+    if (!validasiFileGambar(file)) {
+        event.target.value = '';
+        return;
+    }
     imgHoverPreviewElm.src = URL.createObjectURL(file);
 }
 
@@ -543,7 +568,7 @@ function uploadFile(event) {
       <label class="btn">
         + Tambah
         <input type="file" id="input-gambar-${varianNum}-${Number(subVarianNum)+1}"
-               name="gambar-${varianNum}-${Number(subVarianNum)+1}" onchange="uploadFile(event)">
+               name="gambar-${varianNum}-${Number(subVarianNum)+1}" accept="image/jpeg,image/png,image/webp,image/avif" onchange="uploadFile(event)">
       </label>`;
     const containerInputGambar = document.getElementById("container-input-gambar" + varianNum);
     containerInputGambar.append(buatElementDariHTML(inputBaru));
@@ -551,6 +576,10 @@ function uploadFile(event) {
     // tampilkan preview
     const file = event.target.files?. [0];
     if (!file) return;
+    if (!validasiFileGambar(file)) {
+        event.target.value = '';
+        return;
+    }
     const blobUrl = URL.createObjectURL(file);
     const itemGambar = `
       <div class="thumb" >
@@ -577,7 +606,7 @@ function addVarian() {
         <div id="container-input-gambar${no}" class="row" style="flex-wrap:wrap; margin-top:8px;">
           <label class="btn">
             + Tambah
-            <input type="file" id="input-gambar-${no}-1" name="gambar-${no}-1" onchange="uploadFile(event)">
+            <input type="file" id="input-gambar-${no}-1" name="gambar-${no}-1" accept="image/jpeg,image/png,image/webp,image/avif" onchange="uploadFile(event)">
           </label>
         </div>
 
@@ -640,7 +669,23 @@ function hapusSubvarian(varianNum, indexGambar, e) {
     const deskripsiHidden = document.getElementById('deskripsi-json');
     const varianHidden = document.getElementById('varian-json');
 
-    form.addEventListener('submit', function() {
+    form.addEventListener('submit', function(event) {
+        const selectedFiles = Array.from(form.querySelectorAll('input[type="file"]'))
+            .flatMap(input => Array.from(input.files || []));
+        const productFiles = Array.from(form.querySelectorAll('#container-varian input[type="file"]'))
+            .flatMap(input => Array.from(input.files || []));
+        if (productFiles.length > MAX_PRODUCT_IMAGES) {
+            event.preventDefault();
+            alert(`Maksimal ${MAX_PRODUCT_IMAGES} foto produk dalam sekali simpan.`);
+            return;
+        }
+        for (const file of selectedFiles) {
+            if (!validasiFileGambar(file)) {
+                event.preventDefault();
+                return;
+            }
+        }
+
         // DESKRIPSI JSON
         const deskripsiText = document.querySelector('textarea[name="deskripsi_teks"]').value || '';
         const perawatanText = document.querySelector('textarea[name="perawatan"]').value || '';
