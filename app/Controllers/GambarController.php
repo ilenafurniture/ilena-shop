@@ -410,133 +410,192 @@ class GambarController extends BaseController
         return $this->tampilGambarHeaderField($id, 'foto_hp');
     }
 
-    public function gantiUkuran($id) //koleksinya = water_case
+    private function productImageSlots(array $barang): array
     {
-        $barangLama = $this->barangModel->where(['id' => $id])->first();
-        if (!$barangLama) {
-            return $this->response->setJSON(['message' => 'barang nggk nemu'], false);
-        }
-
-        $dataChecker = [];
-        $insertGambarBarang = [];
-        $insertGambar300 = false;
-        $jumlahGambar = '';
-        foreach (json_decode($barangLama['varian'], true) as $ind_v => $v) {
-            if($ind_v == 0){
-                $jumlahGambar = $jumlahGambar . $v['urutan_gambar'];
-            } else {
-                $jumlahGambar = $jumlahGambar . ',' . $v['urutan_gambar'];
+        $slots = [];
+        $variants = json_decode($barang['varian'] ?? '[]', true) ?: [];
+        foreach ($variants as $variant) {
+            foreach (explode(',', (string)($variant['urutan_gambar'] ?? '')) as $slot) {
+                $slot = preg_replace('/[^0-9]/', '', trim($slot));
+                if ($slot !== '' && !in_array($slot, $slots, true)) {
+                    $slots[] = $slot;
+                }
             }
         }
-        $jumlahGambar = count(explode(',', $jumlahGambar));
-        $dataGambar = $this->gambarBarang3000Model->where(['id' => $barangLama['id']])->first();
-        for ($i = 1; $i <= $jumlahGambar; $i++) {
-            $gambarSelected = $dataGambar['gambar' . $i];
-            $fp = 'imgdum/' . $barangLama['id'] . '-' . $i . '.webp';
-            file_put_contents($fp, $gambarSelected);
-            \Config\Services::image()
-                ->withFile($fp)
-                ->resize(1000, 1000, true, 'height')->save('imgdum/' . $barangLama['id'] . '-' . $i . '(1).webp');
-            $insertGambarBarang['gambar' . $i] = file_get_contents('imgdum/' . $barangLama['id'] . '-' . $i . '(1).webp');
-            unlink('imgdum/' . $barangLama['id'] . '-' . $i . '(1).webp');
-            $dataChecker['resize_300'] = 'success';
-
-            if ($i == 1) {
-                \Config\Services::image()
-                    ->withFile($fp)
-                    ->resize(300, 300, true, 'height')->save('imgdum/' . $barangLama['id'] . '-' . $i . '300(1).webp');
-                $insertGambar300 = file_get_contents('imgdum/' . $barangLama['id'] . '-' . $i . '300(1).webp');
-                unlink('imgdum/' . $barangLama['id'] . '-' . $i . '300(1).webp');
-            }
-            unlink($fp);
-            $dataChecker['resize_1000'] = 'success';
-        }
-
-        //resize gambar hover
-        $fp = 'imgdum/hover-' . $barangLama['id'] .'.webp';
-        file_put_contents($fp, $barangLama['gambar_hover']);
-        \Config\Services::image()
-            ->withFile($fp)
-            ->resize(300, 300, true, 'height')->save('imgdum/hover-' . $barangLama['id'] . '(1).webp');
-        
-        $this->barangModel->where(['id' => $barangLama['id']])->set([
-            'gambar' => $insertGambar300,
-            'gambar_hover' => file_get_contents('imgdum/hover-' . $barangLama['id'] . '(1).webp')
-            ])->update();
-        unlink('imgdum/hover-' . $barangLama['id'] . '(1).webp');
-        unlink($fp);
-        $dataChecker['resize_hover'] = 'success';
-        $this->gambarBarangModel->where(['id' => $barangLama['id']])->set($insertGambarBarang)->update();
-        $dataChecker['nama_barang'] = $barangLama['nama'];
-        
-        return $this->response->setStatusCode(200)->setJSON([
-            'success' => true,
-            'barang' => $dataChecker
-        ], false);
+        return $slots ?: ['1'];
     }
 
-    public function gantiLokasi($id) //koleksinya = water_case
+    private function usableImageFile(string $path): bool
     {
-        $dataChecker = [];
-        $barangLama = $this->barangModel->where(['id' => $id])->first();
-        
-            // Ukuran 300
-        $fp = 'imgdum/barang/300/' . $barangLama['id'] .'.webp';
-        file_put_contents($fp, $barangLama['gambar']);
-        \Config\Services::image()
-                ->withFile($fp)
-                ->resize(300, 300, true, 'height')->save('img/barang/300/' . $barangLama['id'].'.webp');
-        unlink($fp);
-        $dataChecker['resize_300'] = 'success';
+        return is_file($path) && filesize($path) > 0 && @getimagesize($path) !== false;
+    }
 
+    private function imageSourceFromLegacy($value, string $dir, string $tmpPrefix): ?array
+    {
+        if (!is_string($value) || $value === '') {
+            return null;
+        }
 
-        // Ukuran Hover
-        $fp = 'imgdum/barang/hover/' . $barangLama['id'] .'.webp';
-        file_put_contents($fp, $barangLama['gambar_hover']);
-        \Config\Services::image()
-                ->withFile($fp)
-                ->resize(300, 300, true, 'height')->save('img/barang/hover/' . $barangLama['id'].'.webp');
-        unlink($fp);
-        $dataChecker['resize_hover'] = 'success';
+        if (preg_match('#^[A-Za-z0-9._-]+\.(?:jpe?g|png|webp|avif)$#i', $value)) {
+            $path = $this->publicImagePath($dir . '/' . $value);
+            return $this->usableImageFile($path) ? ['path' => $path, 'temporary' => false] : null;
+        }
 
+        if (@getimagesizefromstring($value) === false) {
+            return null;
+        }
 
-        $gambarBarang = $this->gambarBarangModel->where(['id' => $barangLama['id']])->first();
-        $gambarBarang3000 = $this->gambarBarang3000Model->where(['id' => $barangLama['id']])->first();
-        $jumlahGambar = '';
-        foreach (json_decode($barangLama['varian'], true) as $ind_v => $v) {
-            if($ind_v == 0){
-                $jumlahGambar = $jumlahGambar . $v['urutan_gambar'];
-            } else {
-                $jumlahGambar = $jumlahGambar . ',' . $v['urutan_gambar'];
+        $tmpDir = rtrim(WRITEPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'cache';
+        if (!is_dir($tmpDir)) { @mkdir($tmpDir, 0775, true); }
+        $tmpFile = $tmpDir . DIRECTORY_SEPARATOR . $tmpPrefix . '-' . uniqid('', true) . '.webp';
+        file_put_contents($tmpFile, $value);
+        return $this->usableImageFile($tmpFile) ? ['path' => $tmpFile, 'temporary' => true] : null;
+    }
+
+    private function firstAvailableSource(array $sources): ?array
+    {
+        foreach ($sources as $source) {
+            if (!is_array($source)) {
+                continue;
+            }
+            if (!empty($source['path']) && $this->usableImageFile($source['path'])) {
+                return $source;
             }
         }
-        $jumlahGambar = count(explode(',', $jumlahGambar));
-        for ($i = 1; $i <= $jumlahGambar; $i++) {
-            // Ukuran 1000
-            $fp = 'imgdum/barang/1000/' . $barangLama['id'] . '-' . $i.'.webp';
-            file_put_contents($fp, $gambarBarang['gambar'.$i]);
-            \Config\Services::image()
-                ->withFile($fp)
-                ->resize(1000, 1000, true, 'height')->save('img/barang/1000/' . $barangLama['id'].'-'.$i.'.webp');
-            unlink($fp);
-            $dataChecker['resize_1000'] = 'success';
+        return null;
+    }
 
-
-            // Ukuran 3000
-            $fp = 'imgdum/barang/3000/' . $barangLama['id'] . '-' . $i.'.webp';
-            file_put_contents($fp, $gambarBarang3000['gambar'.$i]);
-            \Config\Services::image()
-                ->withFile($fp)
-                ->resize(3000, 3000, true, 'height')->save('img/barang/3000/' . $barangLama['id'].'-'.$i.'.webp');
-            unlink($fp);
-            $dataChecker['resize_3000'] = 'success';
-
+    private function saveResizedProductImage(string $source, string $relativeDestination, int $size): bool
+    {
+        $destination = $this->publicImagePath($relativeDestination);
+        $dir = dirname($destination);
+        if (!is_dir($dir)) { @mkdir($dir, 0775, true); }
+        if (!is_writable($dir)) { @chmod($dir, 0775); }
+        if (!is_writable($dir)) {
+            throw new \RuntimeException('Folder gambar belum writable: ' . $relativeDestination);
         }
 
-        $dataChecker['nama_barang'] = $barangLama['nama'];
+        $tmpDir = rtrim(WRITEPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'cache';
+        if (!is_dir($tmpDir)) { @mkdir($tmpDir, 0775, true); }
+        $tmpOut = $tmpDir . DIRECTORY_SEPARATOR . 'safe-resize-' . uniqid('', true) . '.webp';
+
+        \Config\Services::image()
+            ->withFile($source)
+            ->resize($size, $size, true, 'height')
+            ->save($tmpOut);
+
+        if (!$this->usableImageFile($tmpOut)) {
+            @unlink($tmpOut);
+            throw new \RuntimeException('Hasil resize kosong: ' . $relativeDestination);
+        }
+
+        @unlink($destination);
+        $ok = @copy($tmpOut, $destination);
+        @unlink($tmpOut);
+        if ($ok) { @touch($destination); }
+        return $ok;
+    }
+
+    public function gantiUkuran($id)
+    {
+        return $this->gantiLokasi($id);
+    }
+
+    public function gantiLokasi($id)
+    {
+        $safeId = preg_replace('/[^A-Za-z0-9_-]/', '', (string)$id);
+        $barang = $this->barangModel->where(['id' => $safeId])->first();
+        if (!$barang) {
+            return $this->response->setStatusCode(404)->setJSON([
+                'success' => false,
+                'message' => 'Produk tidak ditemukan',
+            ]);
+        }
+
+        $force = $this->request->getGet('force') === '1';
+        $report = [
+            'nama_barang' => $barang['nama'] ?? $safeId,
+            'id' => $safeId,
+            'created' => [],
+            'skipped' => [],
+            'missing_source' => [],
+        ];
+
+        $gambar1000 = $this->gambarBarangModel->where(['id' => $safeId])->first() ?: [];
+        $gambar3000 = $this->gambarBarang3000Model->where(['id' => $safeId])->first() ?: [];
+        $slots = $this->productImageSlots($barang);
+
+        foreach ($slots as $slot) {
+            $path1000 = $this->publicImagePath("img/barang/1000/{$safeId}-{$slot}.webp");
+            $path3000 = $this->publicImagePath("img/barang/3000/{$safeId}-{$slot}.webp");
+            $source = $this->firstAvailableSource([
+                ['path' => $path3000, 'temporary' => false],
+                ['path' => $path1000, 'temporary' => false],
+                $this->imageSourceFromLegacy($gambar3000['gambar' . $slot] ?? null, 'img/barang/3000', $safeId . '-' . $slot . '-3000'),
+                $this->imageSourceFromLegacy($gambar1000['gambar' . $slot] ?? null, 'img/barang/1000', $safeId . '-' . $slot . '-1000'),
+            ]);
+
+            if (!$source) {
+                $report['missing_source'][] = "slot {$slot}";
+                continue;
+            }
+
+            foreach ([3000, 1000] as $size) {
+                $relative = "img/barang/{$size}/{$safeId}-{$slot}.webp";
+                $dest = $this->publicImagePath($relative);
+                if (!$force && $this->usableImageFile($dest)) {
+                    $report['skipped'][] = $relative;
+                    continue;
+                }
+                $this->saveResizedProductImage($source['path'], $relative, $size);
+                $report['created'][] = $relative;
+            }
+
+            if (!empty($source['temporary'])) { @unlink($source['path']); }
+        }
+
+        $firstSlot = $slots[0] ?? '1';
+        $coverDest = $this->publicImagePath("img/barang/300/{$safeId}.webp");
+        $coverSource = $this->firstAvailableSource([
+            ['path' => $this->publicImagePath("img/barang/1000/{$safeId}-{$firstSlot}.webp"), 'temporary' => false],
+            ['path' => $this->publicImagePath("img/barang/3000/{$safeId}-{$firstSlot}.webp"), 'temporary' => false],
+            $this->imageSourceFromLegacy($barang['gambar'] ?? null, 'img/barang/300', $safeId . '-cover'),
+        ]);
+        if ($coverSource) {
+            if ($force || !$this->usableImageFile($coverDest)) {
+                $this->saveResizedProductImage($coverSource['path'], "img/barang/300/{$safeId}.webp", 300);
+                $report['created'][] = "img/barang/300/{$safeId}.webp";
+            } else {
+                $report['skipped'][] = "img/barang/300/{$safeId}.webp";
+            }
+            if (!empty($coverSource['temporary'])) { @unlink($coverSource['path']); }
+        } else {
+            $report['missing_source'][] = 'cover 300';
+        }
+
+        $hoverDest = $this->publicImagePath("img/barang/hover/{$safeId}.webp");
+        $hoverSource = $this->firstAvailableSource([
+            ['path' => $hoverDest, 'temporary' => false],
+            $this->imageSourceFromLegacy($barang['gambar_hover'] ?? null, 'img/barang/hover', $safeId . '-hover'),
+        ]);
+        if ($hoverSource) {
+            if ($force || !$this->usableImageFile($hoverDest)) {
+                $this->saveResizedProductImage($hoverSource['path'], "img/barang/hover/{$safeId}.webp", 300);
+                $report['created'][] = "img/barang/hover/{$safeId}.webp";
+            } else {
+                $report['skipped'][] = "img/barang/hover/{$safeId}.webp";
+            }
+            if (!empty($hoverSource['temporary'])) { @unlink($hoverSource['path']); }
+        } else {
+            $report['missing_source'][] = 'hover';
+        }
+
+        $this->barangModel->update($safeId, ['tgl_update' => date('Y-m-d H:i:s', strtotime('+7 hours'))]);
+
         return $this->response->setStatusCode(200)->setJSON([
             'success' => true,
-            'barang' => $dataChecker
+            'message' => 'Perbaikan gambar selesai tanpa menimpa data gambar DB lama.',
+            'barang' => $report,
         ], false);
     }
 }

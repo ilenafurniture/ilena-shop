@@ -94,8 +94,8 @@ $routes->get('/editarticle/(:any)', 'AdminController::editArticle/$1', ['filter'
 
 
 // ==================== GambarController ====================
-$routes->get('/changepic/(:any)', 'GambarController::gantiUkuran/$1', ['filter' => 'corsFilter']);
-$routes->get('/gantilokasi/(:any)', 'GambarController::gantiLokasi/$1', ['filter' => 'corsFilter']);
+$routes->get('/changepic/(:any)', 'GambarController::gantiUkuran/$1', ['filter' => 'adminFilter']);
+$routes->get('/gantilokasi/(:any)', 'GambarController::gantiLokasi/$1', ['filter' => 'adminFilter']);
 $routes->get('/cobainput', 'GambarController::actionCobaInput');
 $routes->get('/gamwm', 'GambarController::tampilGambarVarWM');
 $routes->get('/viewpic/(:segment)', 'GambarController::tampilGambarBarang/$1');

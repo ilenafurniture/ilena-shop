@@ -1992,7 +1992,8 @@ class AdminController extends BaseController
             ->select('deskripsi')
             ->findAll();
         foreach ($barangLama as $ind_b => $b) {
-            $barangLama[$ind_b]['dimensi'] = json_decode($b['deskripsi'], true)['dimensi']['asli'];
+            $deskripsi = json_decode($b['deskripsi'] ?? '[]', true) ?: [];
+            $barangLama[$ind_b]['dimensi'] = $deskripsi['dimensi']['asli'] ?? ['panjang' => '-'];
             $barangLama[$ind_b]['deskripsi'] = '';
         }
         $data = [
