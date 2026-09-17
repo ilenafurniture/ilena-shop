@@ -383,6 +383,7 @@ class AdminController extends BaseController
             'tokped'        => $data['tokped'],
             'tiktok'        => $data['tiktok'],
             'active'        => '1',
+            'tgl_update'    => date('Y-m-d H:i:s', strtotime('+7 hours')),
             'ruang_tamu'    => $data['ruang_tamu'],
             'ruang_keluarga'=> $data['ruang_keluarga'],
             'ruang_tidur'   => $data['ruang_tidur'],
@@ -683,6 +684,7 @@ class AdminController extends BaseController
                 'ruang_tamu'     => $boolTo01($data['ruang_tamu']     ?? ($barang['ruang_tamu'] ?? '0')),
                 'ruang_keluarga' => $boolTo01($data['ruang_keluarga'] ?? ($barang['ruang_keluarga'] ?? '0')),
                 'ruang_tidur'    => $boolTo01($data['ruang_tidur']    ?? ($barang['ruang_tidur'] ?? '0')),
+                'tgl_update'     => date('Y-m-d H:i:s', strtotime('+7 hours')),
             ];
 
             // ===== PATCH PENTING: simpan jadwal diskon =====

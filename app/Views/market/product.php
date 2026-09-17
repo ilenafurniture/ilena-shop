@@ -30,8 +30,13 @@ for ($i = 0; $i < 10; $i++) {
             </div>
             <?php foreach ($produk as $ind_p => $p) { ?>
                 <?php foreach (json_decode($p['varian'], true) as $ind_v => $v) { ?>
+                    <?php
+                    $imageSlots = array_values(array_filter(array_map('trim', explode(',', (string)($v['urutan_gambar'] ?? '')))));
+                    $imageSlot = preg_replace('/[^0-9]/', '', (string)($imageSlots[0] ?? ($ind_v + 1))) ?: ($ind_v + 1);
+                    $imageVersion = !empty($p['tgl_update']) ? strtotime($p['tgl_update']) : time();
+                    ?>
                     <div class="isi-table">
-                        <div style="flex: 1;" onclick="pergiKeProduct('')"><img style="width: 50px; height: 50px; object-fit:cover;" src="/viewvar/<?= $p['id'] ?>/<?= $ind_v + 1 ?>" alt="">
+                        <div style="flex: 1;" onclick="pergiKeProduct('')"><img style="width: 50px; height: 50px; object-fit:cover;" src="/viewvar/<?= $p['id'] ?>/<?= $imageSlot ?>?v=<?= $imageVersion ?>" alt="">
                         </div>
                         <div style="flex: 2;" class="d-flex flex-column align-items-start justify-content-center" onclick="pergiKeProduct('')">
                             <p class="m-0"><?= ucwords($p['kategori']); ?></p>

@@ -4648,6 +4648,54 @@ class Pages extends BaseController
         }
 
         if (!$source) {
+            $legacyCandidates = [];
+            $legacy3000 = $this->gambarBarang3000Model->getGambar($safeId);
+            $legacy1000 = $this->gambarBarangModel->getGambar($safeId);
+            if (!empty($legacy1000['gambar' . $slot])) {
+                $legacyCandidates[] = ['value' => $legacy1000['gambar' . $slot], 'dir' => 'img/barang/1000'];
+            }
+            if (!empty($legacy3000['gambar' . $slot])) {
+                $legacyCandidates[] = ['value' => $legacy3000['gambar' . $slot], 'dir' => 'img/barang/3000'];
+            }
+            if (!empty($product['gambar'])) {
+                $legacyCandidates[] = ['value' => $product['gambar'], 'dir' => 'img/barang/300'];
+            }
+
+            foreach ($legacyCandidates as $candidate) {
+                $value = $candidate['value'];
+                if (!is_string($value) || $value === '') {
+                    continue;
+                }
+
+                if (preg_match('#^[A-Za-z0-9._-]+\.(?:jpe?g|png|webp|avif)$#i', $value)) {
+                    $candidateFile = $publicPath($candidate['dir'] . '/' . $value);
+                    if (is_file($candidateFile)) {
+                        $source = $candidateFile;
+                        break;
+                    }
+                }
+
+                if (@getimagesizefromstring($value) !== false) {
+                    $etag = '"' . md5($value) . '"';
+                    if ($this->request->getHeaderLine('If-None-Match') === $etag) {
+                        return $this->response
+                            ->setStatusCode(304)
+                            ->setHeader('ETag', $etag)
+                            ->setHeader('Cache-Control', 'public, max-age=86400');
+                    }
+
+                    return $this->response
+                        ->setHeader('Content-Type', 'image/webp')
+                        ->setHeader('Content-Length', (string) strlen($value))
+                        ->setHeader('Cache-Control', 'public, max-age=86400')
+                        ->setHeader('ETag', $etag)
+                        ->setBody($value);
+                }
+            }
+        }
+
+        if (!$source) {
+            log_message('error', 'Product cover gambar tidak ditemukan: {id} slot {slot}', ['id' => $safeId, 'slot' => $slot]);
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Gambar tidak ditemukan');
         }
 

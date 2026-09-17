@@ -212,6 +212,7 @@ trait ProductTrait
             'tokped'        => $data['tokped'],
             'tiktok'        => $data['tiktok'],
             'active'        => '1',
+            'tgl_update'    => date('Y-m-d H:i:s', strtotime('+7 hours')),
             'ruang_tamu'    => $data['ruang_tamu'],
             'ruang_keluarga'=> $data['ruang_keluarga'],
             'ruang_tidur'   => $data['ruang_tidur'],
@@ -579,6 +580,7 @@ trait ProductTrait
             'ruang_tamu' => $data['ruang_tamu'] ?? '0',
             'ruang_keluarga' => $data['ruang_keluarga'] ?? '0',
             'ruang_tidur' => $data['ruang_tidur'] ?? '0',
+            'tgl_update' => date('Y-m-d H:i:s', strtotime('+7 hours')),
         ];
 
         $dataUpdate = array_filter($dataUpdate, fn($val) => !is_null($val));

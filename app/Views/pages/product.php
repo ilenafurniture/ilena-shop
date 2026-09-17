@@ -1,7 +1,7 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <?php
-$punyaGambarHoverDetail = is_file(FCPATH . 'img/barang/hover/' . $produk['id'] . '.webp');
+$punyaGambarHoverDetail = is_file(FCPATH . 'img/barang/hover/' . $produk['id'] . '.webp') || !empty($produk['gambar_hover']);
 $imageSlotExists = function (string $slot) use ($produk): bool {
     $slot = trim($slot);
     if ($slot === '') return false;
@@ -18,17 +18,18 @@ if (!empty($produk['varian'][0]['urutan_gambar'])) {
     $urutanAwal = $filterExistingSlots($produk['varian'][0]['urutan_gambar']);
     $gambarAwalDetail = $urutanAwal[0] ?? '1';
 }
-$assetVersion = function (string $relativePath): string {
+$assetVersion = function (string $relativePath) use ($produk): string {
     $path = FCPATH . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
-    return is_file($path) ? (string) filemtime($path) : (string) time();
+    return is_file($path) ? (string) filemtime($path) : (string) strtotime($produk['tgl_update'] ?? 'now');
 };
 $barangImgUrl = function (string $size, string $slot) use ($produk, $assetVersion): string {
     $relative = 'img/barang/' . $size . '/' . $produk['id'] . '-' . $slot . '.webp';
-    return base_url($relative) . '?v=' . $assetVersion($relative);
+    $route = $size === '3000' ? 'viewvar3000' : 'viewvar';
+    return base_url($route . '/' . $produk['id'] . '/' . $slot) . '?v=' . $assetVersion($relative);
 };
 $hoverImgUrl = function () use ($produk, $assetVersion): string {
     $relative = 'img/barang/hover/' . $produk['id'] . '.webp';
-    return base_url($relative) . '?v=' . $assetVersion($relative);
+    return base_url('viewpichover/' . $produk['id']) . '?v=' . $assetVersion($relative);
 };
 $productCoverUrl = function (array $product): string {
     $id = $product['id'] ?? '';
@@ -323,20 +324,20 @@ $productCoverUrl = function (array $product): string {
                                     window.isHoverDetailSelected = true;
                                     imgElm.classList.add("d-none");
                                     imgElm.style =
-                                        "background-image: url('/img/barang/hover/<?= $produk['id']; ?>.webp?v=" + Date.now() + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
-                                    imgFixElm.src = "/img/barang/hover/<?= $produk['id']; ?>.webp?v=" + Date.now();
+                                        "background-image: url('/viewpichover/<?= $produk['id']; ?>?v=" + Date.now() + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
+                                    imgFixElm.src = "/viewpichover/<?= $produk['id']; ?>?v=" + Date.now();
                                     return;
                                 }
                                 window.isHoverDetailSelected = false;
                                 imgElm.style =
                                     "background-image: url('" +
-                                    "/img/barang/3000/<?= $produk['id']; ?>-" +
+                                    "/viewvar3000/<?= $produk['id']; ?>/" +
                                     e.target.value
                                     .split("-")[0] +
-                                    ".webp?v=" + Date.now() + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
-                                imgFixElm.src = "/img/barang/1000/<?= $produk['id']; ?>-" + e.target
+                                    "?v=" + Date.now() + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
+                                imgFixElm.src = "/viewvar/<?= $produk['id']; ?>/" + e.target
                                     .value
-                                    .split("-")[0] + '.webp?v=' + Date.now();
+                                    .split("-")[0] + '?v=' + Date.now();
                             })
                         });
                         </script>
@@ -393,7 +394,7 @@ $productCoverUrl = function (array $product): string {
                         <img class=" img-pic" id="img<?= $ind_p ?>"
                             src="<?= $productCoverUrl($p) ?>" alt="" loading="lazy" decoding="async">
                         <img class=" img-pic-hover" id="img<?= $ind_p ?>"
-                            src="<?= base_url('img/barang/hover/' . $p['id'] . '.webp') ?>" alt="" loading="lazy" decoding="async"> 
+                            src="<?= base_url('viewpichover/' . $p['id']) ?>?v=<?= !empty($p['tgl_update']) ? strtotime($p['tgl_update']) : time() ?>" alt="" loading="lazy" decoding="async"> 
                     </a>
                 </div>
                 <div class="container-varian mb-1 d-flex">
@@ -411,10 +412,10 @@ $productCoverUrl = function (array $product): string {
                             console.log(e.target.value)
                             const img<?= $ind_p ?>Elm = document.getElementById("img<?= $ind_p ?>");
                             img<?= $ind_p ?>Elm.src =
-                                "<?= base_url('img/barang/1000/' . $p['id'] .'-') ?>" + e.target
+                                "<?= base_url('viewvar/' . $p['id'] .'/') ?>" + e.target
                                 .value.split("-")[0].split(
                                     ",")[
-                                    0] + '.webp?v=' + Date.now();
+                                    0] + '?v=' + Date.now();
 
                             btnKeranjang<?= $ind_p ?>Elm.action = "/addcart/<?= $p['id'] ?>/" + e
                                 .target
@@ -457,12 +458,12 @@ radioVarianElm.forEach(elm => {
         const imgElm = document.querySelector("figure.img-detail-prev");
         const imgFixElm = document.querySelector("img.img-detail-prev");
         imgElm.style =
-            "background-image: url('" + "/img/barang/3000/<?= $produk['id']; ?>-" + e.target.value
+            "background-image: url('" + "/viewvar3000/<?= $produk['id']; ?>/" + e.target.value
             .split(
                 "-")[0].split(",")[0] +
-            ".webp?v=" + Date.now() + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
-        imgFixElm.src = "/img/barang/1000/<?= $produk['id']; ?>-" + e.target.value.split("-")[0].split(
-            ",")[0] + '.webp?v=' + Date.now();
+            "?v=" + Date.now() + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
+        imgFixElm.src = "/viewvar/<?= $produk['id']; ?>/" + e.target.value.split("-")[0].split(
+            ",")[0] + '?v=' + Date.now();
 
         const containerImgDetailElm = document.querySelector(".container-img-detail-select");
         containerImgDetailElm.innerHTML = "";
@@ -471,13 +472,13 @@ radioVarianElm.forEach(elm => {
             containerImgDetailElm.innerHTML += '<input id="gambar' + ind_x +
                 '" type="radio" name="gambar" value="' + urutan + '"' + (ind_x === 0 ? ' checked' : '') +
                 '"><label class="img-detail-select" for="gambar' + ind_x +
-                '"><img src="/img/barang/1000/<?= $produk['id'] ?>-' + urutan +
-                '.webp?v=' + Date.now() + '"></label>'
+                '"><img src="/viewvar/<?= $produk['id'] ?>/' + urutan +
+                '?v=' + Date.now() + '"></label>'
         })
         <?php if ($punyaGambarHoverDetail) { ?>
         containerImgDetailElm.innerHTML += '<input id="gambar-hover" type="radio" name="gambar" value="hover">' +
             '<label class="img-detail-select" for="gambar-hover">' +
-            '<img src="/img/barang/hover/<?= $produk['id'] ?>.webp?v=' + Date.now() + '"></label>';
+            '<img src="/viewpichover/<?= $produk['id'] ?>?v=' + Date.now() + '"></label>';
         <?php } ?>
 
         if (Number(varianFullSelected.stok) <= 0) {
@@ -518,19 +519,19 @@ radioVarianElm.forEach(elm => {
                     window.isHoverDetailSelected = true;
                     imgElm.classList.add("d-none");
                     imgElm.style =
-                        "background-image: url('/img/barang/hover/<?= $produk['id']; ?>.webp?v=" + Date.now() + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
-                    imgFixElm.src = "/img/barang/hover/<?= $produk['id']; ?>.webp?v=" + Date.now();
+                        "background-image: url('/viewpichover/<?= $produk['id']; ?>?v=" + Date.now() + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
+                    imgFixElm.src = "/viewpichover/<?= $produk['id']; ?>?v=" + Date.now();
                     return;
                 }
                 window.isHoverDetailSelected = false;
                 imgElm.style =
                     "background-image: url('" +
-                    "/img/barang/3000/<?= $produk['id']; ?>-" +
+                    "/viewvar3000/<?= $produk['id']; ?>/" +
                     elmVar.target.value.split("-")[0].split(",")[0] +
-                    ".webp?v=" + Date.now() + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
-                imgFixElm.src = "/img/barang/1000/<?= $produk['id']; ?>-" + elmVar
+                    "?v=" + Date.now() + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
+                imgFixElm.src = "/viewvar/<?= $produk['id']; ?>/" + elmVar
                     .target.value
-                    .split("-")[0].split(",")[0] + '.webp?v=' + Date.now()
+                    .split("-")[0].split(",")[0] + '?v=' + Date.now()
             })
         });
     })

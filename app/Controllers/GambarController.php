@@ -141,20 +141,112 @@ class GambarController extends BaseController
     //     echo $data;
     // }
 
-    private function tampilFileGambar(string $relativePath)
+    private function publicImagePath(string $relativePath): string
     {
-        $path = FCPATH . ltrim(str_replace('/', DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
+        return rtrim(FCPATH, DIRECTORY_SEPARATOR)
+            . DIRECTORY_SEPARATOR
+            . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
+    }
 
-        if (!is_file($path)) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Gambar tidak ditemukan');
+    private function serveImageContent(string $content, string $defaultMime = 'image/webp')
+    {
+        $info = @getimagesizefromstring($content);
+        $mime = $info['mime'] ?? $defaultMime;
+        $etag = '"' . md5($content) . '"';
+        $cacheControl = $this->request->getGet('v')
+            ? 'public, max-age=31536000, immutable'
+            : 'public, max-age=86400';
+
+        if ($this->request->getHeaderLine('If-None-Match') === $etag) {
+            return $this->response
+                ->setStatusCode(304)
+                ->removeHeader('Cache-Control')
+                ->setHeader('ETag', $etag)
+                ->setHeader('Cache-Control', $cacheControl);
         }
 
+        return $this->response
+            ->removeHeader('Cache-Control')
+            ->setHeader('Content-Type', $mime)
+            ->setHeader('Content-Length', (string) strlen($content))
+            ->setHeader('Cache-Control', $cacheControl)
+            ->setHeader('ETag', $etag)
+            ->setBody($content);
+    }
+
+    private function serveImageFile(string $path)
+    {
         $mime = function_exists('mime_content_type') ? mime_content_type($path) : 'image/webp';
+        $etag = '"' . md5($path . '|' . filemtime($path) . '|' . filesize($path)) . '"';
+        $cacheControl = $this->request->getGet('v')
+            ? 'public, max-age=31536000, immutable'
+            : 'public, max-age=86400';
+
+        if ($this->request->getHeaderLine('If-None-Match') === $etag) {
+            return $this->response
+                ->setStatusCode(304)
+                ->removeHeader('Cache-Control')
+                ->setHeader('ETag', $etag)
+                ->setHeader('Cache-Control', $cacheControl);
+        }
 
         return $this->response
+            ->removeHeader('Cache-Control')
             ->setHeader('Content-Type', $mime ?: 'image/webp')
-            ->setHeader('Cache-Control', 'public, max-age=86400')
+            ->setHeader('Content-Length', (string) filesize($path))
+            ->setHeader('Cache-Control', $cacheControl)
+            ->setHeader('ETag', $etag)
             ->setBody(file_get_contents($path));
+    }
+
+    private function legacyProductImageFallback(string $relativePath): ?array
+    {
+        if (preg_match('#^img/barang/300/([^/]+)\.webp$#', $relativePath, $match)) {
+            $barang = $this->barangModel->getBarangAdmin($match[1]);
+            return ['value' => $barang['gambar'] ?? null, 'dir' => 'img/barang/300'];
+        }
+
+        if (preg_match('#^img/barang/hover/([^/]+)\.webp$#', $relativePath, $match)) {
+            $barang = $this->barangModel->getBarangAdmin($match[1]);
+            return ['value' => $barang['gambar_hover'] ?? null, 'dir' => 'img/barang/hover'];
+        }
+
+        if (preg_match('#^img/barang/(1000|3000)/([^/]+)-([0-9]+)\.webp$#', $relativePath, $match)) {
+            $model = $match[1] === '3000' ? $this->gambarBarang3000Model : $this->gambarBarangModel;
+            $row = $model->getGambar($match[2]);
+            return ['value' => $row['gambar' . $match[3]] ?? null, 'dir' => 'img/barang/' . $match[1]];
+        }
+
+        return null;
+    }
+
+    private function tampilFileGambar(string $relativePath)
+    {
+        $relativePath = ltrim(str_replace('\\', '/', $relativePath), '/');
+        $path = $this->publicImagePath($relativePath);
+
+        if (is_file($path)) {
+            return $this->serveImageFile($path);
+        }
+
+        $fallback = $this->legacyProductImageFallback($relativePath);
+        $legacyValue = $fallback['value'] ?? null;
+        if (!empty($legacyValue) && is_string($legacyValue)) {
+            // Beberapa data lama menyimpan nama file, sementara data yang lebih lama lagi menyimpan blob gambar.
+            if (preg_match('#^[A-Za-z0-9._-]+\.(?:jpe?g|png|webp|avif)$#i', $legacyValue)) {
+                $legacyPath = $this->publicImagePath(($fallback['dir'] ?? '') . '/' . $legacyValue);
+                if (is_file($legacyPath)) {
+                    return $this->serveImageFile($legacyPath);
+                }
+            }
+
+            if (@getimagesizefromstring($legacyValue) !== false) {
+                return $this->serveImageContent($legacyValue);
+            }
+        }
+
+        log_message('error', 'Gambar produk tidak ditemukan: {path}', ['path' => $relativePath]);
+        throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Gambar tidak ditemukan');
     }
 
     public function tampilGambarBarang($idBarang)
@@ -243,17 +335,79 @@ class GambarController extends BaseController
         echo $gambarSelected;
     }
 
+    private function tampilGambarHeaderField($id, string $field)
+    {
+        $safeId = preg_replace('/[^0-9]/', '', (string) $id);
+        if ($safeId === '') {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Gambar tidak ditemukan');
+        }
+
+        $row = $this->gambarHeaderModel->getGambar($safeId);
+        $gambar = $row[$field] ?? null;
+        if (empty($gambar)) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Gambar tidak ditemukan');
+        }
+
+        if (is_string($gambar) && preg_match('#^uploads/slider/[A-Za-z0-9._-]+\.(?:jpe?g|png|webp|avif)$#', $gambar)) {
+            $path = FCPATH . str_replace('/', DIRECTORY_SEPARATOR, $gambar);
+            if (!is_file($path)) {
+                throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Gambar tidak ditemukan');
+            }
+
+            $mime = function_exists('mime_content_type') ? mime_content_type($path) : 'image/jpeg';
+            $etag = '"' . md5_file($path) . '"';
+            $cacheControl = $this->request->getGet('v')
+                ? 'public, max-age=31536000, immutable'
+                : 'public, max-age=86400';
+
+            if ($this->request->getHeaderLine('If-None-Match') === $etag) {
+                return $this->response
+                    ->setStatusCode(304)
+                    ->removeHeader('Cache-Control')
+                    ->setHeader('ETag', $etag)
+                    ->setHeader('Cache-Control', $cacheControl);
+            }
+
+            return $this->response
+                ->removeHeader('Cache-Control')
+                ->setHeader('Content-Type', $mime ?: 'image/jpeg')
+                ->setHeader('Content-Length', (string) filesize($path))
+                ->setHeader('Cache-Control', $cacheControl)
+                ->setHeader('ETag', $etag)
+                ->setBody(file_get_contents($path));
+        }
+
+        $info = @getimagesizefromstring($gambar);
+        $mime = $info['mime'] ?? 'image/jpeg';
+        $etag = '"' . md5($gambar) . '"';
+        $cacheControl = $this->request->getGet('v')
+            ? 'public, max-age=31536000, immutable'
+            : 'public, max-age=86400';
+
+        if ($this->request->getHeaderLine('If-None-Match') === $etag) {
+            return $this->response
+                ->setStatusCode(304)
+                ->removeHeader('Cache-Control')
+                ->setHeader('ETag', $etag)
+                ->setHeader('Cache-Control', $cacheControl);
+        }
+
+        return $this->response
+            ->removeHeader('Cache-Control')
+            ->setHeader('Content-Type', $mime)
+            ->setHeader('Content-Length', (string) strlen($gambar))
+            ->setHeader('Cache-Control', $cacheControl)
+            ->setHeader('ETag', $etag)
+            ->setBody($gambar);
+    }
+
     public function tampilGambarHeader($id)
     {
-        $gambar = $this->gambarHeaderModel->getGambar($id)['foto'];
-        $this->response->setHeader('Content-Type', 'image/webp');
-        echo $gambar;
+        return $this->tampilGambarHeaderField($id, 'foto');
     }
     public function tampilGambarHeaderHp($id)
     {
-        $gambar = $this->gambarHeaderModel->getGambar($id)['foto_hp'];
-        $this->response->setHeader('Content-Type', 'image/webp');
-        echo $gambar;
+        return $this->tampilGambarHeaderField($id, 'foto_hp');
     }
 
     public function gantiUkuran($id) //koleksinya = water_case
