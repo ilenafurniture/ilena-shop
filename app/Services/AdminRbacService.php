@@ -118,6 +118,10 @@ class AdminRbacService
 
     public function firstAllowedAdminUrl(string $email): string
     {
+        if ($this->hasAnyAdminAccess($email)) {
+            return '/admin';
+        }
+
         $map = [
             'products' => '/admin/product',
             'vouchers' => '/admin/voucher',

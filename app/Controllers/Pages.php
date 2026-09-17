@@ -3939,7 +3939,7 @@ class Pages extends BaseController
                 'isLogin' => true
             ];
             session()->set($ses_data);
-            return redirect()->to('/admin/product');
+            return redirect()->to('/admin');
         } else if ($getUser['role'] == '2') {
             $nama = ucwords(str_replace("_", " ", substr($getUser['email'], 0, -4)));
             $ses_data = [
