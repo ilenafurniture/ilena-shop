@@ -60,7 +60,11 @@ class R2ProductImageService
             'cache-control' => 'public, max-age=31536000, immutable',
         ]);
 
-        return $result['status'] >= 200 && $result['status'] < 300;
+        $ok = $result['status'] >= 200 && $result['status'] < 300;
+        if ($ok) {
+            cache()->save('r2_product_exists_' . md5($key), '1', 3600);
+        }
+        return $ok;
     }
 
     public function objectExists(string $key): bool

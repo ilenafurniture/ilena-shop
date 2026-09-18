@@ -1,5 +1,6 @@
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
+<?php $imageVersion = !empty($produk['tgl_update']) ? strtotime((string) $produk['tgl_update']) : time(); ?>
 
 <style>
 :root {
@@ -437,7 +438,7 @@ body {
                     <div class="hint" style="margin-bottom:10px;">
                         Maksimal 4MB per foto. Format: JPG, PNG, WebP, atau AVIF. Sistem akan menyimpan ulang ke WebP.
                     </div>
-                    <img id="imghover-preview" class="img-preview" src="/viewpichover/<?= $produk['id']; ?>" alt="">
+                    <img id="imghover-preview" class="img-preview" src="/viewpichover/<?= $produk['id']; ?>?v=<?= $imageVersion; ?>" alt="">
                     <div class="uploader" style="margin-top:10px;">
                         <label class="btn">Pilih File</label>
                         <input name="gambar_hover" type="file" accept="image/jpeg,image/png,image/webp,image/avif" onchange="uploadFileGambarHover(event)">
@@ -457,7 +458,7 @@ body {
                                 <div class="thumb"
                                     onclick="hapusSubvarian('<?= $ind_v + 1; ?>','<?= $ind_u + 1; ?>',event)">
                                     <div class="x">hapus</div>
-                                    <img src="/viewvar/<?= $produk['id'] ?>/<?= $u; ?>?v=<?= !empty($produk['tgl_update']) ? strtotime($produk['tgl_update']) : time(); ?>" alt="">
+                                    <img src="/product-cover/<?= $produk['id'] ?>?slot=<?= urlencode(trim((string) $u)); ?>&v=<?= $imageVersion; ?>" alt="">
                                 </div>
                                 <?php } ?>
                             </div>
