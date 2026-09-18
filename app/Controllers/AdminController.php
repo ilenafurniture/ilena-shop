@@ -35,6 +35,7 @@ use App\Services\FreeShippingService;
 use App\Services\MetaCapiSettingsService;
 use App\Services\AdminRbacService;
 use App\Services\SpamAccountCleanupService;
+use App\Services\R2ProductImageService;
 
 // Import Traits for modular organization
 use App\Controllers\Admin\Traits\ProductTrait;
@@ -96,6 +97,7 @@ class AdminController extends BaseController
     protected $suratJalanItemModel;
     protected $projectInteriorItemModel;
     protected $partnerModel;
+    protected R2ProductImageService $r2ProductImages;
 
 
 
@@ -133,6 +135,7 @@ class AdminController extends BaseController
         $this->suratJalanItemModel = new SuratJalanItemModel();
         $this->projectInteriorItemModel = new ProjectInteriorItemModel();
         $this->partnerModel = new PartnerModel();
+        $this->r2ProductImages = new R2ProductImageService();
         
     }
 
@@ -612,6 +615,7 @@ class AdminController extends BaseController
                 ->withFile($fp . '/' . $data['id'] . '.webp')
                 ->resize(300, 300, true, 'height')
                 ->save($hoverDest);
+            $this->uploadProductImageToR2($hoverDest, 'uploads/product-images/hover/' . $data['id'] . '.webp');
             @unlink($fp . '/' . $data['id'] . '.webp');
         }
         unset($data_gambar_mentah['gambar_hover']);
@@ -663,6 +667,7 @@ class AdminController extends BaseController
                 ->withFile('imgdum/' . $dG->getName())
                 ->resize(3000, 3000, true, 'height')
                 ->save($dest3000);
+            $this->uploadProductImageToR2($dest3000, 'uploads/product-images/3000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
 
             if (file_exists($dest1000)) {
                 unlink($dest1000);
@@ -671,6 +676,7 @@ class AdminController extends BaseController
                 ->withFile('imgdum/' . $dG->getName())
                 ->resize(1000, 1000, true, 'height')
                 ->save($dest1000);
+            $this->uploadProductImageToR2($dest1000, 'uploads/product-images/1000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
 
             if ($urutan <= 0) {
                 if (file_exists($dest300)) {
@@ -680,6 +686,7 @@ class AdminController extends BaseController
                     ->withFile('imgdum/' . $dG->getName())
                     ->resize(300, 300, true, 'height')
                     ->save($dest300);
+                $this->uploadProductImageToR2($dest300, 'uploads/product-images/300/' . $data['id'] . '.webp');
             }
             @unlink('imgdum/' . $dG->getName());
         }
@@ -759,6 +766,19 @@ class AdminController extends BaseController
                     @chmod($path, 0775);
                 }
             }
+        }
+    }
+
+    private function uploadProductImageToR2(string $localPath, string $relativePath): void
+    {
+        if (!$this->r2ProductImages->enabled() || !is_file($localPath)) {
+            return;
+        }
+
+        $key = preg_replace('#^uploads/product-images/#', 'products/', ltrim(str_replace('\\', '/', $relativePath), '/'));
+        $ok = $this->r2ProductImages->uploadFile($localPath, $key, 'image/webp');
+        if (!$ok) {
+            log_message('error', 'Upload gambar produk ke R2 gagal: {key}', ['key' => $key]);
         }
     }
 
@@ -912,6 +932,7 @@ class AdminController extends BaseController
                         throw new \RuntimeException('File hasil resize tidak tersimpan: ' . $destination);
                     }
                     @touch($destFile);
+                    $this->uploadProductImageToR2($destFile, $destination);
                     @unlink($stagingFile);
                 }
 
@@ -998,6 +1019,7 @@ class AdminController extends BaseController
                                 throw new \RuntimeException('Thumbnail cover tidak tersalin ke ' . $thumbDest);
                             }
                             @touch($thumbDest);
+                            $this->uploadProductImageToR2($thumbDest, "uploads/product-images/300/{$id_product}.webp");
                             @unlink($thumbTmp);
                         } else {
                             @unlink($thumbTmp);

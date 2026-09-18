@@ -27,6 +27,7 @@ use App\Services\ShippingService;
 use App\Services\FreeShippingService;
 use App\Services\AdminRbacService;
 use App\Services\SpamAccountCleanupService;
+use App\Services\R2ProductImageService;
 
 
 class Pages extends BaseController
@@ -48,6 +49,7 @@ class Pages extends BaseController
     protected $voucherUsageModel;
     protected $session;
     protected $apikey_img_ilena;
+    protected R2ProductImageService $r2ProductImages;
 
     protected $provinsiModel;
     protected $kabupatenModel;
@@ -72,6 +74,7 @@ class Pages extends BaseController
         $this->voucherUsageModel = new VoucherUsageModel();
         $this->session = \Config\Services::session();
         $this->apikey_img_ilena = env('APIKEY_IMG_ILENA', 'DefaultValue');
+        $this->r2ProductImages = new R2ProductImageService();
         $this->provinsiModel = new ProvinsiModel();
         $this->kabupatenModel = new KabupatenModel();
         $this->kecamatanModel = new KecamatanModel();
@@ -4669,6 +4672,21 @@ class Pages extends BaseController
             if (!empty($varian[0]['urutan_gambar'])) {
                 $slots = array_values(array_filter(array_map('trim', explode(',', (string) $varian[0]['urutan_gambar']))));
                 $slot = $slots[0] ?? '1';
+            }
+        }
+
+        if ($this->r2ProductImages->enabled()) {
+            $hasSlotRequest = (bool) $this->request->getGet('slot');
+            $r2Candidates = $hasSlotRequest
+                ? ["products/1000/{$safeId}-{$slot}.webp", "products/3000/{$safeId}-{$slot}.webp"]
+                : ["products/300/{$safeId}.webp", "products/1000/{$safeId}-{$slot}.webp", "products/3000/{$safeId}-{$slot}.webp"];
+            foreach ($r2Candidates as $key) {
+                if ($this->r2ProductImages->objectExists($key)) {
+                    $redirect = $this->r2ProductImages->redirectResponse($key);
+                    if ($redirect) {
+                        return $redirect;
+                    }
+                }
             }
         }
 

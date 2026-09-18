@@ -12,6 +12,7 @@ use App\Models\PemesananModel;
 use App\Models\UserModel;
 use CodeIgniter\Images\Handlers\GDHandler;
 use App\Models\GambarHeaderModel;
+use App\Services\R2ProductImageService;
 
 class GambarController extends BaseController
 {
@@ -21,6 +22,7 @@ class GambarController extends BaseController
     protected $gambarBarangModel;
     protected $gambarBarang3000Model;
     protected $gambarHeaderModel;
+    protected R2ProductImageService $r2ProductImages;
     public function __construct()
     {
         $this->artikelModel = new ArtikelModel();
@@ -29,6 +31,7 @@ class GambarController extends BaseController
         $this->gambarBarangModel = new GambarBarangModel();
         $this->gambarBarang3000Model = new GambarBarang3000Model();
         $this->gambarHeaderModel = new GambarHeaderModel();
+        $this->r2ProductImages = new R2ProductImageService();
     }
 
     public function file_get_contents_curl($url)
@@ -163,6 +166,12 @@ class GambarController extends BaseController
         return null;
     }
 
+    private function productR2KeyFromLegacy(string $relativePath): ?string
+    {
+        $uploadPath = $this->productUploadPathFromLegacy($relativePath);
+        return $uploadPath ? preg_replace('#^uploads/product-images/#', 'products/', $uploadPath) : null;
+    }
+
     private function serveImageContent(string $content, string $defaultMime = 'image/webp')
     {
         $info = @getimagesizefromstring($content);
@@ -238,6 +247,14 @@ class GambarController extends BaseController
     private function tampilFileGambar(string $relativePath)
     {
         $relativePath = ltrim(str_replace('\\', '/', $relativePath), '/');
+        $r2Key = $this->productR2KeyFromLegacy($relativePath);
+        if ($r2Key && $this->r2ProductImages->enabled() && $this->r2ProductImages->objectExists($r2Key)) {
+            $redirect = $this->r2ProductImages->redirectResponse($r2Key);
+            if ($redirect) {
+                return $redirect;
+            }
+        }
+
         $uploadRelative = $this->productUploadPathFromLegacy($relativePath);
         if ($uploadRelative) {
             $uploadPath = $this->publicImagePath($uploadRelative);
