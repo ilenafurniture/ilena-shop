@@ -4676,21 +4676,26 @@ class Pages extends BaseController
             return rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
         };
 
+        $upload1000 = $publicPath("uploads/product-images/1000/{$safeId}-{$slot}.webp");
+        $upload3000 = $publicPath("uploads/product-images/3000/{$safeId}-{$slot}.webp");
+        $upload300 = $publicPath("uploads/product-images/300/{$safeId}.webp");
         $source1000 = $publicPath("img/barang/1000/{$safeId}-{$slot}.webp");
         $source3000 = $publicPath("img/barang/3000/{$safeId}-{$slot}.webp");
         $fallback300 = $publicPath("img/barang/300/{$safeId}.webp");
-        $source = is_file($source1000) ? $source1000 : (is_file($source3000) ? $source3000 : null);
+        $source = is_file($upload1000) ? $upload1000 : (is_file($upload3000) ? $upload3000 : (is_file($source1000) ? $source1000 : (is_file($source3000) ? $source3000 : null)));
 
         if (!$source && $product && !empty($product['varian'])) {
             $varian = json_decode($product['varian'], true) ?: [];
             foreach ($varian as $v) {
                 $slots = array_values(array_filter(array_map('trim', explode(',', (string)($v['urutan_gambar'] ?? '')))));
                 foreach ($slots as $candidateSlot) {
+                    $candidateUpload1000 = $publicPath("uploads/product-images/1000/{$safeId}-{$candidateSlot}.webp");
+                    $candidateUpload3000 = $publicPath("uploads/product-images/3000/{$safeId}-{$candidateSlot}.webp");
                     $candidate1000 = $publicPath("img/barang/1000/{$safeId}-{$candidateSlot}.webp");
                     $candidate3000 = $publicPath("img/barang/3000/{$safeId}-{$candidateSlot}.webp");
-                    if (is_file($candidate1000) || is_file($candidate3000)) {
+                    if (is_file($candidateUpload1000) || is_file($candidateUpload3000) || is_file($candidate1000) || is_file($candidate3000)) {
                         $slot = $candidateSlot;
-                        $source = is_file($candidate1000) ? $candidate1000 : $candidate3000;
+                        $source = is_file($candidateUpload1000) ? $candidateUpload1000 : (is_file($candidateUpload3000) ? $candidateUpload3000 : (is_file($candidate1000) ? $candidate1000 : $candidate3000));
                         break 2;
                     }
                 }
@@ -4698,7 +4703,7 @@ class Pages extends BaseController
         }
 
         if (!$source) {
-            $source = is_file($fallback300) ? $fallback300 : null;
+            $source = is_file($upload300) ? $upload300 : (is_file($fallback300) ? $fallback300 : null);
         }
 
         if (!$source) {

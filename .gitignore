@@ -125,3 +125,18 @@ nb-configuration.xml
 /results/
 /phpunit*.xml
 /.phpunit.*.cache
+
+# Runtime uploaded media. Jangan ikut Git supaya gambar admin di produksi
+# tidak ketimpa saat deploy/pull source code.
+public/uploads/product-images/*
+!public/uploads/product-images/.gitkeep
+public/uploads/product-images/300/*
+!public/uploads/product-images/300/.gitkeep
+public/uploads/product-images/1000/*
+!public/uploads/product-images/1000/.gitkeep
+public/uploads/product-images/3000/*
+!public/uploads/product-images/3000/.gitkeep
+public/uploads/product-images/hover/*
+!public/uploads/product-images/hover/.gitkeep
+public/uploads/slider/*
+!public/uploads/slider/.gitkeep

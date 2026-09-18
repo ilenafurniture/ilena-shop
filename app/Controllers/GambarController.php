@@ -148,6 +148,21 @@ class GambarController extends BaseController
             . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
     }
 
+    private function productUploadPathFromLegacy(string $relativePath): ?string
+    {
+        $relativePath = ltrim(str_replace('\\', '/', $relativePath), '/');
+        if (preg_match('#^img/barang/(1000|3000)/([^/]+)-([0-9]+)\.webp$#', $relativePath, $m)) {
+            return "uploads/product-images/{$m[1]}/{$m[2]}-{$m[3]}.webp";
+        }
+        if (preg_match('#^img/barang/300/([^/]+)\.webp$#', $relativePath, $m)) {
+            return "uploads/product-images/300/{$m[1]}.webp";
+        }
+        if (preg_match('#^img/barang/hover/([^/]+)\.webp$#', $relativePath, $m)) {
+            return "uploads/product-images/hover/{$m[1]}.webp";
+        }
+        return null;
+    }
+
     private function serveImageContent(string $content, string $defaultMime = 'image/webp')
     {
         $info = @getimagesizefromstring($content);
@@ -223,6 +238,14 @@ class GambarController extends BaseController
     private function tampilFileGambar(string $relativePath)
     {
         $relativePath = ltrim(str_replace('\\', '/', $relativePath), '/');
+        $uploadRelative = $this->productUploadPathFromLegacy($relativePath);
+        if ($uploadRelative) {
+            $uploadPath = $this->publicImagePath($uploadRelative);
+            if (is_file($uploadPath)) {
+                return $this->serveImageFile($uploadPath);
+            }
+        }
+
         $path = $this->publicImagePath($relativePath);
 
         if (is_file($path)) {

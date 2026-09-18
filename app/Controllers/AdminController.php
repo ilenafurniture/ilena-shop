@@ -595,17 +595,23 @@ class AdminController extends BaseController
                 'pesan' => 'Data varian tidak valid'
             ]);
         }
+        $toPublicPath = static function (string $relativePath): string {
+            return rtrim(FCPATH, DIRECTORY_SEPARATOR)
+                . DIRECTORY_SEPARATOR
+                . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
+        };
 
         if (isset($data_gambar_mentah['gambar_hover']) && $data_gambar_mentah['gambar_hover']->isValid()) {
             $fp = 'imgdum/barang/hover';
             $data_gambar_mentah['gambar_hover']->move($fp, $data['id'] . '.webp');
-            if (file_exists('img/barang/hover/' . $data['id'] . '.webp')) {
-                unlink('img/barang/hover/' . $data['id'] . '.webp');
+            $hoverDest = $toPublicPath('uploads/product-images/hover/' . $data['id'] . '.webp');
+            if (file_exists($hoverDest)) {
+                unlink($hoverDest);
             }
             \Config\Services::image()
                 ->withFile($fp . '/' . $data['id'] . '.webp')
                 ->resize(300, 300, true, 'height')
-                ->save('img/barang/hover/' . $data['id'] . '.webp');
+                ->save($hoverDest);
             @unlink($fp . '/' . $data['id'] . '.webp');
         }
         unset($data_gambar_mentah['gambar_hover']);
@@ -646,30 +652,34 @@ class AdminController extends BaseController
             $urutan = (int)($parts[1] ?? 0);
             $dG->move('imgdum');
 
-            if (file_exists('img/barang/3000/' . $data['id'] . '-' . ($urutan + 1) . '.webp')) {
-                unlink('img/barang/3000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
+            $dest3000 = $toPublicPath('uploads/product-images/3000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
+            $dest1000 = $toPublicPath('uploads/product-images/1000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
+            $dest300 = $toPublicPath('uploads/product-images/300/' . $data['id'] . '.webp');
+
+            if (file_exists($dest3000)) {
+                unlink($dest3000);
             }
             \Config\Services::image()
                 ->withFile('imgdum/' . $dG->getName())
                 ->resize(3000, 3000, true, 'height')
-                ->save('img/barang/3000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
+                ->save($dest3000);
 
-            if (file_exists('img/barang/1000/' . $data['id'] . '-' . ($urutan + 1) . '.webp')) {
-                unlink('img/barang/1000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
+            if (file_exists($dest1000)) {
+                unlink($dest1000);
             }
             \Config\Services::image()
                 ->withFile('imgdum/' . $dG->getName())
                 ->resize(1000, 1000, true, 'height')
-                ->save('img/barang/1000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
+                ->save($dest1000);
 
             if ($urutan <= 0) {
-                if (file_exists('img/barang/300/' . $data['id'] . '.webp')) {
-                    unlink('img/barang/300/' . $data['id'] . '.webp');
+                if (file_exists($dest300)) {
+                    unlink($dest300);
                 }
                 \Config\Services::image()
                     ->withFile('imgdum/' . $dG->getName())
                     ->resize(300, 300, true, 'height')
-                    ->save('img/barang/300/' . $data['id'] . '.webp');
+                    ->save($dest300);
             }
             @unlink('imgdum/' . $dG->getName());
         }
@@ -724,17 +734,30 @@ class AdminController extends BaseController
             'imgdum',
             'imgdum/barang',
             'imgdum/barang/hover',
+            'uploads/product-images',
+            'uploads/product-images/300',
+            'uploads/product-images/1000',
+            'uploads/product-images/3000',
+            'uploads/product-images/hover',
             'img/barang',
             'img/barang/300',
             'img/barang/1000',
             'img/barang/3000',
             'img/barang/hover',
         ] as $dir) {
-            if (!is_dir($dir)) {
-                @mkdir($dir, 0775, true);
+            $paths = [$dir];
+            if (str_starts_with($dir, 'uploads/') || str_starts_with($dir, 'img/')) {
+                $paths[] = rtrim(FCPATH, DIRECTORY_SEPARATOR)
+                    . DIRECTORY_SEPARATOR
+                    . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $dir), DIRECTORY_SEPARATOR);
             }
-            if (is_dir($dir) && !is_writable($dir)) {
-                @chmod($dir, 0775);
+            foreach (array_unique($paths) as $path) {
+                if (!is_dir($path)) {
+                    @mkdir($path, 0775, true);
+                }
+                if (is_dir($path) && !is_writable($path)) {
+                    @chmod($path, 0775);
+                }
             }
         }
     }
@@ -894,14 +917,15 @@ class AdminController extends BaseController
 
                 @unlink($tmpFile);
             };
-            // Thumbnail 300px dibuat lewat cache cover/list; folder ini non-fatal saat edit produk.
-            $ensureDir('img/barang/1000');
-            $ensureDir('img/barang/3000');
-            $ensureDir('img/barang/hover');
+            // Upload admin disimpan di uploads/product-images supaya tidak ketimpa Git/deploy.
+            $ensureDir('uploads/product-images/1000');
+            $ensureDir('uploads/product-images/3000');
+            $ensureDir('uploads/product-images/300');
+            $ensureDir('uploads/product-images/hover');
 
             if (isset($files['gambar_hover']) && $files['gambar_hover'] && $files['gambar_hover']->isValid()) {
                 $processUploadedImage($files['gambar_hover'], [
-                    ["img/barang/hover/{$id_product}.webp", 300, 300],
+                    ["uploads/product-images/hover/{$id_product}.webp", 300, 300],
                 ]);
             }
 
@@ -915,8 +939,8 @@ class AdminController extends BaseController
                     $urutan = isset($parts[1]) ? (int)$parts[1] : 0;
                     $slot = $urutan + 1;
                     $processUploadedImage($file, [
-                        ["img/barang/3000/{$id_product}-{$slot}.webp", 3000, 3000],
-                        ["img/barang/1000/{$id_product}-{$slot}.webp", 1000, 1000],
+                        ["uploads/product-images/3000/{$id_product}-{$slot}.webp", 3000, 3000],
+                        ["uploads/product-images/1000/{$id_product}-{$slot}.webp", 1000, 1000],
                     ]);
                 }
             }
@@ -951,13 +975,15 @@ class AdminController extends BaseController
                     $toPublicPath = function (string $relativePath): string {
                         return rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
                     };
-                    $thumbSource1000 = $toPublicPath("img/barang/1000/{$id_product}-{$firstImageSlot}.webp");
-                    $thumbSource3000 = $toPublicPath("img/barang/3000/{$id_product}-{$firstImageSlot}.webp");
-                    $thumbDest = $toPublicPath("img/barang/300/{$id_product}.webp");
+                    $thumbSource1000 = $toPublicPath("uploads/product-images/1000/{$id_product}-{$firstImageSlot}.webp");
+                    $thumbSource3000 = $toPublicPath("uploads/product-images/3000/{$id_product}-{$firstImageSlot}.webp");
+                    $legacyThumbSource1000 = $toPublicPath("img/barang/1000/{$id_product}-{$firstImageSlot}.webp");
+                    $legacyThumbSource3000 = $toPublicPath("img/barang/3000/{$id_product}-{$firstImageSlot}.webp");
+                    $thumbDest = $toPublicPath("uploads/product-images/300/{$id_product}.webp");
                     $thumbDir = dirname($thumbDest);
                     if (!is_dir($thumbDir)) { @mkdir($thumbDir, 0775, true); }
                     if (!is_writable($thumbDir)) { @chmod($thumbDir, 0775); }
-                    $thumbSource = is_file($thumbSource1000) ? $thumbSource1000 : (is_file($thumbSource3000) ? $thumbSource3000 : null);
+                    $thumbSource = is_file($thumbSource1000) ? $thumbSource1000 : (is_file($thumbSource3000) ? $thumbSource3000 : (is_file($legacyThumbSource1000) ? $legacyThumbSource1000 : (is_file($legacyThumbSource3000) ? $legacyThumbSource3000 : null)));
                     if ($thumbSource && is_writable($thumbDir)) {
                         $tmpDir = rtrim(WRITEPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'cache';
                         if (!is_dir($tmpDir)) { @mkdir($tmpDir, 0775, true); }
