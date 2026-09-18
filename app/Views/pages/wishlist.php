@@ -71,7 +71,7 @@ $productCoverUrl = function (string $id, array $varianList): string {
                             src="<?= $productCoverUrl((string)$p_id, $varianList); ?>"
                             alt="<?= htmlspecialchars($p_nama, ENT_QUOTES); ?>" loading="lazy" decoding="async">
                         <?php if ($p_gbrHover): ?>
-                        <img class="img-pic-hover" src="/img/barang/hover/<?= $p_id; ?>.webp"
+                        <img class="img-pic-hover" src="/viewpichover/<?= $p_id; ?>?v=<?= time(); ?>"
                             alt="<?= htmlspecialchars($p_nama . ' (hover)', ENT_QUOTES); ?>" loading="lazy" decoding="async">
                         <?php endif; ?>
                     </a>
@@ -153,7 +153,7 @@ $productCoverUrl = function (string $id, array $varianList): string {
                             const stok = parseInt(e.target.dataset.stok || "0");
 
                             // update gambar
-                            imgMain.src = "/img/barang/1000/<?= $p_id; ?>-" + urutGambar + ".webp";
+                            imgMain.src = "/viewvar/<?= $p_id; ?>/" + urutGambar + "?v=" + Date.now();
 
                             // update tombol & form
                             form.action = stok > 0 ?

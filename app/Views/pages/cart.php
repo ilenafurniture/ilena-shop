@@ -33,7 +33,7 @@
                                     </form>
                                     <input type="number" name="number" class="number-quantity" disabled
                                         value="<?= $k['jumlah'] ?>">
-                                    <form action="/addcart/<?= $k['id_barang'] ?>/<?= $k['varian'] ?>/1" method="post">
+                                    <form action="/addcart/<?= $k['id_barang'] ?>/<?= rawurlencode($k['varian']) ?>/1" method="post">
                                         <button type="submit">
                                             <div class="number-right"></div>
                                         </button>
@@ -94,7 +94,7 @@
                             <div class="number-quantity-hp">
                                 <?= $k['jumlah'] ?>
                             </div>
-                            <form action="/addcart/<?= $k['id_barang'] ?>/<?= $k['varian'] ?>/1" method="post">
+                            <form action="/addcart/<?= $k['id_barang'] ?>/<?= rawurlencode($k['varian']) ?>/1" method="post">
                                 <button type="submit">
                                     <div class="number-right"></div>
                                 </button>

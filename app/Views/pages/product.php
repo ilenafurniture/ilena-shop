@@ -127,7 +127,12 @@ $productCoverUrl = function (array $product): string {
                     <div class="container-varian mb-3 d-flex">
                         <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
                         <input id="varian<?= $ind_v ?>"
-                            value="<?= $v['urutan_gambar'] ?>-<?= $v['nama'] ?>-<?= $ind_v ?>" type="radio"
+                            value="<?= esc($v['urutan_gambar'], 'attr') ?>-<?= esc($v['nama'], 'attr') ?>-<?= $ind_v ?>"
+                            data-slot="<?= esc($v['urutan_gambar'], 'attr') ?>"
+                            data-name="<?= esc($v['nama'], 'attr') ?>"
+                            data-index="<?= $ind_v ?>"
+                            data-stok="<?= (int)($v['stok'] ?? 0) ?>"
+                            type="radio"
                             name="varian">
                         <label for="varian<?= $ind_v ?>"><span
                                 style="background-color: <?= $v['kode'] ?>"></span></label>
@@ -168,7 +173,7 @@ $productCoverUrl = function (array $product): string {
                         <div class="number-right" onclick="tambahJumlah()"></div>
                     </div>
                     <form id="btn-keranjang" method="post"
-                        action="<?= $produk['varian'][0]['stok'] > 0 ? '/addcart/' . $produk['id'] . '/' . $produk['varian'][0]['nama'] . '/1' : ''; ?>">
+                        action="<?= $produk['varian'][0]['stok'] > 0 ? '/addcart/' . $produk['id'] . '/' . rawurlencode($produk['varian'][0]['nama']) . '/1' : ''; ?>">
                         <button class="btn-default-merah <?= $produk['varian'][0]['stok'] > 0 ? '' : 'disabled'; ?>"
                             <?= $produk['varian'][0]['stok'] > 0 ? '' : 'disabled'; ?>
                             type="submit"><?= $produk['varian'][0]['stok'] > 0 ? 'Keranjang' : 'Stok habis'; ?></button>
@@ -346,7 +351,12 @@ $productCoverUrl = function (array $product): string {
                 <div class="gap-2 hide-ke-show-flex">
                     <div class="container-varian mb-3 d-flex">
                         <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
-                        <input id="varian<?= $ind_v ?>" value="<?= $v['urutan_gambar'] ?>-<?= $v['nama'] ?>"
+                        <input id="varian<?= $ind_v ?>"
+                            value="<?= esc($v['urutan_gambar'], 'attr') ?>-<?= esc($v['nama'], 'attr') ?>-<?= $ind_v ?>"
+                            data-slot="<?= esc($v['urutan_gambar'], 'attr') ?>"
+                            data-name="<?= esc($v['nama'], 'attr') ?>"
+                            data-index="<?= $ind_v ?>"
+                            data-stok="<?= (int)($v['stok'] ?? 0) ?>"
                             type="radio" name="varian">
                         <label for="varian<?= $ind_v ?>"><span
                                 style="background-color: <?= $v['kode'] ?>"></span></label>
@@ -385,8 +395,9 @@ $productCoverUrl = function (array $product): string {
                                     class="material-icons">bookmark_border</i></button>
                         </form>
                         <?php } ?>
+                        <?php $cardVarianAwal = json_decode($p['varian'], true)[0]['nama'] ?? 'default'; ?>
                         <form method="post" id="card<?= $ind_p ?>"
-                            action="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'], true)[0]['nama'] ?>/1"><button class="card1-btn-img"><i class="material-icons">shopping_cart</i>
+                            action="/addcart/<?= $p['id'] ?>/<?= rawurlencode($cardVarianAwal) ?>/1"><button class="card1-btn-img"><i class="material-icons">shopping_cart</i>
                             </button>
                         </form>
                     </div>
@@ -399,7 +410,11 @@ $productCoverUrl = function (array $product): string {
                 </div>
                 <div class="container-varian mb-1 d-flex">
                     <?php foreach (json_decode($p['varian'], true) as $ind_v => $v) { ?>
-                    <input id="varian-<?= $ind_p ?>-<?= $ind_v ?>" value="<?= $v['urutan_gambar'] ?>-<?= $v['nama'] ?>"
+                    <input id="varian-<?= $ind_p ?>-<?= $ind_v ?>"
+                        value="<?= esc($v['urutan_gambar'], 'attr') ?>-<?= esc($v['nama'], 'attr') ?>"
+                        data-slot="<?= esc($v['urutan_gambar'], 'attr') ?>"
+                        data-name="<?= esc($v['nama'], 'attr') ?>"
+                        data-stok="<?= (int)($v['stok'] ?? 0) ?>"
                         type="radio" name="varian<?= $ind_p ?>">
                     <label for="varian-<?= $ind_p ?>-<?= $ind_v ?>"><span
                             style="background-color: <?= $v['kode'] ?>"></span></label>
@@ -411,15 +426,15 @@ $productCoverUrl = function (array $product): string {
                         elm.addEventListener('change', (e) => {
                             console.log(e.target.value)
                             const img<?= $ind_p ?>Elm = document.getElementById("img<?= $ind_p ?>");
+                            const slot = (e.target.dataset.slot || e.target.value.split("-")[0] || "1").split(",")[0];
+                            const namaVarian = e.target.dataset.name || e.target.value.split("-").slice(1).join("-") || "default";
+                            const stok = Number(e.target.dataset.stok || 0);
                             img<?= $ind_p ?>Elm.src =
-                                "<?= base_url('viewvar/' . $p['id'] .'/') ?>" + e.target
-                                .value.split("-")[0].split(
-                                    ",")[
-                                    0] + '?v=' + Date.now();
+                                "<?= base_url('viewvar/' . $p['id'] .'/') ?>" + slot + '?v=' + Date.now();
 
-                            btnKeranjang<?= $ind_p ?>Elm.action = "/addcart/<?= $p['id'] ?>/" + e
-                                .target
-                                .value.split("-")[1] + "/1";
+                            btnKeranjang<?= $ind_p ?>Elm.action = stok > 0 ? "/addcart/<?= $p['id'] ?>/" + encodeURIComponent(namaVarian) + "/1" : "";
+                            const quickBtn = btnKeranjang<?= $ind_p ?>Elm.querySelector('button');
+                            if (quickBtn) quickBtn.disabled = stok <= 0;
                         })
                     });
                     </script>
@@ -449,25 +464,28 @@ const varian = JSON.parse('<?= json_encode($produk['varian']) ?>');
 const teksInfoHabisElm = document.getElementById('info-habis');
 const containerMarketElm = document.getElementById('container-market');
 console.log(varian)
-let varianSelected = "<?= $produk['varian'][0]['nama'] ?>";
+let varianSelected = <?= json_encode($produk['varian'][0]['nama'] ?? 'default') ?>;
 let jumlahSelected = "1";
 let isStokHabis = <?= $produk['varian'][0]['stok'] == '0' ? 'true' : 'false' ?>;
+const stokByVarianName = <?= json_encode(array_column($produk['varian'], 'stok', 'nama')) ?>;
+function encodedCartUrl(productId, varianName, qty) {
+    return "/addcart/" + productId + "/" + encodeURIComponent(varianName || "default") + "/" + Math.max(1, Number(qty || 1));
+}
 radioVarianElm.forEach(elm => {
     elm.addEventListener('change', (e) => {
-        const varianFullSelected = varian[Number(e.target.value.split("-")[2])];
+        const slotValue = e.target.dataset.slot || e.target.value.split("-")[0];
+        const varianName = e.target.dataset.name || e.target.value.split("-").slice(1, -1).join("-") || e.target.value.split("-")[1] || '';
+        const varianFullSelected = varian[Number(e.target.dataset.index || e.target.value.split("-")[2] || 0)] || { stok: e.target.dataset.stok || 0, urutan_gambar: slotValue, nama: varianName };
         const imgElm = document.querySelector("figure.img-detail-prev");
         const imgFixElm = document.querySelector("img.img-detail-prev");
         imgElm.style =
-            "background-image: url('" + "/viewvar3000/<?= $produk['id']; ?>/" + e.target.value
-            .split(
-                "-")[0].split(",")[0] +
+            "background-image: url('" + "/viewvar3000/<?= $produk['id']; ?>/" + slotValue.split(",")[0] +
             "?v=" + Date.now() + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
-        imgFixElm.src = "/viewvar/<?= $produk['id']; ?>/" + e.target.value.split("-")[0].split(
-            ",")[0] + '?v=' + Date.now();
+        imgFixElm.src = "/viewvar/<?= $produk['id']; ?>/" + slotValue.split(",")[0] + '?v=' + Date.now();
 
         const containerImgDetailElm = document.querySelector(".container-img-detail-select");
         containerImgDetailElm.innerHTML = "";
-        const urutanGambar = e.target.value.split("-")[0].split(",");
+        const urutanGambar = slotValue.split(",");
         urutanGambar.forEach((urutan, ind_x) => {
             containerImgDetailElm.innerHTML += '<input id="gambar' + ind_x +
                 '" type="radio" name="gambar" value="' + urutan + '"' + (ind_x === 0 ? ' checked' : '') +
@@ -494,9 +512,7 @@ radioVarianElm.forEach(elm => {
         if (btnKeranjangElm) {
             if (Number(varianFullSelected.stok) > 0) {
                 btnKeranjangElm.children[0].innerHTML = 'Keranjang'
-                btnKeranjangElm.action = "/addcart/<?= $produk['id'] ?>/" + e.target.value.split("-")[
-                        1] +
-                    "/" + jumlahSelected;
+                btnKeranjangElm.action = encodedCartUrl("<?= $produk['id'] ?>", varianName, jumlahSelected);
                 btnKeranjangElm.children[0].classList.remove('disabled')
                 teksInfoHabisElm.classList.add('d-none')
                 isStokHabis = false;
@@ -508,7 +524,7 @@ radioVarianElm.forEach(elm => {
                 isStokHabis = true;
             }
         }
-        varianSelected = e.target.value.split("-")[1];
+        varianSelected = varianName;
 
         const radioImgElm = document.querySelectorAll('input[name="gambar"]');
         radioImgElm.forEach(elm1 => {
@@ -542,8 +558,7 @@ function kurangJumlah() {
     if (!isStokHabis) {
         if (Number(jumlahBarangElm.value) > 1) {
             jumlahBarangElm.value--
-            btnKeranjangElm.action = "/addcart/<?= $produk['id'] ?>/" + varianSelected + "/" +
-                jumlahBarangElm.value;
+            btnKeranjangElm.action = encodedCartUrl("<?= $produk['id'] ?>", varianSelected, jumlahBarangElm.value);
             jumlahSelected = jumlahBarangElm.value;
         }
     }
@@ -551,9 +566,10 @@ function kurangJumlah() {
 
 function tambahJumlah() {
     if (!isStokHabis) {
+        const maxStok = Number(stokByVarianName[varianSelected] || 999);
+        if (Number(jumlahBarangElm.value) >= maxStok) return;
         jumlahBarangElm.value++;
-        btnKeranjangElm.action = "/addcart/<?= $produk['id'] ?>/" + varianSelected + "/" +
-            jumlahBarangElm.value;
+        btnKeranjangElm.action = encodedCartUrl("<?= $produk['id'] ?>", varianSelected, jumlahBarangElm.value);
         jumlahSelected = jumlahBarangElm.value;
     }
 }

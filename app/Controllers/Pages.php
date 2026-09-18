@@ -655,7 +655,9 @@ class Pages extends BaseController
             $varians = json_decode($produk['varian'], true);
             foreach ($varians as $v) {
                 if ($v['nama'] === $item['varian']) {
-                    $keranjang[$i]['src_gambar'] = "/img/barang/1000/{$item['id_barang']}-" . explode(',', $v['urutan_gambar'])[0] . '.webp';
+                    $slot = preg_replace('/[^0-9]/', '', (string)(explode(',', $v['urutan_gambar'])[0] ?? '1')) ?: '1';
+                    $version = !empty($produk['tgl_update']) ? strtotime($produk['tgl_update']) : time();
+                    $keranjang[$i]['src_gambar'] = "/viewvar/{$item['id_barang']}/{$slot}?v={$version}";
                     break;
                 }
             }
@@ -675,11 +677,13 @@ class Pages extends BaseController
 
     public function addCart($idbarang, $varian, $jumlah)
     {
+        $varian = rawurldecode((string)$varian);
+        $jumlah = max(1, (int)$jumlah);
         $keranjang = session()->get('keranjang') ?? [];
         $found = false;
         foreach ($keranjang as &$item) {
             if ($item['id_barang'] == $idbarang && $item['varian'] == $varian) {
-                $item['jumlah'] += (int) $jumlah;
+                $item['jumlah'] += $jumlah;
                 $found = true;
                 break;
             }
@@ -688,7 +692,7 @@ class Pages extends BaseController
             $keranjang[] = [
                 'id_barang' => $idbarang,
                 'varian'    => $varian,
-                'jumlah'    => (int) $jumlah,
+                'jumlah'    => $jumlah,
             ];
         }
         session()->set('keranjang', $keranjang);
