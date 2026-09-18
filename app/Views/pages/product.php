@@ -33,6 +33,7 @@ $hoverImgUrl = function () use ($produk, $assetVersion): string {
     $relative = 'img/barang/hover/' . $produk['id'] . '.webp';
     return base_url('viewpichover/' . $produk['id']) . '?v=' . $assetVersion($relative);
 };
+$detailVersion = !empty($produk['tgl_update']) ? (int) strtotime((string) $produk['tgl_update']) : time();
 $productCoverUrl = function (array $product): string {
     $id = $product['id'] ?? '';
     $varian = json_decode($product['varian'] ?? '[]', true) ?: [];
@@ -402,12 +403,13 @@ $productCoverUrl = function (array $product): string {
             <div class="limapuluh-ke-seratus">
                 <div>
                     <figure class="img-detail-prev d-none"
-                        style="background-image: url('<?= $barangImgUrl('3000', $gambarAwalDetail) ?>'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;">
+                        data-zoom-src="<?= $barangImgUrl('3000', $gambarAwalDetail) ?>"
+                        style="background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;">
                     </figure>
                     <img class="img-detail-prev"
                         <?= $produk['varian'][0]['stok'] <= 0 ? 'style="filter: grayscale(90%)"' : ''; ?>
                         src="<?= $barangImgUrl('1000', $gambarAwalDetail) ?>" onmousemove="zoom(event)"
-                        onmouseleave="mouseoff(event)">
+                        onmouseleave="mouseoff(event)" alt="<?= esc($produk['nama'], 'attr') ?>" decoding="async" fetchpriority="high">
                 </div>
                 <div class="mb-3 mt-3" style="overflow: auto">
                     <div class="container-img-detail-select"
@@ -416,12 +418,12 @@ $productCoverUrl = function (array $product): string {
                         <input <?= $indx == 0 ? 'checked' : '' ?> id="gambar<?= $indx ?>" type="radio" name="gambar"
                             value="<?= $p_v ?>">
                         <label class="img-detail-select" for="gambar<?= $indx ?>"><img
-                                src="<?= $barangImgUrl('1000', $p_v) ?>"></label>
+                                src="<?= $barangImgUrl('1000', $p_v) ?>" alt="<?= esc($produk['nama'], 'attr') ?>" loading="lazy" decoding="async"></label>
                         <?php } ?>
                         <?php if ($punyaGambarHoverDetail) { ?>
                         <input id="gambar-hover" type="radio" name="gambar" value="hover">
                         <label class="img-detail-select" for="gambar-hover"><img
-                                src="<?= $hoverImgUrl() ?>"></label>
+                                src="<?= $hoverImgUrl() ?>" alt="<?= esc($produk['nama'], 'attr') ?>" loading="lazy" decoding="async"></label>
                         <?php } ?>
                         <script>
                         const radioImgElm = document.querySelectorAll('input[name="gambar"]');
@@ -432,21 +434,17 @@ $productCoverUrl = function (array $product): string {
                                 if (e.target.value === "hover") {
                                     window.isHoverDetailSelected = true;
                                     imgElm.classList.add("d-none");
-                                    imgElm.style =
-                                        "background-image: url('/viewpichover/<?= $produk['id']; ?>?v=" + Date.now() + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
-                                    imgFixElm.src = "/viewpichover/<?= $produk['id']; ?>?v=" + Date.now();
+                                    imgElm.dataset.zoomSrc = "";
+                                    imgElm.style.backgroundImage = "";
+                                    imgFixElm.src = "<?= $hoverImgUrl() ?>";
                                     return;
                                 }
                                 window.isHoverDetailSelected = false;
-                                imgElm.style =
-                                    "background-image: url('" +
-                                    "/viewvar3000/<?= $produk['id']; ?>/" +
-                                    e.target.value
-                                    .split("-")[0] +
-                                    "?v=" + Date.now() + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
+                                imgElm.dataset.zoomSrc = "/viewvar3000/<?= $produk['id']; ?>/" + e.target.value.split("-")[0] + "?v=<?= $detailVersion ?>";
+                                imgElm.style.backgroundImage = "";
                                 imgFixElm.src = "/viewvar/<?= $produk['id']; ?>/" + e.target
                                     .value
-                                    .split("-")[0] + '?v=' + Date.now();
+                                    .split("-")[0] + '?v=<?= $detailVersion ?>';
                             })
                         });
                         </script>
@@ -483,6 +481,7 @@ $productCoverUrl = function (array $product): string {
         <p class="text-center">Anda mungkin juga suka</p>
         <div class="container-card1">
             <?php foreach ($produkSejenis as $ind_p => $p) { ?>
+            <?php $relatedVersion = !empty($p['tgl_update']) ? (int) strtotime((string) $p['tgl_update']) : time(); ?>
             <div class="card1">
                 <div style="position: relative;">
                     <span class="card1-content-img-kiri"
@@ -509,9 +508,9 @@ $productCoverUrl = function (array $product): string {
                     </div>
                     <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="gambar">
                         <img class=" img-pic" id="img<?= $ind_p ?>"
-                            src="<?= $productCoverUrl($p) ?>" alt="" loading="lazy" decoding="async">
-                        <img class=" img-pic-hover" id="img<?= $ind_p ?>"
-                            src="<?= base_url('viewpichover/' . $p['id']) ?>?v=<?= !empty($p['tgl_update']) ? strtotime($p['tgl_update']) : time() ?>" alt="" loading="lazy" decoding="async"> 
+                            src="<?= $productCoverUrl($p) ?>" alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async">
+                        <img class=" img-pic-hover lazy-hover-product"
+                            data-src="<?= base_url('viewpichover/' . $p['id']) ?>?v=<?= $relatedVersion ?>" alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async"> 
                     </a>
                 </div>
                 <div class="container-varian mb-1 d-flex">
@@ -535,7 +534,7 @@ $productCoverUrl = function (array $product): string {
                             const namaVarian = e.target.dataset.name || e.target.value.split("-").slice(1).join("-") || "default";
                             const stok = Number(e.target.dataset.stok || 0);
                             img<?= $ind_p ?>Elm.src =
-                                "<?= base_url('viewvar/' . $p['id'] .'/') ?>" + slot + '?v=' + Date.now();
+                                "<?= base_url('product-cover/' . $p['id']) ?>?slot=" + slot + '&v=<?= $relatedVersion ?>';
 
                             btnKeranjang<?= $ind_p ?>Elm.action = stok > 0 ? "/addcart/<?= $p['id'] ?>/" + encodeURIComponent(namaVarian) + "/1" : "";
                             const quickBtn = btnKeranjang<?= $ind_p ?>Elm.querySelector('button');
@@ -572,8 +571,18 @@ let varianSelected = <?= json_encode($produk['varian'][0]['nama'] ?? 'default') 
 let jumlahSelected = "1";
 let isStokHabis = <?= $produk['varian'][0]['stok'] == '0' ? 'true' : 'false' ?>;
 const stokByVarianName = <?= json_encode(array_column($produk['varian'], 'stok', 'nama')) ?>;
+const detailVersion = "<?= $detailVersion ?>";
+const detailBase1000 = "/viewvar/<?= $produk['id']; ?>/";
+const detailBase3000 = "/viewvar3000/<?= $produk['id']; ?>/";
+const detailHoverUrl = "<?= $hoverImgUrl() ?>";
 function encodedCartUrl(productId, varianName, qty) {
     return "/addcart/" + productId + "/" + encodeURIComponent(varianName || "default") + "/" + Math.max(1, Number(qty || 1));
+}
+function detailImageUrl(slot) {
+    return detailBase1000 + slot + "?v=" + detailVersion;
+}
+function detailZoomUrl(slot) {
+    return detailBase3000 + slot + "?v=" + detailVersion;
 }
 radioVarianElm.forEach(elm => {
     elm.addEventListener('change', (e) => {
@@ -582,10 +591,9 @@ radioVarianElm.forEach(elm => {
         const varianFullSelected = varian[Number(e.target.dataset.index || e.target.value.split("-")[2] || 0)] || { stok: e.target.dataset.stok || 0, urutan_gambar: slotValue, nama: varianName };
         const imgElm = document.querySelector("figure.img-detail-prev");
         const imgFixElm = document.querySelector("img.img-detail-prev");
-        imgElm.style =
-            "background-image: url('" + "/viewvar3000/<?= $produk['id']; ?>/" + slotValue.split(",")[0] +
-            "?v=" + Date.now() + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
-        imgFixElm.src = "/viewvar/<?= $produk['id']; ?>/" + slotValue.split(",")[0] + '?v=' + Date.now();
+        imgElm.dataset.zoomSrc = detailZoomUrl(slotValue.split(",")[0]);
+        imgElm.style.backgroundImage = "";
+        imgFixElm.src = detailImageUrl(slotValue.split(",")[0]);
 
         const containerImgDetailElm = document.querySelector(".container-img-detail-select");
         containerImgDetailElm.innerHTML = "";
@@ -594,13 +602,12 @@ radioVarianElm.forEach(elm => {
             containerImgDetailElm.innerHTML += '<input id="gambar' + ind_x +
                 '" type="radio" name="gambar" value="' + urutan + '"' + (ind_x === 0 ? ' checked' : '') +
                 '"><label class="img-detail-select" for="gambar' + ind_x +
-                '"><img src="/viewvar/<?= $produk['id'] ?>/' + urutan +
-                '?v=' + Date.now() + '"></label>'
+                '"><img loading="lazy" decoding="async" src="' + detailImageUrl(urutan) + '"></label>'
         })
         <?php if ($punyaGambarHoverDetail) { ?>
         containerImgDetailElm.innerHTML += '<input id="gambar-hover" type="radio" name="gambar" value="hover">' +
             '<label class="img-detail-select" for="gambar-hover">' +
-            '<img src="/viewpichover/<?= $produk['id'] ?>?v=' + Date.now() + '"></label>';
+            '<img loading="lazy" decoding="async" src="' + detailHoverUrl + '"></label>';
         <?php } ?>
 
         if (Number(varianFullSelected.stok) <= 0) {
@@ -638,20 +645,17 @@ radioVarianElm.forEach(elm => {
                 if (elmVar.target.value === "hover") {
                     window.isHoverDetailSelected = true;
                     imgElm.classList.add("d-none");
-                    imgElm.style =
-                        "background-image: url('/viewpichover/<?= $produk['id']; ?>?v=" + Date.now() + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
-                    imgFixElm.src = "/viewpichover/<?= $produk['id']; ?>?v=" + Date.now();
+                    imgElm.dataset.zoomSrc = "";
+                    imgElm.style.backgroundImage = "";
+                    imgFixElm.src = detailHoverUrl;
                     return;
                 }
                 window.isHoverDetailSelected = false;
-                imgElm.style =
-                    "background-image: url('" +
-                    "/viewvar3000/<?= $produk['id']; ?>/" +
-                    elmVar.target.value.split("-")[0].split(",")[0] +
-                    "?v=" + Date.now() + "'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;"
+                imgElm.dataset.zoomSrc = detailZoomUrl(elmVar.target.value.split("-")[0].split(",")[0]);
+                imgElm.style.backgroundImage = "";
                 imgFixElm.src = "/viewvar/<?= $produk['id']; ?>/" + elmVar
                     .target.value
-                    .split("-")[0].split(",")[0] + '?v=' + Date.now()
+                    .split("-")[0].split(",")[0] + '?v=' + detailVersion
             })
         });
     })
@@ -680,6 +684,9 @@ function tambahJumlah() {
 
 function zoom(e) {
     if (window.innerWidth > 600 && !window.isHoverDetailSelected) {
+        if (figureElm && figureElm.dataset.zoomSrc && !figureElm.style.backgroundImage) {
+            figureElm.style.backgroundImage = "url('" + figureElm.dataset.zoomSrc + "')";
+        }
         figureElm.classList.remove('d-none')
         figureElm.style.backgroundSize = "auto"
         const widthGambar = e.target.offsetWidth;
@@ -698,6 +705,18 @@ function mouseoff(e) {
         figureElm.style.backgroundSize = "cover"
     }
 }
+
+document.querySelectorAll('.gambar').forEach((card) => {
+    const hoverImg = card.querySelector('.lazy-hover-product');
+    if (!hoverImg) return;
+    const loadHover = () => {
+        if (!hoverImg.src && hoverImg.dataset.src) {
+            hoverImg.src = hoverImg.dataset.src;
+        }
+    };
+    card.addEventListener('mouseenter', loadHover, { once: true });
+    card.addEventListener('touchstart', loadHover, { once: true, passive: true });
+});
 </script>
 
 <?= $this->endSection(); ?>

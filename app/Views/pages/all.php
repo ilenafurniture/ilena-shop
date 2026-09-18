@@ -552,6 +552,7 @@ if (isset($_GET['ruang'])) {
             <?php } ?>
             <div class="container-card1">
                 <?php foreach ($produk as $ind_p => $p) { ?>
+                <?php $cardVersion = !empty($p['tgl_update']) ? (int) strtotime((string) $p['tgl_update']) : time(); ?>
                 <div class="card1">
                     <div style="position: relative;">
                         <span class="card1-content-img-kiri"
@@ -578,9 +579,10 @@ if (isset($_GET['ruang'])) {
                         </div>
                         <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="gambar">
                             <img class="img-pic" id="img<?= $ind_p ?>"
-                                src="<?= $productCoverUrl($p) ?>" alt="" loading="lazy" decoding="async">
-                            <img class="img-pic-hover" id="img<?= $ind_p ?>"
-                                src="<?= base_url('img/barang/hover/' . $p['id'] . '.webp') ?>" alt="" loading="lazy" decoding="async"> 
+                                src="<?= $productCoverUrl($p) ?>" alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async">
+                            <img class="img-pic-hover lazy-hover-product"
+                                data-src="<?= base_url('viewpichover/' . $p['id']) ?>?v=<?= $cardVersion ?>"
+                                alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async"> 
                         </a>
                     </div>
                     <div class="container-varian mb-1 d-flex">
@@ -596,13 +598,10 @@ if (isset($_GET['ruang'])) {
                         const varian<?= $ind_p ?>Elm = document.querySelectorAll('input[name="varian<?= $ind_p ?>"]');
                         varian<?= $ind_p ?>Elm.forEach(elm => {
                             elm.addEventListener('change', (e) => {
-                                console.log(e.target.value)
                                 const img<?= $ind_p ?>Elm = document.getElementById("img<?= $ind_p ?>");
                                 img<?= $ind_p ?>Elm.src =
-                                    "<?= base_url('img/barang/1000/' . $p['id'] . '-') ?>" + e.target
-                                    .value.split("-")[0].split(
-                                        ",")[
-                                        0] + '.webp';
+                                    "<?= base_url('product-cover/' . $p['id']) ?>?slot=" + e.target
+                                    .value.split("-")[0].split(",")[0] + "&v=<?= $cardVersion ?>";
 
                                 btnKeranjang<?= $ind_p ?>Elm.action = "/addcart/<?= $p['id'] ?>/" + e
                                     .target
@@ -1673,6 +1672,18 @@ function openMeta(e) {
         e.target.innerHTML = 'Lebih sedikit'
     }
 }
+
+document.querySelectorAll('.gambar').forEach((card) => {
+    const hoverImg = card.querySelector('.lazy-hover-product');
+    if (!hoverImg) return;
+    const loadHover = () => {
+        if (!hoverImg.src && hoverImg.dataset.src) {
+            hoverImg.src = hoverImg.dataset.src;
+        }
+    };
+    card.addEventListener('mouseenter', loadHover, { once: true });
+    card.addEventListener('touchstart', loadHover, { once: true, passive: true });
+});
 </script>
 
 <?= $this->endSection(); ?>
