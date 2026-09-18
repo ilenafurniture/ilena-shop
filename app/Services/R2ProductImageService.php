@@ -86,6 +86,43 @@ class R2ProductImageService
         return $exists;
     }
 
+    public function deleteObject(string $key): bool
+    {
+        if (!$this->enabled()) {
+            return false;
+        }
+
+        $key = ltrim($key, '/');
+        $result = $this->request('DELETE', $key);
+        $ok = $result['status'] >= 200 && $result['status'] < 300;
+        if ($ok || $result['status'] === 404) {
+            cache()->delete('r2_product_exists_' . md5($key));
+            return true;
+        }
+
+        log_message('error', 'Hapus gambar produk R2 gagal: {key} status {status}', [
+            'key' => $key,
+            'status' => $result['status'],
+        ]);
+        return false;
+    }
+
+    public function deleteProductImages(string $productId, int $maxSlots = 20): void
+    {
+        $safeId = preg_replace('/[^A-Za-z0-9_-]/', '', $productId);
+        if ($safeId === '') {
+            return;
+        }
+
+        $this->deleteObject("products/300/{$safeId}.webp");
+        $this->deleteObject("products/hover/{$safeId}.webp");
+
+        for ($slot = 1; $slot <= $maxSlots; $slot++) {
+            $this->deleteObject("products/1000/{$safeId}-{$slot}.webp");
+            $this->deleteObject("products/3000/{$safeId}-{$slot}.webp");
+        }
+    }
+
     public function redirectResponse(string $key)
     {
         $url = $this->publicUrl($key);

@@ -782,6 +782,35 @@ class AdminController extends BaseController
         }
     }
 
+    private function deleteLocalProductImages(string $productId, int $maxSlots = 20): void
+    {
+        $safeId = preg_replace('/[^A-Za-z0-9_-]/', '', $productId);
+        if ($safeId === '') {
+            return;
+        }
+
+        $paths = [
+            "uploads/product-images/300/{$safeId}.webp",
+            "uploads/product-images/hover/{$safeId}.webp",
+            "img/barang/300/{$safeId}.webp",
+            "img/barang/hover/{$safeId}.webp",
+        ];
+
+        for ($slot = 1; $slot <= $maxSlots; $slot++) {
+            $paths[] = "uploads/product-images/1000/{$safeId}-{$slot}.webp";
+            $paths[] = "uploads/product-images/3000/{$safeId}-{$slot}.webp";
+            $paths[] = "img/barang/1000/{$safeId}-{$slot}.webp";
+            $paths[] = "img/barang/3000/{$safeId}-{$slot}.webp";
+        }
+
+        foreach ($paths as $relativePath) {
+            $fullPath = rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
+            if (is_file($fullPath)) {
+                @unlink($fullPath);
+            }
+        }
+    }
+
     private function ensureBarangScheduleColumns(): void
     {
         try {
@@ -1443,6 +1472,8 @@ class AdminController extends BaseController
         $this->barangModel->where('id', $id_product)->delete();
         $this->gambarBarangModel->where('id', $id_product)->delete();
         $this->gambarBarang3000Model->where('id', $id_product)->delete();
+        $this->r2ProductImages->deleteProductImages((string) $id_product);
+        $this->deleteLocalProductImages((string) $id_product);
         return redirect()->to('/admin/product')->with('success', 'Produk berhasil dihapus.');
     }
     public function order()
