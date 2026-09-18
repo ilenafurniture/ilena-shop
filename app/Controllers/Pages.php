@@ -4682,6 +4682,24 @@ class Pages extends BaseController
                 : ["products/300/{$safeId}.webp", "products/1000/{$safeId}-{$slot}.webp", "products/3000/{$safeId}-{$slot}.webp"];
             foreach ($r2Candidates as $key) {
                 if ($this->r2ProductImages->objectExists($key)) {
+                    if ($this->request->getGet('proxy') === '1') {
+                        $object = $this->r2ProductImages->getObject($key);
+                        if ($object) {
+                            $etag = '"' . md5($object['body']) . '"';
+                            if ($this->request->getHeaderLine('If-None-Match') === $etag) {
+                                return $this->response
+                                    ->setStatusCode(304)
+                                    ->setHeader('ETag', $etag)
+                                    ->setHeader('Cache-Control', 'private, max-age=60');
+                            }
+                            return $this->response
+                                ->setHeader('Content-Type', $object['contentType'])
+                                ->setHeader('Content-Length', (string) strlen($object['body']))
+                                ->setHeader('Cache-Control', 'private, max-age=60')
+                                ->setHeader('ETag', $etag)
+                                ->setBody($object['body']);
+                        }
+                    }
                     $redirect = $this->r2ProductImages->redirectResponse($key);
                     if ($redirect) {
                         return $redirect;

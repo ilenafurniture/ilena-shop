@@ -95,6 +95,24 @@ class R2ProductImageService
         return redirect()->to($url, 302)->setHeader('Cache-Control', 'public, max-age=300');
     }
 
+    public function getObject(string $key): ?array
+    {
+        if (!$this->enabled()) {
+            return null;
+        }
+
+        $result = $this->request('GET', $key);
+        if ($result['status'] < 200 || $result['status'] >= 300 || $result['body'] === false) {
+            return null;
+        }
+
+        cache()->save('r2_product_exists_' . md5($key), '1', 3600);
+        return [
+            'body' => (string) $result['body'],
+            'contentType' => 'image/webp',
+        ];
+    }
+
     private function request(string $method, string $key, string $body = '', array $extraHeaders = []): array
     {
         $key = ltrim($key, '/');

@@ -249,6 +249,13 @@ class GambarController extends BaseController
         $relativePath = ltrim(str_replace('\\', '/', $relativePath), '/');
         $r2Key = $this->productR2KeyFromLegacy($relativePath);
         if ($r2Key && $this->r2ProductImages->enabled() && $this->r2ProductImages->objectExists($r2Key)) {
+            if ($this->request->getGet('proxy') === '1') {
+                $object = $this->r2ProductImages->getObject($r2Key);
+                if ($object) {
+                    return $this->serveImageContent($object['body'], $object['contentType']);
+                }
+            }
+
             $redirect = $this->r2ProductImages->redirectResponse($r2Key);
             if ($redirect) {
                 return $redirect;
