@@ -171,6 +171,10 @@ $routes->group('admin', ['filter' => 'adminFilter'], static function($routes) {
     $routes->get('homelayout', 'AdminController::homeLayout');
     $routes->post('homelayout', 'AdminController::actionHomeLayout');
     $routes->get('changepic', 'AdminController::changePic');
+    $routes->get('partners', 'AdminController::partners');
+    $routes->post('partners', 'AdminController::actionPartner');
+    $routes->post('partners/(:num)', 'AdminController::actionPartner/$1');
+    $routes->post('partners/delete/(:num)', 'AdminController::deletePartner/$1');
 
     // Gratis ongkir per wilayah
     $routes->get('free-shipping', 'AdminController::freeShipping');

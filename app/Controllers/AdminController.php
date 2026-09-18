@@ -29,6 +29,7 @@ use App\Models\ProjectInteriorPaymentModel;
 use App\Models\SuratJalanModel;
 use App\Models\SuratJalanItemModel;
 use App\Models\ProjectInteriorItemModel;
+use App\Models\PartnerModel;
 use App\Services\AuditLogService;
 use App\Services\FreeShippingService;
 use App\Services\MetaCapiSettingsService;
@@ -94,6 +95,7 @@ class AdminController extends BaseController
     protected $suratJalanModel;
     protected $suratJalanItemModel;
     protected $projectInteriorItemModel;
+    protected $partnerModel;
 
 
 
@@ -130,6 +132,7 @@ class AdminController extends BaseController
         $this->suratJalanModel = new SuratJalanModel();
         $this->suratJalanItemModel = new SuratJalanItemModel();
         $this->projectInteriorItemModel = new ProjectInteriorItemModel();
+        $this->partnerModel = new PartnerModel();
         
     }
 
@@ -191,6 +194,154 @@ class AdminController extends BaseController
             'recentOrders' => $recentOrders,
             'lowStockProducts' => array_slice($lowStockProducts, 0, 6),
         ]);
+    }
+
+    private function ensurePartnerTable(): void
+    {
+        $db = \Config\Database::connect();
+        if ($db->tableExists('partners')) {
+            return;
+        }
+
+        $forge = \Config\Database::forge();
+        $forge->addField([
+            'id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'name' => ['type' => 'VARCHAR', 'constraint' => 160],
+            'city' => ['type' => 'VARCHAR', 'constraint' => 120],
+            'address' => ['type' => 'TEXT'],
+            'maps_url' => ['type' => 'TEXT', 'null' => true],
+            'image_url' => ['type' => 'TEXT', 'null' => true],
+            'lat' => ['type' => 'DECIMAL', 'constraint' => '12,8', 'null' => true],
+            'lng' => ['type' => 'DECIMAL', 'constraint' => '12,8', 'null' => true],
+            'active' => ['type' => 'TINYINT', 'constraint' => 1, 'default' => 1],
+            'sort_order' => ['type' => 'INT', 'constraint' => 11, 'default' => 0],
+            'created_at' => ['type' => 'DATETIME', 'null' => true],
+            'updated_at' => ['type' => 'DATETIME', 'null' => true],
+        ]);
+        $forge->addKey('id', true);
+        $forge->createTable('partners', true);
+    }
+
+    public function partners()
+    {
+        $this->ensurePartnerTable();
+        if ($this->partnerModel->countAllResults() === 0) {
+            $this->seedPartnersFromLegacyView();
+        }
+
+        return view('admin/partners', [
+            'title' => 'Partner Ilena',
+            'partners' => $this->partnerModel
+                ->orderBy('sort_order', 'ASC')
+                ->orderBy('name', 'ASC')
+                ->findAll(),
+            'editPartner' => ($id = $this->request->getGet('edit')) ? $this->partnerModel->find($id) : null,
+        ]);
+    }
+
+    private function seedPartnersFromLegacyView(): void
+    {
+        $viewPath = APPPATH . 'Views/pages/mitra.php';
+        if (!is_file($viewPath)) {
+            return;
+        }
+        $source = file_get_contents($viewPath);
+        if (!preg_match('/const\s+LEGACY_MITRA\s*=\s*\[(.*?)\];\s*const\s+MITRA/s', $source, $match)) {
+            return;
+        }
+
+        preg_match_all('/\{\s*(.*?)\n\s*\}/s', $match[1], $objects);
+        $now = date('Y-m-d H:i:s');
+        $rows = [];
+        $readString = static function (string $object, string $field): string {
+            return preg_match('/\b' . preg_quote($field, '/') . '\s*:\s*"((?:[^"\\\\]|\\\\.)*)"/s', $object, $m)
+                ? stripcslashes($m[1])
+                : '';
+        };
+
+        foreach ($objects[1] as $index => $object) {
+            $name = trim($readString($object, 'name'));
+            $city = trim($readString($object, 'city'));
+            $address = trim($readString($object, 'address'));
+            if ($name === '' || $city === '' || $address === '') {
+                continue;
+            }
+
+            $img = trim($readString($object, 'img'));
+            $img = str_replace('<?= $apikey_img_ilena ?>', $this->apikey_img_ilena, $img);
+            $lat = null;
+            $lng = null;
+            if (preg_match('/coords\s*:\s*\[\s*([-0-9.]+)\s*,\s*([-0-9.]+)\s*\]/', $object, $coord)) {
+                $lat = (float) $coord[1];
+                $lng = (float) $coord[2];
+            }
+
+            $rows[] = [
+                'name' => $name,
+                'city' => $city,
+                'address' => $address,
+                'maps_url' => 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($address),
+                'image_url' => $img,
+                'lat' => $lat,
+                'lng' => $lng,
+                'active' => 1,
+                'sort_order' => $index + 1,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+
+        if (!empty($rows)) {
+            $this->partnerModel->insertBatch($rows);
+        }
+    }
+
+    public function actionPartner($id = null)
+    {
+        $this->ensurePartnerTable();
+        $data = $this->request->getPost();
+        $now = date('Y-m-d H:i:s');
+        $payload = [
+            'name' => trim((string) ($data['name'] ?? '')),
+            'city' => trim((string) ($data['city'] ?? '')),
+            'address' => trim((string) ($data['address'] ?? '')),
+            'maps_url' => trim((string) ($data['maps_url'] ?? '')),
+            'image_url' => trim((string) ($data['image_url'] ?? '')),
+            'lat' => $data['lat'] !== '' ? (float) $data['lat'] : null,
+            'lng' => $data['lng'] !== '' ? (float) $data['lng'] : null,
+            'active' => !empty($data['active']) ? 1 : 0,
+            'sort_order' => (int) ($data['sort_order'] ?? 0),
+            'updated_at' => $now,
+        ];
+
+        if ($payload['name'] === '' || $payload['city'] === '' || $payload['address'] === '') {
+            return redirect()->back()->with('error', 'Nama, kota, dan alamat wajib diisi.')->withInput();
+        }
+        if ($payload['maps_url'] === '') {
+            $payload['maps_url'] = 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($payload['address']);
+        }
+        if (!preg_match('#^https?://#i', $payload['maps_url'])) {
+            $payload['maps_url'] = 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($payload['address']);
+        }
+        if ($payload['image_url'] !== '' && !preg_match('#^https?://#i', $payload['image_url'])) {
+            $payload['image_url'] = '';
+        }
+
+        if ($id) {
+            $this->partnerModel->update($id, $payload);
+            return redirect()->to('/admin/partners')->with('success', 'Partner berhasil diperbarui.');
+        }
+
+        $payload['created_at'] = $now;
+        $this->partnerModel->insert($payload);
+        return redirect()->to('/admin/partners')->with('success', 'Partner berhasil ditambahkan.');
+    }
+
+    public function deletePartner($id)
+    {
+        $this->ensurePartnerTable();
+        $this->partnerModel->delete($id);
+        return redirect()->to('/admin/partners')->with('success', 'Partner berhasil dihapus.');
     }
     
     public function listProduct()

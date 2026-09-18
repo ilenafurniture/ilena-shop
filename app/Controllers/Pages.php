@@ -16,6 +16,7 @@ use App\Models\PemesananGudangModel;
 use App\Models\KartuStokModel;
 use App\Models\ProvinsiModel;
 use App\Models\UserModel;
+use App\Models\PartnerModel;
 use App\Models\KoleksiModel;
 use App\Models\JenisModel;
 use App\Models\VoucherModel;
@@ -4467,12 +4468,61 @@ class Pages extends BaseController
     }
     public function partner()
     {
+        $this->ensurePartnerTable();
+        $partners = (new PartnerModel())
+            ->where('active', 1)
+            ->orderBy('sort_order', 'ASC')
+            ->orderBy('name', 'ASC')
+            ->findAll();
+
+        $partners = array_map(static function (array $row): array {
+            $lat = $row['lat'] ?? null;
+            $lng = $row['lng'] ?? null;
+            $hasCoords = $lat !== null && $lat !== '' && $lng !== null && $lng !== '';
+
+            return [
+                'name' => $row['name'] ?? '',
+                'city' => $row['city'] ?? '',
+                'address' => $row['address'] ?? '',
+                'href' => $row['maps_url'] ?: ('https://www.google.com/maps/search/?api=1&query=' . rawurlencode($row['address'] ?? '')),
+                'img' => $row['image_url'] ?? '',
+                'coords' => $hasCoords ? [(float) $lat, (float) $lng] : null,
+            ];
+        }, $partners);
+
         $data = [
             'title' => 'Mitra Kami',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
+            'partners' => $partners,
         ];
         return view('pages/mitra', $data);
+    }
+
+    private function ensurePartnerTable(): void
+    {
+        $db = \Config\Database::connect();
+        if ($db->tableExists('partners')) {
+            return;
+        }
+
+        $forge = \Config\Database::forge();
+        $forge->addField([
+            'id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'name' => ['type' => 'VARCHAR', 'constraint' => 160],
+            'city' => ['type' => 'VARCHAR', 'constraint' => 120],
+            'address' => ['type' => 'TEXT'],
+            'maps_url' => ['type' => 'TEXT', 'null' => true],
+            'image_url' => ['type' => 'TEXT', 'null' => true],
+            'lat' => ['type' => 'DECIMAL', 'constraint' => '12,8', 'null' => true],
+            'lng' => ['type' => 'DECIMAL', 'constraint' => '12,8', 'null' => true],
+            'active' => ['type' => 'TINYINT', 'constraint' => 1, 'default' => 1],
+            'sort_order' => ['type' => 'INT', 'constraint' => 11, 'default' => 0],
+            'created_at' => ['type' => 'DATETIME', 'null' => true],
+            'updated_at' => ['type' => 'DATETIME', 'null' => true],
+        ]);
+        $forge->addKey('id', true);
+        $forge->createTable('partners', true);
     }
     public function iklan()
     {

@@ -1507,10 +1507,11 @@
 
 <script>
 /**
- * ====== SATU SUMBER DATA (MASTER) ======
- * Semua view + marker map akan dibangun dari sini.
+ * Data utama dari admin. LEGACY_MITRA hanya fallback saat tabel admin masih kosong,
+ * supaya halaman lama tetap aman sampai semua data dipindahkan ke admin.
  */
-const MITRA = [{
+const ADMIN_MITRA = <?= json_encode($partners ?? [], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>;
+const LEGACY_MITRA = [{
         name: "Sumber Abadi Furniture",
         city: "Yogyakarta",
         address: "Jl. Magelang No. Km7, SENDANGADI, Mlati, Sleman, DI Yogyakarta 55285",
@@ -1835,13 +1836,33 @@ const MITRA = [{
         coords: [-8.674787398225718, 115.18479436414849]
     },
 ];
+const MITRA = ADMIN_MITRA.length ? ADMIN_MITRA : LEGACY_MITRA;
 
 function safeText(s) {
     return (s ?? "").toString();
 }
 
+function safeHTML(s) {
+    return safeText(s).replace(/[&<>"']/g, (ch) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    }[ch]));
+}
+
+function safeURL(s) {
+    const url = safeText(s).trim();
+    return /^https?:\/\//i.test(url) ? url.replace(/"/g, "%22") : "#";
+}
+
 function norm(s) {
     return safeText(s).toLowerCase().trim();
+}
+
+function hasValidCoords(coords) {
+    return Array.isArray(coords) && coords.length >= 2 && Number.isFinite(Number(coords[0])) && Number.isFinite(Number(coords[1]));
 }
 
 /**
@@ -1851,14 +1872,15 @@ function norm(s) {
  * @param {string} cls  - class tambahan (opsional)
  */
 function thumbHTML(src, alt, cls = "") {
-    if (src && src.trim() !== "") {
-        return `<img loading="lazy" decoding="async" src="${src}" alt="${alt}" ${cls ? `class="${cls}"` : ""}>`;
+    const imageUrl = safeURL(src);
+    if (imageUrl !== "#") {
+        return `<img loading="lazy" decoding="async" src="${imageUrl}" alt="${safeHTML(alt)}" ${cls ? `class="${safeHTML(cls)}"` : ""}>`;
     }
     const initials = safeText(alt).split(" ").slice(0, 2).map(w => w[0] || "").join("").toUpperCase();
     return `
-        <div class="img-placeholder ${cls}" aria-label="Foto belum tersedia">
+        <div class="img-placeholder ${safeHTML(cls)}" aria-label="Foto belum tersedia">
             <span class="material-icons ph-icon">storefront</span>
-            <span class="ph-label">${initials || "?"}</span>
+            <span class="ph-label">${safeHTML(initials || "?")}</span>
         </div>`;
 }
 
@@ -1914,17 +1936,17 @@ function buildRail(items) {
         div.innerHTML = `
       <div class="info">
         <div class="chips">
-          <span class="chip-city"><i class="material-icons">location_on</i>${safeText(m.city)}</span>
+          <span class="chip-city"><i class="material-icons">location_on</i>${safeHTML(m.city)}</span>
         </div>
-        <a href="${m.href}" style="text-decoration:none;" target="_blank" rel="noopener">
-          <h3 class="nama">${safeText(m.name)}</h3>
-          <p class="alamat m-0">${safeText(m.address)}</p>
+        <a href="${safeURL(m.href)}" style="text-decoration:none;" target="_blank" rel="noopener">
+          <h3 class="nama">${safeHTML(m.name)}</h3>
+          <p class="alamat m-0">${safeHTML(m.address)}</p>
         </a>
         <div class="mini-actions">
-          <span class="mini-btn" data-open="${encodeURIComponent(m.href)}">
+          <span class="mini-btn" data-open="${encodeURIComponent(safeURL(m.href))}">
             <i class="material-icons">map</i> Maps
           </span>
-          ${m.coords ? `
+          ${hasValidCoords(m.coords) ? `
             <span class="mini-btn" data-fly="${m.coords[0]},${m.coords[1]}">
               <i class="material-icons">near_me</i> Fokus
             </span>
@@ -1968,15 +1990,15 @@ function buildGridList(items) {
     items.forEach((m) => {
         const g = document.createElement("a");
         g.className = "grid-card";
-        g.href = m.href;
+        g.href = safeURL(m.href);
         g.target = "_blank";
         g.rel = "noopener";
         g.style.textDecoration = "none";
         g.innerHTML = `
       <div class="g-info">
-        <span class="g-chip"><i class="material-icons">location_on</i>${safeText(m.city)}</span>
-        <p class="g-name">${safeText(m.name)}</p>
-        <p class="g-addr">${safeText(m.address)}</p>
+        <span class="g-chip"><i class="material-icons">location_on</i>${safeHTML(m.city)}</span>
+        <p class="g-name">${safeHTML(m.name)}</p>
+        <p class="g-addr">${safeHTML(m.address)}</p>
       </div>
       ${thumbHTML(m.img, safeText(m.name))}
     `;
@@ -1987,16 +2009,16 @@ function buildGridList(items) {
         l.innerHTML = `
       ${thumbHTML(m.img, safeText(m.name))}
       <div>
-        <p class="l-title m-0">${safeText(m.name)}</p>
+        <p class="l-title m-0">${safeHTML(m.name)}</p>
         <div class="l-meta">
-          <span class="l-chip"><i class="material-icons">location_on</i>${safeText(m.city)}</span>
-          ${m.coords ? `<span class="l-chip" style="background:rgba(249,115,22,.08);border-color:rgba(249,115,22,.14)"><i class="material-icons" style="color:var(--brand-2)">my_location</i>Map</span>` : ``}
+          <span class="l-chip"><i class="material-icons">location_on</i>${safeHTML(m.city)}</span>
+          ${hasValidCoords(m.coords) ? `<span class="l-chip" style="background:rgba(249,115,22,.08);border-color:rgba(249,115,22,.14)"><i class="material-icons" style="color:var(--brand-2)">my_location</i>Map</span>` : ``}
         </div>
-        <p class="l-addr">${safeText(m.address)}</p>
+        <p class="l-addr">${safeHTML(m.address)}</p>
       </div>
       <div class="l-cta">
-        ${m.coords ? `<a href="javascript:void(0)" data-fly="${m.coords[0]},${m.coords[1]}"><i class="material-icons" style="font-size:18px">near_me</i> Fokus</a>` : ``}
-        <a href="${m.href}" target="_blank" rel="noopener">
+        ${hasValidCoords(m.coords) ? `<a href="javascript:void(0)" data-fly="${m.coords[0]},${m.coords[1]}"><i class="material-icons" style="font-size:18px">near_me</i> Fokus</a>` : ``}
+        <a href="${safeURL(m.href)}" target="_blank" rel="noopener">
           <i class="material-icons" style="font-size:18px">map</i> Lihat Peta
         </a>
       </div>
@@ -2041,7 +2063,7 @@ function renderMap(items) {
     window.__ILENA_LAYERS = [];
 
     items.forEach(function(store) {
-        if (!store.coords || !Array.isArray(store.coords)) return;
+        if (!hasValidCoords(store.coords)) return;
 
         var brand = getComputedStyle(document.documentElement).getPropertyValue('--brand').trim() || '#e11d48';
         var brand2 = getComputedStyle(document.documentElement).getPropertyValue('--brand-2').trim() ||
@@ -2065,11 +2087,11 @@ function renderMap(items) {
 
         const pop = `
       <div style="min-width:220px;font-family:system-ui">
-        <div style="font-weight:900;color:#0f172a">${safeText(store.name)}</div>
-        <div style="margin-top:4px;color:#64748b;font-weight:800;font-size:12px">${safeText(store.city)}</div>
-        <div style="margin-top:8px;color:#475569;font-weight:700;font-size:12px;line-height:1.25">${safeText(store.address)}</div>
+        <div style="font-weight:900;color:#0f172a">${safeHTML(store.name)}</div>
+        <div style="margin-top:4px;color:#64748b;font-weight:800;font-size:12px">${safeHTML(store.city)}</div>
+        <div style="margin-top:8px;color:#475569;font-weight:700;font-size:12px;line-height:1.25">${safeHTML(store.address)}</div>
         <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-          <a href="${store.href}" target="_blank" rel="noopener"
+          <a href="${safeURL(store.href)}" target="_blank" rel="noopener"
              style="text-decoration:none;font-weight:900;padding:.45rem .7rem;border-radius:10px;border:1px solid rgba(15,23,42,.14);color:#0f172a;">
              Open Maps
           </a>

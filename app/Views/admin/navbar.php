@@ -38,6 +38,7 @@
         'Konten' => [
             ['show' => $can('content'), 'label' => 'Artikel', 'icon' => 'article', 'href' => '/admin/article', 'active' => $isActivePrefix(['admin/article']) || str_contains($lowerTitle, 'artikel')],
             ['show' => $can('content'), 'label' => 'Home Layout', 'icon' => 'dashboard_customize', 'href' => '/admin/homelayout', 'active' => $isActivePrefix(['admin/homelayout']) || ($title ?? '') === 'Home Layout'],
+            ['show' => $can('content'), 'label' => 'Partner', 'icon' => 'storefront', 'href' => '/admin/partners', 'active' => $isActivePrefix(['admin/partners']) || ($title ?? '') === 'Partner Ilena'],
             ['show' => $can('shipping'), 'label' => 'Gratis Ongkir', 'icon' => 'local_shipping', 'href' => '/admin/free-shipping', 'active' => $isActivePrefix(['admin/free-shipping']) || ($title ?? '') === 'Gratis Ongkir'],
         ],
         'Tools' => [
