@@ -4704,9 +4704,11 @@ class Pages extends BaseController
         }
 
         $mtime = (string) filemtime($source);
+        $requestVersion = preg_replace('/[^A-Za-z0-9_-]/', '', (string) $this->request->getGet('v'));
+        $cacheVersion = $requestVersion !== '' ? $requestVersion : $mtime;
         $cacheDir = rtrim(WRITEPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'product-covers';
         if (!is_dir($cacheDir)) { @mkdir($cacheDir, 0775, true); }
-        $cacheFile = $cacheDir . DIRECTORY_SEPARATOR . $safeId . '-' . $slot . '-' . $mtime . '.webp';
+        $cacheFile = $cacheDir . DIRECTORY_SEPARATOR . $safeId . '-' . $slot . '-' . $mtime . '-' . $cacheVersion . '.webp';
 
         if (!is_file($cacheFile) && is_writable($cacheDir)) {
             try {
@@ -4726,13 +4728,13 @@ class Pages extends BaseController
             return $this->response
                 ->setStatusCode(304)
                 ->setHeader('ETag', $etag)
-                ->setHeader('Cache-Control', 'public, max-age=86400');
+                ->setHeader('Cache-Control', $requestVersion !== '' ? 'public, max-age=31536000, immutable' : 'public, max-age=86400');
         }
 
         return $this->response
             ->setHeader('Content-Type', 'image/webp')
             ->setHeader('Content-Length', (string) filesize($serveFile))
-            ->setHeader('Cache-Control', 'public, max-age=86400')
+            ->setHeader('Cache-Control', $requestVersion !== '' ? 'public, max-age=31536000, immutable' : 'public, max-age=86400')
             ->setHeader('ETag', $etag)
             ->setBody(file_get_contents($serveFile));
     }

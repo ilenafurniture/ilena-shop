@@ -20,7 +20,9 @@ if (!empty($produk['varian'][0]['urutan_gambar'])) {
 }
 $assetVersion = function (string $relativePath) use ($produk): string {
     $path = FCPATH . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
-    return is_file($path) ? (string) filemtime($path) : (string) strtotime($produk['tgl_update'] ?? 'now');
+    $fileVersion = is_file($path) ? (int) filemtime($path) : 0;
+    $dbVersion = !empty($produk['tgl_update']) ? (int) strtotime((string) $produk['tgl_update']) : time();
+    return (string) max($fileVersion, $dbVersion);
 };
 $barangImgUrl = function (string $size, string $slot) use ($produk, $assetVersion): string {
     $relative = 'img/barang/' . $size . '/' . $produk['id'] . '-' . $slot . '.webp';
@@ -49,7 +51,9 @@ $productCoverUrl = function (array $product): string {
         $sourceRelative = 'img/barang/300/' . $id . '.webp';
         $sourceAbsolute = FCPATH . $sourceRelative;
     }
-    return base_url('product-cover/' . $id) . '?slot=' . urlencode($slot) . '&v=' . (is_file($sourceAbsolute) ? filemtime($sourceAbsolute) : time());
+    $fileVersion = is_file($sourceAbsolute) ? (int) filemtime($sourceAbsolute) : time();
+    $dbVersion = !empty($product['tgl_update']) ? (int) strtotime((string) $product['tgl_update']) : 0;
+    return base_url('product-cover/' . $id) . '?slot=' . urlencode($slot) . '&v=' . max($fileVersion, $dbVersion);
 };
 ?>
 <div class="container d-flex flex-column align-items-center">

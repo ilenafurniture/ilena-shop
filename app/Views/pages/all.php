@@ -19,7 +19,9 @@ $productCoverUrl = function (array $product): string {
         $sourceRelative = 'img/barang/300/' . $id . '.webp';
         $sourceAbsolute = FCPATH . $sourceRelative;
     }
-    return base_url('product-cover/' . $id) . '?slot=' . urlencode($slot) . '&v=' . (is_file($sourceAbsolute) ? filemtime($sourceAbsolute) : time());
+    $fileVersion = is_file($sourceAbsolute) ? (int) filemtime($sourceAbsolute) : time();
+    $dbVersion = !empty($product['tgl_update']) ? (int) strtotime((string) $product['tgl_update']) : 0;
+    return base_url('product-cover/' . $id) . '?slot=' . urlencode($slot) . '&v=' . max($fileVersion, $dbVersion);
 };
 ?>
 <?php

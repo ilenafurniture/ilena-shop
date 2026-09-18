@@ -48,7 +48,9 @@ $barangThumbUrl = function ($product) {
         $sourceRelative = 'img/barang/300/' . $id . '.webp';
         $sourceAbsolute = FCPATH . $sourceRelative;
     }
-    $version = is_file($sourceAbsolute) ? filemtime($sourceAbsolute) : time();
+    $fileVersion = is_file($sourceAbsolute) ? (int) filemtime($sourceAbsolute) : time();
+    $dbVersion = is_array($product) && !empty($product['tgl_update']) ? (int) strtotime((string) $product['tgl_update']) : 0;
+    $version = max($fileVersion, $dbVersion);
     return base_url('product-cover/' . $id) . '?slot=' . urlencode($slot) . '&v=' . $version;
 };
 ?>

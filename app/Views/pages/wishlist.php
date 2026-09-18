@@ -11,7 +11,7 @@ $wishlistCount = is_array($wishlist) ? count($wishlist) : 0;
 $isInWishlist = function($id) use ($wishlist) {
   return in_array((string)$id, array_map('strval', $wishlist), true);
 };
-$productCoverUrl = function (string $id, array $varianList): string {
+$productCoverUrl = function (string $id, array $varianList, array $product = []): string {
   $slot = '1';
   if (!empty($varianList[0]['urutan_gambar'])) {
     $slots = array_values(array_filter(array_map('trim', explode(',', (string) $varianList[0]['urutan_gambar']))));
@@ -27,7 +27,9 @@ $productCoverUrl = function (string $id, array $varianList): string {
     $sourceRelative = 'img/barang/300/' . $id . '.webp';
     $sourceAbsolute = FCPATH . $sourceRelative;
   }
-  return base_url('product-cover/' . $id) . '?slot=' . urlencode($slot) . '&v=' . (is_file($sourceAbsolute) ? filemtime($sourceAbsolute) : time());
+  $fileVersion = is_file($sourceAbsolute) ? (int) filemtime($sourceAbsolute) : time();
+  $dbVersion = !empty($product['tgl_update']) ? (int) strtotime((string) $product['tgl_update']) : 0;
+  return base_url('product-cover/' . $id) . '?slot=' . urlencode($slot) . '&v=' . max($fileVersion, $dbVersion);
 };
 ?>
 
@@ -68,7 +70,7 @@ $productCoverUrl = function (string $id, array $varianList): string {
 
                     <a href="/product/<?= str_replace(' ', '-', $p_nama); ?>" class="gambar">
                         <img class="<?= $p_gbrHover ? '' : 'nonhover'; ?> img-pic" id="<?= $imgMainId ?>"
-                            src="<?= $productCoverUrl((string)$p_id, $varianList); ?>"
+                            src="<?= $productCoverUrl((string)$p_id, $varianList, $p); ?>"
                             alt="<?= htmlspecialchars($p_nama, ENT_QUOTES); ?>" loading="lazy" decoding="async">
                         <?php if ($p_gbrHover): ?>
                         <img class="img-pic-hover" src="/viewpichover/<?= $p_id; ?>?v=<?= time(); ?>"
