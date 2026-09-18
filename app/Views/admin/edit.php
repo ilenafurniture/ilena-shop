@@ -457,7 +457,7 @@ body {
                                 <div class="thumb"
                                     onclick="hapusSubvarian('<?= $ind_v + 1; ?>','<?= $ind_u + 1; ?>',event)">
                                     <div class="x">hapus</div>
-                                    <img src="/viewvar/<?= $produk['id'] ?>/<?= $u; ?>" alt="">
+                                    <img src="/viewvar/<?= $produk['id'] ?>/<?= $u; ?>?v=<?= !empty($produk['tgl_update']) ? strtotime($produk['tgl_update']) : time(); ?>" alt="">
                                 </div>
                                 <?php } ?>
                             </div>
@@ -470,6 +470,7 @@ body {
                                     <input type="file"
                                         id="input-gambar-<?= $ind_v + 1; ?>-<?= $ind_urutanGambar + 1; ?>"
                                         name="gambar-<?= $ind_v + 1; ?>-<?= $ind_urutanGambar + 1; ?>"
+                                        data-slot="<?= esc(trim((string) $urutanGambar), 'attr'); ?>"
                                         accept="image/jpeg,image/png,image/webp,image/avif"
                                         onchange="uploadFile(event)">
                                 </label>
@@ -581,6 +582,14 @@ function uploadFile(event) {
         return;
     }
     const blobUrl = URL.createObjectURL(file);
+    const existingSlot = event.target.dataset.slot || '';
+    if (existingSlot) {
+        const oldThumb = document.querySelector(`#container-gambar${varianNum} .thumb:nth-child(${Number(subVarianNum)}) img`);
+        if (oldThumb) {
+            oldThumb.src = blobUrl;
+            return;
+        }
+    }
     const itemGambar = `
       <div class="thumb" >
         <div class="x">hapus</div>
@@ -711,8 +720,18 @@ function hapusSubvarian(varianNum, indexGambar, e) {
 
         // VARIAN JSON
         const varianElems = Array.from(document.querySelectorAll('#container-varian > .card'));
-        let globalImageIndex = 1; // backend akan save sebagai (index+1)
         const renameTargets = [];
+        const usedSlots = new Set();
+        form.querySelectorAll('#container-varian input[type="file"][data-slot]').forEach(inp => {
+            const slot = Number(inp.dataset.slot || 0);
+            if (slot > 0) usedSlots.add(slot);
+        });
+        let nextImageSlot = Math.max(0, ...Array.from(usedSlots)) + 1;
+        const allocateNewSlot = () => {
+            while (usedSlots.has(nextImageSlot)) nextImageSlot++;
+            usedSlots.add(nextImageSlot);
+            return nextImageSlot++;
+        };
 
         const varianArr = varianElems.map((card, idx) => {
             const no = idx + 1;
@@ -724,12 +743,21 @@ function hapusSubvarian(varianNum, indexGambar, e) {
                 `#container-input-gambar${no} input[type="file"]`));
             const urutan = [];
             inputs.forEach(inp => {
+                let slot = Number(inp.dataset.slot || 0);
+                const hasFile = inp.files && inp.files.length > 0;
+                if (slot > 0) {
+                    urutan.push(String(slot));
+                    if (hasFile) {
+                        renameTargets.push([inp, slot - 1]);
+                    }
+                    return;
+                }
+
                 if (inp.files && inp.files.length > 0) {
-                    urutan.push(String(globalImageIndex));
-                    renameTargets.push([inp, globalImageIndex -
-                        1
-                    ]); // name => gambar_<0based>
-                    globalImageIndex++;
+                    slot = allocateNewSlot();
+                    inp.dataset.slot = String(slot);
+                    urutan.push(String(slot));
+                    renameTargets.push([inp, slot - 1]); // name => gambar_<0based>
                 }
             });
 
