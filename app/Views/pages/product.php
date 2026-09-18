@@ -56,7 +56,105 @@ $productCoverUrl = function (array $product): string {
     return base_url('product-cover/' . $id) . '?slot=' . urlencode($slot) . '&v=' . max($fileVersion, $dbVersion);
 };
 ?>
-<div class="container d-flex flex-column align-items-center">
+<style>
+/* Aksen halus saja: tetap mempertahankan struktur UI lama */
+.product-detail-soft .breadcrumb {
+    font-size: 13px;
+}
+.product-detail-soft .breadcrumb a {
+    color: #6b7280;
+    text-decoration: none;
+}
+.product-detail-soft .breadcrumb a:hover {
+    color: #b31217;
+}
+.product-detail-soft .baris-ke-kolom-reverse.w-100 {
+    gap: 28px;
+    align-items: flex-start;
+}
+.product-detail-soft .teks-besar {
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+}
+.product-detail-soft .harga {
+    letter-spacing: -0.02em;
+}
+.product-detail-soft .img-detail-prev {
+    border-radius: 18px;
+}
+.product-detail-soft img.img-detail-prev {
+    box-shadow: 0 14px 34px rgba(15, 23, 42, .08);
+    background: #f8fafc;
+}
+.product-detail-soft .container-img-detail-select {
+    gap: 10px;
+    padding-bottom: 4px;
+}
+.product-detail-soft .img-detail-select {
+    border-radius: 12px;
+    padding: 3px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+}
+.product-detail-soft .img-detail-select:hover {
+    transform: translateY(-1px);
+    border-color: #cbd5e1;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, .06);
+}
+.product-detail-soft .container-img-detail-select input:checked + .img-detail-select {
+    border-color: #b31217;
+    box-shadow: 0 0 0 3px rgba(179, 18, 23, .10);
+}
+.product-detail-soft .img-detail-select img {
+    border-radius: 9px;
+}
+.product-detail-soft .container-varian {
+    gap: 9px;
+    flex-wrap: wrap;
+}
+.product-detail-soft .container-varian label {
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+.product-detail-soft .container-varian label:hover {
+    transform: translateY(-1px);
+}
+.product-detail-soft .container-varian input:checked + label span {
+    box-shadow: 0 0 0 3px #fff, 0 0 0 5px rgba(179, 18, 23, .35);
+}
+.detail-mini-label {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #6b7280;
+    letter-spacing: .02em;
+}
+.product-detail-soft .btn-default-abu {
+    border-radius: 999px;
+}
+.product-detail-soft #btn-keranjang .btn-default-merah,
+.product-detail-soft .number-control {
+    min-height: 44px;
+}
+.product-detail-soft #container-market {
+    border: 1px solid #eeeeee;
+    border-radius: 14px;
+    padding: 12px 14px;
+    background: #fafafa;
+}
+.product-detail-soft .accordion {
+    border-top: 1px solid #f1f1f1;
+}
+@media (max-width: 768px) {
+    .product-detail-soft .baris-ke-kolom-reverse.w-100 {
+        gap: 16px;
+    }
+    .product-detail-soft img.img-detail-prev {
+        border-radius: 16px;
+    }
+}
+</style>
+<div class="container d-flex flex-column align-items-center product-detail-soft">
     <div class="konten w-100">
         <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb" class="show-block-ke-hide">
             <ol class="breadcrumb">
@@ -128,6 +226,7 @@ $productCoverUrl = function (array $product): string {
                 </div>
                 <p><?= $produk['deskripsi']['deskripsi'] ?></p>
                 <div class="gap-2 show-flex-ke-hide">
+                    <p class="detail-mini-label">Pilih warna / varian</p>
                     <div class="container-varian mb-3 d-flex">
                         <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
                         <input id="varian<?= $ind_v ?>"
@@ -142,6 +241,7 @@ $productCoverUrl = function (array $product): string {
                                 style="background-color: <?= $v['kode'] ?>"></span></label>
                         <?php } ?>
                     </div>
+                    <p class="detail-mini-label">Pilihan ukuran</p>
                     <div class="d-flex gap-1 mb-2">
                         <?php foreach ($produkSemua as $ind_ps => $ps) { ?>
                         <a href="/product/<?= strtolower(str_replace(' ', '-', $ps['nama'])) ?>/<?= $ind_ps ?>"
@@ -353,6 +453,7 @@ $productCoverUrl = function (array $product): string {
                     </div>
                 </div>
                 <div class="gap-2 hide-ke-show-flex">
+                    <p class="detail-mini-label w-100">Pilih warna / varian</p>
                     <div class="container-varian mb-3 d-flex">
                         <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
                         <input id="varian<?= $ind_v ?>"
@@ -366,6 +467,7 @@ $productCoverUrl = function (array $product): string {
                                 style="background-color: <?= $v['kode'] ?>"></span></label>
                         <?php } ?>
                     </div>
+                    <p class="detail-mini-label w-100">Pilihan ukuran</p>
                     <div class="d-flex gap-1 mb-2">
                         <?php foreach ($produkSemua as $ind_ps => $ps) { ?>
                         <a href="/product/<?= strtolower(str_replace(' ', '-', $ps['nama'])) ?>/<?= $ind_ps ?>"
@@ -428,7 +530,6 @@ $productCoverUrl = function (array $product): string {
                     const varian<?= $ind_p ?>Elm = document.querySelectorAll('input[name="varian<?= $ind_p ?>"]');
                     varian<?= $ind_p ?>Elm.forEach(elm => {
                         elm.addEventListener('change', (e) => {
-                            console.log(e.target.value)
                             const img<?= $ind_p ?>Elm = document.getElementById("img<?= $ind_p ?>");
                             const slot = (e.target.dataset.slot || e.target.value.split("-")[0] || "1").split(",")[0];
                             const namaVarian = e.target.dataset.name || e.target.value.split("-").slice(1).join("-") || "default";
@@ -467,7 +568,6 @@ const radioVarianElm = document.querySelectorAll('input[name="varian"]');
 const varian = JSON.parse('<?= json_encode($produk['varian']) ?>');
 const teksInfoHabisElm = document.getElementById('info-habis');
 const containerMarketElm = document.getElementById('container-market');
-console.log(varian)
 let varianSelected = <?= json_encode($produk['varian'][0]['nama'] ?? 'default') ?>;
 let jumlahSelected = "1";
 let isStokHabis = <?= $produk['varian'][0]['stok'] == '0' ? 'true' : 'false' ?>;
@@ -506,11 +606,11 @@ radioVarianElm.forEach(elm => {
         if (Number(varianFullSelected.stok) <= 0) {
             imgFixElm.style = 'filter: grayscale(90%)';
             containerImgDetailElm.style = 'filter: grayscale(90%)';
-            containerMarketElm.classList.add('d-none')
+            if (containerMarketElm) containerMarketElm.classList.add('d-none')
         } else {
             imgFixElm.style = 'filter: grayscale(0%)';
             containerImgDetailElm.style = 'filter: grayscale(0%)';
-            containerMarketElm.classList.remove('d-none')
+            if (containerMarketElm) containerMarketElm.classList.remove('d-none')
         }
 
         if (btnKeranjangElm) {
