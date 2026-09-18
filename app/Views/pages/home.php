@@ -2,19 +2,7 @@
 <?= $this->section("content"); ?>
 <?php
 $homeImageBaseUrl = rtrim((string) env('ILENA_HOME_IMAGE_BASE_URL', 'https://img.ilenafurniture.com'), '/');
-$homeUseProductFallback = filter_var(env('ILENA_HOME_USE_PRODUCT_IMAGES', 'true'), FILTER_VALIDATE_BOOLEAN);
-$homeFallbackProducts = [
-    '10100201', '10100202', '10100301', '10100302', '10100401', '10100601', '10100801', '10100901',
-    '10200301', '10200302', '10200401', '10200701', '10201201', '10201301', '10201401', '10201601',
-    '10300301', '10300302', '10300401', '10300601', '10300801', '10300901', '10301201', '10301301',
-];
-$homeImage = static function (string $file) use ($homeImageBaseUrl, $apikey_img_ilena, $homeUseProductFallback, $homeFallbackProducts): string {
-    if ($homeUseProductFallback && $homeFallbackProducts !== []) {
-        $index = (int) (abs(crc32($file)) % count($homeFallbackProducts));
-        $slot = (int) ((abs(crc32('slot-' . $file)) % 8) + 1);
-        return base_url('product-cover/' . $homeFallbackProducts[$index]) . '?slot=' . $slot . '&v=home-fallback';
-    }
-
+$homeImage = static function (string $file) use ($homeImageBaseUrl, $apikey_img_ilena): string {
     return $homeImageBaseUrl . '/image/' . ltrim($file, '/') . '/?apikey=' . rawurlencode((string) $apikey_img_ilena);
 };
 ?>
