@@ -118,6 +118,8 @@ $routes->group('admin', ['filter' => 'adminFilter'], static function($routes) {
     // Produk
     $routes->get('producttable', 'AdminController::listProductTable');
     $routes->get('product', 'AdminController::listProduct');
+    $routes->get('product-bulk-edit', 'AdminController::bulkEditProduct');
+    $routes->post('product-bulk-edit', 'AdminController::actionBulkEditProduct');
 
     // Artikel (admin)
     $routes->get('article', 'AdminController::article');

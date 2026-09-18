@@ -198,12 +198,17 @@ class AdminController extends BaseController
         $product = $this->barangModel->getBarangAdmin();
         $koleksi = $this->koleksiModel->findAll();
         foreach ($product as $index_p => $p) {
-            $product[$index_p]['varian'] = json_decode($p['varian'], true);
+            $decodedVarian = json_decode($p['varian'] ?? '[]', true);
+            $product[$index_p]['varian'] = is_array($decodedVarian) ? $decodedVarian : [];
             $product[$index_p]['allstok'] = '';
             foreach ($product[$index_p]['varian'] as $ind_v => $v) {
-                // $product[$index_p]['allstok'] = $product[$index_p]['allstok'] . $v['stok'];
-                if ($ind_v == 0) $product[$index_p]['allstok'] .= $v['nama'] . ' : ' . $v['stok'];
-                else $product[$index_p]['allstok'] .= "<br>" . $v['nama'] . ' : ' . $v['stok'];
+                $namaVarian = $v['nama'] ?? 'Varian';
+                $stokVarian = $v['stok'] ?? 0;
+                if ($ind_v == 0) $product[$index_p]['allstok'] .= $namaVarian . ' : ' . $stokVarian;
+                else $product[$index_p]['allstok'] .= "<br>" . $namaVarian . ' : ' . $stokVarian;
+            }
+            if ($product[$index_p]['allstok'] === '') {
+                $product[$index_p]['allstok'] = '-';
             }
         }
         $data = [
@@ -213,6 +218,111 @@ class AdminController extends BaseController
             'koleksi' => $koleksi
         ];
         return view('admin/all', $data);
+    }
+
+    private function normalizeBulkProductIds($rawIds): array
+    {
+        if (is_string($rawIds)) {
+            $rawIds = explode(',', $rawIds);
+        }
+        if (!is_array($rawIds)) {
+            return [];
+        }
+
+        $ids = [];
+        foreach ($rawIds as $id) {
+            $id = trim((string) $id);
+            if ($id !== '' && !in_array($id, $ids, true)) {
+                $ids[] = $id;
+            }
+        }
+
+        return array_slice($ids, 0, 20);
+    }
+
+    public function bulkEditProduct()
+    {
+        $ids = $this->normalizeBulkProductIds($this->request->getGet('ids'));
+        if (empty($ids)) {
+            return redirect()->to('/admin/product')->with('error', 'Pilih produk dulu sebelum edit massal.');
+        }
+
+        $products = $this->barangModel->whereIn('id', $ids)->findAll();
+        $byId = [];
+        foreach ($products as $product) {
+            $byId[$product['id']] = $product;
+        }
+        $orderedProducts = [];
+        foreach ($ids as $id) {
+            if (isset($byId[$id])) {
+                $orderedProducts[] = $byId[$id];
+            }
+        }
+
+        if (empty($orderedProducts)) {
+            return redirect()->to('/admin/product')->with('error', 'Produk yang dipilih tidak ditemukan.');
+        }
+
+        return view('admin/bulkEdit', [
+            'title' => 'Edit Massal Produk',
+            'products' => $orderedProducts,
+            'ids' => array_column($orderedProducts, 'id'),
+            'koleksi' => $this->koleksiModel->getKoleksi(),
+            'jenis' => $this->jenisModel->getJenis(),
+        ]);
+    }
+
+    public function actionBulkEditProduct()
+    {
+        $ids = $this->normalizeBulkProductIds($this->request->getPost('ids'));
+        if (empty($ids)) {
+            return redirect()->to('/admin/product')->with('error', 'Pilih produk dulu sebelum edit massal.');
+        }
+
+        $payload = [];
+        $post = $this->request->getPost();
+
+        if (!empty($post['update_harga'])) {
+            $payload['harga'] = max(0, (int) preg_replace('/\D+/', '', (string) ($post['harga'] ?? '0')));
+        }
+        if (!empty($post['update_diskon'])) {
+            $payload['diskon'] = min(100, max(0, (int) ($post['diskon'] ?? 0)));
+        }
+        if (!empty($post['update_active'])) {
+            $payload['active'] = ($post['active'] ?? '0') === '1' ? '1' : '0';
+        }
+        if (!empty($post['update_kategori'])) {
+            $row = $this->koleksiModel->where('id', $post['kategori'] ?? '')->first();
+            if ($row) {
+                $payload['kategori'] = $row['nama'];
+            }
+        }
+        if (!empty($post['update_subkategori'])) {
+            $row = $this->jenisModel->where('id', $post['subkategori'] ?? '')->first();
+            if ($row) {
+                $payload['subkategori'] = $row['nama'];
+            }
+        }
+        if (!empty($post['update_ruangan'])) {
+            $payload['ruang_tamu'] = !empty($post['ruang_tamu']) ? '1' : '0';
+            $payload['ruang_keluarga'] = !empty($post['ruang_keluarga']) ? '1' : '0';
+            $payload['ruang_tidur'] = !empty($post['ruang_tidur']) ? '1' : '0';
+        }
+
+        if (empty($payload)) {
+            return redirect()->back()->with('error', 'Centang minimal satu field yang mau diubah.')->withInput();
+        }
+
+        $payload['tgl_update'] = date('Y-m-d H:i:s');
+        $updated = 0;
+        $products = $this->barangModel->whereIn('id', $ids)->findAll();
+        foreach ($products as $product) {
+            if ($this->barangModel->update($product['id'], $payload)) {
+                $updated++;
+            }
+        }
+
+        return redirect()->to('/admin/product')->with('success', $updated . ' produk berhasil diperbarui.');
     }
     public function listProductTable()
     {
@@ -1100,18 +1210,32 @@ class AdminController extends BaseController
     public function activeProduct($id_product)
     {
         $product = $this->barangModel->getBarangAdmin($id_product);
-        $this->barangModel->where(['id' => $id_product])->set(['active' => $product['active'] == '0' ? '1' : '0'])->update();
-        $arr = [
+        if (!$product) {
+            return $this->response->setStatusCode(404)->setJSON(['pesan' => 'Produk tidak ditemukan'], false);
+        }
+
+        $newStatus = ($product['active'] ?? '0') == '0' ? '1' : '0';
+        $this->barangModel->where(['id' => $id_product])->set([
+            'active' => $newStatus,
+            'tgl_update' => date('Y-m-d H:i:s'),
+        ])->update();
+
+        return $this->response->setJSON([
             'pesan' => 'Ok',
-        ];
-        return $this->response->setJSON($arr, false);
+            'active' => $newStatus,
+        ], false);
     }
     public function deleteProduct($id_product)
     {
-        $produk = $this->barangModel->where('id', $id_product)->delete();
-        $gambar = $this->gambarBarangModel->where('id', $id_product)->delete();
-        $gambar3000 = $this->gambarBarang3000Model->where('id', $id_product)->delete();
-        return redirect()->to('admin/product');
+        $product = $this->barangModel->getBarangAdmin($id_product);
+        if (!$product) {
+            return redirect()->to('/admin/product')->with('error', 'Produk tidak ditemukan.');
+        }
+
+        $this->barangModel->where('id', $id_product)->delete();
+        $this->gambarBarangModel->where('id', $id_product)->delete();
+        $this->gambarBarang3000Model->where('id', $id_product)->delete();
+        return redirect()->to('/admin/product')->with('success', 'Produk berhasil dihapus.');
     }
     public function order()
     {

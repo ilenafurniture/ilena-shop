@@ -164,6 +164,70 @@ $barangThumbUrl = function ($product) {
     white-space: nowrap;
 }
 
+.bulk-toolbar {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    margin: 0 0 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, .05);
+}
+
+.bulk-toolbar.is-visible {
+    display: flex;
+}
+
+.bulk-toolbar strong {
+    color: #111827;
+}
+
+.bulk-actions-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.bulk-edit-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    border-radius: 10px;
+    padding: 0 13px;
+    background: #b31217;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 800;
+}
+
+.bulk-edit-link:hover {
+    color: #fff;
+    filter: brightness(.96);
+}
+
+.bulk-clear-btn {
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #334155;
+    min-height: 38px;
+    border-radius: 10px;
+    padding: 0 12px;
+    font-weight: 700;
+}
+
+.product-select,
+#selectAllProducts,
+#selectAllProductsMobile {
+    width: 18px;
+    height: 18px;
+    accent-color: #b31217;
+}
+
 .filter-select {
     min-width: 220px;
 }
@@ -466,9 +530,30 @@ $barangThumbUrl = function ($product) {
         </div>
     </div>
 
+    <?php if (session()->getFlashdata('success')): ?>
+        <div class="alert alert-success"><?= esc(session()->getFlashdata('success')); ?></div>
+    <?php endif; ?>
+    <?php if (session()->getFlashdata('error')): ?>
+        <div class="alert alert-danger"><?= esc(session()->getFlashdata('error')); ?></div>
+    <?php endif; ?>
+
+    <div id="bulkToolbar" class="bulk-toolbar" aria-live="polite">
+        <div>
+            <strong><span id="bulkCount">0</span> produk dipilih</strong>
+            <div class="meta-line">Edit cepat untuk harga, diskon, status, kategori, subkategori, dan tag ruangan.</div>
+        </div>
+        <div class="bulk-actions-inline">
+            <a id="bulkEditLink" class="bulk-edit-link" href="/admin/product-bulk-edit">Edit massal</a>
+            <button id="bulkClearBtn" class="bulk-clear-btn" type="button">Bersihkan pilihan</button>
+        </div>
+    </div>
+
     <!-- Desktop-style table -->
     <div class="container-table show-block-ke-hide">
         <div class="header-table">
+            <div style="flex: .35; color:black;" class="col-center">
+                <input id="selectAllProducts" type="checkbox" aria-label="Pilih semua produk di halaman ini">
+            </div>
             <div style="flex: .8; color:black;"><strong>Gambar</strong></div>
             <div style="flex: 2; color:black;"><strong>Nama & ID</strong></div>
             <div style="flex: 1; color:black;"><strong>Harga</strong></div>
@@ -479,6 +564,10 @@ $barangThumbUrl = function ($product) {
 
         <?php foreach ($produk as $ind_p => $p) { ?>
         <div class="isi-table" data-filter="<?= strtolower($p['nama'].' '.$p['kategori'].' '.$p['id']); ?>">
+            <div style="flex: .35;" class="col-center">
+                <input class="product-select" type="checkbox" value="<?= esc($p['id']); ?>"
+                    aria-label="Pilih produk <?= esc($p['nama']); ?>" onclick="event.stopPropagation();">
+            </div>
             <div style="flex: .8; cursor:pointer" onclick="pergiKeProduct('<?= str_replace(' ', '-', $p['nama']); ?>')">
                 <img style="width: 70px; height: 70px; object-fit:cover; border-radius:12px; border:1px solid var(--slate-200)"
                     id="img<?= $ind_p ?>" src="<?= $barangThumbUrl($p); ?>"
@@ -501,7 +590,7 @@ $barangThumbUrl = function ($product) {
 
             <div style="flex: 1;">
                 <div class="checkbox-apple">
-                    <input onchange="ubahStatus('<?= $p['id']; ?>')" class="yep" id="check-apple<?= $ind_p ?>"
+                    <input onchange="ubahStatus('<?= $p['id']; ?>', this)" class="yep" id="check-apple<?= $ind_p ?>"
                         type="checkbox" <?= $p['active'] ? 'checked' : ''; ?>>
                     <label for="check-apple<?= $ind_p ?>"></label>
                 </div>
@@ -511,7 +600,9 @@ $barangThumbUrl = function ($product) {
                 <div class="actions">
                     <a class="btn-icon" href="/admin/editproduct/<?= $p['id']; ?>" title="Edit"><i
                             class="material-icons">edit</i></a>
-                    <form action="/admin/deleteproduct/<?= $p['id']; ?>" method="post" style="display:inline-flex">
+                    <form action="/admin/deleteproduct/<?= $p['id']; ?>" method="post" style="display:inline-flex"
+                        onsubmit="return confirm('Hapus produk <?= esc($p['nama'], 'js'); ?>? Data gambar produk juga akan ikut dihapus.')">
+                        <?= csrf_field(); ?>
                         <button class="btn-icon btn-del" type="submit" title="Hapus">
                             <i class="material-icons">delete</i>
                         </button>
@@ -526,6 +617,9 @@ $barangThumbUrl = function ($product) {
     <div class="hide-ke-show-block" style="overflow:auto;">
         <div class="container-table mini-wrap">
             <div class="header-table">
+                <div style="flex: .45; color:black;" class="col-center">
+                    <input id="selectAllProductsMobile" type="checkbox" aria-label="Pilih semua produk di halaman ini">
+                </div>
                 <div style="flex: 1; color:black;"><strong>Gambar</strong></div>
                 <div style="flex: 1.4; color:black;"><strong>Nama & ID</strong></div>
                 <div style="flex: 1; color:black;"><strong>Harga</strong></div>
@@ -536,6 +630,10 @@ $barangThumbUrl = function ($product) {
 
             <?php foreach ($produk as $ind_p => $p) { ?>
             <div class="isi-table" data-filter="<?= strtolower($p['nama'].' '.$p['kategori'].' '.$p['id']); ?>">
+                <div style="flex: .45;" class="col-center">
+                    <input class="product-select" type="checkbox" value="<?= esc($p['id']); ?>"
+                        aria-label="Pilih produk <?= esc($p['nama']); ?>" onclick="event.stopPropagation();">
+                </div>
                 <div style="flex: 1; cursor:pointer"
                     onclick="pergiKeProduct('<?= str_replace(' ', '-', $p['nama']); ?>')">
                     <img style="width: 50px; height: 50px; object-fit:cover; border-radius:10px; border:1px solid var(--slate-200)"
@@ -560,7 +658,7 @@ $barangThumbUrl = function ($product) {
 
                 <div style="flex: .8;">
                     <div class="checkbox-apple">
-                        <input onchange="ubahStatus('<?= $p['id']; ?>')" class="yep" id="check-apple-m<?= $ind_p ?>"
+                        <input onchange="ubahStatus('<?= $p['id']; ?>', this)" class="yep" id="check-apple-m<?= $ind_p ?>"
                             type="checkbox" <?= $p['active'] ? 'checked' : ''; ?>>
                         <label for="check-apple-m<?= $ind_p ?>"></label>
                     </div>
@@ -570,8 +668,13 @@ $barangThumbUrl = function ($product) {
                     <div class="actions" style="justify-content:center;">
                         <a class="btn-icon" href="/admin/editproduct/<?= $p['id']; ?>" title="Edit"><i
                                 class="material-icons">edit</i></a>
-                        <a class="btn-icon btn-del" href="/admin/deleteproduct/<?= $p['id']; ?>" title="Hapus"><i
-                                class="material-icons">delete</i></a>
+                        <form action="/admin/deleteproduct/<?= $p['id']; ?>" method="post" style="display:inline-flex"
+                            onsubmit="return confirm('Hapus produk <?= esc($p['nama'], 'js'); ?>? Data gambar produk juga akan ikut dihapus.')">
+                            <?= csrf_field(); ?>
+                            <button class="btn-icon btn-del" type="submit" title="Hapus">
+                                <i class="material-icons">delete</i>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -613,11 +716,22 @@ function gantikoleksi(e) {
     }
 }
 
-function ubahStatus(id_produk) {
-    async function fetchUpdate() {
-        await fetch('/admin/activeproduct/' + id_produk);
+async function ubahStatus(id_produk, checkbox) {
+    const checkedBefore = checkbox ? !checkbox.checked : null;
+    if (checkbox) checkbox.disabled = true;
+    try {
+        const response = await fetch('/admin/activeproduct/' + encodeURIComponent(id_produk), {
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        if (!response.ok) throw new Error('Gagal update status');
+    } catch (error) {
+        if (checkbox && checkedBefore !== null) checkbox.checked = checkedBefore;
+        alert('Status produk gagal diubah. Coba ulangi beberapa saat lagi.');
+    } finally {
+        if (checkbox) checkbox.disabled = false;
     }
-    fetchUpdate();
 }
 
 function pergiKeProduct(nama_produk) {
@@ -643,6 +757,67 @@ function pergiKeProduct(nama_produk) {
             });
         });
     });
+})();
+
+(function() {
+    const toolbar = document.getElementById('bulkToolbar');
+    const countEl = document.getElementById('bulkCount');
+    const editLink = document.getElementById('bulkEditLink');
+    const clearBtn = document.getElementById('bulkClearBtn');
+    const selectAll = document.getElementById('selectAllProducts');
+    const selectAllMobile = document.getElementById('selectAllProductsMobile');
+
+    function uniqueCheckedIds() {
+        const ids = [];
+        document.querySelectorAll('.product-select:checked').forEach((checkbox) => {
+            if (!ids.includes(checkbox.value)) ids.push(checkbox.value);
+        });
+        return ids;
+    }
+
+    function updateToolbar() {
+        const ids = uniqueCheckedIds();
+        if (countEl) countEl.textContent = ids.length;
+        if (toolbar) toolbar.classList.toggle('is-visible', ids.length > 0);
+        if (editLink) {
+            editLink.href = '/admin/product-bulk-edit?ids=' + encodeURIComponent(ids.join(','));
+            editLink.setAttribute('aria-disabled', ids.length ? 'false' : 'true');
+        }
+    }
+
+    function setAllVisible(checked) {
+        document.querySelectorAll('.product-select').forEach((checkbox) => {
+            const row = checkbox.closest('.isi-table');
+            if (row && row.style.display === 'none') return;
+            checkbox.checked = checked;
+        });
+        updateToolbar();
+    }
+
+    document.querySelectorAll('.product-select').forEach((checkbox) => {
+        checkbox.addEventListener('change', updateToolbar);
+    });
+
+    if (selectAll) {
+        selectAll.addEventListener('change', function() {
+            setAllVisible(this.checked);
+            if (selectAllMobile) selectAllMobile.checked = this.checked;
+        });
+    }
+    if (selectAllMobile) {
+        selectAllMobile.addEventListener('change', function() {
+            setAllVisible(this.checked);
+            if (selectAll) selectAll.checked = this.checked;
+        });
+    }
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+            document.querySelectorAll('.product-select').forEach((checkbox) => checkbox.checked = false);
+            if (selectAll) selectAll.checked = false;
+            if (selectAllMobile) selectAllMobile.checked = false;
+            updateToolbar();
+        });
+    }
 })();
 </script>
 
