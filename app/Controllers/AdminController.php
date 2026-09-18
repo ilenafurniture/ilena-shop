@@ -894,7 +894,7 @@ class AdminController extends BaseController
                 $path = $publicPath($dir);
                 if (!is_dir($path)) { @mkdir($path, 0775, true); }
                 if (!is_writable($path)) { @chmod($path, 0775); }
-                if (!is_dir($path) || !is_writable($path)) {
+                if ((!is_dir($path) || !is_writable($path)) && !$this->r2ProductImages->enabled()) {
                     throw new \RuntimeException('Folder gambar belum writable: ' . $dir);
                 }
             };
@@ -911,7 +911,7 @@ class AdminController extends BaseController
                     $destDir = dirname($destFile);
                     if (!is_dir($destDir)) { @mkdir($destDir, 0775, true); }
                     if (!is_writable($destDir)) { @chmod($destDir, 0775); }
-                    if (!is_writable($destDir)) {
+                    if (!is_writable($destDir) && !$this->r2ProductImages->enabled()) {
                         throw new \RuntimeException('Folder tujuan gambar belum writable: ' . $destination);
                     }
 
@@ -926,13 +926,18 @@ class AdminController extends BaseController
                         throw new \RuntimeException('File hasil resize kosong: ' . $destination);
                     }
 
-                    @unlink($destFile);
-                    if (!@copy($stagingFile, $destFile)) {
-                        @unlink($stagingFile);
-                        throw new \RuntimeException('File hasil resize tidak tersimpan: ' . $destination);
+                    if (is_writable($destDir)) {
+                        @unlink($destFile);
+                        if (!@copy($stagingFile, $destFile)) {
+                            if (!$this->r2ProductImages->enabled()) {
+                                @unlink($stagingFile);
+                                throw new \RuntimeException('File hasil resize tidak tersimpan: ' . $destination);
+                            }
+                        } else {
+                            @touch($destFile);
+                        }
                     }
-                    @touch($destFile);
-                    $this->uploadProductImageToR2($destFile, $destination);
+                    $this->uploadProductImageToR2(is_file($destFile) ? $destFile : $stagingFile, $destination);
                     @unlink($stagingFile);
                 }
 
@@ -1005,7 +1010,7 @@ class AdminController extends BaseController
                     if (!is_dir($thumbDir)) { @mkdir($thumbDir, 0775, true); }
                     if (!is_writable($thumbDir)) { @chmod($thumbDir, 0775); }
                     $thumbSource = is_file($thumbSource1000) ? $thumbSource1000 : (is_file($thumbSource3000) ? $thumbSource3000 : (is_file($legacyThumbSource1000) ? $legacyThumbSource1000 : (is_file($legacyThumbSource3000) ? $legacyThumbSource3000 : null)));
-                    if ($thumbSource && is_writable($thumbDir)) {
+                    if ($thumbSource && (is_writable($thumbDir) || $this->r2ProductImages->enabled())) {
                         $tmpDir = rtrim(WRITEPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'cache';
                         if (!is_dir($tmpDir)) { @mkdir($tmpDir, 0775, true); }
                         $thumbTmp = $tmpDir . DIRECTORY_SEPARATOR . 'thumb-' . $id_product . '-' . uniqid('', true) . '.webp';
@@ -1014,12 +1019,16 @@ class AdminController extends BaseController
                             ->resize(300, 300, true, 'height')
                             ->save($thumbTmp);
                         if (is_file($thumbTmp) && filesize($thumbTmp) > 0) {
-                            @unlink($thumbDest);
-                            if (!@copy($thumbTmp, $thumbDest)) {
-                                throw new \RuntimeException('Thumbnail cover tidak tersalin ke ' . $thumbDest);
+                            if (is_writable($thumbDir)) {
+                                @unlink($thumbDest);
+                                if (!@copy($thumbTmp, $thumbDest) && !$this->r2ProductImages->enabled()) {
+                                    throw new \RuntimeException('Thumbnail cover tidak tersalin ke ' . $thumbDest);
+                                }
+                                if (is_file($thumbDest)) {
+                                    @touch($thumbDest);
+                                }
                             }
-                            @touch($thumbDest);
-                            $this->uploadProductImageToR2($thumbDest, "uploads/product-images/300/{$id_product}.webp");
+                            $this->uploadProductImageToR2(is_file($thumbDest) ? $thumbDest : $thumbTmp, "uploads/product-images/300/{$id_product}.webp");
                             @unlink($thumbTmp);
                         } else {
                             @unlink($thumbTmp);
