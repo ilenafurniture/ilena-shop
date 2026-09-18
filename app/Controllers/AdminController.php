@@ -261,7 +261,8 @@ class AdminController extends BaseController
     // === ACTION TAMBAH PRODUK ===
     private function validateProductImageUploads(array $files)
     {
-        $imageCount = 0;
+        $productImageCount = 0;
+        $hoverImageCount = 0;
         foreach ($files as $field => $file) {
             if (!$file || !str_starts_with((string)$field, 'gambar_')) {
                 continue;
@@ -271,8 +272,13 @@ class AdminController extends BaseController
                 continue;
             }
 
-            $imageCount++;
-            if ($imageCount > self::PRODUCT_IMAGE_MAX_FILES + 1) {
+            if ($field === 'gambar_hover') {
+                $hoverImageCount++;
+            } else {
+                $productImageCount++;
+            }
+
+            if ($productImageCount > self::PRODUCT_IMAGE_MAX_FILES || $hoverImageCount > 1) {
                 return 'Maksimal ' . self::PRODUCT_IMAGE_MAX_FILES . ' foto produk + 1 foto hover dalam sekali simpan.';
             }
 
