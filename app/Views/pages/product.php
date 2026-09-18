@@ -56,306 +56,9 @@ $productCoverUrl = function (array $product): string {
     return base_url('product-cover/' . $id) . '?slot=' . urlencode($slot) . '&v=' . max($fileVersion, $dbVersion);
 };
 ?>
-<style>
-.product-detail-page {
-    --ilena-red: #b31217;
-    --ink: #0f172a;
-    --muted: #64748b;
-    --line: #e5e7eb;
-    --soft: #f8fafc;
-    padding-top: 8px;
-    padding-bottom: 48px;
-}
-.product-detail-page .konten {
-    max-width: 1180px;
-}
-.detail-breadcrumb {
-    margin-bottom: 18px;
-    font-size: 13px;
-}
-.detail-breadcrumb a {
-    color: #64748b;
-    text-decoration: none;
-}
-.detail-breadcrumb a:hover {
-    color: var(--ilena-red);
-}
-.product-detail-card {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) minmax(380px, .92fr);
-    gap: 30px;
-    align-items: start;
-    background: linear-gradient(180deg, #fff 0%, #fbfbfc 100%);
-    border: 1px solid #eef2f7;
-    border-radius: 28px;
-    padding: 26px;
-    box-shadow: 0 24px 70px rgba(15, 23, 42, .08);
-}
-.product-info-panel,
-.product-gallery-panel {
-    min-width: 0;
-}
-.product-detail-card > .limapuluh-ke-seratus {
-    width: 100% !important;
-}
-.product-kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 7px 11px;
-    border: 1px solid #fee2e2;
-    border-radius: 999px;
-    background: #fff7f7;
-    color: var(--ilena-red);
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-}
-.product-title-row {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin: 12px 0 10px;
-}
-.product-title {
-    margin: 0;
-    color: var(--ink);
-    font-size: clamp(30px, 4vw, 52px);
-    line-height: .98;
-    letter-spacing: -.055em;
-    font-weight: 900;
-}
-.product-category-link {
-    width: 42px;
-    height: 42px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 14px;
-    border: 1px solid #e5e7eb;
-    background: #fff;
-    color: var(--ink);
-    flex: 0 0 auto;
-}
-.product-category-link:hover {
-    color: var(--ilena-red);
-    border-color: #fecaca;
-}
-.price-wrap {
-    align-items: baseline;
-    flex-wrap: wrap;
-    padding: 14px 0 18px;
-    border-bottom: 1px solid #eef2f7;
-}
-.price-wrap .harga {
-    font-size: clamp(22px, 3vw, 32px);
-    font-weight: 900;
-    letter-spacing: -.04em;
-    color: var(--ilena-red);
-    margin: 0;
-}
-.price-wrap .harga-diskon {
-    color: #94a3b8;
-    margin: 0;
-}
-.product-description {
-    margin: 18px 0;
-    color: #334155;
-    font-size: 15px;
-    line-height: 1.75;
-}
-.option-block {
-    margin: 16px 0;
-}
-.option-label {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    color: var(--ink);
-    font-size: 13px;
-    font-weight: 850;
-}
-.container-varian {
-    gap: 9px;
-    flex-wrap: wrap;
-}
-.container-varian input,
-.container-img-detail-select input {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-}
-.container-varian label {
-    width: 38px;
-    height: 38px;
-    border-radius: 999px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #dbe3ef;
-    background: #fff;
-    cursor: pointer;
-    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
-}
-.container-varian label:hover {
-    transform: translateY(-1px);
-    border-color: #94a3b8;
-}
-.container-varian label span {
-    width: 24px;
-    height: 24px;
-    border-radius: 999px;
-    display: block;
-    border: 1px solid rgba(15, 23, 42, .15);
-}
-.container-varian input:checked + label {
-    border-color: var(--ilena-red);
-    box-shadow: 0 0 0 4px rgba(179, 18, 23, .11);
-}
-.size-options {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-.size-options .btn-default-abu {
-    min-height: 38px;
-    border-radius: 999px;
-    padding: 8px 12px;
-    background: #fff;
-    border: 1px solid #e2e8f0;
-}
-.purchase-card {
-    margin-top: 20px;
-    padding: 14px;
-    border: 1px solid #eef2f7;
-    border-radius: 18px;
-    background: #fff;
-}
-.purchase-card .btn-default-merah {
-    min-height: 46px;
-    border-radius: 14px;
-    padding-left: 18px;
-    padding-right: 18px;
-    font-weight: 850;
-}
-.save-action .btn-teks-aja {
-    min-height: 42px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 0 12px;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    background: #fff;
-}
-.marketplace-box {
-    padding: 14px;
-    border: 1px solid #eef2f7;
-    border-radius: 16px;
-    background: #f8fafc;
-}
-.product-detail-page .accordion {
-    border: 1px solid #eef2f7;
-    border-radius: 18px;
-    overflow: hidden;
-}
-.product-detail-page .accordion-button {
-    font-size: 13px;
-    letter-spacing: .04em;
-}
-.product-gallery-panel {
-    position: sticky;
-    top: 92px;
-}
-.product-main-image-wrap {
-    position: relative;
-    overflow: visible;
-    border-radius: 24px;
-    background: #f1f5f9;
-    border: 1px solid #e5e7eb;
-}
-.product-main-image-wrap img.img-detail-prev {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    display: block;
-    border-radius: 24px;
-}
-figure.img-detail-prev {
-    z-index: 20;
-    border-radius: 20px;
-    box-shadow: 0 18px 50px rgba(15, 23, 42, .18);
-    pointer-events: none;
-}
-.thumb-strip {
-    margin-top: 14px;
-    overflow-x: auto;
-    padding: 3px 2px 8px;
-}
-.container-img-detail-select {
-    display: flex;
-    gap: 10px;
-    min-width: max-content;
-}
-.img-detail-select {
-    margin: 0;
-    border: 2px solid transparent;
-    border-radius: 16px;
-    padding: 3px;
-    background: #fff;
-    cursor: pointer;
-    transition: border-color .15s ease, transform .15s ease;
-}
-.img-detail-select:hover {
-    transform: translateY(-1px);
-    border-color: #cbd5e1;
-}
-.container-img-detail-select input:checked + .img-detail-select {
-    border-color: var(--ilena-red);
-}
-.img-detail-select img {
-    width: 72px;
-    height: 72px;
-    object-fit: cover;
-    border-radius: 12px;
-    display: block;
-}
-.related-heading {
-    margin-top: 42px;
-    text-align: center;
-    color: var(--ink);
-    font-weight: 850;
-    letter-spacing: -.02em;
-}
-@media (max-width: 991px) {
-    .product-detail-card {
-        grid-template-columns: 1fr;
-        padding: 16px;
-        border-radius: 22px;
-    }
-    .product-gallery-panel {
-        position: static;
-        order: -1;
-    }
-    .product-title {
-        font-size: 34px;
-    }
-    .img-detail-select img {
-        width: 62px;
-        height: 62px;
-    }
-    .purchase-card .d-flex {
-        flex-wrap: wrap;
-    }
-}
-</style>
-
-<div class="container product-detail-page d-flex flex-column align-items-center">
+<div class="container d-flex flex-column align-items-center">
     <div class="konten w-100">
-        <nav class="detail-breadcrumb show-block-ke-hide" style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
+        <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb" class="show-block-ke-hide">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/product">Produk Kami</a></li>
                 <li class="breadcrumb-item"><a
@@ -367,16 +70,15 @@ figure.img-detail-prev {
                 </li>
             </ol>
         </nav>
-        <div class="baris-ke-kolom-reverse product-detail-card w-100">
-            <div class="limapuluh-ke-seratus product-info-panel">
-                <span class="product-kicker"><?= esc(ucfirst($produk['kategori'])); ?> • <?= esc(ucfirst($produk['subkategori'])); ?></span>
-                <div class="product-title-row">
-                    <h1 class="product-title"><?= str_replace('Tv', 'TV', ucwords($produk['nama'])) ?></h1>
-                    <a href="/product?koleksi=<?= $produk['kategori']; ?>" class="product-category-link" aria-label="Lihat produk <?= esc(ucfirst($produk['kategori'])); ?>">
-                        <i class="material-icons d-inline" style="font-size: 22px;">open_in_new</i>
+        <div class="baris-ke-kolom-reverse w-100">
+            <div class="limapuluh-ke-seratus">
+                <div class="mb-2">
+                    <h1 class="teks-besar d-inline"><?= str_replace('Tv', 'TV', ucwords($produk['nama'])) ?> </h1>
+                    <a href="/product?koleksi=<?= $produk['kategori']; ?>" class="btn-teks-aja d-inline">
+                        <i class="material-icons d-inline" style="font-size: 30px;">open_in_new</i>
                         <span class="popup"> Lihat Produk <?= ucfirst($produk['kategori']); ?></span>
                         <style>
-                        .product-category-link {
+                        .btn-teks-aja {
                             position: relative;
                         }
 
@@ -408,7 +110,7 @@ figure.img-detail-prev {
                             border-color: black transparent transparent transparent;
                         }
 
-                        .product-category-link:hover .popup {
+                        .btn-teks-aja:hover .popup {
                             visibility: visible;
                             opacity: 1;
                             transform: translateX(-50%) translateY(0);
@@ -417,17 +119,15 @@ figure.img-detail-prev {
                     </a>
                 </div>
 
-                <div class="price-wrap d-flex gap-2 mb-3">
+                <div class="d-flex gap-2 mb-3">
                     <p class="harga">Rp
                         <?= number_format($produk['harga'] * (100 - $produk['diskon']) / 100, 0, ',', '.'); ?></p>
                     <?php if ($produk['diskon'] > 0) { ?>
                     <p class="harga-diskon">Rp <?= number_format($produk['harga'], 0, ',', '.') ?></p>
                     <?php } ?>
                 </div>
-                <div class="product-description"><?= $produk['deskripsi']['deskripsi'] ?></div>
+                <p><?= $produk['deskripsi']['deskripsi'] ?></p>
                 <div class="gap-2 show-flex-ke-hide">
-                    <div class="option-block">
-                        <div class="option-label"><span>Pilih warna / varian</span><small id="selected-varian-label"><?= esc($produk['varian'][0]['nama'] ?? 'default'); ?></small></div>
                     <div class="container-varian mb-3 d-flex">
                         <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
                         <input id="varian<?= $ind_v ?>"
@@ -437,25 +137,21 @@ figure.img-detail-prev {
                             data-index="<?= $ind_v ?>"
                             data-stok="<?= (int)($v['stok'] ?? 0) ?>"
                             type="radio"
-                            name="varian" <?= $ind_v == 0 ? 'checked' : ''; ?>>
+                            name="varian">
                         <label for="varian<?= $ind_v ?>"><span
                                 style="background-color: <?= $v['kode'] ?>"></span></label>
                         <?php } ?>
                     </div>
-                    </div>
-                    <div class="option-block">
-                        <div class="option-label"><span>Pilihan ukuran</span></div>
-                    <div class="size-options mb-2">
+                    <div class="d-flex gap-1 mb-2">
                         <?php foreach ($produkSemua as $ind_ps => $ps) { ?>
                         <a href="/product/<?= strtolower(str_replace(' ', '-', $ps['nama'])) ?>/<?= $ind_ps ?>"
                             class="btn-default-abu <?= $ind_ps == $indexNama ? 'border border-dark' : '' ?>"><?= (json_decode($ps['deskripsi'] ?? '{}', true) ?? [])['dimensi']['asli']['panjang'] ?? '-' ?>
                             mm</a>
                         <?php } ?>
                     </div>
-                    </div>
                 </div>
                 <?php if (session()->get('role') == '1') { ?>
-                <div class="purchase-card d-flex gap-2">
+                <div class="d-flex gap-2">
                     <a class="btn-default d-flex justify-content-center align-items-center"
                         href="/admin/editproduct/<?= $produk['id']; ?>">
                         <i class="material-icons">edit</i>
@@ -468,13 +164,12 @@ figure.img-detail-prev {
                     </a> -->
                     <form action="/admin/deleteproduct/<?= $produk['id']; ?>" method="post">
                         <button class="btn-default-merah d-flex justify-content-center align-items-center"
-                            type="submit" onclick="return confirm('Hapus produk ini?')"><i class="material-icons">delete</i>
+                            type="submit"><i class="material-icons">delete</i>
                             <p class="m-0">Hapus</p>
                         </button>
                     </form>
                 </div>
                 <?php } else { ?>
-                <div class="purchase-card">
                 <div class="d-flex gap-2 align-items-stretch">
                     <div class="number-control">
                         <div class="number-left" onclick="kurangJumlah()"></div>
@@ -489,14 +184,13 @@ figure.img-detail-prev {
                     </form>
 
                 </div>
-                </div>
                 <?php } ?>
                 <p id="info-habis" class="mt-2 <?= $produk['varian'][0]['stok'] <= 0 ? '' : 'd-none'; ?>"
                     style="font-size: 10px;">*Produk ini bisa di pre-order dengan menghubungi <a
                         href="https://wa.me/+628112938158" class="btn-teks-aja" style="display: inline;">Customer
                         Service</a> kami</p>
                 <?php if ($produk['tokped'] || $produk['shopee'] || $produk['tiktok']) { ?>
-                <div class="marketplace-box mt-4 <?= $produk['varian'][0]['stok'] <= 0 ? 'd-none' : ''; ?>" id="container-market">
+                <div class="mt-4 <?= $produk['varian'][0]['stok'] <= 0 ? 'd-none' : ''; ?>" id="container-market">
                     <p class="mb-2">
                         Produk ini juga tersedia di
                     </p>
@@ -517,11 +211,11 @@ figure.img-detail-prev {
                 </div>
                 <?php }
                 if (in_array($produk['id'], $wishlist)) { ?>
-                <form class="save-action" action="/delwishlist/<?= $produk['id'] ?>" method="post">
+                <form action="/delwishlist/<?= $produk['id'] ?>" method="post">
                     <button type="submit" class="btn-teks-aja my-3"><i class="material-icons">bookmark</i>Hapus</button>
                 </form>
                 <?php } else { ?>
-                <form class="save-action" action="/addwishlist/<?= $produk['id'] ?>" method="post">
+                <form action="/addwishlist/<?= $produk['id'] ?>" method="post">
                     <button type="submit" class="btn-teks-aja my-3"><i
                             class="material-icons">bookmark_border</i>Simpan</button>
                 </form>
@@ -605,17 +299,17 @@ figure.img-detail-prev {
                     </div>
                 </div>
             </div>
-            <div class="limapuluh-ke-seratus product-gallery-panel">
-                <div class="product-main-image-wrap">
+            <div class="limapuluh-ke-seratus">
+                <div>
                     <figure class="img-detail-prev d-none"
                         style="background-image: url('<?= $barangImgUrl('3000', $gambarAwalDetail) ?>'); background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;">
                     </figure>
                     <img class="img-detail-prev"
                         <?= $produk['varian'][0]['stok'] <= 0 ? 'style="filter: grayscale(90%)"' : ''; ?>
                         src="<?= $barangImgUrl('1000', $gambarAwalDetail) ?>" onmousemove="zoom(event)"
-                        onmouseleave="mouseoff(event)" alt="<?= esc($produk['nama']); ?>">
+                        onmouseleave="mouseoff(event)">
                 </div>
-                <div class="thumb-strip mb-3 mt-3">
+                <div class="mb-3 mt-3" style="overflow: auto">
                     <div class="container-img-detail-select"
                         <?= $produk['varian'][0]['stok'] <= 0 ? 'style="filter: grayscale(90%)"' : ''; ?>>
                         <?php foreach ($filterExistingSlots($produk['varian'][0]['urutan_gambar']) as $indx => $p_v) { ?>
@@ -659,38 +353,32 @@ figure.img-detail-prev {
                     </div>
                 </div>
                 <div class="gap-2 hide-ke-show-flex">
-                    <div class="option-block w-100">
-                        <div class="option-label"><span>Pilih warna / varian</span></div>
                     <div class="container-varian mb-3 d-flex">
                         <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
-                        <input id="varian-mobile<?= $ind_v ?>"
+                        <input id="varian<?= $ind_v ?>"
                             value="<?= esc($v['urutan_gambar'], 'attr') ?>-<?= esc($v['nama'], 'attr') ?>-<?= $ind_v ?>"
                             data-slot="<?= esc($v['urutan_gambar'], 'attr') ?>"
                             data-name="<?= esc($v['nama'], 'attr') ?>"
                             data-index="<?= $ind_v ?>"
                             data-stok="<?= (int)($v['stok'] ?? 0) ?>"
-                            type="radio" name="varian" <?= $ind_v == 0 ? 'checked' : ''; ?>>
-                        <label for="varian-mobile<?= $ind_v ?>"><span
+                            type="radio" name="varian">
+                        <label for="varian<?= $ind_v ?>"><span
                                 style="background-color: <?= $v['kode'] ?>"></span></label>
                         <?php } ?>
                     </div>
-                    </div>
-                    <div class="option-block w-100">
-                        <div class="option-label"><span>Pilihan ukuran</span></div>
-                    <div class="size-options mb-2">
+                    <div class="d-flex gap-1 mb-2">
                         <?php foreach ($produkSemua as $ind_ps => $ps) { ?>
                         <a href="/product/<?= strtolower(str_replace(' ', '-', $ps['nama'])) ?>/<?= $ind_ps ?>"
                             class="btn-default-abu <?= $ind_ps == $indexNama ? 'border border-dark' : '' ?>"><?= (json_decode($ps['deskripsi'] ?? '{}', true) ?? [])['dimensi']['asli']['panjang'] ?? '-' ?>
                             mm</a>
                         <?php } ?>
                     </div>
-                    </div>
                 </div>
             </div>
         </div>
         <?php if (count($produkSejenis) > 0) { ?>
         <hr class="mt-5">
-        <h2 class="related-heading">Anda mungkin juga suka</h2>
+        <p class="text-center">Anda mungkin juga suka</p>
         <div class="container-card1">
             <?php foreach ($produkSejenis as $ind_p => $p) { ?>
             <div class="card1">
@@ -779,7 +467,7 @@ const radioVarianElm = document.querySelectorAll('input[name="varian"]');
 const varian = JSON.parse('<?= json_encode($produk['varian']) ?>');
 const teksInfoHabisElm = document.getElementById('info-habis');
 const containerMarketElm = document.getElementById('container-market');
-const selectedVarianLabelElm = document.getElementById('selected-varian-label');
+console.log(varian)
 let varianSelected = <?= json_encode($produk['varian'][0]['nama'] ?? 'default') ?>;
 let jumlahSelected = "1";
 let isStokHabis = <?= $produk['varian'][0]['stok'] == '0' ? 'true' : 'false' ?>;
@@ -792,7 +480,6 @@ radioVarianElm.forEach(elm => {
         const slotValue = e.target.dataset.slot || e.target.value.split("-")[0];
         const varianName = e.target.dataset.name || e.target.value.split("-").slice(1, -1).join("-") || e.target.value.split("-")[1] || '';
         const varianFullSelected = varian[Number(e.target.dataset.index || e.target.value.split("-")[2] || 0)] || { stok: e.target.dataset.stok || 0, urutan_gambar: slotValue, nama: varianName };
-        if (selectedVarianLabelElm) selectedVarianLabelElm.textContent = varianName || 'default';
         const imgElm = document.querySelector("figure.img-detail-prev");
         const imgFixElm = document.querySelector("img.img-detail-prev");
         imgElm.style =
@@ -819,11 +506,11 @@ radioVarianElm.forEach(elm => {
         if (Number(varianFullSelected.stok) <= 0) {
             imgFixElm.style = 'filter: grayscale(90%)';
             containerImgDetailElm.style = 'filter: grayscale(90%)';
-            if (containerMarketElm) containerMarketElm.classList.add('d-none')
+            containerMarketElm.classList.add('d-none')
         } else {
             imgFixElm.style = 'filter: grayscale(0%)';
             containerImgDetailElm.style = 'filter: grayscale(0%)';
-            if (containerMarketElm) containerMarketElm.classList.remove('d-none')
+            containerMarketElm.classList.remove('d-none')
         }
 
         if (btnKeranjangElm) {
