@@ -472,10 +472,13 @@ const jenis   = <?= $jenisJson ?>;
 const idProduct = '<?= isset($idProduct) ? $idProduct : '' ?>';
 const produk   = <?= isset($produkJson) ? $produkJson : 'null' ?>;
 
-// Prefix URL gambar (hanya dipakai saat edit)
-const URL_1000_PREFIX = "<?= base_url('img/barang/1000/' . ($produk ? $produk['id'] : '') . '-') ?>";
-const URL_3000_PREFIX = "<?= base_url('img/barang/3000/' . ($produk ? $produk['id'] : '') . '-') ?>";
-const URL_HOVER       = "<?= base_url('img/barang/hover/' . ($produk ? $produk['id'] : '') . '.webp') ?>";
+// URL preview gambar lama saat edit. Wajib lewat route storage, bukan /img/barang,
+// supaya gambar R2/uploads langsung terbaca dan tidak balik ke asset Git lama.
+const PRODUCT_IMAGE_VERSION = "<?= ($produk && !empty($produk['tgl_update'])) ? strtotime((string) $produk['tgl_update']) : time(); ?>";
+const URL_HOVER = "<?= base_url('viewpichover/' . ($produk ? $produk['id'] : '')) ?>?proxy=1";
+function productCoverPreviewUrl(slot) {
+  return "<?= base_url('product-cover/' . ($produk ? $produk['id'] : '')) ?>?proxy=1&slot=" + encodeURIComponent(slot || "1");
+}
 
 // === Helper: format waktu untuk input[type=datetime-local] ===
 function toInputDateTime(val) {
@@ -489,7 +492,7 @@ function toInputDateTime(val) {
 // === Helper: cache buster untuk preview gambar lama ===
 function withCacheBuster(url) {
   if (!url) return url;
-  return `${url}${url.includes('?') ? '&' : '?'}v=${Date.now()}`;
+  return `${url}${url.includes('?') ? '&' : '?'}v=${PRODUCT_IMAGE_VERSION}`;
 }
 
 function makeImageItem(src, file = null, slot = null) {
@@ -669,7 +672,7 @@ const App = () => {
         (v.urutan_gambar || '')
           .split(',')
           .filter(Boolean)
-          .map(n => makeImageItem(withCacheBuster(`${URL_1000_PREFIX}${n}.webp`), null, n))
+          .map(n => makeImageItem(withCacheBuster(productCoverPreviewUrl(n)), null, n))
       );
       setGambarSrc(src);
       setGambarFile(src.map(group => group.map(item => item.file)));
