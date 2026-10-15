@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Services\Payments\PaymentSafety;
+
 use App\Models\BarangModel;
 use App\Models\GambarBarangModel;
 use App\Models\GambarBarang3000Model;
@@ -1099,7 +1101,7 @@ class Pages extends BaseController
 
         // ====== legacy voucher untuk email uji (tetap, tidak auto-apply) ======
         $voucher      = [];
-        $emailUjiCoba = ['galihsuks123@gmail.com','ilenafurniture@gmail.com','galih8.4.2001@gmail.com','tipaun0605@gmail.com','uuua5021@gmail.com'];
+        $emailUjiCoba = $this->midtransTestEmails();
         if (session()->get('isLogin') && in_array($alamatselected['email_pemesan'], $emailUjiCoba, true)) {
             $voucherMemberBaru = $this->voucherModel->where(['id'=>1])->first();
             if ($voucherMemberBaru) {
@@ -1231,7 +1233,7 @@ class Pages extends BaseController
             ])),
             'indexAddress'      => $index_kurir,
             'voucher'           => ['list'=>$voucher, 'selected'=>$voucherSelected],
-            'emailUji'          => in_array($alamatselected['email_pemesan'], $emailUjiCoba, true),
+            'emailUji'          => session()->get('isLogin') && session()->get('email') !== 'tamu' && PaymentSafety::isTestEmail((string)session()->get('email'), $emailUjiCoba),
             'msg'               => session()->getFlashdata('msg'),
             'hargaOngkir'       => $hargaOngkir,
             'kurir'             => $kurirTerpilih,
@@ -1547,18 +1549,15 @@ class Pages extends BaseController
         return ['galihsuks123@gmail.com','ilenafurniture@gmail.com','galih8.4.2001@gmail.com','adityaanugrah494@gmail.com','tipaun0605@gmail.com','uuua5021@gmail.com'];
     }
 
-    private function midtransServerKey(string $email = ''): string
+    private function midtransServerKey(string $email = '', ?string $environment = null): string
     {
-        if (in_array($email, $this->midtransTestEmails(), true)) {
-            return 'SB-Mid-server-3M67g25LgovNPlwdS4WfiMsh';
-        }
-
-        return (string)env('MIDTRANS_PRODUCTION_KEY', 'DefaultValue');
+        $sandbox = $environment === null ? PaymentSafety::isTestEmail($email, $this->midtransTestEmails()) : $environment === 'sandbox';
+        return $sandbox ? (string)env('MIDTRANS_SANDBOX_KEY', 'SB-Mid-server-3M67g25LgovNPlwdS4WfiMsh') : (string)env('MIDTRANS_PRODUCTION_KEY', '');
     }
 
     private function isSandboxOrder(array $order): bool
     {
-        return in_array((string)($order['email'] ?? ''), $this->midtransTestEmails(), true);
+        return PaymentSafety::environment($order, $this->midtransTestEmails(), 'email') === 'sandbox';
     }
 
     private function midtransStatusToOrderStatus(string $transactionStatus, string $fraudStatus = 'accept'): string
@@ -1739,6 +1738,7 @@ class Pages extends BaseController
             'kurir' => $kurir,
             'data_mid' => $dataMid,
             'is_test' => $this->isSandboxOrder($order),
+            'payment_environment' => $this->isSandboxOrder($order) ? 'sandbox' : 'production',
             'source' => 'ilenafurniture.com',
         ];
 
@@ -1797,6 +1797,7 @@ class Pages extends BaseController
         $payload = [
             'email' => (string)($order['email'] ?? ''),
             'is_test' => $this->isSandboxOrder($order),
+            'payment_environment' => $this->isSandboxOrder($order) ? 'sandbox' : 'production',
             'reason' => (string)($order['status'] ?? 'Dibatalkan'),
         ];
 
@@ -2001,7 +2002,9 @@ class Pages extends BaseController
             return redirect()->to('/payment/' . $index_kurir)->withInput();
         }
 
-        $email = $alamatselected['email_pemesan'];
+        $sessionEmail = (string)session()->get('email');
+        $email = PaymentSafety::normalizeEmail($sessionEmail !== '' && $sessionEmail !== 'tamu' ? $sessionEmail : (string)$alamatselected['email_pemesan']);
+        $isSandboxCheckout = session()->get('isLogin') && $sessionEmail !== 'tamu' && PaymentSafety::isTestEmail($sessionEmail, $this->midtransTestEmails());
         $nama = $alamatselected['nama_penerima'];
         $nohp = $alamatselected['nohp_penerima'];
         $alamat = $alamatselected['alamat_lengkap'];
@@ -2082,7 +2085,7 @@ class Pages extends BaseController
 
         $last = $this->pemesananModel->orderBy('id','desc')->first();
         $idAsli = "IL".sprintf("%08d", $last ? ((int)$last['id']+1) : 1);
-        $idFix = in_array($email, $emailUjiCoba, true) ? ("IL".rand()) : $idAsli;
+        $idFix = $isSandboxCheckout ? ("IL".rand()) : $idAsli;
 
         $customField = json_encode(['e'=>$email,'n'=>$nama,'h'=>$nohp,'a'=>$alamat,'i'=>session()->get('keranjang'),'k'=>$kurirTerpilih,'v'=>$voucher]);
         $arrPostField = [
@@ -2134,11 +2137,11 @@ class Pages extends BaseController
 
         $curl = curl_init();
         curl_setopt_array($curl, [
-            CURLOPT_URL => in_array($email, $emailUjiCoba, true) ? "https://api.sandbox.midtrans.com/v2/charge" : "https://api.midtrans.com/v2/charge",
+            CURLOPT_URL => $isSandboxCheckout ? "https://api.sandbox.midtrans.com/v2/charge" : "https://api.midtrans.com/v2/charge",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "POST",
             CURLOPT_POSTFIELDS => json_encode($arrPostField),
-            CURLOPT_HTTPHEADER => ["Accept: application/json","Content-Type: application/json","Authorization: Basic ".base64_encode($this->midtransServerKey($email).":")],
+            CURLOPT_HTTPHEADER => ["Accept: application/json","Content-Type: application/json","Authorization: Basic ".base64_encode($this->midtransServerKey($email, $isSandboxCheckout ? 'sandbox' : 'production').":")],
         ]);
         $response = curl_exec($curl);
         $err = curl_error($curl);
@@ -2152,6 +2155,7 @@ class Pages extends BaseController
         }
 
         $status = $this->midtransStatusToOrderStatus($hasilMidtrans['transaction_status'] ?? '', $hasilMidtrans['fraud_status'] ?? 'accept');
+        $hasilMidtrans['_app_payment_environment'] = $isSandboxCheckout ? 'sandbox' : 'production';
         $this->pemesananModel->insert([
             'nama' => $nama,
             'email'=> $email,
@@ -2181,74 +2185,54 @@ class Pages extends BaseController
 
     public function updateTransaction()
     {
-        $bodyJson = $this->request->getBody();
-        $body = json_decode($bodyJson, true);
-        if (!is_array($body)) {
-            return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'Invalid JSON']);
+        $body = json_decode($this->request->getBody(), true);
+        if (!is_array($body) || !is_string($body['order_id'] ?? null)) {
+            return $this->response->setStatusCode(400)->setJSON(['success'=>false, 'message'=>'Invalid notification']);
         }
-
-        $orderId = (string)($body['order_id'] ?? '');
-        $transactionStatus = (string)($body['transaction_status'] ?? '');
-        $statusCode = (string)($body['status_code'] ?? '');
-        $grossAmount = (string)($body['gross_amount'] ?? '');
-        $signature = (string)($body['signature_key'] ?? '');
-        if ($orderId === '' || $transactionStatus === '') {
-            return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'Missing transaction data']);
-        }
-
+        $orderId = $body['order_id'];
         $order = $this->pemesananModel->getPemesanan($orderId);
-        if (!$order) {
-            return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'Order not found']);
+        if (!$order) return $this->response->setStatusCode(404)->setJSON(['success'=>false, 'message'=>'Order not found']);
+        $environment = PaymentSafety::environment($order, $this->midtransTestEmails(), 'email');
+        if (!PaymentSafety::validNotification($order, $body, $this->midtransServerKey((string)$order['email'], $environment))) {
+            return $this->response->setStatusCode(403)->setJSON(['success'=>false, 'message'=>'Invalid notification signature or amount']);
         }
-
-        $serverKey = $this->midtransServerKey((string)($order['email'] ?? ''));
-        $expectedSignature = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
-        if ($signature === '' || !hash_equals($expectedSignature, $signature)) {
-            return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'Invalid signature']);
+        $oldStatus = (string)$order['status'];
+        $newStatus = PaymentSafety::notificationStatus($body);
+        if (!PaymentSafety::canTransition($oldStatus, $newStatus)) {
+            if (in_array($oldStatus, ['Proses','Menunggu Pembayaran'], true) && $oldStatus === $newStatus) $this->syncOrderToIlenaSistem($order);
+            return $this->response->setJSON(['success'=>true, 'ignored'=>true]);
         }
-
-        $oldStatus = (string)($order['status'] ?? '');
-        $newStatus = $this->midtransStatusToOrderStatus($transactionStatus, (string)($body['fraud_status'] ?? 'accept'));
-
-        $dataMid = json_decode($order['data_mid'] ?? '[]', true);
-        if (!is_array($dataMid)) $dataMid = [];
-        $dataMid = array_merge($dataMid, $body);
-
-        $this->pemesananModel->where('id_midtrans', $orderId)->set([
-            'status' => $newStatus,
-            'data_mid' => json_encode($dataMid),
-        ])->update();
-
-        $updatedOrder = $this->pemesananModel->getPemesanan($orderId);
-        $isSandboxOrder = $updatedOrder ? $this->isSandboxOrder($updatedOrder) : false;
-
-        if (!$isSandboxOrder && $newStatus === 'Proses' && $oldStatus !== 'Proses' && $updatedOrder) {
-            $this->processPaidOrder($updatedOrder);
-        }
-        if ($newStatus === 'Proses' && $oldStatus !== 'Proses' && $updatedOrder) {
-            $this->syncOrderToIlenaSistem($updatedOrder);
-        }
-
-        if ($newStatus === 'Menunggu Pembayaran' && $oldStatus !== 'Menunggu Pembayaran' && $updatedOrder) {
-            $this->syncOrderToIlenaSistem($updatedOrder);
-        }
-
-        if (!$isSandboxOrder && in_array($newStatus, ['Kadaluarsa', 'Ditolak', 'Gagal', 'Dibatalkan'], true) && $oldStatus === 'Proses' && $updatedOrder) {
-            $this->restorePaidOrderStock($updatedOrder);
-        }
-
-        if (in_array($newStatus, ['Kadaluarsa', 'Ditolak', 'Gagal', 'Dibatalkan'], true) && $updatedOrder) {
-            $this->deleteOrderFromIlenaSistem($updatedOrder);
-        }
-
-        if ($updatedOrder && $newStatus !== $oldStatus) {
-            $this->sendOrderPaymentEmail($updatedOrder, $newStatus);
-            if (!$isSandboxOrder) {
-                $this->sendAdminOrderPaymentEmail($updatedOrder, $newStatus);
+        $db = \Config\Database::connect();
+        $db->transBegin();
+        try {
+            $order = PaymentSafety::lockedOrder($db, $orderId);
+            if (!$order) throw new \RuntimeException('Order disappeared');
+            $oldStatus = (string)$order['status'];
+            if (!PaymentSafety::canTransition($oldStatus, $newStatus)) {
+                $db->transRollback();
+                return $this->response->setJSON(['success'=>true, 'ignored'=>true]);
             }
+            $dataMid = json_decode($order['data_mid'] ?? '[]', true) ?: [];
+            $dataMid = array_merge($dataMid, $body);
+            $dataMid['_app_payment_environment'] = $environment;
+            if (!PaymentSafety::claim($db, $orderId, $oldStatus, $newStatus, $dataMid)) {
+                $db->transRollback();
+                return $this->response->setJSON(['success'=>true, 'ignored'=>true]);
+            }
+            $updatedOrder = $this->pemesananModel->getPemesanan($orderId);
+            if ($environment !== 'sandbox' && $newStatus === 'Proses') $this->processPaidOrder($updatedOrder);
+            if (!$db->transStatus()) throw new \RuntimeException('Payment effects failed');
+            $db->transCommit();
+        } catch (\Throwable $error) {
+            $db->transRollback();
+            log_message('error', 'Ilena payment notification failed for {order}: {message}', ['order'=>$orderId, 'message'=>$error->getMessage()]);
+            return $this->response->setStatusCode(500)->setJSON(['success'=>false, 'message'=>'Notification will be retried']);
         }
-
-        return $this->response->setJSON(['success' => true]);
+        if (in_array($newStatus, ['Proses','Menunggu Pembayaran'], true)) $this->syncOrderToIlenaSistem($updatedOrder);
+        if (in_array($newStatus, ['Kadaluarsa','Ditolak','Gagal','Dibatalkan'], true)) $this->deleteOrderFromIlenaSistem($updatedOrder);
+        $this->sendOrderPaymentEmail($updatedOrder, $newStatus);
+        if ($environment !== 'sandbox') $this->sendAdminOrderPaymentEmail($updatedOrder, $newStatus);
+        return $this->response->setJSON(['success'=>true]);
     }
 
     public function midtransNotificationDispatcher()
@@ -2364,7 +2348,7 @@ class Pages extends BaseController
         }
 
         if ($this->isLunareaOrderId($orderId)) {
-            return redirect()->to('https://lunareafurniture.com/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId));
+            return redirect()->to('https://lunareafurniture.com/order/' . rawurlencode($orderId));
         }
 
         return redirect()->to('/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId));
@@ -2372,12 +2356,16 @@ class Pages extends BaseController
 
     public function cancelOrder($id_midtrans)
     {
-        $auth = base64_encode("SB-Mid-server-3M67g25LgovNPlwdS4WfiMsh" . ":");
+        $order = $this->pemesananModel->getPemesanan($id_midtrans);
+        if (!$order || !in_array($order['status'] ?? '', ['Menunggu Pembayaran'], true)) return redirect()->to('/orderadmin');
+        $environment = PaymentSafety::environment($order, $this->midtransTestEmails(), 'email');
+        $key = $this->midtransServerKey((string)$order['email'], $environment);
+        $auth = base64_encode($key . ':');
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://api.sandbox.midtrans.com/v2/" . $id_midtrans . "/cancel",
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0,
+            CURLOPT_URL => ($environment === 'sandbox' ? 'https://api.sandbox.midtrans.com/v2/' : 'https://api.midtrans.com/v2/') . rawurlencode($id_midtrans) . '/cancel',
+            CURLOPT_SSL_VERIFYHOST => 2,
+            CURLOPT_SSL_VERIFYPEER => true,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
