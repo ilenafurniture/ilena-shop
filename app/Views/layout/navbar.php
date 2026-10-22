@@ -54,14 +54,14 @@
     </div>
 </nav>
 <style>
-    .navbar-brand-pair { width: calc(100% / 3); display:flex; align-items:center; justify-content:center; gap:12px; min-width:0; }
+    .navbar-brand-pair { width: calc(100% / 3); display:flex; align-items:center; justify-content:center; gap:18px; min-width:0; }
     .navbar-brand-pair a { display:inline-flex; align-items:center; justify-content:center; flex:0 1 auto; }
     .navbar-brand-ilena img { display:block; width:auto; max-width:150px; height:30px; object-fit:contain; }
     .navbar-brand-divider { width:1px; height:25px; flex:0 0 1px; background:rgba(255,255,255,.55); }
     .navbar-brand-lunarea { padding:0; background:transparent; line-height:0; }
     .navbar-brand-lunarea img { display:block; width:auto; max-width:180px; height:20px; object-fit:contain; }
     @media (max-width:1100px) {
-        .navbar-brand-pair { gap:7px; }
+        .navbar-brand-pair { gap:12px; }
         .navbar-brand-ilena img { height:24px; max-width:125px; }
         .navbar-brand-divider { height:20px; }
         .navbar-brand-lunarea img { height:16px; max-width:150px; }
