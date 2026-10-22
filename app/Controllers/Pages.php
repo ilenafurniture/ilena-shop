@@ -209,7 +209,7 @@ class Pages extends BaseController
         return view('pages/all', $data);
     }
 
-    public function fixId()
+    private function fixId()
     {
         $seluruhBarang = $this->barangModel->findAll();
         foreach ($seluruhBarang as $sb) {
@@ -228,7 +228,7 @@ class Pages extends BaseController
         }
         return $this->response->setJSON(['Sucess' => 'OK'], false);
     }
-    public function fixSet()
+    private function fixSet()
     {
         $seluruhBarang = $this->barangModel->findAll();
         $ruangTamu = false;
@@ -335,7 +335,7 @@ class Pages extends BaseController
         }
         return $this->response->setJSON(['Sucess' => 'OK'], false);
     }
-    public function fixNama()
+    private function fixNama()
     {
         $seluruhBarang = $this->barangModel->findAll();
         foreach ($seluruhBarang as $sb) {
@@ -348,7 +348,7 @@ class Pages extends BaseController
         return $this->response->setJSON(['Sucess' => 'OK'], false);
     }
 
-    public function gantiJenis($nama_lama, $nama_baru)
+    private function gantiJenis($nama_lama, $nama_baru)
     {
         $this->jenisModel->where(['nama' => $nama_lama])->set(['nama' => $nama_baru])->update();
         $seluruhBarang = $this->barangModel->findAll();
@@ -1204,6 +1204,25 @@ class Pages extends BaseController
 
         $method  = session()->get('payment_method') ?? 'bca';
         session()->set('payment_method', $method);
+        $checkoutNonce = bin2hex(random_bytes(32));
+        session()->set('checkout_nonce', $checkoutNonce);
+        $checkoutFingerprint = hash('sha256', json_encode([
+            'cart' => $keranjang,
+            'address' => $alamatselected,
+            'shipping' => $kurirTerpilih,
+            'method' => $method,
+            'voucher' => session()->get('voucher'),
+        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+        $operationCreated = (int)session()->get('checkout_operation_created_at');
+        if (!hash_equals((string)session()->get('checkout_operation_fingerprint'), $checkoutFingerprint)
+            || $operationCreated <= 0 || time() - $operationCreated >= 285) {
+            session()->set([
+                'checkout_operation_fingerprint' => $checkoutFingerprint,
+                'checkout_operation_created_at' => time(),
+                'checkout_operation_key' => bin2hex(random_bytes(16)),
+                'checkout_order_id' => 'IL' . date('ymdHis') . strtoupper(bin2hex(random_bytes(8))),
+            ]);
+        }
 
         $baseForFee = max(0, $hargaTotal - $diskonVoucher - $flashSale + $hargaOngkir);
         $biayaAdmin  = $this->calculateAdminFee($method, $baseForFee);
@@ -1242,6 +1261,7 @@ class Pages extends BaseController
             'paymentMethod'     => $method,
             'listPaymentMethod' => ['bca','bri','bni','mandiri','permata','cimb','gopay','shopeepay','qris'],
             'grossAmount'       => $grossAmount,
+            'checkoutNonce'     => $checkoutNonce,
         ];
 
         $this->session->set(['alamatTerpilih' => $alamatselected]);
@@ -1552,7 +1572,7 @@ class Pages extends BaseController
     private function midtransServerKey(string $email = '', ?string $environment = null): string
     {
         $sandbox = $environment === null ? PaymentSafety::isTestEmail($email, $this->midtransTestEmails()) : $environment === 'sandbox';
-        return $sandbox ? (string)env('MIDTRANS_SANDBOX_KEY', 'SB-Mid-server-3M67g25LgovNPlwdS4WfiMsh') : (string)env('MIDTRANS_PRODUCTION_KEY', '');
+        return $sandbox ? (string)env('MIDTRANS_SANDBOX_KEY', '') : (string)env('MIDTRANS_PRODUCTION_KEY', '');
     }
 
     private function isSandboxOrder(array $order): bool
@@ -1640,69 +1660,76 @@ class Pages extends BaseController
 
     private function processPaidOrder(array $order): void
     {
-        $idPesanan = (string)($order['id_midtrans'] ?? '');
-        if ($idPesanan === '') return;
-
-        $alreadyQueued = $this->pemesananGudangModel->where('id_pesanan', $idPesanan)->countAllResults();
+        $orderId = (string)($order['id_midtrans'] ?? '');
+        if ($orderId === '') return;
+        $db = \Config\Database::connect();
+        $alreadyQueued = $this->pemesananGudangModel->where('id_pesanan', $orderId)->countAllResults();
         if ($alreadyQueued > 0) {
+            (new \App\Services\Payments\StockReservationService($db))->consume($orderId);
             return;
         }
 
-        $items = json_decode($order['items'] ?? '[]', true);
-        $dataMid = json_decode($order['data_mid'] ?? '[]', true);
-        if (!is_array($items)) return;
+        $items = json_decode((string)($order['items'] ?? '[]'), true);
+        $dataMid = json_decode((string)($order['data_mid'] ?? '[]'), true);
+        if (!is_array($items)) throw new \RuntimeException('Invalid paid-order items.');
+        $tanggal = is_array($dataMid) ? ($dataMid['transaction_time'] ?? date('Y-m-d H:i:s')) : date('Y-m-d H:i:s');
+        $items = array_values(array_filter($items, fn($item) => $this->isChargeableProductItem($item)));
+        usort($items, fn($a, $b) => [(string)($a['id'] ?? ''), strtolower($this->itemVariantName($a))]
+            <=> [(string)($b['id'] ?? ''), strtolower($this->itemVariantName($b))]);
 
-        $tanggal = $dataMid['transaction_time'] ?? date('Y-m-d H:i:s');
         foreach ($items as $item) {
-            if (!$this->isChargeableProductItem($item)) continue;
-
-            $barang = $this->barangModel->getBarang($item['id'] ?? null);
-            if (!$barang) continue;
-
+            $productId = (string)($item['id'] ?? '');
             $variantName = $this->itemVariantName($item);
             $qty = max(0, (int)($item['quantity'] ?? 0));
-            if ($variantName === '' || $qty <= 0) continue;
+            if ($productId === '' || $variantName === '' || $qty <= 0) continue;
 
-            $varians = json_decode($barang['varian'] ?? '[]', true);
-            if (!is_array($varians)) continue;
+            // The same product-row lock is used during reserve(), so a paid order and a
+            // competing checkout cannot both consume the final available unit.
+            $db->query('SELECT id FROM barang WHERE id = ? FOR UPDATE', [$productId]);
+            $barang = $this->barangModel->getBarang($productId);
+            if (!$barang) throw new \RuntimeException('Paid order product no longer exists: ' . $productId);
+            $varians = json_decode((string)($barang['varian'] ?? '[]'), true);
+            if (!is_array($varians)) throw new \RuntimeException('Paid order variant data is invalid: ' . $productId);
 
-            $saldo = 0;
-            foreach ($varians as $idx => $v) {
-                if (strtolower((string)($v['nama'] ?? '')) === strtolower($variantName)) {
-                    $varians[$idx]['stok'] = max(0, (int)($v['stok'] ?? 0) - $qty);
+            $saldo = null;
+            foreach ($varians as $idx => $variant) {
+                if (strtolower((string)($variant['nama'] ?? '')) === strtolower($variantName)) {
+                    $currentStock = max(0, (int)($variant['stok'] ?? 0));
+                    if ($currentStock < $qty) throw new \RuntimeException('Paid order stock underflow prevented for ' . $productId . '/' . $variantName);
+                    $varians[$idx]['stok'] = $currentStock - $qty;
                     $saldo = $varians[$idx]['stok'];
                     break;
                 }
             }
-            $this->barangModel->update($barang['id'], ['varian' => json_encode($varians)]);
+            if ($saldo === null) throw new \RuntimeException('Paid order variant no longer exists: ' . $productId . '/' . $variantName);
+            if (!$this->barangModel->update($barang['id'], ['varian' => json_encode($varians)])) {
+                throw new \RuntimeException('Could not persist paid-order stock for ' . $productId);
+            }
 
             for ($x = 1; $x <= $qty; $x++) {
                 $this->pemesananGudangModel->insert([
-                    'id_pesanan' => $idPesanan,
+                    'id_pesanan' => $orderId,
                     'tanggal' => $tanggal,
-                    'nama' => $item['name'],
-                    'id_barang' => $item['id'],
+                    'nama' => $item['name'] ?? $barang['nama'],
+                    'id_barang' => $productId,
                     'packed' => false,
                     'printed' => false,
                 ]);
             }
-
-            $tanggalNoStrip = date("YmdHis", strtotime($tanggal));
             $this->kartuStokModel->insert([
-                'id_barang' => $item['id'],
+                'id_barang' => $productId,
                 'tanggal' => $tanggal,
-                'keterangan' => $tanggalNoStrip . "-" . $item['id'] . "-" . strtoupper($variantName) . "-" . $idPesanan,
+                'keterangan' => date('YmdHis', strtotime($tanggal)) . '-' . $productId . '-' . strtoupper($variantName) . '-' . $orderId,
                 'debit' => 0,
                 'kredit' => $qty,
                 'saldo' => $saldo,
                 'pending' => true,
-                'id_pesanan' => $idPesanan,
+                'id_pesanan' => $orderId,
                 'varian' => strtoupper($variantName),
             ]);
         }
 
-        $this->markVoucherUsed($order);
-        $this->sendMetaCapiPurchase($order);
+        (new \App\Services\Payments\StockReservationService($db))->consume($orderId);
     }
 
     private function syncOrderToIlenaSistem(array $order): void
@@ -1726,6 +1753,7 @@ class Pages extends BaseController
 
         $dataMid = json_decode($order['data_mid'] ?? '[]', true);
         if (!is_array($dataMid)) $dataMid = [];
+        unset($dataMid['_app_order_access_token']);
 
         $payload = [
             'order_id' => (string)($order['id_midtrans'] ?? ''),
@@ -1844,6 +1872,7 @@ class Pages extends BaseController
         $nama = (string)($order['nama'] ?? 'Customer');
         $statusText = $status;
         $subjectStatus = $status === 'Proses' ? 'Pembayaran Berhasil' : 'Status Pembayaran ' . $status;
+        $accessToken = $this->orderAccessToken($orderId, $order);
 
         if ($status === 'Proses') {
             $pesan = 'Pembayaran kamu sudah berhasil kami terima. Pesanan akan segera kami proses.';
@@ -1869,11 +1898,11 @@ class Pages extends BaseController
                 <p>' . esc($pesan) . '</p>
                 <p><b>Kode Pesanan:</b> ' . esc($orderId) . '</p>
                 <p><b>Status:</b> ' . esc($statusText) . '</p>
-                <p><a href="https://ilenafurniture.com/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId) . '">Lihat detail pesanan</a></p>
+                <p><a href="https://ilenafurniture.com/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId) . '&amp;access_token=' . rawurlencode($accessToken) . '">Lihat detail pesanan</a></p>
                 <p>Terima kasih sudah berbelanja di Ilena Furniture.</p>
             </div>
         ');
-        $email->setAltMessage("Halo {$nama}, {$pesan}\nKode Pesanan: {$orderId}\nStatus: {$statusText}\nhttps://ilenafurniture.com/orderdetail/" . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId));
+        $email->setAltMessage("Halo {$nama}, {$pesan}\nKode Pesanan: {$orderId}\nStatus: {$statusText}\nhttps://ilenafurniture.com/orderdetail/" . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId) . '&access_token=' . rawurlencode($accessToken));
 
         if (!$email->send(false)) {
             log_message('error', 'Gagal mengirim email status pembayaran Ilena ke {email}: {debug}', [
@@ -1972,7 +2001,14 @@ class Pages extends BaseController
 
     public function actionPayCore($token)
     {
-        $deCodeToken = base64_decode($token);
+        if (!$this->request->is('post')) {
+            return $this->response->setStatusCode(405)->setBody('Metode checkout tidak valid.');
+        }
+        $deCodeToken = base64_decode($token, true);
+        if (!is_string($deCodeToken)) {
+            session()->setFlashdata('msg', 'Token checkout tidak valid.');
+            return redirect()->to('/address');
+        }
         $parts = explode(':', $deCodeToken);
         if (count($parts) < 2) {
             session()->setFlashdata('msg', 'Token tidak valid');
@@ -1980,8 +2016,14 @@ class Pages extends BaseController
         }
 
         [$stamp, $index_kurir] = $parts;
-        if (!is_numeric($stamp) || (time() - (int)$stamp) > 600) {
+        if (!is_numeric($stamp) || (time() - (int)$stamp) > 600 || (int)$stamp > time() + 60) {
             session()->setFlashdata('msg', 'Token kadaluarsa, silakan ulangi pembayaran');
+            return redirect()->to('/payment/' . $index_kurir);
+        }
+        $expectedNonce = (string)session()->get('checkout_nonce');
+        $submittedNonce = (string)$this->request->getPost('checkout_nonce');
+        if ($expectedNonce === '' || $submittedNonce === '' || !hash_equals($expectedNonce, $submittedNonce)) {
+            session()->setFlashdata('msg', 'Permintaan checkout sudah digunakan atau kedaluwarsa. Periksa status pesanan sebelum mencoba lagi.');
             return redirect()->to('/payment/' . $index_kurir);
         }
 
@@ -2083,9 +2125,28 @@ class Pages extends BaseController
         }
         unset($item);
 
-        $last = $this->pemesananModel->orderBy('id','desc')->first();
-        $idAsli = "IL".sprintf("%08d", $last ? ((int)$last['id']+1) : 1);
-        $idFix = $isSandboxCheckout ? ("IL".rand()) : $idAsli;
+        $idFix = (string)session()->get('checkout_order_id');
+        $idempotencyKey = (string)session()->get('checkout_operation_key');
+        $currentFingerprint = hash('sha256', json_encode([
+            'cart' => (array)(session()->get('keranjang') ?? []),
+            'address' => $alamatselected,
+            'shipping' => $kurirTerpilih,
+            'method' => $pembayaran,
+            'voucher' => session()->get('voucher'),
+        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+        if (!hash_equals((string)session()->get('checkout_operation_fingerprint'), $currentFingerprint)) {
+            session()->setFlashdata('msg', 'Keranjang atau pilihan pembayaran berubah. Periksa kembali ringkasan sebelum membayar.');
+            return redirect()->to('/payment/' . $index_kurir);
+        }
+        if ($idFix === '' || $idempotencyKey === '') {
+            session()->setFlashdata('msg', 'Sesi checkout kedaluwarsa. Muat ulang pembayaran sebelum melanjutkan.');
+            return redirect()->to('/payment/' . $index_kurir);
+        }
+        $existingOrder = $this->pemesananModel->getPemesanan($idFix);
+        if ($existingOrder) {
+            return redirect()->to('/orderdetail/' . rawurlencode(strtolower((string)$existingOrder['status']))
+                . '?idorder=' . rawurlencode($idFix) . '&access_token=' . rawurlencode($this->orderAccessToken($idFix)));
+        }
 
         $customField = json_encode(['e'=>$email,'n'=>$nama,'h'=>$nohp,'a'=>$alamat,'i'=>session()->get('keranjang'),'k'=>$kurirTerpilih,'v'=>$voucher]);
         $arrPostField = [
@@ -2129,33 +2190,65 @@ class Pages extends BaseController
                 break;
             case 'card':
                 $arrPostField["payment_type"] = "credit_card";
-                $arrPostField["credit_card"] = ["token_id"=>$this->request->getVar('tokencc')];
+                $arrPostField["credit_card"] = ["token_id"=>$this->request->getPost('tokencc')];
                 break;
             default:
                 return redirect()->to('/payment/' . $index_kurir);
         }
 
+        if (!$isSandboxCheckout) {
+            try {
+                $reservation = (new \App\Services\Payments\StockReservationService())->reserve($idFix, $cartCheck['cart']);
+            } catch (\Throwable $error) {
+                log_message('error', 'Could not reserve checkout stock for {order}: {error}', ['order' => $idFix, 'error' => $error->getMessage()]);
+                session()->setFlashdata('msg', 'Stok belum dapat diamankan. Coba kembali setelah beberapa saat.');
+                return redirect()->to('/payment/' . $index_kurir);
+            }
+            if (empty($reservation['ok'])) {
+                session()->setFlashdata('msg', $reservation['message'] ?? 'Stok berubah. Perbarui keranjang sebelum membayar.');
+                return redirect()->to('/cart');
+            }
+        }
+
+        // One-time token prevents repeated form submissions; gateway key protects network retries.
+        session()->remove('checkout_nonce');
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_URL => $isSandboxCheckout ? "https://api.sandbox.midtrans.com/v2/charge" : "https://api.midtrans.com/v2/charge",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "POST",
             CURLOPT_POSTFIELDS => json_encode($arrPostField),
-            CURLOPT_HTTPHEADER => ["Accept: application/json","Content-Type: application/json","Authorization: Basic ".base64_encode($this->midtransServerKey($email, $isSandboxCheckout ? 'sandbox' : 'production').":")],
+            CURLOPT_HTTPHEADER => array_values(array_filter([
+                "Accept: application/json",
+                "Content-Type: application/json",
+                "Authorization: Basic " . base64_encode($this->midtransServerKey($email, $isSandboxCheckout ? 'sandbox' : 'production') . ":"),
+                !in_array($pembayaran, ['permata', 'cimb'], true) ? "Idempotency-Key: " . $idempotencyKey : null,
+            ])),
         ]);
         $response = curl_exec($curl);
         $err = curl_error($curl);
+        $httpCode = (int)curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
 
-        if ($err) return "cURL Error #:" . $err;
-        $hasilMidtrans = json_decode($response, true);
+        if ($err !== '') {
+            log_message('error', 'Midtrans checkout request failed for {order}: HTTP {http}; {error}', [
+                'order' => $idFix,
+                'http' => $httpCode,
+                'error' => $err,
+            ]);
+            session()->setFlashdata('msg', 'Pembayaran belum mendapat konfirmasi. Pesanan belum ditampilkan sebagai berhasil; muat ulang dan periksa status sebelum mencoba lagi.');
+            return redirect()->to('/payment/' . $index_kurir);
+        }
+        $hasilMidtrans = json_decode((string)$response, true);
         if (substr($hasilMidtrans['status_code'] ?? '', 0, 1) !== '2') {
+            if (!$isSandboxCheckout) (new \App\Services\Payments\StockReservationService())->release($idFix);
             session()->setFlashdata('msg', $hasilMidtrans['status_message'] ?? 'Transaksi gagal');
             return redirect()->to('/payment/' . $index_kurir);
         }
 
         $status = $this->midtransStatusToOrderStatus($hasilMidtrans['transaction_status'] ?? '', $hasilMidtrans['fraud_status'] ?? 'accept');
         $hasilMidtrans['_app_payment_environment'] = $isSandboxCheckout ? 'sandbox' : 'production';
+        $hasilMidtrans['_app_order_access_token'] = bin2hex(random_bytes(32));
         $this->pemesananModel->insert([
             'nama' => $nama,
             'email'=> $email,
@@ -2171,16 +2264,27 @@ class Pages extends BaseController
 
         $trx = $this->pemesananModel->where('id_midtrans', $idFix)->first();
         if ($status === 'Proses' && $trx && !$this->isSandboxOrder($trx)) {
-            $this->processPaidOrder($trx);
+            $db = \Config\Database::connect();
+            $db->transBegin();
+            try {
+                $this->processPaidOrder($trx);
+                if (!$db->transStatus()) throw new \RuntimeException('Immediate paid-order stock transaction failed');
+                $db->transCommit();
+                $this->markVoucherUsed($trx);
+                $this->sendMetaCapiPurchase($trx);
+            } catch (\Throwable $error) {
+                $db->transRollback();
+                log_message('error', 'Immediate paid order stock effects failed for {order}: {error}', ['order' => $idFix, 'error' => $error->getMessage()]);
+            }
         }
         if (in_array($status, ['Proses', 'Menunggu Pembayaran'], true) && $trx) {
             $this->syncOrderToIlenaSistem($trx);
         }
 
-        session()->remove(['voucher', 'voucher_claimed', 'keranjang', 'kurir', 'kurirTerpilih', 'alamatTerpilih', 'hargaKeseluruhan']);
+        session()->remove(['voucher', 'voucher_claimed', 'keranjang', 'kurir', 'kurirTerpilih', 'alamatTerpilih', 'hargaKeseluruhan', 'checkout_nonce', 'checkout_operation_fingerprint', 'checkout_operation_created_at', 'checkout_operation_key', 'checkout_order_id']);
         $this->syncCartToUser([]);
 
-        return redirect()->to('/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . $idFix);
+        return redirect()->to('/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($idFix) . '&access_token=' . rawurlencode($this->orderAccessToken($idFix)));
     }
 
     public function updateTransaction()
@@ -2221,12 +2325,19 @@ class Pages extends BaseController
             }
             $updatedOrder = $this->pemesananModel->getPemesanan($orderId);
             if ($environment !== 'sandbox' && $newStatus === 'Proses') $this->processPaidOrder($updatedOrder);
+            if (in_array($newStatus, ['Kadaluarsa', 'Ditolak', 'Gagal', 'Dibatalkan'], true)) {
+                (new \App\Services\Payments\StockReservationService($db))->release($orderId);
+            }
             if (!$db->transStatus()) throw new \RuntimeException('Payment effects failed');
             $db->transCommit();
         } catch (\Throwable $error) {
             $db->transRollback();
             log_message('error', 'Ilena payment notification failed for {order}: {message}', ['order'=>$orderId, 'message'=>$error->getMessage()]);
             return $this->response->setStatusCode(500)->setJSON(['success'=>false, 'message'=>'Notification will be retried']);
+        }
+        if ($environment !== 'sandbox' && $newStatus === 'Proses') {
+            $this->markVoucherUsed($updatedOrder);
+            $this->sendMetaCapiPurchase($updatedOrder);
         }
         if (in_array($newStatus, ['Proses','Menunggu Pembayaran'], true)) $this->syncOrderToIlenaSistem($updatedOrder);
         if (in_array($newStatus, ['Kadaluarsa','Ditolak','Gagal','Dibatalkan'], true)) $this->deleteOrderFromIlenaSistem($updatedOrder);
@@ -2301,11 +2412,32 @@ class Pages extends BaseController
         return $this->redirectFromMidtrans('Gagal');
     }
 
+    private function orderAccessToken(string $orderId, ?array $order = null): string
+    {
+        $order = $order ?? $this->pemesananModel->getPemesanan($orderId);
+        $dataMid = json_decode((string)($order['data_mid'] ?? ''), true);
+        $token = is_array($dataMid) ? (string)($dataMid['_app_order_access_token'] ?? '') : '';
+        return preg_match('/^[a-f0-9]{64}$/i', $token) === 1 ? strtolower($token) : '';
+    }
+
+    private function canAccessOrder(array $order): bool
+    {
+        $orderId = (string)($order['id_midtrans'] ?? '');
+        $orderEmail = PaymentSafety::normalizeEmail((string)($order['email'] ?? ''));
+        $sessionEmail = PaymentSafety::normalizeEmail((string)session()->get('email'));
+        if ($sessionEmail !== '' && $sessionEmail !== 'tamu' && hash_equals($orderEmail, $sessionEmail)) return true;
+        if (session()->get('isLogin') && (string)session()->get('role') === '1') return true;
+        if (session()->get('isLogin') && $sessionEmail !== '' && ((new \App\Services\AdminRbacService())->hasPermission($sessionEmail, 'orders_online') || (new \App\Services\AdminRbacService())->hasPermission($sessionEmail, 'orders_offline'))) return true;
+        $expected = $this->orderAccessToken($orderId, $order);
+        $provided = (string)$this->request->getGet('access_token');
+        return $expected !== '' && preg_match('/^[a-f0-9]{64}$/i', $provided) === 1 && hash_equals($expected, strtolower($provided));
+    }
+
     public function paymentStatus($orderId)
     {
         $orderId = (string)$orderId;
         $order = $this->pemesananModel->getPemesanan($orderId);
-        if (!$order) {
+        if (!$order || !$this->canAccessOrder($order)) {
             return $this->response->setStatusCode(404)->setJSON([
                 'success' => false,
                 'message' => 'Order not found',
@@ -2318,7 +2450,7 @@ class Pages extends BaseController
             'order_id' => $orderId,
             'status' => $status,
             'paid' => $status === 'Proses',
-            'detail_url' => site_url('/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId)),
+            'detail_url' => site_url('/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId) . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $order))),
         ]);
     }
 
@@ -2351,7 +2483,93 @@ class Pages extends BaseController
             return redirect()->to('https://lunareafurniture.com/order/' . rawurlencode($orderId));
         }
 
-        return redirect()->to('/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId));
+        return redirect()->to('/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId) . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $order)));
+    }
+
+    public function cancelCustomerOrder(string $orderId)
+    {
+        $order = $this->pemesananModel->getPemesanan($orderId);
+        if (!$order || !$this->canAccessOrder($order)) {
+            return $this->response->setStatusCode(404)->setBody('Pesanan tidak ditemukan.');
+        }
+        if (($order['status'] ?? '') !== 'Menunggu Pembayaran') {
+            session()->setFlashdata('order_action_message', 'Pesanan ini sudah tidak dapat dibatalkan dari halaman ini.');
+            return redirect()->to('/orderdetail/' . rawurlencode(strtolower((string)$order['status']))
+                . '?idorder=' . rawurlencode($orderId) . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $order)));
+        }
+
+        $environment = PaymentSafety::environment($order, $this->midtransTestEmails(), 'email');
+        $serverKey = $this->midtransServerKey((string)$order['email'], $environment);
+        if ($serverKey === '') {
+            session()->setFlashdata('order_action_message', 'Pembatalan belum dapat diproses. Silakan hubungi Customer Care.');
+            return redirect()->back();
+        }
+
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL => ($environment === 'sandbox' ? 'https://api.sandbox.midtrans.com/v2/' : 'https://api.midtrans.com/v2/') . rawurlencode($orderId) . '/cancel',
+            CURLOPT_SSL_VERIFYHOST => 2,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 20,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_HTTPHEADER => ['Accept: application/json', 'Content-Type: application/json', 'Authorization: Basic ' . base64_encode($serverKey . ':')],
+        ]);
+        $response = curl_exec($curl);
+        $curlError = curl_error($curl);
+        $httpCode = (int)curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+        $gateway = json_decode((string)$response, true);
+        if ($curlError !== '' || $httpCode < 200 || $httpCode >= 300 || !is_array($gateway)) {
+            log_message('error', 'Customer order cancellation request failed for {order}: HTTP {http}; {error}', [
+                'order' => $orderId,
+                'http' => $httpCode,
+                'error' => $curlError,
+            ]);
+            session()->setFlashdata('order_action_message', 'Pembatalan belum terkonfirmasi. Periksa status pesanan sebelum mencoba lagi.');
+            return redirect()->back();
+        }
+
+        $newStatus = PaymentSafety::notificationStatus($gateway);
+        if ($newStatus !== 'Dibatalkan') {
+            session()->setFlashdata('order_action_message', 'Midtrans belum mengonfirmasi pembatalan. Status pesanan tetap mengikuti pembaruan pembayaran.');
+            return redirect()->back();
+        }
+
+        $db = \Config\Database::connect();
+        $db->transBegin();
+        try {
+            $locked = PaymentSafety::lockedOrder($db, $orderId);
+            if (!$locked || !PaymentSafety::canTransition((string)$locked['status'], 'Dibatalkan')) {
+                $db->transRollback();
+                session()->setFlashdata('order_action_message', 'Status pesanan berubah saat pembatalan diproses. Periksa status terbaru.');
+                return redirect()->back();
+            }
+            $dataMid = json_decode((string)($locked['data_mid'] ?? ''), true) ?: [];
+            $dataMid = array_merge($dataMid, $gateway);
+            $dataMid['_app_payment_environment'] = $environment;
+            if (!PaymentSafety::claim($db, $orderId, (string)$locked['status'], 'Dibatalkan', $dataMid) || !$db->transStatus()) {
+                throw new \RuntimeException('Could not apply buyer cancellation transition');
+            }
+            (new \App\Services\Payments\StockReservationService($db))->release($orderId);
+            $db->transCommit();
+        } catch (\Throwable $error) {
+            $db->transRollback();
+            log_message('error', 'Customer cancellation transition failed for {order}: {error}', [
+                'order' => $orderId,
+                'error' => $error->getMessage(),
+            ]);
+            session()->setFlashdata('order_action_message', 'Pembatalan sedang disinkronkan. Cek status kembali beberapa saat lagi.');
+            return redirect()->back();
+        }
+
+        $updatedOrder = $this->pemesananModel->getPemesanan($orderId);
+        if ($updatedOrder) {
+            $this->deleteOrderFromIlenaSistem($updatedOrder);
+            $this->sendOrderPaymentEmail($updatedOrder, 'Dibatalkan');
+        }
+        return redirect()->to('/orderdetail/dibatalkan?idorder=' . rawurlencode($orderId)
+            . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $updatedOrder)));
     }
 
     public function cancelOrder($id_midtrans)
@@ -2959,6 +3177,9 @@ class Pages extends BaseController
     public function order($id_order = false)
     {
         $pemesanan = $this->pemesananModel->getPemesanan($id_order);
+        if ($id_order && (!$pemesanan || !$this->canAccessOrder($pemesanan))) {
+            return $this->response->setStatusCode(404)->setBody('Pesanan tidak ditemukan.');
+        }
         $carapembayaran = [
             'bca' => [
                 [
@@ -3184,8 +3405,12 @@ class Pages extends BaseController
     {
         $status = rawurldecode($status);
         $idOrder = (string)($this->request->getGet('idorder') ?? '');
+        $order = null;
         if ($idOrder !== '') {
             $order = $this->pemesananModel->getPemesanan($idOrder);
+            if ($order && !$this->canAccessOrder($order)) {
+                return $this->response->setStatusCode(404)->setBody('Pesanan tidak ditemukan.');
+            }
             $pemesanan = $order ? [$order] : [];
             $pemesananAll = $pemesanan;
             if ($order) {
@@ -3430,6 +3655,7 @@ class Pages extends BaseController
         });
         foreach ($pemesanan as $ind_p => $p) {
             $pemesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
+            unset($pemesanan[$ind_p]['data_mid']['_app_order_access_token']);
             $pemesanan[$ind_p]['kurir'] = json_decode($p['kurir'], true);
             $pemesanan[$ind_p]['items'] = json_decode($p['items'], true);
             $items = $pemesanan[$ind_p]['items'];
@@ -3442,6 +3668,7 @@ class Pages extends BaseController
         }
         foreach ($pemesananAll as $ind_p => $p) {
             $pemesananAll[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
+            unset($pemesananAll[$ind_p]['data_mid']['_app_order_access_token']);
             $pemesananAll[$ind_p]['kurir'] = json_decode($p['kurir'], true);
             $pemesananAll[$ind_p]['items'] = json_decode($p['items'], true);
             $items = $pemesananAll[$ind_p]['items'];
@@ -3463,6 +3690,8 @@ class Pages extends BaseController
             'carapembayaran' => $carapembayaran,
             'status' => $status,
             'statusSelain' => $statusSelain,
+            'orderAccessToken' => $order ? $this->orderAccessToken((string)$order['id_midtrans'], $order) : '',
+            'orderActionMessage' => session()->getFlashdata('order_action_message'),
         ];
         switch (strtolower($status)) {
             case 'kadaluarsa':
@@ -3494,6 +3723,9 @@ class Pages extends BaseController
     public function invoice($id_mid)
     {
         $transaksi = $this->pemesananModel->getPemesanan($id_mid);
+        if (!$transaksi || !$this->canAccessOrder($transaksi)) {
+            return $this->response->setStatusCode(404)->setBody('Pesanan tidak ditemukan.');
+        }
         // dd($transaksi);
         $arr = [
             'id' => $transaksi['id'],
@@ -3511,6 +3743,7 @@ class Pages extends BaseController
             ],
             'data_mid' => json_decode($transaksi['data_mid'], true),
         ];
+        unset($arr['data_mid']['_app_order_access_token']);
         foreach ($arr['items'] as $ind_i => $i) {
             $itemId = $i['id'] ?? null;
             if (!in_array($itemId, ['Voucher', 'Biaya Admin', 'Flash Sale'], true)) {
@@ -4582,7 +4815,7 @@ class Pages extends BaseController
         return view('pages/kebijakan', $data);
     }
 
-    public function gantinamakekecil($batchSize = 20)
+    private function gantinamakekecil($batchSize = 20)
     {
         try {
             // Hitung total produk

@@ -14,7 +14,7 @@ class FixingController extends BaseController
         $this->barangModel = new BarangModel();
     }
 
-    public function fixIdBarang()
+    private function fixIdBarang()
 {
     $barangAll = $this->barangModel->findAll();
     $checking = [];

@@ -63,7 +63,7 @@ $routes->get('/payment/unfinish', 'Pages::paymentUnfinishRedirect');
 $routes->get('/payment/error', 'Pages::paymentErrorRedirect');
 $routes->get('/payment/status/(:any)', 'Pages::paymentStatus/$1');
 $routes->get('/payment/(:any)', 'Pages::payment/$1', ['filter' => 'customerShippingFilter']);
-$routes->get('/actionpaycore/(:any)', 'Pages::actionPayCore/$1', ['filter' => 'customerShippingFilter']);
+$routes->post('/actionpaycore/(:any)', 'Pages::actionPayCore/$1', ['filter' => ['customerShippingFilter', 'csrf']]);
 $routes->post('/updatetransaction', 'Pages::updateTransaction');
 $routes->post('/midtrans/notification', 'Pages::midtransNotificationDispatcher');
 
@@ -74,6 +74,7 @@ $routes->get('/wishlisttocart', 'Pages::wishlistToCart', ['filter' => 'customerF
 
 $routes->get('/order', 'Pages::order', ['filter' => 'customerFilter']);
 $routes->get('/order/(:any)', 'Pages::order/$1', ['filter' => 'customerFilter']);
+$routes->post('/order/cancel/(:any)', 'Pages::cancelCustomerOrder/$1', ['filter' => ['customerFilter', 'csrf']]);
 $routes->get('/orderdetail/(:any)', 'Pages::orderDetail/$1', ['filter' => 'customerFilter']);
 $routes->get('/invoice/(:any)', 'Pages::invoice/$1', ['filter' => 'customerFilter']);
 $routes->get('/account', 'Pages::account', ['filter' => 'customerLoginFilter']);
@@ -304,13 +305,6 @@ $routes->post('/gudang/ajukanprint', 'GudangController::ajukanPrint', ['filter' 
 
 
 // ==================== Fixing ====================
-$routes->get('/fixmutasi', 'GudangController::fixMutasi');
-$routes->get('/fixnama', 'Pages::fixNama');
-$routes->get('/fixid', 'Pages::fixId');
-$routes->get('/gantijenis/(:any)/(:any)', 'Pages::gantiJenis/$1/$2');
-$routes->get('/fixset', 'Pages::fixSet');
-$routes->get('/gantinamakekecil', 'Pages::gantinamakekecil');
-$routes->get('/fix-id-barang', 'FixingController::fixIdBarang');
 
 
 // ==================== Marketplace ====================

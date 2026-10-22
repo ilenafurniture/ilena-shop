@@ -164,7 +164,7 @@ class GudangController extends BaseController
         ];
         return view('gudang/mutasi', $data);
     }
-    public function fixMutasi()
+    private function fixMutasi()
     {
         $mutasi = $this->kartuStokModel->findAll();
         foreach ($mutasi as $m) {

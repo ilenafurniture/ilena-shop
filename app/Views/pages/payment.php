@@ -596,9 +596,16 @@ hr {
 
 <script>
 function bayar(e) {
-    e.target.innerHTML = "Loading";
+    e.preventDefault();
+    const button = e.currentTarget || e.target;
+    if (button.dataset.submitting === '1') return;
+    button.dataset.submitting = '1';
+    button.disabled = true;
+    button.innerHTML = "Memproses…";
     const timeStamp = Math.floor(Date.now() / 1000);
-    window.location.href = "/actionpaycore/" + btoa(timeStamp + ":" + "<?= $indexAddress; ?>");
+    const form = document.getElementById('checkout-submit-form');
+    form.action = "/actionpaycore/" + btoa(timeStamp + ":" + "<?= $indexAddress; ?>");
+    form.submit();
 }
 
 function toggleRedeem() {
@@ -629,5 +636,7 @@ function toggleVoucherList() {
 })();
 </script>
 
+
+<form id="checkout-submit-form" method="post" hidden><?= function_exists('csrf_field') ? csrf_field() : '' ?><input type="hidden" name="tokencc" id="checkout-tokencc" value=""><input type="hidden" name="checkout_nonce" value="<?= esc($checkoutNonce ?? '', 'attr'); ?>"></form>
 
 <?= $this->endSection(); ?>

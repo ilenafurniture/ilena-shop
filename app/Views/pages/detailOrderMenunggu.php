@@ -9,7 +9,7 @@ if (count($pemesananSelectedArr) <= 0) {
 }
 $pemesananSelected = array_values($pemesananSelectedArr)[0];
 if (in_array($pemesananSelected['status'], $statusSelain)) {
-    header('Location: ' . '/orderdetail/' . strtolower($pemesananSelected['status']) . '?idorder=' . $id_order);
+    header('Location: ' . '/orderdetail/' . strtolower($pemesananSelected['status']) . '?idorder=' . $id_order . '&access_token=' . rawurlencode((string)($_GET['access_token'] ?? '')));
     die();
 }
 
@@ -566,8 +566,14 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
         <hr class="hr">
 
         <!-- CTA -->
-        <div class="pad cta-sticky" style="padding-top:0;">
+        <div class="pad cta-sticky" style="padding-top:0; display:grid; gap:8px;">
             <a href="#" id="btnCekPembayaran" class="btn-default-merah">Saya sudah membayar</a>
+            <form method="post" action="/order/cancel/<?= rawurlencode($id_order); ?>?access_token=<?= rawurlencode($orderAccessToken ?? ''); ?>"
+                onsubmit="return confirm('Batalkan pesanan ini? Jika pembayaran sudah berhasil, status tidak dapat dibatalkan dari sini.');">
+                <?= function_exists('csrf_field') ? csrf_field() : '' ?>
+                <button type="submit" class="btn btn-outline-secondary w-100" style="min-height:48px;">Batalkan pesanan</button>
+            </form>
+            <?php if (!empty($orderActionMessage)): ?><p class="muted m-0" role="status"><?= esc($orderActionMessage); ?></p><?php endif; ?>
         </div>
     </div>
 </div>
@@ -623,6 +629,7 @@ function copytext(text) {
 }
 
 const orderId = <?= json_encode($id_order) ?>;
+const orderAccessToken = <?= json_encode($orderAccessToken ?? '') ?>;
 const btnCekPembayaran = document.getElementById('btnCekPembayaran');
 
 function showOrderToast(text) {
@@ -636,7 +643,7 @@ function showOrderToast(text) {
 async function cekStatusPembayaran(manual = false) {
     if (!orderId) return;
     try {
-        const res = await fetch('/payment/status/' + encodeURIComponent(orderId), {
+        const res = await fetch('/payment/status/' + encodeURIComponent(orderId) + '?access_token=' + encodeURIComponent(orderAccessToken), {
             headers: { 'Accept': 'application/json' },
             cache: 'no-store'
         });

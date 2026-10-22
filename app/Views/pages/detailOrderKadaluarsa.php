@@ -13,7 +13,7 @@ $pemesananSelected = array_values($pemesananSelectedArr)[0];
 
 // Cek jika status pesanan tidak sesuai, redirect ke halaman yang sesuai
 if (in_array($pemesananSelected['status'], $statusSelain)) {
-    header('Location: '.'/orderdetail/'.strtolower($pemesananSelected['status']).'?idorder='.$id_order);
+    header('Location: '.'/orderdetail/'.strtolower($pemesananSelected['status']).'?idorder='.$id_order.'&access_token='.rawurlencode((string)($_GET['access_token'] ?? '')));
     die();
 }
 
