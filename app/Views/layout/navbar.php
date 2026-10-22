@@ -13,7 +13,7 @@
                 </a>
                 <span class="navbar-brand-divider" aria-hidden="true"></span>
                 <a class="navbar-brand-lunarea" href="https://lunareafurniture.com/" target="_blank" rel="noopener noreferrer" aria-label="Kunjungi Lunarea Furniture">
-                    <img src="<?= base_url('/img/logolunareaputih.webp'); ?>" alt="Lunarea Furniture" width="180" height="20" decoding="async">
+                    <img src="<?= base_url('/img/logolunareanavbar.webp'); ?>" alt="Lunarea Furniture" width="180" height="20" decoding="async">
                 </a>
             </div>
             <div style="width: calc(100% / 3)" class="d-flex justify-content-end">
@@ -58,7 +58,7 @@
     .navbar-brand-pair a { display:inline-flex; align-items:center; justify-content:center; flex:0 1 auto; }
     .navbar-brand-ilena img { display:block; width:auto; max-width:150px; height:30px; object-fit:contain; }
     .navbar-brand-divider { width:1px; height:25px; flex:0 0 1px; background:rgba(255,255,255,.55); }
-    .navbar-brand-lunarea { padding:4px 6px; border-radius:3px; background:#faf9f6; line-height:0; }
+    .navbar-brand-lunarea { padding:0; background:transparent; line-height:0; }
     .navbar-brand-lunarea img { display:block; width:auto; max-width:180px; height:20px; object-fit:contain; }
     @media (max-width:1100px) {
         .navbar-brand-pair { gap:7px; }
