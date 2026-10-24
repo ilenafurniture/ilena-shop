@@ -123,11 +123,15 @@ class R2ProductImageService
         }
     }
 
-    public function redirectResponse(string $key)
+    public function redirectResponse(string $key, string $version = '')
     {
         $url = $this->publicUrl($key);
         if (!$url) {
             return null;
+        }
+        $version = preg_replace('/[^A-Za-z0-9_-]/', '', $version);
+        if ($version !== '') {
+            $url .= (str_contains($url, '?') ? '&' : '?') . 'v=' . rawurlencode($version);
         }
         return redirect()->to($url, 302)->setHeader('Cache-Control', 'public, max-age=300');
     }

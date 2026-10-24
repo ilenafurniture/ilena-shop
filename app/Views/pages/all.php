@@ -27,7 +27,22 @@ $productCoverUrl = function (array $product): string {
     $dbVersion = !empty($product['tgl_update']) ? (int) strtotime((string) $product['tgl_update']) : 0;
     // Serve an existing local 300px thumbnail directly, bypassing the image
     // controller (and its remote-storage existence checks) for catalog tiles.
-    if (in_array($sourceRelative, ['img/barang/300/' . $id . '.webp', 'uploads/product-images/300/' . $id . '.webp'], true)) {
+    $isLocalThumbnail = in_array($sourceRelative, ['img/barang/300/' . $id . '.webp', 'uploads/product-images/300/' . $id . '.webp'], true);
+    $fullSizeMtime = 0;
+    foreach ([
+        'uploads/product-images/1000/' . $id . '-' . $slot . '.webp',
+        'uploads/product-images/3000/' . $id . '-' . $slot . '.webp',
+        'img/barang/1000/' . $id . '-' . $slot . '.webp',
+        'img/barang/3000/' . $id . '-' . $slot . '.webp',
+    ] as $fullSizeCandidate) {
+        if (is_file(FCPATH . $fullSizeCandidate)) {
+            $fullSizeMtime = max($fullSizeMtime, (int) filemtime(FCPATH . $fullSizeCandidate));
+        }
+    }
+    $imageStorage = strtolower((string) env('PRODUCT_IMAGE_STORAGE', 'local'));
+    $thumbnailIsCurrent = !$fullSizeMtime || $fileVersion >= $fullSizeMtime;
+    $fileVersion = max($fileVersion, $fullSizeMtime);
+    if ($imageStorage !== 'r2' && $isLocalThumbnail && $thumbnailIsCurrent) {
         return base_url($sourceRelative) . '?v=' . max($fileVersion, $dbVersion);
     }
     return base_url('product-cover/' . $id) . '?slot=' . urlencode($slot) . '&size=300&v=' . max($fileVersion, $dbVersion);

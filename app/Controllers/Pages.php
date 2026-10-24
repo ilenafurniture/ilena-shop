@@ -5412,7 +5412,10 @@ class Pages extends BaseController
                                 ->setBody($object['body']);
                         }
                     }
-                    $redirect = $this->r2ProductImages->redirectResponse($key);
+                    $redirect = $this->r2ProductImages->redirectResponse(
+                        $key,
+                        (string) $this->request->getGet('v'),
+                    );
                     if ($redirect) {
                         return $redirect;
                     }
@@ -5431,9 +5434,18 @@ class Pages extends BaseController
         $source3000 = $publicPath("img/barang/3000/{$safeId}-{$slot}.webp");
         $fallback300 = $publicPath("img/barang/300/{$safeId}.webp");
         $thumbnailSource = is_file($upload300) ? $upload300 : (is_file($fallback300) ? $fallback300 : null);
-        $source = $preferThumbnail && $thumbnailSource
+        $fullSizeSource = is_file($upload1000) ? $upload1000 : (is_file($upload3000) ? $upload3000 : (is_file($source1000) ? $source1000 : (is_file($source3000) ? $source3000 : null)));
+        $thumbnailIsCurrent = $thumbnailSource !== null
+            && ($fullSizeSource === null || filemtime($thumbnailSource) >= filemtime($fullSizeSource));
+        // A stale 300px derivative is safe to remove when its full-resolution source exists.
+        if ($thumbnailSource !== null && $fullSizeSource !== null && !$thumbnailIsCurrent
+            && is_writable(dirname($thumbnailSource)) && @unlink($thumbnailSource)
+        ) {
+            $thumbnailSource = null;
+        }
+        $source = $preferThumbnail && $thumbnailIsCurrent
             ? $thumbnailSource
-            : (is_file($upload1000) ? $upload1000 : (is_file($upload3000) ? $upload3000 : (is_file($source1000) ? $source1000 : (is_file($source3000) ? $source3000 : null))));
+            : $fullSizeSource;
 
         if (!$source && $product && !empty($product['varian'])) {
             $varian = json_decode($product['varian'], true) ?: [];
