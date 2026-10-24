@@ -189,26 +189,42 @@ body.ilena-storefront :where(input.form-control, select.form-control, textarea.f
 
 body.ilena-storefront .card1 {
     min-width: 0;
-    overflow: hidden;
-    padding: 10px 10px 16px;
-    border: 1px solid rgba(66, 54, 42, .07);
-    border-radius: 18px;
-    background: var(--ilena-surface);
-    box-shadow: 0 4px 16px rgba(45, 35, 25, .035);
-    transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    overflow: visible;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    transition: opacity .2s ease;
 }
 
 body.ilena-storefront .card1:hover {
-    transform: translateY(-3px);
-    border-color: rgba(232, 74, 73, .18);
-    box-shadow: var(--ilena-shadow);
+    transform: none;
+    border: 0;
+    box-shadow: none;
+}
+
+body.ilena-storefront .container-card1 {
+    column-gap: clamp(16px, 2.4vw, 34px);
+    row-gap: clamp(30px, 4vw, 54px);
+}
+
+body.ilena-storefront .card1 .gambar {
+    display: block;
+    overflow: hidden;
+    background: #f3efe9;
 }
 
 body.ilena-storefront .card1 img {
-    aspect-ratio: 4 / 4.25;
-    margin-bottom: 12px;
-    border-radius: 12px;
-    background: #f4f0eb;
+    aspect-ratio: 4 / 5;
+    margin-bottom: 0;
+    border-radius: 0;
+    background: transparent;
+    transition: transform .45s cubic-bezier(.2, .7, .2, 1);
+}
+
+body.ilena-storefront .card1:hover img {
+    transform: scale(1.025);
 }
 
 body.ilena-storefront .card1 h5 {
@@ -217,7 +233,7 @@ body.ilena-storefront .card1 h5 {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     min-height: 2.6em;
-    margin: 0 0 6px;
+    margin: 10px 0 5px;
     color: var(--ilena-ink);
     font-size: clamp(15px, 1.4vw, 18px);
     font-weight: 600;
@@ -236,13 +252,20 @@ body.ilena-storefront .card1 .card1-btn-img {
     width: 42px;
     height: 42px;
     place-items: center;
-    border: 1px solid rgba(41, 38, 34, .08);
-    box-shadow: 0 4px 12px rgba(41, 38, 34, .10);
+    border: 0;
+    box-shadow: none;
 }
 
 body.ilena-storefront .card1 .card1-btn-img:hover {
     background: var(--merah);
     color: #fff;
+}
+
+body.ilena-storefront .card {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
 }
 
 body.ilena-storefront .slider {
@@ -286,9 +309,12 @@ body.ilena-storefront .product-detail-soft img.img-detail-prev {
 }
 
 body.ilena-storefront .product-detail-soft #container-market {
-    border-color: var(--ilena-line);
-    border-radius: 16px;
-    background: #fff;
+    border: 0;
+    border-top: 1px solid var(--ilena-line);
+    border-bottom: 1px solid var(--ilena-line);
+    border-radius: 0;
+    padding: 14px 0;
+    background: transparent;
 }
 
 body.ilena-storefront .breadcrumb {
@@ -314,13 +340,16 @@ body.ilena-storefront .breadcrumb a:hover {
     }
 
     body.ilena-storefront .card1 {
-        padding: 7px 7px 12px;
-        border-radius: 14px;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
     }
 
     body.ilena-storefront .card1 img {
-        margin-bottom: 9px;
-        border-radius: 10px;
+        margin-bottom: 0;
+        border-radius: 0;
     }
 
     body.ilena-storefront .card1 .card1-content-img {
