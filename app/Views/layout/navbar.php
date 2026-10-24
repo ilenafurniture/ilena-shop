@@ -49,18 +49,18 @@
     </div>
 </nav>
 <style>
-    .navbar-brand-pair { width: calc(100% / 3); display:flex; align-items:center; justify-content:center; gap:18px; min-width:0; }
+    .navbar-brand-pair { width: calc(100% / 3); display:flex; align-items:center; justify-content:center; gap:14px; min-width:0; }
     .navbar-brand-pair a, .navbar-brand-pair > details { display:inline-flex; align-items:center; justify-content:center; flex:0 1 auto; }
-    .navbar-brand-ilena img { display:block; width:auto; max-width:150px; height:30px; object-fit:contain; }
+    .navbar-brand-ilena img { display:block; width:auto; max-width:126px; height:26px; object-fit:contain; }
     .navbar-brand-divider { width:1px; height:25px; flex:0 0 1px; background:rgba(255,255,255,.55); }
     .navbar-lunarea-popover { position:relative; z-index:101; }
     .navbar-brand-lunarea { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:5px 0; border:0; background:transparent; line-height:0; }
-    .navbar-brand-lunarea img { display:block; width:150px; height:30px; object-fit:contain; }
+    .navbar-brand-lunarea img { display:block; width:124px; height:26px; object-fit:contain; }
     @media (max-width:1100px) {
-        .navbar-brand-pair { gap:12px; }
-        .navbar-brand-ilena img { height:24px; max-width:125px; }
+        .navbar-brand-pair { gap:10px; }
+        .navbar-brand-ilena img { height:22px; max-width:112px; }
         .navbar-brand-divider { height:20px; }
-        .navbar-brand-lunarea img { width:126px; height:26px; }
+        .navbar-brand-lunarea img { width:110px; height:23px; }
     }
     body.ilena-storefront .navbar-lunarea-popover .ilena-lunarea-popover__panel {
         top:calc(100% + 8px); bottom:auto; left:50%; transform:translateX(-50%);
