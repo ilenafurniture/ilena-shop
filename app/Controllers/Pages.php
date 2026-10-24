@@ -4084,10 +4084,12 @@ class Pages extends BaseController
 
     public function login()
     {
+        $authFormGuard = new \App\Services\Auth\AuthFormGuard();
         $data = [
             'title' => 'Akun',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
+            'authFormNonce' => $authFormGuard->issue('login'),
             'val' => [
                 'msg' => session()->getFlashdata('msg'),
                 'val_email' => session()->getFlashdata('val-email'),
@@ -4099,6 +4101,26 @@ class Pages extends BaseController
     }
     public function actionLogin()
     {
+        $emailInput = $this->request->getPost('email');
+        $emailIdentity = is_string($emailInput) ? trim($emailInput) : '';
+        $guard = new \App\Services\Auth\AuthFormGuard();
+        $validForm = $guard->verify('login', $this->request->getPost('auth_form_nonce'), [
+            $this->request->getPost('company_website'),
+        ]);
+        if (!$validForm) {
+            session()->setFlashdata('msg', 'Form login kedaluwarsa. Silakan muat ulang halaman dan coba lagi.');
+            return redirect()->to('/login');
+        }
+        if (!(new \App\Services\Auth\AuthAttemptLimiter())->allow('login', (string)$this->request->getIPAddress(), $emailIdentity, 20, 8, 900)) {
+            session()->setFlashdata('msg', 'Terlalu banyak percobaan login. Tunggu beberapa saat lalu coba lagi.');
+            return redirect()->to('/login');
+        }
+        $captchaError = (new \App\Services\Auth\RecaptchaVerifier())->error($this->request->getPost('g-recaptcha-response'));
+        if ($captchaError !== null) {
+            session()->setFlashdata('msg', $captchaError);
+            return redirect()->to('/login')->withInput();
+        }
+
         if (!$this->validate([
             'email' => [
                 'rules' => 'required',
@@ -4252,10 +4274,12 @@ class Pages extends BaseController
     }
     public function register()
     {
+        $authFormGuard = new \App\Services\Auth\AuthFormGuard();
         $data = [
             'title' => 'Membuat Akun',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
+            'authFormNonce' => $authFormGuard->issue('register'),
             'val' => [
                 'val_nama' => session()->getFlashdata('val-nama'),
                 'val_email' => session()->getFlashdata('val-email'),
@@ -4270,6 +4294,28 @@ class Pages extends BaseController
     }
     public function actionRegister()
     {
+        $emailInput = $this->request->getPost('email');
+        $emailIdentity = is_string($emailInput) ? strtolower(trim($emailInput)) : '';
+        $guard = new \App\Services\Auth\AuthFormGuard();
+        $validForm = $guard->verify('register', $this->request->getPost('auth_form_nonce'), [
+            $this->request->getPost('website'),
+            $this->request->getPost('ref_code'),
+            $this->request->getPost('company_website'),
+        ], 3);
+        if (!$validForm) {
+            session()->setFlashdata('msg', 'Form pendaftaran kedaluwarsa atau tidak valid. Silakan muat ulang halaman.');
+            return redirect()->to('/register');
+        }
+        if (!(new \App\Services\Auth\AuthAttemptLimiter())->allow('register', (string)$this->request->getIPAddress(), $emailIdentity, 8, 3, 3600)) {
+            session()->setFlashdata('msg', 'Terlalu banyak percobaan pendaftaran. Coba lagi nanti.');
+            return redirect()->to('/register')->withInput();
+        }
+        $captchaError = (new \App\Services\Auth\RecaptchaVerifier())->error($this->request->getPost('g-recaptcha-response'));
+        if ($captchaError !== null) {
+            session()->setFlashdata('msg', $captchaError);
+            return redirect()->to('/register')->withInput();
+        }
+
         if (!$this->validate([
             'nama' => [
                 'rules' => 'required',
@@ -4516,6 +4562,10 @@ class Pages extends BaseController
         }
         if ((string)($getUser['active'] ?? '1') !== '0') {
             return redirect()->to('/');
+        }
+        if (!(new \App\Services\Auth\AuthAttemptLimiter())->allow('otp_resend', (string)$this->request->getIPAddress(), (string)$emailUser, 10, 5, 3600)) {
+            session()->setFlashdata('msg', 'Terlalu banyak permintaan kode verifikasi. Coba lagi nanti.');
+            return redirect()->to('/verify');
         }
         $lastSent = (int)session()->get('otp_last_sent_at');
         if ($lastSent > 0 && time() - $lastSent < 60) {

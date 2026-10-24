@@ -68,6 +68,7 @@
 
             <form id="registerForm" action="/actionregister" method="post" autocomplete="off">
                 <?= csrf_field(); ?>
+                <input type="hidden" name="auth_form_nonce" value="<?= esc($authFormNonce ?? '', 'attr'); ?>">
                 <!-- Honeypot (TANPA mengganggu backend). Jika bot isi ini, submit akan diblok di JS -->
                 <div class="hp-wrap" aria-hidden="true">
                     <label>Website
@@ -130,6 +131,7 @@
                     </div>
                 </div>
 
+                <?= view('partials/auth_recaptcha', [], ['saveData' => false]); ?>
                 <div class="mb-3 d-flex w-100 justify-content-center">
                     <button id="btnSubmit" type="submit" class="btn btn-default btn-block" disabled>Register</button>
                 </div>

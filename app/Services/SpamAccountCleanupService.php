@@ -36,25 +36,52 @@ class SpamAccountCleanupService
         return [
             '10minutemail.com',
             '10minutemail.net',
+            '10minemail.com',
+            '1secmail.com',
             '20minutemail.com',
             '33mail.com',
             'anonaddy.com',
+            'anonaddy.me',
             'burnermail.io',
+            'disposablemail.com',
             'dispostable.com',
+            'duck.com',
+            'emailfake.com',
             'emailondeck.com',
+            'emailtemporanea.net',
             'fakeinbox.com',
+            'getairmail.com',
             'getnada.com',
             'guerrillamail.com',
+            'guerrillamailblock.com',
             'guerrillamail.net',
             'guerrillamail.org',
+            'inboxkitten.com',
+            'mail.tm',
+            'mail.gw',
+            'mailcatch.com',
             'maildrop.cc',
             'mailinator.com',
+            'mailnesia.com',
+            'mintemail.com',
             'mohmal.com',
+            'mytemp.email',
+            'mozmail.com',
+            'privaterelay.appleid.com',
+            'relay.firefox.com',
+            'simplelogin.com',
+            'simplelogin.co',
+            'simplelogin.io',
             'sharklasers.com',
+            'spam4.me',
+            'temp-mail.io',
             'temp-mail.org',
             'tempmail.com',
             'tempmail.net',
+            'tempmail.plus',
+            'tempmail.ninja',
             'tempmailo.com',
+            'throwaway.email',
             'throwawaymail.com',
             'trashmail.com',
             'yopmail.com',
@@ -67,9 +94,11 @@ class SpamAccountCleanupService
         $domain = substr(strrchr($email, '@') ?: '', 1);
         if ($domain === '') return false;
 
-        if (in_array($domain, $this->disposableDomains(), true)) {
-            return true;
+        foreach ($this->disposableDomains() as $blocked) {
+            if ($domain === $blocked || str_ends_with($domain, '.' . $blocked)) return true;
         }
+
+        if ((new \App\Services\Auth\DisposableEmailDomainList())->isListed($domain)) return true;
 
         foreach (['tempmail', 'temp-mail', 'mailinator', 'guerrillamail', 'yopmail', 'maildrop', 'throwaway', 'trashmail'] as $keyword) {
             if (str_contains($domain, $keyword)) {

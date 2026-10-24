@@ -12,6 +12,10 @@
                 <?php } ?>
                 <form id="loginForm" action="/actionlogin" method="post">
                     <?= csrf_field(); ?>
+                    <input type="hidden" name="auth_form_nonce" value="<?= esc($authFormNonce ?? '', 'attr'); ?>">
+                    <div class="hp-wrap" aria-hidden="true" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);">
+                        <label>Jangan isi kolom ini<input type="text" name="company_website" tabindex="-1" autocomplete="off"></label>
+                    </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input name="email" type="email" class="form-control <?= ($val['val_email']) ? "is-invalid" : ""; ?>" placeholder="Masukkan Email" value="<?= old('email'); ?>">
@@ -30,6 +34,7 @@
                         <label for="showPassword" class="form-label" style="font-size:small;">Tampilkan Kata
                             Sandi</label>
                     </div> -->
+                    <?= view('partials/auth_recaptcha', [], ['saveData' => false]); ?>
                     <div class="mb-3 d-flex w-100 justify-content-center">
                         <button type="submit" class="btn btn-default btn-block">Login</button>
                     </div>
