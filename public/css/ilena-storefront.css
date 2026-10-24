@@ -435,6 +435,47 @@ body.ilena-storefront .ilena-footer {
     background: #282521;
 }
 
+body.ilena-storefront .ilena-context-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    padding: 20px clamp(16px, 5vw, 64px);
+    border-top: 1px solid rgba(255, 255, 255, .12);
+    color: rgba(255, 255, 255, .76);
+    background: #282521 !important;
+    font-size: 13px;
+}
+
+body.ilena-storefront .ilena-context-footer img {
+    display: block;
+    width: 120px;
+    height: 18px;
+    object-fit: contain;
+}
+
+body.ilena-storefront .ilena-context-footer nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+}
+
+body.ilena-storefront .ilena-context-footer a {
+    color: rgba(255, 255, 255, .86);
+    text-decoration: none;
+}
+
+body.ilena-storefront .ilena-context-footer a:hover {
+    color: #fff;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+body.ilena-storefront .ilena-context-footer small {
+    color: rgba(255, 255, 255, .62);
+}
+
 body.ilena-storefront .ilena-footer__main {
     display: grid;
     grid-template-columns: minmax(190px, 1.3fr) repeat(2, minmax(125px, .8fr)) repeat(3, minmax(135px, 1fr));
@@ -616,6 +657,11 @@ body.ilena-storefront .ilena-footer--account .ilena-footer__bottom {
 }
 
 @media (max-width: 768px) {
+    body.ilena-storefront .ilena-context-footer {
+        justify-content: center;
+        text-align: center;
+    }
+
     body.ilena-storefront .navbar-hp-atas {
         box-sizing: border-box;
         width: 100%;
@@ -836,6 +882,184 @@ body.ilena-storefront .ilena-footer--account .ilena-footer__bottom {
     body.ilena-storefront .ilena-compact-header__shop {
         min-height: 38px;
         padding-inline: 10px;
+    }
+}
+
+body.ilena-storefront .ilena-store-footer {
+    margin-top: 52px;
+    padding: 0 clamp(18px, 4vw, 64px);
+    color: #f5f1eb;
+    background: #282521;
+}
+
+body.ilena-storefront .ilena-store-footer__main {
+    display: grid;
+    grid-template-columns: minmax(170px, 1.25fr) repeat(3, minmax(125px, .8fr)) minmax(220px, 1.3fr);
+    gap: clamp(22px, 3vw, 44px);
+    max-width: 1440px;
+    margin-inline: auto;
+    padding-block: 46px 34px;
+}
+
+body.ilena-storefront .ilena-store-footer__brand img {
+    width: 140px;
+    height: 22px;
+    object-fit: contain;
+}
+
+body.ilena-storefront .ilena-store-footer__brand p {
+    max-width: 230px;
+    margin: 15px 0 0;
+    color: rgba(245, 241, 235, .68);
+    font-size: 14px;
+}
+
+body.ilena-storefront .ilena-store-footer__column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+body.ilena-storefront .ilena-store-footer__column h2 {
+    margin: 0 0 6px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 650;
+    letter-spacing: .01em;
+}
+
+body.ilena-storefront .ilena-store-footer__column a,
+body.ilena-storefront .ilena-store-footer__bottom a,
+body.ilena-storefront .ilena-store-footer__sister a,
+body.ilena-storefront .ilena-store-footer__midtrans a {
+    color: rgba(245, 241, 235, .72);
+    font-size: 13px;
+    text-decoration: none;
+    text-underline-offset: 3px;
+    transition: color .18s ease;
+}
+
+body.ilena-storefront .ilena-store-footer a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+body.ilena-storefront .ilena-store-footer__marketplaces {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+}
+
+body.ilena-storefront .ilena-store-footer__payments {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+body.ilena-storefront .ilena-store-footer__payments img {
+    width: auto;
+    max-width: 48px;
+    height: 22px;
+    padding: 3px 5px;
+    border-radius: 3px;
+    background: #fff;
+    object-fit: contain;
+}
+
+body.ilena-storefront .ilena-store-footer__midtrans {
+    color: rgba(245, 241, 235, .62);
+    font-size: 12px;
+}
+
+body.ilena-storefront .ilena-store-footer__sister,
+body.ilena-storefront .ilena-store-footer__bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    max-width: 1440px;
+    margin-inline: auto;
+    border-top: 1px solid rgba(255, 255, 255, .13);
+    padding-block: 16px;
+    color: rgba(245, 241, 235, .62);
+    font-size: 12px;
+}
+
+body.ilena-storefront .ilena-store-footer__sister {
+    justify-content: flex-start;
+    gap: 12px;
+}
+
+body.ilena-storefront .ilena-store-footer__sister img {
+    display: block;
+    width: 112px;
+    height: 24px;
+    object-fit: contain;
+}
+
+body.ilena-storefront .ilena-store-footer__bottom nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+}
+
+body.ilena-storefront .ilena-store-footer__mobile-clear {
+    display: none;
+}
+
+@media (max-width: 1100px) {
+    body.ilena-storefront .ilena-store-footer__main {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    body.ilena-storefront .ilena-store-footer__brand {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 768px) {
+    body.ilena-storefront .ilena-store-footer {
+        margin-top: 34px;
+        padding-inline: 20px;
+    }
+
+    body.ilena-storefront .ilena-store-footer__main {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 28px 20px;
+        padding-block: 32px 24px;
+    }
+
+    body.ilena-storefront .ilena-store-footer__brand,
+    body.ilena-storefront .ilena-store-footer__commerce {
+        grid-column: 1 / -1;
+    }
+
+    body.ilena-storefront .ilena-store-footer__bottom {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    body.ilena-storefront .ilena-store-footer__mobile-clear {
+        display: block;
+        height: 76px;
+    }
+}
+
+@media (max-width: 420px) {
+    body.ilena-storefront .ilena-store-footer {
+        padding-inline: 16px;
+    }
+
+    body.ilena-storefront .ilena-store-footer__main {
+        gap: 24px 14px;
+    }
+
+    body.ilena-storefront .ilena-store-footer__column a {
+        font-size: 12px;
     }
 }
 
