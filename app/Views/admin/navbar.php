@@ -44,6 +44,7 @@
         'Tools' => [
             ['show' => $can('analytics'), 'label' => 'Analytics', 'icon' => 'insights', 'href' => '/analytics', 'active' => $isActivePrefix(['analytics']) || ($title ?? '') === 'Insights Analytics'],
             ['show' => $can('activity_log'), 'label' => 'Log Aktivitas', 'icon' => 'history', 'href' => '/admin/activity-log', 'active' => $isActivePrefix(['admin/activity-log']) || ($title ?? '') === 'Log Aktivitas Admin'],
+            ['show' => $can('customers'), 'label' => 'Akun Pelanggan', 'icon' => 'manage_accounts', 'href' => '/admin/customers', 'active' => $isActivePrefix(['admin/customers']) || ($title ?? '') === 'Akun Pelanggan'],
             ['show' => $can('meta_capi'), 'label' => 'Meta CAPI', 'icon' => 'track_changes', 'href' => '/admin/meta-capi', 'active' => $isActivePrefix(['admin/meta-capi']) || ($title ?? '') === 'Meta CAPI'],
             ['show' => $can('rbac'), 'label' => 'Role & Akses', 'icon' => 'admin_panel_settings', 'href' => '/admin/rbac', 'active' => $isActivePrefix(['admin/rbac']) || ($title ?? '') === 'Role & Akses Admin'],
         ],
@@ -82,10 +83,13 @@
     </nav>
 
     <div class="admin-nav-footer">
-        <a class="item-nav admin-menu-item admin-logout" href="/logout">
-            <span class="admin-menu-icon"><i class="material-icons">logout</i></span>
-            <span class="admin-menu-label">Keluar</span>
-        </a>
+        <form action="/logout" method="post" class="m-0">
+            <?= csrf_field(); ?>
+            <button type="submit" class="item-nav admin-menu-item admin-logout border-0 w-100 text-start">
+                <span class="admin-menu-icon"><i class="material-icons">logout</i></span>
+                <span class="admin-menu-label">Keluar</span>
+            </button>
+        </form>
     </div>
 </aside>
 

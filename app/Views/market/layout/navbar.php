@@ -27,9 +27,10 @@
             <p class="m-0">Keranjang</p>
         </a>
 
-        <a class="item-nav " href="/logout">
-            <i class="material-icons">exit_to_app</i>
-            <p class="m-0">Keluar</p>
-        </a>
+        <form action="/logout" method="post" class="m-0">
+            <?= csrf_field(); ?><button type="submit" class="item-nav border-0 bg-transparent">
+                <i class="material-icons">exit_to_app</i><p class="m-0">Keluar</p>
+            </button>
+        </form>
     </div>
 </div>

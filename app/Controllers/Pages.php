@@ -84,57 +84,51 @@ class Pages extends BaseController
     }
     public function getNavbarData()
     {
-        $jenis = $this->barangModel->query(
-            "SELECT 
-                subkategori AS jenis, 
-                GROUP_CONCAT(DISTINCT kategori ORDER BY kategori ASC) AS koleksi
-            FROM barang
-            GROUP BY subkategori;"
+        // Ambil satu produk representatif per pasangan subkategori/kategori
+        // dalam satu query, bukan query tambahan untuk setiap pasangan menu.
+        $produkNavbar = $this->barangModel->query(
+            "SELECT b.id, b.nama, b.deskripsi, b.varian,
+                    b.subkategori AS jenis, b.kategori AS koleksi
+             FROM barang AS b
+             INNER JOIN (
+                 SELECT subkategori, kategori, MIN(id) AS id
+                 FROM barang
+                 GROUP BY subkategori, kategori
+             ) AS representative ON representative.id = b.id
+             ORDER BY b.subkategori ASC, b.kategori ASC"
         )->getResultArray();
-
         $hasil = [];
-        foreach ($jenis as $j) {
-            $arrKoleksi = [];
-            $koleksi = explode(',', $j['koleksi']);
-
-            foreach ($koleksi as $k) {
-                $produk = $this->barangModel
-                    ->select('id')
-                    ->select('nama')
-                    ->select('deskripsi')
-                    ->select('varian')
-                    ->where(['subkategori' => $j['jenis'], 'kategori' => $k])->first();
-                if (!$produk) continue;
-                $deskripsi = json_decode($produk['deskripsi'], true) ?? [];
-                $deskripsi['perawatan'] = '';
-                $rawText = $deskripsi['deskripsi'] ?? '';
-                $text = strip_tags($rawText);
-                $text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
-                $text = trim($text);
-                $text = str_replace(["\r\n", "\r", "\n"], ' ', $text);
-                $deskripsi['deskripsi'] = $text;
-                $varian = json_decode($produk['varian'] ?? '[]', true) ?: [];
-                $coverSlot = '1';
-                if (!empty($varian[0]['urutan_gambar'])) {
-                    $slots = array_values(array_filter(array_map('trim', explode(',', (string) $varian[0]['urutan_gambar']))));
-                    $coverSlot = $slots[0] ?? '1';
-                }
-                $itemKoleksi = [
-                    'id' => $produk['id'],
-                    'nama' => $produk['nama'],
-                    'deskripsi' => $deskripsi,
-                    'koleksi' => $k,
-                    'cover_slot' => $coverSlot
-                ];
-                array_push($arrKoleksi, $itemKoleksi);
+        foreach ($produkNavbar as $produk) {
+            $jenis = (string) ($produk['jenis'] ?? '');
+            $koleksi = (string) ($produk['koleksi'] ?? '');
+            $deskripsi = json_decode($produk['deskripsi'] ?? '{}', true) ?? [];
+            $deskripsi['perawatan'] = '';
+            $rawText = $deskripsi['deskripsi'] ?? '';
+            $text = strip_tags($rawText);
+            $text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
+            $text = trim($text);
+            $text = str_replace(["\r\n", "\r", "\n"], ' ', $text);
+            $deskripsi['deskripsi'] = $text;
+            $varian = json_decode($produk['varian'] ?? '[]', true) ?: [];
+            $coverSlot = '1';
+            if (!empty($varian[0]['urutan_gambar'])) {
+                $slots = array_values(array_filter(array_map('trim', explode(',', (string) $varian[0]['urutan_gambar']))));
+                $coverSlot = $slots[0] ?? '1';
             }
+            $itemKoleksi = [
+                'id' => $produk['id'],
+                'nama' => $produk['nama'],
+                'deskripsi' => $deskripsi,
+                'koleksi' => $koleksi,
+                'cover_slot' => $coverSlot,
+            ];
 
-            if (str_contains($j['jenis'], 'dresser')) {
-                $hasil['dresser'][$j['jenis']] = $arrKoleksi;
-            } else if (str_contains($j['jenis'], 'bed')) {
-                $hasil['bed'][$j['jenis']] = $arrKoleksi;
+            if (str_contains($jenis, 'dresser')) {
+                $hasil['dresser'][$jenis][] = $itemKoleksi;
+            } elseif (str_contains($jenis, 'bed')) {
+                $hasil['bed'][$jenis][] = $itemKoleksi;
             } else {
-                $hasil[$j['jenis']] = $arrKoleksi;
+                $hasil[$jenis][] = $itemKoleksi;
             }
         }
         return $hasil;
@@ -449,11 +443,12 @@ class Pages extends BaseController
                 ->findAll(8, 0);
 
             $seluruhBarangFilter = [];
-            $seluruhNama =  [];
+            $namaTerpilih = [];
             foreach ($produkSejenis as $s) {
-                if (!in_array($s['nama'], $seluruhNama)) {
+                $namaKey = 'nama:' . (string) $s['nama'];
+                if (!isset($namaTerpilih[$namaKey])) {
                     array_push($seluruhBarangFilter, $s);
-                    array_push($seluruhNama, $s['nama']);
+                    $namaTerpilih[$namaKey] = true;
                 }
             }
 
@@ -472,7 +467,7 @@ class Pages extends BaseController
 
             // menambah pengunjung
             $this->barangModel->where(['id' => $product['id']])
-                            ->set(['pengunjung' => (int)$product['pengunjung'] + 1])
+                            ->set('pengunjung', 'COALESCE(pengunjung, 0) + 1', false)
                             ->update();
 
             return view('pages/product', $data);
@@ -529,11 +524,12 @@ class Pages extends BaseController
         $product = $this->barangModel->orderBy('nama', 'asc')->where(['active' => '1', 'kategori' => str_replace('-', ' ', $kategori)])->findAll();
 
         $seluruhBarangFilter = [];
-        $seluruhNama =  [];
+        $namaTerpilih = [];
         foreach ($product as $s) {
-            if (!in_array($s['nama'], $seluruhNama)) {
+            $namaKey = 'nama:' . (string) $s['nama'];
+            if (!isset($namaTerpilih[$namaKey])) {
                 array_push($seluruhBarangFilter, $s);
-                array_push($seluruhNama, $s['nama']);
+                $namaTerpilih[$namaKey] = true;
             }
         }
 
@@ -854,6 +850,10 @@ class Pages extends BaseController
     public function deleteAddress($ind_add, $pathname)
     {
         $alamat = $this->session->get('alamat');
+        $redirectPath = $pathname === 'account' ? '/account' : '/address';
+        if (!is_array($alamat) || !array_key_exists($ind_add, $alamat)) {
+            return redirect()->to($redirectPath);
+        }
         unset($alamat[$ind_add]);
         $alamatBaru = array_values($alamat);
         $this->session->set(['alamat' => $alamatBaru]);
@@ -861,7 +861,7 @@ class Pages extends BaseController
         $email = session()->get('email');
         if ($email)
             $this->pembeliModel->where('email', $email)->set(['alamat' => json_encode($alamatBaru)])->update();
-        return redirect()->to($pathname);
+        return redirect()->to($redirectPath);
     }
     public function editAddress($ind_add)
     {
@@ -873,9 +873,15 @@ class Pages extends BaseController
         $kecamatan = explode("-", $this->request->getVar('kecamatanEdit'));
         $kodepos = explode("-", $this->request->getVar('kodeposEdit'));
         $alamatAdd = $this->request->getVar('alamat_add');
-        $pathnameUrl = $this->request->getVar('url');
+        $pathnameUrl = in_array($this->request->getVar('url'), ['/address', '/account'], true)
+            ? $this->request->getVar('url')
+            : '/address';
 
         $alamat = $this->session->get('alamat');
+        if (!is_array($alamat) || !array_key_exists($ind_add, $alamat)) {
+            session()->setFlashdata('msg', 'Alamat tidak ditemukan.');
+            return redirect()->to($pathnameUrl);
+        }
         $email = session()->get('email');
         if ($email) {
             if ($email != $emailPem) {
@@ -1206,6 +1212,16 @@ class Pages extends BaseController
         session()->set('payment_method', $method);
         $checkoutNonce = bin2hex(random_bytes(32));
         session()->set('checkout_nonce', $checkoutNonce);
+        $shopOrderToken = null;
+        if ((string)session()->get('role') === '5'
+            && (new AdminRbacService())->hasPermission((string)session()->get('email'), 'orders_online')
+        ) {
+            $shopOrderToken = (string)session()->get('shop_order_token');
+            if ($shopOrderToken === '') {
+                $shopOrderToken = bin2hex(random_bytes(32));
+                session()->set('shop_order_token', $shopOrderToken);
+            }
+        }
         $checkoutFingerprint = hash('sha256', json_encode([
             'cart' => $keranjang,
             'address' => $alamatselected,
@@ -1262,6 +1278,7 @@ class Pages extends BaseController
             'listPaymentMethod' => ['bca','bri','bni','mandiri','permata','cimb','gopay','shopeepay','qris'],
             'grossAmount'       => $grossAmount,
             'checkoutNonce'     => $checkoutNonce,
+            'shopOrderToken'    => $shopOrderToken,
         ];
 
         $this->session->set(['alamatTerpilih' => $alamatselected]);
@@ -2425,6 +2442,9 @@ class Pages extends BaseController
         $orderId = (string)($order['id_midtrans'] ?? '');
         $orderEmail = PaymentSafety::normalizeEmail((string)($order['email'] ?? ''));
         $sessionEmail = PaymentSafety::normalizeEmail((string)session()->get('email'));
+        if ($orderEmail !== '' && (new \App\Services\AccountSuspensionService())->isSuspended($orderEmail)) {
+            return false;
+        }
         if ($sessionEmail !== '' && $sessionEmail !== 'tamu' && hash_equals($orderEmail, $sessionEmail)) return true;
         if (session()->get('isLogin') && (string)session()->get('role') === '1') return true;
         if (session()->get('isLogin') && $sessionEmail !== '' && ((new \App\Services\AdminRbacService())->hasPermission($sessionEmail, 'orders_online') || (new \App\Services\AdminRbacService())->hasPermission($sessionEmail, 'orders_offline'))) return true;
@@ -4103,13 +4123,23 @@ class Pages extends BaseController
         $sandi = $this->request->getVar('sandi');
         $getUser = $this->userModel->getUser($email);
         if (!$getUser) {
-            session()->setFlashdata('msg', 'Email tidak terdaftar');
+            session()->setFlashdata('msg', 'Email atau kata sandi salah');
             return redirect()->to('/login');
         }
         $authSandi = password_verify($sandi, $getUser['sandi']);
         if (!$authSandi) {
-            session()->setFlashdata('msg', 'Sandi salah');
+            session()->setFlashdata('msg', 'Email atau kata sandi salah');
             return redirect()->to('/login');
+        }
+
+        if (in_array((string)($getUser['role'] ?? ''), ['0', '4'], true)) {
+            $suspension = (new \App\Services\AccountSuspensionService())->state((string)$getUser['email']);
+            if ($suspension !== null) {
+                $until = new \DateTimeImmutable($suspension['until'], new \DateTimeZone('UTC'));
+                $when = $until->format('d M Y H:i') . ' UTC';
+                session()->setFlashdata('msg', 'Akun Anda ditangguhkan ' . $when . '. Silakan hubungi admin.');
+                return redirect()->to('/login');
+            }
         }
 
         $ses_data = ['alamat', 'wishlist', 'keranjang'];
@@ -4121,12 +4151,13 @@ class Pages extends BaseController
                 'role' => $getUser['role'],
                 'isLogin' => true
             ];
+            session()->regenerate(true);
             session()->set($ses_data);
             session()->setFlashdata('msg', "Email " . $email . " perlu diverifikasi");
             return redirect()->to('/verify');
         }
         $rbacService = new AdminRbacService();
-        if ((string)$getUser['role'] === '5' || (!in_array((string)$getUser['role'], ['1', '2', '3'], true) && $rbacService->hasAnyAdminAccess((string)$getUser['email']))) {
+        if ((string)$getUser['role'] === '5' || ((string)$getUser['role'] !== '1' && $rbacService->hasAnyAdminAccess((string)$getUser['email']))) {
             if (!$rbacService->hasAnyAdminAccess((string)$getUser['email'])) {
                 session()->setFlashdata('msg', 'Akses admin belum aktif untuk email ini.');
                 return redirect()->to('/login');
@@ -4138,18 +4169,42 @@ class Pages extends BaseController
                 'email' => $getUser['email'],
                 'role' => '5',
                 'admin_rbac' => true,
+                'admin_home' => $rbacService->firstAllowedAdminUrl((string)$getUser['email']),
                 'isLogin' => true
             ];
+            $buyerProfile = $this->pembeliModel->getPembeli((string)$getUser['email']);
+            if ($buyerProfile) {
+                $ses_data += [
+                    'alamat' => json_decode((string)($buyerProfile['alamat'] ?? '[]'), true) ?: [],
+                    'nohp' => $buyerProfile['nohp'] ?? '',
+                    'wishlist' => json_decode((string)($buyerProfile['wishlist'] ?? '[]'), true) ?: [],
+                    'keranjang' => json_decode((string)($buyerProfile['keranjang'] ?? '[]'), true) ?: [],
+                ];
+            }
+            session()->regenerate(true);
             session()->set($ses_data);
-            return redirect()->to($rbacService->firstAllowedAdminUrl((string)$getUser['email']));
+            return redirect()->to($ses_data['admin_home']);
         }
 
         if ($getUser['role'] == '0' || $getUser['role'] == '4') {
             $getPembeli = $this->pembeliModel->getPembeli($email);
+            if (!$getPembeli) {
+                $this->pembeliModel->insert([
+                    'nama' => ucwords(str_replace(['_', '.'], ' ', strtok((string)$email, '@') ?: 'Customer')),
+                    'email' => $email,
+                    'nohp' => '',
+                    'alamat' => json_encode([]),
+                    'wishlist' => json_encode([]),
+                    'keranjang' => json_encode([]),
+                ]);
+                $getPembeli = $this->pembeliModel->getPembeli($email) ?? [
+                    'nama' => '', 'alamat' => '[]', 'nohp' => '', 'wishlist' => '[]', 'keranjang' => '[]',
+                ];
+            }
             $ses_data = [
                 'active' => '1',
                 'email' => $getUser['email'],
-                'role' => $getUser['role'],
+                'role' => '0',
                 'nama' => $getPembeli['nama'],
                 'alamat' => json_decode($getPembeli['alamat'], true),
                 'nohp' => $getPembeli['nohp'],
@@ -4157,45 +4212,34 @@ class Pages extends BaseController
                 'keranjang' => json_decode($getPembeli['keranjang'], true),
                 'isLogin' => true
             ];
+            session()->regenerate(true);
             session()->set($ses_data);
             return redirect()->to(site_url('/'));
         } else if ($getUser['role'] == '1') {
             $ses_data = [
                 'active' => '1',
-                'nama' => 'Admin Ilena',
+                'nama' => 'Dev Ilena',
                 'email' => $getUser['email'],
                 'role' => $getUser['role'],
                 'isLogin' => true
             ];
+            session()->regenerate(true);
             session()->set($ses_data);
             return redirect()->to('/admin');
-        } else if ($getUser['role'] == '2') {
-            $nama = ucwords(str_replace("_", " ", substr($getUser['email'], 0, -4)));
-            $ses_data = [
-                'active' => '1',
-                'email' => $getUser['email'],
-                'role' => $getUser['role'],
-                'isLogin' => true,
-                'nama' => $nama
-            ];
-            session()->set($ses_data);
-            return redirect()->to('/gudang/listorder');
-        } else if ($getUser['role'] == '3') {
-            $ses_data = [
-                'active' => '1',
-                'email' => $getUser['email'],
-                'role' => $getUser['role'],
-                'isLogin' => true
-            ];
-            session()->set($ses_data);
-            return redirect()->to('/market/product');
+        } else if (in_array((string)$getUser['role'], ['2', '3'], true)) {
+            return redirect()->to('/login')->with('msg', 'Akses akun ini belum diatur. Hubungi Admin utama.');
         }
     }
     public function editSandi($path)
     {
-        $sandi = $this->request->getVar('sandi');
+        $sandi = (string) $this->request->getVar('sandi');
         $sandiKonfirm = $this->request->getVar('sandiKonfirm');
         $email = session()->get('email');
+        $path = in_array($path, ['account', 'order'], true) ? $path : 'account';
+        if (!$email || strlen($sandi) < 12 || strlen($sandi) > 4096) {
+            session()->setFlashdata('msg-sandi', 'Kata sandi harus terdiri dari 12–4096 karakter.');
+            return redirect()->to('/' . $path);
+        }
         if ($sandi != $sandiKonfirm) {
             session()->setFlashdata('msg-sandi', 'Sandi yang terkonfirmasi tidak cocok');
             return redirect()->to('/' . $path);
@@ -4244,9 +4288,11 @@ class Pages extends BaseController
                 ]
             ],
             'sandi' => [
-                'rules' => 'required',
+                'rules' => 'required|min_length[12]|max_length[4096]',
                 'errors' => [
-                    'required' => 'Sandi harus diisi'
+                    'required' => 'Sandi harus diisi',
+                    'min_length' => 'Kata sandi minimal 12 karakter',
+                    'max_length' => 'Kata sandi terlalu panjang'
                 ]
             ],
             'nohp' => [
@@ -4278,7 +4324,7 @@ class Pages extends BaseController
             return redirect()->to('/register')->withInput();
         }
 
-        $otp_number = rand(100000, 999999);
+        $otp_number = random_int(100000, 999999);
         $waktu_otp = time() + 300;
         $d = strtotime("+425 Minutes");
         $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
@@ -4293,7 +4339,11 @@ class Pages extends BaseController
         $email->setTo($emailUser);
         $email->setSubject('ILENA Store - Verifikasi OTP');
         $email->setMessage("<p>Berikut kode OTP verifikasi</p><h1>" . $otp_number . "</h1><p>Kode ini berlaku hingga " . $waktu_otp_tanggal . "</p>");
-        $email->send();
+        if (!$email->send()) {
+            log_message('error', 'Registration verification email could not be sent.');
+            session()->setFlashdata('msg', 'Email verifikasi belum dapat dikirim. Coba lagi nanti.');
+            return redirect()->to('/register')->withInput();
+        }
 
         $this->userModel->insert([
             'email' => $emailUser,
@@ -4341,7 +4391,9 @@ class Pages extends BaseController
             'active' => '0',
             'isLogin' => true
         ];
+        session()->regenerate(true);
         session()->set($ses_data);
+        session()->set('otp_last_sent_at', time());
         session()->setFlashdata('msg', "OTP telah dikirim ke email " . $emailUser . " dan berlaku hingga " . $waktu_otp_tanggal);
         return redirect()->to('/verify');
     }
@@ -4373,14 +4425,23 @@ class Pages extends BaseController
             session()->setFlashdata('msg', 'Sesi verifikasi sudah berakhir. Silakan daftar/login ulang.');
             return redirect()->to('/login');
         }
+        if (in_array((string)($getUser['role'] ?? ''), ['0', '4'], true)
+            && (new \App\Services\AccountSuspensionService())->isSuspended((string)$email)) {
+            session()->destroy();
+            session()->setFlashdata('msg', 'Akun Anda ditangguhkan. Silakan hubungi admin.');
+            return redirect()->to('/login');
+        }
+        if ((string)($getUser['active'] ?? '1') !== '0') {
+            return redirect()->to('/');
+        }
 
-        if ($otp != $getUser['otp']) {
+        if (preg_match('/^\d{6}$/', (string)$otp) !== 1 || !hash_equals((string)$getUser['otp'], (string)$otp)) {
             session()->setFlashdata('val_verify', "OTP salah");
             return redirect()->to("/verify");
         }
         $waktu_otp = time();
         if ($waktu_otp > (int)$getUser['waktu_otp']) {
-            $otp_number = rand(100000, 999999);
+            $otp_number = random_int(100000, 999999);
             $waktu_otp = time() + 300;
             $d = strtotime("+425 Minutes");
             $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
@@ -4392,12 +4453,17 @@ class Pages extends BaseController
             $sendemail->setTo($email);
             $sendemail->setSubject('ILENA Store - Verifikasi OTP');
             $sendemail->setMessage("<p>Berikut kode OTP verifikasi</p><h1>" . $otp_number . "</h1><p>Kode ini berlaku hingga " . $waktu_otp_tanggal . "</p>");
-            $sendemail->send();
+            if (!$sendemail->send()) {
+                log_message('error', 'Expired verification OTP email could not be sent.');
+                session()->setFlashdata('msg', 'Email verifikasi belum dapat dikirim. Coba lagi nanti.');
+                return redirect()->to('/verify');
+            }
 
             $this->userModel->where('email', $email)->set([
                 'otp' => $otp_number,
                 'waktu_otp' => $waktu_otp
             ])->update();
+            session()->set('otp_last_sent_at', time());
             session()->setFlashdata('msg', "OTP telah diperbarui dan sudah dikirim kembali ke email " . $email);
             return redirect()->to("/verify");
         }
@@ -4429,6 +4495,7 @@ class Pages extends BaseController
             'otp' => '0',
             'waktu_otp' => '0'
         ])->update();
+        session()->regenerate(true);
         session()->set($ses_data);
         session()->setFlashdata('msg_active', true);
         return redirect()->to(site_url('/'));
@@ -4441,8 +4508,22 @@ class Pages extends BaseController
             session()->setFlashdata('msg', 'Sesi verifikasi sudah berakhir. Silakan daftar/login ulang.');
             return redirect()->to('/login');
         }
+        if (in_array((string)($getUser['role'] ?? ''), ['0', '4'], true)
+            && (new \App\Services\AccountSuspensionService())->isSuspended((string)$emailUser)) {
+            session()->destroy();
+            session()->setFlashdata('msg', 'Akun Anda ditangguhkan. Silakan hubungi admin.');
+            return redirect()->to('/login');
+        }
+        if ((string)($getUser['active'] ?? '1') !== '0') {
+            return redirect()->to('/');
+        }
+        $lastSent = (int)session()->get('otp_last_sent_at');
+        if ($lastSent > 0 && time() - $lastSent < 60) {
+            session()->setFlashdata('msg', 'Tunggu sebentar sebelum meminta kode OTP baru.');
+            return redirect()->to('/verify');
+        }
 
-        $otp_number = rand(100000, 999999);
+        $otp_number = random_int(100000, 999999);
         $waktu_otp = time() + 300;
         $d = strtotime("+425 Minutes");
         $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
@@ -4454,12 +4535,17 @@ class Pages extends BaseController
         $email->setTo($emailUser);
         $email->setSubject('ILENA Store - Verifikasi OTP');
         $email->setMessage("<p>Berikut kode OTP verifikasi</p><h1>" . $otp_number . "</h1><p>Kode ini berlaku hingga " . $waktu_otp_tanggal . "</p>");
-        $email->send();
+        if (!$email->send()) {
+            log_message('error', 'Verification OTP resend email could not be sent.');
+            session()->setFlashdata('msg', 'Email verifikasi belum dapat dikirim. Coba lagi nanti.');
+            return redirect()->to('/verify');
+        }
 
         $this->userModel->where('email', $emailUser)->set([
             'otp' => $otp_number,
             'waktu_otp' => $waktu_otp
         ])->update();
+        session()->set('otp_last_sent_at', time());
 
         session()->setFlashdata('msg', "OTP telah dikirim ke email " . $emailUser . " dan berlaku hingga " . $waktu_otp_tanggal);
         return redirect()->to('/verify');
@@ -4886,9 +4972,13 @@ class Pages extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Gambar tidak ditemukan');
         }
 
-        $product = $this->barangModel->getBarangAdmin($safeId) ?: $this->barangModel->where('id', $safeId)->first();
-        $slot = preg_replace('/[^0-9]/', '', (string) $this->request->getGet('slot')) ?: '1';
-        if ($product && !empty($product['varian']) && !$this->request->getGet('slot')) {
+        $requestedSlot = trim((string) $this->request->getGet('slot'));
+        $product = $requestedSlot === ''
+            ? ($this->barangModel->getBarangAdmin($safeId) ?: $this->barangModel->where('id', $safeId)->first())
+            : null;
+        $slot = preg_replace('/[^0-9]/', '', $requestedSlot) ?: '1';
+        $preferThumbnail = $this->request->getGet('size') === '300';
+        if ($product && !empty($product['varian']) && $requestedSlot === '') {
             $varian = json_decode($product['varian'], true) ?: [];
             if (!empty($varian[0]['urutan_gambar'])) {
                 $slots = array_values(array_filter(array_map('trim', explode(',', (string) $varian[0]['urutan_gambar']))));
@@ -4897,10 +4987,14 @@ class Pages extends BaseController
         }
 
         if ($this->r2ProductImages->enabled()) {
-            $hasSlotRequest = (bool) $this->request->getGet('slot');
-            $r2Candidates = $hasSlotRequest
-                ? ["products/1000/{$safeId}-{$slot}.webp", "products/3000/{$safeId}-{$slot}.webp"]
-                : ["products/300/{$safeId}.webp", "products/1000/{$safeId}-{$slot}.webp", "products/3000/{$safeId}-{$slot}.webp"];
+            $hasSlotRequest = $requestedSlot !== '';
+            if ($preferThumbnail) {
+                $r2Candidates = ["products/300/{$safeId}.webp", "products/1000/{$safeId}-{$slot}.webp", "products/3000/{$safeId}-{$slot}.webp"];
+            } else {
+                $r2Candidates = $hasSlotRequest
+                    ? ["products/1000/{$safeId}-{$slot}.webp", "products/3000/{$safeId}-{$slot}.webp"]
+                    : ["products/300/{$safeId}.webp", "products/1000/{$safeId}-{$slot}.webp", "products/3000/{$safeId}-{$slot}.webp"];
+            }
             foreach ($r2Candidates as $key) {
                 if ($this->r2ProductImages->objectExists($key)) {
                     if ($this->request->getGet('proxy') === '1') {
@@ -4939,7 +5033,10 @@ class Pages extends BaseController
         $source1000 = $publicPath("img/barang/1000/{$safeId}-{$slot}.webp");
         $source3000 = $publicPath("img/barang/3000/{$safeId}-{$slot}.webp");
         $fallback300 = $publicPath("img/barang/300/{$safeId}.webp");
-        $source = is_file($upload1000) ? $upload1000 : (is_file($upload3000) ? $upload3000 : (is_file($source1000) ? $source1000 : (is_file($source3000) ? $source3000 : null)));
+        $thumbnailSource = is_file($upload300) ? $upload300 : (is_file($fallback300) ? $fallback300 : null);
+        $source = $preferThumbnail && $thumbnailSource
+            ? $thumbnailSource
+            : (is_file($upload1000) ? $upload1000 : (is_file($upload3000) ? $upload3000 : (is_file($source1000) ? $source1000 : (is_file($source3000) ? $source3000 : null))));
 
         if (!$source && $product && !empty($product['varian'])) {
             $varian = json_decode($product['varian'], true) ?: [];
@@ -4960,7 +5057,7 @@ class Pages extends BaseController
         }
 
         if (!$source) {
-            $source = is_file($upload300) ? $upload300 : (is_file($fallback300) ? $fallback300 : null);
+            $source = $thumbnailSource;
         }
 
         if (!$source) {
@@ -5022,7 +5119,10 @@ class Pages extends BaseController
         if (!is_dir($cacheDir)) { @mkdir($cacheDir, 0775, true); }
         $cacheFile = $cacheDir . DIRECTORY_SEPARATOR . $safeId . '-' . $slot . '-' . $mtime . '-' . $cacheVersion . '.webp';
 
-        if (!is_file($cacheFile) && is_writable($cacheDir)) {
+        $sourceIsRequestedThumbnail = $preferThumbnail && $thumbnailSource !== null && $source === $thumbnailSource;
+        if ($sourceIsRequestedThumbnail) {
+            $cacheFile = $source;
+        } elseif (!is_file($cacheFile) && is_writable($cacheDir)) {
             try {
                 \Config\Services::image()
                     ->withFile($source)

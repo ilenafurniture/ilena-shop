@@ -32,8 +32,8 @@
                 <div style="flex: 1;"><?= $m['debit'] ? "+" . $m['debit'] : "-" . $m['kredit']; ?></div>
                 <div style="flex: 2;"><?= $m['alasan'] ?></div>
                 <div style="flex: 1;" class="gap-2">
-                    <a class="btn-default" href="/admin/accmutasi/<?= $m['id']; ?>">Konfim</a>
-                    <a class="btn-default-merah" href="/admin/denymutasi/<?= $m['id']; ?>">Tolak</a>
+                    <form method="post" action="/admin/accmutasi/<?= $m['id']; ?>" class="d-inline"><?= csrf_field() ?><button class="btn-default" type="submit">Konfim</button></form>
+                    <form method="post" action="/admin/denymutasi/<?= $m['id']; ?>" class="d-inline"><?= csrf_field() ?><button class="btn-default-merah" type="submit">Tolak</button></form>
                 </div>
             </div>
         <?php } ?>
@@ -58,8 +58,8 @@
                 <div style="flex: 1;"><?= $m['debit'] ? "+" . $m['debit'] : "-" . $m['kredit']; ?></div>
                 <div style="flex: 2;"><?= $m['alasan'] ?></div>
                 <div style="flex: 1;" class="gap-2">
-                    <a class="btn-default" href="/admin/accmutasi/<?= $m['id']; ?>">Konfim</a>
-                    <a class="btn-default-merah" href="/admin/denymutasi/<?= $m['id']; ?>">Tolak</a>
+                    <form method="post" action="/admin/accmutasi/<?= $m['id']; ?>" class="d-inline"><?= csrf_field() ?><button class="btn-default" type="submit">Konfim</button></form>
+                    <form method="post" action="/admin/denymutasi/<?= $m['id']; ?>" class="d-inline"><?= csrf_field() ?><button class="btn-default-merah" type="submit">Tolak</button></form>
                 </div>
             </div>
         <?php } ?>

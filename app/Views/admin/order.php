@@ -235,7 +235,7 @@
                             class="material-icons">local_shipping</i></a>
                     <?php } ?>
                     <?php if ($p['status'] == 'Menunggu Pembayaran') { ?>
-                    <a class="btn" href="/cancelorder/<?= $p['id_midtrans']; ?>"><i class="material-icons"
+                    <a class="btn" href="#" onclick="cancelOrder('<?= esc($p['id_midtrans'], 'js'); ?>'); return false;"><i class="material-icons"
                             style="color: var(--merah);">cancel</i></a>
                     <?php } ?>
                 </div>
@@ -296,8 +296,8 @@
                                 onclick="openEditResi('<?= $p['id_midtrans']; ?>')"><i
                                     class="material-icons">edit</i></a>
                             <?php } ?>
-                            <?php if ($p['status'] == 'Menunggu Pembayaran' || $p['status'] == 'Proses' || $p['status'] == 'Dikirim') { ?>
-                            <a class="btn" href="/cancelorder/<?= $p['id_midtrans']; ?>"><i class="material-icons"
+                            <?php if ($p['status'] == 'Menunggu Pembayaran') { ?>
+                            <a class="btn" href="#" onclick="cancelOrder('<?= esc($p['id_midtrans'], 'js'); ?>'); return false;"><i class="material-icons"
                                     style="color: var(--merah);">cancel</i></a>
                             <?php } ?>
                         </div>
@@ -410,13 +410,32 @@ function openDetail(indP, event) {
     btnBawahElm[1].onclick = function() {
         openEditResi(pesananSelected.id_midtrans)
     }
-    btnBawahElm[2].href = "/cancelorder/" + pesananSelected.id_midtrans
+    btnBawahElm[2].href = "#"
+    btnBawahElm[2].onclick = function() { cancelOrder(pesananSelected.id_midtrans); return false; }
     btnBawahElm[3].href = "/order/" + pesananSelected.id_midtrans
     containerOffcanvasElm.classList.add("show")
 }
 
 function closeDetail() {
     containerOffcanvasElm.classList.remove("show")
+}
+
+function cancelOrder(idMidtrans) {
+    if (!window.confirm('Batalkan pesanan ini di Midtrans?')) return;
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/cancelorder/' + encodeURIComponent(idMidtrans);
+    const tokenName = document.querySelector('meta[name="csrf-token-name"]')?.content;
+    const tokenHash = document.querySelector('meta[name="csrf-token-hash"]')?.content;
+    if (tokenName && tokenHash) {
+        const token = document.createElement('input');
+        token.type = 'hidden';
+        token.name = tokenName;
+        token.value = tokenHash;
+        form.appendChild(token);
+    }
+    document.body.appendChild(form);
+    form.submit();
 }
 
 /* ====== FILTER & SEARCH (client-side, non-breaking) ====== */

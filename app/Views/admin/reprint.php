@@ -23,8 +23,8 @@
                 <div style="flex: 2;"><?= $a['id_midtrans']; ?></div>
                 <div style="flex: 2;"><?= $a['kendala']; ?></div>
                 <div style="flex: 2;" class="d-flex align-items-center gap-1">
-                    <a class="btn-default" href="/admin/accreprint/<?= $a['id_midtrans']; ?>"><i class=" material-icons">check</i></a>
-                    <a class="btn-default-merah" href="/admin/denyreprint/<?= $a['id_midtrans']; ?>"><i class=" material-icons">close</i></a>
+                    <form method="post" action="/admin/accreprint/<?= esc($a['id_midtrans'], 'attr'); ?>" class="d-inline"><?= csrf_field() ?><button class="btn-default" type="submit"><i class="material-icons">check</i></button></form>
+                    <form method="post" action="/admin/denyreprint/<?= esc($a['id_midtrans'], 'attr'); ?>" class="d-inline" onsubmit="return confirm('Tolak pengajuan cetak ulang ini?')"><?= csrf_field() ?><button class="btn-default-merah" type="submit"><i class="material-icons">close</i></button></form>
                 </div>
             </div>
         <?php } ?>

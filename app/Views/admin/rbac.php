@@ -32,7 +32,7 @@ $decodePermissions = $decodePermissions ?? static fn($v) => [];
     <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
         <div>
             <h1 class="rbac-title mb-1">Role & Akses Admin</h1>
-            <p class="rbac-muted mb-0">Buat role, centang fitur yang boleh diakses, lalu assign ke email user.</p>
+            <p class="rbac-muted mb-0">Dev mengelola role dan assignment. Role “Admin” atau “Admin Operasional” mendapat semua izin operasional; akses teknis tetap khusus Dev.</p>
         </div>
         <div class="d-flex flex-wrap gap-2">
             <form action="/admin/rbac/sync-users" method="post">
@@ -48,7 +48,7 @@ $decodePermissions = $decodePermissions ?? static fn($v) => [];
     <div class="rbac-grid mb-4">
         <form action="/admin/rbac/role" method="post" class="rbac-card p-4">
             <h2 class="h5 fw-bold mb-2">Tambah Role Baru</h2>
-            <p class="rbac-muted">Contoh: Staff Produk, Admin Order, Marketing.</p>
+            <p class="rbac-muted">Contoh: Admin Operasional, Staff Produk, atau Marketing. Gunakan nama Admin untuk paket izin operasional lengkap.</p>
 
             <div class="mb-3">
                 <label class="form-label fw-bold" for="role_name">Nama Role</label>

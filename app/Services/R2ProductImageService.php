@@ -202,7 +202,11 @@ class R2ProductImageService
             CURLOPT_HTTPHEADER => $curlHeaders,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HEADER => false,
-            CURLOPT_TIMEOUT => 30,
+            // HEAD requests only select a remote image candidate. Keep them
+            // short so a slow/unreachable R2 endpoint cannot stall page loads
+            // before local-image fallback is attempted.
+            CURLOPT_CONNECTTIMEOUT => strtoupper($method) === 'HEAD' ? 2 : 8,
+            CURLOPT_TIMEOUT => strtoupper($method) === 'HEAD' ? 4 : 30,
         ]);
         if (strtoupper($method) !== 'HEAD') {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $body);

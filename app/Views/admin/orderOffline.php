@@ -840,12 +840,13 @@ hr {
                                     <?php endif; ?>
                                     <?php else: ?>
                                     <!-- Buat SJ (FINAL, nomor global) -->
-                                    <a class="btn text-danger"
-                                        href="<?= base_url('admin/surat-jalan/offline/create/' . urlencode($p['id_pesanan'])) ?>"
-                                        onclick="return confirm('Buat Surat Jalan (FINAL) sekarang? Nomor SJ global akan dibuat. Lanjutkan?')"
-                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Buat SJ">
-                                        <i class="material-icons">add</i>
-                                    </a>
+                                    <form method="post" action="<?= base_url('admin/surat-jalan/offline/create/' . urlencode($p['id_pesanan'])) ?>" class="d-inline"
+                                        onsubmit="return confirm('Buat Surat Jalan (FINAL) sekarang? Nomor SJ global akan dibuat. Lanjutkan?')">
+                                        <?= csrf_field(); ?>
+                                        <button class="btn text-danger" type="submit" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Buat SJ">
+                                            <i class="material-icons">add</i>
+                                        </button>
+                                    </form>
                                     <?php endif; ?>
 
                                     <!-- ====== INVOICE BUTTONS (existing behavior) ====== -->
@@ -1080,7 +1081,20 @@ let pesananSelected = {};
 function alertSuccess(idPesanan) {
     const check = window.confirm(`ID pesanan ${idPesanan} sudah lunas?`);
     if (check) {
-        window.location.replace(`/admin/actionaccorderoffline/${idPesanan}`);
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/actionaccorderoffline/${encodeURIComponent(idPesanan)}`;
+        const tokenName = document.querySelector('meta[name="csrf-token-name"]')?.content;
+        const tokenHash = document.querySelector('meta[name="csrf-token-hash"]')?.content;
+        if (tokenName && tokenHash) {
+            const token = document.createElement('input');
+            token.type = 'hidden';
+            token.name = tokenName;
+            token.value = tokenHash;
+            form.appendChild(token);
+        }
+        document.body.appendChild(form);
+        form.submit();
     }
 }
 

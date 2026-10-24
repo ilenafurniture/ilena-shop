@@ -13,7 +13,10 @@ class UserModel extends Model
         'role',
         'otp',
         'active',
-        'waktu_otp'
+        'waktu_otp',
+        'suspended_until',
+        'suspension_reason',
+        'suspended_by',
     ];
 
     public function getUser($email = false)

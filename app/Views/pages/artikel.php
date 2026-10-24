@@ -49,17 +49,13 @@
                         </div>
                         <div class="d-flex gap-2 align-items-center">
                             <div class="d-flex gap-1 align-items-center">
-                                <a href="/addlikearticle/<?= $artikel['id'] ?>" class="btn-sm">
-                                    <i class="material-icons text-secondary" style="font-size: 13px;">thumb_up</i>
-                                </a>
+                                <form action="/addlikearticle/<?= esc($artikel['id'], 'url') ?>" method="post" class="m-0"><?= csrf_field(); ?><button type="submit" class="btn-sm border-0 bg-transparent"><i class="material-icons text-secondary" style="font-size: 13px;">thumb_up</i></button></form>
                                 <?php if ($artikel['suka'] > 0) { ?>
                                 <p class="m-0" style="font-size: 13px;"><?= $artikel['suka']; ?></p>
                                 <?php } ?>
                             </div>
                             <div class="d-flex gap-1 align-items-center">
-                                <a href="/addsharearticle/<?= $artikel['id'] ?>" class="btn-sm">
-                                    <i class="material-icons text-secondary" style="font-size: 13px;">share</i>
-                                </a>
+                                <form action="/addsharearticle/<?= esc($artikel['id'], 'url') ?>" method="post" class="m-0"><?= csrf_field(); ?><button type="submit" class="btn-sm border-0 bg-transparent"><i class="material-icons text-secondary" style="font-size: 13px;">share</i></button></form>
                                 <?php if ($artikel['bagikan'] > 0) { ?>
                                 <p class="m-0" style="font-size: 13px;"><?= $artikel['bagikan']; ?></p>
                                 <?php } ?>
@@ -92,9 +88,7 @@
                         </div>
                         <div class="d-flex gap-2 align-items-center">
                             <div class="d-flex gap-1 align-items-center">
-                                <a href="/addlikearticle/<?= $artikel['id'] ?>" class="btn">
-                                    <i class="material-icons text-secondary">thumb_up</i>
-                                </a>
+                                <form action="/addlikearticle/<?= esc($artikel['id'], 'url') ?>" method="post" class="m-0"><?= csrf_field(); ?><button type="submit" class="btn border-0 bg-transparent"><i class="material-icons text-secondary">thumb_up</i></button></form>
                                 <?php if ($artikel['suka'] > 0) { ?>
                                 <p class="m-0"><?= $artikel['suka']; ?></p>
                                 <?php } ?>
@@ -323,12 +317,12 @@
                                             ? '<a class="card1-btn-img" href="/admin/editproduct/' . $p['id'] . '"><i class="material-icons">edit</i></a>'
                                             : '' ?>
                                 <?= in_array($p['id'], $wishlist)
-                                            ? '<a class="card1-btn-img" href="/delwishlist/' . $p['id'] . '"><i class="material-icons">bookmark</i></a>'
-                                            : '<a class="card1-btn-img" href="/addwishlist/' . $p['id'] . '"><i class="material-icons">bookmark_border</i></a>' ?>
-                                <a id="card<?= $ind_p ?>" class="card1-btn-img"
-                                    href="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'], true)[0]['nama'] ?>/1">
-                                    <i class="material-icons">shopping_cart</i>
-                                </a>
+                                            ? '<form method="post" action="/delwishlist/' . esc($p['id'], 'attr') . '">' . csrf_field() . '<button class="card1-btn-img" type="submit"><i class="material-icons">bookmark</i></button></form>'
+                                            : '<form method="post" action="/addwishlist/' . esc($p['id'], 'attr') . '">' . csrf_field() . '<button class="card1-btn-img" type="submit"><i class="material-icons">bookmark_border</i></button></form>' ?>
+                                <form method="post" id="card<?= $ind_p ?>" class="m-0"
+                                    action="/addcart/<?= $p['id'] ?>/<?= rawurlencode(json_decode($p['varian'], true)[0]['nama']) ?>/1">
+                                    <?= csrf_field(); ?><button type="submit" class="card1-btn-img"><i class="material-icons">shopping_cart</i></button>
+                                </form>
                             </div>
                             <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="gambar">
                                 <img class="<?= $p['gambar_hover'] ? '' : 'nonhover'; ?> img-pic" id="img<?= $ind_p ?>"
@@ -356,8 +350,7 @@
                                         "img<?= $ind_p ?>");
                                     img<?= $ind_p ?>Elm.src = "/viewvar/<?= $p['id']; ?>/" + e.target
                                         .value.split("-")[0].split(",")[0];
-                                    btnKeranjang<?= $ind_p ?>Elm.href = "/addcart/<?= $p['id'] ?>/" + e
-                                        .target.value.split("-")[1] + "/1";
+                                    btnKeranjang<?= $ind_p ?>Elm.action = "/addcart/<?= $p['id'] ?>/" + encodeURIComponent(e.target.value.split("-")[1]) + "/1";
                                 })
                             });
                             </script>

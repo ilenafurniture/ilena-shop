@@ -197,8 +197,10 @@
 
     <link rel="stylesheet" href="<?= base_url('css/style.css?v=' . filemtime(FCPATH . 'css/style.css')); ?>">
     <link rel="icon" href="<?= base_url('img/logo/N.png?v=' . date('d-m-Y')); ?>" type="image/png">
+    <?php if (($title ?? '') === 'Mitra Kami') : ?>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script defer src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <?php endif; ?>
 </head>
 
 <body>
@@ -259,9 +261,9 @@
         </div>
     </div>
 
-    <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script defer crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script defer crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script defer crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 
     <?= $this->include('layout/navbar'); ?>

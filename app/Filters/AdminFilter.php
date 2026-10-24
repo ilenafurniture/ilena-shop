@@ -15,9 +15,8 @@ class AdminFilter implements FilterInterface
         if (!session()->get('isLogin')) {
             return redirect()->to('/');
         } else if(session()->get('role') == '2'){
-            return redirect()->to('/gudang/listorder');
-        }else if(session()->get('role') == '3'){
-            return redirect()->to('/market/product');
+            session()->destroy();
+            return redirect()->to('/login')->with('msg', 'Akses akun Gudang sudah dinonaktifkan. Hubungi administrator.');
         }
 
         $rbac = new AdminRbacService();

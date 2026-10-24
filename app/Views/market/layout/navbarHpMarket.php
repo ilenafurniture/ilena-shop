@@ -37,10 +37,11 @@
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
-        <a class="item-navhp" href="/logout">
-            <i class="material-icons">exit_to_app</i>
-            <p class="m-0 teks-menu">Keluar</p>
-        </a>
+        <form action="/logout" method="post" class="m-0">
+            <?= csrf_field(); ?><button type="submit" class="item-navhp border-0 bg-transparent">
+                <i class="material-icons">exit_to_app</i><p class="m-0 teks-menu">Keluar</p>
+            </button>
+        </form>
     </div>
 
 </div>

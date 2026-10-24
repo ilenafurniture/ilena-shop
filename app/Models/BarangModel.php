@@ -53,11 +53,12 @@ class BarangModel extends Model
                                  ->where(['active' => '1'])
                                  ->findAll();
             $seluruhBarangFilter = [];
-            $seluruhNama =  [];
+            $namaTerpilih = [];
             foreach ($seluruhBrang as $s) {
-                if (!in_array($s['nama'], $seluruhNama)) {
+                $namaKey = 'nama:' . (string) $s['nama'];
+                if (!isset($namaTerpilih[$namaKey])) {
                     $seluruhBarangFilter[] = $s;
-                    $seluruhNama[] = $s['nama'];
+                    $namaTerpilih[$namaKey] = true;
                 }
             }
             return $seluruhBarangFilter;

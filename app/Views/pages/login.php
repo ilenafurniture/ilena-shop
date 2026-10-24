@@ -11,6 +11,7 @@
                     </div>
                 <?php } ?>
                 <form id="loginForm" action="/actionlogin" method="post">
+                    <?= csrf_field(); ?>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input name="email" type="email" class="form-control <?= ($val['val_email']) ? "is-invalid" : ""; ?>" placeholder="Masukkan Email" value="<?= old('email'); ?>">

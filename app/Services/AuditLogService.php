@@ -229,9 +229,11 @@ class AuditLogService
     private function roleLabel($role): string
     {
         return match ((string)$role) {
-            '1' => 'Admin',
-            '2' => 'Gudang',
-            '3' => 'Marketplace',
+            '1' => 'Dev',
+            '2' => 'Role lama (dinonaktifkan)',
+            '3' => 'Role lama (perlu assignment RBAC)',
+            '4' => 'Pengguna lama',
+            '5' => 'Admin (RBAC)',
             default => 'User',
         };
     }

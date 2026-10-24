@@ -53,9 +53,9 @@ for ($i = 0; $i < 10; $i++) {
                                 <?php if ($p['id'] == $k['id_barang'] && $v['nama'] == $k['varian']) { ?>
                                     <div style="flex: 1;">
                                         <div style="display:flex; border: 1px solid grey; border-radius: 0.5em;">
-                                            <a style="width: 30px; height: 30px;" class="number-left" href="/market/reducecart/<?= $k['id'] ?>"></a>
+                                            <form method="post" action="/market/reducecart/<?= $k['id'] ?>" class="m-0"><input type="hidden" name="<?= csrf_token(); ?>" value="<?= csrf_hash(); ?>"><button type="submit" style="width: 30px; height: 30px;" class="number-left"></button></form>
                                             <input type="number" style="height: 30px;" name="jumlah" class="number-quantity" disabled value="<?= $k['jumlah'] ?>">
-                                            <a style="width: 30px; height: 30px;" class="number-right" href="/market/addcart/<?= $k['id_barang'] ?>/<?= $k['varian'] ?>"></a>
+                                            <form method="post" action="/market/addcart/<?= rawurlencode($k['id_barang']) ?>/<?= rawurlencode($k['varian']) ?>" class="m-0"><input type="hidden" name="<?= csrf_token(); ?>" value="<?= csrf_hash(); ?>"><button type="submit" style="width: 30px; height: 30px;" class="number-right"></button></form>
                                         </div>
                                     </div>
                                 <?php
@@ -63,7 +63,7 @@ for ($i = 0; $i < 10; $i++) {
                                 }
                             }
                             if (!$ketemu) {  ?>
-                                <a class="btn-default-merah" href="/market/addcart/<?= $p['id'] ?>/<?= $v['nama'] ?>">Beli</a>
+                                <form method="post" action="/market/addcart/<?= rawurlencode($p['id']) ?>/<?= rawurlencode($v['nama']) ?>" class="m-0"><input type="hidden" name="<?= csrf_token(); ?>" value="<?= csrf_hash(); ?>"><button type="submit" class="btn-default-merah">Beli</button></form>
                             <?php } ?>
 
                         </div>

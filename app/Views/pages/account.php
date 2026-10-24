@@ -13,6 +13,7 @@
         </div>
         <?php } ?>
         <form action="/editsandi/account" method="post">
+            <?= csrf_field(); ?>
             <div class="mb-1">
                 <label for="">Sandi baru Anda</label>
                 <input type="password" name="sandi" class="form-control" required>
@@ -294,7 +295,9 @@
             <span class="garis my-2"></span>
             <a href="/account" class="mb-1 btn-default-abu" style="width: 100%; text-align:center;">Profile</a>
             <a href="/order" class="mb-1 btn-default-abu" style="width: 100%; text-align:center;">Pesanan</a>
-            <a href="/logout" class="btn-default-merah" style="width: 100%; text-align:center;">Keluar</a>
+            <form action="/logout" method="post">
+                <?= csrf_field(); ?><button type="submit" class="btn-default-merah" style="width: 100%; text-align:center;">Keluar</button>
+            </form>
         </div>
     </div>
 
@@ -343,8 +346,9 @@
                 <div style="width: 100px" class="d-flex gap-3 justify-content-end align-items-start">
                     <a class="btn-teks-aja text-dark" data-bs-toggle="modal" data-bs-target="#editModal" type="button"
                         onclick="openEditModal(<?= (int)$ind_a; ?>)">Edit</a>
-                    <a href="/deleteaddress/<?= (int)$ind_a; ?>/<?= $_SERVER['REQUEST_URI']; ?>"
-                        class="btn-teks-aja">Hapus</a>
+                    <form action="/deleteaddress/<?= (int)$ind_a; ?>/account" method="post" class="m-0">
+                        <?= csrf_field(); ?><button type="submit" class="btn-teks-aja">Hapus</button>
+                    </form>
                 </div>
             </div>
             <?php } ?>
@@ -445,6 +449,7 @@
         <!-- Add Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <form action="/addaddress" method="post">
+                <?= csrf_field(); ?>
                 <input type="text" value="account" name="checkpage" style="display: none;">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -541,6 +546,7 @@
         <!-- Edit Modal -->
         <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <form method="post" id="formEdit">
+                <?= csrf_field(); ?>
                 <input type="text" value="<?= $_SERVER['REQUEST_URI']; ?>" class="d-none" name="url">
                 <div class="modal-dialog">
                     <div class="modal-content">

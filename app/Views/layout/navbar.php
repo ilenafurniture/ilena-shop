@@ -27,22 +27,13 @@
                             <i class="material-icons text-light">chevron_left</i>
                             <p class="m-0 text-light">Admin</p>
                         </a>
-                        <a href="/logout" class="btn" style="padding-right: 0"><i
-                                class="material-icons text-light">exit_to_app</i></a>
-                    <?php } else if (session()->get('role') == '2') { ?>
-                        <a href="/gudang/listorder" class="btn d-flex align-items-center">
+                        <form action="/logout" method="post" class="m-0"><input type="hidden" name="<?= csrf_token(); ?>" value="<?= csrf_hash(); ?>"><button type="submit" class="btn" style="padding-right: 0"><i class="material-icons text-light">exit_to_app</i></button></form>
+                    <?php } else if (session()->get('role') == '5') { ?>
+                        <a href="<?= esc(session()->get('admin_home') ?: '/admin'); ?>" class="btn d-flex align-items-center">
                             <i class="material-icons text-light">chevron_left</i>
-                            <p class="m-0 text-light">Gudang</p>
+                            <p class="m-0 text-light">Workspace</p>
                         </a>
-                        <a href="/logout" class="btn" style="padding-right: 0"><i
-                                class="material-icons text-light">exit_to_app</i></a>
-                    <?php } else if (session()->get('role') == '3') { ?>
-                        <a href="/market/product" class="btn d-flex align-items-center">
-                            <i class="material-icons text-light">chevron_left</i>
-                            <p class="m-0 text-light">Marketplace</p>
-                        </a>
-                        <a href="/logout" class="btn" style="padding-right: 0"><i
-                                class="material-icons text-light">exit_to_app</i></a>
+                        <form action="/logout" method="post" class="m-0"><input type="hidden" name="<?= csrf_token(); ?>" value="<?= csrf_hash(); ?>"><button type="submit" class="btn" style="padding-right: 0"><i class="material-icons text-light">exit_to_app</i></button></form>
                     <?php } ?>
                 <?php } else { ?>
                     <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
@@ -316,7 +307,7 @@
                                             width: '100%',
                                             height: '100%',
                                             }}
-                                            src={`/product-cover/${productSelected.id}?slot=${productSelected.cover_slot || '1'}&v=${Date.now()}`}
+                                            src={`/product-cover/${productSelected.id}?slot=${productSelected.cover_slot || '1'}`}
                                             loading="lazy" decoding="async" alt={`${productSelected.nama} ${productSelected.koleksi}`}
                                         />
                                     </div>

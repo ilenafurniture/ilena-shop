@@ -34,9 +34,9 @@ $routes->post('/actionfind', 'Pages::actionFind', ['filter' => 'customerFilter']
 $routes->get('/find/(:any)', 'Pages::find/$1', ['filter' => 'customerFilter']);
 
 $routes->get('/cart', 'Pages::cart', ['filter' => 'customerFilter']);
-$routes->post('/addcart/(:any)/(:any)/(:any)', 'Pages::addCart/$1/$2/$3', ['filter' => 'customerFilter']);
-$routes->get('/deletecart/(:any)', 'Pages::deleteCart/$1', ['filter' => 'customerFilter']);
-$routes->post('/reducecart/(:any)', 'Pages::reduceCart/$1', ['filter' => 'customerFilter']);
+$routes->post('/addcart/(:any)/(:any)/(:any)', 'Pages::addCart/$1/$2/$3', ['filter' => ['customerFilter', 'csrf']]);
+$routes->post('/deletecart/(:any)', 'Pages::deleteCart/$1', ['filter' => ['customerFilter', 'csrf']]);
+$routes->post('/reducecart/(:any)', 'Pages::reduceCart/$1', ['filter' => ['customerFilter', 'csrf']]);
 
 $routes->get('/getkota/(:any)', 'Pages::getKota/$1', ['filter' => 'customerFilter']);
 $routes->get('/getkec/(:any)', 'Pages::getKec/$1', ['filter' => 'customerFilter']);
@@ -45,16 +45,16 @@ $routes->get('/address', 'Pages::address', ['filter' => 'customerFilter']);
 
 // NOTE: kamu sebelumnya ga kasih filter di addaddress.
 // Kalau memang harus login customer, saran: pakai customerLoginFilter/customerFilter sesuai sistemmu.
-$routes->post('/addaddress', 'Pages::addAddress', ['filter' => 'customerFilter']);
+$routes->post('/addaddress', 'Pages::addAddress', ['filter' => ['customerFilter', 'csrf']]);
 
-$routes->get('/deleteaddress/(:any)/(:any)', 'Pages::deleteAddress/$1/$2', ['filter' => 'customerFilter']);
-$routes->post('/editaddress/(:any)', 'Pages::editAddress/$1', ['filter' => 'customerFilter']);
+$routes->post('/deleteaddress/(:any)/(:any)', 'Pages::deleteAddress/$1/$2', ['filter' => ['customerFilter', 'csrf']]);
+$routes->post('/editaddress/(:any)', 'Pages::editAddress/$1', ['filter' => ['customerFilter', 'csrf']]);
 
 // Voucher (frontend)
-$routes->post('/redeemvoucher/(:num)', 'Pages::redeemVoucher/$1', ['filter' => 'customerShippingFilter']);
-$routes->get('/usevoucher/(:any)', 'Pages::useVoucher/$1', ['filter' => 'customerShippingFilter']);
-$routes->get('/cancelvoucher/(:any)', 'Pages::cancelVoucher/$1', ['filter' => 'customerShippingFilter']);
-$routes->get('/removevoucher/(:num)', 'Pages::removeVoucher/$1', ['filter' => 'customerShippingFilter']);
+$routes->post('/redeemvoucher/(:num)', 'Pages::redeemVoucher/$1', ['filter' => ['customerShippingFilter', 'csrf']]);
+$routes->post('/usevoucher/(:any)', 'Pages::useVoucher/$1', ['filter' => ['customerShippingFilter', 'csrf']]);
+$routes->post('/cancelvoucher/(:any)', 'Pages::cancelVoucher/$1', ['filter' => ['customerShippingFilter', 'csrf']]);
+$routes->post('/removevoucher/(:num)', 'Pages::removeVoucher/$1', ['filter' => ['customerShippingFilter', 'csrf']]);
 
 $routes->get('/shipping/(:any)', 'Pages::shipping/$1', ['filter' => 'customerShippingFilter']);
 $routes->get('/payment/method/(:any)/(:any)', 'Pages::paymentMethod/$1/$2', ['filter' => 'customerShippingFilter']);
@@ -62,15 +62,15 @@ $routes->get('/payment/finish', 'Pages::paymentFinishRedirect');
 $routes->get('/payment/unfinish', 'Pages::paymentUnfinishRedirect');
 $routes->get('/payment/error', 'Pages::paymentErrorRedirect');
 $routes->get('/payment/status/(:any)', 'Pages::paymentStatus/$1');
-$routes->get('/payment/(:any)', 'Pages::payment/$1', ['filter' => 'customerShippingFilter']);
+$routes->get('/payment/(:any)', 'Pages::payment/$1', ['filter' => ['customerShippingFilter', 'csrf']]);
 $routes->post('/actionpaycore/(:any)', 'Pages::actionPayCore/$1', ['filter' => ['customerShippingFilter', 'csrf']]);
 $routes->post('/updatetransaction', 'Pages::updateTransaction');
 $routes->post('/midtrans/notification', 'Pages::midtransNotificationDispatcher');
 
 $routes->get('/wishlist', 'Pages::wishlist', ['filter' => 'customerFilter']);
-$routes->post('/addwishlist/(:any)', 'Pages::addWishlist/$1', ['filter' => 'customerFilter']);
-$routes->post('/delwishlist/(:any)', 'Pages::delWishlist/$1', ['filter' => 'customerFilter']);
-$routes->get('/wishlisttocart', 'Pages::wishlistToCart', ['filter' => 'customerFilter']);
+$routes->post('/addwishlist/(:any)', 'Pages::addWishlist/$1', ['filter' => ['customerFilter', 'csrf']]);
+$routes->post('/delwishlist/(:any)', 'Pages::delWishlist/$1', ['filter' => ['customerFilter', 'csrf']]);
+$routes->post('/wishlisttocart', 'Pages::wishlistToCart', ['filter' => ['customerFilter', 'csrf']]);
 
 $routes->get('/order', 'Pages::order', ['filter' => 'customerFilter']);
 $routes->get('/order/(:any)', 'Pages::order/$1', ['filter' => 'customerFilter']);
@@ -80,23 +80,23 @@ $routes->get('/invoice/(:any)', 'Pages::invoice/$1', ['filter' => 'customerFilte
 $routes->get('/account', 'Pages::account', ['filter' => 'customerLoginFilter']);
 
 $routes->get('/register', 'Pages::register', ['filter' => 'customerLogoutFilter']);
-$routes->post('/actionregister', 'Pages::actionRegister', ['filter' => 'customerFilter']);
+$routes->post('/actionregister', 'Pages::actionRegister', ['filter' => ['customerFilter', 'csrf']]);
 $routes->get('/verify', 'Pages::verify', ['filter' => 'customerFilter']);
-$routes->post('/actionverify', 'Pages::actionVerify', ['filter' => 'customerFilter']);
+$routes->post('/actionverify', 'Pages::actionVerify', ['filter' => ['customerFilter', 'csrf']]);
 $routes->get('/login', 'Pages::login', ['filter' => 'customerLogoutFilter']);
-$routes->post('/actionlogin', 'Pages::actionLogin', ['filter' => 'customerFilter']);
-$routes->get('/kirimotp', 'Pages::kirimOTP', ['filter' => 'customerFilter']);
-$routes->post('/editsandi/(:any)', 'Pages::editSandi/$1', ['filter' => 'customerFilter']);
-$routes->get('/logout', 'Pages::actionLogout');
-$routes->get('/cancelorder/(:any)', 'Pages::cancelOrder/$1', ['filter' => 'adminFilter']);
-$routes->get('/addlikearticle/(:any)', 'Pages::addLikeArticle/$1', ['filter' => 'customerFilter']);
-$routes->get('/addsharearticle/(:any)', 'Pages::addShareArticle/$1', ['filter' => 'customerFilter']);
+$routes->post('/actionlogin', 'Pages::actionLogin', ['filter' => ['customerFilter', 'csrf']]);
+$routes->post('/kirimotp', 'Pages::kirimOTP', ['filter' => ['customerFilter', 'csrf']]);
+$routes->post('/editsandi/(:any)', 'Pages::editSandi/$1', ['filter' => ['customerFilter', 'csrf']]);
+$routes->post('/logout', 'Pages::actionLogout', ['filter' => ['customerFilter', 'csrf']]);
+$routes->post('/cancelorder/(:any)', 'Pages::cancelOrder/$1', ['filter' => ['adminFilter', 'csrf']]);
+$routes->post('/addlikearticle/(:any)', 'Pages::addLikeArticle/$1', ['filter' => ['customerFilter', 'csrf']]);
+$routes->post('/addsharearticle/(:any)', 'Pages::addShareArticle/$1', ['filter' => ['customerFilter', 'csrf']]);
 $routes->get('/editarticle/(:any)', 'AdminController::editArticle/$1', ['filter' => 'adminFilter']);
 
 
 // ==================== GambarController ====================
-$routes->get('/changepic/(:any)', 'GambarController::gantiUkuran/$1', ['filter' => 'adminFilter']);
-$routes->get('/gantilokasi/(:any)', 'GambarController::gantiLokasi/$1', ['filter' => 'adminFilter']);
+$routes->post('/changepic/(:any)', 'GambarController::gantiUkuran/$1', ['filter' => ['adminFilter', 'csrf']]);
+$routes->post('/gantilokasi/(:any)', 'GambarController::gantiLokasi/$1', ['filter' => ['adminFilter', 'csrf']]);
 $routes->get('/cobainput', 'GambarController::actionCobaInput');
 $routes->get('/gamwm', 'GambarController::tampilGambarVarWM');
 $routes->get('/viewpic/(:segment)', 'GambarController::tampilGambarBarang/$1');
@@ -111,7 +111,7 @@ $routes->get('/imgheaderhp/(:any)', 'GambarController::tampilGambarHeaderHp/$1')
 
 
 // ==================== Admin Controller ====================
-$routes->group('admin', ['filter' => 'adminFilter'], static function($routes) {
+$routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($routes) {
 
     // Dashboard website admin
     $routes->get('', 'AdminController::dashboard');
@@ -138,7 +138,7 @@ $routes->group('admin', ['filter' => 'adminFilter'], static function($routes) {
     $routes->post('editproduct/(:any)', 'AdminController::actionEditProduct/$1');
     $routes->post('product', 'AdminController::actionAddProduct');
     $routes->post('deleteproduct/(:any)', 'AdminController::deleteProduct/$1');
-    $routes->get('activeproduct/(:any)', 'AdminController::activeProduct/$1');
+    $routes->post('activeproduct/(:any)', 'AdminController::activeProduct/$1', ['filter' => 'csrf']);
 
     // legacy (kalau masih dipakai)
     $routes->post('product/(:any)', 'AdminController::actionEditProduct/$1');
@@ -153,19 +153,20 @@ $routes->group('admin', ['filter' => 'adminFilter'], static function($routes) {
     $routes->get('reprint', 'AdminController::reprint');
     $routes->get('suratjalan/(:any)', 'AdminController::suratJalan/$1');
     $routes->get('marketplace', 'AdminController::marketplace');
-    $routes->get('confirm-mp/(:any)', 'AdminController::confirmMarketplace/$1');
+    $routes->post('confirm-mp/(:any)', 'AdminController::confirmMarketplace/$1', ['filter' => 'csrf']);
     $routes->get('edit-mp/(:any)', 'AdminController::editMarketplace/$1');
-    $routes->get('accreprint/(:any)', 'AdminController::accReprint/$1');
-    $routes->get('denyreprint/(:any)', 'AdminController::denyReprint/$1');
-    $routes->get('ordertoko/(:any)', 'AdminController::orderToko/$1', ['filter' => 'loginToko']); // khusus toko
+    $routes->post('accreprint/(:any)', 'AdminController::accReprint/$1', ['filter' => 'csrf']);
+    $routes->post('denyreprint/(:any)', 'AdminController::denyReprint/$1', ['filter' => 'csrf']);
+    $routes->post('ordertoko/(:any)', 'AdminController::orderToko/$1', ['filter' => 'loginToko']);
+    $routes->post('suratjalan/(:any)/printed', 'AdminController::markSuratJalanPrinted/$1');
 
     // Mutasi (admin)
     $routes->get('mutasiconfirm', 'AdminController::mutasiConfirm');
     $routes->get('mutasi', 'AdminController::mutasi');
     $routes->get('mutasi/(:any)', 'AdminController::mutasi/$1');
     $routes->post('actionaddmutasi', 'AdminController::actionAddMutasi');
-    $routes->get('accmutasi/(:any)', 'AdminController::accMutasi/$1');
-    $routes->get('denymutasi/(:any)', 'AdminController::denyMutasi/$1');
+    $routes->post('accmutasi/(:any)', 'AdminController::accMutasi/$1', ['filter' => 'csrf']);
+    $routes->post('denymutasi/(:any)', 'AdminController::denyMutasi/$1', ['filter' => 'csrf']);
     $routes->get('labelbarang/(:any)', 'AdminController::labelBarang/$1');
 
     // Home layout (admin)
@@ -192,6 +193,9 @@ $routes->group('admin', ['filter' => 'adminFilter'], static function($routes) {
     $routes->post('rbac/sync-users', 'AdminController::syncRbacUserRoles');
     $routes->get('spam-cleanup', 'AdminController::spamCleanup');
     $routes->post('spam-cleanup', 'AdminController::actionSpamCleanup');
+    $routes->get('customers', 'AdminController::customers');
+    $routes->post('customers/suspend', 'AdminController::actionSuspendCustomer');
+    $routes->post('customers/reinstate', 'AdminController::actionReinstateCustomer');
 
     // ==================== OFFLINE ORDER (admin) ====================
 
@@ -224,10 +228,10 @@ $routes->group('admin', ['filter' => 'adminFilter'], static function($routes) {
     $routes->get('surat-offline/(:any)', 'AdminController::suratOffline/$1');
 
     // Action lain
-    $routes->get('benerinsurat', 'AdminController::benerinSurat');
+    $routes->post('benerinsurat', 'AdminController::benerinSurat');
     $routes->post('actionbuatinvoice', 'AdminController::actionBuatInvoice');
     $routes->post('actionbuatdp', 'AdminController::actionBuatDP');
-    $routes->get('actionaccorderoffline/(:any)', 'AdminController::actionAccOrderOffline/$1');
+    $routes->post('actionaccorderoffline/(:any)', 'AdminController::actionAccOrderOffline/$1', ['filter' => 'csrf']);
 
     // ==================== SURAT JALAN OFFLINE (admin) ====================
     // Halaman edit SJ (dipakai OFFLINE & INTERIOR)
@@ -243,8 +247,7 @@ $routes->group('admin', ['filter' => 'adminFilter'], static function($routes) {
         'AdminController::suratJalanOfflineEditSave/$1'
     );  
     // Create SJ harus POST (bikin data)
-    $routes->post('surat-jalan/offline/create/(:segment)', 'AdminController::createSuratJalanOffline/$1');
-    $routes->get('surat-jalan/offline/create/(:segment)', 'AdminController::createSuratJalanOffline/$1');
+    $routes->post('surat-jalan/offline/create/(:segment)', 'AdminController::createSuratJalanOffline/$1', ['filter' => 'csrf']);
 
     // Buka/print/edit SJ
     $routes->get('surat-jalan/offline/(:num)', 'AdminController::suratJalanOffline/$1');
@@ -258,12 +261,12 @@ $routes->group('admin', ['filter' => 'adminFilter'], static function($routes) {
     // ==================== Voucher System (admin) ====================
     $routes->get('voucher', 'AdminController::voucher');
     $routes->post('voucher/add', 'AdminController::actionAddVoucher');
-    $routes->get('voucher/delete/(:any)', 'AdminController::deleteVoucher/$1');
+    $routes->post('voucher/delete/(:any)', 'AdminController::deleteVoucher/$1', ['filter' => 'csrf']);
     $routes->get('voucher/edit/(:num)', 'AdminController::editVoucher/$1');
     $routes->post('voucher/edit/(:num)', 'AdminController::editVoucher/$1');
     $routes->post('voucher/toggle/(:num)', 'AdminController::toggleVoucher/$1');
     $routes->get('voucher/usage', 'AdminController::voucherUsage');
-    $routes->get('voucher/usage/delete/(:num)', 'AdminController::deleteVoucherUsage/$1');
+    $routes->post('voucher/usage/delete/(:num)', 'AdminController::deleteVoucherUsage/$1');
 
     // ==================== PROJECT INTERIOR (ADMIN) ====================
     $routes->get('project-interior', 'AdminController::projectInteriorList');
@@ -280,28 +283,12 @@ $routes->group('admin', ['filter' => 'adminFilter'], static function($routes) {
     $routes->get('project-interior/(:segment)/invoice-pengiriman/(:num)', 'AdminController::projectInteriorInvoicePengiriman/$1/$2');
     $routes->get('project-interior/(:segment)/payment-invoice/(:num)', 'AdminController::projectInteriorPaymentInvoice/$1/$2');
 
-    $routes->get(
-    'project-interior/(:segment)/sj/create',
-    'AdminController::projectInteriorCreateSuratJalan/$1'
-    );
     $routes->post('project-interior/(:segment)/surat-jalan/create', 'AdminController::projectInteriorCreateSuratJalan/$1');
 
     // Optional (kalau kamu pakai create SJ parsial interior)
     // $routes->post('project-interior/(:segment)/surat-jalan/create', 'AdminController::projectInteriorCreateSuratJalan/$1');
     // $routes->get('project-interior/(:segment)/surat-jalan/(:num)', 'AdminController::projectInteriorSuratJalanPrint/$1/$2');
 });
-
-
-// ==================== Gudang ====================
-$routes->get('/gudang/listorder', 'GudangController::listOrder', ['filter' => 'gudangFilter']);
-$routes->get('/gudang/listordertable', 'GudangController::listOrderTable');
-$routes->get('/gudang/listorderafter', 'GudangController::listOrderAfter', ['filter' => 'gudangFilter']);
-$routes->get('/gudang/mutasi', 'GudangController::mutasi', ['filter' => 'gudangFilter']);
-$routes->get('/gudang/mutasi/(:any)', 'GudangController::mutasi/$1', ['filter' => 'gudangFilter']);
-$routes->get('/gudang/actionscan/(:any)/(:any)', 'GudangController::actionScan/$1/$2', ['filter' => 'gudangFilter']);
-$routes->post('/gudang/actionaddmutasi', 'GudangController::actionAddMutasi', ['filter' => 'gudangFilter']);
-$routes->get('/gudang/suratjalan/(:any)', 'GudangController::suratJalan/$1', ['filter' => 'gudangFilter']);
-$routes->post('/gudang/ajukanprint', 'GudangController::ajukanPrint', ['filter' => 'gudangFilter']);
 
 
 // ==================== Fixing ====================
@@ -312,13 +299,13 @@ $routes->get('/market/product', 'MarketplaceController::product', ['filter' => '
 $routes->post('/market/actionfind', 'MarketplaceController::actionFind', ['filter' => 'marketFilter']);
 $routes->get('/market/find/(:any)', 'MarketplaceController::find/$1', ['filter' => 'marketFilter']);
 $routes->get('/market/cart', 'MarketplaceController::cart', ['filter' => 'marketFilter']);
-$routes->get('/market/addcart/(:any)/(:any)', 'MarketplaceController::addCart/$1/$2', ['filter' => 'marketFilter']);
-$routes->get('/market/reducecart/(:any)', 'MarketplaceController::reduceCart/$1', ['filter' => 'marketFilter']);
-$routes->post('/market/submitorder', 'MarketplaceController::submitOrder', ['filter' => 'marketFilter']);
-$routes->post('/maket/submitorder', 'MarketplaceController::submitOrder', ['filter' => 'marketFilter']);
+$routes->post('/market/addcart/(:any)/(:any)', 'MarketplaceController::addCart/$1/$2', ['filter' => ['marketFilter', 'csrf']]);
+$routes->post('/market/reducecart/(:any)', 'MarketplaceController::reduceCart/$1', ['filter' => ['marketFilter', 'csrf']]);
+$routes->post('/market/submitorder', 'MarketplaceController::submitOrder', ['filter' => ['marketFilter', 'csrf']]);
+$routes->post('/maket/submitorder', 'MarketplaceController::submitOrder', ['filter' => ['marketFilter', 'csrf']]);
 
 // routes untuk nyolong raja ongkir (sesuai punya kamu - tapi ini aneh karena actionnya submitOrder)
-$routes->post('/ro/provinsi', 'MarketplaceController::submitOrder', ['filter' => 'marketFilter']);
+$routes->post('/ro/provinsi', 'MarketplaceController::submitOrder', ['filter' => ['marketFilter', 'csrf']]);
 
 
 // ==================== Analytics (admin) ====================
@@ -326,8 +313,8 @@ $routes->get('/analytics', 'Analytics::index', ['filter' => 'adminFilter']);
 $routes->get('/analytics/live', 'Analytics::live', ['filter' => 'adminFilter']);
 $routes->get('/analytics/exportCsv', 'Analytics::exportCsv', ['filter' => 'adminFilter']);
 $routes->get('/analytics/exportPdf', 'Analytics::exportPdf', ['filter' => 'adminFilter']);
-$routes->post('/analytics/blacklist/add', 'Analytics::addBlacklist', ['filter' => 'adminFilter']);
-$routes->get('/analytics/blacklist/del/(:any)', 'Analytics::delBlacklist/$1', ['filter' => 'adminFilter']);
+$routes->post('/analytics/blacklist/add', 'Analytics::addBlacklist', ['filter' => ['adminFilter', 'csrf']]);
+$routes->post('/analytics/blacklist/del/(:any)', 'Analytics::delBlacklist/$1', ['filter' => ['adminFilter', 'csrf']]);
 
 
 // Tracking

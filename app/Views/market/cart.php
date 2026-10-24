@@ -2,6 +2,7 @@
 <?= $this->section("content"); ?>
 <div style="padding: 2em;">
     <form action="/maket/submitorder" method="post">
+        <?= csrf_field(); ?>
         <div class="baris-ke-kolom">
             <div class="limapuluh-ke-seratus">
                 <h1 class="teks-sedang mb-3">Informasi Pesanan</h1>

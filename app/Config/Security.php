@@ -71,7 +71,9 @@ class Security extends BaseConfig
      *
      * Regenerate CSRF Token on every submission.
      */
-    public bool $regenerate = true;
+    // Keep the cookie-mode CSRF token stable for the cookie lifetime so admin
+    // forms and successive same-page AJAX actions can reuse the validated hash.
+    public bool $regenerate = false;
 
     /**
      * --------------------------------------------------------------------------

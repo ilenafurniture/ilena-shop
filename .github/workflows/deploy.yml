@@ -30,4 +30,5 @@ jobs:
             echo "INFO: cek dengan 'git stash list' & restore manual 'git stash pop' kalau perlu"
           fi
           git pull
+          php spark migrate
         EOF

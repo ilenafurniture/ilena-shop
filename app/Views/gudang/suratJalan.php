@@ -113,7 +113,15 @@
             </div> -->
         </div>
     </div>
+    <form id="mark-printed" method="post" action="<?= site_url('admin/suratjalan/' . rawurlencode((string)$orderId) . '/printed'); ?>" hidden>
+        <?= csrf_field(); ?>
+    </form>
     <script>
+    window.addEventListener('afterprint', function () {
+        if (window.confirm('Surat jalan sudah berhasil dicetak?')) {
+            document.getElementById('mark-printed').submit();
+        }
+    }, { once: true });
     window.print();
     </script>
 </body>

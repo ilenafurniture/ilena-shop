@@ -416,8 +416,9 @@ tbody tr:hover {
                     <tr>
                         <td><?= esc($b['ip']) ?></td>
                         <td><?= esc($b['alasan'] ?? '') ?></td>
-                        <td><a class="btn secondary"
-                                href="<?= site_url('analytics/blacklist/del/'.urlencode($b['ip'])) ?>">Hapus</a></td>
+                        <td><form method="post" action="<?= site_url('analytics/blacklist/del/'.urlencode($b['ip'])) ?>">
+                                <?= csrf_field(); ?><button type="submit" class="btn secondary">Hapus</button>
+                            </form></td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>

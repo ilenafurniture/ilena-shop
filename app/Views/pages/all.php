@@ -9,19 +9,23 @@ $productCoverUrl = function (array $product): string {
         $slots = array_values(array_filter(array_map('trim', explode(',', (string) $varian[0]['urutan_gambar']))));
         $slot = $slots[0] ?? '1';
     }
-    $sourceRelative = 'img/barang/1000/' . $id . '-' . $slot . '.webp';
+    $candidates = [
+        'img/barang/300/' . $id . '.webp',
+        'uploads/product-images/300/' . $id . '.webp',
+        'img/barang/1000/' . $id . '-' . $slot . '.webp',
+        'img/barang/3000/' . $id . '-' . $slot . '.webp',
+    ];
+    $sourceRelative = $candidates[0];
+    foreach ($candidates as $candidate) {
+        if (is_file(FCPATH . $candidate)) {
+            $sourceRelative = $candidate;
+            break;
+        }
+    }
     $sourceAbsolute = FCPATH . $sourceRelative;
-    if (!is_file($sourceAbsolute)) {
-        $sourceRelative = 'img/barang/3000/' . $id . '-' . $slot . '.webp';
-        $sourceAbsolute = FCPATH . $sourceRelative;
-    }
-    if (!is_file($sourceAbsolute)) {
-        $sourceRelative = 'img/barang/300/' . $id . '.webp';
-        $sourceAbsolute = FCPATH . $sourceRelative;
-    }
     $fileVersion = is_file($sourceAbsolute) ? (int) filemtime($sourceAbsolute) : time();
     $dbVersion = !empty($product['tgl_update']) ? (int) strtotime((string) $product['tgl_update']) : 0;
-    return base_url('product-cover/' . $id) . '?slot=' . urlencode($slot) . '&v=' . max($fileVersion, $dbVersion);
+    return base_url('product-cover/' . $id) . '?slot=' . urlencode($slot) . '&size=300&v=' . max($fileVersion, $dbVersion);
 };
 ?>
 <?php
@@ -60,13 +64,17 @@ if (isset($_GET['varian'])) {
         $varian = explode(" ", $_GET['varian']);
         $produkLama = $produk;
         $produk = [];
+        $produkTerpilih = [];
         foreach ($varian as $v) {
             foreach ($produkLama as $p) {
                 $varianProdukSelected = json_decode($p['varian'], true);
                 foreach ($varianProdukSelected as $vp) {
                     if (strtolower(str_replace("-", " ", $v)) == strtolower($vp['nama'])) {
-                        if (!in_array($p, $produk))
+                        $produkKey = 'id:' . (string) $p['id'];
+                        if (!isset($produkTerpilih[$produkKey])) {
                             array_push($produk, $p);
+                            $produkTerpilih[$produkKey] = true;
+                        }
                     }
                 }
             }
@@ -125,9 +133,10 @@ $produkLama = $produk;
 $produk = [];
 $arrNamaProduk = [];
 foreach ($produkLama as $p) {
-    if (!in_array(strtolower($p['nama']), $arrNamaProduk)) {
+    $namaKey = 'nama:' . strtolower((string) $p['nama']);
+    if (!isset($arrNamaProduk[$namaKey])) {
         array_push($produk, $p);
-        array_push($arrNamaProduk, strtolower($p['nama']));
+        $arrNamaProduk[$namaKey] = true;
     }
 }
 
@@ -563,17 +572,19 @@ if (isset($_GET['ruang'])) {
                             <?php }
                                 if (in_array($p['id'], $wishlist)) { ?>
                             <form action="/delwishlist/<?= $p['id'] ?>" method="post">
+                                <?= csrf_field(); ?>
                                 <button type="submit" class="card1-btn-img"><i
                                         class="material-icons">bookmark</i></button>
                             </form>
                             <?php } else { ?>
                             <form action="/addwishlist/<?= $p['id'] ?>" method="post">
+                                <?= csrf_field(); ?>
                                 <button type="submit" class="card1-btn-img"><i
                                         class="material-icons">bookmark_border</i></button>
                             </form>
                             <?php } ?>
                             <form method="post" id="card<?= $ind_p ?>"
-                                action="/addcart/<?= $p['id'] ?>/<?= json_decode($p['varian'], true)[0]['nama'] ?>/1"><button class="card1-btn-img"><i class="material-icons">shopping_cart</i>
+                                action="/addcart/<?= $p['id'] ?>/<?= rawurlencode(json_decode($p['varian'], true)[0]['nama']) ?>/1"><?= csrf_field(); ?><button class="card1-btn-img"><i class="material-icons">shopping_cart</i>
                                 </button>
                             </form>
                         </div>

@@ -26,7 +26,7 @@
                 <div style="flex: 2;"><?= $p['nama'] ?></div>
                 <div style="flex: 2;"><?= $p['alamat'] ?></div>
                 <div style="flex: 2;" class="gap-2">
-                    <a class="btn-default" href="/admin/confirm-mp/<?= $p['id'] ?>">Konfim</a>
+                    <form method="post" action="/admin/confirm-mp/<?= $p['id'] ?>" class="d-inline"><?= csrf_field() ?><button class="btn-default" type="submit">Konfim</button></form>
                     <a class="btn-default-merah" href="/admin/edit-mp/<?= $p['id'] ?>">Edit</a>
                     <button class="btn btn-light" onclick="openDetail(<?= $indx_p ?>)"><i class=" material-icons">more_vert</i></button>
                 </div>
@@ -52,7 +52,7 @@
                 <div style="flex: 2;"><?= $p['nama'] ?></div>
                 <div style="flex: 2;"><?= $p['alamat'] ?></div>
                 <div style="flex: 2;" class="gap-2">
-                    <a class="btn-default" href="/admin/confirm-mp/<?= $p['id'] ?>">Konfim</a>
+                    <form method="post" action="/admin/confirm-mp/<?= $p['id'] ?>" class="d-inline"><?= csrf_field() ?><button class="btn-default" type="submit">Konfim</button></form>
                     <a class="btn-default-merah" href="/admin/edit-mp/<?= $p['id'] ?>">Edit</a>
                     <button class="btn btn-light" onclick="openDetail(<?= $indx_p ?>)"><i class=" material-icons">more_vert</i></button>
                 </div>

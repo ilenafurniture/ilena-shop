@@ -10,6 +10,7 @@ class AdminRbacService
     public function permissions(): array
     {
         return [
+            'dashboard' => ['label' => 'Dashboard Admin', 'description' => 'Akses ringkasan operasional admin.'],
             'products' => ['label' => 'Produk', 'description' => 'Lihat, tambah, edit, aktif/nonaktif produk.'],
             'vouchers' => ['label' => 'Voucher', 'description' => 'Kelola voucher dan pemakaian voucher.'],
             'orders_online' => ['label' => 'Pesanan Online', 'description' => 'Lihat pesanan online, input resi, surat jalan, reprint.'],
@@ -22,16 +23,32 @@ class AdminRbacService
             'meta_capi' => ['label' => 'Meta CAPI', 'description' => 'Atur Pixel ID, token, Graph API, dan test event code.'],
             'activity_log' => ['label' => 'Log Aktivitas', 'description' => 'Lihat log aktivitas admin.'],
             'spam_cleanup' => ['label' => 'Cleanup Spam Akun', 'description' => 'Lihat dan hapus akun register spam/injection.'],
-            'rbac' => ['label' => 'Role & Akses Admin', 'description' => 'Buat role dan atur akses user admin.'],
+            'customers' => ['label' => 'Akun Pelanggan', 'description' => 'Lihat status akun dan kelola penangguhan pelanggan.'],
+            'marketplace' => ['label' => 'Workspace Marketplace', 'description' => 'Kelola katalog dan pesanan melalui workspace marketplace.'],
         ];
+    }
+
+    /** Permissions for the standard operational Admin role; technical controls remain Dev-only. */
+    public function operationalAdminPermissions(): array
+    {
+        return array_values(array_diff(array_keys($this->permissions()), ['meta_capi', 'spam_cleanup']));
+    }
+
+    private function isOperationalAdminRoleName(string $name): bool
+    {
+        return in_array(strtolower(trim($name)), ['admin', 'admin operasional'], true);
     }
 
     public function routePermission(string $path): ?string
     {
         $path = trim($path, '/');
+        if ($path === 'admin') {
+            return 'dashboard';
+        }
 
         $rules = [
             'admin/rbac' => 'rbac',
+            'admin/product-bulk-edit' => 'products',
             'admin/producttable' => 'products',
             'admin/product' => 'products',
             'admin/addproduct' => 'products',
@@ -76,10 +93,16 @@ class AdminRbacService
             'admin/addgaleriarticle' => 'content',
             'admin/homelayout' => 'content',
             'admin/changepic' => 'content',
+            'admin/partners' => 'content',
+            'admin/seo-check' => 'products',
+            'admin/surat-koreksi' => 'orders_offline',
             'admin/free-shipping' => 'shipping',
             'admin/meta-capi' => 'meta_capi',
             'admin/activity-log' => 'activity_log',
             'admin/spam-cleanup' => 'spam_cleanup',
+            'admin/customers' => 'customers',
+            'admin/ordertoko' => 'orders_online',
+            'market' => 'marketplace',
             'analytics' => 'analytics',
         ];
 
@@ -108,7 +131,19 @@ class AdminRbacService
 
     public function canAccessPath(?string $email, string $path): bool
     {
-        return $this->hasPermission($email, $this->routePermission($path));
+        $normalizedPath = trim($path, '/');
+        if (($normalizedPath === 'admin/rbac' || str_starts_with($normalizedPath, 'admin/rbac/'))
+            && (string) session()->get('role') !== '1'
+        ) {
+            return false;
+        }
+
+        $permission = $this->routePermission($path);
+        if ($permission === null && str_starts_with($normalizedPath, 'admin/')) {
+            return (string) session()->get('role') === '1';
+        }
+
+        return $this->hasPermission($email, $permission);
     }
 
     public function hasAnyAdminAccess(string $email): bool
@@ -118,11 +153,8 @@ class AdminRbacService
 
     public function firstAllowedAdminUrl(string $email): string
     {
-        if ($this->hasAnyAdminAccess($email)) {
-            return '/admin';
-        }
-
         $map = [
+            'dashboard' => '/admin',
             'products' => '/admin/product',
             'vouchers' => '/admin/voucher',
             'orders_online' => '/admin/order/online',
@@ -135,7 +167,8 @@ class AdminRbacService
             'meta_capi' => '/admin/meta-capi',
             'activity_log' => '/admin/activity-log',
             'spam_cleanup' => '/admin/spam-cleanup',
-            'rbac' => '/admin/rbac',
+            'customers' => '/admin/customers',
+            'marketplace' => '/market/product',
         ];
 
         $allowed = $this->userPermissions($email);
@@ -174,6 +207,9 @@ class AdminRbacService
         $this->ensureTables();
         $valid = array_keys($this->permissions());
         $permissions = array_values(array_intersect(array_unique($permissions), $valid));
+        if ($this->isOperationalAdminRoleName($name)) {
+            $permissions = $this->operationalAdminPermissions();
+        }
 
         $data = [
             'role_name' => trim($name),
@@ -222,7 +258,7 @@ class AdminRbacService
             if ($email === '') continue;
 
             $user = $db->table('user')->select('role')->where('email', $email)->get()->getRowArray();
-            if ($user && in_array((string)($user['role'] ?? ''), ['0', '4', '5'], true)) {
+            if ($user && in_array((string)($user['role'] ?? ''), ['0', '3', '4', '5'], true)) {
                 $db->table('user')->where('email', $email)->update(['role' => '5']);
                 $count++;
             }
@@ -253,7 +289,7 @@ class AdminRbacService
 
         if ($saved && $db->tableExists('user')) {
             $user = $db->table('user')->select('role')->where('email', $email)->get()->getRowArray();
-            if ($user && in_array((string)($user['role'] ?? ''), ['0', '4', '5'], true)) {
+            if ($user && in_array((string)($user['role'] ?? ''), ['0', '3', '4', '5'], true)) {
                 $db->table('user')->where('email', $email)->update(['role' => '5']);
             }
         }
@@ -290,14 +326,25 @@ class AdminRbacService
             $this->ensureTables();
             $row = \Config\Database::connect()
                 ->table($this->userRolesTable . ' ur')
-                ->select('r.permissions')
+                ->select('r.role_name, r.permissions')
                 ->join($this->rolesTable . ' r', 'r.id = ur.role_id', 'inner')
                 ->where('ur.email', $email)
                 ->get()
                 ->getRowArray();
 
             $permissions = json_decode((string)($row['permissions'] ?? '[]'), true);
-            return is_array($permissions) ? array_values(array_filter(array_map('strval', $permissions))) : [];
+            if ($this->isOperationalAdminRoleName((string)($row['role_name'] ?? ''))) {
+                return $this->operationalAdminPermissions();
+            }
+
+            if (!is_array($permissions)) {
+                return [];
+            }
+
+            return array_values(array_intersect(
+                array_unique(array_map('strval', $permissions)),
+                array_keys($this->permissions()),
+            ));
         } catch (\Throwable $th) {
             log_message('error', 'RBAC user permission error: {err}', ['err' => $th->getMessage()]);
             return [];

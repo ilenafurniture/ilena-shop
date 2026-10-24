@@ -372,6 +372,7 @@ input[type="radio"][name="address"]:checked+.item-address {
 <div id="addModalContainer" class="modal-layer d-none">
     <div class="modal-card">
         <form action="/addaddress" method="post">
+            <?= csrf_field(); ?>
             <input type="text" value="address" name="checkpage" class="d-none">
             <div class="modal-content">
                 <?php if(!session()->get('isLogin')) { ?>
@@ -473,6 +474,7 @@ input[type="radio"][name="address"]:checked+.item-address {
 <div id="editModalContainer" class="modal-layer d-none">
     <div class="modal-card">
         <form method="post" id="formEdit">
+            <?= csrf_field(); ?>
             <input type="text" value="<?= $_SERVER['REQUEST_URI']; ?>" class="d-none" name="url">
             <div class="modal-content">
                 <?php if(!session()->get('isLogin')) { ?>
@@ -595,8 +597,9 @@ input[type="radio"][name="address"]:checked+.item-address {
                     <div style="width:100px" class="d-flex gap-3 justify-content-end align-items-start">
                         <a class="btn-teks-aja text-dark" data-bs-toggle="modal" data-bs-target="#editModal"
                             type="button" onclick="openEditModal(<?= $ind_a; ?>)">Edit</a>
-                        <a href="/deleteaddress/<?= $ind_a; ?>/<?= $_SERVER['REQUEST_URI']; ?>"
-                            class="btn-teks-aja">Hapus</a>
+                        <form action="/deleteaddress/<?= (int)$ind_a; ?>/address" method="post" class="m-0">
+                            <?= csrf_field(); ?><button type="submit" class="btn-teks-aja">Hapus</button>
+                        </form>
                     </div>
                 </label>
                 <?php } ?>

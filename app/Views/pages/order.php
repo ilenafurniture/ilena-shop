@@ -213,6 +213,7 @@
         <?php } ?>
 
         <form action="/editsandi/order" method="post" novalidate>
+            <?= csrf_field(); ?>
             <div class="mb-2">
                 <label class="mb-1">Sandi baru Anda</label>
                 <input type="password" name="sandi" class="form-control" required>
@@ -253,7 +254,9 @@
 
             <a href="/account" class="mb-2 btn-default-abu w-100 text-center">Profile</a>
             <a href="/order" class="mb-2 btn-default-abu w-100 text-center">Pesanan</a>
-            <a href="/logout" class="btn-default-merah w-100 text-center">Keluar</a>
+            <form action="/logout" method="post">
+                <?= csrf_field(); ?><button type="submit" class="btn-default-merah w-100 text-center">Keluar</button>
+            </form>
         </div>
     </div>
 

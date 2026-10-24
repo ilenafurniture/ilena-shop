@@ -782,11 +782,9 @@ $kodeProject = (string)($project['kode_project'] ?? '');
                         <code><?= esc($kodeDokUtama); ?></code>
                     </p>
 
-                    <!-- Ini tetap ke create-sj (kalau kamu mau jadi "lihat daftar SJ", nanti kita ubah).
-                         Untuk sekarang aku biarkan sesuai struktur awalmu. -->
-                    <a href="<?= site_url('admin/project-interior/' . $kodeProject . '/sj/create'); ?>" target="_blank"
+                    <a href="<?= site_url('admin/project-interior/' . $kodeProject . '/sj'); ?>" target="_blank"
                         class="btn-ghost w-100" style="margin-bottom:.35rem;">
-                        Cetak Surat Jalan (<?= esc($kodeDokUtama); ?>)
+                        Lihat Surat Jalan (<?= esc($kodeDokUtama); ?>)
                     </a>
                 </div>
                 <?php else: ?>

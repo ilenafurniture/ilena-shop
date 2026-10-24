@@ -21,7 +21,11 @@
                 <button class="btn-default-merah" type="submit">Verifikasi</button>
             </div>
         </form>
-        <p class="mt-3 text-sm-center">OTP belum terkirim? <a href="/kirimotp" class="btn-teks-aja" style="display: inline;">Klik disini</a> untuk mengirim ulang</p>
+        <form action="/kirimotp" method="post" class="mt-3 text-sm-center">
+            <?= csrf_field(); ?>
+            <span>OTP belum terkirim?</span>
+            <button type="submit" class="btn-teks-aja" style="display:inline; border:0; background:none;">Kirim ulang</button>
+        </form>
     </div>
 </div>
 <?= $this->endSection(); ?>

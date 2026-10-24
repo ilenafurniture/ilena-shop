@@ -279,6 +279,7 @@ $productCoverUrl = function (array $product): string {
                     </div>
                     <form id="btn-keranjang" method="post"
                         action="<?= $produk['varian'][0]['stok'] > 0 ? '/addcart/' . $produk['id'] . '/' . rawurlencode($produk['varian'][0]['nama']) . '/1' : ''; ?>">
+                        <?= csrf_field(); ?>
                         <button class="btn-default-merah <?= $produk['varian'][0]['stok'] > 0 ? '' : 'disabled'; ?>"
                             <?= $produk['varian'][0]['stok'] > 0 ? '' : 'disabled'; ?>
                             type="submit"><?= $produk['varian'][0]['stok'] > 0 ? 'Keranjang' : 'Stok habis'; ?></button>
@@ -313,10 +314,12 @@ $productCoverUrl = function (array $product): string {
                 <?php }
                 if (in_array($produk['id'], $wishlist)) { ?>
                 <form action="/delwishlist/<?= $produk['id'] ?>" method="post">
+                    <?= csrf_field(); ?>
                     <button type="submit" class="btn-teks-aja my-3"><i class="material-icons">bookmark</i>Hapus</button>
                 </form>
                 <?php } else { ?>
                 <form action="/addwishlist/<?= $produk['id'] ?>" method="post">
+                    <?= csrf_field(); ?>
                     <button type="submit" class="btn-teks-aja my-3"><i
                             class="material-icons">bookmark_border</i>Simpan</button>
                 </form>
@@ -492,17 +495,19 @@ $productCoverUrl = function (array $product): string {
                         <?php }
                                 if (in_array($p['id'], $wishlist)) { ?>
                         <form action="/delwishlist/<?= $p['id'] ?>" method="post">
+                            <?= csrf_field(); ?>
                             <button type="submit" class="card1-btn-img"><i class="material-icons">bookmark</i></button>
                         </form>
                         <?php } else { ?>
                         <form action="/addwishlist/<?= $p['id'] ?>" method="post">
+                            <?= csrf_field(); ?>
                             <button type="submit" class="card1-btn-img"><i
                                     class="material-icons">bookmark_border</i></button>
                         </form>
                         <?php } ?>
                         <?php $cardVarianAwal = json_decode($p['varian'], true)[0]['nama'] ?? 'default'; ?>
                         <form method="post" id="card<?= $ind_p ?>"
-                            action="/addcart/<?= $p['id'] ?>/<?= rawurlencode($cardVarianAwal) ?>/1"><button class="card1-btn-img"><i class="material-icons">shopping_cart</i>
+                            action="/addcart/<?= $p['id'] ?>/<?= rawurlencode($cardVarianAwal) ?>/1"><?= csrf_field(); ?><button class="card1-btn-img"><i class="material-icons">shopping_cart</i>
                             </button>
                         </form>
                     </div>

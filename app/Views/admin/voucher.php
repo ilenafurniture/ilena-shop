@@ -563,11 +563,11 @@ input:checked+.slider:before {
                                 Edit
                             </button>
 
-                            <a href="/admin/voucher/delete/<?= $v['id']; ?>"
-                                class="btn btn-sm btn-outline-danger btn-chip"
-                                onclick="return confirm('Hapus voucher <?= esc($v['kode']); ?>?')">
-                                Hapus
-                            </a>
+                            <form method="post" action="/admin/voucher/delete/<?= (int)$v['id']; ?>" class="d-inline"
+                                onsubmit="return confirm('Hapus voucher <?= esc($v['kode'], 'js'); ?>?')">
+                                <?= csrf_field(); ?>
+                                <button class="btn btn-sm btn-outline-danger btn-chip" type="submit">Hapus</button>
+                            </form>
                         </td>
                     </tr>
                     <?php endforeach; ?>

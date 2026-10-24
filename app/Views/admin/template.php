@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token-name" content="<?= csrf_token(); ?>">
+    <meta name="csrf-token-hash" content="<?= csrf_hash(); ?>">
     <title><?= $title; ?> | I L E N A</title>
 
     <link href="<?= base_url('css/bootstrap.min.css'); ?>" rel="stylesheet">
@@ -200,6 +202,38 @@
     </div>
 
     <script>
+    (() => {
+        const tokenName = document.querySelector('meta[name="csrf-token-name"]')?.content;
+        const tokenHash = document.querySelector('meta[name="csrf-token-hash"]')?.content;
+        if (!tokenName || !tokenHash) return;
+
+        document.addEventListener('submit', (event) => {
+            const form = event.target;
+            if (!(form instanceof HTMLFormElement) || (form.method || 'get').toLowerCase() !== 'post') return;
+            if (!form.querySelector(`input[name="${CSS.escape(tokenName)}"]`)) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = tokenName;
+                input.value = tokenHash;
+                form.appendChild(input);
+            }
+        }, true);
+
+        const nativeFetch = window.fetch.bind(window);
+        window.fetch = (input, init = {}) => {
+            const request = input instanceof Request ? input : null;
+            const method = String(init.method || request?.method || 'GET').toUpperCase();
+            const target = new URL(request?.url || input, window.location.href);
+            if (target.origin === window.location.origin && !['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+                const headers = new Headers(request?.headers || undefined);
+                new Headers(init.headers || {}).forEach((value, name) => headers.set(name, value));
+                if (!headers.has('X-CSRF-TOKEN')) headers.set('X-CSRF-TOKEN', tokenHash);
+                init = { ...init, headers };
+            }
+            return nativeFetch(input, init);
+        };
+    })();
+
     function copytext(teksCopy, teksNotif) {
         navigator.clipboard.writeText(teksCopy);
         callNotif(teksNotif);

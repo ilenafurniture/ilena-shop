@@ -1345,32 +1345,66 @@ class AdminController extends BaseController
     }
     public function accMutasi($id)
     {
-        $getMutasi  = $this->kartuStokModel->where(['id' => $id])->first();
-        $produk = $this->barangModel->getBarang($getMutasi['id_barang']);
-        $varianCurr = json_decode($produk['varian'], true);
+        $db = \Config\Database::connect();
+        $db->transBegin();
+
+        $getMutasi = $this->kartuStokModel->where(['id' => $id])->first();
+        if (!$getMutasi || !filter_var($getMutasi['pending'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
+            $db->transRollback();
+            return redirect()->to('/admin/mutasiconfirm')->with('msg', 'Mutasi sudah diproses atau tidak ditemukan.');
+        }
+
+        // Claim the pending ledger row atomically. A repeated/double request
+        // cannot apply the same stock delta a second time.
+        $this->kartuStokModel->where(['id' => $id, 'pending' => true])->set(['pending' => false])->update();
+        if ($db->affectedRows() !== 1) {
+            $db->transRollback();
+            return redirect()->to('/admin/mutasiconfirm')->with('msg', 'Mutasi sudah diproses atau sedang diproses.');
+        }
+
+        // Serialize approvals for the same product so concurrent, different
+        // ledger rows cannot overwrite each other's JSON stock update.
+        $produk = $db->query(
+            'SELECT * FROM barang WHERE id = ? FOR UPDATE',
+            [$getMutasi['id_barang']]
+        )->getRowArray();
+        $varianCurr = json_decode($produk['varian'] ?? '[]', true);
+        if (!$produk || !is_array($varianCurr)) {
+            $db->transRollback();
+            return redirect()->to('/admin/mutasiconfirm')->with('msg', 'Produk atau data varian tidak valid.');
+        }
+
+        $varianDitemukan = false;
         $saldoFix = 0;
         foreach ($varianCurr as $ind_v => $v) {
-            if (strtoupper($v['nama']) == strtoupper($getMutasi['varian'])) {
-                $saldoSkrg = $v['stok'];
-                $saldoFix = $saldoSkrg + ($getMutasi['debit'] ? $getMutasi['debit'] : -$getMutasi['kredit']);
+            if (strcasecmp((string)($v['nama'] ?? ''), (string)$getMutasi['varian']) === 0) {
+                $saldoFix = (int)($v['stok'] ?? 0) + ((int)($getMutasi['debit'] ?? 0) - (int)($getMutasi['kredit'] ?? 0));
                 $varianCurr[$ind_v]['stok'] = $saldoFix;
+                $varianDitemukan = true;
+                break;
             }
         }
-        if ($saldoFix < 0) {
-            session()->setFlashdata('msg', 'Saldo melebihi batas minimal');
-            return redirect()->to('/admin/mutasiconfirm');
+        if (!$varianDitemukan || $saldoFix < 0) {
+            $db->transRollback();
+            return redirect()->to('/admin/mutasiconfirm')->with('msg', $varianDitemukan ? 'Saldo melebihi batas minimal.' : 'Varian produk tidak ditemukan.');
         }
+
         $this->kartuStokModel->where(['id' => $id])->set([
             'saldo' => $saldoFix,
             'alasan' => '',
-            'pending' => false
         ])->update();
         $this->barangModel->where(['id' => $getMutasi['id_barang']])->set(['varian' => json_encode($varianCurr)])->update();
+
+        if ($db->transStatus() === false) {
+            $db->transRollback();
+            return redirect()->to('/admin/mutasiconfirm')->with('msg', 'Mutasi gagal disimpan; stok tidak berubah.');
+        }
+        $db->transCommit();
         return redirect()->to('admin/mutasiconfirm');
     }
     public function denyMutasi($id)
     {
-        $this->kartuStokModel->where(['id' => $id])->delete();
+        $this->kartuStokModel->where(['id' => $id, 'pending' => true])->delete();
         return redirect()->to('admin/mutasiconfirm');
     }
 
@@ -1705,112 +1739,176 @@ class AdminController extends BaseController
 
     public function confirmMarketplace($id)
     {
-        $pemesanan = $this->pemesananModel->where([
-            'id' => $id,
-        ])->first();
-        $items_curr = json_decode($pemesanan['items'], true);
-        foreach ($items_curr as $i) {
-            if ($i['name'] != "Voucher" && $i['name'] != "Biaya Admin") {
-                for ($x = 1; $x <= (int)$i['quantity']; $x++) {
-                    $this->pemesananGudangModel->insert([
-                        'id_pesanan' => $pemesanan['id_midtrans'],
-                        'tanggal' => json_decode($pemesanan['data_mid'], true)['transaction_time'],
-                        'nama' => $i['name'],
-                        'id_barang' => $i['id'],
-                        'packed' => false
-                    ]);
-                }
+        $db = \Config\Database::connect();
+        $db->transBegin();
+        $pemesanan = $db->query('SELECT * FROM pemesanan WHERE id = ? FOR UPDATE', [$id])->getRowArray();
+        if (!$pemesanan) {
+            $db->transRollback();
+            return redirect()->to('/admin/marketplace')->with('msg', 'Pesanan tidak ditemukan.');
+        }
+
+        $existingQueueRows = $this->pemesananGudangModel
+            ->where('id_pesanan', $pemesanan['id_midtrans'])
+            ->countAllResults();
+        if ($existingQueueRows > 0) {
+            $db->transRollback();
+            return redirect()->to('/admin/marketplace')->with('msg', 'Pesanan sudah masuk antrean gudang.');
+        }
+
+        $items_curr = json_decode($pemesanan['items'] ?? '[]', true);
+        $dataMidtrans = json_decode($pemesanan['data_mid'] ?? '[]', true);
+        if (!is_array($items_curr) || !is_array($dataMidtrans) || empty($dataMidtrans['transaction_time'])) {
+            $db->transRollback();
+            return redirect()->to('/admin/marketplace')->with('msg', 'Data item atau waktu transaksi tidak valid.');
+        }
+
+        foreach ($items_curr as $item) {
+            if (($item['name'] ?? '') === 'Voucher' || ($item['name'] ?? '') === 'Biaya Admin') {
+                continue;
+            }
+            $quantity = filter_var($item['quantity'] ?? null, FILTER_VALIDATE_INT);
+            if ($quantity === false || $quantity < 1 || empty($item['id']) || empty($item['name'])) {
+                $db->transRollback();
+                return redirect()->to('/admin/marketplace')->with('msg', 'Rincian produk pesanan tidak valid.');
+            }
+            for ($x = 0; $x < $quantity; $x++) {
+                $this->pemesananGudangModel->insert([
+                    'id_pesanan' => $pemesanan['id_midtrans'],
+                    'tanggal' => $dataMidtrans['transaction_time'],
+                    'nama' => $item['name'],
+                    'id_barang' => $item['id'],
+                    'packed' => false,
+                ]);
             }
         }
+
+        if ($db->transStatus() === false) {
+            $db->transRollback();
+            return redirect()->to('/admin/marketplace')->with('msg', 'Antrean gudang gagal disimpan.');
+        }
+        $db->transCommit();
         return redirect()->to('/admin/marketplace');
     }
 
     public function orderToko($ind_add)
     {
-        $email = session()->get('email');
-        $nama = session()->get('nama');
-        $nohp = session()->get('nohp');
-        $keranjang = session()->get('keranjang');
-        $alamat = session()->get('alamat')[$ind_add];
+        $sessionToken = (string)session()->get('shop_order_token');
+        $requestToken = (string)$this->request->getPost('shop_order_token');
+        if ($sessionToken === '' || $requestToken === '' || !hash_equals($sessionToken, $requestToken)) {
+            return redirect()->to('/cart')->with('msg', 'Permintaan pemesanan sudah digunakan atau kedaluwarsa. Silakan ulangi dari pembayaran.');
+        }
 
-        $hargaTotal = 0;
-        $items = [];
-        foreach ($keranjang as $index => $k) {
-            $produk = $this->barangModel->getBarang($k['id_barang']);
-            foreach (json_decode($produk['varian'], true) as $v) {
-                if ($v['nama'] == $k['varian']) {
-                    $keranjang[$index]['src_gambar'] = "/viewvar/" . $k['id_barang'] . "/" . explode(',', $v['urutan_gambar'])[0];
+        $cart = session()->get('keranjang');
+        $address = session()->get('alamatTerpilih');
+        if (!is_array($cart) || $cart === [] || !is_array($address) || empty($address['alamat_lengkap'])) {
+            return redirect()->to('/cart')->with('msg', 'Keranjang atau alamat pemesanan tidak valid.');
+        }
+
+        $db = \Config\Database::connect();
+        try {
+            $db->transBegin();
+            $productIds = array_values(array_unique(array_map(static fn($row) => (int)($row['id_barang'] ?? 0), $cart)));
+            sort($productIds, SORT_NUMERIC);
+            $lockedProducts = [];
+            foreach ($productIds as $productId) {
+                if ($productId <= 0) throw new \RuntimeException('Produk pada keranjang tidak valid.');
+                $product = $db->query('SELECT * FROM barang WHERE id = ? FOR UPDATE', [$productId])->getRowArray();
+                if (!$product || (string)($product['active'] ?? '0') !== '1') {
+                    throw new \RuntimeException('Ada produk yang sudah tidak tersedia.');
                 }
+                $variants = json_decode((string)($product['varian'] ?? ''), true);
+                if (!is_array($variants)) throw new \RuntimeException('Data varian produk tidak valid.');
+                $lockedProducts[$productId] = ['row' => $product, 'variants' => $variants];
             }
-            $keranjang[$index]['detail'] = $produk;
-            $hargaTotal += $produk['harga'] * $k['jumlah'] * (100 - $produk['diskon']) / 100;
 
-            $item = [
-                'id' => $k['id_barang'],
-                'price' => $produk['harga'],
-                'quantity' => $k['jumlah'],
-                'name' => $produk['nama'] . " " . json_decode($produk['deskripsi'], true)['dimensi']['asli']['panjang'] . ' (' . $k['varian'] . ')',
+            $items = [];
+            $stockUpdates = [];
+            $total = 0;
+            foreach ($cart as $cartRow) {
+                $productId = (int)($cartRow['id_barang'] ?? 0);
+                $quantity = filter_var($cartRow['jumlah'] ?? null, FILTER_VALIDATE_INT);
+                $variantName = trim((string)($cartRow['varian'] ?? ''));
+                if ($quantity === false || $quantity < 1 || $quantity > 99 || $variantName === '' || !isset($lockedProducts[$productId])) {
+                    throw new \RuntimeException('Rincian produk atau jumlah pesanan tidak valid.');
+                }
+
+                $product = $lockedProducts[$productId]['row'];
+                $variantIndex = null;
+                foreach ($lockedProducts[$productId]['variants'] as $index => $variant) {
+                    if (strcasecmp((string)($variant['nama'] ?? ''), $variantName) === 0) {
+                        $variantIndex = $index;
+                        break;
+                    }
+                }
+                if ($variantIndex === null) throw new \RuntimeException('Varian produk sudah tidak tersedia.');
+
+                $stock = (int)($lockedProducts[$productId]['variants'][$variantIndex]['stok'] ?? 0);
+                if ($stock < $quantity) throw new \RuntimeException('Stok tidak cukup untuk ' . ($product['nama'] ?? 'produk') . ' (' . $variantName . ').');
+                $lockedProducts[$productId]['variants'][$variantIndex]['stok'] = $stock - $quantity;
+
+                $basePrice = max(0, (int)($product['harga'] ?? 0));
+                $discount = max(0, min(100, (int)($product['diskon'] ?? 0)));
+                $unitPrice = (int)round($basePrice * (100 - $discount) / 100);
+                $description = json_decode((string)($product['deskripsi'] ?? ''), true);
+                $length = $description['dimensi']['asli']['panjang'] ?? '';
+                $itemName = trim((string)$product['nama'] . ' ' . $length . ' (' . $variantName . ')');
+                $items[] = ['id' => $productId, 'price' => $unitPrice, 'quantity' => $quantity, 'name' => $itemName];
+                $total += $unitPrice * $quantity;
+            }
+
+            foreach ($lockedProducts as $productId => $productState) {
+                $this->barangModel->where('id', $productId)->set([
+                    'varian' => json_encode($productState['variants'], JSON_UNESCAPED_UNICODE),
+                ])->update();
+            }
+
+            $orderId = 'TOKO' . date('ymdHis') . strtoupper(bin2hex(random_bytes(5)));
+            $timestamp = date('Y-m-d H:i:s', strtotime('+7 hours'));
+            $order = [
+                'data_mid' => json_encode([
+                    'transaction_time' => $timestamp,
+                    'order_id' => $orderId,
+                    'gross_amount' => $total,
+                    'payment_type' => 'toko',
+                ], JSON_UNESCAPED_UNICODE),
+                'id_midtrans' => $orderId,
+                'email' => (string)($address['email_pemesan'] ?? session()->get('email')),
+                'kurir' => json_encode([]),
+                'resi' => 'Menunggu pengiriman',
+                'harga' => $total,
+                'nama' => (string)($address['nama_penerima'] ?? session()->get('nama')),
+                'nohp' => (string)($address['nohp_penerima'] ?? session()->get('nohp')),
+                'alamat' => (string)$address['alamat_lengkap'],
+                'status' => 'Proses',
+                'id_marketplace' => '',
+                'items' => json_encode($items, JSON_UNESCAPED_UNICODE),
             ];
-            array_push($items, $item);
-        }
+            if (!$this->pemesananModel->insert($order)) throw new \RuntimeException('Pesanan gagal disimpan.');
 
-        $pesananke = $this->pemesananModel->orderBy('id', 'desc')->first();
-        $idFix = "TOKO" . (sprintf("%08d", $pesananke ? ((int)$pesananke['id'] + 1) : 1));
-        $randomId = "TOKO" . rand();
-        $tanggal = date('Y-m-d H:i:s', strtotime('+7 hours'));
-        $data = [
-            'data_mid'          => json_encode([
-                'transaction_time'  => $tanggal,
-                'order_id'          => $idFix,
-                'gross_amount'      => $hargaTotal,
-                'payment_type'      => 'toko'
-            ]),
-            'id_midtrans'       => $idFix,
-            'email'             => $email,
-            'kurir'             => json_encode([]),
-            'resi'              => 'Menunggu pengiriman',
-            'harga'             => $hargaTotal,
-            'nama'              => $nama,
-            'nohp'              => $nohp,
-            'alamat'            => $alamat['alamat_lengkap'],
-            'status'            => 'Proses',
-            'id_marketplace'    => '',
-            'items'             => json_encode($items),
-        ];
-        $this->pemesananModel->insert($data);
-
-        //insert pesanan gudang
-        foreach ($items as $i) {
-            if ($i['name'] != "Biaya Ongkir" && $i['name'] != "Biaya Admin") {
-                for ($x = 1; $x <= (int)$i['quantity']; $x++) {
-                    $this->pemesananGudangModel->insert([
-                        'id_pesanan' => $idFix,
-                        'tanggal' => $tanggal,
-                        'nama' => $i['name'],
-                        'id_barang' => $i['id'],
-                        'packed' => false
-                    ]);
+            foreach ($items as $item) {
+                for ($unit = 0; $unit < (int)$item['quantity']; $unit++) {
+                    if (!$this->pemesananGudangModel->insert([
+                        'id_pesanan' => $orderId,
+                        'tanggal' => $timestamp,
+                        'nama' => $item['name'],
+                        'id_barang' => $item['id'],
+                        'packed' => false,
+                    ])) throw new \RuntimeException('Antrean pesanan gagal disimpan.');
                 }
             }
-        }
 
-        //pengurangan stok
-        $dataTransaksiFulDariDatabase = $this->pemesananModel->where('id_midtrans', $idFix)->first();
-        $dataTransaksiFulDariDatabase_items = json_decode($dataTransaksiFulDariDatabase['items'], true);
-        foreach ($dataTransaksiFulDariDatabase_items as $item) {
-            $barangCurr = $this->barangModel->where('id', $item['id'])->first();
-            $varianBarangCurr = json_decode($barangCurr['varian'], true);
-            foreach ($varianBarangCurr as $ind_v => $v) {
-                if ($v['nama'] == rtrim(explode("(", $item['name'])[1], ")")) {
-                    $varianBarangCurr[$ind_v]['stok'] = (int)$v['stok'] - $item['quantity'];
-                }
-            }
-            $this->barangModel->where('id', $item['id'])->set([
-                'varian' => json_encode($varianBarangCurr)
-            ])->update();
+            if ($db->transStatus() === false) throw new \RuntimeException('Transaksi pemesanan gagal.');
+            $db->transCommit();
+            session()->remove('shop_order_token');
+            return redirect()->to('/order')->with('msg', 'Pesanan toko berhasil dibuat.');
+        } catch (\Throwable $e) {
+            if ($db->transStatus()) $db->transRollback();
+            log_message('error', 'Order toko gagal: {message}', ['message' => $e->getMessage()]);
+            $message = $e instanceof \RuntimeException
+                ? $e->getMessage()
+                : 'Pemesanan gagal diproses. Silakan coba kembali.';
+            return redirect()->back()->with('msg', $message);
         }
-
-        return redirect()->to('/order');
     }
 
     public function labelBarang($id)
@@ -2057,41 +2155,8 @@ class AdminController extends BaseController
     public function suratJalan($id_midtrans)
     {
         $pemesanan = $this->pemesananModel->getPemesanan($id_midtrans);
-        $d = strtotime("+7 hours");
-        $this->pemesananModel->where(['id_midtrans' => $id_midtrans])->set(['status_print' => 'sudah print'])->update();
+        if (!$pemesanan) return redirect()->to('/admin/order/online')->with('msg', 'Pesanan tidak ditemukan.');
         $items = [];
-        if ($pemesanan['status_print'] == 'siap') {
-            foreach (json_decode($pemesanan['items'], true) as $p) {
-                if ($p['name'] != 'Biaya Ongkir' && $p['name'] != 'Biaya Admin' && $p['name'] != 'Voucher' && strtolower($p['name']) != 'flash sale' && !str_contains(strtolower($p['name']), 'potongan')) {
-                    $produknya = $this->barangModel->getBarang($p['id']);
-                    $varian = json_decode($produknya['varian'], true);
-                    $saldo = 0;
-                    foreach ($varian as $ind_v => $v) {
-                        if (strtolower($v['nama']) == strtolower(rtrim(explode("(", $p['name'])[1], ")"))) {
-                            $saldo = (int)$v['stok'];
-                        }
-                    }
-                    // $this->kartuStokModel->insert([
-                    //     'id_barang' => $p['id'],
-                    //     'tanggal' => $tanggal,
-                    //     'keterangan' => $tanggalNoStrip . "-" . $p['id'] . "-" . strtoupper(rtrim(explode("(", $p['name'])[1], ")")) . "-" . $pemesanan['id_midtrans'],
-                    //     'debit' => 0,
-                    //     'kredit' => $p['quantity'],
-                    //     'saldo' => (int)$saldo - (int)$p['quantity'],
-                    // ]);
-                    $this->kartuStokModel
-                    ->where([
-                        'id_barang' => $p['id'],
-                        'id_pesanan'=> $pemesanan['id_midtrans'],   // tambah ini
-                    ])
-                    ->set([
-                        'pending' => false,
-                        'saldo'   => (int)$saldo - (int)$p['quantity'],
-                    ])->update();
-                    array_push($items, $p);
-                }
-            }
-        }
 
         $pemesanan['items'] = json_decode($pemesanan['items'], true);
         $pemesanan['kurir'] = json_decode($pemesanan['kurir'], true);
@@ -2111,10 +2176,35 @@ class AdminController extends BaseController
             'title' => 'Surat Jalan',
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'pemesanan'           => $pemesanan,
+            'orderId' => $id_midtrans,
             'tanggal' => date("d", $tsPemesanan) . " " . $bulan[(int)date("m", $tsPemesanan) - 1] . " " . date("Y", $tsPemesanan),
             'items' => $items
         ];
         return view('gudang/suratJalan', $data);
+    }
+
+    public function markSuratJalanPrinted($id_midtrans)
+    {
+        $db = \Config\Database::connect();
+        $db->transBegin();
+        $order = $db->query('SELECT id, status_print FROM pemesanan WHERE id_midtrans = ? FOR UPDATE', [$id_midtrans])->getRowArray();
+        if (!$order) {
+            $db->transRollback();
+            return redirect()->to('/admin/order/online')->with('msg', 'Pesanan tidak ditemukan.');
+        }
+        if (($order['status_print'] ?? '') === 'sudah print') {
+            $db->transCommit();
+            return redirect()->to('/admin/order/online')->with('msg', 'Surat jalan sudah ditandai tercetak.');
+        }
+
+        $this->pemesananModel->where('id', $order['id'])->set(['status_print' => 'sudah print'])->update();
+        $this->kartuStokModel->where(['id_pesanan' => $id_midtrans, 'pending' => true])->set(['pending' => false])->update();
+        if ($db->transStatus() === false) {
+            $db->transRollback();
+            return redirect()->to('/admin/order/online')->with('msg', 'Status cetak gagal diperbarui.');
+        }
+        $db->transCommit();
+        return redirect()->to('/admin/order/online')->with('msg', 'Surat jalan ditandai sudah dicetak.');
     }
 
     public function suratInvoice($id_pesanan)
@@ -3882,6 +3972,70 @@ private function interiorShippedQtyMap(string $idPesanan): array
         );
 
         return redirect()->to('/admin/spam-cleanup');
+    }
+
+    public function customers()
+    {
+        $page = max(1, (int)$this->request->getGet('page'));
+        $search = trim((string)$this->request->getGet('q'));
+        $builder = db_connect()->table('user u')
+            ->select('u.email, u.role, u.active, u.suspended_until, u.suspension_reason, p.nama')
+            ->join('pembeli p', 'p.email = u.email', 'left')
+            ->whereIn('u.role', ['0', '4']);
+        if ($search !== '') {
+            $builder->groupStart()
+                ->like('u.email', $search)
+                ->orLike('p.nama', $search)
+                ->groupEnd();
+        }
+        $total = (clone $builder)->countAllResults();
+        $rows = $builder->orderBy('u.email', 'ASC')->get(50, ($page - 1) * 50)->getResultArray();
+        $suspensions = new \App\Services\AccountSuspensionService();
+        foreach ($rows as &$row) {
+            $row['suspension'] = $suspensions->state((string)$row['email']);
+        }
+        unset($row);
+
+        return view('admin/customers', [
+            'title' => 'Akun Pelanggan',
+            'customers' => $rows,
+            'search' => $search,
+            'page' => $page,
+            'pages' => max(1, (int)ceil($total / 50)),
+            'msg' => session()->getFlashdata('msg'),
+            'err' => session()->getFlashdata('err'),
+        ]);
+    }
+
+    public function actionSuspendCustomer()
+    {
+        $email = strtolower(trim((string)$this->request->getPost('email')));
+        $days = (int)$this->request->getPost('days');
+        $reason = trim((string)$this->request->getPost('reason'));
+        $validEmail = filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+        $validReason = mb_strlen($reason) <= 500;
+        $saved = $validEmail && $validReason
+            && (new \App\Services\AccountSuspensionService())->suspendCustomer(
+                $email,
+                $days,
+                $reason,
+                (string)session()->get('email')
+            );
+        session()->setFlashdata($saved ? 'msg' : 'err', $saved
+            ? 'Penangguhan akun berhasil disimpan.'
+            : 'Penangguhan gagal. Periksa akun pelanggan, alasan, dan durasi (1–365 hari). Pastikan migrasi sudah dijalankan.');
+        return redirect()->to('/admin/customers');
+    }
+
+    public function actionReinstateCustomer()
+    {
+        $email = strtolower(trim((string)$this->request->getPost('email')));
+        $saved = filter_var($email, FILTER_VALIDATE_EMAIL) !== false
+            && (new \App\Services\AccountSuspensionService())->reinstateCustomer($email);
+        session()->setFlashdata($saved ? 'msg' : 'err', $saved
+            ? 'Penangguhan akun berhasil diakhiri.'
+            : 'Akun tidak ditemukan atau penangguhan tidak dapat diakhiri.');
+        return redirect()->to('/admin/customers');
     }
 
     public function activityLog()

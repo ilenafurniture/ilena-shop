@@ -23,22 +23,19 @@
                     <i class="material-icons text-light">chevron_left</i>
                     <p class="m-0 text-light">Admin</p>
                 </a>
-                <a href="/logout" class="btn" style="padding-right: 0"><i
-                        class="material-icons text-light">exit_to_app</i></a>
+                <form action="/logout" method="post" class="m-0"><?= csrf_field(); ?><button type="submit" class="btn"><i class="material-icons text-light">exit_to_app</i></button></form>
                 <?php } else if (session()->get('role') == '2') { ?>
                 <a href="/gudang/listorder" class="btn d-flex align-items-center">
                     <i class="material-icons text-light">chevron_left</i>
                     <p class="m-0 text-light">Gudang</p>
                 </a>
-                <a href="/logout" class="btn" style="padding-right: 0"><i
-                        class="material-icons text-light">exit_to_app</i></a>
+                <form action="/logout" method="post" class="m-0"><?= csrf_field(); ?><button type="submit" class="btn"><i class="material-icons text-light">exit_to_app</i></button></form>
                 <?php } else if (session()->get('role') == '3') { ?>
                 <a href="/market/product" class="btn d-flex align-items-center">
                     <i class="material-icons text-light">chevron_left</i>
                     <p class="m-0 text-light">Marketplace</p>
                 </a>
-                <a href="/logout" class="btn" style="padding-right: 0"><i
-                        class="material-icons text-light">exit_to_app</i></a>
+                <form action="/logout" method="post" class="m-0"><?= csrf_field(); ?><button type="submit" class="btn"><i class="material-icons text-light">exit_to_app</i></button></form>
                 <?php } ?>
                 <?php } else { ?>
                 <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>

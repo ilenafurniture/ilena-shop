@@ -27,6 +27,7 @@
                                         <div class="number-left"></div>
                                     </a> -->
                                     <form action="/reducecart/<?= $index ?>" method="post">
+                                        <?= csrf_field(); ?>
                                         <button type="submit">
                                             <div class="number-left"></div>
                                         </button>
@@ -34,12 +35,16 @@
                                     <input type="number" name="number" class="number-quantity" disabled
                                         value="<?= $k['jumlah'] ?>">
                                     <form action="/addcart/<?= $k['id_barang'] ?>/<?= rawurlencode($k['varian']) ?>/1" method="post">
+                                        <?= csrf_field(); ?>
                                         <button type="submit">
                                             <div class="number-right"></div>
                                         </button>
                                     </form>
                                 </div>
-                                <a href="/deletecart/<?= $index ?>" class="btn-teks-aja m-0">Hapus</a>
+                                <form action="/deletecart/<?= $index ?>" method="post" class="m-0">
+                                    <?= csrf_field(); ?>
+                                    <button type="submit" class="btn-teks-aja m-0">Hapus</button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -83,10 +88,12 @@
 
                     <div class="d-flex flex-column gap-2 align-items-end justify-content-between">
                         <form action="/deletecart/<?= $index ?>" method="post">
+                            <?= csrf_field(); ?>
                             <button type="submit" class="btn-teks-aja m-0">Hapus</button>
                         </form>
                         <div class="number-control-hp">
                             <form action="/reducecart/<?= $index ?>" method="post">
+                                <?= csrf_field(); ?>
                                 <button type="submit">
                                     <div class="number-left"></div>
                                 </button>
@@ -95,6 +102,7 @@
                                 <?= $k['jumlah'] ?>
                             </div>
                             <form action="/addcart/<?= $k['id_barang'] ?>/<?= rawurlencode($k['varian']) ?>/1" method="post">
+                                <?= csrf_field(); ?>
                                 <button type="submit">
                                     <div class="number-right"></div>
                                 </button>

@@ -45,7 +45,7 @@ btnGantiLokasiElm.addEventListener('click', () => {
             loadingElm[i].innerHTML = 'data_usage'
             loadingElm[i].classList.add('muter')
             const barangCur = barang[i];
-            const response = await fetch(`/gantilokasi/${barangCur.id}`)
+            const response = await fetch(`/gantilokasi/${barangCur.id}`, { method: 'POST' })
             if (response.status == 200) {
                 loadingElm[i].classList.remove('muter')
                 loadingElm[i].innerHTML = 'done'

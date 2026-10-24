@@ -2226,6 +2226,7 @@ function renderAll() {
 
 <!-- Map (Leaflet) -->
 <script>
+document.addEventListener('DOMContentLoaded', function() {
 window.__ILENAMAP = L.map('map').setView([-7.614529, 110.712246], 6.5);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -2236,6 +2237,7 @@ window.__ILENAMAP.on('click', function(e) {
 });
 
 renderAll();
+});
 </script>
 
 <?= $this->endSection(); ?>

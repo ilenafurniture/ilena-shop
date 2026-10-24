@@ -722,10 +722,13 @@ async function ubahStatus(id_produk, checkbox) {
     const checkedBefore = checkbox ? !checkbox.checked : null;
     if (checkbox) checkbox.disabled = true;
     try {
+        const tokenName = document.querySelector('meta[name="csrf-token-name"]')?.content;
+        const tokenHash = document.querySelector('meta[name="csrf-token-hash"]')?.content;
+        const headers = {'Accept': 'application/json'};
+        if (tokenName && tokenHash) headers['X-CSRF-TOKEN'] = tokenHash;
         const response = await fetch('/admin/activeproduct/' + encodeURIComponent(id_produk), {
-            headers: {
-                'Accept': 'application/json'
-            }
+            method: 'POST',
+            headers
         });
         if (!response.ok) throw new Error('Gagal update status');
     } catch (error) {

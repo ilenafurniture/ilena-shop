@@ -511,9 +511,13 @@ hr {
                         </div>
                     </div>
                     <?php if ($isActive): ?>
-                    <a class="btn-plain" href="/cancelvoucher/<?= $vId . "-" . $indexAddress; ?>">Lepas</a>
+                    <form action="/cancelvoucher/<?= $vId . "-" . $indexAddress; ?>" method="post" class="m-0">
+                        <?= csrf_field(); ?><button type="submit" class="btn-plain">Lepas</button>
+                    </form>
                     <?php else: ?>
-                    <a class="btn-plain" href="/usevoucher/<?= $vId . "-" . $indexAddress; ?>">Pakai</a>
+                    <form action="/usevoucher/<?= $vId . "-" . $indexAddress; ?>" method="post" class="m-0">
+                        <?= csrf_field(); ?><button type="submit" class="btn-plain">Pakai</button>
+                    </form>
                     <?php endif; ?>
                 </div>
                 <?php endforeach; ?>
@@ -582,9 +586,12 @@ hr {
                         <div class="v">Rp <?= number_format((int)$grossAmount, 0, ',', '.'); ?></div>
                     </div>
 
-                    <?php if ((string)session()->get('role') === '4') : ?>
-                    <a href="/admin/ordertoko/<?= $indexAddress; ?>" class="btn-default-merah w-100 mt-2 text-center"
-                        style="text-decoration:none;">Pesankan</a>
+                    <?php if ((string)session()->get('role') === '5' && (new \App\Services\AdminRbacService())->hasPermission((string)session()->get('email'), 'orders_online')) : ?>
+                    <form method="post" action="/admin/ordertoko/<?= esc($indexAddress, 'url'); ?>">
+                        <?= csrf_field(); ?>
+                        <input type="hidden" name="shop_order_token" value="<?= esc($shopOrderToken ?? '', 'attr'); ?>">
+                        <button type="submit" class="btn-default-merah w-100 mt-2">Pesankan</button>
+                    </form>
                     <?php else : ?>
                     <button onclick="bayar(event)" class="btn-default-merah w-100 mt-2">Bayar</button>
                     <?php endif; ?>

@@ -67,6 +67,7 @@
             <?php } ?>
 
             <form id="registerForm" action="/actionregister" method="post" autocomplete="off">
+                <?= csrf_field(); ?>
                 <!-- Honeypot (TANPA mengganggu backend). Jika bot isi ini, submit akan diblok di JS -->
                 <div class="hp-wrap" aria-hidden="true">
                     <label>Website

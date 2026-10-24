@@ -45,8 +45,9 @@
                         <td><?= esc($r['email']); ?></td>
                         <td><?= esc($r['used_at']); ?></td>
                         <td>
-                            <a class="btn btn-sm btn-outline-danger" onclick="return confirm('Hapus log ini?')"
-                                href="/admin/voucher/usage/delete/<?= (int)$r['id']; ?>">Hapus</a>
+                            <form method="post" action="/admin/voucher/usage/delete/<?= (int)$r['id']; ?>" onsubmit="return confirm('Hapus log ini?')">
+                                <button class="btn btn-sm btn-outline-danger" type="submit">Hapus</button>
+                            </form>
                         </td>
                     </tr>
                     <?php endforeach; else: ?>

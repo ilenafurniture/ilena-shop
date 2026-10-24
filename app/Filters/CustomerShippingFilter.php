@@ -11,7 +11,14 @@ class CustomerShippingFilter implements FilterInterface
     public function before(RequestInterface $request, $arguments = null)
     {
         if (session()->get('role') == '2') {
-            return redirect()->to('/gudang/listorder');
+            session()->destroy();
+            return redirect()->to('/login')->with('msg', 'Akses akun Gudang sudah dinonaktifkan. Hubungi administrator.');
+        }
+        $suspension = (new \App\Services\AccountSuspensionService())->enforceSession();
+        if ($suspension !== null) {
+            $until = new \DateTimeImmutable($suspension['until'], new \DateTimeZone('UTC'));
+            $when = $until->format('d M Y H:i') . ' UTC';
+            return redirect()->to('/login')->with('msg', 'Akun Anda ditangguhkan ' . $when . '. Silakan hubungi admin.');
         }
     }
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
