@@ -17,12 +17,27 @@ if (isset($_GET['koleksi'])) {
     }
 }
 
+$queryProduk = trim((string) ($_GET['q'] ?? ''));
+if ($queryProduk !== '') {
+    $queryFolded = mb_strtolower($queryProduk, 'UTF-8');
+    $produk = array_values(array_filter($produk, static function (array $item) use ($queryFolded): bool {
+        $searchText = mb_strtolower(implode(' ', [
+            (string) ($item['nama'] ?? ''),
+            (string) ($item['kategori'] ?? ''),
+            (string) ($item['subkategori'] ?? ''),
+            (string) ($item['id'] ?? ''),
+        ]), 'UTF-8');
+        return mb_strpos($searchText, $queryFolded, 0, 'UTF-8') !== false;
+    }));
+}
+
 $totalProdukFiltered = count($produk);
-$totalProdukAktif = count(array_filter($produk, static fn($item) => !empty($item['active'])));
-$totalKoleksi = count($koleksi ?? []);
-$hitungPag = ceil($totalProdukFiltered / 10);
-$pag = 1;
-if (isset($_GET['pag'])) $pag = (int)$_GET['pag'];
+$hitungPag = (int) ceil($totalProdukFiltered / 10);
+$pag = max(1, (int) ($_GET['pag'] ?? 1));
+if ($hitungPag > 0) $pag = min($pag, $hitungPag);
+$paginationFilters = [];
+if ($koleksiterpilih !== '') $paginationFilters['koleksi'] = $koleksiterpilih;
+if ($queryProduk !== '') $paginationFilters['q'] = $queryProduk;
 $produkLama = array_slice($produk, ($pag - 1) * 10);
 $produk = [];
 for ($i = 0; $i < 10; $i++) {
@@ -70,15 +85,17 @@ $barangThumbUrl = function ($product) {
 }
 
 .page-wrap {
-    padding: 4px 2px 2rem;
+    max-width: 1480px;
+    margin: 0 auto;
+    padding: 8px 16px 2rem;
 }
 
 .admin-product-hero {
     background: rgba(255, 255, 255, .86);
     border: 1px solid #eef2f7;
-    border-radius: 22px;
-    padding: 20px;
-    box-shadow: 0 18px 45px rgba(15, 23, 42, .06);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 6px 24px rgba(15, 23, 42, .045);
     margin-bottom: 16px;
 }
 
@@ -93,7 +110,7 @@ $barangThumbUrl = function ($product) {
 .page-title {
     margin: 0 0 6px;
     line-height: 1.1;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 850;
     letter-spacing: -.045em;
     color: #0f172a;
@@ -102,37 +119,6 @@ $barangThumbUrl = function ($product) {
 .meta-line {
     color: var(--slate-600);
     font-size: 13px
-}
-
-.admin-stat-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
-}
-
-.admin-stat-card {
-    padding: 13px 14px;
-    border-radius: 16px;
-    border: 1px solid #eef2f7;
-    background: #f8fafc;
-}
-
-.admin-stat-card span {
-    display: block;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    color: #94a3b8;
-    margin-bottom: 4px;
-}
-
-.admin-stat-card strong {
-    display: block;
-    font-size: 22px;
-    line-height: 1;
-    color: #111827;
-    letter-spacing: -.04em;
 }
 
 /* Toolbar */
@@ -150,6 +136,14 @@ $barangThumbUrl = function ($product) {
     gap: 10px;
     align-items: center;
     flex: 1;
+}
+
+@media (max-width: 640px) {
+    .page-wrap { padding: 12px 10px 24px; }
+    .admin-product-hero { padding: 14px; }
+    .page-head { align-items: flex-start; flex-direction: column; }
+    .toolbar-left { width: 100%; flex-wrap: wrap; }
+    .searchbox { min-width: 100%; }
 }
 
 .toolbar-right {
@@ -405,11 +399,6 @@ $barangThumbUrl = function ($product) {
         padding-bottom: 2px;
     }
 
-    .admin-stat-grid {
-        grid-template-columns: repeat(3, minmax(96px, 1fr));
-        overflow-x: auto;
-    }
-
     .toolbar-left,
     .searchbox {
         width: 100%;
@@ -485,52 +474,44 @@ $barangThumbUrl = function ($product) {
         <div class="page-head">
             <div>
                 <h1 class="page-title">Produk Saya</h1>
-                <div class="meta-line"><?= $totalProdukFiltered; ?> produk ditemukan<?= $koleksiterpilih ? " • Koleksi: <b>".htmlspecialchars(str_replace('-', ' ', $koleksiterpilih))."</b>" : '' ?></div>
+                <div class="meta-line"><?= number_format($totalProdukFiltered, 0, ',', '.'); ?> produk<?= $koleksiterpilih ? " · " . esc(str_replace('-', ' ', $koleksiterpilih)) : '' ?><?= $queryProduk !== '' ? ' · “' . esc($queryProduk) . '”' : '' ?></div>
             </div>
             <div class="toolbar-right">
                 <a href="/admin/producttable" class="btn btn-outline-dark">Export</a>
                 <a href="/admin/addproduct" class="btn-default-merah">Tambah Produk</a>
-                <a href="/admin/changepic" class="btn-default-merah">Resize Img</a>
             </div>
         </div>
 
-        <div class="admin-stat-grid">
-            <div class="admin-stat-card">
-                <span>Total Produk</span>
-                <strong><?= number_format($totalProdukFiltered, 0, ',', '.'); ?></strong>
-            </div>
-            <div class="admin-stat-card">
-                <span>Produk Aktif</span>
-                <strong><?= number_format($totalProdukAktif, 0, ',', '.'); ?></strong>
-            </div>
-            <div class="admin-stat-card">
-                <span>Koleksi</span>
-                <strong><?= number_format($totalKoleksi, 0, ',', '.'); ?></strong>
-            </div>
-        </div>
     </div>
 
-    <!-- Toolbar filter & search (frontend-only) -->
+    <!-- Filter dan pencarian untuk seluruh katalog -->
     <div class="toolbar">
-        <div class="toolbar-left">
+        <form class="toolbar-left" id="productFilterForm" method="get" action="/admin/product">
             <div class="filter-select">
-                <!-- Selected adalah atribut yang aktif -->
-                <select class="form-select" onchange="gantikoleksi(event)">
-                    <option value="semua" <?= $koleksiterpilih == '' ? 'selected' : '' ?>>Semua</option>
+                <select class="form-select" name="koleksi" aria-label="Filter koleksi" onchange="this.form.submit()">
+                    <option value="" <?= $koleksiterpilih == '' ? 'selected' : '' ?>>Semua koleksi</option>
                     <?php foreach ($koleksi as $k) { ?>
-                    <option value="<?= str_replace(' ', '-', $k['nama']) ?>"
+                    <option value="<?= esc(str_replace(' ', '-', $k['nama']), 'attr') ?>"
                         <?= $koleksiterpilih == str_replace(' ', '-', $k['nama']) ? 'selected' : '' ?>>
-                        <?= $k['nama'] ?>
+                        <?= esc($k['nama']) ?>
                     </option>
                     <?php } ?>
                 </select>
             </div>
             <div class="searchbox">
                 <i class="material-icons">search</i>
-                <input id="filterInput" type="text" placeholder="Cari nama, kategori, atau ID…">
+                <input id="filterInput" name="q" type="search" value="<?= esc($queryProduk, 'attr') ?>" placeholder="Cari produk…" aria-label="Cari semua produk">
             </div>
-        </div>
+            <button class="btn-default-merah" type="submit">Cari</button>
+            <?php if ($queryProduk !== '' || $koleksiterpilih !== ''): ?>
+                <a class="btn btn-outline-secondary" href="/admin/product">Reset</a>
+            <?php endif; ?>
+        </form>
     </div>
+
+    <?php if ($totalProdukFiltered === 0): ?>
+        <div class="alert alert-light border" role="status">Produk tidak ditemukan.</div>
+    <?php endif; ?>
 
     <?php if (session()->getFlashdata('success')): ?>
         <div class="alert alert-success"><?= esc(session()->getFlashdata('success')); ?></div>
@@ -688,21 +669,21 @@ $barangThumbUrl = function ($product) {
     <div class="container-pag">
         <?php if ($pag > 1) { ?>
         <a class="item-pag"
-            href="/admin/product?pag=<?= $pag - 1; ?><?= isset($_GET['koleksi']) ? '&koleksi=' . $_GET['koleksi'] : ''; ?>">
+            href="/admin/product?<?= esc(http_build_query(array_merge($paginationFilters, ['pag' => $pag - 1])), 'attr') ?>">
             <i class="material-icons">chevron_left</i>
         </a>
         <?php } ?>
 
         <?php for ($i = 0; $i < $hitungPag; $i++) { ?>
         <a class="item-pag <?= $pag == ($i + 1) ? 'active' : ''; ?>"
-            href="/admin/product?pag=<?= $i + 1; ?><?= isset($_GET['koleksi']) ? '&koleksi=' . $_GET['koleksi'] : ''; ?>">
+            href="/admin/product?<?= esc(http_build_query(array_merge($paginationFilters, ['pag' => $i + 1])), 'attr') ?>">
             <?= $i + 1; ?>
         </a>
         <?php } ?>
 
         <?php if ($pag < $hitungPag) { ?>
         <a class="item-pag"
-            href="/admin/product?pag=<?= $pag + 1; ?><?= isset($_GET['koleksi']) ? '&koleksi=' . $_GET['koleksi'] : ''; ?>">
+            href="/admin/product?<?= esc(http_build_query(array_merge($paginationFilters, ['pag' => $pag + 1])), 'attr') ?>">
             <i class="material-icons">chevron_right</i>
         </a>
         <?php } ?>
@@ -710,14 +691,6 @@ $barangThumbUrl = function ($product) {
 </div>
 
 <script>
-function gantikoleksi(e) {
-    if (e.target.value == 'semua') {
-        window.location.href = window.location.pathname;
-    } else {
-        window.location.href = window.location.pathname + '?koleksi=' + e.target.value;
-    }
-}
-
 async function ubahStatus(id_produk, checkbox) {
     const checkedBefore = checkbox ? !checkbox.checked : null;
     if (checkbox) checkbox.disabled = true;
@@ -742,27 +715,6 @@ async function ubahStatus(id_produk, checkbox) {
 function pergiKeProduct(nama_produk) {
     window.location.href = "/product/" + nama_produk
 }
-
-// Filter frontend (tidak mengubah sistem)
-(function() {
-    const input = document.getElementById('filterInput');
-    if (!input) return;
-
-    const selectors = [
-        '.show-block-ke-hide .isi-table',
-        '.hide-ke-show-block .isi-table'
-    ];
-
-    input.addEventListener('input', function() {
-        const q = this.value.trim().toLowerCase();
-        selectors.forEach(sel => {
-            document.querySelectorAll(sel).forEach(row => {
-                const bag = row.getAttribute('data-filter') || '';
-                row.style.display = q ? (bag.includes(q) ? '' : 'none') : '';
-            });
-        });
-    });
-})();
 
 (function() {
     const toolbar = document.getElementById('bulkToolbar');

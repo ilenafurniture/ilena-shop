@@ -4,13 +4,15 @@
 <style>
 /* ====== Layout & Cards ====== */
 .page-wrap {
-    padding: 2em;
+    max-width: 1480px;
+    margin: 0 auto;
+    padding: clamp(16px, 2.2vw, 32px);
 }
 
 .form-grid {
     display: grid;
     grid-template-columns: 1.1fr 0.9fr;
-    gap: 24px;
+    gap: 16px;
 }
 
 @media (max-width: 992px) {
@@ -21,13 +23,13 @@
 
 .card {
     background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, .06);
-    border: 1px solid rgba(0, 0, 0, .06);
+    border-radius: 14px;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, .035);
+    border: 1px solid #edf0f3;
 }
 
 .card-header {
-    padding: 18px 20px;
+    padding: 15px 18px;
     border-bottom: 1px solid rgba(0, 0, 0, .06);
     display: flex;
     align-items: center;
@@ -42,7 +44,7 @@
 }
 
 .card-body {
-    padding: 18px 20px;
+    padding: 16px 18px;
 }
 
 .section-title {
@@ -273,19 +275,19 @@
 
 .image-actions {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 4px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
     margin-top: 6px;
 }
 
 .image-actions button,
 .image-actions label {
-    min-height: 32px;
+    min-height: 44px;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     background: #fff;
     color: #374151;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     display: inline-flex;
     align-items: center;
@@ -301,6 +303,35 @@
 
 .image-actions .danger {
     color: #dc2626;
+}
+
+.image-actions button:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.missing-image-state {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    text-align: center;
+    color: #7f1d1d;
+    background: #fff7f7;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.missing-image-state[hidden] {
+    display: none !important;
+}
+
+.image-order-note {
+    margin: 0 0 10px;
+    color: #64748b;
+    font-size: 12px;
 }
 
 .variant-tools {
@@ -347,12 +378,29 @@
 }
 
 .preview-hover {
-    width: 100%;
-    aspect-ratio: 1 / 1;
+    width: 88px;
+    height: 88px;
     object-fit: cover;
     border-radius: 14px;
     border: 1px solid #e5e7eb;
     background: #f9fafb;
+}
+
+.media-help {
+    margin: 0 0 10px;
+    color: #64748b;
+    font-size: 12px;
+}
+
+@media (max-width: 640px) {
+    .page-wrap { padding: 14px 12px 88px; }
+    .card-header, .card-body { padding: 14px; }
+    .table-input td { display: block; width: 100% !important; padding: 4px 0; }
+    .table-input td:first-child { padding: 8px 0 2px; }
+    .image-tile { width: 108px; }
+    .item-gambar { width: 100px; height: 100px; }
+    .image-actions { gap: 4px; }
+    .image-actions button, .image-actions label { min-height: 42px; padding: 3px; }
 }
 
 /* ====== Chips ====== */
@@ -594,7 +642,6 @@ const App = () => {
   const [gambarSrc, setGambarSrc] = useState([]);
   const [gambarFile, setGambarFile] = useState([]); // dipertahankan untuk kompatibilitas state lama
   const [loading, setLoading] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
   const idStr = useRef("1-00-000-XX");
 
   // Loading overlay
@@ -823,49 +870,8 @@ const App = () => {
     });
   };
 
-  const moveImageToIndex = (variantIndex, fromIndex, toIndex) => {
-    if (fromIndex === toIndex) return;
-    updateVariantImages(variantIndex, list => {
-      if (fromIndex < 0 || toIndex < 0 || fromIndex >= list.length || toIndex >= list.length) return list;
-      const copy = [...list];
-      const [item] = copy.splice(fromIndex, 1);
-      copy.splice(toIndex, 0, item);
-      return copy;
-    });
-    setSelectedImage(null);
-  };
-
-  const swapImage = (variantIndex, fromIndex, toIndex) => {
-    if (fromIndex === toIndex) return;
-    updateVariantImages(variantIndex, list => {
-      if (fromIndex < 0 || toIndex < 0 || fromIndex >= list.length || toIndex >= list.length) return list;
-      const copy = [...list];
-      [copy[fromIndex], copy[toIndex]] = [copy[toIndex], copy[fromIndex]];
-      return copy;
-    });
-    setSelectedImage(null);
-  };
-
   const removeImage = (variantIndex, imageIndex) => {
     updateVariantImages(variantIndex, list => list.filter((_, i) => i !== imageIndex));
-    setSelectedImage(null);
-  };
-
-  const handleImageClick = (variantIndex, imageIndex) => {
-    if (selectedImage && selectedImage.variantIndex === variantIndex && selectedImage.imageIndex !== imageIndex) {
-      swapImage(variantIndex, selectedImage.imageIndex, imageIndex);
-      return;
-    }
-    setSelectedImage({ variantIndex, imageIndex });
-  };
-
-  const handleImageDrop = (event, variantIndex, imageIndex) => {
-    event.preventDefault();
-    event.currentTarget.classList.remove('dragging');
-    let payload = null;
-    try { payload = JSON.parse(event.dataTransfer.getData('text/plain') || '{}'); } catch (_) {}
-    if (!payload || payload.variantIndex !== variantIndex) return;
-    moveImageToIndex(variantIndex, payload.imageIndex, imageIndex);
   };
 
   const addOrReplaceImage = async (variantIndex, file, imageIndex = null) => {
@@ -889,19 +895,6 @@ const App = () => {
       return list.map((oldItem, i) => i === imageIndex ? item : oldItem);
     });
   };
-
-  useEffect(() => {
-    const onKeyDown = (e) => {
-      if (!selectedImage) return;
-      if (e.key === 'Delete' || e.key === 'Backspace') {
-        e.preventDefault();
-        removeImage(selectedImage.variantIndex, selectedImage.imageIndex);
-      }
-      if (e.key === 'Escape') setSelectedImage(null);
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [selectedImage, gambarSrc]);
 
   // Badge status jadwal diskon
   const renderBadgeJadwal = () => {
@@ -1178,13 +1171,10 @@ const App = () => {
         <div className="card">
           <div className="card-header"><h2>Media & Varian</h2></div>
           <div className="card-body">
-            <div style={{padding:'10px 12px', borderRadius:'12px', background:'#f8fafc', border:'1px solid #e5e7eb', marginBottom:'14px', color:'#475569', fontSize:'13px', lineHeight:1.55}}>
-              <b>Aturan upload foto:</b> maksimal {MAX_UPLOAD_MB}MB per foto, maksimal {MAX_PRODUCT_IMAGES} foto produk, format WebP/AVIF.
-              Sistem akan mengompres foto otomatis sebelum disimpan.
-            </div>
+            <p className="media-help">WebP atau AVIF · maks. {MAX_UPLOAD_MB} MB per foto · maks. {MAX_PRODUCT_IMAGES} foto.</p>
             <div className="section-title">Gambar Hover</div>
-            <img className="preview-hover" src={hoverSrc || "/img/nopic.jpg"} alt="preview hover" />
-            <div style={{ margin: '10px 0 20px' }}>
+            <div style={{display:'flex',alignItems:'center',gap:'12px',marginBottom:'18px'}}>
+              <img className="preview-hover" src={hoverSrc || "/img/nopic.jpg"} alt="Pratinjau gambar hover" />
               <input
                 onChange={async (e) => {
                   const file = e.target.files[0];
@@ -1218,37 +1208,29 @@ const App = () => {
                     <div className="variant-tools">
                       <div>
                         <div className="section-title" style={{ margin:0 }}>Varian #{ind_v + 1}</div>
-                        <div className="variant-help">Drag foto untuk geser urutan. Klik 2 foto untuk tukar posisi. Double click untuk ganti. Arahkan mouse untuk hapus.</div>
+                        <div className="variant-help">{(gambarSrc[ind_v] || []).length} foto</div>
                       </div>
                     </div>
+                    {ind_v === 0 && <p className="image-order-note">Foto pertama tampil di katalog.</p>}
 
                     <div className="container-gambar">
                       {gambarSrc.length > 0 && (gambarSrc[ind_v] || []).map((g, ind_g) => {
-                        const isSelected = selectedImage && selectedImage.variantIndex === ind_v && selectedImage.imageIndex === ind_g;
                         return (
                         <div key={ind_g} className="image-tile">
                           <input id={`replace-file-${ind_v}-${ind_g}`} type="file" accept="image/webp,image/avif" onChange={(e) => { addOrReplaceImage(ind_v, e.target.files[0], ind_g); e.target.value = ''; }} />
-                          <div
-                            className={`item-gambar${isSelected ? ' selected' : ''}`}
-                            title="Drag untuk pindah, klik 2 foto untuk tukar, double click untuk ganti"
-                            draggable="true"
-                            tabIndex="0"
-                            onClick={() => handleImageClick(ind_v, ind_g)}
-                            onDoubleClick={() => document.getElementById(`replace-file-${ind_v}-${ind_g}`)?.click()}
-                            onDragStart={(e) => {
-                              e.dataTransfer.setData('text/plain', JSON.stringify({ variantIndex: ind_v, imageIndex: ind_g }));
-                              e.currentTarget.classList.add('dragging');
-                            }}
-                            onDragEnd={(e) => e.currentTarget.classList.remove('dragging')}
-                            onDragOver={(e) => e.preventDefault()}
-                            onDrop={(e) => handleImageDrop(e, ind_v, ind_g)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleImageClick(ind_v, ind_g); }
-                            }}>
-                            <span className="img-no">#{ind_g + 1}{getImageSlot(g) ? ` / file ${getImageSlot(g)}` : ' / baru'}</span>
-                            <p>{getImageFile(g) instanceof File ? 'baru' : 'lama'}</p>
-                            <button type="button" className="quick-delete" title="Hapus foto" aria-label={`Hapus foto ${ind_g + 1}`} onClick={(e) => { e.stopPropagation(); removeImage(ind_v, ind_g); }}>×</button>
-                            <img src={getImageSrc(g) || "/img/nopic.jpg"} alt={`Foto varian ${ind_v + 1} nomor ${ind_g + 1}`} loading="lazy" decoding="async" />
+                          <div className="item-gambar">
+                            <span className="img-no">{ind_g + 1}</span>
+                            <div className="missing-image-state" hidden>Foto tidak tersedia<br/>Unggah ulang</div>
+                            <img src={getImageSrc(g) || "/img/nopic.jpg"} alt={`Foto varian ${ind_v + 1} nomor ${ind_g + 1}`} loading="lazy" decoding="async"
+                              onError={(e) => { e.currentTarget.hidden = true; e.currentTarget.parentElement?.querySelector('.missing-image-state')?.removeAttribute('hidden'); }}
+                              onLoad={(e) => { e.currentTarget.hidden = false; e.currentTarget.parentElement?.querySelector('.missing-image-state')?.setAttribute('hidden', 'hidden'); }} />
+                          </div>
+                          <div className="image-actions">
+                            <button type="button" title="Naikkan urutan" onClick={() => moveImage(ind_v, ind_g, -1)} disabled={ind_g === 0} aria-label={`Pindahkan foto ${ind_g + 1} ke atas`}><i className="material-icons">north</i></button>
+                            <button type="button" title="Turunkan urutan" onClick={() => moveImage(ind_v, ind_g, 1)} disabled={ind_g === (gambarSrc[ind_v] || []).length - 1} aria-label={`Pindahkan foto ${ind_g + 1} ke bawah`}><i className="material-icons">south</i></button>
+                            <button type="button" title="Jadikan cover" onClick={() => moveImageToFirst(ind_v, ind_g)} disabled={ind_g === 0} aria-label={`Jadikan foto ${ind_g + 1} cover`}><i className="material-icons">star</i></button>
+                            <label htmlFor={`replace-file-${ind_v}-${ind_g}`} title="Ganti foto"><i className="material-icons">edit</i><span>Ganti</span></label>
+                            <button type="button" className="danger" title="Hapus foto" onClick={() => removeImage(ind_v, ind_g)} aria-label={`Hapus foto ${ind_g + 1}`}><i className="material-icons">delete</i></button>
                           </div>
                         </div>
                         );
