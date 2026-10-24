@@ -30,27 +30,25 @@ jobs:
             exit 1
           fi
 
-          IMAGE_STASH=""
-          if [ -n "$(git status --porcelain -- public/img/barang)" ]; then
-            echo "[deploy] temporarily preserve production product images only"
-            git stash push --include-untracked -m "ci-preserve-production-images-$(date +%Y%m%d-%H%M%S)" -- public/img/barang
-            IMAGE_STASH="$(git rev-parse -q --verify refs/stash || true)"
-            if [ -z "$IMAGE_STASH" ]; then
-              echo "ERROR: failed to preserve production product images."
-              exit 1
-            fi
-          fi
-
           echo "[deploy] fetch origin/main"
           git fetch origin
-          echo "[deploy] fast-forward to origin/main"
-          git merge --ff-only origin/main
+          echo "[deploy] update tracked application files; preserve VPS product images"
+          while IFS= read -r -d '' path; do
+            case "$path" in
+              public/img/barang/*)
+                echo "ERROR: image path unexpectedly entered the application update list."
+                exit 1
+                ;;
+            esac
 
-          if [ -n "$IMAGE_STASH" ]; then
-            echo "[deploy] restore production product images"
-            git stash apply "$IMAGE_STASH"
-            git stash drop "$IMAGE_STASH"
-          fi
+            if git cat-file -e "origin/main:$path" 2>/dev/null; then
+              git checkout origin/main -- "$path"
+            else
+              rm -f -- "$path"
+              git rm --cached --ignore-unmatch -- "$path" >/dev/null
+            fi
+          done < <(git diff --name-only -z HEAD origin/main -- . ':(exclude)public/img/barang/**')
+          git reset --soft origin/main
 
           echo "[deploy] run database migrations"
           php spark migrate
