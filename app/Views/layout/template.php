@@ -207,8 +207,13 @@
 <?php
 $layoutPath = trim((string) service('uri')->getPath(), '/');
 $isInternalArea = preg_match('~^(admin|analytics|market|editarticle|changepic|gantilokasi|cobainput|gamwm)(/|$)~i', $layoutPath) === 1;
+$layoutPath = '/' . strtolower(trim($layoutPath, '/'));
+$layoutIsAuthPage = in_array($layoutPath, ['/login', '/register', '/verify'], true);
+$layoutIsCheckoutPage = preg_match('~^/(cart|shipping|payment|progresspay|successpay|cencelpay|expirepay)(/|$)~', $layoutPath) === 1;
+$layoutIsAccountPage = preg_match('~^/(account|address|order|orderdetail|invoice|wishlist)(/|$)~', $layoutPath) === 1;
+$layoutHeaderMode = $layoutIsAuthPage ? 'auth' : ($layoutIsCheckoutPage ? 'checkout' : ($layoutIsAccountPage ? 'account' : 'full'));
 ?>
-<body class="<?= $isInternalArea ? 'ilena-internal' : 'ilena-storefront'; ?>">
+<body class="<?= $isInternalArea ? 'ilena-internal' : 'ilena-storefront ilena-header--' . $layoutHeaderMode; ?>">
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K5BLN7VV" height="0" width="0"
             style="display:none;visibility:hidden"></iframe></noscript>
@@ -272,8 +277,12 @@ $isInternalArea = preg_match('~^(admin|analytics|market|editarticle|changepic|ga
     <script defer crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 
-    <?= $this->include('layout/navbar'); ?>
-    <?= $this->include('layout/navbarHp'); ?>
+    <?php if (!$isInternalArea && $layoutHeaderMode === 'full'): ?>
+        <?= $this->include('layout/navbar'); ?>
+        <?= $this->include('layout/navbarHp'); ?>
+    <?php elseif (!$isInternalArea): ?>
+        <?= $this->include('layout/navbarCompact', ['headerMode' => $layoutHeaderMode]); ?>
+    <?php endif; ?>
     <div style="flex: 1; position: relative; min-height: 500px;">
         <?= $this->renderSection('content'); ?>
     </div>

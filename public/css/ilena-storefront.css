@@ -329,9 +329,404 @@ body.ilena-storefront .breadcrumb a:hover {
     color: var(--merah);
 }
 
+body.ilena-storefront .ilena-compact-header {
+    position: sticky;
+    top: 0;
+    z-index: 105;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 68px;
+    gap: 20px;
+    padding: 12px clamp(18px, 5vw, 72px);
+    border-bottom: 1px solid rgba(255, 255, 255, .10);
+    background: #282521;
+    box-shadow: 0 5px 20px rgba(30, 24, 20, .10);
+}
+
+body.ilena-storefront .ilena-compact-header__logo {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    min-height: 44px;
+}
+
+body.ilena-storefront .ilena-compact-header__logo img {
+    display: block;
+    width: auto;
+    max-width: 150px;
+    height: 30px;
+    object-fit: contain;
+}
+
+body.ilena-storefront .ilena-compact-header__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: clamp(14px, 2.5vw, 30px);
+}
+
+body.ilena-storefront .ilena-compact-header__link,
+body.ilena-storefront .ilena-compact-header__secure {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 44px;
+    color: rgba(255, 255, 255, .82);
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color .18s ease;
+}
+
+body.ilena-storefront .ilena-compact-header__link:hover {
+    color: #fff;
+}
+
+body.ilena-storefront .ilena-compact-header a:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+body.ilena-storefront .ilena-compact-header__secure {
+    color: rgba(255, 255, 255, .66);
+    font-size: 13px;
+}
+
+body.ilena-storefront .ilena-compact-header__secure svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: #b9d7bc;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.5;
+}
+
+body.ilena-storefront .ilena-compact-header__shop {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 8px 17px;
+    border: 1px solid rgba(255, 255, 255, .32);
+    border-radius: 999px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color .18s ease, border-color .18s ease;
+}
+
+body.ilena-storefront .ilena-compact-header__shop:hover {
+    border-color: var(--merah);
+    background: var(--merah);
+    color: #fff;
+}
+
+body.ilena-storefront .ilena-footer {
+    --footer-ink: #f5f1eb;
+    --footer-muted: rgba(245, 241, 235, .7);
+    margin-top: 52px;
+    padding: 0 clamp(18px, 4vw, 64px);
+    color: var(--footer-ink);
+    background: #282521;
+}
+
+body.ilena-storefront .ilena-footer__main {
+    display: grid;
+    grid-template-columns: minmax(190px, 1.3fr) repeat(2, minmax(125px, .8fr)) repeat(3, minmax(135px, 1fr));
+    gap: clamp(24px, 4vw, 54px);
+    max-width: 1440px;
+    margin-inline: auto;
+    padding-block: 48px 38px;
+}
+
+body.ilena-storefront .ilena-footer__brand p {
+    max-width: 250px;
+    margin: 16px 0 0;
+    color: var(--footer-muted);
+    font-size: 14px;
+}
+
+body.ilena-storefront .ilena-footer__wordmark {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+}
+
+body.ilena-storefront .ilena-footer__wordmark img {
+    display: block;
+    width: auto;
+    max-width: 150px;
+    height: auto;
+    max-height: 28px;
+    object-fit: contain;
+}
+
+body.ilena-storefront .ilena-footer__column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 9px;
+}
+
+body.ilena-storefront .ilena-footer__column h2 {
+    margin: 0 0 6px;
+    color: #fff;
+    font-family: "Inter", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+body.ilena-storefront .ilena-footer__column a,
+body.ilena-storefront .ilena-footer__bottom a {
+    color: var(--footer-muted);
+    font-size: 14px;
+    text-decoration: none;
+    transition: color .18s ease;
+}
+
+body.ilena-storefront .ilena-footer__column a:hover,
+body.ilena-storefront .ilena-footer__bottom a:hover {
+    color: #fff;
+}
+
+body.ilena-storefront .ilena-footer__payment-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    max-width: 280px;
+}
+
+body.ilena-storefront .ilena-footer__payment-list img {
+    display: block;
+    width: 43px;
+    height: 29px;
+    padding: 4px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, .94);
+    object-fit: contain;
+}
+
+body.ilena-storefront .ilena-footer__column a.ilena-footer__midtrans {
+    margin-top: 3px;
+    color: rgba(245, 241, 235, .56);
+    font-size: 12px;
+}
+
+body.ilena-storefront .ilena-footer__sister-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-top: 10px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, .14);
+}
+
+body.ilena-storefront .ilena-footer__sister-brand span {
+    color: rgba(245, 241, 235, .48);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+body.ilena-storefront .ilena-footer__bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding-block: 18px 22px;
+    border-top: 1px solid rgba(255, 255, 255, .14);
+    color: rgba(245, 241, 235, .62);
+    font-size: 12px;
+}
+
+body.ilena-storefront .ilena-footer__bottom nav,
+body.ilena-storefront .ilena-footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+}
+
+body.ilena-storefront .ilena-footer--minimal {
+    margin-top: 28px;
+    padding-inline: 20px;
+    background: transparent;
+    color: var(--ilena-muted);
+}
+
+body.ilena-storefront .ilena-footer__minimal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+    max-width: 960px;
+    margin-inline: auto;
+    padding-block: 18px 24px;
+    border-top: 1px solid var(--ilena-line);
+}
+
+body.ilena-storefront .ilena-footer--minimal .ilena-footer__wordmark img {
+    filter: brightness(0) saturate(100%) invert(17%) sepia(8%) saturate(633%) hue-rotate(356deg) brightness(93%) contrast(87%);
+}
+
+body.ilena-storefront .ilena-footer__legal a,
+body.ilena-storefront .ilena-footer__minimal small {
+    color: var(--ilena-muted);
+    font-size: 12px;
+    text-decoration: none;
+}
+
+body.ilena-storefront .ilena-footer__legal a:hover {
+    color: var(--merah);
+}
+
+body.ilena-storefront .ilena-footer--checkout .ilena-footer__main {
+    grid-template-columns: minmax(180px, 1fr) minmax(180px, .8fr) minmax(220px, 1fr);
+    max-width: 1080px;
+    padding-block: 30px;
+}
+
+body.ilena-storefront .ilena-footer--account .ilena-footer__main {
+    grid-template-columns: minmax(180px, 1fr) minmax(180px, .8fr);
+    max-width: 900px;
+    padding-block: 30px;
+}
+
+body.ilena-storefront .ilena-footer--account .ilena-footer__bottom {
+    max-width: 900px;
+}
+
+@media (max-width: 1100px) {
+    body.ilena-storefront .ilena-footer__main {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    body.ilena-storefront .ilena-footer__brand {
+        grid-column: 1 / -1;
+    }
+}
+
 @media (max-width: 768px) {
+    body.ilena-storefront .navbar-hp-atas {
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 64px;
+        height: auto;
+        gap: 12px;
+        padding: 9px 14px;
+        border-bottom: 1px solid rgba(255, 255, 255, .10);
+        box-shadow: 0 5px 18px rgba(30, 24, 20, .12);
+    }
+
+    body.ilena-storefront .navbar-hp-atas > a {
+        display: inline-flex;
+        flex: 0 0 40px;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    body.ilena-storefront .navbar-hp-atas > div:last-of-type {
+        flex: 0 0 44px !important;
+        width: 44px !important;
+    }
+
+    body.ilena-storefront .navbar-hp-atas label[for="n-logo"] {
+        display: flex;
+        width: 44px;
+        min-height: 44px;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    body.ilena-storefront .navbar-hp-atas #n-logo:focus-visible + label {
+        outline: 2px solid #fff;
+        outline-offset: 2px;
+        border-radius: 6px;
+    }
+
+    body.ilena-storefront .expend-hp {
+        top: 64px;
+        box-sizing: border-box;
+        height: calc(100dvh - 64px);
+        padding: 0 18px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding-bottom: max(24px, env(safe-area-inset-bottom));
+    }
+
+    body.ilena-storefront #n-logo:checked ~ .expend-hp {
+        height: calc(100dvh - 64px);
+        padding: 18px;
+    }
+
+    body.ilena-storefront .navbar-hp {
+        box-sizing: border-box;
+        height: calc(64px + env(safe-area-inset-bottom));
+        padding: 6px 8px max(6px, env(safe-area-inset-bottom));
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+    }
+
+    body.ilena-storefront .navbar-hp .item-navhp {
+        flex: 1 1 0;
+        min-width: 0;
+        min-height: 48px;
+        gap: 2px;
+    }
+
+    body.ilena-storefront .navbar-hp .item-navhp p {
+        margin: 0;
+        font-size: 10px;
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+
     body.ilena-storefront .konten {
         padding: 22px 16px 34px;
+    }
+
+    body.ilena-storefront .ilena-compact-header {
+        min-height: 60px;
+        gap: 10px;
+        padding-inline: 16px;
+    }
+
+    body.ilena-storefront .ilena-compact-header__logo img {
+        max-width: 126px;
+        height: 26px;
+    }
+
+    body.ilena-storefront .ilena-compact-header__actions {
+        gap: 10px;
+    }
+
+    body.ilena-storefront .ilena-compact-header__link,
+    body.ilena-storefront .ilena-compact-header__secure {
+        font-size: 12px;
+    }
+
+    body.ilena-storefront .ilena-compact-header__shop {
+        min-height: 40px;
+        padding-inline: 12px;
+        font-size: 12px;
+    }
+
+    body.ilena-storefront .ilena-header--checkout .ilena-compact-header__secure {
+        display: none;
     }
 
     body.ilena-storefront .container-card1 {
@@ -369,6 +764,78 @@ body.ilena-storefront .breadcrumb a:hover {
 
     body.ilena-storefront .slider .dots {
         bottom: 10px;
+    }
+
+    body.ilena-storefront .ilena-footer {
+        margin-top: 32px;
+        padding-inline: 20px;
+    }
+
+    body.ilena-storefront .ilena-footer__main,
+    body.ilena-storefront .ilena-footer--checkout .ilena-footer__main,
+    body.ilena-storefront .ilena-footer--account .ilena-footer__main {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 28px 20px;
+        padding-block: 32px 26px;
+    }
+
+    body.ilena-storefront .ilena-footer__brand {
+        grid-column: 1 / -1;
+    }
+
+    body.ilena-storefront .ilena-footer__payments {
+        grid-column: 1 / -1;
+    }
+
+    body.ilena-storefront .ilena-footer__bottom {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    body.ilena-storefront .ilena-footer__minimal {
+        gap: 12px 18px;
+    }
+}
+
+@media (max-width: 420px) {
+    body.ilena-storefront .navbar-hp-atas {
+        gap: 8px;
+        padding-inline: 10px;
+    }
+
+    body.ilena-storefront .navbar-hp-atas .input {
+        min-height: 42px;
+        padding-inline: 13px;
+        font-size: 14px;
+    }
+
+    body.ilena-storefront .navbar-hp-atas > a img {
+        width: 36px !important;
+        height: 36px !important;
+    }
+
+    body.ilena-storefront .ilena-compact-header {
+        padding-inline: 12px;
+    }
+
+    body.ilena-storefront .ilena-compact-header__logo img {
+        max-width: 108px;
+        height: 23px;
+    }
+
+    body.ilena-storefront .ilena-compact-header__actions {
+        gap: 8px;
+    }
+
+    body.ilena-storefront .ilena-compact-header__link,
+    body.ilena-storefront .ilena-compact-header__shop {
+        font-size: 11px;
+    }
+
+    body.ilena-storefront .ilena-compact-header__shop {
+        min-height: 38px;
+        padding-inline: 10px;
     }
 }
 
