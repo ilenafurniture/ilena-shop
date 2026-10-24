@@ -1,12 +1,20 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
-<div class="container d-flex justify-content-center align-items-center">
+<div class="container d-flex justify-content-center align-items-center ilena-cart-page <?= empty($keranjang) ? 'is-empty' : ''; ?>">
     <div class="konten baris-ke-kolom">
         <div style="flex:1;">
             <div class="mb-4">
                 <h1 class="teks-sedang">Keranjang</h1>
                 <p style="color: grey;"><?= count($keranjang) <= 0 ? 'Tidak Ada' : count($keranjang) ?> Produk</p>
             </div>
+            <?php if (empty($keranjang)): ?>
+                <div class="ilena-cart-empty">
+                    <p class="ilena-cart-empty__eyebrow">Belum ada pilihan</p>
+                    <h2>Keranjang Anda masih kosong.</h2>
+                    <p>Temukan furniture yang paling sesuai untuk ruang Anda.</p>
+                    <a class="btn-default-merah" href="/product">Jelajahi koleksi</a>
+                </div>
+            <?php endif; ?>
             <div class="container-keranjang show-block-ke-hide">
                 <?php foreach ($keranjang as $index => $k) { ?>
                 <div class="item-keranjang">
@@ -115,7 +123,7 @@
 
         </div>
         <div class="tigapuluh-ke-seratus">
-            <div class="card p-4">
+            <div class="card p-4 ilena-cart-summary">
                 <h4 style="letter-spacing: -1px">Pesanan</h4>
                 <div class="mt-2 d-flex justify-content-between py-1">
                     <p class="m-0">

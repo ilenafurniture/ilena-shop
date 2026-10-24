@@ -193,7 +193,7 @@ if (isset($_GET['ruang'])) {
     transition: 0.4s;
 }
 </style>
-<div class="container d-flex justify-content-center">
+<div class="container d-flex justify-content-center ilena-catalog-page">
     <div class="konten baris-ke-kolom ganti-gap">
         <div class="show-block-ke-hide container-filter-desktop"
             style="position: sticky; top: 50px; height:fit-content">

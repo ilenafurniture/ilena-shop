@@ -1,10 +1,11 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
-<div class="container konten">
+<div class="container konten ilena-auth-page ilena-auth-page--login">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card p-4">
-                <h5 class="mb-3 teks-sedang">Login Akun</h5>
+            <div class="card p-4 ilena-auth-page__form">
+                <p class="ilena-auth-page__eyebrow">Selamat datang kembali</p>
+                <h1 class="mb-3 teks-sedang">Masuk ke akun Anda</h1>
                 <?php if ($val['msg']) { ?>
                     <div class="pemberitahuan my-1" role="alert">
                         <?= $val['msg']; ?>
@@ -18,12 +19,12 @@
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input name="email" type="email" class="form-control <?= ($val['val_email']) ? "is-invalid" : ""; ?>" placeholder="Masukkan Email" value="<?= old('email'); ?>">
+                        <input id="email" name="email" type="email" class="form-control <?= ($val['val_email']) ? "is-invalid" : ""; ?>" placeholder="Masukkan Email" value="<?= old('email'); ?>">
                         <div class="invalid-feedback">Mohon masukkan alamat email yang valid.</div>
                     </div>
                     <label for="password" class="form-label">Kata Sandi</label>
                     <div class="input-group mb-3 has-validation mb-3">
-                        <input name="sandi" type="password" class="form-control <?= ($val['val_sandi']) ? "is-invalid" : ""; ?>" placeholder="Masukkan Kata Sandi">
+                        <input id="password" name="sandi" type="password" class="form-control <?= ($val['val_sandi']) ? "is-invalid" : ""; ?>" placeholder="Masukkan Kata Sandi">
                         <span class="input-group-text d-flex justify-content-center align-items-center" onclick="togglePassword(event)">
                             <i class="material-icons" style="cursor: default; -webkit-user-select: none; -ms-user-select: none; user-select: none;">remove_red_eye</i>
                         </span>

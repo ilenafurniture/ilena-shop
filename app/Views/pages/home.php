@@ -303,7 +303,7 @@ function closeSecondAd() {
 
 <!-- End Tampilan Side Promo -->
 <!-- bagian windows -->
-<div class="p-5">
+<div class="p-5 ilena-home-hero">
     <div class="show-flex-ke-hide p-5 flex-column align-items-center justify-content-center"
         data-lazy-bg="<?= esc($homeImage('1742972542166.png'), 'attr'); ?>" style="background-size:cover;background-position:center;background-color:#f4f1ec; width:100%; height:80svh;">
         <h1 class="teks-besar mb-2 text-center text-light">Modern & Stylish<br>Furniture</h1>

@@ -55,10 +55,11 @@
 }
 </style>
 
-<div class="container d-flex justify-content-center align-items-center">
+<div class="container d-flex justify-content-center align-items-center ilena-auth-page ilena-auth-page--register">
     <div class="konten d-flex justify-content-center align-items-center">
-        <div class="card p-4 limapuluh-ke-seratus">
-            <h1 class="mb-3 teks-sedang">Register Akun</h1>
+        <div class="card p-4 limapuluh-ke-seratus ilena-auth-page__form">
+            <p class="ilena-auth-page__eyebrow">Mulai perjalanan Anda</p>
+            <h1 class="mb-3 teks-sedang">Buat akun Ilena</h1>
 
             <?php if ($val['msg']) { ?>
             <div class="pemberitahuan my-1" role="alert">
@@ -84,14 +85,14 @@
 
                 <div class="mb-3">
                     <label for="fullname" class="form-label">Nama Lengkap</label>
-                    <input name="nama" type="text" class="form-control <?= ($val['val_nama']) ? "is-invalid" : ""; ?>"
+                    <input id="fullname" name="nama" type="text" class="form-control <?= ($val['val_nama']) ? "is-invalid" : ""; ?>"
                         placeholder="Masukkan Nama Lengkap" value="<?= old('nama'); ?>">
                     <div class="invalid-feedback">Mohon masukkan nama lengkap.</div>
                 </div>
 
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input name="email" type="email"
+                    <input id="email" name="email" type="email"
                         class="form-control <?= ($val['val_email']) ? "is-invalid" : ""; ?>"
                         placeholder="Masukkan Email" value="<?= old('email'); ?>">
                     <div class="invalid-feedback">Email tidak valid atau telah terdaftar.</div>
@@ -99,14 +100,14 @@
 
                 <div class="mb-3">
                     <label for="nohp" class="form-label">Nomor Telepon</label>
-                    <input name="nohp" type="text" class="form-control <?= ($val['val_nohp']) ? "is-invalid" : ""; ?>"
+                    <input id="nohp" name="nohp" type="text" class="form-control <?= ($val['val_nohp']) ? "is-invalid" : ""; ?>"
                         placeholder="Masukkan Nomor Telepon" value="<?= old('nohp'); ?>">
                     <div class="invalid-feedback">Nomor telepon tidak valid atau telah terdaftar.</div>
                 </div>
 
                 <label for="sandi" class="form-label">Kata Sandi</label>
                 <div class="input-group mb-3 has-validation">
-                    <input name="sandi" type="password"
+                    <input id="password" name="sandi" type="password"
                         class="form-control <?= ($val['val_sandi']) ? "is-invalid" : ""; ?>" id="password"
                         placeholder="Masukkan Kata Sandi">
                     <span class="input-group-text d-flex justify-content-center align-items-center"

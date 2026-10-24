@@ -234,7 +234,7 @@
     </div>
 </div>
 
-<div class="container konten baris-ke-kolom">
+<div class="container konten baris-ke-kolom ilena-order-page">
     <!-- Kolom kanan (ringkasan akun) ditaruh duluan di DOM kecil? tetap: tidak ubah sistem -->
     <div class="tigapuluh-ke-seratus">
         <div class="card p-4 account-card">

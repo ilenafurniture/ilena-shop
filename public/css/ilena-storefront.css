@@ -1176,3 +1176,702 @@ body.ilena-storefront .ilena-store-footer__mobile-clear {
         transition-duration: .01ms !important;
     }
 }
+
+/* Account entry and help pages: editorial spacing, no enclosing card panels. */
+body.ilena-storefront .ilena-auth-page {
+    min-height: min(76svh, 760px);
+    align-content: center;
+    padding-block: clamp(42px, 8vw, 92px);
+}
+
+body.ilena-storefront .ilena-auth-page__form {
+    width: 100%;
+    max-width: 560px;
+    margin-inline: auto;
+    padding: 0 !important;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+body.ilena-storefront .ilena-auth-page__eyebrow,
+body.ilena-storefront .ilena-faq-page__eyebrow {
+    margin: 0 0 10px;
+    color: #9a4a43;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+
+body.ilena-storefront .ilena-auth-page__form > h1,
+body.ilena-storefront .ilena-faq-page__title {
+    margin: 0 0 26px;
+    color: var(--ilena-ink);
+    font-family: var(--ilena-font-display);
+    font-size: clamp(34px, 5vw, 54px);
+    font-weight: 500;
+    letter-spacing: -.02em;
+    line-height: 1.05;
+}
+
+body.ilena-storefront .ilena-auth-page__form .form-label {
+    margin-bottom: 7px;
+    color: #38332f;
+    font-size: 13px;
+    font-weight: 650;
+}
+
+body.ilena-storefront .ilena-auth-page__form .form-control {
+    min-height: 50px;
+    border: 1px solid #ded8d1;
+    border-radius: 5px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, .76);
+}
+
+body.ilena-storefront .ilena-auth-page__form .input-group-text {
+    min-width: 48px;
+    border-color: #ded8d1;
+    background: #f5f1ec;
+    cursor: pointer;
+}
+
+body.ilena-storefront .ilena-auth-page__form button[type="submit"] {
+    min-height: 48px;
+    padding-inline: 28px;
+    border-radius: 4px;
+    font-weight: 650;
+}
+
+body.ilena-storefront .ilena-auth-page__form a:not(.btn) {
+    color: #8e3935;
+    font-weight: 650;
+    text-underline-offset: 3px;
+}
+
+body.ilena-storefront .ilena-auth-page--verify .ilena-auth-page__form {
+    max-width: 540px;
+}
+
+body.ilena-storefront .ilena-auth-page--verify #otp {
+    min-height: 58px;
+    font-size: 22px;
+}
+
+body.ilena-storefront .ilena-faq-page .konten {
+    width: min(100%, 1020px);
+    padding-block: 38px 76px;
+}
+
+body.ilena-storefront .ilena-faq-page__title {
+    max-width: 700px;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+body.ilena-storefront .ilena-faq-page__intro {
+    max-width: 650px;
+    margin: 0 0 40px;
+    color: var(--ilena-muted);
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+body.ilena-storefront .ilena-faq-page .container-faq {
+    gap: clamp(24px, 5vw, 72px);
+    margin: 0;
+    padding: 28px 0 32px;
+    border-top: 1px solid var(--ilena-line);
+}
+
+body.ilena-storefront .ilena-faq-page .tigapuluh-ke-seratus {
+    flex: 0 0 22%;
+    width: 22%;
+}
+
+body.ilena-storefront .ilena-faq-page .nomor {
+    color: #9a4a43;
+    font-variant-numeric: tabular-nums;
+}
+
+body.ilena-storefront .ilena-faq-page .sub-faq {
+    margin: 0;
+    color: var(--ilena-ink);
+    font-family: var(--ilena-font-display);
+    font-size: 25px;
+    font-weight: 500;
+    letter-spacing: -.015em;
+}
+
+body.ilena-storefront .ilena-faq-page .isi-faq .sub-sub-faq {
+    margin: 0 0 7px;
+    color: var(--ilena-ink);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+body.ilena-storefront .ilena-faq-page .isinya {
+    margin: 0 0 20px;
+    color: var(--ilena-muted);
+    line-height: 1.75;
+}
+
+body.ilena-storefront .ilena-faq-page .isinya a {
+    font-weight: 650;
+}
+
+@media (max-width: 700px) {
+    body.ilena-storefront .ilena-auth-page {
+        min-height: auto;
+        padding-block: 42px 56px;
+    }
+
+    body.ilena-storefront .ilena-faq-page .container-faq {
+        flex-direction: column;
+        gap: 10px;
+        padding-block: 22px 25px;
+    }
+
+    body.ilena-storefront .ilena-faq-page .tigapuluh-ke-seratus {
+        flex-basis: auto;
+        width: 100%;
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+    }
+
+    body.ilena-storefront .ilena-faq-page .sub-faq {
+        font-size: 21px;
+    }
+}
+
+/* Checkout flow: clear steps, flat choices, and a compact order summary. */
+body.ilena-storefront :where(.ilena-address-page, .ilena-shipping-page, .ilena-payment-page) {
+    --checkout-line: var(--ilena-line);
+    --checkout-muted: var(--ilena-muted);
+    color: var(--ilena-ink);
+}
+
+body.ilena-storefront .ilena-address-page,
+body.ilena-storefront .ilena-shipping-page,
+body.ilena-storefront .ilena-payment-page {
+    max-width: 1180px;
+    padding-block: clamp(30px, 5vw, 64px);
+}
+
+body.ilena-storefront .ilena-address-page .path,
+body.ilena-storefront .ilena-shipping-page .path,
+body.ilena-storefront .ilena-payment-page .payment-bc {
+    margin: 0 0 26px;
+    color: var(--checkout-muted);
+    font-size: 13px;
+    letter-spacing: 0;
+}
+
+body.ilena-storefront .ilena-address-page .path a,
+body.ilena-storefront .ilena-shipping-page .path a,
+body.ilena-storefront .ilena-payment-page .payment-bc a {
+    margin-inline: 0 10px !important;
+    color: inherit !important;
+    font-weight: 500 !important;
+}
+
+body.ilena-storefront .ilena-address-page .item-address,
+body.ilena-storefront .ilena-shipping-page .item-kurir {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    padding: 18px 0;
+    border: 0;
+    border-bottom: 1px solid var(--checkout-line);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    transition: color .16s ease, background-color .16s ease;
+}
+
+body.ilena-storefront .ilena-address-page .item-address:hover,
+body.ilena-storefront .ilena-shipping-page .item-kurir:hover {
+    background: #f7f4f0;
+}
+
+body.ilena-storefront .ilena-address-page input[type="radio"][name="address"]:checked + .item-address,
+body.ilena-storefront .ilena-shipping-page input[type="radio"][name="kurir"]:checked + .item-kurir {
+    border-color: #9a4a43;
+    background: #f7f4f0;
+    box-shadow: none;
+}
+
+body.ilena-storefront .ilena-address-page .item-address .nama,
+body.ilena-storefront .ilena-shipping-page .item-kurir .nama {
+    color: var(--ilena-ink);
+    font-family: var(--ilena-font-display);
+    font-size: 21px;
+    font-weight: 600;
+}
+
+body.ilena-storefront .ilena-address-page .item-address p,
+body.ilena-storefront .ilena-shipping-page .item-kurir p {
+    color: var(--checkout-muted);
+    line-height: 1.65;
+}
+
+body.ilena-storefront .ilena-address-page .tigapuluh-ke-seratus,
+body.ilena-storefront .ilena-shipping-page .tigapuluh-ke-seratus {
+    flex: 0 0 320px;
+    width: 320px;
+}
+
+body.ilena-storefront .ilena-address-page .tigapuluh-ke-seratus .card,
+body.ilena-storefront .ilena-shipping-page .tigapuluh-ke-seratus .card {
+    position: sticky;
+    top: 22px;
+    padding: 0 0 20px !important;
+    border: 0;
+    border-bottom: 1px solid var(--checkout-line);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+body.ilena-storefront .ilena-address-page .tigapuluh-ke-seratus h4,
+body.ilena-storefront .ilena-shipping-page .tigapuluh-ke-seratus h4 {
+    margin: 0 0 16px;
+    font-family: var(--ilena-font-display);
+    font-size: 29px;
+    font-weight: 500;
+}
+
+body.ilena-storefront .ilena-payment-page .grid-two {
+    grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr);
+    gap: clamp(28px, 5vw, 68px);
+}
+
+body.ilena-storefront .ilena-payment-page .card-soft {
+    border: 0;
+    border-bottom: 1px solid var(--checkout-line);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+body.ilena-storefront .ilena-payment-page .card-soft .hd {
+    padding: 15px 0 10px;
+    border: 0;
+    border-radius: 0;
+    color: var(--ilena-ink);
+    background: transparent;
+    font-family: var(--ilena-font-display);
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: 0;
+}
+
+body.ilena-storefront .ilena-payment-page .card-soft .bd {
+    padding: 8px 0 18px;
+}
+
+body.ilena-storefront .ilena-payment-page .item-logo-pembayaran {
+    min-height: 58px;
+    border: 0;
+    border-bottom: 1px solid var(--checkout-line);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+body.ilena-storefront .ilena-payment-page .item-logo-pembayaran.active {
+    border-bottom: 2px solid #9a4a43;
+    background: #f7f4f0;
+    box-shadow: none;
+}
+
+body.ilena-storefront .ilena-payment-page .item-row img {
+    border-radius: 0;
+    background: #f2eee8;
+}
+
+body.ilena-storefront .ilena-payment-page .grid-two > div:last-child {
+    align-self: start;
+    position: sticky;
+    top: 22px;
+}
+
+body.ilena-storefront .ilena-payment-page .section-toggle {
+    border: 0;
+    border-bottom: 1px solid var(--checkout-line);
+    border-radius: 0;
+    background: transparent;
+    font-weight: 650;
+}
+
+@media (max-width: 900px) {
+    body.ilena-storefront .ilena-address-page .baris-ke-kolom,
+    body.ilena-storefront .ilena-shipping-page {
+        flex-direction: column;
+    }
+
+    body.ilena-storefront .ilena-address-page .tigapuluh-ke-seratus,
+    body.ilena-storefront .ilena-shipping-page .tigapuluh-ke-seratus {
+        flex: 1 1 auto;
+        width: 100%;
+    }
+
+    body.ilena-storefront .ilena-address-page .tigapuluh-ke-seratus .card,
+    body.ilena-storefront .ilena-shipping-page .tigapuluh-ke-seratus .card,
+    body.ilena-storefront .ilena-payment-page .grid-two > div:last-child {
+        position: static;
+    }
+
+    body.ilena-storefront .ilena-payment-page .grid-two {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Cart, profile and order pages continue the same flat editorial system. */
+body.ilena-storefront .ilena-cart-page .konten,
+body.ilena-storefront .ilena-account-page,
+body.ilena-storefront .ilena-order-page {
+    align-items: flex-start;
+    gap: clamp(28px, 5vw, 72px);
+}
+
+body.ilena-storefront .ilena-cart-page .item-keranjang,
+body.ilena-storefront .ilena-cart-page .item-keranjang-hp {
+    align-items: center;
+    gap: clamp(14px, 2.5vw, 28px);
+    padding-block: 22px;
+    border-bottom: 1px solid var(--ilena-line);
+}
+
+body.ilena-storefront .ilena-cart-page .item-keranjang img,
+body.ilena-storefront .ilena-cart-page .item-keranjang-hp img {
+    width: 112px;
+    height: 124px;
+    border-radius: 0;
+    background: #f1ede7;
+    object-fit: cover;
+}
+
+body.ilena-storefront .ilena-cart-page .nama-barang {
+    color: var(--ilena-ink);
+    font-family: var(--ilena-font-display);
+    font-size: clamp(20px, 2.5vw, 28px);
+    font-weight: 500;
+    letter-spacing: -.015em;
+}
+
+body.ilena-storefront .ilena-cart-page .ilena-cart-summary {
+    position: sticky;
+    top: 24px;
+    padding: 0 0 0 24px !important;
+    border: 0;
+    border-left: 1px solid var(--ilena-line);
+    background: transparent;
+}
+
+body.ilena-storefront .ilena-cart-page .ilena-cart-summary h4 {
+    font-family: var(--ilena-font-display);
+    font-size: 28px;
+    font-weight: 500;
+}
+
+body.ilena-storefront .ilena-cart-page.is-empty .ilena-cart-summary,
+body.ilena-storefront .ilena-cart-page.is-empty .container-keranjang,
+body.ilena-storefront .ilena-cart-page.is-empty .hide-ke-show-block {
+    display: none !important;
+}
+
+body.ilena-storefront .ilena-cart-empty {
+    padding: 50px 0 58px;
+    border-top: 1px solid var(--ilena-line);
+}
+
+body.ilena-storefront .ilena-cart-empty__eyebrow {
+    margin: 0 0 8px;
+    color: #9a4a43;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+}
+
+body.ilena-storefront .ilena-cart-empty h2 {
+    margin: 0 0 10px;
+    font-family: var(--ilena-font-display);
+    font-size: clamp(30px, 5vw, 46px);
+    font-weight: 500;
+}
+
+body.ilena-storefront .ilena-cart-empty > p:not(.ilena-cart-empty__eyebrow) {
+    margin-bottom: 22px;
+    color: var(--ilena-muted);
+}
+
+body.ilena-storefront .ilena-account-page > .tigapuluh-ke-seratus,
+body.ilena-storefront .ilena-order-page > .tigapuluh-ke-seratus {
+    flex: 0 0 250px;
+    width: 250px;
+}
+
+body.ilena-storefront .ilena-account-page .ilena-account-nav,
+body.ilena-storefront .ilena-order-page .tigapuluh-ke-seratus .card {
+    padding: 0 !important;
+    border: 0;
+    border-radius: 0;
+    border-bottom: 1px solid var(--ilena-line);
+    background: transparent;
+    box-shadow: none;
+}
+
+body.ilena-storefront .ilena-account-page .ilena-account-nav h2,
+body.ilena-storefront .ilena-order-page .tigapuluh-ke-seratus .card h4 {
+    margin: 0 0 16px;
+    font-family: var(--ilena-font-display);
+    font-size: 28px;
+    font-weight: 500;
+}
+
+body.ilena-storefront .ilena-account-page .ilena-account-nav > a {
+    min-height: 44px;
+    margin-block: 4px;
+}
+
+body.ilena-storefront .ilena-account-page .item-address {
+    gap: 20px;
+    padding-block: 18px;
+    border-top: 1px solid var(--ilena-line);
+}
+
+body.ilena-storefront .ilena-account-page .item-address .nama {
+    color: var(--ilena-ink);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+body.ilena-storefront .ilena-order-page .container-table {
+    width: 100%;
+    border: 0;
+    border-top: 1px solid var(--ilena-line);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+body.ilena-storefront .ilena-order-page .header-table {
+    background: transparent;
+    color: var(--ilena-muted);
+    font-size: 11px;
+    letter-spacing: .08em;
+}
+
+body.ilena-storefront .ilena-order-page .isi-table {
+    border-bottom: 1px solid var(--ilena-line);
+    transition: background-color .16s ease;
+}
+
+body.ilena-storefront .ilena-order-page .isi-table:hover {
+    background: #f4f0eb;
+}
+
+body.ilena-storefront .ilena-order-page .container-offcanvas {
+    padding: clamp(22px, 4vw, 40px);
+    border-left-color: var(--ilena-line);
+    box-shadow: -16px 0 40px rgba(45, 35, 25, .10);
+}
+
+body.ilena-storefront .ilena-catalog-page > .konten {
+    width: min(100%, 1360px);
+    align-items: flex-start;
+    gap: clamp(22px, 3.5vw, 48px);
+}
+
+body.ilena-storefront .ilena-catalog-page .container-filter-desktop {
+    width: 220px;
+    flex: 0 0 220px;
+    padding-right: 20px;
+    border-right: 1px solid var(--ilena-line);
+}
+
+body.ilena-storefront .ilena-catalog-page .container-filter-desktop .item-filter {
+    padding-block: 14px;
+    border-bottom: 1px solid var(--ilena-line);
+    color: var(--ilena-ink);
+    font-size: 14px;
+    font-weight: 650;
+}
+
+body.ilena-storefront .ilena-catalog-page .breadcrumb {
+    margin-bottom: 0;
+    color: var(--ilena-muted);
+    font-size: 13px;
+}
+
+body.ilena-storefront .ilena-catalog-page .card1 .container-varian {
+    min-height: 30px;
+}
+
+body.ilena-storefront .ilena-catalog-page .card1 .harga-diskon {
+    color: var(--ilena-muted);
+    font-size: 13px;
+    text-decoration: line-through;
+}
+
+body.ilena-storefront .ilena-home-hero {
+    padding: clamp(12px, 2vw, 28px) !important;
+}
+
+body.ilena-storefront .ilena-home-hero .show-flex-ke-hide {
+    position: relative;
+    height: min(76svh, 820px) !important;
+    min-height: 520px;
+    overflow: hidden;
+    background-position: center 55% !important;
+}
+
+body.ilena-storefront .ilena-home-hero .show-flex-ke-hide::before {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(24, 21, 19, .38), rgba(24, 21, 19, .04) 76%);
+    content: "";
+    pointer-events: none;
+}
+
+body.ilena-storefront .ilena-home-hero .show-flex-ke-hide > * {
+    position: relative;
+    z-index: 1;
+}
+
+body.ilena-storefront .ilena-home-hero .show-flex-ke-hide h1 {
+    font-family: var(--ilena-font-display);
+    font-size: clamp(54px, 7vw, 88px);
+    font-weight: 500;
+    letter-spacing: -.025em;
+    line-height: .98;
+}
+
+body.ilena-storefront .ilena-home-hero .show-flex-ke-hide .text-handwrite {
+    font-family: var(--ilena-font-display);
+    font-size: clamp(22px, 3vw, 32px) !important;
+    font-style: italic;
+    letter-spacing: .01em;
+}
+
+body.ilena-storefront .ilena-home-hero .show-flex-ke-hide .kesana {
+    min-height: 48px;
+    width: fit-content;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, .8);
+    color: #fff;
+    text-decoration: none;
+}
+
+@media (max-width: 700px) {
+    body.ilena-storefront .ilena-cart-page .item-keranjang-hp {
+        align-items: flex-start;
+        padding-block: 16px;
+    }
+
+    body.ilena-storefront .ilena-cart-page .item-keranjang-hp img {
+        width: 84px;
+        height: 100px;
+    }
+
+    body.ilena-storefront .ilena-cart-page .ilena-cart-summary {
+        position: static;
+        margin-top: 24px;
+        padding: 0 !important;
+        border-left: 0;
+        border-top: 1px solid var(--ilena-line);
+        padding-top: 22px !important;
+    }
+
+    body.ilena-storefront .ilena-account-page > .tigapuluh-ke-seratus,
+    body.ilena-storefront .ilena-order-page > .tigapuluh-ke-seratus {
+        flex-basis: auto;
+        width: 100%;
+    }
+
+    body.ilena-storefront .ilena-order-page .hide-ke-show-block .container-table {
+        width: 100% !important;
+    }
+
+    body.ilena-storefront .ilena-order-page .hide-ke-show-block .header-table {
+        display: none;
+    }
+
+    body.ilena-storefront .ilena-order-page .hide-ke-show-block .isi-table {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 6px 14px;
+        padding: 14px 2px;
+    }
+
+    body.ilena-storefront .ilena-order-page .hide-ke-show-block .isi-table > div {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        min-width: 0;
+        gap: 3px;
+        font-size: 12px;
+        letter-spacing: 0;
+    }
+
+    body.ilena-storefront .ilena-order-page .hide-ke-show-block .isi-table > div::before {
+        color: var(--ilena-muted);
+        font-size: 10px;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+    }
+
+    body.ilena-storefront .ilena-order-page .hide-ke-show-block .isi-table > div:nth-child(1)::before { content: "ID Pesanan"; }
+    body.ilena-storefront .ilena-order-page .hide-ke-show-block .isi-table > div:nth-child(2)::before { content: "Tanggal"; }
+    body.ilena-storefront .ilena-order-page .hide-ke-show-block .isi-table > div:nth-child(3)::before { content: "Penerima"; }
+    body.ilena-storefront .ilena-order-page .hide-ke-show-block .isi-table > div:nth-child(4)::before { content: "Total"; }
+    body.ilena-storefront .ilena-order-page .hide-ke-show-block .isi-table > div:nth-child(5)::before { content: "Status"; }
+
+    body.ilena-storefront .ilena-catalog-page > .konten {
+        padding: 20px 12px 48px;
+        gap: 0;
+    }
+
+    body.ilena-storefront .ilena-catalog-page .container-card1 {
+        column-gap: 12px;
+        row-gap: 26px;
+    }
+
+    body.ilena-storefront .ilena-home-hero {
+        padding: 10px !important;
+    }
+
+    body.ilena-storefront .ilena-home-hero .hide-ke-show-flex {
+        position: relative;
+        height: 64svh !important;
+        min-height: 420px;
+        overflow: hidden;
+        background-position: center !important;
+    }
+
+    body.ilena-storefront .ilena-home-hero .hide-ke-show-flex::before {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, rgba(24, 21, 19, .36), rgba(24, 21, 19, .02));
+        content: "";
+        pointer-events: none;
+    }
+
+    body.ilena-storefront .ilena-home-hero .hide-ke-show-flex > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    body.ilena-storefront .ilena-home-hero .hide-ke-show-flex h1 {
+        font-family: var(--ilena-font-display);
+        font-size: clamp(42px, 12vw, 58px) !important;
+        font-weight: 500;
+        line-height: .98;
+    }
+}

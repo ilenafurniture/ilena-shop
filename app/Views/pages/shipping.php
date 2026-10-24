@@ -1,6 +1,6 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
-<div class="container konten baris-ke-kolom">
+<div class="container konten baris-ke-kolom ilena-shipping-page">
     <div style="flex:1;">
         <h5 style="letter-spacing: -1px; font-weight:100;" class="path">
             <a href="/address" class="me-3 text-secondary" style="text-decoration: none;">Alamat</a> >

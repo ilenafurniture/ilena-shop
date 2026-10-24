@@ -280,9 +280,9 @@
 }
 </style>
 
-<div class="container konten baris-ke-kolom">
+<div class="container konten baris-ke-kolom ilena-account-page">
     <div class="tigapuluh-ke-seratus">
-        <div class="card p-4">
+        <div class="card p-4 ilena-account-nav">
             <h2 style="letter-spacing: -1px">Akun Saya</h2>
             <div class="mt-2 d-flex justify-content-between py-1">
                 <p class="m-0">Email</p>

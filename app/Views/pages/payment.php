@@ -368,7 +368,7 @@ hr {
 }
 </style>
 
-<div class="payment-shell container">
+<div class="payment-shell container ilena-payment-page">
     <div class="payment-bc">
         <a href="/address">Alamat</a> &nbsp;>&nbsp; <span class="active">Rincian Pembayaran</span>
     </div>

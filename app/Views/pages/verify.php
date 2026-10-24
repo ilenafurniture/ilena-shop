@@ -1,8 +1,9 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
-<div class="container konten d-flex justify-content-center align-items-center">
-    <div style="width: 60%;">
-        <h1 class="teks-sedang text-center">Verifikasi</h1>
+<div class="container konten d-flex justify-content-center align-items-center ilena-auth-page ilena-auth-page--verify">
+    <div class="ilena-auth-page__form">
+        <p class="ilena-auth-page__eyebrow text-center">Keamanan akun</p>
+        <h1 class="teks-sedang text-center">Verifikasi email Anda</h1>
         <?php if ($val['msg']) { ?>
             <div class="pemberitahuan my-1 mx-auto" style="width: fit-content;" role="alert">
                 <?= $val['msg']; ?>
@@ -12,7 +13,7 @@
         <form action="/actionverify" method="post">
             <?= csrf_field(); ?>
             <div class="form mb-1">
-                <input type="number" style="letter-spacing: 2em" autofocus class="text-center form-control <?= ($val['val_verify']) ? "is-invalid" : ""; ?>" name="otp">
+                <input id="otp" type="number" inputmode="numeric" style="letter-spacing: 2em" autofocus class="text-center form-control <?= ($val['val_verify']) ? "is-invalid" : ""; ?>" name="otp">
                 <div class="invalid-feedback">
                     <?= $val['val_verify']; ?>
                 </div>

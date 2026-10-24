@@ -571,7 +571,7 @@ input[type="radio"][name="address"]:checked+.item-address {
     </div>
 </div>
 
-<div class="container konten">
+<div class="container konten ilena-address-page">
     <?php if ($msg) { ?>
     <div class="pemberitahuan mb-2" role="alert"><?= $msg; ?></div>
     <?php } ?>
@@ -581,7 +581,7 @@ input[type="radio"][name="address"]:checked+.item-address {
         <a class="mx-3 text-secondary">Rincian Pembayaran</a>
     </h5>
 
-    <div class="baris-ke-kolom">
+    <div class="baris-ke-kolom ilena-checkout-layout">
         <!-- LEFT -->
         <div>
             <div class="container-address my-4">
