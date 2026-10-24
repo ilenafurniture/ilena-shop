@@ -5,10 +5,10 @@ $footerAuth = in_array($footerPath, ['/login', '/register', '/verify'], true);
 $footerCheckout = preg_match('~^/(cart|shipping|payment|progresspay|successpay|cencelpay|expirepay)(/|$)~', $footerPath) === 1;
 $footerAccount = preg_match('~^/(account|address|order|orderdetail|invoice|wishlist)(/|$)~', $footerPath) === 1;
 $paymentLogos = [
-    ['bca.png', 'BCA'], ['bni.png', 'BNI'], ['bri.png', 'BRI'],
-    ['mandiri.png', 'Mandiri'], ['permata.png', 'PermataBank'], ['cimb1.png', 'CIMB Niaga'],
-    ['mastercard.png', 'Mastercard'], ['visa.png', 'Visa'], ['qris.png', 'QRIS'],
-    ['shopeepay.png', 'ShopeePay'], ['gopay.png', 'GoPay'],
+    ['bca.webp', 'BCA', false], ['bni.webp', 'BNI', false], ['bri.webp', 'BRI', false],
+    ['mandiri.webp', 'Mandiri', false], ['permatabank.webp', 'PermataBank', false], ['cimb1.png', 'CIMB Niaga', true],
+    ['mastercard.webp', 'Mastercard', false], ['visa.webp', 'Visa', false], ['qris.webp', 'QRIS', false],
+    ['shopeepay.webp', 'ShopeePay', false], ['gopay.webp', 'GoPay', false],
 ];
 ?>
 <?php if (!$footerInternal && $footerAuth): ?>
@@ -61,8 +61,8 @@ $paymentLogos = [
                 <a href="https://www.tiktok.com/@ilenafurnitureofficial" target="_blank" rel="noopener noreferrer">TikTok Shop</a>
             </div>
             <div class="ilena-store-footer__payments" aria-label="Metode pembayaran">
-                <?php foreach ($paymentLogos as [$image, $label]): ?>
-                    <img src="<?= base_url('img/pembayaran/' . $image); ?>" alt="<?= esc($label, 'attr'); ?>" loading="lazy" decoding="async">
+                <?php foreach ($paymentLogos as [$image, $label, $whiteMark]): ?>
+                    <img class="<?= $whiteMark ? 'ilena-store-footer__payment--white-mark' : ''; ?>" src="<?= base_url('img/pembayaran/' . $image); ?>" alt="<?= esc($label, 'attr'); ?>" loading="lazy" decoding="async">
                 <?php endforeach; ?>
             </div>
             <span class="ilena-store-footer__midtrans">Pembayaran diproses aman oleh <a href="https://midtrans.com" target="_blank" rel="noopener noreferrer">Midtrans</a></span>
@@ -70,17 +70,10 @@ $paymentLogos = [
     </div>
     <div class="ilena-store-footer__sister">
         <span>Bagian dari</span>
-        <details class="ilena-lunarea-popover">
-            <summary class="ilena-store-footer__sister-brand" aria-label="Tentang Lunarea Furniture">
-                <img src="<?= base_url('img/logo/N.png'); ?>" width="32" height="32" alt="">
-                <span>Lunarea Furniture</span>
-            </summary>
-            <div class="ilena-lunarea-popover__panel">
-                <strong>Lunarea Furniture</strong>
-                <p>Temukan inspirasi dan koleksi furnitur dari Lunarea.</p>
-                <a href="https://lunareafurniture.com" target="_blank" rel="noopener noreferrer">Kunjungi Lunarea <span aria-hidden="true">↗</span></a>
-            </div>
-        </details>
+        <a class="ilena-store-footer__sister-brand" href="https://lunareafurniture.com" target="_blank" rel="noopener noreferrer" aria-label="Kunjungi Lunarea Furniture">
+            <img src="<?= base_url('img/logo/N.png'); ?>" width="32" height="32" alt="">
+            <span>Lunarea Furniture</span>
+        </a>
     </div>
     <div class="ilena-store-footer__bottom">
         <small>© <?= date('Y'); ?> Ilena Furniture. Hak cipta dilindungi.</small>

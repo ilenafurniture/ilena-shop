@@ -961,12 +961,16 @@ body.ilena-storefront .ilena-store-footer__payments {
 
 body.ilena-storefront .ilena-store-footer__payments img {
     width: auto;
-    max-width: 48px;
-    height: 22px;
-    padding: 3px 5px;
-    border-radius: 3px;
+    max-width: 56px;
+    height: 28px;
+    padding: 4px 6px;
+    border-radius: 4px;
     background: #fff;
     object-fit: contain;
+}
+
+body.ilena-storefront .ilena-store-footer__payments img.ilena-store-footer__payment--white-mark {
+    background: #292622;
 }
 
 body.ilena-storefront .ilena-store-footer__midtrans {
