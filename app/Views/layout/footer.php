@@ -70,7 +70,17 @@ $paymentLogos = [
     </div>
     <div class="ilena-store-footer__sister">
         <span>Bagian dari</span>
-        <a href="https://lunareafurniture.com" target="_blank" rel="noopener noreferrer"><img src="<?= base_url('img/logolunareaputih.webp'); ?>" width="112" height="24" alt="Lunarea Furniture"></a>
+        <details class="ilena-lunarea-popover">
+            <summary class="ilena-store-footer__sister-brand" aria-label="Tentang Lunarea Furniture">
+                <img src="<?= base_url('img/logo/N.png'); ?>" width="32" height="32" alt="">
+                <span>Lunarea Furniture</span>
+            </summary>
+            <div class="ilena-lunarea-popover__panel">
+                <strong>Lunarea Furniture</strong>
+                <p>Temukan inspirasi dan koleksi furnitur dari Lunarea.</p>
+                <a href="https://lunareafurniture.com" target="_blank" rel="noopener noreferrer">Kunjungi Lunarea <span aria-hidden="true">↗</span></a>
+            </div>
+        </details>
     </div>
     <div class="ilena-store-footer__bottom">
         <small>© <?= date('Y'); ?> Ilena Furniture. Hak cipta dilindungi.</small>
