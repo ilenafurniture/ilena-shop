@@ -111,6 +111,7 @@ $routes->get('/imgheaderhp/(:any)', 'GambarController::tampilGambarHeaderHp/$1')
 
 
 // ==================== Admin Controller ====================
+// CSRF applies once to every route in this group; do not add per-route csrf filters here.
 $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($routes) {
 
     // Dashboard website admin
@@ -138,7 +139,7 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
     $routes->post('editproduct/(:any)', 'AdminController::actionEditProduct/$1');
     $routes->post('product', 'AdminController::actionAddProduct');
     $routes->post('deleteproduct/(:any)', 'AdminController::deleteProduct/$1');
-    $routes->post('activeproduct/(:any)', 'AdminController::activeProduct/$1', ['filter' => 'csrf']);
+    $routes->post('activeproduct/(:any)', 'AdminController::activeProduct/$1');
 
     // legacy (kalau masih dipakai)
     $routes->post('product/(:any)', 'AdminController::actionEditProduct/$1');
@@ -153,10 +154,10 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
     $routes->get('reprint', 'AdminController::reprint');
     $routes->get('suratjalan/(:any)', 'AdminController::suratJalan/$1');
     $routes->get('marketplace', 'AdminController::marketplace');
-    $routes->post('confirm-mp/(:any)', 'AdminController::confirmMarketplace/$1', ['filter' => 'csrf']);
+    $routes->post('confirm-mp/(:any)', 'AdminController::confirmMarketplace/$1');
     $routes->get('edit-mp/(:any)', 'AdminController::editMarketplace/$1');
-    $routes->post('accreprint/(:any)', 'AdminController::accReprint/$1', ['filter' => 'csrf']);
-    $routes->post('denyreprint/(:any)', 'AdminController::denyReprint/$1', ['filter' => 'csrf']);
+    $routes->post('accreprint/(:any)', 'AdminController::accReprint/$1');
+    $routes->post('denyreprint/(:any)', 'AdminController::denyReprint/$1');
     $routes->post('ordertoko/(:any)', 'AdminController::orderToko/$1', ['filter' => 'loginToko']);
     $routes->post('suratjalan/(:any)/printed', 'AdminController::markSuratJalanPrinted/$1');
 
@@ -165,8 +166,8 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
     $routes->get('mutasi', 'AdminController::mutasi');
     $routes->get('mutasi/(:any)', 'AdminController::mutasi/$1');
     $routes->post('actionaddmutasi', 'AdminController::actionAddMutasi');
-    $routes->post('accmutasi/(:any)', 'AdminController::accMutasi/$1', ['filter' => 'csrf']);
-    $routes->post('denymutasi/(:any)', 'AdminController::denyMutasi/$1', ['filter' => 'csrf']);
+    $routes->post('accmutasi/(:any)', 'AdminController::accMutasi/$1');
+    $routes->post('denymutasi/(:any)', 'AdminController::denyMutasi/$1');
     $routes->get('labelbarang/(:any)', 'AdminController::labelBarang/$1');
 
     // Home layout (admin)
@@ -231,7 +232,7 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
     $routes->post('benerinsurat', 'AdminController::benerinSurat');
     $routes->post('actionbuatinvoice', 'AdminController::actionBuatInvoice');
     $routes->post('actionbuatdp', 'AdminController::actionBuatDP');
-    $routes->post('actionaccorderoffline/(:any)', 'AdminController::actionAccOrderOffline/$1', ['filter' => 'csrf']);
+    $routes->post('actionaccorderoffline/(:any)', 'AdminController::actionAccOrderOffline/$1');
 
     // ==================== SURAT JALAN OFFLINE (admin) ====================
     // Halaman edit SJ (dipakai OFFLINE & INTERIOR)
@@ -247,7 +248,7 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
         'AdminController::suratJalanOfflineEditSave/$1'
     );  
     // Create SJ harus POST (bikin data)
-    $routes->post('surat-jalan/offline/create/(:segment)', 'AdminController::createSuratJalanOffline/$1', ['filter' => 'csrf']);
+    $routes->post('surat-jalan/offline/create/(:segment)', 'AdminController::createSuratJalanOffline/$1');
 
     // Buka/print/edit SJ
     $routes->get('surat-jalan/offline/(:num)', 'AdminController::suratJalanOffline/$1');
@@ -261,7 +262,7 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
     // ==================== Voucher System (admin) ====================
     $routes->get('voucher', 'AdminController::voucher');
     $routes->post('voucher/add', 'AdminController::actionAddVoucher');
-    $routes->post('voucher/delete/(:any)', 'AdminController::deleteVoucher/$1', ['filter' => 'csrf']);
+    $routes->post('voucher/delete/(:any)', 'AdminController::deleteVoucher/$1');
     $routes->get('voucher/edit/(:num)', 'AdminController::editVoucher/$1');
     $routes->post('voucher/edit/(:num)', 'AdminController::editVoucher/$1');
     $routes->post('voucher/toggle/(:num)', 'AdminController::toggleVoucher/$1');
