@@ -1,12 +1,5 @@
 <?php
 $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $headerMode : 'full';
-$headerCartItems = session()->get('keranjang');
-$headerCartCount = 0;
-if (is_array($headerCartItems)) {
-    foreach ($headerCartItems as $headerCartItem) {
-        $headerCartCount += max(0, (int) ($headerCartItem['jumlah'] ?? 1));
-    }
-}
 ?>
 <nav class="nav show-block-ke-hide ilena-topbar" style="background-color: black;">
     <div class="container py-3">
@@ -23,16 +16,9 @@ if (is_array($headerCartItems)) {
                     <img src="<?= base_url('/img/Logo Putih Ilena 1.png'); ?>" alt="Ilena Furniture" width="150" height="30" decoding="async">
                 </a>
                 <span class="navbar-brand-divider" aria-hidden="true"></span>
-                <details class="ilena-lunarea-popover navbar-lunarea-popover">
-                    <summary class="navbar-brand-lunarea" aria-label="Tentang Lunarea Furniture">
-                        <img src="<?= base_url('img/logolunareanavbar.webp'); ?>" alt="Lunarea Furniture" width="150" height="30" decoding="async">
-                    </summary>
-                    <div class="ilena-lunarea-popover__panel">
-                        <strong>Lunarea Furniture</strong>
-                        <p>Temukan inspirasi dan koleksi furnitur dari Lunarea.</p>
-                        <a href="https://lunareafurniture.com" target="_blank" rel="noopener noreferrer">Kunjungi Lunarea <span aria-hidden="true">↗</span></a>
-                    </div>
-                </details>
+                <a class="navbar-brand-lunarea" href="https://lunareafurniture.com" target="_blank" rel="noopener noreferrer" aria-label="Kunjungi Lunarea Furniture">
+                    <img src="<?= base_url('img/logolunareanavbar.webp'); ?>" alt="Lunarea Furniture" width="150" height="30" decoding="async">
+                </a>
             </div>
             <div style="width: calc(100% / 3)" class="d-flex justify-content-end">
                 <?php if (session()->get('isLogin') && in_array((string) session()->get('role'), ['1', '5'], true)) { ?>
@@ -50,36 +36,9 @@ if (is_array($headerCartItems)) {
                         <form action="/logout" method="post" class="m-0"><input type="hidden" name="<?= csrf_token(); ?>" value="<?= csrf_hash(); ?>"><button type="submit" class="btn" style="padding-right: 0"><i class="material-icons text-light">exit_to_app</i></button></form>
                     <?php } ?>
                 <?php } else { ?>
-                    <div class="ilena-header-popover ilena-header-popover--wishlist">
-                        <a href="/wishlist" class="ilena-header-action ilena-header-popover__trigger" aria-label="Wishlist" aria-haspopup="dialog"><i class="material-icons" aria-hidden="true">bookmark_border</i><span class="ilena-sr-only">Wishlist</span></a>
-                        <div class="ilena-header-popover__panel" role="dialog" aria-label="Wishlist">
-                            <strong>Wishlist</strong>
-                            <p><?= session()->get('isLogin') ? 'Buka daftar produk yang Anda simpan.' : 'Masuk untuk melihat dan menyimpan produk favorit Anda.'; ?></p>
-                            <a href="<?= session()->get('isLogin') ? '/wishlist' : '/login'; ?>"><?= session()->get('isLogin') ? 'Lihat wishlist' : 'Masuk'; ?></a>
-                        </div>
-                    </div>
-                    <div class="ilena-header-popover ilena-header-popover--cart">
-                        <a href="/cart" class="ilena-header-action ilena-header-popover__trigger" aria-label="Keranjang" aria-haspopup="true"><i class="material-icons" aria-hidden="true">shopping_cart</i><span class="ilena-sr-only">Keranjang</span></a>
-                        <div class="ilena-header-popover__panel" role="dialog" aria-label="Ringkasan keranjang">
-                            <strong>Keranjang</strong>
-                            <p><?= $headerCartCount > 0 ? esc($headerCartCount . ' barang siap dilihat di keranjang Anda.') : 'Keranjang Anda masih kosong.'; ?></p>
-                            <a href="<?= $headerCartCount > 0 ? '/cart' : '/product'; ?>"><?= $headerCartCount > 0 ? 'Lihat keranjang' : 'Mulai belanja'; ?></a>
-                        </div>
-                    </div>
-                    <div class="ilena-header-popover ilena-header-popover--account">
-                        <a href="<?= session()->get('isLogin') ? '/account' : '/login'; ?>" class="ilena-header-action ilena-header-popover__trigger" aria-label="<?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?>" aria-haspopup="dialog"><i class="material-icons" aria-hidden="true">person_outline</i><span class="ilena-sr-only"><?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?></span></a>
-                        <div class="ilena-header-popover__panel" role="dialog" aria-label="Menu akun">
-                            <?php if (session()->get('isLogin')): ?>
-                                <strong>Akun saya</strong>
-                                <p>Kelola profil dan pesanan Anda.</p>
-                                <nav class="ilena-header-popover__links" aria-label="Menu akun"><a href="/account">Profil</a><a href="/order">Pesanan</a><a href="/address">Alamat</a></nav>
-                            <?php else: ?>
-                                <strong>Selamat datang di Ilena</strong>
-                                <p>Masuk untuk mengelola akun dan pesanan.</p>
-                                <nav class="ilena-header-popover__links" aria-label="Akses akun"><a href="/login">Masuk</a><a href="/register">Daftar</a></nav>
-                            <?php endif; ?>
-                        </div>
-                    </div>
+                    <a href="/wishlist" class="ilena-header-action" aria-label="Wishlist"><i class="material-icons" aria-hidden="true">bookmark_border</i><span class="ilena-sr-only">Wishlist</span></a>
+                    <a href="/cart" class="ilena-header-action" aria-label="Keranjang"><i class="material-icons" aria-hidden="true">shopping_cart</i><span class="ilena-sr-only">Keranjang</span></a>
+                    <a href="<?= session()->get('isLogin') ? '/account' : '/login'; ?>" class="ilena-header-action" aria-label="<?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?>"><i class="material-icons" aria-hidden="true">person_outline</i><span class="ilena-sr-only"><?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?></span></a>
                 <?php } ?>
             </div>
         </div>
@@ -90,7 +49,6 @@ if (is_array($headerCartItems)) {
     .navbar-brand-pair a, .navbar-brand-pair > details { display:inline-flex; align-items:center; justify-content:center; flex:0 1 auto; }
     .navbar-brand-ilena img { display:block; width:auto; max-width:112px; height:23px; object-fit:contain; }
     .navbar-brand-divider { width:1px; height:25px; flex:0 0 1px; background:rgba(255,255,255,.55); }
-    .navbar-lunarea-popover { position:relative; z-index:101; }
     .navbar-brand-lunarea { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:5px 0; border:0; background:transparent; line-height:0; }
     .navbar-brand-lunarea img { display:block; width:124px; height:26px; object-fit:contain; }
     @media (max-width:1100px) {
@@ -99,26 +57,7 @@ if (is_array($headerCartItems)) {
         .navbar-brand-divider { height:20px; }
         .navbar-brand-lunarea img { width:110px; height:23px; }
     }
-    body.ilena-storefront .navbar-lunarea-popover .ilena-lunarea-popover__panel {
-        top:calc(100% + 8px); bottom:auto; left:50%; transform:translateX(-50%);
-        z-index:102; max-height:min(70vh, 360px); overflow:auto;
-    }
 </style>
-<script>
-(() => {
-    const popover = document.querySelector('.navbar-lunarea-popover');
-    if (!popover) return;
-    document.addEventListener('click', event => {
-        if (!popover.contains(event.target)) popover.open = false;
-    });
-    document.addEventListener('keydown', event => {
-        if (event.key === 'Escape' && popover.open) {
-            popover.open = false;
-            popover.querySelector('summary')?.focus();
-        }
-    });
-})();
-</script>
 <?php if ($headerMode === 'full'): ?>
 <div style="background-color: #474747;" class="py-1 show-block-ke-hide">
     <p class="m-0 text-center" style="color: white;">Lebih hemat dengan Free Ongkir hingga 100%</p>

@@ -2,16 +2,9 @@
     <a href="/" aria-label="Ilena Furniture — Beranda">
         <img src="<?php echo base_url('/img/logo/N.png'); ?>" alt="Ilena Furniture" style="height: 40px; width: 40px;">
     </a>
-    <details class="ilena-lunarea-popover ilena-mobile-lunarea-popover">
-        <summary aria-label="Tentang Lunarea Furniture">
-            <img src="<?= base_url('img/logolunareanavbar.webp'); ?>" width="112" height="24" alt="Lunarea Furniture">
-        </summary>
-        <div class="ilena-lunarea-popover__panel">
-            <strong>Lunarea Furniture</strong>
-            <p>Temukan inspirasi dan koleksi furnitur dari Lunarea.</p>
-            <a href="https://lunareafurniture.com" target="_blank" rel="noopener noreferrer">Kunjungi Lunarea <span aria-hidden="true">↗</span></a>
-        </div>
-    </details>
+    <a class="ilena-mobile-lunarea-link" href="https://lunareafurniture.com" target="_blank" rel="noopener noreferrer" aria-label="Kunjungi Lunarea Furniture">
+        <img src="<?= base_url('img/logolunareanavbar.webp'); ?>" width="112" height="24" alt="Lunarea Furniture">
+    </a>
     <div style="flex:1;">
         <form action="/actionfind" method="post" class="w-100">
             <?= csrf_field(); ?>

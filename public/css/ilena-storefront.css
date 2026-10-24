@@ -1123,63 +1123,6 @@ body.ilena-storefront .ilena-store-footer__sister-brand img {
     object-fit: contain;
 }
 
-body.ilena-storefront .ilena-lunarea-popover {
-    position: relative;
-}
-
-body.ilena-storefront .ilena-lunarea-popover > summary {
-    min-height: 44px;
-    cursor: pointer;
-    list-style: none;
-}
-
-body.ilena-storefront .ilena-lunarea-popover > summary::-webkit-details-marker {
-    display: none;
-}
-
-body.ilena-storefront .ilena-lunarea-popover > summary:focus-visible {
-    outline: 2px solid #fff;
-    outline-offset: 3px;
-    border-radius: 5px;
-}
-
-body.ilena-storefront .ilena-lunarea-popover__panel {
-    position: absolute;
-    z-index: 20;
-    left: 0;
-    bottom: calc(100% + 12px);
-    width: min(290px, calc(100vw - 40px));
-    padding: 18px 20px;
-    border: 1px solid rgba(255, 255, 255, .14);
-    border-radius: 8px;
-    color: #f5f1eb;
-    background: #35312c;
-    box-shadow: 0 14px 36px rgba(0, 0, 0, .28);
-}
-
-body.ilena-storefront .ilena-lunarea-popover__panel strong {
-    color: #fff;
-    font-size: 14px;
-}
-
-body.ilena-storefront .ilena-lunarea-popover__panel p {
-    margin: 7px 0 12px;
-    color: rgba(245, 241, 235, .76);
-    font-size: 13px;
-    line-height: 1.5;
-}
-
-body.ilena-storefront .ilena-lunarea-popover__panel a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 40px;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 600;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-}
-
 body.ilena-storefront .ilena-store-footer__bottom nav {
     display: flex;
     flex-wrap: wrap;
@@ -1423,11 +1366,14 @@ body.ilena-storefront .ilena-faq-page .isinya a {
     }
 }
 
-/* Consistent account controls: visible labels prevent an icon-only, ambiguous header. */
-body.ilena-storefront .ilena-header-action {
+/* Direct header links, with no dropdown behavior. */
+body.ilena-storefront .ilena-header-action,
+body.ilena-storefront .ilena-compact-header__icon-link {
     display: inline-flex;
+    min-width: 44px;
     min-height: 44px;
     align-items: center;
+    justify-content: center;
     gap: 7px;
     padding: 0 10px;
     color: rgba(255,255,255,.88);
@@ -1436,140 +1382,11 @@ body.ilena-storefront .ilena-header-action {
     text-decoration: none;
     white-space: nowrap;
 }
-body.ilena-storefront .ilena-header-action .material-icons { font-size: 20px; }
-body.ilena-storefront .ilena-header-action:hover { color: #fff; }
-body.ilena-storefront .ilena-compact-header__welcome {
-    color: rgba(255,255,255,.62);
-    font-size: 12px;
-    white-space: nowrap;
-}
-body.ilena-storefront .ilena-compact-header__logout { margin: 0; }
-body.ilena-storefront .ilena-compact-header__logout button {
-    padding: 0;
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-}
-body.ilena-storefront .ilena-compact-header__icon-link,
-body.ilena-storefront .ilena-compact-header__account-menu > summary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    min-width: 44px;
-    min-height: 44px;
-    color: rgba(255,255,255,.88);
-    font-size: 13px;
-    font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-    list-style: none;
-}
-body.ilena-storefront .ilena-compact-header__icon-link .material-icons,
-body.ilena-storefront .ilena-compact-header__account-menu .material-icons {
-    font-size: 21px;
-}
-body.ilena-storefront .ilena-compact-header__icon-link:hover,
-body.ilena-storefront .ilena-compact-header__account-menu > summary:hover {
-    color: #fff;
-}
-body.ilena-storefront .ilena-compact-header__account-menu {
-    position: relative;
-}
-body.ilena-storefront .ilena-compact-header__account-menu > summary::-webkit-details-marker {
-    display: none;
-}
-body.ilena-storefront .ilena-compact-header__account-panel {
-    position: absolute;
-    z-index: 120;
-    top: 100%;
-    right: 0;
-    display: grid;
-    min-width: 190px;
-    padding: 8px;
-    border: 1px solid rgba(255,255,255,.12);
-    background: #302c27;
-    box-shadow: 0 14px 32px rgba(0,0,0,.24);
-}
-body.ilena-storefront .ilena-compact-header__account-menu:not([open]) > .ilena-compact-header__account-panel {
-    display: none;
-}
-body.ilena-storefront .ilena-compact-header__account-panel a,
-body.ilena-storefront .ilena-compact-header__account-panel button {
-    display: flex;
-    align-items: center;
-    min-height: 42px;
-    padding: 8px 12px;
-    border: 0;
-    color: rgba(255,255,255,.88);
-    background: transparent;
-    font: inherit;
-    text-align: left;
-    text-decoration: none;
-    cursor: pointer;
-}
-body.ilena-storefront .ilena-compact-header__account-panel a:hover,
-body.ilena-storefront .ilena-compact-header__account-panel button:hover {
-    color: #fff;
-    background: rgba(255,255,255,.08);
-}
-
-@media (min-width: 701px) and (hover: hover) and (pointer: fine) {
-    body.ilena-storefront .ilena-header-action,
-    body.ilena-storefront .ilena-compact-header__icon-link,
-    body.ilena-storefront .ilena-compact-header__account-menu > summary {
-        position: relative;
-    }
-
-    body.ilena-storefront .ilena-header-action:not(.ilena-header-popover__trigger) > span,
-    body.ilena-storefront .ilena-compact-header__icon-link:not(.ilena-header-popover__trigger) > span,
-    body.ilena-storefront .ilena-compact-header__account-menu > summary > span:not(.ilena-sr-only) {
-        position: absolute;
-        z-index: 130;
-        top: calc(100% + 7px);
-        left: 50%;
-        display: block;
-        width: max-content;
-        max-width: 220px;
-        padding: 7px 10px;
-        border: 1px solid rgba(255,255,255,.12);
-        color: #fff;
-        background: #302c27;
-        box-shadow: 0 8px 20px rgba(0,0,0,.2);
-        font-size: 12px;
-        font-weight: 500;
-        line-height: 1.3;
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-        transform: translate(-50%, -3px);
-        transition: opacity .15s ease, transform .15s ease, visibility .15s ease;
-    }
-
-    body.ilena-storefront .ilena-header-action:not(.ilena-header-popover__trigger):hover > span,
-    body.ilena-storefront .ilena-header-action:not(.ilena-header-popover__trigger):focus-visible > span,
-    body.ilena-storefront .ilena-compact-header__icon-link:not(.ilena-header-popover__trigger):hover > span,
-    body.ilena-storefront .ilena-compact-header__icon-link:not(.ilena-header-popover__trigger):focus-visible > span,
-    body.ilena-storefront .ilena-compact-header__account-menu > summary:hover > span:not(.ilena-sr-only),
-    body.ilena-storefront .ilena-compact-header__account-menu > summary:focus-visible > span:not(.ilena-sr-only) {
-        opacity: 1;
-        visibility: visible;
-        transform: translate(-50%, 0);
-    }
-}
-
-body.ilena-storefront .ilena-header-popover {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    z-index: 110;
-}
-
-body.ilena-storefront .ilena-header-popover__trigger {
-    position: relative;
-}
-
-body.ilena-storefront .ilena-header-popover__trigger > .ilena-sr-only {
+body.ilena-storefront .ilena-header-action .material-icons,
+body.ilena-storefront .ilena-compact-header__icon-link .material-icons { font-size: 21px; }
+body.ilena-storefront .ilena-header-action:hover,
+body.ilena-storefront .ilena-compact-header__icon-link:hover { color: #fff; }
+body.ilena-storefront .ilena-sr-only {
     position: absolute !important;
     width: 1px !important;
     height: 1px !important;
@@ -1580,91 +1397,6 @@ body.ilena-storefront .ilena-header-popover__trigger > .ilena-sr-only {
     white-space: nowrap !important;
     border: 0 !important;
 }
-
-body.ilena-storefront .ilena-header-popover__panel {
-    position: absolute;
-    z-index: 140;
-    top: calc(100% + 12px);
-    right: -10px;
-    display: block;
-    width: min(300px, calc(100vw - 32px));
-    padding: 18px 20px;
-    border: 1px solid rgba(245, 241, 235, .14);
-    border-top: 2px solid var(--merah);
-    color: #f5f1eb;
-    background: #302c27;
-    box-shadow: 0 16px 36px rgba(20, 17, 14, .32);
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transform: translateY(4px);
-    transition: opacity .16s ease, transform .16s ease, visibility 0s linear .3s;
-}
-
-body.ilena-storefront .ilena-header-popover__panel strong {
-    display: block;
-    font-size: 14px;
-    font-weight: 700;
-}
-
-body.ilena-storefront .ilena-header-popover__panel p {
-    margin: 8px 0 12px;
-    color: rgba(245, 241, 235, .72);
-    font-size: 13px;
-    line-height: 1.5;
-}
-
-body.ilena-storefront .ilena-header-popover__panel > a {
-    display: inline-flex;
-    min-height: 38px;
-    align-items: center;
-    justify-content: center;
-    padding: 0 14px;
-    color: #fff;
-    background: var(--merah);
-    font-size: 12px;
-    font-weight: 650;
-    text-decoration: none;
-}
-
-body.ilena-storefront .ilena-header-popover__links {
-    display: grid;
-    gap: 2px;
-    margin-top: 8px;
-    border-top: 1px solid rgba(245, 241, 235, .12);
-}
-
-body.ilena-storefront .ilena-header-popover__links a {
-    display: flex;
-    min-height: 38px;
-    align-items: center;
-    padding: 0 8px;
-    color: rgba(245, 241, 235, .88);
-    text-decoration: none;
-}
-
-body.ilena-storefront .ilena-header-popover__links a:hover,
-body.ilena-storefront .ilena-header-popover__links a:focus-visible {
-    color: #fff;
-    background: rgba(255, 255, 255, .08);
-}
-
-@media (hover: hover) and (pointer: fine) {
-    body.ilena-storefront .ilena-header-popover:focus-within:not(.is-dismissed) > .ilena-header-popover__panel,
-    body.ilena-storefront .ilena-header-popover.is-open > .ilena-header-popover__panel {
-        opacity: 1;
-        visibility: visible;
-        pointer-events: auto;
-        transform: translateY(0);
-        transition-delay: 0s;
-    }
-
-    body.ilena-storefront .ilena-compact-header__account-menu:not([open]):hover > .ilena-compact-header__account-panel,
-    body.ilena-storefront .ilena-compact-header__account-menu:not([open]):focus-within > .ilena-compact-header__account-panel {
-        display: grid;
-    }
-}
-
 /* Product detail and saved products join the storefront's warm, editorial system. */
 body.ilena-storefront .product-detail-soft .teks-besar {
     font-family: var(--ilena-font-body);
@@ -1768,7 +1500,6 @@ body.ilena-storefront.ilena-page--invoice .print {
         border-top: 1px solid rgba(255,255,255,.08);
     }
 
-    body.ilena-storefront .ilena-compact-header__account-menu > summary span,
     body.ilena-storefront .ilena-compact-header__icon-link span {
         display: none;
     }
@@ -2185,67 +1916,25 @@ body.ilena-storefront .ilena-home-hero .show-flex-ke-hide h1 {
     line-height: .98;
 }
 
-/* Brand popovers open on hover for pointer devices; touch keeps click-to-toggle. */
-@media (hover: hover) and (pointer: fine) {
-    body.ilena-storefront details.ilena-lunarea-popover:not([open]):hover > .ilena-lunarea-popover__panel,
-    body.ilena-storefront details.ilena-lunarea-popover:not([open]):focus-within > .ilena-lunarea-popover__panel {
-        display: block;
-    }
-}
-
-body.ilena-storefront .ilena-compact-header__lunarea > summary,
-body.ilena-storefront .ilena-mobile-lunarea-popover > summary {
+body.ilena-storefront .ilena-mobile-lunarea-link {
     display: inline-flex;
+    flex: 0 0 auto;
     align-items: center;
     min-height: 44px;
-    cursor: pointer;
-    list-style: none;
 }
-
-body.ilena-storefront .ilena-compact-header__lunarea > summary::-webkit-details-marker,
-body.ilena-storefront .ilena-mobile-lunarea-popover > summary::-webkit-details-marker {
-    display: none;
-}
-
-body.ilena-storefront .ilena-compact-header__lunarea > summary img {
-    display: block;
-    width: 120px;
-    height: 28px;
-    object-fit: contain;
-}
-
-body.ilena-storefront .ilena-compact-header__lunarea .ilena-lunarea-popover__panel {
-    top: calc(100% + 6px);
-    bottom: auto;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-body.ilena-storefront .ilena-mobile-lunarea-popover {
-    position: relative;
-    flex: 0 0 auto;
-}
-
-body.ilena-storefront .ilena-mobile-lunarea-popover > summary img {
+body.ilena-storefront .ilena-mobile-lunarea-link img {
     display: block;
     width: 82px;
     height: 22px;
     object-fit: contain;
 }
-
-body.ilena-storefront .ilena-mobile-lunarea-popover .ilena-lunarea-popover__panel {
-    top: calc(100% + 8px);
-    bottom: auto;
-    left: 0;
-}
-
 @media (max-width: 700px) {
     body.ilena-storefront .ilena-compact-header {
         gap: 10px;
         padding-inline: 14px;
     }
 
-    body.ilena-storefront .ilena-compact-header__lunarea > summary img {
+    body.ilena-storefront .ilena-compact-header__lunarea img {
         width: 88px;
         height: 24px;
     }
@@ -2396,7 +2085,6 @@ body.ilena-storefront.ilena-page--article .isi-artikel :where(h2, h3) {
 body.ilena-storefront.ilena-page--article :where(p, a, button, time, small, .badge) {
     font-family: var(--ilena-font-body);
 }
-body.ilena-storefront .ilena-lunarea-popover__panel,
 body.ilena-storefront .toast,
 body.ilena-storefront .modal,
 body.ilena-storefront .popover,

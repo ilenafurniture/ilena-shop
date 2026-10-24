@@ -291,47 +291,6 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
     <?php elseif (!$isInternalArea): ?>
         <?= $this->include('layout/navbarCompact', ['headerMode' => $layoutHeaderMode]); ?>
     <?php endif; ?>
-    <script>
-    (() => {
-        document.querySelectorAll('.ilena-header-popover').forEach(popover => {
-            const trigger = popover.querySelector('.ilena-header-popover__trigger');
-            let closeTimer = 0;
-            if (trigger) trigger.setAttribute('aria-expanded', 'false');
-            const open = () => {
-                window.clearTimeout(closeTimer);
-                popover.classList.remove('is-dismissed');
-                popover.classList.add('is-open');
-                if (trigger) trigger.setAttribute('aria-expanded', 'true');
-            };
-            const close = () => {
-                if (popover.matches(':focus-within')) return;
-                popover.classList.remove('is-open');
-                if (trigger) trigger.setAttribute('aria-expanded', 'false');
-            };
-            const scheduleClose = () => {
-                window.clearTimeout(closeTimer);
-                closeTimer = window.setTimeout(close, 700);
-            };
-
-            popover.addEventListener('pointerenter', open);
-            popover.addEventListener('pointerleave', scheduleClose);
-            popover.addEventListener('focusin', open);
-            popover.addEventListener('focusout', event => {
-                if (!event.relatedTarget || !popover.contains(event.relatedTarget)) scheduleClose();
-            });
-            popover.addEventListener('keydown', event => {
-                if (event.key !== 'Escape') return;
-                window.clearTimeout(closeTimer);
-                popover.classList.remove('is-open');
-                popover.classList.add('is-dismissed');
-                if (trigger) {
-                    trigger.setAttribute('aria-expanded', 'false');
-                    trigger.focus();
-                }
-            });
-        });
-    })();
-    </script>
     <div style="flex: 1; position: relative; min-height: 500px;">
         <?= $this->renderSection('content'); ?>
     </div>
