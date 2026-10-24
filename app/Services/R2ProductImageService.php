@@ -133,7 +133,12 @@ class R2ProductImageService
         if ($version !== '') {
             $url .= (str_contains($url, '?') ? '&' : '?') . 'v=' . rawurlencode($version);
         }
-        return redirect()->to($url, 302)->setHeader('Cache-Control', 'public, max-age=300');
+        $response = redirect()->to($url, 302);
+        $response->removeHeader('Cache-Control');
+        $response->setHeader('Cache-Control', 'public, max-age=300');
+        $response->setBody('');
+
+        return $response;
     }
 
     public function getObject(string $key): ?array
