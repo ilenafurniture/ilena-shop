@@ -31,6 +31,8 @@ $routes->get('/product/(:any)', 'Pages::product/$1', ['filter' => 'customerFilte
 $routes->get('/product/(:any)/(:any)', 'Pages::product/$1/$2', ['filter' => 'customerFilter']);
 
 $routes->post('/actionfind', 'Pages::actionFind', ['filter' => 'customerFilter']);
+$routes->get('/search/suggest', 'Pages::searchSuggestions', ['filter' => 'customerFilter']);
+$routes->get('/find', 'Pages::findSmart', ['filter' => 'customerFilter']);
 $routes->get('/find/(:any)', 'Pages::find/$1', ['filter' => 'customerFilter']);
 
 $routes->get('/cart', 'Pages::cart', ['filter' => 'customerFilter']);

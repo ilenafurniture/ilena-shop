@@ -175,13 +175,208 @@ class Pages extends BaseController
 
     public function actionFind()
     {
-        $cari = str_replace(" ", "-", $this->request->getVar('cari'));
-        return redirect()->to('/find/' . $cari);
+        $query = mb_substr(trim((string) $this->request->getVar('cari')), 0, 100);
+        return redirect()->to('/find?' . http_build_query(['q' => $query]));
     }
     public function find($teks)
     {
-        $cari = str_replace("-", " ", $teks);
-        $produk = $this->barangModel->like('nama', $cari, 'both')->where(['active' => '1'])->findAll();
+        $cari = str_replace('-', ' ', (string) $teks);
+        return redirect()->to('/find?' . http_build_query(['q' => $cari]));
+    }
+
+    private function normalizeSmartCatalogQuery(string $value): string
+    {
+        $ascii = function_exists('iconv') ? iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $value) : $value;
+        $value = mb_strtolower($ascii !== false ? $ascii : $value);
+        return trim((string) preg_replace('/[^a-z0-9]+/u', ' ', $value));
+    }
+
+    private function rankSmartCatalog(string $query, array $products, bool $includeFallback = false): array
+    {
+        $synonyms = [
+            ['mebel', 'meubel', 'furniture', 'furnitur', 'perabot'],
+            ['sofa', 'couch', 'loveseat'],
+            ['meja', 'table'],
+            ['kursi', 'chair', 'stool'],
+            ['lemari', 'cabinet', 'wardrobe'],
+            ['rak', 'shelf', 'bookshelf', 'bookcase'],
+            ['nakas', 'nightstand', 'bedside'],
+            ['laci', 'drawer'],
+            ['tv', 'televisi'],
+        ];
+        $stopWords = ['di', 'ke', 'dari', 'dan', 'yang', 'untuk', 'dengan', 'ada', 'cari', 'carikan', 'mencari', 'tolong', 'saya', 'produk', 'produkkan', 'please', 'find', 'the', 'a', 'an', 'of', 'for'];
+        $queryWords = preg_split('/\s+/', $this->normalizeSmartCatalogQuery($query), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $tokens = array_values(array_unique(array_filter($queryWords, static fn (string $word): bool => strlen($word) > 1 && !in_array($word, $stopWords, true))));
+        $ranked = [];
+
+        foreach ($products as $product) {
+            $variantNames = [];
+            $variants = json_decode((string) ($product['varian'] ?? '[]'), true);
+            if (is_array($variants)) {
+                foreach ($variants as $variant) {
+                    if (is_array($variant) && isset($variant['nama'])) $variantNames[] = (string) $variant['nama'];
+                }
+            }
+            $fields = [
+                [(string) ($product['nama'] ?? ''), 14],
+                [(string) ($product['pencarian'] ?? ''), 11],
+                [(string) ($product['kategori'] ?? ''), 8],
+                [(string) ($product['subkategori'] ?? ''), 8],
+                [implode(' ', $variantNames), 6],
+                [(string) ($product['deskripsi'] ?? ''), 2],
+            ];
+            $normalizedFields = [];
+            $candidateWords = [];
+            foreach ($fields as [$field, $weight]) {
+                $normalized = $this->normalizeSmartCatalogQuery($field);
+                $words = preg_split('/\s+/', $normalized, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+                $normalizedFields[] = [$normalized, $words, $weight];
+                $candidateWords = array_merge($candidateWords, $words);
+            }
+            $score = 0;
+            $totalDistance = 0;
+            foreach ($tokens as $token) {
+                $equivalents = [$token];
+                foreach ($synonyms as $group) if (in_array($token, $group, true)) $equivalents = array_merge($equivalents, $group);
+                $best = 0;
+                $bestDistance = PHP_INT_MAX;
+                foreach ($normalizedFields as [$field, $words, $weight]) {
+                    foreach (array_unique($equivalents) as $equivalent) {
+                        if ($field !== '' && str_contains($field, $equivalent)) $best = max($best, $weight + 3);
+                        foreach ($words as $word) {
+                            $distance = levenshtein($equivalent, $word);
+                            $bestDistance = min($bestDistance, $distance);
+                            $maxDistance = strlen($equivalent) >= 8 ? 2 : (strlen($equivalent) >= 5 ? 1 : 0);
+                            if ($distance <= $maxDistance) $best = max($best, $weight - $distance);
+                        }
+                    }
+                }
+                $score += $best;
+                $totalDistance += $bestDistance === PHP_INT_MAX ? strlen($token) : $bestDistance;
+            }
+            if ($tokens === []) $score = 1;
+            if ($score > 0 || $includeFallback) {
+                $ranked[] = [
+                    'product' => $product,
+                    'score' => $score,
+                    'distance' => $totalDistance,
+                    'popularity' => (int) ($product['pengunjung'] ?? 0),
+                ];
+            }
+        }
+
+        usort($ranked, static function (array $a, array $b): int {
+            return ($b['score'] <=> $a['score']) ?: (($a['distance'] <=> $b['distance']) ?: ($b['popularity'] <=> $a['popularity']));
+        });
+        return $ranked;
+    }
+
+    public function searchSuggestions()
+    {
+        $query = mb_substr(trim((string) $this->request->getGet('q')), 0, 100);
+        if (mb_strlen($this->normalizeSmartCatalogQuery($query)) < 2) {
+            return $this->response->setJSON(['items' => []]);
+        }
+        $products = $this->barangModel->where('active', '1')->findAll();
+        $ranked = array_slice($this->rankSmartCatalog($query, $products), 0, 7);
+        $items = array_map(static function (array $item): array {
+            $product = $item['product'];
+            return [
+                'name' => (string) ($product['nama'] ?? ''),
+                'category' => trim((string) ($product['subkategori'] ?? '')),
+                'collection' => trim((string) ($product['kategori'] ?? '')),
+            ];
+        }, $ranked);
+        return $this->response->setJSON(['items' => $items]);
+    }
+
+    public function findSmart()
+    {
+        $query = mb_substr(trim((string) $this->request->getGet('q')), 0, 100);
+        $productRows = $this->barangModel->where('active', '1')->findAll();
+        $queryForMatching = $query;
+        $smartFilters = [];
+        $normalizedQuery = $this->normalizeSmartCatalogQuery($query);
+
+        $roomPatterns = [
+            'tamu' => ['ruang tamu', 'living room', 'untuk tamu'],
+            'keluarga' => ['ruang keluarga', 'family room'],
+            'tidur' => ['ruang tidur', 'kamar tidur', 'bedroom'],
+        ];
+        if (empty($_GET['ruang'])) {
+            foreach ($roomPatterns as $room => $phrases) {
+                foreach ($phrases as $phrase) {
+                    if (str_contains($normalizedQuery, $phrase)) {
+                        $_GET['ruang'] = $room;
+                        $smartFilters[] = 'Ruang ' . ucfirst($room);
+                        $queryForMatching = str_ireplace($phrase, ' ', $queryForMatching);
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        $matchedType = '';
+        if (empty($_GET['jenis'])) {
+            foreach ($this->jenisModel->findAll() as $type) {
+                $typeName = trim((string) ($type['nama'] ?? ''));
+                $typePhrase = $this->normalizeSmartCatalogQuery($typeName);
+                if ($typePhrase !== '' && str_contains($normalizedQuery, $typePhrase)) {
+                    $matchedType = str_replace(' ', '-', $typePhrase);
+                    $_GET['jenis'] = $matchedType;
+                    $smartFilters[] = 'Jenis ' . $typeName;
+                    $queryForMatching = str_ireplace($typeName, ' ', $queryForMatching);
+                    break;
+                }
+            }
+        }
+
+        if (empty($_GET['koleksi'])) {
+            foreach ($this->koleksiModel->findAll() as $collection) {
+                $collectionName = trim((string) ($collection['nama'] ?? ''));
+                $collectionPhrase = $this->normalizeSmartCatalogQuery($collectionName);
+                if ($collectionPhrase !== '' && str_contains($normalizedQuery, $collectionPhrase)) {
+                    $_GET['koleksi'] = str_replace(' ', '-', $collectionPhrase);
+                    $smartFilters[] = 'Koleksi ' . $collectionName;
+                    $queryForMatching = str_ireplace($collectionName, ' ', $queryForMatching);
+                    break;
+                }
+            }
+        }
+
+        $smartMaxPrice = null;
+        $smartMinPrice = null;
+        if (!empty($_GET['harga'])) {
+            $smartFilters[] = 'Rentang harga';
+        } elseif (preg_match('/\b(?:di bawah|dibawah|kurang dari|maksimal|max)\s*(\d+(?:[.,]\d+)?)\s*(juta|jt|juta-an|ribu|rb)?\b/u', $normalizedQuery, $priceMatch)) {
+            $amount = (float) str_replace(',', '.', $priceMatch[1]);
+            $unit = $priceMatch[2] ?? '';
+            $smartMaxPrice = $amount * (in_array($unit, ['juta', 'jt', 'juta-an'], true) ? 1000000 : (in_array($unit, ['ribu', 'rb'], true) ? 1000 : 1));
+            $queryForMatching = preg_replace('/\b(?:di bawah|dibawah|kurang dari|maksimal|max)\s*\d+(?:[.,]\d+)?\s*(?:juta|jt|juta-an|ribu|rb)?\b/u', ' ', $queryForMatching, 1) ?? $queryForMatching;
+            $smartFilters[] = 'Harga hingga Rp ' . number_format($smartMaxPrice, 0, ',', '.');
+        } elseif (preg_match('/\b(?:murah|terjangkau|hemat|budget)\b/u', $normalizedQuery, $cheapMatch)) {
+            $smartMaxPrice = 5000000;
+            $queryForMatching = preg_replace('/\b(?:murah|terjangkau|hemat|budget)\b/u', ' ', $queryForMatching, 1) ?? $queryForMatching;
+            $smartFilters[] = 'Harga terjangkau (di bawah Rp 5.000.000)';
+        } elseif (preg_match('/\b(?:mahal|premium)\b/u', $normalizedQuery)) {
+            $smartMinPrice = 20000000;
+            $queryForMatching = preg_replace('/\b(?:mahal|premium)\b/u', ' ', $queryForMatching, 1) ?? $queryForMatching;
+            $smartFilters[] = 'Harga premium (mulai Rp 20.000.000)';
+        }
+
+        $ranked = $this->rankSmartCatalog($queryForMatching, $productRows);
+        $ranked = array_values(array_filter($ranked, static function (array $item) use ($smartMaxPrice, $smartMinPrice): bool {
+            $price = (float) ($item['product']['harga'] ?? 0);
+            return ($smartMaxPrice === null || $price <= $smartMaxPrice) && ($smartMinPrice === null || $price >= $smartMinPrice);
+        }));
+        $products = array_column($ranked, 'product');
+        $suggestions = [];
+        if ($products === [] && $query !== '') {
+            $fallback = $this->rankSmartCatalog($queryForMatching, $productRows, true);
+            $suggestions = array_column(array_slice(array_filter($fallback, static fn (array $item): bool => $item['score'] > 0 || $item['distance'] <= 2), 0, 5), 'product');
+            if ($suggestions === []) $suggestions = array_column(array_slice($this->rankSmartCatalog('', $productRows), 0, 5), 'product');
+        }
+
         $wishlist = $this->session->get('wishlist');
         $koleksi = $this->koleksiModel->findAll();
         $jenis = $this->jenisModel->findAll();
@@ -196,9 +391,11 @@ class Pages extends BaseController
                 'koleksi' => $koleksi,
                 'jenis' => $jenis,
             ],
-            'produk' => $produk,
+            'produk' => $products,
+            'smartSuggestions' => $suggestions,
+            'smartFilters' => $smartFilters,
             'wishlist' => $wishlist,
-            'find' => $cari
+            'find' => $query,
         ];
         return view('pages/all', $data);
     }
@@ -4830,25 +5027,128 @@ class Pages extends BaseController
     {
         $this->ensurePartnerTable();
         $query = mb_substr(trim((string) $this->request->getGet('q')), 0, 80);
+        $requestedCity = mb_substr(trim((string) $this->request->getGet('city')), 0, 100);
         $perPage = 10;
         $requestedPage = max(1, (int) $this->request->getGet('page'));
-        $partnerModel = new PartnerModel();
-        $partnerModel->where('active', 1);
-        if ($query !== '') {
-            $partnerModel->groupStart()
-                ->like('name', $query)
-                ->orLike('city', $query)
-                ->orLike('address', $query)
-                ->groupEnd();
-        }
-        $totalPartners = $partnerModel->countAllResults(false);
-        $totalPages = max(1, (int) ceil($totalPartners / $perPage));
-        $page = min($requestedPage, $totalPages);
-        $partners = $partnerModel
+        $allPartnerRows = (new PartnerModel())
+            ->where('active', 1)
             ->orderBy('sort_order', 'ASC')
             ->orderBy('name', 'ASC')
-            ->findAll($perPage, ($page - 1) * $perPage);
+            ->findAll();
 
+        $normalizeSearch = static function (string $value): string {
+            $ascii = function_exists('iconv') ? iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $value) : $value;
+            $value = mb_strtolower($ascii !== false ? $ascii : $value);
+            return trim((string) preg_replace('/[^a-z0-9]+/u', ' ', $value));
+        };
+        $searchWords = static function (string $value) use ($normalizeSearch): array {
+            $words = preg_split('/\s+/', $normalizeSearch($value), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+            return array_values(array_unique($words));
+        };
+        $synonymGroups = [
+            ['toko', 'gerai', 'outlet', 'store', 'stores', 'mitra', 'partner', 'showroom', 'dealer', 'reseller'],
+            ['mebel', 'meubel', 'furniture', 'furnitur', 'perabot'],
+            ['dekat', 'sekitar', 'near', 'lokasi'],
+        ];
+        $stopWords = ['di', 'ke', 'dari', 'dan', 'yang', 'ada', 'mana', 'dimana', 'berada', 'cari', 'mencari', 'carikan', 'tolong', 'saya', 'untuk', 'wilayah', 'daerah', 'kota', 'kabupaten', 'provinsi', 'in', 'where', 'is', 'the', 'please', 'find', 'around'];
+        $cities = [];
+        foreach ($allPartnerRows as $row) {
+            $cityName = trim((string) ($row['city'] ?? ''));
+            if ($cityName !== '') $cities[$normalizeSearch($cityName)] = $cityName;
+        }
+        natcasesort($cities);
+
+        $genericSearchWords = array_merge($synonymGroups[0], $synonymGroups[2]);
+        $tokens = array_values(array_filter($searchWords($query), static fn (string $word): bool => !in_array($word, $stopWords, true)));
+        $cityFilter = '';
+        if ($requestedCity !== '') {
+            foreach ($cities as $cityKey => $cityName) {
+                if ($normalizeSearch($requestedCity) === $cityKey) { $cityFilter = $cityName; break; }
+            }
+        }
+        if ($cityFilter === '' && $tokens !== []) {
+            foreach ($cities as $cityKey => $cityName) {
+                foreach ($tokens as $token) {
+                    $cityTokens = $searchWords($cityKey);
+                    $cityTypoMatch = false;
+                    foreach ($cityTokens as $cityToken) {
+                        if (strlen($token) >= 4 && levenshtein($token, $cityToken) <= (strlen($token) >= 8 ? 2 : 1)) {
+                            $cityTypoMatch = true;
+                            break;
+                        }
+                    }
+                    if (str_contains($normalizeSearch($query), $cityKey) || $cityTypoMatch) {
+                        $cityFilter = $cityName;
+                        $tokens = array_values(array_diff($tokens, $searchWords($cityName)));
+                        break 2;
+                    }
+                }
+            }
+        }
+        $tokens = array_values(array_filter($tokens, static function (string $token) use ($genericSearchWords): bool {
+            if (in_array($token, $genericSearchWords, true)) return false;
+            return strlen($token) > 1;
+        }));
+
+        $scorePartner = static function (array $row) use ($tokens, $cityFilter, $normalizeSearch, $searchWords, $synonymGroups): int {
+            $name = $normalizeSearch((string) ($row['name'] ?? ''));
+            $city = $normalizeSearch((string) ($row['city'] ?? ''));
+            $address = $normalizeSearch((string) ($row['address'] ?? ''));
+            if ($cityFilter !== '' && $city !== $normalizeSearch($cityFilter)) return 0;
+            if ($tokens === []) return 1;
+            $fields = [[$name, 10], [$city, 9], [$address, 4]];
+            $score = 0;
+            foreach ($tokens as $token) {
+                $equivalents = [$token];
+                foreach ($synonymGroups as $group) if (in_array($token, $group, true)) $equivalents = array_merge($equivalents, $group);
+                $best = 0;
+                foreach ($fields as [$field, $weight]) {
+                    $fieldWords = $searchWords($field);
+                    foreach (array_unique($equivalents) as $equivalent) {
+                        if (str_contains($field, $equivalent)) $best = max($best, $weight + 3);
+                        foreach ($fieldWords as $fieldWord) {
+                            $distance = levenshtein($equivalent, $fieldWord);
+                            $maxDistance = strlen($equivalent) >= 8 ? 2 : (strlen($equivalent) >= 5 ? 1 : 0);
+                            if ($distance <= $maxDistance) $best = max($best, $weight - $distance);
+                        }
+                    }
+                }
+                $score += $best;
+            }
+            return $score;
+        };
+
+        $rankedRows = [];
+        foreach ($allPartnerRows as $row) {
+            $score = $scorePartner($row);
+            if (($query === '' && $cityFilter === '') || $score > 0) $rankedRows[] = ['row' => $row, 'score' => $score];
+        }
+        usort($rankedRows, static fn (array $a, array $b): int => $b['score'] <=> $a['score']);
+        $filteredRows = array_column($rankedRows, 'row');
+        $totalPartners = count($filteredRows);
+        $totalPages = max(1, (int) ceil($totalPartners / $perPage));
+        $page = min($requestedPage, $totalPages);
+        $pageRows = array_slice($filteredRows, ($page - 1) * $perPage, $perPage);
+        $suggestionRows = [];
+        if ($totalPartners === 0 && $tokens !== []) {
+            $nearMatches = [];
+            foreach ($allPartnerRows as $row) {
+                $candidateWords = array_merge(
+                    $searchWords((string) ($row['name'] ?? '')),
+                    $searchWords((string) ($row['city'] ?? '')),
+                    $searchWords((string) ($row['address'] ?? ''))
+                );
+                $distance = 0;
+                foreach ($tokens as $token) {
+                    $bestDistance = PHP_INT_MAX;
+                    foreach ($candidateWords as $candidateWord) $bestDistance = min($bestDistance, levenshtein($token, $candidateWord));
+                    $distance += $bestDistance;
+                }
+                $nearMatches[] = ['row' => $row, 'distance' => $distance];
+            }
+            usort($nearMatches, static fn (array $a, array $b): int => $a['distance'] <=> $b['distance']);
+            $suggestionRows = array_column(array_slice($nearMatches, 0, 3), 'row');
+        }
         $partners = array_map(static function (array $row): array {
             $lat = $row['lat'] ?? null;
             $lng = $row['lng'] ?? null;
@@ -4862,13 +5162,41 @@ class Pages extends BaseController
                 'img' => $row['image_url'] ?? '',
                 'coords' => $hasCoords ? [(float) $lat, (float) $lng] : null,
             ];
-        }, $partners);
+        }, $pageRows);
+
+        // The partner directory is paginated, but the overview map must include every
+        // active store that has coordinates so the map represents the full network.
+        $mapPartnerRows = $allPartnerRows;
+        $mapPartners = array_values(array_filter(array_map(static function (array $row): array {
+            $lat = (float) ($row['lat'] ?? 0);
+            $lng = (float) ($row['lng'] ?? 0);
+            if ($lat < -90 || $lat > 90 || $lng < -180 || $lng > 180 || ($lat === 0.0 && $lng === 0.0)) {
+                return [];
+            }
+
+            return [
+                'name' => (string) ($row['name'] ?? ''),
+                'city' => (string) ($row['city'] ?? ''),
+                'address' => (string) ($row['address'] ?? ''),
+                'lat' => $lat,
+                'lng' => $lng,
+            ];
+        }, $mapPartnerRows), static fn (array $partner): bool => $partner !== []));
 
         $data = [
             'title' => 'Mitra Kami',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'partners' => $partners,
+            'mapPartners' => $mapPartners,
+            'partnerSearchIndex' => array_map(static fn (array $row): array => [
+                'name' => (string) ($row['name'] ?? ''),
+                'city' => (string) ($row['city'] ?? ''),
+                'address' => (string) ($row['address'] ?? ''),
+            ], $allPartnerRows),
+            'partnerCities' => array_values($cities),
+            'partnerCityFilter' => $cityFilter,
+            'partnerSuggestions' => $suggestionRows,
             'partnerQuery' => $query,
             'partnerTotal' => $totalPartners,
             'partnerPage' => $page,

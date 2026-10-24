@@ -6,10 +6,11 @@
         <img src="<?= base_url('img/logolunareanavbar.webp'); ?>" width="112" height="24" alt="Lunarea Furniture">
     </a>
     <div style="flex:1;">
-        <form action="/actionfind" method="post" class="w-100">
-            <?= csrf_field(); ?>
-            <input placeholder="Cari produk" style="text-transform: capitalize;" class="input w-100" name="cari"
-                type="text">
+        <form action="/find" method="get" class="w-100 ilena-global-search" data-global-search role="search">
+            <label class="ilena-sr-only" for="global-search-mobile">Cari produk</label>
+            <input id="global-search-mobile" placeholder="Cari produk" class="input w-100" name="q"
+                type="search" autocomplete="off" autocapitalize="off" aria-autocomplete="list" aria-expanded="false" aria-controls="global-search-mobile-listbox">
+            <div class="ilena-search-suggestions" id="global-search-mobile-listbox" role="listbox" hidden></div>
         </form>
     </div>
     <div style="width: fit-content">

@@ -22,6 +22,20 @@ $partnerLast = min($partnerPage * $partnerPerPage, $partnerTotal);
         <a class="ilena-editorial__text-link" href="#partner-directory">Lihat daftar partner <span aria-hidden="true">↓</span></a>
     </header>
 
+    <section class="ilena-partners__map-section" aria-labelledby="partner-map-title">
+        <div class="ilena-editorial__section-heading">
+            <div>
+                <p class="ilena-editorial__eyebrow">Jangkauan toko</p>
+                <h2 id="partner-map-title">Temukan Ilena di sekitar Anda</h2>
+            </div>
+            <p class="ilena-partners__count"><strong><?= count($mapPartners ?? []); ?></strong> lokasi bertitik di peta</p>
+        </div>
+        <div id="ilena-partner-map" class="ilena-partners__map" role="region" aria-label="Peta lokasi partner resmi Ilena" data-partners="<?= esc(json_encode($mapPartners ?? [], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), 'attr'); ?>">
+            <p class="ilena-partners__map-status">Peta lokasi partner akan dimuat saat bagian ini terlihat.</p>
+        </div>
+        <p class="ilena-partners__map-note">Pilih titik pada peta untuk melihat nama toko dan membuka petunjuk arah.</p>
+    </section>
+
     <section id="partner-directory" class="ilena-partners__directory" aria-labelledby="partner-directory-title">
         <div class="ilena-editorial__section-heading">
             <div>
@@ -31,12 +45,25 @@ $partnerLast = min($partnerPage * $partnerPerPage, $partnerTotal);
             <p class="ilena-partners__count">Menampilkan <strong><?= $partnerFirst; ?>–<?= $partnerLast; ?></strong> dari <strong><?= $partnerTotal; ?></strong> partner</p>
         </div>
 
-        <form class="ilena-partners__search" action="/partner" method="get" role="search">
-            <label class="sr-only" for="partner-search">Cari partner berdasarkan nama, kota, atau alamat</label>
-            <span aria-hidden="true">⌕</span>
-            <input id="partner-search" name="q" type="search" value="<?= esc($partnerQuery, 'attr'); ?>" placeholder="Cari nama, kota, atau alamat" autocomplete="off">
+        <form class="ilena-partners__search" action="/partner" method="get" role="search" data-search-index="<?= esc(json_encode($partnerSearchIndex ?? [], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT), 'attr'); ?>">
+            <div class="ilena-partners__search-main">
+                <label class="sr-only" for="partner-search">Cari partner berdasarkan nama, kota, atau alamat</label>
+                <span aria-hidden="true">⌕</span>
+                <input id="partner-search" name="q" type="search" value="<?= esc($partnerQuery, 'attr'); ?>" placeholder="Coba: toko mebel di Surabaya" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="partner-search-suggestions">
+                <div class="ilena-partners__suggestions" id="partner-search-suggestions" role="listbox" aria-label="Saran partner" hidden></div>
+            </div>
+            <label class="ilena-partners__city-filter">
+                <span class="sr-only">Filter berdasarkan kota</span>
+                <select name="city" aria-label="Filter berdasarkan kota">
+                    <option value="">Semua kota</option>
+                    <?php foreach (($partnerCities ?? []) as $city): ?>
+                        <option value="<?= esc($city, 'attr'); ?>" <?= ($partnerCityFilter ?? '') === $city ? 'selected' : ''; ?>><?= esc($city); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
             <button type="submit">Cari</button>
         </form>
+        <p class="ilena-partners__search-hint">Cari dengan nama toko, kota, alamat, atau kalimat seperti “toko mebel dekat Solo”. Kami juga memahami beberapa variasi ejaan.</p>
 
         <?php if ($activePartners !== []): ?>
             <ul class="ilena-partners__list" id="partner-list">
@@ -79,26 +106,223 @@ $partnerLast = min($partnerPage * $partnerPerPage, $partnerTotal);
             </ul>
             <?php if ($partnerPages > 1): ?>
                 <nav class="ilena-partners__pagination" aria-label="Halaman daftar partner">
-                    <?php if ($partnerPage > 1): ?><a href="<?= site_url('partner') . '?' . http_build_query(array_filter(['q' => $partnerQuery, 'page' => $partnerPage - 1], static fn ($value) => $value !== '')); ?>" rel="prev">← Sebelumnya</a><?php endif; ?>
+                    <?php if ($partnerPage > 1): ?><a href="<?= site_url('partner') . '?' . http_build_query(array_filter(['q' => $partnerQuery, 'city' => $partnerCityFilter ?? '', 'page' => $partnerPage - 1], static fn ($value) => $value !== '')); ?>" rel="prev">← Sebelumnya</a><?php endif; ?>
                     <span>Halaman <?= $partnerPage; ?> dari <?= $partnerPages; ?></span>
-                    <?php if ($partnerPage < $partnerPages): ?><a href="<?= site_url('partner') . '?' . http_build_query(array_filter(['q' => $partnerQuery, 'page' => $partnerPage + 1], static fn ($value) => $value !== '')); ?>" rel="next">Berikutnya →</a><?php endif; ?>
+                    <?php if ($partnerPage < $partnerPages): ?><a href="<?= site_url('partner') . '?' . http_build_query(array_filter(['q' => $partnerQuery, 'city' => $partnerCityFilter ?? '', 'page' => $partnerPage + 1], static fn ($value) => $value !== '')); ?>" rel="next">Berikutnya →</a><?php endif; ?>
                 </nav>
             <?php endif; ?>
         <?php else: ?>
-            <p class="ilena-partners__empty"><?= $partnerQuery !== '' ? 'Tidak ada partner yang cocok dengan pencarian tersebut.' : 'Informasi partner sedang diperbarui.'; ?> Silakan hubungi <a href="mailto:cs@ilenafurniture.com">Customer Service Ilena</a> untuk bantuan.</p>
+            <div class="ilena-partners__empty">
+                <h3><?= $partnerQuery !== '' || ($partnerCityFilter ?? '') !== '' ? 'Belum menemukan partner yang cocok' : 'Informasi partner sedang diperbarui'; ?></h3>
+                <p>Coba ejaan lain, hapus filter kota, atau cari dengan nama kota/alamat yang lebih singkat.</p>
+                <?php if (($partnerSuggestions ?? []) !== []): ?>
+                    <p class="ilena-partners__empty-label">Mungkin lokasi ini yang Anda cari:</p>
+                    <div class="ilena-partners__alternatives">
+                        <?php foreach ($partnerSuggestions as $suggestion): ?>
+                            <?php $suggestionName = trim((string) ($suggestion['name'] ?? '')); $suggestionCity = trim((string) ($suggestion['city'] ?? '')); ?>
+                            <a href="<?= site_url('partner') . '?' . http_build_query(['q' => $suggestionName]); ?>"><strong><?= esc($suggestionName); ?></strong><span><?= esc($suggestionCity); ?></span></a>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+                <a class="ilena-partners__reset" href="<?= site_url('partner'); ?>">Lihat semua partner</a>
+                <p>Butuh bantuan? <a href="mailto:cs@ilenafurniture.com">Hubungi Customer Service Ilena</a>.</p>
+            </div>
         <?php endif; ?>
     </section>
 </main>
 <script>
-document.querySelectorAll('.ilena-partners__map-preview').forEach((preview) => {
-    preview.addEventListener('toggle', () => {
-        if (!preview.open) return;
-        const map = preview.querySelector('iframe[data-map-src]');
-        if (map && !map.dataset.loaded) {
-            map.src = map.dataset.mapSrc;
-            map.dataset.loaded = 'true';
+(() => {
+    const form = document.querySelector('.ilena-partners__search');
+    const input = document.getElementById('partner-search');
+    const list = document.getElementById('partner-search-suggestions');
+    if (!form || !input || !list) return;
+
+    const partners = JSON.parse(form.dataset.searchIndex || '[]');
+    const synonymGroups = [['toko', 'gerai', 'outlet', 'store', 'mitra', 'partner', 'showroom', 'dealer', 'reseller'], ['mebel', 'meubel', 'furniture', 'furnitur', 'perabot'], ['dekat', 'sekitar', 'near', 'around', 'lokasi']];
+    const stopWords = new Set(['di', 'ke', 'dari', 'dan', 'yang', 'ada', 'mana', 'dimana', 'cari', 'carikan', 'tolong', 'untuk', 'kota', 'wilayah', 'in', 'where', 'is', 'the', 'please', 'find']);
+    const genericWords = new Set([...synonymGroups[0], ...synonymGroups[2]]);
+    const normalize = (value) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    const editDistance = (a, b) => {
+        const row = Array.from({ length: b.length + 1 }, (_, i) => i);
+        for (let i = 1; i <= a.length; i++) {
+            let diagonal = row[0];
+            row[0] = i;
+            for (let j = 1; j <= b.length; j++) {
+                const above = row[j];
+                row[j] = Math.min(row[j] + 1, row[j - 1] + 1, diagonal + (a[i - 1] === b[j - 1] ? 0 : 1));
+                diagonal = above;
+            }
+        }
+        return row[b.length];
+    };
+    const renderSuggestions = () => {
+        const words = normalize(input.value).split(/\s+/).filter(word => word.length > 1 && !stopWords.has(word) && !genericWords.has(word));
+        list.replaceChildren();
+        if (words.length === 0) {
+            list.hidden = true;
+            input.setAttribute('aria-expanded', 'false');
+            return;
+        }
+        const ranked = partners.map((partner) => {
+            const fields = [normalize(partner.name || ''), normalize(partner.city || ''), normalize(partner.address || '')];
+            let score = 0;
+            words.forEach((word) => {
+                let variants = [word];
+                synonymGroups.forEach(group => { if (group.includes(word)) variants = variants.concat(group); });
+                let best = 0;
+                variants.forEach(variant => fields.forEach((field, index) => {
+                    const fieldWords = field.split(/\s+/);
+                    const weight = index === 0 ? 8 : index === 1 ? 7 : 3;
+                    if (field.includes(variant)) best = Math.max(best, weight + 2);
+                    fieldWords.forEach(candidate => {
+                        const distance = editDistance(variant, candidate);
+                        if (distance <= (variant.length >= 8 ? 2 : variant.length >= 5 ? 1 : 0)) best = Math.max(best, weight - distance);
+                    });
+                }));
+                score += best;
+            });
+            return { partner, score };
+        }).filter(item => item.score > 0).sort((a, b) => b.score - a.score).slice(0, 6);
+
+        ranked.forEach(({ partner }) => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.role = 'option';
+            const name = document.createElement('strong');
+            name.textContent = partner.name || 'Partner Ilena';
+            const city = document.createElement('span');
+            city.textContent = [partner.city, partner.address].filter(Boolean).join(' · ');
+            button.append(name, city);
+            button.addEventListener('click', () => {
+                input.value = partner.name || '';
+                const citySelect = form.querySelector('select[name="city"]');
+                if (citySelect) citySelect.value = Array.from(citySelect.options).some(option => option.value === partner.city) ? partner.city : '';
+                list.hidden = true;
+                input.setAttribute('aria-expanded', 'false');
+                form.requestSubmit();
+            });
+            list.appendChild(button);
+        });
+        list.hidden = ranked.length === 0;
+        input.setAttribute('aria-expanded', String(ranked.length > 0));
+    };
+
+    input.addEventListener('input', renderSuggestions);
+    input.addEventListener('focus', renderSuggestions);
+    form.querySelector('select[name="city"]')?.addEventListener('change', () => form.requestSubmit());
+    input.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+            list.hidden = true;
+            input.setAttribute('aria-expanded', 'false');
+        }
+        if (event.key === 'Enter' && !list.hidden && list.querySelector('button')) {
+            event.preventDefault();
+            list.querySelector('button').click();
         }
     });
-});
+    document.addEventListener('click', event => {
+        if (!form.contains(event.target)) {
+            list.hidden = true;
+            input.setAttribute('aria-expanded', 'false');
+        }
+    });
+})();
+</script>
+<script>
+(() => {
+    const mapElement = document.getElementById('ilena-partner-map');
+    if (!mapElement) return;
+
+    const status = mapElement.querySelector('.ilena-partners__map-status');
+    let initialized = false;
+    const initializeMap = () => {
+        if (initialized) return;
+        initialized = true;
+        const locations = JSON.parse(mapElement.dataset.partners || '[]');
+        if (!locations.length) {
+            if (status) status.textContent = 'Belum ada data koordinat partner untuk ditampilkan.';
+            return;
+        }
+
+        const loadStyles = () => {
+            if (document.querySelector('link[data-ilena-leaflet]')) return;
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+            link.dataset.ilenaLeaflet = 'true';
+            document.head.appendChild(link);
+        };
+        const start = () => {
+            if (status) status.remove();
+            const map = L.map(mapElement, { scrollWheelZoom: false, zoomControl: true });
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+            const bounds = [];
+            locations.forEach((location) => {
+                const point = [Number(location.lat), Number(location.lng)];
+                if (!Number.isFinite(point[0]) || !Number.isFinite(point[1])) return;
+                bounds.push(point);
+                const marker = L.circleMarker(point, {
+                    radius: 7,
+                    color: '#fff',
+                    weight: 2,
+                    fillColor: '#b3262d',
+                    fillOpacity: 1
+                }).addTo(map);
+
+                const popup = document.createElement('div');
+                popup.className = 'ilena-partners__map-popup';
+                const name = document.createElement('strong');
+                name.textContent = location.name || 'Partner Ilena';
+                popup.appendChild(name);
+                if (location.city) {
+                    const city = document.createElement('span');
+                    city.textContent = location.city;
+                    popup.appendChild(city);
+                }
+                const direction = document.createElement('a');
+                direction.href = `https://www.google.com/maps/dir/?api=1&destination=${point[0]},${point[1]}`;
+                direction.target = '_blank';
+                direction.rel = 'noopener noreferrer';
+                direction.textContent = 'Petunjuk arah ↗';
+                popup.appendChild(direction);
+                marker.bindPopup(popup);
+            });
+
+            if (bounds.length === 1) map.setView(bounds[0], 12);
+            else if (bounds.length > 1) map.fitBounds(bounds, { padding: [28, 28], maxZoom: 7 });
+            else map.setView([-2.5, 118], 4);
+        };
+
+        loadStyles();
+        if (window.L) {
+            start();
+            return;
+        }
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+        script.async = true;
+        script.onload = start;
+        script.onerror = () => {
+            initialized = false;
+            if (status) status.textContent = 'Peta gagal dimuat. Silakan coba muat ulang halaman.';
+        };
+        document.head.appendChild(script);
+    };
+
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            if (!entries.some((entry) => entry.isIntersecting)) return;
+            observer.disconnect();
+            initializeMap();
+        }, { rootMargin: '240px' });
+        observer.observe(mapElement);
+    } else {
+        initializeMap();
+    }
+})();
 </script>
 <?= $this->endSection(); ?>

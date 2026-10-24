@@ -398,6 +398,7 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
     })();
     </script>
 
+    <script src="<?= base_url('js/ilena-smart-search.js?v=' . (is_file(FCPATH . 'js/ilena-smart-search.js') ? filemtime(FCPATH . 'js/ilena-smart-search.js') : time())); ?>" defer></script>
     <script src="https://go.kreasibot.com/k.js" data-kreasibot="ilenafurniture" defer></script>
 </body>
 

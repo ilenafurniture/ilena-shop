@@ -5,10 +5,11 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
     <div class="container py-3">
         <div class="d-flex w-100 justify-content-between align-items-center">
             <div style="width: calc(100% / 3)">
-                <form action="/actionfind" method="post">
-                    <?= csrf_field(); ?>
-                    <input placeholder="Cari produk" style="text-transform: capitalize;" class="input" name="cari"
-                        type="text">
+                <form action="/find" method="get" class="ilena-global-search" data-global-search role="search">
+                    <label class="ilena-sr-only" for="global-search-desktop">Cari produk</label>
+                    <input id="global-search-desktop" placeholder="Cari produk atau koleksi" class="input" name="q"
+                        type="search" autocomplete="off" autocapitalize="off" aria-autocomplete="list" aria-expanded="false" aria-controls="global-search-desktop-listbox">
+                    <div class="ilena-search-suggestions" id="global-search-desktop-listbox" role="listbox" hidden></div>
                 </form>
             </div>
             <div class="navbar-brand-pair">

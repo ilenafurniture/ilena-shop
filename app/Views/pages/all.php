@@ -27,6 +27,9 @@ $productCoverUrl = function (array $product): string {
     $dbVersion = !empty($product['tgl_update']) ? (int) strtotime((string) $product['tgl_update']) : 0;
     return base_url('product-cover/' . $id) . '?slot=' . urlencode($slot) . '&size=300&v=' . max($fileVersion, $dbVersion);
 };
+$isSmartSearch = isset($find);
+$smartQuery = (string) ($find ?? '');
+$catalogRoute = $isSmartSearch ? '/find' : '/product';
 ?>
 <?php
 if (isset($kategori)) $_GET['koleksi'] = $kategori;
@@ -127,6 +130,17 @@ if (isset($_GET['ruang'])) {
         }
     }
 }
+
+// Keep search context and selected facets when navigating result pages.
+$catalogPageUrl = static function (int $page) use ($catalogRoute, $isSmartSearch, $smartQuery): string {
+    $params = [];
+    if ($isSmartSearch && $smartQuery !== '') $params['q'] = $smartQuery;
+    foreach (['koleksi', 'jenis', 'harga', 'ruang', 'varian'] as $key) {
+        if (isset($_GET[$key]) && $_GET[$key] !== '') $params[$key] = $_GET[$key];
+    }
+    if ($page > 1) $params['pag'] = $page;
+    return $catalogRoute . ($params ? '?' . http_build_query($params) : '');
+};
 
 //nggabungin produk sejenis
 $produkLama = $produk;
@@ -338,8 +352,8 @@ if (isset($_GET['ruang'])) {
             </div>
             <div class="d-flex gap-3 mt-2">
                 <a class="btn-filter btn-lonjong">Terapkan</a>
-                <?php if (!empty($_GET['koleksi']) || !empty($_GET['jenis']) || !empty($_GET['harga'])) { ?>
-                <a class="btn-teks-aja" href="/product">Hapus Filter</a>
+                <?php if (!empty($_GET['koleksi']) || !empty($_GET['jenis']) || !empty($_GET['harga']) || !empty($_GET['ruang'])) { ?>
+                <a class="btn-teks-aja" href="<?= $isSmartSearch ? '/find?' . http_build_query(['q' => $smartQuery]) : '/product'; ?>">Hapus Filter</a>
                 <?php } ?>
             </div>
         </div>
@@ -513,8 +527,8 @@ if (isset($_GET['ruang'])) {
                 </div>
                 <div class="d-flex gap-3 mt-2">
                     <a class="btn-filter btn-lonjong">Terapkan</a>
-                    <?php if (!empty($_GET['koleksi']) || !empty($_GET['jenis']) || !empty($_GET['harga'])) { ?>
-                    <a class="btn-teks-aja" href="/product">Hapus Filter</a>
+                    <?php if (!empty($_GET['koleksi']) || !empty($_GET['jenis']) || !empty($_GET['harga']) || !empty($_GET['ruang'])) { ?>
+                    <a class="btn-teks-aja" href="<?= $isSmartSearch ? '/find?' . http_build_query(['q' => $smartQuery]) : '/product'; ?>">Hapus Filter</a>
                     <?php } ?>
                 </div>
             </div>
@@ -557,7 +571,26 @@ if (isset($_GET['ruang'])) {
                 </div>
             </div>
             <?php if (isset($find)) { ?>
-            <p>Anda mencari "<?= $find ?>"</p>
+            <p>Hasil pencarian untuk “<?= esc($find); ?>”</p>
+            <?php if (!empty($smartFilters)) { ?>
+            <div class="ilena-smart-search-chips" aria-label="Filter pencarian otomatis">
+                <?php foreach ($smartFilters as $smartFilter) { ?><span class="badge rounded-pill text-bg-light"><?= esc($smartFilter); ?></span><?php } ?>
+            </div>
+            <?php } ?>
+            <?php if (empty($produk)) { ?>
+            <section class="ilena-smart-search-empty" aria-live="polite">
+                <h2>Belum menemukan produk yang cocok</h2>
+                <p>Coba kata yang lebih umum, periksa ejaan, atau pilih salah satu rekomendasi berikut.</p>
+                <?php if (!empty($smartSuggestions)) { ?>
+                <div class="ilena-smart-search-chips">
+                    <?php foreach ($smartSuggestions as $suggestion) { ?>
+                    <a href="<?= esc('/find?' . http_build_query(['q' => $suggestion['nama'] ?? '']), 'attr'); ?>"><?= esc($suggestion['nama'] ?? 'Lihat produk'); ?></a>
+                    <?php } ?>
+                </div>
+                <?php } ?>
+                <p class="mt-3 mb-0"><a href="/product">Lihat semua produk</a></p>
+            </section>
+            <?php } ?>
             <?php } ?>
             <div class="container-card1">
                 <?php foreach ($produk as $ind_p => $p) { ?>
@@ -638,7 +671,7 @@ if (isset($_GET['ruang'])) {
             <!-- <div class="container-pag">
                 <?php if ($pag > 1) { ?>
                 <a class="item-pag"
-                    href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&ruang=<?= isset($_GET['ruang']) ? $_GET['ruang'] : ''; ?>&pag=<?= $pag - 1; ?>"><i
+                    href="<?= esc($catalogPageUrl($pag - 1), 'attr'); ?>"><i
                         class="material-icons">chevron_left</i></a>
                 <?php } ?>
                 <?php for ($i = 0; $i < $hitungPag; $i++) { ?>
@@ -667,14 +700,14 @@ if (isset($_GET['ruang'])) {
                 // Menampilkan angka pagination dari $start sampai $end
                 for ($i = $start; $i <= $end; $i++) { ?>
                 <a class="item-pag <?= $pag == $i ? 'active' : ''; ?>"
-                    href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&ruang=<?= isset($_GET['ruang']) ? $_GET['ruang'] : ''; ?>&pag=<?= $i; ?>"><?= $i; ?></a>
+                    href="<?= esc($catalogPageUrl($i), 'attr'); ?>"><?= $i; ?></a>
                 <?php } ?>
 
                 <?php
                 // Menampilkan tombol 'Next'
                 if ($pag < $hitungPag) { ?>
                 <a class="item-pag"
-                    href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&ruang=<?= isset($_GET['ruang']) ? $_GET['ruang'] : ''; ?>&pag=<?= $pag + 1; ?>"><i
+                    href="<?= esc($catalogPageUrl($pag + 1), 'attr'); ?>"><i
                         class="material-icons">chevron_right</i></a>
                 <?php } ?>
             </div>
@@ -1540,8 +1573,8 @@ const filterKoleksi1Elm = document.querySelectorAll('input[name="koleksi1"]')
 const filterJenis1Elm = document.querySelectorAll('input[name="jenis1"]')
 const filterHarga1Elm = document.querySelectorAll('input[name="harga1"]')
 const filterRuang1Elm = document.querySelectorAll('input[name="ruang1"]')
-let urlCur = '/product';
-console.log(urlCur)
+let urlCur = <?= json_encode($catalogRoute, JSON_UNESCAPED_SLASHES); ?>;
+const smartSearchQuery = <?= json_encode($isSmartSearch ? $smartQuery : '', JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
 let koleksiParam = ''
 let jenisParam = ''
 let hargaParam = ''
@@ -1634,11 +1667,12 @@ btnFilterElm.forEach(elm => {
 
         // console.log(urlCur + '?koleksi=' + koleksiParam + '&jenis=' + jenisParam + '&harga=' + hargaParam)
         let paramArr = [];
-        if (koleksiParam != '') paramArr.push('koleksi=' + koleksiParam)
-        if (jenisParam != '') paramArr.push('jenis=' + jenisParam)
-        if (hargaParam != '') paramArr.push('harga=' + hargaParam)
-        if (ruangParam != '') paramArr.push('ruang=' + ruangParam)
-        window.location.href = urlCur + '?' + paramArr.join('&')
+        if (smartSearchQuery !== '') paramArr.push('q=' + encodeURIComponent(smartSearchQuery))
+        if (koleksiParam != '') paramArr.push('koleksi=' + encodeURIComponent(koleksiParam))
+        if (jenisParam != '') paramArr.push('jenis=' + encodeURIComponent(jenisParam))
+        if (hargaParam != '') paramArr.push('harga=' + encodeURIComponent(hargaParam))
+        if (ruangParam != '') paramArr.push('ruang=' + encodeURIComponent(ruangParam))
+        window.location.href = urlCur + (paramArr.length ? '?' + paramArr.join('&') : '')
     })
 })
 // btnFilterElm.forEach(element => {
