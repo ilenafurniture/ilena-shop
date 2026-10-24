@@ -24,8 +24,6 @@ $headerIsStaff = $headerLoggedIn && in_array($headerRole, ['1', '5'], true);
             <a class="ilena-compact-header__icon-link" href="/wishlist" aria-label="Wishlist" title="Wishlist"><i class="material-icons" aria-hidden="true">bookmark_border</i><span>Wishlist</span></a>
             <a class="ilena-compact-header__icon-link" href="/cart" aria-label="Keranjang" title="Keranjang"><i class="material-icons" aria-hidden="true">shopping_cart</i><span>Keranjang</span></a>
             <a class="ilena-compact-header__icon-link" href="<?= $headerLoggedIn && !$headerIsStaff ? '/account' : '/login'; ?>" aria-label="<?= $headerLoggedIn && !$headerIsStaff ? 'Akun saya' : 'Masuk'; ?>" title="<?= $headerLoggedIn && !$headerIsStaff ? 'Akun saya' : 'Masuk'; ?>"><i class="material-icons" aria-hidden="true">person_outline</i><span><?= $headerLoggedIn && !$headerIsStaff ? 'Akun saya' : 'Masuk'; ?></span></a>
-            <a class="ilena-compact-header__link" href="/product">Kembali ke toko</a>
-            <a class="ilena-compact-header__link" href="/faq">Bantuan</a>
         <?php elseif ($headerMode === 'checkout'): ?>
             <span class="ilena-compact-header__secure">
                 <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M5.5 8V5.75a4.5 4.5 0 0 1 9 0V8m-10 0h11v9h-11z"/><path d="M10 11v2"/></svg>
