@@ -47,6 +47,8 @@ $partnerLast = min($partnerPage * $partnerPerPage, $partnerTotal);
                     $partnerAddress = trim((string) ($partner['address'] ?? ''));
                     $partnerImage = trim((string) ($partner['img'] ?? ''));
                     $partnerHref = trim((string) ($partner['href'] ?? ''));
+                    $partnerMapQuery = trim(implode(', ', array_filter([$partnerAddress, $partnerCity, $partnerName], static fn ($value) => $value !== '')));
+                    $partnerMapEmbed = 'https://www.google.com/maps?q=' . rawurlencode($partnerMapQuery) . '&output=embed';
                     ?>
                     <li class="ilena-partners__item">
                         <?php if ($partnerImage !== ''): ?>
@@ -57,8 +59,20 @@ $partnerLast = min($partnerPage * $partnerPerPage, $partnerTotal);
                             <h3><?= esc($partnerName !== '' ? $partnerName : 'Partner Ilena'); ?></h3>
                             <?php if ($partnerAddress !== ''): ?><address><?= esc($partnerAddress); ?></address><?php endif; ?>
                         </div>
-                        <?php if ($partnerHref !== ''): ?>
-                            <a class="ilena-partners__map-link" href="<?= esc($partnerHref, 'attr'); ?>" target="_blank" rel="noopener noreferrer" aria-label="Lihat <?= esc($partnerName, 'attr'); ?> di peta">Lihat peta <span aria-hidden="true">↗</span></a>
+                        <?php if ($partnerHref !== '' || $partnerMapQuery !== ''): ?>
+                            <div class="ilena-partners__actions">
+                                <?php if ($partnerHref !== ''): ?>
+                                    <a class="ilena-partners__map-link" href="<?= esc($partnerHref, 'attr'); ?>" target="_blank" rel="noopener noreferrer" aria-label="Buka <?= esc($partnerName, 'attr'); ?> di Google Maps">Buka di Maps <span aria-hidden="true">↗</span></a>
+                                <?php endif; ?>
+                                <?php if ($partnerMapQuery !== ''): ?>
+                                    <details class="ilena-partners__map-preview">
+                                        <summary aria-label="Tampilkan peta <?= esc($partnerName, 'attr'); ?>">Pratinjau peta <span aria-hidden="true">＋</span></summary>
+                                        <div class="ilena-partners__map-frame">
+                                            <iframe title="Peta lokasi <?= esc($partnerName, 'attr'); ?>" data-map-src="<?= esc($partnerMapEmbed, 'attr'); ?>" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+                                        </div>
+                                    </details>
+                                <?php endif; ?>
+                            </div>
                         <?php endif; ?>
                     </li>
                 <?php endforeach; ?>
@@ -75,4 +89,16 @@ $partnerLast = min($partnerPage * $partnerPerPage, $partnerTotal);
         <?php endif; ?>
     </section>
 </main>
+<script>
+document.querySelectorAll('.ilena-partners__map-preview').forEach((preview) => {
+    preview.addEventListener('toggle', () => {
+        if (!preview.open) return;
+        const map = preview.querySelector('iframe[data-map-src]');
+        if (map && !map.dataset.loaded) {
+            map.src = map.dataset.mapSrc;
+            map.dataset.loaded = 'true';
+        }
+    });
+});
+</script>
 <?= $this->endSection(); ?>

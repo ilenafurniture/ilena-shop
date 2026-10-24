@@ -286,7 +286,7 @@ body.ilena-storefront .ilena-partners__list {
 
 body.ilena-storefront .ilena-partners__item {
     display: grid;
-    grid-template-columns: 112px minmax(0, 1fr) auto;
+    grid-template-columns: 112px minmax(0, 1fr);
     align-items: center;
     gap: 20px;
     padding: 20px 0;
@@ -332,6 +332,57 @@ body.ilena-storefront .ilena-partners__map-link {
     font-size: 13px;
     font-weight: 650;
     white-space: nowrap;
+}
+
+body.ilena-storefront .ilena-partners__actions {
+    display: flex;
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 18px;
+}
+
+body.ilena-storefront .ilena-partners__map-preview {
+    color: #8e3935;
+    font-size: 13px;
+}
+
+body.ilena-storefront .ilena-partners__map-preview summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 40px;
+    cursor: pointer;
+    list-style: none;
+    text-underline-offset: 3px;
+}
+
+body.ilena-storefront .ilena-partners__map-preview summary::-webkit-details-marker {
+    display: none;
+}
+
+body.ilena-storefront .ilena-partners__map-preview summary:hover {
+    text-decoration: underline;
+}
+
+body.ilena-storefront .ilena-partners__map-preview[open] summary span {
+    transform: rotate(45deg);
+}
+
+body.ilena-storefront .ilena-partners__map-frame {
+    grid-column: 1 / -1;
+    width: min(100%, 760px);
+    margin: 14px 0 4px;
+    overflow: hidden;
+    border: 1px solid var(--editorial-rule);
+    background: #f1eee9;
+}
+
+body.ilena-storefront .ilena-partners__map-frame iframe {
+    display: block;
+    width: 100%;
+    height: clamp(220px, 32vw, 340px);
+    border: 0;
 }
 
 body.ilena-storefront .ilena-partners__empty {
@@ -410,6 +461,16 @@ body.ilena-storefront .ilena-partners__pagination a {
     body.ilena-storefront .ilena-partners__map-link {
         grid-column: 2;
         min-height: 38px;
+    }
+
+    body.ilena-storefront .ilena-partners__actions {
+        grid-column: 2;
+        gap: 0;
+    }
+
+    body.ilena-storefront .ilena-partners__map-frame {
+        width: calc(100vw - 72px);
+        margin-top: 8px;
     }
 }
 

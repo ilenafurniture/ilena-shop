@@ -1,6 +1,6 @@
 <div class="navbar-hp-atas hide-ke-show-flex">
-    <a href="/">
-        <img src="<?php echo base_url('/img/logo/N.png'); ?>" alt="logo ilena" style="height: 40px; width: 40px;">
+    <a href="/" aria-label="Ilena Furniture — Beranda">
+        <img src="<?php echo base_url('/img/logo/N.png'); ?>" alt="Ilena Furniture" style="height: 40px; width: 40px;">
     </a>
     <details class="ilena-lunarea-popover ilena-mobile-lunarea-popover">
         <summary aria-label="Tentang Lunarea Furniture">
@@ -363,23 +363,23 @@
 
 <div class="navbar-hp hide-ke-show-flex">
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
-        <a class="item-navhp <?= $title == 'Home' ? 'active' : ''; ?>" href="/">
+        <a class="item-navhp <?= $title == 'Home' ? 'active' : ''; ?>" href="/" aria-label="Beranda" title="Beranda">
             <i class="material-icons">home</i>
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
-        <a class="item-navhp <?= $title == 'Favorite' ? 'active' : ''; ?>" href="/wishlist">
+        <a class="item-navhp <?= $title == 'Favorite' ? 'active' : ''; ?>" href="/wishlist" aria-label="Wishlist" title="Wishlist">
             <i class="material-icons">bookmark_border</i>
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
-        <a class="item-navhp <?= $title == 'Keranjang' ? 'active' : ''; ?>" href="/cart">
+        <a class="item-navhp <?= $title == 'Keranjang' ? 'active' : ''; ?>" href="/cart" aria-label="Keranjang" title="Keranjang">
             <i class="material-icons">shopping_cart</i>
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
         <a class="item-navhp <?= $title == 'Akun' ? 'active' : ''; ?>"
-            href="<?= session()->get('isLogin') ? '/account' : '/login' ?>">
+            href="<?= session()->get('isLogin') ? '/account' : '/login' ?>" aria-label="<?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?>" title="<?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?>">
             <i class="material-icons">person_outline</i>
         </a>
     </div>

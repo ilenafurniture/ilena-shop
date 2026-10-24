@@ -1374,6 +1374,66 @@ body.ilena-storefront .ilena-compact-header__logout button {
     background: transparent;
     cursor: pointer;
 }
+body.ilena-storefront .ilena-compact-header__icon-link,
+body.ilena-storefront .ilena-compact-header__account-menu > summary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-width: 44px;
+    min-height: 44px;
+    color: rgba(255,255,255,.88);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    list-style: none;
+}
+body.ilena-storefront .ilena-compact-header__icon-link .material-icons,
+body.ilena-storefront .ilena-compact-header__account-menu .material-icons {
+    font-size: 21px;
+}
+body.ilena-storefront .ilena-compact-header__icon-link:hover,
+body.ilena-storefront .ilena-compact-header__account-menu > summary:hover {
+    color: #fff;
+}
+body.ilena-storefront .ilena-compact-header__account-menu {
+    position: relative;
+}
+body.ilena-storefront .ilena-compact-header__account-menu > summary::-webkit-details-marker {
+    display: none;
+}
+body.ilena-storefront .ilena-compact-header__account-panel {
+    position: absolute;
+    z-index: 120;
+    top: calc(100% + 8px);
+    right: 0;
+    display: grid;
+    min-width: 190px;
+    padding: 8px;
+    border: 1px solid rgba(255,255,255,.12);
+    background: #302c27;
+    box-shadow: 0 14px 32px rgba(0,0,0,.24);
+}
+body.ilena-storefront .ilena-compact-header__account-panel a,
+body.ilena-storefront .ilena-compact-header__account-panel button {
+    display: flex;
+    align-items: center;
+    min-height: 42px;
+    padding: 8px 12px;
+    border: 0;
+    color: rgba(255,255,255,.88);
+    background: transparent;
+    font: inherit;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+}
+body.ilena-storefront .ilena-compact-header__account-panel a:hover,
+body.ilena-storefront .ilena-compact-header__account-panel button:hover {
+    color: #fff;
+    background: rgba(255,255,255,.08);
+}
 
 /* Product detail and saved products join the storefront's warm, editorial system. */
 body.ilena-storefront .product-detail-soft .teks-besar {
@@ -1454,6 +1514,28 @@ body.ilena-storefront.ilena-page--invoice .print {
 }
 
 @media (max-width: 700px) {
+    body.ilena-storefront .ilena-compact-header {
+        flex-wrap: wrap;
+        justify-content: space-between;
+        row-gap: 4px;
+    }
+
+    body.ilena-storefront .ilena-compact-header__actions {
+        flex: 1 0 100%;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+
+    body.ilena-storefront .ilena-header--account .ilena-compact-header__actions {
+        padding-top: 2px;
+        border-top: 1px solid rgba(255,255,255,.08);
+    }
+
+    body.ilena-storefront .ilena-compact-header__account-menu > summary span,
+    body.ilena-storefront .ilena-compact-header__icon-link span {
+        display: none;
+    }
+
     body.ilena-storefront .ilena-header-action { gap: 0; padding-inline: 6px; }
     body.ilena-storefront .ilena-header-action span { display: none; }
     body.ilena-storefront .ilena-compact-header__welcome { display: none; }

@@ -25,8 +25,8 @@ $paymentLogos = [
 </footer>
 <?php elseif (!$footerInternal && $footerAccount): ?>
 <footer class="ilena-context-footer ilena-context-footer--account" role="contentinfo">
-    <nav aria-label="Tautan akun"><a href="/account">Profil</a><a href="/order">Pesanan</a><a href="/wishlist">Wishlist</a></nav>
-    <a href="/faq">Butuh bantuan?</a>
+    <nav aria-label="Bantuan dan informasi"><a href="/faq">Pusat bantuan</a><a href="/syarat">Syarat &amp; ketentuan</a><a href="/kebijakan">Kebijakan privasi</a></nav>
+    <a href="mailto:cs@ilenafurniture.com">Hubungi Ilena</a>
     <small>© <?= date('Y'); ?> Ilena Furniture</small>
 </footer>
 <?php elseif (!$footerInternal): ?>

@@ -217,7 +217,7 @@ $layoutPath = '/' . strtolower(trim($layoutPath, '/'));
 $layoutIsAuthPage = in_array($layoutPath, ['/login', '/register', '/verify'], true);
 $layoutIsCheckoutPage = preg_match('~^/(cart|shipping|payment|progresspay|successpay|cencelpay|expirepay)(/|$)~', $layoutPath) === 1;
 $layoutIsAccountPage = preg_match('~^/(account|address|order|orderdetail|invoice|wishlist)(/|$)~', $layoutPath) === 1;
-$layoutHeaderMode = $layoutIsCheckoutPage ? 'checkout' : ($layoutIsAccountPage ? 'account' : 'full');
+$layoutHeaderMode = $layoutIsAuthPage ? 'auth' : ($layoutIsCheckoutPage ? 'checkout' : ($layoutIsAccountPage ? 'account' : 'full'));
 $layoutPageSegments = array_values(array_filter(explode('/', trim($layoutPath, '/'))));
 $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? 'home') ?: 'home';
 ?>
