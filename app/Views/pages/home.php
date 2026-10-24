@@ -254,7 +254,7 @@ function closeSecondAd() {
             class="<?= $isFirstSlide ? 'active' : 'kanan'; ?>">
             <picture>
                 <source media="(max-width: 700px)" srcset="<?= esc($mobileSrc, 'attr'); ?>">
-                <img src="<?= esc($desktopSrc, 'attr'); ?>" alt="Slide" decoding="async"<?= $isFirstSlide ? ' fetchpriority="high"' : ' loading="lazy"'; ?>>
+                <img src="<?= esc($desktopSrc, 'attr'); ?>" alt="<?= esc('Inspirasi furniture Ilena' . ($ind_s > 0 ? ' — promosi ' . ($ind_s + 1) : ''), 'attr'); ?>" decoding="async"<?= $isFirstSlide ? ' fetchpriority="high"' : ' loading="lazy"'; ?>>
             </picture>
         </a>
         <?php endforeach; ?>
@@ -306,6 +306,7 @@ function closeSecondAd() {
 <div class="p-5 ilena-home-hero">
     <div class="show-flex-ke-hide p-5 flex-column align-items-center justify-content-center"
         data-lazy-bg="<?= esc($homeImage('1742972542166.png'), 'attr'); ?>" style="background-size:cover;background-position:center;background-color:#f4f1ec; width:100%; height:80svh;">
+        <p class="ilena-home-kicker">RUANG YANG MENCERITAKAN DIRI ANDA</p>
         <h1 class="teks-besar mb-2 text-center text-light">Modern & Stylish<br>Furniture</h1>
         <p class="text-handwrite py-1 px-2 text-light"
             style="font-size:30px; transform: rotate(-10deg) translate(100px, -20px);">True to you</p>
@@ -316,6 +317,7 @@ function closeSecondAd() {
     <!-- bagian HP -->
     <div class="hide-ke-show-flex px-5 flex-column justify-content-center"
         style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('<?= $homeImage('1742972542166.png') ?>'); background-size: cover; width:100%; height:60svh;">
+        <p class="ilena-home-kicker">RUANG YANG MENCERITAKAN DIRI ANDA</p>
         <h1 class="teks-besar text-light" style="font-size:34px;">Modern & Stylish<br>Furniture</h1>
         <p class="text-handwrite py-1 px-2 text-light"
             style="font-size:20px; transform: rotate(-10deg) translate(50px, -15px);">True to you</p>
@@ -465,7 +467,7 @@ function closeSecondAd() {
     }
 }
 </style>
-<div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:80svh;">
+<div class="show-flex-ke-hide align-items-stretch ilena-home-mosaic" style="width:100%; height:80svh;">
     <a class="d-flex align-items-center ps-5 zoom-wrapper" href="<?= base_url('/product/bufet-tv-ilena-plint-base') ?>"
         style="text-decoration:none; flex:1; position: relative;">
         <img loading="lazy" decoding="async" src="<?= $homeImage('1748320128043.jpg') ?>"
@@ -549,7 +551,7 @@ function closeSecondAd() {
 
 
 <!-- Bagian HP -->
-<div class="hide-ke-show-flex flex-column pt-2 gap-2" style="width:100%; height:80svh;">
+<div class="hide-ke-show-flex flex-column pt-2 gap-2 ilena-home-mosaic-mobile" style="width:100%; height:80svh;">
     <a href="<?= base_url('/product/bufet-tv-ilena-plint-base') ?>" class="d-flex align-items-center px-5"
         data-lazy-bg="<?= esc($homeImage('1748320128043.jpg'), 'attr'); ?>" style="text-decoration:none; flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
         <div>
@@ -1265,7 +1267,7 @@ function modalseries() {
 </style>
 
 <!-- Bagian Windows -->
-<div id="ruangan" class="container show-flex-ke-hide gap-3 my-5" style="width:100%;">
+<div id="ruangan" class="container show-flex-ke-hide gap-3 my-5 ilena-home-room-grid" style="width:100%;">
     <a href="/product?ruang=tamu" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
         <div class="zoom-wrapper mb-2">
             <img loading="lazy" decoding="async" src="<?= $homeImage('1742445399641.webp') ?>" alt=""
@@ -1323,7 +1325,7 @@ function modalseries() {
 }
 </style>
 
-<div class="hide-ke-show-block" id="scroll-set">
+<div class="hide-ke-show-block ilena-home-room-scroll" id="scroll-set">
     <div class="d-flex gap-1 px-5 pt-5 pb-4" style="width: fit-content;">
         <a href="/product?ruang=tamu" class="bg-primary"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block; height: 100px;">
@@ -1621,7 +1623,7 @@ function currentSlidePanah(index_slider, index, slides, dots) {
             loadBackground(entry.target);
             currentObserver.unobserve(entry.target);
         });
-    }, { rootMargin: '500px 0px' });
+    }, { rootMargin: '300px 0px' });
     backgrounds.forEach((element) => observer.observe(element));
 })();
 </script>

@@ -2122,3 +2122,102 @@ body.ilena-internal :where(h1, h2, h3, h4, h5, h6) {
 .ilena-smart-search-empty h2 { font-size: clamp(20px, 3vw, 28px); }
 .ilena-smart-search-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .ilena-smart-search-chips a { display: inline-flex; min-height: 40px; align-items: center; padding: 8px 14px; border: 1px solid #ded8d1; border-radius: 999px; color: inherit; text-decoration: none; }
+
+/* Image-rich, editorial homepage inspired by room-led furniture merchandising. */
+body.ilena-storefront.ilena-page--home {
+    --ilena-home-gutter: clamp(16px, 3.1vw, 52px);
+    overflow-x: clip;
+}
+body.ilena-storefront.ilena-page--home .slider {
+    width: calc(100% - var(--ilena-home-gutter) - var(--ilena-home-gutter)); max-width: 1760px; margin: 18px auto 0;
+    overflow: hidden; background: #eae5de; box-shadow: 0 16px 44px rgba(40, 33, 26, .10);
+}
+body.ilena-storefront.ilena-page--home .slider a img { object-position: center; }
+body.ilena-storefront.ilena-page--home .slider .dot { border-color: rgba(255,255,255,.88); }
+body.ilena-storefront.ilena-page--home .slider .dot.active { background: #fff; }
+body.ilena-storefront.ilena-page--home .slider .item-panah {
+    display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid rgba(255,255,255,.65);
+    border-radius: 50%; background: rgba(34,31,28,.32); color: #fff; backdrop-filter: blur(8px);
+}
+body.ilena-storefront.ilena-page--home .ilena-home-hero {
+    width: min(100%, 1760px); margin: 0 auto; padding: clamp(24px, 4.2vw, 68px) var(--ilena-home-gutter) !important;
+}
+body.ilena-storefront.ilena-page--home .ilena-home-hero .show-flex-ke-hide,
+body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex {
+    min-height: 540px; height: min(72svh, 790px) !important; background-position: center 56% !important;
+}
+body.ilena-storefront.ilena-page--home .ilena-home-hero .show-flex-ke-hide::before,
+body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex::before {
+    background: linear-gradient(90deg, rgba(20,18,16,.50), rgba(20,18,16,.14) 58%, rgba(20,18,16,.02));
+}
+body.ilena-storefront.ilena-page--home .ilena-home-hero .ilena-home-kicker {
+    margin: 0 0 18px; color: rgba(255,255,255,.9); font-size: 11px; font-weight: 600;
+    letter-spacing: .2em; text-align: center;
+}
+body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex .ilena-home-kicker { text-align: left; }
+body.ilena-storefront.ilena-page--home .ilena-home-hero .kesana,
+body.ilena-storefront.ilena-page--home .ilena-home-hero .btn-underline { letter-spacing: .04em; }
+body.ilena-storefront.ilena-page--home .ilena-home-mosaic,
+body.ilena-storefront.ilena-page--home .ilena-home-mosaic-mobile {
+    width: calc(100% - var(--ilena-home-gutter) - var(--ilena-home-gutter)) !important; max-width: 1660px; margin: 0 auto;
+    gap: 10px; overflow: hidden;
+}
+body.ilena-storefront.ilena-page--home .ilena-home-mosaic { height: clamp(470px, 60svh, 720px) !important; }
+body.ilena-storefront.ilena-page--home .ilena-home-mosaic > a,
+body.ilena-storefront.ilena-page--home .ilena-home-mosaic > div > a { overflow: hidden; }
+body.ilena-storefront.ilena-page--home .ilena-home-mosaic img { transition: transform .75s cubic-bezier(.2,.7,.2,1), filter .5s ease; }
+body.ilena-storefront.ilena-page--home .ilena-home-mosaic a:hover img { transform: scale(1.035); filter: brightness(.94); }
+body.ilena-storefront.ilena-page--home .ilena-home-mosaic :where(h1,p) { text-shadow: 0 2px 22px rgba(0,0,0,.24); }
+body.ilena-storefront.ilena-page--home .scroll-home {
+    height: clamp(560px, 76svh, 820px); margin-top: clamp(52px, 8vw, 120px); background: #f3efe9; scrollbar-width: none;
+}
+body.ilena-storefront.ilena-page--home .scroll-home-item { padding-block: clamp(24px, 4vw, 58px); }
+body.ilena-storefront.ilena-page--home .scroll-home-item > .container { max-width: 1500px; }
+body.ilena-storefront.ilena-page--home .scroll-home-item h1.teks-besar {
+    font-family: var(--ilena-font-display); font-size: clamp(48px, 7vw, 90px); font-weight: 500; letter-spacing: -.045em;
+}
+body.ilena-storefront.ilena-page--home .scroll-home-item h1:not(.teks-besar) {
+    margin-top: 8px; color: var(--ilena-muted); font-size: 10px !important; font-weight: 600; letter-spacing: .28em !important;
+}
+body.ilena-storefront.ilena-page--home .scroll-home-item p {
+    max-width: 52ch; color: #625b54; font-size: clamp(14px, 1.15vw, 17px); line-height: 1.85;
+}
+body.ilena-storefront.ilena-page--home .scroll-home-input { margin-top: -28px; }
+body.ilena-storefront.ilena-page--home #ruangan {
+    max-width: 1660px; height: auto; margin: clamp(70px, 9vw, 132px) auto !important; padding-inline: var(--ilena-home-gutter);
+}
+body.ilena-storefront.ilena-page--home .ilena-home-room-grid .zoom-wrapper { aspect-ratio: 4 / 5; }
+body.ilena-storefront.ilena-page--home .ilena-home-room-grid img,
+body.ilena-storefront.ilena-page--home .ilena-home-room-scroll img { display: block; }
+body.ilena-storefront.ilena-page--home .ilena-home-room-grid a { color: var(--ilena-ink) !important; }
+body.ilena-storefront.ilena-page--home .ilena-home-room-grid a > div:nth-child(2) { gap: .25em !important; }
+body.ilena-storefront.ilena-page--home .ilena-home-room-grid a > div:nth-child(2) h5 {
+    color: var(--ilena-muted); font-family: var(--ilena-font-display); font-size: 13px; letter-spacing: .12em;
+}
+body.ilena-storefront.ilena-page--home .ilena-home-room-grid a > h5 { letter-spacing: .18em; }
+body.ilena-storefront.ilena-page--home .zoom-wrapper img { transition: transform .7s cubic-bezier(.2,.7,.2,1); }
+body.ilena-storefront.ilena-page--home .zoom-wrapper:hover img { transform: scale(1.035); }
+@media (max-width: 700px) {
+    body.ilena-storefront.ilena-page--home .slider { width: 100%; margin-top: 0; box-shadow: none; }
+    body.ilena-storefront.ilena-page--home .ilena-home-hero { padding: 14px var(--ilena-home-gutter) 30px !important; }
+    body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex {
+        min-height: 470px; height: 68svh !important; padding-inline: clamp(22px, 7vw, 40px) !important;
+    }
+    body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex .ilena-home-kicker {
+        max-width: 24ch; margin-bottom: 12px; font-size: 9px; letter-spacing: .16em;
+    }
+    body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex .btn-underline { transform: none !important; margin-top: 28px; }
+    body.ilena-storefront.ilena-page--home .ilena-home-mosaic-mobile {
+        height: auto !important; padding: 0 !important; margin: 0 auto 18px; gap: 8px !important;
+    }
+    body.ilena-storefront.ilena-page--home .ilena-home-mosaic-mobile > a { min-height: 31svh; }
+    body.ilena-storefront.ilena-page--home .scroll-home { height: 68svh; min-height: 500px; margin-top: 46px; }
+    body.ilena-storefront.ilena-page--home .scroll-home-item > .container { padding-inline: 22px; gap: 18px !important; }
+    body.ilena-storefront.ilena-page--home .scroll-home-item h1.teks-besar { font-size: clamp(52px, 15vw, 72px); }
+    body.ilena-storefront.ilena-page--home #ruangan { margin-block: 58px !important; padding: 0 18px; }
+    body.ilena-storefront.ilena-page--home .ilena-home-room-scroll > div { gap: 14px !important; padding: 18px !important; }
+    body.ilena-storefront.ilena-page--home .ilena-home-room-scroll a { width: min(78vw, 340px) !important; height: auto !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront.ilena-page--home :where(.zoom-wrapper img, .ilena-home-mosaic img) { transition: none !important; }
+}
