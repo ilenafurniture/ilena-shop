@@ -977,7 +977,7 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
                 <i class="material-icons">arrow_forward</i>
             </a>
         </div> -->
-        <div class="overlayMeja" id="overlayMeja">
+        <div class="overlayMeja" id="overlayMeja-desktop">
             <a href="/product?koleksi=cody&jenis=queen-bed" class="d-flex gap-3 align-items-center">
                 <div>
                     <p class="m-0 fw-bold">Bed Cody</p>
@@ -1014,7 +1014,7 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
                 <i class="material-icons">arrow_forward</i>
             </a>
         </div> -->
-        <div class="overlayMeja" id="overlayMeja">
+        <div class="overlayMeja" id="overlayMeja-mobile">
             <a href="/product?koleksi=cody&jenis=queen-bed" class="d-flex gap-3 align-items-center">
                 <div>
                     <p class="m-0 fw-bold">Bed Cody</p>
@@ -1028,19 +1028,18 @@ inputScrollHomeElm.forEach((inputnya, indInput) => {
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // const overlayBed = document.getElementById('overlayBed');
-    const overlayMeja = document.getElementById('overlayMeja');
-    const observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('show');
-            }
-        });
-    }, {
-        threshold: 1
+    document.querySelectorAll('.kontenLN, .kontenLNMobile').forEach((section) => {
+        const revealLink = section.querySelector('.overlayMeja');
+        if (!revealLink) return;
+        const observer = new IntersectionObserver((entries, currentObserver) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+                revealLink.classList.add('show');
+                currentObserver.unobserve(entry.target);
+            });
+        }, { threshold: 0.35 });
+        observer.observe(section);
     });
-    // observer.observe(overlayBed);
-    observer.observe(overlayMeja);
 });
 </script>
 
