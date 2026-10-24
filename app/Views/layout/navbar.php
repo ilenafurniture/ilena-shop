@@ -49,16 +49,36 @@ if (is_array($headerCartItems)) {
                         <form action="/logout" method="post" class="m-0"><input type="hidden" name="<?= csrf_token(); ?>" value="<?= csrf_hash(); ?>"><button type="submit" class="btn" style="padding-right: 0"><i class="material-icons text-light">exit_to_app</i></button></form>
                     <?php } ?>
                 <?php } else { ?>
-                    <a href="/wishlist" class="ilena-header-action" aria-label="Wishlist"><i class="material-icons" aria-hidden="true">bookmark_border</i><span>Wishlist</span></a>
+                    <div class="ilena-header-popover ilena-header-popover--wishlist">
+                        <a href="/wishlist" class="ilena-header-action ilena-header-popover__trigger" aria-label="Wishlist" aria-haspopup="dialog"><i class="material-icons" aria-hidden="true">bookmark_border</i><span class="ilena-sr-only">Wishlist</span></a>
+                        <div class="ilena-header-popover__panel" role="dialog" aria-label="Wishlist">
+                            <strong>Wishlist</strong>
+                            <p><?= session()->get('isLogin') ? 'Buka daftar produk yang Anda simpan.' : 'Masuk untuk melihat dan menyimpan produk favorit Anda.'; ?></p>
+                            <a href="<?= session()->get('isLogin') ? '/wishlist' : '/login'; ?>"><?= session()->get('isLogin') ? 'Lihat wishlist' : 'Masuk'; ?></a>
+                        </div>
+                    </div>
                     <div class="ilena-header-popover ilena-header-popover--cart">
                         <a href="/cart" class="ilena-header-action ilena-header-popover__trigger" aria-label="Keranjang" aria-haspopup="true"><i class="material-icons" aria-hidden="true">shopping_cart</i><span class="ilena-sr-only">Keranjang</span></a>
-                        <div class="ilena-header-popover__panel" role="status">
+                        <div class="ilena-header-popover__panel" role="dialog" aria-label="Ringkasan keranjang">
                             <strong>Keranjang</strong>
                             <p><?= $headerCartCount > 0 ? esc($headerCartCount . ' barang siap dilihat di keranjang Anda.') : 'Keranjang Anda masih kosong.'; ?></p>
                             <a href="<?= $headerCartCount > 0 ? '/cart' : '/product'; ?>"><?= $headerCartCount > 0 ? 'Lihat keranjang' : 'Mulai belanja'; ?></a>
                         </div>
                     </div>
-                    <a href="<?= session()->get('isLogin') ? '/account' : '/login'; ?>" class="ilena-header-action" aria-label="<?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?>"><i class="material-icons" aria-hidden="true">person_outline</i><span><?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?></span></a>
+                    <div class="ilena-header-popover ilena-header-popover--account">
+                        <a href="<?= session()->get('isLogin') ? '/account' : '/login'; ?>" class="ilena-header-action ilena-header-popover__trigger" aria-label="<?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?>" aria-haspopup="dialog"><i class="material-icons" aria-hidden="true">person_outline</i><span class="ilena-sr-only"><?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?></span></a>
+                        <div class="ilena-header-popover__panel" role="dialog" aria-label="Menu akun">
+                            <?php if (session()->get('isLogin')): ?>
+                                <strong>Akun saya</strong>
+                                <p>Kelola profil dan pesanan Anda.</p>
+                                <nav class="ilena-header-popover__links" aria-label="Menu akun"><a href="/account">Profil</a><a href="/order">Pesanan</a><a href="/address">Alamat</a></nav>
+                            <?php else: ?>
+                                <strong>Selamat datang di Ilena</strong>
+                                <p>Masuk untuk mengelola akun dan pesanan.</p>
+                                <nav class="ilena-header-popover__links" aria-label="Akses akun"><a href="/login">Masuk</a><a href="/register">Daftar</a></nav>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                 <?php } ?>
             </div>
         </div>

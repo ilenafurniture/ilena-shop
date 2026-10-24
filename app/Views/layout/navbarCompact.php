@@ -31,12 +31,20 @@ if (is_array($headerCartItems)) {
     </div>
     <nav class="ilena-compact-header__actions" aria-label="Navigasi halaman">
         <?php if ($headerMode === 'auth'): ?>
-            <a class="ilena-compact-header__icon-link" href="/wishlist" aria-label="Wishlist" title="Wishlist"><i class="material-icons" aria-hidden="true">bookmark_border</i><span>Wishlist</span></a>
+            <div class="ilena-header-popover ilena-header-popover--wishlist">
+                <a class="ilena-compact-header__icon-link ilena-header-popover__trigger" href="/wishlist" aria-label="Wishlist" aria-haspopup="dialog"><i class="material-icons" aria-hidden="true">bookmark_border</i><span class="ilena-sr-only">Wishlist</span></a>
+                <div class="ilena-header-popover__panel" role="dialog" aria-label="Wishlist"><strong>Wishlist</strong><p><?= $headerLoggedIn && !$headerIsStaff ? 'Buka daftar produk yang Anda simpan.' : 'Masuk untuk melihat dan menyimpan produk favorit Anda.'; ?></p><a href="<?= $headerLoggedIn && !$headerIsStaff ? '/wishlist' : '/login'; ?>"><?= $headerLoggedIn && !$headerIsStaff ? 'Lihat wishlist' : 'Masuk'; ?></a></div>
+            </div>
             <div class="ilena-header-popover ilena-header-popover--cart">
                 <a class="ilena-compact-header__icon-link ilena-header-popover__trigger" href="/cart" aria-label="Keranjang" aria-haspopup="true"><i class="material-icons" aria-hidden="true">shopping_cart</i><span class="ilena-sr-only">Keranjang</span></a>
-                <div class="ilena-header-popover__panel" role="status"><strong>Keranjang</strong><p><?= $headerCartCount > 0 ? esc($headerCartCount . ' barang siap dilihat di keranjang Anda.') : 'Keranjang Anda masih kosong.'; ?></p><a href="<?= $headerCartCount > 0 ? '/cart' : '/product'; ?>"><?= $headerCartCount > 0 ? 'Lihat keranjang' : 'Mulai belanja'; ?></a></div>
+                <div class="ilena-header-popover__panel" role="dialog" aria-label="Ringkasan keranjang"><strong>Keranjang</strong><p><?= $headerCartCount > 0 ? esc($headerCartCount . ' barang siap dilihat di keranjang Anda.') : 'Keranjang Anda masih kosong.'; ?></p><a href="<?= $headerCartCount > 0 ? '/cart' : '/product'; ?>"><?= $headerCartCount > 0 ? 'Lihat keranjang' : 'Mulai belanja'; ?></a></div>
             </div>
-            <a class="ilena-compact-header__icon-link" href="<?= $headerLoggedIn && !$headerIsStaff ? '/account' : '/login'; ?>" aria-label="<?= $headerLoggedIn && !$headerIsStaff ? 'Akun saya' : 'Masuk'; ?>" title="<?= $headerLoggedIn && !$headerIsStaff ? 'Akun saya' : 'Masuk'; ?>"><i class="material-icons" aria-hidden="true">person_outline</i><span><?= $headerLoggedIn && !$headerIsStaff ? 'Akun saya' : 'Masuk'; ?></span></a>
+            <div class="ilena-header-popover ilena-header-popover--account">
+                <a class="ilena-compact-header__icon-link ilena-header-popover__trigger" href="<?= $headerLoggedIn && !$headerIsStaff ? '/account' : '/login'; ?>" aria-label="<?= $headerLoggedIn && !$headerIsStaff ? 'Akun saya' : 'Masuk'; ?>" aria-haspopup="dialog"><i class="material-icons" aria-hidden="true">person_outline</i><span class="ilena-sr-only"><?= $headerLoggedIn && !$headerIsStaff ? 'Akun saya' : 'Masuk'; ?></span></a>
+                <div class="ilena-header-popover__panel" role="dialog" aria-label="Menu akun">
+                    <?php if ($headerLoggedIn && !$headerIsStaff): ?><strong>Akun saya</strong><p>Kelola profil dan pesanan Anda.</p><nav class="ilena-header-popover__links" aria-label="Menu akun"><a href="/account">Profil</a><a href="/order">Pesanan</a><a href="/address">Alamat</a></nav><?php else: ?><strong>Selamat datang di Ilena</strong><p>Masuk untuk mengelola akun dan pesanan.</p><nav class="ilena-header-popover__links" aria-label="Akses akun"><a href="/login">Masuk</a><a href="/register">Daftar</a></nav><?php endif; ?>
+                </div>
+            </div>
         <?php elseif ($headerMode === 'checkout'): ?>
             <span class="ilena-compact-header__secure">
                 <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M5.5 8V5.75a4.5 4.5 0 0 1 9 0V8m-10 0h11v9h-11z"/><path d="M10 11v2"/></svg>
@@ -62,13 +70,13 @@ if (is_array($headerCartItems)) {
                     <button class="ilena-compact-header__link" type="submit">Keluar</button>
                 </form>
             <?php elseif ($headerLoggedIn): ?>
-                <a class="ilena-compact-header__icon-link" href="/wishlist" aria-label="Wishlist" title="Wishlist"><i class="material-icons" aria-hidden="true">bookmark_border</i><span>Wishlist</span></a>
+                <div class="ilena-header-popover ilena-header-popover--wishlist"><a class="ilena-compact-header__icon-link ilena-header-popover__trigger" href="/wishlist" aria-label="Wishlist" aria-haspopup="dialog"><i class="material-icons" aria-hidden="true">bookmark_border</i><span class="ilena-sr-only">Wishlist</span></a><div class="ilena-header-popover__panel" role="dialog" aria-label="Wishlist"><strong>Wishlist</strong><p>Buka daftar produk yang Anda simpan.</p><a href="/wishlist">Lihat wishlist</a></div></div>
                 <div class="ilena-header-popover ilena-header-popover--cart">
-                    <a class="ilena-compact-header__icon-link ilena-header-popover__trigger" href="/cart" aria-label="Keranjang" aria-haspopup="true"><i class="material-icons" aria-hidden="true">shopping_cart</i><span class="ilena-sr-only">Keranjang</span></a>
-                    <div class="ilena-header-popover__panel" role="status"><strong>Keranjang</strong><p><?= $headerCartCount > 0 ? esc($headerCartCount . ' barang siap dilihat di keranjang Anda.') : 'Keranjang Anda masih kosong.'; ?></p><a href="<?= $headerCartCount > 0 ? '/cart' : '/product'; ?>"><?= $headerCartCount > 0 ? 'Lihat keranjang' : 'Mulai belanja'; ?></a></div>
+                    <a class="ilena-compact-header__icon-link ilena-header-popover__trigger" href="/cart" aria-label="Keranjang" aria-haspopup="dialog"><i class="material-icons" aria-hidden="true">shopping_cart</i><span class="ilena-sr-only">Keranjang</span></a>
+                    <div class="ilena-header-popover__panel" role="dialog" aria-label="Ringkasan keranjang"><strong>Keranjang</strong><p><?= $headerCartCount > 0 ? esc($headerCartCount . ' barang siap dilihat di keranjang Anda.') : 'Keranjang Anda masih kosong.'; ?></p><a href="<?= $headerCartCount > 0 ? '/cart' : '/product'; ?>"><?= $headerCartCount > 0 ? 'Lihat keranjang' : 'Mulai belanja'; ?></a></div>
                 </div>
                 <details class="ilena-compact-header__account-menu">
-                    <summary aria-label="Menu akun"><i class="material-icons" aria-hidden="true">person_outline</i><span>Akun</span></summary>
+                    <summary aria-label="Menu akun"><i class="material-icons" aria-hidden="true">person_outline</i><span class="ilena-sr-only">Akun</span></summary>
                     <div class="ilena-compact-header__account-panel">
                         <a href="/account">Profil</a>
                         <a href="/order">Pesanan</a>
@@ -77,12 +85,12 @@ if (is_array($headerCartItems)) {
                     </div>
                 </details>
             <?php else: ?>
-                <a class="ilena-compact-header__icon-link" href="/wishlist" aria-label="Wishlist" title="Wishlist"><i class="material-icons" aria-hidden="true">bookmark_border</i><span>Wishlist</span></a>
+                <div class="ilena-header-popover ilena-header-popover--wishlist"><a class="ilena-compact-header__icon-link ilena-header-popover__trigger" href="/wishlist" aria-label="Wishlist" aria-haspopup="dialog"><i class="material-icons" aria-hidden="true">bookmark_border</i><span class="ilena-sr-only">Wishlist</span></a><div class="ilena-header-popover__panel" role="dialog" aria-label="Wishlist"><strong>Wishlist</strong><p>Masuk untuk melihat dan menyimpan produk favorit Anda.</p><a href="/login">Masuk</a></div></div>
                 <div class="ilena-header-popover ilena-header-popover--cart">
-                    <a class="ilena-compact-header__icon-link ilena-header-popover__trigger" href="/cart" aria-label="Keranjang" aria-haspopup="true"><i class="material-icons" aria-hidden="true">shopping_cart</i><span class="ilena-sr-only">Keranjang</span></a>
-                    <div class="ilena-header-popover__panel" role="status"><strong>Keranjang</strong><p><?= $headerCartCount > 0 ? esc($headerCartCount . ' barang siap dilihat di keranjang Anda.') : 'Keranjang Anda masih kosong.'; ?></p><a href="<?= $headerCartCount > 0 ? '/cart' : '/product'; ?>"><?= $headerCartCount > 0 ? 'Lihat keranjang' : 'Mulai belanja'; ?></a></div>
+                    <a class="ilena-compact-header__icon-link ilena-header-popover__trigger" href="/cart" aria-label="Keranjang" aria-haspopup="dialog"><i class="material-icons" aria-hidden="true">shopping_cart</i><span class="ilena-sr-only">Keranjang</span></a>
+                    <div class="ilena-header-popover__panel" role="dialog" aria-label="Ringkasan keranjang"><strong>Keranjang</strong><p><?= $headerCartCount > 0 ? esc($headerCartCount . ' barang siap dilihat di keranjang Anda.') : 'Keranjang Anda masih kosong.'; ?></p><a href="<?= $headerCartCount > 0 ? '/cart' : '/product'; ?>"><?= $headerCartCount > 0 ? 'Lihat keranjang' : 'Mulai belanja'; ?></a></div>
                 </div>
-                <a class="ilena-compact-header__shop" href="/login">Masuk</a>
+                <div class="ilena-header-popover ilena-header-popover--account"><a class="ilena-compact-header__icon-link ilena-header-popover__trigger" href="/login" aria-label="Masuk" aria-haspopup="dialog"><i class="material-icons" aria-hidden="true">person_outline</i><span class="ilena-sr-only">Masuk</span></a><div class="ilena-header-popover__panel" role="dialog" aria-label="Menu akun"><strong>Selamat datang di Ilena</strong><p>Masuk untuk mengelola akun dan pesanan.</p><nav class="ilena-header-popover__links" aria-label="Akses akun"><a href="/login">Masuk</a><a href="/register">Daftar</a></nav></div></div>
                 <a class="ilena-compact-header__link" href="/product">Belanja</a>
             <?php endif; ?>
         <?php endif; ?>

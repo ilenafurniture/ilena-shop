@@ -1463,7 +1463,7 @@ body.ilena-storefront .ilena-compact-header__account-menu > summary::-webkit-det
 body.ilena-storefront .ilena-compact-header__account-panel {
     position: absolute;
     z-index: 120;
-    top: calc(100% + 8px);
+    top: 100%;
     right: 0;
     display: grid;
     min-width: 190px;
@@ -1471,6 +1471,9 @@ body.ilena-storefront .ilena-compact-header__account-panel {
     border: 1px solid rgba(255,255,255,.12);
     background: #302c27;
     box-shadow: 0 14px 32px rgba(0,0,0,.24);
+}
+body.ilena-storefront .ilena-compact-header__account-menu:not([open]) > .ilena-compact-header__account-panel {
+    display: none;
 }
 body.ilena-storefront .ilena-compact-header__account-panel a,
 body.ilena-storefront .ilena-compact-header__account-panel button {
@@ -1501,7 +1504,7 @@ body.ilena-storefront .ilena-compact-header__account-panel button:hover {
 
     body.ilena-storefront .ilena-header-action:not(.ilena-header-popover__trigger) > span,
     body.ilena-storefront .ilena-compact-header__icon-link:not(.ilena-header-popover__trigger) > span,
-    body.ilena-storefront .ilena-compact-header__account-menu > summary > span {
+    body.ilena-storefront .ilena-compact-header__account-menu > summary > span:not(.ilena-sr-only) {
         position: absolute;
         z-index: 130;
         top: calc(100% + 7px);
@@ -1528,8 +1531,8 @@ body.ilena-storefront .ilena-compact-header__account-panel button:hover {
     body.ilena-storefront .ilena-header-action:not(.ilena-header-popover__trigger):focus-visible > span,
     body.ilena-storefront .ilena-compact-header__icon-link:not(.ilena-header-popover__trigger):hover > span,
     body.ilena-storefront .ilena-compact-header__icon-link:not(.ilena-header-popover__trigger):focus-visible > span,
-    body.ilena-storefront .ilena-compact-header__account-menu > summary:hover > span,
-    body.ilena-storefront .ilena-compact-header__account-menu > summary:focus-visible > span {
+    body.ilena-storefront .ilena-compact-header__account-menu > summary:hover > span:not(.ilena-sr-only),
+    body.ilena-storefront .ilena-compact-header__account-menu > summary:focus-visible > span:not(.ilena-sr-only) {
         opacity: 1;
         visibility: visible;
         transform: translate(-50%, 0);
@@ -1541,6 +1544,16 @@ body.ilena-storefront .ilena-header-popover {
     display: inline-flex;
     align-items: center;
     z-index: 110;
+}
+
+body.ilena-storefront .ilena-header-popover::before {
+    position: absolute;
+    z-index: 139;
+    top: 100%;
+    right: -10px;
+    width: min(300px, calc(100vw - 32px));
+    height: 10px;
+    content: "";
 }
 
 body.ilena-storefront .ilena-header-popover__trigger {
@@ -1562,16 +1575,21 @@ body.ilena-storefront .ilena-header-popover__trigger > .ilena-sr-only {
 body.ilena-storefront .ilena-header-popover__panel {
     position: absolute;
     z-index: 140;
-    top: calc(100% + 10px);
+    top: calc(100% + 8px);
     right: -10px;
-    display: none;
+    display: block;
     width: min(300px, calc(100vw - 32px));
     padding: 18px 20px;
-    border: 1px solid rgba(54, 43, 34, .12);
-    border-top: 3px solid var(--merah);
-    color: #342f2b;
-    background: #fff;
-    box-shadow: 0 16px 36px rgba(35, 28, 22, .18);
+    border: 1px solid rgba(245, 241, 235, .14);
+    border-top: 2px solid var(--merah);
+    color: #f5f1eb;
+    background: #302c27;
+    box-shadow: 0 16px 36px rgba(20, 17, 14, .32);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(4px);
+    transition: opacity .16s ease, transform .16s ease, visibility 0s linear .18s;
 }
 
 body.ilena-storefront .ilena-header-popover__panel strong {
@@ -1582,7 +1600,7 @@ body.ilena-storefront .ilena-header-popover__panel strong {
 
 body.ilena-storefront .ilena-header-popover__panel p {
     margin: 8px 0 12px;
-    color: #716960;
+    color: rgba(245, 241, 235, .72);
     font-size: 13px;
     line-height: 1.5;
 }
@@ -1600,10 +1618,41 @@ body.ilena-storefront .ilena-header-popover__panel > a {
     text-decoration: none;
 }
 
+body.ilena-storefront .ilena-header-popover__links {
+    display: grid;
+    gap: 2px;
+    margin-top: 8px;
+    border-top: 1px solid rgba(245, 241, 235, .12);
+}
+
+body.ilena-storefront .ilena-header-popover__links a {
+    display: flex;
+    min-height: 38px;
+    align-items: center;
+    padding: 0 8px;
+    color: rgba(245, 241, 235, .88);
+    text-decoration: none;
+}
+
+body.ilena-storefront .ilena-header-popover__links a:hover,
+body.ilena-storefront .ilena-header-popover__links a:focus-visible {
+    color: #fff;
+    background: rgba(255, 255, 255, .08);
+}
+
 @media (hover: hover) and (pointer: fine) {
     body.ilena-storefront .ilena-header-popover:hover > .ilena-header-popover__panel,
     body.ilena-storefront .ilena-header-popover:focus-within > .ilena-header-popover__panel {
-        display: block;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateY(0);
+        transition-delay: 0s;
+    }
+
+    body.ilena-storefront .ilena-compact-header__account-menu:not([open]):hover > .ilena-compact-header__account-panel,
+    body.ilena-storefront .ilena-compact-header__account-menu:not([open]):focus-within > .ilena-compact-header__account-panel {
+        display: grid;
     }
 }
 
