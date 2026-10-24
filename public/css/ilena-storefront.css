@@ -1546,16 +1546,6 @@ body.ilena-storefront .ilena-header-popover {
     z-index: 110;
 }
 
-body.ilena-storefront .ilena-header-popover::before {
-    position: absolute;
-    z-index: 139;
-    top: 100%;
-    right: -10px;
-    width: min(300px, calc(100vw - 32px));
-    height: 18px;
-    content: "";
-}
-
 body.ilena-storefront .ilena-header-popover__trigger {
     position: relative;
 }
@@ -1575,7 +1565,7 @@ body.ilena-storefront .ilena-header-popover__trigger > .ilena-sr-only {
 body.ilena-storefront .ilena-header-popover__panel {
     position: absolute;
     z-index: 140;
-    top: calc(100% + 14px);
+    top: calc(100% + 12px);
     right: -10px;
     display: block;
     width: min(300px, calc(100vw - 32px));
@@ -1641,8 +1631,8 @@ body.ilena-storefront .ilena-header-popover__links a:focus-visible {
 }
 
 @media (hover: hover) and (pointer: fine) {
-    body.ilena-storefront .ilena-header-popover:hover > .ilena-header-popover__panel,
-    body.ilena-storefront .ilena-header-popover:focus-within > .ilena-header-popover__panel {
+    body.ilena-storefront .ilena-header-popover:focus-within:not(.is-dismissed) > .ilena-header-popover__panel,
+    body.ilena-storefront .ilena-header-popover.is-open > .ilena-header-popover__panel {
         opacity: 1;
         visibility: visible;
         pointer-events: auto;
