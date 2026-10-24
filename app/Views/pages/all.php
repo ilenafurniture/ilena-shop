@@ -25,6 +25,11 @@ $productCoverUrl = function (array $product): string {
     $sourceAbsolute = FCPATH . $sourceRelative;
     $fileVersion = is_file($sourceAbsolute) ? (int) filemtime($sourceAbsolute) : time();
     $dbVersion = !empty($product['tgl_update']) ? (int) strtotime((string) $product['tgl_update']) : 0;
+    // Serve an existing local 300px thumbnail directly, bypassing the image
+    // controller (and its remote-storage existence checks) for catalog tiles.
+    if (in_array($sourceRelative, ['img/barang/300/' . $id . '.webp', 'uploads/product-images/300/' . $id . '.webp'], true)) {
+        return base_url($sourceRelative) . '?v=' . max($fileVersion, $dbVersion);
+    }
     return base_url('product-cover/' . $id) . '?slot=' . urlencode($slot) . '&size=300&v=' . max($fileVersion, $dbVersion);
 };
 $isSmartSearch = isset($find);
@@ -185,30 +190,8 @@ if (isset($_GET['ruang'])) {
 }
 
 ?>
-<style>
-.container-filter-desktop {
-    width: 0px;
-    overflow-x: hidden;
-    transition: 0.4s;
-}
-
-.container-filter-desktop.show {
-    width: 200px;
-    transition: 0.4s;
-}
-
-.ganti-gap {
-    gap: 0;
-    transition: 0.4s;
-}
-
-.ganti-gap.geser {
-    gap: 4em;
-    transition: 0.4s;
-}
-</style>
 <div class="container d-flex justify-content-center ilena-catalog-page">
-    <div class="konten baris-ke-kolom ganti-gap">
+    <div class="konten baris-ke-kolom">
         <div class="show-block-ke-hide container-filter-desktop"
             style="position: sticky; top: 50px; height:fit-content">
             <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample" aria-expanded="false"
@@ -383,11 +366,11 @@ if (isset($_GET['ruang'])) {
                 </div>
             </label>
             <div class="container-filter mt-2">
-                <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample" aria-expanded="false"
-                    aria-controls="collapseExample">
+                <div class="item-filter" data-bs-toggle="collapse" href="#collapseExampleMobile" aria-expanded="false"
+                    aria-controls="collapseExampleMobile">
                     Koleksi
                 </div>
-                <div class="collapse py-2" id="collapseExample">
+                <div class="collapse py-2" id="collapseExampleMobile">
                     <?php foreach ($koleksiJenis['koleksi'] as $ind_k => $k) { ?>
                     <div class="checkbox-wrapper-46">
                         <input type="checkbox" id="checkbox-filter-1-<?= $ind_k ?>-hp" class="inp-cbx filter"
@@ -403,11 +386,11 @@ if (isset($_GET['ruang'])) {
                     <?php } ?>
                 </div>
 
-                <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample1" aria-expanded="false"
-                    aria-controls="collapseExample1">
+                <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample1Mobile" aria-expanded="false"
+                    aria-controls="collapseExample1Mobile">
                     Jenis
                 </div>
-                <div class="collapse py-2" id="collapseExample1">
+                <div class="collapse py-2" id="collapseExample1Mobile">
                     <?php foreach ($koleksiJenis['jenis'] as $ind_j => $j) { ?>
                     <div class="checkbox-wrapper-46">
                         <input type="checkbox" id="checkbox-filter-2-<?= $ind_j ?>-hp" class="inp-cbx filter"
@@ -423,11 +406,11 @@ if (isset($_GET['ruang'])) {
                     <?php } ?>
                 </div>
 
-                <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample4" aria-expanded="false"
-                    aria-controls="collapseExample4">
+                <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample4Mobile" aria-expanded="false"
+                    aria-controls="collapseExample4Mobile">
                     Room Set
                 </div>
-                <div class="collapse py-2" id="collapseExample4">
+                <div class="collapse py-2" id="collapseExample4Mobile">
                     <div class="checkbox-wrapper-46">
                         <input type="checkbox" id="checkbox-filter-10-hp" class="inp-cbx filter" name="ruang1"
                             value="tamu"
@@ -463,11 +446,11 @@ if (isset($_GET['ruang'])) {
                     </div>
                 </div>
 
-                <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample2" aria-expanded="false"
-                    aria-controls="collapseExample2">
+                <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample2Mobile" aria-expanded="false"
+                    aria-controls="collapseExample2Mobile">
                     Harga
                 </div>
-                <div class="collapse py-2" id="collapseExample2">
+                <div class="collapse py-2" id="collapseExample2Mobile">
                     <div class="checkbox-wrapper-46">
                         <input type="radio" name="harga1" id="checkbox-filter-5-hp" class="inp-cbx filter" value="0"
                             style="display: none;"
@@ -544,8 +527,8 @@ if (isset($_GET['ruang'])) {
             <?php } ?>
             <div class="d-flex gap-4 align-items-stretch mb-3">
                 <div style="width: fit-content;" class="show-flex-ke-hide justify-content-center align-items-center">
-                    <button class="btn btn-sm btn-outline-dark d-flex align-items-center" onclick="showFilterDesktop()">
-                        <i class="material-icons">chevron_left</i>
+                    <button class="btn btn-sm btn-outline-dark d-flex align-items-center" type="button" data-filter-sidebar-toggle aria-expanded="true" onclick="showFilterDesktop()">
+                        <i class="material-icons" aria-hidden="true">chevron_left</i>
                         <p class="m-0" style="line-height: 7px;">Filter</p>
                     </button>
                 </div>
@@ -623,7 +606,8 @@ if (isset($_GET['ruang'])) {
                         </div>
                         <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="gambar">
                             <img class="img-pic" id="img<?= $ind_p ?>"
-                                src="<?= $productCoverUrl($p) ?>" alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async">
+                                src="<?= $productCoverUrl($p) ?>" alt="<?= esc($p['nama'], 'attr') ?>"
+                                loading="<?= $ind_p < 2 ? 'eager' : 'lazy' ?>" fetchpriority="<?= $ind_p === 0 ? 'high' : 'auto' ?>" decoding="async">
                             <img class="img-pic-hover lazy-hover-product"
                                 data-src="<?= base_url('viewpichover/' . $p['id']) ?>?v=<?= $cardVersion ?>"
                                 alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async"> 
@@ -1581,19 +1565,15 @@ let hargaParam = ''
 let ruangParam = ''
 let bukaMeta = false;
 
-let showFilter = false;
-
 function showFilterDesktop() {
     const containerFilterDesktopElm = document.querySelector('.container-filter-desktop');
-    const gantiGapElm = document.querySelector('.ganti-gap')
-    if (showFilter) {
-        containerFilterDesktopElm.classList.remove('show')
-        gantiGapElm.classList.remove('geser')
-    } else {
-        containerFilterDesktopElm.classList.add('show')
-        gantiGapElm.classList.add('geser')
-    }
-    showFilter = !showFilter;
+    const toggle = document.querySelector('[data-filter-sidebar-toggle]');
+    if (!containerFilterDesktopElm || !toggle) return;
+    const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+    containerFilterDesktopElm.classList.toggle('is-collapsed', isExpanded);
+    toggle.setAttribute('aria-expanded', String(!isExpanded));
+    const icon = toggle.querySelector('.material-icons');
+    if (icon) icon.textContent = isExpanded ? 'chevron_right' : 'chevron_left';
 }
 
 btnFilterElm.forEach(elm => {

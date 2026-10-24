@@ -1857,6 +1857,17 @@ body.ilena-storefront .ilena-catalog-page .container-filter-desktop {
     flex: 0 0 220px;
     padding-right: 20px;
     border-right: 1px solid var(--ilena-line);
+    overflow: hidden;
+    transition: width .24s ease, flex-basis .24s ease, padding .24s ease, opacity .18s ease;
+}
+
+body.ilena-storefront .ilena-catalog-page .container-filter-desktop.is-collapsed {
+    width: 0;
+    flex: 0 0 0;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    pointer-events: none;
 }
 
 body.ilena-storefront .ilena-catalog-page .container-filter-desktop .item-filter {
@@ -1865,6 +1876,71 @@ body.ilena-storefront .ilena-catalog-page .container-filter-desktop .item-filter
     color: var(--ilena-ink);
     font-size: 14px;
     font-weight: 650;
+}
+
+body.ilena-storefront .ilena-catalog-page .container-filter-desktop .item-filter,
+body.ilena-storefront .ilena-catalog-page .container-filter .item-filter {
+    cursor: pointer;
+}
+
+body.ilena-storefront .ilena-catalog-page .container-filter .item-filter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--ilena-line);
+    color: var(--ilena-ink);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+body.ilena-storefront .ilena-catalog-page .container-filter .item-filter::after {
+    color: var(--merah);
+    content: '+';
+    font-size: 18px;
+    font-weight: 400;
+}
+
+body.ilena-storefront .ilena-catalog-page .container-filter .item-filter[aria-expanded="true"]::after {
+    content: '−';
+}
+
+body.ilena-storefront .ilena-catalog-page [data-filter-sidebar-toggle] {
+    min-height: 42px;
+    padding-inline: 14px;
+    border: 1px solid var(--ilena-line);
+    border-radius: 0;
+    background: #fff;
+    color: var(--ilena-ink);
+    font-size: 12px;
+}
+
+body.ilena-storefront .ilena-catalog-page [data-filter-sidebar-toggle]:hover {
+    border-color: var(--merah);
+    color: var(--merah);
+}
+
+body.ilena-storefront .ilena-catalog-page label[for="container-filter"] .btn-lonjong {
+    min-height: 44px;
+    border: 1px solid var(--ilena-line);
+    border-radius: 0;
+    background: #fff;
+    color: var(--ilena-ink);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+body.ilena-storefront .ilena-catalog-page #container-filter ~ .container-filter {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height .25s ease, opacity .2s ease;
+}
+
+body.ilena-storefront .ilena-catalog-page #container-filter:checked ~ .container-filter {
+    max-height: min(70svh, 600px);
+    overflow-y: auto;
+    opacity: 1;
 }
 
 body.ilena-storefront .ilena-catalog-page .breadcrumb {
