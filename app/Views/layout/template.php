@@ -197,11 +197,11 @@
 
     <link rel="stylesheet" href="<?= base_url('css/style.css?v=' . filemtime(FCPATH . 'css/style.css')); ?>">
     <link rel="stylesheet" href="<?= base_url('css/ilena-storefront.css?v=' . filemtime(FCPATH . 'css/ilena-storefront.css')); ?>">
-    <link rel="icon" href="<?= base_url('img/logo/N.png?v=' . date('d-m-Y')); ?>" type="image/png">
-    <?php if (($title ?? '') === 'Mitra Kami') : ?>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
-    <script defer src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <?php $editorialPagePath = '/' . strtolower(trim((string) service('uri')->getPath(), '/')); ?>
+    <?php if (in_array($editorialPagePath, ['/tentang', '/partner'], true)) : ?>
+    <link rel="stylesheet" href="<?= base_url('css/ilena-editorial-pages.css?v=' . filemtime(FCPATH . 'css/ilena-editorial-pages.css')); ?>">
     <?php endif; ?>
+    <link rel="icon" href="<?= base_url('img/logo/N.png?v=' . date('d-m-Y')); ?>" type="image/png">
 </head>
 
 <?php

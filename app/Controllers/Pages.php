@@ -4824,7 +4824,7 @@ class Pages extends BaseController
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
         ];
-        return view('pages/tentang', $data);
+        return view('pages/tentang-clean', $data);
     }
     public function partner()
     {
@@ -4856,7 +4856,7 @@ class Pages extends BaseController
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'partners' => $partners,
         ];
-        return view('pages/mitra', $data);
+        return view('pages/mitra-clean', $data);
     }
 
     private function ensurePartnerTable(): void
