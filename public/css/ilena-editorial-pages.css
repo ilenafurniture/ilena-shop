@@ -56,8 +56,8 @@ body.ilena-storefront .ilena-editorial__hero h1 {
     font-family: var(--ilena-font-display, Georgia, "Times New Roman", serif);
     font-size: clamp(42px, 7vw, 84px);
     font-weight: 400;
-    letter-spacing: -.055em;
-    line-height: .99;
+    letter-spacing: -.02em;
+    line-height: 1.02;
 }
 
 body.ilena-storefront .ilena-editorial__intro {
@@ -77,7 +77,7 @@ body.ilena-storefront .ilena-about__contact h2 {
     font-family: var(--ilena-font-display, Georgia, "Times New Roman", serif);
     font-size: clamp(30px, 4vw, 48px);
     font-weight: 400;
-    letter-spacing: -.04em;
+    letter-spacing: -.02em;
     line-height: 1.08;
 }
 

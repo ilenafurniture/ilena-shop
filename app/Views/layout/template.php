@@ -197,6 +197,12 @@
 
     <link rel="stylesheet" href="<?= base_url('css/style.css?v=' . filemtime(FCPATH . 'css/style.css')); ?>">
     <link rel="stylesheet" href="<?= base_url('css/ilena-storefront.css?v=' . filemtime(FCPATH . 'css/ilena-storefront.css')); ?>">
+    <?php $fontRoutePath = trim((string) service('uri')->getPath(), '/'); ?>
+    <?php if (preg_match('~^(admin|analytics|market|editarticle|changepic|gantilokasi|cobainput|gamwm)(/|$)~i', $fontRoutePath) !== 1) : ?>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <?php endif; ?>
     <?php $editorialPagePath = '/' . strtolower(trim((string) service('uri')->getPath(), '/')); ?>
     <?php if (in_array($editorialPagePath, ['/tentang', '/partner'], true)) : ?>
     <link rel="stylesheet" href="<?= base_url('css/ilena-editorial-pages.css?v=' . filemtime(FCPATH . 'css/ilena-editorial-pages.css')); ?>">
