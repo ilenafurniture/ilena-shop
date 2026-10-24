@@ -2198,10 +2198,10 @@ body.ilena-storefront.ilena-page--home .ilena-home-room-grid a > h5 { letter-spa
 body.ilena-storefront.ilena-page--home .zoom-wrapper img { transition: transform .7s cubic-bezier(.2,.7,.2,1); }
 body.ilena-storefront.ilena-page--home .zoom-wrapper:hover img { transform: scale(1.035); }
 body.ilena-storefront.ilena-page--home .kontenLN .overlayMeja.show {
-    max-width: 300px; padding: .65em 1.5em; opacity: 1; pointer-events: auto;
+    max-width: 300px; padding: .65em 1.5em; opacity: 1; pointer-events: auto; transition-delay: 0s;
 }
 body.ilena-storefront.ilena-page--home .kontenLNMobile .overlayMeja.show {
-    max-width: 220px; padding: .5em 1.25em; opacity: 1; pointer-events: auto;
+    max-width: min(220px, calc(100vw - 32px)); padding: .5em 1.25em; opacity: 1; pointer-events: auto; transition-delay: 0s;
 }
 body.ilena-storefront.ilena-page--home .overlayMeja a { min-height: 44px; pointer-events: auto; }
 @media (max-width: 700px) {

@@ -359,13 +359,6 @@ function closeSecondAd() {
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
 }
 
-.kontenLN:hover .overlayBed,
-.kontenLN:hover .overlayMeja {
-    max-width: 300px;
-    transition: all 0.8s ease;
-    padding: 0.5em 2em;
-}
-
 .overlayBed {
     top: 360px;
     left: 220px;
@@ -462,8 +455,12 @@ function closeSecondAd() {
     }
 
     .overlayMeja {
-        top: 250px;
-        left: 200px;
+        top: auto;
+        right: 16px;
+        bottom: 18px;
+        left: 16px;
+        width: fit-content;
+        max-width: calc(100% - 32px);
     }
 }
 </style>
