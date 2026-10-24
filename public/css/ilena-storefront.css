@@ -2228,3 +2228,10 @@ body.ilena-storefront.ilena-page--home .overlayMeja a { min-height: 44px; pointe
 @media (prefers-reduced-motion: reduce) {
     body.ilena-storefront.ilena-page--home :where(.zoom-wrapper img, .ilena-home-mosaic img) { transition: none !important; }
 }
+
+/* Mobile header: keep the Ilena mark, search and menu; the drawer must be displayable when checked. */
+@media (max-width: 600px) {
+    body.ilena-storefront .ilena-mobile-lunarea-link { display: none !important; }
+    body.ilena-storefront .expend-hp { display: none !important; z-index: 1002; }
+    body.ilena-storefront #n-logo:checked ~ .expend-hp { display: block !important; }
+}
