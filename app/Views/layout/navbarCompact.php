@@ -8,7 +8,7 @@ $headerIsStaff = $headerLoggedIn && in_array($headerRole, ['1', '5'], true);
 <header class="ilena-compact-header ilena-compact-header--<?= esc($headerMode, 'attr'); ?>">
     <div class="ilena-compact-header__brands" aria-label="Ilena dan Lunarea">
         <a class="ilena-compact-header__logo" href="/" aria-label="Ilena Furniture — Beranda">
-            <img src="<?= base_url('img/Logo Putih Ilena 1.png'); ?>" width="126" height="26" alt="Ilena Furniture">
+            <img src="<?= base_url('img/Logo Putih Ilena 1.png'); ?>" width="112" height="23" alt="Ilena Furniture">
         </a>
         <span class="ilena-compact-header__brand-divider" aria-hidden="true"></span>
         <details class="ilena-lunarea-popover ilena-compact-header__lunarea">

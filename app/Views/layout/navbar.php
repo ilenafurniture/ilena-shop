@@ -51,7 +51,7 @@
 <style>
     .navbar-brand-pair { width: calc(100% / 3); display:flex; align-items:center; justify-content:center; gap:14px; min-width:0; }
     .navbar-brand-pair a, .navbar-brand-pair > details { display:inline-flex; align-items:center; justify-content:center; flex:0 1 auto; }
-    .navbar-brand-ilena img { display:block; width:auto; max-width:126px; height:26px; object-fit:contain; }
+    .navbar-brand-ilena img { display:block; width:auto; max-width:112px; height:23px; object-fit:contain; }
     .navbar-brand-divider { width:1px; height:25px; flex:0 0 1px; background:rgba(255,255,255,.55); }
     .navbar-lunarea-popover { position:relative; z-index:101; }
     .navbar-brand-lunarea { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:5px 0; border:0; background:transparent; line-height:0; }

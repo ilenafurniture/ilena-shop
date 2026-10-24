@@ -390,8 +390,8 @@ body.ilena-storefront .ilena-compact-header__logo {
 body.ilena-storefront .ilena-compact-header__logo img {
     display: block;
     width: auto;
-    max-width: 126px;
-    height: 26px;
+    max-width: 112px;
+    height: 23px;
     object-fit: contain;
 }
 
@@ -830,8 +830,8 @@ body.ilena-storefront .ilena-footer--account .ilena-footer__bottom {
     }
 
     body.ilena-storefront .ilena-compact-header__logo img {
-        max-width: 126px;
-        height: 26px;
+        max-width: 112px;
+        height: 23px;
     }
 
     body.ilena-storefront .ilena-compact-header__actions {
