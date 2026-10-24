@@ -4829,11 +4829,25 @@ class Pages extends BaseController
     public function partner()
     {
         $this->ensurePartnerTable();
-        $partners = (new PartnerModel())
-            ->where('active', 1)
+        $query = mb_substr(trim((string) $this->request->getGet('q')), 0, 80);
+        $perPage = 10;
+        $requestedPage = max(1, (int) $this->request->getGet('page'));
+        $partnerModel = new PartnerModel();
+        $partnerModel->where('active', 1);
+        if ($query !== '') {
+            $partnerModel->groupStart()
+                ->like('name', $query)
+                ->orLike('city', $query)
+                ->orLike('address', $query)
+                ->groupEnd();
+        }
+        $totalPartners = $partnerModel->countAllResults(false);
+        $totalPages = max(1, (int) ceil($totalPartners / $perPage));
+        $page = min($requestedPage, $totalPages);
+        $partners = $partnerModel
             ->orderBy('sort_order', 'ASC')
             ->orderBy('name', 'ASC')
-            ->findAll();
+            ->findAll($perPage, ($page - 1) * $perPage);
 
         $partners = array_map(static function (array $row): array {
             $lat = $row['lat'] ?? null;
@@ -4855,6 +4869,11 @@ class Pages extends BaseController
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'partners' => $partners,
+            'partnerQuery' => $query,
+            'partnerTotal' => $totalPartners,
+            'partnerPage' => $page,
+            'partnerPages' => $totalPages,
+            'partnerPerPage' => $perPage,
         ];
         return view('pages/mitra-clean', $data);
     }

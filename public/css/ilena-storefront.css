@@ -6,16 +6,41 @@ body.ilena-storefront {
     --ilena-muted: #726b64;
     --ilena-line: #e9e3dc;
     --ilena-shadow: 0 14px 38px rgba(45, 35, 25, .075);
+    --ilena-font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    --ilena-font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
     background: var(--ilena-paper);
     color: var(--ilena-ink);
-    font-family: "Inter", sans-serif;
-    line-height: 1.55;
+    font-family: var(--ilena-font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+}
+
+/* style.css assigns Inter to every element; normalize it on customer pages. */
+body.ilena-storefront * {
+    font-family: var(--ilena-font-body);
+}
+
+body.ilena-storefront .material-icons {
+    font-family: "Material Icons" !important;
 }
 
 body.ilena-storefront :where(h1, h2, h3) {
     color: var(--ilena-ink);
     letter-spacing: -.035em;
     text-wrap: balance;
+}
+
+body.ilena-storefront :where(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--ilena-font-display);
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -.025em;
+}
+
+body.ilena-storefront :where(button, input, select, textarea) {
+    font-family: var(--ilena-font-body);
 }
 
 body.ilena-storefront :where(a, button, input, select, textarea) {
@@ -517,7 +542,7 @@ body.ilena-storefront .ilena-footer__column {
 body.ilena-storefront .ilena-footer__column h2 {
     margin: 0 0 6px;
     color: #fff;
-    font-family: "Inter", sans-serif;
+    font-family: var(--ilena-font-display);
     font-size: 13px;
     font-weight: 700;
     letter-spacing: .08em;

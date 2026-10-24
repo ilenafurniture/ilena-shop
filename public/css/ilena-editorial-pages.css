@@ -7,6 +7,7 @@ body.ilena-storefront .ilena-editorial {
     margin: 0 auto;
     padding: 20px clamp(18px, 4vw, 54px) 72px;
     color: var(--editorial-ink);
+    font-family: var(--ilena-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif);
 }
 
 body.ilena-storefront .ilena-editorial__breadcrumb {
@@ -52,7 +53,7 @@ body.ilena-storefront .ilena-editorial__hero h1 {
     max-width: 900px;
     margin: 0;
     color: var(--editorial-ink);
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: var(--ilena-font-display, Georgia, "Times New Roman", serif);
     font-size: clamp(42px, 7vw, 84px);
     font-weight: 400;
     letter-spacing: -.055em;
@@ -73,7 +74,7 @@ body.ilena-storefront .ilena-about__profile h2,
 body.ilena-storefront .ilena-about__contact h2 {
     margin: 0;
     color: var(--editorial-ink);
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: var(--ilena-font-display, Georgia, "Times New Roman", serif);
     font-size: clamp(30px, 4vw, 48px);
     font-weight: 400;
     letter-spacing: -.04em;
@@ -249,6 +250,29 @@ body.ilena-storefront .ilena-partners__search input {
     font: inherit;
 }
 
+body.ilena-storefront .ilena-partners__search button {
+    min-width: 72px;
+    min-height: 42px;
+    border: 0;
+    color: #fff;
+    background: #8e3935;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+body.ilena-storefront .ilena-partners__search button:hover,
+body.ilena-storefront .ilena-partners__search button:focus-visible {
+    background: #712c29;
+}
+
+body.ilena-storefront .ilena-partners__search button:focus-visible,
+body.ilena-storefront .ilena-partners__pagination a:focus-visible {
+    outline: 2px solid #292622;
+    outline-offset: 3px;
+}
+
 body.ilena-storefront .ilena-partners__search:focus-within {
     border-bottom-color: #8e3935;
     box-shadow: 0 1px 0 #8e3935;
@@ -320,6 +344,26 @@ body.ilena-storefront .ilena-partners__empty {
 body.ilena-storefront .ilena-partners__empty a {
     color: #8e3935;
     text-decoration: underline;
+}
+
+body.ilena-storefront .ilena-partners__pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 8px;
+    padding-top: 18px;
+    border-top: 1px solid var(--editorial-rule);
+    color: var(--editorial-muted);
+    font-size: 13px;
+}
+
+body.ilena-storefront .ilena-partners__pagination a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: #8e3935;
+    font-weight: 650;
 }
 
 @media (max-width: 700px) {
