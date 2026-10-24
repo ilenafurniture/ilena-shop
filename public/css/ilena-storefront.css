@@ -132,6 +132,25 @@ body.ilena-storefront .expend-hp {
     background: #282521;
 }
 
+/* Keep exactly one storefront header visible at each viewport size. */
+body.ilena-storefront .ilena-topbar,
+body.ilena-storefront .navbar-hp-atas,
+body.ilena-storefront .navbar-hp,
+body.ilena-storefront .expend-hp {
+    display: none;
+}
+@media (min-width: 601px) {
+    body.ilena-storefront .ilena-topbar { display: block; }
+    body.ilena-storefront .navbar-hp-atas,
+    body.ilena-storefront .navbar-hp,
+    body.ilena-storefront .expend-hp { display: none !important; }
+}
+@media (max-width: 600px) {
+    body.ilena-storefront .ilena-topbar { display: none !important; }
+    body.ilena-storefront .navbar-hp-atas,
+    body.ilena-storefront .navbar-hp { display: flex; }
+}
+
 body.ilena-storefront .navbar-hp {
     box-shadow: 0 -8px 28px rgba(30, 24, 20, .16);
 }

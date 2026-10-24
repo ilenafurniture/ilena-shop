@@ -285,8 +285,8 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
     <script defer crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 
-    <?php if (!$isInternalArea && $layoutHeaderMode === 'full'): ?>
-        <?= $this->include('layout/navbar'); ?>
+    <?php if (!$isInternalArea && in_array($layoutHeaderMode, ['full', 'auth', 'account'], true)): ?>
+        <?= $this->include('layout/navbar', ['headerMode' => $layoutHeaderMode]); ?>
         <?= $this->include('layout/navbarHp'); ?>
     <?php elseif (!$isInternalArea): ?>
         <?= $this->include('layout/navbarCompact', ['headerMode' => $layoutHeaderMode]); ?>

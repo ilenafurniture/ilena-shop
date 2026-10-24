@@ -1,4 +1,5 @@
 <?php
+$headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $headerMode : 'full';
 $headerCartItems = session()->get('keranjang');
 $headerCartCount = 0;
 if (is_array($headerCartItems)) {
@@ -118,6 +119,7 @@ if (is_array($headerCartItems)) {
     });
 })();
 </script>
+<?php if ($headerMode === 'full'): ?>
 <div style="background-color: #474747;" class="py-1 show-block-ke-hide">
     <p class="m-0 text-center" style="color: white;">Lebih hemat dengan Free Ongkir hingga 100%</p>
 </div>
@@ -181,7 +183,7 @@ if (is_array($headerCartItems)) {
 <div id="container-react" class="tampilHp"></div>
 <script type="text/babel">
     const { useState, useEffect, useRef } = React;
-    const navbar = JSON.parse('<?= json_encode($navbar); ?>');
+    const navbar = JSON.parse('<?= json_encode($navbar ?? []); ?>');
     const App = () => {
         const containerNavbarListNav = useRef();
         const [jenisSelected , setJenisSelected] = useState({
@@ -401,3 +403,4 @@ if (is_array($headerCartItems)) {
     }
     ReactDOM.render(<App />, document.getElementById("container-react"));
 </script>
+<?php endif; ?>
