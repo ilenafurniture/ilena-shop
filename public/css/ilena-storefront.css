@@ -521,6 +521,28 @@ body.ilena-storefront .ilena-context-footer small {
     color: rgba(255, 255, 255, .62);
 }
 
+/* Account/order pages intentionally use a compact, useful-only footer. */
+body.ilena-storefront .ilena-context-footer--account {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 12px clamp(20px, 3vw, 40px);
+    min-height: 68px;
+    padding-block: 14px;
+}
+
+body.ilena-storefront .ilena-context-footer--account nav {
+    gap: 10px clamp(16px, 2vw, 26px);
+}
+
+body.ilena-storefront .ilena-context-footer--account > a {
+    white-space: nowrap;
+}
+
+body.ilena-storefront .ilena-context-footer--account small {
+    white-space: nowrap;
+}
+
 body.ilena-storefront .ilena-footer__main {
     display: grid;
     grid-template-columns: minmax(190px, 1.3fr) repeat(2, minmax(125px, .8fr)) repeat(3, minmax(135px, 1fr));
@@ -705,6 +727,17 @@ body.ilena-storefront .ilena-footer--account .ilena-footer__bottom {
     body.ilena-storefront .ilena-context-footer {
         justify-content: center;
         text-align: center;
+    }
+
+    body.ilena-storefront .ilena-context-footer--account {
+        grid-template-columns: minmax(0, 1fr);
+        justify-items: center;
+        gap: 12px;
+        padding-block: 18px;
+    }
+
+    body.ilena-storefront .ilena-context-footer--account nav {
+        justify-content: center;
     }
 
     body.ilena-storefront .navbar-hp-atas {
