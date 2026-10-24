@@ -1,4 +1,4 @@
-<nav class="nav show-block-ke-hide" style="background-color: black;">
+<nav class="nav show-block-ke-hide ilena-topbar" style="background-color: black;">
     <div class="container py-3">
         <div class="d-flex w-100 justify-content-between align-items-center">
             <div style="width: calc(100% / 3)">

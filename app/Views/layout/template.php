@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" translate="no">
+<html lang="id" translate="no">
 
 <head>
     <!-- Google tag (gtag.js) -->
@@ -196,6 +196,7 @@
     <?php } ?>
 
     <link rel="stylesheet" href="<?= base_url('css/style.css?v=' . filemtime(FCPATH . 'css/style.css')); ?>">
+    <link rel="stylesheet" href="<?= base_url('css/ilena-storefront.css?v=' . filemtime(FCPATH . 'css/ilena-storefront.css')); ?>">
     <link rel="icon" href="<?= base_url('img/logo/N.png?v=' . date('d-m-Y')); ?>" type="image/png">
     <?php if (($title ?? '') === 'Mitra Kami') : ?>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
@@ -203,7 +204,11 @@
     <?php endif; ?>
 </head>
 
-<body>
+<?php
+$layoutPath = trim((string) service('uri')->getPath(), '/');
+$isInternalArea = preg_match('~^(admin|analytics|market|editarticle|changepic|gantilokasi|cobainput|gamwm)(/|$)~i', $layoutPath) === 1;
+?>
+<body class="<?= $isInternalArea ? 'ilena-internal' : 'ilena-storefront'; ?>">
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K5BLN7VV" height="0" width="0"
             style="display:none;visibility:hidden"></iframe></noscript>
