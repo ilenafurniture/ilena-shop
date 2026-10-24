@@ -358,8 +358,9 @@ body.ilena-storefront .ilena-compact-header {
     position: sticky;
     top: 0;
     z-index: 105;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    justify-content: initial;
     align-items: center;
     min-height: 68px;
     gap: 24px;
@@ -367,6 +368,16 @@ body.ilena-storefront .ilena-compact-header {
     border-bottom: 1px solid rgba(255, 255, 255, .10);
     background: #282521;
     box-shadow: 0 5px 20px rgba(30, 24, 20, .10);
+}
+
+body.ilena-storefront .ilena-compact-header__brands {
+    grid-column: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    min-width: 0;
+    white-space: nowrap;
 }
 
 body.ilena-storefront .ilena-compact-header__logo {
@@ -384,10 +395,19 @@ body.ilena-storefront .ilena-compact-header__logo img {
     object-fit: contain;
 }
 
+body.ilena-storefront .ilena-compact-header__brand-divider {
+    width: 1px;
+    height: 22px;
+    flex: 0 0 1px;
+    background: rgba(255, 255, 255, .35);
+}
+
 body.ilena-storefront .ilena-compact-header__actions {
+    grid-column: 3;
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    min-width: 0;
     flex-wrap: nowrap;
     gap: clamp(12px, 1.8vw, 22px);
 }
@@ -1515,9 +1535,16 @@ body.ilena-storefront.ilena-page--invoice .print {
 
 @media (max-width: 700px) {
     body.ilena-storefront .ilena-compact-header {
+        display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
         row-gap: 4px;
+    }
+
+    body.ilena-storefront .ilena-compact-header__brands {
+        flex: 1 1 auto;
+        justify-content: flex-start;
+        gap: 10px;
     }
 
     body.ilena-storefront .ilena-compact-header__actions {
