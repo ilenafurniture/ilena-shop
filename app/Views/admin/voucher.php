@@ -366,6 +366,7 @@ input:checked+.slider:before {
                 </div>
                 <div class="card-body">
                     <form method="post" action="/admin/voucher/add" class="row g-3">
+                        <?= csrf_field(); ?>
                         <div class="col-md-6">
                             <label class="form-label">Kode Voucher</label>
                             <input type="text" name="kode" class="form-control" placeholder="WELCOME5" required>
@@ -593,6 +594,7 @@ input:checked+.slider:before {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
             </div>
             <form method="post" id="formEditVoucher" action="">
+                <?= csrf_field(); ?>
                 <div class="modal-body">
                     <div class="row g-3">
                         <div class="col-md-6">

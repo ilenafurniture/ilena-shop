@@ -3,6 +3,7 @@
 <div class="d-none justify-content-center align-items-center w-100" id="modal-add" style="background-color: rgba(0,0,0,0.5); position:fixed; top: 0; left: 0; width: 100vw; height: 100svh;">
     <div class="bg-white p-4" style="width:fit-content; border: 0.5px solid black; border-radius: 1em; box-shadow:1em;">
         <form action="/admin/actionaddmutasi" method="post">
+            <?= csrf_field(); ?>
             <div class="form-floating mb-1">
                 <input type="datetime-local" class="form-control" id="floatingInput" placeholder="name@example.com" name="tanggal">
                 <label for="floatingInput">Tanggal</label>

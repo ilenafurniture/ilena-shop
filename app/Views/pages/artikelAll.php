@@ -625,6 +625,7 @@ input[name="cari"]+button {
 <div style="position: absolute; z-index: 4;" class="w-100 pt-4">
     <div class="container">
         <form action="/actionsearcharticle" method="post">
+            <?= csrf_field(); ?>
             <div class="d-flex align-items-center gap-3">
                 <input type="text" name="cari" class="py-1" value="<?= isset($cari) ? $cari : ''; ?>">
                 <button type="submit"><i class="material-icons">search</i></button>

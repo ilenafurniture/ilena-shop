@@ -36,6 +36,7 @@ $decodePermissions = $decodePermissions ?? static fn($v) => [];
         </div>
         <div class="d-flex flex-wrap gap-2">
             <form action="/admin/rbac/sync-users" method="post">
+                <?= csrf_field(); ?>
                 <button class="btn btn-dark" type="submit">Sinkronkan User RBAC</button>
             </form>
             <a href="/admin/product" class="btn btn-light border">Kembali</a>
@@ -47,6 +48,7 @@ $decodePermissions = $decodePermissions ?? static fn($v) => [];
 
     <div class="rbac-grid mb-4">
         <form action="/admin/rbac/role" method="post" class="rbac-card p-4">
+            <?= csrf_field(); ?>
             <h2 class="h5 fw-bold mb-2">Tambah Role Baru</h2>
             <p class="rbac-muted">Contoh: Admin Operasional, Staff Produk, atau Marketing. Gunakan nama Admin untuk paket izin operasional lengkap.</p>
 
@@ -76,6 +78,7 @@ $decodePermissions = $decodePermissions ?? static fn($v) => [];
         </form>
 
         <form action="/admin/rbac/assign" method="post" class="rbac-card p-4">
+            <?= csrf_field(); ?>
             <h2 class="h5 fw-bold mb-2">Assign Role ke User</h2>
             <p class="rbac-muted">User yang sudah punya akun bisa login admin sesuai role yang dipilih.</p>
 
@@ -111,6 +114,7 @@ $decodePermissions = $decodePermissions ?? static fn($v) => [];
                     <?php $rolePerms = $decodePermissions($role['permissions'] ?? '[]'); ?>
                     <div class="role-box">
                         <form action="/admin/rbac/role/<?= esc($role['id']); ?>" method="post">
+                            <?= csrf_field(); ?>
                             <div class="d-flex flex-wrap justify-content-between gap-2 mb-3">
                                 <input name="role_name" class="form-control fw-bold" style="max-width:320px" value="<?= esc($role['role_name']); ?>" required>
                                 <div class="d-flex gap-2">
@@ -127,7 +131,7 @@ $decodePermissions = $decodePermissions ?? static fn($v) => [];
                                 <?php endforeach; ?>
                             </div>
                         </form>
-                        <form id="delete-role-<?= esc($role['id']); ?>" action="/admin/rbac/role/delete/<?= esc($role['id']); ?>" method="post"></form>
+                        <form id="delete-role-<?= esc($role['id']); ?>" action="/admin/rbac/role/delete/<?= esc($role['id']); ?>" method="post"><?= csrf_field(); ?></form>
                     </div>
                 <?php endforeach; ?>
             </div>
@@ -162,6 +166,7 @@ $decodePermissions = $decodePermissions ?? static fn($v) => [];
                                 </td>
                                 <td class="text-end">
                                     <form action="/admin/rbac/assign/delete" method="post" onsubmit="return confirm('Hapus akses user ini?')">
+                                        <?= csrf_field(); ?>
                                         <input type="hidden" name="email" value="<?= esc($row['email']); ?>">
                                         <button class="btn btn-sm btn-outline-danger">Hapus Akses</button>
                                     </form>

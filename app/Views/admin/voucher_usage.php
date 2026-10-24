@@ -46,6 +46,7 @@
                         <td><?= esc($r['used_at']); ?></td>
                         <td>
                             <form method="post" action="/admin/voucher/usage/delete/<?= (int)$r['id']; ?>" onsubmit="return confirm('Hapus log ini?')">
+                                <?= csrf_field(); ?>
                                 <button class="btn btn-sm btn-outline-danger" type="submit">Hapus</button>
                             </form>
                         </td>

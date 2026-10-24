@@ -46,6 +46,7 @@ h5 {
     <hr>
 
     <form method="post" action="/admin/homelayout" enctype="multipart/form-data">
+        <?= csrf_field(); ?>
         <div class="card">
             <div class="card-header text-center">
                 <h5>Header Slider Atas</h5>

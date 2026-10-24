@@ -4,6 +4,7 @@
     </a>
     <div style="flex:1;">
         <form action="/actionfind" method="post" class="w-100">
+            <?= csrf_field(); ?>
             <input placeholder="Cari produk" style="text-transform: capitalize;" class="input w-100" name="cari"
                 type="text">
         </form>

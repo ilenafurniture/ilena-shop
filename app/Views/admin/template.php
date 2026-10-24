@@ -165,6 +165,7 @@
             <p>Hello, world! This is a toast message.</p>
             <div class="mt-2 pt-2 border-top d-flex gap-1">
                 <form method="post">
+                    <?= csrf_field(); ?>
                     <button type="submit" class="btn btn-danger btn-sm">Ok</button>
                 </form>
                 <button type="button" class="btn btn-secondary btn-sm" onclick="hapusToast()">Batal</button>

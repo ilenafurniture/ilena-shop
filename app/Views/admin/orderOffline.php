@@ -344,6 +344,7 @@ hr {
     style="position: fixed; left: 0; top: 0; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.45)">
     <div class="bg-white p-4 rounded modal-card-modern">
         <form method="post" action="/admin/actionbuatinvoice">
+            <?= csrf_field(); ?>
             <h5 class="m-0 fw-bold">Buat Invoice</h5>
             <p class="mb-3 text-sm" style="color: var(--brand); font-size: 12px">
                 ID Order :
@@ -381,6 +382,7 @@ hr {
     style="position: fixed; left: 0; top: 0; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.45)">
     <div class="bg-white p-4 rounded modal-card-modern">
         <form method="post" action="/admin/actionbuatdp">
+            <?= csrf_field(); ?>
             <h5 class="m-0 fw-bold">Buat Invoice DP</h5>
             <p class="mb-3 text-sm" style="color: var(--brand); font-size: 12px">ID Order :
                 <input type="text" name="id_pesanan" style="border: none; color: var(--brand); pointer-events: none;"
@@ -430,6 +432,7 @@ hr {
     style="position: fixed; left: 0; top: 0; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.45)">
     <div class="bg-white p-4 rounded modal-card-modern">
         <form method="post" action="/admin/order-offline/koreksisp">
+            <?= csrf_field(); ?>
             <h5 class="m-0 fw-bold">Koreksi Surat Pengantar</h5>
             <p class="m-0 text-sm" style="color: var(--brand); font-size: 12px">ID Order :
                 <input type="text" name="id_pesanan" style="border: none; color: var(--brand); pointer-events: none;"
@@ -539,6 +542,7 @@ hr {
     style="position: fixed; left: 0; top: 0; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.45)">
     <div class="bg-white p-4 rounded modal-card-modern">
         <form method="post" action="/admin/order-offline/update">
+            <?= csrf_field(); ?>
             <h5 class="m-0 fw-bold">Edit Order</h5>
             <p class="mb-3 text-sm" style="color: var(--brand); font-size: 12px">
                 ID Order :
@@ -810,6 +814,7 @@ hr {
                                     <form method="post" action="/admin/order-offline/finalize"
                                         onsubmit="return confirm('Finalisasi draft <?= esc($p['id_pesanan']); ?> ? Stok akan dipotong dan status berubah. Lanjutkan?');"
                                         style="display:inline;">
+                                        <?= csrf_field(); ?>
                                         <input type="hidden" name="id_pesanan" value="<?= esc($p['id_pesanan']); ?>">
                                         <button type="submit" class="btn" data-bs-toggle="tooltip"
                                             data-bs-placement="top"

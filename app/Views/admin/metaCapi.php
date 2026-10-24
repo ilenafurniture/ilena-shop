@@ -84,6 +84,7 @@ $isEnabled = !empty($config['enabled']);
     <?php endif; ?>
 
     <form action="/admin/meta-capi" method="post" class="meta-capi-card p-4">
+        <?= csrf_field(); ?>
         <div class="mb-4">
             <label class="meta-capi-switch mb-0">
                 <input type="checkbox" name="enabled" value="1" <?= $isEnabled ? 'checked' : ''; ?>>

@@ -263,7 +263,8 @@ $productCoverUrl = function (array $product): string {
                         <i class="material-icons">delete</i>
                         <p class="m-0">Hapus</p>
                     </a> -->
-                    <form action="/admin/deleteproduct/<?= $produk['id']; ?>" method="post">
+                <form action="/admin/deleteproduct/<?= $produk['id']; ?>" method="post">
+                    <?= csrf_field(); ?>
                         <button class="btn-default-merah d-flex justify-content-center align-items-center"
                             type="submit"><i class="material-icons">delete</i>
                             <p class="m-0">Hapus</p>

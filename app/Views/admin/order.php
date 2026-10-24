@@ -121,6 +121,7 @@
     style="position: fixed; top: 0; left: 0; height: 100svh; width: 100vw; background-color: rgba(0,0,0,0.8); z-index: 101;">
     <div class="p-4" style="background-color: white; border-radius: 1em">
         <form action="/admin/actioneditresi" method="post">
+            <?= csrf_field(); ?>
             <h5 class="teks-sedang mb-2">Edit resi</h5>
             <div class="mb-1">
                 <label>Nama Ekspedisi</label>

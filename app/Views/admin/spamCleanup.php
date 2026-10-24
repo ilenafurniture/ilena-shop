@@ -50,6 +50,7 @@ $inactiveDays = (int)($inactiveDays ?? 7);
     </form>
 
     <form method="post" action="/admin/spam-cleanup" class="spam-card p-4">
+        <?= csrf_field(); ?>
         <?php if (empty($candidates)): ?>
             <div class="alert alert-success mb-0">Tidak ada kandidat akun spam terdeteksi.</div>
         <?php else: ?>

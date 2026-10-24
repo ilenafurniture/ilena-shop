@@ -3,6 +3,7 @@
         <div class="d-flex w-100 justify-content-between align-items-center">
             <div style="width: calc(100% / 3)">
                 <form action="/actionfind" method="post">
+                    <?= csrf_field(); ?>
                     <input placeholder="Cari produk" style="text-transform: capitalize;" class="input" name="cari"
                         type="text">
                 </form>

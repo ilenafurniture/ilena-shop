@@ -16,6 +16,7 @@ for ($i = 0; $i < 10; $i++) {
         <div class="d-flex justify-content-between">
             <h1 class="teks-sedang mb-2">List Produk</h1>
             <form action="/market/actionfind" method="post">
+                <?= csrf_field(); ?>
                 <input placeholder="Cari produk" style="text-transform: capitalize;" class="input text-dark" name="cari" type="text">
             </form>
         </div>

@@ -95,6 +95,7 @@ $javaBaliNames = [
     <?php endif; ?>
 
     <form action="/admin/free-shipping" method="post" class="free-ship-card p-4">
+        <?= csrf_field(); ?>
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
             <label class="free-ship-switch mb-0">
                 <input type="checkbox" name="active" value="1" <?= !empty($config['active']) ? 'checked' : ''; ?>>
