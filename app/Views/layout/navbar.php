@@ -1,3 +1,12 @@
+<?php
+$headerCartItems = session()->get('keranjang');
+$headerCartCount = 0;
+if (is_array($headerCartItems)) {
+    foreach ($headerCartItems as $headerCartItem) {
+        $headerCartCount += max(0, (int) ($headerCartItem['jumlah'] ?? 1));
+    }
+}
+?>
 <nav class="nav show-block-ke-hide ilena-topbar" style="background-color: black;">
     <div class="container py-3">
         <div class="d-flex w-100 justify-content-between align-items-center">
@@ -41,7 +50,14 @@
                     <?php } ?>
                 <?php } else { ?>
                     <a href="/wishlist" class="ilena-header-action" aria-label="Wishlist"><i class="material-icons" aria-hidden="true">bookmark_border</i><span>Wishlist</span></a>
-                    <a href="/cart" class="ilena-header-action" aria-label="Keranjang"><i class="material-icons" aria-hidden="true">shopping_cart</i><span>Keranjang</span></a>
+                    <div class="ilena-header-popover ilena-header-popover--cart">
+                        <a href="/cart" class="ilena-header-action ilena-header-popover__trigger" aria-label="Keranjang" aria-haspopup="true"><i class="material-icons" aria-hidden="true">shopping_cart</i><span class="ilena-sr-only">Keranjang</span></a>
+                        <div class="ilena-header-popover__panel" role="status">
+                            <strong>Keranjang</strong>
+                            <p><?= $headerCartCount > 0 ? esc($headerCartCount . ' barang siap dilihat di keranjang Anda.') : 'Keranjang Anda masih kosong.'; ?></p>
+                            <a href="<?= $headerCartCount > 0 ? '/cart' : '/product'; ?>"><?= $headerCartCount > 0 ? 'Lihat keranjang' : 'Mulai belanja'; ?></a>
+                        </div>
+                    </div>
                     <a href="<?= session()->get('isLogin') ? '/account' : '/login'; ?>" class="ilena-header-action" aria-label="<?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?>"><i class="material-icons" aria-hidden="true">person_outline</i><span><?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?></span></a>
                 <?php } ?>
             </div>

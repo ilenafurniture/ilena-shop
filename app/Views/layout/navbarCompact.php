@@ -4,6 +4,13 @@ $headerPath = '/' . trim(strtolower((string) service('uri')->getPath()), '/');
 $headerLoggedIn = (bool) session()->get('isLogin');
 $headerRole = (string) session()->get('role');
 $headerIsStaff = $headerLoggedIn && in_array($headerRole, ['1', '5'], true);
+$headerCartItems = session()->get('keranjang');
+$headerCartCount = 0;
+if (is_array($headerCartItems)) {
+    foreach ($headerCartItems as $headerCartItem) {
+        $headerCartCount += max(0, (int) ($headerCartItem['jumlah'] ?? 1));
+    }
+}
 ?>
 <header class="ilena-compact-header ilena-compact-header--<?= esc($headerMode, 'attr'); ?>">
     <div class="ilena-compact-header__brands" aria-label="Ilena dan Lunarea">
@@ -25,7 +32,10 @@ $headerIsStaff = $headerLoggedIn && in_array($headerRole, ['1', '5'], true);
     <nav class="ilena-compact-header__actions" aria-label="Navigasi halaman">
         <?php if ($headerMode === 'auth'): ?>
             <a class="ilena-compact-header__icon-link" href="/wishlist" aria-label="Wishlist" title="Wishlist"><i class="material-icons" aria-hidden="true">bookmark_border</i><span>Wishlist</span></a>
-            <a class="ilena-compact-header__icon-link" href="/cart" aria-label="Keranjang" title="Keranjang"><i class="material-icons" aria-hidden="true">shopping_cart</i><span>Keranjang</span></a>
+            <div class="ilena-header-popover ilena-header-popover--cart">
+                <a class="ilena-compact-header__icon-link ilena-header-popover__trigger" href="/cart" aria-label="Keranjang" aria-haspopup="true"><i class="material-icons" aria-hidden="true">shopping_cart</i><span class="ilena-sr-only">Keranjang</span></a>
+                <div class="ilena-header-popover__panel" role="status"><strong>Keranjang</strong><p><?= $headerCartCount > 0 ? esc($headerCartCount . ' barang siap dilihat di keranjang Anda.') : 'Keranjang Anda masih kosong.'; ?></p><a href="<?= $headerCartCount > 0 ? '/cart' : '/product'; ?>"><?= $headerCartCount > 0 ? 'Lihat keranjang' : 'Mulai belanja'; ?></a></div>
+            </div>
             <a class="ilena-compact-header__icon-link" href="<?= $headerLoggedIn && !$headerIsStaff ? '/account' : '/login'; ?>" aria-label="<?= $headerLoggedIn && !$headerIsStaff ? 'Akun saya' : 'Masuk'; ?>" title="<?= $headerLoggedIn && !$headerIsStaff ? 'Akun saya' : 'Masuk'; ?>"><i class="material-icons" aria-hidden="true">person_outline</i><span><?= $headerLoggedIn && !$headerIsStaff ? 'Akun saya' : 'Masuk'; ?></span></a>
         <?php elseif ($headerMode === 'checkout'): ?>
             <span class="ilena-compact-header__secure">
@@ -53,7 +63,10 @@ $headerIsStaff = $headerLoggedIn && in_array($headerRole, ['1', '5'], true);
                 </form>
             <?php elseif ($headerLoggedIn): ?>
                 <a class="ilena-compact-header__icon-link" href="/wishlist" aria-label="Wishlist" title="Wishlist"><i class="material-icons" aria-hidden="true">bookmark_border</i><span>Wishlist</span></a>
-                <a class="ilena-compact-header__icon-link" href="/cart" aria-label="Keranjang" title="Keranjang"><i class="material-icons" aria-hidden="true">shopping_cart</i><span>Keranjang</span></a>
+                <div class="ilena-header-popover ilena-header-popover--cart">
+                    <a class="ilena-compact-header__icon-link ilena-header-popover__trigger" href="/cart" aria-label="Keranjang" aria-haspopup="true"><i class="material-icons" aria-hidden="true">shopping_cart</i><span class="ilena-sr-only">Keranjang</span></a>
+                    <div class="ilena-header-popover__panel" role="status"><strong>Keranjang</strong><p><?= $headerCartCount > 0 ? esc($headerCartCount . ' barang siap dilihat di keranjang Anda.') : 'Keranjang Anda masih kosong.'; ?></p><a href="<?= $headerCartCount > 0 ? '/cart' : '/product'; ?>"><?= $headerCartCount > 0 ? 'Lihat keranjang' : 'Mulai belanja'; ?></a></div>
+                </div>
                 <details class="ilena-compact-header__account-menu">
                     <summary aria-label="Menu akun"><i class="material-icons" aria-hidden="true">person_outline</i><span>Akun</span></summary>
                     <div class="ilena-compact-header__account-panel">
@@ -65,7 +78,10 @@ $headerIsStaff = $headerLoggedIn && in_array($headerRole, ['1', '5'], true);
                 </details>
             <?php else: ?>
                 <a class="ilena-compact-header__icon-link" href="/wishlist" aria-label="Wishlist" title="Wishlist"><i class="material-icons" aria-hidden="true">bookmark_border</i><span>Wishlist</span></a>
-                <a class="ilena-compact-header__icon-link" href="/cart" aria-label="Keranjang" title="Keranjang"><i class="material-icons" aria-hidden="true">shopping_cart</i><span>Keranjang</span></a>
+                <div class="ilena-header-popover ilena-header-popover--cart">
+                    <a class="ilena-compact-header__icon-link ilena-header-popover__trigger" href="/cart" aria-label="Keranjang" aria-haspopup="true"><i class="material-icons" aria-hidden="true">shopping_cart</i><span class="ilena-sr-only">Keranjang</span></a>
+                    <div class="ilena-header-popover__panel" role="status"><strong>Keranjang</strong><p><?= $headerCartCount > 0 ? esc($headerCartCount . ' barang siap dilihat di keranjang Anda.') : 'Keranjang Anda masih kosong.'; ?></p><a href="<?= $headerCartCount > 0 ? '/cart' : '/product'; ?>"><?= $headerCartCount > 0 ? 'Lihat keranjang' : 'Mulai belanja'; ?></a></div>
+                </div>
                 <a class="ilena-compact-header__shop" href="/login">Masuk</a>
                 <a class="ilena-compact-header__link" href="/product">Belanja</a>
             <?php endif; ?>
