@@ -1885,7 +1885,7 @@ body.ilena-storefront .ilena-catalog-page .card1 .harga-diskon {
 
 /* Product cards: compact typography and a neutral stage that separates warm-toned photos. */
 body.ilena-storefront .card1 .gambar { background: #eeedea; }
-body.ilena-storefront .card1 .gambar img { object-fit: contain; }
+body.ilena-storefront .card1 .gambar img { object-fit: cover; }
 body.ilena-storefront .card1:hover .gambar img { transform: scale(1.01); }
 body.ilena-storefront .card1 h5 {
     min-height: 2.8em;
@@ -1896,7 +1896,12 @@ body.ilena-storefront .card1 h5 {
     line-height: 1.4;
 }
 body.ilena-storefront .card1 .text-secondary { font-size: 11px; line-height: 1.4; }
-body.ilena-storefront .card1 .container-varian { min-height: 24px; gap: 6px; }
+body.ilena-storefront .card1 .container-varian {
+    min-height: 24px;
+    gap: 6px;
+    margin-top: 8px;
+    margin-bottom: 5px;
+}
 body.ilena-storefront .card1 .container-varian label {
     width: 22px;
     height: 22px;
