@@ -23,17 +23,35 @@ jobs:
         ssh -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }} 'bash -se' << 'EOF'
           set -euo pipefail
           cd /mine/ilenafurniture.com
-          echo "[deploy] verify tracked working tree"
-          if ! git diff --quiet || ! git diff --cached --quiet; then
-            git status --short
-            echo "ERROR: tracked files on VPS differ from Git; resolve these changes before deployment."
+          echo "[deploy] verify application working tree"
+          if ! git diff --quiet -- . ':(exclude)public/img/barang/**' || ! git diff --cached --quiet -- . ':(exclude)public/img/barang/**'; then
+            git status --short -- . ':(exclude)public/img/barang/**'
+            echo "ERROR: tracked application files on VPS differ from Git."
             exit 1
+          fi
+
+          IMAGE_STASH=""
+          if [ -n "$(git status --porcelain -- public/img/barang)" ]; then
+            echo "[deploy] temporarily preserve production product images only"
+            git stash push --include-untracked -m "ci-preserve-production-images-$(date +%Y%m%d-%H%M%S)" -- public/img/barang
+            IMAGE_STASH="$(git rev-parse -q --verify refs/stash || true)"
+            if [ -z "$IMAGE_STASH" ]; then
+              echo "ERROR: failed to preserve production product images."
+              exit 1
+            fi
           fi
 
           echo "[deploy] fetch origin/main"
           git fetch origin
           echo "[deploy] fast-forward to origin/main"
           git merge --ff-only origin/main
+
+          if [ -n "$IMAGE_STASH" ]; then
+            echo "[deploy] restore production product images"
+            git stash apply "$IMAGE_STASH"
+            git stash drop "$IMAGE_STASH"
+          fi
+
           echo "[deploy] run database migrations"
           php spark migrate
           echo "[deploy] completed"
