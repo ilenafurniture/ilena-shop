@@ -6,6 +6,16 @@ $headerPath = '/' . trim(strtolower((string) service('uri')->getPath()), '/');
     <a class="ilena-compact-header__logo" href="/" aria-label="Ilena Furniture — Beranda">
         <img src="<?= base_url('img/Logo Putih Ilena 1.png'); ?>" width="150" height="30" alt="Ilena Furniture">
     </a>
+    <details class="ilena-lunarea-popover ilena-compact-header__lunarea">
+        <summary aria-label="Tentang Lunarea Furniture">
+            <img src="<?= base_url('img/logolunareanavbar.webp'); ?>" width="150" height="30" alt="Lunarea Furniture">
+        </summary>
+        <div class="ilena-lunarea-popover__panel">
+            <strong>Lunarea Furniture</strong>
+            <p>Temukan inspirasi dan koleksi furnitur dari Lunarea.</p>
+            <a href="https://lunareafurniture.com" target="_blank" rel="noopener noreferrer">Kunjungi Lunarea <span aria-hidden="true">↗</span></a>
+        </div>
+    </details>
     <nav class="ilena-compact-header__actions" aria-label="Navigasi halaman">
         <?php if ($headerMode === 'auth'): ?>
             <a class="ilena-compact-header__link" href="/product">Kembali ke toko</a>

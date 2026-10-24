@@ -1747,10 +1747,80 @@ body.ilena-storefront .ilena-home-hero .show-flex-ke-hide > * {
 
 body.ilena-storefront .ilena-home-hero .show-flex-ke-hide h1 {
     font-family: var(--ilena-font-display);
-    font-size: clamp(54px, 7vw, 88px);
+    font-size: clamp(42px, 5.2vw, 68px);
     font-weight: 500;
     letter-spacing: -.025em;
     line-height: .98;
+}
+
+/* Brand popovers open on hover for pointer devices; touch keeps click-to-toggle. */
+@media (hover: hover) and (pointer: fine) {
+    body.ilena-storefront details.ilena-lunarea-popover:not([open]):hover > .ilena-lunarea-popover__panel,
+    body.ilena-storefront details.ilena-lunarea-popover:not([open]):focus-within > .ilena-lunarea-popover__panel {
+        display: block;
+    }
+}
+
+body.ilena-storefront .ilena-compact-header__lunarea > summary,
+body.ilena-storefront .ilena-mobile-lunarea-popover > summary {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    cursor: pointer;
+    list-style: none;
+}
+
+body.ilena-storefront .ilena-compact-header__lunarea > summary::-webkit-details-marker,
+body.ilena-storefront .ilena-mobile-lunarea-popover > summary::-webkit-details-marker {
+    display: none;
+}
+
+body.ilena-storefront .ilena-compact-header__lunarea > summary img {
+    display: block;
+    width: 136px;
+    height: 28px;
+    object-fit: contain;
+}
+
+body.ilena-storefront .ilena-compact-header__lunarea .ilena-lunarea-popover__panel {
+    top: calc(100% + 6px);
+    bottom: auto;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+body.ilena-storefront .ilena-mobile-lunarea-popover {
+    position: relative;
+    flex: 0 0 auto;
+}
+
+body.ilena-storefront .ilena-mobile-lunarea-popover > summary img {
+    display: block;
+    width: 82px;
+    height: 22px;
+    object-fit: contain;
+}
+
+body.ilena-storefront .ilena-mobile-lunarea-popover .ilena-lunarea-popover__panel {
+    top: calc(100% + 8px);
+    bottom: auto;
+    left: 0;
+}
+
+@media (max-width: 700px) {
+    body.ilena-storefront .ilena-compact-header {
+        gap: 10px;
+        padding-inline: 14px;
+    }
+
+    body.ilena-storefront .ilena-compact-header__lunarea > summary img {
+        width: 92px;
+        height: 24px;
+    }
+
+    body.ilena-storefront .ilena-home-hero .show-flex-ke-hide h1 {
+        font-size: clamp(36px, 10vw, 46px);
+    }
 }
 
 body.ilena-storefront .ilena-home-hero .show-flex-ke-hide .text-handwrite {
