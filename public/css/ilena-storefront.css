@@ -1552,7 +1552,7 @@ body.ilena-storefront .ilena-header-popover::before {
     top: 100%;
     right: -10px;
     width: min(300px, calc(100vw - 32px));
-    height: 10px;
+    height: 18px;
     content: "";
 }
 
@@ -1575,7 +1575,7 @@ body.ilena-storefront .ilena-header-popover__trigger > .ilena-sr-only {
 body.ilena-storefront .ilena-header-popover__panel {
     position: absolute;
     z-index: 140;
-    top: calc(100% + 8px);
+    top: calc(100% + 14px);
     right: -10px;
     display: block;
     width: min(300px, calc(100vw - 32px));
@@ -1589,7 +1589,7 @@ body.ilena-storefront .ilena-header-popover__panel {
     visibility: hidden;
     pointer-events: none;
     transform: translateY(4px);
-    transition: opacity .16s ease, transform .16s ease, visibility 0s linear .18s;
+    transition: opacity .16s ease, transform .16s ease, visibility 0s linear .3s;
 }
 
 body.ilena-storefront .ilena-header-popover__panel strong {
