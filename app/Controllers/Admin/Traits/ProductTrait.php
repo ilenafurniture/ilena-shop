@@ -19,6 +19,33 @@ namespace App\Controllers\Admin\Traits;
 
 trait ProductTrait
 {
+    /** Reject oversized uploads and anything except genuine WebP/AVIF image MIME types. */
+    private function validateProductImageUploads(array $files): ?string
+    {
+        $allowedMimeTypes = ['image/webp', 'image/avif'];
+        $maxBytes = 4 * 1024 * 1024;
+
+        foreach ($files as $field => $file) {
+            if ($field !== 'gambar_hover' && strpos((string) $field, 'gambar_') !== 0) {
+                continue;
+            }
+            if (!$file || $file->getError() === UPLOAD_ERR_NO_FILE) {
+                continue;
+            }
+            if (!$file->isValid()) {
+                return 'Upload gambar gagal. Silakan pilih ulang file WebP atau AVIF.';
+            }
+            if ($file->getSize() > $maxBytes) {
+                return 'Ukuran gambar maksimal 4 MB.';
+            }
+            if (!in_array(strtolower((string) $file->getMimeType()), $allowedMimeTypes, true)) {
+                return 'Format gambar hanya menerima WebP atau AVIF.';
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Display product list with variants
      */
@@ -118,6 +145,9 @@ trait ProductTrait
 
         $data               = $this->request->getVar();
         $data_gambar_mentah = $this->request->getFiles();
+        if ($imageError = $this->validateProductImageUploads($data_gambar_mentah)) {
+            return $this->response->setStatusCode(400)->setJSON(['pesan' => $imageError]);
+        }
 
         if (isset($data_gambar_mentah['gambar_hover']) && $data_gambar_mentah['gambar_hover']->isValid()) {
             $fp = 'imgdum/barang/hover';
@@ -293,6 +323,15 @@ trait ProductTrait
 
             $data  = $this->request->getVar();
             $files = $this->request->getFiles();
+            if ($imageError = $this->validateProductImageUploads($files)) {
+                return $this->response->setStatusCode(400)->setJSON(['pesan' => $imageError]);
+            }
+            $r2Images = new \App\Services\R2ProductImageService();
+            $syncImageToR2 = static function (string $localPath, string $key) use ($r2Images): void {
+                if ($r2Images->enabled() && !$r2Images->uploadFile($localPath, $key, 'image/webp')) {
+                    throw new \RuntimeException('Gagal menyinkronkan gambar ke penyimpanan: ' . $key);
+                }
+            };
 
             $ensureDir = function (string $dir) {
                 $path = rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . trim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $dir), DIRECTORY_SEPARATOR);
@@ -302,7 +341,7 @@ trait ProductTrait
             $publicPath = function (string $path): string {
                 return rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path), DIRECTORY_SEPARATOR);
             };
-            $processUploadedImage = function ($file, array $outputs) use ($publicPath): void {
+            $processUploadedImage = function ($file, array $outputs) use ($publicPath, $syncImageToR2): void {
                 $tmpDir = $publicPath('imgdum');
                 $tmpName = uniqid('upload_', true) . '.' . ($file->guessExtension() ?: $file->getExtension() ?: 'img');
                 $file->move($tmpDir, $tmpName, true);
@@ -333,6 +372,8 @@ trait ProductTrait
                         throw new \RuntimeException('File hasil resize tidak tersimpan: ' . $destination);
                     }
                     @touch($destFile);
+                    $r2Key = preg_replace('#^img/barang/#', 'products/', str_replace('\\', '/', $destination));
+                    $syncImageToR2($destFile, $r2Key);
                 }
 
                 @unlink($tmpFile);
@@ -369,9 +410,6 @@ trait ProductTrait
                             ["img/barang/3000/{$id_product}-" . ($urutan + 1) . ".webp", 3000, 3000],
                             ["img/barang/1000/{$id_product}-" . ($urutan + 1) . ".webp", 1000, 1000],
                         ];
-
-                        // Thumbnail list 300px tidak dibuat di flow upload utama agar simpan produk tidak berat.
-                        // Cover list di-serve lewat endpoint /product-cover dan cache 300px.
 
                         $processUploadedImage($file, $outputs);
                     } catch (\Throwable $e) {
@@ -435,6 +473,7 @@ trait ProductTrait
                                 throw new \RuntimeException('Thumbnail cover tidak tersalin ke ' . $thumbDest);
                             }
                             @touch($thumbDest);
+                            $syncImageToR2($thumbDest, "products/300/{$id_product}.webp");
                             @unlink($thumbTmp);
                         } else {
                             @unlink($thumbTmp);
@@ -443,6 +482,9 @@ trait ProductTrait
                 }
             } catch (\Throwable $e) {
                 log_message('error', 'EDIT thumbnail cover gagal: {msg}', ['msg' => $e->getMessage()]);
+                if ($r2Images->enabled()) {
+                    throw $e;
+                }
             }
 
             $boolTo01 = fn($v) => (is_bool($v) ? ($v ? '1' : '0') : (string)$v);
@@ -462,6 +504,7 @@ trait ProductTrait
                 'ruang_tamu'     => $boolTo01($data['ruang_tamu']     ?? ($barang['ruang_tamu'] ?? '0')),
                 'ruang_keluarga' => $boolTo01($data['ruang_keluarga'] ?? ($barang['ruang_keluarga'] ?? '0')),
                 'ruang_tidur'    => $boolTo01($data['ruang_tidur']    ?? ($barang['ruang_tidur'] ?? '0')),
+                'tgl_update'     => date('Y-m-d H:i:s'),
             ];
 
             // Jadwal diskon
@@ -478,6 +521,30 @@ trait ProductTrait
             }
 
             $this->barangModel->update($id_product, $payload);
+
+            // Hapus file slot yang sudah tidak direferensikan setelah perubahan produk tersimpan.
+            $oldVariants = json_decode((string) ($barang['varian'] ?? '[]'), true) ?: [];
+            $newVariants = json_decode((string) $varian, true) ?: [];
+            $referencedSlots = [];
+            foreach ($newVariants as $variant) {
+                foreach (array_filter(array_map('trim', explode(',', (string) ($variant['urutan_gambar'] ?? '')))) as $slot) {
+                    if (ctype_digit($slot) && (int) $slot > 0) $referencedSlots[(int) $slot] = true;
+                }
+            }
+            $oldSlots = [];
+            foreach ($oldVariants as $variant) {
+                foreach (array_filter(array_map('trim', explode(',', (string) ($variant['urutan_gambar'] ?? '')))) as $slot) {
+                    if (ctype_digit($slot) && (int) $slot > 0) $oldSlots[(int) $slot] = true;
+                }
+            }
+            foreach (array_diff_key($oldSlots, $referencedSlots) as $slot => $_unused) {
+                foreach ([1000, 3000] as $size) {
+                    $relative = "img/barang/{$size}/{$id_product}-{$slot}.webp";
+                    $path = $publicPath($relative);
+                    if (is_file($path)) @unlink($path);
+                    $r2Images->deleteObject("products/{$size}/{$id_product}-{$slot}.webp");
+                }
+            }
 
             return $this->response->setStatusCode(200)->setJSON([
                 'pesan'   => 'Berhasil mengubah produk.',

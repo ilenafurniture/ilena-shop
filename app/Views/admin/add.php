@@ -513,7 +513,7 @@ function getImageSlot(item) {
 
 const MAX_UPLOAD_MB = 4;
 const MAX_PRODUCT_IMAGES = 25;
-const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+const ALLOWED_IMAGE_TYPES = ['image/webp', 'image/avif'];
 const PREVIEW_REVOKE_DELAY = 1500;
 
 function fileTooLarge(file) {
@@ -871,7 +871,7 @@ const App = () => {
   const addOrReplaceImage = async (variantIndex, file, imageIndex = null) => {
     if (!file) return;
     if (fileTypeInvalid(file)) {
-      setEror('Format foto harus JPG, PNG, WebP, atau AVIF.');
+      setEror('Format foto hanya WebP atau AVIF.');
       return;
     }
     if (fileTooLarge(file)) {
@@ -1179,7 +1179,7 @@ const App = () => {
           <div className="card-header"><h2>Media & Varian</h2></div>
           <div className="card-body">
             <div style={{padding:'10px 12px', borderRadius:'12px', background:'#f8fafc', border:'1px solid #e5e7eb', marginBottom:'14px', color:'#475569', fontSize:'13px', lineHeight:1.55}}>
-              <b>Aturan upload foto:</b> maksimal {MAX_UPLOAD_MB}MB per foto, maksimal {MAX_PRODUCT_IMAGES} foto produk, format JPG/PNG/WebP/AVIF.
+              <b>Aturan upload foto:</b> maksimal {MAX_UPLOAD_MB}MB per foto, maksimal {MAX_PRODUCT_IMAGES} foto produk, format WebP/AVIF.
               Sistem akan mengompres foto otomatis sebelum disimpan.
             </div>
             <div className="section-title">Gambar Hover</div>
@@ -1189,7 +1189,7 @@ const App = () => {
                 onChange={async (e) => {
                   const file = e.target.files[0];
                   if (fileTypeInvalid(file)) {
-                    setEror('Format foto hover harus JPG, PNG, WebP, atau AVIF.');
+                    setEror('Format foto hover hanya WebP atau AVIF.');
                     e.target.value = '';
                     return;
                   }
@@ -1207,7 +1207,7 @@ const App = () => {
                     if (oldHover && oldHover.startsWith('blob:')) setTimeout(() => URL.revokeObjectURL(oldHover), PREVIEW_REVOKE_DELAY);
                   } else { setHoverFile(null); }
                 }}
-                name="gambar_hover" type="file" accept="image/jpeg,image/png,image/webp,image/avif" className="form-control" />
+                name="gambar_hover" type="file" accept="image/webp,image/avif" className="form-control" />
             </div>
 
             <div className="section-title">Varian</div>
@@ -1227,7 +1227,7 @@ const App = () => {
                         const isSelected = selectedImage && selectedImage.variantIndex === ind_v && selectedImage.imageIndex === ind_g;
                         return (
                         <div key={ind_g} className="image-tile">
-                          <input id={`replace-file-${ind_v}-${ind_g}`} type="file" accept="image/jpeg,image/png,image/webp,image/avif" onChange={(e) => { addOrReplaceImage(ind_v, e.target.files[0], ind_g); e.target.value = ''; }} />
+                          <input id={`replace-file-${ind_v}-${ind_g}`} type="file" accept="image/webp,image/avif" onChange={(e) => { addOrReplaceImage(ind_v, e.target.files[0], ind_g); e.target.value = ''; }} />
                           <div
                             className={`item-gambar${isSelected ? ' selected' : ''}`}
                             title="Drag untuk pindah, klik 2 foto untuk tukar, double click untuk ganti"
@@ -1254,7 +1254,7 @@ const App = () => {
                         );
                       })}
                       <div>
-                        <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" id={`file-${ind_v}`} style={{ display:'none' }}
+                        <input type="file" accept="image/webp,image/avif" id={`file-${ind_v}`} style={{ display:'none' }}
                           onChange={(e) => { addOrReplaceImage(ind_v, e.target.files[0]); e.target.value = ''; }} />
                         <label htmlFor={`file-${ind_v}`} className="add-thumb">+ Foto</label>
                       </div>

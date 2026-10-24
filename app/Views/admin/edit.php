@@ -436,12 +436,12 @@ body {
                 <div class="card">
                     <div class="section-title">Gambar Hover</div>
                     <div class="hint" style="margin-bottom:10px;">
-                        Maksimal 4MB per foto. Format: JPG, PNG, WebP, atau AVIF. Sistem akan menyimpan ulang ke WebP.
+                        Maksimal 4MB per foto. Format yang diterima: WebP atau AVIF. Sistem menyimpan hasil olahan sebagai WebP.
                     </div>
                     <img id="imghover-preview" class="img-preview" src="/viewpichover/<?= $produk['id']; ?>?proxy=1&v=<?= $imageVersion; ?>" alt="">
                     <div class="uploader" style="margin-top:10px;">
                         <label class="btn">Pilih File</label>
-                        <input name="gambar_hover" type="file" accept="image/jpeg,image/png,image/webp,image/avif" onchange="uploadFileGambarHover(event)">
+                        <input name="gambar_hover" type="file" accept="image/webp,image/avif" onchange="uploadFileGambarHover(event)">
                         <span class="muted">Maks. 4MB</span>
                     </div>
                 </div>
@@ -472,7 +472,7 @@ body {
                                         id="input-gambar-<?= $ind_v + 1; ?>-<?= $ind_urutanGambar + 1; ?>"
                                         name="gambar-<?= $ind_v + 1; ?>-<?= $ind_urutanGambar + 1; ?>"
                                         data-slot="<?= esc(trim((string) $urutanGambar), 'attr'); ?>"
-                                        accept="image/jpeg,image/png,image/webp,image/avif"
+                                        accept="image/webp,image/avif"
                                         onchange="uploadFile(event)">
                                 </label>
                                 <?php } ?>
@@ -481,7 +481,7 @@ body {
                                     <input type="file"
                                         id="input-gambar-<?= $ind_v + 1; ?>-<?= count(explode(",", $v['urutan_gambar'])) + 1; ?>"
                                         name="gambar-<?= $ind_v + 1; ?>-<?= count(explode(",", $v['urutan_gambar'])) + 1; ?>"
-                                        accept="image/jpeg,image/png,image/webp,image/avif"
+                                        accept="image/webp,image/avif"
                                         onchange="uploadFile(event)">
                                 </label>
                             </div>
@@ -529,12 +529,12 @@ let counterJmlVarian = <?= count($produk['varian']); ?>;
 const hitungVarianInputElm = document.querySelector('input[name="hitung-varian"]');
 const MAX_UPLOAD_MB = 4;
 const MAX_PRODUCT_IMAGES = 25;
-const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+const ALLOWED_IMAGE_TYPES = ['image/webp', 'image/avif'];
 
 function validasiFileGambar(file) {
     if (!file) return true;
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-        alert('Format foto harus JPG, PNG, WebP, atau AVIF.');
+        alert('Format foto hanya WebP atau AVIF.');
         return false;
     }
     if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
@@ -570,7 +570,7 @@ function uploadFile(event) {
       <label class="btn">
         + Tambah
         <input type="file" id="input-gambar-${varianNum}-${Number(subVarianNum)+1}"
-               name="gambar-${varianNum}-${Number(subVarianNum)+1}" accept="image/jpeg,image/png,image/webp,image/avif" onchange="uploadFile(event)">
+               name="gambar-${varianNum}-${Number(subVarianNum)+1}" accept="image/webp,image/avif" onchange="uploadFile(event)">
       </label>`;
     const containerInputGambar = document.getElementById("container-input-gambar" + varianNum);
     containerInputGambar.append(buatElementDariHTML(inputBaru));
@@ -616,7 +616,7 @@ function addVarian() {
         <div id="container-input-gambar${no}" class="row" style="flex-wrap:wrap; margin-top:8px;">
           <label class="btn">
             + Tambah
-            <input type="file" id="input-gambar-${no}-1" name="gambar-${no}-1" accept="image/jpeg,image/png,image/webp,image/avif" onchange="uploadFile(event)">
+            <input type="file" id="input-gambar-${no}-1" name="gambar-${no}-1" accept="image/webp,image/avif" onchange="uploadFile(event)">
           </label>
         </div>
 
