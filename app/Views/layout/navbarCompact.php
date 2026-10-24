@@ -29,10 +29,22 @@ $headerPath = '/' . trim(strtolower((string) service('uri')->getPath()), '/');
             <?php else: ?>
                 <a class="ilena-compact-header__link" href="/cart">Kembali ke keranjang</a>
             <?php endif; ?>
+            <?php if (session()->get('isLogin')): ?>
+                <a class="ilena-compact-header__link" href="/account">Akun saya</a>
+            <?php else: ?>
+                <a class="ilena-compact-header__link" href="/login">Masuk</a>
+            <?php endif; ?>
         <?php else: ?>
+            <span class="ilena-compact-header__welcome">Halo, <?= esc(session()->get('nama') ?: 'Pelanggan'); ?></span>
             <a class="ilena-compact-header__link" href="/order">Pesanan</a>
             <a class="ilena-compact-header__link" href="/account">Akun</a>
             <a class="ilena-compact-header__shop" href="/product">Lanjut belanja</a>
+            <?php if (session()->get('isLogin')): ?>
+                <form class="ilena-compact-header__logout" action="/logout" method="post">
+                    <?= csrf_field(); ?>
+                    <button class="ilena-compact-header__link" type="submit">Keluar</button>
+                </form>
+            <?php endif; ?>
         <?php endif; ?>
     </nav>
 </header>

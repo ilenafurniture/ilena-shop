@@ -197,13 +197,13 @@
 
     <link rel="stylesheet" href="<?= base_url('css/style.css?v=' . filemtime(FCPATH . 'css/style.css')); ?>">
     <link rel="stylesheet" href="<?= base_url('css/ilena-storefront.css?v=' . filemtime(FCPATH . 'css/ilena-storefront.css')); ?>">
-    <?php $fontRoutePath = trim((string) service('uri')->getPath(), '/'); ?>
-    <?php if (preg_match('~^(admin|analytics|market|editarticle|changepic|gantilokasi|cobainput|gamwm)(/|$)~i', $fontRoutePath) !== 1) : ?>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <?php endif; ?>
     <?php $editorialPagePath = '/' . strtolower(trim((string) service('uri')->getPath(), '/')); ?>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <?php if (in_array($editorialPagePath, ['/', '/tentang', '/partner', '/article'], true)) : ?>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+    <?php endif; ?>
     <?php if (in_array($editorialPagePath, ['/tentang', '/partner'], true)) : ?>
     <link rel="stylesheet" href="<?= base_url('css/ilena-editorial-pages.css?v=' . filemtime(FCPATH . 'css/ilena-editorial-pages.css')); ?>">
     <?php endif; ?>
@@ -218,8 +218,10 @@ $layoutIsAuthPage = in_array($layoutPath, ['/login', '/register', '/verify'], tr
 $layoutIsCheckoutPage = preg_match('~^/(cart|shipping|payment|progresspay|successpay|cencelpay|expirepay)(/|$)~', $layoutPath) === 1;
 $layoutIsAccountPage = preg_match('~^/(account|address|order|orderdetail|invoice|wishlist)(/|$)~', $layoutPath) === 1;
 $layoutHeaderMode = $layoutIsCheckoutPage ? 'checkout' : ($layoutIsAccountPage ? 'account' : 'full');
+$layoutPageSegments = array_values(array_filter(explode('/', trim($layoutPath, '/'))));
+$layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? 'home') ?: 'home';
 ?>
-<body class="<?= $isInternalArea ? 'ilena-internal' : 'ilena-storefront ilena-header--' . $layoutHeaderMode; ?>">
+<body class="<?= $isInternalArea ? 'ilena-internal' : 'ilena-storefront ilena-header--' . $layoutHeaderMode . ' ilena-page--' . esc($layoutPageSlug, 'attr'); ?>">
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K5BLN7VV" height="0" width="0"
             style="display:none;visibility:hidden"></iframe></noscript>

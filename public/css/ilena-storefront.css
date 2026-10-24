@@ -33,7 +33,7 @@ body.ilena-storefront :where(h1, h2, h3) {
 }
 
 body.ilena-storefront :where(h1, h2, h3, h4, h5, h6) {
-    font-family: var(--ilena-font-display);
+    font-family: var(--ilena-font-body);
     font-weight: 500;
     line-height: 1.2;
     letter-spacing: -.015em;
@@ -542,7 +542,7 @@ body.ilena-storefront .ilena-footer__column {
 body.ilena-storefront .ilena-footer__column h2 {
     margin: 0 0 6px;
     color: #fff;
-    font-family: var(--ilena-font-display);
+    font-family: var(--ilena-font-body);
     font-size: 13px;
     font-weight: 700;
     letter-spacing: .08em;
@@ -1209,7 +1209,7 @@ body.ilena-storefront .ilena-auth-page__form > h1,
 body.ilena-storefront .ilena-faq-page__title {
     margin: 0 0 26px;
     color: var(--ilena-ink);
-    font-family: var(--ilena-font-display);
+    font-family: var(--ilena-font-body);
     font-size: clamp(34px, 5vw, 54px);
     font-weight: 500;
     letter-spacing: -.02em;
@@ -1299,7 +1299,7 @@ body.ilena-storefront .ilena-faq-page .nomor {
 body.ilena-storefront .ilena-faq-page .sub-faq {
     margin: 0;
     color: var(--ilena-ink);
-    font-family: var(--ilena-font-display);
+    font-family: var(--ilena-font-body);
     font-size: 25px;
     font-weight: 500;
     letter-spacing: -.015em;
@@ -1345,6 +1345,119 @@ body.ilena-storefront .ilena-faq-page .isinya a {
     body.ilena-storefront .ilena-faq-page .sub-faq {
         font-size: 21px;
     }
+}
+
+/* Consistent account controls: visible labels prevent an icon-only, ambiguous header. */
+body.ilena-storefront .ilena-header-action {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    gap: 7px;
+    padding: 0 10px;
+    color: rgba(255,255,255,.88);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+body.ilena-storefront .ilena-header-action .material-icons { font-size: 20px; }
+body.ilena-storefront .ilena-header-action:hover { color: #fff; }
+body.ilena-storefront .ilena-compact-header__welcome {
+    color: rgba(255,255,255,.62);
+    font-size: 12px;
+    white-space: nowrap;
+}
+body.ilena-storefront .ilena-compact-header__logout { margin: 0; }
+body.ilena-storefront .ilena-compact-header__logout button {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+/* Product detail and saved products join the storefront's warm, editorial system. */
+body.ilena-storefront .product-detail-soft .teks-besar {
+    font-family: var(--ilena-font-body);
+    font-size: clamp(30px, 3.2vw, 46px);
+    font-weight: 500;
+    line-height: 1.08;
+}
+body.ilena-storefront .product-detail-soft .harga { font-size: 23px; font-weight: 700; }
+body.ilena-storefront .product-detail-soft .accordion-item {
+    border-color: var(--ilena-line);
+    background: transparent;
+}
+body.ilena-storefront .product-detail-soft .accordion-button {
+    padding: 18px 0;
+    color: var(--ilena-ink);
+    background: transparent;
+    box-shadow: none;
+}
+body.ilena-storefront .ilena-wishlist-page { padding-block: clamp(28px, 5vw, 64px); }
+body.ilena-storefront .ilena-wishlist-page h1 {
+    font-family: var(--ilena-font-body);
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 500;
+}
+body.ilena-storefront .ilena-wishlist-page .container-card1 { gap: 22px; }
+body.ilena-storefront .ilena-wishlist-page .card1 {
+    overflow: hidden;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+body.ilena-storefront .ilena-wishlist-page .card1 .gambar img { background: #f1eee9; }
+
+/* Editorial/legal pages currently use legacy markup; normalize type and reading width. */
+body.ilena-storefront.ilena-page--article .container,
+body.ilena-storefront.ilena-page--contact .container,
+body.ilena-storefront.ilena-page--syarat .container,
+body.ilena-storefront.ilena-page--kebijakan .container,
+body.ilena-storefront.ilena-page--visimisi .container {
+    max-width: 1120px;
+}
+body.ilena-storefront:is(.ilena-page--article, .ilena-page--contact, .ilena-page--syarat, .ilena-page--kebijakan, .ilena-page--visimisi) .konten {
+    padding-block: clamp(32px, 6vw, 76px);
+}
+body.ilena-storefront:is(.ilena-page--article, .ilena-page--contact, .ilena-page--syarat, .ilena-page--kebijakan, .ilena-page--visimisi) h1 {
+    max-width: 20ch;
+    margin-bottom: 24px;
+    font-family: var(--ilena-font-body);
+    font-size: clamp(34px, 4.4vw, 54px);
+    line-height: 1.04;
+}
+body.ilena-storefront:is(.ilena-page--syarat, .ilena-page--kebijakan, .ilena-page--visimisi) .konten p {
+    max-width: 74ch;
+    color: #514b45;
+    line-height: 1.8;
+}
+
+/* Transaction-result and order lookup screens share a calm, legible status treatment. */
+body.ilena-storefront:is(.ilena-page--progresspay, .ilena-page--successpay, .ilena-page--cencelpay, .ilena-page--expirepay, .ilena-page--tracking, .ilena-page--invoice, .ilena-page--orderdetail) h1 {
+    font-family: var(--ilena-font-body);
+    font-size: clamp(30px, 4vw, 44px);
+    font-weight: 500;
+    line-height: 1.08;
+}
+body.ilena-storefront:is(.ilena-page--progresspay, .ilena-page--successpay, .ilena-page--cencelpay, .ilena-page--expirepay, .ilena-page--tracking) .container > .justify-content-center,
+body.ilena-storefront:is(.ilena-page--progresspay, .ilena-page--successpay, .ilena-page--cencelpay, .ilena-page--expirepay, .ilena-page--tracking) .container > .text-center {
+    max-width: 680px;
+    margin-inline: auto;
+    padding: clamp(28px, 5vw, 56px) 20px;
+}
+body.ilena-storefront.ilena-page--invoice .print {
+    max-width: 920px;
+    margin: 32px auto;
+    padding: clamp(20px, 4vw, 48px);
+    background: #fff;
+}
+
+@media (max-width: 700px) {
+    body.ilena-storefront .ilena-header-action { gap: 0; padding-inline: 6px; }
+    body.ilena-storefront .ilena-header-action span { display: none; }
+    body.ilena-storefront .ilena-compact-header__welcome { display: none; }
+    body.ilena-storefront .ilena-wishlist-page .container-card1 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 }
 
 /* Checkout flow: clear steps, flat choices, and a compact order summary. */
@@ -1408,7 +1521,7 @@ body.ilena-storefront .ilena-shipping-page input[type="radio"][name="kurir"]:che
 body.ilena-storefront .ilena-address-page .item-address .nama,
 body.ilena-storefront .ilena-shipping-page .item-kurir .nama {
     color: var(--ilena-ink);
-    font-family: var(--ilena-font-display);
+    font-family: var(--ilena-font-body);
     font-size: 21px;
     font-weight: 600;
 }
@@ -1440,7 +1553,7 @@ body.ilena-storefront .ilena-shipping-page .tigapuluh-ke-seratus .card {
 body.ilena-storefront .ilena-address-page .tigapuluh-ke-seratus h4,
 body.ilena-storefront .ilena-shipping-page .tigapuluh-ke-seratus h4 {
     margin: 0 0 16px;
-    font-family: var(--ilena-font-display);
+    font-family: var(--ilena-font-body);
     font-size: 29px;
     font-weight: 500;
 }
@@ -1464,7 +1577,7 @@ body.ilena-storefront .ilena-payment-page .card-soft .hd {
     border-radius: 0;
     color: var(--ilena-ink);
     background: transparent;
-    font-family: var(--ilena-font-display);
+    font-family: var(--ilena-font-body);
     font-size: 24px;
     font-weight: 500;
     letter-spacing: 0;
@@ -1558,7 +1671,7 @@ body.ilena-storefront .ilena-cart-page .item-keranjang-hp img {
 
 body.ilena-storefront .ilena-cart-page .nama-barang {
     color: var(--ilena-ink);
-    font-family: var(--ilena-font-display);
+    font-family: var(--ilena-font-body);
     font-size: clamp(20px, 2.5vw, 28px);
     font-weight: 500;
     letter-spacing: -.015em;
@@ -1574,7 +1687,7 @@ body.ilena-storefront .ilena-cart-page .ilena-cart-summary {
 }
 
 body.ilena-storefront .ilena-cart-page .ilena-cart-summary h4 {
-    font-family: var(--ilena-font-display);
+    font-family: var(--ilena-font-body);
     font-size: 28px;
     font-weight: 500;
 }
@@ -1601,7 +1714,7 @@ body.ilena-storefront .ilena-cart-empty__eyebrow {
 
 body.ilena-storefront .ilena-cart-empty h2 {
     margin: 0 0 10px;
-    font-family: var(--ilena-font-display);
+    font-family: var(--ilena-font-body);
     font-size: clamp(30px, 5vw, 46px);
     font-weight: 500;
 }
@@ -1630,7 +1743,7 @@ body.ilena-storefront .ilena-order-page .tigapuluh-ke-seratus .card {
 body.ilena-storefront .ilena-account-page .ilena-account-nav h2,
 body.ilena-storefront .ilena-order-page .tigapuluh-ke-seratus .card h4 {
     margin: 0 0 16px;
-    font-family: var(--ilena-font-display);
+    font-family: var(--ilena-font-body);
     font-size: 28px;
     font-weight: 500;
 }
@@ -1940,8 +2053,45 @@ body.ilena-storefront .ilena-home-hero .show-flex-ke-hide .kesana {
 
     body.ilena-storefront .ilena-home-hero .hide-ke-show-flex h1 {
         font-family: var(--ilena-font-display);
-        font-size: clamp(42px, 12vw, 58px) !important;
+        font-size: clamp(36px, 10vw, 46px) !important;
         font-weight: 500;
         line-height: .98;
     }
+}
+
+/* Typography contract: Manrope is the product/UI voice; serif is editorial display only. */
+body.ilena-storefront .ilena-home-hero :where(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--ilena-font-body);
+}
+body.ilena-storefront .ilena-home-hero .show-flex-ke-hide h1,
+body.ilena-storefront .ilena-home-hero .hide-ke-show-flex h1,
+body.ilena-storefront .ilena-home-hero .text-handwrite {
+    font-family: var(--ilena-font-display);
+}
+body.ilena-storefront.ilena-page--tentang .ilena-editorial :where(h1, h2, h3),
+body.ilena-storefront.ilena-page--partner .ilena-editorial :where(h1, h2, h3),
+body.ilena-storefront.ilena-page--article h1,
+body.ilena-storefront.ilena-page--article .isi-artikel :where(h2, h3) {
+    font-family: var(--ilena-font-display);
+}
+body.ilena-storefront.ilena-page--article :where(p, a, button, time, small, .badge) {
+    font-family: var(--ilena-font-body);
+}
+body.ilena-storefront .ilena-lunarea-popover__panel,
+body.ilena-storefront .toast,
+body.ilena-storefront .modal,
+body.ilena-storefront .popover,
+body.ilena-storefront .tooltip {
+    font-family: var(--ilena-font-body);
+}
+body.ilena-internal {
+    --ilena-font-body: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    font-family: var(--ilena-font-body);
+}
+body.ilena-internal :not([class*="material-icons"]):not([class*="fa-"]) {
+    font-family: var(--ilena-font-body);
+}
+body.ilena-internal :where(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--ilena-font-body);
+    font-weight: 600;
 }

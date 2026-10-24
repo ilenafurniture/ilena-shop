@@ -33,7 +33,7 @@ $productCoverUrl = function (string $id, array $varianList, array $product = [])
 };
 ?>
 
-<div class="container">
+<div class="container ilena-wishlist-page">
     <div class="konten">
         <div class="d-flex justify-content-between mb-4">
             <div>

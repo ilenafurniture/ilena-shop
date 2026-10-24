@@ -25,18 +25,14 @@
                 </details>
             </div>
             <div style="width: calc(100% / 3)" class="d-flex justify-content-end">
-                <?php if (session()->get('isLogin')) { ?>
-                    <?php if (session()->get('role') == '0' || session()->get('role') == '4') { ?>
-                        <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
-                        <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
-                        <a href="/account" class="btn"><i class="material-icons text-light">person_outline</i></a>
-                    <?php } else if (session()->get('role') == '1') { ?>
+                <?php if (session()->get('isLogin') && in_array((string) session()->get('role'), ['1', '5'], true)) { ?>
+                    <?php if ((string) session()->get('role') === '1') { ?>
                         <a href="/admin/product" class="btn d-flex align-items-center">
                             <i class="material-icons text-light">chevron_left</i>
                             <p class="m-0 text-light">Admin</p>
                         </a>
                         <form action="/logout" method="post" class="m-0"><input type="hidden" name="<?= csrf_token(); ?>" value="<?= csrf_hash(); ?>"><button type="submit" class="btn" style="padding-right: 0"><i class="material-icons text-light">exit_to_app</i></button></form>
-                    <?php } else if (session()->get('role') == '5') { ?>
+                    <?php } else { ?>
                         <a href="<?= esc(session()->get('admin_home') ?: '/admin'); ?>" class="btn d-flex align-items-center">
                             <i class="material-icons text-light">chevron_left</i>
                             <p class="m-0 text-light">Workspace</p>
@@ -44,9 +40,9 @@
                         <form action="/logout" method="post" class="m-0"><input type="hidden" name="<?= csrf_token(); ?>" value="<?= csrf_hash(); ?>"><button type="submit" class="btn" style="padding-right: 0"><i class="material-icons text-light">exit_to_app</i></button></form>
                     <?php } ?>
                 <?php } else { ?>
-                    <a href="/wishlist" class="btn"><i class="material-icons text-light">bookmark_border</i></a>
-                    <a href="/cart" class="btn"><i class="material-icons text-light">shopping_cart</i></a>
-                    <a href="/login" class="btn"><i class="material-icons text-light">person_outline</i></a>
+                    <a href="/wishlist" class="ilena-header-action" aria-label="Wishlist"><i class="material-icons" aria-hidden="true">bookmark_border</i><span>Wishlist</span></a>
+                    <a href="/cart" class="ilena-header-action" aria-label="Keranjang"><i class="material-icons" aria-hidden="true">shopping_cart</i><span>Keranjang</span></a>
+                    <a href="<?= session()->get('isLogin') ? '/account' : '/login'; ?>" class="ilena-header-action" aria-label="<?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?>"><i class="material-icons" aria-hidden="true">person_outline</i><span><?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?></span></a>
                 <?php } ?>
             </div>
         </div>
