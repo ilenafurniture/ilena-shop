@@ -1009,15 +1009,16 @@ body.ilena-storefront .ilena-store-footer__sister-brand {
     display: inline-flex;
     align-items: center;
     gap: 9px;
-    color: #fff !important;
-    font-size: 13px;
-    font-weight: 600;
+    min-height: 44px;
+    padding: 4px 7px;
+    border-radius: 5px;
+    background: transparent;
     text-decoration: none;
 }
 
 body.ilena-storefront .ilena-store-footer__sister-brand img {
-    width: 32px;
-    height: 32px;
+    width: 150px;
+    height: 30px;
     object-fit: contain;
 }
 

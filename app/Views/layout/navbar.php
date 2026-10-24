@@ -15,8 +15,7 @@
                 <span class="navbar-brand-divider" aria-hidden="true"></span>
                 <details class="ilena-lunarea-popover navbar-lunarea-popover">
                     <summary class="navbar-brand-lunarea" aria-label="Tentang Lunarea Furniture">
-                        <img src="<?= base_url('/img/logo/N.png'); ?>" alt="" width="32" height="32" decoding="async">
-                        <span>Lunarea</span>
+                        <img src="<?= base_url('img/logolunareanavbar.webp'); ?>" alt="Lunarea Furniture" width="150" height="30" decoding="async">
                     </summary>
                     <div class="ilena-lunarea-popover__panel">
                         <strong>Lunarea Furniture</strong>
@@ -58,15 +57,35 @@
     .navbar-brand-pair a, .navbar-brand-pair > details { display:inline-flex; align-items:center; justify-content:center; flex:0 1 auto; }
     .navbar-brand-ilena img { display:block; width:auto; max-width:150px; height:30px; object-fit:contain; }
     .navbar-brand-divider { width:1px; height:25px; flex:0 0 1px; background:rgba(255,255,255,.55); }
-    .navbar-brand-lunarea { display:inline-flex; align-items:center; gap:7px; padding:0; color:#fff; background:transparent; font-size:14px; font-weight:600; line-height:1; }
-    .navbar-brand-lunarea img { display:block; width:32px; height:32px; object-fit:contain; }
+    .navbar-lunarea-popover { position:relative; z-index:101; }
+    .navbar-brand-lunarea { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:5px 0; border:0; background:transparent; line-height:0; }
+    .navbar-brand-lunarea img { display:block; width:150px; height:30px; object-fit:contain; }
     @media (max-width:1100px) {
         .navbar-brand-pair { gap:12px; }
         .navbar-brand-ilena img { height:24px; max-width:125px; }
         .navbar-brand-divider { height:20px; }
-        .navbar-brand-lunarea img { width:26px; height:26px; }
+        .navbar-brand-lunarea img { width:126px; height:26px; }
+    }
+    body.ilena-storefront .navbar-lunarea-popover .ilena-lunarea-popover__panel {
+        top:calc(100% + 8px); bottom:auto; left:50%; transform:translateX(-50%);
+        z-index:102; max-height:min(70vh, 360px); overflow:auto;
     }
 </style>
+<script>
+(() => {
+    const popover = document.querySelector('.navbar-lunarea-popover');
+    if (!popover) return;
+    document.addEventListener('click', event => {
+        if (!popover.contains(event.target)) popover.open = false;
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && popover.open) {
+            popover.open = false;
+            popover.querySelector('summary')?.focus();
+        }
+    });
+})();
+</script>
 <div style="background-color: #474747;" class="py-1 show-block-ke-hide">
     <p class="m-0 text-center" style="color: white;">Lebih hemat dengan Free Ongkir hingga 100%</p>
 </div>

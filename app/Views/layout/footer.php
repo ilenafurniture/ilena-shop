@@ -71,8 +71,7 @@ $paymentLogos = [
     <div class="ilena-store-footer__sister">
         <span>Bagian dari</span>
         <a class="ilena-store-footer__sister-brand" href="https://lunareafurniture.com" target="_blank" rel="noopener noreferrer" aria-label="Kunjungi Lunarea Furniture">
-            <img src="<?= base_url('img/logo/N.png'); ?>" width="32" height="32" alt="">
-            <span>Lunarea Furniture</span>
+            <img src="<?= base_url('img/logolunareanavbar.webp'); ?>" width="150" height="30" alt="Lunarea Furniture" loading="lazy" decoding="async">
         </a>
     </div>
     <div class="ilena-store-footer__bottom">
