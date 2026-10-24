@@ -20,15 +20,21 @@ jobs:
     
     - name: Deploy to VPS
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }} << 'EOF'
-          set -e
+        ssh -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }} 'bash -se' << 'EOF'
+          set -euo pipefail
           cd /mine/ilenafurniture.com
-          if ! git diff --quiet || ! git diff --cached --quiet || [ -n "$(git ls-files --others --exclude-standard)" ]; then
-            STASH_MSG="auto-deploy-$(date +%Y%m%d-%H%M%S)"
-            git stash push --include-untracked -m "$STASH_MSG"
-            echo "INFO: perubahan lokal di-stash dengan label: $STASH_MSG"
-            echo "INFO: cek dengan 'git stash list' & restore manual 'git stash pop' kalau perlu"
+          echo "[deploy] verify tracked working tree"
+          if ! git diff --quiet || ! git diff --cached --quiet; then
+            git status --short
+            echo "ERROR: tracked files on VPS differ from Git; resolve these changes before deployment."
+            exit 1
           fi
-          git pull
+
+          echo "[deploy] fetch origin/main"
+          git fetch origin
+          echo "[deploy] fast-forward to origin/main"
+          git merge --ff-only origin/main
+          echo "[deploy] run database migrations"
           php spark migrate
+          echo "[deploy] completed"
         EOF
