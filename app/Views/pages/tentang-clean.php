@@ -30,7 +30,9 @@
             <p>Berbasis di Semarang, CV Catur Bhakti Mandiri memproduksi furniture untuk kebutuhan rumah tangga, perkantoran, dan perhotelan. Pengalaman tersebut menjadi landasan Ilena dalam menjaga kualitas produk dan menghadirkan pilihan yang relevan untuk rumah modern.</p>
             <a class="ilena-editorial__text-link" href="/product">Jelajahi koleksi <span aria-hidden="true">→</span></a>
         </div>
-        <img src="https://img.ilenafurniture.com/image/1742450090380.webp/?apikey=<?= esc($apikey_img_ilena, 'attr'); ?>" alt="Proses dan produk furniture Ilena" width="960" height="640" loading="lazy" decoding="async">
+        <figure class="ilena-about__profile-image">
+            <img src="https://img.ilenafurniture.com/image/1742450090380.webp/?apikey=<?= esc($apikey_img_ilena, 'attr'); ?>" alt="Proses dan produk furniture Ilena" width="960" height="640" loading="lazy" decoding="async">
+        </figure>
     </section>
 
     <section class="ilena-about__clients" aria-labelledby="about-clients-title">
