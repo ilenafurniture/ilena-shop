@@ -480,8 +480,10 @@ $productCoverUrl = function (array $product): string {
                     <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="gambar">
                         <img class=" img-pic" id="img<?= $ind_p ?>"
                             src="<?= $productCoverUrl($p) ?>" alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async">
+                        <?php if (is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') || !empty($p['gambar_hover'])) { ?>
                         <img class=" img-pic-hover lazy-hover-product"
-                            data-src="<?= base_url('viewpichover/' . $p['id']) ?>?v=<?= $relatedVersion ?>" alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async"> 
+                            data-src="<?= base_url('viewpichover/' . $p['id']) ?>?v=<?= $relatedVersion ?>" alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async">
+                        <?php } ?>
                     </a>
                 </div>
                 <div class="container-varian mb-1 d-flex">

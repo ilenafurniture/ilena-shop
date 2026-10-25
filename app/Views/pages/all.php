@@ -23,11 +23,13 @@ $productCoverUrl = function (array $product): string {
         }
     }
     $sourceAbsolute = FCPATH . $sourceRelative;
-    $fileVersion = is_file($sourceAbsolute) ? (int) filemtime($sourceAbsolute) : time();
+    $sourceExists = is_file($sourceAbsolute);
+    $fileVersion = $sourceExists ? (int) filemtime($sourceAbsolute) : 0;
     $dbVersion = !empty($product['tgl_update']) ? (int) strtotime((string) $product['tgl_update']) : 0;
     // Serve an existing local 300px thumbnail directly, bypassing the image
     // controller (and its remote-storage existence checks) for catalog tiles.
-    $isLocalThumbnail = in_array($sourceRelative, ['img/barang/300/' . $id . '.webp', 'uploads/product-images/300/' . $id . '.webp'], true);
+    $isLocalThumbnail = $sourceExists
+        && in_array($sourceRelative, ['img/barang/300/' . $id . '.webp', 'uploads/product-images/300/' . $id . '.webp'], true);
     $fullSizeMtime = 0;
     foreach ([
         'uploads/product-images/1000/' . $id . '-' . $slot . '.webp',
@@ -40,7 +42,7 @@ $productCoverUrl = function (array $product): string {
         }
     }
     $imageStorage = strtolower((string) env('PRODUCT_IMAGE_STORAGE', 'local'));
-    $thumbnailIsCurrent = !$fullSizeMtime || $fileVersion >= $fullSizeMtime;
+    $thumbnailIsCurrent = $sourceExists && (!$fullSizeMtime || $fileVersion >= $fullSizeMtime);
     $fileVersion = max($fileVersion, $fullSizeMtime);
     if ($imageStorage !== 'r2' && $isLocalThumbnail && $thumbnailIsCurrent) {
         return base_url($sourceRelative) . '?v=' . max($fileVersion, $dbVersion);
@@ -634,9 +636,11 @@ if (isset($_GET['ruang'])) {
                             <img class="img-pic" id="img<?= $ind_p ?>"
                                 src="<?= $productCoverUrl($p) ?>" alt="<?= esc($p['nama'], 'attr') ?>"
                                 loading="<?= $ind_p < 2 ? 'eager' : 'lazy' ?>" fetchpriority="<?= $ind_p === 0 ? 'high' : 'auto' ?>" decoding="async">
+                            <?php if (is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') || !empty($p['gambar_hover'])) { ?>
                             <img class="img-pic-hover lazy-hover-product"
                                 data-src="<?= base_url('viewpichover/' . $p['id']) ?>?v=<?= $cardVersion ?>"
-                                alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async"> 
+                                alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async">
+                            <?php } ?>
                         </a>
                     </div>
                     <div class="container-varian mb-1 d-flex">

@@ -4618,3 +4618,358 @@ body.ilena-storefront.ilena-page--article .container-artikel-list .artikel-list:
     body.ilena-storefront.ilena-page--article .item-kategori-artikel__image,
     body.ilena-storefront.ilena-page--article .article-card-cover { transition: none; }
 }
+
+/* Product detail refinement: a calmer information rhythm and lighter related cards. */
+body.ilena-storefront .product-detail-soft .ilena-product-info {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+}
+body.ilena-storefront .product-detail-soft .ilena-product-heading { padding-bottom: 15px; }
+body.ilena-storefront .product-detail-soft .ilena-product-price { margin: 15px 0 10px !important; }
+body.ilena-storefront .product-detail-soft .ilena-product-description { margin-bottom: 17px; }
+body.ilena-storefront .product-detail-soft .ilena-product-info > .gap-2.show-flex-ke-hide {
+    margin: 0 0 8px;
+    padding: 13px 0 5px;
+    border-top: 1px solid var(--ilena-line);
+}
+body.ilena-storefront .product-detail-soft .ilena-product-info > .gap-2.show-flex-ke-hide .detail-mini-label:not(:first-child) { margin-top: 3px; }
+body.ilena-storefront .product-detail-soft .ilena-product-info > .gap-2.show-flex-ke-hide .d-flex.gap-1 { flex-wrap: wrap; }
+body.ilena-storefront .product-detail-soft #btn-keranjang,
+body.ilena-storefront .product-detail-soft .number-control { min-height: 44px; }
+body.ilena-storefront .product-detail-soft #container-market { margin-top: 14px !important; }
+body.ilena-storefront .product-detail-soft .ilena-product-info > hr { margin: 14px 0 0; color: var(--ilena-line); opacity: 1; }
+body.ilena-storefront .product-detail-soft .ilena-product-info > .accordion { margin-top: 0; }
+body.ilena-storefront .product-detail-soft .ilena-product-related-title { margin: 16px 0 18px; }
+body.ilena-storefront .product-detail-soft .ilena-product-related-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    column-gap: clamp(12px, 1.6vw, 22px);
+    row-gap: 26px;
+}
+body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1 .gambar {
+    aspect-ratio: 1 / 1;
+    background: #f4f1ed;
+}
+body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1 .gambar img {
+    width: 100%; height: 100%; aspect-ratio: 1 / 1; object-fit: cover;
+}
+body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1 .container-varian {
+    min-height: 20px; gap: 5px; margin: 7px 0 5px !important;
+}
+body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1 .container-varian label { width: 13px; height: 13px; }
+body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1 > a.text-dark { display: block; text-decoration: none; }
+body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1 > a.text-dark > p { margin-bottom: 3px !important; font-size: 9px; }
+body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1 h5 { margin: 0 0 6px; font-size: 13px !important; line-height: 1.4; }
+body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1 .harga { margin: 0; font-size: 12px; }
+body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1 .harga-diskon { margin: 0; font-size: 10px; }
+body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1-content-img-kanan { gap: 5px !important; }
+body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1-btn-img { width: 30px; height: 30px; }
+@media (max-width: 1050px) {
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 12px; }
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1 h5 { font-size: 12px !important; }
+}
+
+/* Desktop category rail and mega-menu: refined scale, clear hierarchy, compact spacing. */
+@media (min-width: 601px) {
+    body.ilena-storefront .container-navbar-list-nav {
+        min-height: 42px;
+        padding: 0 clamp(18px, 4vw, 64px);
+        overflow-x: auto;
+        overscroll-behavior-inline: contain;
+        scrollbar-width: none;
+    }
+    body.ilena-storefront .container-navbar-list-nav > .d-flex {
+        width: max-content;
+        min-width: min(100%, max-content);
+        gap: clamp(22px, 3.2vw, 48px) !important;
+        padding: 0 !important;
+    }
+    body.ilena-storefront .container-navbar-list-nav .list-nav { position: relative; flex: 0 0 auto; }
+    body.ilena-storefront .container-navbar-list-nav .list-nav > a {
+        position: relative;
+        display: flex !important;
+        align-items: center;
+        min-height: 42px;
+        width: auto !important;
+        padding: 0 1px;
+        color: var(--ilena-ink) !important;
+        font-size: 11px;
+        font-weight: 550;
+        letter-spacing: .075em;
+        text-transform: uppercase;
+        transition: color .18s ease;
+    }
+    body.ilena-storefront .container-navbar-list-nav .list-nav > a::after {
+        position: absolute;
+        right: 0; bottom: 7px; left: 0;
+        height: 1px;
+        background: #8b684c;
+        content: "";
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform .2s ease;
+    }
+    body.ilena-storefront .container-navbar-list-nav .list-nav:hover > a,
+    body.ilena-storefront .container-navbar-list-nav .list-nav > a:focus-visible { color: #8b684c !important; }
+    body.ilena-storefront .container-navbar-list-nav .list-nav:hover > a::after,
+    body.ilena-storefront .container-navbar-list-nav .list-nav > a:focus-visible::after { transform: scaleX(1); }
+    body.ilena-storefront .child-list-nav {
+        position: relative;
+        z-index: 98;
+        max-height: 0;
+        overflow: hidden;
+        border-bottom: 0 solid transparent;
+        background: rgba(255, 255, 255, .985);
+        box-shadow: 0 12px 28px rgba(35, 29, 23, .08);
+        opacity: 0;
+        transition: max-height .28s ease, opacity .18s ease, border-width .18s ease;
+    }
+    body.ilena-storefront .child-list-nav.show {
+        max-height: min(72vh, 560px);
+        overflow-y: auto;
+        border-bottom: 1px solid var(--ilena-line);
+        opacity: 1;
+    }
+    body.ilena-storefront .child-list-nav > .container {
+        max-width: 1240px;
+        gap: clamp(28px, 5vw, 76px);
+        padding: 26px 24px 30px !important;
+    }
+    body.ilena-storefront .child-list-nav > .container > div:first-child {
+        flex: 1.1 !important;
+        align-content: start;
+        column-gap: 28px;
+        row-gap: 20px !important;
+    }
+    body.ilena-storefront .child-list-nav > .container > div:first-child > div { min-width: 0; }
+    body.ilena-storefront .child-list-nav > .container > div:first-child > div > p {
+        margin: 0 0 7px !important;
+        color: #8b684c;
+        font-size: 9px !important;
+        font-weight: 650;
+        letter-spacing: .14em;
+        line-height: 1.5;
+        text-transform: uppercase;
+    }
+    body.ilena-storefront .child-list-nav > .container > div:first-child a {
+        display: inline-flex !important;
+        width: auto !important;
+        max-width: 100%;
+        margin: 0;
+        padding: 4px 0;
+        color: #38332e !important;
+        font-size: 13px !important;
+        font-weight: 450 !important;
+        line-height: 1.45;
+        text-decoration: none;
+        transition: color .16s ease, padding-left .16s ease;
+    }
+    body.ilena-storefront .child-list-nav > .container > div:first-child a:hover,
+    body.ilena-storefront .child-list-nav > .container > div:first-child a:focus-visible { padding-left: 3px; color: #8b684c !important; }
+    body.ilena-storefront .child-list-nav > .container > div:nth-child(2) {
+        flex: 0 1 430px !important;
+        min-width: 0;
+        padding-left: clamp(20px, 3vw, 42px);
+        border-left: 1px solid var(--ilena-line);
+    }
+    body.ilena-storefront .child-list-nav > .container > div:nth-child(2) > .d-flex {
+        align-items: center;
+        gap: 18px !important;
+        margin-bottom: 12px !important;
+    }
+    body.ilena-storefront .child-list-nav > .container > div:nth-child(2) > .d-flex > div { flex: 0 0 42% !important; }
+    body.ilena-storefront .child-list-nav > .container > div:nth-child(2) img {
+        display: block;
+        width: 100% !important;
+        height: auto !important;
+        aspect-ratio: 4 / 3;
+        border-radius: 0 !important;
+        object-fit: cover !important;
+        background: #f3efe9;
+    }
+    body.ilena-storefront .child-list-nav > .container > div:nth-child(2) h3 {
+        margin: 0 0 8px !important;
+        color: var(--ilena-ink);
+        font-size: 18px;
+        line-height: 1.25;
+    }
+    body.ilena-storefront .child-list-nav > .container > div:nth-child(2) p {
+        color: #70685f;
+        font-size: 11px;
+        line-height: 1.65;
+    }
+    body.ilena-storefront .child-list-nav > .container > div:nth-child(2) > p { margin: 0; font-size: 10px; }
+    body.ilena-storefront .child-list-nav > .container > div:nth-child(2) a { font-size: 10px !important; }
+    body.ilena-storefront .overlay-navbar { height: 42px; margin-bottom: -42px; width: 68px; padding-right: 12px; background-image: linear-gradient(to left, #fbf9f6, transparent); }
+    body.ilena-storefront .overlay-navbar i { color: #6d6257; font-size: 20px; }
+}
+
+/* Editorial category tiles: gradient belongs over the photo, with readable text and gentle reveal. */
+body.ilena-storefront.ilena-page--article .container-kategori-artikel { align-items: stretch; }
+body.ilena-storefront.ilena-page--article .item-kategori-artikel {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: #d9d2c8;
+    box-shadow: 0 5px 18px rgba(36, 29, 22, .08);
+    transition: box-shadow .25s ease, transform .25s ease;
+}
+body.ilena-storefront.ilena-page--article .item-kategori-artikel::after {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(17, 16, 14, .02) 20%, rgba(17, 16, 14, .12) 49%, rgba(17, 16, 14, .74) 100%);
+    content: "";
+    pointer-events: none;
+    transition: background .25s ease;
+}
+body.ilena-storefront.ilena-page--article .item-kategori-artikel > div {
+    display: flex;
+    justify-content: flex-end;
+    padding: clamp(15px, 1.8vw, 24px);
+    background: transparent !important;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, .24);
+}
+body.ilena-storefront.ilena-page--article .item-kategori-artikel:hover,
+body.ilena-storefront.ilena-page--article .item-kategori-artikel:focus-visible {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 26px rgba(36, 29, 22, .16);
+}
+body.ilena-storefront.ilena-page--article .item-kategori-artikel:hover::after,
+body.ilena-storefront.ilena-page--article .item-kategori-artikel:focus-visible::after {
+    background: linear-gradient(180deg, rgba(17, 16, 14, .06) 10%, rgba(17, 16, 14, .22) 42%, rgba(17, 16, 14, .84) 100%);
+}
+body.ilena-storefront.ilena-page--article .item-kategori-artikel .judul {
+    color: #fff;
+    font-size: clamp(16px, 1.5vw, 20px);
+    line-height: 1.2;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, .28);
+}
+body.ilena-storefront.ilena-page--article .item-kategori-artikel i {
+    align-self: center;
+    color: rgba(255, 255, 255, .9);
+    font-size: 16px;
+}
+body.ilena-storefront.ilena-page--article .item-kategori-artikel .desc p {
+    margin: 8px 0 0;
+    color: rgba(255, 255, 255, .88);
+    font-size: 10px;
+    line-height: 1.6;
+}
+@media (max-width: 700px) {
+    body.ilena-storefront.ilena-page--article .item-kategori-artikel > div { padding: 15px; }
+    body.ilena-storefront.ilena-page--article .item-kategori-artikel .desc { max-height: 100px; }
+    body.ilena-storefront.ilena-page--article .item-kategori-artikel i { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront.ilena-page--article .item-kategori-artikel,
+    body.ilena-storefront.ilena-page--article .item-kategori-artikel::after { transition: none; }
+}
+
+/* Storefront button system: compact, consistent, and quiet until interaction. */
+body.ilena-storefront :is(.btn-default, .btn-default-hitam, .btn-default-merah, .btn-default-abu, .btn-lonjong, .btn-lonjong-putih, .btn-lonjong-putih-outline, .btn-default-putih, .btn, .btn-chip) {
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 8px 15px;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    font-family: var(--ilena-font-body);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .035em;
+    line-height: 1.25;
+    text-decoration: none;
+    box-shadow: none;
+    transition: color .18s ease, background-color .18s ease, border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+body.ilena-storefront :is(.btn-default, .btn-default-hitam, .btn-default-merah) {
+    border-color: #302c27;
+    background: #302c27;
+    color: #fff;
+}
+body.ilena-storefront :is(.btn-default, .btn-default-hitam, .btn-default-merah):hover:not(:disabled):not(.disabled) {
+    border-color: #8b684c;
+    background: #8b684c;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 12px rgba(50, 39, 29, .12);
+}
+body.ilena-storefront :is(.btn-default-abu, .btn-lonjong, .btn-lonjong-putih-outline, .btn-chip) {
+    border-color: #d9d1c8;
+    background: #fff;
+    color: #514a43;
+}
+body.ilena-storefront :is(.btn-default-abu, .btn-lonjong, .btn-lonjong-putih-outline, .btn-chip):hover:not(:disabled):not(.disabled) {
+    border-color: #8b684c;
+    background: #f5f1ec;
+    color: #76573f;
+    transform: translateY(-1px);
+}
+body.ilena-storefront :is(.btn-default-putih, .btn-lonjong-putih) {
+    border-color: rgba(255,255,255,.72);
+    background: #fff;
+    color: #302c27;
+}
+body.ilena-storefront :is(.btn-default-putih, .btn-lonjong-putih):hover:not(:disabled):not(.disabled) {
+    border-color: #fff;
+    background: #f3eee8;
+    color: #302c27;
+}
+body.ilena-storefront .btn-teks-aja {
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 5px 2px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #6f655b;
+    font-size: 10px;
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 3px;
+    box-shadow: none;
+    transition: color .18s ease, text-decoration-color .18s ease;
+}
+body.ilena-storefront .btn-teks-aja:hover { color: #8b684c; text-decoration-color: currentColor; }
+body.ilena-storefront :is(.btn-default, .btn-default-hitam, .btn-default-merah, .btn-default-abu, .btn-lonjong, .btn-lonjong-putih, .btn-lonjong-putih-outline, .btn-default-putih, .btn, .btn-chip, .btn-teks-aja):is(:focus-visible, :active) {
+    outline: 2px solid rgba(139, 104, 76, .42);
+    outline-offset: 2px;
+}
+body.ilena-storefront :is(.btn-default, .btn-default-hitam, .btn-default-merah, .btn-default-abu, .btn-lonjong, .btn-lonjong-putih, .btn-lonjong-putih-outline, .btn-default-putih, .btn, .btn-chip):is(:disabled, .disabled, [aria-disabled="true"]) {
+    cursor: not-allowed;
+    opacity: .52;
+    transform: none;
+    box-shadow: none;
+}
+body.ilena-storefront .card1 .card1-btn-img {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255,255,255,.85);
+    border-radius: 0;
+    background: rgba(255,255,255,.94);
+    color: #3e3933;
+    box-shadow: 0 3px 10px rgba(30,24,18,.08);
+    transition: color .18s ease, background .18s ease, border-color .18s ease;
+}
+body.ilena-storefront .card1 .card1-btn-img:hover,
+body.ilena-storefront .card1 .card1-btn-img:focus-visible { border-color: #8b684c; background: #8b684c; color: #fff; }
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront :is(.btn-default, .btn-default-hitam, .btn-default-merah, .btn-default-abu, .btn-lonjong, .btn-lonjong-putih, .btn-lonjong-putih-outline, .btn-default-putih, .btn, .btn-chip, .btn-teks-aja, .card1-btn-img) { transition: none; }
+}
