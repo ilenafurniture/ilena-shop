@@ -23,4 +23,9 @@ class UserModel extends Model
     {
         return $this->where(['email' => $email])->first();
     }
+
+    public function findByEmailIdentity(string $email): ?array
+    {
+        return $this->where('LOWER(TRIM(email))', strtolower(trim($email)))->first();
+    }
 }

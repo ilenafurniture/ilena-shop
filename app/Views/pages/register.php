@@ -84,37 +84,39 @@
 
                 <div class="mb-3">
                     <label for="fullname" class="form-label">Nama lengkap</label>
-                    <input id="fullname" name="nama" type="text" autocomplete="name" class="form-control <?= ($val['val_nama']) ? "is-invalid" : ""; ?>"
+                    <input id="fullname" name="nama" type="text" autocomplete="name" required maxlength="100" aria-describedby="fullname-feedback" class="form-control <?= ($val['val_nama']) ? "is-invalid" : ""; ?>"
                         placeholder="Masukkan nama lengkap" value="<?= old('nama'); ?>">
-                    <div class="invalid-feedback">Mohon masukkan nama lengkap.</div>
+                    <div class="invalid-feedback" id="fullname-feedback"><?= esc($val['val_nama'] ?: 'Mohon masukkan nama lengkap.'); ?></div>
                 </div>
 
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input id="email" name="email" type="email" autocomplete="email"
+                    <input id="email" name="email" type="email" autocomplete="email" required maxlength="191" autocapitalize="none" spellcheck="false" aria-describedby="email-feedback"
                         class="form-control <?= ($val['val_email']) ? "is-invalid" : ""; ?>"
                         placeholder="Masukkan email" value="<?= old('email'); ?>">
-                    <div class="invalid-feedback">Email tidak valid atau telah terdaftar.</div>
+                    <div class="invalid-feedback" id="email-feedback"><?= esc($val['val_email'] ?: 'Gunakan email pribadi yang aktif.'); ?></div>
                 </div>
 
                 <div class="mb-3">
                     <label for="nohp" class="form-label">Nomor telepon</label>
-                    <input id="nohp" name="nohp" type="tel" autocomplete="tel" class="form-control <?= ($val['val_nohp']) ? "is-invalid" : ""; ?>"
+                    <input id="nohp" name="nohp" type="tel" autocomplete="tel" inputmode="numeric" pattern="[0-9]{10,15}" required aria-describedby="nohp-help nohp-feedback" title="Gunakan 10–15 digit angka tanpa spasi atau tanda baca." class="form-control <?= ($val['val_nohp']) ? "is-invalid" : ""; ?>"
                         placeholder="Masukkan nomor telepon" value="<?= old('nohp'); ?>">
-                    <div class="invalid-feedback">Nomor telepon tidak valid atau telah terdaftar.</div>
+                    <div class="invalid-feedback" id="nohp-feedback"><?= esc($val['val_nohp'] ?: 'Nomor HP harus berupa 10–15 digit angka.'); ?></div>
+                    <div class="form-text" id="nohp-help">10–15 digit angka. Contoh: 081234567890 atau 6281234567890.</div>
                 </div>
 
                 <label for="password" class="form-label">Kata sandi</label>
                 <div class="input-group mb-3 has-validation">
-                    <input id="password" name="sandi" type="password" autocomplete="new-password"
+                    <input id="password" name="sandi" type="password" autocomplete="new-password" required minlength="12" maxlength="72" aria-describedby="password-help password-feedback"
                         class="form-control <?= ($val['val_sandi']) ? "is-invalid" : ""; ?>"
                         placeholder="Buat kata sandi">
                     <button type="button" class="input-group-text ilena-auth-page__password-toggle"
                         aria-label="Tampilkan kata sandi" aria-controls="password" aria-pressed="false" onclick="togglePassword(event)">
                         <i class="material-icons" aria-hidden="true">visibility</i>
                     </button>
-                    <div class="invalid-feedback">Mohon masukkan kata sandi.</div>
+                    <div class="invalid-feedback" id="password-feedback"><?= esc($val['val_sandi'] ?: 'Kata sandi minimal 12 karakter.'); ?></div>
                 </div>
+                <div class="form-text mb-3" id="password-help">Minimal 12 karakter, maksimal 72 byte.</div>
 
                 <div class="mb-3">
                     <div class="agreement-box <?= ($val['val_syarat'] ?? false) ? "is-invalid" : ""; ?>">
@@ -126,7 +128,7 @@
                         </label>
                     </div>
                     <div class="invalid-feedback d-block" id="syarat-feedback">
-                        <?= $val['val_syarat'] ?? ''; ?>
+                        <?= esc($val['val_syarat'] ?? ''); ?>
                     </div>
                 </div>
 
@@ -164,6 +166,16 @@ function togglePassword(e) {
     const elps = form.querySelector('input[name="abt_elapsed"]');
     const agreement = document.getElementById('validation-syarat');
     const syaratFeedback = document.getElementById('syarat-feedback');
+    const phone = document.getElementById('nohp');
+    const email = document.getElementById('email');
+
+    // Covers typing, paste and autofill. The server independently enforces the same policy.
+    phone.addEventListener('input', () => {
+        phone.value = phone.value.replace(/[^0-9]/g, '');
+    });
+    email.addEventListener('blur', () => {
+        email.value = email.value.trim().toLowerCase();
+    });
 
     const start = Date.now();
     const minWaitMs = 4000;

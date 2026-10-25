@@ -9,9 +9,11 @@ final class DisposableEmailDomainList
 {
     public const SOURCE_URL = 'https://disposable.github.io/disposable-email-domains/domains_mx.txt';
     private static array $processCache = [];
+    private ?string $bundledPath;
 
     public function __construct(private ?string $path = null, private $fetch = null)
     {
+        $this->bundledPath = $path === null ? APPPATH . 'Data/disposable-email-domains.txt' : null;
         $this->path ??= WRITEPATH . 'cache/disposable-email-domains.txt';
     }
 
@@ -72,19 +74,24 @@ final class DisposableEmailDomainList
     private function loadDomains(): array
     {
         clearstatcache(true, $this->path);
-        $mtime = is_file($this->path) ? (int)filemtime($this->path) : 0;
-        if (isset(self::$processCache[$this->path]) && self::$processCache[$this->path]['mtime'] === $mtime) {
+        $paths = array_filter([$this->bundledPath, $this->path]);
+        $signature = [];
+        foreach ($paths as $path) {
+            clearstatcache(true, $path);
+            $signature[] = is_file($path) ? [$path, filemtime($path), filesize($path)] : [$path, 0];
+        }
+        if (isset(self::$processCache[$this->path]) && self::$processCache[$this->path]['signature'] === $signature) {
             return self::$processCache[$this->path]['domains'];
         }
         $domains = [];
-        if ($mtime > 0) {
-            $lines = @file($this->path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($paths as $path) {
+            $lines = is_file($path) ? @file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) : false;
             if (is_array($lines)) foreach ($lines as $line) {
                 $domain = strtolower(trim($line));
                 if ($domain !== '') $domains[$domain] = true;
             }
         }
-        self::$processCache[$this->path] = ['mtime' => $mtime, 'domains' => $domains];
+        self::$processCache[$this->path] = ['signature' => $signature, 'domains' => $domains];
         return $domains;
     }
 }

@@ -4509,8 +4509,8 @@ class Pages extends BaseController
     }
     public function actionRegister()
     {
-        $emailInput = $this->request->getPost('email');
-        $emailIdentity = is_string($emailInput) ? strtolower(trim($emailInput)) : '';
+        $registration = \App\Services\Auth\RegistrationInput::normalize((array) $this->request->getPost());
+        $emailIdentity = $registration['email'];
         $guard = new \App\Services\Auth\AuthFormGuard();
         $validForm = $guard->verify('register', $this->request->getPost('auth_form_nonce'), [
             $this->request->getPost('website'),
@@ -4531,120 +4531,87 @@ class Pages extends BaseController
             return redirect()->to('/register')->withInput();
         }
 
-        if (!$this->validate([
-            'nama' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => 'Nama lengkap harus diisi',
-                ]
-            ],
-            'email' => [
-                'rules' => 'required|valid_email|max_length[191]|regex_match[/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/]|is_unique[user.email]',
-                'errors' => [
-                    'required' => 'Email harus diisi',
-                    'valid_email' => 'Format email tidak valid',
-                    'max_length' => 'Email terlalu panjang',
-                    'regex_match' => 'Format email tidak valid',
-                    'is_unique' => 'Email sudah terdaftar',
-                ]
-            ],
-            'sandi' => [
-                'rules' => 'required|min_length[12]|max_length[4096]',
-                'errors' => [
-                    'required' => 'Sandi harus diisi',
-                    'min_length' => 'Kata sandi minimal 12 karakter',
-                    'max_length' => 'Kata sandi terlalu panjang'
-                ]
-            ],
-            'nohp' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => 'Nomor handphone harus diisi'
-                ]
-            ],
-            'validasi-syarat' => [
-                'rules' => 'required|in_list[1]',
-                'errors' => [
-                    'required' => 'Anda belum menyetujui syarat dan ketentuan pendaftaran',
-                    'in_list' => 'Persetujuan syarat dan ketentuan tidak valid'
-                ]
-            ],
-        ])) {
-            $validation = \Config\Services::validation();
-            session()->setFlashdata('val-nama', $validation->getError('nama'));
-            session()->setFlashdata('val-email', $validation->getError('email'));
-            session()->setFlashdata('val-sandi', $validation->getError('sandi'));
-            session()->setFlashdata('val-nohp', $validation->getError('nohp'));
-            session()->setFlashdata('val-syarat', $validation->getError('validasi-syarat'));
+        $errors = (new \App\Services\Auth\RegistrationInput())->errors($registration);
+        if (!isset($errors['email']) && $this->userModel->findByEmailIdentity($emailIdentity)) {
+            $errors['email'] = 'Email sudah terdaftar. Silakan masuk dengan akun Anda.';
+        }
+        if ($errors !== []) {
+            foreach (['nama', 'email', 'sandi', 'nohp', 'validasi-syarat'] as $field) {
+                session()->setFlashdata('val-' . ($field === 'validasi-syarat' ? 'syarat' : $field), $errors[$field] ?? '');
+            }
             return redirect()->to('/register')->withInput();
         }
 
-        $emailUser = strtolower(trim((string)$this->request->getVar('email')));
-        if ((new SpamAccountCleanupService())->isDisposableEmail($emailUser)) {
-            session()->setFlashdata('val-email', 'Email sementara/tempmail tidak bisa digunakan');
-            return redirect()->to('/register')->withInput();
-        }
-
-        $otp_number = random_int(100000, 999999);
-        $waktu_otp = time() + 300;
-        $d = strtotime("+425 Minutes");
-        $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-        $waktu_otp_tanggal = date("d", $d) . " " . $bulan[date("m", $d) - 1] . " " . date("Y H:i:s", $d);
-
-        $namaUser = trim((string)$this->request->getVar('nama'));
-        $nohpUser = preg_replace('/[^\d+]/', '', (string)$this->request->getVar('nohp'));
-
-        $email = \Config\Services::email();
-        $emailConfig = config('Email');
-        $email->setFrom($emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com', 'Ilena Furniture');
-        $email->setTo($emailUser);
-        $email->setSubject('ILENA Store - Verifikasi OTP');
-        $email->setMessage("<p>Berikut kode OTP verifikasi</p><h1>" . $otp_number . "</h1><p>Kode ini berlaku hingga " . $waktu_otp_tanggal . "</p>");
-        if (!$email->send()) {
-            log_message('error', 'Registration verification email could not be sent.');
-            session()->setFlashdata('msg', 'Email verifikasi belum dapat dikirim. Coba lagi nanti.');
-            return redirect()->to('/register')->withInput();
-        }
-
-        $this->userModel->insert([
-            'email' => $emailUser,
-            'sandi' => password_hash($this->request->getVar('sandi'), PASSWORD_DEFAULT),
-            'role' => '0',
-            'otp' => $otp_number,
-            'active' => '0',
-            'waktu_otp' => $waktu_otp
-        ]);
-        $pembeliPayload = [
-            'nama' => $namaUser,
-            'email' => $emailUser,
-            'nohp' => $nohpUser,
-            'alamat' => json_encode([]),
-            'wishlist' => json_encode([]),
-            'keranjang' => json_encode([])
-        ];
-
+        $emailUser = $registration['email'];
+        $atomic = null;
         try {
-            $existingPembeli = $this->pembeliModel->getPembeli($emailUser);
+            $atomic = new \App\Services\AtomicOperation(\Config\Database::connect(), 'ilena-register-' . substr(hash('sha256', $emailUser), 0, 48));
+            // Recheck under a per-email lock: two concurrent signups must not create two identities.
+            if ($this->userModel->findByEmailIdentity($emailUser)) {
+                session()->setFlashdata('val-email', 'Email sudah terdaftar. Silakan masuk dengan akun Anda.');
+                return redirect()->to('/register')->withInput();
+            }
+
+            $otp_number = random_int(100000, 999999);
+            $waktu_otp = time() + 300;
+            $d = strtotime("+425 Minutes");
+            $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+            $waktu_otp_tanggal = date("d", $d) . " " . $bulan[date("m", $d) - 1] . " " . date("Y H:i:s", $d);
+
+            $namaUser = $registration['nama'];
+            $nohpUser = $registration['nohp'];
+
+            $email = \Config\Services::email();
+            $emailConfig = config('Email');
+            $email->setFrom($emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com', 'Ilena Furniture');
+            $email->setTo($emailUser);
+            $email->setSubject('ILENA Store - Verifikasi OTP');
+            $email->setMessage("<p>Berikut kode OTP verifikasi</p><h1>" . $otp_number . "</h1><p>Kode ini berlaku hingga " . $waktu_otp_tanggal . "</p>");
+            if (!$email->send()) {
+                log_message('error', 'Registration verification email could not be sent.');
+                session()->setFlashdata('msg', 'Email verifikasi belum dapat dikirim. Coba lagi nanti.');
+                return redirect()->to('/register')->withInput();
+            }
+
+            $insertedUser = $this->userModel->insert([
+                'email' => $emailUser,
+                'sandi' => password_hash($registration['sandi'], PASSWORD_DEFAULT),
+                'role' => '0',
+                'otp' => $otp_number,
+                'active' => '0',
+                'waktu_otp' => $waktu_otp
+            ]);
+            if ($insertedUser === false) throw new \RuntimeException('Registration user insert failed.');
+            $pembeliPayload = [
+                'nama' => $namaUser,
+                'email' => $emailUser,
+                'nohp' => $nohpUser,
+                'alamat' => json_encode([]),
+                'wishlist' => json_encode([]),
+                'keranjang' => json_encode([])
+            ];
+
+            $existingPembeli = $this->pembeliModel->where('LOWER(TRIM(email))', $emailUser)->first();
             if ($existingPembeli) {
-                $this->pembeliModel->where('email', $emailUser)->set([
+                $savedProfile = $this->pembeliModel->where('email', $existingPembeli['email'])->set([
+                    'email' => $emailUser,
                     'nama' => $namaUser,
                     'nohp' => $nohpUser,
                 ])->update();
             } else {
-                $this->pembeliModel->insert($pembeliPayload);
+                $savedProfile = $this->pembeliModel->insert($pembeliPayload);
             }
-        } catch (\Throwable $th) {
-            if (str_contains(strtolower($th->getMessage()), 'duplicate')) {
-                $this->pembeliModel->where('email', $emailUser)->set([
-                    'nama' => $namaUser,
-                    'nohp' => $nohpUser,
-                ])->update();
-            } else {
-                throw $th;
-            }
+            if ($savedProfile === false) throw new \RuntimeException('Registration profile save failed.');
+            $getUser = $this->userModel->getUser($emailUser);
+            if (!$getUser) throw new \RuntimeException('Registration account missing.');
+            $atomic->commit();
+        } catch (\Throwable $error) {
+            unset($atomic); // Roll back account/profile together before returning an error.
+            log_message('error', 'Registration persistence failed: {type}', ['type' => get_class($error)]);
+            session()->setFlashdata('msg', 'Pendaftaran belum berhasil disimpan. Silakan coba lagi.');
+            return redirect()->to('/register')->withInput();
         }
 
-        $getUser = $this->userModel->getUser($emailUser);
         if (!session()->get('isLogin')) session()->set([
             'pending_guest_cart'=>(array)session()->get('keranjang'),'pending_guest_wishlist'=>(array)session()->get('wishlist'),'pending_guest_addresses'=>(array)session()->get('alamat'),
         ]);
