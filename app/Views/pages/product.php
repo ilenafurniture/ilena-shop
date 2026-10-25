@@ -156,7 +156,7 @@ $productCoverUrl = function (array $product): string {
 }
 </style>
 <div class="container d-flex flex-column align-items-center product-detail-soft">
-    <div class="konten w-100">
+    <div class="konten w-100 ilena-product-detail">
         <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb" class="show-block-ke-hide">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/product">Produk Kami</a></li>
@@ -169,76 +169,39 @@ $productCoverUrl = function (array $product): string {
                 </li>
             </ol>
         </nav>
-        <div class="baris-ke-kolom-reverse w-100">
-            <div class="limapuluh-ke-seratus">
-                <div class="mb-2">
-                    <h1 class="teks-besar d-inline"><?= str_replace('Tv', 'TV', ucwords($produk['nama'])) ?> </h1>
-                    <a href="/product?koleksi=<?= $produk['kategori']; ?>" class="btn-teks-aja d-inline">
-                        <i class="material-icons d-inline" style="font-size: 30px;">open_in_new</i>
-                        <span class="popup"> Lihat Produk <?= ucfirst($produk['kategori']); ?></span>
-                        <style>
-                        .btn-teks-aja {
-                            position: relative;
-                        }
-
-                        .popup {
-                            visibility: hidden;
-                            opacity: 0;
-                            width: 120px;
-                            background-color: black;
-                            color: #fff;
-                            text-align: center;
-                            border-radius: 6px;
-                            padding: 5px 5px;
-                            position: absolute;
-                            bottom: 240%;
-                            left: 50%;
-                            transform: translateX(-50%) translateY(10px);
-                            z-index: 1;
-                            transition: opacity 0.6s, transform 0.6s;
-                        }
-
-                        .popup::before {
-                            content: "";
-                            position: absolute;
-                            top: 100%;
-                            left: 50%;
-                            margin-left: -5px;
-                            border-width: 5px;
-                            border-style: solid;
-                            border-color: black transparent transparent transparent;
-                        }
-
-                        .btn-teks-aja:hover .popup {
-                            visibility: visible;
-                            opacity: 1;
-                            transform: translateX(-50%) translateY(0);
-                        }
-                        </style>
-                    </a>
+        <div class="baris-ke-kolom-reverse w-100 ilena-product-layout">
+            <div class="limapuluh-ke-seratus ilena-product-info">
+                <div class="ilena-product-heading">
+                    <p class="ilena-product-eyebrow"><?= esc(ucwords($produk['kategori'])); ?> <span>/</span> ILENA FURNITURE</p>
+                    <div class="ilena-product-title-row">
+                        <h1 class="teks-besar"><?= esc(str_replace('Tv', 'TV', ucwords($produk['nama']))) ?></h1>
+                        <a href="/product?koleksi=<?= rawurlencode($produk['kategori']); ?>" class="ilena-product-collection-link" aria-label="Lihat koleksi <?= esc($produk['kategori'], 'attr'); ?>">Lihat koleksi <span aria-hidden="true">↗</span></a>
+                    </div>
                 </div>
 
-                <div class="d-flex gap-2 mb-3">
+                <div class="d-flex gap-2 mb-3 ilena-product-price">
                     <p class="harga">Rp
                         <?= number_format($produk['harga'] * (100 - $produk['diskon']) / 100, 0, ',', '.'); ?></p>
                     <?php if ($produk['diskon'] > 0) { ?>
                     <p class="harga-diskon">Rp <?= number_format($produk['harga'], 0, ',', '.') ?></p>
                     <?php } ?>
                 </div>
-                <p><?= $produk['deskripsi']['deskripsi'] ?></p>
+                <p class="ilena-product-description"><?= esc($produk['deskripsi']['deskripsi'] ?? ''); ?></p>
                 <div class="gap-2 show-flex-ke-hide">
                     <p class="detail-mini-label">Pilih warna / varian</p>
                     <div class="container-varian mb-3 d-flex">
                         <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
                         <input id="varian<?= $ind_v ?>"
+                            <?= $ind_v === 0 ? 'checked' : '' ?>
                             value="<?= esc($v['urutan_gambar'], 'attr') ?>-<?= esc($v['nama'], 'attr') ?>-<?= $ind_v ?>"
                             data-slot="<?= esc($v['urutan_gambar'], 'attr') ?>"
                             data-name="<?= esc($v['nama'], 'attr') ?>"
                             data-index="<?= $ind_v ?>"
                             data-stok="<?= (int)($v['stok'] ?? 0) ?>"
+                            aria-label="Warna <?= esc($v['nama'], 'attr') ?>"
                             type="radio"
                             name="varian">
-                        <label for="varian<?= $ind_v ?>"><span
+                        <label for="varian<?= $ind_v ?>" title="<?= esc($v['nama'], 'attr') ?>"><span
                                 style="background-color: <?= $v['kode'] ?>"></span></label>
                         <?php } ?>
                     </div>
@@ -274,9 +237,9 @@ $productCoverUrl = function (array $product): string {
                 <?php } else { ?>
                 <div class="d-flex gap-2 align-items-stretch">
                     <div class="number-control">
-                        <div class="number-left" onclick="kurangJumlah()"></div>
-                        <input type="number" name="jumlah" class="number-quantity" value="1">
-                        <div class="number-right" onclick="tambahJumlah()"></div>
+                        <button type="button" class="number-left" onclick="kurangJumlah()" aria-label="Kurangi jumlah"></button>
+                        <input type="number" name="jumlah" class="number-quantity" value="1" min="1" aria-label="Jumlah pembelian">
+                        <button type="button" class="number-right" onclick="tambahJumlah()" aria-label="Tambah jumlah"></button>
                     </div>
                     <form id="btn-keranjang" method="post"
                         action="<?= $produk['varian'][0]['stok'] > 0 ? '/addcart/' . $produk['id'] . '/' . rawurlencode($produk['varian'][0]['nama']) . '/1' : ''; ?>">
@@ -404,8 +367,8 @@ $productCoverUrl = function (array $product): string {
                     </div>
                 </div>
             </div>
-            <div class="limapuluh-ke-seratus">
-                <div>
+            <div class="limapuluh-ke-seratus ilena-product-gallery">
+                <div class="ilena-product-gallery__stage">
                     <figure class="img-detail-prev d-none"
                         data-zoom-src="<?= $barangImgUrl('3000', $gambarAwalDetail) ?>"
                         style="background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;">
@@ -420,13 +383,13 @@ $productCoverUrl = function (array $product): string {
                         <?= $produk['varian'][0]['stok'] <= 0 ? 'style="filter: grayscale(90%)"' : ''; ?>>
                         <?php foreach ($filterExistingSlots($produk['varian'][0]['urutan_gambar']) as $indx => $p_v) { ?>
                         <input <?= $indx == 0 ? 'checked' : '' ?> id="gambar<?= $indx ?>" type="radio" name="gambar"
-                            value="<?= $p_v ?>">
-                        <label class="img-detail-select" for="gambar<?= $indx ?>"><img
+                            aria-label="Foto produk <?= $indx + 1 ?>" value="<?= $p_v ?>">
+                        <label class="img-detail-select" for="gambar<?= $indx ?>" title="Foto produk <?= $indx + 1 ?>"><img
                                 src="<?= $barangImgUrl('1000', $p_v) ?>" alt="<?= esc($produk['nama'], 'attr') ?>" loading="lazy" decoding="async"></label>
                         <?php } ?>
                         <?php if ($punyaGambarHoverDetail) { ?>
-                        <input id="gambar-hover" type="radio" name="gambar" value="hover">
-                        <label class="img-detail-select" for="gambar-hover"><img
+                        <input id="gambar-hover" type="radio" name="gambar" aria-label="Lihat detail permukaan" value="hover">
+                        <label class="img-detail-select" for="gambar-hover" title="Lihat detail permukaan"><img
                                 src="<?= $hoverImgUrl() ?>" alt="<?= esc($produk['nama'], 'attr') ?>" loading="lazy" decoding="async"></label>
                         <?php } ?>
                         <script>
@@ -458,14 +421,16 @@ $productCoverUrl = function (array $product): string {
                     <p class="detail-mini-label w-100">Pilih warna / varian</p>
                     <div class="container-varian mb-3 d-flex">
                         <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
-                        <input id="varian<?= $ind_v ?>"
+                        <input id="varian<?= $ind_v ?>-mobile"
+                            <?= $ind_v === 0 ? 'checked' : '' ?>
                             value="<?= esc($v['urutan_gambar'], 'attr') ?>-<?= esc($v['nama'], 'attr') ?>-<?= $ind_v ?>"
                             data-slot="<?= esc($v['urutan_gambar'], 'attr') ?>"
                             data-name="<?= esc($v['nama'], 'attr') ?>"
                             data-index="<?= $ind_v ?>"
                             data-stok="<?= (int)($v['stok'] ?? 0) ?>"
-                            type="radio" name="varian">
-                        <label for="varian<?= $ind_v ?>"><span
+                            aria-label="Warna <?= esc($v['nama'], 'attr') ?>"
+                            type="radio" name="varian-mobile">
+                        <label for="varian<?= $ind_v ?>-mobile" title="<?= esc($v['nama'], 'attr') ?>"><span
                                 style="background-color: <?= $v['kode'] ?>"></span></label>
                         <?php } ?>
                     </div>
@@ -482,8 +447,8 @@ $productCoverUrl = function (array $product): string {
         </div>
         <?php if (count($produkSejenis) > 0) { ?>
         <hr class="mt-5">
-        <p class="text-center">Anda mungkin juga suka</p>
-        <div class="container-card1">
+        <p class="text-center ilena-product-related-title">Anda mungkin juga suka</p>
+        <div class="container-card1 ilena-product-related-grid">
             <?php foreach ($produkSejenis as $ind_p => $p) { ?>
             <?php $relatedVersion = !empty($p['tgl_update']) ? (int) strtotime((string) $p['tgl_update']) : time(); ?>
             <div class="card1">
@@ -569,7 +534,7 @@ $productCoverUrl = function (array $product): string {
 <script>
 const figureElm = document.querySelector('figure');
 const btnKeranjangElm = document.getElementById('btn-keranjang');
-const radioVarianElm = document.querySelectorAll('input[name="varian"]');
+const radioVarianElm = document.querySelectorAll('input[name="varian"], input[name="varian-mobile"]');
 const varian = JSON.parse('<?= json_encode($produk['varian']) ?>');
 const teksInfoHabisElm = document.getElementById('info-habis');
 const containerMarketElm = document.getElementById('container-market');
@@ -592,6 +557,9 @@ function detailZoomUrl(slot) {
 }
 radioVarianElm.forEach(elm => {
     elm.addEventListener('change', (e) => {
+        radioVarianElm.forEach(peer => {
+            if (peer !== e.target && peer.dataset.index === e.target.dataset.index) peer.checked = true;
+        });
         const slotValue = e.target.dataset.slot || e.target.value.split("-")[0];
         const varianName = e.target.dataset.name || e.target.value.split("-").slice(1, -1).join("-") || e.target.value.split("-")[1] || '';
         const varianFullSelected = varian[Number(e.target.dataset.index || e.target.value.split("-")[2] || 0)] || { stok: e.target.dataset.stok || 0, urutan_gambar: slotValue, nama: varianName };
@@ -642,6 +610,7 @@ radioVarianElm.forEach(elm => {
             }
         }
         varianSelected = varianName;
+        syncQuantitySelection();
 
         const radioImgElm = document.querySelectorAll('input[name="gambar"]');
         radioImgElm.forEach(elm1 => {
@@ -667,6 +636,23 @@ radioVarianElm.forEach(elm => {
     })
 });
 const jumlahBarangElm = document.querySelector('input[name="jumlah"]');
+function syncQuantitySelection() {
+    if (!jumlahBarangElm) return;
+    const availableStock = Number(stokByVarianName[varianSelected] || 0);
+    const maxQuantity = availableStock > 0 ? availableStock : 1;
+    jumlahBarangElm.max = String(maxQuantity);
+    const requestedQuantity = Math.floor(Number(jumlahBarangElm.value) || 1);
+    const safeQuantity = Math.min(maxQuantity, Math.max(1, requestedQuantity));
+    jumlahBarangElm.value = String(safeQuantity);
+    jumlahSelected = String(safeQuantity);
+    if (btnKeranjangElm && !isStokHabis) {
+        btnKeranjangElm.action = encodedCartUrl("<?= $produk['id'] ?>", varianSelected, safeQuantity);
+    }
+}
+if (jumlahBarangElm) {
+    jumlahBarangElm.addEventListener('change', syncQuantitySelection);
+    syncQuantitySelection();
+}
 
 function kurangJumlah() {
     if (!isStokHabis) {
