@@ -4973,3 +4973,133 @@ body.ilena-storefront .card1 .card1-btn-img:focus-visible { border-color: #8b684
 @media (prefers-reduced-motion: reduce) {
     body.ilena-storefront :is(.btn-default, .btn-default-hitam, .btn-default-merah, .btn-default-abu, .btn-lonjong, .btn-lonjong-putih, .btn-lonjong-putih-outline, .btn-default-putih, .btn, .btn-chip, .btn-teks-aja, .card1-btn-img) { transition: none; }
 }
+
+/* Footer refresh: tighter desktop rhythm, subtle warm accent, unchanged link destinations. */
+body.ilena-storefront .ilena-store-footer {
+    position: relative;
+    margin-top: 42px;
+    padding-inline: clamp(24px, 5vw, 76px);
+    background: linear-gradient(112deg, #25231f 0%, #2b2823 55%, #25231f 100%) !important;
+}
+body.ilena-storefront .ilena-store-footer::before {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 5%, rgba(190, 157, 121, .7) 50%, transparent 95%);
+    content: "";
+}
+body.ilena-storefront .ilena-store-footer__main {
+    grid-template-columns: minmax(160px, 1.15fr) minmax(100px, .72fr) minmax(125px, .9fr) minmax(105px, .72fr) minmax(205px, 1.2fr);
+    gap: clamp(18px, 2.5vw, 34px);
+    max-width: 1280px;
+    padding-block: 34px 27px;
+}
+body.ilena-storefront .ilena-store-footer__brand img { width: 126px; height: 20px; }
+body.ilena-storefront .ilena-store-footer__brand p {
+    max-width: 205px;
+    margin-top: 10px;
+    color: rgba(245, 241, 235, .62);
+    font-size: 11px;
+    line-height: 1.65;
+}
+body.ilena-storefront .ilena-store-footer__column { gap: 7px; }
+body.ilena-storefront .ilena-store-footer__column h2 {
+    margin-bottom: 5px;
+    color: #d4b99c;
+    font-size: 9px;
+    font-weight: 650;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+body.ilena-storefront .ilena-store-footer__column a,
+body.ilena-storefront .ilena-store-footer__bottom a,
+body.ilena-storefront .ilena-store-footer__sister a,
+body.ilena-storefront .ilena-store-footer__midtrans a {
+    color: rgba(245, 241, 235, .68);
+    font-size: 10px;
+    line-height: 1.55;
+}
+body.ilena-storefront .ilena-store-footer a:hover { color: #e0c6a8; text-decoration-color: currentColor; }
+body.ilena-storefront .ilena-store-footer__marketplaces { gap: 5px 11px; }
+body.ilena-storefront .ilena-store-footer__payments { gap: 6px; margin-top: 2px; }
+body.ilena-storefront .ilena-store-footer__payments img {
+    max-width: 48px;
+    height: 23px;
+    padding: 3px 5px;
+    border-radius: 2px;
+    background: rgba(255,255,255,.96);
+}
+body.ilena-storefront .ilena-store-footer__payments img.ilena-store-footer__payment--white-mark { background: transparent; }
+body.ilena-storefront .ilena-store-footer__midtrans { color: rgba(245, 241, 235, .56); font-size: 9px; }
+body.ilena-storefront .ilena-store-footer__sister,
+body.ilena-storefront .ilena-store-footer__bottom {
+    max-width: 1280px;
+    border-top-color: rgba(255,255,255,.09);
+    padding-block: 11px;
+    color: rgba(245, 241, 235, .52);
+    font-size: 9px;
+}
+body.ilena-storefront .ilena-store-footer__sister { gap: 10px; }
+body.ilena-storefront .ilena-store-footer__sister-brand { min-height: 34px; padding: 2px 0; }
+body.ilena-storefront .ilena-store-footer__sister-brand img { width: 104px; height: 22px; }
+body.ilena-storefront .ilena-store-footer__bottom nav { gap: 8px 16px; }
+body.ilena-storefront .ilena-context-footer {
+    border-top-color: rgba(255,255,255,.09);
+    background: #27241f !important;
+    font-size: 10px;
+}
+body.ilena-storefront .ilena-context-footer a { color: rgba(245,241,235,.72); }
+body.ilena-storefront .ilena-context-footer a:hover { color: #e0c6a8; }
+@media (max-width: 1100px) {
+    body.ilena-storefront .ilena-store-footer__main { gap: 20px 24px; padding-block: 28px 22px; }
+    body.ilena-storefront .ilena-store-footer__brand { grid-column: 1 / -1; }
+}
+@media (max-width: 768px) {
+    body.ilena-storefront .ilena-store-footer { margin-top: 30px; padding-inline: 20px; }
+    body.ilena-storefront .ilena-store-footer__main { gap: 22px 16px; padding-block: 25px 20px; }
+    body.ilena-storefront .ilena-store-footer__brand img { width: 118px; height: 19px; }
+    body.ilena-storefront .ilena-store-footer__column h2 { font-size: 9px; }
+    body.ilena-storefront .ilena-store-footer__column a { font-size: 10px; }
+    body.ilena-storefront .ilena-store-footer__sister,
+    body.ilena-storefront .ilena-store-footer__bottom { padding-block: 10px; }
+}
+
+/* Warm fade for long editorial copy and more breathing room in category collections. */
+body.ilena-storefront .container-meta {
+    position: relative;
+    color: #554e46;
+    line-height: 1.8;
+}
+body.ilena-storefront .container-meta .overlay-meta {
+    z-index: 2;
+    height: 100%;
+    background: linear-gradient(0deg, rgba(251, 249, 246, .98) 0%, rgba(251, 249, 246, .88) 24%, rgba(251, 249, 246, .36) 68%, rgba(251, 249, 246, 0) 100%);
+    pointer-events: none;
+}
+body.ilena-storefront .container-meta.show .overlay-meta { display: none; }
+@media (min-width: 601px) {
+    body.ilena-storefront .child-list-nav > .container > div:first-child {
+        column-gap: clamp(24px, 3vw, 42px);
+        row-gap: 17px !important;
+    }
+    body.ilena-storefront .child-list-nav > .container > div:first-child > div > .ms-1 { margin: 0 !important; }
+    body.ilena-storefront .child-list-nav > .container > div:first-child > div > p { margin-bottom: 9px !important; }
+    body.ilena-storefront .child-list-nav > .container > div:first-child .ms-2 {
+        display: grid;
+        gap: 5px;
+        margin: 5px 0 0 !important;
+        padding-left: 10px;
+        border-left: 1px solid #eee8e1;
+    }
+    body.ilena-storefront .child-list-nav > .container > div:first-child a {
+        padding: 6px 8px;
+        border-bottom: 1px solid rgba(233, 227, 220, .7);
+        line-height: 1.5;
+    }
+    body.ilena-storefront .child-list-nav > .container > div:first-child a:hover,
+    body.ilena-storefront .child-list-nav > .container > div:first-child a:focus-visible {
+        padding-left: 11px;
+        border-bottom-color: #cbb8a4;
+        background: #faf8f5;
+    }
+}
