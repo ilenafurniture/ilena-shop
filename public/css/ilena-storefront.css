@@ -5103,3 +5103,111 @@ body.ilena-storefront .container-meta.show .overlay-meta { display: none; }
         background: #faf8f5;
     }
 }
+
+/* Header and delivery note: a cleaner hierarchy with comfortable, intentional spacing. */
+body.ilena-storefront .ilena-topbar {
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    background: linear-gradient(105deg, #24221e 0%, #302b25 54%, #24221e 100%) !important;
+    box-shadow: 0 4px 14px rgba(25,21,17,.08);
+}
+body.ilena-storefront .ilena-topbar__container {
+    max-width: 1440px;
+    padding: 10px clamp(20px, 3vw, 42px) !important;
+}
+body.ilena-storefront .ilena-topbar__inner { min-height: 54px; gap: 24px; }
+body.ilena-storefront .ilena-topbar__search-slot { flex: 1 1 0; min-width: 200px; }
+body.ilena-storefront .ilena-topbar__search-slot .ilena-global-search { max-width: 320px; }
+body.ilena-storefront .ilena-topbar .input {
+    min-height: 40px;
+    border-color: rgba(255,255,255,.16);
+    border-radius: 3px;
+    padding-inline: 14px;
+    background: rgba(255,255,255,.075);
+    font-size: 12px;
+}
+body.ilena-storefront .navbar-brand-pair { flex: 0 1 33.333%; gap: clamp(16px, 2vw, 28px); }
+body.ilena-storefront .navbar-brand-ilena img { max-width: 118px; height: 24px; }
+body.ilena-storefront .navbar-brand-lunarea img { width: 116px; height: 24px; }
+body.ilena-storefront .navbar-brand-divider { height: 21px; background: rgba(255,255,255,.25); }
+body.ilena-storefront .ilena-topbar__actions { flex: 1 1 0; min-width: 200px; gap: 7px; }
+body.ilena-storefront .ilena-topbar__actions .ilena-header-action {
+    min-width: 42px;
+    min-height: 42px;
+    border: 1px solid rgba(255,255,255,.09);
+    color: rgba(255,255,255,.86);
+    transition: border-color .18s ease, background .18s ease, color .18s ease;
+}
+body.ilena-storefront .ilena-topbar__actions .ilena-header-action:hover,
+body.ilena-storefront .ilena-topbar__actions .ilena-header-action:focus-visible {
+    border-color: rgba(212,185,156,.45);
+    background: rgba(212,185,156,.1);
+    color: #e2c6a7;
+}
+body.ilena-storefront .ilena-shipping-bar {
+    position: relative;
+    z-index: 100;
+    border-bottom: 1px solid #e8e0d7;
+    background: #f4f0ea;
+    color: #544b41;
+}
+body.ilena-storefront .ilena-shipping-bar__inner {
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding-block: 5px;
+    text-align: center;
+}
+body.ilena-storefront .ilena-shipping-bar__inner i { color: #8b684c; font-size: 16px; }
+body.ilena-storefront .ilena-shipping-bar__inner p { color: #645a50; font-size: 10px; line-height: 1.4; letter-spacing: .025em; }
+body.ilena-storefront .ilena-shipping-bar__inner strong { color: #3b342d; font-weight: 700; }
+
+/* Footer: breathe between information groups without making the page feel oversized. */
+body.ilena-storefront .ilena-store-footer {
+    margin-top: 38px;
+    padding-inline: clamp(28px, 5vw, 80px);
+}
+body.ilena-storefront .ilena-store-footer__main {
+    grid-template-columns: minmax(170px, 1.15fr) repeat(3, minmax(115px, .78fr)) minmax(210px, 1.2fr);
+    gap: clamp(28px, 3.2vw, 46px);
+    max-width: 1320px;
+    padding-block: 44px 34px;
+}
+body.ilena-storefront .ilena-store-footer__brand p { margin-top: 14px; line-height: 1.75; }
+body.ilena-storefront .ilena-store-footer__brand p span {
+    color: #d4b99c;
+    font-family: var(--ilena-font-display);
+    font-size: 14px;
+    font-style: italic;
+    white-space: nowrap;
+}
+body.ilena-storefront .ilena-store-footer__column { gap: 11px; }
+body.ilena-storefront .ilena-store-footer__column h2 { margin-bottom: 7px; }
+body.ilena-storefront .ilena-store-footer__column a,
+body.ilena-storefront .ilena-store-footer__midtrans { line-height: 1.75; }
+body.ilena-storefront .ilena-store-footer__sister,
+body.ilena-storefront .ilena-store-footer__bottom {
+    max-width: 1320px;
+    gap: 14px 28px;
+    padding-block: 16px;
+}
+body.ilena-storefront .ilena-store-footer__bottom nav { gap: 10px 22px; }
+@media (max-width: 1100px) {
+    body.ilena-storefront .ilena-store-footer__main { gap: 28px 32px; }
+}
+@media (max-width: 768px) {
+    body.ilena-storefront .ilena-store-footer { padding-inline: 22px; }
+    body.ilena-storefront .ilena-store-footer__main { gap: 24px 18px; padding-block: 30px 26px; }
+    body.ilena-storefront .ilena-store-footer__column { gap: 9px; }
+    body.ilena-storefront .ilena-store-footer__sister,
+    body.ilena-storefront .ilena-store-footer__bottom { gap: 12px 18px; padding-block: 13px; }
+}
+@media (max-width: 700px) {
+    body.ilena-storefront .ilena-topbar__inner { gap: 0; }
+    body.ilena-storefront .ilena-shipping-bar__inner { min-height: 34px; gap: 7px; padding-inline: 14px; }
+    body.ilena-storefront .ilena-shipping-bar__inner p { font-size: 9px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront .ilena-topbar__actions .ilena-header-action { transition: none; }
+}

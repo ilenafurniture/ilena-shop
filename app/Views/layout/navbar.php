@@ -1,10 +1,10 @@
 <?php
 $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $headerMode : 'full';
 ?>
-<nav class="nav show-block-ke-hide ilena-topbar" style="background-color: black;">
-    <div class="container py-3">
-        <div class="d-flex w-100 justify-content-between align-items-center">
-            <div style="width: calc(100% / 3)">
+<nav class="nav show-block-ke-hide ilena-topbar">
+    <div class="container py-3 ilena-topbar__container">
+        <div class="d-flex w-100 justify-content-between align-items-center ilena-topbar__inner">
+            <div class="ilena-topbar__search-slot" style="width: calc(100% / 3)">
                 <form action="/find" method="get" class="ilena-global-search" data-global-search role="search">
                     <label class="ilena-sr-only" for="global-search-desktop">Cari produk</label>
                     <input id="global-search-desktop" placeholder="Cari produk atau koleksi" class="input" name="q"
@@ -21,7 +21,7 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
                     <img src="<?= base_url('img/logolunareanavbar.webp'); ?>" alt="Lunarea Furniture" width="150" height="30" decoding="async">
                 </a>
             </div>
-            <div style="width: calc(100% / 3)" class="d-flex justify-content-end">
+            <div style="width: calc(100% / 3)" class="d-flex justify-content-end ilena-topbar__actions">
                 <?php if (session()->get('isLogin') && in_array((string) session()->get('role'), ['1', '5'], true)) { ?>
                     <?php if ((string) session()->get('role') === '1') { ?>
                         <a href="/admin/product" class="btn d-flex align-items-center">
@@ -60,8 +60,11 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
     }
 </style>
 <?php if ($headerMode === 'full'): ?>
-<div style="background-color: #474747;" class="py-1 show-block-ke-hide">
-    <p class="m-0 text-center" style="color: white;">Lebih hemat dengan Free Ongkir hingga 100%</p>
+<div class="ilena-shipping-bar show-block-ke-hide" role="note" aria-label="Promo pengiriman">
+    <div class="container ilena-shipping-bar__inner">
+        <i class="material-icons" aria-hidden="true">local_shipping</i>
+        <p class="m-0">Lebih hemat dengan <strong>Free Ongkir hingga 100%</strong></p>
+    </div>
 </div>
 <style>
     #container-react {

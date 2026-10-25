@@ -34,7 +34,7 @@ $paymentLogos = [
     <div class="ilena-store-footer__main">
         <section class="ilena-store-footer__brand" aria-label="Ilena Furniture">
             <a href="/" aria-label="Ilena Furniture — Beranda"><img src="<?= base_url('img/LogoIlenaWhite.png'); ?>" width="140" height="22" alt="Ilena Furniture"></a>
-            <p>Furniture untuk ruang yang terasa lebih personal.</p>
+            <p>Modern &amp; Stylish<br>Furniture <span>True to you</span></p>
         </section>
         <nav class="ilena-store-footer__column" aria-label="Jelajahi Ilena">
             <h2>Jelajahi</h2>
