@@ -1196,6 +1196,146 @@ body.ilena-storefront .ilena-store-footer__mobile-clear {
     }
 }
 
+/* Compact account entry is scoped to login/register; verify and FAQ stay unchanged. */
+body.ilena-storefront .ilena-auth-page.ilena-auth-page--compact {
+    min-height: min(76svh, 720px);
+    padding: 48px 24px 64px;
+    display: grid;
+    align-content: center;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+body.ilena-storefront .ilena-auth-page.ilena-auth-page--compact .ilena-auth-page__form {
+    max-width: 400px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+body.ilena-storefront .ilena-auth-page.ilena-auth-page--compact .ilena-auth-page__eyebrow {
+    margin: 0 0 6px;
+    color: #726b64;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: .01em;
+    text-transform: none;
+}
+
+body.ilena-storefront .ilena-auth-page.ilena-auth-page--compact .ilena-auth-page__title {
+    margin: 0 0 24px;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -.025em;
+    text-wrap: initial;
+}
+
+body.ilena-storefront .ilena-auth-page.ilena-auth-page--compact .form-label {
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+body.ilena-storefront .ilena-auth-page.ilena-auth-page--compact .form-control {
+    min-height: 44px;
+    padding: 10px 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    background-color: #fff;
+    border-radius: 3px;
+}
+
+body.ilena-storefront .ilena-auth-page.ilena-auth-page--compact .form-control::placeholder {
+    color: #807971;
+    opacity: 1;
+}
+
+body.ilena-storefront .ilena-auth-page.ilena-auth-page--compact .ilena-auth-page__password-toggle {
+    min-width: 44px;
+    justify-content: center;
+    padding: 0 10px;
+    border-radius: 0 3px 3px 0;
+    background: #fff;
+    color: #625b54;
+    cursor: pointer;
+}
+
+body.ilena-storefront .ilena-auth-page.ilena-auth-page--compact .ilena-auth-page__password-toggle .material-icons {
+    font-size: 18px;
+    pointer-events: none;
+}
+
+body.ilena-storefront .ilena-auth-page.ilena-auth-page--compact .ilena-auth-page__password-toggle:hover {
+    background: #f5f1ec;
+}
+
+body.ilena-storefront .ilena-auth-page.ilena-auth-page--compact .ilena-auth-page__password-toggle[aria-pressed="true"] {
+    color: #8e3935;
+}
+
+body.ilena-storefront .ilena-auth-page.ilena-auth-page--compact button[type="submit"] {
+    width: 100%;
+    min-height: 44px;
+    margin-top: 4px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    border-radius: 3px;
+}
+
+body.ilena-storefront .ilena-auth-page.ilena-auth-page--compact .agreement-box {
+    gap: 10px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+body.ilena-storefront .ilena-auth-page.ilena-auth-page--compact .agreement-box input {
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    margin-top: 3px;
+}
+
+body.ilena-storefront .ilena-auth-page.ilena-auth-page--compact .agreement-box label {
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+body.ilena-storefront .ilena-auth-page.ilena-auth-page--compact .ilena-auth-page__switch {
+    margin: 20px 0 0;
+    color: #726b64;
+    font-size: 13px;
+    text-align: center;
+}
+
+body.ilena-storefront .ilena-auth-page.ilena-auth-page--compact a:not(.btn) {
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+body.ilena-storefront .ilena-auth-page.ilena-auth-page--compact .invalid-feedback,
+body.ilena-storefront .ilena-auth-page.ilena-auth-page--compact .pemberitahuan {
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+@media (max-width: 700px) {
+    body.ilena-storefront .ilena-auth-page.ilena-auth-page--compact {
+        min-height: auto;
+        padding: 36px 24px 48px;
+    }
+
+    body.ilena-storefront .ilena-auth-page.ilena-auth-page--compact .form-control {
+        font-size: 16px;
+    }
+}
+
 /* Account entry and help pages: editorial spacing, no enclosing card panels. */
 body.ilena-storefront .ilena-auth-page {
     min-height: min(76svh, 760px);

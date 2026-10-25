@@ -55,11 +55,10 @@
 }
 </style>
 
-<div class="container d-flex justify-content-center align-items-center ilena-auth-page ilena-auth-page--register">
-    <div class="konten d-flex justify-content-center align-items-center">
-        <div class="card p-4 limapuluh-ke-seratus ilena-auth-page__form">
+<div class="container ilena-auth-page ilena-auth-page--register ilena-auth-page--compact">
+        <div class="ilena-auth-page__form">
             <p class="ilena-auth-page__eyebrow">Mulai perjalanan Anda</p>
-            <h1 class="mb-3 teks-sedang">Buat akun Ilena</h1>
+            <h1 class="ilena-auth-page__title">Buat akun Ilena</h1>
 
             <?php if ($val['msg']) { ?>
             <div class="pemberitahuan my-1" role="alert">
@@ -67,7 +66,7 @@
             </div>
             <?php } ?>
 
-            <form id="registerForm" action="/actionregister" method="post" autocomplete="off">
+            <form id="registerForm" action="/actionregister" method="post">
                 <?= csrf_field(); ?>
                 <input type="hidden" name="auth_form_nonce" value="<?= esc($authFormNonce ?? '', 'attr'); ?>">
                 <!-- Honeypot (TANPA mengganggu backend). Jika bot isi ini, submit akan diblok di JS -->
@@ -84,37 +83,36 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="fullname" class="form-label">Nama Lengkap</label>
-                    <input id="fullname" name="nama" type="text" class="form-control <?= ($val['val_nama']) ? "is-invalid" : ""; ?>"
-                        placeholder="Masukkan Nama Lengkap" value="<?= old('nama'); ?>">
+                    <label for="fullname" class="form-label">Nama lengkap</label>
+                    <input id="fullname" name="nama" type="text" autocomplete="name" class="form-control <?= ($val['val_nama']) ? "is-invalid" : ""; ?>"
+                        placeholder="Masukkan nama lengkap" value="<?= old('nama'); ?>">
                     <div class="invalid-feedback">Mohon masukkan nama lengkap.</div>
                 </div>
 
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input id="email" name="email" type="email"
+                    <input id="email" name="email" type="email" autocomplete="email"
                         class="form-control <?= ($val['val_email']) ? "is-invalid" : ""; ?>"
-                        placeholder="Masukkan Email" value="<?= old('email'); ?>">
+                        placeholder="Masukkan email" value="<?= old('email'); ?>">
                     <div class="invalid-feedback">Email tidak valid atau telah terdaftar.</div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="nohp" class="form-label">Nomor Telepon</label>
-                    <input id="nohp" name="nohp" type="text" class="form-control <?= ($val['val_nohp']) ? "is-invalid" : ""; ?>"
-                        placeholder="Masukkan Nomor Telepon" value="<?= old('nohp'); ?>">
+                    <label for="nohp" class="form-label">Nomor telepon</label>
+                    <input id="nohp" name="nohp" type="tel" autocomplete="tel" class="form-control <?= ($val['val_nohp']) ? "is-invalid" : ""; ?>"
+                        placeholder="Masukkan nomor telepon" value="<?= old('nohp'); ?>">
                     <div class="invalid-feedback">Nomor telepon tidak valid atau telah terdaftar.</div>
                 </div>
 
-                <label for="sandi" class="form-label">Kata Sandi</label>
+                <label for="password" class="form-label">Kata sandi</label>
                 <div class="input-group mb-3 has-validation">
-                    <input id="password" name="sandi" type="password"
-                        class="form-control <?= ($val['val_sandi']) ? "is-invalid" : ""; ?>" id="password"
-                        placeholder="Masukkan Kata Sandi">
-                    <span class="input-group-text d-flex justify-content-center align-items-center"
-                        onclick="togglePassword(event)">
-                        <i class="material-icons"
-                            style="cursor: default; -webkit-user-select: none; -ms-user-select: none; user-select: none;">remove_red_eye</i>
-                    </span>
+                    <input id="password" name="sandi" type="password" autocomplete="new-password"
+                        class="form-control <?= ($val['val_sandi']) ? "is-invalid" : ""; ?>"
+                        placeholder="Buat kata sandi">
+                    <button type="button" class="input-group-text ilena-auth-page__password-toggle"
+                        aria-label="Tampilkan kata sandi" aria-controls="password" aria-pressed="false" onclick="togglePassword(event)">
+                        <i class="material-icons" aria-hidden="true">visibility</i>
+                    </button>
                     <div class="invalid-feedback">Mohon masukkan kata sandi.</div>
                 </div>
 
@@ -134,30 +132,27 @@
 
                 <?= view('partials/auth_recaptcha', [], ['saveData' => false]); ?>
                 <div class="mb-3 d-flex w-100 justify-content-center">
-                    <button id="btnSubmit" type="submit" class="btn btn-default btn-block" disabled>Register</button>
+                    <button id="btnSubmit" type="submit" class="btn btn-default btn-block" disabled>Daftar</button>
                 </div>
                 <div id="ab-msg" aria-live="polite"></div>
 
                 <div>
-                    <p class="text-center">Sudah punya akun?
-                        <a href="/login" class="btn-teks-aja" style="display: inline;">Masuk sekarang</a>
+                    <p class="ilena-auth-page__switch">Sudah punya akun?
+                        <a href="/login">Masuk sekarang</a>
                     </p>
                 </div>
             </form>
         </div>
-    </div>
 </div>
 
 <script>
 function togglePassword(e) {
     var passwordField = document.querySelector('input[name="sandi"]');
-    if (passwordField.type === "password") {
-        passwordField.type = "text";
-        e.target.style.color = 'var(--merah)'
-    } else {
-        passwordField.type = "password";
-        e.target.style.color = 'black'
-    }
+    var show = passwordField.type === 'password';
+    passwordField.type = show ? 'text' : 'password';
+    e.currentTarget.setAttribute('aria-pressed', String(show));
+    e.currentTarget.setAttribute('aria-label', show ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi');
+    e.currentTarget.querySelector('i').textContent = show ? 'visibility_off' : 'visibility';
 }
 (function() {
     const form = document.getElementById('registerForm');
