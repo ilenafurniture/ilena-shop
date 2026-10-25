@@ -539,9 +539,9 @@ if (isset($_GET['ruang'])) {
             <!-- <div style="position: absolute;" class="w-100"> -->
             <header class="ilena-catalog-intro">
                 <div>
-                    <p class="ilena-catalog-intro__eyebrow">ILENA <span>/</span> FURNITURE</p>
+                    <p class="ilena-catalog-intro__eyebrow"><?= $isSmartSearch ? 'PENCARIAN KATALOG' : 'ILENA <span>/</span> FURNITURE'; ?></p>
                     <h1><?= esc($isSmartSearch ? 'Temukan furniture pilihan' : ($title ?? 'Produk Kami')); ?></h1>
-                    <p class="ilena-catalog-intro__description">Jelajahi pilihan furniture untuk melengkapi ruang dengan karakter dan kenyamanan.</p>
+                    <p class="ilena-catalog-intro__description"><?= $isSmartSearch ? 'Kami mencarikan furniture yang paling mendekati kebutuhan dan gaya ruang Anda.' : 'Jelajahi pilihan furniture untuk melengkapi ruang dengan karakter dan kenyamanan.'; ?></p>
                 </div>
                 <div class="ilena-catalog-intro__aside">
                     <?php if (session()->get('role') == '1') { ?>
@@ -581,18 +581,23 @@ if (isset($_GET['ruang'])) {
                     </nav>
                 </div>
             </div>
-            <?php if (isset($find)) { ?>
-            <p>Hasil pencarian untuk “<?= esc($find); ?>”</p>
+            <?php if ($isSmartSearch) { ?>
+            <div class="ilena-smart-search-summary" role="status" aria-live="polite">
+                <div><span class="ilena-smart-search-summary__label">Hasil pencarian</span><h2>“<?= esc($find); ?>”</h2></div>
+                <p><strong><?= number_format($catalogTotalResults, 0, ',', '.'); ?></strong> produk ditemukan</p>
+            </div>
             <?php if (!empty($smartFilters)) { ?>
-            <div class="ilena-smart-search-chips" aria-label="Filter pencarian otomatis">
+            <div class="ilena-smart-search-chips" aria-label="Kriteria yang dikenali dari pencarian">
+                <span class="ilena-smart-search-chips__label">Cocok dengan</span>
                 <?php foreach ($smartFilters as $smartFilter) { ?><span class="badge rounded-pill text-bg-light"><?= esc($smartFilter); ?></span><?php } ?>
             </div>
             <?php } ?>
             <?php if (empty($produk)) { ?>
             <section class="ilena-smart-search-empty" aria-live="polite">
                 <h2>Belum menemukan produk yang cocok</h2>
-                <p>Coba kata yang lebih umum, periksa ejaan, atau pilih salah satu rekomendasi berikut.</p>
+                <p>Coba kata kunci yang lebih umum atau pilih salah satu pencarian yang mendekati kebutuhan Anda.</p>
                 <?php if (!empty($smartSuggestions)) { ?>
+                <p class="ilena-smart-search-empty__label">Pencarian yang mungkin Anda maksud</p>
                 <div class="ilena-smart-search-chips">
                     <?php foreach ($smartSuggestions as $suggestion) { ?>
                     <a href="<?= esc('/find?' . http_build_query(['q' => $suggestion['nama'] ?? '']), 'attr'); ?>"><?= esc($suggestion['nama'] ?? 'Lihat produk'); ?></a>

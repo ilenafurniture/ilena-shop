@@ -2,302 +2,107 @@
 <?= $this->section("content"); ?>
 
 <style>
-.iklan-section {
-    padding: 64px 16px;
+.ilena-iklan-page {
+    --iklan-ink: #25221f; --iklan-muted: #716a63; --iklan-line: #e5ded6; --iklan-paper: #f5f2ed; --iklan-accent: #8b684c;
+    color: var(--iklan-ink); overflow: clip; background: #fff;
 }
-.iklan-container {
-    max-width: 1140px;
-    margin: 0 auto;
+.ilena-iklan-page :where(*, *::before, *::after) { box-sizing: border-box; }
+.ilena-iklan-page .iklan-section { padding: clamp(64px, 8vw, 112px) clamp(18px, 4vw, 56px); }
+.ilena-iklan-page .iklan-container { width: min(100%, 1320px); margin-inline: auto; }
+.ilena-iklan-page .iklan-hero {
+    position: relative; display: flex; min-height: min(82svh, 850px); align-items: center; padding: clamp(52px, 8vw, 110px) clamp(20px, 7vw, 100px);
+    overflow: hidden; color: #fff; background: #38322d;
 }
-.iklan-hero {
-    position: relative;
-    min-height: 90svh;
-    display: flex;
-    align-items: center;
-    color: white;
-    overflow: hidden;
+.ilena-iklan-page .iklan-hero::before {
+    position: absolute; inset: 0; z-index: 0; content: ""; background:
+        linear-gradient(90deg, rgba(23,20,18,.72) 0%, rgba(23,20,18,.42) 52%, rgba(23,20,18,.08) 100%),
+        url('https://img.ilenafurniture.com/image/1748320128043.jpg/?apikey=<?= $apikey_img_ilena ?>') center 55% / cover no-repeat;
+    transform: scale(1.015);
 }
-.iklan-hero::before {
-    content: "";
-    position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(0,0,0,0.65), rgba(0,0,0,0.35)),
-        url('https://img.ilenafurniture.com/image/1748320128043.jpg/?apikey=<?= $apikey_img_ilena ?>');
-    background-size: cover;
-    background-position: center;
-    z-index: 0;
+.ilena-iklan-page .iklan-hero > .iklan-container { position: relative; z-index: 1; }
+.ilena-iklan-page .iklan-hero .iklan-container { max-width: 1320px; }
+.ilena-iklan-page .iklan-badge {
+    display: inline-flex; align-items: center; gap: 8px; margin: 0 0 20px; padding: 8px 11px;
+    border: 1px solid rgba(255,255,255,.45); border-radius: 0; background: rgba(255,255,255,.08);
+    color: rgba(255,255,255,.94); font-size: 10px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
 }
-.iklan-hero > * { position: relative; z-index: 1; }
-.iklan-badge {
-    display: inline-block;
-    padding: 6px 14px;
-    border-radius: 999px;
-    background-color: rgba(232,74,73,0.9);
-    color: white;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    margin-bottom: 18px;
+.ilena-iklan-page .iklan-h1 {
+    max-width: 800px; margin: 0 0 18px; color: #fff; font-family: var(--ilena-font-display, Georgia, serif);
+    font-size: clamp(40px, 6.3vw, 78px); font-weight: 500; letter-spacing: -.045em; line-height: 1.02;
 }
-.iklan-h1 {
-    font-size: clamp(32px, 5vw, 56px);
-    font-weight: 700;
-    line-height: 1.15;
-    margin-bottom: 18px;
+.ilena-iklan-page .iklan-h2 {
+    margin: 0 0 14px; color: var(--iklan-ink); font-family: var(--ilena-font-display, Georgia, serif);
+    font-size: clamp(28px, 4vw, 46px); font-weight: 500; letter-spacing: -.035em; line-height: 1.12;
 }
-.iklan-h2 {
-    font-size: clamp(26px, 3.5vw, 38px);
-    font-weight: 700;
-    line-height: 1.25;
-    margin-bottom: 12px;
-    color: #1a1a1a;
+.ilena-iklan-page .iklan-sub { max-width: 600px; margin: 0 0 28px; color: rgba(255,255,255,.84); font-size: clamp(14px, 1.3vw, 17px); line-height: 1.8; }
+.ilena-iklan-page .iklan-sub-dark { max-width: 660px; margin: 0 auto 36px; color: var(--iklan-muted); font-size: 14px; line-height: 1.8; }
+.ilena-iklan-page .iklan-btn-primary,
+.ilena-iklan-page .iklan-btn-outline,
+.ilena-iklan-page .iklan-btn-dark {
+    display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px;
+    border: 1px solid var(--iklan-accent); border-radius: 0; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-decoration: none;
+    transition: color .2s ease, background .2s ease, border-color .2s ease;
 }
-.iklan-sub {
-    font-size: clamp(15px, 1.6vw, 18px);
-    color: #e4e4e4;
-    margin-bottom: 28px;
-    max-width: 620px;
+.ilena-iklan-page .iklan-btn-primary { background: var(--iklan-accent); color: #fff !important; }
+.ilena-iklan-page .iklan-btn-primary:hover { border-color: #715138; background: #715138; }
+.ilena-iklan-page .iklan-btn-outline { border-color: rgba(255,255,255,.78); background: transparent; color: #fff !important; }
+.ilena-iklan-page .iklan-btn-outline:hover { background: #fff; color: var(--iklan-ink) !important; }
+.ilena-iklan-page .iklan-btn-dark { border-color: var(--iklan-ink); background: var(--iklan-ink); color: #fff !important; }
+.ilena-iklan-page .iklan-btn-dark:hover { background: #443c35; }
+.ilena-iklan-page .iklan-stats { background: var(--iklan-paper); }
+.ilena-iklan-page .stat-card { height: 100%; padding: 20px 18px; border: 0; border-top: 1px solid #cbb8a5; border-radius: 0; background: transparent; box-shadow: none; text-align: left; }
+.ilena-iklan-page .stat-num { margin: 0 0 7px; color: var(--iklan-accent); font-family: var(--ilena-font-display, Georgia, serif); font-size: clamp(34px, 4vw, 48px); font-weight: 500; line-height: 1; }
+.ilena-iklan-page .stat-label { color: var(--iklan-muted); font-size: 12px; letter-spacing: .035em; }
+.ilena-iklan-page .benefit-card,
+.ilena-iklan-page .value-card { height: 100%; padding: 22px 0 8px; border: 0; border-top: 1px solid var(--iklan-line); border-radius: 0; background: transparent; box-shadow: none; transition: border-color .2s ease; }
+.ilena-iklan-page .benefit-card:hover { transform: none; border-color: var(--iklan-accent); box-shadow: none; }
+.ilena-iklan-page .benefit-icon { display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; margin: 0 0 16px; border-radius: 0; background: var(--iklan-paper); color: var(--iklan-accent); }
+.ilena-iklan-page .benefit-title,
+.ilena-iklan-page .value-card h3 { margin: 0 0 9px; color: var(--iklan-ink); font-family: var(--ilena-font-display, Georgia, serif); font-size: 20px; font-weight: 500; letter-spacing: -.01em; }
+.ilena-iklan-page .benefit-text,
+.ilena-iklan-page .value-card p { margin: 0; color: var(--iklan-muted); font-size: 13px; line-height: 1.75; }
+.ilena-iklan-page .value-card { border-top: 1px solid var(--iklan-accent); }
+.ilena-iklan-page .series-card { display: flex; height: 100%; flex-direction: column; overflow: hidden; border: 0; border-radius: 0; background: #fff; box-shadow: none; }
+.ilena-iklan-page .series-img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--iklan-paper); transition: transform .55s ease; }
+.ilena-iklan-page .series-card:hover .series-img { transform: scale(1.025); }
+.ilena-iklan-page .series-body { flex: 1; padding: 18px 0 0; }
+.ilena-iklan-page .series-tag { margin-bottom: 6px; color: var(--iklan-accent); font-size: 9px; font-weight: 650; letter-spacing: .15em; text-transform: uppercase; }
+.ilena-iklan-page .series-name { margin-bottom: 8px; color: var(--iklan-ink); font-family: var(--ilena-font-display, Georgia, serif); font-size: 22px; font-weight: 500; }
+.ilena-iklan-page .series-desc { flex: 1; margin-bottom: 16px; color: var(--iklan-muted); font-size: 13px; line-height: 1.7; }
+.ilena-iklan-page .series-link { display: inline-flex; min-height: 40px; align-items: center; gap: 7px; color: var(--iklan-accent); font-size: 11px; font-weight: 600; text-decoration: none; }
+.ilena-iklan-page .series-link:hover { color: var(--iklan-ink); }
+.ilena-iklan-page .testi-section { background: var(--iklan-paper); }
+.ilena-iklan-page .testi-card { height: 100%; padding: 22px 0; border: 0; border-top: 1px solid #d8c8b8; border-radius: 0; background: transparent; box-shadow: none; }
+.ilena-iklan-page .testi-stars { margin-bottom: 12px; color: var(--iklan-accent); font-size: 14px; letter-spacing: 3px; }
+.ilena-iklan-page .testi-quote { margin: 0 0 18px; color: var(--iklan-ink); font-family: var(--ilena-font-display, Georgia, serif); font-size: 17px; font-style: normal; line-height: 1.65; }
+.ilena-iklan-page .testi-name { margin: 0; color: var(--iklan-ink); font-size: 12px; font-weight: 600; }
+.ilena-iklan-page .testi-loc { margin: 2px 0 0; color: var(--iklan-muted); font-size: 11px; }
+.ilena-iklan-page .testi-avatar { display: inline-flex; width: 40px; height: 40px; align-items: center; justify-content: center; margin-right: 12px; border-radius: 50%; background: #e9e1d8; color: var(--iklan-accent); font-size: 14px; }
+.ilena-iklan-page .verif-badge { display: inline-block; margin-top: 5px; padding: 0; background: transparent; color: #58705b; font-size: 10px; font-weight: 600; }
+.ilena-iklan-page .final-cta { background: #25221f; color: #fff; text-align: center; }
+.ilena-iklan-page .final-cta .iklan-h2 { color: #fff; }
+.ilena-iklan-page .cta-mini-benefit { display: inline-flex; align-items: center; gap: 6px; margin: 6px 10px; color: rgba(255,255,255,.78); font-size: 11px; }
+.ilena-iklan-page .cta-mini-benefit i { color: #c6a98d; font-size: 17px; }
+.ilena-iklan-page a:focus-visible { outline: 2px solid #b79473; outline-offset: 3px; }
+@media (max-width: 700px) {
+    .ilena-iklan-page .iklan-section { padding: 58px 18px; }
+    .ilena-iklan-page .iklan-hero { min-height: 76svh; padding: 48px 20px; }
+    .ilena-iklan-page .iklan-hero::before { background-position: 58% center; background-image: linear-gradient(90deg, rgba(23,20,18,.72), rgba(23,20,18,.25)), url('https://img.ilenafurniture.com/image/1748320128043.jpg/?apikey=<?= $apikey_img_ilena ?>'); }
+    .ilena-iklan-page .iklan-h1 { font-size: clamp(38px, 11vw, 56px); }
+    .ilena-iklan-page .iklan-sub-dark { margin-bottom: 26px; font-size: 13px; }
+    .ilena-iklan-page .iklan-btn-primary, .ilena-iklan-page .iklan-btn-outline { min-height: 46px; padding-inline: 14px; font-size: 10px; }
+    .ilena-iklan-page .stat-card { padding: 16px 0; }
+    .ilena-iklan-page .value-card, .ilena-iklan-page .benefit-card { padding-top: 18px; }
+    .ilena-iklan-page .series-body { padding-top: 14px; }
+    .ilena-iklan-page .series-name { font-size: 19px; }
+    .ilena-iklan-page .testi-card { padding-block: 18px; }
 }
-.iklan-sub-dark {
-    font-size: 16px;
-    color: #6b6b6b;
-    max-width: 720px;
-    margin: 0 auto 40px;
-    text-align: center;
-}
-.iklan-btn-primary {
-    display: inline-block;
-    padding: 14px 28px;
-    background-color: var(--merah);
-    color: white !important;
-    border-radius: 8px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all .2s;
-    border: 2px solid var(--merah);
-}
-.iklan-btn-primary:hover {
-    background-color: #c93b3a;
-    border-color: #c93b3a;
-    transform: translateY(-1px);
-}
-.iklan-btn-outline {
-    display: inline-block;
-    padding: 14px 28px;
-    background-color: transparent;
-    color: white !important;
-    border-radius: 8px;
-    font-weight: 600;
-    text-decoration: none;
-    border: 2px solid white;
-    transition: all .2s;
-}
-.iklan-btn-outline:hover {
-    background-color: white;
-    color: #1a1a1a !important;
-}
-.iklan-btn-dark {
-    display: inline-block;
-    padding: 14px 28px;
-    background-color: #1a1a1a;
-    color: white !important;
-    border-radius: 8px;
-    font-weight: 600;
-    text-decoration: none;
-    border: 2px solid #1a1a1a;
-}
-.iklan-btn-dark:hover { background-color: #000; }
-
-.iklan-stats {
-    background-color: #fafafa;
-}
-.stat-card {
-    background: white;
-    border-radius: 12px;
-    padding: 28px;
-    text-align: center;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-    height: 100%;
-}
-.stat-num {
-    font-size: 44px;
-    font-weight: 800;
-    color: var(--merah);
-    line-height: 1;
-    margin-bottom: 8px;
-}
-.stat-label {
-    font-size: 14px;
-    color: #555;
-    font-weight: 500;
-}
-
-.benefit-card {
-    background: white;
-    border: 1px solid #eee;
-    border-radius: 12px;
-    padding: 28px;
-    height: 100%;
-    transition: all .2s;
-}
-.benefit-card:hover {
-    border-color: var(--merah);
-    box-shadow: 0 6px 24px rgba(232,74,73,0.08);
-    transform: translateY(-2px);
-}
-.benefit-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 12px;
-    background-color: #fdefef;
-    color: var(--merah);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 16px;
-}
-.benefit-title {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    color: #1a1a1a;
-}
-.benefit-text {
-    font-size: 14px;
-    color: #6b6b6b;
-    margin: 0;
-    line-height: 1.6;
-}
-
-.value-card {
-    background: #fafafa;
-    border-radius: 14px;
-    padding: 32px 24px;
-    height: 100%;
-    border-top: 4px solid var(--merah);
-}
-.value-card h3 {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 10px;
-    color: #1a1a1a;
-}
-.value-card p { color: #555; font-size: 14px; line-height: 1.65; margin: 0; }
-
-.series-card {
-    background: white;
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    transition: all .25s;
-}
-.series-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.10);
-}
-.series-img {
-    width: 100%;
-    aspect-ratio: 4/3;
-    object-fit: cover;
-}
-.series-body {
-    padding: 22px;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-}
-.series-tag {
-    font-size: 12px;
-    color: var(--merah);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 6px;
-}
-.series-name {
-    font-size: 22px;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin-bottom: 10px;
-}
-.series-desc {
-    font-size: 14px;
-    color: #6b6b6b;
-    line-height: 1.6;
-    flex: 1;
-    margin-bottom: 18px;
-}
-.series-link {
-    color: var(--merah);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 14px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-.series-link:hover { color: #c93b3a; }
-
-.testi-section { background-color: #fafafa; }
-.testi-card {
-    background: white;
-    border-radius: 14px;
-    padding: 28px;
-    height: 100%;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-}
-.testi-stars { color: #f5b40a; margin-bottom: 14px; font-size: 18px; letter-spacing: 2px; }
-.testi-quote {
-    font-size: 16px;
-    color: #2a2a2a;
-    line-height: 1.65;
-    margin-bottom: 18px;
-    font-style: italic;
-}
-.testi-name { font-size: 15px; font-weight: 700; color: #1a1a1a; margin: 0; }
-.testi-loc { font-size: 13px; color: #888; margin: 0; }
-.testi-avatar {
-    width: 48px; height: 48px; border-radius: 50%;
-    background: var(--merah); color: white;
-    display: inline-flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 18px;
-    margin-right: 12px;
-}
-.verif-badge {
-    display: inline-block;
-    background: #1ece3623;
-    color: #1ba32a;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 3px 10px;
-    border-radius: 999px;
-    margin-top: 4px;
-}
-
-.final-cta {
-    background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
-    color: white;
-    text-align: center;
-}
-.final-cta .iklan-h2 { color: white; }
-.cta-mini-benefit {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    color: #d4d4d4;
-    font-size: 13px;
-    margin: 6px 12px;
-}
-.cta-mini-benefit i { color: var(--merah); font-size: 18px; }
-
-@media (max-width: 768px) {
-    .iklan-section { padding: 48px 16px; }
-    .iklan-hero { min-height: 80svh; }
+@media (prefers-reduced-motion: reduce) {
+    .ilena-iklan-page *, .ilena-iklan-page *::before, .ilena-iklan-page *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
 </style>
 
+<main class="ilena-iklan-page">
 <!-- 1. HERO -->
 <section class="iklan-hero">
     <div class="iklan-container w-100 px-4">
@@ -487,4 +292,5 @@
     </div>
 </section>
 
+</main>
 <?= $this->endSection(); ?>

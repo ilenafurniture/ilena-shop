@@ -18,6 +18,10 @@ if (!empty($produk['varian'][0]['urutan_gambar'])) {
     $urutanAwal = $filterExistingSlots($produk['varian'][0]['urutan_gambar']);
     $gambarAwalDetail = $urutanAwal[0] ?? '1';
 }
+$detailSlotsByVariant = array_map(
+    static fn(array $variant): array => $filterExistingSlots($variant['urutan_gambar'] ?? ''),
+    $produk['varian'] ?? []
+);
 $assetVersion = function (string $relativePath) use ($produk): string {
     $path = FCPATH . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
     $fileVersion = is_file($path) ? (int) filemtime($path) : 0;
@@ -48,22 +52,37 @@ $productCoverUrl = function (array $product): string {
         $slots = array_values(array_filter(array_map('trim', explode(',', (string) $varian[0]['urutan_gambar']))));
         $slot = $slots[0] ?? '1';
     }
-    $sourceRelative = 'img/barang/1000/' . $id . '-' . $slot . '.webp';
+    $candidates = [
+        'img/barang/300/' . $id . '.webp',
+        'uploads/product-images/300/' . $id . '.webp',
+        'img/barang/1000/' . $id . '-' . $slot . '.webp',
+        'img/barang/3000/' . $id . '-' . $slot . '.webp',
+    ];
+    $sourceRelative = $candidates[0];
+    foreach ($candidates as $candidate) {
+        if (is_file(FCPATH . $candidate)) { $sourceRelative = $candidate; break; }
+    }
     $sourceAbsolute = FCPATH . $sourceRelative;
-    if (!is_file($sourceAbsolute)) {
-        $sourceRelative = 'img/barang/3000/' . $id . '-' . $slot . '.webp';
-        $sourceAbsolute = FCPATH . $sourceRelative;
-    }
-    if (!is_file($sourceAbsolute)) {
-        $sourceRelative = 'img/barang/300/' . $id . '.webp';
-        $sourceAbsolute = FCPATH . $sourceRelative;
-    }
-    $fileVersion = is_file($sourceAbsolute) ? (int) filemtime($sourceAbsolute) : time();
+    $sourceExists = is_file($sourceAbsolute);
+    $fileVersion = $sourceExists ? (int) filemtime($sourceAbsolute) : 0;
     $dbVersion = !empty($product['tgl_update']) ? (int) strtotime((string) $product['tgl_update']) : 0;
-    if (is_file($sourceAbsolute)) {
+    $isLocalThumbnail = $sourceExists && in_array($sourceRelative, [
+        'img/barang/300/' . $id . '.webp', 'uploads/product-images/300/' . $id . '.webp',
+    ], true);
+    $fullSizeMtime = 0;
+    foreach ([
+        'uploads/product-images/1000/' . $id . '-' . $slot . '.webp',
+        'uploads/product-images/3000/' . $id . '-' . $slot . '.webp',
+        'img/barang/1000/' . $id . '-' . $slot . '.webp',
+        'img/barang/3000/' . $id . '-' . $slot . '.webp',
+    ] as $fullSizeCandidate) {
+        if (is_file(FCPATH . $fullSizeCandidate)) $fullSizeMtime = max($fullSizeMtime, (int) filemtime(FCPATH . $fullSizeCandidate));
+    }
+    $fileVersion = max($fileVersion, $fullSizeMtime);
+    if (strtolower((string) env('PRODUCT_IMAGE_STORAGE', 'local')) !== 'r2' && $isLocalThumbnail && (!$fullSizeMtime || (int) filemtime($sourceAbsolute) >= $fullSizeMtime)) {
         return base_url($sourceRelative) . '?v=' . max($fileVersion, $dbVersion);
     }
-    return base_url('product-cover/' . $id) . '?slot=' . urlencode($slot) . '&v=' . max($fileVersion, $dbVersion);
+    return base_url('product-cover/' . $id) . '?slot=' . urlencode($slot) . '&size=300&v=' . max($fileVersion, $dbVersion);
 };
 ?>
 <style>
@@ -457,10 +476,10 @@ $productCoverUrl = function (array $product): string {
         <?php if (count($produkSejenis) > 0) { ?>
         <section class="ilena-product-related" aria-labelledby="related-products-title">
         <div class="ilena-product-related-heading"><span>Pilihan untuk Anda</span><h2 id="related-products-title">Anda mungkin juga suka</h2></div>
-        <div class="container-card1 ilena-product-related-grid">
+        <div class="container-card1 ilena-catalog-grid ilena-product-related-grid">
             <?php foreach ($produkSejenis as $ind_p => $p) { ?>
             <?php $relatedVersion = !empty($p['tgl_update']) ? (int) strtotime((string) $p['tgl_update']) : time(); ?>
-            <?php $relatedVariantData = json_decode($p['varian'] ?? '[]', true) ?: []; $relatedLocalSlots = []; foreach ($relatedVariantData as $rv) { foreach (array_filter(array_map('trim', explode(',', (string)($rv['urutan_gambar'] ?? '')))) as $rs) { foreach (['1000', '3000'] as $rz) { if (is_file(FCPATH . 'img/barang/' . $rz . '/' . $p['id'] . '-' . $rs . '.webp')) { $relatedLocalSlots[$rs] = $rz; break; } } } } ?>
+            <?php $relatedVariantData = json_decode($p['varian'] ?? '[]', true) ?: []; $cardVarianAwal = $relatedVariantData[0]['nama'] ?? 'default'; $cardVarianAwalStok = (int)($relatedVariantData[0]['stok'] ?? 0); ?>
             <div class="card1">
                 <div style="position: relative;">
                     <span class="card1-content-img-kiri"
@@ -481,9 +500,8 @@ $productCoverUrl = function (array $product): string {
                                     class="material-icons">bookmark_border</i></button>
                         </form>
                         <?php } ?>
-                        <?php $cardVarianAwal = json_decode($p['varian'], true)[0]['nama'] ?? 'default'; ?>
                         <form method="post" id="card<?= $ind_p ?>"
-                            action="/addcart/<?= $p['id'] ?>/<?= rawurlencode($cardVarianAwal) ?>/1"><?= csrf_field(); ?><button type="submit" class="card1-btn-img" aria-label="Tambah <?= esc($p['nama'], 'attr') ?> ke keranjang"><i class="material-icons">shopping_cart</i>
+                            action="<?= $cardVarianAwalStok > 0 ? '/addcart/' . $p['id'] . '/' . rawurlencode($cardVarianAwal) . '/1' : '' ?>"><?= csrf_field(); ?><button type="submit" class="card1-btn-img" aria-label="Tambah <?= esc($p['nama'], 'attr') ?> ke keranjang" <?= $cardVarianAwalStok > 0 ? '' : 'disabled' ?>><i class="material-icons">shopping_cart</i>
                             </button>
                         </form>
                     </div>
@@ -517,10 +535,7 @@ $productCoverUrl = function (array $product): string {
                             const slot = (e.target.dataset.slot || e.target.value.split("-")[0] || "1").split(",")[0];
                             const namaVarian = e.target.dataset.name || e.target.value.split("-").slice(1).join("-") || "default";
                             const stok = Number(e.target.dataset.stok || 0);
-                            const staticSlots<?= $ind_p ?> = <?= json_encode($relatedLocalSlots) ?>;
-                            img<?= $ind_p ?>Elm.src = staticSlots<?= $ind_p ?>[slot]
-                                ? "<?= base_url('img/barang/') ?>" + staticSlots<?= $ind_p ?>[slot] + "/<?= $p['id'] ?>-" + encodeURIComponent(slot) + ".webp?v=<?= $relatedVersion ?>"
-                                : "<?= base_url('product-cover/' . $p['id']) ?>?slot=" + slot + '&v=<?= $relatedVersion ?>';
+                            img<?= $ind_p ?>Elm.src = "<?= base_url('product-cover/' . $p['id']) ?>?slot=" + encodeURIComponent(slot) + '&size=300&v=<?= $relatedVersion ?>';
 
                             btnKeranjang<?= $ind_p ?>Elm.action = stok > 0 ? "/addcart/<?= $p['id'] ?>/" + encodeURIComponent(namaVarian) + "/1" : "";
                             const quickBtn = btnKeranjang<?= $ind_p ?>Elm.querySelector('button');
@@ -558,6 +573,7 @@ let jumlahSelected = "1";
 let isStokHabis = <?= $produk['varian'][0]['stok'] == '0' ? 'true' : 'false' ?>;
 const stokByVarianName = <?= json_encode(array_column($produk['varian'], 'stok', 'nama')) ?>;
 const detailVersion = "<?= $detailVersion ?>";
+const detailSlotsByVariant = <?= json_encode($detailSlotsByVariant, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 const detailBase1000 = "/viewvar/<?= $produk['id']; ?>/";
 const detailBase3000 = "/viewvar3000/<?= $produk['id']; ?>/";
 const detailHoverUrl = "<?= $hoverImgUrl() ?>";
@@ -582,9 +598,10 @@ radioVarianElm.forEach(elm => {
         radioVarianElm.forEach(peer => {
             if (peer !== e.target && peer.dataset.index === e.target.dataset.index) peer.checked = true;
         });
-        const slotValue = e.target.dataset.slot || e.target.value.split("-")[0];
+        const variantIndex = Number(e.target.dataset.index || e.target.value.split("-")[2] || 0);
+        const slotValue = (detailSlotsByVariant[variantIndex] || [e.target.dataset.slot || e.target.value.split("-")[0]]).join(",");
         const varianName = e.target.dataset.name || e.target.value.split("-").slice(1, -1).join("-") || e.target.value.split("-")[1] || '';
-        const varianFullSelected = varian[Number(e.target.dataset.index || e.target.value.split("-")[2] || 0)] || { stok: e.target.dataset.stok || 0, urutan_gambar: slotValue, nama: varianName };
+        const varianFullSelected = varian[variantIndex] || { stok: e.target.dataset.stok || 0, urutan_gambar: slotValue, nama: varianName };
         const imgElm = document.querySelector("figure.img-detail-prev");
         const imgFixElm = document.querySelector("img.img-detail-prev");
         window.isHoverDetailSelected = false;
@@ -595,7 +612,7 @@ radioVarianElm.forEach(elm => {
 
         const containerImgDetailElm = document.querySelector(".container-img-detail-select");
         containerImgDetailElm.innerHTML = "";
-        const urutanGambar = slotValue.split(",");
+        const urutanGambar = slotValue.split(",").filter(Boolean);
         urutanGambar.forEach((urutan, ind_x) => {
             containerImgDetailElm.innerHTML += '<input id="gambar' + ind_x +
                 '" type="radio" name="gambar" value="' + urutan + '"' + (ind_x === 0 ? ' checked' : '') +
