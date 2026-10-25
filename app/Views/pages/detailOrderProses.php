@@ -1,5 +1,5 @@
 <?php
-$id_order = $_GET['idorder'];
+$id_order = (string)(service('request')->getGet('idorder') ?? '');
 $pemesananSelectedArr = array_filter($pemesananAll, function ($p) use ($id_order) {
     return $p['id_midtrans'] == $id_order;
 });
@@ -22,13 +22,13 @@ switch ($dataMid['payment_type']) {
             $va_number = $dataMid['permata_va_number'];
             $bank = "permata";
         } else {
-            $va_number = $dataMid['va_numbers'][0]['va_number'];
-            $bank = $dataMid['va_numbers'][0]['bank'];
+            $va_number = $dataMid['va_numbers'][0]['va_number'] ?? '';
+            $bank = $dataMid['va_numbers'][0]['bank'] ?? '';
         }
         break;
     case 'echannel':
-        $va_number = $dataMid['bill_key'];
-        $biller_code = $dataMid['biller_code'];
+        $va_number = $dataMid['bill_key'] ?? '';
+        $biller_code = $dataMid['biller_code'] ?? '';
         $bank = "mandiri";
         break;
     case 'qris':
@@ -56,7 +56,7 @@ $carapembayaranSelected = $carapembayaran[$bank] ?? [];
 
 // waktu (pakai settlement/transaction kalau ada untuk halaman sukses)
 $bulan = $bulan ?? ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
-$waktuExpire = strtotime($dataMid['expiry_time']);
+$waktuExpire = strtotime($dataMid['expiry_time'] ?? 'now');
 $waktuCurr = strtotime("+7 Hours");
 $waktuSelisih = $waktuExpire - $waktuCurr;
 $waktu = date("H:i:s", $waktuSelisih);
@@ -341,7 +341,7 @@ $grossAmount = (int)($dataMid['gross_amount'] ?? 0);
         </button>
     </div>
     <hr>
-    <h1 class="header-title text-center mb-3 mt-4" style="font-size:22px;letter-spacing:-.5px;">Pembayaran Berhasil</h1>
+    <h1 class="header-title text-center mb-3 mt-4" style="font-size:22px;letter-spacing:-.5px;"><?= esc(($pemesananSelected['status'] ?? '') === 'Proses' ? 'Pembayaran Berhasil' : 'Pesanan ' . ($pemesananSelected['status'] ?? '')); ?></h1>
     <div class="success center mb-2"><i class="material-icons">check_circle</i></div>
     <hr>
 
@@ -454,7 +454,7 @@ $grossAmount = (int)($dataMid['gross_amount'] ?? 0);
             </div>
             <?php } else { ?>
             <div style="margin-top:6px;">
-                <p class="m-0">Barang masih kami proses untuk pengiriman.</p>
+                <p class="m-0"><?= esc(match ($pemesananSelected['status'] ?? '') { 'Dikirim'=>'Pesanan sedang dikirim.', 'Selesai'=>'Pesanan selesai.', 'Refund'=>'Pembayaran telah dikembalikan.', 'Partial Refund'=>'Sebagian pembayaran telah dikembalikan.', default=>'Barang masih kami proses untuk pengiriman.' }); ?></p>
                 <p class="m-0 muted" style="font-size:12.5px">*Pesanan setelah jam 12:00 diproses di hari berikutnya.
                 </p>
             </div>
@@ -538,6 +538,7 @@ function copytext(text) {
 // Pixel Purchase hanya ditembak saat order benar-benar sudah berstatus Proses
 // (status ini diubah oleh webhook/notifikasi Midtrans, bukan dari klik "Saya sudah membayar").
 (function () {
+    if (!<?= json_encode(in_array($pemesananSelected['status'] ?? '', ['Proses','Dikirim','Selesai'], true)); ?>) return;
     const orderId = <?= json_encode($id_order) ?>;
     const value = <?= json_encode((int)$grossAmount) ?>;
     const eventId = 'purchase_' + orderId;

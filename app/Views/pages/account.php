@@ -659,7 +659,7 @@ const inputNamaElm = document.getElementById("inputNama");
 const inputNohpElm = document.getElementById("inputNohp");
 const formEditElm = document.getElementById("formEdit");
 
-const alamatJson = JSON.parse('<?= $alamatJson ?>');
+const alamatJson = JSON.parse(<?= json_encode($alamatJson, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>);
 const sandiElm = document.querySelector('input[name="sandi"]');
 const editSandiElm = document.getElementById('edit-sandi');
 
@@ -861,7 +861,7 @@ kecElmEdit?.addEventListener("change", (e) => {
 
 /* ---------- EDIT modal bind ---------- */
 function openEditModal(ind_add) {
-    const a = (<?= $alamatJson ?>)[ind_add] || {};
+    const a = alamatJson[ind_add] || {};
     inputEmailElm.value = a.email_pemesan || '';
     inputNamaElm.value = a.nama_penerima || '';
     inputNohpElm.value = a.nohp_penerima || '';

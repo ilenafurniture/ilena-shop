@@ -89,10 +89,10 @@ trait OrderOfflineTrait
         }
         $pesanan = $builder->findAll();
         $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
-        
+
         // Query SJ data untuk semua order sekaligus
         $db = \Config\Database::connect();
-        
+
         foreach ($pesanan as $ind_p => $p) {
             $d = strtotime($p['tanggal']);
             $pesanan[$ind_p]['tanggal_format'] = date('d', $d) . ' ' . $bulan[date('m', $d) - 1] . ' ' . date('Y', $d);
@@ -101,17 +101,17 @@ trait OrderOfflineTrait
                 ->join('barang', 'barang.id = pemesanan_offline_item.id_barang')
                 ->where('id_pesanan', $p['id_pesanan'])
                 ->findAll();
-            
+
             // Query SJ data untuk order ini
             $idPesananEsc = $db->escape($p['id_pesanan']);
             $sjLast = $db->query("SELECT * FROM surat_jalan WHERE id_pesanan = {$idPesananEsc} ORDER BY id DESC LIMIT 1")->getRowArray();
-            
+
             if ($sjLast) {
                 $pesanan[$ind_p]['sj_last_id'] = $sjLast['id'];
                 $pesanan[$ind_p]['sj_last_no'] = $sjLast['no_sj'];
                 $pesanan[$ind_p]['sj_last_status'] = $sjLast['status'];
                 $pesanan[$ind_p]['sj_last_tanggal'] = $sjLast['tanggal'];
-                
+
                 // Jika ada SJ final, ambil tanggal terakhir yang final
                 $sjFinal = $db->query("SELECT tanggal FROM surat_jalan WHERE id_pesanan = {$idPesananEsc} AND status = 'final' ORDER BY id DESC LIMIT 1")->getRowArray();
                 $pesanan[$ind_p]['sj_final_tanggal'] = $sjFinal['tanggal'] ?? null;
@@ -254,6 +254,8 @@ trait OrderOfflineTrait
      */
     public function actionAddOrderOffline()
     {
+        $atomic=new \App\Services\AtomicOperation(db_connect());
+        try {
         $body = $this->request->getBody();
         $body = json_decode($body, true);
 
@@ -264,7 +266,15 @@ trait OrderOfflineTrait
             ]);
         }
 
+        if (empty($body['items']) || !is_array($body['items']) || count($body['items'])>1000) throw new \RuntimeException('Daftar item tidak valid.');
+        foreach ($body['items'] as $item) {
+            if (!is_array($item) || empty($item['id']) || empty($item['varian']) || filter_var($item['jumlah']??null,FILTER_VALIDATE_INT)===false || (int)$item['jumlah']<1 || (int)$item['jumlah']>10000 || !is_numeric($item['harga']??null) || (float)$item['harga']<0) throw new \RuntimeException('Produk, qty, atau harga item tidak valid.');
+        }
+        usort($body['items'],static fn($a,$b)=>[(string)$a['id'],(string)$a['varian']]<=>[(string)$b['id'],(string)$b['varian']]);
+        if ((int)($body['downPayment']??0)<0 || (int)($body['potonganHargaSatuan']??0)<0 || !is_numeric($body['totalAkhir']??null) || (float)$body['totalAkhir']<0) throw new \RuntimeException('Total, DP atau diskon tidak valid.');
         $isDraft = !empty($body['isDraft']);
+        $receipt=\App\Services\SessionOperation::lookup('offline_order',$body['operation_token']??null);
+        if ($receipt!==null) return $this->response->setJSON($receipt);
         $body['downPayment']         = (int)($body['downPayment'] ?? 0);
         $body['potonganHargaSatuan'] = (int)($body['potonganHargaSatuan'] ?? 0);
         $body['jenis']               = $body['jenis'] ?? 'sp';
@@ -312,7 +322,7 @@ trait OrderOfflineTrait
         $tanggalNoStrip = date('Ymd', strtotime($body['tanggal']));
 
         foreach ($body['items'] as $item) {
-            $produkCur = $this->barangModel->getBarang($item['id']);
+            $produkCur = $this->barangModel->getBarangForUpdate($item['id']);
             if (!$produkCur) {
                 return $this->response->setStatusCode(400)->setJSON([
                     'success' => false,
@@ -347,6 +357,7 @@ trait OrderOfflineTrait
             }
 
             if (!$isDraft && $this->shouldDeductStockNow($normJenis, $body['downPayment'])) {
+                \App\Services\InventoryAvailability::assertRemaining(db_connect(),(string)$item['id'],(string)$item['varian'],$saldoAkhir);
                 $this->barangModel->where('id', $item['id'])->set([
                     'varian' => json_encode($varianBaru)
                 ])->update();
@@ -405,11 +416,15 @@ trait OrderOfflineTrait
 
         $this->pemesananOfflineModel->insert($data);
 
+        $atomic->commit();
+        \App\Services\SessionOperation::complete('offline_order',$body['operation_token'],['success'=>true,'id_pesanan'=>$idFix,'is_draft'=>$isDraft]);
         return $this->response->setStatusCode(200)->setJSON([
             'success'    => true,
             'id_pesanan' => $idFix,
             'is_draft'   => $isDraft,
         ], false);
+
+        } catch (\Throwable $e) { log_message('error','Atomic operation failed: {error}',['error'=>$e->getMessage()]); return $this->response->setStatusCode(400)->setJSON(['success'=>false,'pesan'=>'Pesanan gagal: '.$e->getMessage()]); }
     }
 
     /**
@@ -417,6 +432,8 @@ trait OrderOfflineTrait
      */
     public function actionBuatDP()
     {
+        $atomic=new \App\Services\AtomicOperation(db_connect());
+        try {
         $tanggal   = $this->request->getVar('tanggal');
         $idPesanan = $this->request->getVar('id_pesanan');
         $npwp      = $this->request->getVar('npwp');
@@ -427,6 +444,7 @@ trait OrderOfflineTrait
             return redirect()->back()->with('msg', 'Pesanan sumber tidak ditemukan.');
         }
 
+        if (($pesananDP['status'] ?? '') !== 'DP' || (int)($pesananDP['down_payment'] ?? 0) <= 0) { return redirect()->back()->with('msg','DP sudah diproses atau sumber tidak valid.'); }
         $jenisAsal = $pesananDP['jenis'] ?: 'sale';
         $prefix    = $this->prefixByJenis($jenisAsal);
 
@@ -496,7 +514,7 @@ trait OrderOfflineTrait
         }
 
         foreach ($itemsFiltered as $i) {
-            $produkCur = $this->barangModel->getBarang($i['id_barang']);
+            $produkCur = $this->barangModel->getBarangForUpdate($i['id_barang']);
             $varian    = json_decode($produkCur['varian'], true);
             $saldo     = 0; $varianBaru = $varian;
 
@@ -507,6 +525,8 @@ trait OrderOfflineTrait
                 }
             }
             $saldoAkhir = $saldo - $i['jumlah'];
+            if ($saldoAkhir < 0) throw new \RuntimeException('Stok tidak mencukupi untuk pelunasan DP.');
+            \App\Services\InventoryAvailability::assertRemaining(db_connect(),(string)$i['id_barang'],(string)$i['varian'],$saldoAkhir);
 
             $this->barangModel->where('id', $i['id_barang'])->set([
                 'varian' => json_encode($varianBaru)
@@ -536,7 +556,10 @@ trait OrderOfflineTrait
             }
         }
         $segmentJenis = $jenisAsal === 'nf' ? 'nf' : 'sale';
+        $atomic->commit();
         return redirect()->to('/admin/order/offline/' . $segmentJenis);
+
+        } catch (\Throwable $e) { log_message('error','Atomic operation failed: {error}',['error'=>$e->getMessage()]); return redirect()->back()->with('msg','Operasi dibatalkan: '.$e->getMessage()); }
     }
 
     /**
@@ -544,6 +567,8 @@ trait OrderOfflineTrait
      */
     public function actionKoreksiSP()
     {
+        $atomic=new \App\Services\AtomicOperation(db_connect());
+        try {
         $body = $this->request->getVar();
 
         $convertTo = $body['convert_to'] ?? 'sale';
@@ -557,6 +582,7 @@ trait OrderOfflineTrait
         $id_pesanan_SP = $body['id_pesanan'];
         $sp_current = $this->pemesananOfflineModel->getPemesanan($id_pesanan_SP);
 
+        if (!$sp_current || ($sp_current['jenis']??'')!=='display') throw new \RuntimeException('Dokumen sumber bukan display/SP.');
         $items = $this->pemesananOfflineItemModel
             ->select('pemesanan_offline_item.*')
             ->select('barang.nama')
@@ -597,8 +623,9 @@ trait OrderOfflineTrait
         $totalAkhir = 0;
 
         foreach ($items as $ind_i => $item) {
-            if ($indexItems[$ind_i] == '1') {
-                $produkCur = $this->barangModel->getBarang($item['id_barang']);
+            if (($indexItems[$ind_i] ?? '') == '1') {
+                if (!empty($item['id_return'])) throw new \RuntimeException('Item SP sudah dikoreksi.');
+                $produkCur = $this->barangModel->getBarangForUpdate($item['id_barang']);
                 $varian    = json_decode($produkCur['varian'], true);
                 $saldo     = 0;
                 $varianBaru = $varian;
@@ -702,7 +729,10 @@ trait OrderOfflineTrait
         $this->pemesananOfflineModel->insert($dataSK);
 
         $seg = ($normJenisTarget === 'nf') ? 'nf' : 'sale';
+        $atomic->commit();
         return redirect()->to('/admin/order/offline/' . $seg);
+
+        } catch (\Throwable $e) { log_message('error','Atomic operation failed: {error}',['error'=>$e->getMessage()]); return redirect()->back()->with('msg','Operasi dibatalkan: '.$e->getMessage()); }
     }
 
     /**
@@ -761,6 +791,8 @@ trait OrderOfflineTrait
      */
     public function orderOfflineFinalize()
     {
+        $atomic=new \App\Services\AtomicOperation(db_connect());
+        try {
         $req = $this->request;
         $id  = trim((string)$req->getPost('id_pesanan'));
 
@@ -788,7 +820,7 @@ trait OrderOfflineTrait
 
         if ($this->shouldDeductStockNow($normJenis, $downPayment)) {
             foreach ($items as $item) {
-                $produkCur = $this->barangModel->getBarang($item['id_barang']);
+                $produkCur = $this->barangModel->getBarangForUpdate($item['id_barang']);
                 $varian    = json_decode($produkCur['varian'], true);
                 $saldo     = 0;
                 $varianBaru = $varian;
@@ -806,6 +838,7 @@ trait OrderOfflineTrait
                         'Stok tidak mencukupi untuk varian ' . $item['varian'] . ' (' . $produkCur['nama'] . ')');
                 }
 
+                \App\Services\InventoryAvailability::assertRemaining(db_connect(),(string)$item['id_barang'],(string)$item['varian'],$saldoAkhir);
                 $this->barangModel->where('id', $item['id_barang'])->set([
                     'varian' => json_encode($varianBaru)
                 ])->update();
@@ -846,7 +879,10 @@ trait OrderOfflineTrait
 
         $seg = ($normJenis === 'nf') ? 'nf' : ($normJenis === 'display' ? 'display' : 'sale');
 
+        $atomic->commit();
         return redirect()->to('/admin/order/offline/' . $seg)
             ->with('msg', 'Draft ' . $id . ' berhasil difinalisasi.');
+
+        } catch (\Throwable $e) { log_message('error','Atomic operation failed: {error}',['error'=>$e->getMessage()]); return redirect()->back()->with('msg','Operasi dibatalkan: '.$e->getMessage()); }
     }
 }

@@ -12,7 +12,7 @@ class AdminFilter implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        if (!session()->get('isLogin')) {
+        if (!session()->get('isLogin') || (string)session()->get('active') !== '1') {
             return redirect()->to('/');
         } else if(session()->get('role') == '2'){
             session()->destroy();

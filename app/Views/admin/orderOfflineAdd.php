@@ -1155,7 +1155,7 @@ const App = () => {
 
   const handleSubmit = (payloadFromPreview=null, isDraft=false)=>{
     const basePayload = payloadFromPreview ?? buildPayload();
-    const formDataAkhir1 = { ...basePayload, isDraft: isDraft ? 1 : 0 };
+    const formDataAkhir1 = { ...basePayload, isDraft: isDraft ? 1 : 0, operation_token: <?= json_encode(\App\Services\SessionOperation::issue('offline_order')); ?> };
 
     (async ()=>{
       try{

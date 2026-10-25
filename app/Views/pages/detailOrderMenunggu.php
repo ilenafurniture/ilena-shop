@@ -1,5 +1,5 @@
 <?php
-$id_order = $_GET['idorder'];
+$id_order = (string)(service('request')->getGet('idorder') ?? '');
 $pemesananSelectedArr = array_filter($pemesananAll, function ($p) use ($id_order) {
     return $p['id_midtrans'] == $id_order;
 });
@@ -27,8 +27,8 @@ switch ($dataMid['payment_type']) {
         }
         break;
     case 'echannel':
-        $va_number = $dataMid['bill_key'];
-        $biller_code = $dataMid['biller_code'];
+        $va_number = $dataMid['bill_key'] ?? '';
+        $biller_code = $dataMid['biller_code'] ?? '';
         $bank = "mandiri";
         break;
     case 'gopay':
@@ -36,7 +36,7 @@ switch ($dataMid['payment_type']) {
         $bank = "gopay";
         break;
     case 'qris':
-        $va_number = 'https://api.midtrans.com/v2/qris/' . $dataMid['transaction_id'] . '/qr-code';
+        $va_number = !empty($dataMid['transaction_id']) ? (($dataMid['_app_payment_environment'] ?? '') === 'sandbox' ? 'https://api.sandbox.midtrans.com/v2/qris/' : 'https://api.midtrans.com/v2/qris/') . rawurlencode($dataMid['transaction_id']) . '/qr-code' : '';
         $bank = "qris";
         break;
     case 'toko':
@@ -59,7 +59,7 @@ switch ($dataMid['payment_type']) {
 $items = $pemesananSelected['items'];
 $carapembayaranSelected = $carapembayaran[$bank] ?? [];
 
-$waktuExpire = strtotime($dataMid['expiry_time']);
+$waktuExpire = strtotime($dataMid['expiry_time'] ?? '+60 minutes');
 $waktuCurr   = strtotime("+7 Hours");
 $waktuSelisih = $waktuExpire - $waktuCurr;
 $waktu = date("H:i:s", $waktuSelisih);
@@ -379,6 +379,9 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
     </div>
 
     <div class="card pad">
+        <?php if (empty($dataMid['transaction_id'])): ?>
+            <p class="pemberitahuan" role="status">Konfirmasi penyedia pembayaran sedang diperiksa. Jangan membuat pembayaran kedua; gunakan tombol cek status atau hubungi Customer Care dengan ID pesanan ini.</p>
+        <?php endif; ?>
         <!-- Ringkasan singkat -->
         <div class="grid pad" style="padding-top:0;">
             <div class="center">

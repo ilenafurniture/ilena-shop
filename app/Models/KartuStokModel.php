@@ -6,6 +6,12 @@ use CodeIgniter\Model;
 
 class KartuStokModel extends Model
 {
+    protected $beforeInsert = ['defaultReason'];
+    protected function defaultReason(array $event): array
+    {
+        $event['data']['alasan'] ??= '';
+        return $event;
+    }
     protected $table = 'kartu_stok';
     protected $allowedFields = [
         'id_barang',

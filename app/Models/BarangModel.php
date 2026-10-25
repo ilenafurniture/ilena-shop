@@ -39,11 +39,12 @@ class BarangModel extends Model
     public function getBarang($id = false)
     {
         if ($id == false) {
-            return $this->orderBy('nama', 'asc')
+            return array_map([\App\Services\CatalogPricing::class, 'forSale'], $this->orderBy('nama', 'asc')
                         ->where(['active' => '1'])
-                        ->findAll();
+                        ->findAll());
         }
-        return $this->where(['id' => $id, 'active' => '1'])->first();
+        $row = $this->where(['id' => $id, 'active' => '1'])->first();
+        return $row ? \App\Services\CatalogPricing::forSale($row) : null;
     }
 
     public function getBarangNama($nama = false)
@@ -61,9 +62,18 @@ class BarangModel extends Model
                     $namaTerpilih[$namaKey] = true;
                 }
             }
-            return $seluruhBarangFilter;
+            return array_map([\App\Services\CatalogPricing::class, 'forSale'], $seluruhBarangFilter);
         }
-        return $this->where(['id' => $nama, 'active' => '1'])->first();
+        $row = $this->where(['id' => $nama, 'active' => '1'])->first();
+        return $row ? \App\Services\CatalogPricing::forSale($row) : null;
+    }
+
+    /** Caller must hold a transaction; used by stock-changing operations. */
+    public function getBarangForUpdate($id): ?array
+    {
+        $sql=$this->db->table($this->table)->where('id',$id)->where('active','1')->getCompiledSelect();
+        $row=$this->db->query($sql.($this->db->DBDriver==='MySQLi'?' FOR UPDATE':''))->getRowArray();
+        return $row ? \App\Services\CatalogPricing::forSale($row) : null;
     }
 
     public function getBarangAdmin($id = false)

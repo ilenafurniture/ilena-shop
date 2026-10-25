@@ -654,7 +654,7 @@ const radioAddressElm = document.querySelectorAll('input[name="address"]');
 const inputEmailElm = document.getElementById("inputEmail");
 const inputNamaElm = document.getElementById("inputNama");
 const inputNohpElm = document.getElementById("inputNohp");
-const alamatJson = JSON.parse('<?= $alamatJson ?>');
+const alamatJson = JSON.parse(<?= json_encode($alamatJson, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>);
 const formEditElm = document.getElementById("formEdit");
 const btnShippingElm = document.getElementById("btn-shipping");
 const btnAddAddressElm = document.getElementById("btn-add-address");

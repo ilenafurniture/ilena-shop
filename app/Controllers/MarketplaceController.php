@@ -41,7 +41,7 @@ class MarketplaceController extends BaseController
 
     public function product()
     {
-        $cart = $this->keranjangMarketModel->getKeranjang();
+        $cart = (new \App\Services\SessionMarketCart())->items();
         $product = $this->barangModel->getBarang();
         $data = [
             'title' => 'Semua Produk',
@@ -58,7 +58,7 @@ class MarketplaceController extends BaseController
     public function find($teks)
     {
         $cari = str_replace("-", " ", $teks);
-        $cart = $this->keranjangMarketModel->getKeranjang();
+        $cart = (new \App\Services\SessionMarketCart())->items();
         $produk = $this->barangModel->like('nama', $cari, 'both')->where(['active' => '1'])->findAll();
         $data = [
             'title' => 'Cari Produk',
@@ -71,10 +71,10 @@ class MarketplaceController extends BaseController
 
     public function cart()
     {
-        $cart = $this->keranjangMarketModel->getKeranjang();
+        $cart = (new \App\Services\SessionMarketCart())->items();
         foreach ($cart as $ind_c => $c) {
             $produknya = $this->barangModel->getBarang($c['id_barang']);
-            $cart[$ind_c]['nama'] = $produknya['nama'];
+            $cart[$ind_c]['nama'] = $produknya['nama'] ?? 'Produk tidak tersedia';
         }
         $data = [
             'title' => 'Keranjang Produk',
@@ -85,115 +85,51 @@ class MarketplaceController extends BaseController
 
     public function addCart($id_barang, $varian)
     {
-        $cart = $this->keranjangMarketModel->getKeranjang();
-        $ketemu = false;
-        foreach ($cart as $ind_c => $c) {
-            $jumlahsekarang = $c['jumlah'];
-            if ($c['id_barang'] == $id_barang && $c['varian'] == $varian) {
-                $this->keranjangMarketModel->where(['id_barang' => $id_barang, 'varian' => $varian])->set([
-                    'jumlah' => $jumlahsekarang + 1,
-                ])->update();
-                $ketemu = true;
-            }
-        }
-        if (!$ketemu) {
-            $data = [
-                'id_barang' => $id_barang,
-                'varian' => $varian,
-                'jumlah' => 1,
-            ];
-            $this->keranjangMarketModel->insert((object)$data);
-        }
+        $product=$this->barangModel->getBarang($id_barang); $variant=rawurldecode((string)$varian); $valid=false;
+        foreach (json_decode($product['varian']??'[]',true)??[] as $v) if (strcasecmp((string)$v['nama'],$variant)===0 && (int)$v['stok']>0) $valid=true;
+        if (!$valid) return redirect()->to('/market/product')->with('msg','Produk/varian tidak tersedia.');
+        (new \App\Services\SessionMarketCart())->add((string)$id_barang,$variant);
         return redirect()->to('/market/product');
     }
 
     public function submitOrder()
     {
-        $keranjang = $this->keranjangMarketModel->getKeranjang();
-        $items = [];
-        $hargaTotal = 0;
-        $waktu = date("H:i:s", strtotime(('+7 Hours')));
-        $pesananke = $this->pemesananModel->orderBy('id', 'desc')->first();
-        $idFix = "IL" . (sprintf("%08d", $pesananke ? ((int)$pesananke['id'] + 1) : 1)) . 'MP';
-        $randomId = "IL" . rand();
-        foreach ($keranjang as $k) {
-            $produk = $this->barangModel->getBarang($k['id_barang']);
-            $item = [
-                'id' => $k['id_barang'],
-                'price' => $produk['harga'],
-                'quantity' => $k['jumlah'],
-                'name' => $produk['nama'] . " " . json_decode($produk['deskripsi'], true)['dimensi']['asli']['panjang'] . ' (' . $k['varian'] . ')',
-                'packed' => false,
-            ];
-            array_push($items, $item);
-            $hargaTotal += $produk['harga'] * $k['jumlah'] * (100 - $produk['diskon']) / 100;
-
-            //kartu stok ditambahkan
-            $varian = json_decode($produk['varian'], true);
-            $saldo = 0;
-            foreach ($varian as $ind_v => $v) {
-                if (strtolower($v['nama']) == strtolower($k['varian'])) {
-                    $saldo = (int)$v['stok'];
-                }
+        $cart=new \App\Services\SessionMarketCart(); $rows=array_values($cart->items());
+        if (!$rows) return redirect()->to('/market/cart')->with('msg','Keranjang kosong atau sudah dikirim.');
+        $date=(string)$this->request->getPost('tanggal');
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/D',$date) || strtotime($date)===false) return redirect()->back()->with('msg','Tanggal pesanan tidak valid.');
+        $db=db_connect(); $db->transBegin();
+        try {
+            usort($rows,static fn($a,$b)=>[(string)$a['id_barang'],(string)$a['varian']]<=>[(string)$b['id_barang'],(string)$b['varian']]);
+            $id=\App\Services\OrderIdentifiers::market(); $items=[]; $total=0;
+            $timestamp=$date.' '.(new \DateTimeImmutable('now',new \DateTimeZone('Asia/Jakarta')))->format('H:i:s');
+            foreach ($rows as $row) {
+                $product=$this->barangModel->getBarangForUpdate($row['id_barang']);
+                if (!$product) throw new \RuntimeException('Produk tidak tersedia.');
+                $variant=null;
+                foreach (json_decode($product['varian'],true)??[] as $v) if (strcasecmp((string)$v['nama'],(string)$row['varian'])===0) $variant=$v;
+                $qty=(int)$row['jumlah'];
+                if (!$variant || $qty<1 || $qty>(int)$variant['stok']) throw new \RuntimeException('Varian atau stok berubah. Periksa keranjang.');
+                $price=\App\Services\CatalogPricing::unitPrice($product);
+                $desc=json_decode($product['deskripsi']??'{}',true);
+                $name=$product['nama'].' '.($desc['dimensi']['asli']['panjang']??'').' ('.$variant['nama'].')';
+                $items[]=['id'=>$product['id'],'name'=>$name,'variant'=>$variant['nama'],'quantity'=>$qty,'price'=>$price];
+                $total+=$price*$qty;
+                if (!$this->kartuStokModel->insert(['id_barang'=>$product['id'],'tanggal'=>$timestamp,'keterangan'=>$id.'-'.$product['id'].'-'.strtoupper($variant['nama']),'debit'=>0,'kredit'=>$qty,'saldo'=>(int)$variant['stok'],'pending'=>true,'id_pesanan'=>$id,'varian'=>strtoupper($variant['nama'])])) throw new \RuntimeException('Kartu stok gagal disimpan.');
             }
-            $tanggalNoStrip = date("YmdHis", strtotime($this->request->getVar('tanggal') . " " . $waktu));
-            $this->kartuStokModel->insert([
-                'id_barang' => $k['id_barang'],
-                'tanggal' => $this->request->getVar('tanggal') . " " . $waktu,
-                'keterangan' => $tanggalNoStrip . "-" . $k['id_barang'] . "-" . strtoupper($k['varian']) . "-" . $idFix,
-                'debit' => 0,
-                'kredit' => $k['jumlah'],
-                'saldo' => $saldo,
-                'pending' => true,
-                'id_pesanan' => $idFix,
-                'varian' => strtoupper($k['varian'])
-            ]);
-        }
-        $data = [
-            'data_mid'          => json_encode([
-                'transaction_time' => $this->request->getVar('tanggal') . " " . $waktu,
-                'order_id'         => $idFix,
-                'gross_amount'     => $hargaTotal,
-                'payment_type'     => 'market'
-            ]),
-            'id_midtrans'       => $idFix,
-            'email'             => $this->request->getVar('email'),
-            'kurir'             => json_encode([
-                'nama' => $this->request->getVar('nama_ekspedisi'),
-                'deskripsi' => $this->request->getVar('jenis_kurir'),
-                'harga' => $this->request->getVar('harga_pengiriman'),
-                'estimasi' => $this->request->getVar('estimasi')
-            ]),
-            'resi'              => $this->request->getVar('no_resi'),
-            'harga'             => $this->request->getVar('harga_pengiriman'),
-            'estimasi'          => $this->request->getVar('estimasi'),
-            'nama'              => $this->request->getVar('nama_lengkap'),
-            'nohp'              => $this->request->getVar('no_hp'),
-            'alamat'            => $this->request->getVar('alamat_lengkap'),
-            'status'            => 'Proses',
-            'id_marketplace'    => $this->request->getVar('id_marketplace'),
-            'items'             => json_encode($items),
-        ];
-        $this->pemesananModel->insert((object)$data);
-        $this->keranjangMarketModel->truncate();
-        return redirect()->to('/market/product');
+            $post=fn($name)=>(string)$this->request->getPost($name);
+            $order=['id_midtrans'=>$id,'items'=>json_encode($items),'data_mid'=>json_encode(['transaction_time'=>$timestamp,'order_id'=>$id,'gross_amount'=>$total,'payment_type'=>'market']),
+                'email'=>$post('email'),'nama'=>$post('nama_lengkap'),'nohp'=>$post('no_hp'),'alamat'=>$post('alamat_lengkap'),'status'=>'Proses','resi'=>$post('no_resi'),'id_marketplace'=>$post('id_marketplace'),
+                'status_print'=>'siap','keterangan_suratjalan'=>'','kurir'=>json_encode(['nama'=>$post('nama_ekspedisi'),'deskripsi'=>$post('jenis_kurir'),'harga'=>(int)$post('harga_pengiriman'),'estimasi'=>$post('estimasi')])];
+            if (!$this->pemesananModel->insert($order) || !$db->transStatus()) throw new \RuntimeException('Pesanan gagal disimpan.');
+            $db->transCommit(); $cart->clear();
+            return redirect()->to('/market/product')->with('msg','Pesanan disimpan untuk konfirmasi.');
+        } catch (\Throwable $e) { $db->transRollback(); log_message('error','Marketplace submit: {error}',['error'=>$e->getMessage()]); return redirect()->back()->with('msg','Pesanan gagal diproses: '.$e->getMessage()); }
     }
 
     public function reduceCart($id)
     {
-        $cart = $this->keranjangMarketModel->getKeranjang();
-        foreach ($cart as $c) {
-            $jumlahsekarang = $c['jumlah'];
-            if ($c['id'] == $id) {
-                if ($jumlahsekarang > 1) {
-                    $this->keranjangMarketModel->where(['id_barang' => $c['id_barang'], 'varian' => $c['varian']])->set([
-                        'jumlah' => $jumlahsekarang - 1,
-                    ])->update();
-                } else {
-                    $this->keranjangMarketModel->where(['id' => $id])->delete();
-                }
-            }
-        }
+        (new \App\Services\SessionMarketCart())->reduce((string)$id);
         return redirect()->to('/market/product');
     }
 }

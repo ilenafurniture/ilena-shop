@@ -13,7 +13,6 @@ class PemesananModel extends Model
         'nohp',
         'alamat',
         'resi',
-        'harga',
         'id_midtrans',
         'items',
         'status',

@@ -99,8 +99,6 @@ $routes->get('/editarticle/(:any)', 'AdminController::editArticle/$1', ['filter'
 // ==================== GambarController ====================
 $routes->post('/changepic/(:any)', 'GambarController::gantiUkuran/$1', ['filter' => ['adminFilter', 'csrf']]);
 $routes->post('/gantilokasi/(:any)', 'GambarController::gantiLokasi/$1', ['filter' => ['adminFilter', 'csrf']]);
-$routes->get('/cobainput', 'GambarController::actionCobaInput');
-$routes->get('/gamwm', 'GambarController::tampilGambarVarWM');
 $routes->get('/viewpic/(:segment)', 'GambarController::tampilGambarBarang/$1');
 $routes->get('/product-cover/(:segment)', 'Pages::productCoverImage/$1');
 $routes->get('/viewpichover/(:segment)', 'GambarController::tampilGambarBarangHover/$1');
@@ -145,7 +143,6 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
 
     // legacy (kalau masih dipakai)
     $routes->post('product/(:any)', 'AdminController::actionEditProduct/$1');
-    $routes->post('product-old', 'AdminController::actionEditProductOld');
 
     // Order Online (admin)
     $routes->get('order', 'AdminController::order');
@@ -308,7 +305,6 @@ $routes->post('/market/submitorder', 'MarketplaceController::submitOrder', ['fil
 $routes->post('/maket/submitorder', 'MarketplaceController::submitOrder', ['filter' => ['marketFilter', 'csrf']]);
 
 // routes untuk nyolong raja ongkir (sesuai punya kamu - tapi ini aneh karena actionnya submitOrder)
-$routes->post('/ro/provinsi', 'MarketplaceController::submitOrder', ['filter' => ['marketFilter', 'csrf']]);
 
 
 // ==================== Analytics (admin) ====================

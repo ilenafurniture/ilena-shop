@@ -236,6 +236,11 @@
                             class="material-icons">local_shipping</i></a>
                     <?php } ?>
                     <?php if ($p['status'] == 'Menunggu Pembayaran') { ?>
+                    <?php if (($p['data_mid']['payment_type'] ?? '') === 'admin'): ?>
+                    <form method="post" action="/admin/confirm-mp/<?= (int)$p['id']; ?>" class="d-inline" onsubmit="return confirm('Konfirmasi bahwa pembayaran manual telah diterima?');">
+                        <?= csrf_field(); ?><button type="submit" class="btn" title="Konfirmasi pembayaran manual">Konfirmasi lunas</button>
+                    </form>
+                    <?php endif; ?>
                     <a class="btn" href="#" onclick="cancelOrder('<?= esc($p['id_midtrans'], 'js'); ?>'); return false;"><i class="material-icons"
                             style="color: var(--merah);">cancel</i></a>
                     <?php } ?>
@@ -298,6 +303,11 @@
                                     class="material-icons">edit</i></a>
                             <?php } ?>
                             <?php if ($p['status'] == 'Menunggu Pembayaran') { ?>
+                            <?php if (($p['data_mid']['payment_type'] ?? '') === 'admin'): ?>
+                            <form method="post" action="/admin/confirm-mp/<?= (int)$p['id']; ?>" class="d-inline" onsubmit="return confirm('Konfirmasi bahwa pembayaran manual telah diterima?');">
+                                <?= csrf_field(); ?><button type="submit" class="btn" title="Konfirmasi pembayaran manual">Konfirmasi lunas</button>
+                            </form>
+                            <?php endif; ?>
                             <a class="btn" href="#" onclick="cancelOrder('<?= esc($p['id_midtrans'], 'js'); ?>'); return false;"><i class="material-icons"
                                     style="color: var(--merah);">cancel</i></a>
                             <?php } ?>
@@ -366,7 +376,7 @@ const tooltipList = [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el))
 
 <!-- ===== Original JS (dipertahankan) + Filter/Search tambahan ===== -->
 <script>
-const pesanan = JSON.parse('<?= $pesananJson; ?>');
+const pesanan = JSON.parse(<?= json_encode($pesananJson, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>);
 const idElm = document.getElementById("id");
 const namaElm = document.getElementById("nama");
 const nohpElm = document.getElementById("nohp");

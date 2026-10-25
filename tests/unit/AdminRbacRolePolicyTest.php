@@ -5,6 +5,17 @@ use CodeIgniter\Test\CIUnitTestCase;
 
 final class AdminRbacRolePolicyTest extends CIUnitTestCase
 {
+    public function testOfflinePrefixesAndAdministrativeAliasesAreMapped(): void
+    {
+        $rbac=new AdminRbacService();
+        $this->assertSame('orders_offline',$rbac->routePermission('admin/order/offline/sale'));
+        $this->assertSame('project_interior',$rbac->routePermission('admin/order/offline/interior'));
+        $this->assertSame('content',$rbac->routePermission('editarticle/1'));
+        $this->assertSame('products',$rbac->routePermission('changepic/1'));
+        $this->assertSame('products',$rbac->routePermission('gantilokasi/1'));
+        $this->assertSame('orders_online',$rbac->routePermission('cancelorder/1'));
+    }
+
     public function testMarketplaceAndShopOrderAccessUseExplicitPermissions(): void
     {
         $rbac = new AdminRbacService();

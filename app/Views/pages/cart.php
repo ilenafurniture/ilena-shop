@@ -1,6 +1,9 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <div class="container d-flex justify-content-center align-items-center ilena-cart-page <?= empty($keranjang) ? 'is-empty' : ''; ?>">
+    <?php if ($cartMessage = session()->getFlashdata('msg')): ?>
+        <p class="pemberitahuan" role="alert"><?= esc($cartMessage); ?></p>
+    <?php endif; ?>
     <div class="konten baris-ke-kolom">
         <div style="flex:1;">
             <div class="mb-4">

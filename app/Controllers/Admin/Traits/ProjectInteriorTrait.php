@@ -210,6 +210,7 @@ trait ProjectInteriorTrait
         // ======================
         $subtotalDpp = 0;
         $cleanItems  = [];
+        $seenCodes = [];
 
         foreach ($items as $it) {
             if (!is_array($it)) continue;
@@ -234,6 +235,8 @@ trait ProjectInteriorTrait
                 return redirect()->back()->with('msg', 'Item tidak valid. Pastikan kode/nama/harga/qty terisi benar.');
             }
 
+            if (strlen($kode)>50 || mb_strlen($nama)>255 || isset($seenCodes[$kode])) return redirect()->back()->with('msg','Kode item harus unik (maksimal 50 karakter) dan nama maksimal 255 karakter.');
+            $seenCodes[$kode]=true;
             $sub = $harga * $qty;
             $subtotalDpp += $sub;
 
@@ -252,10 +255,12 @@ trait ProjectInteriorTrait
 
         $totalPpn   = (int) round($subtotalDpp * $ppnRate / 100);
         $grandTotal = $subtotalDpp + $totalPpn;
+        if ($grandTotal>2147483647) return redirect()->back()->with('msg','Nilai project melebihi batas penyimpanan saat ini.');
 
         // ======================
         // TRANSACTION
         // ======================
+        $atomic=new \App\Services\AtomicOperation($db);
         $db->transBegin();
 
         try {
@@ -321,6 +326,10 @@ trait ProjectInteriorTrait
 
                 // FIX: ini yang bikin sisa tagihan benar
                 'nilai_kontrak' => $grandTotal,
+                'harga_satuan' => count($cleanItems)===1 ? (int)$cleanItems[0]['harga_satuan'] : 0,
+                'qty' => array_sum(array_column($cleanItems,'qty')),
+                'nama_barang' => count($cleanItems)===1 ? $cleanItems[0]['nama_barang'] : $namaProject,
+                'kode_barang' => count($cleanItems)===1 ? $cleanItems[0]['kode_barang'] : $kodeProject,
 
                 // tetap simpan pajak
                 'ppn_mode'     => $ppnMode,
@@ -351,6 +360,7 @@ trait ProjectInteriorTrait
             }
 
             $db->transCommit();
+            $atomic->commit();
 
             $labelDok = ($jenisFaktur === 'nf') ? 'NF' : 'SJ';
             return redirect()->to('/admin/project-interior/' . $kodeProject)
@@ -410,7 +420,11 @@ trait ProjectInteriorTrait
             }
         }
 
+        $paymentNonces=(array)session()->get('pi_payment_nonces');
+        $paymentNonces[$kodeProject] ??= bin2hex(random_bytes(32));
+        session()->set('pi_payment_nonces',array_slice($paymentNonces,-30,null,true));
         return view('admin/projectInteriorDetail', [
+            'paymentNonce' => $paymentNonces[$kodeProject],
             'title'            => 'Detail Project Interior',
             'project'          => $project,
             'items'            => $items,
@@ -428,11 +442,15 @@ trait ProjectInteriorTrait
      */
     public function actionProjectInteriorAddPayment(string $kodeProject)
     {
+        $atomic=new \App\Services\AtomicOperation(db_connect());
+        try {
+        $nonce=(string)$this->request->getPost('payment_nonce');
+        $nonces=(array)session()->get('pi_payment_nonces');
+        if ($nonce==='' || !hash_equals((string)($nonces[$kodeProject]??''),$nonce)) return redirect()->back()->with('msg','Form pembayaran sudah dipakai atau kedaluwarsa. Muat ulang detail project.');
         $db = \Config\Database::connect();
 
-        $project = $db->table('project_interior')
-            ->where('kode_project', $kodeProject)
-            ->get()->getRowArray();
+        $projectSql=$db->table('project_interior')->where('kode_project',$kodeProject)->getCompiledSelect();
+        $project=$db->query($projectSql.($db->DBDriver==='MySQLi'?' FOR UPDATE':''))->getRowArray();
 
         if (!$project) {
             return redirect()->back()->with('msg', 'Project interior tidak ditemukan.');
@@ -490,12 +508,17 @@ trait ProjectInteriorTrait
             ->where('id', $project['id'])
             ->update([
                 'total_bayar' => $totalBayar,
+                'total_dp' => (int)($project['total_dp']??0)+($jenis==='dp'?$nominal:0),
                 'status'      => $status,
             ]);
 
+        $atomic->commit();
+        unset($nonces[$kodeProject]); session()->set('pi_payment_nonces',$nonces);
         return redirect()
             ->to('/admin/project-interior/' . $kodeProject)
             ->with('msg', 'Pembayaran berhasil ditambahkan. Status sekarang: ' . $status);
+
+        } catch (\Throwable $e) { log_message('error','Atomic operation failed: {error}',['error'=>$e->getMessage()]); return redirect()->back()->with('msg','Operasi dibatalkan: '.$e->getMessage()); }
     }
 
     /**

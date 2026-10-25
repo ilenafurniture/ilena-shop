@@ -47,6 +47,11 @@ class AdminRbacService
         }
 
         $rules = [
+            'admin/order/offline/interior' => 'project_interior',
+            'editarticle' => 'content',
+            'changepic' => 'products',
+            'gantilokasi' => 'products',
+            'cancelorder' => 'orders_online',
             'admin/rbac' => 'rbac',
             'admin/product-bulk-edit' => 'products',
             'admin/producttable' => 'products',
@@ -106,6 +111,8 @@ class AdminRbacService
             'analytics' => 'analytics',
         ];
 
+        // Most-specific match first; admin/order must never shadow offline.
+        uksort($rules, static fn($a, $b) => strlen($b) <=> strlen($a));
         foreach ($rules as $prefix => $permission) {
             if ($path === $prefix || str_starts_with($path, $prefix . '/')) {
                 return $permission;
@@ -139,7 +146,16 @@ class AdminRbacService
         }
 
         $permission = $this->routePermission($path);
-        if ($permission === null && str_starts_with($normalizedPath, 'admin/')) {
+        // Shared SJ screens must authorize the source, not require the offline module
+        // for a staff member assigned only to project interior.
+        if ((string)session()->get('role') !== '1'
+            && preg_match('~^admin/surat-jalan/offline/(\d+)(?:/.*)?$~', $normalizedPath, $match)
+        ) {
+            $db=\Config\Database::connect();
+            $isInterior=$db->table('surat_jalan sj')->join('project_interior pi','pi.kode_sj = sj.id_pesanan')->where('sj.id',(int)$match[1])->countAllResults()>0;
+            return $this->hasPermission($email, $isInterior ? 'project_interior' : 'orders_offline');
+        }
+        if ($permission === null) {
             return (string) session()->get('role') === '1';
         }
 

@@ -1,5 +1,5 @@
 <?php
-$id_order = $_GET['idorder'];
+$id_order = (string)(service('request')->getGet('idorder') ?? '');
 $pemesananSelectedArr = array_filter($pemesananAll, function ($p) use ($id_order) {
     return $p['id_midtrans'] == $id_order;
 });

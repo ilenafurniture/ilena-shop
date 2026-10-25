@@ -263,13 +263,6 @@ class ShippingService
 
     private function itemPrice(array $product): int
     {
-        $price = (float) ($product['harga'] ?? 0);
-        $discount = (float) ($product['diskon'] ?? 0);
-
-        if ($discount > 0) {
-            $price *= (100 - $discount) / 100;
-        }
-
-        return (int) round($price);
+        return CatalogPricing::unitPrice($product);
     }
 }

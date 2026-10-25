@@ -34,5 +34,6 @@ class ProjectInteriorModel extends Model
         'subtotal_dpp',
         'total_ppn',
         'grand_total',
+        'nilai_kontrak',
     ];
 }

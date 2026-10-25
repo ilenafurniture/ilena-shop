@@ -94,11 +94,10 @@ input {
 <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script>
-console.log(JSON.parse('<?= $produkJson; ?>'))
 </script>
 <script type="text/babel">
     const { useState, useEffect } = React;
-    const produkSemua = JSON.parse('<?= $produkJson; ?>');
+    const produkSemua = JSON.parse(<?= json_encode($produkJson, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>);
     function waktuSkrg() {
         const date = new Date();
         let datePart = [
@@ -114,7 +113,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
         return datePart + " " + timePart;
     }
     const App = () => {
-        const [listProduk, setListProduk] = useState(JSON.parse('<?= $produkJson; ?>'))
+        const [listProduk, setListProduk] = useState(produkSemua)
         const [currentPage, setCurrentPage] = useState(1);
         const [pageNumbers, setPageNumbers] = useState([]);
         const [currentItems, setCurrentItems] = useState([]); 
@@ -296,7 +295,7 @@ console.log(JSON.parse('<?= $produkJson; ?>'))
                         headers: {
                             "Content-Type": "application/json",
                         },
-                        body: JSON.stringify(body),
+                        body: JSON.stringify({...body, operation_token: <?= json_encode(\App\Services\SessionOperation::issue('manual_order')); ?>}),
                     }
                 );
                 const responseJson = await response.json()

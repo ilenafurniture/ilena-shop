@@ -296,8 +296,10 @@ $formatter = new \NumberFormatter('id_ID', \NumberFormatter::CURRENCY);
 $formatter->setTextAttribute(\NumberFormatter::CURRENCY_CODE, 'IDR');
 $formatter->setAttribute(\NumberFormatter::FRACTION_DIGITS, 0);
 
-function rupiah_local($n, $formatter){
-  return $formatter->formatCurrency((int)$n, 'IDR');
+if (!function_exists('rupiah_local')) {
+    function rupiah_local($n, $formatter){
+        return $formatter->formatCurrency((int)$n, 'IDR');
+    }
 }
 
 $nilaiKontrak = (int)($project['nilai_kontrak'] ?? ($project['grand_total'] ?? 0));
@@ -491,16 +493,11 @@ $kodeProject = (string)($project['kode_project'] ?? '');
                 <?php else : ?>
 
                 <!-- FORM CREATE SJ (POST) + PILIH ITEM -->
-                <form id="form-create-sj"
-                    action="<?= site_url('admin/project-interior/' . $kodeProject . '/sj/create'); ?>" method="post">
-                    <?= csrf_field(); ?>
-
                     <div class="table-responsive">
                         <table class="table table-sm align-middle mb-0">
                             <thead>
                                 <tr>
                                     <th class="text-center" style="width:80px;">Kirim?</th>
-                                    <th class="text-center" style="width:70px;">Pilih</th>
                                     <th style="width:160px;">Kode</th>
                                     <th>Nama Item</th>
                                     <th class="text-center" style="width:90px;">Dipesan</th>
@@ -527,11 +524,6 @@ $kodeProject = (string)($project['kode_project'] ?? '');
                                                 <?= $disabledCheck ? 'disabled' : ''; ?>>
                                         </span>
                                     </td>
-                                    <td class="text-center">
-                                        <?php $keyPost = $kode . '||'; ?>
-                                        <input type="checkbox" name="item_keys[]" value="<?= esc($keyPost); ?>"
-                                            <?= $remain > 0 ? 'checked' : 'disabled'; ?> />
-                                    </td>
                                     <td class="mono" style="font-weight:900;"><?= esc($kode ?: '-'); ?></td>
                                     <td><?= esc($it['nama_barang'] ?? '-'); ?></td>
                                     <td class="text-center mono"><?= esc($ordered); ?></td>
@@ -556,8 +548,6 @@ $kodeProject = (string)($project['kode_project'] ?? '');
                             Setelah itu isi qty yang dikirim, lalu <b>Simpan</b> / <b>Finalize</b>.
                         </div>
                     </div>
-                </form>
-
                 <?php endif; ?>
 
                 <hr style="border-color:var(--slate-100);">
@@ -709,6 +699,7 @@ $kodeProject = (string)($project['kode_project'] ?? '');
 
                 <form id="form-payment" action="<?= site_url('admin/project-interior/' . $kodeProject . '/payment'); ?>"
                     method="post">
+                    <input type="hidden" name="payment_nonce" value="<?= esc($paymentNonce ?? '', 'attr'); ?>">
                     <?= csrf_field(); ?>
 
                     <div class="mb-2">
