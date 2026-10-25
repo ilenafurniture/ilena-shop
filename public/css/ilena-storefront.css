@@ -2990,6 +2990,13 @@ body.ilena-storefront .product-detail-soft .ilena-product-related-grid { grid-te
     body.ilena-storefront .product-detail-soft :where(img, label, button, a) { transition: none !important; }
 }
 
+/* Transparent Ilena fallback stays legible within product/photo image frames. */
+img.ilena-image-fallback {
+    object-fit: contain !important;
+    background-color: transparent !important;
+    filter: none !important;
+}
+
 /* Mobile header: keep the Ilena mark, search and menu; the drawer must be displayable when checked. */
 @media (max-width: 600px) {
     body.ilena-storefront .ilena-mobile-lunarea-link { display: none !important; }

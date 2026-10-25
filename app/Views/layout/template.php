@@ -208,6 +208,22 @@
     <link rel="stylesheet" href="<?= base_url('css/ilena-editorial-pages.css?v=' . filemtime(FCPATH . 'css/ilena-editorial-pages.css')); ?>">
     <?php endif; ?>
     <link rel="icon" href="<?= base_url('img/logo/N.png?v=' . date('d-m-Y')); ?>" type="image/png">
+    <script>
+    (() => {
+        const fallbackImageUrl = <?= json_encode(base_url('img/ilena-image-placeholder.png'), JSON_UNESCAPED_SLASHES); ?>;
+        document.addEventListener('error', (event) => {
+            const image = event.target;
+            if (!(image instanceof HTMLImageElement)) return;
+            if (image.dataset.ilenaFallbackApplied === 'true') {
+                image.hidden = true;
+                return;
+            }
+            image.dataset.ilenaFallbackApplied = 'true';
+            image.classList.add('ilena-image-fallback');
+            image.src = fallbackImageUrl;
+        }, true);
+    })();
+    </script>
 </head>
 
 <?php
