@@ -616,26 +616,52 @@ function detailZoomUrl(slot) {
     return detailBase3000 + slot + "?v=" + detailVersion;
 }
 const galleryThumbs = document.querySelector('.container-img-detail-select');
-galleryThumbs?.addEventListener('change', (event) => {
-    const selectedPhoto = event.target.closest('input[name="gambar"]');
+function showSelectedProductPhoto(selectedPhoto) {
     if (!selectedPhoto) return;
-    const zoomLayer = document.querySelector('.ilena-product-zoom');
+    const zoomLayer = document.querySelector('.ilena-product-gallery__stage > .ilena-product-zoom');
     const mainPhoto = document.querySelector('.ilena-product-gallery__stage > img.img-detail-prev');
     if (!zoomLayer || !mainPhoto) return;
+    const isHoverPhoto = selectedPhoto.value === 'hover';
+    const slot = String(selectedPhoto.value || selectedPhoto.dataset.slot || '').split(',')[0].trim();
+    if (!isHoverPhoto && !slot) return;
+    const photoKey = isHoverPhoto ? 'hover' : slot;
+    if (mainPhoto.dataset.gallerySelection === photoKey) return;
+    mainPhoto.dataset.gallerySelection = photoKey;
+    const requestedPhotoUrl = isHoverPhoto ? detailHoverUrl : detailImageUrl(slot);
+    const routeFallbackUrl = isHoverPhoto ? '' : detailBase1000 + encodeURIComponent(detailProductId) + '/' + encodeURIComponent(slot) + '?v=' + detailVersion;
     zoomLayer.classList.add('d-none');
+    zoomLayer.setAttribute('aria-hidden', 'true');
     zoomLayer.style.backgroundImage = '';
     zoomLayer.dataset.loadedSource = '';
-    if (selectedPhoto.value === 'hover') {
+    mainPhoto.onerror = () => {
+        if (mainPhoto.dataset.galleryFallbackTried !== photoKey && routeFallbackUrl && requestedPhotoUrl !== routeFallbackUrl) {
+            mainPhoto.dataset.galleryFallbackTried = photoKey;
+            mainPhoto.src = routeFallbackUrl;
+            return;
+        }
+        mainPhoto.onerror = null;
+        mainPhoto.src = <?= json_encode(base_url('img/ilena-image-placeholder.png'), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+    };
+    mainPhoto.onload = () => { delete mainPhoto.dataset.galleryFallbackTried; };
+    if (isHoverPhoto) {
         window.isHoverDetailSelected = true;
         zoomLayer.dataset.zoomSrc = '';
-        mainPhoto.src = detailHoverUrl;
+        mainPhoto.src = requestedPhotoUrl;
         return;
     }
-    const slot = String(selectedPhoto.value || selectedPhoto.dataset.slot || '').split(',')[0].trim();
-    if (!slot) return;
     window.isHoverDetailSelected = false;
     zoomLayer.dataset.zoomSrc = detailZoomUrl(slot);
-    mainPhoto.src = detailImageUrl(slot);
+    mainPhoto.src = requestedPhotoUrl;
+}
+galleryThumbs?.addEventListener('change', (event) => {
+    const selectedPhoto = event.target instanceof Element ? event.target.closest('input[name="gambar"]') : null;
+    showSelectedProductPhoto(selectedPhoto);
+});
+galleryThumbs?.addEventListener('click', (event) => {
+    const label = event.target instanceof Element ? event.target.closest('label.img-detail-select[for]') : null;
+    if (!label) return;
+    const selectedPhoto = document.getElementById(label.htmlFor);
+    if (selectedPhoto instanceof HTMLInputElement) showSelectedProductPhoto(selectedPhoto);
 });
 radioVarianElm.forEach(elm => {
     elm.addEventListener('change', (e) => {

@@ -9,54 +9,48 @@ $homeImage = static function (string $file, int $width = 1200): string {
 };
 ?>
 <?php if ($msg_active) { ?>
-<div id="modal-voucher" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
-    class="d-flex justify-content-center align-items-center">
-    <div style="border-radius: 10px; overflow: hidden; background-color: white; width: 80%; max-width: 500px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);"
-        class="p-5">
-        <h1 class="teks-sedang mb-3">Klaim voucher diskon 5% Anda sekarang juga</h1>
-        <p class="text-secondary">*S&K diskon ini hanya berlaku 1 bulan sejak menjadi member kami</p>
-        <a href="/product" class="btn-default w-100 text-center mb-2">Beli Produk</a>
-        <button class="btn-teks-aja mx-auto" onclick="closeModalVoucher()">Nanti</button>
+<div id="modal-voucher" class="ilena-home-popup ilena-home-popup--active" role="presentation">
+    <div class="ilena-home-popup__backdrop" onclick="closeModalVoucher()">
+        <section class="ilena-home-popup__dialog ilena-home-popup__dialog--voucher" role="dialog" aria-modal="true" aria-labelledby="voucher-popup-title" onclick="event.stopPropagation()">
+            <button type="button" class="ilena-home-popup__close" onclick="closeModalVoucher()" aria-label="Tutup promo">&times;</button>
+            <span class="ilena-home-popup__eyebrow">ILENA MEMBER BENEFIT</span>
+            <h2 id="voucher-popup-title">Selamat datang di ruang yang lebih istimewa.</h2>
+            <p>Klaim voucher diskon 5% Anda dan temukan furniture yang terasa true to you.</p>
+            <small>*S&amp;K diskon berlaku 1 bulan sejak menjadi member.</small>
+            <a href="/product" class="ilena-home-popup__primary">Jelajahi koleksi</a>
+            <button type="button" class="ilena-home-popup__dismiss" onclick="closeModalVoucher()">Nanti saja</button>
+        </section>
     </div>
 </div>
 <script>
 function closeModalVoucher() {
-    document.getElementById('modal-voucher').classList.add('d-none')
-    document.getElementById('modal-voucher').classList.remove('d-flex')
+    const voucherPopup = document.getElementById('modal-voucher');
+    if (!voucherPopup) return;
+    voucherPopup.classList.add('d-none');
+    voucherPopup.classList.remove('ilena-home-popup--active');
 }
 </script>
 <?php } ?>
 
 
 
-<div id="login-modal" class="d-none">
-    <div style="position: fixed; background-color: rgba(0, 0, 0, 0.5); top: 0; left: 0; width: 100vw; height: 100svh; z-index: 99;"
-        class="show-flex-ke-hide justify-content-center align-items-center">
-        <div style="width: fit-content; height: fit-content;  overflow: hidden; position:relative;">
-            <div style="position: absolute;"
-                class="p-3 w-100 h-100 d-flex flex-column justify-content-between align-items-center">
-                <div class="d-flex justify-content-end w-100 py-1 px-3">
-                    <p class="m-0 d-block" style="cursor: pointer; font-size:18px; font-weight:bold; color:black;"
-                        onclick="closeLoginModel()">X</p>
-                </div>
-                <div class="d-flex flex-column align-items-center">
-                    <a href="/register" class="btn-diskon mb-2">Daftar Sekarang</a>
-                    <p class="text-center" style="color:black;">Sudah punya akun? <a href="/login" class="btn-teks-aja"
-                            style="display: inline; color: black">Login</a></p>
-                </div>
+<div id="login-modal" class="d-none" aria-hidden="true">
+    <div class="ilena-home-popup__backdrop" onclick="closeLoginModel(event)">
+        <section class="ilena-home-popup__dialog ilena-home-popup__dialog--membership" role="dialog" aria-modal="true" aria-labelledby="membership-popup-title">
+            <button type="button" class="ilena-home-popup__close" onclick="closeLoginModel()" aria-label="Tutup promo">&times;</button>
+            <div class="ilena-home-popup__image">
+                <img loading="lazy" decoding="async" src="<?= $homeImage('1742444827619.webp') ?>" alt="Inspirasi interior Ilena Furniture">
+                <span>Modern &amp; Stylish<br>Furniture <em>True to you</em></span>
             </div>
-            <img loading="lazy" decoding="async" src="<?= $homeImage('1742444827619.webp') ?>"
-                style="width: 400px; height: 400px; object-fit: cover" alt="">
-        </div>
-    </div>
-    <div style="position: fixed; background-color: white; bottom: 0; left: 0; width: 100%; height: fit-content; z-index: 99;"
-        class="hide-ke-show-flex flex-column justify-content-center align-items-center p-4">
-        <div class="d-flex justify-content-end w-100" style="position: relative; margin-bottom: -10px;">
-            <button class="btn-teks-aja" onclick="closeLoginModel()">X</button>
-        </div>
-        <h1 class="teks-sedang">Klaim diskon 5%</h1>
-        <p class="text-secondary">Untuk pembelian pertama</p>
-        <a href="/register" class="btn-default w-100 text-center mb-2">Join Our Membership</a>
+            <div class="ilena-home-popup__content">
+                <span class="ilena-home-popup__eyebrow">ILENA MEMBERSHIP</span>
+                <h2 id="membership-popup-title">Ruang pilihanmu, dengan keuntungan khusus.</h2>
+                <p>Nikmati diskon 5% untuk pembelian pertama dan inspirasi furniture pilihan Ilena.</p>
+                <a href="/register" class="ilena-home-popup__primary">Gabung membership</a>
+                <p class="ilena-home-popup__login">Sudah punya akun? <a href="/login">Masuk</a></p>
+                <button type="button" class="ilena-home-popup__dismiss" onclick="closeLoginModel()">Nanti saja</button>
+            </div>
+        </section>
     </div>
 </div>
 
@@ -88,29 +82,31 @@ function closeModalVoucher() {
 const loginModalElm = document.getElementById('login-modal');
 const secondAdElm = document.getElementById('second-ad');
 let opened = false;
-document.body.onscroll = (e) => {
-    if (!window.sessionStorage.getItem('close-login-modal')) {
-        const scrollingElm = e.target.scrollingElement;
-        const hasil = Math.round(
-            (scrollingElm.scrollTop /
-                (scrollingElm.scrollHeight -
-                    scrollingElm.clientHeight)) *
-            100
-        );
-        if (hasil > 50 && !opened) {
-            loginModalElm.classList.remove("d-none")
-            opened = true
-        }
+window.addEventListener('scroll', () => {
+    const voucherModal = document.getElementById('modal-voucher');
+    if (!loginModalElm || window.sessionStorage.getItem('close-login-modal') || (voucherModal && !voucherModal.classList.contains('d-none'))) return;
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollPercent = maxScroll > 0 ? (window.scrollY / maxScroll) * 100 : 0;
+    if (scrollPercent > 50 && !opened) {
+        loginModalElm.classList.remove('d-none');
+        loginModalElm.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('ilena-popup-open');
+        opened = true;
     }
-};
+}, { passive: true });
 
-function closeLoginModel() {
-    loginModalElm.classList.add("d-none")
-    window.sessionStorage.setItem('close-login-modal', true)
-    opened = false
-    // setTimeout(() => {
-    //     secondAdElm.classList.remove("d-none");
-    // }, 2000);
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && loginModalElm && !loginModalElm.classList.contains('d-none')) closeLoginModel();
+});
+
+function closeLoginModel(event) {
+    if (event && event.target !== event.currentTarget) return;
+    if (!loginModalElm) return;
+    loginModalElm.classList.add('d-none');
+    loginModalElm.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('ilena-popup-open');
+    window.sessionStorage.setItem('close-login-modal', '1');
+    opened = false;
 }
 
 function closeSecondAd() {

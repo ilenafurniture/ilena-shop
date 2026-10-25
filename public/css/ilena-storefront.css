@@ -5219,14 +5219,15 @@ body.ilena-storefront .ilena-store-footer__bottom nav { gap: 10px 22px; }
 
 /* Payment marks use one Ilena tone, one tile size, and one quiet footer surface. */
 body.ilena-storefront .ilena-store-footer__commerce .ilena-store-footer__payments {
-    display: grid; width: min(100%, 196px); grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px;
-    margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.12);
+    display: grid !important; visibility: visible; width: min(100%, 196px); min-height: 70px;
+    grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,.12); opacity: 1;
 }
 body.ilena-storefront .ilena-store-footer__commerce .ilena-store-footer__payments img {
-    display: block; width: 100%; max-width: none; height: 32px; padding: 6px; box-sizing: border-box;
-    border: 1px solid rgba(212,185,156,.2); border-radius: 0; background: #37322d !important;
-    object-fit: contain; opacity: 1; box-shadow: none;
-    filter: brightness(0) saturate(100%) invert(81%) sepia(14%) saturate(440%) hue-rotate(352deg) brightness(91%) contrast(88%);
+    display: block; visibility: visible; width: 100%; max-width: none; height: 32px; min-height: 32px;
+    padding: 6px; box-sizing: border-box; border: 1px solid rgba(212,185,156,.2); border-radius: 0;
+    background: #37322d !important; object-fit: contain; opacity: 1; box-shadow: none;
+    filter: grayscale(1) brightness(0) invert(.82);
 }
 body.ilena-storefront .ilena-store-footer__commerce .ilena-store-footer__payments img.ilena-store-footer__payment--white-mark {
     background: #37322d !important;
@@ -5274,4 +5275,83 @@ body.ilena-storefront .ilena-chat-greeting__link:hover { color: #2d4936; text-de
 @media (prefers-reduced-motion: reduce) {
     body.ilena-storefront .container-melayang .ilena-floating-chat,
     body.ilena-storefront .container-melayang .ilena-floating-chat::after { transition: none; }
+}
+
+
+/* Home campaign dialogs — editorial, compact, and keyboard-dismissable. */
+body.ilena-storefront.ilena-page--home.ilena-popup-open { overflow: hidden; }
+body.ilena-storefront.ilena-page--home #login-modal:not(.d-none) { display: block !important; }
+body.ilena-storefront.ilena-page--home .ilena-home-popup__backdrop {
+    position: fixed; z-index: 1200; inset: 0; display: flex; align-items: center; justify-content: center;
+    overflow-y: auto; padding: 28px; background: rgba(23, 21, 19, .66); backdrop-filter: blur(5px);
+    animation: ilena-popup-fade-in .22s ease-out both;
+}
+body.ilena-storefront.ilena-page--home .ilena-home-popup__dialog {
+    position: relative; width: min(820px, 100%); max-height: calc(100dvh - 56px); overflow: auto;
+    color: #28231f; background: #f7f5f1; box-shadow: 0 24px 80px rgba(15, 13, 11, .28);
+    animation: ilena-popup-rise-in .28s cubic-bezier(.2,.7,.2,1) both;
+}
+body.ilena-storefront.ilena-page--home .ilena-home-popup__dialog--membership { display: grid; grid-template-columns: 1.04fr .96fr; }
+body.ilena-storefront.ilena-page--home .ilena-home-popup__image { position: relative; min-height: 430px; overflow: hidden; background: #ddd5cb; }
+body.ilena-storefront.ilena-page--home .ilena-home-popup__image::after { position: absolute; inset: 0; content: ''; background: linear-gradient(0deg, rgba(20,17,15,.56), transparent 54%); }
+body.ilena-storefront.ilena-page--home .ilena-home-popup__image img { display: block; width: 100%; height: 100%; min-height: 430px; object-fit: cover; }
+body.ilena-storefront.ilena-page--home .ilena-home-popup__image > span {
+    position: absolute; z-index: 1; left: 28px; bottom: 25px; color: #fff; font-family: var(--ilena-font-display, Georgia, serif);
+    font-size: 21px; font-weight: 500; line-height: 1.2; letter-spacing: .025em;
+}
+body.ilena-storefront.ilena-page--home .ilena-home-popup__image em { font-size: 17px; }
+body.ilena-storefront.ilena-page--home .ilena-home-popup__content,
+body.ilena-storefront.ilena-page--home .ilena-home-popup__dialog--voucher { padding: clamp(30px, 5vw, 54px); }
+body.ilena-storefront.ilena-page--home .ilena-home-popup__content { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
+body.ilena-storefront.ilena-page--home .ilena-home-popup__eyebrow { margin-bottom: 16px; color: #8b684c; font-size: 9px; font-weight: 700; letter-spacing: .2em; }
+body.ilena-storefront.ilena-page--home .ilena-home-popup__content h2,
+body.ilena-storefront.ilena-page--home .ilena-home-popup__dialog--voucher h2 {
+    max-width: 13ch; margin: 0 0 14px; color: #28231f; font-family: var(--ilena-font-display, Georgia, serif);
+    font-size: clamp(29px, 4vw, 41px); font-weight: 500; letter-spacing: -.035em; line-height: 1.08;
+}
+body.ilena-storefront.ilena-page--home .ilena-home-popup__content > p,
+body.ilena-storefront.ilena-page--home .ilena-home-popup__dialog--voucher > p { margin: 0 0 22px; color: #6a625a; font-size: 13px; line-height: 1.75; }
+body.ilena-storefront.ilena-page--home .ilena-home-popup__primary {
+    display: inline-flex; min-height: 46px; align-items: center; justify-content: center; width: 100%; padding: 12px 18px;
+    border: 1px solid #292622; background: #292622; color: #fff; font-size: 10px; font-weight: 650; letter-spacing: .13em;
+    text-align: center; text-decoration: none; text-transform: uppercase; transition: background .2s ease, border-color .2s ease;
+}
+body.ilena-storefront.ilena-page--home .ilena-home-popup__primary:hover { border-color: #8b684c; background: #8b684c; color: #fff; }
+body.ilena-storefront.ilena-page--home .ilena-home-popup__login { margin: 15px 0 0 !important; color: #777069 !important; font-size: 11px !important; }
+body.ilena-storefront.ilena-page--home .ilena-home-popup__login a { color: #514335; font-weight: 650; text-underline-offset: 3px; }
+body.ilena-storefront.ilena-page--home .ilena-home-popup__dismiss {
+    margin: 14px auto 0; padding: 7px 10px; border: 0; background: transparent; color: #777069; cursor: pointer; font-size: 11px;
+    text-decoration: underline; text-underline-offset: 3px;
+}
+body.ilena-storefront.ilena-page--home .ilena-home-popup__close {
+    position: absolute; z-index: 2; top: 12px; right: 12px; display: grid; width: 38px; height: 38px; place-items: center;
+    border: 1px solid rgba(41,38,34,.16); border-radius: 50%; background: rgba(247,245,241,.92); color: #292622;
+    cursor: pointer; font-size: 23px; line-height: 1;
+}
+body.ilena-storefront.ilena-page--home .ilena-home-popup__close:hover { background: #292622; color: #fff; }
+body.ilena-storefront.ilena-page--home .ilena-home-popup__dialog--voucher { width: min(480px, 100%); margin: auto; }
+body.ilena-storefront.ilena-page--home .ilena-home-popup__dialog--voucher small { display: block; margin: -10px 0 22px; color: #827a72; font-size: 10px; line-height: 1.6; }
+body.ilena-storefront.ilena-page--home .ilena-home-popup__dialog--voucher .ilena-home-popup__dismiss { display: block; margin-inline: auto; }
+body.ilena-storefront.ilena-page--home .ilena-home-popup__dialog :focus-visible { outline: 2px solid #8b684c; outline-offset: 3px; }
+@keyframes ilena-popup-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ilena-popup-rise-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 700px) {
+    body.ilena-storefront.ilena-page--home .ilena-home-popup__backdrop { align-items: flex-end; padding: 14px; }
+    body.ilena-storefront.ilena-page--home .ilena-home-popup__dialog { max-height: calc(100dvh - 28px); }
+    body.ilena-storefront.ilena-page--home .ilena-home-popup__dialog--membership { width: min(430px, 100%); margin: auto; grid-template-columns: 1fr; }
+    body.ilena-storefront.ilena-page--home .ilena-home-popup__image { min-height: 0; height: min(30dvh, 210px); }
+    body.ilena-storefront.ilena-page--home .ilena-home-popup__image img { min-height: 0; height: 100%; }
+    body.ilena-storefront.ilena-page--home .ilena-home-popup__image > span { left: 18px; bottom: 15px; font-size: 17px; }
+    body.ilena-storefront.ilena-page--home .ilena-home-popup__image em { font-size: 14px; }
+    body.ilena-storefront.ilena-page--home .ilena-home-popup__content,
+    body.ilena-storefront.ilena-page--home .ilena-home-popup__dialog--voucher { padding: 25px 22px 22px; }
+    body.ilena-storefront.ilena-page--home .ilena-home-popup__eyebrow { margin-bottom: 10px; font-size: 8px; }
+    body.ilena-storefront.ilena-page--home .ilena-home-popup__content h2,
+    body.ilena-storefront.ilena-page--home .ilena-home-popup__dialog--voucher h2 { margin-bottom: 10px; font-size: clamp(27px, 8vw, 34px); }
+    body.ilena-storefront.ilena-page--home .ilena-home-popup__content > p,
+    body.ilena-storefront.ilena-page--home .ilena-home-popup__dialog--voucher > p { margin-bottom: 16px; font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront.ilena-page--home .ilena-home-popup__backdrop,
+    body.ilena-storefront.ilena-page--home .ilena-home-popup__dialog { animation: none; }
 }
