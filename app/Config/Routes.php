@@ -106,6 +106,7 @@ $routes->get('/viewvar/(:segment)/(:num)', 'GambarController::tampilGambarVarian
 $routes->get('/viewvar3000/(:segment)/(:num)', 'GambarController::tampilGambarVarian3000/$1/$2');
 $routes->get('/imgart/(:any)', 'GambarController::tampilGambarArtikel/$1');
 $routes->get('/imgart/(:any)/(:any)', 'GambarController::tampilGambarArtikel/$1/$2');
+$routes->get('/home-image/(:segment)', 'GambarController::homeImage/$1');
 $routes->get('/imgheader/(:any)', 'GambarController::tampilGambarHeader/$1');
 $routes->get('/imgheaderhp/(:any)', 'GambarController::tampilGambarHeaderHp/$1');
 

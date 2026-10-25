@@ -12,6 +12,7 @@ use App\Models\PemesananModel;
 use App\Models\UserModel;
 use CodeIgniter\Images\Handlers\GDHandler;
 use App\Models\GambarHeaderModel;
+use App\Services\ResponsiveImageOptimizer;
 use App\Services\R2ProductImageService;
 
 class GambarController extends BaseController
@@ -395,14 +396,39 @@ class GambarController extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Gambar tidak ditemukan');
         }
 
-        if (is_string($gambar) && preg_match('#^uploads/slider/[A-Za-z0-9._-]+\.(?:jpe?g|png|webp|avif)$#', $gambar)) {
-            $path = FCPATH . str_replace('/', DIRECTORY_SEPARATOR, $gambar);
-            if (!is_file($path)) {
+        $sourcePath = null;
+        $sourceBytes = $gambar;
+        if (is_string($gambar) && preg_match('#^uploads/slider/[A-Za-z0-9._-]+\.(?:jpe?g|png|webp|avif)$#i', $gambar)) {
+            $sourcePath = FCPATH . str_replace('/', DIRECTORY_SEPARATOR, $gambar);
+            if (!is_file($sourcePath)) {
                 throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Gambar tidak ditemukan');
             }
+            $sourceBytes = @file_get_contents($sourcePath);
+            if (!is_string($sourceBytes) || $sourceBytes === '') {
+                throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Gambar tidak ditemukan');
+            }
+        }
 
-            $mime = function_exists('mime_content_type') ? mime_content_type($path) : 'image/jpeg';
-            $etag = '"' . md5_file($path) . '"';
+        if (is_string($sourceBytes) && strtolower((string) $this->request->getGet('format')) === 'webp') {
+            $maxWidth = $field === 'foto_hp' ? 900 : 1600;
+            $cacheKey = 'slider-' . $safeId . '-' . $field . '-' . $maxWidth . '-' . md5($sourceBytes);
+            $optimizedPath = $this->optimizedHomeImagePath($cacheKey);
+            $optimizedBytes = is_file($optimizedPath) ? @file_get_contents($optimizedPath) : false;
+            if (!is_string($optimizedBytes) || $optimizedBytes === '') {
+                $optimizedBytes = (new ResponsiveImageOptimizer())->toWebp($sourceBytes, $maxWidth, 78);
+                if (is_string($optimizedBytes) && $optimizedBytes !== '') {
+                    $this->writeOptimizedHomeImage($optimizedPath, $optimizedBytes);
+                }
+            }
+
+            if (is_string($optimizedBytes) && $optimizedBytes !== '') {
+                return $this->serveOptimizedHomeImage($optimizedBytes);
+            }
+        }
+
+        if ($sourcePath !== null) {
+            $mime = function_exists('mime_content_type') ? mime_content_type($sourcePath) : 'image/jpeg';
+            $etag = '"' . md5_file($sourcePath) . '"';
             $cacheControl = $this->request->getGet('v')
                 ? 'public, max-age=31536000, immutable'
                 : 'public, max-age=86400';
@@ -418,15 +444,15 @@ class GambarController extends BaseController
             return $this->response
                 ->removeHeader('Cache-Control')
                 ->setHeader('Content-Type', $mime ?: 'image/jpeg')
-                ->setHeader('Content-Length', (string) filesize($path))
+                ->setHeader('Content-Length', (string) filesize($sourcePath))
                 ->setHeader('Cache-Control', $cacheControl)
                 ->setHeader('ETag', $etag)
-                ->setBody(file_get_contents($path));
+                ->setBody($sourceBytes);
         }
 
-        $info = @getimagesizefromstring($gambar);
+        $info = @getimagesizefromstring($sourceBytes);
         $mime = $info['mime'] ?? 'image/jpeg';
-        $etag = '"' . md5($gambar) . '"';
+        $etag = '"' . md5($sourceBytes) . '"';
         $cacheControl = $this->request->getGet('v')
             ? 'public, max-age=31536000, immutable'
             : 'public, max-age=86400';
@@ -442,10 +468,103 @@ class GambarController extends BaseController
         return $this->response
             ->removeHeader('Cache-Control')
             ->setHeader('Content-Type', $mime)
-            ->setHeader('Content-Length', (string) strlen($gambar))
+            ->setHeader('Content-Length', (string) strlen($sourceBytes))
             ->setHeader('Cache-Control', $cacheControl)
             ->setHeader('ETag', $etag)
-            ->setBody($gambar);
+            ->setBody($sourceBytes);
+    }
+
+    private function optimizedHomeImagePath(string $cacheKey): string
+    {
+        return rtrim(WRITEPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR
+            . 'home-images' . DIRECTORY_SEPARATOR . hash('sha256', $cacheKey) . '.webp';
+    }
+
+    private function writeOptimizedHomeImage(string $path, string $bytes): void
+    {
+        $directory = dirname($path);
+        if (!is_dir($directory) && !@mkdir($directory, 0775, true) && !is_dir($directory)) {
+            return;
+        }
+        $temporaryPath = $path . '.' . bin2hex(random_bytes(5)) . '.tmp';
+        if (@file_put_contents($temporaryPath, $bytes, LOCK_EX) !== false) {
+            if (!@rename($temporaryPath, $path)) {
+                @unlink($temporaryPath);
+            }
+        }
+    }
+
+    private function serveOptimizedHomeImage(string $bytes)
+    {
+        $etag = '"' . md5($bytes) . '"';
+        $cacheControl = $this->request->getGet('v')
+            ? 'public, max-age=31536000, immutable'
+            : 'public, max-age=86400';
+        if ($this->request->getHeaderLine('If-None-Match') === $etag) {
+            return $this->response
+                ->setStatusCode(304)
+                ->removeHeader('Cache-Control')
+                ->setHeader('ETag', $etag)
+                ->setHeader('Cache-Control', $cacheControl);
+        }
+
+        return $this->response
+            ->removeHeader('Cache-Control')
+            ->setHeader('Content-Type', 'image/webp')
+            ->setHeader('Content-Length', (string) strlen($bytes))
+            ->setHeader('Cache-Control', $cacheControl)
+            ->setHeader('ETag', $etag)
+            ->setBody($bytes);
+    }
+
+    /** Serve optimized homepage photography while keeping the source API key server-side. */
+    public function homeImage(string $filename)
+    {
+        $filename = basename(rawurldecode($filename));
+        if (!preg_match('/^[0-9]{10,}\.(?:png|jpe?g|webp)$/i', $filename)) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Gambar tidak ditemukan');
+        }
+
+        $allowedWidths = [640, 900, 1200, 1600];
+        $requestedWidth = (int) $this->request->getGet('w');
+        $maxWidth = in_array($requestedWidth, $allowedWidths, true) ? $requestedWidth : 1200;
+        $cacheKey = 'home-' . strtolower($filename) . '-' . $maxWidth . '-v1';
+        $cachePath = $this->optimizedHomeImagePath($cacheKey);
+        $bytes = is_file($cachePath) ? @file_get_contents($cachePath) : false;
+        if (!is_string($bytes) || $bytes === '') {
+            $apiKey = (string) env('APIKEY_IMG_ILENA', '');
+            $baseUrl = rtrim((string) env('ILENA_HOME_IMAGE_BASE_URL', 'https://img.ilenafurniture.com'), '/');
+            if ($apiKey === '' || !function_exists('curl_init')) {
+                return $this->response->setStatusCode(502)->setBody('Gambar sedang tidak tersedia.');
+            }
+
+            $sourceUrl = $baseUrl . '/image/' . rawurlencode($filename) . '/?apikey=' . rawurlencode($apiKey);
+            $curl = curl_init($sourceUrl);
+            curl_setopt_array($curl, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_FOLLOWLOCATION => false,
+                CURLOPT_CONNECTTIMEOUT => 4,
+                CURLOPT_TIMEOUT => 12,
+                CURLOPT_MAXFILESIZE => 15728640,
+                CURLOPT_PROTOCOLS => CURLPROTO_HTTPS,
+                CURLOPT_SSL_VERIFYPEER => true,
+                CURLOPT_SSL_VERIFYHOST => 2,
+            ]);
+            $sourceBytes = curl_exec($curl);
+            $statusCode = (int) curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
+            curl_close($curl);
+            if (!is_string($sourceBytes) || $sourceBytes === '' || strlen($sourceBytes) > 15728640 || $statusCode !== 200) {
+                return $this->response->setStatusCode(502)->setBody('Gambar sedang tidak tersedia.');
+            }
+
+            $bytes = (new ResponsiveImageOptimizer())->toWebp($sourceBytes, $maxWidth, 78);
+            if (!is_string($bytes) || $bytes === '') {
+                return $this->response->setStatusCode(502)->setBody('Gambar sedang tidak tersedia.');
+            }
+            $this->writeOptimizedHomeImage($cachePath, $bytes);
+        }
+
+        return $this->serveOptimizedHomeImage($bytes);
     }
 
     public function tampilGambarHeader($id)

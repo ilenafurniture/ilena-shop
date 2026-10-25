@@ -1,9 +1,11 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <?php
-$homeImageBaseUrl = rtrim((string) env('ILENA_HOME_IMAGE_BASE_URL', 'https://img.ilenafurniture.com'), '/');
-$homeImage = static function (string $file) use ($homeImageBaseUrl, $apikey_img_ilena): string {
-    return $homeImageBaseUrl . '/image/' . ltrim($file, '/') . '/?apikey=' . rawurlencode((string) $apikey_img_ilena);
+$homeImage = static function (string $file, int $width = 1200): string {
+    $file = basename($file);
+    $version = substr(hash('sha256', $file), 0, 12);
+    $width = in_array($width, [640, 900, 1200, 1600], true) ? $width : 1200;
+    return base_url('home-image/' . rawurlencode($file) . '?v=' . $version . '&w=' . $width);
 };
 ?>
 <?php if ($msg_active) { ?>
@@ -246,8 +248,8 @@ function closeSecondAd() {
             }
             $desktopVersion = substr(md5((string) ($slider['foto'] ?? '')), 0, 12);
             $mobileVersion = substr(md5((string) ($slider['foto_hp'] ?? '')), 0, 12);
-            $desktopSrc = '/imgheader/' . $sliderId . '?v=' . $desktopVersion;
-            $mobileSrc = '/imgheaderhp/' . $sliderId . '?v=' . $mobileVersion;
+            $desktopSrc = '/imgheader/' . $sliderId . '?v=' . $desktopVersion . '&format=webp';
+            $mobileSrc = '/imgheaderhp/' . $sliderId . '?v=' . $mobileVersion . '&format=webp';
             $isFirstSlide = $ind_s === 0;
         ?>
         <a <?= !empty($slider['url']) ? 'href="' . esc($slider['url'], 'attr') . '"' : ''; ?>
@@ -316,7 +318,7 @@ function closeSecondAd() {
     </div>
     <!-- bagian HP -->
     <div class="hide-ke-show-flex px-5 flex-column justify-content-center"
-        style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('<?= $homeImage('1742972542166.png') ?>'); background-size: cover; width:100%; height:60svh;">
+        style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('<?= $homeImage('1742972542166.png', 900) ?>'); background-size: cover; width:100%; height:60svh;">
         <p class="ilena-home-kicker">RUANG YANG MENCERITAKAN DIRI ANDA</p>
         <h1 class="teks-besar text-light" style="font-size:34px;">Modern & Stylish<br>Furniture</h1>
         <p class="text-handwrite py-1 px-2 text-light"
@@ -1618,7 +1620,7 @@ function currentSlidePanah(index_slider, index, slides, dots) {
             loadBackground(entry.target);
             currentObserver.unobserve(entry.target);
         });
-    }, { rootMargin: '300px 0px' });
+    }, { rootMargin: '100px 0px' });
     backgrounds.forEach((element) => observer.observe(element));
 })();
 </script>

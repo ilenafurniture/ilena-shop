@@ -144,7 +144,6 @@ class Pages extends BaseController
         $data = [
             'title' => 'Home',
             'navbar' => $this->getNavbarData(),
-            'apikey_img_ilena' => $this->apikey_img_ilena,
             'metaKeyword' => 'ilena Furniture, Toko Furniture, Sorely Ilena Semarang, Cabana Ilena Semarang, Orca Ilena Semarang, Plint Base Ilena Semarang, Cutout Ilena Semarang, Living Room Ilena Semarang, Bed Room Ilena Semarang, Lounge Room Ilena Semarang',
             'produk' => $produk,
             'wishlist' => $wishlist,
