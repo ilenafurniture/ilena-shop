@@ -186,7 +186,7 @@ $productCoverUrl = function (array $product): string {
                     <p class="harga-diskon">Rp <?= number_format($produk['harga'], 0, ',', '.') ?></p>
                     <?php } ?>
                 </div>
-                <p class="ilena-product-description"><?= esc($produk['deskripsi']['deskripsi'] ?? ''); ?></p>
+                <div class="ilena-product-description"><?= $produk['deskripsi']['deskripsi'] ?? ''; ?></div>
                 <div class="gap-2 show-flex-ke-hide">
                     <p class="detail-mini-label">Pilih warna / varian</p>
                     <div class="container-varian mb-3 d-flex">

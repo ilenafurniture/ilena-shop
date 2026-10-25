@@ -2908,6 +2908,10 @@ body.ilena-storefront .product-detail-soft .harga-diskon { color: var(--ilena-mu
 body.ilena-storefront .product-detail-soft .ilena-product-description {
     max-width: 62ch; margin: 0 0 22px; color: #655e57; font-size: 14px; line-height: 1.8;
 }
+body.ilena-storefront .product-detail-soft .ilena-product-description > :first-child { margin-top: 0; }
+body.ilena-storefront .product-detail-soft .ilena-product-description > :last-child { margin-bottom: 0; }
+body.ilena-storefront .product-detail-soft .ilena-product-description :where(ul, ol) { padding-left: 1.25em; }
+body.ilena-storefront .product-detail-soft .ilena-product-description a { color: #8b684c; text-underline-offset: 3px; }
 body.ilena-storefront .product-detail-soft .detail-mini-label {
     margin-bottom: 9px; color: var(--ilena-ink); font-size: 11px; font-weight: 650; letter-spacing: .1em; text-transform: uppercase;
 }
