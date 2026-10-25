@@ -35,15 +35,15 @@
 
     <section class="ilena-about__clients" aria-labelledby="about-clients-title">
         <div class="ilena-editorial__section-heading">
-            <p class="ilena-editorial__eyebrow">Dipercaya oleh</p>
-            <h2 id="about-clients-title">Our clients</h2>
+            <p class="ilena-editorial__eyebrow">Kemitraan pilihan</p>
+            <h2 id="about-clients-title">Dipercaya oleh</h2>
         </div>
-        <div class="ilena-about__client-logos">
-            <img src="https://img.ilenafurniture.com/image/1742450163897.webp/?apikey=<?= esc($apikey_img_ilena, 'attr'); ?>" alt="The Land of Nod" width="160" height="64" loading="lazy" decoding="async">
-            <img src="https://img.ilenafurniture.com/image/1742450190985.webp/?apikey=<?= esc($apikey_img_ilena, 'attr'); ?>" alt="Crate and Barrel" width="160" height="64" loading="lazy" decoding="async">
-            <img src="https://img.ilenafurniture.com/image/1742450222588.webp/?apikey=<?= esc($apikey_img_ilena, 'attr'); ?>" alt="West Elm" width="160" height="64" loading="lazy" decoding="async">
-            <img src="https://img.ilenafurniture.com/image/1742450249426.webp/?apikey=<?= esc($apikey_img_ilena, 'attr'); ?>" alt="Williams Sonoma" width="160" height="64" loading="lazy" decoding="async">
-        </div>
+        <ul class="ilena-about__client-logos" aria-label="Daftar klien Ilena">
+            <li>The Land of Nod</li>
+            <li>Crate &amp; Barrel</li>
+            <li>West Elm</li>
+            <li>Williams Sonoma</li>
+        </ul>
     </section>
 
     <section class="ilena-about__contact" aria-labelledby="about-contact-title">
