@@ -2918,29 +2918,29 @@ body.ilena-storefront .product-detail-soft .detail-mini-label {
 body.ilena-storefront .product-detail-soft .container-varian { gap: 7px; margin-bottom: 14px !important; }
 body.ilena-storefront .product-detail-soft .container-varian input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 body.ilena-storefront .product-detail-soft .container-varian label {
-    display: inline-flex; align-items: center; gap: 6px; width: auto; min-width: 40px; height: 34px;
-    padding: 4px 9px 4px 6px; border: 1px solid #e2ddd6; border-radius: 999px; background: #fff; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 5px; width: auto; min-width: 34px; height: 29px;
+    padding: 3px 7px 3px 5px; border: 1px solid #e2ddd6; border-radius: 999px; background: #fff; cursor: pointer;
     transition: border-color .18s ease, background-color .18s ease;
 }
 body.ilena-storefront .product-detail-soft .container-varian label:hover { border-color: #a58d75; transform: none; }
 body.ilena-storefront .product-detail-soft .container-varian label > span:first-child {
-    flex: 0 0 14px; width: 14px; height: 14px; padding: 0; border-radius: 50%;
+    flex: 0 0 12px; width: 12px; height: 12px; padding: 0; border-radius: 50%;
     box-shadow: inset 0 0 0 1px rgba(31,29,26,.12);
 }
 body.ilena-storefront .product-detail-soft .container-varian label .ilena-variant-name {
-    width: auto; height: auto; padding: 0; border-radius: 0; color: #554f49; font-size: 10px;
+    width: auto; height: auto; padding: 0; border-radius: 0; color: #554f49; font-size: 9px;
     font-weight: 500; line-height: 1; white-space: nowrap;
 }
 body.ilena-storefront .product-detail-soft .container-varian input:checked + label { border: 1px solid #8b684c; background: #f5f1ec; }
 body.ilena-storefront .product-detail-soft .container-varian input:focus-visible + label { outline: 2px solid #8b684c; outline-offset: 3px; }
 body.ilena-storefront .product-detail-soft .container-varian input:checked + label span { box-shadow: none; }
-body.ilena-storefront .product-detail-soft .ilena-product-info > .gap-1 a.btn-default-abu {
-    min-height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 5px 9px;
+body.ilena-storefront .product-detail-soft .ilena-product-layout .gap-1 a.btn-default-abu {
+    min-height: 28px; display: inline-flex; align-items: center; justify-content: center; padding: 4px 7px;
     border: 1px solid var(--ilena-line) !important; border-radius: 0; background: transparent; color: var(--ilena-ink);
-    font-size: 10px; line-height: 1.2; text-decoration: none; box-shadow: none;
+    font-size: 9px; line-height: 1.1; text-decoration: none; box-shadow: none;
 }
-body.ilena-storefront .product-detail-soft .ilena-product-info > .gap-1 a.btn-default-abu:hover { transform: none; border-color: #a58d75 !important; box-shadow: none; }
-body.ilena-storefront .product-detail-soft .ilena-product-info > .gap-1 a.btn-default-abu.border-dark { border-color: #8b684c !important; background: #f5f1ec; }
+body.ilena-storefront .product-detail-soft .ilena-product-layout .gap-1 a.btn-default-abu:hover { transform: none; border-color: #a58d75 !important; box-shadow: none; }
+body.ilena-storefront .product-detail-soft .ilena-product-layout .gap-1 a.btn-default-abu.border-dark { border-color: #8b684c !important; background: #f5f1ec; }
 body.ilena-storefront .product-detail-soft .number-control {
     min-height: 48px; padding-inline: 4px; border: 1px solid var(--ilena-line); border-radius: 0; background: #fff;
 }
@@ -2980,6 +2980,8 @@ body.ilena-storefront .product-detail-soft .ilena-product-related-grid { grid-te
     body.ilena-storefront .product-detail-soft .harga { font-size: 22px; }
     body.ilena-storefront .product-detail-soft .ilena-product-gallery__stage > figure.img-detail-prev { display: none !important; }
     body.ilena-storefront .product-detail-soft .img-detail-select { flex-basis: 62px; width: 62px; height: 62px; }
+    body.ilena-storefront .product-detail-soft .container-varian label { height: 32px; }
+    body.ilena-storefront .product-detail-soft .ilena-product-layout .gap-1 a.btn-default-abu { min-height: 30px; font-size: 10px; }
     body.ilena-storefront .product-detail-soft .ilena-product-info > .d-flex.gap-2.align-items-stretch { flex-wrap: wrap; }
     body.ilena-storefront .product-detail-soft #btn-keranjang { flex: 1 1 auto; }
     body.ilena-storefront .product-detail-soft #btn-keranjang .btn-default-merah { width: 100%; }
