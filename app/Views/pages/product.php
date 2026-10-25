@@ -202,7 +202,7 @@ $productCoverUrl = function (array $product): string {
                             type="radio"
                             name="varian">
                         <label for="varian<?= $ind_v ?>" title="<?= esc($v['nama'], 'attr') ?>"><span
-                                style="background-color: <?= $v['kode'] ?>"></span></label>
+                                style="background-color: <?= esc($v['kode'], 'attr') ?>"></span><span class="ilena-variant-name"><?= esc($v['nama']); ?></span></label>
                         <?php } ?>
                     </div>
                     <p class="detail-mini-label">Pilihan ukuran</p>
@@ -431,7 +431,7 @@ $productCoverUrl = function (array $product): string {
                             aria-label="Warna <?= esc($v['nama'], 'attr') ?>"
                             type="radio" name="varian-mobile">
                         <label for="varian<?= $ind_v ?>-mobile" title="<?= esc($v['nama'], 'attr') ?>"><span
-                                style="background-color: <?= $v['kode'] ?>"></span></label>
+                                style="background-color: <?= esc($v['kode'], 'attr') ?>"></span><span class="ilena-variant-name"><?= esc($v['nama']); ?></span></label>
                         <?php } ?>
                     </div>
                     <p class="detail-mini-label w-100">Pilihan ukuran</p>
