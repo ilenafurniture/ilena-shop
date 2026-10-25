@@ -1001,7 +1001,6 @@ body.ilena-storefront .ilena-store-footer__main {
     margin-inline: auto;
     padding-block: 46px 34px;
 }
-
 body.ilena-storefront .ilena-store-footer__brand img {
     width: 140px;
     height: 22px;
@@ -3043,6 +3042,10 @@ body.ilena-storefront .ilena-catalog-intro h1 {
 body.ilena-storefront .ilena-catalog-intro__description {
     max-width: 58ch; margin: 10px 0 0; color: var(--ilena-muted); font-size: 14px; line-height: 1.65;
 }
+body.ilena-storefront .ilena-catalog-intro--compact {
+    align-items: center; margin: 4px 0 18px; padding-bottom: 13px;
+}
+body.ilena-storefront .ilena-catalog-intro--compact .ilena-catalog-intro__eyebrow { margin: 0; }
 body.ilena-storefront .ilena-catalog-intro__aside { display: flex; flex-direction: column; align-items: flex-end; gap: 18px; flex: 0 0 auto; }
 body.ilena-storefront .ilena-catalog-intro__aside > p { display: flex; align-items: baseline; gap: 8px; margin: 0; color: var(--ilena-muted); }
 body.ilena-storefront .ilena-catalog-intro__aside strong { color: var(--ilena-ink); font-family: var(--ilena-font-display); font-size: 28px; font-weight: 500; }
@@ -5208,4 +5211,60 @@ body.ilena-storefront .ilena-store-footer__bottom nav { gap: 10px 22px; }
 }
 @media (prefers-reduced-motion: reduce) {
     body.ilena-storefront .ilena-topbar__actions .ilena-header-action { transition: none; }
+}
+
+/* Payment marks sit directly on the footer surface rather than white tiles. */
+body.ilena-storefront .ilena-store-footer__commerce .ilena-store-footer__payments {
+    gap: 10px 13px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.12);
+}
+body.ilena-storefront .ilena-store-footer__commerce .ilena-store-footer__payments img {
+    max-width: 48px; height: 24px; padding: 0; border: 0; border-radius: 0; background: transparent !important;
+    object-fit: contain; opacity: .9; box-shadow: none;
+}
+body.ilena-storefront .ilena-store-footer__commerce .ilena-store-footer__payments img.ilena-store-footer__payment--white-mark {
+    background: transparent !important; opacity: .96;
+}
+body.ilena-storefront .ilena-store-footer__commerce .ilena-store-footer__marketplaces { gap: 7px 14px; }
+body.ilena-storefront .ilena-store-footer__commerce .ilena-store-footer__marketplaces a {
+    font-size: 11px; text-underline-offset: 4px;
+}
+
+/* Floating support action: compact, keyboard-visible, and clear of the mobile safe area. */
+body.ilena-storefront .container-melayang {
+    right: max(20px, env(safe-area-inset-right)); bottom: max(22px, env(safe-area-inset-bottom)); z-index: 1040;
+    gap: 12px !important; align-items: flex-end; pointer-events: none;
+}
+body.ilena-storefront .container-melayang > * { pointer-events: auto; }
+body.ilena-storefront .container-melayang .ilena-floating-chat {
+    position: relative; display: grid; width: 48px; height: 48px; place-items: center; padding: 0;
+    border: 1px solid rgba(255,255,255,.42); border-radius: 50%; background: #496d58; color: #fff;
+    box-shadow: 0 7px 20px rgba(28,37,30,.22); transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+}
+body.ilena-storefront .container-melayang .ilena-floating-chat svg { width: 23px; height: 23px; }
+body.ilena-storefront .container-melayang .ilena-floating-chat:hover { transform: translateY(-2px); background: #385742; box-shadow: 0 10px 24px rgba(28,37,30,.27); }
+body.ilena-storefront .container-melayang .ilena-floating-chat:focus-visible { outline: 3px solid #c6a98d; outline-offset: 3px; }
+body.ilena-storefront .container-melayang .ilena-floating-chat::after {
+    position: absolute; right: 58px; padding: 8px 10px; border: 1px solid rgba(255,255,255,.12); background: #282521;
+    color: #f5f1eb; content: "Chat WhatsApp"; font-size: 10px; font-weight: 550; letter-spacing: .04em; white-space: nowrap;
+    opacity: 0; pointer-events: none; transform: translateX(4px); transition: opacity .18s ease, transform .18s ease;
+}
+body.ilena-storefront .container-melayang .ilena-floating-chat:hover::after,
+body.ilena-storefront .container-melayang .ilena-floating-chat:focus-visible::after { opacity: 1; transform: translateX(0); }
+body.ilena-storefront .ilena-chat-greeting { width: min(300px, calc(100vw - 92px)); margin-bottom: 4px; }
+body.ilena-storefront .ilena-chat-greeting__panel { padding: 18px; border: 1px solid #e8e0d7; background: #fbf9f6; box-shadow: 0 12px 34px rgba(37,34,31,.16); }
+body.ilena-storefront .ilena-chat-greeting__heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+body.ilena-storefront .ilena-chat-greeting__heading p { margin: 0; color: var(--ilena-ink); font-family: var(--ilena-font-display); font-size: 18px; }
+body.ilena-storefront .ilena-chat-greeting__heading button { display: grid; width: 32px; height: 32px; place-items: center; border: 0; background: transparent; color: var(--ilena-muted); font-size: 23px; }
+body.ilena-storefront .ilena-chat-greeting__copy { margin: 8px 0 14px; color: var(--ilena-muted); font-size: 12px; line-height: 1.6; }
+body.ilena-storefront .ilena-chat-greeting__link { display: inline-flex; min-height: 40px; align-items: center; gap: 8px; color: #496d58; font-size: 11px; font-weight: 650; text-decoration: none; }
+body.ilena-storefront .ilena-chat-greeting__link:hover { color: #2d4936; text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 600px) {
+    body.ilena-storefront .container-melayang { right: max(14px, env(safe-area-inset-right)); bottom: calc(78px + env(safe-area-inset-bottom)); }
+    body.ilena-storefront .container-melayang .ilena-floating-chat { width: 46px; height: 46px; }
+    body.ilena-storefront .container-melayang .ilena-floating-chat::after { display: none; }
+    body.ilena-storefront .ilena-chat-greeting { width: min(280px, calc(100vw - 82px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront .container-melayang .ilena-floating-chat,
+    body.ilena-storefront .container-melayang .ilena-floating-chat::after { transition: none; }
 }

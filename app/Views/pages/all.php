@@ -52,6 +52,8 @@ $productCoverUrl = function (array $product): string {
 $isSmartSearch = isset($find);
 $smartQuery = (string) ($find ?? '');
 $catalogRoute = $isSmartSearch ? '/find' : '/product';
+$catalogHeading = (string) ($title ?? 'Produk Kami');
+$hideGenericCatalogIntro = !$isSmartSearch && mb_strtolower(trim($catalogHeading)) === 'produk kami';
 ?>
 <?php
 if (isset($kategori)) $_GET['koleksi'] = $kategori;
@@ -537,11 +539,15 @@ if (isset($_GET['ruang'])) {
 
         <div style="flex: 1;">
             <!-- <div style="position: absolute;" class="w-100"> -->
-            <header class="ilena-catalog-intro">
+            <header class="ilena-catalog-intro <?= $hideGenericCatalogIntro ? 'ilena-catalog-intro--compact' : ''; ?>">
                 <div>
                     <p class="ilena-catalog-intro__eyebrow"><?= $isSmartSearch ? 'PENCARIAN KATALOG' : 'ILENA <span>/</span> FURNITURE'; ?></p>
-                    <h1><?= esc($isSmartSearch ? 'Temukan furniture pilihan' : ($title ?? 'Produk Kami')); ?></h1>
-                    <p class="ilena-catalog-intro__description"><?= $isSmartSearch ? 'Kami mencarikan furniture yang paling mendekati kebutuhan dan gaya ruang Anda.' : 'Jelajahi pilihan furniture untuk melengkapi ruang dengan karakter dan kenyamanan.'; ?></p>
+                    <?php if ($isSmartSearch || !$hideGenericCatalogIntro) { ?>
+                    <h1><?= esc($isSmartSearch ? 'Temukan furniture pilihan' : $catalogHeading); ?></h1>
+                    <?php } ?>
+                    <?php if ($isSmartSearch) { ?>
+                    <p class="ilena-catalog-intro__description">Kami mencarikan furniture yang paling mendekati kebutuhan dan gaya ruang Anda.</p>
+                    <?php } ?>
                 </div>
                 <div class="ilena-catalog-intro__aside">
                     <?php if (session()->get('role') == '1') { ?>

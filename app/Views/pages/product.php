@@ -9,7 +9,7 @@ $imageSlotExists = function (string $slot) use ($produk): bool {
         || is_file(FCPATH . 'img/barang/3000/' . $produk['id'] . '-' . $slot . '.webp');
 };
 $filterExistingSlots = function ($urutan) use ($imageSlotExists): array {
-    $slots = array_values(array_filter(array_map('trim', explode(',', (string) $urutan))));
+    $slots = array_values(array_unique(array_filter(array_map('trim', explode(',', (string) $urutan)) )));
     $existing = array_values(array_filter($slots, $imageSlotExists));
     return $existing ?: ($slots ?: ['1']);
 };
@@ -22,6 +22,16 @@ $detailSlotsByVariant = array_map(
     static fn(array $variant): array => $filterExistingSlots($variant['urutan_gambar'] ?? ''),
     $produk['varian'] ?? []
 );
+$sizeOptionMap = [];
+foreach ($produkSemua ?? [] as $sizeIndex => $sizeProduct) {
+    $sizeDescription = json_decode($sizeProduct['deskripsi'] ?? '{}', true) ?: [];
+    $sizeLength = trim((string) ($sizeDescription['dimensi']['asli']['panjang'] ?? '-'));
+    $sizeKey = $sizeLength === '-' ? 'missing-' . $sizeIndex : mb_strtolower($sizeLength);
+    if (!isset($sizeOptionMap[$sizeKey]) || (int) $sizeIndex === (int) $indexNama) {
+        $sizeOptionMap[$sizeKey] = ['index' => $sizeIndex, 'product' => $sizeProduct, 'length' => $sizeLength];
+    }
+}
+$sizeOptions = array_values($sizeOptionMap);
 $assetVersion = function (string $relativePath) use ($produk): string {
     $path = FCPATH . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
     $fileVersion = is_file($path) ? (int) filemtime($path) : 0;
@@ -217,7 +227,7 @@ $productCoverUrl = function (array $product): string {
                 <div class="ilena-product-description"><?= $produk['deskripsi']['deskripsi'] ?? ''; ?></div>
                 <div class="ilena-product-options gap-2 show-flex-ke-hide">
                     <section class="ilena-option-group" aria-labelledby="desktop-variant-label">
-                    <div class="ilena-option-heading"><p class="detail-mini-label" id="desktop-variant-label">Warna / varian</p><span class="ilena-option-selected" data-selected-variant><?= esc($produk['varian'][0]['nama'] ?? '') ?></span></div>
+                    <div class="ilena-option-heading"><p class="detail-mini-label" id="desktop-variant-label">Warna / varian</p></div>
                     <div class="container-varian mb-3 d-flex" role="radiogroup" aria-labelledby="desktop-variant-label">
                         <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
                         <input id="varian<?= $ind_v ?>"
@@ -237,9 +247,9 @@ $productCoverUrl = function (array $product): string {
                     <section class="ilena-option-group" aria-labelledby="desktop-size-label">
                     <div class="ilena-option-heading"><p class="detail-mini-label" id="desktop-size-label">Pilihan ukuran</p><span class="ilena-option-caption">Panjang</span></div>
                     <div class="ilena-size-options">
-                        <?php foreach ($produkSemua as $ind_ps => $ps) { ?>
+                        <?php foreach ($sizeOptions as $sizeOption) { $ind_ps = $sizeOption['index']; $ps = $sizeOption['product']; ?>
                         <a href="/product/<?= strtolower(str_replace(' ', '-', $ps['nama'])) ?>/<?= $ind_ps ?>"
-                            class="btn-default-abu ilena-size-option <?= $ind_ps == $indexNama ? 'border border-dark is-active' : '' ?>" <?= $ind_ps == $indexNama ? 'aria-current="page"' : '' ?>><?= (json_decode($ps['deskripsi'] ?? '{}', true) ?? [])['dimensi']['asli']['panjang'] ?? '-' ?><span>mm</span></a>
+                            class="btn-default-abu ilena-size-option <?= $ind_ps == $indexNama ? 'border border-dark is-active' : '' ?>" <?= $ind_ps == $indexNama ? 'aria-current="page"' : '' ?>><?= esc($sizeOption['length']) ?><span>mm</span></a>
                         <?php } ?>
                     </div></section>
                 </div>
@@ -421,32 +431,11 @@ $productCoverUrl = function (array $product): string {
                         <label class="img-detail-select" for="gambar-hover" title="Lihat detail permukaan"><img
                                 src="<?= $hoverImgUrl() ?>" alt="<?= esc($produk['nama'], 'attr') ?>" loading="lazy" decoding="async"></label>
                         <?php } ?>
-                        <script>
-                        const radioImgElm = document.querySelectorAll('input[name="gambar"]');
-                        radioImgElm.forEach(elm => {
-                            elm.addEventListener('change', (e) => {
-                                const imgElm = document.querySelector("figure.img-detail-prev");
-                                const imgFixElm = document.querySelector("img.img-detail-prev");
-                                if (e.target.value === "hover") {
-                                    window.isHoverDetailSelected = true;
-                                    imgElm.classList.add("d-none");
-                                    imgElm.dataset.zoomSrc = "";
-                                    imgElm.style.backgroundImage = "";
-                                    imgFixElm.src = "<?= $hoverImgUrl() ?>";
-                                    return;
-                                }
-                                window.isHoverDetailSelected = false;
-                                imgElm.dataset.zoomSrc = "/viewvar3000/<?= $produk['id']; ?>/" + e.target.value.split("-")[0] + "?v=<?= $detailVersion ?>";
-                                imgElm.style.backgroundImage = "";
-                                imgFixElm.src = detailImageUrl(e.target.value.split("-")[0]);
-                            })
-                        });
-                        </script>
                     </div>
                 </div>
                 <div class="ilena-product-options gap-2 hide-ke-show-flex">
                     <section class="ilena-option-group" aria-labelledby="mobile-variant-label">
-                    <div class="ilena-option-heading"><p class="detail-mini-label w-100" id="mobile-variant-label">Warna / varian</p><span class="ilena-option-selected" data-selected-variant><?= esc($produk['varian'][0]['nama'] ?? '') ?></span></div>
+                    <div class="ilena-option-heading"><p class="detail-mini-label w-100" id="mobile-variant-label">Warna / varian</p></div>
                     <div class="container-varian mb-3 d-flex" role="radiogroup" aria-labelledby="mobile-variant-label">
                         <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
                         <input id="varian<?= $ind_v ?>-mobile"
@@ -465,9 +454,9 @@ $productCoverUrl = function (array $product): string {
                     <section class="ilena-option-group" aria-labelledby="mobile-size-label">
                     <div class="ilena-option-heading"><p class="detail-mini-label w-100" id="mobile-size-label">Pilihan ukuran</p><span class="ilena-option-caption">Panjang</span></div>
                     <div class="ilena-size-options">
-                        <?php foreach ($produkSemua as $ind_ps => $ps) { ?>
+                        <?php foreach ($sizeOptions as $sizeOption) { $ind_ps = $sizeOption['index']; $ps = $sizeOption['product']; ?>
                         <a href="/product/<?= strtolower(str_replace(' ', '-', $ps['nama'])) ?>/<?= $ind_ps ?>"
-                            class="btn-default-abu ilena-size-option <?= $ind_ps == $indexNama ? 'border border-dark is-active' : '' ?>" <?= $ind_ps == $indexNama ? 'aria-current="page"' : '' ?>><?= (json_decode($ps['deskripsi'] ?? '{}', true) ?? [])['dimensi']['asli']['panjang'] ?? '-' ?><span>mm</span></a>
+                            class="btn-default-abu ilena-size-option <?= $ind_ps == $indexNama ? 'border border-dark is-active' : '' ?>" <?= $ind_ps == $indexNama ? 'aria-current="page"' : '' ?>><?= esc($sizeOption['length']) ?><span>mm</span></a>
                         <?php } ?>
                     </div></section>
                 </div>
@@ -535,7 +524,8 @@ $productCoverUrl = function (array $product): string {
                             const slot = (e.target.dataset.slot || e.target.value.split("-")[0] || "1").split(",")[0];
                             const namaVarian = e.target.dataset.name || e.target.value.split("-").slice(1).join("-") || "default";
                             const stok = Number(e.target.dataset.stok || 0);
-                            img<?= $ind_p ?>Elm.src = "<?= base_url('product-cover/' . $p['id']) ?>?slot=" + encodeURIComponent(slot) + '&size=300&v=<?= $relatedVersion ?>';
+                            // Use the requested variant slot; size=300 selects the shared generic cover on R2.
+                            img<?= $ind_p ?>Elm.src = "<?= base_url('product-cover/' . $p['id']) ?>?slot=" + encodeURIComponent(slot) + '&v=<?= $relatedVersion ?>';
 
                             btnKeranjang<?= $ind_p ?>Elm.action = stok > 0 ? "/addcart/<?= $p['id'] ?>/" + encodeURIComponent(namaVarian) + "/1" : "";
                             const quickBtn = btnKeranjang<?= $ind_p ?>Elm.querySelector('button');
@@ -593,6 +583,28 @@ function detailZoomUrl(slot) {
     if (detailLocalSlots3000.includes(String(slot))) return detailStatic3000 + detailProductId + "-" + encodeURIComponent(slot) + ".webp?v=" + detailVersion;
     return detailBase3000 + slot + "?v=" + detailVersion;
 }
+const galleryThumbs = document.querySelector('.container-img-detail-select');
+galleryThumbs?.addEventListener('change', (event) => {
+    const selectedPhoto = event.target.closest('input[name="gambar"]');
+    if (!selectedPhoto) return;
+    const zoomLayer = document.querySelector('.ilena-product-zoom');
+    const mainPhoto = document.querySelector('.ilena-product-gallery__stage > img.img-detail-prev');
+    if (!zoomLayer || !mainPhoto) return;
+    zoomLayer.classList.add('d-none');
+    zoomLayer.style.backgroundImage = '';
+    zoomLayer.dataset.loadedSource = '';
+    if (selectedPhoto.value === 'hover') {
+        window.isHoverDetailSelected = true;
+        zoomLayer.dataset.zoomSrc = '';
+        mainPhoto.src = detailHoverUrl;
+        return;
+    }
+    const slot = String(selectedPhoto.value || selectedPhoto.dataset.slot || '').split(',')[0].trim();
+    if (!slot) return;
+    window.isHoverDetailSelected = false;
+    zoomLayer.dataset.zoomSrc = detailZoomUrl(slot);
+    mainPhoto.src = detailImageUrl(slot);
+});
 radioVarianElm.forEach(elm => {
     elm.addEventListener('change', (e) => {
         radioVarianElm.forEach(peer => {
@@ -610,19 +622,48 @@ radioVarianElm.forEach(elm => {
         imgElm.dataset.loadedSource = "";
         imgFixElm.src = detailImageUrl(slotValue.split(",")[0]);
 
-        const containerImgDetailElm = document.querySelector(".container-img-detail-select");
-        containerImgDetailElm.innerHTML = "";
+        const containerImgDetailElm = galleryThumbs;
+        containerImgDetailElm.replaceChildren();
         const urutanGambar = slotValue.split(",").filter(Boolean);
         urutanGambar.forEach((urutan, ind_x) => {
-            containerImgDetailElm.innerHTML += '<input id="gambar' + ind_x +
-                '" type="radio" name="gambar" value="' + urutan + '"' + (ind_x === 0 ? ' checked' : '') +
-                '"><label class="img-detail-select" for="gambar' + ind_x +
-                '"><img loading="lazy" decoding="async" src="' + detailImageUrl(urutan) + '"></label>'
-        })
+            const input = document.createElement('input');
+            input.id = 'gambar' + ind_x;
+            input.type = 'radio';
+            input.name = 'gambar';
+            input.value = urutan;
+            input.dataset.slot = urutan;
+            input.setAttribute('aria-label', 'Foto produk ' + (ind_x + 1));
+            input.checked = ind_x === 0;
+            const label = document.createElement('label');
+            label.className = 'img-detail-select';
+            label.htmlFor = input.id;
+            label.title = 'Foto produk ' + (ind_x + 1);
+            const thumbnail = document.createElement('img');
+            thumbnail.src = detailImageUrl(urutan);
+            thumbnail.alt = '';
+            thumbnail.loading = 'lazy';
+            thumbnail.decoding = 'async';
+            label.append(thumbnail);
+            containerImgDetailElm.append(input, label);
+        });
         <?php if ($punyaGambarHoverDetail) { ?>
-        containerImgDetailElm.innerHTML += '<input id="gambar-hover" type="radio" name="gambar" value="hover">' +
-            '<label class="img-detail-select" for="gambar-hover">' +
-            '<img loading="lazy" decoding="async" src="' + detailHoverUrl + '"></label>';
+        const hoverInput = document.createElement('input');
+        hoverInput.id = 'gambar-hover';
+        hoverInput.type = 'radio';
+        hoverInput.name = 'gambar';
+        hoverInput.value = 'hover';
+        hoverInput.setAttribute('aria-label', 'Lihat detail permukaan');
+        const hoverLabel = document.createElement('label');
+        hoverLabel.className = 'img-detail-select';
+        hoverLabel.htmlFor = 'gambar-hover';
+        hoverLabel.title = 'Lihat detail permukaan';
+        const hoverThumbnail = document.createElement('img');
+        hoverThumbnail.src = detailHoverUrl;
+        hoverThumbnail.alt = '';
+        hoverThumbnail.loading = 'lazy';
+        hoverThumbnail.decoding = 'async';
+        hoverLabel.append(hoverThumbnail);
+        containerImgDetailElm.append(hoverInput, hoverLabel);
         <?php } ?>
 
         if (Number(varianFullSelected.stok) <= 0) {
@@ -651,30 +692,8 @@ radioVarianElm.forEach(elm => {
             }
         }
         varianSelected = varianName;
-        document.querySelectorAll('[data-selected-variant]').forEach(label => { label.textContent = varianName; });
         syncQuantitySelection();
 
-        const radioImgElm = document.querySelectorAll('input[name="gambar"]');
-        radioImgElm.forEach(elm1 => {
-            elm1.addEventListener('change', (elmVar) => {
-                const imgElm = document.querySelector("figure.img-detail-prev");
-                const imgFixElm = document.querySelector("img.img-detail-prev");
-                if (elmVar.target.value === "hover") {
-                    window.isHoverDetailSelected = true;
-                    imgElm.classList.add("d-none");
-                    imgElm.dataset.zoomSrc = "";
-                    imgElm.style.backgroundImage = "";
-                    imgElm.dataset.loadedSource = "";
-                    imgFixElm.src = detailHoverUrl;
-                    return;
-                }
-                window.isHoverDetailSelected = false;
-                imgElm.dataset.zoomSrc = detailZoomUrl(elmVar.target.value.split("-")[0].split(",")[0]);
-                imgElm.style.backgroundImage = "";
-                imgElm.dataset.loadedSource = "";
-                imgFixElm.src = detailImageUrl(elmVar.target.value.split("-")[0].split(",")[0]);
-            })
-        });
     })
 });
 const jumlahBarangElm = document.querySelector('input[name="jumlah"]');

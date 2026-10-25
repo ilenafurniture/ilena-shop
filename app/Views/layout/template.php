@@ -273,20 +273,19 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
     <script src="<?= base_url('js/bootstrap.bundle.min.js'); ?>"></script>
     <div
         class="container-melayang d-flex gap-2 align-items-end <?= isset($geser_container_melayang) ? 'geser' : ''; ?>">
-        <div id="container-greeting-card" class="d-none">
-            <div style="background-color: white; border-radius: 1em; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);"
-                class="p-4">
-                <div class="d-flex align-items-start justify-content-between">
-                    <p class="m-0">Hai!</p>
-                    <p class="m-0" style="cursor: pointer;" onclick="closeGreetingCard()">x</p>
+        <div id="container-greeting-card" class="ilena-chat-greeting d-none">
+            <div class="ilena-chat-greeting__panel">
+                <div class="ilena-chat-greeting__heading">
+                    <p>Butuh bantuan?</p>
+                    <button type="button" aria-label="Tutup pesan bantuan" data-close-chat-greeting>×</button>
                 </div>
-                <p class="m-0">Kalau kamu butuh bantuan,<br>hubungi kami via WhatsApp ya!</p>
+                <p class="ilena-chat-greeting__copy">Tim Ilena siap membantu Anda menemukan furniture yang tepat.</p>
+                <a data-kbot-wa href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20saya%20butuh%20bantuan" class="ilena-chat-greeting__link" target="_blank" rel="noopener noreferrer">Chat via WhatsApp <span aria-hidden="true">↗</span></a>
             </div>
-            <div style="height: 30px;"></div>
         </div>
         <div class="d-flex flex-column gap-2">
             <!--<a class="btn-circle" href="/form"><i class="material-icons">insert_comment</i></a>-->
-            <a data-kbot-wa class="btn-circle hitam" id="btn-wa" aria-label="Chat Ilena Furniture via WhatsApp"
+            <a data-kbot-wa class="btn-circle hitam ilena-floating-chat" id="btn-wa" aria-label="Chat Ilena Furniture via WhatsApp" title="Chat via WhatsApp"
                 href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20mau%20tanya-tanya%20koleksinya">
                 <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
                     <path
@@ -295,6 +294,11 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
             </a>
         </div>
     </div>
+    <script>
+        document.querySelector('[data-close-chat-greeting]')?.addEventListener('click', () => {
+            document.getElementById('container-greeting-card')?.classList.add('d-none');
+        });
+    </script>
 
     <script defer crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
     <script defer crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
