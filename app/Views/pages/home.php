@@ -906,39 +906,38 @@ function closeSecondAd() {
 const scrollHomeElm = document.querySelector('.scroll-home');
 const counterSlideElm = document.getElementById('counter-slide');
 const numCounterSlideElm = document.querySelectorAll('#counter-slide p');
-// console.log(numCounterSlideElm)
 const inputScrollHomeElm = document.querySelectorAll('input[name="scrollHome"]');
-// console.log(scrollHomeElm.children);
-scrollHomeElm.onscroll = () => {
-    let x = scrollHomeElm.scrollLeft;
-    // console.log(x);
-    const widthInnerStg = window.innerWidth / 2;
-    if (x % window.innerWidth < widthInnerStg) {
-        counterSlideElm.style.opacity = 1 - ((x % widthInnerStg) / widthInnerStg) / 1;
-        counterSlideElm.style.transform = 'translateX(-' + (x % widthInnerStg) + 'px)';
-        console.log('translateX(-' + (x % widthInnerStg) + ')')
-    } else {
-        counterSlideElm.style.opacity = ((x % widthInnerStg) / widthInnerStg) / 1;
-        counterSlideElm.style.transform = 'translateX(-' + (widthInnerStg - (x % widthInnerStg)) + 'px)';
-        console.log('translateX(-' + (widthInnerStg - (x % widthInnerStg)) + ')')
-    }
-
-    // console.log(Math.floor(x / (window.innerWidth * 90 / 100)))
-    inputScrollHomeElm.forEach(inputnya => {
-        inputnya.removeAttribute('checked');
+if (scrollHomeElm && inputScrollHomeElm.length) {
+    const slideWidth = () => scrollHomeElm.querySelector('.scroll-home-item')?.getBoundingClientRect().width || scrollHomeElm.clientWidth;
+    let scrollTick = false;
+    const syncHomeGallery = () => {
+        const maxIndex = inputScrollHomeElm.length - 1;
+        const index = Math.max(0, Math.min(maxIndex, Math.round(scrollHomeElm.scrollLeft / slideWidth())));
+        inputScrollHomeElm.forEach((input, inputIndex) => { input.checked = inputIndex === index; });
+        if (numCounterSlideElm.length >= 2) {
+            numCounterSlideElm[0].textContent = String(index + 1).padStart(2, '0');
+            numCounterSlideElm[1].textContent = String(inputScrollHomeElm.length).padStart(2, '0');
+        }
+        if (counterSlideElm) {
+            counterSlideElm.style.opacity = '1';
+            counterSlideElm.style.transform = 'none';
+        }
+        scrollTick = false;
+    };
+    scrollHomeElm.addEventListener('scroll', () => {
+        if (!scrollTick) {
+            window.requestAnimationFrame(syncHomeGallery);
+            scrollTick = true;
+        }
+    }, { passive: true });
+    inputScrollHomeElm.forEach((input, index) => {
+        input.setAttribute('aria-label', 'Tampilkan koleksi ' + (index + 1));
+        input.addEventListener('change', () => {
+            if (input.checked) scrollHomeElm.scrollTo({ left: slideWidth() * index, behavior: 'smooth' });
+        });
     });
-    inputScrollHomeElm[Math.floor(x / (window.innerWidth * 90 / 100))].setAttribute('checked', '');
-
-    numCounterSlideElm[0].innerHTML = '0' + (Math.floor(x / (window.innerWidth * 90 / 100)) + 1)
-    numCounterSlideElm[1].innerHTML = '0' + inputScrollHomeElm.length;
+    syncHomeGallery();
 }
-inputScrollHomeElm.forEach((inputnya, indInput) => {
-    inputnya.addEventListener('change', () => {
-        // console.log('input ' + indInput + ' berubah')
-        scrollHomeElm.scrollLeft = window.innerWidth * indInput
-    });
-
-});
 </script>
 <!-- END BAGIAN SERIES  -->
 
