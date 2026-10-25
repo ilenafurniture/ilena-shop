@@ -1,6 +1,39 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <?php
+$defaultVariant = $produk['varian'][0] ?? ['nama' => 'default', 'stok' => 0, 'urutan_gambar' => '1'];
+$sanitizeProductHtml = static function (string $html): string {
+    if (!class_exists(\DOMDocument::class)) return nl2br(esc(strip_tags($html)));
+    $dom = new \DOMDocument('1.0', 'UTF-8');
+    $previous = libxml_use_internal_errors(true);
+    $dom->loadHTML('<?xml encoding="utf-8" ?><div id="ilena-description-root">' . $html . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+    libxml_clear_errors();
+    libxml_use_internal_errors($previous);
+    $root = $dom->getElementById('ilena-description-root');
+    if (!$root) return esc(strip_tags($html));
+    $allowed = ['p', 'br', 'ul', 'ol', 'li', 'strong', 'b', 'em', 'i', 'u', 'h2', 'h3', 'h4', 'blockquote', 'a', 'div', 'span'];
+    $render = static function ($node) use (&$render, $allowed): string {
+        if ($node instanceof \DOMText) return esc($node->nodeValue ?? '');
+        if (!$node instanceof \DOMElement) return '';
+        $tag = strtolower($node->tagName);
+        if (in_array($tag, ['script', 'style', 'iframe', 'object', 'embed', 'svg', 'math'], true)) return '';
+        $children = '';
+        foreach ($node->childNodes as $child) $children .= $render($child);
+        if (!in_array($tag, $allowed, true)) return $children;
+        if ($tag === 'br') return '<br>';
+        $attributes = '';
+        if ($tag === 'a') {
+            $href = trim($node->getAttribute('href'));
+            if ($href !== '' && preg_match('/^(https?:\/\/|mailto:|tel:|\/|#)/i', $href)) {
+                $attributes = ' href="' . esc($href, 'attr') . '" rel="noopener noreferrer"';
+            }
+        }
+        return '<' . $tag . $attributes . '>' . $children . '</' . $tag . '>';
+    };
+    $clean = '';
+    foreach ($root->childNodes as $child) $clean .= $render($child);
+    return $clean;
+};
 $punyaGambarHoverDetail = is_file(FCPATH . 'img/barang/hover/' . $produk['id'] . '.webp') || !empty($produk['gambar_hover']);
 $imageSlotExists = function (string $slot) use ($produk): bool {
     $slot = trim($slot);
@@ -14,8 +47,8 @@ $filterExistingSlots = function ($urutan) use ($imageSlotExists): array {
     return $existing ?: ($slots ?: ['1']);
 };
 $gambarAwalDetail = '1';
-if (!empty($produk['varian'][0]['urutan_gambar'])) {
-    $urutanAwal = $filterExistingSlots($produk['varian'][0]['urutan_gambar']);
+if (!empty($defaultVariant['urutan_gambar'])) {
+    $urutanAwal = $filterExistingSlots($defaultVariant['urutan_gambar']);
     $gambarAwalDetail = $urutanAwal[0] ?? '1';
 }
 $detailSlotsByVariant = array_map(
@@ -199,11 +232,10 @@ $productCoverUrl = function (array $product): string {
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/product">Produk Kami</a></li>
                 <li class="breadcrumb-item"><a
-                        href="/product?koleksi=<?= $produk['kategori']; ?>"><?= ucfirst($produk['kategori']); ?></a>
+                        href="/product?koleksi=<?= rawurlencode((string) $produk['kategori']); ?>"><?= ucfirst($produk['kategori']); ?></a>
                 </li>
                 <li class="breadcrumb-item"><a
-                        href="/product?jenis=<?= $produk['subkategori']; ?>"><?= ucfirst($produk['subkategori']); ?></a>
-                </li>
+                        href="/product?jenis=<?= rawurlencode((string) $produk['subkategori']); ?>"><?= ucfirst($produk['subkategori']); ?></a>
                 </li>
             </ol>
         </nav>
@@ -224,7 +256,7 @@ $productCoverUrl = function (array $product): string {
                     <p class="harga-diskon">Rp <?= number_format($produk['harga'], 0, ',', '.') ?></p>
                     <?php } ?>
                 </div>
-                <div class="ilena-product-description"><?= $produk['deskripsi']['deskripsi'] ?? ''; ?></div>
+                <div class="ilena-product-description"><?= $sanitizeProductHtml((string) ($produk['deskripsi']['deskripsi'] ?? '')); ?></div>
                 <div class="ilena-product-options gap-2 show-flex-ke-hide">
                     <section class="ilena-option-group" aria-labelledby="desktop-variant-label">
                     <div class="ilena-option-heading"><p class="detail-mini-label" id="desktop-variant-label">Warna / varian</p></div>
@@ -248,7 +280,7 @@ $productCoverUrl = function (array $product): string {
                     <div class="ilena-option-heading"><p class="detail-mini-label" id="desktop-size-label">Pilihan ukuran</p><span class="ilena-option-caption">Panjang</span></div>
                     <div class="ilena-size-options">
                         <?php foreach ($sizeOptions as $sizeOption) { $ind_ps = $sizeOption['index']; $ps = $sizeOption['product']; ?>
-                        <a href="/product/<?= strtolower(str_replace(' ', '-', $ps['nama'])) ?>/<?= $ind_ps ?>"
+                        <a href="/product/<?= rawurlencode(strtolower(str_replace(' ', '-', (string) $ps['nama']))) ?>/<?= (int) $ind_ps ?>"
                             class="btn-default-abu ilena-size-option <?= $ind_ps == $indexNama ? 'border border-dark is-active' : '' ?>" <?= $ind_ps == $indexNama ? 'aria-current="page"' : '' ?>><?= esc($sizeOption['length']) ?><span>mm</span></a>
                         <?php } ?>
                     </div></section>
@@ -281,35 +313,35 @@ $productCoverUrl = function (array $product): string {
                         <button type="button" class="number-right" onclick="tambahJumlah()" aria-label="Tambah jumlah"></button>
                     </div>
                     <form id="btn-keranjang" method="post"
-                        action="<?= $produk['varian'][0]['stok'] > 0 ? '/addcart/' . $produk['id'] . '/' . rawurlencode($produk['varian'][0]['nama']) . '/1' : ''; ?>">
+                        action="<?= $defaultVariant['stok'] > 0 ? '/addcart/' . $produk['id'] . '/' . rawurlencode($defaultVariant['nama']) . '/1' : ''; ?>">
                         <?= csrf_field(); ?>
-                        <button class="btn-default-merah <?= $produk['varian'][0]['stok'] > 0 ? '' : 'disabled'; ?>"
-                            <?= $produk['varian'][0]['stok'] > 0 ? '' : 'disabled'; ?>
-                            type="submit"><?= $produk['varian'][0]['stok'] > 0 ? 'Keranjang' : 'Stok habis'; ?></button>
+                        <button class="btn-default-merah <?= $defaultVariant['stok'] > 0 ? '' : 'disabled'; ?>"
+                            <?= $defaultVariant['stok'] > 0 ? '' : 'disabled'; ?>
+                            type="submit"><?= $defaultVariant['stok'] > 0 ? 'Keranjang' : 'Stok habis'; ?></button>
                     </form>
 
                 </div>
                 <?php } ?>
-                <p id="info-habis" class="mt-2 <?= $produk['varian'][0]['stok'] <= 0 ? '' : 'd-none'; ?>"
+                <p id="info-habis" class="mt-2 <?= $defaultVariant['stok'] <= 0 ? '' : 'd-none'; ?>"
                     style="font-size: 10px;">*Produk ini bisa di pre-order dengan menghubungi <a
                         href="https://wa.me/+628112938158" class="btn-teks-aja" style="display: inline;">Customer
                         Service</a> kami</p>
                 <?php if ($produk['tokped'] || $produk['shopee'] || $produk['tiktok']) { ?>
-                <div class="mt-4 <?= $produk['varian'][0]['stok'] <= 0 ? 'd-none' : ''; ?>" id="container-market">
+                <div class="mt-4 <?= $defaultVariant['stok'] <= 0 ? 'd-none' : ''; ?>" id="container-market">
                     <p class="mb-2">
                         Produk ini juga tersedia di
                     </p>
                     <div>
                         <?php if ($produk['tokped']) { ?>
-                        <a href="<?= $produk['tokped']; ?>" title="Tokopedia" target="_blank"><img
+                        <a href="<?= esc((string) $produk['tokped'], 'attr'); ?>" rel="noopener noreferrer" title="Tokopedia" target="_blank"><img
                                 src="/img/logo/tokopedia.png" class="marketplace"></a>
                         <?php } ?>
                         <?php if ($produk['shopee']) { ?>
-                        <a href="<?= $produk['shopee']; ?>" title="Shopee" target="_blank"><img
+                        <a href="<?= esc((string) $produk['shopee'], 'attr'); ?>" rel="noopener noreferrer" title="Shopee" target="_blank"><img
                                 src="/img/logo/shopee.png" class="marketplace"></a>
                         <?php } ?>
                         <?php if ($produk['tiktok']) { ?>
-                        <a href="<?= $produk['tiktok']; ?>" title="Tiktok" target="_blank"><img
+                        <a href="<?= esc((string) $produk['tiktok'], 'attr'); ?>" rel="noopener noreferrer" title="Tiktok" target="_blank"><img
                                 src="/img/logo/tiktokshop.svg" class="marketplace"></a>
                         <?php } ?>
                     </div>
@@ -340,7 +372,7 @@ $productCoverUrl = function (array $product): string {
                             data-bs-parent="#accordionFlushExample">
                             <div class="accordion-body">
                                 <p class="mb-0">
-                                    <?= $produk['deskripsi']['perawatan'] ?>
+                                    <?= esc((string) ($produk['deskripsi']['perawatan'] ?? 'Informasi perawatan belum tersedia.')) ?>
                                 </p>
                             </div>
                         </div>
@@ -359,22 +391,22 @@ $productCoverUrl = function (array $product): string {
                                 <ul>
                                     <li>
                                         <p class="mb-0">
-                                            Panjang : <?= $produk['deskripsi']['dimensi']['asli']['panjang'] ?> mm
+                                            Panjang : <?= esc((string) ($produk['deskripsi']['dimensi']['asli']['panjang'] ?? '-')) ?> mm
                                         </p>
                                     </li>
                                     <li>
                                         <p class="mb-0">
-                                            Lebar : <?= $produk['deskripsi']['dimensi']['asli']['lebar'] ?> mm
+                                            Lebar : <?= esc((string) ($produk['deskripsi']['dimensi']['asli']['lebar'] ?? '-')) ?> mm
                                         </p>
                                     </li>
                                     <li>
                                         <p class="mb-0">
-                                            Tinggi : <?= $produk['deskripsi']['dimensi']['asli']['tinggi'] ?> mm
+                                            Tinggi : <?= esc((string) ($produk['deskripsi']['dimensi']['asli']['tinggi'] ?? '-')) ?> mm
                                         </p>
                                     </li>
                                     <li>
                                         <p class="mb-0">
-                                            Berat : <?= $produk['deskripsi']['dimensi']['asli']['berat'] ?> kg
+                                            Berat : <?= esc((string) ($produk['deskripsi']['dimensi']['asli']['berat'] ?? '-')) ?> kg
                                         </p>
                                     </li>
                                 </ul>
@@ -382,22 +414,22 @@ $productCoverUrl = function (array $product): string {
                                 <ul>
                                     <li>
                                         <p class="mb-0">
-                                            Panjang : <?= $produk['deskripsi']['dimensi']['paket']['panjang'] ?> mm
+                                            Panjang : <?= esc((string) ($produk['deskripsi']['dimensi']['paket']['panjang'] ?? '-')) ?> mm
                                         </p>
                                     </li>
                                     <li>
                                         <p class="mb-0">
-                                            Lebar : <?= $produk['deskripsi']['dimensi']['paket']['lebar'] ?> mm
+                                            Lebar : <?= esc((string) ($produk['deskripsi']['dimensi']['paket']['lebar'] ?? '-')) ?> mm
                                         </p>
                                     </li>
                                     <li>
                                         <p class="mb-0">
-                                            Tinggi : <?= $produk['deskripsi']['dimensi']['paket']['tinggi'] ?> mm
+                                            Tinggi : <?= esc((string) ($produk['deskripsi']['dimensi']['paket']['tinggi'] ?? '-')) ?> mm
                                         </p>
                                     </li>
                                     <li>
                                         <p class="mb-0">
-                                            Berat : <?= $produk['deskripsi']['dimensi']['paket']['berat'] ?> kg
+                                            Berat : <?= esc((string) ($produk['deskripsi']['dimensi']['paket']['berat'] ?? '-')) ?> kg
                                         </p>
                                     </li>
                                 </ul>
@@ -413,14 +445,14 @@ $productCoverUrl = function (array $product): string {
                         style="background-size: cover;">
                     </figure>
                     <img class="img-detail-prev"
-                        <?= $produk['varian'][0]['stok'] <= 0 ? 'style="filter: grayscale(90%)"' : ''; ?>
+                        <?= $defaultVariant['stok'] <= 0 ? 'style="filter: grayscale(90%)"' : ''; ?>
                         src="<?= $barangImgUrl('1000', $gambarAwalDetail) ?>" onmousemove="zoom(event)"
                         onmouseleave="mouseoff(event)" alt="<?= esc($produk['nama'], 'attr') ?>" decoding="async" fetchpriority="high">
                 </div>
                 <div class="mb-3 mt-3" style="overflow: auto">
                     <div class="container-img-detail-select"
-                        <?= $produk['varian'][0]['stok'] <= 0 ? 'style="filter: grayscale(90%)"' : ''; ?>>
-                        <?php foreach ($filterExistingSlots($produk['varian'][0]['urutan_gambar']) as $indx => $p_v) { ?>
+                        <?= $defaultVariant['stok'] <= 0 ? 'style="filter: grayscale(90%)"' : ''; ?>>
+                        <?php foreach ($filterExistingSlots($defaultVariant['urutan_gambar']) as $indx => $p_v) { ?>
                         <input <?= $indx == 0 ? 'checked' : '' ?> id="gambar<?= $indx ?>" type="radio" name="gambar"
                             aria-label="Foto produk <?= $indx + 1 ?>" value="<?= $p_v ?>">
                         <label class="img-detail-select" for="gambar<?= $indx ?>" title="Foto produk <?= $indx + 1 ?>"><img
@@ -455,7 +487,7 @@ $productCoverUrl = function (array $product): string {
                     <div class="ilena-option-heading"><p class="detail-mini-label w-100" id="mobile-size-label">Pilihan ukuran</p><span class="ilena-option-caption">Panjang</span></div>
                     <div class="ilena-size-options">
                         <?php foreach ($sizeOptions as $sizeOption) { $ind_ps = $sizeOption['index']; $ps = $sizeOption['product']; ?>
-                        <a href="/product/<?= strtolower(str_replace(' ', '-', $ps['nama'])) ?>/<?= $ind_ps ?>"
+                        <a href="/product/<?= rawurlencode(strtolower(str_replace(' ', '-', (string) $ps['nama']))) ?>/<?= (int) $ind_ps ?>"
                             class="btn-default-abu ilena-size-option <?= $ind_ps == $indexNama ? 'border border-dark is-active' : '' ?>" <?= $ind_ps == $indexNama ? 'aria-current="page"' : '' ?>><?= esc($sizeOption['length']) ?><span>mm</span></a>
                         <?php } ?>
                     </div></section>
@@ -494,7 +526,7 @@ $productCoverUrl = function (array $product): string {
                             </button>
                         </form>
                     </div>
-                    <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="gambar">
+                    <a href="/product/<?= rawurlencode(str_replace(' ', '-', (string) $p['nama'])); ?>" class="gambar">
                         <img class=" img-pic" id="img<?= $ind_p ?>"
                             src="<?= $productCoverUrl($p) ?>" alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async">
                         <?php if (is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') || !empty($p['gambar_hover'])) { ?>
@@ -534,7 +566,7 @@ $productCoverUrl = function (array $product): string {
                     });
                     </script>
                 </div>
-                <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="text-dark">
+                <a href="/product/<?= rawurlencode(str_replace(' ', '-', (string) $p['nama'])); ?>" class="text-dark">
                     <p class="text-secondary text-sm-start m-0"><?= strtolower($p['kategori']); ?></p>
                     <h5 style="font-size:18px;"><?= str_replace('Tv', 'TV', ucwords($p['nama'])); ?></h5>
                     <div class="d-flex gap-2">
@@ -555,21 +587,21 @@ $productCoverUrl = function (array $product): string {
 <script>
 const btnKeranjangElm = document.getElementById('btn-keranjang');
 const radioVarianElm = document.querySelectorAll('input[name="varian"], input[name="varian-mobile"]');
-const varian = JSON.parse('<?= json_encode($produk['varian']) ?>');
+const varian = <?= json_encode($produk['varian'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_INVALID_UTF8_SUBSTITUTE) ?>;
 const teksInfoHabisElm = document.getElementById('info-habis');
 const containerMarketElm = document.getElementById('container-market');
-let varianSelected = <?= json_encode($produk['varian'][0]['nama'] ?? 'default') ?>;
+let varianSelected = <?= json_encode($defaultVariant['nama'] ?? 'default', JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 let jumlahSelected = "1";
-let isStokHabis = <?= $produk['varian'][0]['stok'] == '0' ? 'true' : 'false' ?>;
-const stokByVarianName = <?= json_encode(array_column($produk['varian'], 'stok', 'nama')) ?>;
+let isStokHabis = <?= $defaultVariant['stok'] == '0' ? 'true' : 'false' ?>;
+const stokByVarianName = <?= json_encode(array_column($produk['varian'], 'stok', 'nama'), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 const detailVersion = "<?= $detailVersion ?>";
 const detailSlotsByVariant = <?= json_encode($detailSlotsByVariant, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
-const detailBase1000 = "/viewvar/<?= $produk['id']; ?>/";
-const detailBase3000 = "/viewvar3000/<?= $produk['id']; ?>/";
-const detailHoverUrl = "<?= $hoverImgUrl() ?>";
-const detailProductId = <?= json_encode((string) $produk['id']) ?>;
-const detailStatic1000 = <?= json_encode(base_url('img/barang/1000/')) ?>;
-const detailStatic3000 = <?= json_encode(base_url('img/barang/3000/')) ?>;
+const detailBase1000 = "/viewvar/" + encodeURIComponent(<?= json_encode((string) $produk['id'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>) + "/";
+const detailBase3000 = "/viewvar3000/" + encodeURIComponent(<?= json_encode((string) $produk['id'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>) + "/";
+const detailHoverUrl = <?= json_encode($hoverImgUrl(), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+const detailProductId = <?= json_encode((string) $produk['id'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+const detailStatic1000 = <?= json_encode(base_url('img/barang/1000/'), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+const detailStatic3000 = <?= json_encode(base_url('img/barang/3000/'), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 const detailLocalSlots1000 = <?= json_encode(array_values(array_filter(array_unique(array_merge(...array_map(static fn($v) => array_map('trim', explode(',', (string)($v['urutan_gambar'] ?? ''))), $produk['varian']))), static fn($slot) => $slot !== '' && is_file(FCPATH . 'img/barang/1000/' . $produk['id'] . '-' . $slot . '.webp')))) ?>;
 const detailLocalSlots3000 = <?= json_encode(array_values(array_filter(array_unique(array_merge(...array_map(static fn($v) => array_map('trim', explode(',', (string)($v['urutan_gambar'] ?? ''))), $produk['varian']))), static fn($slot) => $slot !== '' && is_file(FCPATH . 'img/barang/3000/' . $produk['id'] . '-' . $slot . '.webp')))) ?>;
 function encodedCartUrl(productId, varianName, qty) {
@@ -677,16 +709,15 @@ radioVarianElm.forEach(elm => {
         }
 
         if (btnKeranjangElm) {
+            const cartButton = btnKeranjangElm.querySelector('button[type="submit"]');
             if (Number(varianFullSelected.stok) > 0) {
-                btnKeranjangElm.children[0].innerHTML = 'Keranjang'
-                btnKeranjangElm.action = encodedCartUrl("<?= $produk['id'] ?>", varianName, jumlahSelected);
-                btnKeranjangElm.children[0].classList.remove('disabled')
+                if (cartButton) { cartButton.textContent = 'Keranjang'; cartButton.disabled = false; cartButton.classList.remove('disabled'); }
+                btnKeranjangElm.action = encodedCartUrl(<?= json_encode((string) $produk['id'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>, varianName, jumlahSelected);
                 teksInfoHabisElm.classList.add('d-none')
                 isStokHabis = false;
             } else {
-                btnKeranjangElm.children[0].innerHTML = 'Stok habis'
-                btnKeranjangElm.action = ''
-                btnKeranjangElm.children[0].classList.add('disabled')
+                if (cartButton) { cartButton.textContent = 'Stok habis'; cartButton.disabled = true; cartButton.classList.add('disabled'); }
+                btnKeranjangElm.action = '';
                 teksInfoHabisElm.classList.remove('d-none')
                 isStokHabis = true;
             }
@@ -707,7 +738,7 @@ function syncQuantitySelection() {
     jumlahBarangElm.value = String(safeQuantity);
     jumlahSelected = String(safeQuantity);
     if (btnKeranjangElm && !isStokHabis) {
-        btnKeranjangElm.action = encodedCartUrl("<?= $produk['id'] ?>", varianSelected, safeQuantity);
+        btnKeranjangElm.action = encodedCartUrl(<?= json_encode((string) $produk['id'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>, varianSelected, safeQuantity);
     }
 }
 if (jumlahBarangElm) {
@@ -719,7 +750,7 @@ function kurangJumlah() {
     if (!isStokHabis) {
         if (Number(jumlahBarangElm.value) > 1) {
             jumlahBarangElm.value--
-            btnKeranjangElm.action = encodedCartUrl("<?= $produk['id'] ?>", varianSelected, jumlahBarangElm.value);
+            btnKeranjangElm.action = encodedCartUrl(<?= json_encode((string) $produk['id'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>, varianSelected, jumlahBarangElm.value);
             jumlahSelected = jumlahBarangElm.value;
         }
     }
@@ -730,7 +761,7 @@ function tambahJumlah() {
         const maxStok = Number(stokByVarianName[varianSelected] || 999);
         if (Number(jumlahBarangElm.value) >= maxStok) return;
         jumlahBarangElm.value++;
-        btnKeranjangElm.action = encodedCartUrl("<?= $produk['id'] ?>", varianSelected, jumlahBarangElm.value);
+        btnKeranjangElm.action = encodedCartUrl(<?= json_encode((string) $produk['id'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>, varianSelected, jumlahBarangElm.value);
         jumlahSelected = jumlahBarangElm.value;
     }
 }

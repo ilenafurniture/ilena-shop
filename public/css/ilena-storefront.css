@@ -3292,6 +3292,8 @@ body.ilena-storefront .product-detail-soft .detail-mini-label {
     margin-bottom: 7px; color: var(--ilena-ink); font-size: 10px; font-weight: 650; letter-spacing: .09em; text-transform: uppercase;
 }
 body.ilena-storefront .product-detail-soft .ilena-product-options { display: grid; gap: 15px !important; margin: 0; padding: 17px 0 18px; border-block: 1px solid var(--ilena-line); }
+body.ilena-storefront .product-detail-soft .ilena-product-options.show-flex-ke-hide { display: grid; }
+body.ilena-storefront .product-detail-soft .ilena-product-options.hide-ke-show-flex { display: none; }
 body.ilena-storefront .product-detail-soft .ilena-option-group { min-width: 0; }
 body.ilena-storefront .product-detail-soft .ilena-option-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
 body.ilena-storefront .product-detail-soft .ilena-option-heading .detail-mini-label { margin: 0; }
@@ -3357,7 +3359,9 @@ body.ilena-storefront .product-detail-soft .ilena-product-related-title { margin
     body.ilena-storefront .product-detail-soft .ilena-product-layout > .limapuluh-ke-seratus { width: 100%; flex: 1 1 auto; }
     body.ilena-storefront .product-detail-soft .ilena-product-gallery { position: static; }
 }
-@media (max-width: 700px) {
+@media (max-width: 900px) {
+    body.ilena-storefront .product-detail-soft .ilena-product-options.show-flex-ke-hide { display: none; }
+    body.ilena-storefront .product-detail-soft .ilena-product-options.hide-ke-show-flex { display: grid; }
     body.ilena-storefront .product-detail-soft .ilena-product-detail { padding-block: 14px 40px; }
     body.ilena-storefront .product-detail-soft .ilena-product-layout { flex-direction: column-reverse; gap: 24px; }
     body.ilena-storefront .product-detail-soft .ilena-product-layout > .limapuluh-ke-seratus { width: 100%; flex: 1 1 auto; }
@@ -5213,16 +5217,19 @@ body.ilena-storefront .ilena-store-footer__bottom nav { gap: 10px 22px; }
     body.ilena-storefront .ilena-topbar__actions .ilena-header-action { transition: none; }
 }
 
-/* Payment marks sit directly on the footer surface rather than white tiles. */
+/* Payment marks use one Ilena tone, one tile size, and one quiet footer surface. */
 body.ilena-storefront .ilena-store-footer__commerce .ilena-store-footer__payments {
-    gap: 10px 13px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.12);
+    display: grid; width: min(100%, 196px); grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px;
+    margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.12);
 }
 body.ilena-storefront .ilena-store-footer__commerce .ilena-store-footer__payments img {
-    max-width: 48px; height: 24px; padding: 0; border: 0; border-radius: 0; background: transparent !important;
-    object-fit: contain; opacity: .9; box-shadow: none;
+    display: block; width: 100%; max-width: none; height: 32px; padding: 6px; box-sizing: border-box;
+    border: 1px solid rgba(212,185,156,.2); border-radius: 0; background: #37322d !important;
+    object-fit: contain; opacity: 1; box-shadow: none;
+    filter: brightness(0) saturate(100%) invert(81%) sepia(14%) saturate(440%) hue-rotate(352deg) brightness(91%) contrast(88%);
 }
 body.ilena-storefront .ilena-store-footer__commerce .ilena-store-footer__payments img.ilena-store-footer__payment--white-mark {
-    background: transparent !important; opacity: .96;
+    background: #37322d !important;
 }
 body.ilena-storefront .ilena-store-footer__commerce .ilena-store-footer__marketplaces { gap: 7px 14px; }
 body.ilena-storefront .ilena-store-footer__commerce .ilena-store-footer__marketplaces a {

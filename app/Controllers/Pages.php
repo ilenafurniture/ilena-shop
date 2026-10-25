@@ -628,9 +628,42 @@ class Pages extends BaseController
 
         if ($nama) {
             $productsemua = $this->barangModel->where(['nama' => $nama])->findAll();
-            $product      = $productsemua[$ind_nama];
-            $product['deskripsi'] = json_decode($product['deskripsi'] ?? '{}', true) ?? [];
-            $product['varian']    = json_decode($product['varian'] ?? '[]', true) ?? [];
+            $variantIndex = 0;
+            if ($ind_nama !== false && $ind_nama !== null && $ind_nama !== '') {
+                $parsedVariantIndex = filter_var($ind_nama, FILTER_VALIDATE_INT);
+                if ($parsedVariantIndex === false) {
+                    throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+                }
+                $variantIndex = $parsedVariantIndex;
+            }
+            if ($variantIndex < 0 || !isset($productsemua[$variantIndex])) {
+                throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+            }
+
+            $product = $productsemua[$variantIndex];
+            $product['deskripsi'] = json_decode($product['deskripsi'] ?? '{}', true) ?: [];
+            $variants = json_decode($product['varian'] ?? '[]', true);
+            $variants = is_array($variants) ? $variants : [];
+            $variantsByName = [];
+            foreach ($variants as $variantIndexInProduct => $variant) {
+                if (!is_array($variant)) continue;
+                $variantName = trim((string) ($variant['nama'] ?? ''));
+                $variantKey = $variantName !== '' ? mb_strtolower($variantName) : 'unnamed-' . $variantIndexInProduct;
+                if (!isset($variantsByName[$variantKey])) {
+                    $variant['nama'] = $variantName !== '' ? $variantName : 'Varian ' . ($variantIndexInProduct + 1);
+                    $variant['stok'] = max(0, (int) ($variant['stok'] ?? 0));
+                    $variant['urutan_gambar'] = (string) ($variant['urutan_gambar'] ?? '1');
+                    $variant['kode'] = (string) ($variant['kode'] ?? '#ddd');
+                    $variantsByName[$variantKey] = $variant;
+                    continue;
+                }
+                $existingSlots = array_filter(array_map('trim', explode(',', (string) ($variantsByName[$variantKey]['urutan_gambar'] ?? ''))));
+                $duplicateSlots = array_filter(array_map('trim', explode(',', (string) ($variant['urutan_gambar'] ?? ''))));
+                $variantsByName[$variantKey]['urutan_gambar'] = implode(',', array_values(array_unique(array_merge($existingSlots, $duplicateSlots))));
+                $variantsByName[$variantKey]['stok'] = max((int) ($variantsByName[$variantKey]['stok'] ?? 0), (int) ($variant['stok'] ?? 0));
+            }
+            $product['varian'] = array_values($variantsByName);
+            $ind_nama = $variantIndex;
 
             $produkSejenis = $this->barangModel
                 ->where(['subkategori' => $product['subkategori']])
