@@ -174,6 +174,7 @@ foreach ($produkLama as $p) {
     }
 }
 
+$catalogTotalResults = count($produk);
 $hitungPag = ceil(count($produk) / 10);
 $pag = 1;
 if (isset($_GET['pag'])) $pag = (int)$_GET['pag'];
@@ -207,7 +208,7 @@ if (isset($_GET['ruang'])) {
 ?>
 <div class="container d-flex justify-content-center ilena-catalog-page">
     <div class="konten baris-ke-kolom">
-        <div class="show-block-ke-hide container-filter-desktop"
+        <div id="catalogFilterSidebar" class="show-block-ke-hide container-filter-desktop is-collapsed" inert aria-hidden="true"
             style="position: sticky; top: 50px; height:fit-content">
             <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample" aria-expanded="false"
                 aria-controls="collapseExample">
@@ -534,16 +535,26 @@ if (isset($_GET['ruang'])) {
 
         <div style="flex: 1;">
             <!-- <div style="position: absolute;" class="w-100"> -->
+            <header class="ilena-catalog-intro">
+                <div>
+                    <p class="ilena-catalog-intro__eyebrow">ILENA <span>/</span> FURNITURE</p>
+                    <h1><?= esc($isSmartSearch ? 'Temukan furniture pilihan' : ($title ?? 'Produk Kami')); ?></h1>
+                    <p class="ilena-catalog-intro__description">Jelajahi pilihan furniture untuk melengkapi ruang dengan karakter dan kenyamanan.</p>
+                </div>
+                <div class="ilena-catalog-intro__aside">
+                    <?php if (session()->get('role') == '1') { ?>
+                    <a href="/admin/addproduct" class="ilena-catalog-add">Tambah Produk <span aria-hidden="true">↗</span></a>
+                    <?php } ?>
+                    <p><strong><?= number_format($catalogTotalResults, 0, ',', '.'); ?></strong><span>DESAIN</span></p>
+                </div>
+            </header>
             <?php if (session()->get('role') == '1') { ?>
-            <div class="d-flex justify-content-between">
-                <h1 class="teks-sedang">List Product</h1>
-                <a href="/admin/addproduct" class="btn-default-merah">Tambah Produk</a>
-            </div>
+            <p class="ilena-catalog-admin-note">Katalog produk</p>
             <?php } ?>
-            <div class="d-flex gap-4 align-items-stretch mb-3">
+            <div class="d-flex gap-4 align-items-stretch mb-3 ilena-catalog-toolbar">
                 <div style="width: fit-content;" class="show-flex-ke-hide justify-content-center align-items-center">
-                    <button class="btn btn-sm btn-outline-dark d-flex align-items-center" type="button" data-filter-sidebar-toggle aria-expanded="true" onclick="showFilterDesktop()">
-                        <i class="material-icons" aria-hidden="true">chevron_left</i>
+                    <button class="btn btn-sm btn-outline-dark d-flex align-items-center" type="button" data-filter-sidebar-toggle aria-controls="catalogFilterSidebar" aria-expanded="false" aria-label="Tampilkan filter" onclick="showFilterDesktop()">
+                        <i class="material-icons" aria-hidden="true">chevron_right</i>
                         <p class="m-0" style="line-height: 7px;">Filter</p>
                     </button>
                 </div>
@@ -590,10 +601,10 @@ if (isset($_GET['ruang'])) {
             </section>
             <?php } ?>
             <?php } ?>
-            <div class="container-card1">
+            <div class="container-card1 ilena-catalog-grid">
                 <?php foreach ($produk as $ind_p => $p) { ?>
                 <?php $cardVersion = !empty($p['tgl_update']) ? (int) strtotime((string) $p['tgl_update']) : time(); ?>
-                <div class="card1">
+                <div class="card1" data-product-card>
                     <div style="position: relative;">
                         <span class="card1-content-img-kiri"
                             <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
@@ -604,18 +615,18 @@ if (isset($_GET['ruang'])) {
                                 if (in_array($p['id'], $wishlist)) { ?>
                             <form action="/delwishlist/<?= $p['id'] ?>" method="post">
                                 <?= csrf_field(); ?>
-                                <button type="submit" class="card1-btn-img"><i
+                                <button type="submit" class="card1-btn-img" aria-label="Hapus <?= esc($p['nama'], 'attr'); ?> dari favorit" title="Hapus dari favorit"><i
                                         class="material-icons">bookmark</i></button>
                             </form>
                             <?php } else { ?>
                             <form action="/addwishlist/<?= $p['id'] ?>" method="post">
                                 <?= csrf_field(); ?>
-                                <button type="submit" class="card1-btn-img"><i
+                                <button type="submit" class="card1-btn-img" aria-label="Simpan <?= esc($p['nama'], 'attr'); ?> ke favorit" title="Simpan ke favorit"><i
                                         class="material-icons">bookmark_border</i></button>
                             </form>
                             <?php } ?>
                             <form method="post" id="card<?= $ind_p ?>"
-                                action="/addcart/<?= $p['id'] ?>/<?= rawurlencode(json_decode($p['varian'], true)[0]['nama']) ?>/1"><?= csrf_field(); ?><button class="card1-btn-img"><i class="material-icons">shopping_cart</i>
+                                action="/addcart/<?= $p['id'] ?>/<?= rawurlencode(json_decode($p['varian'], true)[0]['nama']) ?>/1"><?= csrf_field(); ?><button class="card1-btn-img" aria-label="Tambah <?= esc($p['nama'], 'attr'); ?> ke keranjang" title="Tambah ke keranjang"><i class="material-icons">shopping_cart</i>
                                 </button>
                             </form>
                         </div>
@@ -631,9 +642,9 @@ if (isset($_GET['ruang'])) {
                     <div class="container-varian mb-1 d-flex">
                         <?php foreach (json_decode($p['varian'], true) as $ind_v => $v) { ?>
                         <input id="varian-<?= $ind_p ?>-<?= $ind_v ?>"
-                            value="<?= $v['urutan_gambar'] ?>-<?= $v['nama'] ?>" type="radio"
+                            value="<?= esc($v['urutan_gambar'], 'attr') ?>-<?= esc($v['nama'], 'attr') ?>" aria-label="Warna <?= esc($v['nama'], 'attr') ?>" type="radio"
                             name="varian<?= $ind_p ?>">
-                        <label for="varian-<?= $ind_p ?>-<?= $ind_v ?>"><span
+                        <label for="varian-<?= $ind_p ?>-<?= $ind_v ?>" title="<?= esc($v['nama'], 'attr') ?>"><span
                                 style="background-color: <?= $v['kode'] ?>"></span></label>
                         <?php } ?>
                         <script>
@@ -691,7 +702,7 @@ if (isset($_GET['ruang'])) {
                 // Menampilkan tombol 'Prev'
                 if ($pag > 1) { ?>
                 <a class="item-pag"
-                    href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&ruang=<?= isset($_GET['ruang']) ? $_GET['ruang'] : ''; ?>&pag=<?= $pag - 1; ?>"><i
+                    href="<?= esc($catalogPageUrl($pag - 1), 'attr'); ?>" aria-label="Halaman sebelumnya"><i
                         class="material-icons">chevron_left</i></a>
                 <?php } ?>
 
@@ -706,7 +717,7 @@ if (isset($_GET['ruang'])) {
                 // Menampilkan tombol 'Next'
                 if ($pag < $hitungPag) { ?>
                 <a class="item-pag"
-                    href="<?= esc($catalogPageUrl($pag + 1), 'attr'); ?>"><i
+                    href="<?= esc($catalogPageUrl($pag + 1), 'attr'); ?>" aria-label="Halaman berikutnya"><i
                         class="material-icons">chevron_right</i></a>
                 <?php } ?>
             </div>
@@ -1587,6 +1598,9 @@ function showFilterDesktop() {
     const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
     containerFilterDesktopElm.classList.toggle('is-collapsed', isExpanded);
     toggle.setAttribute('aria-expanded', String(!isExpanded));
+    containerFilterDesktopElm.toggleAttribute('inert', isExpanded);
+    containerFilterDesktopElm.setAttribute('aria-hidden', String(isExpanded));
+    toggle.setAttribute('aria-label', isExpanded ? 'Tampilkan filter' : 'Sembunyikan filter');
     const icon = toggle.querySelector('.material-icons');
     if (icon) icon.textContent = isExpanded ? 'chevron_right' : 'chevron_left';
 }
