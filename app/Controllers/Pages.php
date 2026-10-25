@@ -84,6 +84,15 @@ class Pages extends BaseController
     }
     public function getNavbarData()
     {
+        // This data is shared by public pages and only changes when catalog
+        // metadata changes. Cache it briefly to avoid repeating a full
+        // representative-product aggregation on every PHP request.
+        $navbarCacheKey = 'ilena_public_navbar_data_v1';
+        $cachedNavbar = cache()->get($navbarCacheKey);
+        if (is_array($cachedNavbar)) {
+            return $cachedNavbar;
+        }
+
         // Ambil satu produk representatif per pasangan subkategori/kategori
         // dalam satu query, bukan query tambahan untuk setiap pasangan menu.
         $produkNavbar = $this->barangModel->query(
@@ -131,6 +140,7 @@ class Pages extends BaseController
                 $hasil[$jenis][] = $itemKoleksi;
             }
         }
+        cache()->save($navbarCacheKey, $hasil, 60);
         return $hasil;
     }
     public function index()
