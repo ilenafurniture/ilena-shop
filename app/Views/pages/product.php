@@ -26,11 +26,17 @@ $assetVersion = function (string $relativePath) use ($produk): string {
 };
 $barangImgUrl = function (string $size, string $slot) use ($produk, $assetVersion): string {
     $relative = 'img/barang/' . $size . '/' . $produk['id'] . '-' . $slot . '.webp';
+    if (is_file(FCPATH . $relative)) {
+        return base_url($relative) . '?v=' . $assetVersion($relative);
+    }
     $route = $size === '3000' ? 'viewvar3000' : 'viewvar';
     return base_url($route . '/' . $produk['id'] . '/' . $slot) . '?v=' . $assetVersion($relative);
 };
 $hoverImgUrl = function () use ($produk, $assetVersion): string {
     $relative = 'img/barang/hover/' . $produk['id'] . '.webp';
+    if (is_file(FCPATH . $relative)) {
+        return base_url($relative) . '?v=' . $assetVersion($relative);
+    }
     return base_url('viewpichover/' . $produk['id']) . '?v=' . $assetVersion($relative);
 };
 $detailVersion = !empty($produk['tgl_update']) ? (int) strtotime((string) $produk['tgl_update']) : time();
@@ -54,6 +60,9 @@ $productCoverUrl = function (array $product): string {
     }
     $fileVersion = is_file($sourceAbsolute) ? (int) filemtime($sourceAbsolute) : time();
     $dbVersion = !empty($product['tgl_update']) ? (int) strtotime((string) $product['tgl_update']) : 0;
+    if (is_file($sourceAbsolute)) {
+        return base_url($sourceRelative) . '?v=' . max($fileVersion, $dbVersion);
+    }
     return base_url('product-cover/' . $id) . '?slot=' . urlencode($slot) . '&v=' . max($fileVersion, $dbVersion);
 };
 ?>
@@ -187,9 +196,10 @@ $productCoverUrl = function (array $product): string {
                     <?php } ?>
                 </div>
                 <div class="ilena-product-description"><?= $produk['deskripsi']['deskripsi'] ?? ''; ?></div>
-                <div class="gap-2 show-flex-ke-hide">
-                    <p class="detail-mini-label">Pilih warna / varian</p>
-                    <div class="container-varian mb-3 d-flex">
+                <div class="ilena-product-options gap-2 show-flex-ke-hide">
+                    <section class="ilena-option-group" aria-labelledby="desktop-variant-label">
+                    <div class="ilena-option-heading"><p class="detail-mini-label" id="desktop-variant-label">Warna / varian</p><span class="ilena-option-selected" data-selected-variant><?= esc($produk['varian'][0]['nama'] ?? '') ?></span></div>
+                    <div class="container-varian mb-3 d-flex" role="radiogroup" aria-labelledby="desktop-variant-label">
                         <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
                         <input id="varian<?= $ind_v ?>"
                             <?= $ind_v === 0 ? 'checked' : '' ?>
@@ -204,15 +214,15 @@ $productCoverUrl = function (array $product): string {
                         <label for="varian<?= $ind_v ?>" title="<?= esc($v['nama'], 'attr') ?>"><span
                                 style="background-color: <?= esc($v['kode'], 'attr') ?>"></span><span class="ilena-variant-name"><?= esc($v['nama']); ?></span></label>
                         <?php } ?>
-                    </div>
-                    <p class="detail-mini-label">Pilihan ukuran</p>
-                    <div class="d-flex gap-1 mb-2">
+                    </div></section>
+                    <section class="ilena-option-group" aria-labelledby="desktop-size-label">
+                    <div class="ilena-option-heading"><p class="detail-mini-label" id="desktop-size-label">Pilihan ukuran</p><span class="ilena-option-caption">Panjang</span></div>
+                    <div class="ilena-size-options">
                         <?php foreach ($produkSemua as $ind_ps => $ps) { ?>
                         <a href="/product/<?= strtolower(str_replace(' ', '-', $ps['nama'])) ?>/<?= $ind_ps ?>"
-                            class="btn-default-abu <?= $ind_ps == $indexNama ? 'border border-dark' : '' ?>"><?= (json_decode($ps['deskripsi'] ?? '{}', true) ?? [])['dimensi']['asli']['panjang'] ?? '-' ?>
-                            mm</a>
+                            class="btn-default-abu ilena-size-option <?= $ind_ps == $indexNama ? 'border border-dark is-active' : '' ?>" <?= $ind_ps == $indexNama ? 'aria-current="page"' : '' ?>><?= (json_decode($ps['deskripsi'] ?? '{}', true) ?? [])['dimensi']['asli']['panjang'] ?? '-' ?><span>mm</span></a>
                         <?php } ?>
-                    </div>
+                    </div></section>
                 </div>
                 <?php if (session()->get('role') == '1') { ?>
                 <div class="d-flex gap-2">
@@ -369,9 +379,9 @@ $productCoverUrl = function (array $product): string {
             </div>
             <div class="limapuluh-ke-seratus ilena-product-gallery">
                 <div class="ilena-product-gallery__stage">
-                    <figure class="img-detail-prev d-none"
+                    <figure class="img-detail-prev ilena-product-zoom d-none" aria-hidden="true"
                         data-zoom-src="<?= $barangImgUrl('3000', $gambarAwalDetail) ?>"
-                        style="background-size: cover; position: absolute; transform: translateX(-410px); width: 400px; height: 400;">
+                        style="background-size: cover;">
                     </figure>
                     <img class="img-detail-prev"
                         <?= $produk['varian'][0]['stok'] <= 0 ? 'style="filter: grayscale(90%)"' : ''; ?>
@@ -409,17 +419,16 @@ $productCoverUrl = function (array $product): string {
                                 window.isHoverDetailSelected = false;
                                 imgElm.dataset.zoomSrc = "/viewvar3000/<?= $produk['id']; ?>/" + e.target.value.split("-")[0] + "?v=<?= $detailVersion ?>";
                                 imgElm.style.backgroundImage = "";
-                                imgFixElm.src = "/viewvar/<?= $produk['id']; ?>/" + e.target
-                                    .value
-                                    .split("-")[0] + '?v=<?= $detailVersion ?>';
+                                imgFixElm.src = detailImageUrl(e.target.value.split("-")[0]);
                             })
                         });
                         </script>
                     </div>
                 </div>
-                <div class="gap-2 hide-ke-show-flex">
-                    <p class="detail-mini-label w-100">Pilih warna / varian</p>
-                    <div class="container-varian mb-3 d-flex">
+                <div class="ilena-product-options gap-2 hide-ke-show-flex">
+                    <section class="ilena-option-group" aria-labelledby="mobile-variant-label">
+                    <div class="ilena-option-heading"><p class="detail-mini-label w-100" id="mobile-variant-label">Warna / varian</p><span class="ilena-option-selected" data-selected-variant><?= esc($produk['varian'][0]['nama'] ?? '') ?></span></div>
+                    <div class="container-varian mb-3 d-flex" role="radiogroup" aria-labelledby="mobile-variant-label">
                         <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
                         <input id="varian<?= $ind_v ?>-mobile"
                             <?= $ind_v === 0 ? 'checked' : '' ?>
@@ -433,47 +442,48 @@ $productCoverUrl = function (array $product): string {
                         <label for="varian<?= $ind_v ?>-mobile" title="<?= esc($v['nama'], 'attr') ?>"><span
                                 style="background-color: <?= esc($v['kode'], 'attr') ?>"></span><span class="ilena-variant-name"><?= esc($v['nama']); ?></span></label>
                         <?php } ?>
-                    </div>
-                    <p class="detail-mini-label w-100">Pilihan ukuran</p>
-                    <div class="d-flex gap-1 mb-2">
+                    </div></section>
+                    <section class="ilena-option-group" aria-labelledby="mobile-size-label">
+                    <div class="ilena-option-heading"><p class="detail-mini-label w-100" id="mobile-size-label">Pilihan ukuran</p><span class="ilena-option-caption">Panjang</span></div>
+                    <div class="ilena-size-options">
                         <?php foreach ($produkSemua as $ind_ps => $ps) { ?>
                         <a href="/product/<?= strtolower(str_replace(' ', '-', $ps['nama'])) ?>/<?= $ind_ps ?>"
-                            class="btn-default-abu <?= $ind_ps == $indexNama ? 'border border-dark' : '' ?>"><?= (json_decode($ps['deskripsi'] ?? '{}', true) ?? [])['dimensi']['asli']['panjang'] ?? '-' ?>
-                            mm</a>
+                            class="btn-default-abu ilena-size-option <?= $ind_ps == $indexNama ? 'border border-dark is-active' : '' ?>" <?= $ind_ps == $indexNama ? 'aria-current="page"' : '' ?>><?= (json_decode($ps['deskripsi'] ?? '{}', true) ?? [])['dimensi']['asli']['panjang'] ?? '-' ?><span>mm</span></a>
                         <?php } ?>
-                    </div>
+                    </div></section>
                 </div>
             </div>
         </div>
         <?php if (count($produkSejenis) > 0) { ?>
-        <hr class="mt-5">
-        <p class="text-center ilena-product-related-title">Anda mungkin juga suka</p>
+        <section class="ilena-product-related" aria-labelledby="related-products-title">
+        <div class="ilena-product-related-heading"><span>Pilihan untuk Anda</span><h2 id="related-products-title">Anda mungkin juga suka</h2></div>
         <div class="container-card1 ilena-product-related-grid">
             <?php foreach ($produkSejenis as $ind_p => $p) { ?>
             <?php $relatedVersion = !empty($p['tgl_update']) ? (int) strtotime((string) $p['tgl_update']) : time(); ?>
+            <?php $relatedVariantData = json_decode($p['varian'] ?? '[]', true) ?: []; $relatedLocalSlots = []; foreach ($relatedVariantData as $rv) { foreach (array_filter(array_map('trim', explode(',', (string)($rv['urutan_gambar'] ?? '')))) as $rs) { foreach (['1000', '3000'] as $rz) { if (is_file(FCPATH . 'img/barang/' . $rz . '/' . $p['id'] . '-' . $rs . '.webp')) { $relatedLocalSlots[$rs] = $rz; break; } } } } ?>
             <div class="card1">
                 <div style="position: relative;">
                     <span class="card1-content-img-kiri"
                         <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
                     <div class="d-flex flex-column gap-2 card1-content-img-kanan">
                         <?php if (session()->get('role') == '1') { ?>
-                        <a class="card1-btn-img" href="/admin/editproduct/<?= $p['id'] ?>" title="Edit produk"><i class="material-icons">edit</i></a>
+                        <a class="card1-btn-img" href="/admin/editproduct/<?= $p['id'] ?>" title="Edit produk" aria-label="Edit <?= esc($p['nama'], 'attr') ?>"><i class="material-icons">edit</i></a>
                         <?php }
                                 if (in_array($p['id'], $wishlist)) { ?>
                         <form action="/delwishlist/<?= $p['id'] ?>" method="post">
                             <?= csrf_field(); ?>
-                            <button type="submit" class="card1-btn-img"><i class="material-icons">bookmark</i></button>
+                            <button type="submit" class="card1-btn-img" aria-label="Hapus <?= esc($p['nama'], 'attr') ?> dari wishlist"><i class="material-icons">bookmark</i></button>
                         </form>
                         <?php } else { ?>
                         <form action="/addwishlist/<?= $p['id'] ?>" method="post">
                             <?= csrf_field(); ?>
-                            <button type="submit" class="card1-btn-img"><i
+                            <button type="submit" class="card1-btn-img" aria-label="Simpan <?= esc($p['nama'], 'attr') ?> ke wishlist"><i
                                     class="material-icons">bookmark_border</i></button>
                         </form>
                         <?php } ?>
                         <?php $cardVarianAwal = json_decode($p['varian'], true)[0]['nama'] ?? 'default'; ?>
                         <form method="post" id="card<?= $ind_p ?>"
-                            action="/addcart/<?= $p['id'] ?>/<?= rawurlencode($cardVarianAwal) ?>/1"><?= csrf_field(); ?><button class="card1-btn-img"><i class="material-icons">shopping_cart</i>
+                            action="/addcart/<?= $p['id'] ?>/<?= rawurlencode($cardVarianAwal) ?>/1"><?= csrf_field(); ?><button type="submit" class="card1-btn-img" aria-label="Tambah <?= esc($p['nama'], 'attr') ?> ke keranjang"><i class="material-icons">shopping_cart</i>
                             </button>
                         </form>
                     </div>
@@ -482,13 +492,14 @@ $productCoverUrl = function (array $product): string {
                             src="<?= $productCoverUrl($p) ?>" alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async">
                         <?php if (is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') || !empty($p['gambar_hover'])) { ?>
                         <img class=" img-pic-hover lazy-hover-product"
-                            data-src="<?= base_url('viewpichover/' . $p['id']) ?>?v=<?= $relatedVersion ?>" alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async">
+                            data-src="<?= is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') ? base_url('img/barang/hover/' . $p['id'] . '.webp') : base_url('viewpichover/' . $p['id']) ?>?v=<?= $relatedVersion ?>" alt="" aria-hidden="true" loading="lazy" decoding="async">
                         <?php } ?>
                     </a>
                 </div>
                 <div class="container-varian mb-1 d-flex">
-                    <?php foreach (json_decode($p['varian'], true) as $ind_v => $v) { ?>
+                    <?php foreach ($relatedVariantData as $ind_v => $v) { ?>
                     <input id="varian-<?= $ind_p ?>-<?= $ind_v ?>"
+                        <?= $ind_v === 0 ? 'checked' : '' ?>
                         value="<?= esc($v['urutan_gambar'], 'attr') ?>-<?= esc($v['nama'], 'attr') ?>"
                         data-slot="<?= esc($v['urutan_gambar'], 'attr') ?>"
                         data-name="<?= esc($v['nama'], 'attr') ?>"
@@ -506,8 +517,10 @@ $productCoverUrl = function (array $product): string {
                             const slot = (e.target.dataset.slot || e.target.value.split("-")[0] || "1").split(",")[0];
                             const namaVarian = e.target.dataset.name || e.target.value.split("-").slice(1).join("-") || "default";
                             const stok = Number(e.target.dataset.stok || 0);
-                            img<?= $ind_p ?>Elm.src =
-                                "<?= base_url('product-cover/' . $p['id']) ?>?slot=" + slot + '&v=<?= $relatedVersion ?>';
+                            const staticSlots<?= $ind_p ?> = <?= json_encode($relatedLocalSlots) ?>;
+                            img<?= $ind_p ?>Elm.src = staticSlots<?= $ind_p ?>[slot]
+                                ? "<?= base_url('img/barang/') ?>" + staticSlots<?= $ind_p ?>[slot] + "/<?= $p['id'] ?>-" + encodeURIComponent(slot) + ".webp?v=<?= $relatedVersion ?>"
+                                : "<?= base_url('product-cover/' . $p['id']) ?>?slot=" + slot + '&v=<?= $relatedVersion ?>';
 
                             btnKeranjang<?= $ind_p ?>Elm.action = stok > 0 ? "/addcart/<?= $p['id'] ?>/" + encodeURIComponent(namaVarian) + "/1" : "";
                             const quickBtn = btnKeranjang<?= $ind_p ?>Elm.querySelector('button');
@@ -530,11 +543,11 @@ $productCoverUrl = function (array $product): string {
             </div>
             <?php } ?>
         </div>
+        </section>
         <?php } ?>
     </div>
 </div>
 <script>
-const figureElm = document.querySelector('figure');
 const btnKeranjangElm = document.getElementById('btn-keranjang');
 const radioVarianElm = document.querySelectorAll('input[name="varian"], input[name="varian-mobile"]');
 const varian = JSON.parse('<?= json_encode($produk['varian']) ?>');
@@ -548,13 +561,20 @@ const detailVersion = "<?= $detailVersion ?>";
 const detailBase1000 = "/viewvar/<?= $produk['id']; ?>/";
 const detailBase3000 = "/viewvar3000/<?= $produk['id']; ?>/";
 const detailHoverUrl = "<?= $hoverImgUrl() ?>";
+const detailProductId = <?= json_encode((string) $produk['id']) ?>;
+const detailStatic1000 = <?= json_encode(base_url('img/barang/1000/')) ?>;
+const detailStatic3000 = <?= json_encode(base_url('img/barang/3000/')) ?>;
+const detailLocalSlots1000 = <?= json_encode(array_values(array_filter(array_unique(array_merge(...array_map(static fn($v) => array_map('trim', explode(',', (string)($v['urutan_gambar'] ?? ''))), $produk['varian']))), static fn($slot) => $slot !== '' && is_file(FCPATH . 'img/barang/1000/' . $produk['id'] . '-' . $slot . '.webp')))) ?>;
+const detailLocalSlots3000 = <?= json_encode(array_values(array_filter(array_unique(array_merge(...array_map(static fn($v) => array_map('trim', explode(',', (string)($v['urutan_gambar'] ?? ''))), $produk['varian']))), static fn($slot) => $slot !== '' && is_file(FCPATH . 'img/barang/3000/' . $produk['id'] . '-' . $slot . '.webp')))) ?>;
 function encodedCartUrl(productId, varianName, qty) {
     return "/addcart/" + productId + "/" + encodeURIComponent(varianName || "default") + "/" + Math.max(1, Number(qty || 1));
 }
 function detailImageUrl(slot) {
+    if (detailLocalSlots1000.includes(String(slot))) return detailStatic1000 + detailProductId + "-" + encodeURIComponent(slot) + ".webp?v=" + detailVersion;
     return detailBase1000 + slot + "?v=" + detailVersion;
 }
 function detailZoomUrl(slot) {
+    if (detailLocalSlots3000.includes(String(slot))) return detailStatic3000 + detailProductId + "-" + encodeURIComponent(slot) + ".webp?v=" + detailVersion;
     return detailBase3000 + slot + "?v=" + detailVersion;
 }
 radioVarianElm.forEach(elm => {
@@ -567,8 +587,10 @@ radioVarianElm.forEach(elm => {
         const varianFullSelected = varian[Number(e.target.dataset.index || e.target.value.split("-")[2] || 0)] || { stok: e.target.dataset.stok || 0, urutan_gambar: slotValue, nama: varianName };
         const imgElm = document.querySelector("figure.img-detail-prev");
         const imgFixElm = document.querySelector("img.img-detail-prev");
+        window.isHoverDetailSelected = false;
         imgElm.dataset.zoomSrc = detailZoomUrl(slotValue.split(",")[0]);
         imgElm.style.backgroundImage = "";
+        imgElm.dataset.loadedSource = "";
         imgFixElm.src = detailImageUrl(slotValue.split(",")[0]);
 
         const containerImgDetailElm = document.querySelector(".container-img-detail-select");
@@ -612,6 +634,7 @@ radioVarianElm.forEach(elm => {
             }
         }
         varianSelected = varianName;
+        document.querySelectorAll('[data-selected-variant]').forEach(label => { label.textContent = varianName; });
         syncQuantitySelection();
 
         const radioImgElm = document.querySelectorAll('input[name="gambar"]');
@@ -624,15 +647,15 @@ radioVarianElm.forEach(elm => {
                     imgElm.classList.add("d-none");
                     imgElm.dataset.zoomSrc = "";
                     imgElm.style.backgroundImage = "";
+                    imgElm.dataset.loadedSource = "";
                     imgFixElm.src = detailHoverUrl;
                     return;
                 }
                 window.isHoverDetailSelected = false;
                 imgElm.dataset.zoomSrc = detailZoomUrl(elmVar.target.value.split("-")[0].split(",")[0]);
                 imgElm.style.backgroundImage = "";
-                imgFixElm.src = "/viewvar/<?= $produk['id']; ?>/" + elmVar
-                    .target.value
-                    .split("-")[0].split(",")[0] + '?v=' + detailVersion
+                imgElm.dataset.loadedSource = "";
+                imgFixElm.src = detailImageUrl(elmVar.target.value.split("-")[0].split(",")[0]);
             })
         });
     })
@@ -677,27 +700,25 @@ function tambahJumlah() {
 }
 
 function zoom(e) {
-    if (window.innerWidth > 600 && !window.isHoverDetailSelected) {
-        if (figureElm && figureElm.dataset.zoomSrc && !figureElm.style.backgroundImage) {
-            figureElm.style.backgroundImage = "url('" + figureElm.dataset.zoomSrc + "')";
-        }
-        figureElm.classList.remove('d-none')
-        figureElm.style.backgroundSize = "auto"
-        const widthGambar = e.target.offsetWidth;
-        const gmbrPosition = [
-            (e.offsetX / widthGambar) * 100,
-            (e.offsetY / widthGambar) * 100,
-        ];
-        figureElm.style.backgroundPosition =
-            gmbrPosition[0] + "% " + gmbrPosition[1] + "%";
+    const stage = e.currentTarget.closest('.ilena-product-gallery__stage');
+    const zoomLayer = stage && stage.querySelector('.ilena-product-zoom');
+    const source = zoomLayer && zoomLayer.dataset.zoomSrc;
+    if (!stage || !zoomLayer || !source || window.innerWidth <= 700 || window.matchMedia('(hover: none)').matches || window.isHoverDetailSelected) return;
+    if (zoomLayer.dataset.loadedSource !== source) {
+        zoomLayer.style.backgroundImage = "url('" + source.replace(/'/g, '%27') + "')";
+        zoomLayer.dataset.loadedSource = source;
     }
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+    const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+    zoomLayer.style.backgroundPosition = x + '% ' + y + '%';
+    zoomLayer.classList.remove('d-none');
+    zoomLayer.setAttribute('aria-hidden', 'false');
 }
 
 function mouseoff(e) {
-    if (window.innerWidth > 600) {
-        figureElm.classList.add('d-none')
-        figureElm.style.backgroundSize = "cover"
-    }
+    const zoomLayer = e.currentTarget.closest('.ilena-product-gallery__stage')?.querySelector('.ilena-product-zoom');
+    if (zoomLayer) { zoomLayer.classList.add('d-none'); zoomLayer.setAttribute('aria-hidden', 'true'); }
 }
 
 document.querySelectorAll('.gambar').forEach((card) => {
