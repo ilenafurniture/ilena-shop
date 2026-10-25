@@ -30,7 +30,13 @@ class R2ProductImageService
     public function enabled(): bool
     {
         return strtolower((string) env('PRODUCT_IMAGE_STORAGE', 'local')) === 'r2'
-            && $this->accessKey !== ''
+            && $this->configured();
+    }
+
+    /** R2 credentials usable for independent static assets such as home photos. */
+    public function configured(): bool
+    {
+        return $this->accessKey !== ''
             && $this->secretKey !== ''
             && $this->bucket !== ''
             && $this->endpoint !== '';
@@ -46,7 +52,7 @@ class R2ProductImageService
 
     public function uploadFile(string $localPath, string $key, string $contentType = 'image/webp'): bool
     {
-        if (!$this->enabled() || !is_file($localPath)) {
+        if (!$this->configured() || !is_file($localPath)) {
             return false;
         }
 

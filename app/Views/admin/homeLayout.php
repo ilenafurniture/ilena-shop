@@ -67,13 +67,13 @@ h5 {
                     <label for="image1" class="col-md-2 col-form-label">Gambar 1</label>
                     <div class="col-md-5">
                         <img src="/imgheader/1" id="image1" alt="Image 1" class="img-fluid img-preview mb-2">
-                        <input type="file" name="image1" class="form-control mb-2">
+                        <input type="file" name="image1" class="form-control mb-2" accept="image/jpeg,image/png,image/webp,image/avif">
                         <small class="form-text text-muted">Upload gambar untuk desktop.</small>
                     </div>
                     <div class="col-md-5">
                         <img src="/imgheaderhp/1" id="image1-hp" alt="Image 1 (Mobile)"
                             class="img-fluid img-preview mb-2">
-                        <input type="file" name="image1-hp" class="form-control mb-2">
+                        <input type="file" name="image1-hp" class="form-control mb-2" accept="image/jpeg,image/png,image/webp,image/avif">
                         <small class="form-text text-muted">Upload gambar untuk tampilan mobile.</small>
                     </div>
                 </div>
@@ -93,12 +93,12 @@ h5 {
                     <label for="image2" class="col-md-2 col-form-label">Gambar 2</label>
                     <div class="col-md-5">
                         <img src="/imgheader/2" id="image2" alt="Image 2" class="img-fluid img-preview mb-2">
-                        <input type="file" name="image2" class="form-control mb-2">
+                        <input type="file" name="image2" class="form-control mb-2" accept="image/jpeg,image/png,image/webp,image/avif">
                     </div>
                     <div class="col-md-5">
                         <img src="/imgheaderhp/2" id="image2-hp" alt="Image 2 (Mobile)"
                             class="img-fluid img-preview mb-2">
-                        <input type="file" name="image2-hp" class="form-control mb-2">
+                        <input type="file" name="image2-hp" class="form-control mb-2" accept="image/jpeg,image/png,image/webp,image/avif">
                     </div>
                 </div>
 
@@ -116,12 +116,12 @@ h5 {
                     <label for="image3" class="col-md-2 col-form-label">Gambar 3</label>
                     <div class="col-md-5">
                         <img src="/imgheader/3" id="image3" alt="Image 3" class="img-fluid img-preview mb-2">
-                        <input type="file" name="image3" class="form-control mb-2">
+                        <input type="file" name="image3" class="form-control mb-2" accept="image/jpeg,image/png,image/webp,image/avif">
                     </div>
                     <div class="col-md-5">
                         <img src="/imgheaderhp/3" id="image3-hp" alt="Image 3 (Mobile)"
                             class="img-fluid img-preview mb-2">
-                        <input type="file" name="image3-hp" class="form-control mb-2">
+                        <input type="file" name="image3-hp" class="form-control mb-2" accept="image/jpeg,image/png,image/webp,image/avif">
                     </div>
                 </div>
 
@@ -140,15 +140,43 @@ h5 {
                     <label for="image4" class="col-md-2 col-form-label">Gambar 4</label>
                     <div class="col-md-5">
                         <img src="/imgheader/4" id="image4" alt="Image 4" class="img-fluid img-preview mb-2">
-                        <input type="file" name="image4" class="form-control mb-2">
+                        <input type="file" name="image4" class="form-control mb-2" accept="image/jpeg,image/png,image/webp,image/avif">
                     </div>
                     <div class="col-md-5">
                         <img src="/imgheaderhp/4" id="image4-hp" alt="Image 4 (Mobile)"
                             class="img-fluid img-preview mb-2">
-                        <input type="file" name="image4-hp" class="form-control mb-2">
+                        <input type="file" name="image4-hp" class="form-control mb-2" accept="image/jpeg,image/png,image/webp,image/avif">
                     </div>
                 </div>
 
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header text-center">
+                <h5>Foto & Latar Home</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Unggah satu gambar per penyimpanan. File sumber maksimal 8 MB, 6000 × 6000 px, dan 25 MP; server mengubahnya menjadi WebP maksimal 1600 px dan 900 KB, lalu mengirimkannya ke R2/CDN. Jika R2 belum terkonfigurasi, gambar lama tetap aktif dan penyimpanan ditolak.</p>
+                <div class="row g-3">
+                    <?php foreach (($homeAssetCatalog ?? []) as $filename => $label): ?>
+                    <?php $previewUrl = $homeAssetUrls[$filename] ?? base_url('home-image/' . rawurlencode($filename)); ?>
+                    <?php $assetStorage = $homeAssetRecords[$filename]['storage'] ?? 'API lama (belum dimigrasikan)'; ?>
+                    <?php $inputId = 'home-asset-' . pathinfo($filename, PATHINFO_FILENAME); ?>
+                    <div class="col-12 col-md-6 col-xl-4">
+                        <div class="border rounded p-3 h-100">
+                            <label class="form-label fw-bold" for="<?= esc($inputId, 'attr') ?>"><?= esc($label) ?></label>
+                            <img src="<?= esc($previewUrl, 'attr') ?>" id="<?= esc($inputId . '-preview', 'attr') ?>" alt="<?= esc($label, 'attr') ?>" class="img-preview d-block w-100 mb-2" loading="lazy" decoding="async">
+                            <small class="d-block text-muted mb-2"><?= esc($filename) ?></small>
+                            <small class="d-block mb-2">Storage: <?= esc($assetStorage === 'r2' ? 'R2/CDN' : ($assetStorage === 'local' ? 'Berkas statis lokal' : $assetStorage)) ?></small>
+                            <input class="form-control" type="file" id="<?= esc($inputId, 'attr') ?>"
+                                name="home_asset_<?= esc(pathinfo($filename, PATHINFO_FILENAME), 'attr') ?>"
+                                accept="image/jpeg,image/png,image/webp,image/avif"
+                                data-home-preview="<?= esc($inputId . '-preview', 'attr') ?>">
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
             </div>
         </div>
 
@@ -169,8 +197,16 @@ inputFileElm.forEach((element) => {
             type: file.type
         });
         var blobUrl = URL.createObjectURL(blobFile);
-        gambarnya.src = blobUrl;
+        if (gambarnya) gambarnya.src = blobUrl;
     })
 })
+
+document.querySelectorAll('input[data-home-preview]').forEach((input) => {
+    input.addEventListener('change', () => {
+        const file = input.files && input.files[0];
+        const preview = document.getElementById(input.dataset.homePreview);
+        if (file && preview) preview.src = URL.createObjectURL(file);
+    });
+});
 </script>
 <?= $this->endSection(); ?>

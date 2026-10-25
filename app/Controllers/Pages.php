@@ -30,6 +30,7 @@ use App\Services\FreeShippingService;
 use App\Services\AdminRbacService;
 use App\Services\SpamAccountCleanupService;
 use App\Services\R2ProductImageService;
+use App\Services\HomeAssetManager;
 
 
 class Pages extends BaseController
@@ -158,6 +159,7 @@ class Pages extends BaseController
             'produk' => $produk,
             'wishlist' => $wishlist,
             'sliders' => $sliders,
+            'homeAssets' => (new HomeAssetManager())->publicUrls(),
             'msg_active' => session()->getFlashdata('msg_active') ? session()->getFlashdata('msg_active') : false,
             'isLogin' => session()->get('isLogin') ? true : false,
         ];

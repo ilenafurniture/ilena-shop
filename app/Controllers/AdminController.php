@@ -36,6 +36,7 @@ use App\Services\MetaCapiSettingsService;
 use App\Services\AdminRbacService;
 use App\Services\SpamAccountCleanupService;
 use App\Services\R2ProductImageService;
+use App\Services\HomeAssetManager;
 
 // Import Traits for modular organization
 use App\Controllers\Admin\Traits\ProductTrait;
@@ -98,6 +99,7 @@ class AdminController extends BaseController
     protected $projectInteriorItemModel;
     protected $partnerModel;
     protected R2ProductImageService $r2ProductImages;
+    protected HomeAssetManager $homeAssetManager;
 
 
 
@@ -136,6 +138,7 @@ class AdminController extends BaseController
         $this->projectInteriorItemModel = new ProjectInteriorItemModel();
         $this->partnerModel = new PartnerModel();
         $this->r2ProductImages = new R2ProductImageService();
+        $this->homeAssetManager = new HomeAssetManager($this->r2ProductImages);
         
     }
 
@@ -2063,7 +2066,10 @@ class AdminController extends BaseController
             'title' => 'Home Layout',
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'msg' => session()->getFlashdata('msg'),
-            'gambarHeader' => $gambarHeader
+            'gambarHeader' => $gambarHeader,
+            'homeAssetCatalog' => $this->homeAssetManager->catalog(),
+            'homeAssetUrls' => $this->homeAssetManager->publicUrls(),
+            'homeAssetRecords' => $this->homeAssetManager->records(),
         ];
         return view('admin/homeLayout', $data);
     }
@@ -2074,6 +2080,11 @@ class AdminController extends BaseController
             return null;
         }
 
+        if ($image->getSize() < 1 || $image->getSize() > 8_388_608) {
+            log_message('warning', 'Slider upload rejected by source size limit for slot {slot}.', ['slot' => $id]);
+            return null;
+        }
+
         $allowedMimes = [
             'image/jpeg' => 'jpg',
             'image/png'  => 'png',
@@ -2081,7 +2092,15 @@ class AdminController extends BaseController
             'image/avif' => 'avif',
         ];
         $mime = $image->getMimeType();
-        if (!isset($allowedMimes[$mime])) {
+        $dimensions = @getimagesize($image->getTempName());
+        if (!isset($allowedMimes[$mime]) || !is_array($dimensions)
+            || !isset($allowedMimes[$dimensions['mime'] ?? ''])) {
+            return null;
+        }
+        $width = (int) $dimensions[0];
+        $height = (int) $dimensions[1];
+        if ($width < 1 || $height < 1 || $width > 6000 || $height > 6000 || ($width * $height) > 25_000_000) {
+            log_message('warning', 'Slider upload rejected by dimension limit for slot {slot}.', ['slot' => $id]);
             return null;
         }
 
@@ -2093,32 +2112,20 @@ class AdminController extends BaseController
         $fileStem = 'header-' . $id . '-' . $device . '-' . date('YmdHis') . '-' . bin2hex(random_bytes(4));
         $optimizedFilename = $fileStem . '.webp';
         $optimizedPath = $uploadDir . DIRECTORY_SEPARATOR . $optimizedFilename;
-        $maxDimension = $device === 'mobile' ? 1200 : 1920;
-
-        try {
-            $dimensions = @getimagesize($image->getTempName());
-            $optimizer = \Config\Services::image()->withFile($image->getTempName());
-            if (is_array($dimensions) && max((int) $dimensions[0], (int) $dimensions[1]) > $maxDimension) {
-                $optimizer->resize($maxDimension, $maxDimension, true, 'auto');
+        $maxWidth = $device === 'mobile' ? 1200 : 1920;
+        $sourceBytes = @file_get_contents($image->getTempName());
+        if (is_string($sourceBytes) && $sourceBytes !== '') {
+            $optimizer = new \App\Services\ResponsiveImageOptimizer();
+            foreach ([82, 76, 70, 64] as $quality) {
+                $optimizedBytes = $optimizer->toWebp($sourceBytes, $maxWidth, $quality);
+                if (is_string($optimizedBytes) && strlen($optimizedBytes) <= 900_000
+                    && @file_put_contents($optimizedPath, $optimizedBytes, LOCK_EX) !== false) {
+                    return 'uploads/slider/' . $optimizedFilename;
+                }
             }
-            $optimizer->convert(IMAGETYPE_WEBP)->save($optimizedPath, 82);
-            if (is_file($optimizedPath) && filesize($optimizedPath) > 0) {
-                return 'uploads/slider/' . $optimizedFilename;
-            }
-        } catch (\Throwable $e) {
-            @unlink($optimizedPath);
-            log_message('warning', 'Slider image optimization failed; preserving uploaded original: {message}', [
-                'message' => $e->getMessage(),
-                'device' => $device,
-                'slot' => $id,
-            ]);
         }
 
-        // Keep the upload usable if the image driver cannot decode or encode it.
-        $originalFilename = $fileStem . '.' . $allowedMimes[$mime];
-        if ($image->move($uploadDir, $originalFilename)) {
-            return 'uploads/slider/' . $originalFilename;
-        }
+        log_message('warning', 'Slider upload rejected because WebP optimization failed for slot {slot}.', ['slot' => $id]);
 
         return null;
     }
@@ -2165,7 +2172,24 @@ class AdminController extends BaseController
         $dataUpdate['url'] = $url4 ? $url4 : null;
         $this->gambarHeaderModel->where(['id' => 4])->set($dataUpdate)->update();
 
-        session()->setFlashdata('msg', 'Home layout telah diperbarui');
+        $assetMessages = [];
+        foreach ($this->homeAssetManager->catalog() as $filename => $label) {
+            $field = 'home_asset_' . pathinfo($filename, PATHINFO_FILENAME);
+            $file = $this->request->getFile($field);
+            if (!$file || $file->getError() === UPLOAD_ERR_NO_FILE) {
+                continue;
+            }
+            try {
+                $this->homeAssetManager->upload($filename, $file);
+                $assetMessages[] = $label . ' tersimpan sebagai WebP.';
+            } catch (\Throwable $error) {
+                $assetMessages[] = $label . ' gagal: ' . $error->getMessage();
+            }
+        }
+
+        session()->setFlashdata('msg', $assetMessages
+            ? 'Home layout diperbarui. ' . implode(' ', $assetMessages)
+            : 'Home layout telah diperbarui.');
         return redirect()->to('/admin/homelayout');
     }
 

@@ -1,10 +1,14 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
 <?php
-$homeImage = static function (string $file, int $width = 1200): string {
+$homeAssets = is_array($homeAssets ?? null) ? $homeAssets : [];
+$homeImage = static function (string $file, int $width = 1200) use ($homeAssets): string {
     $file = basename($file);
     $version = substr(hash('sha256', $file), 0, 12);
     $width = in_array($width, [640, 900, 1200, 1600], true) ? $width : 1200;
+    if (!empty($homeAssets[$file]) && is_string($homeAssets[$file])) {
+        return $homeAssets[$file];
+    }
     return base_url('home-image/' . rawurlencode($file) . '?v=' . $version . '&w=' . $width);
 };
 ?>

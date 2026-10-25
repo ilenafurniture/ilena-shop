@@ -59,6 +59,7 @@ writable/session/*
 
 writable/uploads/*
 !writable/uploads/index.html
+writable/home-assets.json*
 
 writable/debugbar/*
 !writable/debugbar/.gitkeep
@@ -140,3 +141,5 @@ public/uploads/product-images/hover/*
 !public/uploads/product-images/hover/.gitkeep
 public/uploads/slider/*
 !public/uploads/slider/.gitkeep
+public/uploads/home/*
+!public/uploads/home/.gitkeep
