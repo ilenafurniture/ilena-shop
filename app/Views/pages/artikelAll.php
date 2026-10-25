@@ -684,7 +684,7 @@ const App=()=> {
             </div>
           </div>
           <div className="container-header-img">
-            {artikel3Baru.map((a,i)=>(<img key={i} className={img[i]} src={a.header} alt="" />))}
+            {artikel3Baru.map((a,i)=>(<img key={i} className={img[i]} src={a.header} alt="" loading={i===0?'eager':'lazy'} decoding="async" />))}
           </div>
         </div>
       :
@@ -701,7 +701,8 @@ const App=()=> {
               {teks:'Fun Fact',link:'/article/category/fun-fact',gambar:'https://images.unsplash.com/photo-1676276375656-c4864c632a08?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',deskripsi:'Ketahui serba-serbi fakta menarik yang menginspirasi'},
               {teks:'Rekomendasi',link:'/article/category/rekomendasi',gambar:'https://images.unsplash.com/photo-1624269305543-efbc8d89f1d3?q=80&w=1025&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',deskripsi:'Pentingnya mendapatkan yang tepat sesuai kebutuhan'}
             ].map((c,i)=>(
-              <a key={i} href={c.link} style={{backgroundImage:`url(${c.gambar})`}} className="item-kategori-artikel">
+              <a key={i} href={c.link} className="item-kategori-artikel">
+                <img className="item-kategori-artikel__image" src={c.gambar} alt="" loading="lazy" decoding="async" />
                 <div>
                   <div className="d-flex justify-content-between">
                     <p className="judul">{c.teks}</p>
@@ -752,9 +753,10 @@ ReactDOM.render(<App />, document.getElementById("container-react-artikel"));
     <div class="ubah-padding">
         <div class="baris-ke-kolom ubah-gap">
             <div style="flex:2;">
-                <a href="/article/<?= $artikel[0]['path']; ?>"
-                    style="height:100%;background-image:url(<?= $artikel[0]['header']; ?>);"
+                <a href="/article/<?= esc($artikel[0]['path'], 'attr'); ?>"
+                    style="height:100%;"
                     class="w-full artikel-list-besar">
+                    <img class="article-card-cover" src="<?= esc($artikel[0]['header'], 'attr'); ?>" alt="" loading="lazy" decoding="async" width="1200" height="800">
                     <div>
                         <div style="flex:1;" class="d-flex justify-content-end">
                             <snap class="kategori"><?= ucwords($artikel[0]['kategori'][0]); ?></snap>
@@ -766,9 +768,10 @@ ReactDOM.render(<App />, document.getElementById("container-react-artikel"));
                 </a>
             </div>
             <div style="flex:1;" class="d-flex flex-column ubah-gap">
-                <a href="/article/<?= $artikel[1]['path']; ?>"
-                    style="height:50%;background-image:url(<?= $artikel[1]['header']; ?>);"
+                <a href="/article/<?= esc($artikel[1]['path'], 'attr'); ?>"
+                    style="height:50%;"
                     class="w-full artikel-list-kecil">
+                    <img class="article-card-cover" src="<?= esc($artikel[1]['header'], 'attr'); ?>" alt="" loading="lazy" decoding="async" width="900" height="600">
                     <div>
                         <div style="flex:1;" class="d-flex justify-content-end">
                             <snap class="kategori"><?= ucwords($artikel[1]['kategori'][0]); ?></snap>
@@ -778,9 +781,10 @@ ReactDOM.render(<App />, document.getElementById("container-react-artikel"));
                         <p class="tanggal hide-ke-show-block m-0"><?= $artikel[1]['waktu']; ?></p>
                     </div>
                 </a>
-                <a href="/article/<?= $artikel[2]['path']; ?>"
-                    style="height:50%;background-image:url(<?= $artikel[2]['header']; ?>);"
+                <a href="/article/<?= esc($artikel[2]['path'], 'attr'); ?>"
+                    style="height:50%;"
                     class="w-full artikel-list-kecil">
+                    <img class="article-card-cover" src="<?= esc($artikel[2]['header'], 'attr'); ?>" alt="" loading="lazy" decoding="async" width="900" height="600">
                     <div>
                         <div style="flex:1;" class="d-flex justify-content-end">
                             <snap class="kategori"><?= ucwords($artikel[2]['kategori'][0]); ?></snap>
@@ -801,7 +805,8 @@ ReactDOM.render(<App />, document.getElementById("container-react-artikel"));
     <!-- ===== Grid artikel bawah (Desktop) ===== -->
     <div id="home-articles-desktop" class="container-artikel-list ubah-gap mb-3">
         <?php foreach ($artikel as $ind_a => $a) { if ($ind_a > 2) { ?>
-        <a href="/article/<?= $a['path']; ?>" class="artikel-list" style="background-image:url(<?= $a['header']; ?>);">
+        <a href="/article/<?= esc($a['path'], 'attr'); ?>" class="artikel-list">
+            <img class="article-card-cover" src="<?= esc($a['header'], 'attr'); ?>" alt="" loading="lazy" decoding="async" width="900" height="700">
             <div>
                 <div style="flex:1;" class="d-flex justify-content-end">
                     <snap class="kategori"><?= ucwords($a['kategori'][0]); ?></snap>

@@ -2090,10 +2090,37 @@ class AdminController extends BaseController
             mkdir($uploadDir, 0755, true);
         }
 
-        $filename = 'header-' . $id . '-' . $device . '-' . date('YmdHis') . '-' . bin2hex(random_bytes(4)) . '.' . $allowedMimes[$mime];
-        $image->move($uploadDir, $filename);
+        $fileStem = 'header-' . $id . '-' . $device . '-' . date('YmdHis') . '-' . bin2hex(random_bytes(4));
+        $optimizedFilename = $fileStem . '.webp';
+        $optimizedPath = $uploadDir . DIRECTORY_SEPARATOR . $optimizedFilename;
+        $maxDimension = $device === 'mobile' ? 1200 : 1920;
 
-        return 'uploads/slider/' . $filename;
+        try {
+            $dimensions = @getimagesize($image->getTempName());
+            $optimizer = \Config\Services::image()->withFile($image->getTempName());
+            if (is_array($dimensions) && max((int) $dimensions[0], (int) $dimensions[1]) > $maxDimension) {
+                $optimizer->resize($maxDimension, $maxDimension, true, 'auto');
+            }
+            $optimizer->convert(IMAGETYPE_WEBP)->save($optimizedPath, 82);
+            if (is_file($optimizedPath) && filesize($optimizedPath) > 0) {
+                return 'uploads/slider/' . $optimizedFilename;
+            }
+        } catch (\Throwable $e) {
+            @unlink($optimizedPath);
+            log_message('warning', 'Slider image optimization failed; preserving uploaded original: {message}', [
+                'message' => $e->getMessage(),
+                'device' => $device,
+                'slot' => $id,
+            ]);
+        }
+
+        // Keep the upload usable if the image driver cannot decode or encode it.
+        $originalFilename = $fileStem . '.' . $allowedMimes[$mime];
+        if ($image->move($uploadDir, $originalFilename)) {
+            return 'uploads/slider/' . $originalFilename;
+        }
+
+        return null;
     }
 
     public function actionHomeLayout()

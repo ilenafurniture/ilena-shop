@@ -36,7 +36,7 @@
 <div class="container artikel d-flex justify-content-center">
     <div class="konten">
         <div class="artikel">
-            <img src="<?= $artikel['header']; ?>" alt="<?= $artikel['judul'] ?>" class="header">
+            <img src="<?= esc($artikel['header'], 'attr'); ?>" alt="<?= esc($artikel['judul'], 'attr'); ?>" class="header" width="1600" height="900" decoding="async" fetchpriority="high">
 
             <div class="mb-4 hide-ke-show-block">
                 <div class="p-4 mx-4"
@@ -264,8 +264,8 @@
                 <!-- Desktop/Grid -->
                 <div id="rel-container-desktop" class="container-artikel-list ubah-gap mb-3">
                     <?php foreach ($artikelTerkait as $ind_a => $a) { ?>
-                    <a href="/article/<?= $a['path']; ?>" class="artikel-list"
-                        style="background-image: url(<?= $a['header']; ?>);">
+                    <a href="/article/<?= esc($a['path'], 'attr'); ?>" class="artikel-list">
+                        <img class="article-card-cover" src="<?= esc($a['header'], 'attr'); ?>" alt="" loading="lazy" decoding="async" width="900" height="700">
                         <div>
                             <div style="flex: 1;" class="d-flex justify-content-end">
                                 <snap class="kategori"><?= ucwords($a['kategori'][0]); ?></snap>
@@ -282,7 +282,7 @@
                     <?php foreach ($artikelTerkait as $ind_a => $a) { ?>
                     <a href="/article/<?= $a['path']; ?>" class="artikel-list gap-3">
                         <div class="image">
-                            <img src="<?= $a['header']; ?>" alt="">
+                            <img src="<?= esc($a['header'], 'attr'); ?>" alt="" loading="lazy" decoding="async" width="240" height="180">
                         </div>
                         <div style="flex: 1;">
                             <div class="mb-1 tanggal">
@@ -326,9 +326,9 @@
                             </div>
                             <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="gambar">
                                 <img class="<?= $p['gambar_hover'] ? '' : 'nonhover'; ?> img-pic" id="img<?= $ind_p ?>"
-                                    src="/viewpic/<?= $p['id']; ?>" alt="">
+                                    src="/viewpic/<?= esc($p['id'], 'attr'); ?>" alt="<?= esc($p['nama'], 'attr'); ?>" loading="lazy" decoding="async">
                                 <img class="<?= $p['gambar_hover'] ? '' : 'nonhover'; ?> img-pic-hover"
-                                    id="img<?= $ind_p ?>" src="/viewpichover/<?= $p['id']; ?>" alt="">
+                                    id="img<?= $ind_p ?>" src="/viewpichover/<?= esc($p['id'], 'attr'); ?>" alt="" loading="lazy" decoding="async">
                             </a>
                         </div>
                         <div class="container-varian mb-1 d-flex">
