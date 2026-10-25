@@ -584,6 +584,14 @@ input[type="radio"][name="address"]:checked+.item-address {
     <div class="baris-ke-kolom ilena-checkout-layout">
         <!-- LEFT -->
         <div>
+            <header class="ilena-address-heading">
+                <div>
+                    <p class="ilena-address-heading__eyebrow">LANGKAH 01 <span>/</span> PENGIRIMAN</p>
+                    <h1>Alamat penerima</h1>
+                    <p class="ilena-address-heading__description">Pilih alamat tujuan atau tambahkan alamat baru untuk pesanan ini.</p>
+                </div>
+                <span class="ilena-address-heading__count"><?= count($alamat); ?> alamat tersimpan</span>
+            </header>
             <div class="container-address my-4">
                 <?php foreach ($alamat as $ind_a => $a) { ?>
                 <input type="radio" name="address" id="address<?= $ind_a ?>" <?= $ind_a <= 0 ? 'checked' : '' ?>>

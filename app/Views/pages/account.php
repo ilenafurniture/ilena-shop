@@ -5,7 +5,7 @@
 <div id="edit-sandi"
     style="position: fixed; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.7); z-index: 100; top: 0; left: 0;"
     class="<?= $msgSandi ? 'd-flex' : 'd-none'; ?> justify-content-center align-items-center">
-    <div class="p-4 bg-light" style="border-radius: 1em;">
+    <div class="p-4 bg-light ilena-account-password-modal">
         <h2 style="letter-spacing: -1px">Ganti Sandi</h2>
         <?php if ($msgSandi) { ?>
         <div class="pemberitahuan my-1 mx-auto" style="width: fit-content;" role="alert">
@@ -293,39 +293,41 @@
                 <a class="btn-teks-aja" onclick="openGantiSandi()">Ganti Sandi</a>
             </div>
             <span class="garis my-2"></span>
-            <a href="/account" class="mb-1 btn-default-abu" style="width: 100%; text-align:center;">Profile</a>
-            <a href="/order" class="mb-1 btn-default-abu" style="width: 100%; text-align:center;">Pesanan</a>
+            <a href="/account" class="mb-1 btn-default-abu">Profile</a>
+            <a href="/order" class="mb-1 btn-default-abu">Pesanan</a>
             <form action="/logout" method="post">
-                <?= csrf_field(); ?><button type="submit" class="btn-default-merah" style="width: 100%; text-align:center;">Keluar</button>
+                <?= csrf_field(); ?><button type="submit" class="btn-default-merah">Keluar</button>
             </form>
         </div>
     </div>
 
-    <div style="flex:1;">
-        <div class="mb-4">
-            <h1 class="teks-sedang">Tentang Saya</h1>
-            <p style="color: grey;">1 Pemesanan</p>
-        </div>
+    <div class="ilena-account-main" style="flex:1;">
+        <header class="ilena-account-heading">
+            <div>
+                <p class="ilena-account-heading__eyebrow">AKUN <span>/</span> PROFIL</p>
+                <h1>Profil saya</h1>
+                <p class="ilena-account-heading__description">Kelola informasi akun dan alamat pengiriman Anda.</p>
+            </div>
+        </header>
 
-        <div class="mt-2 d-flex justify-content-between py-1">
+        <div class="ilena-account-profile-row mt-2 d-flex justify-content-between py-1">
             <p class="m-0">Email</p>
             <p class="fw-bold m-0"><?= esc($email); ?></p>
         </div>
-        <div class="d-flex justify-content-between py-1">
+        <div class="ilena-account-profile-row d-flex justify-content-between py-1">
             <p class="m-0">Nama Lengkap</p>
             <p class="fw-bold m-0"><?= esc($nama); ?></p>
         </div>
-        <div class="mb-4 d-flex justify-content-between py-1">
+        <div class="ilena-account-profile-row ilena-account-password-row mb-4 d-flex justify-content-between py-1">
             <p class="m-0">Sandi</p>
             <a class="btn-teks-aja" onclick="openGantiSandi()">Ganti Sandi</a>
         </div>
         <span class="garis"></span>
 
         <?php if (session()->get('active') != '0') { ?>
-        <div class="my-4">
-            <h1 class="teks-sedang">Alamat</h1>
-            <p style="color: grey;"><?= count($alamat) <= 0 ? 'Tidak Ada' : count($alamat) ?> tujuan yang dapat dipilih
-            </p>
+        <div class="ilena-account-section-heading my-4">
+            <h2>Alamat pengiriman</h2>
+            <p><?= count($alamat) <= 0 ? 'Belum ada alamat tersimpan' : count($alamat) . ' alamat tersimpan'; ?></p>
         </div>
 
         <?php if ($msg) { ?>
@@ -354,7 +356,7 @@
             <?php } ?>
         </div>
 
-        <button type="button" class="btn-teks-aja" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <button type="button" class="btn-teks-aja ilena-account-add-address" data-bs-toggle="modal" data-bs-target="#exampleModal">
             <i class="material-icons">add</i> Tambah Alamat
         </button>
 
@@ -367,9 +369,9 @@
         ?>
 
         <?php if ($showVoucherSection): ?>
-        <div class="my-4">
-            <h1 class="teks-sedang">Voucher Saya</h1>
-            <p style="color: grey;">Voucher yang terikat akun / sudah kamu klaim.</p>
+        <div class="ilena-account-section-heading my-4">
+            <h2>Voucher saya</h2>
+            <p>Voucher yang terikat akun atau sudah Anda klaim.</p>
 
             <div class="vch-grid">
                 <?php if (count($voucherUser) > 0): ?>

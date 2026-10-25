@@ -35,18 +35,17 @@ $productCoverUrl = function (string $id, array $varianList, array $product = [])
 
 <div class="container ilena-wishlist-page">
     <div class="konten">
-        <div class="d-flex justify-content-between mb-4">
+        <header class="ilena-wishlist-heading">
             <div>
-                <h1 class="teks-sedang">Produk tersimpan</h1>
-                <p style="color: grey;">
-                    <?= $wishlistCount <= 0 ? 'Tidak ada' : $wishlistCount ?> produk yang disimpan
-                </p>
+                <p class="ilena-wishlist-heading__eyebrow">AKUN <span>/</span> FAVORIT</p>
+                <h1>Produk tersimpan</h1>
+                <p class="ilena-wishlist-heading__description">Koleksi pilihan yang ingin Anda simpan untuk nanti.</p>
             </div>
-            <div></div>
-        </div>
+            <span class="ilena-wishlist-heading__count"><?= $wishlistCount; ?> produk</span>
+        </header>
 
         <?php if ($wishlistCount > 0): ?>
-        <div class="container-card1">
+        <div class="container-card1 ilena-wishlist-grid">
             <?php foreach ($produk as $ind_p => $p): ?>
             <?php
           // Normalisasi/guard data produk
@@ -60,7 +59,7 @@ $productCoverUrl = function (string $id, array $varianList, array $product = [])
           $imgMainId  = "img{$ind_p}";
           ?>
 
-            <div class="card1">
+                <div class="card1" data-wishlist-product>
                 <div style="position: relative;">
                     <div class="card1-content-img">
                         <span <?= $p_diskon > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>>
@@ -99,6 +98,7 @@ $productCoverUrl = function (string $id, array $varianList, array $product = [])
                 </div>
 
                 <!-- Nama & Harga -->
+                <p class="ilena-wishlist-category"><?= esc($p['kategori'] ?? 'Furniture'); ?></p>
                 <h5><?= htmlspecialchars($p_nama, ENT_QUOTES); ?></h5>
                 <div class="d-flex gap-2">
                     <p class="harga">
@@ -110,12 +110,11 @@ $productCoverUrl = function (string $id, array $varianList, array $product = [])
                 </div>
 
                 <!-- Tombol wishlist + keranjang -->
-                <div class="mt-2" style="margin: 6px 12px 12px; display:flex; gap:10px; flex-wrap:wrap;">
+                <div class="ilena-wishlist-actions">
                     <?php if ($isInWishlist($p_id)): ?>
-                    <form action="/delwishlist/<?= $p_id ?>" method="post" style="display:inline;">
+                    <form action="/delwishlist/<?= $p_id ?>" method="post" class="ilena-wishlist-remove-form">
                         <?= function_exists('csrf_field') ? csrf_field() : '' ?>
-                        <button type="submit" class="btn-teks-aja my-3"
-                            style="display:inline-flex;align-items:center;gap:6px;">
+                        <button type="submit" class="btn-teks-aja ilena-wishlist-remove">
                             <i class="material-icons" style="font-size:18px;">bookmark</i>
                             Hapus
                         </button>
@@ -172,9 +171,13 @@ $productCoverUrl = function (string $id, array $varianList, array $product = [])
             <?php endforeach; ?>
         </div>
         <?php else: ?>
-        <div class="d-flex justify-content-center align-items-center">
-            <img src="/img/sadface.webp" alt="Kosong" style="height: 100px; opacity: 0.5">
-        </div>
+        <section class="ilena-wishlist-empty" aria-live="polite">
+            <span class="material-icons" aria-hidden="true">bookmark_border</span>
+            <p class="ilena-wishlist-empty__eyebrow">BELUM ADA FAVORIT</p>
+            <h2>Simpan produk yang Anda sukai.</h2>
+            <p>Tekan ikon favorit pada produk untuk menyimpannya di sini.</p>
+            <a href="/product">Jelajahi koleksi <span aria-hidden="true">↗</span></a>
+        </section>
         <?php endif; ?>
     </div>
 </div>

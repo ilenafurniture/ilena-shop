@@ -262,12 +262,22 @@
 
     <!-- Kolom kiri (daftar pesanan) -->
     <div style="flex:1;">
-        <div class="mb-4">
-            <h1 class="teks-sedang m-0" style="letter-spacing:-.02em;">Pesanan</h1>
-            <p class="m-0" style="color: grey;">
-                <?= count($pesanan) <= 0 ? 'Tidak Ada' : count($pesanan) ?> Pemesanan
-            </p>
-        </div>
+        <header class="ilena-order-heading">
+            <div>
+                <p class="ilena-order-heading__eyebrow">AKUN <span>/</span> RIWAYAT TRANSAKSI</p>
+                <h1>Pesanan Saya</h1>
+            </div>
+            <span class="ilena-order-heading__count"><?= count($pesanan); ?> pesanan</span>
+        </header>
+
+        <?php if (empty($pesanan)) : ?>
+        <section class="ilena-order-empty" aria-live="polite">
+            <p class="ilena-order-empty__eyebrow">RIWAYAT PESANAN</p>
+            <h2>Belum ada pesanan</h2>
+            <p>Pesanan yang Anda buat akan muncul di sini agar mudah dilacak dan ditinjau.</p>
+            <a href="/product">Jelajahi koleksi <span aria-hidden="true">↗</span></a>
+        </section>
+        <?php else : ?>
 
         <!-- Desktop -->
         <div style="overflow-x: auto;" class="show-block-ke-hide">
@@ -350,6 +360,7 @@
                 <?php } ?>
             </div>
         </div>
+        <?php endif; ?>
     </div>
 </div>
 

@@ -228,11 +228,11 @@
 </style>
 <!-- <div style="z-index: 99; position: fixed; top: 300px; left: 0; width: 100vw; height: 2px; background-color: red"></div>
 <div style="z-index: 99; position: fixed; top: 500px; left: 0; width: 100vw; height: 2px; background-color: blue"></div> -->
-<div class="container d-flex justify-content-center">
+<div class="container d-flex justify-content-center ilena-values-page">
     <div class="konten">
         <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/">Beranda</a></li>
                 <li class="breadcrumb-item active" aria-current="page">
                     Visi dan Misi
                 </li>

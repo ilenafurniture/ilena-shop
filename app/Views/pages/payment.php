@@ -373,6 +373,15 @@ hr {
         <a href="/address">Alamat</a> &nbsp;>&nbsp; <span class="active">Rincian Pembayaran</span>
     </div>
 
+    <header class="ilena-payment-heading">
+        <div>
+            <p class="ilena-payment-heading__eyebrow">LANGKAH 03 <span>/</span> PEMBAYARAN</p>
+            <h1>Tinjau pesanan Anda</h1>
+            <p class="ilena-payment-heading__description">Pastikan detail pesanan sudah sesuai, lalu pilih metode pembayaran.</p>
+        </div>
+        <span class="ilena-payment-heading__count"><?= count($keranjang); ?> item pesanan</span>
+    </header>
+
     <?php if (!empty($msg)) : ?>
     <div class="pemberitahuan my-1 w-100" style="width:fit-content" role="alert"><?= esc($msg); ?></div>
     <?php endif; ?>

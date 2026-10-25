@@ -4,7 +4,7 @@
     <div class="konten">
         <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/">Beranda</a></li>
                 <li class="breadcrumb-item active" aria-current="page">
                     Kebijakan Privasi
                 </li>
@@ -99,7 +99,7 @@
                 <p class="m-0">:</p>
             </div>
             <div style="flex: 1;">
-                <p class="m-0">cs@ilenafurniture.com</p>
+                <p class="m-0"><a href="mailto:cs@ilenafurniture.com">cs@ilenafurniture.com</a></p>
             </div>
         </div>
         <div class="d-flex mb-5">
@@ -110,7 +110,7 @@
                 <p class="m-0">:</p>
             </div>
             <div style="flex: 1;">
-                <p class="m-0">08112938158</p>
+                <p class="m-0"><a href="https://wa.me/628112938158" target="_blank" rel="noopener noreferrer">0811-2938-158</a></p>
             </div>
         </div>
 

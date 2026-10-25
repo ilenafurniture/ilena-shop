@@ -206,7 +206,11 @@ $waktuStart = sprintf('%02d:%02d:%02d', floor($selisihDetik/3600), floor(($selis
 </style>
 
 <div class="order-wait">
-    <h1 class="title">Menunggu Pembayaran</h1>
+    <header class="order-wait__hero">
+        <p class="order-wait__eyebrow">PESANAN DIBUAT <span>/</span> MENUNGGU PEMBAYARAN</p>
+        <h1 class="title">Selesaikan pembayaran Anda</h1>
+        <p class="order-wait__description">Gunakan detail pembayaran berikut sebelum batas waktu berakhir.</p>
+    </header>
 
     <!-- Bar ID Pesanan -->
     <div class="bar">

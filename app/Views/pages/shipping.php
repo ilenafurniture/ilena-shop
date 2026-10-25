@@ -7,6 +7,14 @@
             <a class="mx-3 text-dark fw-bold" style="text-decoration: none;">Kurir</a> >
             <a class="mx-3 text-secondary" style="text-decoration: none;">Rincian Pembayaran</a>
         </h5>
+        <header class="ilena-shipping-heading">
+            <div>
+                <p class="ilena-shipping-heading__eyebrow">LANGKAH 02 <span>/</span> PENGIRIMAN</p>
+                <h1>Pilih layanan pengiriman</h1>
+                <p class="ilena-shipping-heading__description">Pilih kurir yang paling sesuai dengan waktu dan biaya pengiriman Anda.</p>
+            </div>
+            <span class="ilena-shipping-heading__count"><?= count($kurir); ?> layanan tersedia</span>
+        </header>
         <div class="container-kurir my-4">
             <?php foreach ($kurir as $index_k => $k) { ?>
             <input type="radio" name="kurir" id="kurir<?= $index_k ?>" value="<?= $k['harga']?>"

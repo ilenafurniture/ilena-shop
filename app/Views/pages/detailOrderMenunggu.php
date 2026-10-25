@@ -365,6 +365,11 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
 </style>
 
 <div class="order-simple">
+    <header class="ilena-order-detail-heading">
+        <p class="ilena-order-detail-heading__eyebrow">DETAIL PESANAN <span>/</span> PEMBAYARAN</p>
+        <h1>Menunggu pembayaran</h1>
+        <p class="ilena-order-detail-heading__description">Selesaikan pembayaran sebelum batas waktu agar pesanan dapat segera diproses.</p>
+    </header>
     <!-- Header: ID & Status -->
     <div class="between" style="margin-bottom:10px;">
         <div class="between" style="gap:8px;">

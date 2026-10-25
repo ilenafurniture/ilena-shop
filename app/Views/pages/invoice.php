@@ -23,7 +23,7 @@
 </head>
 
 <body>
-    <div class="print">
+    <main class="print ilena-invoice">
         <?php if ($transaksi['status'] == 'Proses' || $transaksi['status'] == 'Dikirim' || $transaksi['status'] == 'Selesai') { ?>
         <div class="print-lunas">
             <p>L U N A S</p>
@@ -34,7 +34,7 @@
             <p>G A G A L</p>
         </div>
         <?php } ?>
-        <div class="d-flex justify-content-between mb-2">
+        <div class="d-flex justify-content-between mb-2 invoice-head">
             <img src="<?= base_url('img/LogoIlena.png'); ?>" class="logo" />
             <div class="d-flex flex-column align-items-end">
                 <p class="mb-0">INVOICE</p>
@@ -44,7 +44,7 @@
                                 ?>/CBM/<?= $transaksi['id_midtrans']; ?></p>
             </div>
         </div>
-        <div class="d-flex justify-content-between mb-2">
+        <div class="d-flex justify-content-between mb-2 invoice-parties">
             <div class="w-100">
                 <p class="fw-bold mb-0">DITERBITKAN ATAS NAMA</p>
                 <p class="mb-0">Penjual : <b>Ilena Furniture</b></p>
@@ -95,8 +95,8 @@
         </div>
 
         <!-- Container List Barang -->
-        <div class="w-100 border-bottom pb-2">
-            <div class="w-100 d-flex border-bottom border-top border-dark py-2">
+        <div class="w-100 border-bottom pb-2 invoice-items">
+            <div class="w-100 d-flex border-bottom border-top border-dark py-2 invoice-items__head">
                 <div style="flex: 2.9">
                     <p class="mb-0 fw-bold">INFO PRODUK</p>
                 </div>
@@ -136,7 +136,7 @@
                 }
                 $totalHarga += $item['price'] * $item['quantity'];
             ?>
-            <div class="w-100 d-flex">
+            <div class="w-100 d-flex invoice-items__row">
                 <div style="flex: 3">
                     <p class="mb-0">| <?= strtoupper($item['collection'] ?? '') ?> | <?= $item['name']; ?></p>
                 </div>
@@ -155,7 +155,7 @@
         </div>
 
         <!-- Container perhitungan -->
-        <div class="w-100 d-flex mt-auto border-bottom">
+        <div class="w-100 d-flex mt-auto border-bottom invoice-totals">
             <div class="flex-grow-1 w-100"></div>
             <div class="flex-grow-1 w-100">
                 <div class="w-100 py-2">
@@ -224,7 +224,7 @@
         </div>
 
         <!-- Container footer -->
-        <div class="w-100 d-flex py-2">
+        <div class="w-100 d-flex py-2 invoice-fulfillment">
             <div class="w-100">
                 <p class="mb-0 text-black-50">Kurir :</p>
                 <?php if ($transaksi['kurir']['nama'] == 'Menunggu pengiriman') { ?>
@@ -273,7 +273,7 @@
                     ?></p>
             </div>
         </div>
-        <div class="w-100 d-flex py-2 justify-content-between align-items-end">
+        <div class="w-100 d-flex py-2 justify-content-between align-items-end invoice-note">
             <div style="width: 50%">
                 <p class="mb-0">
                     Invoice ini sah dan diproses oleh sistem<br />
@@ -294,7 +294,7 @@
                 </p>
             </div>
         </div>
-    </div>
+    </main>
 </body>
 <?php if ($transaksi['status'] == 'Proses' || $transaksi['status'] == 'Dikirim' || $transaksi['status'] == 'Selesai' || $transaksi['status'] == 'Menunggu Pembayaran') { ?>
 <script>

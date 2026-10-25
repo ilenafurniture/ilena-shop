@@ -198,7 +198,11 @@ $waktuExpireFix = date("d", $waktuExpireEpoch) . " " . $bulan[(int)date("m", $wa
 </style>
 
 <div class="order-expired">
-    <h1 class="title">Pembayaran Kedaluwarsa</h1>
+    <header class="order-expired__hero">
+        <p class="order-expired__eyebrow">STATUS PESANAN <span>/</span> WAKTU HABIS</p>
+        <h1 class="title">Batas pembayaran berakhir</h1>
+        <p class="order-expired__description">Nomor pembayaran ini sudah tidak aktif. Anda dapat melihat detail pesanan atau kembali memilih produk.</p>
+    </header>
 
     <!-- Bar ID Pesanan -->
     <div class="bar">
