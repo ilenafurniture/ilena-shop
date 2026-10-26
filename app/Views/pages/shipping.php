@@ -2,11 +2,11 @@
 <?= $this->section("content"); ?>
 <div class="container konten baris-ke-kolom ilena-shipping-page">
     <div style="flex:1;">
-        <h5 style="letter-spacing: -1px; font-weight:100;" class="path">
-            <a href="/address" class="me-3 text-secondary" style="text-decoration: none;">Alamat</a> >
-            <a class="mx-3 text-dark fw-bold" style="text-decoration: none;">Kurir</a> >
-            <a class="mx-3 text-secondary" style="text-decoration: none;">Rincian Pembayaran</a>
-        </h5>
+        <nav class="path ilena-checkout-steps" aria-label="Tahapan checkout">
+            <a href="/address">Alamat</a><span aria-hidden="true">/</span>
+            <span aria-current="step">Pengiriman</span><span aria-hidden="true">/</span>
+            <span>Rincian pembayaran</span>
+        </nav>
         <header class="ilena-shipping-heading">
             <div>
                 <p class="ilena-shipping-heading__eyebrow">LANGKAH 02 <span>/</span> PENGIRIMAN</p>
@@ -21,9 +21,9 @@
                 <?= $index_k <= 0 ? 'checked' : '' ?>>
             <label for="kurir<?= $index_k ?>" class="item-kurir">
                 <div style="flex: 1;">
-                    <p class="mb-1 nama"><?= strtoupper($k['nama']) ?> <?= $k['deskripsi'] ?></p>
+                    <p class="mb-1 nama"><?= esc(strtoupper($k['nama'])) ?> <?= esc($k['deskripsi']) ?></p>
                     <?php if($k['estimasi']) { ?>
-                    <p class="mb-1">Estimasi pengiriman <?= $k['estimasi'] ?> Hari</p>
+                    <p class="mb-1">Estimasi pengiriman <?= esc($k['estimasi']) ?> hari</p>
                     <?php } ?>
                     <p class="mb-1" style="font-weight: 600;">
                         <?php if (!empty($k['gratis_ongkir'])): ?>
@@ -36,13 +36,13 @@
                         <?php endif; ?>
                     </p>
                     <?php if (!empty($k['gratis_ongkir_label'])): ?>
-                        <p class="mb-1 text-success" style="font-size: 12px; font-weight: 600;">
+                        <p class="mb-1 text-success ilena-shipping-benefit">
                             <?= esc($k['gratis_ongkir_label']); ?>
                         </p>
                     <?php endif; ?>
                 </div>
                 <div style="width:fit-content" class="show-block-ke-hide">
-                    <img src="/img/kurir/<?= $k['nama'] ?>.png" alt="" onerror="this.style.display='none'">
+                    <img src="/img/kurir/<?= esc($k['nama'], 'attr') ?>.png" alt="" width="76" height="34" loading="lazy" onerror="this.style.display='none'">
                 </div>
             </label>
             <?php } ?>
@@ -50,7 +50,7 @@
     </div>
     <div class="tigapuluh-ke-seratus">
         <div class="card p-4">
-            <h4 style="letter-spacing: -1px">Pesanan</h4>
+            <h4>Ringkasan pesanan</h4>
             <div class="mt-2 d-flex justify-content-between py-1">
                 <p class="m-0">
                     harga
@@ -75,7 +75,7 @@
                     Dihitung nanti
                 </p>
             </div>
-            <p class="m-0 text-secondary" style="font-size: 12px;">
+            <p class="m-0 text-secondary ilena-shipping-fee-note">
                 Biaya admin mengikuti metode pembayaran yang dipilih di halaman berikutnya.
             </p>
             <span class="garis my-2"></span>

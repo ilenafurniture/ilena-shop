@@ -490,7 +490,7 @@ hr {
                 <p class="m-0">
                     <?= is_array($selected) ? ucwords(esc($selected['nama'] ?? 'Voucher')) : 'Pilih Voucher'; ?>
                 </p>
-                <i class="material-icons">chevron_right</i>
+                <i class="material-icons">arrow_forward_ios</i>
             </div>
             <div id="voucherList" class="voucher-list">
                 <?php foreach ($list as $v):

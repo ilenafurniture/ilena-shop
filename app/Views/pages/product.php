@@ -350,13 +350,13 @@ $productCoverUrl = function (array $product): string {
                 if (in_array($produk['id'], $wishlist)) { ?>
                 <form action="/delwishlist/<?= $produk['id'] ?>" method="post">
                     <?= csrf_field(); ?>
-                    <button type="submit" class="btn-teks-aja my-3"><i class="material-icons">bookmark</i>Hapus</button>
+                    <button type="submit" class="btn-teks-aja my-3"><i class="material-icons">favorite</i>Hapus</button>
                 </form>
                 <?php } else { ?>
                 <form action="/addwishlist/<?= $produk['id'] ?>" method="post">
                     <?= csrf_field(); ?>
                     <button type="submit" class="btn-teks-aja my-3"><i
-                            class="material-icons">bookmark_border</i>Simpan</button>
+                            class="material-icons">favorite_border</i>Simpan</button>
                 </form>
                 <?php } ?>
                 <hr>
@@ -499,43 +499,68 @@ $productCoverUrl = function (array $product): string {
         <div class="ilena-product-related-heading"><span>Pilihan untuk Anda</span><h2 id="related-products-title">Anda mungkin juga suka</h2></div>
         <div class="container-card1 ilena-catalog-grid ilena-product-related-grid">
             <?php foreach ($produkSejenis as $ind_p => $p) { ?>
-            <?php $relatedVersion = !empty($p['tgl_update']) ? (int) strtotime((string) $p['tgl_update']) : time(); ?>
-            <?php $relatedVariantData = json_decode($p['varian'] ?? '[]', true) ?: []; $cardVarianAwal = $relatedVariantData[0]['nama'] ?? 'default'; $cardVarianAwalStok = (int)($relatedVariantData[0]['stok'] ?? 0); ?>
-            <div class="card1">
+            <?php
+                $relatedVersion = !empty($p['tgl_update']) ? (int) strtotime((string) $p['tgl_update']) : time();
+                $relatedVariants = json_decode($p['varian'] ?? '[]', true);
+                $relatedVariants = is_array($relatedVariants) ? $relatedVariants : [];
+                $relatedVariantsByName = [];
+                foreach ($relatedVariants as $relatedIndex => $relatedVariant) {
+                    if (!is_array($relatedVariant)) continue;
+                    $relatedName = trim((string) ($relatedVariant['nama'] ?? ''));
+                    $relatedKey = $relatedName !== '' ? mb_strtolower($relatedName) : 'unnamed-' . $relatedIndex;
+                    if (!isset($relatedVariantsByName[$relatedKey])) {
+                        $relatedVariant['nama'] = $relatedName !== '' ? $relatedName : 'Varian ' . ($relatedIndex + 1);
+                        $relatedVariant['stok'] = max(0, (int) ($relatedVariant['stok'] ?? 0));
+                        $relatedVariant['urutan_gambar'] = (string) ($relatedVariant['urutan_gambar'] ?? '1');
+                        $relatedVariant['kode'] = (string) ($relatedVariant['kode'] ?? '#ddd');
+                        $relatedVariantsByName[$relatedKey] = $relatedVariant;
+                        continue;
+                    }
+                    $previousSlots = array_filter(array_map('trim', explode(',', (string) ($relatedVariantsByName[$relatedKey]['urutan_gambar'] ?? ''))));
+                    $duplicateSlots = array_filter(array_map('trim', explode(',', (string) ($relatedVariant['urutan_gambar'] ?? ''))));
+                    $relatedVariantsByName[$relatedKey]['urutan_gambar'] = implode(',', array_values(array_unique(array_merge($previousSlots, $duplicateSlots))));
+                    $relatedVariantsByName[$relatedKey]['stok'] = max((int) ($relatedVariantsByName[$relatedKey]['stok'] ?? 0), (int) ($relatedVariant['stok'] ?? 0));
+                }
+                $relatedVariantData = array_values($relatedVariantsByName);
+                $cardVarianAwal = $relatedVariantData[0]['nama'] ?? 'default';
+                $cardVarianAwalStok = (int) ($relatedVariantData[0]['stok'] ?? 0);
+                $relatedProductUrl = '/product/' . rawurlencode(str_replace(' ', '-', (string) $p['nama']));
+            ?>
+            <div class="card1" data-product-card>
                 <div style="position: relative;">
                     <span class="card1-content-img-kiri"
                         <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
                     <div class="d-flex flex-column gap-2 card1-content-img-kanan">
                         <?php if (session()->get('role') == '1') { ?>
-                        <a class="card1-btn-img" href="/admin/editproduct/<?= $p['id'] ?>" title="Edit produk" aria-label="Edit <?= esc($p['nama'], 'attr') ?>"><i class="material-icons">edit</i></a>
+                        <a class="card1-btn-img" href="/admin/editproduct/<?= esc((string) $p['id'], 'attr') ?>" title="Edit produk" aria-label="Edit <?= esc($p['nama'], 'attr') ?>"><i class="material-icons">edit</i></a>
                         <?php }
                                 if (in_array($p['id'], $wishlist)) { ?>
-                        <form action="/delwishlist/<?= $p['id'] ?>" method="post">
+                        <form action="/delwishlist/<?= esc((string) $p['id'], 'attr') ?>" method="post">
                             <?= csrf_field(); ?>
-                            <button type="submit" class="card1-btn-img" aria-label="Hapus <?= esc($p['nama'], 'attr') ?> dari wishlist"><i class="material-icons">bookmark</i></button>
+                            <button type="submit" class="card1-btn-img" aria-label="Hapus <?= esc($p['nama'], 'attr') ?> dari wishlist"><i class="material-icons">favorite</i></button>
                         </form>
                         <?php } else { ?>
-                        <form action="/addwishlist/<?= $p['id'] ?>" method="post">
+                        <form action="/addwishlist/<?= esc((string) $p['id'], 'attr') ?>" method="post">
                             <?= csrf_field(); ?>
                             <button type="submit" class="card1-btn-img" aria-label="Simpan <?= esc($p['nama'], 'attr') ?> ke wishlist"><i
-                                    class="material-icons">bookmark_border</i></button>
+                                    class="material-icons">favorite_border</i></button>
                         </form>
                         <?php } ?>
                         <form method="post" id="card<?= $ind_p ?>"
-                            action="<?= $cardVarianAwalStok > 0 ? '/addcart/' . $p['id'] . '/' . rawurlencode($cardVarianAwal) . '/1' : '' ?>"><?= csrf_field(); ?><button type="submit" class="card1-btn-img" aria-label="Tambah <?= esc($p['nama'], 'attr') ?> ke keranjang" <?= $cardVarianAwalStok > 0 ? '' : 'disabled' ?>><i class="material-icons">shopping_cart</i>
+                            action="<?= $cardVarianAwalStok > 0 ? '/addcart/' . rawurlencode((string) $p['id']) . '/' . rawurlencode($cardVarianAwal) . '/1' : '' ?>"><?= csrf_field(); ?><button type="submit" class="card1-btn-img" aria-label="Tambah <?= esc($p['nama'], 'attr') ?> ke keranjang" title="Tambah ke keranjang" <?= $cardVarianAwalStok > 0 ? '' : 'disabled' ?>><i class="material-icons">shopping_bag</i>
                             </button>
                         </form>
                     </div>
-                    <a href="/product/<?= rawurlencode(str_replace(' ', '-', (string) $p['nama'])); ?>" class="gambar">
-                        <img class=" img-pic" id="img<?= $ind_p ?>"
+                    <a href="<?= esc($relatedProductUrl, 'attr') ?>" class="gambar">
+                        <img class="img-pic" id="img<?= $ind_p ?>"
                             src="<?= $productCoverUrl($p) ?>" alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async">
                         <?php if (is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') || !empty($p['gambar_hover'])) { ?>
-                        <img class=" img-pic-hover lazy-hover-product"
+                        <img class="img-pic-hover lazy-hover-product"
                             data-src="<?= is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') ? base_url('img/barang/hover/' . $p['id'] . '.webp') : base_url('viewpichover/' . $p['id']) ?>?v=<?= $relatedVersion ?>" alt="" aria-hidden="true" loading="lazy" decoding="async">
                         <?php } ?>
                     </a>
                 </div>
-                <div class="container-varian mb-1 d-flex">
+                <div class="container-varian mb-1 d-flex" role="radiogroup" aria-label="Pilih warna <?= esc($p['nama'], 'attr') ?>">
                     <?php foreach ($relatedVariantData as $ind_v => $v) { ?>
                     <input id="varian-<?= $ind_p ?>-<?= $ind_v ?>"
                         <?= $ind_v === 0 ? 'checked' : '' ?>
@@ -543,9 +568,9 @@ $productCoverUrl = function (array $product): string {
                         data-slot="<?= esc($v['urutan_gambar'], 'attr') ?>"
                         data-name="<?= esc($v['nama'], 'attr') ?>"
                         data-stok="<?= (int)($v['stok'] ?? 0) ?>"
-                        type="radio" name="varian<?= $ind_p ?>">
-                    <label for="varian-<?= $ind_p ?>-<?= $ind_v ?>"><span
-                            style="background-color: <?= $v['kode'] ?>"></span></label>
+                        type="radio" name="varian<?= $ind_p ?>" aria-label="Warna <?= esc($v['nama'], 'attr') ?>">
+                    <label for="varian-<?= $ind_p ?>-<?= $ind_v ?>" title="<?= esc($v['nama'], 'attr') ?>"><span
+                            style="background-color: <?= esc((string) $v['kode'], 'attr') ?>"></span></label>
                     <?php } ?>
                     <script>
                     const btnKeranjang<?= $ind_p ?>Elm = document.getElementById("card<?= $ind_p ?>");
@@ -566,9 +591,9 @@ $productCoverUrl = function (array $product): string {
                     });
                     </script>
                 </div>
-                <a href="/product/<?= rawurlencode(str_replace(' ', '-', (string) $p['nama'])); ?>" class="text-dark">
-                    <p class="text-secondary text-sm-start m-0"><?= strtolower($p['kategori']); ?></p>
-                    <h5 style="font-size:18px;"><?= str_replace('Tv', 'TV', ucwords($p['nama'])); ?></h5>
+                <a href="<?= esc($relatedProductUrl, 'attr') ?>" class="text-dark">
+                    <p class="text-secondary text-sm-start m-0"><?= esc(strtolower((string) $p['kategori'])); ?></p>
+                    <h5><?= esc(str_replace('Tv', 'TV', ucwords((string) $p['nama']))); ?></h5>
                     <div class="d-flex gap-2">
                         <p class="harga">Rp
                             <?= number_format($p['harga'] * (100 - $p['diskon']) / 100, 0, ',', '.'); ?></p>

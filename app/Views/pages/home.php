@@ -294,8 +294,8 @@ function closeSecondAd() {
         <div class="dot"></div>
     </div>
     <div class="panah">
-        <button class="btn-teks-aja item-panah"><i class="material-icons">chevron_left</i></button>
-        <button class="btn-teks-aja item-panah"><i class="material-icons">chevron_right</i></button>
+        <button class="btn-teks-aja item-panah"><i class="material-icons">arrow_back_ios</i></button>
+        <button class="btn-teks-aja item-panah"><i class="material-icons">arrow_forward_ios</i></button>
     </div>
 </div> -->
 

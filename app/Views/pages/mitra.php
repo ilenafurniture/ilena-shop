@@ -1480,10 +1480,10 @@
                     <input id="railProgress" type="range" min="0" max="100" value="0" class="rail-progress"
                         aria-label="Scroll progress">
                     <button class="toko-nav-btn toko-prev" type="button" aria-label="Sebelumnya">
-                        <i class="material-icons" style="font-size:18px">chevron_left</i>
+                        <i class="material-icons" style="font-size:18px">arrow_back_ios</i>
                     </button>
                     <button class="toko-nav-btn toko-next" type="button" aria-label="Berikutnya">
-                        <i class="material-icons" style="font-size:18px">chevron_right</i>
+                        <i class="material-icons" style="font-size:18px">arrow_forward_ios</i>
                     </button>
                 </div>
             </div>

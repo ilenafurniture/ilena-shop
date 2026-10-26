@@ -562,7 +562,7 @@ if (isset($_GET['ruang'])) {
             <div class="d-flex gap-4 align-items-stretch mb-3 ilena-catalog-toolbar">
                 <div style="width: fit-content;" class="show-flex-ke-hide justify-content-center align-items-center">
                     <button class="btn btn-sm btn-outline-dark d-flex align-items-center" type="button" data-filter-sidebar-toggle aria-controls="catalogFilterSidebar" aria-expanded="false" aria-label="Tampilkan filter" onclick="showFilterDesktop()">
-                        <i class="material-icons" aria-hidden="true">chevron_right</i>
+                        <i class="material-icons" aria-hidden="true">arrow_forward_ios</i>
                         <p class="m-0" style="line-height: 7px;">Filter</p>
                     </button>
                 </div>
@@ -629,17 +629,17 @@ if (isset($_GET['ruang'])) {
                             <form action="/delwishlist/<?= $p['id'] ?>" method="post">
                                 <?= csrf_field(); ?>
                                 <button type="submit" class="card1-btn-img" aria-label="Hapus <?= esc($p['nama'], 'attr'); ?> dari favorit" title="Hapus dari favorit"><i
-                                        class="material-icons">bookmark</i></button>
+                                        class="material-icons">favorite</i></button>
                             </form>
                             <?php } else { ?>
                             <form action="/addwishlist/<?= $p['id'] ?>" method="post">
                                 <?= csrf_field(); ?>
                                 <button type="submit" class="card1-btn-img" aria-label="Simpan <?= esc($p['nama'], 'attr'); ?> ke favorit" title="Simpan ke favorit"><i
-                                        class="material-icons">bookmark_border</i></button>
+                                        class="material-icons">favorite_border</i></button>
                             </form>
                             <?php } ?>
                             <form method="post" id="card<?= $ind_p ?>"
-                                action="/addcart/<?= $p['id'] ?>/<?= rawurlencode(json_decode($p['varian'], true)[0]['nama']) ?>/1"><?= csrf_field(); ?><button class="card1-btn-img" aria-label="Tambah <?= esc($p['nama'], 'attr'); ?> ke keranjang" title="Tambah ke keranjang"><i class="material-icons">shopping_cart</i>
+                                action="/addcart/<?= $p['id'] ?>/<?= rawurlencode(json_decode($p['varian'], true)[0]['nama']) ?>/1"><?= csrf_field(); ?><button class="card1-btn-img" aria-label="Tambah <?= esc($p['nama'], 'attr'); ?> ke keranjang" title="Tambah ke keranjang"><i class="material-icons">shopping_bag</i>
                                 </button>
                             </form>
                         </div>
@@ -697,7 +697,7 @@ if (isset($_GET['ruang'])) {
                 <?php if ($pag > 1) { ?>
                 <a class="item-pag"
                     href="<?= esc($catalogPageUrl($pag - 1), 'attr'); ?>"><i
-                        class="material-icons">chevron_left</i></a>
+                        class="material-icons">arrow_back_ios</i></a>
                 <?php } ?>
                 <?php for ($i = 0; $i < $hitungPag; $i++) { ?>
                 <a class="item-pag <?= $pag == ($i + 1) ? 'active' : ''; ?>"
@@ -706,7 +706,7 @@ if (isset($_GET['ruang'])) {
                 <?php if ($pag < $hitungPag) { ?>
                 <a class="item-pag"
                     href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&ruang=<?= isset($_GET['ruang']) ? $_GET['ruang'] : ''; ?>&pag=<?= $pag + 1; ?>"><i
-                        class="material-icons">chevron_right</i></a>
+                        class="material-icons">arrow_forward_ios</i></a>
                 <?php } ?>
             </div> -->
             <div class="container-pag">
@@ -718,7 +718,7 @@ if (isset($_GET['ruang'])) {
                 if ($pag > 1) { ?>
                 <a class="item-pag"
                     href="<?= esc($catalogPageUrl($pag - 1), 'attr'); ?>" aria-label="Halaman sebelumnya"><i
-                        class="material-icons">chevron_left</i></a>
+                        class="material-icons">arrow_back_ios</i></a>
                 <?php } ?>
 
                 <?php
@@ -733,7 +733,7 @@ if (isset($_GET['ruang'])) {
                 if ($pag < $hitungPag) { ?>
                 <a class="item-pag"
                     href="<?= esc($catalogPageUrl($pag + 1), 'attr'); ?>" aria-label="Halaman berikutnya"><i
-                        class="material-icons">chevron_right</i></a>
+                        class="material-icons">arrow_forward_ios</i></a>
                 <?php } ?>
             </div>
 
@@ -1617,7 +1617,7 @@ function showFilterDesktop() {
     containerFilterDesktopElm.setAttribute('aria-hidden', String(isExpanded));
     toggle.setAttribute('aria-label', isExpanded ? 'Tampilkan filter' : 'Sembunyikan filter');
     const icon = toggle.querySelector('.material-icons');
-    if (icon) icon.textContent = isExpanded ? 'chevron_right' : 'chevron_left';
+    if (icon) icon.textContent = isExpanded ? 'arrow_forward_ios' : 'arrow_back_ios';
 }
 
 btnFilterElm.forEach(elm => {

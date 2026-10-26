@@ -115,7 +115,7 @@ $productCoverUrl = function (string $id, array $varianList, array $product = [])
                     <form action="/delwishlist/<?= $p_id ?>" method="post" class="ilena-wishlist-remove-form">
                         <?= function_exists('csrf_field') ? csrf_field() : '' ?>
                         <button type="submit" class="btn-teks-aja ilena-wishlist-remove">
-                            <i class="material-icons" style="font-size:18px;">bookmark</i>
+                            <i class="material-icons" style="font-size:18px;">favorite</i>
                             Hapus
                         </button>
                     </form>
@@ -172,7 +172,7 @@ $productCoverUrl = function (string $id, array $varianList, array $product = [])
         </div>
         <?php else: ?>
         <section class="ilena-wishlist-empty" aria-live="polite">
-            <span class="material-icons" aria-hidden="true">bookmark_border</span>
+            <span class="material-icons" aria-hidden="true">favorite_border</span>
             <p class="ilena-wishlist-empty__eyebrow">BELUM ADA FAVORIT</p>
             <h2>Simpan produk yang Anda sukai.</h2>
             <p>Tekan ikon favorit pada produk untuk menyimpannya di sini.</p>

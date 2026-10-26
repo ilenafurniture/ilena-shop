@@ -317,11 +317,11 @@
                                             ? '<a class="card1-btn-img" href="/admin/editproduct/' . $p['id'] . '"><i class="material-icons">edit</i></a>'
                                             : '' ?>
                                 <?= in_array($p['id'], $wishlist)
-                                            ? '<form method="post" action="/delwishlist/' . esc($p['id'], 'attr') . '">' . csrf_field() . '<button class="card1-btn-img" type="submit"><i class="material-icons">bookmark</i></button></form>'
-                                            : '<form method="post" action="/addwishlist/' . esc($p['id'], 'attr') . '">' . csrf_field() . '<button class="card1-btn-img" type="submit"><i class="material-icons">bookmark_border</i></button></form>' ?>
+                                            ? '<form method="post" action="/delwishlist/' . esc($p['id'], 'attr') . '">' . csrf_field() . '<button class="card1-btn-img" type="submit"><i class="material-icons">favorite</i></button></form>'
+                                            : '<form method="post" action="/addwishlist/' . esc($p['id'], 'attr') . '">' . csrf_field() . '<button class="card1-btn-img" type="submit"><i class="material-icons">favorite_border</i></button></form>' ?>
                                 <form method="post" id="card<?= $ind_p ?>" class="m-0"
                                     action="/addcart/<?= $p['id'] ?>/<?= rawurlencode(json_decode($p['varian'], true)[0]['nama']) ?>/1">
-                                    <?= csrf_field(); ?><button type="submit" class="card1-btn-img"><i class="material-icons">shopping_cart</i></button>
+                                    <?= csrf_field(); ?><button type="submit" class="card1-btn-img"><i class="material-icons">shopping_bag</i></button>
                                 </form>
                             </div>
                             <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="gambar">

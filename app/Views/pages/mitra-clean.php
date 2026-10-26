@@ -7,6 +7,7 @@ $partnerTotal = (int) ($partnerTotal ?? count($activePartners));
 $partnerPage = (int) ($partnerPage ?? 1);
 $partnerPages = (int) ($partnerPages ?? 1);
 $partnerPerPage = (int) ($partnerPerPage ?? 10);
+$partnerFallbackImage = base_url('img/ilena-image-placeholder.png');
 $partnerFirst = $partnerTotal === 0 ? 0 : (($partnerPage - 1) * $partnerPerPage) + 1;
 $partnerLast = min($partnerPage * $partnerPerPage, $partnerTotal);
 ?>
@@ -78,9 +79,10 @@ $partnerLast = min($partnerPage * $partnerPerPage, $partnerTotal);
                     $partnerMapEmbed = 'https://www.google.com/maps?q=' . rawurlencode($partnerMapQuery) . '&output=embed';
                     ?>
                     <li class="ilena-partners__item">
-                        <?php if ($partnerImage !== ''): ?>
-                            <img class="ilena-partners__image" src="<?= esc($partnerImage, 'attr'); ?>" alt="" width="112" height="84" loading="lazy" decoding="async">
-                        <?php endif; ?>
+                        <img class="ilena-partners__image<?= $partnerImage === '' ? ' is-placeholder' : ''; ?>"
+                            src="<?= esc($partnerImage !== '' ? $partnerImage : $partnerFallbackImage, 'attr'); ?>"
+                            data-fallback-src="<?= esc($partnerFallbackImage, 'attr'); ?>" alt="" width="112" height="84"
+                            loading="lazy" decoding="async">
                         <div class="ilena-partners__details">
                             <?php if ($partnerCity !== ''): ?><p class="ilena-editorial__eyebrow"><?= esc($partnerCity); ?></p><?php endif; ?>
                             <h3><?= esc($partnerName !== '' ? $partnerName : 'Partner Ilena'); ?></h3>
@@ -130,6 +132,14 @@ $partnerLast = min($partnerPage * $partnerPerPage, $partnerTotal);
         <?php endif; ?>
     </section>
 </main>
+<script>
+document.querySelectorAll('.ilena-partners__image').forEach((image) => {
+    image.addEventListener('error', () => {
+        image.classList.add('is-placeholder');
+        image.src = image.dataset.fallbackSrc;
+    }, { once: true });
+});
+</script>
 <script>
 (() => {
     const form = document.querySelector('.ilena-partners__search');

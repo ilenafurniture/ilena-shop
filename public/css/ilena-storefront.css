@@ -5086,6 +5086,36 @@ body.ilena-storefront .ilena-context-footer {
 }
 body.ilena-storefront .ilena-context-footer a { color: rgba(245,241,235,.72); }
 body.ilena-storefront .ilena-context-footer a:hover { color: #e0c6a8; }
+
+/* Payment/checkout shell: retain the focused header but match Ilena's single-brand header and footer rhythm. */
+body.ilena-storefront.ilena-page--payment .ilena-compact-header__brand-divider,
+body.ilena-storefront.ilena-page--payment .ilena-compact-header__lunarea { display: none !important; }
+body.ilena-storefront.ilena-page--payment .ilena-compact-header__brands { grid-column: 1; justify-content: flex-start; }
+body.ilena-storefront.ilena-page--payment .ilena-compact-header__logo img { max-width: 132px; height: 27px; }
+body.ilena-storefront .ilena-context-footer--checkout {
+    display: grid; grid-template-columns: 1fr auto auto; align-items: center;
+    gap: 12px clamp(18px, 3vw, 36px); min-height: 72px; padding-block: 14px;
+    color: rgba(245,241,235,.82); font-size: 12px;
+}
+body.ilena-storefront .ilena-context-footer--checkout > span { line-height: 1.55; }
+body.ilena-storefront .ilena-context-footer--checkout a { color: #e0c6a8; text-underline-offset: 3px; }
+body.ilena-storefront .ilena-context-footer--checkout a:hover { color: #fff; }
+body.ilena-storefront .ilena-context-footer--checkout small { white-space: nowrap; font-size: 11px; }
+@media (max-width: 700px) {
+    body.ilena-storefront.ilena-page--payment .ilena-compact-header {
+        display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between;
+        min-height: 60px; gap: 10px; padding: 8px 14px;
+    }
+    body.ilena-storefront.ilena-page--payment .ilena-compact-header__brands { flex: 0 0 auto; }
+    body.ilena-storefront.ilena-page--payment .ilena-compact-header__logo img { max-width: 106px; height: 22px; }
+    body.ilena-storefront.ilena-page--payment .ilena-compact-header__actions { flex: 0 1 auto; gap: 8px; }
+    body.ilena-storefront.ilena-page--payment .ilena-compact-header__link { min-height: 40px; font-size: 12px; white-space: nowrap; }
+    body.ilena-storefront .ilena-context-footer--checkout {
+        grid-template-columns: 1fr; justify-items: center; gap: 8px;
+        min-height: 0; padding: 16px 14px; text-align: center; font-size: 12px;
+    }
+    body.ilena-storefront .ilena-context-footer--checkout small { white-space: normal; font-size: 11px; }
+}
 @media (max-width: 1100px) {
     body.ilena-storefront .ilena-store-footer__main { gap: 20px 24px; padding-block: 28px 22px; }
     body.ilena-storefront .ilena-store-footer__brand { grid-column: 1 / -1; }
@@ -5988,9 +6018,7 @@ body.ilena-storefront.ilena-page--home .ilena-home-popup__dialog :focus-visible 
     from { background-position: 120% 50%; }
     to { background-position: -20% 50%; }
 }
-body.ilena-storefront .ilena-header-action .material-icons,
-body.ilena-storefront .ilena-compact-header__icon-link .material-icons,
-body.ilena-storefront .navbar-hp .item-navhp .material-icons,
+body.ilena-storefront :is(a, button) .material-icons,
 body.ilena-storefront .ilena-mobile-menu-button .material-icons,
 body.ilena-storefront .expend-hp .collectionjdl .material-icons {
     background-image: linear-gradient(105deg, var(--ilena-icon-base, currentColor) 0%, var(--ilena-icon-base, currentColor) 38%, #fff1d9 50%, var(--ilena-icon-base, currentColor) 62%, var(--ilena-icon-base, currentColor) 100%);
@@ -6003,10 +6031,77 @@ body.ilena-storefront .expend-hp .collectionjdl .material-icons {
 body.ilena-storefront .ilena-topbar__actions .ilena-header-action { --ilena-icon-base: rgba(255,255,255,.86); }
 body.ilena-storefront .ilena-mobile-menu-button { --ilena-icon-base: #e2c6a7; }
 body.ilena-storefront .expend-hp .collectionjdl { --ilena-icon-base: #cdb99f; }
-body.ilena-storefront :is(.ilena-header-action, .ilena-compact-header__icon-link, .navbar-hp .item-navhp, .ilena-mobile-menu-button, .expend-hp .collectionjdl):hover .material-icons,
-body.ilena-storefront :is(.ilena-header-action, .ilena-compact-header__icon-link, .navbar-hp .item-navhp, .ilena-mobile-menu-button, .expend-hp .collectionjdl):focus-visible .material-icons {
+body.ilena-storefront :is(a, button, .ilena-mobile-menu-button, .expend-hp .collectionjdl):hover .material-icons,
+body.ilena-storefront :is(a, button, .ilena-mobile-menu-button, .expend-hp .collectionjdl):focus-visible .material-icons {
     animation: ilena-menu-icon-shimmer 650ms ease-out 1;
 }
 @media (prefers-reduced-motion: reduce) {
     body.ilena-storefront .material-icons { animation: none !important; }
+}
+
+/* Checkout consistency pass: keep address, shipping, and payment readable at every size. */
+body.ilena-storefront :where(.ilena-address-page, .ilena-shipping-page, .ilena-payment-page) {
+    --checkout-muted: #71685f;
+}
+body.ilena-storefront .ilena-checkout-steps {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 9px;
+    margin: 0 0 28px; color: var(--checkout-muted); font-size: 12px; line-height: 1.5;
+}
+body.ilena-storefront .ilena-checkout-steps a { color: inherit; text-decoration: none; }
+body.ilena-storefront .ilena-checkout-steps a:hover { color: #8b684c; text-decoration: underline; text-underline-offset: 3px; }
+body.ilena-storefront .ilena-checkout-steps [aria-current="step"] { color: var(--ilena-ink); font-weight: 650; }
+body.ilena-storefront .ilena-shipping-page .item-kurir { min-height: 84px; }
+body.ilena-storefront .ilena-shipping-page .item-kurir p { font-size: 13px; line-height: 1.5; }
+body.ilena-storefront .ilena-shipping-page .item-kurir p:nth-child(2) { font-size: 12px; }
+body.ilena-storefront .ilena-shipping-page .item-kurir p:nth-child(3) { font-size: 14px; }
+body.ilena-storefront .ilena-shipping-page .item-kurir .nama { font-size: 19px; }
+body.ilena-storefront .ilena-shipping-page .ilena-shipping-benefit { font-size: 12px; line-height: 1.5; }
+body.ilena-storefront .ilena-shipping-page .ilena-shipping-fee-note { font-size: 12px !important; line-height: 1.55; }
+body.ilena-storefront .ilena-shipping-page .tigapuluh-ke-seratus .card > div p:first-child { font-size: 13px; }
+body.ilena-storefront .ilena-shipping-page .tigapuluh-ke-seratus .card > div p:last-child { font-size: 14px; }
+body.ilena-storefront .ilena-shipping-page .tigapuluh-ke-seratus .card > div:last-of-type p:first-child { font-size: 11px; }
+body.ilena-storefront .ilena-shipping-page .tigapuluh-ke-seratus .card > div:last-of-type p:last-child { font-size: 16px; }
+body.ilena-storefront .ilena-shipping-page #btn-payment { min-height: 48px; font-size: 12px; }
+body.ilena-storefront .ilena-address-page .item-address p { font-size: 13px; line-height: 1.5; }
+body.ilena-storefront .ilena-address-page .item-address .nama { font-size: 19px; }
+body.ilena-storefront .ilena-address-page .tigapuluh-ke-seratus .card > div p:first-child { font-size: 13px; }
+body.ilena-storefront .ilena-address-page .tigapuluh-ke-seratus .card > div p:last-child { font-size: 14px; }
+body.ilena-storefront .ilena-address-page .tigapuluh-ke-seratus .card > div:last-of-type p:last-child { font-size: 16px; }
+body.ilena-storefront .ilena-address-page #btn-shipping { min-height: 48px; font-size: 12px; }
+body.ilena-storefront .ilena-payment-page .payment-bc { font-size: 12px; }
+body.ilena-storefront .ilena-payment-page .kv .k { font-size: 12px; }
+body.ilena-storefront .ilena-payment-page .card-soft .hd { font-size: 22px; }
+body.ilena-storefront .ilena-payment-page :where(button, .btn) { min-height: 46px; }
+body.ilena-storefront :where(.ilena-page--syarat, .ilena-page--kebijakan) .breadcrumb { font-size: 12px; }
+body.ilena-storefront.ilena-page--syarat .konten > p,
+body.ilena-storefront.ilena-page--kebijakan .konten > p,
+body.ilena-storefront.ilena-page--kebijakan .konten > ul { font-size: 14px; }
+body.ilena-storefront.ilena-page--kebijakan .konten > .d-flex { font-size: 13px; }
+@media (max-width: 700px) {
+    body.ilena-storefront :where(.ilena-page--syarat, .ilena-page--kebijakan) .breadcrumb { font-size: 12px; }
+    body.ilena-storefront.ilena-page--syarat .konten > p,
+    body.ilena-storefront.ilena-page--kebijakan .konten > p,
+    body.ilena-storefront.ilena-page--kebijakan .konten > ul { font-size: 14px; line-height: 1.75; }
+    body.ilena-storefront.ilena-page--kebijakan .konten > .d-flex { font-size: 14px; }
+    body.ilena-storefront .ilena-checkout-steps { gap: 7px; margin-bottom: 20px; font-size: 12px; }
+    body.ilena-storefront .ilena-shipping-page .ilena-shipping-heading { gap: 10px; }
+    body.ilena-storefront .ilena-shipping-page .ilena-shipping-heading__description { font-size: 14px; }
+    body.ilena-storefront .ilena-shipping-page .ilena-shipping-heading__count { font-size: 12px; }
+    body.ilena-storefront .ilena-shipping-page .item-kurir { min-height: 80px; gap: 12px; padding: 12px 10px; }
+    body.ilena-storefront .ilena-shipping-page .item-kurir .nama { font-size: 16px; }
+    body.ilena-storefront .ilena-shipping-page .item-kurir p,
+    body.ilena-storefront .ilena-shipping-page .item-kurir p:nth-child(2) { font-size: 13px; }
+    body.ilena-storefront .ilena-shipping-page .item-kurir p:nth-child(3) { font-size: 14px; }
+    body.ilena-storefront .ilena-shipping-page .item-kurir > div:last-child img { width: 64px; height: 32px; }
+    body.ilena-storefront .ilena-shipping-page .tigapuluh-ke-seratus .card { padding: 18px 0 20px !important; }
+    body.ilena-storefront .ilena-shipping-page .tigapuluh-ke-seratus .card h4,
+    body.ilena-storefront .ilena-address-page .tigapuluh-ke-seratus .card h4 { font-size: 24px; }
+    body.ilena-storefront .ilena-shipping-page .tigapuluh-ke-seratus .card > p.text-secondary { font-size: 12px !important; }
+    body.ilena-storefront .ilena-address-page .item-address p { font-size: 14px; }
+    body.ilena-storefront .ilena-address-page .item-address .nama { font-size: 17px; }
+    body.ilena-storefront .ilena-address-page #btn-add-address { min-height: 44px; font-size: 12px; }
+    body.ilena-storefront .ilena-payment-page .payment-shell { font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront .ilena-shipping-page .item-kurir { transition: none; }
 }

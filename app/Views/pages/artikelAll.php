@@ -893,7 +893,7 @@ ubahGapElm.forEach(e => e.classList.add(innerWidthClient > 700 ? 'gap-4' : 'gap-
             pager.style.display = '';
             let html = '';
             html += `<button type="button" ${current===1?'disabled':''} data-act="prev" aria-label="Sebelumnya">
-               <span class="material-icons">chevron_left</span><span class="hide-ke-show-inline">Prev</span>
+               <span class="material-icons">arrow_back_ios</span><span class="hide-ke-show-inline">Prev</span>
              </button>`;
 
             const windowSize = 7;
@@ -907,7 +907,7 @@ ubahGapElm.forEach(e => e.classList.add(innerWidthClient > 700 ? 'gap-4' : 'gap-
             }
 
             html += `<button type="button" ${current===lastPage?'disabled':''} data-act="next" aria-label="Berikutnya">
-               <span class="hide-ke-show-inline">Next</span><span class="material-icons">chevron_right</span>
+               <span class="hide-ke-show-inline">Next</span><span class="material-icons">arrow_forward_ios</span>
              </button>`;
 
             pager.innerHTML = html;
