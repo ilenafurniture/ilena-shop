@@ -266,10 +266,6 @@ function closeSecondAd() {
         <div class="dot <?= $key === 0 ? 'active' : ''; ?>"></div>
         <?php endforeach; ?>
     </div>
-    <div class="panah">
-        <button class="btn-teks-aja item-panah"><i class="material-icons ">chevron_left</i></button>
-        <button class="btn-teks-aja item-panah"><i class="material-icons ">chevron_right</i></button>
-    </div>
 </div>
 
 <!-- <div class="slider">
@@ -1324,8 +1320,8 @@ function modalseries() {
 
 <div class="hide-ke-show-block ilena-home-room-scroll" id="scroll-set">
     <div class="d-flex gap-1 px-5 pt-5 pb-4" style="width: fit-content;">
-        <a href="/product?ruang=tamu" class="bg-primary"
-            style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block; height: 100px;">
+        <a href="/product?ruang=tamu" class="ilena-home-room-card"
+            style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
             <img loading="lazy" decoding="async" src="<?= $homeImage('1742445542692.webp') ?>" alt=""
                 style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
             <div class="d-flex gap-4 justify-content-center mb-2">
@@ -1338,7 +1334,7 @@ function modalseries() {
             </div>
             <h5 class="text-center text-secondary fw-bold" style="font-size: 13px">ROOM</h5>
         </a>
-        <a href="/product?ruang=tidur"
+        <a href="/product?ruang=tidur" class="ilena-home-room-card"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
             <img loading="lazy" decoding="async" src="<?= $homeImage('1742445603554.webp') ?>" alt=""
                 style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
@@ -1349,7 +1345,7 @@ function modalseries() {
             </div>
             <h5 class="text-center text-secondary fw-bold" style="font-size: 13px">ROOM</h5>
         </a>
-        <a href="/product?ruang=keluarga"
+        <a href="/product?ruang=keluarga" class="ilena-home-room-card"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
             <img loading="lazy" decoding="async" src="<?= $homeImage('1742445633826.webp') ?>" alt=""
                 style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
@@ -1397,10 +1393,6 @@ function modalseries() {
     <div class="dots">
         <div class="dot active"></div>
         <div class="dot"></div>
-    </div>
-    <div class="panah">
-        <button class="btn-teks-aja item-panah"><i class="material-icons ">chevron_left</i></button>
-        <button class="btn-teks-aja item-panah"><i class="material-icons ">chevron_right</i></button>
     </div>
 </div>
 <style>
@@ -1534,71 +1526,30 @@ function modalseries() {
 
 <script>
 const sliders = document.querySelectorAll('.slider');
-let slideIndex = [];
-for (let i = 0; i < sliders.length; i++) {
-    slideIndex.push(0);
-}
-sliders.forEach((slider, ind_slider) => {
-    const slidesCur = slider.children[0].children;
-    const dotsCur = slider.children[1].children;
-    const panahCur = slider.children[2].children;
-    setInterval(() => {
-        slideIndex[ind_slider]++;
-        showSlide(ind_slider, slideIndex[ind_slider], slidesCur, dotsCur);
-    }, 7000);
-    for (let i = 0; i < dotsCur.length; i++) {
-        const dot = dotsCur[i];
-        dot.addEventListener('click', () => {
-            currentSlide(ind_slider, i, slidesCur, dotsCur);
+sliders.forEach((slider) => {
+    const track = slider.querySelector('.slides');
+    const slides = Array.from(track?.children ?? []);
+    const dots = Array.from(slider.querySelectorAll('.dots .dot'));
+    if (!track || slides.length < 2) return;
+
+    let activeIndex = 0;
+    const syncDots = () => {
+        activeIndex = Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / track.clientWidth)));
+        dots.forEach((dot, index) => dot.classList.toggle('active', index === activeIndex));
+    };
+    const goTo = (index) => {
+        activeIndex = (index + slides.length) % slides.length;
+        track.scrollTo({
+            left: activeIndex * track.clientWidth,
+            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
         });
-    }
-    for (let i = 0; i < panahCur.length; i++) {
-        const itemPanah = panahCur[i];
-        itemPanah.addEventListener('click', () => {
-            currentSlidePanah(ind_slider, i, slidesCur, dotsCur);
-        });
-    }
+        dots.forEach((dot, dotIndex) => dot.classList.toggle('active', dotIndex === activeIndex));
+    };
+
+    track.addEventListener('scroll', syncDots, { passive: true });
+    dots.forEach((dot, index) => dot.addEventListener('click', () => goTo(index)));
+    window.setInterval(() => goTo(activeIndex + 1), 7000);
 });
-
-function showSlide(index_slider, index, slides, dots) {
-    const totalSlides = slides.length;
-    if (index >= totalSlides) {
-        slideIndex[index_slider] = 0;
-    } else if (index < 0) {
-        slideIndex[index_slider] = totalSlides - 1;
-    }
-    for (let i = 0; i < slides.length; i++) {
-        const slide = slides[i];
-        slide.classList.remove('active', 'kiri', 'kanan');
-        if (i === slideIndex[index_slider]) {
-            slide.classList.add('active');
-        } else if (i < slideIndex[index_slider]) {
-            slide.classList.add('kiri');
-        } else {
-            slide.classList.add('kanan');
-        }
-    }
-    for (let i = 0; i < dots.length; i++) {
-        const dot = dots[i];
-        dot.classList.toggle('active', i === slideIndex[index_slider]);
-    }
-}
-
-function currentSlide(index_slider, index, slides, dots) {
-    slideIndex[index_slider] = index;
-    showSlide(index_slider, slideIndex[index_slider], slides, dots);
-}
-
-function currentSlidePanah(index_slider, index, slides, dots) {
-    if (index === 0) {
-        slideIndex[index_slider]--;
-    } else if (index === 1) {
-        slideIndex[index_slider]++;
-    }
-    if (slideIndex[index_slider] < 0) slideIndex[index_slider] = slides.length - 1;
-    if (slideIndex[index_slider] >= slides.length) slideIndex[index_slider] = 0;
-    showSlide(index_slider, slideIndex[index_slider], slides, dots);
-}
 </script>
 <script>
 (() => {
