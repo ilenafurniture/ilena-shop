@@ -1,9 +1,7 @@
 <?php
-$footerPath = '/' . strtolower(trim((string) service('uri')->getPath(), '/'));
-$footerInternal = preg_match('~^/(admin|analytics|market|editarticle|changepic|gantilokasi|cobainput|gamwm)(/|$)~', $footerPath) === 1;
-$footerAuth = in_array($footerPath, ['/login', '/register', '/verify'], true);
-$footerCheckout = preg_match('~^/(cart|shipping|payment|progresspay|successpay|cencelpay|expirepay)(/|$)~', $footerPath) === 1;
-$footerAccount = preg_match('~^/(account|address|order|orderdetail|invoice|wishlist)(/|$)~', $footerPath) === 1;
+$footerPath = App\Services\StorefrontLayoutPolicy::normalizePath((string) service('uri')->getPath());
+$footerInternal = App\Services\StorefrontLayoutPolicy::isInternal($footerPath);
+$footerMode = App\Services\StorefrontLayoutPolicy::footerMode($footerPath);
 $paymentLogos = [
     ['bca.webp', 'BCA', false], ['bni.webp', 'BNI', false], ['bri.webp', 'BRI', false],
     ['mandiri.webp', 'Mandiri', false], ['permatabank.webp', 'PermataBank', false], ['cimb1.png', 'CIMB Niaga', true],
@@ -11,19 +9,19 @@ $paymentLogos = [
     ['shopeepay.webp', 'ShopeePay', false], ['gopay.webp', 'GoPay', false],
 ];
 ?>
-<?php if (!$footerInternal && $footerAuth): ?>
+<?php if (!$footerInternal && $footerMode === 'auth'): ?>
 <footer class="ilena-context-footer ilena-context-footer--auth" role="contentinfo">
     <a href="/" aria-label="Ilena Furniture — Beranda"><img src="<?= base_url('img/LogoIlenaWhite.png'); ?>" width="120" height="18" alt="Ilena Furniture"></a>
     <nav aria-label="Informasi legal"><a href="/syarat">Syarat &amp; ketentuan</a><a href="/kebijakan">Kebijakan privasi</a></nav>
     <small>© <?= date('Y'); ?> Ilena Furniture</small>
 </footer>
-<?php elseif (!$footerInternal && $footerCheckout): ?>
+<?php elseif (!$footerInternal && $footerMode === 'checkout'): ?>
 <footer class="ilena-context-footer ilena-context-footer--checkout" role="contentinfo">
     <span>Butuh bantuan? <a href="/faq">Kunjungi pusat bantuan</a></span>
     <span>Pembayaran aman melalui <a href="https://midtrans.com" target="_blank" rel="noopener noreferrer">Midtrans</a></span>
     <small>© <?= date('Y'); ?> Ilena Furniture</small>
 </footer>
-<?php elseif (!$footerInternal && $footerAccount): ?>
+<?php elseif (!$footerInternal && $footerMode === 'account'): ?>
 <footer class="ilena-context-footer ilena-context-footer--account" role="contentinfo">
     <nav aria-label="Bantuan dan informasi"><a href="/faq">Pusat bantuan</a><a href="/syarat">Syarat &amp; ketentuan</a><a href="/kebijakan">Kebijakan privasi</a></nav>
     <a href="mailto:cs@ilenafurniture.com">Hubungi Ilena</a>
