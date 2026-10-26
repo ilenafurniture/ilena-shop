@@ -40,8 +40,8 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
                         <form action="/logout" method="post" class="m-0"><input type="hidden" name="<?= csrf_token(); ?>" value="<?= csrf_hash(); ?>"><button type="submit" class="btn" style="padding-right: 0"><i class="material-icons text-light">exit_to_app</i></button></form>
                     <?php } ?>
                 <?php } else { ?>
-                    <a href="/wishlist" class="ilena-header-action" aria-label="Wishlist"><i class="material-icons" aria-hidden="true">bookmark_border</i><span class="ilena-sr-only">Wishlist</span></a>
-                    <a href="/cart" class="ilena-header-action" aria-label="Keranjang"><i class="material-icons" aria-hidden="true">shopping_cart</i><span class="ilena-sr-only">Keranjang</span></a>
+                    <a href="/wishlist" class="ilena-header-action" aria-label="Wishlist"><i class="material-icons" aria-hidden="true">favorite_border</i><span class="ilena-sr-only">Wishlist</span></a>
+                    <a href="/cart" class="ilena-header-action" aria-label="Keranjang"><i class="material-icons" aria-hidden="true">shopping_bag</i><span class="ilena-sr-only">Keranjang</span></a>
                     <a href="<?= session()->get('isLogin') ? '/account' : '/login'; ?>" class="ilena-header-action" aria-label="<?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?>"><i class="material-icons" aria-hidden="true">person_outline</i><span class="ilena-sr-only"><?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?></span></a>
                 <?php } ?>
             </div>
@@ -202,7 +202,7 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
             <>
                 {!isAtEnd &&
                 <div className="d-flex justify-content-end">
-                    <div className="overlay-navbar"><i className="material-icons" onClick={() => {handleScrollClick()}}>chevron_right</i></div>
+                    <div className="overlay-navbar"><i className="material-icons" onClick={() => {handleScrollClick()}}>arrow_forward_ios</i></div>
                 </div>}
                 <div className="w-100 show-flex-ke-hide container-navbar-list-nav" ref={containerNavbarListNav} onScroll={handleScroll}>
                     <div className="d-flex align-items-center py-2 gap-5">

@@ -29,7 +29,7 @@
                 <input type="radio" name="collection" id="collection1" class="item-collection">
                 <label for="collection1" class="collectionjdl">
                     <a class="m-0 fw-bold" href="product?jenis=bookshelf">Bookshelf</a>
-                    <i class="material-icons">chevron_right</i>
+                    <i class="material-icons">arrow_forward_ios</i>
                 </label>
                 <div class="container-collection">
                     <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
@@ -46,7 +46,7 @@
                 <input type="radio" name="collection" id="collection2" class="item-collection">
                 <label for="collection2" class="collectionjdl">
                     <a class="m-0 fw-bold" href="/product?jenis=coffee-table">Coffee Table</a>
-                    <i class="material-icons">chevron_right</i>
+                    <i class="material-icons">arrow_forward_ios</i>
                 </label>
                 <div class="container-collection">
                     <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
@@ -72,7 +72,7 @@
                 <input type="radio" name="collection" id="collection3" class="item-collection">
                 <label for="collection3" class="collectionjdl">
                     <a class="m-0 fw-bold" href="/product?jenis=console-table">Console Table</a>
-                    <i class="material-icons">chevron_right</i>
+                    <i class="material-icons">arrow_forward_ios</i>
                 </label>
                 <div class="container-collection">
                     <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
@@ -100,7 +100,7 @@
                 <input type="radio" name="collection" id="collection4" class="item-collection">
                 <label for="collection4" class="collectionjdl">
                     <a class="m-0 fw-bold" href="/product?jenis=credenza">Credenza</a>
-                    <i class="material-icons">chevron_right</i>
+                    <i class="material-icons">arrow_forward_ios</i>
                 </label>
                 <div class="container-collection">
                     <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
@@ -111,7 +111,7 @@
                 <input type="radio" name="collection" id="collection5" class="item-collection">
                 <label for="collection5" class="collectionjdl">
                     <a class="m-0 fw-bold" href="/product?jenis=dresser-3-drawer">Dresser 3</a>
-                    <i class="material-icons">chevron_right</i>
+                    <i class="material-icons">arrow_forward_ios</i>
                 </label>
                 <div class="container-collection">
                     <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
@@ -128,7 +128,7 @@
                 <input type="radio" name="collection" id="collection6" class="item-collection">
                 <label for="collection6" class="collectionjdl">
                     <a class="m-0 fw-bold" href="/product?jenis=dresser-4-drawer">Dresser 4</a>
-                    <i class="material-icons">chevron_right</i>
+                    <i class="material-icons">arrow_forward_ios</i>
                 </label>
                 <div class="container-collection">
                     <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
@@ -139,7 +139,7 @@
                 <input type="radio" name="collection" id="collection7" class="item-collection">
                 <label for="collection7" class="collectionjdl">
                     <a class="m-0 fw-bold" href="/product?jenis=dresser-5-drawer">Dresser 5</a>
-                    <i class="material-icons">chevron_right</i>
+                    <i class="material-icons">arrow_forward_ios</i>
                 </label>
                 <div class="container-collection">
                     <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
@@ -155,7 +155,7 @@
                 <input type="radio" name="collection" id="collection8" class="item-collection">
                 <label for="collection8" class="collectionjdl">
                     <a class="m-0 fw-bold" href="/product?jenis=dresser-6-drawer">Dresser 6</a>
-                    <i class="material-icons">chevron_right</i>
+                    <i class="material-icons">arrow_forward_ios</i>
                 </label>
                 <div class="container-collection">
                     <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
@@ -177,7 +177,7 @@
                 <input type="radio" name="collection" id="collection9" class="item-collection">
                 <label for="collection9" class="collectionjdl">
                     <a class="m-0 fw-bold" href="/product?jenis=king-bed">King Bed</a>
-                    <i class="material-icons">chevron_right</i>
+                    <i class="material-icons">arrow_forward_ios</i>
                 </label>
                 <div class="container-collection">
                     <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
@@ -207,7 +207,7 @@
                 <input type="radio" name="collection" id="collection10" class="item-collection">
                 <label for="collection10" class="collectionjdl">
                     <a class="m-0 fw-bold" href="/product?jenis=queen-bed">Queen Bed</a>
-                    <i class="material-icons">chevron_right</i>
+                    <i class="material-icons">arrow_forward_ios</i>
                 </label>
                 <div class="container-collection">
                     <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
@@ -237,7 +237,7 @@
                 <input type="radio" name="collection" id="collection11" class="item-collection">
                 <label for="collection11" class="collectionjdl">
                     <a class="m-0 fw-bold" href="/product?jenis=single-bed">Single Bed</a>
-                    <i class="material-icons">chevron_right</i>
+                    <i class="material-icons">arrow_forward_ios</i>
                 </label>
                 <div class="container-collection">
                     <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
@@ -267,7 +267,7 @@
                 <input type="radio" name="collection" id="collection12" class="item-collection">
                 <label for="collection12" class="collectionjdl">
                     <a class="m-0 fw-bold" href="/product?jenis=side-table">Side Table</a>
-                    <i class="material-icons">chevron_right</i>
+                    <i class="material-icons">arrow_forward_ios</i>
                 </label>
                 <div class="container-collection">
                     <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
@@ -297,7 +297,7 @@
                 <input type="radio" name="collection" id="collection13" class="item-collection">
                 <label for="collection13" class="collectionjdl">
                     <a class="m-0 fw-bold" href="/product?jenis=meja-nakas">Meja Nakas</a>
-                    <i class="material-icons">chevron_right</i>
+                    <i class="material-icons">arrow_forward_ios</i>
                 </label>
                 <div class="container-collection">
                     <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
@@ -309,7 +309,7 @@
                 <input type="radio" name="collection" id="collection14" class="item-collection">
                 <label for="collection14" class="collectionjdl">
                     <a class="m-0 fw-bold" href="/product?jenis=bufet-tv">Bufet TV</a>
-                    <i class="material-icons">chevron_right</i>
+                    <i class="material-icons">arrow_forward_ios</i>
                 </label>
                 <div class="container-collection">
                     <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
@@ -337,7 +337,7 @@
                 <input type="radio" name="collection" id="collection15" class="item-collection">
                 <label for="collection15" class="collectionjdl">
                     <a class="m-0 fw-bold" href="/product?jenis=wardrobe">Wardrobe</a>
-                    <i class="material-icons">chevron_right</i>
+                    <i class="material-icons">arrow_forward_ios</i>
                 </label>
                 <div class="container-collection">
                     <a class="w-100 d-block" style="text-decoration: none; font-size:16px;"
@@ -363,12 +363,12 @@
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
         <a class="item-navhp <?= $title == 'Favorite' ? 'active' : ''; ?>" href="/wishlist" aria-label="Wishlist" title="Wishlist" <?= $title == 'Favorite' ? 'aria-current="page"' : ''; ?>>
-            <i class="material-icons" aria-hidden="true">bookmark_border</i><span>Favorit</span>
+            <i class="material-icons" aria-hidden="true">favorite_border</i><span>Favorit</span>
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
         <a class="item-navhp <?= $title == 'Keranjang' ? 'active' : ''; ?>" href="/cart" aria-label="Keranjang" title="Keranjang" <?= $title == 'Keranjang' ? 'aria-current="page"' : ''; ?>>
-            <i class="material-icons" aria-hidden="true">shopping_cart</i><span>Keranjang</span>
+            <i class="material-icons" aria-hidden="true">shopping_bag</i><span>Keranjang</span>
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">

@@ -24,8 +24,8 @@ $headerIsStaff = $headerLoggedIn && in_array($headerRole, ['1', '5'], true);
             <a class="ilena-compact-header__link" href="<?= esc(session()->get('admin_home') ?: '/admin'); ?>">Workspace</a>
             <form class="ilena-compact-header__logout" action="/logout" method="post"><?= csrf_field(); ?><button class="ilena-compact-header__link" type="submit">Keluar</button></form>
         <?php else: ?>
-            <a class="ilena-compact-header__icon-link" href="/wishlist" aria-label="Wishlist"><i class="material-icons" aria-hidden="true">bookmark_border</i><span class="ilena-sr-only">Wishlist</span></a>
-            <a class="ilena-compact-header__icon-link" href="/cart" aria-label="Keranjang"><i class="material-icons" aria-hidden="true">shopping_cart</i><span class="ilena-sr-only">Keranjang</span></a>
+            <a class="ilena-compact-header__icon-link" href="/wishlist" aria-label="Wishlist"><i class="material-icons" aria-hidden="true">favorite_border</i><span class="ilena-sr-only">Wishlist</span></a>
+            <a class="ilena-compact-header__icon-link" href="/cart" aria-label="Keranjang"><i class="material-icons" aria-hidden="true">shopping_bag</i><span class="ilena-sr-only">Keranjang</span></a>
             <a class="ilena-compact-header__icon-link" href="<?= $headerLoggedIn ? '/account' : '/login'; ?>" aria-label="<?= $headerLoggedIn ? 'Akun saya' : 'Masuk'; ?>"><i class="material-icons" aria-hidden="true">person_outline</i><span class="ilena-sr-only"><?= $headerLoggedIn ? 'Akun saya' : 'Masuk'; ?></span></a>
             <?php if (!$headerLoggedIn): ?><a class="ilena-compact-header__link" href="/register">Daftar</a><?php endif; ?>
         <?php endif; ?>
