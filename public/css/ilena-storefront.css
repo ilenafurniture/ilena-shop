@@ -4825,6 +4825,11 @@ body.ilena-storefront .product-detail-soft .ilena-product-related-heading h2 { m
         padding-left: clamp(20px, 3vw, 42px);
         border-left: 1px solid var(--ilena-line);
     }
+    body.ilena-storefront .child-list-nav-preview-empty {
+        display: grid; min-height: 180px; place-items: center; padding: 24px;
+        color: #83796e; background: #f8f6f2; text-align: center;
+        font-size: 12px; line-height: 1.6;
+    }
     body.ilena-storefront .child-list-nav > .container > div:nth-child(2) > .d-flex {
         align-items: center;
         gap: 18px !important;
