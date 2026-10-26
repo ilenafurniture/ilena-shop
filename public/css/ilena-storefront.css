@@ -4753,8 +4753,12 @@ body.ilena-storefront .product-detail-soft .ilena-product-related-heading h2 { m
     body.ilena-storefront .container-navbar-list-nav .list-nav:hover > a::after,
     body.ilena-storefront .container-navbar-list-nav .list-nav > a:focus-visible::after { transform: scaleX(1); }
     body.ilena-storefront .child-list-nav {
-        position: relative;
-        z-index: 98;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        left: 0;
+        z-index: 100;
+        width: 100%;
         max-height: 0;
         overflow: hidden;
         border-bottom: 0 solid transparent;

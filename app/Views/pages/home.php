@@ -341,6 +341,7 @@ function closeSecondAd() {
 .overlayMeja {
     max-width: 0px;
     overflow: hidden;
+    opacity: 0;
     position: absolute;
     /* background: rgba(0, 0, 0, 0.5); */
     background: var(--orentua);
@@ -348,13 +349,19 @@ function closeSecondAd() {
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all 0.6s ease;
-    transition-delay: 0.4s;
+    transition: max-width 0.45s ease, opacity 0.3s ease, padding 0.45s ease;
     text-wrap: nowrap;
     cursor: pointer;
     border-radius: 100px;
     padding: 0.5em 0em;
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+.overlayBed.show,
+.overlayMeja.show {
+    max-width: 260px;
+    opacity: 1;
+    padding: 0.5em 1.25em;
 }
 
 .overlayBed {
@@ -1022,18 +1029,29 @@ if (scrollHomeElm && inputScrollHomeElm.length) {
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    document.querySelectorAll('.kontenLN, .kontenLNMobile').forEach((section) => {
-        const revealLink = section.querySelector('.overlayMeja');
-        if (!revealLink) return;
-        const observer = new IntersectionObserver((entries, currentObserver) => {
-            entries.forEach((entry) => {
-                if (!entry.isIntersecting) return;
-                revealLink.classList.add('show');
-                currentObserver.unobserve(entry.target);
-            });
-        }, { threshold: 0.35 });
-        observer.observe(section);
-    });
+    const sections = Array.from(document.querySelectorAll('.kontenLN, .kontenLNMobile'))
+        .map((section) => ({ section, overlay: section.querySelector('.overlayMeja') }))
+        .filter((item) => item.overlay);
+    let lastY = window.scrollY;
+    let scheduled = false;
+
+    const updateOverlays = () => {
+        const currentY = window.scrollY;
+        const movingDown = currentY > lastY;
+        lastY = currentY;
+        sections.forEach(({ section, overlay }) => {
+            const rect = section.getBoundingClientRect();
+            const inView = rect.top < window.innerHeight * 0.78 && rect.bottom > window.innerHeight * 0.22;
+            overlay.classList.toggle('show', movingDown && inView);
+        });
+        scheduled = false;
+    };
+
+    window.addEventListener('scroll', () => {
+        if (scheduled) return;
+        scheduled = true;
+        window.requestAnimationFrame(updateOverlays);
+    }, { passive: true });
 });
 </script>
 
@@ -1583,11 +1601,6 @@ sliders.forEach((slider) => {
         event.stopPropagation();
         suppressClick = false;
     }, true);
-    track.addEventListener('wheel', (event) => {
-        if (Math.abs(event.deltaY) <= Math.abs(event.deltaX) || track.scrollWidth <= track.clientWidth) return;
-        track.scrollLeft += event.deltaY;
-        event.preventDefault();
-    }, { passive: false });
     dots.forEach((dot, index) => dot.addEventListener('click', () => goTo(index)));
     window.setInterval(() => goTo(activeIndex + 1), 7000);
 });
