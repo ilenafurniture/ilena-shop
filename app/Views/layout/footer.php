@@ -54,9 +54,15 @@ $paymentLogos = [
         <section class="ilena-store-footer__column ilena-store-footer__commerce">
             <h2>Belanja &amp; pembayaran</h2>
             <div class="ilena-store-footer__marketplaces">
-                <a href="https://tokopedia.link/GNcLHtigJLb" target="_blank" rel="noopener noreferrer">Tokopedia</a>
-                <a href="https://shopee.co.id/ilenafurnitureofficial" target="_blank" rel="noopener noreferrer">Shopee</a>
-                <a href="https://www.tiktok.com/@ilenafurnitureofficial" target="_blank" rel="noopener noreferrer">TikTok Shop</a>
+                <a href="https://tokopedia.link/GNcLHtigJLb" target="_blank" rel="noopener noreferrer" aria-label="Belanja Ilena di Tokopedia">
+                    <img src="<?= base_url('img/logo/tokopedia.png'); ?>" alt="Tokopedia" width="181" height="50" loading="lazy" decoding="async">
+                </a>
+                <a href="https://shopee.co.id/ilenafurnitureofficial" target="_blank" rel="noopener noreferrer" aria-label="Belanja Ilena di Shopee">
+                    <img src="<?= base_url('img/logo/shopee.png'); ?>" alt="Shopee" width="156" height="50" loading="lazy" decoding="async">
+                </a>
+                <a href="https://www.tiktok.com/@ilenafurnitureofficial" target="_blank" rel="noopener noreferrer" aria-label="Belanja Ilena di TikTok Shop">
+                    <img src="<?= base_url('img/logo/tiktokshop.svg'); ?>" alt="TikTok Shop" width="156" height="50" loading="lazy" decoding="async">
+                </a>
             </div>
             <div class="ilena-store-footer__payments" aria-label="Metode pembayaran">
                 <?php foreach ($paymentLogos as [$image, $label, $whiteMark]): ?>

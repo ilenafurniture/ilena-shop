@@ -1547,6 +1547,45 @@ sliders.forEach((slider) => {
     };
 
     track.addEventListener('scroll', syncDots, { passive: true });
+    let dragStartX = 0;
+    let dragStartScroll = 0;
+    let pointerDown = false;
+    let dragging = false;
+    let suppressClick = false;
+    track.addEventListener('pointerdown', (event) => {
+        if (event.pointerType !== 'mouse' || event.button !== 0) return;
+        pointerDown = true;
+        dragStartX = event.clientX;
+        dragStartScroll = track.scrollLeft;
+        dragging = false;
+    });
+    window.addEventListener('pointermove', (event) => {
+        if (!pointerDown || event.pointerType !== 'mouse' || !(event.buttons & 1)) return;
+        const distance = event.clientX - dragStartX;
+        if (!dragging && Math.abs(distance) < 6) return;
+        dragging = true;
+        track.scrollLeft = dragStartScroll - distance;
+        event.preventDefault();
+    });
+    const finishDrag = () => {
+        if (!dragging) return;
+        dragging = false;
+        suppressClick = true;
+        window.setTimeout(() => { suppressClick = false; }, 250);
+    };
+    window.addEventListener('pointerup', () => { pointerDown = false; finishDrag(); });
+    window.addEventListener('pointercancel', () => { pointerDown = false; finishDrag(); });
+    track.addEventListener('click', (event) => {
+        if (!suppressClick) return;
+        event.preventDefault();
+        event.stopPropagation();
+        suppressClick = false;
+    }, true);
+    track.addEventListener('wheel', (event) => {
+        if (Math.abs(event.deltaY) <= Math.abs(event.deltaX) || track.scrollWidth <= track.clientWidth) return;
+        track.scrollLeft += event.deltaY;
+        event.preventDefault();
+    }, { passive: false });
     dots.forEach((dot, index) => dot.addEventListener('click', () => goTo(index)));
     window.setInterval(() => goTo(activeIndex + 1), 7000);
 });
