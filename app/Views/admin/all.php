@@ -494,7 +494,16 @@ $barangThumbUrl = function ($product) {
 }
 
 /* Ilena admin catalog: warm, restrained editorial finish. */
-.page-wrap { max-width: 1540px; padding: 10px clamp(12px, 1.8vw, 26px) 36px; }
+.page-wrap {
+    max-width: 1540px;
+    padding: 10px clamp(12px, 1.8vw, 26px) 36px;
+    color: #302d25;
+    font-family: Inter, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 13.5px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
 .admin-product-hero {
     border-color: #eae5db;
     border-radius: 13px;
@@ -502,11 +511,11 @@ $barangThumbUrl = function ($product) {
     box-shadow: 0 8px 26px rgba(57, 48, 34, .045);
     padding: 19px 20px 15px;
 }
-.page-title { color: #29271f; font-size: 25px; font-weight: 650; letter-spacing: -.04em; }
+.page-title { color: #29271f; font-size: 24px; font-weight: 620; letter-spacing: -.035em; line-height: 1.2; }
 .overview-copy p, .meta-line { color: #77736c; }
 .overview-stat { min-width: 112px; border-color: #ece7de; border-radius: 9px; background: #fbfaf7; }
-.overview-stat strong { color: #302d25; font-size: 16px; font-weight: 650; }
-.overview-stat span { color: #817b70; font-size: 11px; }
+.overview-stat strong { color: #302d25; font-size: 16px; font-weight: 620; }
+.overview-stat span { color: #817b70; font-size: 11.5px; }
 .toolbar { margin: 12px 0; }
 .searchbox input, .filter-select .form-select {
     min-height: 41px;
@@ -514,21 +523,21 @@ $barangThumbUrl = function ($product) {
     border-radius: 8px;
     color: #302d25;
     background-color: #fff;
-    font-size: 13px;
+    font-size: 13.5px;
 }
 .searchbox input:focus, .filter-select .form-select:focus { border-color: #a28e6b; box-shadow: 0 0 0 3px rgba(162, 142, 107, .13); }
 .btn-default-merah, .bulk-edit-link { border-radius: 8px; background: #66583f; box-shadow: none; }
 .btn-default-merah:hover, .bulk-edit-link:hover { background: #51452f; }
 .container-table { border-color: #eae5db; border-radius: 12px; box-shadow: 0 8px 28px rgba(57, 48, 34, .045); }
-.header-table { background: #f8f6f1; border-bottom-color: #eae5db; color: #777165; font-size: 10px; letter-spacing: .12em; }
+.header-table { background: #f8f6f1; border-bottom-color: #eae5db; color: #777165; font-size: 10.5px; letter-spacing: .1em; }
 .isi-table { min-height: 91px; border-bottom-color: #f0ede7; transition: background .18s ease; }
 .isi-table:hover { background: #fbfaf7; }
-.price { color: #403a2f; font-size: 13px; font-weight: 650; }
+.price { color: #403a2f; font-size: 13.5px; font-weight: 620; }
 .stock-summary-total { color: #514a3d; font-weight: 650; }
 .stock-chip { border-color: #e9e5dc; background: #faf9f6; color: #625e54; }
 .stock-chip.is-empty { color: #963f37; background: #fcf4f2; border-color: #efdbd6; }
-.id-mono { color: #8b8579; font-size: 11px; }
-.badge-chip { border-color: #e9e2d5; background: #f8f5ef; color: #62563f; font-size: 11px; }
+.id-mono { color: #8b8579; font-size: 11.5px; }
+.badge-chip { border-color: #e9e2d5; background: #f8f5ef; color: #62563f; font-size: 11.5px; }
 .badge-chip i { color: #8b7959; }
 .btn-icon { width: 36px; height: 36px; border-color: #e6e1d7; border-radius: 9px; color: #5b5344; }
 .btn-icon:hover { background: #f6f2ea; border-color: #d4c8b4; }
@@ -552,7 +561,7 @@ $barangThumbUrl = function ($product) {
         <div class="product-overview">
             <div class="overview-copy">
                 <h1 class="page-title">Katalog Produk</h1>
-                <p>Kelola informasi, harga, stok varian, dan status tayang.</p>
+                <p>Atur produk, harga, stok, dan visibilitas.</p>
             </div>
             <div class="toolbar-right">
                 <a href="/admin/producttable" class="btn btn-outline-dark" aria-label="Export daftar produk">Export</a>
@@ -561,8 +570,8 @@ $barangThumbUrl = function ($product) {
         </div>
         <div class="overview-stats" aria-label="Ringkasan katalog">
             <div class="overview-stat"><strong><?= number_format((int)($jumlah_produk ?? 0), 0, ',', '.'); ?></strong><span>Total produk</span></div>
-            <div class="overview-stat"><strong data-stat-value="live"><?= number_format((int)($jumlah_tayang ?? 0), 0, ',', '.'); ?></strong><span>Sedang tayang</span></div>
-            <div class="overview-stat"><strong data-stat-value="hidden"><?= number_format((int)($jumlah_draft ?? 0), 0, ',', '.'); ?></strong><span>Disembunyikan</span></div>
+            <div class="overview-stat"><strong data-stat-value="live"><?= number_format((int)($jumlah_tayang ?? 0), 0, ',', '.'); ?></strong><span>Aktif</span></div>
+            <div class="overview-stat"><strong data-stat-value="hidden"><?= number_format((int)($jumlah_draft ?? 0), 0, ',', '.'); ?></strong><span>Nonaktif</span></div>
         </div>
         <div class="meta-line" style="margin-top:10px;">
             <?= number_format($totalProdukFiltered, 0, ',', '.'); ?> hasil<?= $koleksiterpilih ? " · " . esc(str_replace('-', ' ', $koleksiterpilih)) : '' ?><?= $queryProduk !== '' ? ' · “' . esc($queryProduk) . '”' : '' ?>

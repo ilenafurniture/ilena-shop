@@ -15,6 +15,11 @@
     max-width: 1200px;
     margin: 0 auto;
     color: var(--text);
+    font-family: Inter, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 13.5px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
 }
 
 .title {
@@ -273,7 +278,7 @@
 .edit-page-eyebrow {
     margin: 0 0 5px;
     color: #8c795a;
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 700;
     letter-spacing: .16em;
     text-transform: uppercase;
@@ -281,14 +286,14 @@
 .edit-page-head .title {
     margin: 0;
     color: #27251f;
-    font-size: clamp(23px, 2.4vw, 30px);
-    font-weight: 650;
-    letter-spacing: -.04em;
+    font-size: clamp(23px, 2.4vw, 29px);
+    font-weight: 620;
+    letter-spacing: -.035em;
 }
 .edit-page-head p {
     margin: 6px 0 0;
     color: #77736c;
-    font-size: 13px;
+    font-size: 13.5px;
 }
 .edit-back-link {
     display: inline-flex;
@@ -313,14 +318,14 @@
     border-radius: 12px;
     box-shadow: 0 7px 24px rgba(53, 45, 31, .045);
 }
-.page .section-title { color: #343127; font-size: 14px; font-weight: 650; letter-spacing: -.01em; }
-.page .label { color: #656157; font-size: 12px; font-weight: 600; }
+.page .section-title { color: #343127; font-size: 14px; font-weight: 620; letter-spacing: -.01em; }
+.page .label { color: #656157; font-size: 12.5px; font-weight: 560; }
 .page .inp, .page .sel, .page .ta {
     border-color: #e5e1d8;
     border-radius: 8px;
     background: #fff;
     color: #29271f;
-    font-size: 13px;
+    font-size: 13.5px;
     transition: border-color .16s ease, box-shadow .16s ease;
 }
 .page .inp:focus, .page .sel:focus, .page .ta:focus {
@@ -356,7 +361,7 @@
         <div>
             <div class="edit-page-eyebrow">Katalog · Pengelolaan</div>
             <h1 class="title">Edit Produk</h1>
-            <p>Perbarui informasi, varian, harga, stok, dan visual produk dalam satu halaman.</p>
+            <p>Atur detail produk, harga, varian, dan foto.</p>
         </div>
         <a class="edit-back-link" href="/admin/product"><i class="material-icons" aria-hidden="true">arrow_back</i><span>Kembali ke katalog</span></a>
     </header>
@@ -370,7 +375,7 @@
             <!-- LEFT -->
             <div class="stack">
                 <div class="card">
-                    <div class="section-title">Informasi Utama</div>
+                    <div class="section-title">Detail Produk</div>
                     <div class="field">
                         <label class="label">Nama Produk</label>
                         <input class="inp" type="text" name="nama" required value="<?= $produk['nama']; ?>">
@@ -436,7 +441,7 @@
                 </div>
 
                 <div class="card">
-                    <div class="section-title">Deskripsi & Spesifikasi</div>
+                    <div class="section-title">Deskripsi & Ukuran</div>
                     <div class="field">
                         <label class="label">Deskripsi</label>
                         <textarea class="ta" name="deskripsi_teks"
@@ -521,7 +526,7 @@
             <!-- RIGHT -->
             <div class="stack">
                 <div class="card">
-                    <div class="section-title">Gambar Hover</div>
+                    <div class="section-title">Foto Alternatif</div>
                     <div class="hint" style="margin-bottom:10px;">
                         Maksimal 4MB per foto. Format yang diterima: WebP atau AVIF. Sistem menyimpan hasil olahan sebagai WebP.
                     </div>
