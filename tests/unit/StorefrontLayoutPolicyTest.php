@@ -7,10 +7,10 @@ use CodeIgniter\Test\CIUnitTestCase;
 
 final class StorefrontLayoutPolicyTest extends CIUnitTestCase
 {
-    public function testCartUsesSameStorefrontShellAsProductAndHome(): void
+    public function testCartUsesStorefrontHeaderButFocusedCheckoutFooter(): void
     {
         $this->assertSame('full', StorefrontLayoutPolicy::headerMode('/cart'));
-        $this->assertSame('store', StorefrontLayoutPolicy::footerMode('/cart'));
+        $this->assertSame('checkout', StorefrontLayoutPolicy::footerMode('/cart'));
         $this->assertSame('full', StorefrontLayoutPolicy::headerMode('/product'));
         $this->assertSame('store', StorefrontLayoutPolicy::footerMode('/'));
     }
