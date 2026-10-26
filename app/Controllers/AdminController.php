@@ -54,7 +54,7 @@ class AdminController extends BaseController
     private const PRODUCT_IMAGE_MAX_BYTES = 4 * 1024 * 1024;
     private const PRODUCT_IMAGE_MAX_MB = 4;
     private const PRODUCT_IMAGE_MAX_FILES = 25;
-    private const PRODUCT_IMAGE_ALLOWED_MIMES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+    private const PRODUCT_IMAGE_ALLOWED_MIMES = ['image/webp'];
 
     // Use Traits for code organization
     use ProductTrait;
@@ -354,26 +354,35 @@ class AdminController extends BaseController
     {
         $product = $this->barangModel->getBarangAdmin();
         $koleksi = $this->koleksiModel->findAll();
+        $activeProductCount = 0;
         foreach ($product as $index_p => $p) {
             $decodedVarian = json_decode($p['varian'] ?? '[]', true);
             $product[$index_p]['varian'] = is_array($decodedVarian) ? $decodedVarian : [];
             $product[$index_p]['allstok'] = '';
+            $product[$index_p]['stok_total'] = 0;
+            $product[$index_p]['jumlah_varian'] = count($product[$index_p]['varian']);
             foreach ($product[$index_p]['varian'] as $ind_v => $v) {
                 if (!is_array($v)) continue;
                 $namaVarian = $v['nama'] ?? 'Varian';
-                $stokVarian = $v['stok'] ?? 0;
-                if ($ind_v == 0) $product[$index_p]['allstok'] .= $namaVarian . ' : ' . $stokVarian;
+                $stokVarian = max(0, (int)($v['stok'] ?? 0));
+                $product[$index_p]['stok_total'] += $stokVarian;
+                if ($product[$index_p]['allstok'] === '') $product[$index_p]['allstok'] .= $namaVarian . ' : ' . $stokVarian;
                 else $product[$index_p]['allstok'] .= "\n" . $namaVarian . ' : ' . $stokVarian;
             }
             if ($product[$index_p]['allstok'] === '') {
                 $product[$index_p]['allstok'] = '-';
             }
+            $product[$index_p]['status_tayang'] = (string)($p['active'] ?? '0') === '1';
+            if ($product[$index_p]['status_tayang']) $activeProductCount++;
         }
         $data = [
             'title' => 'Produk Kami',
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'produk' => $product,
-            'koleksi' => $koleksi
+            'koleksi' => $koleksi,
+            'jumlah_produk' => count($product),
+            'jumlah_tayang' => $activeProductCount,
+            'jumlah_draft' => count($product) - $activeProductCount,
         ];
         return view('admin/all', $data);
     }
@@ -580,7 +589,7 @@ class AdminController extends BaseController
 
             $mime = $file->getMimeType();
             if (!in_array($mime, self::PRODUCT_IMAGE_ALLOWED_MIMES, true)) {
-                return 'Format gambar ' . $field . ' tidak didukung. Gunakan JPG, PNG, WebP, atau AVIF.';
+                return 'Gambar harus sudah dinormalisasi ke WebP. Pilih WebP atau gunakan browser yang mendukung konversi AVIF.';
             }
         }
 

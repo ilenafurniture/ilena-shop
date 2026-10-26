@@ -66,7 +66,7 @@ $barangThumbUrl = function ($product) {
     $fileVersion = is_file($sourceAbsolute) ? (int) filemtime($sourceAbsolute) : time();
     $dbVersion = is_array($product) && !empty($product['tgl_update']) ? (int) strtotime((string) $product['tgl_update']) : 0;
     $version = max($fileVersion, $dbVersion);
-    return base_url('product-cover/' . $id) . '?slot=' . urlencode($slot) . '&v=' . $version;
+    return base_url('product-cover/' . rawurlencode($id)) . '?slot=' . urlencode($slot) . '&size=300&v=' . $version;
 };
 ?>
 
@@ -98,6 +98,19 @@ $barangThumbUrl = function ($product) {
     box-shadow: 0 6px 24px rgba(15, 23, 42, .045);
     margin-bottom: 16px;
 }
+
+.product-overview {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 18px;
+}
+
+.overview-copy p { margin: 0; color: var(--slate-500); font-size: 13px; }
+.overview-stats { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.overview-stat { min-width: 105px; padding: 9px 12px; border: 1px solid var(--slate-200); border-radius: 12px; background: #fff; }
+.overview-stat strong { display: block; color: #172033; font-size: 17px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.overview-stat span { color: var(--slate-500); font-size: 11px; }
 
 .page-head {
     display: flex;
@@ -314,6 +327,16 @@ $barangThumbUrl = function ($product) {
     color: var(--slate-700);
 }
 
+.stock-summary { min-width: 0; }
+.stock-summary-total { display: block; margin-bottom: 5px; color: #172033; font-size: 12px; font-weight: 800; }
+.stock-chip-list { display: flex; flex-wrap: wrap; gap: 4px; }
+.stock-chip { display: inline-flex; align-items: center; gap: 5px; max-width: 100%; padding: 3px 7px; border: 1px solid #e8edf3; border-radius: 999px; background: #f8fafc; color: #475569; font-size: 11px; line-height: 1.25; }
+.stock-chip strong { color: #172033; font-variant-numeric: tabular-nums; }
+.stock-chip.is-empty { color: #9f1239; background: #fff7f8; border-color: #ffe1e5; }
+.status-control { display:flex; align-items:center; gap:8px; }
+.status-label { min-width: 48px; color: #64748b; font-size: 11px; font-weight: 700; }
+.status-label.is-live { color:#166534; }
+
 .id-mono {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Roboto Mono", monospace;
     color: var(--slate-600);
@@ -393,6 +416,10 @@ $barangThumbUrl = function ($product) {
         flex-direction: column;
     }
 
+    .product-overview { grid-template-columns: 1fr; align-items: start; }
+    .overview-stats { justify-content: flex-start; }
+    .overview-stat { min-width: 0; flex: 1; }
+
     .toolbar-right {
         width: 100%;
         overflow-x: auto;
@@ -471,17 +498,24 @@ $barangThumbUrl = function ($product) {
 
     <!-- Header -->
     <div class="admin-product-hero">
-        <div class="page-head">
-            <div>
+        <div class="product-overview">
+            <div class="overview-copy">
                 <h1 class="page-title">Produk Saya</h1>
-                <div class="meta-line"><?= number_format($totalProdukFiltered, 0, ',', '.'); ?> produk<?= $koleksiterpilih ? " · " . esc(str_replace('-', ' ', $koleksiterpilih)) : '' ?><?= $queryProduk !== '' ? ' · “' . esc($queryProduk) . '”' : '' ?></div>
+                <p>Kelola katalog, harga, stok varian, dan status tayang di satu tempat.</p>
             </div>
             <div class="toolbar-right">
-                <a href="/admin/producttable" class="btn btn-outline-dark">Export</a>
+                <a href="/admin/producttable" class="btn btn-outline-dark" aria-label="Export daftar produk">Export</a>
                 <a href="/admin/addproduct" class="btn-default-merah">Tambah Produk</a>
             </div>
         </div>
-
+        <div class="overview-stats" aria-label="Ringkasan katalog">
+            <div class="overview-stat"><strong><?= number_format((int)($jumlah_produk ?? 0), 0, ',', '.'); ?></strong><span>Total produk</span></div>
+            <div class="overview-stat"><strong data-stat-value="live"><?= number_format((int)($jumlah_tayang ?? 0), 0, ',', '.'); ?></strong><span>Sedang tayang</span></div>
+            <div class="overview-stat"><strong data-stat-value="hidden"><?= number_format((int)($jumlah_draft ?? 0), 0, ',', '.'); ?></strong><span>Disembunyikan</span></div>
+        </div>
+        <div class="meta-line" style="margin-top:10px;">
+            <?= number_format($totalProdukFiltered, 0, ',', '.'); ?> hasil<?= $koleksiterpilih ? " · " . esc(str_replace('-', ' ', $koleksiterpilih)) : '' ?><?= $queryProduk !== '' ? ' · “' . esc($queryProduk) . '”' : '' ?>
+        </div>
     </div>
 
     <!-- Filter dan pencarian untuk seluruh katalog -->
@@ -551,37 +585,49 @@ $barangThumbUrl = function ($product) {
                 <input class="product-select" type="checkbox" value="<?= esc($p['id']); ?>"
                     aria-label="Pilih produk <?= esc($p['nama']); ?>" onclick="event.stopPropagation();">
             </div>
-            <div style="flex: .8; cursor:pointer" onclick="pergiKeProduct('<?= str_replace(' ', '-', $p['nama']); ?>')">
+            <div style="flex: .8; cursor:pointer" onclick="pergiKeProduct('<?= esc(str_replace(' ', '-', $p['nama']), 'js'); ?>')">
                 <img style="width: 70px; height: 70px; object-fit:cover; border-radius:12px; border:1px solid var(--slate-200)"
                     id="img<?= $ind_p ?>" src="<?= $barangThumbUrl($p); ?>"
                     alt="<?= htmlspecialchars($p['nama'], ENT_QUOTES); ?>" loading="lazy" decoding="async">
             </div>
 
             <div style="flex: 2; cursor:pointer" class="d-flex flex-column align-items-start justify-content-center"
-                onclick="pergiKeProduct('<?= str_replace(' ', '-', $p['nama']); ?>')">
+                onclick="pergiKeProduct('<?= esc(str_replace(' ', '-', $p['nama']), 'js'); ?>')">
                 <div class="badge-chip" style="margin-bottom:4px;">
-                    <i class="material-icons">label</i><?= ucfirst($p['kategori']); ?>
+                    <i class="material-icons">label</i><?= esc(ucfirst((string)($p['kategori'] ?? ''))); ?>
                 </div>
                 <p class="fw-bold m-0" style="font-size: 15px; letter-spacing:-.2px; color:#111827">
-                    <?= strtoupper($p['nama']); ?></p>
-                <p class="m-0 id-mono">#<?= $p['id']; ?></p>
+                    <?= esc(strtoupper((string)($p['nama'] ?? ''))); ?></p>
+                <p class="m-0 id-mono">#<?= esc($p['id'] ?? ''); ?></p>
             </div>
 
             <div style="flex: 1;" class="price">Rp <?= number_format((int)$p['harga'], 0, ',', '.'); ?></div>
 
-            <div style="flex: 1.5;" class="stok"><?= nl2br(esc((string) ($p['allstok'] ?? '-'))); ?></div>
+            <div style="flex: 1.5;" class="stok">
+                <div class="stock-summary">
+                    <span class="stock-summary-total"><?= (int)($p['stok_total'] ?? 0); ?> unit · <?= (int)($p['jumlah_varian'] ?? 0); ?> varian</span>
+                    <div class="stock-chip-list">
+                        <?php foreach (($p['varian'] ?? []) as $variant): if (!is_array($variant)) continue; $variantStock = max(0, (int)($variant['stok'] ?? 0)); ?>
+                        <span class="stock-chip <?= $variantStock === 0 ? 'is-empty' : ''; ?>"><?= esc($variant['nama'] ?? 'Varian'); ?> <strong><?= $variantStock; ?></strong></span>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
 
             <div style="flex: 1;">
-                <div class="checkbox-apple">
+                <div class="status-control">
+                  <div class="checkbox-apple">
                     <input onchange="ubahStatus('<?= $p['id']; ?>', this)" class="yep" id="check-apple<?= $ind_p ?>"
-                        data-product-id="<?= esc($p['id'], 'attr'); ?>" type="checkbox" <?= $p['active'] ? 'checked' : ''; ?>>
+                        data-product-id="<?= esc($p['id'], 'attr'); ?>" type="checkbox" aria-label="Ubah status tayang <?= esc($p['nama'], 'attr'); ?>" <?= $p['status_tayang'] ? 'checked' : ''; ?>>
                     <label for="check-apple<?= $ind_p ?>"></label>
+                  </div>
+                  <span data-status-label="<?= esc($p['id'], 'attr'); ?>" class="status-label <?= $p['status_tayang'] ? 'is-live' : ''; ?>"><?= $p['status_tayang'] ? 'Tayang' : 'Off'; ?></span>
                 </div>
             </div>
 
             <div style="flex: 1;" class="col-center">
                 <div class="actions">
-                    <a class="btn-icon" href="/admin/editproduct/<?= $p['id']; ?>" title="Edit"><i
+                    <a class="btn-icon" href="/admin/editproduct/<?= esc($p['id'], 'attr'); ?>" title="Edit produk" aria-label="Edit <?= esc($p['nama'], 'attr'); ?>"><i
                             class="material-icons">edit</i></a>
                     <form action="/admin/deleteproduct/<?= $p['id']; ?>" method="post" style="display:inline-flex"
                         onsubmit="return confirm('Hapus produk <?= esc($p['nama'], 'js'); ?>? Data gambar produk juga akan ikut dihapus.')">
@@ -618,7 +664,7 @@ $barangThumbUrl = function ($product) {
                         aria-label="Pilih produk <?= esc($p['nama']); ?>" onclick="event.stopPropagation();">
                 </div>
                 <div style="flex: 1; cursor:pointer"
-                    onclick="pergiKeProduct('<?= str_replace(' ', '-', $p['nama']); ?>')">
+                    onclick="pergiKeProduct('<?= esc(str_replace(' ', '-', $p['nama']), 'js'); ?>')">
                     <img style="width: 50px; height: 50px; object-fit:cover; border-radius:10px; border:1px solid var(--slate-200)"
                         id="img<?= $ind_p ?>" src="<?= $barangThumbUrl($p); ?>"
                         alt="<?= htmlspecialchars($p['nama'], ENT_QUOTES); ?>" loading="lazy" decoding="async">
@@ -626,30 +672,40 @@ $barangThumbUrl = function ($product) {
 
                 <div style="flex: 1.4; cursor:pointer"
                     class="d-flex flex-column align-items-start justify-content-center"
-                    onclick="pergiKeProduct('<?= str_replace(' ', '-', $p['nama']); ?>')">
+                    onclick="pergiKeProduct('<?= esc(str_replace(' ', '-', $p['nama']), 'js'); ?>')">
                     <span class="badge-chip" style="margin-bottom:4px;">
-                        <i class="material-icons">label</i><?= ucfirst($p['kategori']); ?>
+                        <i class="material-icons">label</i><?= esc(ucfirst((string)($p['kategori'] ?? ''))); ?>
                     </span>
-                    <p class="fw-bold m-0 mini-text-sm" style="letter-spacing:-.2px;"><?= ucwords($p['nama']); ?></p>
-                    <p class="m-0 id-mono">#<?= $p['id']; ?></p>
+                    <p class="fw-bold m-0 mini-text-sm" style="letter-spacing:-.2px;"><?= esc(ucwords((string)($p['nama'] ?? ''))); ?></p>
+                    <p class="m-0 id-mono">#<?= esc($p['id'] ?? ''); ?></p>
                 </div>
 
                 <div style="flex: 1;" class="mini-text-sm mini-price">Rp
                     <?= number_format((int)$p['harga'], 0, ',', '.'); ?></div>
 
-                <div style="flex: 1;" class="mini-text-sm"><?= nl2br(esc((string) ($p['allstok'] ?? '-'))); ?></div>
+                <div style="flex: 1;" class="mini-text-sm">
+                    <span class="stock-summary-total"><?= (int)($p['stok_total'] ?? 0); ?> unit</span>
+                    <div class="stock-chip-list">
+                        <?php foreach (($p['varian'] ?? []) as $variant): if (!is_array($variant)) continue; $variantStock = max(0, (int)($variant['stok'] ?? 0)); ?>
+                        <span class="stock-chip <?= $variantStock === 0 ? 'is-empty' : ''; ?>"><?= esc($variant['nama'] ?? 'Varian'); ?> <strong><?= $variantStock; ?></strong></span>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
 
                 <div style="flex: .8;">
-                    <div class="checkbox-apple">
+                    <div class="status-control">
+                      <div class="checkbox-apple">
                         <input onchange="ubahStatus('<?= $p['id']; ?>', this)" class="yep" id="check-apple-m<?= $ind_p ?>"
-                            data-product-id="<?= esc($p['id'], 'attr'); ?>" type="checkbox" <?= $p['active'] ? 'checked' : ''; ?>>
+                            data-product-id="<?= esc($p['id'], 'attr'); ?>" type="checkbox" aria-label="Ubah status tayang <?= esc($p['nama'], 'attr'); ?>" <?= $p['status_tayang'] ? 'checked' : ''; ?>>
                         <label for="check-apple-m<?= $ind_p ?>"></label>
+                      </div>
+                      <span data-status-label="<?= esc($p['id'], 'attr'); ?>" class="status-label <?= $p['status_tayang'] ? 'is-live' : ''; ?>"><?= $p['status_tayang'] ? 'Tayang' : 'Off'; ?></span>
                     </div>
                 </div>
 
                 <div style="flex: .8;" class="col-center">
                     <div class="actions" style="justify-content:center;">
-                        <a class="btn-icon" href="/admin/editproduct/<?= $p['id']; ?>" title="Edit"><i
+                        <a class="btn-icon" href="/admin/editproduct/<?= esc($p['id'], 'attr'); ?>" title="Edit produk" aria-label="Edit <?= esc($p['nama'], 'attr'); ?>"><i
                                 class="material-icons">edit</i></a>
                         <form action="/admin/deleteproduct/<?= $p['id']; ?>" method="post" style="display:inline-flex"
                             onsubmit="return confirm('Hapus produk <?= esc($p['nama'], 'js'); ?>? Data gambar produk juga akan ikut dihapus.')">
@@ -709,6 +765,23 @@ async function ubahStatus(id_produk, checkbox) {
         if (!response.ok) throw new Error('Gagal update status');
         const result = await response.json();
         if (String(result.active) !== desiredStatus) throw new Error('Status yang tersimpan tidak sesuai');
+        const wasLive = checkedBefore[0] === true;
+        const isLiveNow = desiredStatus === '1';
+        if (wasLive !== isLiveNow) {
+            ['live', 'hidden'].forEach(key => {
+                const stat = document.querySelector('[data-stat-value="' + key + '"]');
+                if (!stat) return;
+                const current = Number((stat.textContent || '0').replace(/\D/g, '')) || 0;
+                const next = current + (key === 'live' ? (isLiveNow ? 1 : -1) : (isLiveNow ? -1 : 1));
+                stat.textContent = new Intl.NumberFormat('id-ID').format(Math.max(0, next));
+            });
+        }
+        document.querySelectorAll('[data-status-label]').forEach(label => {
+            if (label.dataset.statusLabel !== String(id_produk)) return;
+            const isLive = desiredStatus === '1';
+            label.textContent = isLive ? 'Tayang' : 'Off';
+            label.classList.toggle('is-live', isLive);
+        });
     } catch (error) {
         toggles.forEach((input, index) => { input.checked = checkedBefore[index]; });
         alert('Status produk gagal diubah. Coba ulangi beberapa saat lagi.');

@@ -65,13 +65,19 @@ foreach ($produkSemua ?? [] as $sizeIndex => $sizeProduct) {
     }
 }
 $sizeOptions = array_values($sizeOptionMap);
+$productImageStorage = strtolower((string) env('PRODUCT_IMAGE_STORAGE', 'local'));
+$productImageCdn = $productImageStorage === 'r2' ? rtrim((string) env('R2_PUBLIC_URL', ''), '/') : '';
 $assetVersion = function (string $relativePath) use ($produk): string {
     $path = FCPATH . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
     $fileVersion = is_file($path) ? (int) filemtime($path) : 0;
     $dbVersion = !empty($produk['tgl_update']) ? (int) strtotime((string) $produk['tgl_update']) : time();
     return (string) max($fileVersion, $dbVersion);
 };
-$barangImgUrl = function (string $size, string $slot) use ($produk, $assetVersion): string {
+$barangImgUrl = function (string $size, string $slot) use ($produk, $assetVersion, $productImageCdn): string {
+    $cdnSize = in_array($size, ['300', '1000', '3000'], true) ? $size : '1000';
+    if ($productImageCdn !== '') {
+        return $productImageCdn . '/products/' . $cdnSize . '/' . rawurlencode((string) $produk['id']) . '-' . rawurlencode($slot) . '.webp?v=' . $assetVersion('uploads/product-images/' . $cdnSize . '/' . $produk['id'] . '-' . $slot . '.webp');
+    }
     $relative = 'img/barang/' . $size . '/' . $produk['id'] . '-' . $slot . '.webp';
     if (is_file(FCPATH . $relative)) {
         return base_url($relative) . '?v=' . $assetVersion($relative);
@@ -79,7 +85,10 @@ $barangImgUrl = function (string $size, string $slot) use ($produk, $assetVersio
     $route = $size === '3000' ? 'viewvar3000' : 'viewvar';
     return base_url($route . '/' . $produk['id'] . '/' . $slot) . '?v=' . $assetVersion($relative);
 };
-$hoverImgUrl = function () use ($produk, $assetVersion): string {
+$hoverImgUrl = function () use ($produk, $assetVersion, $productImageCdn): string {
+    if ($productImageCdn !== '') {
+        return $productImageCdn . '/products/hover/' . rawurlencode((string) $produk['id']) . '.webp?v=' . $assetVersion('uploads/product-images/hover/' . $produk['id'] . '.webp');
+    }
     $relative = 'img/barang/hover/' . $produk['id'] . '.webp';
     if (is_file(FCPATH . $relative)) {
         return base_url($relative) . '?v=' . $assetVersion($relative);
@@ -87,7 +96,7 @@ $hoverImgUrl = function () use ($produk, $assetVersion): string {
     return base_url('viewpichover/' . $produk['id']) . '?v=' . $assetVersion($relative);
 };
 $detailVersion = !empty($produk['tgl_update']) ? (int) strtotime((string) $produk['tgl_update']) : time();
-$productCoverUrl = function (array $product): string {
+$productCoverUrl = function (array $product) use ($productImageCdn): string {
     $id = $product['id'] ?? '';
     $varian = json_decode($product['varian'] ?? '[]', true) ?: [];
     $slot = '1';
@@ -122,6 +131,9 @@ $productCoverUrl = function (array $product): string {
         if (is_file(FCPATH . $fullSizeCandidate)) $fullSizeMtime = max($fullSizeMtime, (int) filemtime(FCPATH . $fullSizeCandidate));
     }
     $fileVersion = max($fileVersion, $fullSizeMtime);
+    if ($productImageCdn !== '') {
+        return $productImageCdn . '/products/300/' . rawurlencode((string) $id) . '.webp?v=' . max($fileVersion, $dbVersion);
+    }
     if (strtolower((string) env('PRODUCT_IMAGE_STORAGE', 'local')) !== 'r2' && $isLocalThumbnail && (!$fullSizeMtime || (int) filemtime($sourceAbsolute) >= $fullSizeMtime)) {
         return base_url($sourceRelative) . '?v=' . max($fileVersion, $dbVersion);
     }
@@ -446,8 +458,10 @@ $productCoverUrl = function (array $product): string {
                     </figure>
                     <img class="img-detail-prev"
                         <?= $defaultVariant['stok'] <= 0 ? 'style="filter: grayscale(90%)"' : ''; ?>
-                        src="<?= $barangImgUrl('1000', $gambarAwalDetail) ?>" onmousemove="zoom(event)"
-                        onmouseleave="mouseoff(event)" alt="<?= esc($produk['nama'], 'attr') ?>" decoding="async" fetchpriority="high">
+                        src="<?= esc($barangImgUrl('1000', $gambarAwalDetail), 'attr') ?>"
+                        data-image-fallback="<?= esc(base_url('product-cover/' . rawurlencode((string) $produk['id'])) . '?slot=' . rawurlencode($gambarAwalDetail) . '&v=' . $detailVersion, 'attr') ?>"
+                        onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"
+                        onmousemove="zoom(event)" onmouseleave="mouseoff(event)" alt="<?= esc($produk['nama'], 'attr') ?>" width="1000" height="1000" decoding="async" fetchpriority="high">
                 </div>
                 <div class="mb-3 mt-3" style="overflow: auto">
                     <div class="container-img-detail-select"
@@ -456,12 +470,18 @@ $productCoverUrl = function (array $product): string {
                         <input <?= $indx == 0 ? 'checked' : '' ?> id="gambar<?= $indx ?>" type="radio" name="gambar"
                             aria-label="Foto produk <?= $indx + 1 ?>" value="<?= $p_v ?>">
                         <label class="img-detail-select" for="gambar<?= $indx ?>" title="Foto produk <?= $indx + 1 ?>"><img
-                                src="<?= $barangImgUrl('1000', $p_v) ?>" alt="<?= esc($produk['nama'], 'attr') ?>" loading="lazy" decoding="async"></label>
+                                src="<?= esc($barangImgUrl('1000', $p_v), 'attr') ?>"
+                                data-image-fallback="<?= esc(base_url('product-cover/' . rawurlencode((string) $produk['id'])) . '?slot=' . rawurlencode((string) $p_v) . '&v=' . $detailVersion, 'attr') ?>"
+                                onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"
+                                alt="<?= esc($produk['nama'], 'attr') ?>" width="1000" height="1000" loading="lazy" decoding="async"></label>
                         <?php } ?>
                         <?php if ($punyaGambarHoverDetail) { ?>
                         <input id="gambar-hover" type="radio" name="gambar" aria-label="Lihat detail permukaan" value="hover">
                         <label class="img-detail-select" for="gambar-hover" title="Lihat detail permukaan"><img
-                                src="<?= $hoverImgUrl() ?>" alt="<?= esc($produk['nama'], 'attr') ?>" loading="lazy" decoding="async"></label>
+                                src="<?= esc($hoverImgUrl(), 'attr') ?>"
+                                data-image-fallback="<?= esc(base_url('viewpichover/' . rawurlencode((string) $produk['id'])) . '?v=' . $detailVersion, 'attr') ?>"
+                                onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"
+                                alt="<?= esc($produk['nama'], 'attr') ?>" width="300" height="300" loading="lazy" decoding="async"></label>
                         <?php } ?>
                     </div>
                 </div>
@@ -525,6 +545,8 @@ $productCoverUrl = function (array $product): string {
                 $cardVarianAwal = $relatedVariantData[0]['nama'] ?? 'default';
                 $cardVarianAwalStok = (int) ($relatedVariantData[0]['stok'] ?? 0);
                 $relatedProductUrl = '/product/' . rawurlencode(str_replace(' ', '-', (string) $p['nama']));
+                $relatedImageFallback = base_url('product-cover/' . rawurlencode((string) $p['id'])) . '?size=300&v=' . $relatedVersion;
+                $relatedCdnImage = $productImageCdn !== '' ? $productImageCdn . '/products/300/' . rawurlencode((string) $p['id']) . '.webp?v=' . $relatedVersion : '';
             ?>
             <div class="card1" data-product-card>
                 <div style="position: relative;">
@@ -553,10 +575,13 @@ $productCoverUrl = function (array $product): string {
                     </div>
                     <a href="<?= esc($relatedProductUrl, 'attr') ?>" class="gambar">
                         <img class="img-pic" id="img<?= $ind_p ?>"
-                            src="<?= $productCoverUrl($p) ?>" alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async">
+                            src="<?= esc($relatedCdnImage !== '' ? $relatedCdnImage : $productCoverUrl($p), 'attr') ?>"
+                            <?= $relatedCdnImage !== '' ? 'data-image-fallback="' . esc($relatedImageFallback, 'attr') . '" onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"' : '' ?>
+                            width="300" height="300" alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async">
                         <?php if (is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') || !empty($p['gambar_hover'])) { ?>
                         <img class="img-pic-hover lazy-hover-product"
-                            data-src="<?= is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') ? base_url('img/barang/hover/' . $p['id'] . '.webp') : base_url('viewpichover/' . $p['id']) ?>?v=<?= $relatedVersion ?>" alt="" aria-hidden="true" loading="lazy" decoding="async">
+                            data-src="<?= esc($productImageCdn !== '' ? $productImageCdn . '/products/hover/' . rawurlencode((string) $p['id']) . '.webp?v=' . $relatedVersion : (is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') ? base_url('img/barang/hover/' . $p['id'] . '.webp') : base_url('viewpichover/' . $p['id']) . '?v=' . $relatedVersion), 'attr') ?>"
+                            data-image-fallback="<?= esc(base_url('viewpichover/' . rawurlencode((string) $p['id'])) . '?v=' . $relatedVersion, 'attr') ?>" onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}" alt="" aria-hidden="true" loading="lazy" decoding="async">
                         <?php } ?>
                     </a>
                 </div>
@@ -623,6 +648,7 @@ const detailVersion = "<?= $detailVersion ?>";
 const detailSlotsByVariant = <?= json_encode($detailSlotsByVariant, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 const detailBase1000 = "/viewvar/" + encodeURIComponent(<?= json_encode((string) $produk['id'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>) + "/";
 const detailBase3000 = "/viewvar3000/" + encodeURIComponent(<?= json_encode((string) $produk['id'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>) + "/";
+const detailR2CdnBase = <?= json_encode($productImageCdn, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 const detailHoverUrl = <?= json_encode($hoverImgUrl(), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 const detailProductId = <?= json_encode((string) $produk['id'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 const detailStatic1000 = <?= json_encode(base_url('img/barang/1000/'), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
@@ -634,10 +660,12 @@ function encodedCartUrl(productId, varianName, qty) {
 }
 function detailImageUrl(slot) {
     if (detailLocalSlots1000.includes(String(slot))) return detailStatic1000 + detailProductId + "-" + encodeURIComponent(slot) + ".webp?v=" + detailVersion;
+    if (detailR2CdnBase) return detailR2CdnBase + "/products/1000/" + encodeURIComponent(detailProductId) + "-" + encodeURIComponent(slot) + ".webp?v=" + detailVersion;
     return detailBase1000 + slot + "?v=" + detailVersion;
 }
 function detailZoomUrl(slot) {
     if (detailLocalSlots3000.includes(String(slot))) return detailStatic3000 + detailProductId + "-" + encodeURIComponent(slot) + ".webp?v=" + detailVersion;
+    if (detailR2CdnBase) return detailR2CdnBase + "/products/3000/" + encodeURIComponent(detailProductId) + "-" + encodeURIComponent(slot) + ".webp?v=" + detailVersion;
     return detailBase3000 + slot + "?v=" + detailVersion;
 }
 const galleryThumbs = document.querySelector('.container-img-detail-select');
@@ -653,7 +681,7 @@ function showSelectedProductPhoto(selectedPhoto) {
     if (mainPhoto.dataset.gallerySelection === photoKey) return;
     mainPhoto.dataset.gallerySelection = photoKey;
     const requestedPhotoUrl = isHoverPhoto ? detailHoverUrl : detailImageUrl(slot);
-    const routeFallbackUrl = isHoverPhoto ? '' : detailBase1000 + encodeURIComponent(detailProductId) + '/' + encodeURIComponent(slot) + '?v=' + detailVersion;
+    const routeFallbackUrl = isHoverPhoto ? '' : detailBase1000 + encodeURIComponent(slot) + '?v=' + detailVersion;
     zoomLayer.classList.add('d-none');
     zoomLayer.setAttribute('aria-hidden', 'true');
     zoomLayer.style.backgroundImage = '';

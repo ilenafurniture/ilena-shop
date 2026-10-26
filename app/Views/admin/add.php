@@ -334,6 +334,18 @@
     font-size: 12px;
 }
 
+.image-workflow-note { margin: 0 0 14px; padding: 10px 12px; border: 1px solid #eee4d7; border-radius: 10px; background: #fbf8f3; color: #655647; font-size: 12px; line-height: 1.55; }
+.image-workflow-note strong { color:#34291f; }
+.image-workflow-note ol { margin:5px 0 0; padding-left:18px; }
+.image-tile { transition: transform .16s ease, opacity .16s ease, box-shadow .16s ease; }
+.image-tile.is-drop-target { transform: translateY(-3px); box-shadow: 0 0 0 2px rgba(164,126,84,.45); border-radius: 12px; }
+.image-tile.is-dragging { opacity:.42; }
+.drag-handle { min-height:32px; display:flex; align-items:center; justify-content:center; gap:5px; color:#76624c; font-size:11px; font-weight:700; cursor:grab; touch-action:manipulation; user-select:none; }
+.drag-handle:active { cursor:grabbing; }
+.drag-handle .material-icons { font-size:16px; }
+.cover-chip { position:absolute; z-index:2; left:6px; bottom:6px; padding:3px 7px; border-radius:999px; background:rgba(31,41,55,.88); color:#fff; font-size:10px; font-weight:800; }
+.image-order-status { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
 .variant-tools {
     display: flex;
     align-items: center;
@@ -572,15 +584,16 @@ function fileTypeInvalid(file) {
   return file && !ALLOWED_IMAGE_TYPES.includes(file.type);
 }
 
-function resizeImageBeforeUpload(file, maxSize = 2200, quality = 0.82) {
+function resizeImageBeforeUpload(file, maxSize = 3000, quality = 0.82) {
   return new Promise((resolve) => {
     if (!file || !file.type || !file.type.startsWith('image/')) return resolve(file);
+    const isAvif = file.type === 'image/avif';
     const img = new Image();
     const url = URL.createObjectURL(file);
     img.onload = () => {
       try {
         const ratio = Math.min(1, maxSize / Math.max(img.width, img.height));
-        if (ratio >= 1 && file.size <= 2 * 1024 * 1024) {
+        if (!isAvif && ratio >= 1 && file.size <= 2 * 1024 * 1024) {
           URL.revokeObjectURL(url);
           resolve(file);
           return;
@@ -589,19 +602,24 @@ function resizeImageBeforeUpload(file, maxSize = 2200, quality = 0.82) {
         canvas.width = Math.max(1, Math.round(img.width * ratio));
         canvas.height = Math.max(1, Math.round(img.height * ratio));
         const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          URL.revokeObjectURL(url);
+          resolve(isAvif ? null : file);
+          return;
+        }
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         canvas.toBlob((blob) => {
           URL.revokeObjectURL(url);
-          if (!blob) return resolve(file);
+          if (!blob || blob.type !== 'image/webp') return resolve(isAvif ? null : file);
           const safeName = (file.name || 'product-image').replace(/\.[^.]+$/, '') + '.webp';
           resolve(new File([blob], safeName, { type: 'image/webp', lastModified: Date.now() }));
         }, 'image/webp', quality);
       } catch (e) {
         URL.revokeObjectURL(url);
-        resolve(file);
+        resolve(isAvif ? null : file);
       }
     };
-    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(isAvif ? null : file); };
     img.src = url;
   });
 }
@@ -641,6 +659,8 @@ const App = () => {
   // gambarSrc berisi object: { src, file, slot }. slot = nomor file fisik (1,2,3...) agar foto lama bisa dipindah/ditukar tanpa upload ulang.
   const [gambarSrc, setGambarSrc] = useState([]);
   const [gambarFile, setGambarFile] = useState([]); // dipertahankan untuk kompatibilitas state lama
+  const [draggedImage, setDraggedImage] = useState(null);
+  const [imageOrderMessage, setImageOrderMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const idStr = useRef("1-00-000-XX");
 
@@ -874,23 +894,39 @@ const App = () => {
   };
 
   const moveImage = (variantIndex, imageIndex, direction) => {
+    moveImageToPosition(variantIndex, imageIndex, imageIndex + direction);
+  };
+
+  const moveImageToPosition = (variantIndex, fromIndex, toIndex) => {
+    const current = gambarSrc?.[variantIndex] || [];
+    if (fromIndex < 0 || toIndex < 0 || fromIndex >= current.length || toIndex >= current.length || fromIndex === toIndex) return;
     updateVariantImages(variantIndex, list => {
-      const target = imageIndex + direction;
-      if (target < 0 || target >= list.length) return list;
       const copy = [...list];
-      [copy[imageIndex], copy[target]] = [copy[target], copy[imageIndex]];
+      const [item] = copy.splice(fromIndex, 1);
+      copy.splice(toIndex, 0, item);
       return copy;
     });
+    setImageOrderMessage(`Foto dipindahkan ke urutan ${toIndex + 1}. ${toIndex === 0 ? 'Foto ini menjadi cover katalog.' : ''}`);
   };
 
   const moveImageToFirst = (variantIndex, imageIndex) => {
-    updateVariantImages(variantIndex, list => {
-      if (imageIndex <= 0) return list;
-      const copy = [...list];
-      const [item] = copy.splice(imageIndex, 1);
-      copy.unshift(item);
-      return copy;
-    });
+    moveImageToPosition(variantIndex, imageIndex, 0);
+  };
+
+  const startImageDrag = (event, variantIndex, imageIndex) => {
+    setDraggedImage({ variantIndex, imageIndex });
+    setImageOrderMessage(`Mulai memindahkan foto ${imageIndex + 1}. Lepaskan pada posisi baru.`);
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', `${variantIndex}:${imageIndex}`);
+    }
+  };
+
+  const dropImage = (event, variantIndex, targetIndex) => {
+    event.preventDefault();
+    if (!draggedImage || draggedImage.variantIndex !== variantIndex) return;
+    moveImageToPosition(variantIndex, draggedImage.imageIndex, targetIndex);
+    setDraggedImage(null);
   };
 
   const removeImage = (variantIndex, imageIndex) => {
@@ -909,6 +945,10 @@ const App = () => {
     }
     setEror('');
     const optimizedFile = await resizeImageBeforeUpload(file);
+    if (!optimizedFile) {
+      setEror('Browser tidak dapat mengonversi AVIF. Simpan gambar sebagai WebP lalu unggah kembali.');
+      return;
+    }
     const previewUrl = URL.createObjectURL(optimizedFile);
     updateVariantImages(variantIndex, list => {
       const oldSrc = imageIndex === null ? null : getImageSrc(list[imageIndex]);
@@ -1194,7 +1234,7 @@ const App = () => {
         <div className="card">
           <div className="card-header"><h2>Media & Varian</h2></div>
           <div className="card-body">
-            <p className="media-help">WebP atau AVIF · maks. {MAX_UPLOAD_MB} MB per foto · maks. {MAX_PRODUCT_IMAGES} foto.</p>
+            <p className="media-help">WebP diterima langsung; AVIF dikonversi di browser · maks. {MAX_UPLOAD_MB} MB per foto · maks. {MAX_PRODUCT_IMAGES} foto. Server hanya menerima dan menyimpan WebP.</p>
             <div className="section-title">Gambar Hover</div>
             <div style={{display:'flex',alignItems:'center',gap:'12px',marginBottom:'18px'}}>
               <img className="preview-hover" src={hoverSrc || "/img/nopic.jpg"} alt="Pratinjau gambar hover" />
@@ -1213,6 +1253,11 @@ const App = () => {
                   }
                   if (file) {
                     const optimizedFile = await resizeImageBeforeUpload(file, 1200, 0.82);
+                    if (!optimizedFile) {
+                      setEror('Browser tidak dapat mengonversi AVIF. Simpan gambar hover sebagai WebP lalu unggah kembali.');
+                      e.target.value = '';
+                      return;
+                    }
                     setHoverFile(optimizedFile);
                     const oldHover = hoverSrc;
                     const nextHover = URL.createObjectURL(optimizedFile);
@@ -1224,6 +1269,15 @@ const App = () => {
             </div>
 
             <div className="section-title">Varian</div>
+            <div className="image-workflow-note">
+              <strong>Urutan foto menentukan tampilannya di toko.</strong>
+              <ol>
+                <li>Seret foto untuk mengatur urutan, atau fokuskan gagang lalu gunakan tombol panah keyboard.</li>
+                <li>Foto pertama pada varian pertama menjadi cover katalog; foto pertama tiap varian menjadi foto utamanya, lalu foto lain tampil di galeri detail.</li>
+                <li>Ganti atau hapus foto sebelum menyimpan. Perubahan baru berlaku setelah produk tersimpan.</li>
+              </ol>
+            </div>
+            <span className="image-order-status" role="status" aria-live="polite">{imageOrderMessage}</span>
             <div id="container-varian" style={{ display:'flex', flexDirection:'column', gap:'16px' }}>
               {(formData.varian || []).map((v, ind_v) => (
                 <div key={ind_v} className="card" style={{ borderRadius:'12px' }}>
@@ -1231,7 +1285,7 @@ const App = () => {
                     <div className="variant-tools">
                       <div>
                         <div className="section-title" style={{ margin:0 }}>Varian #{ind_v + 1}</div>
-                        <div className="variant-help">{(gambarSrc[ind_v] || []).length} foto</div>
+                        <div className="variant-help">{(gambarSrc[ind_v] || []).length} foto · {ind_v === 0 ? 'foto pertama menjadi cover katalog' : 'foto pertama menjadi foto utama varian'}</div>
                       </div>
                     </div>
                     {ind_v === 0 && <p className="image-order-note">Foto pertama tampil di katalog.</p>}
@@ -1239,19 +1293,29 @@ const App = () => {
                     <div className="container-gambar">
                       {gambarSrc.length > 0 && (gambarSrc[ind_v] || []).map((g, ind_g) => {
                         return (
-                        <div key={ind_g} className="image-tile">
+                        <div key={ind_g} className={`image-tile ${draggedImage?.variantIndex === ind_v && draggedImage?.imageIndex === ind_g ? 'is-dragging' : ''} ${draggedImage?.variantIndex === ind_v && draggedImage?.imageIndex !== ind_g ? 'is-drop-target' : ''}`}
+                          onDragOver={(e) => { e.preventDefault(); if (e.dataTransfer) e.dataTransfer.dropEffect = 'move'; }}
+                          onDrop={(e) => dropImage(e, ind_v, ind_g)}>
                           <input id={`replace-file-${ind_v}-${ind_g}`} type="file" accept="image/webp,image/avif" onChange={(e) => { addOrReplaceImage(ind_v, e.target.files[0], ind_g); e.target.value = ''; }} />
+                          <span className="drag-handle" draggable="true" role="group" tabIndex="0" aria-keyshortcuts="ArrowLeft ArrowRight ArrowUp ArrowDown Home"
+                            aria-label={`Seret foto ${ind_g + 1} varian ${v.nama || ind_v + 1} untuk mengubah urutan`}
+                            title="Seret foto untuk mengubah urutan"
+                            onDragStart={(e) => startImageDrag(e, ind_v, ind_g)}
+                            onDragEnd={() => setDraggedImage(null)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); moveImage(ind_v, ind_g, -1); }
+                              if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); moveImage(ind_v, ind_g, 1); }
+                              if (e.key === 'Home') { e.preventDefault(); moveImageToFirst(ind_v, ind_g); }
+                            }}><i className="material-icons">drag_indicator</i><span>Seret</span></span>
                           <div className="item-gambar">
                             <span className="img-no">{ind_g + 1}</span>
+                            {ind_g === 0 && <span className="cover-chip">{ind_v === 0 ? 'Cover katalog' : 'Utama varian'}</span>}
                             <div className="missing-image-state" hidden>Foto tidak tersedia<br/>Unggah ulang</div>
                             <img src={getImageSrc(g) || "/img/nopic.jpg"} alt={`Foto varian ${ind_v + 1} nomor ${ind_g + 1}`} loading="lazy" decoding="async"
                               onError={(e) => { e.currentTarget.hidden = true; e.currentTarget.parentElement?.querySelector('.missing-image-state')?.removeAttribute('hidden'); }}
                               onLoad={(e) => { e.currentTarget.hidden = false; e.currentTarget.parentElement?.querySelector('.missing-image-state')?.setAttribute('hidden', 'hidden'); }} />
                           </div>
                           <div className="image-actions">
-                            <button type="button" title="Naikkan urutan" onClick={() => moveImage(ind_v, ind_g, -1)} disabled={ind_g === 0} aria-label={`Pindahkan foto ${ind_g + 1} ke atas`}><i className="material-icons">north</i></button>
-                            <button type="button" title="Turunkan urutan" onClick={() => moveImage(ind_v, ind_g, 1)} disabled={ind_g === (gambarSrc[ind_v] || []).length - 1} aria-label={`Pindahkan foto ${ind_g + 1} ke bawah`}><i className="material-icons">south</i></button>
-                            <button type="button" title="Jadikan cover" onClick={() => moveImageToFirst(ind_v, ind_g)} disabled={ind_g === 0} aria-label={`Jadikan foto ${ind_g + 1} cover`}><i className="material-icons">star</i></button>
                             <label htmlFor={`replace-file-${ind_v}-${ind_g}`} title="Ganti foto"><i className="material-icons">edit</i><span>Ganti</span></label>
                             <button type="button" className="danger" title="Hapus foto" onClick={() => removeImage(ind_v, ind_g)} aria-label={`Hapus foto ${ind_g + 1}`}><i className="material-icons">delete</i></button>
                           </div>
