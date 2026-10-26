@@ -1,11 +1,11 @@
 <div class="navbar-hp-atas hide-ke-show-flex">
     <a href="/" aria-label="Ilena Furniture — Beranda">
-        <img src="<?php echo base_url('/img/logo/N.png'); ?>" alt="Ilena Furniture" style="height: 40px; width: 40px;">
+        <img src="<?= base_url('/img/Logo Putih Ilena 1.png'); ?>" alt="Ilena Furniture" width="112" height="22" decoding="async">
     </a>
     <a class="ilena-mobile-lunarea-link" href="https://lunareafurniture.com" target="_blank" rel="noopener noreferrer" aria-label="Kunjungi Lunarea Furniture">
         <img src="<?= base_url('img/logolunareanavbar.webp'); ?>" width="112" height="24" alt="Lunarea Furniture">
     </a>
-    <div style="flex:1;">
+    <div class="ilena-mobile-search-slot">
         <form action="/find" method="get" class="w-100 ilena-global-search" data-global-search role="search">
             <label class="ilena-sr-only" for="global-search-mobile">Cari produk</label>
             <input id="global-search-mobile" placeholder="Cari produk" class="input w-100" name="q"
@@ -14,16 +14,16 @@
         </form>
     </div>
     <div style="width: fit-content">
-        <input id="n-logo" type="checkbox" class="d-none">
-        <label for="n-logo">
+        <input id="n-logo" type="checkbox" class="ilena-mobile-menu-checkbox" aria-controls="mobile-menu-drawer">
+        <label for="n-logo" class="ilena-mobile-menu-button" aria-label="Buka atau tutup menu koleksi">
             <div class="menu-icon">
-                <i class="material-icons" style="font-size: 30px; color: white;">menu</i>
+                <i class="material-icons" aria-hidden="true">menu</i>
             </div>
             <div class="close-icon">
-                <i class="material-icons" style="font-size: 30px; color: white;">close</i>
+                <i class="material-icons" aria-hidden="true">close</i>
             </div>
         </label>
-        <div class="expend-hp">
+        <div class="expend-hp" id="mobile-menu-drawer" role="navigation" aria-label="Menu koleksi">
             <p class="mb-2" style="color:white; font-size: 10px">Collection</p>
             <div>
                 <input type="radio" name="collection" id="collection1" class="item-collection">
@@ -357,24 +357,24 @@
 
 <div class="navbar-hp hide-ke-show-flex">
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
-        <a class="item-navhp <?= $title == 'Home' ? 'active' : ''; ?>" href="/" aria-label="Beranda" title="Beranda">
-            <i class="material-icons">home</i>
+        <a class="item-navhp <?= $title == 'Home' ? 'active' : ''; ?>" href="/" aria-label="Beranda" title="Beranda" <?= $title == 'Home' ? 'aria-current="page"' : ''; ?>>
+            <i class="material-icons" aria-hidden="true">home</i><span>Beranda</span>
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
-        <a class="item-navhp <?= $title == 'Favorite' ? 'active' : ''; ?>" href="/wishlist" aria-label="Wishlist" title="Wishlist">
-            <i class="material-icons">bookmark_border</i>
+        <a class="item-navhp <?= $title == 'Favorite' ? 'active' : ''; ?>" href="/wishlist" aria-label="Wishlist" title="Wishlist" <?= $title == 'Favorite' ? 'aria-current="page"' : ''; ?>>
+            <i class="material-icons" aria-hidden="true">bookmark_border</i><span>Favorit</span>
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
-        <a class="item-navhp <?= $title == 'Keranjang' ? 'active' : ''; ?>" href="/cart" aria-label="Keranjang" title="Keranjang">
-            <i class="material-icons">shopping_cart</i>
+        <a class="item-navhp <?= $title == 'Keranjang' ? 'active' : ''; ?>" href="/cart" aria-label="Keranjang" title="Keranjang" <?= $title == 'Keranjang' ? 'aria-current="page"' : ''; ?>>
+            <i class="material-icons" aria-hidden="true">shopping_cart</i><span>Keranjang</span>
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
         <a class="item-navhp <?= $title == 'Akun' ? 'active' : ''; ?>"
-            href="<?= session()->get('isLogin') ? '/account' : '/login' ?>" aria-label="<?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?>" title="<?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?>">
-            <i class="material-icons">person_outline</i>
+            href="<?= session()->get('isLogin') ? '/account' : '/login' ?>" aria-label="<?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?>" title="<?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?>" <?= $title == 'Akun' ? 'aria-current="page"' : ''; ?>>
+            <i class="material-icons" aria-hidden="true">person_outline</i><span><?= session()->get('isLogin') ? 'Akun' : 'Masuk'; ?></span>
         </a>
     </div>
 
