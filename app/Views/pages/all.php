@@ -658,6 +658,11 @@ if (isset($_GET['ruang'])) {
                                 $cardLocalSrc = is_file(FCPATH . 'uploads/product-images/300/' . $p['id'] . '.webp')
                                     ? base_url('uploads/product-images/300/' . rawurlencode((string) $p['id']) . '.webp') . '?v=' . $cardVersion
                                     : (is_file(FCPATH . 'img/barang/300/' . $p['id'] . '.webp') ? base_url('img/barang/300/' . rawurlencode((string) $p['id']) . '.webp') . '?v=' . $cardVersion : '');
+                                $cardLocal1000Relative = 'uploads/product-images/1000/' . $p['id'] . '-' . $cardSlot . '.webp';
+                                $cardLegacy1000Relative = 'img/barang/1000/' . $p['id'] . '-' . $cardSlot . '.webp';
+                                $cardLocal1000Src = is_file(FCPATH . $cardLocal1000Relative)
+                                    ? base_url($cardLocal1000Relative) . '?v=' . $cardVersion
+                                    : (is_file(FCPATH . $cardLegacy1000Relative) ? base_url($cardLegacy1000Relative) . '?v=' . $cardVersion : '');
                                 $cardSlotCandidates = [];
                                 foreach ($cardVariantsForImage as $variantForImage) {
                                     $cardSlotCandidates = array_merge($cardSlotCandidates, explode(',', (string) ($variantForImage['urutan_gambar'] ?? '')));
@@ -670,7 +675,8 @@ if (isset($_GET['ruang'])) {
                             <img class="img-pic" id="img<?= $ind_p ?>"
                                 src="<?= esc($cardLocalSrc !== '' ? $cardLocalSrc : ($cardCdnSrc !== '' ? $cardCdnSrc : $productCoverUrl($p)), 'attr') ?>"
                                 <?= $cardLocalSrc === '' && $cardCdnSrc !== '' ? 'data-image-fallback="' . esc($cardFallback, 'attr') . '" onerror="if(this.dataset.imageFallback){this.onerror=null;this.removeAttribute(\'srcset\');this.src=this.dataset.imageFallback;}"' : '' ?>
-                                <?= $cardLocalSrc === '' && $cardCdnSrc !== '' ? 'srcset="' . esc($cardCdnSrcset, 'attr') . '" sizes="(max-width: 600px) 46vw, (max-width: 1100px) 30vw, 300px"' : '' ?>
+                                <?= $cardLocalSrc !== '' && $cardLocal1000Src !== '' ? 'srcset="' . esc($cardLocalSrc . ' 300w, ' . $cardLocal1000Src . ' 1000w', 'attr') . '"' : ($cardLocalSrc === '' && $cardCdnSrc !== '' ? 'srcset="' . esc($cardCdnSrcset, 'attr') . '"' : '') ?>
+                                sizes="(max-width: 600px) 46vw, (max-width: 1100px) 30vw, 300px"
                                 width="300" height="300" alt="<?= esc($p['nama'], 'attr') ?>"
                                 loading="<?= $ind_p < 2 ? 'eager' : 'lazy' ?>" fetchpriority="<?= $ind_p === 0 ? 'high' : 'auto' ?>" decoding="async">
                             <?php if (is_file(FCPATH . 'uploads/product-images/hover/' . $p['id'] . '.webp') || is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') || !empty($p['gambar_hover'])) { ?>

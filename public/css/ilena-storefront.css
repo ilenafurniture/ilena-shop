@@ -4830,6 +4830,21 @@ body.ilena-storefront .product-detail-soft .ilena-product-related-heading h2 { m
         object-fit: cover !important;
         background: #f3efe9;
     }
+    /* Soft edge fade (edge-fade) blends the menu editorial image into its warm panel. */
+    body.ilena-storefront .child-list-nav > .container > div:nth-child(2) > .d-flex > div:first-child {
+        position: relative;
+        flex: 0 0 42% !important;
+        aspect-ratio: 4 / 3;
+        overflow: hidden;
+        background: #f3efe9;
+    }
+    body.ilena-storefront .child-list-nav > .container > div:nth-child(2) > .d-flex > div:first-child img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        -webkit-mask-image: radial-gradient(ellipse at center, #000 76%, transparent 100%);
+        mask-image: radial-gradient(ellipse at center, #000 76%, transparent 100%);
+    }
     body.ilena-storefront .child-list-nav > .container > div:nth-child(2) h3 {
         margin: 0 0 8px !important;
         color: var(--ilena-ink);

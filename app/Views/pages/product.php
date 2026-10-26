@@ -550,12 +550,19 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                 $relatedVariantData = array_values($relatedVariantsByName);
                 $cardVarianAwal = $relatedVariantData[0]['nama'] ?? 'default';
                 $cardVarianAwalStok = (int) ($relatedVariantData[0]['stok'] ?? 0);
+                $relatedSlots = array_values(array_filter(array_map('trim', explode(',', (string) ($relatedVariantData[0]['urutan_gambar'] ?? '1')))));
+                $relatedCardSlot = $relatedSlots[0] ?? '1';
                 $relatedProductUrl = '/product/' . rawurlencode(str_replace(' ', '-', (string) $p['nama']));
                 $relatedImageFallback = base_url('product-cover/' . rawurlencode((string) $p['id'])) . '?size=300&v=' . $relatedVersion;
                 $relatedCdnImage = $productImageCdn !== '' ? $productImageCdn . '/products/300/' . rawurlencode((string) $p['id']) . '.webp?v=' . $relatedVersion : '';
                 $relatedLocalImage = is_file(FCPATH . 'uploads/product-images/300/' . $p['id'] . '.webp')
                     ? base_url('uploads/product-images/300/' . rawurlencode((string) $p['id']) . '.webp') . '?v=' . $relatedVersion
                     : (is_file(FCPATH . 'img/barang/300/' . $p['id'] . '.webp') ? base_url('img/barang/300/' . rawurlencode((string) $p['id']) . '.webp') . '?v=' . $relatedVersion : '');
+                $relatedLocal1000Relative = 'uploads/product-images/1000/' . $p['id'] . '-' . $relatedCardSlot . '.webp';
+                $relatedLegacy1000Relative = 'img/barang/1000/' . $p['id'] . '-' . $relatedCardSlot . '.webp';
+                $relatedLocal1000Image = is_file(FCPATH . $relatedLocal1000Relative)
+                    ? base_url($relatedLocal1000Relative) . '?v=' . $relatedVersion
+                    : (is_file(FCPATH . $relatedLegacy1000Relative) ? base_url($relatedLegacy1000Relative) . '?v=' . $relatedVersion : '');
             ?>
             <div class="card1" data-product-card>
                 <div style="position: relative;">
@@ -586,6 +593,8 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                         <img class="img-pic" id="img<?= $ind_p ?>"
                             src="<?= esc($relatedLocalImage !== '' ? $relatedLocalImage : ($relatedCdnImage !== '' ? $relatedCdnImage : $productCoverUrl($p)), 'attr') ?>"
                             <?= $relatedLocalImage === '' && $relatedCdnImage !== '' ? 'data-image-fallback="' . esc($relatedImageFallback, 'attr') . '" onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"' : '' ?>
+                            <?= $relatedLocalImage !== '' && $relatedLocal1000Image !== '' ? 'srcset="' . esc($relatedLocalImage . ' 300w, ' . $relatedLocal1000Image . ' 1000w', 'attr') . '"' : '' ?>
+                            sizes="(max-width: 600px) 46vw, (max-width: 1100px) 30vw, 300px"
                             width="300" height="300" alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async">
                         <?php if (is_file(FCPATH . 'uploads/product-images/hover/' . $p['id'] . '.webp') || is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') || !empty($p['gambar_hover'])) { ?>
                         <img class="img-pic-hover lazy-hover-product"
