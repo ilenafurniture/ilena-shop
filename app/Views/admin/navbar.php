@@ -30,6 +30,7 @@
         ],
         'Produk' => [
             ['show' => $can('products'), 'label' => 'Produk', 'icon' => 'inventory_2', 'href' => '/admin/product', 'active' => $isActivePrefix(['admin/product']) || ($title ?? '') === 'Produk Kami'],
+            ['show' => $can('products'), 'label' => 'Foto Preview Menu', 'icon' => 'collections', 'href' => '/admin/menu-previews', 'active' => $isActivePrefix(['admin/menu-previews'])],
             ['show' => $can('vouchers'), 'label' => 'Voucher', 'icon' => 'confirmation_number', 'href' => '/admin/voucher', 'active' => $isActivePrefix(['admin/voucher']) || str_contains($lowerTitle, 'voucher')],
         ],
         'Pesanan' => [

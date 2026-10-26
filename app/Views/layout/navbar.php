@@ -301,7 +301,13 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
                                             width: '100%',
                                             height: '100%',
                                             }}
-                                            src={`/product-cover/${productSelected.id}?slot=${productSelected.cover_slot || '1'}`}
+                                            src={productSelected.preview_image || `/product-cover/${productSelected.id}?slot=${productSelected.cover_slot || '1'}&size=300`}
+                                            onError={(event) => {
+                                                const image = event.currentTarget;
+                                                if (image.dataset.previewFallbackTried) return;
+                                                image.dataset.previewFallbackTried = 'true';
+                                                image.src = `/product-cover/${encodeURIComponent(productSelected.id)}?slot=${encodeURIComponent(productSelected.cover_slot || '1')}&size=300`;
+                                            }}
                                             loading="lazy" decoding="async" alt={`${productSelected.nama} ${productSelected.koleksi}`}
                                         />
                                     </div>

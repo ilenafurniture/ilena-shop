@@ -121,6 +121,8 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
     // Produk
     $routes->get('producttable', 'AdminController::listProductTable');
     $routes->get('product', 'AdminController::listProduct');
+    $routes->get('menu-previews', 'AdminController::menuPreviews');
+    $routes->post('menu-previews', 'AdminController::saveMenuPreviews');
     $routes->get('product-bulk-edit', 'AdminController::bulkEditProduct');
     $routes->post('product-bulk-edit', 'AdminController::actionBulkEditProduct');
 

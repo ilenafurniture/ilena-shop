@@ -26,6 +26,7 @@ if ($can('orders_online')) {
 $mobileItems = [
     ['show' => true, 'label' => 'Home', 'icon' => 'space_dashboard', 'href' => '/admin', 'active' => $currentPath === 'admin' || $currentPath === 'admin/'],
     ['show' => $can('products'), 'label' => 'Produk', 'icon' => 'inventory_2', 'href' => '/admin/product', 'active' => $isActivePrefix(['admin/product']) || ($title ?? '') === 'Produk Kami'],
+    ['show' => $can('products'), 'label' => 'Foto Preview', 'icon' => 'collections', 'href' => '/admin/menu-previews', 'active' => $isActivePrefix(['admin/menu-previews'])],
     ['show' => $can('orders_online'), 'label' => 'Pesanan', 'icon' => 'shopping_bag', 'href' => '/admin/order/online', 'active' => $isActivePrefix(['admin/order/online']), 'badge' => $websiteOrderTodoCount],
     ['show' => $can('vouchers'), 'label' => 'Voucher', 'icon' => 'confirmation_number', 'href' => '/admin/voucher', 'active' => $isActivePrefix(['admin/voucher']) || str_contains($lowerTitle, 'voucher')],
     ['show' => $can('content'), 'label' => 'Konten', 'icon' => 'dashboard_customize', 'href' => '/admin/homelayout', 'active' => $isActivePrefix(['admin/homelayout', 'admin/article', 'admin/partners'])],
@@ -36,6 +37,7 @@ $mobileMenuGroups = [
     'Utama' => [['show' => true, 'label' => 'Dashboard', 'icon' => 'space_dashboard', 'href' => '/admin', 'active' => $currentPath === 'admin']],
     'Produk' => [
         ['show' => $can('products'), 'label' => 'Produk', 'icon' => 'inventory_2', 'href' => '/admin/product', 'active' => $isActivePrefix(['admin/product']) || ($title ?? '') === 'Produk Kami'],
+        ['show' => $can('products'), 'label' => 'Foto Preview Menu', 'icon' => 'collections', 'href' => '/admin/menu-previews', 'active' => $isActivePrefix(['admin/menu-previews'])],
         ['show' => $can('vouchers'), 'label' => 'Voucher', 'icon' => 'confirmation_number', 'href' => '/admin/voucher', 'active' => $isActivePrefix(['admin/voucher']) || str_contains($lowerTitle, 'voucher')],
     ],
     'Pesanan' => [['show' => $can('orders_online'), 'label' => 'Pesanan Online', 'icon' => 'shopping_bag', 'href' => '/admin/order/online', 'active' => $isActivePrefix(['admin/order/online']), 'badge' => $websiteOrderTodoCount]],

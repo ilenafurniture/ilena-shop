@@ -387,6 +387,118 @@ class AdminController extends BaseController
         return view('admin/all', $data);
     }
 
+    public function menuPreviews()
+    {
+        if (!(new \App\Services\AdminRbacService())->hasPermission(session()->get('email'), 'products')) {
+            return $this->response->setStatusCode(403)->setBody('Akses ditolak.');
+        }
+        if (!db_connect()->tableExists('menu_collection_previews')) {
+            return redirect()->to('/admin/product')->with('error', 'Jalankan migration database menu preview terlebih dahulu.');
+        }
+
+        $products = $this->barangModel->where('active', '1')->orderBy('kategori')->orderBy('subkategori')->orderBy('id')->findAll();
+        $grouped = [];
+        foreach ($products as $product) {
+            $category = trim((string) ($product['kategori'] ?? ''));
+            $subcategory = trim((string) ($product['subkategori'] ?? ''));
+            if ($category === '' || $subcategory === '') continue;
+            $key = $category . "\0" . $subcategory;
+            if (!isset($grouped[$key])) {
+                $grouped[$key] = ['category' => $category, 'subcategory' => $subcategory, 'products' => []];
+            }
+            $grouped[$key]['products'][] = $product;
+        }
+
+        $selectedRows = db_connect()->table('menu_collection_previews')->get()->getResultArray();
+        $selectedByPair = [];
+        foreach ($selectedRows as $row) {
+            $selectedByPair[(string) $row['category_name'] . "\0" . (string) $row['subcategory_name']] = (string) $row['product_id'];
+        }
+        $previews = [];
+        foreach ($grouped as $key => $pair) {
+            $pair['selected_product_id'] = $selectedByPair[$key] ?? '';
+            $previews[] = $pair;
+        }
+
+        return view('admin/menuPreviews', [
+            'title' => 'Menu Preview Koleksi',
+            'previews' => $previews,
+        ]);
+    }
+
+    public function saveMenuPreviews()
+    {
+        if (!(new \App\Services\AdminRbacService())->hasPermission(session()->get('email'), 'products')) {
+            return $this->response->setStatusCode(403)->setBody('Akses ditolak.');
+        }
+        $db = db_connect();
+        if (!$db->tableExists('menu_collection_previews')) {
+            return redirect()->to('/admin/product')->with('error', 'Jalankan migration database menu preview terlebih dahulu.');
+        }
+
+        $submitted = $this->request->getPost('previews');
+        if (!is_array($submitted)) {
+            return redirect()->back()->with('error', 'Data preview menu tidak valid.');
+        }
+        $activeProducts = $this->barangModel->where('active', '1')->findAll();
+        $allowed = [];
+        foreach ($activeProducts as $product) {
+            $pairKey = trim((string) ($product['kategori'] ?? '')) . "\0" . trim((string) ($product['subkategori'] ?? ''));
+            $allowed[$pairKey][(string) $product['id']] = true;
+        }
+
+        $changes = [];
+        foreach ($submitted as $row) {
+            if (!is_array($row)) continue;
+            $category = trim((string) ($row['category'] ?? ''));
+            $subcategory = trim((string) ($row['subcategory'] ?? ''));
+            $productId = trim((string) ($row['product_id'] ?? ''));
+            if ($category === '' || $subcategory === '') {
+                return redirect()->back()->with('error', 'Nama koleksi atau jenis produk tidak valid.');
+            }
+            $pairKey = $category . "\0" . $subcategory;
+            if (!isset($allowed[$pairKey])) {
+                return redirect()->back()->with('error', 'Koleksi dan jenis produk tidak lagi tersedia. Muat ulang halaman.');
+            }
+            if ($productId !== '' && !isset($allowed[$pairKey][$productId])) {
+                return redirect()->back()->with('error', 'Produk preview harus aktif dan berasal dari koleksi serta jenis yang sama.');
+            }
+            $changes[] = compact('category', 'subcategory', 'productId');
+        }
+
+        $db->transBegin();
+        try {
+            foreach ($changes as $change) {
+                $where = ['category_name' => $change['category'], 'subcategory_name' => $change['subcategory']];
+                $builder = $db->table('menu_collection_previews');
+                if ($change['productId'] === '') {
+                    $builder->where($where)->delete();
+                    continue;
+                }
+                $existing = $db->table('menu_collection_previews')->where($where)->get()->getRowArray();
+                $payload = $where + [
+                    'pair_key' => hash('sha256', $change['category'] . "\0" . $change['subcategory']),
+                    'product_id' => $change['productId'],
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ];
+                if ($existing) {
+                    $db->table('menu_collection_previews')->where($where)->update($payload);
+                } else {
+                    $db->table('menu_collection_previews')->insert($payload);
+                }
+            }
+            if ($db->transStatus() === false) throw new \RuntimeException('Database menolak perubahan preview menu.');
+            $db->transCommit();
+        } catch (\Throwable $e) {
+            $db->transRollback();
+            log_message('error', 'Simpan menu preview gagal: {message}', ['message' => $e->getMessage()]);
+            return redirect()->back()->with('error', 'Perubahan preview menu gagal disimpan.');
+        }
+
+        cache()->delete('ilena_public_navbar_data_v2');
+        return redirect()->to('/admin/menu-previews')->with('success', 'Preview menu koleksi berhasil diperbarui.');
+    }
+
     private function normalizeBulkProductIds($rawIds): array
     {
         if (is_string($rawIds)) {

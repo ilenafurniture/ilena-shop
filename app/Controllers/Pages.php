@@ -89,7 +89,7 @@ class Pages extends BaseController
         // This data is shared by public pages and only changes when catalog
         // metadata changes. Cache it briefly to avoid repeating a full
         // representative-product aggregation on every PHP request.
-        $navbarCacheKey = 'ilena_public_navbar_data_v1';
+        $navbarCacheKey = 'ilena_public_navbar_data_v2';
         $cachedNavbar = cache()->get($navbarCacheKey);
         if (is_array($cachedNavbar)) {
             return $cachedNavbar;
@@ -97,15 +97,29 @@ class Pages extends BaseController
 
         // Ambil satu produk representatif per pasangan subkategori/kategori
         // dalam satu query, bukan query tambahan untuk setiap pasangan menu.
+        $db = db_connect();
+        $previewJoin = $db->tableExists('menu_collection_previews')
+            ? "LEFT JOIN menu_collection_previews AS selected_menu
+                    ON selected_menu.category_name = b.kategori
+                   AND selected_menu.subcategory_name = b.subkategori
+             LEFT JOIN barang AS selected_product
+                    ON selected_product.id = selected_menu.product_id
+                   AND selected_product.kategori = b.kategori
+                   AND selected_product.subkategori = b.subkategori
+                   AND selected_product.active = '1'"
+            : '';
+        $selectedProductId = $previewJoin !== '' ? 'COALESCE(selected_product.id, b.id)' : 'b.id';
         $produkNavbar = $this->barangModel->query(
-            "SELECT b.id, b.nama, b.deskripsi, b.varian,
-                    b.subkategori AS jenis, b.kategori AS koleksi
+            "SELECT chosen.id, chosen.nama, chosen.deskripsi, chosen.varian, chosen.tgl_update,
+                    chosen.subkategori AS jenis, chosen.kategori AS koleksi
              FROM barang AS b
              INNER JOIN (
                  SELECT subkategori, kategori, MIN(id) AS id
                  FROM barang WHERE active = '1'
                  GROUP BY subkategori, kategori
              ) AS representative ON representative.id = b.id
+             {$previewJoin}
+             INNER JOIN barang AS chosen ON chosen.id = {$selectedProductId}
              WHERE b.active = '1' ORDER BY b.subkategori ASC, b.kategori ASC"
         )->getResultArray();
         $hasil = [];
@@ -132,6 +146,7 @@ class Pages extends BaseController
                 'deskripsi' => $deskripsi,
                 'koleksi' => $koleksi,
                 'cover_slot' => $coverSlot,
+                'preview_image' => $this->menuPreviewImageUrl($produk, $coverSlot),
             ];
 
             if (str_contains($jenis, 'dresser')) {
@@ -144,6 +159,33 @@ class Pages extends BaseController
         }
         cache()->save($navbarCacheKey, $hasil, 60);
         return $hasil;
+    }
+
+    private function menuPreviewImageUrl(array $product, string $slot): string
+    {
+        $id = rawurlencode((string) ($product['id'] ?? ''));
+        $candidates = [
+            'uploads/product-images/300/' . ($product['id'] ?? '') . '.webp',
+            'img/barang/300/' . ($product['id'] ?? '') . '.webp',
+            'uploads/product-images/1000/' . ($product['id'] ?? '') . '-' . $slot . '.webp',
+            'img/barang/1000/' . ($product['id'] ?? '') . '-' . $slot . '.webp',
+        ];
+        foreach ($candidates as $relativePath) {
+            $absolutePath = rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
+                . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath);
+            if (is_file($absolutePath)) {
+                return base_url($relativePath) . '?v=' . (string) filemtime($absolutePath);
+            }
+        }
+
+        $storage = strtolower((string) env('PRODUCT_IMAGE_STORAGE', 'local'));
+        $publicUrl = rtrim((string) env('R2_PUBLIC_URL', ''), '/');
+        $version = !empty($product['tgl_update']) ? (string) strtotime((string) $product['tgl_update']) : '';
+        if ($storage === 'r2' && $publicUrl !== '') {
+            return $publicUrl . '/products/300/' . $id . '.webp' . ($version !== '' ? '?v=' . rawurlencode($version) : '');
+        }
+
+        return base_url('product-cover/' . $id) . '?slot=' . rawurlencode($slot) . '&size=300' . ($version !== '' ? '&v=' . rawurlencode($version) : '');
     }
     public function index()
     {
