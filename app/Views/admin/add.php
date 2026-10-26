@@ -15,6 +15,27 @@
     gap: 16px;
 }
 
+/* Edit form: make the long product workflow scannable without changing its data flow. */
+.edit-guide {
+    margin: 4px 0 20px;
+    padding: 14px 0 12px;
+    border-top: 1px solid #e8e5e1;
+    border-bottom: 1px solid #e8e5e1;
+}
+.edit-guide p { margin: 0 0 10px; color: #6b6259; font-size: 13px; }
+.edit-guide__steps { display: flex; flex-wrap: wrap; gap: 8px; }
+.edit-guide__steps a {
+    display: inline-flex; align-items: center; gap: 7px; min-height: 38px;
+    padding: 7px 12px; border: 1px solid #e7e2dc; border-radius: 999px;
+    color: #302a24; background: #fff; text-decoration: none; font-size: 13px;
+    transition: border-color .18s ease, background .18s ease, color .18s ease;
+}
+.edit-guide__steps a:hover, .edit-guide__steps a:focus-visible {
+    border-color: #9a7955; background: #f8f5f1; color: #654a2d; outline: none;
+}
+.edit-guide__steps b { color: #9a7955; font-size: 11px; }
+.edit-anchor { scroll-margin-top: 96px; }
+
 @media (max-width: 992px) {
     .form-grid {
         grid-template-columns: 1fr;
@@ -406,6 +427,9 @@
 
 @media (max-width: 640px) {
     .page-wrap { padding: 14px 12px 88px; }
+    .edit-guide { margin-bottom: 14px; }
+    .edit-guide__steps { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+    .edit-guide__steps a { flex: 0 0 auto; }
     .card-header, .card-body { padding: 14px; }
     .table-input td { display: block; width: 100% !important; padding: 4px 0; }
     .table-input td:first-child { padding: 8px 0 2px; }
@@ -469,13 +493,15 @@
 .loading-card {
     background: #111827;
     color: #fff;
-    padding: 16px 18px;
+    padding: 20px;
     border-radius: 14px;
     display: flex;
+    flex-direction:column;
     align-items: center;
     gap: 12px;
-    min-width: 220px;
+    width:min(390px,calc(100vw - 32px));
     justify-content: center;
+    text-align:center;
 }
 
 .spinner {
@@ -486,6 +512,18 @@
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
+.save-progress { width:min(340px,calc(100vw - 68px)); height:7px; overflow:hidden; border-radius:999px; background:rgba(255,255,255,.18); }
+.save-progress__fill { display:block; height:100%; border-radius:inherit; background:#d8b98e; transition:width .2s ease; }
+.save-progress__fill.is-indeterminate { width:38%; animation:save-progress-slide 1.15s ease-in-out infinite alternate; }
+@keyframes save-progress-slide { from { transform:translateX(0); } to { transform:translateX(165%); } }
+.image-resize-progress { margin:12px 0 16px; padding:12px 14px; border:1px solid #e8dfd3; border-radius:10px; background:#fffdf9; color:#514438; }
+.image-resize-progress__top { display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:12px; font-weight:700; }
+.image-resize-progress__label { display:inline-flex; align-items:center; gap:8px; }
+.image-resize-progress__spinner { width:14px; height:14px; flex:0 0 14px; border:2px solid #e4ddd4; border-top-color:#8b6747; border-radius:50%; animation:spin .8s linear infinite; }
+.image-resize-progress__track { height:6px; margin:8px 0 6px; overflow:hidden; border-radius:999px; background:#eee9e2; }
+.image-resize-progress__fill { height:100%; border-radius:inherit; background:#9b7653; transition:width .2s ease; }
+.image-resize-progress small { display:block; color:#75695d; font-size:11px; line-height:1.45; }
+@media (prefers-reduced-motion:reduce) { .save-progress__fill,.image-resize-progress__fill { transition:none; } .save-progress__fill.is-indeterminate { animation:none; width:70%; } .image-resize-progress__spinner,.spinner { animation:none; } }
 
 @keyframes spin {
     to {
@@ -518,6 +556,9 @@
 
 <div class="page-wrap">
     <h1 class="page-title"><?= isset($idProduct) ? 'Edit' : 'Tambah' ?> Produk</h1>
+    <?php if (isset($idProduct)): ?>
+    <p class="edit-page-intro" style="margin:-8px 0 16px;color:#70675d;font-size:14px;">Perbarui informasi produk, foto, lalu variannya. Perubahan diterapkan setelah Anda menekan Simpan.</p>
+    <?php endif; ?>
     <div id="container-react"></div>
 </div>
 
@@ -584,17 +625,20 @@ function fileTypeInvalid(file) {
   return file && !ALLOWED_IMAGE_TYPES.includes(file.type);
 }
 
-function resizeImageBeforeUpload(file, maxSize = 3000, quality = 0.82) {
+function resizeImageBeforeUpload(file, maxSize = 3000, quality = 0.82, onProgress = () => {}) {
   return new Promise((resolve) => {
     if (!file || !file.type || !file.type.startsWith('image/')) return resolve(file);
     const isAvif = file.type === 'image/avif';
     const img = new Image();
     const url = URL.createObjectURL(file);
+    onProgress(8, 'Membuka gambar…');
     img.onload = () => {
       try {
+        onProgress(25, 'Memeriksa dimensi gambar…');
         const ratio = Math.min(1, maxSize / Math.max(img.width, img.height));
         if (!isAvif && ratio >= 1 && file.size <= 2 * 1024 * 1024) {
           URL.revokeObjectURL(url);
+          onProgress(100, 'Ukuran gambar sudah sesuai.');
           resolve(file);
           return;
         }
@@ -604,22 +648,30 @@ function resizeImageBeforeUpload(file, maxSize = 3000, quality = 0.82) {
         const ctx = canvas.getContext('2d');
         if (!ctx) {
           URL.revokeObjectURL(url);
+          onProgress(100, 'Browser tidak dapat menyiapkan area resize.');
           resolve(isAvif ? null : file);
           return;
         }
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        onProgress(58, 'Dimensi gambar disesuaikan…');
+        onProgress(72, 'Mengompres dan mengubah ke WebP…');
         canvas.toBlob((blob) => {
           URL.revokeObjectURL(url);
-          if (!blob || blob.type !== 'image/webp') return resolve(isAvif ? null : file);
+          if (!blob || blob.type !== 'image/webp') {
+            onProgress(100, 'Konversi WebP tidak berhasil.');
+            return resolve(isAvif ? null : file);
+          }
           const safeName = (file.name || 'product-image').replace(/\.[^.]+$/, '') + '.webp';
+          onProgress(100, 'Resize selesai; gambar siap disimpan.');
           resolve(new File([blob], safeName, { type: 'image/webp', lastModified: Date.now() }));
         }, 'image/webp', quality);
       } catch (e) {
         URL.revokeObjectURL(url);
+        onProgress(100, 'Tidak dapat memproses gambar.');
         resolve(isAvif ? null : file);
       }
     };
-    img.onerror = () => { URL.revokeObjectURL(url); resolve(isAvif ? null : file); };
+    img.onerror = () => { URL.revokeObjectURL(url); onProgress(100, 'Browser tidak dapat membaca gambar.'); resolve(isAvif ? null : file); };
     img.src = url;
   });
 }
@@ -662,25 +714,30 @@ const App = () => {
   const [draggedImage, setDraggedImage] = useState(null);
   const [imageOrderMessage, setImageOrderMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resizeProgress, setResizeProgress] = useState({ active: false, percent: 0, message: '' });
+  const [uploadProgress, setUploadProgress] = useState({ phase: 'idle', percent: null });
+  const resizeBusyRef = useRef(false);
   const idStr = useRef("1-00-000-XX");
 
-  // Loading overlay
+  // Keep the resize state visible briefly after completion so the admin can confirm the image is ready.
   useEffect(() => {
-    const id = "global-loading-overlay";
-    let overlay = document.getElementById(id);
-    if (!overlay) {
-      overlay = document.createElement('div');
-      overlay.id = id;
-      overlay.className = 'loading-overlay';
-      overlay.innerHTML = `
-        <div class="loading-card">
-          <div class="spinner"></div>
-          <div>Sedang menyimpan...</div>
-        </div>`;
-      document.body.appendChild(overlay);
-    }
-    overlay.classList.toggle('show', loading);
     document.body.style.cursor = loading ? 'wait' : '';
+    return () => { document.body.style.cursor = ''; };
+  }, [loading]);
+
+  useEffect(() => {
+    if (resizeProgress.active || !resizeProgress.message) return undefined;
+    const timeout = setTimeout(() => setResizeProgress({ active: false, percent: 0, message: '' }), 3500);
+    return () => clearTimeout(timeout);
+  }, [resizeProgress.active, resizeProgress.message]);
+
+  useEffect(() => {
+    if (loading) {
+      document.documentElement.setAttribute('aria-busy', 'true');
+    } else {
+      document.documentElement.removeAttribute('aria-busy');
+    }
+    return () => document.documentElement.removeAttribute('aria-busy');
   }, [loading]);
 
   // ADD: generate ID berdasarkan kategori/jenis
@@ -853,33 +910,54 @@ const App = () => {
 
     setLoading(true);
     setEror("");
+    setUploadProgress({ phase: 'uploading', percent: 0 });
 
-    (async () => {
-      try {
-        const url = `<?= rtrim(base_url(), '/'); ?>${idProduct ? `/admin/editproduct/${idProduct}` : `/admin/product`}`;
-        const response = await fetch(url, { method: "POST", headers: { Accept: "application/json" }, body: form });
-        const rawText = await response.clone().text();
-        let result; try { result = JSON.parse(rawText); } catch { result = { pesan: rawText }; }
+    try {
+      const url = `<?= rtrim(base_url(), '/'); ?>${idProduct ? `/admin/editproduct/${idProduct}` : `/admin/product`}`;
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', url, true);
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.upload.addEventListener('progress', (event) => {
+        if (event.lengthComputable && event.total > 0) {
+          setUploadProgress({ phase: 'uploading', percent: Math.min(99, Math.floor((event.loaded / event.total) * 100)) });
+        } else {
+          setUploadProgress({ phase: 'uploading', percent: null });
+        }
+      });
+      xhr.upload.addEventListener('load', () => setUploadProgress({ phase: 'processing', percent: 100 }));
+      xhr.addEventListener('load', () => {
+        const rawText = xhr.responseText || '';
+        let result;
+        try { result = JSON.parse(rawText); } catch { result = { pesan: rawText }; }
         setLoading(false);
 
-        if (!response.ok) {
-          setEror(result?.pesan || `Error ${response.status}. ${rawText?.slice(0, 500)}`);
-          console.error("Response error:", { status: response.status, result });
+        if (xhr.status < 200 || xhr.status >= 300) {
+          setEror(result?.pesan || `Error ${xhr.status}. ${rawText.slice(0, 500)}`);
+          console.error('Response error:', { status: xhr.status, result });
           return;
         }
 
         Swal.fire({
-          title: "Berhasil!",
-          text: `Produk berhasil ${idProduct ? "diubah" : "ditambahkan"}.`,
-          icon: "success",
-          confirmButtonText: "OK",
+          title: 'Berhasil!',
+          text: `Produk berhasil ${idProduct ? 'diubah' : 'ditambahkan'}.`,
+          icon: 'success',
+          confirmButtonText: 'OK',
         }).then(() => { window.location.href = `<?= base_url('admin/product'); ?>`; });
-      } catch (err) {
-        console.error("Gagal mengirim data:", err);
+      });
+      xhr.addEventListener('error', () => {
         setLoading(false);
-        setEror("Gagal menghubungi server.");
-      }
-    })();
+        setEror('Gagal menghubungi server. Periksa koneksi lalu coba lagi.');
+      });
+      xhr.addEventListener('abort', () => {
+        setLoading(false);
+        setEror('Pengiriman dibatalkan sebelum selesai.');
+      });
+      xhr.send(form);
+    } catch (err) {
+      console.error('Gagal mengirim data:', err);
+      setLoading(false);
+      setEror('Gagal menghubungi server.');
+    }
   };
 
   const syncLegacyGambarFile = (nextSrc) => {
@@ -929,6 +1007,28 @@ const App = () => {
     setDraggedImage(null);
   };
 
+  const resizeForAdmin = async (file, maxSize = 3000, quality = 0.82) => {
+    if (resizeBusyRef.current) {
+      setEror('Tunggu resize gambar sebelumnya selesai sebelum memilih gambar lain.');
+      return undefined;
+    }
+    resizeBusyRef.current = true;
+    setResizeProgress({ active: true, percent: 3, message: 'Menyiapkan gambar…' });
+    try {
+      return await resizeImageBeforeUpload(file, maxSize, quality, (percent, message) => {
+        setResizeProgress({ active: true, percent, message });
+      });
+    } catch (error) {
+      console.error('Resize gambar gagal:', error);
+      setResizeProgress({ active: true, percent: 100, message: 'Resize gambar gagal.' });
+      setEror('Gambar belum berhasil diproses. Pilih gambar lain atau coba kembali.');
+      return undefined;
+    } finally {
+      resizeBusyRef.current = false;
+      setResizeProgress(current => ({ ...current, active: false }));
+    }
+  };
+
   const removeImage = (variantIndex, imageIndex) => {
     updateVariantImages(variantIndex, list => list.filter((_, i) => i !== imageIndex));
   };
@@ -944,7 +1044,8 @@ const App = () => {
       return;
     }
     setEror('');
-    const optimizedFile = await resizeImageBeforeUpload(file);
+    const optimizedFile = await resizeForAdmin(file);
+    if (optimizedFile === undefined) return;
     if (!optimizedFile) {
       setEror('Browser tidak dapat mengonversi AVIF. Simpan gambar sebagai WebP lalu unggah kembali.');
       return;
@@ -975,13 +1076,36 @@ const App = () => {
 
   return (
     <>
-      <div className="form-grid" aria-busy={loading}>
+      {loading && <div className="loading-overlay show" role="dialog" aria-modal="true" aria-live="polite" aria-label="Status penyimpanan produk">
+        <div className="loading-card">
+          <span className="spinner" aria-hidden="true" />
+          <strong>{uploadProgress.phase === 'processing' ? 'Server sedang memproses produk' : 'Sedang mengunggah produk'}</strong>
+          <div className="save-progress" role="progressbar" aria-label={uploadProgress.phase === 'processing' ? 'Server sedang memproses' : 'Progress unggah'} aria-valuemin="0" aria-valuemax="100" {...(uploadProgress.phase === 'uploading' && uploadProgress.percent !== null ? { 'aria-valuenow': uploadProgress.percent } : {})}>
+            <span className={`save-progress__fill ${uploadProgress.phase === 'processing' || uploadProgress.percent === null ? 'is-indeterminate' : ''}`} style={uploadProgress.phase === 'processing' || uploadProgress.percent === null ? undefined : { width: `${uploadProgress.percent}%` }} />
+          </div>
+          <span>{uploadProgress.phase === 'processing'
+            ? 'Unggahan selesai. Server sedang menyimpan produk dan menyiapkan gambar WebP.'
+            : uploadProgress.percent === null ? 'Mengunggah data dan foto…' : `Mengunggah data dan foto: ${uploadProgress.percent}%`}</span>
+          <small>Persentase menunjukkan data yang sudah terkirim. Tahap penyimpanan server berlangsung setelah unggah selesai.</small>
+        </div>
+      </div>}
+      {Boolean(idProduct) && <nav className="edit-guide" aria-label="Navigasi bagian edit produk">
+        <p><strong>Langkah edit:</strong> pilih bagian yang ingin diubah. Semua perubahan disimpan bersama melalui tombol Simpan.</p>
+        <div className="edit-guide__steps">
+          <a href="#product-basic"><b>01</b> Info produk</a>
+          <a href="#product-description"><b>02</b> Deskripsi & ukuran</a>
+          <a href="#product-images"><b>03</b> Foto</a>
+          <a href="#product-variants"><b>04</b> Varian</a>
+        </div>
+      </nav>}
+      <div className="form-grid" aria-busy={loading || resizeProgress.active}>
         {/* Kiri */}
         <div className="card">
           <div className="card-header"><h2>Data Produk</h2></div>
           <div className="card-body">
             <table className="table-input w-100">
               <tbody>
+                <tr id="product-basic" className="edit-anchor"><td colSpan="2" className="section-title">Informasi produk</td></tr>
                 <tr>
                   <td>Nama Produk</td>
                   <td>
@@ -1085,6 +1209,7 @@ const App = () => {
                   </>
                 )}
 
+                <tr><td colSpan="2" className="section-title">Kanal penjualan</td></tr>
                 <tr>
                   <td>Link Shopee</td>
                   <td><input type="text" className="form-control"
@@ -1101,7 +1226,7 @@ const App = () => {
                     value={formData.tiktok} onChange={e => setFormData({ ...formData, tiktok: e.target.value })} /></td>
                 </tr>
 
-                <tr><td colSpan="2" className="section-title">Deskripsi</td></tr>
+                <tr id="product-description" className="edit-anchor"><td colSpan="2" className="section-title">Deskripsi & ukuran produk</td></tr>
                 <tr>
                   <td>Deskripsi</td>
                   <td>
@@ -1218,10 +1343,10 @@ const App = () => {
 
             <div className="bottom-bar">
               <div className="btn-row">
-                <button className="btn-default" disabled={loading} onClick={handleSubmit}>
+                <button className="btn-default" disabled={loading || resizeProgress.active} onClick={handleSubmit}>
                   <span style={{display:'inline-flex',alignItems:'center',gap:'8px'}}>
-                    {loading && <span className="spinner" style={{borderColor:'rgba(255,255,255,.35)', borderTopColor:'#fff'}}></span>}
-                    {loading ? 'Menyimpan...' : 'Simpan'}
+                    {(loading || resizeProgress.active) && <span className="spinner" style={{borderColor:'rgba(255,255,255,.35)', borderTopColor:'#fff'}}></span>}
+                    {loading ? 'Menyimpan...' : resizeProgress.active ? 'Menunggu resize...' : 'Simpan'}
                   </span>
                 </button>
               </div>
@@ -1231,11 +1356,12 @@ const App = () => {
         </div>
 
         {/* Kanan */}
-        <div className="card">
+        <div className="card edit-anchor" id="product-images">
           <div className="card-header"><h2>Media & Varian</h2></div>
           <div className="card-body">
             <p className="media-help">WebP diterima langsung; AVIF dikonversi di browser · maks. {MAX_UPLOAD_MB} MB per foto · maks. {MAX_PRODUCT_IMAGES} foto. Server hanya menerima dan menyimpan WebP.</p>
-            <div className="section-title">Gambar Hover</div>
+            <div className="section-title">Foto hover</div>
+            <p className="media-help">Foto ini tampil sebagai gambar kedua saat pelanggan mengarahkan kursor ke produk.</p>
             <div style={{display:'flex',alignItems:'center',gap:'12px',marginBottom:'18px'}}>
               <img className="preview-hover" src={hoverSrc || "/img/nopic.jpg"} alt="Pratinjau gambar hover" />
               <input
@@ -1252,7 +1378,11 @@ const App = () => {
                     return;
                   }
                   if (file) {
-                    const optimizedFile = await resizeImageBeforeUpload(file, 1200, 0.82);
+                    const optimizedFile = await resizeForAdmin(file, 1200, 0.82);
+                    if (optimizedFile === undefined) {
+                      e.target.value = '';
+                      return;
+                    }
                     if (!optimizedFile) {
                       setEror('Browser tidak dapat mengonversi AVIF. Simpan gambar hover sebagai WebP lalu unggah kembali.');
                       e.target.value = '';
@@ -1268,7 +1398,7 @@ const App = () => {
                 name="gambar_hover" type="file" accept="image/webp,image/avif" className="form-control" />
             </div>
 
-            <div className="section-title">Varian</div>
+            <div className="section-title edit-anchor" id="product-variants">Varian</div>
             <div className="image-workflow-note">
               <strong>Urutan foto menentukan tampilannya di toko.</strong>
               <ol>
@@ -1276,8 +1406,16 @@ const App = () => {
                 <li>Foto pertama pada varian pertama menjadi cover katalog; foto pertama tiap varian menjadi foto utamanya, lalu foto lain tampil di galeri detail.</li>
                 <li>Ganti atau hapus foto sebelum menyimpan. Perubahan baru berlaku setelah produk tersimpan.</li>
               </ol>
+              <small>Progress resize menunjukkan tahapan browser; tahap kompresi WebP dapat membutuhkan waktu lebih lama, tergantung ukuran gambar dan perangkat.</small>
             </div>
             <span className="image-order-status" role="status" aria-live="polite">{imageOrderMessage}</span>
+            {(resizeProgress.active || resizeProgress.message) && <div className="image-resize-progress" role="status" aria-live="polite">
+              <div className="image-resize-progress__top"><span className="image-resize-progress__label">{resizeProgress.active && <span className="image-resize-progress__spinner" aria-hidden="true" />}{resizeProgress.active ? 'Sedang menyiapkan gambar' : 'Status gambar'}</span><strong>{resizeProgress.percent}%</strong></div>
+              <div className="image-resize-progress__track" role="progressbar" aria-label="Progress resize gambar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={resizeProgress.percent} aria-valuetext={`${resizeProgress.percent}% tahapan — ${resizeProgress.message}`}>
+                <div className="image-resize-progress__fill" style={{ width: `${resizeProgress.percent}%` }} />
+              </div>
+              <small>{resizeProgress.message}</small>
+            </div>}
             <div id="container-varian" style={{ display:'flex', flexDirection:'column', gap:'16px' }}>
               {(formData.varian || []).map((v, ind_v) => (
                 <div key={ind_v} className="card" style={{ borderRadius:'12px' }}>
