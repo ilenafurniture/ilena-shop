@@ -1549,18 +1549,17 @@ sliders.forEach((slider) => {
     track.addEventListener('scroll', syncDots, { passive: true });
     let dragStartX = 0;
     let dragStartScroll = 0;
-    let pointerDown = false;
     let dragging = false;
     let suppressClick = false;
-    track.addEventListener('pointerdown', (event) => {
-        if (event.pointerType !== 'mouse' || event.button !== 0) return;
-        pointerDown = true;
+    track.addEventListener('mousedown', (event) => {
+        if (event.button !== 0) return;
         dragStartX = event.clientX;
         dragStartScroll = track.scrollLeft;
         dragging = false;
+        track.classList.add('is-grabbing');
     });
-    window.addEventListener('pointermove', (event) => {
-        if (!pointerDown || event.pointerType !== 'mouse' || !(event.buttons & 1)) return;
+    window.addEventListener('mousemove', (event) => {
+        if (!(event.buttons & 1) || !track.classList.contains('is-grabbing')) return;
         const distance = event.clientX - dragStartX;
         if (!dragging && Math.abs(distance) < 6) return;
         dragging = true;
@@ -1569,14 +1568,15 @@ sliders.forEach((slider) => {
         event.preventDefault();
     });
     const finishDrag = () => {
+        track.classList.remove('is-grabbing');
         if (!dragging) return;
         dragging = false;
         track.classList.remove('is-dragging');
         suppressClick = true;
         window.setTimeout(() => { suppressClick = false; }, 250);
     };
-    window.addEventListener('pointerup', () => { pointerDown = false; finishDrag(); });
-    window.addEventListener('pointercancel', () => { pointerDown = false; finishDrag(); });
+    window.addEventListener('mouseup', finishDrag);
+    track.addEventListener('dragstart', (event) => event.preventDefault());
     track.addEventListener('click', (event) => {
         if (!suppressClick) return;
         event.preventDefault();
