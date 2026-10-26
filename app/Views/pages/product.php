@@ -290,8 +290,8 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                             aria-label="Warna <?= esc($v['nama'], 'attr') ?>"
                             type="radio"
                             name="varian">
-                        <label for="varian<?= $ind_v ?>" title="<?= esc($v['nama'], 'attr') ?>"><span
-                                style="background-color: <?= esc($v['kode'], 'attr') ?>"></span><span class="ilena-variant-name"><?= esc($v['nama']); ?></span></label>
+                        <label for="varian<?= $ind_v ?>" title="<?= esc($v['nama'], 'attr') ?>"><span aria-hidden="true"
+                                style="background-color: <?= esc($v['kode'], 'attr') ?>"></span></label>
                         <?php } ?>
                     </div></section>
                     <section class="ilena-option-group" aria-labelledby="desktop-size-label">
@@ -505,8 +505,8 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                             data-stok="<?= (int)($v['stok'] ?? 0) ?>"
                             aria-label="Warna <?= esc($v['nama'], 'attr') ?>"
                             type="radio" name="varian-mobile">
-                        <label for="varian<?= $ind_v ?>-mobile" title="<?= esc($v['nama'], 'attr') ?>"><span
-                                style="background-color: <?= esc($v['kode'], 'attr') ?>"></span><span class="ilena-variant-name"><?= esc($v['nama']); ?></span></label>
+                        <label for="varian<?= $ind_v ?>-mobile" title="<?= esc($v['nama'], 'attr') ?>"><span aria-hidden="true"
+                                style="background-color: <?= esc($v['kode'], 'attr') ?>"></span></label>
                         <?php } ?>
                     </div></section>
                     <section class="ilena-option-group" aria-labelledby="mobile-size-label">
