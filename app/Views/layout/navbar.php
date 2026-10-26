@@ -155,9 +155,13 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
             }
         }, [enterNavbar])
         const handleHoverJenis = (category, products) =>{
-            // Jangan memuat preview acak saat menu dibuka. Tampilkan satu foto
-            // hanya setelah koleksi tertentu dipilih/diarahkan.
-            setProductSelected(null);
+            // console.log({
+            //     category,
+            //     products
+            // })
+            // console.log(Array.isArray(products) ? products[0] : products[Object.keys(products)[0]][0])
+            if(category == null) setProductSelected(null);
+            else setProductSelected(Array.isArray(products) ? products[0] : products[Object.keys(products)[0]][0]);
             setJenisSelected({
                 category,
                 products
@@ -283,14 +287,13 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
                             ))} </>
                         }
                         </div>
-                        <div className="child-list-nav-preview" style={{ flex: 1 }}>
-                            {productSelected ? <>
+                        {productSelected && 
+                            <div style={{ flex: 1 }}>
                                 <div
                                     className={`d-flex gap-4 mb-3`}
                                 >
                                     <div style={{ flex: 1 }}>
                                         <img
-                                            key={productSelected.id}
                                             style={{
                                             borderRadius: '6px',
                                             overflow: 'hidden',
@@ -329,8 +332,8 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
                                 <p className="text-secondary">
                                     Terinspirasi oleh keindahan perpaduan dua material: kayu hangat dan logam tebal. Dibuat dengan sungguh-sungguh untuk melengkapi interior estetis, menghadirkan kenyamanan dan ketenangan bagi setiap penghuninya. Kami berbagi semangat kami dengan nama Ilena.
                                 </p>
-                            </> : <div className="child-list-nav-preview-empty" role="status">Pilih atau arahkan kursor ke koleksi untuk melihat satu pratinjau produk.</div>}
-                        </div>
+                            </div>
+                        }
                     </div>
                 </div>
             </>
