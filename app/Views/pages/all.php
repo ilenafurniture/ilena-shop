@@ -673,7 +673,7 @@ if (isset($_GET['ruang'])) {
                                 <?= $cardLocalSrc === '' && $cardCdnSrc !== '' ? 'srcset="' . esc($cardCdnSrcset, 'attr') . '" sizes="(max-width: 600px) 46vw, (max-width: 1100px) 30vw, 300px"' : '' ?>
                                 width="300" height="300" alt="<?= esc($p['nama'], 'attr') ?>"
                                 loading="<?= $ind_p < 2 ? 'eager' : 'lazy' ?>" fetchpriority="<?= $ind_p === 0 ? 'high' : 'auto' ?>" decoding="async">
-                            <?php if (is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') || !empty($p['gambar_hover'])) { ?>
+                            <?php if (is_file(FCPATH . 'uploads/product-images/hover/' . $p['id'] . '.webp') || is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') || !empty($p['gambar_hover'])) { ?>
                             <img class="img-pic-hover lazy-hover-product"
                                 data-src="<?= esc(is_file(FCPATH . 'uploads/product-images/hover/' . $p['id'] . '.webp') ? (base_url('uploads/product-images/hover/' . rawurlencode((string) $p['id']) . '.webp') . '?v=' . $cardVersion) : ($productCdnImageUrl('products/hover/' . rawurlencode((string) $p['id']) . '.webp', $cardVersion) ?: (base_url('viewpichover/' . $p['id']) . '?v=' . $cardVersion)), 'attr') ?>"
                                 data-image-fallback="<?= esc(base_url('viewpichover/' . rawurlencode((string) $p['id'])) . '?v=' . $cardVersion, 'attr') ?>"
@@ -1785,7 +1785,7 @@ document.querySelectorAll('.gambar').forEach((card) => {
     const hoverImg = card.querySelector('.lazy-hover-product');
     if (!hoverImg) return;
     const loadHover = () => {
-        if (!hoverImg.src && hoverImg.dataset.src) {
+        if (!hoverImg.hasAttribute('src') && hoverImg.dataset.src) {
             hoverImg.src = hoverImg.dataset.src;
         }
     };

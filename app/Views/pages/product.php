@@ -34,7 +34,9 @@ $sanitizeProductHtml = static function (string $html): string {
     foreach ($root->childNodes as $child) $clean .= $render($child);
     return $clean;
 };
-$punyaGambarHoverDetail = is_file(FCPATH . 'img/barang/hover/' . $produk['id'] . '.webp') || !empty($produk['gambar_hover']);
+$punyaGambarHoverDetail = is_file(FCPATH . 'uploads/product-images/hover/' . $produk['id'] . '.webp')
+    || is_file(FCPATH . 'img/barang/hover/' . $produk['id'] . '.webp')
+    || !empty($produk['gambar_hover']);
 $imageSlotExists = function (string $slot) use ($produk): bool {
     $slot = trim($slot);
     if ($slot === '') return false;
@@ -585,7 +587,7 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                             src="<?= esc($relatedLocalImage !== '' ? $relatedLocalImage : ($relatedCdnImage !== '' ? $relatedCdnImage : $productCoverUrl($p)), 'attr') ?>"
                             <?= $relatedLocalImage === '' && $relatedCdnImage !== '' ? 'data-image-fallback="' . esc($relatedImageFallback, 'attr') . '" onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"' : '' ?>
                             width="300" height="300" alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async">
-                        <?php if (is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') || !empty($p['gambar_hover'])) { ?>
+                        <?php if (is_file(FCPATH . 'uploads/product-images/hover/' . $p['id'] . '.webp') || is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') || !empty($p['gambar_hover'])) { ?>
                         <img class="img-pic-hover lazy-hover-product"
                             data-src="<?= esc(is_file(FCPATH . 'uploads/product-images/hover/' . $p['id'] . '.webp') ? (base_url('uploads/product-images/hover/' . rawurlencode((string) $p['id']) . '.webp') . '?v=' . $relatedVersion) : ($productImageCdn !== '' ? $productImageCdn . '/products/hover/' . rawurlencode((string) $p['id']) . '.webp?v=' . $relatedVersion : (is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') ? base_url('img/barang/hover/' . $p['id'] . '.webp') : base_url('viewpichover/' . $p['id']) . '?v=' . $relatedVersion)), 'attr') ?>"
                             data-image-fallback="<?= esc(base_url('viewpichover/' . rawurlencode((string) $p['id'])) . '?v=' . $relatedVersion, 'attr') ?>" onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}" alt="" aria-hidden="true" loading="lazy" decoding="async">
@@ -882,7 +884,7 @@ document.querySelectorAll('.gambar').forEach((card) => {
     const hoverImg = card.querySelector('.lazy-hover-product');
     if (!hoverImg) return;
     const loadHover = () => {
-        if (!hoverImg.src && hoverImg.dataset.src) {
+        if (!hoverImg.hasAttribute('src') && hoverImg.dataset.src) {
             hoverImg.src = hoverImg.dataset.src;
         }
     };
