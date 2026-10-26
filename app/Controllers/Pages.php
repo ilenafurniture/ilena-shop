@@ -29,6 +29,7 @@ use App\Services\ShippingService;
 use App\Services\FreeShippingService;
 use App\Services\AdminRbacService;
 use App\Services\SpamAccountCleanupService;
+use App\Services\CheckoutEmailPolicy;
 use App\Services\R2ProductImageService;
 use App\Services\HomeAssetManager;
 
@@ -1039,6 +1040,7 @@ class Pages extends BaseController
             'hargaKeseluruhan' => $hargaTotal,
             'alamat' => $alamat,
             'alamatJson' => json_encode($alamat),
+            'openAddAddressModal' => session()->getFlashdata('openAddAddressModal'),
             'email' => session()->get('email') ? session()->get('email') : '',
             'nama' => session()->get('nama') ? session()->get('nama') : '',
             'nohp' => session()->get('nohp') ? session()->get('nohp') : '',
@@ -1049,8 +1051,14 @@ class Pages extends BaseController
     public function addAddress()
     {
         // dd($this->request->getVar());
-        $checkPage = $this->request->getVar('checkpage');
-        $emailPem = $this->request->getVar('emailPem');
+        $checkPage = $this->request->getPost('checkpage') === 'account' ? 'account' : 'address';
+        $redirectPath = $checkPage === 'account' ? '/account' : '/address';
+        $emailPem = CheckoutEmailPolicy::normalize($this->request->getPost('emailPem'));
+        if ($emailPem === null) {
+            session()->setFlashdata('msg', 'Email tidak valid atau termasuk email sementara. Gunakan email pribadi yang aktif.');
+            if ($checkPage === 'address') session()->setFlashdata('openAddAddressModal', true);
+            return redirect()->to($redirectPath)->withInput();
+        }
         $nama = $this->request->getVar('nama');
         $nohp = $this->request->getVar('nohp');
         $provinsi = explode("-", $this->request->getVar('provinsi'));
@@ -1063,11 +1071,11 @@ class Pages extends BaseController
         if (!isset($alamat)) {
             $alamat = [];
         }
-        $email = session()->get('email');
+        $email = strtolower(trim((string)session()->get('email')));
         if ($email) {
             if ($email != $emailPem) {
                 session()->setFlashdata('msg', 'Email yang dimasukan harus sesuai dengan email akun member Anda');
-                return redirect()->to($checkPage == 'address' ? '/address' : '/account');
+                return redirect()->to($redirectPath)->withInput();
             }
         }
         array_push($alamat, [
@@ -1088,7 +1096,7 @@ class Pages extends BaseController
         $this->session->set(['alamat' => $alamat]);
 
         if ($email) $this->pembeliModel->where('email', $email)->set(['alamat' => json_encode($alamat)])->update();
-        return redirect()->to($checkPage == 'address' ? '/address' : '/account');
+        return redirect()->to($redirectPath);
     }
     public function deleteAddress($ind_add, $pathname)
     {
@@ -1101,14 +1109,14 @@ class Pages extends BaseController
         $alamatBaru = array_values($alamat);
         $this->session->set(['alamat' => $alamatBaru]);
 
-        $email = session()->get('email');
+        $email = strtolower(trim((string)session()->get('email')));
         if ($email)
             $this->pembeliModel->where('email', $email)->set(['alamat' => json_encode($alamatBaru)])->update();
         return redirect()->to($redirectPath);
     }
     public function editAddress($ind_add)
     {
-        $emailPem = $this->request->getVar('emailPem');
+        $emailPem = CheckoutEmailPolicy::normalize($this->request->getPost('emailPem'));
         $nama = $this->request->getVar('nama');
         $nohp = $this->request->getVar('nohp');
         $provinsi = explode("-", $this->request->getVar('provinsiEdit'));
@@ -1120,12 +1128,17 @@ class Pages extends BaseController
             ? $this->request->getVar('url')
             : '/address';
 
+        if ($emailPem === null) {
+            session()->setFlashdata('msg', 'Email tidak valid atau termasuk email sementara. Gunakan email pribadi yang aktif.');
+            return redirect()->to($pathnameUrl)->withInput();
+        }
+
         $alamat = $this->session->get('alamat');
         if (!is_array($alamat) || !array_key_exists($ind_add, $alamat)) {
             session()->setFlashdata('msg', 'Alamat tidak ditemukan.');
             return redirect()->to($pathnameUrl);
         }
-        $email = session()->get('email');
+        $email = strtolower(trim((string)session()->get('email')));
         if ($email) {
             if ($email != $emailPem) {
                 session()->setFlashdata('msg', 'Email yang dimasukan harus sesuai dengan email akun member Anda');
@@ -1161,6 +1174,10 @@ class Pages extends BaseController
         }
 
         $alamatselected = $alamat[$ind_add];
+        if (CheckoutEmailPolicy::normalize($alamatselected['email_pemesan'] ?? null) === null) {
+            session()->setFlashdata('msg', 'Email pemesan tidak valid atau termasuk email sementara. Perbarui alamat dengan email pribadi yang aktif.');
+            return redirect()->to('/address');
+        }
         $keranjang = $this->session->get('keranjang');
         if (!isset($keranjang)) {
             return redirect()->to('/product');
@@ -1340,6 +1357,14 @@ class Pages extends BaseController
         $kurir = $this->session->get('kurir');
 
         if (!is_array($alamatselected) || empty($alamatselected)) return redirect()->to('/address');
+        $paymentEmailCandidate = session()->get('isLogin') && (string)session()->get('email') !== '' && (string)session()->get('email') !== 'tamu'
+            ? session()->get('email')
+            : ($alamatselected['email_pemesan'] ?? null);
+        if (CheckoutEmailPolicy::normalize($paymentEmailCandidate) === null
+            || CheckoutEmailPolicy::normalize($alamatselected['email_pemesan'] ?? null) === null) {
+            session()->setFlashdata('msg', 'Email pemesan tidak valid atau termasuk email sementara. Perbarui alamat dengan email pribadi yang aktif.');
+            return redirect()->to('/address');
+        }
         if (!is_array($kurir) || !array_key_exists($index_kurir, $kurir)) return redirect()->to('/address');
         if (!is_array($keranjang) || empty($keranjang)) {
             session()->setFlashdata('msg','Keranjangmu kosong.');
@@ -2300,6 +2325,11 @@ class Pages extends BaseController
             session()->setFlashdata('msg','Alamat tidak ditemukan, silakan ulangi.');
             return redirect()->to('/address');
         }
+        $checkoutContactEmail = CheckoutEmailPolicy::normalize($alamatselected['email_pemesan'] ?? null);
+        if ($checkoutContactEmail === null) {
+            session()->setFlashdata('msg', 'Email pemesan tidak valid atau termasuk email sementara. Perbarui alamat dengan email pribadi yang aktif.');
+            return redirect()->to('/address');
+        }
         if (!is_array($kurir) || !array_key_exists($index_kurir, $kurir)) {
             session()->setFlashdata('msg','Kurir tidak ditemukan, silakan pilih ulang.');
             return redirect()->to('/address');
@@ -2311,7 +2341,13 @@ class Pages extends BaseController
         }
 
         $sessionEmail = (string)session()->get('email');
-        $email = PaymentSafety::normalizeEmail($sessionEmail !== '' && $sessionEmail !== 'tamu' ? $sessionEmail : (string)$alamatselected['email_pemesan']);
+        $paymentEmailCandidate = $sessionEmail !== '' && $sessionEmail !== 'tamu' ? $sessionEmail : $checkoutContactEmail;
+        $paymentEmail = CheckoutEmailPolicy::normalize($paymentEmailCandidate);
+        if ($paymentEmail === null) {
+            session()->setFlashdata('msg', 'Email pemesan tidak valid atau termasuk email sementara. Perbarui alamat dengan email pribadi yang aktif.');
+            return redirect()->to('/address');
+        }
+        $email = PaymentSafety::normalizeEmail($paymentEmail);
         $isSandboxCheckout = session()->get('isLogin') && $sessionEmail !== 'tamu' && PaymentSafety::isTestEmail($sessionEmail, $this->midtransTestEmails());
         $nama = $alamatselected['nama_penerima'];
         $nohp = $alamatselected['nohp_penerima'];

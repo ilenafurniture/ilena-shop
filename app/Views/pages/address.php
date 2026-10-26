@@ -400,7 +400,7 @@ input[type="radio"][name="address"]:checked+.item-address {
                         <h5 class="mb-2" style="font-weight:700; letter-spacing:-.01em;">Informasi Pemesan</h5>
                         <div class="form-floating mb-2">
                             <input type="email" class="form-control" placeholder="Email" name="emailPem" required
-                                value="<?= $email; ?>">
+                                value="<?= esc(old('emailPem', $email), 'attr'); ?>">
                             <label>Email</label>
                         </div>
                     </div>
@@ -687,10 +687,10 @@ function toast(msg, type = 'success') {
     el.querySelector('.x').addEventListener('click', kill);
     setTimeout(kill, 3500);
 }
-<?php if ($msg) { ?> toast(`<?= addslashes($msg); ?>`, 'success');
+<?php if ($msg) { ?> toast(`<?= addslashes($msg); ?>`, 'error');
 <?php } ?>
 
-if (alamatJson.length == 0) {
+if (alamatJson.length == 0 || <?= !empty($openAddAddressModal) ? 'true' : 'false'; ?>) {
     addModalContainer.classList.remove("d-none");
     addModalContainer.classList.add("d-flex");
 }
