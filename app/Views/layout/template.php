@@ -218,9 +218,16 @@
                 image.hidden = true;
                 return;
             }
-            image.dataset.ilenaFallbackApplied = 'true';
-            image.classList.add('ilena-image-fallback');
-            image.src = fallbackImageUrl;
+            // Let a component-specific onerror try its own alternate source first.
+            // Only use the shared placeholder if this dispatch leaves the source unchanged.
+            const failedSource = image.src;
+            queueMicrotask(() => {
+                if (!image.isConnected || image.dataset.ilenaFallbackApplied === 'true') return;
+                if (image.src !== failedSource) return;
+                image.dataset.ilenaFallbackApplied = 'true';
+                image.classList.add('ilena-image-fallback');
+                image.src = fallbackImageUrl;
+            });
         }, true);
     })();
     </script>
