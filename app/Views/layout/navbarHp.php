@@ -1,6 +1,6 @@
 <div class="navbar-hp-atas hide-ke-show-flex">
     <a href="/" aria-label="Ilena Furniture — Beranda">
-        <img src="<?= base_url('/img/Logo Putih Ilena 1.png'); ?>" alt="Ilena Furniture" width="112" height="22" decoding="async">
+        <img src="<?= base_url('/img/logo/N.png'); ?>" alt="Ilena Furniture" width="36" height="36" decoding="async">
     </a>
     <a class="ilena-mobile-lunarea-link" href="https://lunareafurniture.com" target="_blank" rel="noopener noreferrer" aria-label="Kunjungi Lunarea Furniture">
         <img src="<?= base_url('img/logolunareanavbar.webp'); ?>" width="112" height="24" alt="Lunarea Furniture">
