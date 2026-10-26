@@ -5798,6 +5798,63 @@ body.ilena-storefront.ilena-page--home .ilena-home-popup__dialog :focus-visible 
     body.ilena-storefront .ilena-cart-page .number-control-hp button,
     body.ilena-storefront .ilena-cart-page .number-control-hp :where(.number-left, .number-right) { width: 36px; }
 }
+
+/* Final cart phone layout: keep product details wide and move controls below. */
+@media (max-width: 700px) {
+    body.ilena-storefront .ilena-cart-page > .konten > .tigapuluh-ke-seratus {
+        flex: 0 0 100%; width: 100%; min-width: 0;
+    }
+    body.ilena-storefront .ilena-cart-page .item-keranjang-hp {
+        grid-template-columns: 72px minmax(0, 1fr); align-items: start; gap: 12px;
+        padding-block: 16px; overflow: hidden;
+    }
+    body.ilena-storefront .ilena-cart-page .item-keranjang-hp > a:first-child img {
+        width: 72px; height: 88px; flex: none;
+    }
+    body.ilena-storefront .ilena-cart-page .item-keranjang-hp > div:nth-child(2) {
+        width: auto; min-width: 0; min-height: 88px;
+    }
+    body.ilena-storefront .ilena-cart-page .item-keranjang-hp > div:nth-child(2) > a {
+        height: auto !important; min-height: 88px; justify-content: flex-start; gap: 4px;
+    }
+    body.ilena-storefront .ilena-cart-page .item-keranjang-hp > div:nth-child(2) > a > div {
+        flex: 0 1 auto !important; min-width: 0;
+    }
+    body.ilena-storefront .ilena-cart-page .item-keranjang-hp .nama-barang {
+        margin: 3px 0 6px; font-size: 14px; line-height: 1.35; overflow-wrap: anywhere;
+    }
+    body.ilena-storefront .ilena-cart-page .item-keranjang-hp > div:nth-child(2) > a > p:last-child {
+        margin: 0 !important; color: var(--ilena-muted); font-size: 11px !important; line-height: 1.4;
+    }
+    body.ilena-storefront .ilena-cart-page .item-keranjang-hp > div:last-child {
+        grid-column: 1 / -1; width: 100%; min-width: 0; flex-direction: row;
+        align-items: center; justify-content: space-between; gap: 12px !important; padding-top: 2px;
+    }
+    body.ilena-storefront .ilena-cart-page .item-keranjang-hp .number-control-hp {
+        flex: 0 0 auto; height: 44px;
+    }
+    body.ilena-storefront .ilena-cart-page .item-keranjang-hp .number-control-hp form,
+    body.ilena-storefront .ilena-cart-page .item-keranjang-hp .number-control-hp button,
+    body.ilena-storefront .ilena-cart-page .item-keranjang-hp .number-control-hp :where(.number-left, .number-right) {
+        width: 42px; height: 42px; min-width: 42px; min-height: 42px;
+    }
+    body.ilena-storefront .ilena-cart-page .item-keranjang-hp > div:last-child > form {
+        margin: 0; align-self: center;
+    }
+    body.ilena-storefront .ilena-cart-page .item-keranjang-hp .btn-teks-aja {
+        min-height: 44px; padding-inline: 12px; text-decoration: underline; text-underline-offset: 3px;
+    }
+    body.ilena-storefront .ilena-cart-page .ilena-cart-summary {
+        margin: 0; padding: 18px 0 0 !important; background: transparent; border-radius: 0;
+        box-shadow: none; border-top: 1px solid var(--ilena-line);
+    }
+}
+@media (max-width: 360px) {
+    body.ilena-storefront .ilena-cart-page .item-keranjang-hp { grid-template-columns: 64px minmax(0, 1fr); gap: 10px; }
+    body.ilena-storefront .ilena-cart-page .item-keranjang-hp > a:first-child img { width: 64px; height: 80px; }
+    body.ilena-storefront .ilena-cart-page .item-keranjang-hp > div:nth-child(2) { min-height: 80px; }
+    body.ilena-storefront .ilena-cart-page .item-keranjang-hp > div:nth-child(2) > a { min-height: 80px; }
+}
 @media (prefers-reduced-motion: reduce) {
     body.ilena-storefront .expend-hp :where(.collectionjdl i, .container-collection) { transition: none !important; }
 }
