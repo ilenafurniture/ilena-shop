@@ -1564,12 +1564,14 @@ sliders.forEach((slider) => {
         const distance = event.clientX - dragStartX;
         if (!dragging && Math.abs(distance) < 6) return;
         dragging = true;
+        track.classList.add('is-dragging');
         track.scrollLeft = dragStartScroll - distance;
         event.preventDefault();
     });
     const finishDrag = () => {
         if (!dragging) return;
         dragging = false;
+        track.classList.remove('is-dragging');
         suppressClick = true;
         window.setTimeout(() => { suppressClick = false; }, 250);
     };
