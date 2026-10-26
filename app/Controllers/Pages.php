@@ -5458,7 +5458,44 @@ class Pages extends BaseController
             }
         }
 
-        if ($this->r2ProductImages->enabled()) {
+        // Avoid a remote R2 HEAD request when the requested derivative is
+        // already present locally. This route is a compatibility/fallback
+        // path; the storefront normally loads public R2 URLs directly.
+        $localImageCandidates = $preferThumbnail
+            ? [
+                "uploads/product-images/300/{$safeId}.webp",
+                "img/barang/300/{$safeId}.webp",
+                "uploads/product-images/1000/{$safeId}-{$slot}.webp",
+                "uploads/product-images/3000/{$safeId}-{$slot}.webp",
+                "img/barang/1000/{$safeId}-{$slot}.webp",
+                "img/barang/3000/{$safeId}-{$slot}.webp",
+            ]
+            : ($requestedSlot !== ''
+                ? [
+                    "uploads/product-images/1000/{$safeId}-{$slot}.webp",
+                    "uploads/product-images/3000/{$safeId}-{$slot}.webp",
+                    "img/barang/1000/{$safeId}-{$slot}.webp",
+                    "img/barang/3000/{$safeId}-{$slot}.webp",
+                ]
+                : [
+                    "uploads/product-images/300/{$safeId}.webp",
+                    "img/barang/300/{$safeId}.webp",
+                    "uploads/product-images/1000/{$safeId}-{$slot}.webp",
+                    "uploads/product-images/3000/{$safeId}-{$slot}.webp",
+                    "img/barang/1000/{$safeId}-{$slot}.webp",
+                    "img/barang/3000/{$safeId}-{$slot}.webp",
+                ]);
+        $hasLocalImageCandidate = false;
+        foreach ($localImageCandidates as $relativePath) {
+            $absolutePath = rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
+                . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
+            if (is_file($absolutePath)) {
+                $hasLocalImageCandidate = true;
+                break;
+            }
+        }
+
+        if ($this->r2ProductImages->enabled() && !$hasLocalImageCandidate) {
             $hasSlotRequest = $requestedSlot !== '';
             if ($preferThumbnail) {
                 $r2Candidates = ["products/300/{$safeId}.webp", "products/1000/{$safeId}-{$slot}.webp", "products/3000/{$safeId}-{$slot}.webp"];
