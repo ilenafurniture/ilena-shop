@@ -674,11 +674,13 @@ if (isset($_GET['ruang'])) {
                             ?>
                             <img class="img-pic" id="img<?= $ind_p ?>"
                                 src="<?= esc($cardLocalSrc !== '' ? $cardLocalSrc : ($cardCdnSrc !== '' ? $cardCdnSrc : $productCoverUrl($p)), 'attr') ?>"
-                                <?= $cardLocalSrc === '' && $cardCdnSrc !== '' ? 'data-image-fallback="' . esc($cardFallback, 'attr') . '" onerror="if(this.dataset.imageFallback){this.onerror=null;this.removeAttribute(\'srcset\');this.src=this.dataset.imageFallback;}"' : '' ?>
+                                <?= $cardLocalSrc === '' && $cardCdnSrc !== '' ? 'data-image-fallback="' . esc($cardFallback, 'attr') . '"' : '' ?>
                                 <?= $cardLocalSrc !== '' && $cardLocal1000Src !== '' ? 'srcset="' . esc($cardLocalSrc . ' 300w, ' . $cardLocal1000Src . ' 1000w', 'attr') . '"' : ($cardLocalSrc === '' && $cardCdnSrc !== '' ? 'srcset="' . esc($cardCdnSrcset, 'attr') . '"' : '') ?>
                                 sizes="(max-width: 600px) 46vw, (max-width: 1100px) 30vw, 300px"
                                 width="300" height="300" alt="<?= esc($p['nama'], 'attr') ?>"
-                                loading="<?= $ind_p < 2 ? 'eager' : 'lazy' ?>" fetchpriority="<?= $ind_p === 0 ? 'high' : 'auto' ?>" decoding="async">
+                                loading="<?= $ind_p < 2 ? 'eager' : 'lazy' ?>" fetchpriority="<?= $ind_p === 0 ? 'high' : 'auto' ?>" decoding="async"
+                                onload="this.classList.add('is-loaded');this.closest('.gambar')?.classList.add('is-image-loaded')"
+                                onerror="if(this.dataset.imageFallback&&!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.removeAttribute('srcset');this.src=this.dataset.imageFallback;return;}this.classList.add('is-loaded');this.closest('.gambar')?.classList.add('is-image-loaded')">
                             <?php if (is_file(FCPATH . 'uploads/product-images/hover/' . $p['id'] . '.webp') || is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') || !empty($p['gambar_hover'])) { ?>
                             <img class="img-pic-hover lazy-hover-product"
                                 data-src="<?= esc(is_file(FCPATH . 'uploads/product-images/hover/' . $p['id'] . '.webp') ? (base_url('uploads/product-images/hover/' . rawurlencode((string) $p['id']) . '.webp') . '?v=' . $cardVersion) : ($productCdnImageUrl('products/hover/' . rawurlencode((string) $p['id']) . '.webp', $cardVersion) ?: (base_url('viewpichover/' . $p['id']) . '?v=' . $cardVersion)), 'attr') ?>"

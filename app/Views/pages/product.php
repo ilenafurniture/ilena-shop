@@ -592,10 +592,12 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                     <a href="<?= esc($relatedProductUrl, 'attr') ?>" class="gambar">
                         <img class="img-pic" id="img<?= $ind_p ?>"
                             src="<?= esc($relatedLocalImage !== '' ? $relatedLocalImage : ($relatedCdnImage !== '' ? $relatedCdnImage : $productCoverUrl($p)), 'attr') ?>"
-                            <?= $relatedLocalImage === '' && $relatedCdnImage !== '' ? 'data-image-fallback="' . esc($relatedImageFallback, 'attr') . '" onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"' : '' ?>
+                            <?= $relatedLocalImage === '' && $relatedCdnImage !== '' ? 'data-image-fallback="' . esc($relatedImageFallback, 'attr') . '"' : '' ?>
                             <?= $relatedLocalImage !== '' && $relatedLocal1000Image !== '' ? 'srcset="' . esc($relatedLocalImage . ' 300w, ' . $relatedLocal1000Image . ' 1000w', 'attr') . '"' : '' ?>
                             sizes="(max-width: 600px) 46vw, (max-width: 1100px) 30vw, 300px"
-                            width="300" height="300" alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async">
+                            width="300" height="300" alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async"
+                            onload="this.classList.add('is-loaded');this.closest('.gambar')?.classList.add('is-image-loaded')"
+                            onerror="if(this.dataset.imageFallback&&!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.removeAttribute('srcset');this.src=this.dataset.imageFallback;return;}this.classList.add('is-loaded');this.closest('.gambar')?.classList.add('is-image-loaded')">
                         <?php if (is_file(FCPATH . 'uploads/product-images/hover/' . $p['id'] . '.webp') || is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') || !empty($p['gambar_hover'])) { ?>
                         <img class="img-pic-hover lazy-hover-product"
                             data-src="<?= esc(is_file(FCPATH . 'uploads/product-images/hover/' . $p['id'] . '.webp') ? (base_url('uploads/product-images/hover/' . rawurlencode((string) $p['id']) . '.webp') . '?v=' . $relatedVersion) : ($productImageCdn !== '' ? $productImageCdn . '/products/hover/' . rawurlencode((string) $p['id']) . '.webp?v=' . $relatedVersion : (is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') ? base_url('img/barang/hover/' . $p['id'] . '.webp') : base_url('viewpichover/' . $p['id']) . '?v=' . $relatedVersion)), 'attr') ?>"

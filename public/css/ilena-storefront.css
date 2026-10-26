@@ -3149,8 +3149,15 @@ body.ilena-storefront .ilena-catalog-grid .card1 {
 }
 body.ilena-storefront .ilena-catalog-grid .card1 > div:first-child { position: relative !important; overflow: hidden; background: #efede9; }
 body.ilena-storefront .ilena-catalog-grid .card1 .gambar {
-    position: relative; display: block; overflow: hidden; aspect-ratio: 1 / 1; background: #efede9;
+    position: relative; display: block; overflow: hidden; aspect-ratio: 1 / 1;
+    background: linear-gradient(100deg, #efede9 35%, #f7f5f1 50%, #efede9 65%);
+    background-size: 220% 100%; animation: ilena-image-shimmer 1.8s ease-in-out infinite;
 }
+@keyframes ilena-image-shimmer { to { background-position: -220% 0; } }
+body.ilena-storefront .ilena-catalog-grid .card1 .gambar.is-image-loaded {
+    animation: none; background: #efede9;
+}
+body.ilena-storefront .ilena-catalog-grid .card1 .gambar .img-pic:not(.is-loaded) { opacity: 0; }
 body.ilena-storefront .ilena-catalog-grid .card1 .gambar::before {
     position: absolute; z-index: 1; inset: 35% 0 0; content: ""; pointer-events: none;
     background: linear-gradient(transparent, rgba(25,22,19,.38)); opacity: 0; transition: opacity .3s ease;
@@ -3424,6 +3431,9 @@ img.ilena-image-fallback {
     body.ilena-storefront .ilena-mobile-lunarea-link { display: none !important; }
     body.ilena-storefront .expend-hp { display: none !important; z-index: 1002; }
     body.ilena-storefront #n-logo:checked ~ .expend-hp { display: block !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront .ilena-catalog-grid .card1 .gambar { animation: none; }
 }
 
 /* Payment step: compact review hierarchy and calm selectable payment methods. */
