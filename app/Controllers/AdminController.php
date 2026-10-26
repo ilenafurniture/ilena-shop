@@ -1075,12 +1075,20 @@ class AdminController extends BaseController
                         }
                     }
                     if ($this->r2ProductImages->enabled()) {
-                        $r2Snapshot = $this->r2ProductImages->snapshotObject($backup['r2Key']);
-                        $backup['r2Existed'] = $r2Snapshot['exists'];
-                        if ($backup['r2Existed']) {
-                            $backup['r2Backup'] = $tmpDir . DIRECTORY_SEPARATOR . 'backup-r2-' . uniqid('', true) . '.webp';
-                            if (file_put_contents($backup['r2Backup'], $r2Snapshot['body']) === false) {
-                                throw new \RuntimeException('Backup gambar R2 lama gagal disimpan: ' . $destination);
+                        if ($backup['localExisted'] && !empty($backup['localBackup'])) {
+                            // Admin uploads keep a local mirror. Reuse its exact
+                            // rollback copy instead of making a remote HEAD+GET
+                            // pair for every derivative during a normal edit.
+                            $backup['r2Existed'] = true;
+                            $backup['r2Backup'] = $backup['localBackup'];
+                        } else {
+                            $r2Snapshot = $this->r2ProductImages->snapshotObject($backup['r2Key']);
+                            $backup['r2Existed'] = $r2Snapshot['exists'];
+                            if ($backup['r2Existed']) {
+                                $backup['r2Backup'] = $tmpDir . DIRECTORY_SEPARATOR . 'backup-r2-' . uniqid('', true) . '.webp';
+                                if (file_put_contents($backup['r2Backup'], $r2Snapshot['body']) === false) {
+                                    throw new \RuntimeException('Backup gambar R2 lama gagal disimpan: ' . $destination);
+                                }
                             }
                         }
                     }
@@ -1198,12 +1206,17 @@ class AdminController extends BaseController
                             }
                         }
                         if ($this->r2ProductImages->enabled()) {
-                            $r2ThumbSnapshot = $this->r2ProductImages->snapshotObject($thumbKey);
-                            $thumbBackup['r2Existed'] = $r2ThumbSnapshot['exists'];
-                            if ($thumbBackup['r2Existed']) {
-                                $thumbBackup['r2Backup'] = $tmpDir . DIRECTORY_SEPARATOR . 'backup-r2-thumb-' . uniqid('', true) . '.webp';
-                                if (file_put_contents($thumbBackup['r2Backup'], $r2ThumbSnapshot['body']) === false) {
-                                    throw new \RuntimeException('Backup thumbnail R2 lama gagal disimpan.');
+                            if ($thumbBackup['localExisted'] && !empty($thumbBackup['localBackup'])) {
+                                $thumbBackup['r2Existed'] = true;
+                                $thumbBackup['r2Backup'] = $thumbBackup['localBackup'];
+                            } else {
+                                $r2ThumbSnapshot = $this->r2ProductImages->snapshotObject($thumbKey);
+                                $thumbBackup['r2Existed'] = $r2ThumbSnapshot['exists'];
+                                if ($thumbBackup['r2Existed']) {
+                                    $thumbBackup['r2Backup'] = $tmpDir . DIRECTORY_SEPARATOR . 'backup-r2-thumb-' . uniqid('', true) . '.webp';
+                                    if (file_put_contents($thumbBackup['r2Backup'], $r2ThumbSnapshot['body']) === false) {
+                                        throw new \RuntimeException('Backup thumbnail R2 lama gagal disimpan.');
+                                    }
                                 }
                             }
                         }
@@ -1350,8 +1363,22 @@ class AdminController extends BaseController
                 'line' => $e->getLine(),
             ]);
 
+            $clientMessage = 'Gagal mengubah produk. Coba lagi; jika berulang, kirim waktu kejadian ke tim teknis.';
+            $errorMessage = $e->getMessage();
+            if (str_contains($errorMessage, 'Upload gambar ke storage gagal')) {
+                $clientMessage = 'Foto gagal tersimpan di penyimpanan gambar. Periksa koneksi storage lalu coba lagi.';
+            } elseif (str_contains($errorMessage, 'Upload thumbnail ke storage gagal')) {
+                $clientMessage = 'Foto utama gagal diperbarui di penyimpanan. Coba simpan ulang.';
+            } elseif (str_contains($errorMessage, 'Could not verify existing R2 image')
+                || str_contains($errorMessage, 'Could not snapshot existing R2 image')
+            ) {
+                $clientMessage = 'Penyimpanan gambar sedang tidak dapat diverifikasi. Foto lama dipertahankan; coba lagi sebentar.';
+            } elseif (str_contains($errorMessage, 'File hasil resize kosong')) {
+                $clientMessage = 'Foto gagal diproses. Unggah ulang dalam format WebP.';
+            }
+
             return $this->response->setStatusCode(500)->setJSON([
-                'pesan' => 'Gagal mengubah produk.',
+                'pesan' => $clientMessage,
             ]);
         }
     }
