@@ -39,7 +39,9 @@ $imageSlotExists = function (string $slot) use ($produk): bool {
     $slot = trim($slot);
     if ($slot === '') return false;
     return is_file(FCPATH . 'img/barang/1000/' . $produk['id'] . '-' . $slot . '.webp')
-        || is_file(FCPATH . 'img/barang/3000/' . $produk['id'] . '-' . $slot . '.webp');
+        || is_file(FCPATH . 'img/barang/3000/' . $produk['id'] . '-' . $slot . '.webp')
+        || is_file(FCPATH . 'uploads/product-images/1000/' . $produk['id'] . '-' . $slot . '.webp')
+        || is_file(FCPATH . 'uploads/product-images/3000/' . $produk['id'] . '-' . $slot . '.webp');
 };
 $filterExistingSlots = function ($urutan) use ($imageSlotExists): array {
     $slots = array_values(array_unique(array_filter(array_map('trim', explode(',', (string) $urutan)) )));
@@ -75,24 +77,26 @@ $assetVersion = function (string $relativePath) use ($produk): string {
 };
 $barangImgUrl = function (string $size, string $slot) use ($produk, $assetVersion, $productImageCdn): string {
     $cdnSize = in_array($size, ['300', '1000', '3000'], true) ? $size : '1000';
-    if ($productImageCdn !== '') {
-        return $productImageCdn . '/products/' . $cdnSize . '/' . rawurlencode((string) $produk['id']) . '-' . rawurlencode($slot) . '.webp?v=' . $assetVersion('uploads/product-images/' . $cdnSize . '/' . $produk['id'] . '-' . $slot . '.webp');
-    }
+    $uploadedRelative = 'uploads/product-images/' . $cdnSize . '/' . $produk['id'] . '-' . $slot . '.webp';
+    if (is_file(FCPATH . $uploadedRelative)) return base_url($uploadedRelative) . '?v=' . $assetVersion($uploadedRelative);
     $relative = 'img/barang/' . $size . '/' . $produk['id'] . '-' . $slot . '.webp';
     if (is_file(FCPATH . $relative)) {
         return base_url($relative) . '?v=' . $assetVersion($relative);
+    }
+    if ($productImageCdn !== '') {
+        return $productImageCdn . '/products/' . $cdnSize . '/' . rawurlencode((string) $produk['id']) . '-' . rawurlencode($slot) . '.webp?v=' . $assetVersion($uploadedRelative);
     }
     $route = $size === '3000' ? 'viewvar3000' : 'viewvar';
     return base_url($route . '/' . $produk['id'] . '/' . $slot) . '?v=' . $assetVersion($relative);
 };
 $hoverImgUrl = function () use ($produk, $assetVersion, $productImageCdn): string {
-    if ($productImageCdn !== '') {
-        return $productImageCdn . '/products/hover/' . rawurlencode((string) $produk['id']) . '.webp?v=' . $assetVersion('uploads/product-images/hover/' . $produk['id'] . '.webp');
-    }
+    $uploadedRelative = 'uploads/product-images/hover/' . $produk['id'] . '.webp';
+    if (is_file(FCPATH . $uploadedRelative)) return base_url($uploadedRelative) . '?v=' . $assetVersion($uploadedRelative);
     $relative = 'img/barang/hover/' . $produk['id'] . '.webp';
     if (is_file(FCPATH . $relative)) {
         return base_url($relative) . '?v=' . $assetVersion($relative);
     }
+    if ($productImageCdn !== '') return $productImageCdn . '/products/hover/' . rawurlencode((string) $produk['id']) . '.webp?v=' . $assetVersion($uploadedRelative);
     return base_url('viewpichover/' . $produk['id']) . '?v=' . $assetVersion($relative);
 };
 $detailVersion = !empty($produk['tgl_update']) ? (int) strtotime((string) $produk['tgl_update']) : time();
@@ -131,7 +135,7 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
         if (is_file(FCPATH . $fullSizeCandidate)) $fullSizeMtime = max($fullSizeMtime, (int) filemtime(FCPATH . $fullSizeCandidate));
     }
     $fileVersion = max($fileVersion, $fullSizeMtime);
-    if ($productImageCdn !== '') {
+    if (!$sourceExists && $productImageCdn !== '') {
         return $productImageCdn . '/products/300/' . rawurlencode((string) $id) . '.webp?v=' . max($fileVersion, $dbVersion);
     }
     if (strtolower((string) env('PRODUCT_IMAGE_STORAGE', 'local')) !== 'r2' && $isLocalThumbnail && (!$fullSizeMtime || (int) filemtime($sourceAbsolute) >= $fullSizeMtime)) {
@@ -547,6 +551,9 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                 $relatedProductUrl = '/product/' . rawurlencode(str_replace(' ', '-', (string) $p['nama']));
                 $relatedImageFallback = base_url('product-cover/' . rawurlencode((string) $p['id'])) . '?size=300&v=' . $relatedVersion;
                 $relatedCdnImage = $productImageCdn !== '' ? $productImageCdn . '/products/300/' . rawurlencode((string) $p['id']) . '.webp?v=' . $relatedVersion : '';
+                $relatedLocalImage = is_file(FCPATH . 'uploads/product-images/300/' . $p['id'] . '.webp')
+                    ? base_url('uploads/product-images/300/' . rawurlencode((string) $p['id']) . '.webp') . '?v=' . $relatedVersion
+                    : (is_file(FCPATH . 'img/barang/300/' . $p['id'] . '.webp') ? base_url('img/barang/300/' . rawurlencode((string) $p['id']) . '.webp') . '?v=' . $relatedVersion : '');
             ?>
             <div class="card1" data-product-card>
                 <div style="position: relative;">
@@ -575,12 +582,12 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                     </div>
                     <a href="<?= esc($relatedProductUrl, 'attr') ?>" class="gambar">
                         <img class="img-pic" id="img<?= $ind_p ?>"
-                            src="<?= esc($relatedCdnImage !== '' ? $relatedCdnImage : $productCoverUrl($p), 'attr') ?>"
-                            <?= $relatedCdnImage !== '' ? 'data-image-fallback="' . esc($relatedImageFallback, 'attr') . '" onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"' : '' ?>
+                            src="<?= esc($relatedLocalImage !== '' ? $relatedLocalImage : ($relatedCdnImage !== '' ? $relatedCdnImage : $productCoverUrl($p)), 'attr') ?>"
+                            <?= $relatedLocalImage === '' && $relatedCdnImage !== '' ? 'data-image-fallback="' . esc($relatedImageFallback, 'attr') . '" onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"' : '' ?>
                             width="300" height="300" alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async">
                         <?php if (is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') || !empty($p['gambar_hover'])) { ?>
                         <img class="img-pic-hover lazy-hover-product"
-                            data-src="<?= esc($productImageCdn !== '' ? $productImageCdn . '/products/hover/' . rawurlencode((string) $p['id']) . '.webp?v=' . $relatedVersion : (is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') ? base_url('img/barang/hover/' . $p['id'] . '.webp') : base_url('viewpichover/' . $p['id']) . '?v=' . $relatedVersion), 'attr') ?>"
+                            data-src="<?= esc(is_file(FCPATH . 'uploads/product-images/hover/' . $p['id'] . '.webp') ? (base_url('uploads/product-images/hover/' . rawurlencode((string) $p['id']) . '.webp') . '?v=' . $relatedVersion) : ($productImageCdn !== '' ? $productImageCdn . '/products/hover/' . rawurlencode((string) $p['id']) . '.webp?v=' . $relatedVersion : (is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') ? base_url('img/barang/hover/' . $p['id'] . '.webp') : base_url('viewpichover/' . $p['id']) . '?v=' . $relatedVersion)), 'attr') ?>"
                             data-image-fallback="<?= esc(base_url('viewpichover/' . rawurlencode((string) $p['id'])) . '?v=' . $relatedVersion, 'attr') ?>" onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}" alt="" aria-hidden="true" loading="lazy" decoding="async">
                         <?php } ?>
                     </a>
@@ -651,20 +658,24 @@ const detailBase3000 = "/viewvar3000/" + encodeURIComponent(<?= json_encode((str
 const detailR2CdnBase = <?= json_encode($productImageCdn, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 const detailHoverUrl = <?= json_encode($hoverImgUrl(), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 const detailProductId = <?= json_encode((string) $produk['id'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
-const detailStatic1000 = <?= json_encode(base_url('img/barang/1000/'), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
-const detailStatic3000 = <?= json_encode(base_url('img/barang/3000/'), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
-const detailLocalSlots1000 = <?= json_encode(array_values(array_filter(array_unique(array_merge(...array_map(static fn($v) => array_map('trim', explode(',', (string)($v['urutan_gambar'] ?? ''))), $produk['varian']))), static fn($slot) => $slot !== '' && is_file(FCPATH . 'img/barang/1000/' . $produk['id'] . '-' . $slot . '.webp')))) ?>;
-const detailLocalSlots3000 = <?= json_encode(array_values(array_filter(array_unique(array_merge(...array_map(static fn($v) => array_map('trim', explode(',', (string)($v['urutan_gambar'] ?? ''))), $produk['varian']))), static fn($slot) => $slot !== '' && is_file(FCPATH . 'img/barang/3000/' . $produk['id'] . '-' . $slot . '.webp')))) ?>;
+const detailStatic1000 = <?= json_encode(base_url('uploads/product-images/1000/'), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+const detailStatic3000 = <?= json_encode(base_url('uploads/product-images/3000/'), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+const detailLocalSlots1000 = <?= json_encode(array_values(array_filter(array_unique(array_merge(...array_map(static fn($v) => array_map('trim', explode(',', (string)($v['urutan_gambar'] ?? ''))), $produk['varian']))), static fn($slot) => $slot !== '' && is_file(FCPATH . 'uploads/product-images/1000/' . $produk['id'] . '-' . $slot . '.webp')))) ?>;
+const detailLegacySlots1000 = <?= json_encode(array_values(array_filter(array_unique(array_merge(...array_map(static fn($v) => array_map('trim', explode(',', (string)($v['urutan_gambar'] ?? ''))), $produk['varian']))), static fn($slot) => $slot !== '' && is_file(FCPATH . 'img/barang/1000/' . $produk['id'] . '-' . $slot . '.webp')))) ?>;
+const detailLocalSlots3000 = <?= json_encode(array_values(array_filter(array_unique(array_merge(...array_map(static fn($v) => array_map('trim', explode(',', (string)($v['urutan_gambar'] ?? ''))), $produk['varian']))), static fn($slot) => $slot !== '' && is_file(FCPATH . 'uploads/product-images/3000/' . $produk['id'] . '-' . $slot . '.webp')))) ?>;
+const detailLegacySlots3000 = <?= json_encode(array_values(array_filter(array_unique(array_merge(...array_map(static fn($v) => array_map('trim', explode(',', (string)($v['urutan_gambar'] ?? ''))), $produk['varian']))), static fn($slot) => $slot !== '' && is_file(FCPATH . 'img/barang/3000/' . $produk['id'] . '-' . $slot . '.webp')))) ?>;
 function encodedCartUrl(productId, varianName, qty) {
     return "/addcart/" + productId + "/" + encodeURIComponent(varianName || "default") + "/" + Math.max(1, Number(qty || 1));
 }
 function detailImageUrl(slot) {
     if (detailLocalSlots1000.includes(String(slot))) return detailStatic1000 + detailProductId + "-" + encodeURIComponent(slot) + ".webp?v=" + detailVersion;
+    if (detailLegacySlots1000.includes(String(slot))) return "/img/barang/1000/" + detailProductId + "-" + encodeURIComponent(slot) + ".webp?v=" + detailVersion;
     if (detailR2CdnBase) return detailR2CdnBase + "/products/1000/" + encodeURIComponent(detailProductId) + "-" + encodeURIComponent(slot) + ".webp?v=" + detailVersion;
     return detailBase1000 + slot + "?v=" + detailVersion;
 }
 function detailZoomUrl(slot) {
     if (detailLocalSlots3000.includes(String(slot))) return detailStatic3000 + detailProductId + "-" + encodeURIComponent(slot) + ".webp?v=" + detailVersion;
+    if (detailLegacySlots3000.includes(String(slot))) return "/img/barang/3000/" + detailProductId + "-" + encodeURIComponent(slot) + ".webp?v=" + detailVersion;
     if (detailR2CdnBase) return detailR2CdnBase + "/products/3000/" + encodeURIComponent(detailProductId) + "-" + encodeURIComponent(slot) + ".webp?v=" + detailVersion;
     return detailBase3000 + slot + "?v=" + detailVersion;
 }

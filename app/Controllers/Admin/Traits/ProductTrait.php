@@ -328,7 +328,7 @@ trait ProductTrait
             }
             $r2Images = new \App\Services\R2ProductImageService();
             $syncImageToR2 = static function (string $localPath, string $key) use ($r2Images): void {
-                if ($r2Images->enabled() && !$r2Images->uploadFile($localPath, $key, 'image/webp')) {
+                if ($r2Images->productWritesEnabled() && !$r2Images->uploadFile($localPath, $key, 'image/webp')) {
                     throw new \RuntimeException('Gagal menyinkronkan gambar ke penyimpanan: ' . $key);
                 }
             };
@@ -482,7 +482,7 @@ trait ProductTrait
                 }
             } catch (\Throwable $e) {
                 log_message('error', 'EDIT thumbnail cover gagal: {msg}', ['msg' => $e->getMessage()]);
-                if ($r2Images->enabled()) {
+                if ($r2Images->productWritesEnabled()) {
                     throw $e;
                 }
             }

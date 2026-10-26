@@ -821,7 +821,7 @@ class AdminController extends BaseController
 
     private function uploadProductImageToR2(string $localPath, string $relativePath): void
     {
-        if (!$this->r2ProductImages->enabled() || !is_file($localPath)) {
+        if (!$this->r2ProductImages->productWritesEnabled() || !is_file($localPath)) {
             return;
         }
 
@@ -1038,7 +1038,7 @@ class AdminController extends BaseController
                 $path = $publicPath($dir);
                 if (!is_dir($path)) { @mkdir($path, 0775, true); }
                 if (!is_writable($path)) { @chmod($path, 0775); }
-                if ((!is_dir($path) || !is_writable($path)) && !$this->r2ProductImages->enabled()) {
+                if ((!is_dir($path) || !is_writable($path)) && !$this->r2ProductImages->productWritesEnabled()) {
                     throw new \RuntimeException('Folder gambar belum writable: ' . $dir);
                 }
             };
@@ -1055,7 +1055,7 @@ class AdminController extends BaseController
                     $destDir = dirname($destFile);
                     if (!is_dir($destDir)) { @mkdir($destDir, 0775, true); }
                     if (!is_writable($destDir)) { @chmod($destDir, 0775); }
-                    if (!is_writable($destDir) && !$this->r2ProductImages->enabled()) {
+                    if (!is_writable($destDir) && !$this->r2ProductImages->productWritesEnabled()) {
                         throw new \RuntimeException('Folder tujuan gambar belum writable: ' . $destination);
                     }
 
@@ -1074,7 +1074,7 @@ class AdminController extends BaseController
                             throw new \RuntimeException('Backup gambar lama gagal dibuat: ' . $destination);
                         }
                     }
-                    if ($this->r2ProductImages->enabled()) {
+                    if ($this->r2ProductImages->productWritesEnabled()) {
                         if ($backup['localExisted'] && !empty($backup['localBackup'])) {
                             // Admin uploads keep a local mirror. Reuse its exact
                             // rollback copy instead of making a remote HEAD+GET
@@ -1108,7 +1108,7 @@ class AdminController extends BaseController
                     if (is_writable($destDir)) {
                         @unlink($destFile);
                         if (!@copy($stagingFile, $destFile)) {
-                            if (!$this->r2ProductImages->enabled()) {
+                            if (!$this->r2ProductImages->productWritesEnabled()) {
                                 @unlink($stagingFile);
                                 throw new \RuntimeException('File hasil resize tidak tersimpan: ' . $destination);
                             }
@@ -1116,7 +1116,7 @@ class AdminController extends BaseController
                             @touch($destFile);
                         }
                     }
-                    if ($this->r2ProductImages->enabled()) {
+                    if ($this->r2ProductImages->productWritesEnabled()) {
                         $r2Key = $backup['r2Key'];
                         if (!$this->r2ProductImages->uploadFile(is_file($destFile) ? $destFile : $stagingFile, $r2Key, 'image/webp')) {
                             throw new \RuntimeException('Upload gambar ke storage gagal: ' . $destination);
@@ -1185,7 +1185,7 @@ class AdminController extends BaseController
                     if (!is_dir($thumbDir)) { @mkdir($thumbDir, 0775, true); }
                     if (!is_writable($thumbDir)) { @chmod($thumbDir, 0775); }
                     $thumbSource = is_file($thumbSource1000) ? $thumbSource1000 : (is_file($thumbSource3000) ? $thumbSource3000 : (is_file($legacyThumbSource1000) ? $legacyThumbSource1000 : (is_file($legacyThumbSource3000) ? $legacyThumbSource3000 : null)));
-                    if ($thumbSource && (is_writable($thumbDir) || $this->r2ProductImages->enabled())) {
+                    if ($thumbSource && (is_writable($thumbDir) || $this->r2ProductImages->productWritesEnabled())) {
                         $tmpDir = rtrim(WRITEPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'cache';
                         if (!is_dir($tmpDir)) { @mkdir($tmpDir, 0775, true); }
                         $thumbRelative = "uploads/product-images/300/{$id_product}.webp";
@@ -1205,7 +1205,7 @@ class AdminController extends BaseController
                                 throw new \RuntimeException('Backup thumbnail lama gagal dibuat.');
                             }
                         }
-                        if ($this->r2ProductImages->enabled()) {
+                        if ($this->r2ProductImages->productWritesEnabled()) {
                             if ($thumbBackup['localExisted'] && !empty($thumbBackup['localBackup'])) {
                                 $thumbBackup['r2Existed'] = true;
                                 $thumbBackup['r2Backup'] = $thumbBackup['localBackup'];
@@ -1229,14 +1229,14 @@ class AdminController extends BaseController
                         if (is_file($thumbTmp) && filesize($thumbTmp) > 0) {
                             if (is_writable($thumbDir)) {
                                 @unlink($thumbDest);
-                                if (!@copy($thumbTmp, $thumbDest) && !$this->r2ProductImages->enabled()) {
+                                if (!@copy($thumbTmp, $thumbDest) && !$this->r2ProductImages->productWritesEnabled()) {
                                     throw new \RuntimeException('Thumbnail cover tidak tersalin ke ' . $thumbDest);
                                 }
                                 if (is_file($thumbDest)) {
                                     @touch($thumbDest);
                                 }
                             }
-                            if ($this->r2ProductImages->enabled() && !$this->r2ProductImages->uploadFile(is_file($thumbDest) ? $thumbDest : $thumbTmp, $thumbKey, 'image/webp')) {
+                            if ($this->r2ProductImages->productWritesEnabled() && !$this->r2ProductImages->uploadFile(is_file($thumbDest) ? $thumbDest : $thumbTmp, $thumbKey, 'image/webp')) {
                                 throw new \RuntimeException('Upload thumbnail ke storage gagal.');
                             }
                             @unlink($thumbTmp);
@@ -1251,7 +1251,7 @@ class AdminController extends BaseController
                 } elseif (isset($thumbBackup) && empty($thumbBackup['localExisted']) && is_file($thumbBackup['localPath'] ?? '')) {
                     @unlink($thumbBackup['localPath']);
                 }
-                if (isset($thumbBackup) && $this->r2ProductImages->enabled()) {
+                if (isset($thumbBackup) && $this->r2ProductImages->productWritesEnabled()) {
                     if (!empty($thumbBackup['r2Existed']) && !empty($thumbBackup['r2Backup']) && is_file($thumbBackup['r2Backup'])) {
                         $this->r2ProductImages->uploadFile($thumbBackup['r2Backup'], $thumbBackup['r2Key'], 'image/webp');
                     } elseif (empty($thumbBackup['r2Existed'])) {
@@ -1347,7 +1347,7 @@ class AdminController extends BaseController
                 } elseif (empty($backup['localExisted']) && is_file($backup['localPath'])) {
                     @unlink($backup['localPath']);
                 }
-                if ($this->r2ProductImages->enabled()) {
+                if ($this->r2ProductImages->productWritesEnabled()) {
                     if (!empty($backup['r2Existed']) && !empty($backup['r2Backup']) && is_file($backup['r2Backup'])) {
                         $this->r2ProductImages->uploadFile($backup['r2Backup'], $backup['r2Key'], 'image/webp');
                     } elseif (empty($backup['r2Existed'])) {

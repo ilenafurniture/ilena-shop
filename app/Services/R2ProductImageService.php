@@ -33,6 +33,12 @@ class R2ProductImageService
             && $this->configured();
     }
 
+    /** Product image writes are local-only; R2 remains available for legacy reads. */
+    public function productWritesEnabled(): bool
+    {
+        return false;
+    }
+
     /** R2 credentials usable for independent static assets such as home photos. */
     public function configured(): bool
     {

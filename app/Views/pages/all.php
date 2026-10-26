@@ -655,19 +655,27 @@ if (isset($_GET['ruang'])) {
                                 $cardSlot = (string) ($cardSlotsForImage[0] ?? '1');
                                 $cardFallback = base_url('product-cover/' . rawurlencode((string) $p['id'])) . '?slot=' . rawurlencode($cardSlot) . '&size=300&v=' . $cardVersion;
                                 $cardCdnSrc = $productCdnImageUrl('products/300/' . rawurlencode((string) $p['id']) . '.webp', $cardVersion);
+                                $cardLocalSrc = is_file(FCPATH . 'uploads/product-images/300/' . $p['id'] . '.webp')
+                                    ? base_url('uploads/product-images/300/' . rawurlencode((string) $p['id']) . '.webp') . '?v=' . $cardVersion
+                                    : (is_file(FCPATH . 'img/barang/300/' . $p['id'] . '.webp') ? base_url('img/barang/300/' . rawurlencode((string) $p['id']) . '.webp') . '?v=' . $cardVersion : '');
+                                $cardSlotCandidates = [];
+                                foreach ($cardVariantsForImage as $variantForImage) {
+                                    $cardSlotCandidates = array_merge($cardSlotCandidates, explode(',', (string) ($variantForImage['urutan_gambar'] ?? '')));
+                                }
+                                $cardLocalSlots = array_values(array_filter(array_unique(array_map('trim', $cardSlotCandidates)), static fn($slot) => $slot !== '' && is_file(FCPATH . 'uploads/product-images/1000/' . $p['id'] . '-' . $slot . '.webp')));
                                 $cardCdnSrcset = $productImageCdn !== ''
                                     ? $cardCdnSrc . ' 300w, ' . $productCdnImageUrl('products/1000/' . rawurlencode((string) $p['id']) . '-' . rawurlencode($cardSlot) . '.webp', $cardVersion) . ' 1000w'
                                     : '';
                             ?>
                             <img class="img-pic" id="img<?= $ind_p ?>"
-                                src="<?= esc($cardCdnSrc !== '' ? $cardCdnSrc : $productCoverUrl($p), 'attr') ?>"
-                                <?= $cardCdnSrc !== '' ? 'data-image-fallback="' . esc($cardFallback, 'attr') . '" onerror="if(this.dataset.imageFallback){this.onerror=null;this.removeAttribute(\'srcset\');this.src=this.dataset.imageFallback;}"' : '' ?>
-                                <?= $cardCdnSrc !== '' ? 'srcset="' . esc($cardCdnSrcset, 'attr') . '" sizes="(max-width: 600px) 46vw, (max-width: 1100px) 30vw, 300px"' : '' ?>
+                                src="<?= esc($cardLocalSrc !== '' ? $cardLocalSrc : ($cardCdnSrc !== '' ? $cardCdnSrc : $productCoverUrl($p)), 'attr') ?>"
+                                <?= $cardLocalSrc === '' && $cardCdnSrc !== '' ? 'data-image-fallback="' . esc($cardFallback, 'attr') . '" onerror="if(this.dataset.imageFallback){this.onerror=null;this.removeAttribute(\'srcset\');this.src=this.dataset.imageFallback;}"' : '' ?>
+                                <?= $cardLocalSrc === '' && $cardCdnSrc !== '' ? 'srcset="' . esc($cardCdnSrcset, 'attr') . '" sizes="(max-width: 600px) 46vw, (max-width: 1100px) 30vw, 300px"' : '' ?>
                                 width="300" height="300" alt="<?= esc($p['nama'], 'attr') ?>"
                                 loading="<?= $ind_p < 2 ? 'eager' : 'lazy' ?>" fetchpriority="<?= $ind_p === 0 ? 'high' : 'auto' ?>" decoding="async">
                             <?php if (is_file(FCPATH . 'img/barang/hover/' . $p['id'] . '.webp') || !empty($p['gambar_hover'])) { ?>
                             <img class="img-pic-hover lazy-hover-product"
-                                data-src="<?= esc($productCdnImageUrl('products/hover/' . rawurlencode((string) $p['id']) . '.webp', $cardVersion) ?: (base_url('viewpichover/' . $p['id']) . '?v=' . $cardVersion), 'attr') ?>"
+                                data-src="<?= esc(is_file(FCPATH . 'uploads/product-images/hover/' . $p['id'] . '.webp') ? (base_url('uploads/product-images/hover/' . rawurlencode((string) $p['id']) . '.webp') . '?v=' . $cardVersion) : ($productCdnImageUrl('products/hover/' . rawurlencode((string) $p['id']) . '.webp', $cardVersion) ?: (base_url('viewpichover/' . $p['id']) . '?v=' . $cardVersion)), 'attr') ?>"
                                 data-image-fallback="<?= esc(base_url('viewpichover/' . rawurlencode((string) $p['id'])) . '?v=' . $cardVersion, 'attr') ?>"
                                 onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"
                                 alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async">
@@ -686,17 +694,20 @@ if (isset($_GET['ruang'])) {
                         const btnKeranjang<?= $ind_p ?>Elm = document.getElementById("card<?= $ind_p ?>");
                         const varian<?= $ind_p ?>Elm = document.querySelectorAll('input[name="varian<?= $ind_p ?>"]');
                         const productImageCdnBase<?= $ind_p ?> = <?= json_encode($productImageCdn, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+                        const localProductSlots<?= $ind_p ?> = <?= json_encode($cardLocalSlots, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
                         varian<?= $ind_p ?>Elm.forEach(elm => {
                             elm.addEventListener('change', (e) => {
                                 const img<?= $ind_p ?>Elm = document.getElementById("img<?= $ind_p ?>");
                                 const selectedSlot = e.target.value.split("-")[0].split(",")[0];
                                 const fallbackImage = "<?= base_url('product-cover/' . rawurlencode((string) $p['id'])) ?>?slot=" + encodeURIComponent(selectedSlot) + "&v=<?= $cardVersion ?>";
                                 img<?= $ind_p ?>Elm.removeAttribute('srcset');
-                                img<?= $ind_p ?>Elm.onerror = productImageCdnBase<?= $ind_p ?> ? function () {
+                                img<?= $ind_p ?>Elm.onerror = productImageCdnBase<?= $ind_p ?> && !localProductSlots<?= $ind_p ?>.includes(selectedSlot) ? function () {
                                     this.onerror = null;
                                     this.src = fallbackImage;
                                 } : null;
-                                img<?= $ind_p ?>Elm.src = productImageCdnBase<?= $ind_p ?>
+                                img<?= $ind_p ?>Elm.src = localProductSlots<?= $ind_p ?>.includes(selectedSlot)
+                                    ? "<?= base_url('uploads/product-images/1000/' . rawurlencode((string) $p['id'])) ?>-" + encodeURIComponent(selectedSlot) + ".webp?v=<?= $cardVersion ?>"
+                                    : productImageCdnBase<?= $ind_p ?>
                                     ? productImageCdnBase<?= $ind_p ?> + "/products/1000/<?= rawurlencode((string) $p['id']) ?>-" + encodeURIComponent(selectedSlot) + ".webp?v=<?= $cardVersion ?>"
                                     : fallbackImage;
 
