@@ -28,7 +28,7 @@ class CreateMenuCollectionPreviews extends Migration
         $this->forge->createTable('menu_collection_previews', true, [
             'ENGINE' => 'InnoDB',
             'CHARSET' => 'utf8mb4',
-            'COLLATE' => 'utf8mb4_unicode_ci',
+            'COLLATE' => 'utf8mb4_general_ci',
         ]);
     }
 

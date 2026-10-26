@@ -100,8 +100,8 @@ class Pages extends BaseController
         $db = db_connect();
         $previewJoin = $db->tableExists('menu_collection_previews')
             ? "LEFT JOIN menu_collection_previews AS selected_menu
-                    ON selected_menu.category_name = b.kategori
-                   AND selected_menu.subcategory_name = b.subkategori
+                    ON selected_menu.category_name COLLATE utf8mb4_general_ci = b.kategori COLLATE utf8mb4_general_ci
+                   AND selected_menu.subcategory_name COLLATE utf8mb4_general_ci = b.subkategori COLLATE utf8mb4_general_ci
              LEFT JOIN barang AS selected_product
                     ON selected_product.id = selected_menu.product_id
                    AND selected_product.kategori = b.kategori
