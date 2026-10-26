@@ -1,10 +1,17 @@
 <?php
 $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $headerMode : 'full';
 ?>
+<div class="ilena-utility-bar" aria-label="Lunarea Furniture">
+    <div class="ilena-utility-bar__inner">
+        <a href="https://lunareafurniture.com" target="_blank" rel="noopener noreferrer" aria-label="Kunjungi Lunarea Furniture">
+            <img src="<?= base_url('img/logolunareanavbar.webp'); ?>" alt="Lunarea Furniture" width="150" height="30" decoding="async">
+        </a>
+    </div>
+</div>
 <nav class="nav show-block-ke-hide ilena-topbar">
     <div class="container py-3 ilena-topbar__container">
         <div class="d-flex w-100 justify-content-between align-items-center ilena-topbar__inner">
-            <div class="ilena-topbar__search-slot" style="width: calc(100% / 3)">
+            <div class="ilena-topbar__search-slot">
                 <form action="/find" method="get" class="ilena-global-search" data-global-search role="search">
                     <label class="ilena-sr-only" for="global-search-desktop">Cari produk</label>
                     <input id="global-search-desktop" placeholder="Cari produk atau koleksi" class="input" name="q"
@@ -16,12 +23,8 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
                 <a class="navbar-brand-ilena" href="/" aria-label="Ilena Furniture - Beranda">
                     <img src="<?= base_url('/img/Logo Putih Ilena 1.png'); ?>" alt="Ilena Furniture" width="150" height="30" decoding="async">
                 </a>
-                <span class="navbar-brand-divider" aria-hidden="true"></span>
-                <a class="navbar-brand-lunarea" href="https://lunareafurniture.com" target="_blank" rel="noopener noreferrer" aria-label="Kunjungi Lunarea Furniture">
-                    <img src="<?= base_url('img/logolunareanavbar.webp'); ?>" alt="Lunarea Furniture" width="150" height="30" decoding="async">
-                </a>
             </div>
-            <div style="width: calc(100% / 3)" class="d-flex justify-content-end ilena-topbar__actions">
+            <div class="d-flex justify-content-end ilena-topbar__actions">
                 <?php if (session()->get('isLogin') && in_array((string) session()->get('role'), ['1', '5'], true)) { ?>
                     <?php if ((string) session()->get('role') === '1') { ?>
                         <a href="/admin/product" class="btn d-flex align-items-center">
@@ -45,20 +48,6 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
         </div>
     </div>
 </nav>
-<style>
-    .navbar-brand-pair { width: calc(100% / 3); display:flex; align-items:center; justify-content:center; gap:22px; min-width:0; }
-    .navbar-brand-pair a, .navbar-brand-pair > details { display:inline-flex; align-items:center; justify-content:center; flex:0 1 auto; }
-    .navbar-brand-ilena img { display:block; width:auto; max-width:112px; height:23px; object-fit:contain; }
-    .navbar-brand-divider { width:1px; height:25px; flex:0 0 1px; background:rgba(255,255,255,.55); }
-    .navbar-brand-lunarea { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:5px 0; border:0; background:transparent; line-height:0; }
-    .navbar-brand-lunarea img { display:block; width:124px; height:26px; object-fit:contain; }
-    @media (max-width:1100px) {
-        .navbar-brand-pair { gap:16px; }
-        .navbar-brand-ilena img { height:22px; max-width:112px; }
-        .navbar-brand-divider { height:20px; }
-        .navbar-brand-lunarea img { width:110px; height:23px; }
-    }
-</style>
 <?php if ($headerMode === 'full'): ?>
 <div class="ilena-shipping-bar show-block-ke-hide" role="note" aria-label="Promo pengiriman">
     <div class="container ilena-shipping-bar__inner">
