@@ -3,25 +3,18 @@
 <?php $imageVersion = !empty($produk['tgl_update']) ? strtotime((string) $produk['tgl_update']) : time(); ?>
 
 <style>
-:root {
-    --bg: #0f1115;
-    --card: #161a22;
-    --muted: #8b95a7;
-    --text: #e7e8ea;
-    --line: #222838;
-    --brand: #6aa9ff;
-    --danger: #ff6b6b;
-}
-
-body {
-    background: var(--bg);
-    color: var(--text);
-}
-
 .page {
-    padding: 2rem;
+    --bg: #f7f5f1;
+    --card: #fff;
+    --muted: #77736c;
+    --text: #26251f;
+    --line: #e9e5dc;
+    --brand: #75664f;
+    --danger: #a5463d;
+    padding: 1.25rem clamp(14px, 2.4vw, 34px) 2.5rem;
     max-width: 1200px;
     margin: 0 auto;
+    color: var(--text);
 }
 
 .title {
@@ -267,12 +260,106 @@ body {
 
 .hint {
     font-size: .8rem;
-    color: #9aa6bd;
+    color: var(--muted);
+}
+
+.edit-page-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 8px 2px 20px;
+}
+.edit-page-eyebrow {
+    margin: 0 0 5px;
+    color: #8c795a;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+}
+.edit-page-head .title {
+    margin: 0;
+    color: #27251f;
+    font-size: clamp(23px, 2.4vw, 30px);
+    font-weight: 650;
+    letter-spacing: -.04em;
+}
+.edit-page-head p {
+    margin: 6px 0 0;
+    color: #77736c;
+    font-size: 13px;
+}
+.edit-back-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 40px;
+    padding: 0 14px;
+    border: 1px solid #e4ded2;
+    border-radius: 9px;
+    color: #514a3d;
+    background: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background .18s ease, border-color .18s ease, transform .18s ease;
+}
+.edit-back-link:hover { color: #332d23; background: #f6f2ea; border-color: #cfc3ae; transform: translateY(-1px); }
+.page .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: 0 7px 24px rgba(53, 45, 31, .045);
+}
+.page .section-title { color: #343127; font-size: 14px; font-weight: 650; letter-spacing: -.01em; }
+.page .label { color: #656157; font-size: 12px; font-weight: 600; }
+.page .inp, .page .sel, .page .ta {
+    border-color: #e5e1d8;
+    border-radius: 8px;
+    background: #fff;
+    color: #29271f;
+    font-size: 13px;
+    transition: border-color .16s ease, box-shadow .16s ease;
+}
+.page .inp:focus, .page .sel:focus, .page .ta:focus {
+    border-color: #9b896a;
+    box-shadow: 0 0 0 3px rgba(155, 137, 106, .14);
+}
+.page .input-group span { border-color: #e5e1d8; background: #f8f6f2; color: #77736c; }
+.page .btn { border-color: #e3ded4; border-radius: 8px; background: #fff; color: #514a3d; font-size: 13px; font-weight: 600; }
+.page .btn:hover { border-color: #cbbda5; background: #f8f5ef; }
+.page .btn.primary { border-color: #66583f; background: #66583f; color: #fff; }
+.page .btn.primary:hover { border-color: #51452f; background: #51452f; }
+.page .btn.danger { color: #a5463d; border-color: #ead5d1; background: #fff; }
+.page .chip { border-color: #e9e5dc; background: #faf9f6; color: #4f4b42; font-size: 12px; }
+.page .thumb { border-color: #e6e1d7; background: #f6f3ed; }
+.page .thumb .x { border: 1px solid rgba(255,255,255,.55); background: #a5463d; color: #fff; }
+.page .img-preview { border-color: #e7e1d6; background: #f5f2ec; }
+.page .footer-actions {
+    z-index: 3;
+    margin: 16px -2px -2px;
+    padding: 14px 2px 4px;
+    background: linear-gradient(180deg, rgba(247,245,241,0), #f7f5f1 34%);
+}
+@media (max-width: 700px) {
+    .edit-page-head { align-items: flex-start; }
+    .edit-page-head p { max-width: 34ch; }
+    .edit-back-link { flex: 0 0 auto; min-height: 38px; padding: 0 10px; }
+    .page .card { padding: 14px; }
 }
 </style>
 
 <div class="page">
-    <div class="title">Anjayy Produk</div>
+    <header class="edit-page-head">
+        <div>
+            <div class="edit-page-eyebrow">Katalog · Pengelolaan</div>
+            <h1 class="title">Edit Produk</h1>
+            <p>Perbarui informasi, varian, harga, stok, dan visual produk dalam satu halaman.</p>
+        </div>
+        <a class="edit-back-link" href="/admin/product"><i class="material-icons" aria-hidden="true">arrow_back</i><span>Kembali ke katalog</span></a>
+    </header>
 
     <form method="post" id="product-edit-form"
         action="/admin/editproduct/<?= $produk['id']; ?><?= isset($_GET['sblm']) ? '/' . $_GET['sblm'] : ''; ?>"

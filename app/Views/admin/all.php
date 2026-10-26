@@ -492,6 +492,57 @@ $barangThumbUrl = function ($product) {
     color: #fff;
     border-color: transparent
 }
+
+/* Ilena admin catalog: warm, restrained editorial finish. */
+.page-wrap { max-width: 1540px; padding: 10px clamp(12px, 1.8vw, 26px) 36px; }
+.admin-product-hero {
+    border-color: #eae5db;
+    border-radius: 13px;
+    background: #fff;
+    box-shadow: 0 8px 26px rgba(57, 48, 34, .045);
+    padding: 19px 20px 15px;
+}
+.page-title { color: #29271f; font-size: 25px; font-weight: 650; letter-spacing: -.04em; }
+.overview-copy p, .meta-line { color: #77736c; }
+.overview-stat { min-width: 112px; border-color: #ece7de; border-radius: 9px; background: #fbfaf7; }
+.overview-stat strong { color: #302d25; font-size: 16px; font-weight: 650; }
+.overview-stat span { color: #817b70; font-size: 11px; }
+.toolbar { margin: 12px 0; }
+.searchbox input, .filter-select .form-select {
+    min-height: 41px;
+    border-color: #e5e0d6;
+    border-radius: 8px;
+    color: #302d25;
+    background-color: #fff;
+    font-size: 13px;
+}
+.searchbox input:focus, .filter-select .form-select:focus { border-color: #a28e6b; box-shadow: 0 0 0 3px rgba(162, 142, 107, .13); }
+.btn-default-merah, .bulk-edit-link { border-radius: 8px; background: #66583f; box-shadow: none; }
+.btn-default-merah:hover, .bulk-edit-link:hover { background: #51452f; }
+.container-table { border-color: #eae5db; border-radius: 12px; box-shadow: 0 8px 28px rgba(57, 48, 34, .045); }
+.header-table { background: #f8f6f1; border-bottom-color: #eae5db; color: #777165; font-size: 10px; letter-spacing: .12em; }
+.isi-table { min-height: 91px; border-bottom-color: #f0ede7; transition: background .18s ease; }
+.isi-table:hover { background: #fbfaf7; }
+.price { color: #403a2f; font-size: 13px; font-weight: 650; }
+.stock-summary-total { color: #514a3d; font-weight: 650; }
+.stock-chip { border-color: #e9e5dc; background: #faf9f6; color: #625e54; }
+.stock-chip.is-empty { color: #963f37; background: #fcf4f2; border-color: #efdbd6; }
+.id-mono { color: #8b8579; font-size: 11px; }
+.badge-chip { border-color: #e9e2d5; background: #f8f5ef; color: #62563f; font-size: 11px; }
+.badge-chip i { color: #8b7959; }
+.btn-icon { width: 36px; height: 36px; border-color: #e6e1d7; border-radius: 9px; color: #5b5344; }
+.btn-icon:hover { background: #f6f2ea; border-color: #d4c8b4; }
+.btn-del { background: #fff; border-color: #eadbd7; color: #a5463d; }
+.status-label { color: #817b70; }
+.status-label.is-live { color: #456c50; }
+.bulk-toolbar { border-color: #eae5db; border-radius: 11px; box-shadow: 0 8px 24px rgba(57, 48, 34, .04); }
+.bulk-edit-link { background: #66583f; }
+@media (max-width: 860px) {
+    .page-wrap { padding: 10px 12px 28px; }
+    .admin-product-hero { padding: 15px; border-radius: 11px; }
+    .overview-stat { padding: 8px 10px; }
+    .mini-wrap { border-radius: 10px; }
+}
 </style>
 
 <div class="page-wrap">
@@ -500,8 +551,8 @@ $barangThumbUrl = function ($product) {
     <div class="admin-product-hero">
         <div class="product-overview">
             <div class="overview-copy">
-                <h1 class="page-title">Produk Saya</h1>
-                <p>Kelola katalog, harga, stok varian, dan status tayang di satu tempat.</p>
+                <h1 class="page-title">Katalog Produk</h1>
+                <p>Kelola informasi, harga, stok varian, dan status tayang.</p>
             </div>
             <div class="toolbar-right">
                 <a href="/admin/producttable" class="btn btn-outline-dark" aria-label="Export daftar produk">Export</a>
