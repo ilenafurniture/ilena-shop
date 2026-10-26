@@ -152,6 +152,18 @@ class R2ProductImageService
         }
     }
 
+    /** Remove unreferenced size variants after a product edit has committed. */
+    public function deleteProductImageSlots(string $productId, array $slots): void
+    {
+        if (!$this->enabled()) return;
+        $safeId = preg_replace('/[^A-Za-z0-9_-]/', '', $productId);
+        if ($safeId === '') return;
+        foreach (array_unique(array_filter(array_map('intval', $slots), static fn(int $slot): bool => $slot >= 1 && $slot <= 9999)) as $slot) {
+            $this->deleteObject("products/1000/{$safeId}-{$slot}.webp");
+            $this->deleteObject("products/3000/{$safeId}-{$slot}.webp");
+        }
+    }
+
     public function redirectResponse(string $key, string $version = '')
     {
         $url = $this->publicUrl($key);
@@ -186,6 +198,29 @@ class R2ProductImageService
             'body' => (string) $result['body'],
             'contentType' => 'image/webp',
         ];
+    }
+
+    /** Read the real current object state without relying on the positive/negative cache. */
+    public function snapshotObject(string $key): array
+    {
+        if (!$this->enabled()) {
+            return ['exists' => false, 'body' => null];
+        }
+
+        $head = $this->request('HEAD', $key);
+        if ($head['status'] === 404) {
+            return ['exists' => false, 'body' => null];
+        }
+        if ($head['status'] < 200 || $head['status'] >= 300) {
+            throw new \RuntimeException('Could not verify existing R2 image before edit.');
+        }
+
+        $result = $this->request('GET', $key);
+        if ($result['status'] < 200 || $result['status'] >= 300 || $result['body'] === false) {
+            throw new \RuntimeException('Could not snapshot existing R2 image before edit.');
+        }
+
+        return ['exists' => true, 'body' => (string)$result['body']];
     }
 
     private function request(string $method, string $key, string $body = '', array $extraHeaders = []): array

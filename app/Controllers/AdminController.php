@@ -902,6 +902,9 @@ class AdminController extends BaseController
     // === FORM EDIT PRODUK ===
     public function editProduct($id_product)
     {
+        if (!preg_match('/^[A-Za-z0-9_-]{1,64}$/', (string) $id_product)) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Produk tidak ditemukan');
+        }
         $product = $this->barangModel->getBarangAdmin($id_product);
         if (!$product) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Produk tidak ditemukan');
@@ -933,12 +936,12 @@ class AdminController extends BaseController
         $data = [
             'title'            => 'Edit Produk',
             'apikey_img_ilena' => $this->apikey_img_ilena,
-            'jenisJson'        => json_encode($jenis),
-            'koleksiJson'      => json_encode($koleksi),
+            'jenisJson'        => \App\Services\ScriptJson::encode($jenis),
+            'koleksiJson'      => \App\Services\ScriptJson::encode($koleksi),
             'koleksi'          => $koleksi,
             'jenis'            => $jenis,
             'produk'           => $product,
-            'produkJson'       => json_encode($product),
+            'produkJson'       => \App\Services\ScriptJson::encode($product),
             'idProduct'        => $id_product,
             'val'              => ['msg' => session()->getFlashdata('val-id')],
         ];
@@ -950,13 +953,14 @@ class AdminController extends BaseController
     // === ACTION EDIT PRODUK ===
     public function actionEditProduct($id_product)
     {
+        $editImageBackups = [];
         try {
+            if (!preg_match('/^[A-Za-z0-9_-]{1,64}$/', (string) $id_product)) {
+                return $this->response->setStatusCode(422)->setJSON(['pesan' => 'ID produk tidak valid.']);
+            }
             $barang = $this->barangModel->getBarangAdmin($id_product);
             if (!$barang) {
                 return $this->response->setStatusCode(404)->setJSON(['pesan' => 'Produk tidak ditemukan']);
-            }
-            if (!preg_match('/^[A-Za-z0-9_-]{1,64}$/', (string) $id_product)) {
-                return $this->response->setStatusCode(422)->setJSON(['pesan' => 'ID produk tidak valid.']);
             }
 
             $data  = $this->request->getVar();
@@ -976,6 +980,46 @@ class AdminController extends BaseController
 
             if ($uploadError = $this->validateProductImageUploads($files)) {
                 return $this->response->setStatusCode(413)->setJSON(['pesan' => $uploadError]);
+            }
+
+            // Lock and rebase stock before any image files or remote objects are changed.
+            $stockTransaction = new \App\Services\AtomicOperation(db_connect(), 'ilena-product-' . sha1((string) $id_product));
+            $current = db_connect()->query('SELECT varian FROM barang WHERE id = ? FOR UPDATE', [$id_product])->getRowArray();
+            if (!$current) {
+                return $this->response->setStatusCode(404)->setJSON(['pesan' => 'Produk sudah tidak tersedia.']);
+            }
+            $submittedVariants = $data['varian'] ?? $barang['varian'];
+            if (is_string($submittedVariants)) {
+                $submittedVariants = json_decode($submittedVariants, true);
+            }
+            $currentVariants = json_decode((string) ($current['varian'] ?? '[]'), true);
+            if (!is_array($currentVariants) || json_last_error() !== JSON_ERROR_NONE) {
+                return $this->response->setStatusCode(422)->setJSON(['pesan' => 'Data varian tersimpan tidak valid. Perbaiki data produk sebelum menyimpan perubahan.']);
+            }
+            try {
+                $rebasedVariants = \App\Services\ProductStockPolicy::rebase(
+                    $currentVariants,
+                    is_array($submittedVariants) ? $submittedVariants : []
+                );
+            } catch (\RuntimeException $e) {
+                return $this->response->setStatusCode(422)->setJSON(['pesan' => $e->getMessage()]);
+            }
+            $submittedVariantKeys = array_fill_keys(array_map(
+                static fn(array $variant): string => mb_strtolower(trim((string)($variant['nama'] ?? '')), 'UTF-8'),
+                $rebasedVariants
+            ), true);
+            foreach ($currentVariants as $oldVariant) {
+                $oldName = trim((string)($oldVariant['nama'] ?? ''));
+                $oldKey = mb_strtolower($oldName, 'UTF-8');
+                if ($oldKey !== '' && !isset($submittedVariantKeys[$oldKey]) && db_connect()->tableExists('checkout_stock_reservations')) {
+                    $reservation = db_connect()->query(
+                        "SELECT 1 FROM checkout_stock_reservations WHERE product_id = ? AND LOWER(variant_name) = LOWER(?) AND status = 'reserved' AND expires_at > UTC_TIMESTAMP() LIMIT 1",
+                        [$id_product, $oldName]
+                    )->getRowArray();
+                    if ($reservation) {
+                        return $this->response->setStatusCode(422)->setJSON(['pesan' => 'Varian sedang digunakan checkout berjalan dan belum dapat dihapus.']);
+                    }
+                }
             }
 
             $publicPath = function (string $path): string {
@@ -1006,6 +1050,33 @@ class AdminController extends BaseController
                         throw new \RuntimeException('Folder tujuan gambar belum writable: ' . $destination);
                     }
 
+                    $backup = [
+                        'destination' => $destination,
+                        'localPath' => $destFile,
+                        'localExisted' => is_file($destFile),
+                        'localBackup' => null,
+                        'r2Key' => preg_replace('#^uploads/product-images/#', 'products/', ltrim(str_replace('\\', '/', $destination), '/')),
+                        'r2Existed' => false,
+                        'r2Backup' => null,
+                    ];
+                    if ($backup['localExisted']) {
+                        $backup['localBackup'] = $tmpDir . DIRECTORY_SEPARATOR . 'backup-' . uniqid('', true) . '.webp';
+                        if (!@copy($destFile, $backup['localBackup'])) {
+                            throw new \RuntimeException('Backup gambar lama gagal dibuat: ' . $destination);
+                        }
+                    }
+                    if ($this->r2ProductImages->enabled()) {
+                        $r2Snapshot = $this->r2ProductImages->snapshotObject($backup['r2Key']);
+                        $backup['r2Existed'] = $r2Snapshot['exists'];
+                        if ($backup['r2Existed']) {
+                            $backup['r2Backup'] = $tmpDir . DIRECTORY_SEPARATOR . 'backup-r2-' . uniqid('', true) . '.webp';
+                            if (file_put_contents($backup['r2Backup'], $r2Snapshot['body']) === false) {
+                                throw new \RuntimeException('Backup gambar R2 lama gagal disimpan: ' . $destination);
+                            }
+                        }
+                    }
+                    $editImageBackups[] = $backup;
+
                     $stagingFile = $tmpDir . DIRECTORY_SEPARATOR . 'resize-' . uniqid('', true) . '.webp';
                     \Config\Services::image()
                         ->withFile($tmpFile)
@@ -1028,7 +1099,12 @@ class AdminController extends BaseController
                             @touch($destFile);
                         }
                     }
-                    $this->uploadProductImageToR2(is_file($destFile) ? $destFile : $stagingFile, $destination);
+                    if ($this->r2ProductImages->enabled()) {
+                        $r2Key = $backup['r2Key'];
+                        if (!$this->r2ProductImages->uploadFile(is_file($destFile) ? $destFile : $stagingFile, $r2Key, 'image/webp')) {
+                            throw new \RuntimeException('Upload gambar ke storage gagal: ' . $destination);
+                        }
+                    }
                     @unlink($stagingFile);
                 }
 
@@ -1095,6 +1171,34 @@ class AdminController extends BaseController
                     if ($thumbSource && (is_writable($thumbDir) || $this->r2ProductImages->enabled())) {
                         $tmpDir = rtrim(WRITEPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'cache';
                         if (!is_dir($tmpDir)) { @mkdir($tmpDir, 0775, true); }
+                        $thumbRelative = "uploads/product-images/300/{$id_product}.webp";
+                        $thumbKey = "products/300/{$id_product}.webp";
+                        $thumbBackup = [
+                            'destination' => $thumbRelative,
+                            'localPath' => $thumbDest,
+                            'localExisted' => is_file($thumbDest),
+                            'localBackup' => null,
+                            'r2Key' => $thumbKey,
+                            'r2Existed' => false,
+                            'r2Backup' => null,
+                        ];
+                        if ($thumbBackup['localExisted']) {
+                            $thumbBackup['localBackup'] = $tmpDir . DIRECTORY_SEPARATOR . 'backup-thumb-' . uniqid('', true) . '.webp';
+                            if (!@copy($thumbDest, $thumbBackup['localBackup'])) {
+                                throw new \RuntimeException('Backup thumbnail lama gagal dibuat.');
+                            }
+                        }
+                        if ($this->r2ProductImages->enabled()) {
+                            $r2ThumbSnapshot = $this->r2ProductImages->snapshotObject($thumbKey);
+                            $thumbBackup['r2Existed'] = $r2ThumbSnapshot['exists'];
+                            if ($thumbBackup['r2Existed']) {
+                                $thumbBackup['r2Backup'] = $tmpDir . DIRECTORY_SEPARATOR . 'backup-r2-thumb-' . uniqid('', true) . '.webp';
+                                if (file_put_contents($thumbBackup['r2Backup'], $r2ThumbSnapshot['body']) === false) {
+                                    throw new \RuntimeException('Backup thumbnail R2 lama gagal disimpan.');
+                                }
+                            }
+                        }
+                        $editImageBackups[] = $thumbBackup;
                         $thumbTmp = $tmpDir . DIRECTORY_SEPARATOR . 'thumb-' . $id_product . '-' . uniqid('', true) . '.webp';
                         \Config\Services::image()
                             ->withFile($thumbSource)
@@ -1110,7 +1214,9 @@ class AdminController extends BaseController
                                     @touch($thumbDest);
                                 }
                             }
-                            $this->uploadProductImageToR2(is_file($thumbDest) ? $thumbDest : $thumbTmp, "uploads/product-images/300/{$id_product}.webp");
+                            if ($this->r2ProductImages->enabled() && !$this->r2ProductImages->uploadFile(is_file($thumbDest) ? $thumbDest : $thumbTmp, $thumbKey, 'image/webp')) {
+                                throw new \RuntimeException('Upload thumbnail ke storage gagal.');
+                            }
                             @unlink($thumbTmp);
                         } else {
                             @unlink($thumbTmp);
@@ -1118,6 +1224,18 @@ class AdminController extends BaseController
                     }
                 }
             } catch (\Throwable $e) {
+                if (!empty($thumbBackup['localExisted']) && !empty($thumbBackup['localBackup']) && is_file($thumbBackup['localBackup'])) {
+                    @copy($thumbBackup['localBackup'], $thumbBackup['localPath']);
+                } elseif (isset($thumbBackup) && empty($thumbBackup['localExisted']) && is_file($thumbBackup['localPath'] ?? '')) {
+                    @unlink($thumbBackup['localPath']);
+                }
+                if (isset($thumbBackup) && $this->r2ProductImages->enabled()) {
+                    if (!empty($thumbBackup['r2Existed']) && !empty($thumbBackup['r2Backup']) && is_file($thumbBackup['r2Backup'])) {
+                        $this->r2ProductImages->uploadFile($thumbBackup['r2Backup'], $thumbBackup['r2Key'], 'image/webp');
+                    } elseif (empty($thumbBackup['r2Existed'])) {
+                        $this->r2ProductImages->deleteObject($thumbBackup['r2Key']);
+                    }
+                }
                 log_message('error', 'EDIT thumbnail cover gagal: {msg}', ['msg' => $e->getMessage()]);
             }
 
@@ -1131,7 +1249,7 @@ class AdminController extends BaseController
                 'kategori'       => $kategoriNama,
                 'subkategori'    => $subkategoriNama,
                 'diskon'         => $data['diskon']      ?? $barang['diskon'],
-                'varian'         => $varian,
+                'varian'         => json_encode($rebasedVariants),
                 'shopee'         => $data['shopee']      ?? ($barang['shopee'] ?? ''),
                 'tokped'         => $data['tokped']      ?? ($barang['tokped'] ?? ''),
                 'tiktok'         => $data['tiktok']      ?? ($barang['tiktok'] ?? ''),
@@ -1155,18 +1273,68 @@ class AdminController extends BaseController
             }
             // ===== END PATCH =====
 
-            $stockTransaction=new \App\Services\AtomicOperation(db_connect(),'ilena-product-'.sha1((string)$id_product));
-            $current=db_connect()->query('SELECT varian FROM barang WHERE id = ? FOR UPDATE',[$id_product])->getRowArray();
-            if (!$current) throw new \RuntimeException('Produk sudah tidak tersedia.');
-            $payload['varian']=json_encode(\App\Services\ProductStockPolicy::rebase(json_decode($current['varian'],true)?:[],json_decode($payload['varian'],true)?:[]));
             if (!$this->barangModel->update($id_product, $payload)) throw new \RuntimeException('Data produk gagal disimpan.');
             $stockTransaction->commit();
+
+            $collectSlots = static function (array $variants): array {
+                $slots = [];
+                foreach ($variants as $variant) {
+                    foreach (explode(',', (string)($variant['urutan_gambar'] ?? '')) as $slot) {
+                        $slot = (int)trim($slot);
+                        if ($slot >= 1 && $slot <= 9999) $slots[$slot] = $slot;
+                    }
+                }
+                return $slots;
+            };
+            $removedSlots = array_values(array_diff(
+                $collectSlots($currentVariants),
+                $collectSlots($rebasedVariants)
+            ));
+            if ($removedSlots !== []) {
+                try {
+                    foreach (['uploads/product-images/1000', 'uploads/product-images/3000', 'img/barang/1000', 'img/barang/3000'] as $imageDir) {
+                        foreach ($removedSlots as $slot) {
+                            $oldImage = rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
+                                . str_replace('/', DIRECTORY_SEPARATOR, "{$imageDir}/{$id_product}-{$slot}.webp");
+                            if (is_file($oldImage)) @unlink($oldImage);
+                        }
+                    }
+                    $this->r2ProductImages->deleteProductImageSlots((string)$id_product, $removedSlots);
+                } catch (\Throwable $cleanupError) {
+                    log_message('error', 'Product image cleanup deferred for {id}: {error}', [
+                        'id' => $id_product,
+                        'error' => $cleanupError->getMessage(),
+                    ]);
+                }
+            }
+
+            foreach ($editImageBackups as $backup) {
+                if (!empty($backup['localBackup'])) @unlink($backup['localBackup']);
+                if (!empty($backup['r2Backup'])) @unlink($backup['r2Backup']);
+            }
 
             return $this->response->setStatusCode(200)->setJSON([
                 'pesan'   => 'Berhasil mengubah produk. Saldo stok mengikuti transaksi terbaru; perubahan stok melalui Mutasi.',
                 'payload' => $payload,
             ]);
         } catch (\Throwable $e) {
+            // Compensate image writes if any later image/database operation fails.
+            foreach (array_reverse($editImageBackups) as $backup) {
+                if (!empty($backup['localExisted']) && !empty($backup['localBackup']) && is_file($backup['localBackup'])) {
+                    @copy($backup['localBackup'], $backup['localPath']);
+                } elseif (empty($backup['localExisted']) && is_file($backup['localPath'])) {
+                    @unlink($backup['localPath']);
+                }
+                if ($this->r2ProductImages->enabled()) {
+                    if (!empty($backup['r2Existed']) && !empty($backup['r2Backup']) && is_file($backup['r2Backup'])) {
+                        $this->r2ProductImages->uploadFile($backup['r2Backup'], $backup['r2Key'], 'image/webp');
+                    } elseif (empty($backup['r2Existed'])) {
+                        $this->r2ProductImages->deleteObject($backup['r2Key']);
+                    }
+                }
+                if (!empty($backup['localBackup'])) @unlink($backup['localBackup']);
+                if (!empty($backup['r2Backup'])) @unlink($backup['r2Backup']);
+            }
             log_message('error', 'EDIT PRODUCT ERROR: {msg} at {file}:{line}', [
                 'msg'  => $e->getMessage(),
                 'file' => $e->getFile(),
@@ -1175,7 +1343,6 @@ class AdminController extends BaseController
 
             return $this->response->setStatusCode(500)->setJSON([
                 'pesan' => 'Gagal mengubah produk.',
-                'error' => $e->getMessage(),
             ]);
         }
     }

@@ -13,4 +13,16 @@ final class ProductStockPolicyTest extends CIUnitTestCase
         $this->expectException(\RuntimeException::class);
         ProductStockPolicy::rebase([['nama'=>'Oak','stok'=>1]],[['nama'=>'Renamed','stok'=>1]]);
     }
+
+    public function testMalformedPersistedVariantFailsClosed(): void
+    {
+        $this->expectException(\RuntimeException::class);
+        ProductStockPolicy::rebase([['stok'=>3]],[['nama'=>'Oak','stok'=>3]]);
+    }
+
+    public function testStockedVariantNameCannotChangeCase(): void
+    {
+        $this->expectException(\RuntimeException::class);
+        ProductStockPolicy::rebase([['nama'=>'Oak','stok'=>1]],[['nama'=>'OAK','stok'=>1]]);
+    }
 }

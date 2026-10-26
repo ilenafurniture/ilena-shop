@@ -517,15 +517,15 @@
 // ==== Data dari PHP (pastikan admin/template sudah load React + Babel UMD) ====
 const koleksi = <?= $koleksiJson ?>;
 const jenis   = <?= $jenisJson ?>;
-const idProduct = '<?= isset($idProduct) ? $idProduct : '' ?>';
+const idProduct = <?= \App\Services\ScriptJson::encode((string) ($idProduct ?? '')) ?>;
 const produk   = <?= isset($produkJson) ? $produkJson : 'null' ?>;
 
 // URL preview gambar lama saat edit. Wajib lewat route storage, bukan /img/barang,
 // supaya gambar R2/uploads langsung terbaca dan tidak balik ke asset Git lama.
-const PRODUCT_IMAGE_VERSION = "<?= ($produk && !empty($produk['tgl_update'])) ? strtotime((string) $produk['tgl_update']) : time(); ?>";
-const URL_HOVER = "<?= base_url('viewpichover/' . ($produk ? $produk['id'] : '')) ?>?proxy=1";
+const PRODUCT_IMAGE_VERSION = <?= \App\Services\ScriptJson::encode((string) (($produk && !empty($produk['tgl_update'])) ? strtotime((string) $produk['tgl_update']) : time())) ?>;
+const URL_HOVER = <?= \App\Services\ScriptJson::encode(base_url('viewpichover/' . ($produk['id'] ?? '')) . '?proxy=1') ?>;
 function productCoverPreviewUrl(slot) {
-  return "<?= base_url('product-cover/' . ($produk ? $produk['id'] : '')) ?>?proxy=1&slot=" + encodeURIComponent(slot || "1");
+  return <?= \App\Services\ScriptJson::encode(base_url('product-cover/' . ($produk['id'] ?? '')) . '?proxy=1&slot=') ?> + encodeURIComponent(slot || "1");
 }
 
 // === Helper: format waktu untuk input[type=datetime-local] ===
@@ -1290,11 +1290,12 @@ const App = () => {
                         <tr>
                           <td>Stok</td>
                           <td>
-                            <input className="form-control" value={v.stok}
+                            <input className="form-control" value={v.stok} readOnly={Boolean(idProduct)}
                               onChange={e => setFormData({
                                 ...formData,
                                 varian: formData.varian.map((vv, i) => i === ind_v ? { ...vv, stok: e.target.value } : vv)
-                              })} required />
+                              })} required aria-describedby={idProduct ? `stock-help-${ind_v}` : undefined} />
+                            {Boolean(idProduct) && <small id={`stock-help-${ind_v}`} className="text-muted">Saldo stok dikelola melalui Mutasi agar transaksi terbaru tetap akurat.</small>}
                           </td>
                         </tr>
                       </tbody>
