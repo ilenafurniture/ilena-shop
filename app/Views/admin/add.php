@@ -739,8 +739,31 @@ const App = () => {
 
   const handleSubmit = () => {
     // Validasi
-    if (!formData.nama || !formData.harga) { setEror("Nama dan harga produk wajib diisi."); return; }
+    if (!/^[A-Za-z0-9_-]{1,64}$/.test(String(formData.id || ''))) { setEror("ID produk hanya boleh berisi huruf, angka, garis bawah, atau tanda hubung."); return; }
+    if (!String(formData.nama || '').trim() || !String(formData.harga || '').trim()) { setEror("Nama dan harga produk wajib diisi."); return; }
+    if (!Number.isFinite(Number(formData.harga)) || Number(formData.harga) < 0) { setEror("Harga produk harus berupa angka nol atau lebih."); return; }
+    if (!Number.isFinite(Number(formData.diskon || 0)) || Number(formData.diskon || 0) < 0 || Number(formData.diskon || 0) > 100) { setEror("Diskon harus berada di antara 0 sampai 100 persen."); return; }
+    if (!formData.kategori || !formData.subkategori) { setEror("Pilih koleksi dan jenis produk."); return; }
     if ((formData.varian || []).length === 0) { setEror("Minimal 1 varian harus ditambahkan."); return; }
+    const variantNames = new Set();
+    for (let i = 0; i < formData.varian.length; i++) {
+      const variant = formData.varian[i] || {};
+      const normalizedName = String(variant.nama || '').trim().toLocaleLowerCase();
+      if (!normalizedName || !String(variant.kode || '').trim() || !/^\d+$/.test(String(variant.stok ?? ''))) {
+        setEror(`Varian ke-${i + 1} wajib memiliki nama, kode, dan stok bilangan bulat nol atau lebih.`); return;
+      }
+      if (variantNames.has(normalizedName)) { setEror("Nama setiap varian harus unik."); return; }
+      variantNames.add(normalizedName);
+    }
+    const dimensionFields = ['panjang', 'lebar', 'tinggi', 'berat'];
+    for (const dimensionType of ['asli', 'paket']) {
+      for (const field of dimensionFields) {
+        const value = formData.deskripsi?.dimensi?.[dimensionType]?.[field];
+        if (value === '' || value === null || value === undefined || !Number.isFinite(Number(value)) || Number(value) < 0) {
+          setEror("Dimensi dan berat produk harus diisi dengan angka nol atau lebih."); return;
+        }
+      }
+    }
     const totalFotoProduk = (gambarSrc || []).reduce((total, group) => total + ((group || []).length), 0);
     if (totalFotoProduk > MAX_PRODUCT_IMAGES) {
       setEror(`Maksimal ${MAX_PRODUCT_IMAGES} foto produk dalam 1 produk. Saat ini ada ${totalFotoProduk} foto.`);

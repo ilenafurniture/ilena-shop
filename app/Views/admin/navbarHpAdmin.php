@@ -41,6 +41,13 @@ $mobileItems = array_slice(array_values(array_filter($mobileItems, static fn($it
             <p><?= esc(session()->get('nama') ?: session()->get('email')); ?></p>
         </div>
     </div>
+    <form action="/logout" method="post" class="admin-mobile-logout-form">
+        <?= csrf_field(); ?>
+        <button type="submit" class="admin-mobile-logout" aria-label="Keluar dari akun admin" title="Keluar">
+            <i class="material-icons" aria-hidden="true">logout</i>
+            <span>Keluar</span>
+        </button>
+    </form>
 </div>
 
 <nav class="navbar-hp admin-mobile-nav hide-ke-show-flex" aria-label="Menu admin mobile">
@@ -59,6 +66,10 @@ $mobileItems = array_slice(array_values(array_filter($mobileItems, static fn($it
 
 <style>
 .admin-mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
     padding: 14px 16px 10px;
     background: #fff;
     border-bottom: 1px solid #eef2f7;
@@ -96,6 +107,26 @@ $mobileItems = array_slice(array_values(array_filter($mobileItems, static fn($it
     font-size: 12px;
     color: #64748b;
 }
+.admin-mobile-logout-form { flex: 0 0 auto; margin: 0; }
+.admin-mobile-logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 10px;
+    border: 1px solid #e8e0d7;
+    border-radius: 12px;
+    background: #fff;
+    color: #6b4c3b;
+    font-size: 12px;
+    font-weight: 700;
+}
+.admin-mobile-logout:hover,
+.admin-mobile-logout:focus-visible { border-color: #c7b39e; background: #faf8f5; }
+.admin-mobile-logout:focus-visible { outline: 2px solid #8b684c; outline-offset: 2px; }
+.admin-mobile-logout .material-icons { font-size: 18px; }
 
 .navbar-hp.admin-mobile-nav {
     height: 72px;

@@ -569,12 +569,12 @@ $barangThumbUrl = function ($product) {
 
             <div style="flex: 1;" class="price">Rp <?= number_format((int)$p['harga'], 0, ',', '.'); ?></div>
 
-            <div style="flex: 1.5;" class="stok"><?= strtolower($p['allstok']); ?></div>
+            <div style="flex: 1.5;" class="stok"><?= nl2br(esc((string) ($p['allstok'] ?? '-'))); ?></div>
 
             <div style="flex: 1;">
                 <div class="checkbox-apple">
                     <input onchange="ubahStatus('<?= $p['id']; ?>', this)" class="yep" id="check-apple<?= $ind_p ?>"
-                        type="checkbox" <?= $p['active'] ? 'checked' : ''; ?>>
+                        data-product-id="<?= esc($p['id'], 'attr'); ?>" type="checkbox" <?= $p['active'] ? 'checked' : ''; ?>>
                     <label for="check-apple<?= $ind_p ?>"></label>
                 </div>
             </div>
@@ -637,12 +637,12 @@ $barangThumbUrl = function ($product) {
                 <div style="flex: 1;" class="mini-text-sm mini-price">Rp
                     <?= number_format((int)$p['harga'], 0, ',', '.'); ?></div>
 
-                <div style="flex: 1;" class="mini-text-sm"><?= strtolower($p['allstok']); ?></div>
+                <div style="flex: 1;" class="mini-text-sm"><?= nl2br(esc((string) ($p['allstok'] ?? '-'))); ?></div>
 
                 <div style="flex: .8;">
                     <div class="checkbox-apple">
                         <input onchange="ubahStatus('<?= $p['id']; ?>', this)" class="yep" id="check-apple-m<?= $ind_p ?>"
-                            type="checkbox" <?= $p['active'] ? 'checked' : ''; ?>>
+                            data-product-id="<?= esc($p['id'], 'attr'); ?>" type="checkbox" <?= $p['active'] ? 'checked' : ''; ?>>
                         <label for="check-apple-m<?= $ind_p ?>"></label>
                     </div>
                 </div>
@@ -692,8 +692,10 @@ $barangThumbUrl = function ($product) {
 
 <script>
 async function ubahStatus(id_produk, checkbox) {
-    const checkedBefore = checkbox ? !checkbox.checked : null;
-    if (checkbox) checkbox.disabled = true;
+    const desiredStatus = checkbox && checkbox.checked ? '1' : '0';
+    const toggles = Array.from(document.querySelectorAll('.yep')).filter(input => input.dataset.productId === String(id_produk));
+    const checkedBefore = toggles.map(input => input.checked);
+    toggles.forEach(input => { input.disabled = true; input.checked = desiredStatus === '1'; });
     try {
         const tokenName = document.querySelector('meta[name="csrf-token-name"]')?.content;
         const tokenHash = document.querySelector('meta[name="csrf-token-hash"]')?.content;
@@ -701,14 +703,17 @@ async function ubahStatus(id_produk, checkbox) {
         if (tokenName && tokenHash) headers['X-CSRF-TOKEN'] = tokenHash;
         const response = await fetch('/admin/activeproduct/' + encodeURIComponent(id_produk), {
             method: 'POST',
-            headers
+            headers,
+            body: new URLSearchParams({active: desiredStatus})
         });
         if (!response.ok) throw new Error('Gagal update status');
+        const result = await response.json();
+        if (String(result.active) !== desiredStatus) throw new Error('Status yang tersimpan tidak sesuai');
     } catch (error) {
-        if (checkbox && checkedBefore !== null) checkbox.checked = checkedBefore;
+        toggles.forEach((input, index) => { input.checked = checkedBefore[index]; });
         alert('Status produk gagal diubah. Coba ulangi beberapa saat lagi.');
     } finally {
-        if (checkbox) checkbox.disabled = false;
+        toggles.forEach(input => { input.disabled = false; });
     }
 }
 

@@ -129,6 +129,29 @@ class R2ProductImageService
         }
     }
 
+    /** Delete only the image slots still referenced by a product record. */
+    public function deleteProductImagesForSlots(string $productId, array $slots): void
+    {
+        $safeId = preg_replace('/[^A-Za-z0-9_-]/', '', $productId);
+        if ($safeId === '') {
+            return;
+        }
+
+        $this->deleteObject("products/300/{$safeId}.webp");
+        $this->deleteObject("products/hover/{$safeId}.webp");
+        $normalizedSlots = [];
+        foreach ($slots as $slot) {
+            $slot = filter_var($slot, FILTER_VALIDATE_INT);
+            if ($slot !== false && $slot >= 1 && $slot <= 9999) {
+                $normalizedSlots[$slot] = $slot;
+            }
+        }
+        foreach ($normalizedSlots as $slot) {
+            $this->deleteObject("products/1000/{$safeId}-{$slot}.webp");
+            $this->deleteObject("products/3000/{$safeId}-{$slot}.webp");
+        }
+    }
+
     public function redirectResponse(string $key, string $version = '')
     {
         $url = $this->publicUrl($key);

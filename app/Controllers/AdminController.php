@@ -359,10 +359,11 @@ class AdminController extends BaseController
             $product[$index_p]['varian'] = is_array($decodedVarian) ? $decodedVarian : [];
             $product[$index_p]['allstok'] = '';
             foreach ($product[$index_p]['varian'] as $ind_v => $v) {
+                if (!is_array($v)) continue;
                 $namaVarian = $v['nama'] ?? 'Varian';
                 $stokVarian = $v['stok'] ?? 0;
                 if ($ind_v == 0) $product[$index_p]['allstok'] .= $namaVarian . ' : ' . $stokVarian;
-                else $product[$index_p]['allstok'] .= "<br>" . $namaVarian . ' : ' . $stokVarian;
+                else $product[$index_p]['allstok'] .= "\n" . $namaVarian . ' : ' . $stokVarian;
             }
             if ($product[$index_p]['allstok'] === '') {
                 $product[$index_p]['allstok'] = '-';
@@ -450,15 +451,17 @@ class AdminController extends BaseController
         }
         if (!empty($post['update_kategori'])) {
             $row = $this->koleksiModel->where('id', $post['kategori'] ?? '')->first();
-            if ($row) {
-                $payload['kategori'] = $row['nama'];
+            if (!$row) {
+                return redirect()->back()->with('error', 'Koleksi yang dipilih tidak valid.')->withInput();
             }
+            $payload['kategori'] = $row['nama'];
         }
         if (!empty($post['update_subkategori'])) {
             $row = $this->jenisModel->where('id', $post['subkategori'] ?? '')->first();
-            if ($row) {
-                $payload['subkategori'] = $row['nama'];
+            if (!$row) {
+                return redirect()->back()->with('error', 'Jenis produk yang dipilih tidak valid.')->withInput();
             }
+            $payload['subkategori'] = $row['nama'];
         }
         if (!empty($post['update_ruangan'])) {
             $payload['ruang_tamu'] = !empty($post['ruang_tamu']) ? '1' : '0';
@@ -471,31 +474,44 @@ class AdminController extends BaseController
         }
 
         $payload['tgl_update'] = date('Y-m-d H:i:s');
-        $updated = 0;
-        $products = $this->barangModel->whereIn('id', $ids)->findAll();
-        foreach ($products as $product) {
-            if ($this->barangModel->update($product['id'], $payload)) {
-                $updated++;
+        try {
+            $atomic = new \App\Services\AtomicOperation(db_connect(), 'ilena-bulk-product-edit');
+            $products = $this->barangModel->whereIn('id', $ids)->findAll();
+            if (count($products) !== count($ids)) {
+                throw new \RuntimeException('Sebagian produk yang dipilih sudah tidak tersedia; tidak ada perubahan yang disimpan.');
             }
+            foreach ($products as $product) {
+                if (!$this->barangModel->update($product['id'], $payload)) {
+                    throw new \RuntimeException('Pembaruan produk ' . $product['id'] . ' gagal; seluruh perubahan dibatalkan.');
+                }
+            }
+            $atomic->commit();
+        } catch (\Throwable $e) {
+            log_message('error', 'Bulk product update failed: {error}', ['error' => $e->getMessage()]);
+            return redirect()->to('/admin/product')->with('error', $e->getMessage());
         }
 
-        return redirect()->to('/admin/product')->with('success', $updated . ' produk berhasil diperbarui.');
+        return redirect()->to('/admin/product')->with('success', count($products) . ' produk berhasil diperbarui.');
     }
     public function listProductTable()
     {
         $product = $this->barangModel->orderBy('nama', 'asc')->findAll();
         foreach ($product as $index_p => $p) {
-            $deskripsiArr = json_decode($p['deskripsi'], true);
-            $deskripsi = str_replace('</p>', '', str_replace('<br>', '', str_replace('<p>', '', $deskripsiArr['deskripsi'])));
-            $dimensi = 'Dimensi : P(' . $deskripsiArr['dimensi']['asli']['panjang'] . 'mm) x L(' . $deskripsiArr['dimensi']['asli']['lebar'] . 'mm) x T(' . $deskripsiArr['dimensi']['asli']['tinggi'] . 'mm) dengan berat ' . $deskripsiArr['dimensi']['asli']['berat'] . 'kg';
+            $deskripsiArr = json_decode($p['deskripsi'] ?? '', true);
+            $deskripsiArr = is_array($deskripsiArr) ? $deskripsiArr : [];
+            $deskripsi = strip_tags((string) ($deskripsiArr['deskripsi'] ?? ''));
+            $dimensiAsli = $deskripsiArr['dimensi']['asli'] ?? [];
+            $dimensi = 'Dimensi : P(' . ($dimensiAsli['panjang'] ?? '-') . 'mm) x L(' . ($dimensiAsli['lebar'] ?? '-') . 'mm) x T(' . ($dimensiAsli['tinggi'] ?? '-') . 'mm) dengan berat ' . ($dimensiAsli['berat'] ?? '-') . 'kg';
             $product[$index_p]['deskripsi_nonhtml'] = $deskripsi . ' ' . $dimensi;
             $product[$index_p]['gambar'] = 'https://ilenafurniture.com/viewpichover/' . $p['id'];
-            $product[$index_p]['varian'] = json_decode($p['varian'], true);
+            $decodedVariants = json_decode($p['varian'] ?? '[]', true);
+            $product[$index_p]['varian'] = is_array($decodedVariants) ? $decodedVariants : [];
             $product[$index_p]['stok_total'] = 0;
             $product[$index_p]['warna'] = '';
             foreach ($product[$index_p]['varian'] as $ind_v => $v) {
-                $product[$index_p]['stok_total'] += $v['stok'];
-                $product[$index_p]['warna'] .= ($ind_v == 0 ? '' : '/') . ucwords(strtolower($v['nama']));
+                if (!is_array($v)) continue;
+                $product[$index_p]['stok_total'] += (int) ($v['stok'] ?? 0);
+                $product[$index_p]['warna'] .= ($product[$index_p]['warna'] === '' ? '' : '/') . ucwords(strtolower((string) ($v['nama'] ?? 'Varian')));
             }
         }
         $data = [
@@ -537,6 +553,10 @@ class AdminController extends BaseController
 
             if (method_exists($file, 'getError') && $file->getError() === UPLOAD_ERR_NO_FILE) {
                 continue;
+            }
+
+            if ($field !== 'gambar_hover' && !preg_match('/^gambar_[0-9]{1,4}$/', (string) $field)) {
+                return 'Urutan file gambar produk tidak valid.';
             }
 
             if ($field === 'gambar_hover') {
@@ -583,17 +603,30 @@ class AdminController extends BaseController
             return redirect()->to('/admin/addproduct')->withInput();
         }
 
+        $data               = $this->request->getVar();
+        if (!preg_match('/^[A-Za-z0-9_-]{1,64}$/', (string) ($data['id'] ?? ''))) {
+            return $this->response->setStatusCode(422)->setJSON(['pesan' => 'ID produk hanya boleh berisi huruf, angka, garis bawah, atau tanda hubung (maksimal 64 karakter).']);
+        }
+        $data_gambar_mentah = $this->request->getFiles();
+
+        if ($error = \App\Services\ProductInputPolicy::validate($data)) {
+            return $this->response->setStatusCode(422)->setJSON(['pesan' => $error]);
+        }
+
         $koleksi = $this->koleksiModel->getKoleksi();
         $jenis   = $this->jenisModel->getJenis();
-
-        $data               = $this->request->getVar();
-        $data_gambar_mentah = $this->request->getFiles();
-        $this->ensureProductStorageReady();
-        $this->ensureBarangScheduleColumns();
+        $categoryRow = $this->koleksiModel->where('id', $data['kategori'] ?? '')->first();
+        $subcategoryRow = $this->jenisModel->where('id', $data['subkategori'] ?? '')->first();
+        if (!$categoryRow || !$subcategoryRow) {
+            return $this->response->setStatusCode(422)->setJSON(['pesan' => 'Koleksi dan jenis produk wajib dipilih dari daftar yang tersedia.']);
+        }
 
         if ($uploadError = $this->validateProductImageUploads($data_gambar_mentah)) {
             return $this->response->setStatusCode(413)->setJSON(['pesan' => $uploadError]);
         }
+
+        $this->ensureProductStorageReady();
+        $this->ensureBarangScheduleColumns();
 
         $variants = json_decode($data['varian'] ?? '[]', true);
         if (!is_array($variants)) {
@@ -623,32 +656,8 @@ class AdminController extends BaseController
         }
         unset($data_gambar_mentah['gambar_hover']);
 
-        foreach ($variants as $varian) {
-            $tanggalNoStrip = date("YmdHis", strtotime("+7 Hours"));
-            $this->kartuStokModel->insert([
-                'id_barang'   => $data['id'],
-                'tanggal'     => date("Y-m-d H:i:s", strtotime("+7 Hours")),
-                'keterangan'  => $tanggalNoStrip . "-" . $data['id'] . "-" . strtoupper($varian['nama']) . "-ADDPRODUCT",
-                'debit'       => $varian['stok'],
-                'kredit'      => 0,
-                'saldo'       => $varian['stok'],
-                'pending'     => false,
-                'id_pesanan'  => 'ADDPRODUCT',
-                'varian'      => strtoupper($varian['nama'])
-            ]);
-        }
-
-        $koleksiSelected = '';
-        if (!empty($data['kategori'])) {
-            $row = array_values(array_filter($koleksi, fn($v) => $v['id'] == $data['kategori']))[0] ?? null;
-            $koleksiSelected = $row ? $row['nama'] : '';
-        }
-
-        $jenisSelected = '';
-        if (!empty($data['subkategori'])) {
-            $row = array_values(array_filter($jenis, fn($v) => $v['id'] == $data['subkategori']))[0] ?? null;
-            $jenisSelected = $row ? $row['nama'] : '';
-        }
+        $koleksiSelected = $categoryRow['nama'];
+        $jenisSelected = $subcategoryRow['nama'];
 
         foreach ($data_gambar_mentah as $ind_g => $dG) {
             if ($ind_g === 'gambar_hover') continue;
@@ -727,7 +736,36 @@ class AdminController extends BaseController
                                         ? date('Y-m-d H:i:s', strtotime(str_replace('T',' ', $selesaiRaw))) : null,
         ];
 
-        $this->barangModel->insert($insertDataBarang);
+        try {
+            $stockTransaction = new \App\Services\AtomicOperation(
+                db_connect(),
+                'ilena-product-' . sha1((string) $data['id'])
+            );
+            if (!$this->barangModel->insert($insertDataBarang)) {
+                throw new \RuntimeException('Data produk gagal disimpan.');
+            }
+            foreach ($variants as $variant) {
+                $timestamp = date('Y-m-d H:i:s', strtotime('+7 hours'));
+                $ledger = [
+                    'id_barang' => $data['id'],
+                    'tanggal' => $timestamp,
+                    'keterangan' => date('YmdHis', strtotime($timestamp)) . '-' . $data['id'] . '-' . strtoupper($variant['nama']) . '-ADDPRODUCT',
+                    'debit' => (int) $variant['stok'],
+                    'kredit' => 0,
+                    'saldo' => (int) $variant['stok'],
+                    'pending' => false,
+                    'id_pesanan' => 'ADDPRODUCT',
+                    'varian' => strtoupper($variant['nama']),
+                ];
+                if (!$this->kartuStokModel->insert($ledger)) {
+                    throw new \RuntimeException('Saldo awal varian gagal dicatat.');
+                }
+            }
+            $stockTransaction->commit();
+        } catch (\Throwable $e) {
+            log_message('error', 'ADD PRODUCT TRANSACTION ERROR: {msg}', ['msg' => $e->getMessage()]);
+            return $this->response->setStatusCode(500)->setJSON(['pesan' => 'Produk dan saldo awal gagal disimpan; perubahan data dibatalkan.']);
+        }
 
         return $this->response
             ->setStatusCode(200)
@@ -785,7 +823,7 @@ class AdminController extends BaseController
         }
     }
 
-    private function deleteLocalProductImages(string $productId, int $maxSlots = 20): void
+    private function deleteLocalProductImages(string $productId): void
     {
         $safeId = preg_replace('/[^A-Za-z0-9_-]/', '', $productId);
         if ($safeId === '') {
@@ -799,11 +837,16 @@ class AdminController extends BaseController
             "img/barang/hover/{$safeId}.webp",
         ];
 
-        for ($slot = 1; $slot <= $maxSlots; $slot++) {
-            $paths[] = "uploads/product-images/1000/{$safeId}-{$slot}.webp";
-            $paths[] = "uploads/product-images/3000/{$safeId}-{$slot}.webp";
-            $paths[] = "img/barang/1000/{$safeId}-{$slot}.webp";
-            $paths[] = "img/barang/3000/{$safeId}-{$slot}.webp";
+        foreach ([
+            'uploads/product-images/1000', 'uploads/product-images/3000',
+            'img/barang/1000', 'img/barang/3000',
+        ] as $imageDir) {
+            $absoluteDir = rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $imageDir);
+            foreach (glob($absoluteDir . DIRECTORY_SEPARATOR . $safeId . '-*.webp') ?: [] as $file) {
+                if (is_file($file)) {
+                    @unlink($file);
+                }
+            }
         }
 
         foreach ($paths as $relativePath) {
@@ -870,7 +913,8 @@ class AdminController extends BaseController
         $koleksi = $this->koleksiModel->getKoleksi();
         $jenis   = $this->jenisModel->getJenis();
 
-        unset($product['gambar'], $product['tgl_update'], $product['active']);
+        // Keep tgl_update in the form payload: the editor uses it as a stable cache key for previews.
+        unset($product['gambar'], $product['active']);
 
         $product['ruang_tamu']     = ($product['ruang_tamu'] ?? '0') == '1';
         $product['ruang_keluarga'] = ($product['ruang_keluarga'] ?? '0') == '1';
@@ -887,7 +931,7 @@ class AdminController extends BaseController
         $product['diskon_selesai']      = $product['diskon_selesai'] ?? null;
 
         $data = [
-            'title'            => 'Tambah Produk',
+            'title'            => 'Edit Produk',
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'jenisJson'        => json_encode($jenis),
             'koleksiJson'      => json_encode($koleksi),
@@ -911,9 +955,24 @@ class AdminController extends BaseController
             if (!$barang) {
                 return $this->response->setStatusCode(404)->setJSON(['pesan' => 'Produk tidak ditemukan']);
             }
+            if (!preg_match('/^[A-Za-z0-9_-]{1,64}$/', (string) $id_product)) {
+                return $this->response->setStatusCode(422)->setJSON(['pesan' => 'ID produk tidak valid.']);
+            }
 
             $data  = $this->request->getVar();
             $files = $this->request->getFiles();
+
+            if ($error = \App\Services\ProductInputPolicy::validate($data)) {
+                return $this->response->setStatusCode(422)->setJSON(['pesan' => $error]);
+            }
+            if (isset($data['id']) && (string) $data['id'] !== (string) $id_product) {
+                return $this->response->setStatusCode(422)->setJSON(['pesan' => 'ID produk tidak boleh diubah dari formulir edit.']);
+            }
+            $koleksiRow = $this->koleksiModel->where('id', $data['kategori'] ?? '')->first();
+            $jenisRow = $this->jenisModel->where('id', $data['subkategori'] ?? '')->first();
+            if (!$koleksiRow || !$jenisRow) {
+                return $this->response->setStatusCode(422)->setJSON(['pesan' => 'Koleksi dan jenis produk wajib dipilih dari daftar yang tersedia.']);
+            }
 
             if ($uploadError = $this->validateProductImageUploads($files)) {
                 return $this->response->setStatusCode(413)->setJSON(['pesan' => $uploadError]);
@@ -1003,17 +1062,8 @@ class AdminController extends BaseController
                 }
             }
 
-            $kategoriNama    = $barang['kategori'];
-            $subkategoriNama = $barang['subkategori'];
-
-            if (!empty($data['kategori'])) {
-                $koleksiRow = $this->koleksiModel->where('id', $data['kategori'])->first();
-                if ($koleksiRow) $kategoriNama = $koleksiRow['nama'];
-            }
-            if (!empty($data['subkategori'])) {
-                $jenisRow = $this->jenisModel->where('id', $data['subkategori'])->first();
-                if ($jenisRow) $subkategoriNama = $jenisRow['nama'];
-            }
+            $kategoriNama = $koleksiRow['nama'];
+            $subkategoriNama = $jenisRow['nama'];
 
             $deskripsi = $data['deskripsi'] ?? $barang['deskripsi'];
             if (is_array($deskripsi)) $deskripsi = json_encode($deskripsi);
@@ -1465,11 +1515,18 @@ class AdminController extends BaseController
             return $this->response->setStatusCode(404)->setJSON(['pesan' => 'Produk tidak ditemukan'], false);
         }
 
-        $newStatus = ($product['active'] ?? '0') == '0' ? '1' : '0';
-        $this->barangModel->where(['id' => $id_product])->set([
+        $requestedStatus = $this->request->getPost('active');
+        if (!in_array((string) $requestedStatus, ['0', '1'], true)) {
+            return $this->response->setStatusCode(422)->setJSON(['pesan' => 'Status produk tidak valid.']);
+        }
+
+        $newStatus = (string) $requestedStatus;
+        if (!$this->barangModel->where(['id' => $id_product])->set([
             'active' => $newStatus,
             'tgl_update' => date('Y-m-d H:i:s'),
-        ])->update();
+        ])->update()) {
+            return $this->response->setStatusCode(500)->setJSON(['pesan' => 'Status produk gagal disimpan.']);
+        }
 
         return $this->response->setJSON([
             'pesan' => 'Ok',
@@ -1483,10 +1540,30 @@ class AdminController extends BaseController
             return redirect()->to('/admin/product')->with('error', 'Produk tidak ditemukan.');
         }
 
-        $this->barangModel->where('id', $id_product)->delete();
-        $this->gambarBarangModel->where('id', $id_product)->delete();
-        $this->gambarBarang3000Model->where('id', $id_product)->delete();
-        $this->r2ProductImages->deleteProductImages((string) $id_product);
+        $variantData = json_decode($product['varian'] ?? '[]', true);
+        $imageSlots = [];
+        foreach (is_array($variantData) ? $variantData : [] as $variant) {
+            foreach (explode(',', (string) ($variant['urutan_gambar'] ?? '')) as $slot) {
+                $slot = (int) trim($slot);
+                if ($slot > 0 && $slot <= 9999) $imageSlots[] = $slot;
+            }
+        }
+
+        try {
+            $deleteTransaction = new \App\Services\AtomicOperation(db_connect(), 'ilena-product-delete-' . sha1((string) $id_product));
+            if (!$this->barangModel->where('id', $id_product)->delete()) {
+                throw new \RuntimeException('Data produk tidak berhasil dihapus.');
+            }
+            if (!$this->gambarBarangModel->where('id', $id_product)->delete()
+                || !$this->gambarBarang3000Model->where('id', $id_product)->delete()) {
+                throw new \RuntimeException('Data indeks gambar gagal dihapus; penghapusan dibatalkan.');
+            }
+            $deleteTransaction->commit();
+        } catch (\Throwable $e) {
+            log_message('error', 'Product delete failed: {error}', ['error' => $e->getMessage()]);
+            return redirect()->to('/admin/product')->with('error', 'Produk belum dihapus. ' . $e->getMessage());
+        }
+        $this->r2ProductImages->deleteProductImagesForSlots((string) $id_product, $imageSlots);
         $this->deleteLocalProductImages((string) $id_product);
         return redirect()->to('/admin/product')->with('success', 'Produk berhasil dihapus.');
     }

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token-name" content="<?= csrf_token(); ?>">
     <meta name="csrf-token-hash" content="<?= csrf_hash(); ?>">
-    <title><?= $title; ?> | I L E N A</title>
+    <title><?= esc($title ?? 'Admin'); ?> | ILENA</title>
 
     <link href="<?= base_url('css/bootstrap.min.css'); ?>" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,13 +21,17 @@
     <!-- Layout guard supaya konten & sticky element ga tabrakan -->
     <style>
     :root {
-        --adminSidebarW: 292px;
-        --adminPad: 24px;
-        --adminSurface: #ffffff;
-        --adminBg: #f6f7fb;
-        --adminBorder: #eef2f7;
-        --adminInk: #0f172a;
-        --adminMuted: #64748b;
+        --adminSidebarW: 264px;
+        --adminPad: clamp(16px, 2vw, 28px);
+        --adminSurface: #fffdfa;
+        --adminBg: #f6f4f0;
+        --adminBorder: #e9e3da;
+        --adminInk: #28231f;
+        --adminMuted: #756b62;
+        --adminAccent: #8b5e3c;
+        --adminAccentSoft: #f4ece4;
+        --adminRadius: 12px;
+        --adminShadow: 0 8px 24px rgba(47, 37, 27, .045);
     }
 
     html,
@@ -63,9 +67,7 @@
         display: flex;
         min-height: 100svh;
         width: 100%;
-        background:
-            radial-gradient(circle at top right, rgba(179, 18, 23, .07), transparent 28rem),
-            linear-gradient(180deg, #fbfcff 0%, var(--adminBg) 45%, #f8fafc 100%);
+        background: linear-gradient(180deg, #faf8f4 0%, var(--adminBg) 100%);
     }
 
     .admin-sidebar {
@@ -98,6 +100,42 @@
 
     .admin-content-inner > * {
         max-width: 100%;
+    }
+
+    /* Shared admin baseline: consistent, restrained surfaces and accessible controls. */
+    .admin-content-inner :is(.card, .admin-product-hero, .bulk-hero, .bulk-card) {
+        border-color: var(--adminBorder);
+        border-radius: var(--adminRadius);
+        box-shadow: var(--adminShadow);
+    }
+
+    .admin-content-inner :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea, .form-control, .form-select) {
+        border-color: #ded7ce;
+        border-radius: 9px;
+        color: var(--adminInk);
+    }
+
+    .admin-content-inner :is(input, select, textarea, button, a):focus-visible {
+        outline: 2px solid var(--adminAccent);
+        outline-offset: 2px;
+    }
+
+    .admin-content-inner :is(.btn-default-merah, .btn-bulk-primary) {
+        background: var(--adminAccent);
+        border-radius: 9px;
+        box-shadow: none;
+    }
+
+    .admin-content-inner :is(table, .table) > :not(caption) > * > * {
+        border-color: var(--adminBorder);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .admin-shell *, .admin-shell *::before, .admin-shell *::after {
+            scroll-behavior: auto !important;
+            animation-duration: .01ms !important;
+            transition-duration: .01ms !important;
+        }
     }
 
     .admin-content-inner .page-wrap,
