@@ -546,11 +546,51 @@ $barangThumbUrl = function ($product) {
 .status-label.is-live { color: #456c50; }
 .bulk-toolbar { border-color: #eae5db; border-radius: 11px; box-shadow: 0 8px 24px rgba(57, 48, 34, .04); }
 .bulk-edit-link { background: #66583f; }
+/* Cardless editorial treatment: hierarchy comes from type, whitespace and rules. */
+.admin-product-hero {
+    padding: 10px 0 17px;
+    border: 0;
+    border-bottom: 1px solid #ded9cf;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+.overview-stats { gap: 0; justify-content: flex-start; margin-top: 17px; }
+.overview-stat {
+    min-width: 128px;
+    padding: 2px 18px;
+    border: 0;
+    border-left: 1px solid #ded9cf;
+    border-radius: 0;
+    background: transparent;
+}
+.overview-stat:first-child { padding-left: 0; border-left: 0; }
+.overview-stat strong { font-size: 18px; }
+.meta-line[style] { margin-top: 12px !important; }
+.toolbar { margin: 18px 0 14px; }
+.container-table {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+.header-table {
+    padding: 10px 12px;
+    border-top: 1px solid #ded9cf;
+    background: transparent;
+    color: #777165;
+}
+.isi-table { padding: 13px 12px; border-bottom-color: #eae6de; }
+.isi-table:hover { background: rgba(248, 246, 241, .72); }
+.bulk-toolbar { border: 0; border-top: 1px solid #ded9cf; border-bottom: 1px solid #ded9cf; border-radius: 0; background: transparent; box-shadow: none; }
+.hide-ke-show-block { border-top: 1px solid #ded9cf; }
 @media (max-width: 860px) {
     .page-wrap { padding: 10px 12px 28px; }
-    .admin-product-hero { padding: 15px; border-radius: 11px; }
-    .overview-stat { padding: 8px 10px; }
-    .mini-wrap { border-radius: 10px; }
+    .admin-product-hero { padding: 8px 0 15px; }
+    .overview-stat { min-width: 0; padding: 2px 12px; }
+    .overview-stat:first-child { padding-left: 0; }
+    .mini-wrap { border-radius: 0; }
 }
 </style>
 

@@ -348,11 +348,56 @@
     padding: 14px 2px 4px;
     background: linear-gradient(180deg, rgba(247,245,241,0), #f7f5f1 34%);
 }
+/* Cardless form: sections are separated with fine rules and whitespace. */
+.page {
+    max-width: 1320px;
+    padding-top: 1.1rem;
+}
+.edit-page-head {
+    padding: 8px 0 19px;
+    border-bottom: 1px solid #ded9cf;
+}
+.page .grid { gap: clamp(24px, 4vw, 58px); }
+.page .stack { gap: 0; }
+.page > form > .grid > .stack > .card {
+    padding: 20px 0;
+    border: 0;
+    border-bottom: 1px solid #e3ded4;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+.page > form > .grid > .stack > .card:first-child { padding-top: 8px; }
+.page .section-title { margin-bottom: 16px; color: #39352c; font-size: 14px; }
+.page #container-varian > .card {
+    margin: 0;
+    padding: 18px 0 !important;
+    border: 0;
+    border-top: 1px solid #e3ded4;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+.page #container-varian > .card:first-child { border-top: 0; padding-top: 2px !important; }
+.page .footer-actions {
+    position: sticky;
+    bottom: 0;
+    margin: 0;
+    padding: 14px 0 5px;
+    border-top: 1px solid #ded9cf;
+    background: rgba(247, 245, 241, .96);
+    backdrop-filter: blur(8px);
+}
+.page .img-preview { max-width: 330px; }
+.page .list-images { gap: 8px; }
+.page .thumb { width: 76px; height: 76px; border: 0; border-radius: 3px; background: #eeeae1; }
+.page .chip { border: 0; border-bottom: 1px solid #e3ded4; border-radius: 0; background: transparent; }
 @media (max-width: 700px) {
     .edit-page-head { align-items: flex-start; }
     .edit-page-head p { max-width: 34ch; }
     .edit-back-link { flex: 0 0 auto; min-height: 38px; padding: 0 10px; }
-    .page .card { padding: 14px; }
+    .page > form > .grid > .stack > .card { padding: 17px 0; }
+    .page .img-preview { max-width: 100%; }
 }
 </style>
 
