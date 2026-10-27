@@ -580,6 +580,24 @@
 .bottom-bar { background:linear-gradient(180deg,rgba(255,255,255,0),#fff 35%); }
 @media(max-width:992px){ .form-grid > .card + .card { padding:18px 0 0; border-left:0; border-top:1px solid #ded9cf; } }
 @media(max-width:640px){ .form-grid{gap:16px}.image-tile{width:112px}.item-gambar{width:100px;height:100px}.batch-upload-label{min-width:112px;height:142px}.card-header,.card-body{padding-left:0;padding-right:0} }
+.variant-panel { padding:0 0 16px; background:transparent; border:0; border-bottom:1px solid #e9e4dc; border-radius:0!important; box-shadow:none; }
+.variant-panel:last-child { border-bottom:0; }
+.variant-panel .card-body { padding:8px 0 16px; }
+.variant-tools { padding:0 0 10px; border-bottom:1px solid #f0ece6; }
+.variant-heading { display:flex; align-items:center; gap:10px; min-width:0; }
+.variant-number { display:inline-flex; width:30px; height:30px; flex:0 0 30px; align-items:center; justify-content:center; border-radius:50%; background:#f2eee8; color:#725b43; font-size:12px; font-weight:700; }
+.variant-heading strong { overflow:hidden; color:#342f29; font-size:14px; font-weight:600; text-overflow:ellipsis; white-space:nowrap; }
+.variant-help { display:inline-flex; align-items:center; gap:4px; margin-left:2px; padding:4px 7px; border-radius:999px; background:#f7f5f1; font-size:11px; white-space:nowrap; }
+.variant-help .material-icons { font-size:15px; }
+.variant-icon-button { display:inline-flex; width:44px; height:44px; flex:0 0 44px; align-items:center; justify-content:center; padding:0; border:1px solid #e8e2d9; border-radius:50%; background:#fff; color:#70675d; cursor:pointer; transition:color .16s ease,border-color .16s ease,background .16s ease; }
+.variant-icon-button:hover,.variant-icon-button:focus-visible { border-color:#b9a68e; background:#f8f5f0; color:#604a33; outline:2px solid #d6c5ad; outline-offset:2px; }
+.variant-icon-button--danger:hover,.variant-icon-button--danger:focus-visible { border-color:#d9a8a2; background:#fff7f6; color:#a63d34; }
+.drag-handle { width:44px; min-height:44px; margin:0 auto; }
+.drag-handle .material-icons { font-size:20px; }
+.image-actions button,.image-actions label { width:44px; min-width:44px; min-height:44px; justify-content:center; padding:0; }
+.image-actions .make-primary { grid-column:auto; }
+.image-actions .material-icons { margin:0; font-size:19px; }
+@media(max-width:640px){ .variant-panel .card-body{padding:8px 0 14px}.variant-heading{gap:7px}.variant-number{width:28px;height:28px;flex-basis:28px}.variant-icon-button{width:44px;height:44px} }
 
 @keyframes spin {
     to {
@@ -1504,13 +1522,20 @@ const App = () => {
             </div>}
             <div id="container-varian" style={{ display:'flex', flexDirection:'column', gap:'16px' }}>
               {(formData.varian || []).map((v, ind_v) => (
-                <div key={ind_v} className="card" style={{ borderRadius:'12px' }}>
+                <div key={ind_v} className="variant-panel">
                   <div className="card-body">
                     <div className="variant-tools">
-                      <div>
-                        <div className="section-title" style={{ margin:0 }}>Varian #{ind_v + 1}</div>
-                        <div className="variant-help">{(gambarSrc[ind_v] || []).length} foto</div>
+                      <div className="variant-heading">
+                        <span className="variant-number" aria-hidden="true">{String(ind_v + 1).padStart(2, '0')}</span>
+                        <strong>{String(v.nama || '').trim() || `Varian ${ind_v + 1}`}</strong>
+                        <span className="variant-help" title={`${(gambarSrc[ind_v] || []).length} foto`}><i className="material-icons" aria-hidden="true">photo_library</i>{(gambarSrc[ind_v] || []).length}</span>
                       </div>
+                      <button type="button" className="variant-icon-button variant-icon-button--danger" title="Hapus varian" aria-label={`Hapus varian ${v.nama || ind_v + 1}`}
+                        onClick={() => {
+                          setFormData({ ...formData, varian: formData.varian.filter((_, i) => i !== ind_v) });
+                          setGambarFile(gambarFile.filter((_, i) => i !== ind_v));
+                          setGambarSrc(gambarSrc.filter((_, i) => i !== ind_v));
+                        }}><i className="material-icons" aria-hidden="true">delete_outline</i></button>
                     </div>
                     <div className="container-gambar">
                       {gambarSrc.length > 0 && (gambarSrc[ind_v] || []).map((g, ind_g) => {
@@ -1528,7 +1553,7 @@ const App = () => {
                               if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); moveImage(ind_v, ind_g, -1); }
                               if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); moveImage(ind_v, ind_g, 1); }
                               if (e.key === 'Home') { e.preventDefault(); moveImageToFirst(ind_v, ind_g); }
-                            }}><i className="material-icons">drag_indicator</i><span>Seret</span></span>
+                            }}><i className="material-icons" aria-hidden="true">drag_indicator</i></span>
                           <div className="item-gambar">
                             <span className="img-no">{ind_g + 1}</span>
                             {ind_g === 0 && <span className="cover-chip">{ind_v === 0 ? 'Cover katalog' : 'Utama varian'}</span>}
@@ -1538,9 +1563,9 @@ const App = () => {
                               onLoad={(e) => { e.currentTarget.hidden = false; e.currentTarget.parentElement?.querySelector('.missing-image-state')?.setAttribute('hidden', 'hidden'); }} />
                           </div>
                           <div className="image-actions">
-                            <label htmlFor={`replace-file-${ind_v}-${ind_g}`} title="Ganti foto"><i className="material-icons">edit</i><span>Ganti</span></label>
+                            <label htmlFor={`replace-file-${ind_v}-${ind_g}`} title="Ganti foto" aria-label={`Ganti foto ${ind_g + 1}`}><i className="material-icons" aria-hidden="true">edit</i></label>
                             <button type="button" className="danger" title="Hapus foto" onClick={() => removeImage(ind_v, ind_g)} aria-label={`Hapus foto ${ind_g + 1}`}><i className="material-icons">delete</i></button>
-                            {ind_g > 0 && <button type="button" className="make-primary" onClick={() => moveImageToFirst(ind_v, ind_g)} title={ind_v === 0 ? 'Jadikan cover katalog' : 'Jadikan foto utama varian'}><i className="material-icons">star</i> Jadikan {ind_v === 0 ? 'cover' : 'foto utama'}</button>}
+                            {ind_g > 0 && <button type="button" className="make-primary" onClick={() => moveImageToFirst(ind_v, ind_g)} title={ind_v === 0 ? 'Jadikan cover katalog' : 'Jadikan foto utama varian'} aria-label={ind_v === 0 ? 'Jadikan cover katalog' : 'Jadikan foto utama varian'}><i className="material-icons" aria-hidden="true">star</i></button>}
                           </div>
                         </div>
                         );
@@ -1588,16 +1613,6 @@ const App = () => {
                       </tbody>
                     </table>
 
-                    <div className="btn-row" style={{ marginTop:'8px' }}>
-                      <button type="button" className="btn-teks-aja"
-                        onClick={() => {
-                          setFormData({ ...formData, varian: formData.varian.filter((_, i) => i !== ind_v) });
-                          setGambarFile(gambarFile.filter((_, i) => i !== ind_v));
-                          setGambarSrc(gambarSrc.filter((_, i) => i !== ind_v));
-                        }}>
-                        Hapus Varian
-                      </button>
-                    </div>
                   </div>
                 </div>
               ))}
