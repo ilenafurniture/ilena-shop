@@ -17,10 +17,18 @@ $partnerLast = min($partnerPage * $partnerPerPage, $partnerTotal);
     </nav>
 
     <header class="ilena-editorial__hero ilena-partners__hero">
-        <p class="ilena-editorial__eyebrow">Jaringan resmi Ilena</p>
-        <h1 id="partners-title">Lebih dekat<br>dengan Ilena.</h1>
-        <p class="ilena-editorial__intro">Temukan partner dan toko yang menyediakan produk Ilena. Cari berdasarkan nama, kota, atau alamat.</p>
-        <a class="ilena-editorial__text-link" href="#partner-directory">Lihat daftar partner <span aria-hidden="true">↓</span></a>
+        <div class="ilena-partners__hero-copy">
+            <p class="ilena-editorial__eyebrow">Jaringan resmi Ilena</p>
+            <h1 id="partners-title">Lebih dekat<br>dengan Ilena.</h1>
+            <p class="ilena-editorial__intro">Temukan partner dan toko yang menyediakan produk Ilena. Cari berdasarkan nama, kota, atau alamat.</p>
+            <a class="ilena-editorial__text-link" href="#partner-directory">Jelajahi partner <span aria-hidden="true">↓</span></a>
+        </div>
+        <aside class="ilena-partners__hero-note" aria-label="Ringkasan jaringan partner">
+            <span class="ilena-partners__hero-mark" aria-hidden="true">I</span>
+            <p class="ilena-editorial__eyebrow">Ruang untuk menemukan</p>
+            <p class="ilena-partners__hero-stat"><strong><?= number_format($partnerTotal, 0, ',', '.'); ?></strong><span>partner pilihan</span></p>
+            <a href="#ilena-partner-map">Lihat jangkauan <span aria-hidden="true">↗</span></a>
+        </aside>
     </header>
 
     <section class="ilena-partners__map-section" aria-labelledby="partner-map-title">
