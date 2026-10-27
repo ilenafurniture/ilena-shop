@@ -5635,16 +5635,22 @@ class Pages extends BaseController
         // already present locally. This route is a compatibility/fallback
         // path; the storefront normally loads public R2 URLs directly.
         $localImageCandidates = $preferThumbnail
-            ? [
-                "uploads/product-images/300/{$safeId}-{$slot}.webp",
-                "img/barang/300/{$safeId}-{$slot}.webp",
-                "uploads/product-images/300/{$safeId}.webp",
-                "img/barang/300/{$safeId}.webp",
-                "uploads/product-images/1000/{$safeId}-{$slot}.webp",
-                "uploads/product-images/3000/{$safeId}-{$slot}.webp",
-                "img/barang/1000/{$safeId}-{$slot}.webp",
-                "img/barang/3000/{$safeId}-{$slot}.webp",
-            ]
+            ? array_merge(
+                [
+                    "uploads/product-images/300/{$safeId}-{$slot}.webp",
+                    "img/barang/300/{$safeId}-{$slot}.webp",
+                ],
+                $requestedSlot === '' ? [
+                    "uploads/product-images/300/{$safeId}.webp",
+                    "img/barang/300/{$safeId}.webp",
+                ] : [],
+                [
+                    "uploads/product-images/1000/{$safeId}-{$slot}.webp",
+                    "uploads/product-images/3000/{$safeId}-{$slot}.webp",
+                    "img/barang/1000/{$safeId}-{$slot}.webp",
+                    "img/barang/3000/{$safeId}-{$slot}.webp",
+                ],
+            )
             : ($requestedSlot !== ''
                 ? [
                     "uploads/product-images/1000/{$safeId}-{$slot}.webp",
@@ -5677,7 +5683,10 @@ class Pages extends BaseController
             // admin proxy requests may perform a fresh existence check.
             $allowRemoteProbe = $this->request->getGet('proxy') === '1';
             if ($preferThumbnail) {
-                $r2Candidates = ["products/300/{$safeId}-{$slot}.webp", "products/300/{$safeId}.webp", "products/1000/{$safeId}-{$slot}.webp", "products/3000/{$safeId}-{$slot}.webp"];
+                $r2Candidates = ["products/300/{$safeId}-{$slot}.webp"];
+                if ($requestedSlot === '') $r2Candidates[] = "products/300/{$safeId}.webp";
+                $r2Candidates[] = "products/1000/{$safeId}-{$slot}.webp";
+                $r2Candidates[] = "products/3000/{$safeId}-{$slot}.webp";
             } else {
                 $r2Candidates = $hasSlotRequest
                     ? ["products/1000/{$safeId}-{$slot}.webp", "products/3000/{$safeId}-{$slot}.webp"]
@@ -5729,7 +5738,10 @@ class Pages extends BaseController
         $source3000 = $publicPath("img/barang/3000/{$safeId}-{$slot}.webp");
         $source300Slot = $publicPath("img/barang/300/{$safeId}-{$slot}.webp");
         $fallback300 = $publicPath("img/barang/300/{$safeId}.webp");
-        $thumbnailSource = is_file($upload300Slot) ? $upload300Slot : (is_file($source300Slot) ? $source300Slot : (is_file($upload300) ? $upload300 : (is_file($fallback300) ? $fallback300 : null)));
+        $thumbnailSource = is_file($upload300Slot) ? $upload300Slot : (is_file($source300Slot) ? $source300Slot : null);
+        if ($thumbnailSource === null && $requestedSlot === '') {
+            $thumbnailSource = is_file($upload300) ? $upload300 : (is_file($fallback300) ? $fallback300 : null);
+        }
         $fullSizeSource = is_file($upload1000) ? $upload1000 : (is_file($upload3000) ? $upload3000 : (is_file($source1000) ? $source1000 : (is_file($source3000) ? $source3000 : null)));
         $thumbnailIsCurrent = $thumbnailSource !== null
             && ($fullSizeSource === null || filemtime($thumbnailSource) >= filemtime($fullSizeSource));
