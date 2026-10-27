@@ -143,6 +143,7 @@ class R2ProductImageService
         $this->deleteObject("products/hover/{$safeId}.webp");
 
         for ($slot = 1; $slot <= $maxSlots; $slot++) {
+            $this->deleteObject("products/300/{$safeId}-{$slot}.webp");
             $this->deleteObject("products/1000/{$safeId}-{$slot}.webp");
             $this->deleteObject("products/3000/{$safeId}-{$slot}.webp");
         }
@@ -166,6 +167,7 @@ class R2ProductImageService
             }
         }
         foreach ($normalizedSlots as $slot) {
+            $this->deleteObject("products/300/{$safeId}-{$slot}.webp");
             $this->deleteObject("products/1000/{$safeId}-{$slot}.webp");
             $this->deleteObject("products/3000/{$safeId}-{$slot}.webp");
         }
@@ -178,7 +180,19 @@ class R2ProductImageService
         $safeId = preg_replace('/[^A-Za-z0-9_-]/', '', $productId);
         if ($safeId === '') return;
         foreach (array_unique(array_filter(array_map('intval', $slots), static fn(int $slot): bool => $slot >= 1 && $slot <= 9999)) as $slot) {
+            $this->deleteObject("products/300/{$safeId}-{$slot}.webp");
             $this->deleteObject("products/1000/{$safeId}-{$slot}.webp");
+            $this->deleteObject("products/3000/{$safeId}-{$slot}.webp");
+        }
+    }
+
+    /** Remove obsolete large zoom derivatives after a replacement commits. */
+    public function deleteProductZoomVariants(string $productId, array $slots): void
+    {
+        if (!$this->enabled()) return;
+        $safeId = preg_replace('/[^A-Za-z0-9_-]/', '', $productId);
+        if ($safeId === '') return;
+        foreach (array_unique(array_filter(array_map('intval', $slots), static fn(int $slot): bool => $slot >= 1 && $slot <= 9999)) as $slot) {
             $this->deleteObject("products/3000/{$safeId}-{$slot}.webp");
         }
     }

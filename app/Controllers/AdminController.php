@@ -843,18 +843,9 @@ class AdminController extends BaseController
             $stagingFile = $stagingDir . DIRECTORY_SEPARATOR . $stagingName;
 
             try {
-            $dest3000 = $toPublicPath('uploads/product-images/3000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
             $dest1000 = $toPublicPath('uploads/product-images/1000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
-            $dest300 = $toPublicPath('uploads/product-images/300/' . $data['id'] . '.webp');
-
-            if (file_exists($dest3000)) {
-                unlink($dest3000);
-            }
-            \Config\Services::image()
-                ->withFile($stagingFile)
-                ->resize(3000, 3000, true, 'height')
-                ->save($dest3000);
-            $this->uploadProductImageToR2($dest3000, 'uploads/product-images/3000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
+            $slot = $urutan + 1;
+            $dest300 = $toPublicPath('uploads/product-images/300/' . $data['id'] . '-' . $slot . '.webp');
 
             if (file_exists($dest1000)) {
                 unlink($dest1000);
@@ -865,16 +856,14 @@ class AdminController extends BaseController
                 ->save($dest1000);
             $this->uploadProductImageToR2($dest1000, 'uploads/product-images/1000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
 
-            if ($urutan <= 0) {
-                if (file_exists($dest300)) {
-                    unlink($dest300);
-                }
-                \Config\Services::image()
-                    ->withFile($stagingFile)
-                    ->resize(300, 300, true, 'height')
-                    ->save($dest300);
-                $this->uploadProductImageToR2($dest300, 'uploads/product-images/300/' . $data['id'] . '.webp');
+            if (file_exists($dest300)) {
+                unlink($dest300);
             }
+            \Config\Services::image()
+                ->withFile($stagingFile)
+                ->resize(300, 300, true, 'height')
+                ->save($dest300);
+            $this->uploadProductImageToR2($dest300, 'uploads/product-images/300/' . $data['id'] . '-' . $slot . '.webp');
             } finally {
                 @unlink($stagingFile);
             }
@@ -1015,8 +1004,8 @@ class AdminController extends BaseController
         ];
 
         foreach ([
-            'uploads/product-images/1000', 'uploads/product-images/3000',
-            'img/barang/1000', 'img/barang/3000',
+            'uploads/product-images/300', 'uploads/product-images/1000', 'uploads/product-images/3000',
+            'img/barang/300', 'img/barang/1000', 'img/barang/3000',
         ] as $imageDir) {
             $absoluteDir = rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $imageDir);
             foreach (glob($absoluteDir . DIRECTORY_SEPARATOR . $safeId . '-*.webp') ?: [] as $file) {
@@ -1159,6 +1148,7 @@ class AdminController extends BaseController
             if ($uploadError = $this->validateProductImageUploads($files)) {
                 return $this->response->setStatusCode(413)->setJSON(['pesan' => $uploadError]);
             }
+            $replacedImageSlots = [];
 
             // Lock and rebase stock before any image files or remote objects are changed.
             $stockTransaction = new \App\Services\AtomicOperation(db_connect(), 'ilena-product-' . sha1((string) $id_product));
@@ -1298,7 +1288,6 @@ class AdminController extends BaseController
             };
             // Upload admin disimpan di uploads/product-images supaya tidak ketimpa Git/deploy.
             $ensureDir('uploads/product-images/1000');
-            $ensureDir('uploads/product-images/3000');
             $ensureDir('uploads/product-images/300');
             $ensureDir('uploads/product-images/hover');
 
@@ -1318,9 +1307,10 @@ class AdminController extends BaseController
                     $urutan = isset($parts[1]) ? (int)$parts[1] : 0;
                     $slot = $urutan + 1;
                     $processUploadedImage($file, [
-                        ["uploads/product-images/3000/{$id_product}-{$slot}.webp", 3000, 3000],
                         ["uploads/product-images/1000/{$id_product}-{$slot}.webp", 1000, 1000],
+                        ["uploads/product-images/300/{$id_product}-{$slot}.webp", 300, 300],
                     ]);
+                    $replacedImageSlots[$slot] = $slot;
                 }
             }
 
@@ -1483,7 +1473,7 @@ class AdminController extends BaseController
             ));
             if ($removedSlots !== []) {
                 try {
-                    foreach (['uploads/product-images/1000', 'uploads/product-images/3000', 'img/barang/1000', 'img/barang/3000'] as $imageDir) {
+                    foreach (['uploads/product-images/1000', 'uploads/product-images/300', 'uploads/product-images/3000', 'img/barang/1000', 'img/barang/300', 'img/barang/3000'] as $imageDir) {
                         foreach ($removedSlots as $slot) {
                             $oldImage = rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
                                 . str_replace('/', DIRECTORY_SEPARATOR, "{$imageDir}/{$id_product}-{$slot}.webp");
@@ -1493,6 +1483,26 @@ class AdminController extends BaseController
                     $this->r2ProductImages->deleteProductImageSlots((string)$id_product, $removedSlots);
                 } catch (\Throwable $cleanupError) {
                     log_message('error', 'Product image cleanup deferred for {id}: {error}', [
+                        'id' => $id_product,
+                        'error' => $cleanupError->getMessage(),
+                    ]);
+                }
+            }
+
+            // A replaced image has a new 1000px delivery file; discard its old
+            // 3000px zoom derivative only after the product transaction commits.
+            if ($replacedImageSlots !== []) {
+                foreach (['uploads/product-images/3000', 'img/barang/3000'] as $zoomDir) {
+                    foreach ($replacedImageSlots as $slot) {
+                        $oldZoom = rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
+                            . str_replace('/', DIRECTORY_SEPARATOR, "{$zoomDir}/{$id_product}-{$slot}.webp");
+                        if (is_file($oldZoom)) @unlink($oldZoom);
+                    }
+                }
+                try {
+                    $this->r2ProductImages->deleteProductZoomVariants((string) $id_product, array_values($replacedImageSlots));
+                } catch (\Throwable $cleanupError) {
+                    log_message('error', 'Product zoom cleanup deferred for {id}: {error}', [
                         'id' => $id_product,
                         'error' => $cleanupError->getMessage(),
                     ]);

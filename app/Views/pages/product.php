@@ -85,6 +85,10 @@ $barangImgUrl = function (string $size, string $slot) use ($produk, $assetVersio
     if (is_file(FCPATH . $relative)) {
         return base_url($relative) . '?v=' . $assetVersion($relative);
     }
+    if ($size === '300') {
+        return base_url('product-cover/' . rawurlencode((string) $produk['id']))
+            . '?slot=' . rawurlencode($slot) . '&size=300&v=' . $assetVersion('uploads/product-images/300/' . $produk['id'] . '-' . $slot . '.webp');
+    }
     if ($productImageCdn !== '') {
         return $productImageCdn . '/products/' . $cdnSize . '/' . rawurlencode((string) $produk['id']) . '-' . rawurlencode($slot) . '.webp?v=' . $assetVersion($uploadedRelative);
     }
@@ -459,7 +463,7 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
             <div class="limapuluh-ke-seratus ilena-product-gallery">
                 <div class="ilena-product-gallery__stage">
                     <figure class="img-detail-prev ilena-product-zoom d-none" aria-hidden="true"
-                        data-zoom-src="<?= $barangImgUrl('3000', $gambarAwalDetail) ?>"
+                        data-zoom-src="<?= esc(base_url('viewvar3000/' . rawurlencode((string) $produk['id']) . '/' . rawurlencode($gambarAwalDetail) . '?v=' . $detailVersion), 'attr') ?>"
                         style="background-size: cover;">
                     </figure>
                     <img class="img-detail-prev"
@@ -476,10 +480,10 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                         <input <?= $indx == 0 ? 'checked' : '' ?> id="gambar<?= $indx ?>" type="radio" name="gambar"
                             aria-label="Foto produk <?= $indx + 1 ?>" value="<?= $p_v ?>">
                         <label class="img-detail-select" for="gambar<?= $indx ?>" title="Foto produk <?= $indx + 1 ?>"><img
-                                src="<?= esc($barangImgUrl('1000', $p_v), 'attr') ?>"
+                                src="<?= esc($barangImgUrl('300', $p_v), 'attr') ?>"
                                 data-image-fallback="<?= esc(base_url('product-cover/' . rawurlencode((string) $produk['id'])) . '?slot=' . rawurlencode((string) $p_v) . '&v=' . $detailVersion, 'attr') ?>"
                                 onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"
-                                alt="<?= esc($produk['nama'], 'attr') ?>" width="1000" height="1000" loading="lazy" decoding="async"></label>
+                                alt="<?= esc($produk['nama'], 'attr') ?>" width="300" height="300" loading="lazy" decoding="async"></label>
                         <?php } ?>
                         <?php if ($punyaGambarHoverDetail) { ?>
                         <input id="gambar-hover" type="radio" name="gambar" aria-label="Lihat detail permukaan" value="hover">
@@ -689,7 +693,8 @@ function detailImageUrl(slot) {
 function detailZoomUrl(slot) {
     if (detailLocalSlots3000.includes(String(slot))) return detailStatic3000 + detailProductId + "-" + encodeURIComponent(slot) + ".webp?v=" + detailVersion;
     if (detailLegacySlots3000.includes(String(slot))) return "/img/barang/3000/" + detailProductId + "-" + encodeURIComponent(slot) + ".webp?v=" + detailVersion;
-    if (detailR2CdnBase) return detailR2CdnBase + "/products/3000/" + encodeURIComponent(detailProductId) + "-" + encodeURIComponent(slot) + ".webp?v=" + detailVersion;
+    // Resolve a legacy high-resolution file only when zoom is actually invoked;
+    // the endpoint falls back to the 1000px image for products without one.
     return detailBase3000 + slot + "?v=" + detailVersion;
 }
 const galleryThumbs = document.querySelector('.container-img-detail-select');
@@ -774,7 +779,7 @@ radioVarianElm.forEach(elm => {
             label.htmlFor = input.id;
             label.title = 'Foto produk ' + (ind_x + 1);
             const thumbnail = document.createElement('img');
-            thumbnail.src = detailImageUrl(urutan);
+            thumbnail.src = <?= json_encode(base_url('product-cover/' . rawurlencode((string) $produk['id'])), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?> + '?slot=' + encodeURIComponent(urutan) + '&size=300&v=' + detailVersion;
             thumbnail.alt = '';
             thumbnail.loading = 'lazy';
             thumbnail.decoding = 'async';

@@ -314,7 +314,14 @@ class GambarController extends BaseController
 
     public function tampilGambarVarian3000($idBarang, $urutan)
     {
-        return $this->tampilFileGambar('img/barang/3000/' . $idBarang . '-' . $urutan . '.webp');
+        try {
+            return $this->tampilFileGambar('img/barang/3000/' . $idBarang . '-' . $urutan . '.webp');
+        } catch (\CodeIgniter\Exceptions\PageNotFoundException $e) {
+            // Newly uploaded products no longer keep an upscaled 3000px copy.
+            // Zoom remains available from the 1000px delivery image; old 3000px
+            // files/DB blobs are still served above when they actually exist.
+            return $this->tampilFileGambar('img/barang/1000/' . $idBarang . '-' . $urutan . '.webp');
+        }
     }
 
     public function tampilGambarVarWM($idBarang, $urutan)
@@ -706,8 +713,10 @@ class GambarController extends BaseController
                 continue;
             }
 
-            foreach ([3000, 1000] as $size) {
-                $relative = "img/barang/{$size}/{$safeId}-{$slot}.webp";
+            foreach ([1000, 300] as $size) {
+                $relative = $size === 300
+                    ? "img/barang/300/{$safeId}-{$slot}.webp"
+                    : "img/barang/1000/{$safeId}-{$slot}.webp";
                 $dest = $this->publicImagePath($relative);
                 if (!$force && $this->usableImageFile($dest)) {
                     $report['skipped'][] = $relative;
