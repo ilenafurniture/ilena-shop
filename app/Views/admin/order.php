@@ -28,6 +28,7 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter): st
 .online-orders .row-actions{display:flex;justify-content:flex-end;align-items:center;gap:6px;flex-wrap:wrap}.online-orders .icon-action{display:inline-flex;align-items:center;justify-content:center;min-width:40px;min-height:40px;padding:0 9px;border:1px solid transparent;border-radius:7px;background:transparent;color:#64594f;text-decoration:none;cursor:pointer}.online-orders .icon-action:hover{background:#f1ede6;color:#302a24}.online-orders .icon-action .material-icons{font-size:19px}.online-orders .icon-action-label{font-size:12px;font-weight:600}.online-orders .icon-action-danger{color:var(--o-red)}
 .online-orders .empty-state{padding:52px 16px;text-align:center;color:var(--o-muted);border-bottom:1px solid var(--o-line)}.online-orders .empty-state strong{display:block;color:var(--o-ink);font-size:16px;margin-bottom:4px}
 .online-orders [data-order-row][hidden]{display:none!important}
+.bulk-order-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 4px;margin:4px 0;border-bottom:1px solid var(--o-line);font-size:13px}.bulk-order-tools label{display:flex;align-items:center;gap:9px;cursor:pointer}.bulk-order-tools input,.delete-order-select{width:20px;height:20px;accent-color:#8b5e3c;cursor:pointer}.bulk-order-count{color:var(--o-muted)}.bulk-order-tools .action:disabled{opacity:.45;cursor:not-allowed}.delete-order-select{flex:0 0 20px}
 .orders-pagination{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:16px;color:var(--o-muted);font-size:12px}.orders-pagination>div{display:flex;gap:8px}.orders-pagination .action{min-height:38px}
 .order-dialog{position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(30,26,22,.54)}.order-dialog.is-open{display:flex}.order-dialog__panel{width:min(720px,100%);max-height:min(88vh,850px);overflow:auto;background:var(--o-paper);border-radius:12px;padding:clamp(18px,3vw,30px);box-shadow:0 24px 70px rgba(0,0,0,.2)}
 .order-dialog .eyebrow,.resi-dialog .eyebrow{font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--o-muted)}.order-dialog .action,.resi-dialog .action{display:inline-flex;min-height:42px;align-items:center;justify-content:center;gap:8px;padding:0 15px;border:1px solid var(--o-line);border-radius:8px;background:transparent;color:var(--o-ink);font:600 13px/1.2 "Plus Jakarta Sans",sans-serif;text-decoration:none;cursor:pointer}.order-dialog .action:hover,.resi-dialog .action:hover{background:#f1ede6}.order-dialog .action-primary,.resi-dialog .action-primary{background:var(--o-accent);border-color:var(--o-accent);color:#fff}.order-dialog .action-primary:hover,.resi-dialog .action-primary:hover{background:#70482f;color:#fff}
@@ -63,6 +64,7 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter): st
         <button class="action action-primary" type="submit">Terapkan</button><?php if (($orderQuery ?? '') !== '' || ($orderStatusFilter ?? '') !== ''): ?><a class="action" href="/admin/order/online">Reset</a><?php endif; ?>
       </form>
     </div>
+    <?php if ($isDev): ?><div class="bulk-order-tools"><label><input type="checkbox" data-select-all-orders aria-label="Pilih semua pesanan yang dapat dihapus pada halaman ini"> Pilih semua pesanan terminal di halaman ini</label><span class="bulk-order-count" aria-live="polite"><span data-selected-order-count>0</span> dipilih</span><button class="action icon-action-danger" type="button" data-delete-selected-orders disabled>Hapus pilihan</button></div><?php endif; ?>
     <div class="orders-list" id="ordersList">
       <?php foreach ($orders as $index => $p):
         $mid = is_array($p['data_mid'] ?? null) ? $p['data_mid'] : (json_decode((string) ($p['data_mid'] ?? ''), true) ?: []);
@@ -73,6 +75,7 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter): st
         $amount = (int) ($mid['gross_amount'] ?? 0);
         $isActive = in_array($statusText, ['Proses', 'Dikirim'], true);
         $isPending = $statusText === 'Menunggu Pembayaran';
+        $isDeletable = in_array($statusText, ['Selesai', 'Dibatalkan', 'Gagal', 'Kadaluarsa', 'Ditolak'], true);
         $manualPayment = ($mid['payment_type'] ?? '') === 'admin';
       ?>
       <article class="order-row" data-order-row data-index="<?= (int) $index ?>" data-status="<?= esc($statusKey, 'attr') ?>">
@@ -81,6 +84,7 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter): st
         <div class="order-row__amount amount">Rp <?= number_format($amount, 0, ',', '.') ?></div>
         <div class="order-row__status"><span class="status" data-status="<?= esc($statusKey, 'attr') ?>"><?= esc($statusText) ?></span></div>
         <div class="order-row__actions row-actions">
+          <?php if ($isDev && $isDeletable): ?><input class="delete-order-select" type="checkbox" data-order-delete-select value="<?= esc((string) ($p['id_midtrans'] ?? ''), 'attr') ?>" aria-label="Pilih pesanan <?= esc($p['id_midtrans'] ?? '', 'attr') ?> untuk dihapus"><?php endif; ?>
           <button class="icon-action" type="button" data-order-details="<?= (int) $index ?>" aria-label="Lihat detail pesanan <?= esc($p['id_midtrans'] ?? '', 'attr') ?>" title="Detail"><span class="material-icons" aria-hidden="true">visibility</span></button>
           <a class="icon-action" href="/invoice/<?= rawurlencode((string) ($p['id_midtrans'] ?? '')) ?>" aria-label="Invoice" title="Invoice"><span class="material-icons" aria-hidden="true">description</span></a>
           <?php if ($isActive): ?>
@@ -123,14 +127,16 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter): st
       <input id="deleteOrderPassword" name="current_password" type="password" autocomplete="current-password" required>
       <label for="deleteOrderWord">Ketik DELETE</label>
       <input id="deleteOrderWord" name="delete_confirmation" type="text" autocomplete="off" required pattern="DELETE" aria-describedby="deleteOrderIdentity">
-      <p class="order-date" id="deleteOrderIdentity">Pesanan: <strong data-delete-order-id></strong></p>
+      <p class="order-date" id="deleteOrderIdentity"><span data-delete-order-count>0</span> pesanan dipilih</p>
+      <ul class="delete-order-selected-list" data-delete-order-list aria-label="Pesanan yang akan dihapus"></ul>
+      <div id="deleteOrderHiddenIds"></div>
       <label class="delete-order-ack"><input type="checkbox" name="local_only_ack" value="1" required> Saya memahami data pesanan dan riwayat mutasi terkait dihapus permanen hanya dari Ilena; saldo stok tidak berubah.</label>
       <div class="resi-dialog__actions"><button class="action" type="button" data-close-delete>Batal</button><button class="action action-primary delete-order-submit" type="submit">Hapus pesanan permanen</button></div>
     </form>
   </div>
 </div>
 <style>
-.delete-order-dialog .resi-dialog__panel{max-height:min(92dvh,760px);overflow:auto}.delete-order-dialog .intro{line-height:1.55;margin:8px 0 14px}.delete-order-dialog form{display:grid;gap:9px}.delete-order-dialog label{font-size:13px;font-weight:650}.delete-order-dialog input[type=password],.delete-order-dialog input[type=text]{width:100%;min-height:44px;padding:10px 12px;border:1px solid #d9d0c6;border-radius:7px;background:#fff;font:inherit}.delete-order-dialog input:focus-visible{outline:3px solid rgba(139,94,60,.24);border-color:#8b5e3c}.delete-order-dialog .delete-order-ack{display:flex;gap:10px;align-items:flex-start;margin:7px 0;font-weight:500}.delete-order-dialog .delete-order-ack input{width:20px;height:20px;flex:0 0 20px;margin-top:1px;accent-color:#8b5e3c}.delete-order-dialog .delete-order-submit{background:#a65043;border-color:#a65043}.delete-order-dialog .delete-order-submit:hover{background:#873d33}
+.delete-order-dialog .resi-dialog__panel{max-height:min(92dvh,760px);overflow:auto}.delete-order-dialog .intro{line-height:1.55;margin:8px 0 14px}.delete-order-dialog form{display:grid;gap:9px}.delete-order-dialog label{font-size:13px;font-weight:650}.delete-order-dialog input[type=password],.delete-order-dialog input[type=text]{width:100%;min-height:44px;padding:10px 12px;border:1px solid #d9d0c6;border-radius:7px;background:#fff;font:inherit}.delete-order-dialog input:focus-visible{outline:3px solid rgba(139,94,60,.24);border-color:#8b5e3c}.delete-order-dialog .delete-order-ack{display:flex;gap:10px;align-items:flex-start;margin:7px 0;font-weight:500}.delete-order-dialog .delete-order-ack input{width:20px;height:20px;flex:0 0 20px;margin-top:1px;accent-color:#8b5e3c}.delete-order-dialog .delete-order-submit{background:#a65043;border-color:#a65043}.delete-order-dialog .delete-order-submit:hover{background:#873d33}.delete-order-selected-list{max-height:120px;overflow:auto;padding-left:22px;margin:0;color:#63584e;font:12px ui-monospace,monospace}
 </style>
 <?php endif; ?>
 
@@ -183,19 +189,46 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter): st
     const deleteForm = document.getElementById('deleteOrderForm');
     document.querySelectorAll('[data-delete-order]').forEach(button => button.addEventListener('click', () => {
       const orderId = button.dataset.deleteOrder || '';
-      deleteForm.action = '/admin/order/delete/' + encodeURIComponent(orderId);
-      deleteDialog.querySelector('[data-delete-order-id]').textContent = orderId;
+      openDeleteDialog([orderId]);
+    }));
+    const selectableOrders = [...document.querySelectorAll('[data-order-delete-select]')];
+    const selectAllOrders = document.querySelector('[data-select-all-orders]');
+    const deleteSelectedButton = document.querySelector('[data-delete-selected-orders]');
+    const selectedCount = document.querySelector('[data-selected-order-count]');
+    const refreshBulkSelection = () => {
+      const selected = selectableOrders.filter(input => input.checked);
+      selectedCount.textContent = String(selected.length);
+      deleteSelectedButton.disabled = selected.length === 0;
+      selectAllOrders.checked = selected.length > 0 && selected.length === selectableOrders.length;
+      selectAllOrders.indeterminate = selected.length > 0 && selected.length < selectableOrders.length;
+    };
+    selectableOrders.forEach(input => input.addEventListener('change', refreshBulkSelection));
+    selectAllOrders.addEventListener('change', () => { selectableOrders.forEach(input => { input.checked = selectAllOrders.checked; }); refreshBulkSelection(); });
+    deleteSelectedButton.addEventListener('click', () => openDeleteDialog(selectableOrders.filter(input => input.checked).map(input => input.value)));
+    function openDeleteDialog(ids) {
+      ids = [...new Set(ids)].filter(Boolean);
+      if (!ids.length || ids.length > 50) return;
       deleteForm.reset();
+      deleteForm.action = '/admin/order/delete-bulk';
+      const hidden = document.getElementById('deleteOrderHiddenIds');
+      hidden.replaceChildren();
+      const list = deleteDialog.querySelector('[data-delete-order-list]');
+      list.replaceChildren();
+      ids.forEach(id => {
+        const input = document.createElement('input'); input.type = 'hidden'; input.name = 'order_ids[]'; input.value = id; hidden.append(input);
+        const item = document.createElement('li'); item.textContent = id; list.append(item);
+      });
+      deleteDialog.querySelector('[data-delete-order-count]').textContent = String(ids.length);
       openLayer(deleteDialog);
       document.getElementById('deleteOrderPassword').focus();
-    }));
+    }
     deleteDialog.querySelector('[data-close-delete]').addEventListener('click', () => closeLayer(deleteDialog));
     deleteDialog.addEventListener('click', event => { if (event.target === deleteDialog) closeLayer(deleteDialog); });
     deleteForm.addEventListener('submit', async event => {
       event.preventDefault();
       if (!deleteForm.reportValidity()) return;
-      const orderId = deleteDialog.querySelector('[data-delete-order-id]').textContent;
-      if (!await window.IlenaDialog.confirm(`Hapus permanen pesanan ${orderId} dari Ilena?`, {title:'Konfirmasi penghapusan permanen', tone:'error'})) return;
+      const count = deleteDialog.querySelector('[data-delete-order-count]').textContent;
+      if (!await window.IlenaDialog.confirm(`Hapus permanen ${count} pesanan pilihan dari Ilena?`, {title:'Konfirmasi penghapusan permanen', tone:'error'})) return;
       deleteForm.submit();
     });
   }

@@ -152,6 +152,7 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
     $routes->get('order', 'AdminController::order');
     $routes->get('order/online', 'AdminController::order');
     $routes->post('order/delete/(:any)', 'AdminController::deleteOnlineOrder/$1');
+    $routes->post('order/delete-bulk', 'AdminController::deleteSelectedOnlineOrders');
     $routes->get('order/add', 'AdminController::orderAdd');
     $routes->post('order/add', 'AdminController::actionOrderAdd');
     $routes->post('actioneditresi', 'AdminController::actionEditResi');

@@ -2026,6 +2026,17 @@ class AdminController extends BaseController
     /** Permanently remove one terminal online order and its local website dependents. */
     public function deleteOnlineOrder(string $orderId)
     {
+        return $this->performLocalOrderDeletion([$orderId]);
+    }
+
+    /** Delete a selected batch atomically; one invalid order prevents the whole batch. */
+    public function deleteSelectedOnlineOrders()
+    {
+        return $this->performLocalOrderDeletion((array) $this->request->getPost('order_ids'));
+    }
+
+    private function performLocalOrderDeletion(array $orderIds)
+    {
         if ((string) session()->get('role') !== '1') {
             return $this->response->setStatusCode(403)->setBody('Forbidden');
         }
@@ -2040,9 +2051,12 @@ class AdminController extends BaseController
         $password = (string) $this->request->getPost('current_password');
         $typedConfirmation = (string) $this->request->getPost('delete_confirmation');
         $acknowledged = (string) $this->request->getPost('local_only_ack') === '1';
-        if ($typedConfirmation !== 'DELETE' || !$acknowledged || $orderId === '' || mb_strlen($orderId) > 191) {
-            return redirect()->to('/admin/order/online')->with('order_delete_error', 'Konfirmasi tidak cocok. Ketik DELETE dan centang penghapusan lokal.');
+        $orderIds = array_values(array_unique(array_filter(array_map(static fn($id) => trim((string) $id), $orderIds))));
+        if ($typedConfirmation !== 'DELETE' || !$acknowledged || $orderIds === [] || count($orderIds) > 50
+            || array_filter($orderIds, static fn($id) => mb_strlen($id) > 191) !== []) {
+            return redirect()->to('/admin/order/online')->with('order_delete_error', 'Konfirmasi tidak cocok atau jumlah pilihan tidak valid (maksimal 50 pesanan).');
         }
+        sort($orderIds, SORT_STRING);
 
         $attempts = session()->get('order_delete_failures');
         if (!is_array($attempts) || (int) ($attempts['since'] ?? 0) < time() - 900) $attempts = ['count' => 0, 'since' => time()];
@@ -2061,30 +2075,37 @@ class AdminController extends BaseController
         $db = \Config\Database::connect();
         try {
             $db->transBegin();
-            $order = $db->query('SELECT id, id_midtrans, status FROM pemesanan WHERE id_midtrans = ? FOR UPDATE', [$orderId])->getRowArray();
-            if (!$order) throw new \RuntimeException('Pesanan tidak ditemukan.');
-            if (!in_array((string) ($order['status'] ?? ''), ['Selesai', 'Dibatalkan', 'Gagal', 'Kadaluarsa', 'Ditolak'], true)) {
-                throw new \RuntimeException('Hanya pesanan selesai atau berstatus terminal yang dapat dihapus. Pesanan aktif harus diselesaikan atau dibatalkan lebih dahulu.');
+            $lockedOrders = [];
+            foreach ($orderIds as $orderId) {
+                $order = $db->query('SELECT id, id_midtrans, status FROM pemesanan WHERE id_midtrans = ? FOR UPDATE', [$orderId])->getRowArray();
+                if (!$order) throw new \RuntimeException('Pesanan ' . $orderId . ' tidak ditemukan; tidak ada pesanan yang dihapus.');
+                if (!in_array((string) ($order['status'] ?? ''), ['Selesai', 'Dibatalkan', 'Gagal', 'Kadaluarsa', 'Ditolak'], true)) {
+                    throw new \RuntimeException('Pesanan ' . $orderId . ' belum berstatus terminal; seluruh penghapusan dibatalkan.');
+                }
+                $lockedOrders[] = $order;
             }
 
-            $shipmentIds = array_map('intval', array_column(
-                $db->table('surat_jalan')->select('id')->where('id_pesanan', $orderId)->get()->getResultArray(),
-                'id'
-            ));
-            if ($shipmentIds !== []) $db->table('surat_jalan_item')->whereIn('surat_jalan_id', $shipmentIds)->delete();
-            $db->table('surat_jalan')->where('id_pesanan', $orderId)->delete();
-            $db->table('pemesanan_gudang')->where('id_pesanan', $orderId)->delete();
-            $db->table('kartu_stok')->where('id_pesanan', $orderId)->delete();
-            // Current product variant balances are not recalculated or changed here.
-            if (!$db->table('pemesanan')->where('id', (int) $order['id'])->delete() || $db->transStatus() === false) {
-                throw new \RuntimeException('Penghapusan pesanan lokal gagal.');
+            foreach ($lockedOrders as $order) {
+                $orderId = (string) $order['id_midtrans'];
+                $shipmentIds = array_map('intval', array_column(
+                    $db->table('surat_jalan')->select('id')->where('id_pesanan', $orderId)->get()->getResultArray(),
+                    'id'
+                ));
+                if ($shipmentIds !== []) $db->table('surat_jalan_item')->whereIn('surat_jalan_id', $shipmentIds)->delete();
+                $db->table('surat_jalan')->where('id_pesanan', $orderId)->delete();
+                $db->table('pemesanan_gudang')->where('id_pesanan', $orderId)->delete();
+                $db->table('kartu_stok')->where('id_pesanan', $orderId)->delete();
+                // Current product variant balances are not recalculated or changed here.
+                if (!$db->table('pemesanan')->where('id', (int) $order['id'])->delete() || $db->transStatus() === false) {
+                    throw new \RuntimeException('Penghapusan lokal gagal; seluruh batch dibatalkan.');
+                }
             }
             $db->transCommit();
-            log_message('critical', 'Dev {email} permanently deleted local website order {orderId}; no Sistem Ilena request was sent.', [
+            log_message('critical', 'Dev {email} permanently deleted local website orders {orderIds}; no Sistem Ilena request was sent.', [
                 'email' => $email,
-                'orderId' => $orderId,
+                'orderIds' => implode(',', $orderIds),
             ]);
-            return redirect()->to('/admin/order/online')->with('msg', 'Pesanan dan data operasional Ilena terkait berhasil dihapus. Saldo stok produk tidak diubah.');
+            return redirect()->to('/admin/order/online')->with('msg', count($orderIds) . ' pesanan dan data operasional Ilena terkait berhasil dihapus. Saldo stok produk tidak diubah.');
         } catch (\Throwable $e) {
             $db->transRollback();
             log_message('error', 'Local order deletion failed: {error}', ['error' => $e->getMessage()]);
