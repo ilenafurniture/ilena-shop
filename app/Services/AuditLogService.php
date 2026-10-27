@@ -14,16 +14,14 @@ class AuditLogService
                 return false;
             }
 
-            $this->deleteOldLogs();
-
             return (bool)$db->table($this->table)->insert([
                 'actor_name' => $this->limit($data['actor_name'] ?? '-', 150),
                 'actor_email' => $this->limit($data['actor_email'] ?? '-', 190),
                 'role_label' => $this->limit($data['role_label'] ?? 'Admin', 80),
                 'activity' => $this->limit($data['activity'] ?? 'Melakukan aktivitas admin.', 255),
-                'description' => $data['description'] ?? '',
+                'description' => $this->limit(strip_tags((string)($data['description'] ?? '')), 2000),
                 'method' => $this->limit($data['method'] ?? '', 12),
-                'url' => $this->limit($data['url'] ?? '', 500),
+                'url' => $this->limit(preg_replace('/([?&](?:email|phone|token|key|address|q)=)[^&]*/i', '$1[redacted]', (string)($data['url'] ?? '')) ?? '', 500),
                 'ip_address' => $this->limit($data['ip_address'] ?? '', 80),
                 'user_agent' => $this->limit($data['user_agent'] ?? '', 500),
                 'request_data' => json_encode($this->cleanData($data['request_data'] ?? []), JSON_UNESCAPED_UNICODE),
@@ -114,6 +112,7 @@ class AuditLogService
             return str_contains($path, 'delete') ? 'Menghapus artikel' : 'Menyimpan data artikel';
         }
         if (str_contains($path, 'order')) {
+            if (str_contains($path, 'delete')) return 'Menghapus pesanan lokal di website Ilena';
             return 'Mengubah data pesanan';
         }
         if (str_contains($path, 'surat-jalan') || str_contains($path, 'suratjalan')) {
@@ -197,17 +196,21 @@ class AuditLogService
             return $data;
         }
 
-        $hiddenKeys = ['password', 'sandi', 'token', 'csrf', 'secret', 'key', 'apikey', 'api_key', 'authorization'];
+        // Keep only operational metadata; request payloads often contain customer
+        // identity, addresses, credentials, rich HTML, and payment data.
+        $allowedKeys = ['id', 'product_id', 'order_id', 'status', 'aktif', 'stok', 'quantity', 'qty', 'kategori', 'type', 'jenis', 'role', 'role_id', 'permission', 'permissions', 'action'];
         $clean = [];
         foreach ($data as $key => $value) {
             $lowerKey = strtolower((string)$key);
-            foreach ($hiddenKeys as $hidden) {
-                if (str_contains($lowerKey, $hidden)) {
-                    $clean[$key] = '[disembunyikan]';
-                    continue 2;
-                }
+            if (!in_array($lowerKey, $allowedKeys, true)) continue;
+            if (is_array($value)) {
+                $value = array_slice(array_map(static fn($item) => is_scalar($item) ? mb_substr((string)$item, 0, 80) : '[data]', $value), 0, 20);
+            } elseif (is_scalar($value)) {
+                $value = $this->limit((string)$value, 120);
+            } else {
+                continue;
             }
-            $clean[$key] = is_array($value) ? $this->cleanData($value) : $this->limit((string)$value, 250);
+            $clean[$lowerKey] = $value;
         }
 
         return $clean;

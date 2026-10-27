@@ -64,5 +64,6 @@
             </div>
         <?php } ?>
     </div>
+    <?= isset($pager) ? $pager->links('mutasi') : ''; ?>
 </div>
 <?= $this->endSection(); ?>

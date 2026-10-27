@@ -68,8 +68,8 @@
         <div style="flex: 1; overflow-y:scroll;" class="pe-1">
             <div class="galeri gap-1">
                 <?php foreach ($galeri as $g) { ?>
-                    <div class="item-galeri" onclick="copytext('<?= base_url($g['url']); ?>', 'Url telah di salin')">
-                        <img src="<?= base_url($g['url']); ?>" alt="">
+                    <div class="item-galeri js-copy-gallery" data-url="<?= esc(base_url($g['url'] ?? ''), 'attr'); ?>">
+                        <img src="<?= esc(base_url($g['url'] ?? ''), 'attr'); ?>" alt="">
                     </div>
                 <?php } ?>
             </div>
@@ -92,10 +92,16 @@
                 .then(response => response.json())
                 .then(data => {
                     const base_url = window.location.origin;
-                    galeriElm.innerHTML += `
-                        <div class="item-galeri" onclick="copytext('${base_url}/${data.url}', 'Url telah di salin')">
-                            <img src="${base_url}/${data.url}" alt="">
-                        </div>`;
+                    if (!data.success || typeof data.url !== 'string' || !data.url.startsWith('img/artikel/')) throw new Error('Respons galeri tidak valid');
+                    const url = new URL('/' + data.url, base_url).href;
+                    const item = document.createElement('div');
+                    item.className = 'item-galeri js-copy-gallery';
+                    item.dataset.url = url;
+                    const image = document.createElement('img');
+                    image.src = url;
+                    image.alt = '';
+                    item.append(image);
+                    galeriElm.append(item);
                     inputFile.value = "";
                     console.log(data)
                     callNotif('Galeri ditambahkan')
@@ -109,7 +115,7 @@
 </div>
 <div class="container artikel">
     <div class="konten">
-        <form method="post" action="/admin/editarticle/<?= $artikel['id']; ?>">
+        <form method="post" action="/admin/editarticle/<?= esc($artikel['id'] ?? '', 'attr'); ?>">
             <div class="container">
                 <div class="d-flex justify-content-between w-100 align-items-center">
                     <h1 class="mb-3">Edit Artikel</h1>
@@ -122,14 +128,14 @@
                             <tr>
                                 <td>Judul</td>
                                 <td>
-                                    <div class="baris"><input type="text" class="form-control" name="judul" required value="<?= $artikel['judul']; ?>">
+                                    <div class="baris"><input type="text" class="form-control" name="judul" required maxlength="180" value="<?= esc($artikel['judul'] ?? '', 'attr'); ?>">
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td>Penulis</td>
                                 <td>
-                                    <div class="baris"><input type="text" class="form-control" name="penulis" required value="<?= $artikel['penulis']; ?>">
+                                    <div class="baris"><input type="text" class="form-control" name="penulis" required maxlength="120" value="<?= esc($artikel['penulis'] ?? '', 'attr'); ?>">
                                     </div>
                                 </td>
                             </tr>
@@ -140,10 +146,10 @@
                                         <!-- <input type="text" class="form-control" name="kategori"
                                             placeholder="pisahkan dengan koma" required value="<?= $artikel['kategori']; ?>"> -->
                                         <select name="kategori" class="form-select">
-                                            <option <?= $artikel['kategori'] == 'edukasi' ? 'selected' : ''; ?> value="edukasi">Edukasi</option>
-                                            <option <?= $artikel['kategori'] == 'tips & trik' ? 'selected' : ''; ?> value="tips & trik">Tips & trick</option>
-                                            <option <?= $artikel['kategori'] == 'fun fact' ? 'selected' : ''; ?> value="fun fact">Fun Fact</option>
-                                            <option <?= $artikel['kategori'] == 'rekomendasi' ? 'selected' : ''; ?> value="rekomendasi">Rekomendasi</option>
+                                            <option <?= ($artikel['kategori'] ?? '') == 'edukasi' ? 'selected' : ''; ?> value="edukasi">Edukasi</option>
+                                            <option <?= ($artikel['kategori'] ?? '') == 'tips & trik' ? 'selected' : ''; ?> value="tips & trik">Tips & trick</option>
+                                            <option <?= ($artikel['kategori'] ?? '') == 'fun fact' ? 'selected' : ''; ?> value="fun fact">Fun Fact</option>
+                                            <option <?= ($artikel['kategori'] ?? '') == 'rekomendasi' ? 'selected' : ''; ?> value="rekomendasi">Rekomendasi</option>
                                         </select>
                                     </div>
                                 </td>
@@ -151,21 +157,21 @@
                                 <td>Tanggal Ubah</td>
                                 <td>
                                     <div class="baris"><input type="datetime-local" class="form-control" name="waktu"
-                                            required value="<?= $artikel['waktu']; ?>">
+                                            required value="<?= esc(date('Y-m-d\\TH:i', strtotime($artikel['waktu'] ?? 'now')), 'attr'); ?>">
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td>Gambar Header</td>
                                 <td>
-                                    <div class="baris"><input type="text" class="form-control" name="header" required placeholder="Masukan URL" value="<?= $artikel['header']; ?>">
+                                    <div class="baris"><input type="text" class="form-control" name="header" required placeholder="Masukan URL" value="<?= esc($artikel['header'] ?? '', 'attr'); ?>">
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td>Keywords</td>
                                 <td>
-                                    <div class="baris"><input type="text" class="form-control" name="keywords" required placeholder="Pisahkan dengan koma" value="<?= $artikel['keywords']; ?>">
+                                    <div class="baris"><input type="text" class="form-control" name="keywords" required maxlength="500" placeholder="Pisahkan dengan koma" value="<?= esc($artikel['keywords'] ?? '', 'attr'); ?>">
                                     </div>
                                 </td>
                             </tr>
@@ -173,7 +179,7 @@
                                 <td>Deskripsi</td>
                                 <td>
                                     <div class="baris">
-                                        <textarea name="deskripsi" class="form-control" required><?= $artikel['deskripsi']; ?></textarea>
+                                        <textarea name="deskripsi" class="form-control" maxlength="1000" required><?= esc($artikel['deskripsi'] ?? ''); ?></textarea>
                                     </div>
                                 </td>
                             </tr>
@@ -183,7 +189,7 @@
             </div>
             <div class="container mt-3">
                 <h5>Isi Artikel</h5>
-                <textarea name="isi" id="content"><?= $artikel['isi']; ?></textarea>
+                <textarea name="isi" id="content"><?= esc($artikel['isi'] ?? ''); ?></textarea>
             </div>
             <button type="submit" class="btn-default mt-2 w-100">Simpan</button>
         </form>
@@ -201,6 +207,11 @@
         modalGaleriElm.classList.add('d-none')
         modalGaleriElm.classList.remove('d-flex')
     }
+
+    modalGaleriElm.addEventListener('click', function(event) {
+        const item = event.target.closest('.js-copy-gallery');
+        if (item) copytext(item.dataset.url, 'Url telah disalin');
+    });
 
     tinymce.init({
         selector: "#content",

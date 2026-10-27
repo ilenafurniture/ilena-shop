@@ -2,6 +2,7 @@
 <?= $this->section('content'); ?>
 <?php
 $orders = $pesanan ?? [];
+$isDev = (string) session()->get('role') === '1';
 $countByStatus = $statusCounts ?? ['Menunggu Pembayaran' => 0, 'Proses' => 0, 'Dikirim' => 0];
 $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter): string {
     $params = ['page' => $page];
@@ -43,6 +44,8 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter): st
     <div><div class="eyebrow">Operasional · Toko online</div><h1>Pesanan online</h1><p class="intro">Cari pesanan, tinjau detail, dan lanjutkan pemrosesan.</p></div>
     <div class="head-actions"><a class="action" href="/admin/order/add"><span class="material-icons" aria-hidden="true">add</span>Tambah pesanan</a></div>
   </header>
+  <?php if ($deleteError = session()->getFlashdata('order_delete_error')): ?><div class="alert alert-danger" role="alert"><?= esc($deleteError); ?></div><?php endif; ?>
+  <?php if ($orderMessage = session()->getFlashdata('msg')): ?><div class="alert alert-success" role="status"><?= esc($orderMessage); ?></div><?php endif; ?>
 
   <section class="metrics" aria-label="Ringkasan status pesanan">
     <div class="metric"><strong><?= number_format((int) ($totalOrders ?? count($orders))) ?></strong><span>Total pesanan</span></div>
@@ -88,6 +91,7 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter): st
             <?php if ($manualPayment): ?><form method="post" action="/admin/confirm-mp/<?= (int) ($p['id'] ?? 0) ?>" data-ilena-confirm="Konfirmasi bahwa pembayaran manual telah diterima?" data-ilena-confirm-title="Konfirmasi pembayaran"><?= csrf_field() ?><button class="icon-action icon-action-label" type="submit" title="Konfirmasi pembayaran manual">Tandai lunas</button></form><?php endif; ?>
             <button class="icon-action icon-action-danger" type="button" data-cancel-order="<?= esc((string) ($p['id_midtrans'] ?? ''), 'attr') ?>" aria-label="Batalkan pesanan" title="Batalkan pesanan"><span class="material-icons" aria-hidden="true">close</span></button>
           <?php endif; ?>
+          <?php if ($isDev): ?><button class="icon-action icon-action-danger" type="button" data-delete-order="<?= esc((string) ($p['id_midtrans'] ?? ''), 'attr') ?>" aria-label="Hapus pesanan lokal <?= esc($p['id_midtrans'] ?? '', 'attr') ?>" title="Hapus data pesanan dari Ilena"><span class="material-icons" aria-hidden="true">delete_forever</span></button><?php endif; ?>
         </div>
       </article>
       <?php endforeach; ?>
@@ -106,12 +110,36 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter): st
 </div>
 
 <div class="resi-dialog" id="resiDialog" role="dialog" aria-modal="true" aria-labelledby="resiTitle" aria-hidden="true"><div class="resi-dialog__panel"><h2 id="resiTitle">Perbarui pengiriman</h2><form action="/admin/actioneditresi" method="post"><?= csrf_field() ?><input type="hidden" name="idMid"><label for="resi-courier">Ekspedisi</label><input id="resi-courier" type="text" name="nama" required><label for="resi-service">Layanan</label><input id="resi-service" type="text" name="deskripsi" required><label for="resi-number">Nomor resi</label><input id="resi-number" type="text" name="resi" required><div class="resi-dialog__actions"><button class="action" type="button" data-close-resi>Batal</button><button class="action action-primary" type="submit">Simpan resi</button></div></form></div></div>
+<?php if ($isDev): ?>
+<div class="resi-dialog delete-order-dialog" id="deleteOrderDialog" role="dialog" aria-modal="true" aria-labelledby="deleteOrderTitle" aria-hidden="true">
+  <div class="resi-dialog__panel">
+    <div class="eyebrow">Tindakan Dev · Permanen</div>
+    <h2 id="deleteOrderTitle">Hapus pesanan Ilena</h2>
+    <p class="intro">Tindakan ini menghapus pesanan dan dokumen gudang/surat jalan terkait hanya dari database website Ilena. Tidak ada permintaan hapus ke Sistem Ilena.</p>
+    <p class="intro">Antrean gudang, surat jalan, item surat jalan, dan mutasi stok yang terikat ke pesanan ikut dihapus. Saldo stok produk tidak diubah. Hanya pesanan terminal yang dapat dihapus.</p>
+    <form id="deleteOrderForm" method="post" action="">
+      <?= csrf_field() ?>
+      <label for="deleteOrderPassword">Sandi akun Dev</label>
+      <input id="deleteOrderPassword" name="current_password" type="password" autocomplete="current-password" required>
+      <label for="deleteOrderWord">Ketik DELETE</label>
+      <input id="deleteOrderWord" name="delete_confirmation" type="text" autocomplete="off" required pattern="DELETE" aria-describedby="deleteOrderIdentity">
+      <p class="order-date" id="deleteOrderIdentity">Pesanan: <strong data-delete-order-id></strong></p>
+      <label class="delete-order-ack"><input type="checkbox" name="local_only_ack" value="1" required> Saya memahami data pesanan dan riwayat mutasi terkait dihapus permanen hanya dari Ilena; saldo stok tidak berubah.</label>
+      <div class="resi-dialog__actions"><button class="action" type="button" data-close-delete>Batal</button><button class="action action-primary delete-order-submit" type="submit">Hapus pesanan permanen</button></div>
+    </form>
+  </div>
+</div>
+<style>
+.delete-order-dialog .resi-dialog__panel{max-height:min(92dvh,760px);overflow:auto}.delete-order-dialog .intro{line-height:1.55;margin:8px 0 14px}.delete-order-dialog form{display:grid;gap:9px}.delete-order-dialog label{font-size:13px;font-weight:650}.delete-order-dialog input[type=password],.delete-order-dialog input[type=text]{width:100%;min-height:44px;padding:10px 12px;border:1px solid #d9d0c6;border-radius:7px;background:#fff;font:inherit}.delete-order-dialog input:focus-visible{outline:3px solid rgba(139,94,60,.24);border-color:#8b5e3c}.delete-order-dialog .delete-order-ack{display:flex;gap:10px;align-items:flex-start;margin:7px 0;font-weight:500}.delete-order-dialog .delete-order-ack input{width:20px;height:20px;flex:0 0 20px;margin-top:1px;accent-color:#8b5e3c}.delete-order-dialog .delete-order-submit{background:#a65043;border-color:#a65043}.delete-order-dialog .delete-order-submit:hover{background:#873d33}
+</style>
+<?php endif; ?>
 
 <script>
 (() => {
   const orders = JSON.parse(<?= json_encode($pesananJson, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>) || [];
   const detail = document.getElementById('orderDialog');
   const resi = document.getElementById('resiDialog');
+  const deleteDialog = document.getElementById('deleteOrderDialog');
   const setText = (selector, value) => { const node = detail.querySelector(selector); if (node) node.textContent = value == null || value === '' ? '—' : String(value); };
   const openLayer = layer => { layer.classList.add('is-open'); layer.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; layer.querySelector('button')?.focus(); };
   const closeLayer = layer => { layer.classList.remove('is-open'); layer.setAttribute('aria-hidden','true'); document.body.style.overflow=''; };
@@ -151,6 +179,26 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter): st
   }));
   resi.querySelector('[data-close-resi]').addEventListener('click', () => closeLayer(resi));
   resi.addEventListener('click', event => { if (event.target === resi) closeLayer(resi); });
+  if (deleteDialog) {
+    const deleteForm = document.getElementById('deleteOrderForm');
+    document.querySelectorAll('[data-delete-order]').forEach(button => button.addEventListener('click', () => {
+      const orderId = button.dataset.deleteOrder || '';
+      deleteForm.action = '/admin/order/delete/' + encodeURIComponent(orderId);
+      deleteDialog.querySelector('[data-delete-order-id]').textContent = orderId;
+      deleteForm.reset();
+      openLayer(deleteDialog);
+      document.getElementById('deleteOrderPassword').focus();
+    }));
+    deleteDialog.querySelector('[data-close-delete]').addEventListener('click', () => closeLayer(deleteDialog));
+    deleteDialog.addEventListener('click', event => { if (event.target === deleteDialog) closeLayer(deleteDialog); });
+    deleteForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      if (!deleteForm.reportValidity()) return;
+      const orderId = deleteDialog.querySelector('[data-delete-order-id]').textContent;
+      if (!await window.IlenaDialog.confirm(`Hapus permanen pesanan ${orderId} dari Ilena?`, {title:'Konfirmasi penghapusan permanen', tone:'error'})) return;
+      deleteForm.submit();
+    });
+  }
   document.querySelectorAll('[data-cancel-order]').forEach(button => button.addEventListener('click', async () => {
     if (!await window.IlenaDialog.confirm('Batalkan pesanan ini?', {title:'Batalkan pesanan', tone:'error'})) return;
     const form = document.createElement('form'); form.method='POST'; form.action='/cancelorder/' + encodeURIComponent(button.dataset.cancelOrder);
@@ -158,7 +206,7 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter): st
     if(tokenName&&tokenHash){const token=document.createElement('input');token.type='hidden';token.name=tokenName;token.value=tokenHash;form.append(token);}
     document.body.append(form); form.submit();
   }));
-  document.addEventListener('keydown', event => { if(event.key==='Escape'){if(detail.classList.contains('is-open'))closeLayer(detail);if(resi.classList.contains('is-open'))closeLayer(resi);} });
+  document.addEventListener('keydown', event => { if(event.key==='Escape'){if(detail.classList.contains('is-open'))closeLayer(detail);if(resi.classList.contains('is-open'))closeLayer(resi);if(deleteDialog?.classList.contains('is-open'))closeLayer(deleteDialog);} });
 })();
 </script>
 <?= $this->endSection(); ?>

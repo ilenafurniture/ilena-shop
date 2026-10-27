@@ -151,8 +151,9 @@ class AdminController extends BaseController
                 ->whereNotIn('email', $testEmails);
         };
 
-        $allProducts = $this->barangModel->findAll();
-        $activeProducts = array_values(array_filter($allProducts, static fn($item) => !empty($item['active'])));
+        // Dashboard only needs compact inventory fields; loading complete product
+        // descriptions and image metadata on every admin landing page was wasteful.
+        $allProducts = $this->barangModel->select('id, nama, varian, active')->findAll();
         $lowStockProducts = [];
         foreach ($allProducts as $product) {
             $variants = json_decode($product['varian'] ?? '[]', true) ?: [];
@@ -174,6 +175,7 @@ class AdminController extends BaseController
             ->findAll(6);
 
         $paidOrders = $websiteOrderBase()
+            ->select('data_mid')
             ->whereIn('status', ['Proses', 'Dikirim', 'Selesai'])
             ->findAll();
         $revenue = 0;
@@ -183,12 +185,12 @@ class AdminController extends BaseController
         }
 
         $stats = [
-            'totalProducts' => count($allProducts),
-            'activeProducts' => count($activeProducts),
+            'totalProducts' => $this->barangModel->countAllResults(),
+            'activeProducts' => $this->barangModel->where('active', '1')->countAllResults(),
             'lowStock' => count($lowStockProducts),
             'websiteOrdersTodo' => $websiteOrderBase()->whereIn('status', ['Proses', 'Menunggu Pembayaran'])->countAllResults(),
             'waitingPayment' => $websiteOrderBase()->where('status', 'Menunggu Pembayaran')->countAllResults(),
-            'paidOrders' => count($paidOrders),
+            'paidOrders' => $websiteOrderBase()->whereIn('status', ['Proses', 'Dikirim', 'Selesai'])->countAllResults(),
             'revenue' => $revenue,
             'articles' => $this->artikelModel->countAllResults(),
             'activeVouchers' => (new VoucherModel())->where('aktif', 1)->countAllResults(),
@@ -532,7 +534,7 @@ class AdminController extends BaseController
                 }
             }
             if ($db->transStatus() === false) throw new \RuntimeException('Database menolak perubahan preview menu.');
-            $db->transCommit();
+            if (!$db->transCommit()) throw new \RuntimeException('Transaksi penghapusan lokal gagal dikomit.');
         } catch (\Throwable $e) {
             $db->transRollback();
             log_message('error', 'Simpan menu preview gagal: {message}', ['message' => $e->getMessage()]);
@@ -1576,7 +1578,8 @@ class AdminController extends BaseController
             $product[$ind_p]['varian'] = json_decode($p['varian'], true);
             $product[$ind_p]['deskripsi'] = json_decode($p['deskripsi'], true);
         }
-        $mutasi = $this->kartuStokModel->where(['id_barang' => $id_barang, 'varian' => $varian])->findAll();
+        $mutasi = $this->kartuStokModel->where(['id_barang' => $id_barang, 'varian' => $varian])
+            ->orderBy('id', 'desc')->paginate(50, 'mutasi');
         // $pemesananBelumPrint = $this->pemesananModel->where('status_print !=', 'sudah print')->findAll();
 
         // $mutasiDanPemesanan = $mutasi;
@@ -1599,6 +1602,7 @@ class AdminController extends BaseController
         $data = [
             'title' => 'Mutasi',
             'mutasi' => $mutasi,
+            'pager' => $this->kartuStokModel->pager,
             'product' => $product,
             'idBarang' => $id_barang,
             'data' => $data,
@@ -1631,7 +1635,8 @@ class AdminController extends BaseController
 
     public function mutasiConfirm()
     {
-        $mutasi = $this->kartuStokModel->where('alasan !=', '')->findAll();
+        $mutasi = $this->kartuStokModel->where('alasan !=', '')->where('pending', 1)
+            ->orderBy('id', 'desc')->paginate(50, 'mutasi');
         foreach ($mutasi as $ind_m => $m) {
             $produk  = $this->barangModel->where(['id' => $m['id_barang']])->first();
             $mutasi[$ind_m]['detail'] = $produk;
@@ -1649,6 +1654,7 @@ class AdminController extends BaseController
             'title' => 'Konfirm Mutasi',
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'mutasi' => $mutasi,
+            'pager' => $this->kartuStokModel->pager,
             'msg' => session()->getFlashdata('msg')
         ];
         return view('admin/mutasiConfirm', $data);
@@ -2017,6 +2023,75 @@ class AdminController extends BaseController
             return $this->response->setJSON($receipt);
         } catch (\Throwable $e) { log_message('error','Manual order failed: {error}',['error'=>$e->getMessage()]); return $this->response->setStatusCode(400)->setJSON(['success'=>false,'message'=>$e->getMessage()]); }
     }
+    /** Permanently remove one terminal online order and its local website dependents. */
+    public function deleteOnlineOrder(string $orderId)
+    {
+        if ((string) session()->get('role') !== '1') {
+            return $this->response->setStatusCode(403)->setBody('Forbidden');
+        }
+
+        $email = strtolower(trim((string) session()->get('email')));
+        $rbac = new AdminRbacService();
+        if (!$rbac->sessionAccountMatchesDatabase($email, '1')) {
+            session()->destroy();
+            return redirect()->to('/login')->with('msg', 'Sesi Dev tidak valid. Silakan masuk kembali.');
+        }
+
+        $password = (string) $this->request->getPost('current_password');
+        $typedConfirmation = (string) $this->request->getPost('delete_confirmation');
+        $acknowledged = (string) $this->request->getPost('local_only_ack') === '1';
+        if ($typedConfirmation !== 'DELETE' || !$acknowledged || $orderId === '' || mb_strlen($orderId) > 191) {
+            return redirect()->to('/admin/order/online')->with('order_delete_error', 'Konfirmasi tidak cocok. Ketik DELETE dan centang penghapusan lokal.');
+        }
+
+        $attempts = session()->get('order_delete_failures');
+        if (!is_array($attempts) || (int) ($attempts['since'] ?? 0) < time() - 900) $attempts = ['count' => 0, 'since' => time()];
+        if ((int) ($attempts['count'] ?? 0) >= 5) {
+            return redirect()->to('/admin/order/online')->with('order_delete_error', 'Terlalu banyak sandi yang salah. Coba lagi setelah 15 menit.');
+        }
+
+        $user = $this->userModel->where('email', $email)->first();
+        if (!$user || empty($user['sandi']) || !password_verify($password, (string) $user['sandi'])) {
+            $attempts['count'] = (int) ($attempts['count'] ?? 0) + 1;
+            session()->set('order_delete_failures', $attempts);
+            return redirect()->to('/admin/order/online')->with('order_delete_error', 'Sandi Dev tidak sesuai. Pesanan tetap tersimpan.');
+        }
+        session()->remove('order_delete_failures');
+
+        $db = \Config\Database::connect();
+        try {
+            $db->transBegin();
+            $order = $db->query('SELECT id, id_midtrans, status FROM pemesanan WHERE id_midtrans = ? FOR UPDATE', [$orderId])->getRowArray();
+            if (!$order) throw new \RuntimeException('Pesanan tidak ditemukan.');
+            if (!in_array((string) ($order['status'] ?? ''), ['Selesai', 'Dibatalkan', 'Gagal', 'Kadaluarsa', 'Ditolak'], true)) {
+                throw new \RuntimeException('Hanya pesanan selesai atau berstatus terminal yang dapat dihapus. Pesanan aktif harus diselesaikan atau dibatalkan lebih dahulu.');
+            }
+
+            $shipmentIds = array_map('intval', array_column(
+                $db->table('surat_jalan')->select('id')->where('id_pesanan', $orderId)->get()->getResultArray(),
+                'id'
+            ));
+            if ($shipmentIds !== []) $db->table('surat_jalan_item')->whereIn('surat_jalan_id', $shipmentIds)->delete();
+            $db->table('surat_jalan')->where('id_pesanan', $orderId)->delete();
+            $db->table('pemesanan_gudang')->where('id_pesanan', $orderId)->delete();
+            $db->table('kartu_stok')->where('id_pesanan', $orderId)->delete();
+            // Current product variant balances are not recalculated or changed here.
+            if (!$db->table('pemesanan')->where('id', (int) $order['id'])->delete() || $db->transStatus() === false) {
+                throw new \RuntimeException('Penghapusan pesanan lokal gagal.');
+            }
+            $db->transCommit();
+            log_message('critical', 'Dev {email} permanently deleted local website order {orderId}; no Sistem Ilena request was sent.', [
+                'email' => $email,
+                'orderId' => $orderId,
+            ]);
+            return redirect()->to('/admin/order/online')->with('msg', 'Pesanan dan data operasional Ilena terkait berhasil dihapus. Saldo stok produk tidak diubah.');
+        } catch (\Throwable $e) {
+            $db->transRollback();
+            log_message('error', 'Local order deletion failed: {error}', ['error' => $e->getMessage()]);
+            return redirect()->to('/admin/order/online')->with('order_delete_error', $e->getMessage());
+        }
+    }
+
     public function actionEditResi()
     {
         $db=db_connect(); $db->transBegin();
@@ -2323,13 +2398,51 @@ class AdminController extends BaseController
     }
 
     // ARTIKEL
+    private function articleInput(string $id = ''): array
+    {
+        $title = trim((string) $this->request->getPost('judul'));
+        $author = trim((string) $this->request->getPost('penulis'));
+        $category = strtolower(trim((string) $this->request->getPost('kategori')));
+        $when = trim((string) $this->request->getPost('waktu'));
+        $header = trim((string) $this->request->getPost('header'));
+        $allowedCategories = ['edukasi', 'tips & trik', 'fun fact', 'rekomendasi'];
+        $date = \DateTime::createFromFormat('Y-m-d\TH:i', $when) ?: \DateTime::createFromFormat('Y-m-d H:i:s', $when);
+        $headerOk = $header !== '' && !preg_match('/[\x00-\x20]/', $header)
+            && (str_starts_with($header, '/') && !str_starts_with($header, '//')
+                || in_array(strtolower((string) parse_url($header, PHP_URL_SCHEME)), ['https'], true));
+        if ($title === '' || mb_strlen($title) > 180 || $author === '' || mb_strlen($author) > 120
+            || !in_array($category, $allowedCategories, true) || !$date || !$headerOk
+            || trim((string) $this->request->getPost('keywords')) === ''
+            || mb_strlen((string) $this->request->getPost('keywords')) > 500
+            || trim((string) $this->request->getPost('deskripsi')) === ''
+            || mb_strlen((string) $this->request->getPost('deskripsi')) > 1000) {
+            throw new \InvalidArgumentException('Periksa judul, penulis, kategori, tanggal, gambar header, keywords, dan deskripsi.');
+        }
+        $slugBase = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $title) ?: $title;
+        $slug = trim(strtolower(preg_replace('/[^a-z0-9]+/i', '-', $slugBase) ?? ''), '-');
+        if ($slug === '') throw new \InvalidArgumentException('Judul tidak dapat dijadikan alamat artikel.');
+        $candidate = $slug;
+        $suffix = 2;
+        while ($this->artikelModel->where('path', $candidate)->where('id !=', $id)->countAllResults() > 0) {
+            $candidate = $slug . '-' . $suffix++;
+        }
+        return [
+            'judul' => $title, 'path' => $candidate, 'penulis' => $author,
+            'keywords' => trim((string) $this->request->getPost('keywords')),
+            'kategori' => $category, 'deskripsi' => trim((string) $this->request->getPost('deskripsi')),
+            'waktu' => $date->format('Y-m-d H:i:s'), 'isi' => (new \App\Services\ArticleContentSanitizer())->sanitize((string) $this->request->getPost('isi')),
+            'header' => $header,
+        ];
+    }
+
     public function article()
     {
-        $artikel = $this->artikelModel->orderBy('waktu', 'desc')->findAll();
+        $artikel = $this->artikelModel->orderBy('waktu', 'desc')->paginate(50, 'admin_articles');
         $data = [
             'title' => 'Artikel',
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'artikel' => $artikel,
+            'pager' => $this->artikelModel->pager,
             'msg' => session()->getFlashdata('msg')
         ];
         return view('admin/artikel', $data);
@@ -2413,31 +2526,18 @@ class AdminController extends BaseController
     }
     public function actionAddArticle()
     {
-        $judul = $this->request->getPost('judul');
-        $path = str_replace(",", "", $judul);
-        $path = str_replace(".", "", $path);
-        $path = str_replace("& ", "", $path);
-        $path = str_replace("?", "", $path);
-        $path = str_replace("!", "", $path);
-        $path = str_replace(":", "", $path);
-        $path = str_replace(" ", "-", $path);
-        $path = strtolower($path);
-        $this->artikelModel->insert([
-            'id' => "A" . date("YmdHis", strtotime("+7 Hours")),
-            'judul' => $judul,
-            'path' => $path,
-            'penulis' => $this->request->getPost('penulis'),
-            'keywords' => $this->request->getPost('keywords'),
-            'kategori' => strtolower($this->request->getPost('kategori')),
-            'deskripsi' => $this->request->getPost('deskripsi'),
-            'waktu' => $this->request->getPost('waktu'),
-            'isi' => $this->request->getPost('isi'),
-            'header' => $this->request->getPost('header'),
-            'suka' => 0,
-            'bagikan' => 0,
-            'komen' => json_encode([]),
-        ]);
-        session()->setFlashdata('msg', 'Artikel berhasil ditambahkan');
+        try {
+            $data = $this->articleInput();
+            $data += [
+                'id' => 'A' . date('YmdHis') . bin2hex(random_bytes(3)),
+                'suka' => 0, 'bagikan' => 0, 'komen' => json_encode([]),
+            ];
+            if (!$this->artikelModel->insert($data)) throw new \RuntimeException('Artikel gagal disimpan.');
+            session()->setFlashdata('msg', 'Artikel berhasil ditambahkan');
+        } catch (\Throwable $e) {
+            log_message('error', 'Article create rejected: {message}', ['message' => $e->getMessage()]);
+            session()->setFlashdata('msg', $e instanceof \InvalidArgumentException ? $e->getMessage() : 'Artikel gagal disimpan. Periksa data dan coba lagi.');
+        }
         return redirect()->to('/admin/article');
     }
 
@@ -2450,6 +2550,7 @@ class AdminController extends BaseController
     public function editArticle($id)
     {
         $artikel = $this->artikelModel->where(['id' => $id])->first();
+        if (!$artikel) return redirect()->to('/admin/article')->with('msg', 'Artikel tidak ditemukan.');
         $galeri = $this->gambarArtikelModel->findAll();
         $tinymce_key = env('TINYMCE_KEY', 'DefaultValue');
         $data = [
@@ -2463,27 +2564,14 @@ class AdminController extends BaseController
     }
     public function actionEditArticle($id)
     {
-        $judul = $this->request->getPost('judul');
-        $path = str_replace(",", "", $judul);
-        $path = str_replace(".", "", $path);
-        $path = str_replace("& ", "", $path);
-        $path = str_replace("?", "", $path);
-        $path = str_replace("!", "", $path);
-        $path = str_replace(":", "", $path);
-        $path = str_replace(" ", "-", $path);
-        $path = strtolower($path);
-        $this->artikelModel->where(['id' => $id])->set([
-            'judul' => $judul,
-            'path' => $path,
-            'penulis' => $this->request->getPost('penulis'),
-            'keywords' => $this->request->getPost('keywords'),
-            'kategori' => strtolower($this->request->getPost('kategori')),
-            'deskripsi' => $this->request->getPost('deskripsi'),
-            'waktu' => $this->request->getPost('waktu'),
-            'isi' => $this->request->getPost('isi'),
-            'header' => $this->request->getPost('header'),
-        ])->update();
-        session()->setFlashdata('msg', 'Artikel berhasil diedit');
+        if (!$this->artikelModel->where('id', $id)->first()) return redirect()->to('/admin/article')->with('msg', 'Artikel tidak ditemukan.');
+        try {
+            if (!$this->artikelModel->where('id', $id)->set($this->articleInput((string) $id))->update()) throw new \RuntimeException('Update artikel gagal.');
+            session()->setFlashdata('msg', 'Artikel berhasil diedit');
+        } catch (\Throwable $e) {
+            log_message('error', 'Article update rejected: {message}', ['message' => $e->getMessage()]);
+            session()->setFlashdata('msg', $e instanceof \InvalidArgumentException ? $e->getMessage() : 'Artikel gagal diperbarui. Periksa data dan coba lagi.');
+        }
         return redirect()->to('/admin/article');
     }
 
@@ -3019,7 +3107,7 @@ class AdminController extends BaseController
     // ========== VOUCHER ==========
     public function voucher()
     {
-        $q = $this->request->getGet('q');
+        $q = mb_substr(trim((string) $this->request->getGet('q')), 0, 100);
         $builder = $this->voucherModel->orderBy('id','DESC');
         if ($q) {
             $builder->groupStart()
@@ -3198,7 +3286,7 @@ class AdminController extends BaseController
             ->join('voucher v', 'v.kode = vu.kode_voucher', 'left')
             ->orderBy('vu.id', 'DESC');
 
-        $q = $this->request->getGet('q');
+        $q = mb_substr(trim((string) $this->request->getGet('q')), 0, 100);
         if ($q) {
             $builder->groupStart()
                 ->like('vu.kode_voucher', $q)
@@ -3207,12 +3295,19 @@ class AdminController extends BaseController
                 ->groupEnd();
         }
 
-        $rows = $builder->get()->getResultArray();
+        $total = (int) $builder->countAllResults(false);
+        $perPage = 50;
+        $pages = max(1, (int) ceil($total / $perPage));
+        $page = min($pages, max(1, (int) $this->request->getGet('page')));
+        $rows = $builder->get($perPage, ($page - 1) * $perPage)->getResultArray();
 
         return view('admin/voucher_usage', [
             'title' => 'Pemakaian Voucher',
             'rows'  => $rows,
-            'q'     => $q
+            'q'     => $q,
+            'page' => $page,
+            'pages' => $pages,
+            'total' => $total,
         ]);
     }
 
@@ -4177,7 +4272,8 @@ private function interiorShippedQtyMap(string $idPesanan): array
     public function spamCleanup()
     {
         $service = new SpamAccountCleanupService();
-        $inactiveDays = max(1, (int)($this->request->getGet('inactive_days') ?? 7));
+        $inactiveDays = (int) ($this->request->getGet('inactive_days') ?? 7);
+        if (!in_array($inactiveDays, [7, 30, 90], true)) $inactiveDays = 7;
 
         return view('admin/spamCleanup', [
             'title' => 'Cleanup Spam Akun',

@@ -1,5 +1,6 @@
 <?= $this->extend('layout/template'); ?>
 <?= $this->section('content'); ?>
+<?php $safeArticleHtml = (new \App\Services\ArticleContentSanitizer())->sanitize((string) ($artikel['isi'] ?? '')); ?>
 <style>
 .isi-artikel h1 {
     font-weight: 500;
@@ -44,7 +45,7 @@
                     <div class="d-flex justify-content-between mb-1 align-items-center">
                         <div class="d-flex gap-1">
                             <?php foreach ($artikel['kategori'] as $k) { ?>
-                            <h5 class="badge rounded-pill text-bg-secondary"><?= ucfirst($k); ?></h5>
+                            <h5 class="badge rounded-pill text-bg-secondary"><?= esc(ucfirst($k)); ?></h5>
                             <?php } ?>
                         </div>
                         <div class="d-flex gap-2 align-items-center">
@@ -65,14 +66,14 @@
                             <?php } ?>
                         </div>
                     </div>
-                    <h1 class="teks-besar mb-3"><?= $artikel['judul'] ?></h1>
+                    <h1 class="teks-besar mb-3"><?= esc($artikel['judul'] ?? ''); ?></h1>
                     <div class="d-flex justify-content-between">
-                        <p class="m-0 text-secondary">Ditulis oleh <?= $artikel['penulis']; ?></p>
+                        <p class="m-0 text-secondary">Ditulis oleh <?= esc($artikel['penulis'] ?? ''); ?></p>
                         <p class="m-0 text-secondary"><?= $artikel['waktu']; ?></p>
                     </div>
                     <div style="height: 1px; background-color: #888;" class="my-3"></div>
                     <div class="isi-artikel">
-                        <?= $artikel['isi']; ?>
+                        <?= $safeArticleHtml; ?>
                     </div>
                 </div>
             </div>
@@ -83,7 +84,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="d-flex gap-1 mb-3">
                             <?php foreach ($artikel['kategori'] as $k) { ?>
-                            <h5 class="badge rounded-pill text-bg-secondary"><?= ucfirst($k); ?></h5>
+                            <h5 class="badge rounded-pill text-bg-secondary"><?= esc(ucfirst($k)); ?></h5>
                             <?php } ?>
                         </div>
                         <div class="d-flex gap-2 align-items-center">
@@ -94,21 +95,21 @@
                                 <?php } ?>
                             </div>
                             <?php if (session()->get('role') == 1) { ?>
-                            <a href="/admin/editarticle/<?= $artikel['id'] ?>" class="btn btn-default">Edit</a>
+                            <a href="/admin/editarticle/<?= esc($artikel['id'] ?? '', 'attr'); ?>" class="btn btn-default">Edit</a>
                             <button
-                                onclick="triggerToast('Artikel <?= $artikel['judul'] ?> akan dihapus?', '/admin/deletearticle/<?= $artikel['id'] ?>')"
+                                data-title="<?= esc($artikel['judul'] ?? '', 'attr'); ?>" data-url="/admin/deletearticle/<?= esc($artikel['id'] ?? '', 'attr'); ?>" onclick="triggerToast('Hapus artikel ' + this.dataset.title + '?', this.dataset.url)"
                                 class="btn btn-default">Hapus</button>
                             <?php } ?>
                         </div>
                     </div>
-                    <h1 class="teks-besar mb-4"><?= $artikel['judul'] ?></h1>
+                    <h1 class="teks-besar mb-4"><?= esc($artikel['judul'] ?? ''); ?></h1>
                     <div class="d-flex justify-content-between">
-                        <p class="m-0 text-secondary">Ditulis oleh <?= $artikel['penulis']; ?></p>
+                        <p class="m-0 text-secondary">Ditulis oleh <?= esc($artikel['penulis'] ?? ''); ?></p>
                         <p class="m-0 text-secondary">Terakhir diubah pada <?= $artikel['waktu']; ?></p>
                     </div>
                     <div style="height: 1px; background-color: #888;" class="my-3"></div>
                     <div class="isi-artikel">
-                        <?= $artikel['isi']; ?>
+                        <?= $safeArticleHtml; ?>
                     </div>
                 </div>
             </div>

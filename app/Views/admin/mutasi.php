@@ -126,6 +126,7 @@
             } ?>
         </div>
     </div>
+    <?= isset($pager) ? $pager->links('mutasi') : ''; ?>
 </div>
 <script>
     const modalElm = document.getElementById('modal-add');

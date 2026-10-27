@@ -60,6 +60,16 @@
             </table>
         </div>
     </div>
+    <?php if (($pages ?? 1) > 1): ?>
+    <nav class="d-flex justify-content-between align-items-center mt-3" aria-label="Halaman pemakaian voucher">
+        <small class="text-secondary">Menampilkan maksimal 50 dari <?= (int) ($total ?? 0); ?> catatan</small>
+        <div class="d-flex gap-2">
+            <?php if ($page > 1): ?><a class="btn btn-sm btn-outline-dark" href="?q=<?= esc($q ?? '', 'url'); ?>&page=<?= $page - 1; ?>">Sebelumnya</a><?php endif; ?>
+            <span class="align-self-center small">Halaman <?= (int) $page; ?> / <?= (int) $pages; ?></span>
+            <?php if ($page < $pages): ?><a class="btn btn-sm btn-outline-dark" href="?q=<?= esc($q ?? '', 'url'); ?>&page=<?= $page + 1; ?>">Berikutnya</a><?php endif; ?>
+        </div>
+    </nav>
+    <?php endif; ?>
 </div>
 
 <?= $this->endSection(); ?>

@@ -144,10 +144,17 @@ class SpamAccountCleanupService
     public function candidates(int $limit = 500, int $inactiveOlderThanDays = 7): array
     {
         $db = \Config\Database::connect();
+        // Only list accounts that can safely be purged automatically. A suspicious
+        // email address alone is never enough to delete an active/customer account.
+        $cutoff = time() - (max(7, $inactiveOlderThanDays) * 86400);
         $userRows = $db->table('user')
             ->select('email, role, active, waktu_otp')
+            ->where('role', '0')
+            ->where('active', '0')
+            ->where('waktu_otp >', 0)
+            ->where('waktu_otp <', $cutoff)
             ->orderBy('email', 'asc')
-            ->limit($limit)
+            ->limit(max(1, min(1000, $limit)))
             ->get()
             ->getResultArray();
 
@@ -155,10 +162,8 @@ class SpamAccountCleanupService
         $seen = [];
         foreach ($userRows as $row) {
             $email = (string)($row['email'] ?? '');
-            $isSuspicious = $this->isSuspiciousEmail($email);
             $isInactiveExpired = $this->isInactiveExpiredAccount($row, $inactiveOlderThanDays);
-
-            if (!$isSuspicious && !$isInactiveExpired) {
+            if (!$isInactiveExpired || !$this->isSafeToDelete($db, $email)) {
                 continue;
             }
 
@@ -168,47 +173,12 @@ class SpamAccountCleanupService
                 'role' => $row['role'] ?? '',
                 'active' => $row['active'] ?? '',
                 'waktu_otp' => $row['waktu_otp'] ?? '',
-                'reason' => $isSuspicious
-                    ? $this->reason($email)
-                    : 'Akun belum aktif dan OTP kadaluarsa lebih dari ' . $inactiveOlderThanDays . ' hari',
+                'reason' => 'Akun pelanggan belum aktif, OTP kedaluwarsa lebih dari ' . max(7, $inactiveOlderThanDays) . ' hari, dan tidak memiliki pesanan/role admin',
             ];
             $seen[strtolower($email)] = true;
         }
 
-        $pembeliRows = $db->table('pembeli p')
-            ->select('p.email, u.email AS user_email')
-            ->join('user u', 'u.email = p.email', 'left')
-            ->orderBy('p.email', 'asc')
-            ->limit($limit)
-            ->get()
-            ->getResultArray();
-
-        foreach ($pembeliRows as $row) {
-            $email = (string)($row['email'] ?? '');
-            $emailKey = strtolower($email);
-            if (isset($seen[$emailKey])) {
-                continue;
-            }
-
-            $isSuspicious = $this->isSuspiciousEmail($email);
-            $isOrphan = empty($row['user_email']);
-
-            if (!$isSuspicious && !$isOrphan) {
-                continue;
-            }
-
-            $out[] = [
-                'email' => $email,
-                'source' => $isOrphan ? 'pembeli tanpa user' : 'pembeli',
-                'role' => '-',
-                'active' => '-',
-                'waktu_otp' => '-',
-                'reason' => $isSuspicious ? $this->reason($email) : 'Data pembeli tidak punya pasangan akun user',
-            ];
-            $seen[$emailKey] = true;
-        }
-
-        return $out;
+        return array_slice($out, 0, max(1, min(1000, $limit)));
     }
 
     public function deleteEmails(array $emails): int
@@ -216,33 +186,43 @@ class SpamAccountCleanupService
         $emails = array_values(array_unique(array_filter(array_map('strval', $emails))));
         if (empty($emails)) return 0;
 
-        $safeToDelete = [];
+        $db = \Config\Database::connect();
+        $deleted = 0;
         foreach ($emails as $email) {
-            $db = \Config\Database::connect();
-            $row = $db
-                ->table('user')
-                ->select('email, role, active, waktu_otp')
-                ->where('email', $email)
-                ->get()
-                ->getRowArray();
-            $hasPembeli = $db->table('pembeli')->where('email', $email)->countAllResults() > 0;
-
-            if ($this->isSuspiciousEmail($email)
-                || ($row && $this->isInactiveExpiredAccount($row, 1))
-                || (!$row && $hasPembeli)
-            ) {
-                $safeToDelete[] = $email;
+            $db->transBegin();
+            try {
+                $row = $db->table('user')->select('email, role, active, waktu_otp')->where('email', $email)->get()->getRowArray();
+                if (!$row || !$this->isInactiveExpiredAccount($row, 7) || !$this->isSafeToDelete($db, $email)) {
+                    $db->transRollback();
+                    continue;
+                }
+                $db->table('pembeli')->where('email', $email)->delete();
+                $db->table('user')->where('email', $email)->where('role', '0')->where('active', '0')->delete();
+                if ($db->transStatus()) {
+                    $db->transCommit();
+                    $deleted++;
+                } else {
+                    $db->transRollback();
+                }
+            } catch (\Throwable $e) {
+                $db->transRollback();
+                log_message('error', 'Spam cleanup skipped candidate: {message}', ['message' => $e->getMessage()]);
             }
         }
-        if (empty($safeToDelete)) return 0;
+        return $deleted;
+    }
 
-        $db = \Config\Database::connect();
-        $db->transStart();
-        $db->table('pembeli')->whereIn('email', $safeToDelete)->delete();
-        $db->table('user')->whereIn('email', $safeToDelete)->delete();
-        $db->transComplete();
-
-        return $db->transStatus() ? count($safeToDelete) : 0;
+    private function isSafeToDelete($db, string $email): bool
+    {
+        foreach (['pemesanan', 'pemesanan_online', 'orders'] as $table) {
+            if (!$db->tableExists($table)) continue;
+            $fields = $db->getFieldNames($table);
+            if (in_array('email', $fields, true)
+                && $db->table($table)->where('email', $email)->countAllResults() > 0) return false;
+        }
+        if ($db->tableExists('admin_rbac_user_roles')
+            && $db->table('admin_rbac_user_roles')->where('email', $email)->countAllResults() > 0) return false;
+        return true;
     }
 
     private function reason(string $email): string

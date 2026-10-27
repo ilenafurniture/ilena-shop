@@ -22,7 +22,7 @@ $inactiveDays = (int)($inactiveDays ?? 7);
     <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
         <div>
             <h1 class="spam-title mb-1">Cleanup Spam Akun</h1>
-            <p class="spam-muted mb-0">Preview akun register mencurigakan, payload injection, tempmail, dan akun belum aktif yang OTP-nya sudah lama kadaluarsa.</p>
+            <p class="spam-muted mb-0">Hanya menampilkan akun pelanggan yang belum aktif dengan OTP kedaluwarsa dan tanpa riwayat pesanan atau assignment admin. Email mencurigakan saja tidak cukup untuk penghapusan otomatis.</p>
         </div>
         <span class="spam-badge"><?= count($candidates); ?> kandidat spam</span>
     </div>
@@ -35,13 +35,13 @@ $inactiveDays = (int)($inactiveDays ?? 7);
             <div class="col-md-8">
                 <label for="inactive_days" class="form-label fw-bold">Tampilkan akun belum aktif</label>
                 <select id="inactive_days" name="inactive_days" class="form-select">
-                    <?php foreach ([1, 7, 30, 90] as $day): ?>
+                    <?php foreach ([7, 30, 90] as $day): ?>
                         <option value="<?= $day; ?>" <?= $inactiveDays === $day ? 'selected' : ''; ?>>
                             OTP kadaluarsa lebih dari <?= $day; ?> hari
                         </option>
                     <?php endforeach; ?>
                 </select>
-                <div class="form-text">Akun customer role 0, active 0, dan OTP sudah lewat akan masuk kandidat cleanup.</div>
+                <div class="form-text">Penghapusan akan memeriksa ulang status, usia OTP, riwayat pesanan, dan assignment RBAC tepat sebelum transaksi.</div>
             </div>
             <div class="col-md-4">
                 <button type="submit" class="btn btn-dark w-100">Refresh Kandidat</button>

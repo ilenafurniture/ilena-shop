@@ -249,7 +249,7 @@
     <div class="page-head">
         <div>
             <h1 class="teks-sedang page-title">Artikel Ilena</h1>
-            <div class="subtle"><?= count($artikel) ?> artikel</div>
+            <div class="subtle">Daftar artikel (maksimal 50 per halaman)</div>
         </div>
         <a href="/admin/addarticle" class="btn-default-merah">Tambah</a>
     </div>
@@ -284,32 +284,32 @@
                 <tbody>
                     <?php foreach ($artikel as $ind_a => $a) { ?>
                     <tr>
-                        <td class="col-no"><?= $ind_a + 1; ?></td>
+                        <td class="col-no"><?= (int) $ind_a + 1; ?></td>
                         <td class="col-judul">
-                            <div class="truncate-1" title="<?= htmlspecialchars($a['judul'], ENT_QUOTES); ?>">
-                                <?= $a['judul']; ?>
+                            <div class="truncate-1" title="<?= esc($a['judul'] ?? '', 'attr'); ?>">
+                                <?= esc($a['judul'] ?? ''); ?>
                             </div>
                         </td>
-                        <td class="col-tanggal"><?= date('d/m/Y H:i:s', strtotime($a['waktu'])); ?></td>
-                        <td class="col-penulis"><?= $a['penulis']; ?></td>
+                        <td class="col-tanggal"><?= esc(date('d/m/Y H:i', strtotime($a['waktu'] ?? 'now'))); ?></td>
+                        <td class="col-penulis"><?= esc($a['penulis'] ?? ''); ?></td>
                         <td class="col-kategori">
                             <span class="badge-chip" title="Kategori">
-                                <i class="material-icons" style="font-size:14px">label</i><?= $a['kategori']; ?>
+                                <i class="material-icons" style="font-size:14px">label</i><?= esc($a['kategori'] ?? ''); ?>
                             </span>
                         </td>
                         <td class="col-action">
                             <div class="action-group">
-                                <a class="btn-icon" href="/article/<?= $a['path']; ?>" title="Lihat artikel"
+                                <a class="btn-icon" href="/article/<?= esc($a['path'] ?? '', 'attr'); ?>" title="Lihat artikel"
                                     aria-label="Lihat artikel">
                                     <i class="material-icons">open_in_new</i>
                                 </a>
-                                <a class="btn-icon" href="/admin/editarticle/<?= $a['id']; ?>" title="Edit artikel"
+                                <a class="btn-icon" href="/admin/editarticle/<?= esc($a['id'] ?? '', 'attr'); ?>" title="Edit artikel"
                                     aria-label="Edit artikel">
                                     <i class="material-icons">edit</i>
                                 </a>
-                                <button class="btn-icon danger" type="button" title="Hapus artikel"
-                                    aria-label="Hapus artikel"
-                                    onclick="triggerToast('Hapus artikel <?= htmlspecialchars($a['judul'], ENT_QUOTES); ?>?', '/admin/deletearticle/<?= $a['id']; ?>')">
+                                <button class="btn-icon danger js-delete-article" type="button" title="Hapus artikel"
+                                    aria-label="Hapus artikel <?= esc($a['judul'] ?? '', 'attr'); ?>?"
+                                    data-title="<?= esc($a['judul'] ?? '', 'attr'); ?>" data-url="/admin/deletearticle/<?= esc($a['id'] ?? '', 'attr'); ?>">
                                     <i class="material-icons">delete</i>
                                 </button>
                             </div>
@@ -320,6 +320,7 @@
             </table>
         </div>
     </div>
+    <?= isset($pager) ? $pager->links('admin_articles') : ''; ?>
 </div>
 
 <script>
@@ -336,6 +337,11 @@
             const teks = tds.map(td => td.innerText.toLowerCase()).join(' ');
             tr.style.display = q ? (teks.includes(q) ? '' : 'none') : '';
         });
+    });
+    tbody.addEventListener('click', function(event) {
+        const button = event.target.closest('.js-delete-article');
+        if (!button) return;
+        triggerToast('Hapus artikel ' + button.dataset.title + '?', button.dataset.url);
     });
 })();
 </script>

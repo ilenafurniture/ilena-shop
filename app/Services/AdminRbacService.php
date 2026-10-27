@@ -54,7 +54,7 @@ class AdminRbacService
             'cancelorder' => 'orders_online',
             'admin/rbac' => 'rbac',
             'admin/product-bulk-edit' => 'products',
-            'admin/menu-previews' => 'products',
+            'admin/menu-previews' => 'content',
             'admin/producttable' => 'products',
             'admin/product' => 'products',
             'admin/addproduct' => 'products',

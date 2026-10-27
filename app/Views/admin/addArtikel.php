@@ -324,9 +324,9 @@
         <div style="flex:1; overflow:auto;" class="pe-1">
             <div class="galeri gap-1" id="galeri-grid">
                 <?php foreach ($galeri as $g) { ?>
-                <div class="item-galeri" onclick="copytext('<?= base_url($g['url']); ?>', 'Url telah di salin', this)">
+                <div class="item-galeri js-copy-gallery" data-url="<?= esc(base_url($g['url'] ?? ''), 'attr'); ?>">
                     <span class="copied-badge">Copied</span>
-                    <img loading="lazy" src="<?= base_url($g['url']); ?>" alt="">
+                    <img loading="lazy" src="<?= esc(base_url($g['url'] ?? ''), 'attr'); ?>" alt="">
                 </div>
                 <?php } ?>
             </div>
@@ -459,6 +459,10 @@ const headerStatusElm = document.getElementById('header-status');
 
 const modalGaleriElm = document.getElementById('modal-galeri');
 const galeriGridElm = document.getElementById('galeri-grid');
+galeriGridElm.addEventListener('click', function(event) {
+    const item = event.target.closest('.js-copy-gallery');
+    if (item) copytext(item.dataset.url, 'Url telah disalin', item);
+});
 
 let contentArtikel = '';
 const [seoTitleElm, seoDescriptionElm, seoKeywordsElm, seoGambarElm, seoLinkElm, seoHeadingElm, seoReadibilityElm] =
@@ -512,11 +516,20 @@ function submitAddGaleri() {
         .then(response => response.json())
         .then(data => {
             const base_url = window.location.origin;
-            galeriElm.innerHTML = galeriElm.innerHTML + `
-          <div class="item-galeri" onclick="copytext('${base_url}/${data.url}', 'Url telah di salin', this)">
-            <span class="copied-badge">Copied</span>
-            <img loading="lazy" src="${base_url}/${data.url}" alt="">
-          </div>`;
+            if (!data.success || typeof data.url !== 'string' || !data.url.startsWith('img/artikel/')) throw new Error('Respons galeri tidak valid');
+            const url = new URL('/' + data.url, base_url).href;
+            const item = document.createElement('div');
+            item.className = 'item-galeri js-copy-gallery';
+            item.dataset.url = url;
+            const badge = document.createElement('span');
+            badge.className = 'copied-badge';
+            badge.textContent = 'Copied';
+            const image = document.createElement('img');
+            image.loading = 'lazy';
+            image.src = url;
+            image.alt = '';
+            item.append(badge, image);
+            galeriElm.append(item);
             inputFile.value = "";
             dzBar.style.width = '0%';
             dzProgressWrap.style.display = 'none';
