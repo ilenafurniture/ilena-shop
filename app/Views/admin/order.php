@@ -2,14 +2,16 @@
 <?= $this->section('content'); ?>
 <?php
 $orders = $pesanan ?? [];
-$countByStatus = ['Menunggu Pembayaran' => 0, 'Proses' => 0, 'Dikirim' => 0];
-foreach ($orders as $order) {
-    $status = (string) ($order['status'] ?? '');
-    if (isset($countByStatus[$status])) $countByStatus[$status]++;
-}
+$countByStatus = $statusCounts ?? ['Menunggu Pembayaran' => 0, 'Proses' => 0, 'Dikirim' => 0];
+$pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter): string {
+    $params = ['page' => $page];
+    if ($orderQuery !== '') $params['q'] = $orderQuery;
+    if ($orderStatusFilter !== '') $params['status'] = $orderStatusFilter;
+    return '/admin/order/online?' . http_build_query($params);
+};
 ?>
 <style>
-.online-orders{--o-ink:#28231f;--o-muted:#756b62;--o-line:#e9e3da;--o-paper:#fffdfa;--o-bg:#f6f4f0;--o-accent:#8b5e3c;--o-red:#a65043;color:var(--o-ink);max-width:1500px;margin:0 auto;padding:8px 0 36px}
+.online-orders,.order-dialog,.resi-dialog{--o-ink:#28231f;--o-muted:#756b62;--o-line:#e9e3da;--o-paper:#fffdfa;--o-bg:#f6f4f0;--o-accent:#8b5e3c;--o-red:#a65043;color:var(--o-ink)}.online-orders{max-width:1500px;margin:0 auto;padding:8px 0 36px}
 .online-orders *{box-sizing:border-box}.online-orders .eyebrow{font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--o-muted)}
 .online-orders h1{margin:4px 0;font-size:clamp(23px,2.5vw,30px);font-weight:650;letter-spacing:-.04em}.online-orders .intro{margin:0;color:var(--o-muted);font-size:14px}
 .online-orders .page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:25px}.online-orders .head-actions{display:flex;gap:8px;flex-wrap:wrap}
@@ -24,8 +26,10 @@ foreach ($orders as $order) {
 .online-orders .customer-name{font-size:14px;font-weight:650}.online-orders .customer-email{font-size:12px;color:var(--o-muted);margin-top:4px;overflow-wrap:anywhere}.online-orders .amount{font-size:14px;font-weight:650;font-variant-numeric:tabular-nums;white-space:nowrap}.online-orders .status{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:650;white-space:nowrap}.online-orders .status::before{content:"";width:7px;height:7px;border-radius:50%;background:#8e857b}.online-orders .status[data-status="menunggu pembayaran"]::before{background:#bd8d48}.online-orders .status[data-status="proses"]::before{background:#8b684c}.online-orders .status[data-status="dikirim"]::before{background:#6d8b9b}.online-orders .status[data-status="selesai"]::before{background:#6d8c65}.online-orders .status[data-status="dibatalkan"]::before,.online-orders .status[data-status="gagal"]::before{background:#b45c50}
 .online-orders .row-actions{display:flex;justify-content:flex-end;align-items:center;gap:6px;flex-wrap:wrap}.online-orders .icon-action{display:inline-flex;align-items:center;justify-content:center;min-width:40px;min-height:40px;padding:0 9px;border:1px solid transparent;border-radius:7px;background:transparent;color:#64594f;text-decoration:none;cursor:pointer}.online-orders .icon-action:hover{background:#f1ede6;color:#302a24}.online-orders .icon-action .material-icons{font-size:19px}.online-orders .icon-action-label{font-size:12px;font-weight:600}.online-orders .icon-action-danger{color:var(--o-red)}
 .online-orders .empty-state{padding:52px 16px;text-align:center;color:var(--o-muted);border-bottom:1px solid var(--o-line)}.online-orders .empty-state strong{display:block;color:var(--o-ink);font-size:16px;margin-bottom:4px}
-.online-orders .no-results[hidden],.online-orders [data-order-row][hidden]{display:none!important}
+.online-orders [data-order-row][hidden]{display:none!important}
+.orders-pagination{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:16px;color:var(--o-muted);font-size:12px}.orders-pagination>div{display:flex;gap:8px}.orders-pagination .action{min-height:38px}
 .order-dialog{position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(30,26,22,.54)}.order-dialog.is-open{display:flex}.order-dialog__panel{width:min(720px,100%);max-height:min(88vh,850px);overflow:auto;background:var(--o-paper);border-radius:12px;padding:clamp(18px,3vw,30px);box-shadow:0 24px 70px rgba(0,0,0,.2)}
+.order-dialog .eyebrow,.resi-dialog .eyebrow{font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--o-muted)}.order-dialog .action,.resi-dialog .action{display:inline-flex;min-height:42px;align-items:center;justify-content:center;gap:8px;padding:0 15px;border:1px solid var(--o-line);border-radius:8px;background:transparent;color:var(--o-ink);font:600 13px/1.2 "Plus Jakarta Sans",sans-serif;text-decoration:none;cursor:pointer}.order-dialog .action:hover,.resi-dialog .action:hover{background:#f1ede6}.order-dialog .action-primary,.resi-dialog .action-primary{background:var(--o-accent);border-color:var(--o-accent);color:#fff}.order-dialog .action-primary:hover,.resi-dialog .action-primary:hover{background:#70482f;color:#fff}
 .order-dialog__head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;border-bottom:1px solid var(--o-line);padding-bottom:15px;margin-bottom:18px}.order-dialog__head h2{margin:3px 0;font-size:20px;letter-spacing:-.03em}.order-dialog__close{border:1px solid var(--o-line);background:transparent;border-radius:7px;width:40px;height:40px;cursor:pointer;color:var(--o-ink)}
 .order-dialog__customer{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 24px;margin-bottom:22px}.order-dialog__field label{display:block;color:var(--o-muted);font-size:11px;margin-bottom:3px}.order-dialog__field div{font-size:13px;font-weight:550;overflow-wrap:anywhere}.order-dialog__items{width:100%;border-collapse:collapse}.order-dialog__items th,.order-dialog__items td{padding:10px 7px;border-bottom:1px solid var(--o-line);text-align:left;font-size:13px}.order-dialog__items th{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--o-muted)}.order-dialog__items td:last-child,.order-dialog__items th:last-child{text-align:right;white-space:nowrap}.order-dialog__footer{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:20px}
 .resi-dialog{position:fixed;inset:0;z-index:1210;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(30,26,22,.54)}.resi-dialog.is-open{display:flex}.resi-dialog__panel{width:min(460px,100%);background:var(--o-paper);border-radius:12px;padding:24px}.resi-dialog h2{font-size:19px;margin:0 0 18px}.resi-dialog label{display:block;font-size:12px;font-weight:650;margin:12px 0 5px}.resi-dialog input{width:100%;height:44px;border:1px solid #ded7ce;border-radius:7px;padding:0 11px;background:#fff;font:inherit}.resi-dialog__actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
@@ -41,7 +45,7 @@ foreach ($orders as $order) {
   </header>
 
   <section class="metrics" aria-label="Ringkasan status pesanan">
-    <div class="metric"><strong id="totalCount"><?= count($orders) ?></strong><span>Total pesanan</span></div>
+    <div class="metric"><strong><?= number_format((int) ($totalOrders ?? count($orders))) ?></strong><span>Total pesanan</span></div>
     <div class="metric"><strong><?= (int) $countByStatus['Menunggu Pembayaran'] ?></strong><span>Menunggu pembayaran</span></div>
     <div class="metric"><strong><?= (int) $countByStatus['Proses'] ?></strong><span>Diproses</span></div>
     <div class="metric"><strong><?= (int) $countByStatus['Dikirim'] ?></strong><span>Dikirim</span></div>
@@ -49,12 +53,12 @@ foreach ($orders as $order) {
 
   <section aria-label="Daftar pesanan">
     <div class="order-controls">
-      <div class="results-label"><span id="visibleCount"><?= count($orders) ?></span> dari <?= count($orders) ?> pesanan</div>
-      <div class="filters">
-        <label class="search-box"><span class="material-icons" aria-hidden="true">search</span><span class="visually-hidden">Cari pesanan</span><input class="control search-control" id="orderSearch" type="search" placeholder="Cari ID, penerima, email…" autocomplete="off"></label>
-        <label><span class="visually-hidden">Filter status</span><select class="control" id="orderStatus"><option value="">Semua status</option><option value="menunggu pembayaran">Menunggu pembayaran</option><option value="proses">Diproses</option><option value="dikirim">Dikirim</option><option value="selesai">Selesai</option><option value="dibatalkan">Dibatalkan</option><option value="gagal">Gagal</option></select></label>
-        <button class="action" type="button" id="resetFilter">Reset</button>
-      </div>
+      <div class="results-label">Menampilkan <?= (int) ($firstOrderNumber ?? 0) ?>–<?= (int) ($lastOrderNumber ?? count($orders)) ?> dari <?= number_format((int) ($filteredOrders ?? count($orders))) ?> pesanan</div>
+      <form class="filters" method="get" action="/admin/order/online">
+        <label class="search-box"><span class="material-icons" aria-hidden="true">search</span><span class="visually-hidden">Cari pesanan</span><input class="control search-control" name="q" type="search" value="<?= esc($orderQuery ?? '') ?>" placeholder="Cari ID, nama, email, telepon…" autocomplete="off"></label>
+        <label><span class="visually-hidden">Filter status</span><select class="control" name="status"><option value="">Semua status</option><?php foreach (['Menunggu Pembayaran'=>'Menunggu pembayaran','Proses'=>'Diproses','Dikirim'=>'Dikirim','Selesai'=>'Selesai','Dibatalkan'=>'Dibatalkan','Gagal'=>'Gagal'] as $key=>$label): ?><option value="<?= esc($key, 'attr') ?>" <?= ($orderStatusFilter ?? '') === $key ? 'selected' : '' ?>><?= esc($label) ?></option><?php endforeach; ?></select></label>
+        <button class="action action-primary" type="submit">Terapkan</button><?php if (($orderQuery ?? '') !== '' || ($orderStatusFilter ?? '') !== ''): ?><a class="action" href="/admin/order/online">Reset</a><?php endif; ?>
+      </form>
     </div>
     <div class="orders-list" id="ordersList">
       <?php foreach ($orders as $index => $p):
@@ -63,13 +67,12 @@ foreach ($orders as $order) {
         $formattedDate = $transactionTime ? date('d M Y · H:i', $transactionTime) : 'Tanggal tidak tersedia';
         $statusText = trim((string) ($p['status'] ?? 'Status tidak diketahui'));
         $statusKey = strtolower($statusText);
-        $searchText = strtolower(implode(' ', [(string) ($p['id_midtrans'] ?? ''), (string) ($p['nama'] ?? ''), (string) ($p['email'] ?? ''), $statusText, $formattedDate]));
         $amount = (int) ($mid['gross_amount'] ?? 0);
         $isActive = in_array($statusText, ['Proses', 'Dikirim'], true);
         $isPending = $statusText === 'Menunggu Pembayaran';
         $manualPayment = ($mid['payment_type'] ?? '') === 'admin';
       ?>
-      <article class="order-row" data-order-row data-index="<?= (int) $index ?>" data-status="<?= esc($statusKey, 'attr') ?>" data-search="<?= esc($searchText, 'attr') ?>">
+      <article class="order-row" data-order-row data-index="<?= (int) $index ?>" data-status="<?= esc($statusKey, 'attr') ?>">
         <div class="order-row__id"><div class="order-id"><?= esc($p['id_midtrans'] ?? '—') ?></div><div class="order-date"><?= esc($formattedDate) ?></div></div>
         <div class="order-row__customer"><div class="customer-name"><?= esc($p['nama'] ?? 'Nama tidak tersedia') ?></div><div class="customer-email"><?= esc($p['email'] ?? '') ?></div></div>
         <div class="order-row__amount amount">Rp <?= number_format($amount, 0, ',', '.') ?></div>
@@ -79,18 +82,18 @@ foreach ($orders as $order) {
           <a class="icon-action" href="/invoice/<?= rawurlencode((string) ($p['id_midtrans'] ?? '')) ?>" aria-label="Invoice" title="Invoice"><span class="material-icons" aria-hidden="true">description</span></a>
           <?php if ($isActive): ?>
             <a class="icon-action" href="/admin/labelbarang/<?= rawurlencode((string) ($p['id_midtrans'] ?? '')) ?>" target="_blank" rel="noopener" aria-label="Label barang" title="Label barang"><span class="material-icons" aria-hidden="true">label_outline</span></a>
-            <button class="icon-action" type="button" data-edit-resi="<?= esc((string) ($p['id_midtrans'] ?? ''), 'attr') ?>" aria-label="Edit resi" title="Edit resi"><span class="material-icons" aria-hidden="true">local_shipping</span></button>
+            <button class="icon-action" type="button" data-edit-resi="<?= esc((string) ($p['id_midtrans'] ?? ''), 'attr') ?>" data-edit-resi-courier="<?= esc((string) ($p['kurir']['nama'] ?? ''), 'attr') ?>" data-edit-resi-service="<?= esc((string) ($p['kurir']['deskripsi'] ?? ''), 'attr') ?>" data-edit-resi-number="<?= esc((string) ($p['resi'] ?? ''), 'attr') ?>" aria-label="Edit resi" title="Edit resi"><span class="material-icons" aria-hidden="true">local_shipping</span></button>
             <a class="icon-action" href="/admin/suratjalan/<?= rawurlencode((string) ($p['id_midtrans'] ?? '')) ?>" target="_blank" rel="noopener" aria-label="Surat jalan" title="Surat jalan"><span class="material-icons" aria-hidden="true">print</span></a>
           <?php elseif ($isPending): ?>
-            <?php if ($manualPayment): ?><form method="post" action="/admin/confirm-mp/<?= (int) ($p['id'] ?? 0) ?>" data-ilena-confirm="Konfirmasi bahwa pembayaran manual telah diterima?" data-ilena-confirm-title="Konfirmasi pembayaran"><button class="icon-action icon-action-label" type="submit" title="Konfirmasi pembayaran manual">Tandai lunas</button><?= csrf_field() ?></form><?php endif; ?>
+            <?php if ($manualPayment): ?><form method="post" action="/admin/confirm-mp/<?= (int) ($p['id'] ?? 0) ?>" data-ilena-confirm="Konfirmasi bahwa pembayaran manual telah diterima?" data-ilena-confirm-title="Konfirmasi pembayaran"><?= csrf_field() ?><button class="icon-action icon-action-label" type="submit" title="Konfirmasi pembayaran manual">Tandai lunas</button></form><?php endif; ?>
             <button class="icon-action icon-action-danger" type="button" data-cancel-order="<?= esc((string) ($p['id_midtrans'] ?? ''), 'attr') ?>" aria-label="Batalkan pesanan" title="Batalkan pesanan"><span class="material-icons" aria-hidden="true">close</span></button>
           <?php endif; ?>
         </div>
       </article>
       <?php endforeach; ?>
-      <?php if (!$orders): ?><div class="empty-state"><strong>Belum ada pesanan online</strong>Pesanan baru akan tampil di sini.</div><?php endif; ?>
-      <div class="empty-state no-results" id="noOrderResults" hidden><strong>Pesanan tidak ditemukan</strong>Coba ubah kata kunci atau filter status.</div>
+      <?php if (!$orders && (($orderQuery ?? '') !== '' || ($orderStatusFilter ?? '') !== '')): ?><div class="empty-state"><strong>Pesanan tidak ditemukan</strong>Coba ubah kata kunci atau filter status.</div><?php elseif (!$orders): ?><div class="empty-state"><strong>Belum ada pesanan online</strong>Pesanan baru akan tampil di sini.</div><?php endif; ?>
     </div>
+    <?php if (($totalPages ?? 1) > 1): ?><nav class="orders-pagination" aria-label="Halaman daftar pesanan"><span>Halaman <?= (int) $currentPage ?> dari <?= (int) $totalPages ?></span><div><?php if ($currentPage > 1): ?><a class="action" href="<?= esc($pageUrl($currentPage - 1), 'attr') ?>" rel="prev">Sebelumnya</a><?php endif; ?><?php if ($currentPage < $totalPages): ?><a class="action" href="<?= esc($pageUrl($currentPage + 1), 'attr') ?>" rel="next">Berikutnya</a><?php endif; ?></div></nav><?php endif; ?>
   </section>
 </main>
 
@@ -107,37 +110,31 @@ foreach ($orders as $order) {
 <script>
 (() => {
   const orders = JSON.parse(<?= json_encode($pesananJson, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>) || [];
-  const rows = [...document.querySelectorAll('[data-order-row]')];
-  const search = document.getElementById('orderSearch');
-  const status = document.getElementById('orderStatus');
-  const visibleCount = document.getElementById('visibleCount');
-  const noResults = document.getElementById('noOrderResults');
   const detail = document.getElementById('orderDialog');
   const resi = document.getElementById('resiDialog');
-  const normalize = value => String(value || '').toLocaleLowerCase('id-ID').trim();
   const setText = (selector, value) => { const node = detail.querySelector(selector); if (node) node.textContent = value == null || value === '' ? '—' : String(value); };
   const openLayer = layer => { layer.classList.add('is-open'); layer.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; layer.querySelector('button')?.focus(); };
   const closeLayer = layer => { layer.classList.remove('is-open'); layer.setAttribute('aria-hidden','true'); document.body.style.overflow=''; };
 
-  function filterOrders() {
-    const term = normalize(search.value), selectedStatus = normalize(status.value); let count = 0;
-    rows.forEach(row => { const show = (!term || row.dataset.search.includes(term)) && (!selectedStatus || row.dataset.status === selectedStatus); row.hidden = !show; if (show) count++; });
-    visibleCount.textContent = count; noResults.hidden = count > 0 || rows.length === 0;
-  }
-  search.addEventListener('input', filterOrders); status.addEventListener('change', filterOrders);
-  document.getElementById('resetFilter').addEventListener('click', () => { search.value=''; status.value=''; filterOrders(); search.focus(); });
-
   function showOrder(index) {
     const order = orders[index]; if (!order) return;
     const mid = order.data_mid || {}; let address = order.alamat || '';
-    if (typeof address === 'string') { try { const parsed = JSON.parse(address); address = parsed.alamat_lengkap || Object.values(parsed).filter(Boolean).join(', '); } catch (_) {} }
-    setText('#detailTitle', order.id_midtrans); setText('[data-detail="name"]', order.nama); setText('[data-detail="email"]', order.email); setText('[data-detail="phone"]', order.nohp); setText('[data-detail="status"]', order.status); setText('[data-detail="address"]', typeof address === 'object' ? (address.alamat_lengkap || JSON.stringify(address)) : address);
+    if (typeof address === 'string') { try { const parsed = JSON.parse(address); if (parsed && typeof parsed === 'object') address = parsed.alamat_lengkap || Object.values(parsed).filter(value => typeof value === 'string' && value.trim() !== '').join(', '); } catch (_) {} }
+    setText('#detailTitle', order.id_midtrans); setText('[data-detail="name"]', order.nama); setText('[data-detail="email"]', order.email); setText('[data-detail="phone"]', order.nohp); setText('[data-detail="status"]', order.status); setText('[data-detail="address"]', typeof address === 'object' && address !== null ? (address.alamat_lengkap || JSON.stringify(address)) : address);
     const tbody = document.getElementById('detailItems'); tbody.replaceChildren();
-    (Array.isArray(order.items) ? order.items : []).forEach(item => {
+    const lineItems = Array.isArray(order.items) ? order.items : [];
+    lineItems.forEach(item => {
       const tr = document.createElement('tr');
-      const values = [item.name || item.nama || 'Produk', Number(item.quantity || item.jumlah || 0).toLocaleString('id-ID'), 'Rp ' + Number(item.price || item.harga || 0).toLocaleString('id-ID'), 'Rp ' + (Number(item.price || item.harga || 0) * Number(item.quantity || item.jumlah || 0)).toLocaleString('id-ID')];
+      const quantity = Number(item.quantity ?? item.jumlah ?? 0) || 0;
+      const unitPrice = Number(item.price ?? item.harga ?? 0) || 0;
+      const values = [item.name || item.nama || 'Produk', quantity.toLocaleString('id-ID'), 'Rp ' + unitPrice.toLocaleString('id-ID'), 'Rp ' + (unitPrice * quantity).toLocaleString('id-ID')];
       values.forEach((value, index) => { const td = document.createElement('td'); td.textContent = value; if (index === 1) td.style.textAlign='center'; tr.append(td); }); tbody.append(tr);
     });
+    if (!lineItems.length) { const tr=document.createElement('tr'), td=document.createElement('td'); td.colSpan=4; td.textContent='Rincian item tidak tersedia.'; tr.append(td); tbody.append(tr); }
+    const fallbackTotal=lineItems.reduce((sum,item)=>sum+(Number(item.price ?? item.harga ?? 0)||0)*(Number(item.quantity ?? item.jumlah ?? 0)||0),0);
+    const totalRow=document.createElement('tr'), totalLabel=document.createElement('td'), totalAmount=document.createElement('td');
+    totalLabel.colSpan=3; totalLabel.textContent='Total pesanan'; totalLabel.style.fontWeight='700'; totalLabel.style.textAlign='right';
+    totalAmount.textContent='Rp '+Number(mid.gross_amount ?? fallbackTotal).toLocaleString('id-ID'); totalAmount.style.fontWeight='700'; totalRow.append(totalLabel,totalAmount); tbody.append(totalRow);
     detail.querySelector('[data-detail-invoice]').href = '/invoice/' + encodeURIComponent(order.id_midtrans || '');
     detail.querySelector('[data-detail-order]').href = '/order/' + encodeURIComponent(order.id_midtrans || '');
     openLayer(detail);
@@ -146,18 +143,23 @@ foreach ($orders as $order) {
   detail.querySelector('[data-close-order]').addEventListener('click', () => closeLayer(detail));
   detail.addEventListener('click', event => { if (event.target === detail) closeLayer(detail); });
 
-  document.querySelectorAll('[data-edit-resi]').forEach(button => button.addEventListener('click', () => { resi.querySelector('[name="idMid"]').value = button.dataset.editResi; openLayer(resi); }));
+  document.querySelectorAll('[data-edit-resi]').forEach(button => button.addEventListener('click', () => {
+    resi.querySelector('[name="idMid"]').value = button.dataset.editResi || '';
+    resi.querySelector('[name="nama"]').value = button.dataset.editResiCourier || '';
+    resi.querySelector('[name="deskripsi"]').value = button.dataset.editResiService || '';
+    resi.querySelector('[name="resi"]').value = button.dataset.editResiNumber || '';
+    openLayer(resi);
+  }));
   resi.querySelector('[data-close-resi]').addEventListener('click', () => closeLayer(resi));
   resi.addEventListener('click', event => { if (event.target === resi) closeLayer(resi); });
   document.querySelectorAll('[data-cancel-order]').forEach(button => button.addEventListener('click', async () => {
-    if (!await window.IlenaDialog.confirm('Batalkan pesanan ini di Midtrans?', {title:'Batalkan pesanan', tone:'error'})) return;
+    if (!await window.IlenaDialog.confirm('Batalkan pesanan ini?', {title:'Batalkan pesanan', tone:'error'})) return;
     const form = document.createElement('form'); form.method='POST'; form.action='/cancelorder/' + encodeURIComponent(button.dataset.cancelOrder);
     const tokenName=document.querySelector('meta[name="csrf-token-name"]')?.content, tokenHash=document.querySelector('meta[name="csrf-token-hash"]')?.content;
     if(tokenName&&tokenHash){const token=document.createElement('input');token.type='hidden';token.name=tokenName;token.value=tokenHash;form.append(token);}
     document.body.append(form); form.submit();
   }));
   document.addEventListener('keydown', event => { if(event.key==='Escape'){if(detail.classList.contains('is-open'))closeLayer(detail);if(resi.classList.contains('is-open'))closeLayer(resi);} });
-  filterOrders();
 })();
 </script>
 <?= $this->endSection(); ?>

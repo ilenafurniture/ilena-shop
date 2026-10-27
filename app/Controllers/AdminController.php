@@ -1851,10 +1851,47 @@ class AdminController extends BaseController
     }
     public function order()
     {
-        $pesanan = $this->pemesananModel
-            ->whereNotIn('email', ['galihsuks123@gmail.com','ilenafurniture@gmail.com','galih8.4.2001@gmail.com','adityaanugrah494@gmail.com','tipaun0605@gmail.com','uuua5021@gmail.com'])
-            ->orderBy('id', 'desc')
-            ->findAll();
+        // Keep this operational view bounded: loading every historical order also
+        // serialized every customer's address and contact details into one response.
+        $excludedEmails = ['galihsuks123@gmail.com','ilenafurniture@gmail.com','galih8.4.2001@gmail.com','adityaanugrah494@gmail.com','tipaun0605@gmail.com','uuua5021@gmail.com'];
+        $request = service('request');
+        $query = mb_substr(trim((string) $request->getGet('q')), 0, 100, 'UTF-8');
+        $status = trim((string) $request->getGet('status'));
+        $allowedStatuses = ['Menunggu Pembayaran', 'Proses', 'Dikirim', 'Selesai', 'Dibatalkan', 'Gagal'];
+        if (!in_array($status, $allowedStatuses, true)) $status = '';
+        $perPage = 30;
+        $page = max(1, (int) $request->getGet('page'));
+        $db = db_connect();
+        $buildQuery = static function () use ($db, $excludedEmails, $query, $status) {
+            $builder = $db->table('pemesanan')->whereNotIn('email', $excludedEmails);
+            if ($query !== '') {
+                $builder->groupStart()
+                    ->like('id_midtrans', $query)
+                    ->orLike('nama', $query)
+                    ->orLike('email', $query)
+                    ->orLike('nohp', $query)
+                    ->groupEnd();
+            }
+            if ($status !== '') $builder->where('status', $status);
+            return $builder;
+        };
+        $totalCount = (int) $db->table('pemesanan')->whereNotIn('email', $excludedEmails)->countAllResults();
+        $statusCounts = array_fill_keys($allowedStatuses, 0);
+        $groupedStatusCounts = $db->table('pemesanan')
+            ->select('status, COUNT(*) AS total', false)
+            ->whereNotIn('email', $excludedEmails)
+            ->groupBy('status')
+            ->get()->getResultArray();
+        foreach ($groupedStatusCounts as $statusCount) {
+            $statusKey = (string) ($statusCount['status'] ?? '');
+            if (array_key_exists($statusKey, $statusCounts)) $statusCounts[$statusKey] = (int) $statusCount['total'];
+        }
+        $hasFilters = $query !== '' || $status !== '';
+        $filteredCount = $hasFilters ? (int) $buildQuery()->countAllResults() : $totalCount;
+        $totalPages = max(1, (int) ceil($filteredCount / $perPage));
+        $page = min($page, $totalPages);
+        $offset = ($page - 1) * $perPage;
+        $pesanan = $buildQuery()->orderBy('id', 'desc')->get($perPage, $offset)->getResultArray();
         foreach ($pesanan as $ind_p => $p) {
             $pesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
             if (isset($pesanan[$ind_p]['data_mid']['custom_field1']))
@@ -1870,7 +1907,17 @@ class AdminController extends BaseController
             'title' => 'Pesanan',
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'pesanan' => $pesanan,
-            'pesananJson' => json_encode($pesanan)
+            'pesananJson' => json_encode($pesanan),
+            'orderQuery' => $query,
+            'orderStatusFilter' => $status,
+            'totalOrders' => $totalCount,
+            'filteredOrders' => $filteredCount,
+            'statusCounts' => $statusCounts,
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+            'perPage' => $perPage,
+            'firstOrderNumber' => $filteredCount === 0 ? 0 : $offset + 1,
+            'lastOrderNumber' => min($offset + count($pesanan), $filteredCount),
         ];
         return view('admin/order', $data);
     }
