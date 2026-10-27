@@ -54,6 +54,8 @@ class AdminController extends BaseController
     private const PRODUCT_IMAGE_MAX_BYTES = 4 * 1024 * 1024;
     private const PRODUCT_IMAGE_MAX_MB = 4;
     private const PRODUCT_IMAGE_MAX_FILES = 25;
+    private const PRODUCT_IMAGE_MAX_DIMENSION = 6000;
+    private const PRODUCT_IMAGE_MAX_PIXELS = 25000000;
     private const PRODUCT_IMAGE_ALLOWED_MIMES = ['image/webp'];
 
     // Use Traits for code organization
@@ -749,6 +751,19 @@ class AdminController extends BaseController
             if (!in_array($mime, self::PRODUCT_IMAGE_ALLOWED_MIMES, true)) {
                 return 'Gambar harus sudah dinormalisasi ke WebP. Pilih WebP atau gunakan browser yang mendukung konversi AVIF.';
             }
+
+            $dimensions = @getimagesize($file->getTempName());
+            if (!is_array($dimensions) || empty($dimensions[0]) || empty($dimensions[1])) {
+                return 'File foto tidak dapat dibaca sebagai gambar WebP yang valid.';
+            }
+            $width = (int) $dimensions[0];
+            $height = (int) $dimensions[1];
+            if ($width > self::PRODUCT_IMAGE_MAX_DIMENSION
+                || $height > self::PRODUCT_IMAGE_MAX_DIMENSION
+                || ($width * $height) > self::PRODUCT_IMAGE_MAX_PIXELS
+            ) {
+                return 'Dimensi foto maksimal 6000 × 6000 piksel dan 25 megapiksel.';
+            }
         }
 
         return null;
@@ -1161,6 +1176,7 @@ class AdminController extends BaseController
     public function actionEditProduct($id_product)
     {
         $editImageBackups = [];
+        $stockTransaction = null;
         try {
             if (!preg_match('/^[A-Za-z0-9_-]{1,64}$/', (string) $id_product)) {
                 return $this->response->setStatusCode(422)->setJSON(['pesan' => 'ID produk tidak valid.']);
@@ -1191,44 +1207,17 @@ class AdminController extends BaseController
             }
             $replacedImageSlots = [];
 
-            // Lock and rebase stock before any image files or remote objects are changed.
-            $stockTransaction = new \App\Services\AtomicOperation(db_connect(), 'ilena-product-' . sha1((string) $id_product));
-            $current = db_connect()->query('SELECT varian FROM barang WHERE id = ? FOR UPDATE', [$id_product])->getRowArray();
-            if (!$current) {
+            // Serialize edits for this product, but keep image decoding/resizing
+            // outside the database transaction so stock and checkout rows stay unlocked.
+            $db = db_connect();
+            $stockTransaction = new \App\Services\AtomicOperation(
+                $db,
+                'ilena-product-' . sha1((string) $id_product),
+                false
+            );
+            $barang = $this->barangModel->getBarangAdmin($id_product);
+            if (!$barang) {
                 return $this->response->setStatusCode(404)->setJSON(['pesan' => 'Produk sudah tidak tersedia.']);
-            }
-            $submittedVariants = $data['varian'] ?? $barang['varian'];
-            if (is_string($submittedVariants)) {
-                $submittedVariants = json_decode($submittedVariants, true);
-            }
-            $currentVariants = json_decode((string) ($current['varian'] ?? '[]'), true);
-            if (!is_array($currentVariants) || json_last_error() !== JSON_ERROR_NONE) {
-                return $this->response->setStatusCode(422)->setJSON(['pesan' => 'Data varian tersimpan tidak valid. Perbaiki data produk sebelum menyimpan perubahan.']);
-            }
-            try {
-                $rebasedVariants = \App\Services\ProductStockPolicy::rebase(
-                    $currentVariants,
-                    is_array($submittedVariants) ? $submittedVariants : []
-                );
-            } catch (\RuntimeException $e) {
-                return $this->response->setStatusCode(422)->setJSON(['pesan' => $e->getMessage()]);
-            }
-            $submittedVariantKeys = array_fill_keys(array_map(
-                static fn(array $variant): string => mb_strtolower(trim((string)($variant['nama'] ?? '')), 'UTF-8'),
-                $rebasedVariants
-            ), true);
-            foreach ($currentVariants as $oldVariant) {
-                $oldName = trim((string)($oldVariant['nama'] ?? ''));
-                $oldKey = mb_strtolower($oldName, 'UTF-8');
-                if ($oldKey !== '' && !isset($submittedVariantKeys[$oldKey]) && db_connect()->tableExists('checkout_stock_reservations')) {
-                    $reservation = db_connect()->query(
-                        "SELECT 1 FROM checkout_stock_reservations WHERE product_id = ? AND LOWER(variant_name) = LOWER(?) AND status = 'reserved' AND expires_at > UTC_TIMESTAMP() LIMIT 1",
-                        [$id_product, $oldName]
-                    )->getRowArray();
-                    if ($reservation) {
-                        return $this->response->setStatusCode(422)->setJSON(['pesan' => 'Varian sedang digunakan checkout berjalan dan belum dapat dihapus.']);
-                    }
-                }
             }
 
             $publicPath = function (string $path): string {
@@ -1248,7 +1237,9 @@ class AdminController extends BaseController
                 $tmpName = uniqid('product-upload-', true) . '.' . ($file->guessExtension() ?: $file->getExtension() ?: 'img');
                 $file->move($tmpDir, $tmpName, true);
                 $tmpFile = $tmpDir . DIRECTORY_SEPARATOR . $tmpName;
+                $resizeSource = $tmpFile;
 
+                try {
                 foreach ($outputs as $output) {
                     [$destination, $width, $height] = $output;
                     $destFile = $publicPath($destination);
@@ -1296,7 +1287,7 @@ class AdminController extends BaseController
 
                     $stagingFile = $tmpDir . DIRECTORY_SEPARATOR . 'resize-' . uniqid('', true) . '.webp';
                     \Config\Services::image()
-                        ->withFile($tmpFile)
+                        ->withFile($resizeSource)
                         ->resize($width, $height, true, 'height')
                         ->save($stagingFile);
 
@@ -1322,10 +1313,16 @@ class AdminController extends BaseController
                             throw new \RuntimeException('Upload gambar ke storage gagal: ' . $destination);
                         }
                     }
+                    // Smaller renditions (for example 300px) are derived from
+                    // the already bounded 1000px output, not decoded again from
+                    // the potentially large original upload.
+                    $resizeSource = is_file($destFile) ? $destFile : $tmpFile;
                     @unlink($stagingFile);
                 }
-
-                @unlink($tmpFile);
+                } finally {
+                    @unlink($tmpFile);
+                    if (isset($stagingFile)) @unlink($stagingFile);
+                }
             };
             // Upload admin disimpan di uploads/product-images supaya tidak ketimpa Git/deploy.
             $ensureDir('uploads/product-images/1000');
@@ -1363,8 +1360,8 @@ class AdminController extends BaseController
             $varian = $data['varian'] ?? $barang['varian'];
             if (is_array($varian)) $varian = json_encode($varian);
 
-            // Cover/thumbnail katalog mengikuti foto pertama dari urutan varian pertama.
-            // Dibuat non-fatal: kalau folder 300 belum writable, data produk & gambar utama tetap tersimpan.
+            // Cover/thumbnail katalog mengikuti foto pertama varian pertama. Lewati
+            // resize saat edit teks saja dan gunakan turunan 300px yang sudah tersedia.
             try {
                 $varianArrForThumb = json_decode((string)$varian, true) ?: [];
                 $firstImageSlot = null;
@@ -1373,19 +1370,31 @@ class AdminController extends BaseController
                     $firstImageSlot = isset($slots[0]) ? (int)$slots[0] : null;
                 }
                 if ($firstImageSlot) {
+                    $oldVariantsForThumb = json_decode((string)($barang['varian'] ?? '[]'), true) ?: [];
+                    $oldFirstSlot = null;
+                    if (!empty($oldVariantsForThumb[0]['urutan_gambar'])) {
+                        $oldSlots = array_values(array_filter(array_map('trim', explode(',', (string)$oldVariantsForThumb[0]['urutan_gambar']))));
+                        $oldFirstSlot = isset($oldSlots[0]) ? (int)$oldSlots[0] : null;
+                    }
                     $toPublicPath = function (string $relativePath): string {
                         return rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
                     };
                     $thumbSource1000 = $toPublicPath("uploads/product-images/1000/{$id_product}-{$firstImageSlot}.webp");
                     $thumbSource3000 = $toPublicPath("uploads/product-images/3000/{$id_product}-{$firstImageSlot}.webp");
+                    $thumbSource300 = $toPublicPath("uploads/product-images/300/{$id_product}-{$firstImageSlot}.webp");
                     $legacyThumbSource1000 = $toPublicPath("img/barang/1000/{$id_product}-{$firstImageSlot}.webp");
                     $legacyThumbSource3000 = $toPublicPath("img/barang/3000/{$id_product}-{$firstImageSlot}.webp");
+                    $legacyThumbSource300 = $toPublicPath("img/barang/300/{$id_product}-{$firstImageSlot}.webp");
                     $thumbDest = $toPublicPath("uploads/product-images/300/{$id_product}.webp");
                     $thumbDir = dirname($thumbDest);
                     if (!is_dir($thumbDir)) { @mkdir($thumbDir, 0775, true); }
                     if (!is_writable($thumbDir)) { @chmod($thumbDir, 0775); }
+                    $thumbSource300File = is_file($thumbSource300) ? $thumbSource300 : (is_file($legacyThumbSource300) ? $legacyThumbSource300 : null);
                     $thumbSource = is_file($thumbSource1000) ? $thumbSource1000 : (is_file($thumbSource3000) ? $thumbSource3000 : (is_file($legacyThumbSource1000) ? $legacyThumbSource1000 : (is_file($legacyThumbSource3000) ? $legacyThumbSource3000 : null)));
-                    if ($thumbSource && (is_writable($thumbDir) || $this->r2ProductImages->productWritesEnabled())) {
+                    $coverNeedsRefresh = $oldFirstSlot !== $firstImageSlot
+                        || isset($replacedImageSlots[$firstImageSlot])
+                        || !is_file($thumbDest);
+                    if ($coverNeedsRefresh && ($thumbSource300File || $thumbSource) && (is_writable($thumbDir) || $this->r2ProductImages->productWritesEnabled())) {
                         $tmpDir = rtrim(WRITEPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'cache';
                         if (!is_dir($tmpDir)) { @mkdir($tmpDir, 0775, true); }
                         $thumbRelative = "uploads/product-images/300/{$id_product}.webp";
@@ -1422,10 +1431,16 @@ class AdminController extends BaseController
                         }
                         $editImageBackups[] = $thumbBackup;
                         $thumbTmp = $tmpDir . DIRECTORY_SEPARATOR . 'thumb-' . $id_product . '-' . uniqid('', true) . '.webp';
-                        \Config\Services::image()
-                            ->withFile($thumbSource)
-                            ->resize(300, 300, true, 'height')
-                            ->save($thumbTmp);
+                        if ($thumbSource300File) {
+                            if (!@copy($thumbSource300File, $thumbTmp)) {
+                                throw new \RuntimeException('Thumbnail cover gagal disalin dari foto 300px.');
+                            }
+                        } else {
+                            \Config\Services::image()
+                                ->withFile($thumbSource)
+                                ->resize(300, 300, true, 'height')
+                                ->save($thumbTmp);
+                        }
                         if (is_file($thumbTmp) && filesize($thumbTmp) > 0) {
                             if (is_writable($thumbDir)) {
                                 @unlink($thumbDest);
@@ -1459,6 +1474,47 @@ class AdminController extends BaseController
                     }
                 }
                 log_message('error', 'EDIT thumbnail cover gagal: {msg}', ['msg' => $e->getMessage()]);
+            }
+
+            // Acquire row locks only after synchronous image processing is done.
+            // The named lock above still serializes concurrent edits to this item.
+            $stockTransaction->beginTransaction();
+            $current = $db->query('SELECT varian FROM barang WHERE id = ? FOR UPDATE', [$id_product])->getRowArray();
+            if (!$current) {
+                throw new \RuntimeException('Produk sudah tidak tersedia.');
+            }
+            $submittedVariants = $data['varian'] ?? $barang['varian'];
+            if (is_string($submittedVariants)) {
+                $submittedVariants = json_decode($submittedVariants, true);
+            }
+            $currentVariants = json_decode((string)($current['varian'] ?? '[]'), true);
+            if (!is_array($currentVariants) || json_last_error() !== JSON_ERROR_NONE) {
+                throw new \RuntimeException('Data varian tersimpan tidak valid. Perbaiki data produk sebelum menyimpan perubahan.');
+            }
+            try {
+                $rebasedVariants = \App\Services\ProductStockPolicy::rebase(
+                    $currentVariants,
+                    is_array($submittedVariants) ? $submittedVariants : []
+                );
+            } catch (\RuntimeException $e) {
+                throw $e;
+            }
+            $submittedVariantKeys = array_fill_keys(array_map(
+                static fn(array $variant): string => mb_strtolower(trim((string)($variant['nama'] ?? '')), 'UTF-8'),
+                $rebasedVariants
+            ), true);
+            foreach ($currentVariants as $oldVariant) {
+                $oldName = trim((string)($oldVariant['nama'] ?? ''));
+                $oldKey = mb_strtolower($oldName, 'UTF-8');
+                if ($oldKey !== '' && !isset($submittedVariantKeys[$oldKey]) && $db->tableExists('checkout_stock_reservations')) {
+                    $reservation = $db->query(
+                        "SELECT 1 FROM checkout_stock_reservations WHERE product_id = ? AND LOWER(variant_name) = LOWER(?) AND status = 'reserved' AND expires_at > UTC_TIMESTAMP() LIMIT 1",
+                        [$id_product, $oldName]
+                    )->getRowArray();
+                    if ($reservation) {
+                        throw new \RuntimeException('Varian sedang digunakan checkout berjalan dan belum dapat dihapus.');
+                    }
+                }
             }
 
             $boolTo01 = fn($v) => (is_bool($v) ? ($v ? '1' : '0') : (string)$v);
@@ -1560,6 +1616,14 @@ class AdminController extends BaseController
                 'payload' => $payload,
             ]);
         } catch (\Throwable $e) {
+            if ($stockTransaction instanceof \App\Services\AtomicOperation) {
+                try {
+                    // Keep the product lock until file compensation is complete.
+                    $stockTransaction->rollback(false);
+                } catch (\Throwable $rollbackError) {
+                    log_message('error', 'Product edit DB rollback failed: {error}', ['error' => $rollbackError->getMessage()]);
+                }
+            }
             // Compensate image writes if any later image/database operation fails.
             foreach (array_reverse($editImageBackups) as $backup) {
                 if (!empty($backup['localExisted']) && !empty($backup['localBackup']) && is_file($backup['localBackup'])) {
@@ -1577,6 +1641,9 @@ class AdminController extends BaseController
                 if (!empty($backup['localBackup'])) @unlink($backup['localBackup']);
                 if (!empty($backup['r2Backup'])) @unlink($backup['r2Backup']);
             }
+            if ($stockTransaction instanceof \App\Services\AtomicOperation) {
+                $stockTransaction->releaseLock();
+            }
             log_message('error', 'EDIT PRODUCT ERROR: {msg} at {file}:{line}', [
                 'msg'  => $e->getMessage(),
                 'file' => $e->getFile(),
@@ -1584,8 +1651,22 @@ class AdminController extends BaseController
             ]);
 
             $clientMessage = 'Gagal mengubah produk. Coba lagi; jika berulang, kirim waktu kejadian ke tim teknis.';
+            $errorStatus = 500;
             $errorMessage = $e->getMessage();
-            if (str_contains($errorMessage, 'Upload gambar ke storage gagal')) {
+            if (str_contains($errorMessage, 'Produk sudah tidak tersedia')) {
+                $clientMessage = 'Produk sudah tidak tersedia.';
+                $errorStatus = 404;
+            } elseif (str_contains($errorMessage, 'Data varian tersimpan')
+                || str_contains($errorMessage, 'Saldo varian tersimpan')
+                || str_contains($errorMessage, 'Varian tidak valid')
+                || str_contains($errorMessage, 'Nama varian harus unik')
+                || str_contains($errorMessage, 'Varian dengan saldo stok')
+                || str_contains($errorMessage, 'Varian sedang digunakan checkout berjalan')
+                || str_contains($errorMessage, 'Perubahan stok')
+            ) {
+                $clientMessage = $errorMessage;
+                $errorStatus = 422;
+            } elseif (str_contains($errorMessage, 'Upload gambar ke storage gagal')) {
                 $clientMessage = 'Foto gagal tersimpan di penyimpanan gambar. Periksa koneksi storage lalu coba lagi.';
             } elseif (str_contains($errorMessage, 'Upload thumbnail ke storage gagal')) {
                 $clientMessage = 'Foto utama gagal diperbarui di penyimpanan. Coba simpan ulang.';
@@ -1597,7 +1678,7 @@ class AdminController extends BaseController
                 $clientMessage = 'Foto gagal diproses. Unggah ulang dalam format WebP.';
             }
 
-            return $this->response->setStatusCode(500)->setJSON([
+            return $this->response->setStatusCode($errorStatus)->setJSON([
                 'pesan' => $clientMessage,
             ]);
         }

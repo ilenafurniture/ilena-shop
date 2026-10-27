@@ -447,6 +447,22 @@
     .page > form > .grid > .stack > .edit-section { padding: 17px 0; }
     .page .img-preview { max-width: 100%; }
 }
+.product-save-progress {
+    display: none;
+    margin: 18px 0 0;
+    padding: 14px 0;
+    border-top: 1px solid var(--line);
+    color: var(--text);
+}
+.product-save-progress.is-visible { display: block; }
+.product-save-progress__label { margin: 0 0 8px; font-weight: 600; }
+.product-save-progress__detail { margin: 0; color: var(--muted); font-size: .9rem; }
+.product-save-progress__track { height: 4px; margin-top: 12px; overflow: hidden; background: #e9e5dc; }
+.product-save-progress__bar { width: 0; height: 100%; background: var(--brand); transition: width .18s ease; }
+.product-save-progress.is-processing .product-save-progress__bar { width: 34%; animation: product-save-indeterminate 1.1s ease-in-out infinite alternate; }
+.product-save-progress.is-error { color: #9b3932; }
+@keyframes product-save-indeterminate { from { transform: translateX(-100%); } to { transform: translateX(295%); } }
+@media (prefers-reduced-motion: reduce) { .product-save-progress__bar { transition: none; } .product-save-progress.is-processing .product-save-progress__bar { animation: none; width: 100%; } }
 </style>
 
 <div class="page">
@@ -698,6 +714,11 @@
         <div class="footer-actions">
             <a class="btn ghost" href="/admin/product">Batal</a>
             <button class="btn primary" type="submit">Simpan perubahan</button>
+        </div>
+        <div id="product-save-progress" class="product-save-progress" role="status" aria-live="polite">
+            <p class="product-save-progress__label" id="product-save-progress-label">Menyimpan perubahan…</p>
+            <p class="product-save-progress__detail" id="product-save-progress-detail"></p>
+            <div class="product-save-progress__track" aria-hidden="true"><div class="product-save-progress__bar" id="product-save-progress-bar"></div></div>
         </div>
 
         <!-- tracker varian (tetap seperti versi kamu) -->
@@ -957,6 +978,82 @@ function hapusSubvarian(varianNum, indexGambar, e) {
         // RENAME file inputs sesuai pola backend
         renameTargets.forEach(([inp, zeroIdx]) => inp.setAttribute('name', `gambar_${zeroIdx}`));
         // gambar_hover dipertahankan namanya
+    });
+})();
+</script>
+
+<script>
+(function () {
+    const form = document.getElementById('product-edit-form');
+    const progress = document.getElementById('product-save-progress');
+    const label = document.getElementById('product-save-progress-label');
+    const detail = document.getElementById('product-save-progress-detail');
+    const bar = document.getElementById('product-save-progress-bar');
+    const submitButton = form?.querySelector('button[type="submit"]');
+    if (!form || !progress || !submitButton) return;
+
+    form.addEventListener('submit', function (event) {
+        if (event.defaultPrevented) return;
+        event.preventDefault();
+        if (submitButton.disabled) return;
+
+        const payload = new FormData(form);
+        const xhr = new XMLHttpRequest();
+        submitButton.disabled = true;
+        progress.classList.add('is-visible');
+        progress.classList.remove('is-error', 'is-processing');
+        label.textContent = 'Mengunggah perubahan…';
+        detail.textContent = 'Foto dikirim dengan aman; proses resize berjalan setelah upload selesai.';
+        bar.style.width = '0%';
+
+        xhr.open('POST', form.action, true);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.upload.addEventListener('progress', function (uploadEvent) {
+            if (!uploadEvent.lengthComputable) {
+                detail.textContent = 'Foto sedang dikirim…';
+                return;
+            }
+            const percent = Math.min(100, Math.round((uploadEvent.loaded / uploadEvent.total) * 100));
+            bar.style.width = percent + '%';
+            detail.textContent = `Upload foto ${percent}%`;
+            if (percent >= 100) {
+                progress.classList.add('is-processing');
+                label.textContent = 'Foto diterima, sedang diproses…';
+                detail.textContent = 'Mohon tunggu, sistem sedang menyimpan dan menyiapkan foto produk.';
+            }
+        });
+        xhr.addEventListener('load', function () {
+            let result = {};
+            try { result = JSON.parse(xhr.responseText || '{}'); } catch (_) { /* response non-JSON ditangani di bawah */ }
+            if (xhr.status >= 200 && xhr.status < 300 && result.pesan) {
+                label.textContent = 'Produk berhasil diperbarui';
+                detail.textContent = result.pesan;
+                bar.style.width = '100%';
+                window.location.assign('/admin/product');
+                return;
+            }
+            progress.classList.remove('is-processing');
+            progress.classList.add('is-error');
+            label.textContent = 'Perubahan belum tersimpan';
+            detail.textContent = result.pesan || `Server merespons dengan status ${xhr.status || 'tidak diketahui'}. Silakan coba lagi.`;
+            submitButton.disabled = false;
+        });
+        xhr.addEventListener('error', function () {
+            progress.classList.remove('is-processing');
+            progress.classList.add('is-error');
+            label.textContent = 'Koneksi terputus';
+            detail.textContent = 'Periksa koneksi lalu coba simpan kembali.';
+            submitButton.disabled = false;
+        });
+        xhr.addEventListener('timeout', function () {
+            progress.classList.remove('is-processing');
+            progress.classList.add('is-error');
+            label.textContent = 'Proses melewati batas waktu';
+            detail.textContent = 'Coba simpan kembali. Jika berulang, catat waktu kejadian untuk tim teknis.';
+            submitButton.disabled = false;
+        });
+        xhr.timeout = 180000;
+        xhr.send(payload);
     });
 })();
 </script>
