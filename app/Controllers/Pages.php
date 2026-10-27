@@ -5819,23 +5819,50 @@ class Pages extends BaseController
 
         $mtime = (string) filemtime($source);
         $requestVersion = preg_replace('/[^A-Za-z0-9_-]/', '', (string) $this->request->getGet('v'));
-        $cacheVersion = $requestVersion !== '' ? $requestVersion : $mtime;
         $cacheDir = rtrim(WRITEPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'product-covers';
         if (!is_dir($cacheDir)) { @mkdir($cacheDir, 0775, true); }
-        $cacheFile = $cacheDir . DIRECTORY_SEPARATOR . $safeId . '-' . $slot . '-' . $mtime . '-' . $cacheVersion . '.webp';
+        // The query-string v is for browser cache busting, not an image input.
+        // Key derivatives by the source file so text edits do not trigger a
+        // redundant resize or leave a new permanent cache file each time.
+        $sourceIdentity = $mtime . '-' . (string) filesize($source) . '-' . (string) @fileinode($source);
+        $cacheFile = $cacheDir . DIRECTORY_SEPARATOR . $safeId . '-' . $slot . '-' . $sourceIdentity . '.webp';
 
         $sourceIsRequestedThumbnail = $preferThumbnail && $thumbnailSource !== null && $source === $thumbnailSource;
         if ($sourceIsRequestedThumbnail) {
             $cacheFile = $source;
         } elseif (!is_file($cacheFile) && is_writable($cacheDir)) {
-            try {
-                \Config\Services::image()
-                    ->withFile($source)
-                    ->resize(300, 300, true, 'height')
-                    ->save($cacheFile);
-            } catch (\Throwable $e) {
-                log_message('error', 'Product cover cache gagal: {msg}', ['msg' => $e->getMessage()]);
-                $cacheFile = $source;
+            // Many cards may request fallback covers together. Serialize only
+            // callers for the same source; concurrent callers serve the source.
+            $sourceLock = @fopen($source, 'rb');
+            if (is_resource($sourceLock) && @flock($sourceLock, LOCK_EX | LOCK_NB)) {
+                $temporaryCache = null;
+                try {
+                    if (!is_file($cacheFile)) {
+                        $temporaryCache = $cacheFile . '.tmp-' . bin2hex(random_bytes(5));
+                        \Config\Services::image()
+                            ->withFile($source)
+                            ->resize(300, 300, true, 'height')
+                            ->save($temporaryCache);
+                        if (is_file($temporaryCache) && filesize($temporaryCache) > 0) {
+                            @rename($temporaryCache, $cacheFile);
+                        }
+                    }
+                    if ($temporaryCache !== null) @unlink($temporaryCache);
+                    if (is_file($cacheFile)) {
+                        // Superseded derivatives are reproducible from source.
+                        foreach (glob($cacheDir . DIRECTORY_SEPARATOR . $safeId . '-' . $slot . '-*.webp') ?: [] as $oldCache) {
+                            if ($oldCache !== $cacheFile) @unlink($oldCache);
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    if ($temporaryCache !== null) @unlink($temporaryCache);
+                    log_message('error', 'Product cover cache gagal: {msg}', ['msg' => $e->getMessage()]);
+                } finally {
+                    @flock($sourceLock, LOCK_UN);
+                    fclose($sourceLock);
+                }
+            } elseif (is_resource($sourceLock)) {
+                fclose($sourceLock);
             }
         }
 
