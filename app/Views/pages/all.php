@@ -151,24 +151,24 @@ if (isset($_GET['harga'])) {
             $hargaDiskon = \App\Services\CatalogPricing::unitPrice($p);
             switch ($_GET['harga']) {
                 case '0':
-                    if ($hargaDiskon < 5000000)
+                    if ($hargaDiskon < 1000000)
                         array_push($produk, $p);
                     break;
                 case '1':
-                    if (5000000 <= $hargaDiskon && $hargaDiskon < 10000000) {
+                    if (1000000 <= $hargaDiskon && $hargaDiskon < 3000000) {
                         array_push($produk, $p);
                     }
                     break;
                 case '2':
-                    if (10000000 <= $hargaDiskon && $hargaDiskon < 15000000)
+                    if (3000000 <= $hargaDiskon && $hargaDiskon < 5000000)
                         array_push($produk, $p);
                     break;
                 case '3':
-                    if (15000000 <= $hargaDiskon && $hargaDiskon < 20000000)
+                    if (5000000 <= $hargaDiskon && $hargaDiskon < 10000000)
                         array_push($produk, $p);
                     break;
                 default:
-                    if (20000000 <= $hargaDiskon)
+                    if (10000000 <= $hargaDiskon)
                         array_push($produk, $p);
                     break;
             }
@@ -347,8 +347,7 @@ if (isset($_GET['ruang'])) {
                             <svg viewBox="0 0 12 10" height="10px" width="12px">
                                 <polyline points="3.5 6 4.5 9 10.5 3"></polyline>
                             </svg></span>
-                        <p>
-                            < Rp 5.000.000</p>
+                        <p>Di bawah Rp 1.000.000</p>
                     </label>
                 </div>
                 <div class="checkbox-wrapper-46">
@@ -359,7 +358,7 @@ if (isset($_GET['ruang'])) {
                             <svg viewBox="0 0 12 10" height="10px" width="12px">
                                 <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                             </svg></span>
-                        <p>Rp 5.000.000 - Rp 10.000.000</p>
+                        <p>Rp 1.000.000 – < Rp 3.000.000</p>
                     </label>
                 </div>
                 <div class="checkbox-wrapper-46">
@@ -370,7 +369,7 @@ if (isset($_GET['ruang'])) {
                             <svg viewBox="0 0 12 10" height="10px" width="12px">
                                 <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                             </svg></span>
-                        <p>Rp 10.000.000 - Rp 15.000.000</p>
+                        <p>Rp 3.000.000 – < Rp 5.000.000</p>
                     </label>
                 </div>
                 <div class="checkbox-wrapper-46">
@@ -381,7 +380,7 @@ if (isset($_GET['ruang'])) {
                             <svg viewBox="0 0 12 10" height="10px" width="12px">
                                 <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                             </svg></span>
-                        <p>Rp 15.000.000 - 20.000.000</p>
+                        <p>Rp 5.000.000 – < Rp 10.000.000</p>
                     </label>
                 </div>
                 <div class="checkbox-wrapper-46">
@@ -392,7 +391,7 @@ if (isset($_GET['ruang'])) {
                             <svg viewBox="0 0 12 10" height="10px" width="12px">
                                 <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                             </svg></span>
-                        <p>> 20.000.000</p>
+                        <p>Rp 10.000.000 ke atas</p>
                     </label>
                 </div>
             </div>
@@ -522,8 +521,7 @@ if (isset($_GET['ruang'])) {
                                 <svg viewBox="0 0 12 10" height="10px" width="12px">
                                     <polyline points="3.5 6 4.5 9 10.5 3"></polyline>
                                 </svg></span>
-                            <p>
-                                < Rp 5.000.000</p>
+                            <p>Di bawah Rp 1.000.000</p>
                         </label>
                     </div>
                     <div class="checkbox-wrapper-46">
@@ -534,7 +532,7 @@ if (isset($_GET['ruang'])) {
                                 <svg viewBox="0 0 12 10" height="10px" width="12px">
                                     <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                                 </svg></span>
-                            <p>Rp 5.000.000 - Rp 10.000.000</p>
+                            <p>Rp 1.000.000 – < Rp 3.000.000</p>
                         </label>
                     </div>
                     <div class="checkbox-wrapper-46">
@@ -545,7 +543,7 @@ if (isset($_GET['ruang'])) {
                                 <svg viewBox="0 0 12 10" height="10px" width="12px">
                                     <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                                 </svg></span>
-                            <p>Rp 10.000.000 - Rp 15.000.000</p>
+                            <p>Rp 3.000.000 – < Rp 5.000.000</p>
                         </label>
                     </div>
                     <div class="checkbox-wrapper-46">
@@ -556,7 +554,7 @@ if (isset($_GET['ruang'])) {
                                 <svg viewBox="0 0 12 10" height="10px" width="12px">
                                     <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                                 </svg></span>
-                            <p>Rp 15.000.000 - 20.000.000</p>
+                            <p>Rp 5.000.000 – < Rp 10.000.000</p>
                         </label>
                     </div>
                     <div class="checkbox-wrapper-46">
@@ -567,7 +565,7 @@ if (isset($_GET['ruang'])) {
                                 <svg viewBox="0 0 12 10" height="10px" width="12px">
                                     <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                                 </svg></span>
-                            <p>> 20.000.000</p>
+                            <p>Rp 10.000.000 ke atas</p>
                         </label>
                     </div>
                 </div>
