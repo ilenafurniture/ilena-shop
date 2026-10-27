@@ -39,10 +39,25 @@ $partnerLast = min($partnerPage * $partnerPerPage, $partnerTotal);
             </div>
             <p class="ilena-partners__count"><strong><?= count($mapPartners ?? []); ?></strong> lokasi bertitik di peta</p>
         </div>
+        <div class="ilena-partners__map-tools" aria-label="Kontrol peta">
+            <p>Jelajahi lokasi dengan scroll, geser, atau cubit untuk zoom.</p>
+            <div class="ilena-partners__map-buttons">
+                <button type="button" data-map-action="zoom-in" aria-label="Perbesar peta" disabled>＋</button>
+                <button type="button" data-map-action="zoom-out" aria-label="Perkecil peta" disabled>−</button>
+                <button type="button" data-map-action="fit" aria-label="Tampilkan semua partner" disabled>
+                    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7V3h4M13 3h4v4M17 13v4h-4M7 17H3v-4M3 3l5 5m9-5-5 5m5 9-5-5m-9 5 5-5"/></svg>
+                    <span>Semua lokasi</span>
+                </button>
+                <button type="button" data-map-action="locate" aria-label="Cari partner terdekat dari lokasi saya" disabled>
+                    <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><circle cx="10" cy="10" r="2"/><path d="M10 1v3m0 12v3M1 10h3m12 0h3"/></svg>
+                    <span>Di dekat saya</span>
+                </button>
+            </div>
+        </div>
         <div id="ilena-partner-map" class="ilena-partners__map" role="region" aria-label="Peta lokasi partner resmi Ilena" data-partners="<?= esc(json_encode($mapPartners ?? [], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), 'attr'); ?>">
             <p class="ilena-partners__map-status">Peta lokasi partner akan dimuat saat bagian ini terlihat.</p>
         </div>
-        <p class="ilena-partners__map-note">Pilih titik pada peta untuk melihat nama toko dan membuka petunjuk arah.</p>
+        <p class="ilena-partners__map-note" id="partner-map-feedback" aria-live="polite">Pilih penanda untuk melihat partner dan petunjuk arah. Peta dapat dijelajahi dengan mouse, keyboard, atau sentuhan.</p>
     </section>
 
     <section id="partner-directory" class="ilena-partners__directory" aria-labelledby="partner-directory-title">
@@ -252,6 +267,8 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
     if (!mapElement) return;
 
     const status = mapElement.querySelector('.ilena-partners__map-status');
+    const feedback = document.getElementById('partner-map-feedback');
+    const mapButtons = document.querySelectorAll('.ilena-partners__map-buttons button');
     let initialized = false;
     const initializeMap = () => {
         if (initialized) return;
@@ -272,13 +289,15 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
         };
         const start = () => {
             if (status) status.remove();
-            const map = L.map(mapElement, { scrollWheelZoom: false, zoomControl: true });
+            const map = L.map(mapElement, { scrollWheelZoom: true, zoomControl: false, keyboard: true, zoomSnap: 0.5 });
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }).addTo(map);
 
             const bounds = [];
+            const markers = [];
+            let userMarker = null;
             locations.forEach((location) => {
                 const point = [Number(location.lat), Number(location.lng)];
                 if (!Number.isFinite(point[0]) || !Number.isFinite(point[1])) return;
@@ -290,6 +309,7 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
                     fillColor: '#b3262d',
                     fillOpacity: 1
                 }).addTo(map);
+                markers.push({ marker, point, location });
 
                 const popup = document.createElement('div');
                 popup.className = 'ilena-partners__map-popup';
@@ -313,6 +333,52 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
             if (bounds.length === 1) map.setView(bounds[0], 12);
             else if (bounds.length > 1) map.fitBounds(bounds, { padding: [28, 28], maxZoom: 7 });
             else map.setView([-2.5, 118], 4);
+            mapButtons.forEach((button) => { button.disabled = false; });
+            mapElement.classList.add('is-ready');
+            map.invalidateSize();
+
+            mapButtons.forEach((button) => button.addEventListener('click', () => {
+                const action = button.dataset.mapAction;
+                if (action === 'zoom-in') map.zoomIn();
+                if (action === 'zoom-out') map.zoomOut();
+                if (action === 'fit') {
+                    if (bounds.length === 1) map.setView(bounds[0], 12);
+                    else if (bounds.length > 1) map.fitBounds(bounds, { padding: [28, 28], maxZoom: 7 });
+                    if (feedback) feedback.textContent = 'Peta menampilkan kembali semua lokasi partner.';
+                }
+                if (action === 'locate') {
+                    if (!navigator.geolocation) {
+                        if (feedback) feedback.textContent = 'Browser ini belum mendukung pencarian lokasi.';
+                        return;
+                    }
+                    button.disabled = true;
+                    if (feedback) feedback.textContent = 'Mencari lokasi Anda…';
+                    navigator.geolocation.getCurrentPosition((position) => {
+                        const point = [position.coords.latitude, position.coords.longitude];
+                        const distanceKm = (a, b) => {
+                            const radians = (value) => value * Math.PI / 180;
+                            const latitudeDelta = radians(b[0] - a[0]);
+                            const longitudeDelta = radians(b[1] - a[1]);
+                            const arc = Math.sin(latitudeDelta / 2) ** 2 + Math.cos(radians(a[0])) * Math.cos(radians(b[0])) * Math.sin(longitudeDelta / 2) ** 2;
+                            return 6371 * 2 * Math.atan2(Math.sqrt(arc), Math.sqrt(1 - arc));
+                        };
+                        const nearest = markers.reduce((current, candidate) => !current || distanceKm(point, candidate.point) < distanceKm(point, current.point) ? candidate : current, null);
+                        map.setView(nearest ? nearest.point : point, nearest ? 12 : 11, { animate: true });
+                        if (userMarker) userMarker.remove();
+                        userMarker = L.circleMarker(point, { radius: 8, color: '#fff', weight: 3, fillColor: '#292622', fillOpacity: 1 }).addTo(map);
+                        userMarker.bindPopup('Lokasi Anda · hanya tersimpan di perangkat ini');
+                        if (nearest) nearest.marker.openPopup();
+                        const distance = nearest ? distanceKm(point, nearest.point) : null;
+                        if (feedback) feedback.textContent = nearest
+                            ? `Partner terdekat: ${nearest.location.name || 'Partner Ilena'}${nearest.location.city ? `, ${nearest.location.city}` : ''} · sekitar ${distance < 1 ? `${Math.round(distance * 1000)} m` : `${distance.toFixed(1)} km`}. Lokasi hanya digunakan di perangkat ini.`
+                            : 'Lokasi Anda ditemukan, tetapi belum ada partner dengan koordinat yang tersedia.';
+                        button.disabled = false;
+                    }, () => {
+                        if (feedback) feedback.textContent = 'Lokasi tidak tersedia. Izinkan akses lokasi atau jelajahi peta secara manual.';
+                        button.disabled = false;
+                    }, { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 });
+                }
+            }));
         };
 
         loadStyles();
@@ -327,6 +393,7 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
         script.onerror = () => {
             initialized = false;
             if (status) status.textContent = 'Peta gagal dimuat. Silakan coba muat ulang halaman.';
+            if (feedback) feedback.textContent = 'Peta gagal dimuat. Anda tetap dapat mencari partner melalui daftar di bawah.';
         };
         document.head.appendChild(script);
     };

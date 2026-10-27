@@ -1055,6 +1055,73 @@ body.ilena-storefront .ilena-partners__image { border-radius: 2px; }
 body.ilena-storefront .ilena-partners__map-link,
 body.ilena-storefront .ilena-partners__map-preview summary { transition: color .18s ease; }
 
+body.ilena-storefront .ilena-partners__map-tools {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin: 0 0 12px;
+}
+body.ilena-storefront .ilena-partners__map-tools > p {
+    margin: 0;
+    color: var(--editorial-muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+body.ilena-storefront .ilena-partners__map-buttons {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+body.ilena-storefront .ilena-partners__map-buttons button {
+    display: inline-flex;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 12px;
+    border: 1px solid #ded6cc;
+    color: #292622;
+    background: #fff;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: color .18s ease, border-color .18s ease, background-color .18s ease;
+}
+body.ilena-storefront .ilena-partners__map-buttons button:first-child,
+body.ilena-storefront .ilena-partners__map-buttons button:nth-child(2) {
+    padding: 0;
+    font-size: 21px;
+    font-weight: 400;
+}
+body.ilena-storefront .ilena-partners__map-buttons button:hover:not(:disabled) {
+    border-color: #8e3935;
+    color: #8e3935;
+    background: #fbf8f5;
+}
+body.ilena-storefront .ilena-partners__map-buttons button:focus-visible {
+    outline: 2px solid #8e3935;
+    outline-offset: 2px;
+}
+body.ilena-storefront .ilena-partners__map-buttons button:disabled { cursor: wait; opacity: .5; }
+body.ilena-storefront .ilena-partners__map-buttons svg {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.5;
+}
+body.ilena-storefront .ilena-partners__map-note {
+    min-height: 20px;
+    line-height: 1.6;
+}
+body.ilena-storefront .ilena-partners__map.is-ready { cursor: grab; }
+body.ilena-storefront .ilena-partners__map.is-ready:active { cursor: grabbing; }
+
 @media (max-width: 760px) {
     body.ilena-storefront .ilena-partners__hero {
         grid-template-columns: minmax(0, 1fr);
@@ -1086,4 +1153,16 @@ body.ilena-storefront .ilena-partners__map-preview summary { transition: color .
         background: #fbfaf8;
     }
     body.ilena-storefront .ilena-partners__city-filter select { min-width: 0; }
+    body.ilena-storefront .ilena-partners__map-tools {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+    }
+    body.ilena-storefront .ilena-partners__map-buttons {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+    body.ilena-storefront .ilena-partners__map-buttons button { flex: 1 1 auto; }
+    body.ilena-storefront .ilena-partners__map-buttons button:first-child,
+    body.ilena-storefront .ilena-partners__map-buttons button:nth-child(2) { flex: 0 0 44px; }
 }
