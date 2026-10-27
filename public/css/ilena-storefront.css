@@ -6406,9 +6406,16 @@ body.ilena-storefront .ilena-product-related-grid .card1 h5 { font-size: clamp(1
 @media (min-width: 901px) and (max-width: 1199px) {
     body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
-body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid .card1 .gambar img.img-pic {
-    -webkit-mask-image: radial-gradient(ellipse 78% 82% at center, #000 86%, rgba(0,0,0,.94) 92%, transparent 100%);
-    mask-image: radial-gradient(ellipse 78% 82% at center, #000 86%, rgba(0,0,0,.94) 92%, transparent 100%);
+body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid .card1 .gambar img:is(.img-pic, .img-pic-hover),
+body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1 .gambar img:is(.img-pic, .img-pic-hover) {
+    -webkit-mask-image:
+        linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, #000 8%, #000 92%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+        linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, #000 8%, #000 92%, transparent 100%);
+    mask-composite: intersect;
 }
 @media (prefers-reduced-motion: reduce) {
     body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid .card1 .gambar img { transition: none !important; }
