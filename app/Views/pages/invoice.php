@@ -1,24 +1,29 @@
+<?php
+$invoiceMid = is_array($transaksi['data_mid'] ?? null) ? $transaksi['data_mid'] : [];
+$invoiceItems = is_array($transaksi['items'] ?? null) ? $transaksi['items'] : [];
+$invoiceCourier = is_array($transaksi['kurir'] ?? null) ? $transaksi['kurir'] : [];
+$transactionTimestamp = strtotime((string)($invoiceMid['transaction_time'] ?? '')) ?: 0;
+$courierName = trim((string)($invoiceCourier['nama'] ?? ''));
+$courierService = trim((string)($invoiceCourier['deskripsi'] ?? ''));
+$courierPending = $courierName === '' || strcasecmp($courierName, 'Menunggu pengiriman') === 0;
+$courierDisplay = $courierPending ? 'Menunggu pengiriman' : $courierName;
+if (!$courierPending && $courierService !== '') {
+    $namePrefix = preg_quote($courierName, '/');
+    $serviceAlreadyIncludesName = preg_match('/^' . $namePrefix . '(?:\b|$)/iu', $courierService) === 1;
+    $courierDisplay = $serviceAlreadyIncludesName ? $courierService : strtoupper($courierName) . ' ' . $courierService;
+}
+$grossAmount = isset($invoiceMid['gross_amount']) ? (int)$invoiceMid['gross_amount'] : null;
+$invoiceStatus = (string)($transaksi['status'] ?? '');
+$paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
+?>
 <!DOCTYPE html>
 <html>
 
 <head>
     <meta charset="UTF-8" />
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
-    <title><?= $title; ?> | Ilena Furniture</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
-    </script>
-    <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-    <!-- <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" /> -->
-    <!-- icon google -->
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <title><?= esc($title); ?> | Ilena Furniture</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="/css/style_pdf.css" />
 </head>
 
@@ -35,13 +40,10 @@
         </div>
         <?php } ?>
         <div class="d-flex justify-content-between mb-2 invoice-head">
-            <img src="<?= base_url('img/LogoIlena.png'); ?>" class="logo" />
+            <img src="<?= esc(base_url('img/LogoIlena.png')); ?>" class="logo" alt="Ilena Furniture" />
             <div class="d-flex flex-column align-items-end">
                 <p class="mb-0">INVOICE</p>
-                <p class="mb-0"><?php
-                                $d = strtotime($transaksi['data_mid']['transaction_time']);
-                                echo date("dmY", $d)
-                                ?>/CBM/<?= $transaksi['id_midtrans']; ?></p>
+                <p class="mb-0"><?= $transactionTimestamp ? date('dmY', $transactionTimestamp) : '—' ?>/CBM/<?= esc($transaksi['id_midtrans'] ?? ''); ?></p>
             </div>
         </div>
         <div class="d-flex justify-content-between mb-2 invoice-parties">
@@ -60,9 +62,11 @@
                             <p class="text-center mb-0">:</p>
                         </div>
                         <div style="flex: 5">
-                            <p class="mb-0"><?= $transaksi['nama']; ?></p>
+                            <p class="mb-0"><?= esc($transaksi['nama'] ?? '—'); ?></p>
                         </div>
                     </div>
+                    <?php if (!empty($transaksi['email'])): ?><div class="w-100 d-flex"><div style="flex:2.7"><p class="mb-0">Email</p></div><div style="flex:.4"><p class="text-center mb-0">:</p></div><div style="flex:5"><p class="mb-0"><?= esc($transaksi['email']); ?></p></div></div><?php endif; ?>
+                    <?php if (!empty($transaksi['nohp'])): ?><div class="w-100 d-flex"><div style="flex:2.7"><p class="mb-0">Telepon</p></div><div style="flex:.4"><p class="text-center mb-0">:</p></div><div style="flex:5"><p class="mb-0"><?= esc($transaksi['nohp']); ?></p></div></div><?php endif; ?>
                     <div class="w-100 d-flex">
                         <div style="flex: 2.7">
                             <p class="mb-0">Tanggal Pembelian</p>
@@ -71,10 +75,7 @@
                             <p class="text-center mb-0">:</p>
                         </div>
                         <div style="flex: 5">
-                            <p class="mb-0"><?php
-                                            $d = strtotime($transaksi['data_mid']['transaction_time']);
-                                            echo date("d", $d) . " " . $bulan[(int)date("m", $d) - 1] . " " . date("Y", $d)
-                                            ?></p>
+                            <p class="mb-0"><?= $transactionTimestamp ? date('d', $transactionTimestamp) . ' ' . esc($bulan[(int)date('m', $transactionTimestamp) - 1]) . ' ' . date('Y', $transactionTimestamp) : 'Tanggal tidak tersedia' ?></p>
                         </div>
                     </div>
                     <div class="w-100 d-flex">
@@ -86,7 +87,7 @@
                         </div>
                         <div style="flex: 5">
                             <p class="mb-0">
-                                <?= $transaksi['alamat']; ?>
+                                <?= nl2br(esc($transaksi['alamat'] ?? '')); ?>
                             </p>
                         </div>
                     </div>
@@ -112,14 +113,18 @@
             </div>
             <?php
             $totalHarga = 0;
+            $diskonProduk = 0;
             $biayaOngkir = 0;
             $biayaAdmin = 0;
             $diskonVoucher = 0;
             $diskonFlash = 0;
-            foreach ($transaksi['items'] as $item) {
+            $voucherCodes = [];
+            $hasBiayaOngkir = false;
+            foreach ($invoiceItems as $item) {
                 $itemName = strtolower((string)($item['name'] ?? $item['id'] ?? ''));
                 if ($itemName == 'biaya ongkir') {
                     $biayaOngkir += (int)$item['price'];
+                    $hasBiayaOngkir = true;
                     continue;
                 }
                 if ($itemName == 'biaya admin') {
@@ -128,30 +133,40 @@
                 }
                 if ($itemName == 'voucher') {
                     $diskonVoucher += abs((int)$item['price']);
+                    $voucherCode = trim((string)($item['id'] ?? ''));
+                    if ($voucherCode !== '' && strcasecmp($voucherCode, 'voucher') !== 0) $voucherCodes[] = $voucherCode;
                     continue;
                 }
                 if ($itemName == 'flash sale') {
                     $diskonFlash += abs((int)$item['price']);
                     continue;
                 }
-                $totalHarga += $item['price'] * $item['quantity'];
+                $quantity = max(0, (int)($item['quantity'] ?? 0));
+                $unitPrice = max(0, (int)($item['price'] ?? 0));
+                $originalPrice = max($unitPrice, (int)($item['original_price'] ?? $unitPrice));
+                $totalHarga += $originalPrice * $quantity;
+                $diskonProduk += ($originalPrice - $unitPrice) * $quantity;
             ?>
             <div class="w-100 d-flex invoice-items__row">
                 <div style="flex: 3">
-                    <p class="mb-0">| <?= strtoupper($item['collection'] ?? '') ?> | <?= $item['name']; ?></p>
+                    <p class="mb-0">| <?= esc(mb_strtoupper((string)($item['collection'] ?? ''), 'UTF-8')) ?> | <?= esc($item['name'] ?? $item['id'] ?? 'Produk'); ?></p>
                 </div>
                 <div style="flex: 1">
-                    <p class="text-center mb-0"><?= $item['quantity']; ?></p>
+                    <p class="text-center mb-0"><?= number_format($quantity); ?></p>
                 </div>
                 <div style="flex: 1">
-                    <p class="text-center mb-0">Rp <?= number_format($item['price'], 0, ",", "."); ?></p>
+                    <p class="text-center mb-0">
+                        <?php if ($originalPrice > $unitPrice): ?><del class="price-before">Rp <?= number_format($originalPrice, 0, ',', '.'); ?></del><br><?php endif; ?>
+                        Rp <?= number_format($unitPrice, 0, ',', '.'); ?>
+                    </p>
                 </div>
                 <div style="flex: 1">
-                    <p class="text-end mb-0">Rp <?= number_format($item['price'] * $item['quantity'], 0, ",", "."); ?>
+                    <p class="text-end mb-0">Rp <?= number_format($unitPrice * $quantity, 0, ',', '.'); ?>
                     </p>
                 </div>
             </div>
             <?php } ?>
+            <?php if (!$invoiceItems): ?><div class="invoice-items__row"><p class="mb-0">Rincian produk tidak tersedia.</p></div><?php endif; ?>
         </div>
 
         <!-- Container perhitungan -->
@@ -161,18 +176,24 @@
                 <div class="w-100 py-2">
                     <div class="w-100 d-flex">
                         <div style="flex: 2">
-                            <p class="mb-0 fw-bold">TOTAL HARGA</p>
+                            <p class="mb-0 fw-bold">SUBTOTAL PRODUK</p>
                         </div>
                         <div style="flex: 1">
                             <p class="text-end mb-0 fw-bold">
-                                Rp <?= number_format($totalHarga, 0, ",", "."); ?>
+                                Rp <?= number_format($totalHarga, 0, ',', '.'); ?>
                             </p>
                         </div>
                     </div>
+                    <?php if ($diskonProduk > 0) { ?>
+                    <div class="w-100 d-flex">
+                        <div style="flex: 2"><p class="mb-0">Diskon Produk</p></div>
+                        <div style="flex: 1"><p class="text-end mb-0">- Rp <?= number_format($diskonProduk, 0, ',', '.'); ?></p></div>
+                    </div>
+                    <?php } ?>
                     <?php if ($diskonVoucher > 0) { ?>
                     <div class="w-100 d-flex">
                         <div style="flex: 2">
-                            <p class="mb-0">Diskon Voucher</p>
+                            <p class="mb-0">Diskon Voucher<?= $voucherCodes ? ' (' . esc(implode(', ', array_unique($voucherCodes))) . ')' : '' ?></p>
                         </div>
                         <div style="flex: 1">
                             <p class="text-end mb-0">- Rp <?= number_format($diskonVoucher, 0, ",", "."); ?></p>
@@ -189,13 +210,13 @@
                         </div>
                     </div>
                     <?php } ?>
-                    <?php if ($biayaOngkir > 0) { ?>
+                    <?php if ($hasBiayaOngkir) { ?>
                     <div class="w-100 d-flex">
                         <div style="flex: 2">
-                            <p class="mb-0">Biaya Ongkir</p>
+                            <p class="mb-0">Ongkos Kirim</p>
                         </div>
                         <div style="flex: 1">
-                            <p class="text-end mb-0">Rp <?= number_format($biayaOngkir, 0, ",", "."); ?></p>
+                            <p class="text-end mb-0"><?= $biayaOngkir > 0 ? 'Rp ' . number_format($biayaOngkir, 0, ',', '.') : 'Gratis' ?></p>
                         </div>
                     </div>
                     <?php } ?>
@@ -205,7 +226,7 @@
                             <p class="mb-0">Biaya Admin Pembayaran</p>
                         </div>
                         <div style="flex: 1">
-                            <p class="text-end mb-0">Rp <?= number_format($biayaAdmin, 0, ",", "."); ?></p>
+                            <p class="text-end mb-0">Rp <?= number_format($biayaAdmin, 0, ',', '.'); ?></p>
                         </div>
                     </div>
                     <?php } ?>
@@ -215,7 +236,7 @@
                         </div>
                         <div style="flex: 1">
                             <p class="text-end mb-0 fw-bold">
-                                Rp <?= number_format($transaksi['data_mid']['gross_amount'], 0, ",", "."); ?>
+                                Rp <?= number_format($grossAmount ?? ($totalHarga - $diskonProduk - $diskonVoucher - $diskonFlash + $biayaOngkir + $biayaAdmin), 0, ',', '.'); ?>
                             </p>
                         </div>
                     </div>
@@ -226,24 +247,23 @@
         <!-- Container footer -->
         <div class="w-100 d-flex py-2 invoice-fulfillment">
             <div class="w-100">
-                <p class="mb-0 text-black-50">Kurir :</p>
-                <?php if ($transaksi['kurir']['nama'] == 'Menunggu pengiriman') { ?>
-                <p class="mb-0 fw-bold">Menunggu pengiriman</p>
-                <?php } else { ?>
-                <p class="mb-0 fw-bold">
-                    <?= strtoupper($transaksi['kurir']['nama']) . " " . $transaksi['kurir']['deskripsi']; ?></p>
-                <?php } ?>
+                <p class="mb-0 text-black-50">Ekspedisi</p>
+                <p class="mb-0 fw-bold"><?= esc($courierDisplay); ?></p>
+                <?php $trackingNumber = trim((string)($transaksi['resi'] ?? '')); ?>
+                <?php if (!$courierPending && $trackingNumber !== '' && strcasecmp($trackingNumber, 'Menunggu pengiriman') !== 0): ?><p class="mb-0">No. resi: <strong><?= esc($trackingNumber); ?></strong></p><?php endif; ?>
             </div>
             <div class="w-100">
                 <p class="mb-0 text-black-50">Metode Pembayaran</p>
                 <p class="mb-0">
                     <?php
-                    switch ($transaksi['data_mid']['payment_type']) {
+                    switch ($paymentType) {
                         case 'credit_card':
-                            echo "Credit Card<br>" . strtoupper($transaksi['data_mid']['bank']) . " " . ucfirst($transaksi['data_mid']['card_type']);
+                            echo esc('Credit Card');
+                            $cardDetails = trim(strtoupper((string)($invoiceMid['bank'] ?? '')) . ' ' . ucfirst((string)($invoiceMid['card_type'] ?? '')));
+                            if ($cardDetails !== '') echo '<br>' . esc($cardDetails);
                             break;
                         case 'echannel':
-                            switch ($transaksi['data_mid']['biller_code']) {
+                            switch ((string)($invoiceMid['biller_code'] ?? '')) {
                                 case '70012':
                                     echo "Mandiri Bill";
                                     break;
@@ -253,21 +273,36 @@
                             }
                             break;
                         case 'bank_transfer':
-                            if (isset($transaksi['data_mid']['va_numbers']))
-                                echo strtoupper($transaksi['data_mid']['va_numbers'][0]['bank']) . " VA";
-                            else if (isset($transaksi['data_mid']['permata_va_number']))
+                            if (isset($invoiceMid['va_numbers'][0]['bank']))
+                                echo esc(strtoupper((string)$invoiceMid['va_numbers'][0]['bank']) . ' VA');
+                            else if (isset($invoiceMid['permata_va_number']))
                                 echo "Bank Permata VA";
-                            else if (isset($transaksi['data_mid']['bca_va_number']))
+                            else if (isset($invoiceMid['bca_va_number']))
                                 echo "BCA VA";
+                            else
+                                echo 'Bank transfer';
+                            break;
+                        case 'permata':
+                            echo 'Bank Permata VA';
                             break;
                         case 'gopay':
-                            echo 'Qris';
+                            echo 'GoPay';
                             break;
                         case 'qris':
-                            echo 'Qris';
+                            echo 'QRIS';
+                            break;
+                        case 'shopeepay':
+                            echo 'ShopeePay';
+                            break;
+                        case 'admin':
+                            echo 'Pembayaran manual';
+                            break;
+                        case 'market':
+                        case 'toko':
+                            echo 'Pembayaran marketplace';
                             break;
                         default:
-                            echo $transaksi['data_mid']['payment_type'];
+                            echo esc($invoiceMid['payment_type'] ?? 'Metode tidak tersedia');
                             break;
                     }
                     ?></p>
@@ -288,15 +323,14 @@
             <div>
                 <p class="mb-0 text-black-50">
                     Terakhir diupdate: <?php
-                                        $d = strtotime($transaksi['data_mid']['transaction_time']);
-                                        echo date("d", $d) . " " . $bulan[(int)date("m", $d) - 1] . " " . date("Y", $d) . " " . date("H:i:s", $d)
+                                        echo $transactionTimestamp ? date("d", $transactionTimestamp) . " " . esc($bulan[(int)date("m", $transactionTimestamp) - 1]) . " " . date("Y", $transactionTimestamp) . " " . date("H:i:s", $transactionTimestamp) : 'Waktu tidak tersedia'
                                         ?> WIB
                 </p>
             </div>
         </div>
     </main>
 </body>
-<?php if ($transaksi['status'] == 'Proses' || $transaksi['status'] == 'Dikirim' || $transaksi['status'] == 'Selesai' || $transaksi['status'] == 'Menunggu Pembayaran') { ?>
+<?php if (in_array($invoiceStatus, ['Proses', 'Dikirim', 'Selesai', 'Menunggu Pembayaran'], true)) { ?>
 <script>
 window.print();
 </script>

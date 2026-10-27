@@ -2449,6 +2449,7 @@ class Pages extends BaseController
             $diskon = (float)$produk['diskon'];
             $jumlah = (int)$element['jumlah'];
             $hasil = \App\Services\CatalogPricing::unitPrice($produk);
+            $hargaAwal = max(0, (int)round((float)($produk['harga'] ?? 0)));
             $desc = json_decode($produk['deskripsi'] ?? '[]', true);
             $dim = $desc['dimensi']['asli']['panjang'] ?? '';
             $varLbl = ucfirst($element['varian'] ?? '');
@@ -2456,6 +2457,10 @@ class Pages extends BaseController
             $itemDetails[] = [
                 'id' => $produk['id'],
                 'price' => $hasil,
+                // Persist the checkout-time price basis so invoice discounts remain
+                // historically accurate if catalog pricing changes later.
+                'original_price' => $hargaAwal,
+                'collection' => (string)($produk['kategori'] ?? ''),
                 'quantity' => $jumlah,
                 'name' => $produk['nama'] . " " . $dim . " (" . $varLbl . ")",
                 'variant' => (string)$element['varian'],
@@ -2527,7 +2532,14 @@ class Pages extends BaseController
         $arrPostField = [
             "transaction_details" => ["order_id"=>$idFix, "gross_amount"=>(int)$total],
             "customer_details" => ["email"=>$email,"phone"=>$nohp,"first_name"=>$nama],
-            "item_details" => array_map(static function ($item) { unset($item['variant']); return $item; }, $itemDetails),
+            "item_details" => array_map(static function ($item) {
+                return [
+                    'id' => $item['id'],
+                    'price' => $item['price'],
+                    'quantity' => $item['quantity'],
+                    'name' => $item['name'],
+                ];
+            }, $itemDetails),
             "custom_field1" => substr($customField, 0, 255),
             "custom_field2" => substr($customField, 255, 255),
             "custom_field3" => substr($customField, 510, 255),
@@ -4093,6 +4105,14 @@ class Pages extends BaseController
             return $this->response->setStatusCode(404)->setBody('Pesanan tidak ditemukan.');
         }
         // dd($transaksi);
+        $items = json_decode((string)($transaksi['items'] ?? '[]'), true);
+        if (!is_array($items)) $items = [];
+        $dataMid = json_decode((string)($transaksi['data_mid'] ?? '{}'), true);
+        if (!is_array($dataMid)) $dataMid = [];
+        unset($dataMid['_app_order_access_token']);
+        $kurir = json_decode((string)($transaksi['kurir'] ?? '{}'), true);
+        if (!is_array($kurir)) $kurir = [];
+        if ($kurir === []) $kurir = ['nama' => 'Menunggu pengiriman', 'deskripsi' => ''];
         $arr = [
             'id' => $transaksi['id'],
             'nama' => $transaksi['nama'],
@@ -4101,18 +4121,15 @@ class Pages extends BaseController
             'alamat' => $transaksi['alamat'],
             'resi' => $transaksi['resi'],
             'id_midtrans' => $transaksi['id_midtrans'],
-            'items' => json_decode($transaksi['items'], true),
+            'items' => $items,
             'status' => $transaksi['status'],
-            'kurir' => count(json_decode($transaksi['kurir'], true)) > 0 ? json_decode($transaksi['kurir'], true) : [
-                'nama' => 'Menunggu pengiriman',
-                'deskripsi' => 'Kosong',
-            ],
-            'data_mid' => json_decode($transaksi['data_mid'], true),
+            'kurir' => $kurir,
+            'data_mid' => $dataMid,
         ];
-        unset($arr['data_mid']['_app_order_access_token']);
         foreach ($arr['items'] as $ind_i => $i) {
             $itemId = $i['id'] ?? null;
-            if (!in_array($itemId, ['Voucher', 'Biaya Admin', 'Flash Sale'], true)) {
+            $itemName = strtolower(trim((string)($i['name'] ?? '')));
+            if (!in_array($itemName, ['voucher', 'biaya admin', 'biaya ongkir', 'flash sale'], true)) {
                 $barangCur = $this->barangModel->getBarang($itemId);
 
                 // Jika produk sudah nonaktif / terhapus, getBarang() bisa mengembalikan null.
@@ -4121,7 +4138,7 @@ class Pages extends BaseController
                     $barangCur = $this->barangModel->getBarangAdmin($itemId);
                 }
 
-                $arr['items'][$ind_i]['collection'] = $barangCur['kategori'] ?? ($i['collection'] ?? '');
+                $arr['items'][$ind_i]['collection'] = $i['collection'] ?? ($barangCur['kategori'] ?? '');
                 $arr['items'][$ind_i]['detail'] = $barangCur ?? [];
             }
         }
@@ -4132,7 +4149,6 @@ class Pages extends BaseController
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'transaksi' => $arr,
-            'transaksiJson' => json_encode($arr),
             'bulan' => $bulan
         ];
         return view('pages/invoice', $data);

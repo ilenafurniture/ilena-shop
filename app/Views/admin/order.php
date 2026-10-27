@@ -101,7 +101,7 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter): st
   <div class="order-dialog__panel"><header class="order-dialog__head"><div><div class="eyebrow">Rincian pesanan</div><h2 id="detailTitle">—</h2></div><button class="order-dialog__close" type="button" data-close-order aria-label="Tutup"><span class="material-icons" aria-hidden="true">close</span></button></header>
     <div class="order-dialog__customer"><div class="order-dialog__field"><label>Penerima</label><div data-detail="name">—</div></div><div class="order-dialog__field"><label>Email</label><div data-detail="email">—</div></div><div class="order-dialog__field"><label>Telepon</label><div data-detail="phone">—</div></div><div class="order-dialog__field"><label>Status</label><div data-detail="status">—</div></div><div class="order-dialog__field" style="grid-column:1/-1"><label>Alamat</label><div data-detail="address">—</div></div></div>
     <div class="table-responsive"><table class="order-dialog__items"><thead><tr><th>Produk</th><th>Jumlah</th><th>Harga satuan</th><th>Total</th></tr></thead><tbody id="detailItems"></tbody></table></div>
-    <div class="order-dialog__footer"><a class="action" data-detail-invoice href="#">Buka invoice</a><a class="action action-primary" data-detail-order href="#">Buka pesanan</a></div>
+    <div class="order-dialog__footer"><a class="action" data-detail-invoice href="#">Buka invoice</a><button class="action action-primary" type="button" data-close-order>Tutup detail</button></div>
   </div>
 </div>
 
@@ -136,11 +136,10 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter): st
     totalLabel.colSpan=3; totalLabel.textContent='Total pesanan'; totalLabel.style.fontWeight='700'; totalLabel.style.textAlign='right';
     totalAmount.textContent='Rp '+Number(mid.gross_amount ?? fallbackTotal).toLocaleString('id-ID'); totalAmount.style.fontWeight='700'; totalRow.append(totalLabel,totalAmount); tbody.append(totalRow);
     detail.querySelector('[data-detail-invoice]').href = '/invoice/' + encodeURIComponent(order.id_midtrans || '');
-    detail.querySelector('[data-detail-order]').href = '/order/' + encodeURIComponent(order.id_midtrans || '');
     openLayer(detail);
   }
   document.querySelectorAll('[data-order-details]').forEach(button => button.addEventListener('click', () => showOrder(Number(button.dataset.orderDetails))));
-  detail.querySelector('[data-close-order]').addEventListener('click', () => closeLayer(detail));
+  detail.querySelectorAll('[data-close-order]').forEach(button => button.addEventListener('click', () => closeLayer(detail)));
   detail.addEventListener('click', event => { if (event.target === detail) closeLayer(detail); });
 
   document.querySelectorAll('[data-edit-resi]').forEach(button => button.addEventListener('click', () => {
