@@ -62,6 +62,24 @@ $hideGenericCatalogIntro = !$isSmartSearch && mb_strtolower(trim($catalogHeading
 ?>
 <?php
 if (isset($kategori)) $_GET['koleksi'] = $kategori;
+// PHP decodes raw `+` query separators as spaces, but JS previously escaped
+// a literal plus as `%2B`. Normalize both formats (and repeated query values)
+// before applying facets, rendering checked states, or building pagination.
+foreach (['koleksi', 'jenis', 'ruang', 'varian'] as $multiFacet) {
+    if (!isset($_GET[$multiFacet])) continue;
+    $rawFacetValues = is_array($_GET[$multiFacet]) ? $_GET[$multiFacet] : [(string) $_GET[$multiFacet]];
+    $normalizedFacetValues = [];
+    foreach ($rawFacetValues as $rawFacetValue) {
+        if (!is_scalar($rawFacetValue)) continue;
+        foreach (preg_split('/[\s+,]+/u', trim((string) $rawFacetValue), -1, PREG_SPLIT_NO_EMPTY) ?: [] as $facetValue) {
+            $facetValue = trim($facetValue);
+            if ($facetValue !== '' && !in_array($facetValue, $normalizedFacetValues, true)) {
+                $normalizedFacetValues[] = $facetValue;
+            }
+        }
+    }
+    $_GET[$multiFacet] = implode(' ', $normalizedFacetValues);
+}
 if (isset($_GET['koleksi'])) {
     if ($_GET['koleksi'] != '') {
         $koleksi = explode(" ", $_GET['koleksi']);
@@ -1680,7 +1698,7 @@ btnFilterElm.forEach(elm => {
                     if (koleksiParam == '')
                         koleksiParam += koleksiElm.value
                     else
-                        koleksiParam += '+' + koleksiElm.value
+                        koleksiParam += ' ' + koleksiElm.value
                 }
             });
             filterJenisElm.forEach((jenisElm) => {
@@ -1688,7 +1706,7 @@ btnFilterElm.forEach(elm => {
                     if (jenisParam == '')
                         jenisParam += jenisElm.value
                     else
-                        jenisParam += '+' + jenisElm.value
+                        jenisParam += ' ' + jenisElm.value
                 }
             });
             filterHargaElm.forEach((hargaElm) => {
@@ -1701,7 +1719,7 @@ btnFilterElm.forEach(elm => {
                     if (ruangParam == '')
                         ruangParam += ruangElm.value
                     else
-                        ruangParam += '+' + ruangElm.value
+                        ruangParam += ' ' + ruangElm.value
                 }
             });
         } else {
@@ -1710,7 +1728,7 @@ btnFilterElm.forEach(elm => {
                     if (koleksiParam == '')
                         koleksiParam += koleksiElm.value
                     else
-                        koleksiParam += '+' + koleksiElm.value
+                        koleksiParam += ' ' + koleksiElm.value
                 }
             });
             filterJenis1Elm.forEach((jenisElm) => {
@@ -1718,7 +1736,7 @@ btnFilterElm.forEach(elm => {
                     if (jenisParam == '')
                         jenisParam += jenisElm.value
                     else
-                        jenisParam += '+' + jenisElm.value
+                        jenisParam += ' ' + jenisElm.value
                 }
             });
             filterHarga1Elm.forEach((hargaElm) => {
@@ -1731,7 +1749,7 @@ btnFilterElm.forEach(elm => {
                     if (ruangParam == '')
                         ruangParam += ruangElm.value
                     else
-                        ruangParam += '+' + ruangElm.value
+                        ruangParam += ' ' + ruangElm.value
                 }
             });
         }
