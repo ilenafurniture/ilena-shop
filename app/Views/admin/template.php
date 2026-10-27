@@ -18,10 +18,8 @@ if ($canAdminPermission('orders_online')) {
         ->whereNotIn('email', $testOrderEmails)
         ->countAllResults();
 }
-$adminNavigationData = [
-    'canPermission' => $canAdminPermission,
-    'websiteOrderTodoCount' => $websiteOrderTodoCount,
-];
+$this->setVar('canPermission', $canAdminPermission);
+$this->setVar('websiteOrderTodoCount', $websiteOrderTodoCount);
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -249,12 +247,12 @@ $adminNavigationData = [
     <div class="admin-shell">
         <!-- Sidebar (Desktop) -->
         <aside class="admin-sidebar show-block-ke-hide">
-            <?= $this->include('admin/navbar', $adminNavigationData); ?>
+            <?= $this->include('admin/navbar'); ?>
         </aside>
 
         <!-- Navbar HP (Mobile) -->
         <div class="hide-ke-show-block">
-            <?= $this->include('admin/navbarHpAdmin', $adminNavigationData); ?>
+            <?= $this->include('admin/navbarHpAdmin'); ?>
         </div>
 
         <!-- Konten -->
