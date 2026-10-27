@@ -60,6 +60,11 @@ class App extends BaseConfig
     public string $uriProtocol = 'REQUEST_URI';
 
     /**
+     * Character set permitted in route URI segments (CodeIgniter 4.7+).
+     */
+    public string $permittedURIChars = 'a-z 0-9~%.:_\-';
+
+    /**
      * --------------------------------------------------------------------------
      * Default Locale
      * --------------------------------------------------------------------------
