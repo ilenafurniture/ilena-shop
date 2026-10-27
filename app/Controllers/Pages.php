@@ -969,24 +969,51 @@ class Pages extends BaseController
     {
         $varian = rawurldecode((string)$varian);
         $jumlah = max(1, (int)$jumlah);
-        $keranjang = session()->get('keranjang') ?? [];
-        $found = false;
-        foreach ($keranjang as &$item) {
-            if ($item['id_barang'] == $idbarang && $item['varian'] == $varian) {
-                $item['jumlah'] += $jumlah;
-                $found = true;
+        $product = $this->barangModel->getBarang($idbarang);
+        if (!$product) {
+            return redirect()->to('/cart')->with('msg', 'Produk sudah tidak tersedia. Keranjang tidak berubah.');
+        }
+
+        $variants = json_decode((string) ($product['varian'] ?? '[]'), true);
+        $availableStock = null;
+        foreach (is_array($variants) ? $variants : [] as $variant) {
+            if (is_array($variant) && strcasecmp(trim((string) ($variant['nama'] ?? '')), trim($varian)) === 0) {
+                $availableStock = max(0, (int) ($variant['stok'] ?? 0));
                 break;
             }
         }
-        if (! $found) {
+        if ($availableStock === null || $availableStock < 1) {
+            return redirect()->to('/cart')->with('msg', 'Varian tidak tersedia atau stoknya habis. Keranjang tidak berubah.');
+        }
+
+        $keranjang = session()->get('keranjang') ?? [];
+        $existingIndex = null;
+        $existingQuantity = 0;
+        foreach ($keranjang as $index => $item) {
+            if ((string) ($item['id_barang'] ?? '') === (string) $idbarang
+                && strcasecmp((string) ($item['varian'] ?? ''), $varian) === 0) {
+                $existingIndex = $index;
+                $existingQuantity = max(0, (int) ($item['jumlah'] ?? 0));
+                break;
+            }
+        }
+
+        $requestedTotal = $existingQuantity + $jumlah;
+        $finalQuantity = min($availableStock, $requestedTotal);
+        if ($existingIndex !== null) {
+            $keranjang[$existingIndex]['jumlah'] = $finalQuantity;
+        } else {
             $keranjang[] = [
                 'id_barang' => $idbarang,
                 'varian'    => $varian,
-                'jumlah'    => $jumlah,
+                'jumlah'    => $finalQuantity,
             ];
         }
         session()->set('keranjang', $keranjang);
         $this->syncCartToUser($keranjang);
+        if ($requestedTotal > $availableStock) {
+            session()->setFlashdata('msg', 'Jumlah disesuaikan dengan stok tersedia (' . $availableStock . ').');
+        }
         return redirect()->to('/cart');
     }
 
