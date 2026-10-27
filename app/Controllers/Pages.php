@@ -5557,6 +5557,10 @@ class Pages extends BaseController
 
         if ($this->r2ProductImages->enabled() && !$hasLocalImageCandidate) {
             $hasSlotRequest = $requestedSlot !== '';
+            // Public image fallbacks must never wait on remote R2 HEAD probes.
+            // A known-positive cache entry is safe to redirect; only explicit
+            // admin proxy requests may perform a fresh existence check.
+            $allowRemoteProbe = $this->request->getGet('proxy') === '1';
             if ($preferThumbnail) {
                 $r2Candidates = ["products/300/{$safeId}.webp", "products/1000/{$safeId}-{$slot}.webp", "products/3000/{$safeId}-{$slot}.webp"];
             } else {
@@ -5565,7 +5569,10 @@ class Pages extends BaseController
                     : ["products/300/{$safeId}.webp", "products/1000/{$safeId}-{$slot}.webp", "products/3000/{$safeId}-{$slot}.webp"];
             }
             foreach ($r2Candidates as $key) {
-                if ($this->r2ProductImages->objectExists($key)) {
+                $exists = $allowRemoteProbe
+                    ? $this->r2ProductImages->objectExists($key)
+                    : $this->r2ProductImages->cachedObjectExists($key) === true;
+                if ($exists) {
                     if ($this->request->getGet('proxy') === '1') {
                         $object = $this->r2ProductImages->getObject($key);
                         if ($object) {

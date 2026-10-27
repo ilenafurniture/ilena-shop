@@ -85,17 +85,30 @@ class R2ProductImageService
             return false;
         }
 
-        $cache = cache();
-        $cacheKey = 'r2_product_exists_' . md5($key);
-        $cached = $cache->get($cacheKey);
+        $cached = $this->cachedObjectExists($key);
         if ($cached !== null) {
-            return $cached === true || $cached === '1';
+            return $cached;
         }
 
         $result = $this->request('HEAD', $key);
         $exists = $result['status'] >= 200 && $result['status'] < 300;
-        $cache->save($cacheKey, $exists ? '1' : '0', $exists ? 3600 : 120);
+        cache()->save('r2_product_exists_' . md5($key), $exists ? '1' : '0', $exists ? 3600 : 120);
         return $exists;
+    }
+
+    /**
+     * Return a previously recorded object-existence result without making a
+     * network request. Public image fallbacks use this to keep R2 HEAD latency
+     * out of customer-facing PHP requests.
+     */
+    public function cachedObjectExists(string $key): ?bool
+    {
+        $cached = cache()->get('r2_product_exists_' . md5($key));
+        if ($cached === null) {
+            return null;
+        }
+
+        return $cached === true || $cached === '1';
     }
 
     public function deleteObject(string $key): bool

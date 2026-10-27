@@ -7,6 +7,25 @@ use CodeIgniter\Test\CIUnitTestCase;
 
 final class R2ProductImageRedirectResponseTest extends CIUnitTestCase
 {
+    public function testCachedObjectCheckReturnsKnownStateWithoutRemoteProbe(): void
+    {
+        $key = 'products/test-' . bin2hex(random_bytes(8)) . '.webp';
+        $cacheKey = 'r2_product_exists_' . md5($key);
+        $service = new R2ProductImageService();
+
+        try {
+            $this->assertNull($service->cachedObjectExists($key));
+
+            cache()->save($cacheKey, '1', 60);
+            $this->assertTrue($service->cachedObjectExists($key));
+
+            cache()->save($cacheKey, '0', 60);
+            $this->assertFalse($service->cachedObjectExists($key));
+        } finally {
+            cache()->delete($cacheKey);
+        }
+    }
+
     public function testRedirectHasNoHtmlBodyAndOnePublicCachePolicy(): void
     {
         $oldServerValue = $_SERVER['R2_PUBLIC_URL'] ?? null;
