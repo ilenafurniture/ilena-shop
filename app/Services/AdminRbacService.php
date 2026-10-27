@@ -61,7 +61,6 @@ class AdminRbacService
             'admin/editproduct' => 'products',
             'admin/deleteproduct' => 'products',
             'admin/activeproduct' => 'products',
-            'admin/product-old' => 'products',
             'admin/voucher' => 'vouchers',
             'admin/order/online' => 'orders_online',
             'admin/order/add' => 'orders_online',

@@ -200,64 +200,6 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
     $routes->post('customers/suspend', 'AdminController::actionSuspendCustomer');
     $routes->post('customers/reinstate', 'AdminController::actionReinstateCustomer');
 
-    // ==================== OFFLINE ORDER (admin) ====================
-
-    // Alias lama untuk halaman Project Interior.
-    $routes->get('order/offline/interior', 'AdminController::projectInteriorList');
-
-    // halaman offline list (sale/interior/whatever)
-    $routes->get('order/offline/(:any)', 'AdminController::orderOffline/$1');
-
-    // API ambil items offline (buat modal/detail)
-    $routes->get('getitemsoffline/(:segment)', 'AdminController::getItemsOffline/$1');
-
-    // Form add offline + action
-    $routes->get('order-offline/add', 'AdminController::orderOfflineAdd');
-    $routes->post('order-offline/add', 'AdminController::actionAddOrderOffline');
-
-    // Update offline
-    $routes->post('order-offline/update', 'AdminController::orderOfflineUpdate');
-
-    // Finalize offline (lock nomor/invoice dll)
-    $routes->post('order-offline/finalize', 'AdminController::orderOfflineFinalize');
-
-    // Koreksi SP
-    $routes->post('order-offline/koreksisp', 'AdminController::actionKoreksiSP');
-    $routes->get('surat-koreksi/(:any)', 'AdminController::suratKoreksi/$1');
-
-    // Invoice / DP / Surat offline
-    $routes->get('invoice-offline/(:any)', 'AdminController::suratInvoice/$1');
-    $routes->get('invoice-offline-dp/(:any)', 'AdminController::suratInvoiceDP/$1');
-    $routes->get('surat-offline/(:any)', 'AdminController::suratOffline/$1');
-
-    // Action lain
-    $routes->post('benerinsurat', 'AdminController::benerinSurat');
-    $routes->post('actionbuatinvoice', 'AdminController::actionBuatInvoice');
-    $routes->post('actionbuatdp', 'AdminController::actionBuatDP');
-    $routes->post('actionaccorderoffline/(:any)', 'AdminController::actionAccOrderOffline/$1');
-
-    // ==================== SURAT JALAN OFFLINE (admin) ====================
-    // Halaman edit SJ (dipakai OFFLINE & INTERIOR)
-    $routes->get(
-        'surat-jalan/offline/(:num)/edit',
-        'AdminController::suratJalanOfflineEdit/$1'
-    );
-    $routes->post('surat-jalan/offline/(:num)/edit-save', 'AdminController::suratJalanOfflineEditSave/$1');
-
-    // Simpan perubahan SJ (qty, tanggal, dll)
-    $routes->post(
-        'surat-jalan/offline/(:num)/edit',
-        'AdminController::suratJalanOfflineEditSave/$1'
-    );  
-    // Create SJ harus POST (bikin data)
-    $routes->post('surat-jalan/offline/create/(:segment)', 'AdminController::createSuratJalanOffline/$1');
-
-    // Buka/print/edit SJ
-    $routes->get('surat-jalan/offline/(:num)', 'AdminController::suratJalanOffline/$1');
-
-    // Finalize SJ OFFLINE (kunci nomor & status)
-    $routes->post('surat-jalan/offline/(:num)/finalize', 'AdminController::suratJalanOfflineFinalize/$1');
-
     // ==================== SEO helper (admin) — optional ====================
     $routes->get('seo-check/(:any)', 'AdminController::seoCheck/$1');
 
@@ -271,26 +213,6 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
     $routes->get('voucher/usage', 'AdminController::voucherUsage');
     $routes->post('voucher/usage/delete/(:num)', 'AdminController::deleteVoucherUsage/$1');
 
-    // ==================== PROJECT INTERIOR (ADMIN) ====================
-    $routes->get('project-interior', 'AdminController::projectInteriorList');
-    $routes->get('project-interior/add', 'AdminController::projectInteriorAdd');
-    $routes->post('project-interior/add', 'AdminController::actionProjectInteriorAdd');
-    $routes->post('project-interior/(:segment)/sj/create', 'AdminController::projectInteriorCreateSuratJalan/$1');
-
-
-    $routes->get('project-interior/(:segment)', 'AdminController::projectInteriorDetail/$1');
-    $routes->post('project-interior/(:segment)/payment', 'AdminController::actionProjectInteriorAddPayment/$1');
-    $routes->get('project-interior/(:segment)/invoice', 'AdminController::projectInteriorCreateInvoice/$1');
-    $routes->get('project-interior/(:segment)/sj', 'AdminController::projectInteriorSuratJalan/$1');
-    $routes->get('project-interior/(:segment)/invoice-pengiriman', 'AdminController::projectInteriorInvoicePengiriman/$1');
-    $routes->get('project-interior/(:segment)/invoice-pengiriman/(:num)', 'AdminController::projectInteriorInvoicePengiriman/$1/$2');
-    $routes->get('project-interior/(:segment)/payment-invoice/(:num)', 'AdminController::projectInteriorPaymentInvoice/$1/$2');
-
-    $routes->post('project-interior/(:segment)/surat-jalan/create', 'AdminController::projectInteriorCreateSuratJalan/$1');
-
-    // Optional (kalau kamu pakai create SJ parsial interior)
-    // $routes->post('project-interior/(:segment)/surat-jalan/create', 'AdminController::projectInteriorCreateSuratJalan/$1');
-    // $routes->get('project-interior/(:segment)/surat-jalan/(:num)', 'AdminController::projectInteriorSuratJalanPrint/$1/$2');
 });
 
 

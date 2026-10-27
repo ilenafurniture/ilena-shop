@@ -768,7 +768,8 @@ class AdminController extends BaseController
             return redirect()->to('/admin/addproduct')->withInput();
         }
 
-        $data               = $this->request->getVar();
+        // This endpoint is POST-only; ignore query-string input for mutations.
+        $data               = $this->request->getPost();
         if (!preg_match('/^[A-Za-z0-9_-]{1,64}$/', (string) ($data['id'] ?? ''))) {
             return $this->response->setStatusCode(422)->setJSON(['pesan' => 'ID produk hanya boleh berisi huruf, angka, garis bawah, atau tanda hubung (maksimal 64 karakter).']);
         }
@@ -880,9 +881,9 @@ class AdminController extends BaseController
         }
 
         // ===== Jadwal diskon (baru, minimal patch) =====
-        $pakaiSchedule = !empty($this->request->getVar('pakai_jadwal_diskon')) ? 1 : 0;
-        $mulaiRaw      = (string) $this->request->getVar('diskon_mulai');    // ex: 2025-10-06T13:00
-        $selesaiRaw    = (string) $this->request->getVar('diskon_selesai');  // ex: 2025-10-06T23:00
+        $pakaiSchedule = !empty($this->request->getPost('pakai_jadwal_diskon')) ? 1 : 0;
+        $mulaiRaw      = (string) $this->request->getPost('diskon_mulai');
+        $selesaiRaw    = (string) $this->request->getPost('diskon_selesai');
 
         $insertDataBarang = [
             'id'            => $data['id'],
@@ -1139,7 +1140,8 @@ class AdminController extends BaseController
                 return $this->response->setStatusCode(404)->setJSON(['pesan' => 'Produk tidak ditemukan']);
             }
 
-            $data  = $this->request->getVar();
+            // Only accept product edits from the POST body, never query parameters.
+            $data  = $this->request->getPost();
             $files = $this->request->getFiles();
 
             if ($error = \App\Services\ProductInputPolicy::validate($data)) {
@@ -1449,10 +1451,10 @@ class AdminController extends BaseController
             ];
 
             // ===== PATCH PENTING: simpan jadwal diskon =====
-            if ($this->request->getVar('pakai_jadwal_diskon') !== null) {
-                $pakaiSchedule = !empty($this->request->getVar('pakai_jadwal_diskon')) ? 1 : 0;
-                $mulaiRaw      = (string) $this->request->getVar('diskon_mulai');    // 2025-10-06T13:00
-                $selesaiRaw    = (string) $this->request->getVar('diskon_selesai');  // 2025-10-06T23:00
+            if ($this->request->getPost('pakai_jadwal_diskon') !== null) {
+                $pakaiSchedule = !empty($this->request->getPost('pakai_jadwal_diskon')) ? 1 : 0;
+                $mulaiRaw      = (string) $this->request->getPost('diskon_mulai');
+                $selesaiRaw    = (string) $this->request->getPost('diskon_selesai');
 
                 $payload['pakai_jadwal_diskon'] = $pakaiSchedule;
                 $payload['diskon_mulai']   = $pakaiSchedule && $mulaiRaw
@@ -1549,106 +1551,6 @@ class AdminController extends BaseController
             ]);
         }
     }
-
-    public function actionEditProductOld($pathname = false)
-    {
-        $idBarang = $this->request->getVar('id');
-        if (!$idBarang) {
-            return $this->response->setStatusCode(400)->setJSON(['status' => 'error', 'pesan' => 'ID barang tidak dikirim']);
-        }
-
-        $barangCur = $this->barangModel->getBarangAdmin($idBarang);
-        if (!$barangCur) {
-            return $this->response->setStatusCode(404)->setJSON(['status' => 'error', 'pesan' => 'Barang tidak ditemukan']);
-        }
-
-        $koleksi = $this->koleksiModel->getKoleksi();
-        $jenis = $this->jenisModel->getJenis();
-        $data = $this->request->getVar();
-        $files = $this->request->getFiles();
-
-        $data['deskripsi'] = json_decode($data['deskripsi'] ?? '', true) ?? [];
-        $data['varian'] = json_decode($data['varian'] ?? '', true) ?? [];
-
-        if (!is_array($data['deskripsi']) || !is_array($data['varian'])) {
-            return $this->response->setStatusCode(400)->setJSON(['status' => 'error', 'pesan' => 'Format JSON tidak valid']);
-        }
-
-        if (isset($files['gambar_hover']) && $files['gambar_hover']->isValid()) {
-            $tmpPath = 'imgdum/barang/hover';
-            $files['gambar_hover']->move($tmpPath, $idBarang . '.webp');
-            $finalPath = 'img/barang/hover/' . $idBarang . '.webp';
-            if (file_exists($finalPath)) unlink($finalPath);
-            \Config\Services::image()
-                ->withFile($tmpPath . '/' . $idBarang . '.webp')
-                ->resize(300, 300, true, 'height')
-                ->save($finalPath);
-            unlink($tmpPath . '/' . $idBarang . '.webp');
-        }
-
-        $gambarPaths = [];
-        foreach ($files as $key => $file) {
-            if (strpos($key, 'gambar_') === 0 && $file->isValid()) {
-                $urutan = (int) explode('_', $key)[1];
-                $file->move('imgdum');
-                $filename = $file->getName();
-
-                foreach ([3000, 1000, 300] as $size) {
-                    $savePath = "img/barang/{$size}/{$idBarang}-" . ($urutan + 1) . '.webp';
-                    if (file_exists($savePath)) unlink($savePath);
-                    \Config\Services::image()
-                        ->withFile('imgdum/' . $filename)
-                        ->resize($size, $size, true, 'height')
-                        ->save($savePath);
-                }
-
-                unlink('imgdum/' . $filename);
-                $gambarPaths[$key] = "{$idBarang}-" . ($urutan + 1) . '.webp';
-            }
-        }
-
-        foreach ($gambarPaths as $key => $filename) {
-            $this->gambarBarangModel->where(['id' => $idBarang])->set([$key => $filename])->update();
-            $this->gambarBarang3000Model->where(['id' => $idBarang])->set([$key => $filename])->update();
-        }
-
-        $koleksiSelected = array_values(array_filter($koleksi, fn($k) => $k['id'] == $data['kategori']))[0]['nama'] ?? '';
-        $jenisSelected = array_values(array_filter($jenis, fn($j) => $j['id'] == $data['subkategori']))[0]['nama'] ?? '';
-
-        $dataUpdate = [
-            'nama' => $data['nama'] ?? null,
-            'harga' => $data['harga'] ?? null,
-            'deskripsi' => json_encode($data['deskripsi']),
-            'kategori' => $koleksiSelected,
-            'subkategori' => $jenisSelected,
-            'diskon' => $data['diskon'] ?? '0',
-            'varian' => json_encode($data['varian']),
-            'shopee' => $data['shopee'] ?? '',
-            'tokped' => $data['tokped'] ?? '',
-            'tiktok' => $data['tiktok'] ?? '',
-            'gambar' => $gambarPaths['gambar_0'] ?? $barangCur['gambar'],
-            'ruang_tamu' => $data['ruang_tamu'] ?? '0',
-            'ruang_keluarga' => $data['ruang_keluarga'] ?? '0',
-            'ruang_tidur' => $data['ruang_tidur'] ?? '0',
-        ];
-
-        $dataUpdate = array_filter($dataUpdate, fn($val) => !is_null($val));
-
-        if (empty($dataUpdate)) {
-            return $this->response->setStatusCode(400)->setJSON(['status' => 'error', 'pesan' => 'Tidak ada data untuk diperbarui']);
-        }
-
-
-        $this->barangModel->where(['id' => $idBarang])->set($dataUpdate)->update();
-
-        if ($this->request->isAJAX() || $this->request->getHeaderLine('Accept') === 'application/json') {
-            return $this->response->setJSON(['status' => 'ok', 'pesan' => 'Produk berhasil diupdate']);
-        }
-
-        return redirect()->to($pathname ? str_replace('@', '/', $pathname) : 'admin/product');
-    }
-
-
 
     public function mutasi($data = false)
     {
@@ -2454,7 +2356,7 @@ class AdminController extends BaseController
     }
     public function actionAddArticle()
     {
-        $judul = $this->request->getVar('judul');
+        $judul = $this->request->getPost('judul');
         $path = str_replace(",", "", $judul);
         $path = str_replace(".", "", $path);
         $path = str_replace("& ", "", $path);
@@ -2467,13 +2369,13 @@ class AdminController extends BaseController
             'id' => "A" . date("YmdHis", strtotime("+7 Hours")),
             'judul' => $judul,
             'path' => $path,
-            'penulis' => $this->request->getVar('penulis'),
-            'keywords' => $this->request->getVar('keywords'),
-            'kategori' => strtolower($this->request->getVar('kategori')),
-            'deskripsi' => $this->request->getVar('deskripsi'),
-            'waktu' => $this->request->getVar('waktu'),
-            'isi' => $this->request->getVar('isi'),
-            'header' => $this->request->getVar('header'),
+            'penulis' => $this->request->getPost('penulis'),
+            'keywords' => $this->request->getPost('keywords'),
+            'kategori' => strtolower($this->request->getPost('kategori')),
+            'deskripsi' => $this->request->getPost('deskripsi'),
+            'waktu' => $this->request->getPost('waktu'),
+            'isi' => $this->request->getPost('isi'),
+            'header' => $this->request->getPost('header'),
             'suka' => 0,
             'bagikan' => 0,
             'komen' => json_encode([]),
@@ -2504,7 +2406,7 @@ class AdminController extends BaseController
     }
     public function actionEditArticle($id)
     {
-        $judul = $this->request->getVar('judul');
+        $judul = $this->request->getPost('judul');
         $path = str_replace(",", "", $judul);
         $path = str_replace(".", "", $path);
         $path = str_replace("& ", "", $path);
@@ -2516,13 +2418,13 @@ class AdminController extends BaseController
         $this->artikelModel->where(['id' => $id])->set([
             'judul' => $judul,
             'path' => $path,
-            'penulis' => $this->request->getVar('penulis'),
-            'keywords' => $this->request->getVar('keywords'),
-            'kategori' => strtolower($this->request->getVar('kategori')),
-            'deskripsi' => $this->request->getVar('deskripsi'),
-            'waktu' => $this->request->getVar('waktu'),
-            'isi' => $this->request->getVar('isi'),
-            'header' => $this->request->getVar('header'),
+            'penulis' => $this->request->getPost('penulis'),
+            'keywords' => $this->request->getPost('keywords'),
+            'kategori' => strtolower($this->request->getPost('kategori')),
+            'deskripsi' => $this->request->getPost('deskripsi'),
+            'waktu' => $this->request->getPost('waktu'),
+            'isi' => $this->request->getPost('isi'),
+            'header' => $this->request->getPost('header'),
         ])->update();
         session()->setFlashdata('msg', 'Artikel berhasil diedit');
         return redirect()->to('/admin/article');
@@ -2608,19 +2510,19 @@ class AdminController extends BaseController
     {
         $image1 = $this->request->getFile('image1');
         $image1hp = $this->request->getFile('image1-hp');
-        $url1 = $this->request->getVar('url1');
+        $url1 = $this->request->getPost('url1');
 
         $image2 = $this->request->getFile('image2');
         $image2hp = $this->request->getFile('image2-hp');
-        $url2 = $this->request->getVar('url2');
+        $url2 = $this->request->getPost('url2');
 
         $image3 = $this->request->getFile('image3');
         $image3hp = $this->request->getFile('image3-hp');
-        $url3 = $this->request->getVar('url3');
+        $url3 = $this->request->getPost('url3');
 
         $image4 = $this->request->getFile('image4');
         $image4hp = $this->request->getFile('image4-hp');
-        $url4 = $this->request->getVar('url4');
+        $url4 = $this->request->getPost('url4');
 
         $dataUpdate = [];
         if ($path = $this->simpanFileHeaderSlider($image1, 1, 'desktop')) $dataUpdate['foto'] = $path;

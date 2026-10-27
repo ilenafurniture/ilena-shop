@@ -9,7 +9,6 @@
  * - actionAddProduct(): Process add product
  * - editProduct($id): Show edit product form
  * - actionEditProduct($id): Process edit product
- * - actionEditProductOld($path): Legacy edit handler
  * - activeProduct($id): Toggle product active status
  * - deleteProduct($id): Delete product
  * - gantiUkuran($koleksi, $jenis): Resize images (internal)
@@ -562,107 +561,6 @@ trait ProductTrait
                 'error' => $e->getMessage(),
             ]);
         }
-    }
-
-    /**
-     * Legacy edit product handler
-     */
-    public function actionEditProductOld($pathname = false)
-    {
-        $idBarang = $this->request->getVar('id');
-        if (!$idBarang) {
-            return $this->response->setStatusCode(400)->setJSON(['status' => 'error', 'pesan' => 'ID barang tidak dikirim']);
-        }
-
-        $barangCur = $this->barangModel->getBarangAdmin($idBarang);
-        if (!$barangCur) {
-            return $this->response->setStatusCode(404)->setJSON(['status' => 'error', 'pesan' => 'Barang tidak ditemukan']);
-        }
-
-        $koleksi = $this->koleksiModel->getKoleksi();
-        $jenis = $this->jenisModel->getJenis();
-        $data = $this->request->getVar();
-        $files = $this->request->getFiles();
-
-        $data['deskripsi'] = json_decode($data['deskripsi'] ?? '', true) ?? [];
-        $data['varian'] = json_decode($data['varian'] ?? '', true) ?? [];
-
-        if (!is_array($data['deskripsi']) || !is_array($data['varian'])) {
-            return $this->response->setStatusCode(400)->setJSON(['status' => 'error', 'pesan' => 'Format JSON tidak valid']);
-        }
-
-        if (isset($files['gambar_hover']) && $files['gambar_hover']->isValid()) {
-            $tmpPath = 'imgdum/barang/hover';
-            $files['gambar_hover']->move($tmpPath, $idBarang . '.webp');
-            $finalPath = 'img/barang/hover/' . $idBarang . '.webp';
-            if (file_exists($finalPath)) unlink($finalPath);
-            \Config\Services::image()
-                ->withFile($tmpPath . '/' . $idBarang . '.webp')
-                ->resize(300, 300, true, 'height')
-                ->save($finalPath);
-            unlink($tmpPath . '/' . $idBarang . '.webp');
-        }
-
-        $gambarPaths = [];
-        foreach ($files as $key => $file) {
-            if (strpos($key, 'gambar_') === 0 && $file->isValid()) {
-                $urutan = (int) explode('_', $key)[1];
-                $file->move('imgdum');
-                $filename = $file->getName();
-
-                foreach ([3000, 1000, 300] as $size) {
-                    $savePath = "img/barang/{$size}/{$idBarang}-" . ($urutan + 1) . '.webp';
-                    if (file_exists($savePath)) unlink($savePath);
-                    \Config\Services::image()
-                        ->withFile('imgdum/' . $filename)
-                        ->resize($size, $size, true, 'height')
-                        ->save($savePath);
-                }
-
-                unlink('imgdum/' . $filename);
-                $gambarPaths[$key] = "{$idBarang}-" . ($urutan + 1) . '.webp';
-            }
-        }
-
-        foreach ($gambarPaths as $key => $filename) {
-            $this->gambarBarangModel->where(['id' => $idBarang])->set([$key => $filename])->update();
-            $this->gambarBarang3000Model->where(['id' => $idBarang])->set([$key => $filename])->update();
-        }
-
-        $koleksiSelected = array_values(array_filter($koleksi, fn($k) => $k['id'] == $data['kategori']))[0]['nama'] ?? '';
-        $jenisSelected = array_values(array_filter($jenis, fn($j) => $j['id'] == $data['subkategori']))[0]['nama'] ?? '';
-
-        $dataUpdate = [
-            'nama' => $data['nama'] ?? null,
-            'harga' => $data['harga'] ?? null,
-            'deskripsi' => json_encode($data['deskripsi']),
-            'kategori' => $koleksiSelected,
-            'subkategori' => $jenisSelected,
-            'diskon' => $data['diskon'] ?? '0',
-            'varian' => json_encode($data['varian']),
-            'shopee' => $data['shopee'] ?? '',
-            'tokped' => $data['tokped'] ?? '',
-            'tiktok' => $data['tiktok'] ?? '',
-            'gambar' => $gambarPaths['gambar_0'] ?? $barangCur['gambar'],
-            'ruang_tamu' => $data['ruang_tamu'] ?? '0',
-            'ruang_keluarga' => $data['ruang_keluarga'] ?? '0',
-            'ruang_tidur' => $data['ruang_tidur'] ?? '0',
-            'tgl_update' => date('Y-m-d H:i:s', strtotime('+7 hours')),
-        ];
-
-        $dataUpdate = array_filter($dataUpdate, fn($val) => !is_null($val));
-
-        if (empty($dataUpdate)) {
-            return $this->response->setStatusCode(400)->setJSON(['status' => 'error', 'pesan' => 'Tidak ada data untuk diperbarui']);
-        }
-
-        $this->barangModel->where(['id' => $idBarang])->set($dataUpdate)->update();
-
-        if ($this->request->isAJAX() || $this->request->getHeaderLine('Accept') === 'application/json') {
-            return $this->response->setJSON(['status' => 'ok', 'pesan' => 'Produk berhasil diupdate']);
-        }
-
-        return redirect()->to($pathname ? str_replace('@', '/', $pathname) : 'admin/product');
     }
 
     /**
