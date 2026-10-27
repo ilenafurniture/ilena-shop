@@ -580,11 +580,13 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                 $relatedSlots = array_values(array_filter(array_map('trim', explode(',', (string) ($relatedVariantData[0]['urutan_gambar'] ?? '1')))));
                 $relatedCardSlot = $relatedSlots[0] ?? '1';
                 $relatedProductUrl = '/product/' . rawurlencode(str_replace(' ', '-', (string) $p['nama']));
-                $relatedImageFallback = base_url('product-cover/' . rawurlencode((string) $p['id'])) . '?size=300&v=' . $relatedVersion;
-                $relatedCdnImage = $productImageCdn !== '' ? $productImageCdn . '/products/300/' . rawurlencode((string) $p['id']) . '.webp?v=' . $relatedVersion : '';
-                $relatedLocalImage = is_file(FCPATH . 'uploads/product-images/300/' . $p['id'] . '.webp')
-                    ? base_url('uploads/product-images/300/' . rawurlencode((string) $p['id']) . '.webp') . '?v=' . $relatedVersion
-                    : (is_file(FCPATH . 'img/barang/300/' . $p['id'] . '.webp') ? base_url('img/barang/300/' . rawurlencode((string) $p['id']) . '.webp') . '?v=' . $relatedVersion : '');
+                $relatedImageFallback = base_url('product-cover/' . rawurlencode((string) $p['id'])) . '?slot=' . rawurlencode($relatedCardSlot) . '&size=300&v=' . $relatedVersion;
+                $relatedCdnImage = $productImageCdn !== '' ? $productImageCdn . '/products/300/' . rawurlencode((string) $p['id']) . '-' . rawurlencode($relatedCardSlot) . '.webp?v=' . $relatedVersion : '';
+                $relatedLocalSlot300Relative = 'uploads/product-images/300/' . $p['id'] . '-' . $relatedCardSlot . '.webp';
+                $relatedLegacySlot300Relative = 'img/barang/300/' . $p['id'] . '-' . $relatedCardSlot . '.webp';
+                $relatedLocalImage = is_file(FCPATH . $relatedLocalSlot300Relative)
+                    ? base_url($relatedLocalSlot300Relative) . '?v=' . $relatedVersion
+                    : (is_file(FCPATH . $relatedLegacySlot300Relative) ? base_url($relatedLegacySlot300Relative) . '?v=' . $relatedVersion : '');
                 $relatedLocal1000Relative = 'uploads/product-images/1000/' . $p['id'] . '-' . $relatedCardSlot . '.webp';
                 $relatedLegacy1000Relative = 'img/barang/1000/' . $p['id'] . '-' . $relatedCardSlot . '.webp';
                 $relatedLocal1000Image = is_file(FCPATH . $relatedLocal1000Relative)
@@ -618,7 +620,7 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                     </div>
                     <a href="<?= esc($relatedProductUrl, 'attr') ?>" class="gambar">
                         <img class="img-pic" id="img<?= $ind_p ?>"
-                            src="<?= esc($relatedLocalImage !== '' ? $relatedLocalImage : ($relatedCdnImage !== '' ? $relatedCdnImage : $productCoverUrl($p)), 'attr') ?>"
+                            src="<?= esc($relatedLocalImage !== '' ? $relatedLocalImage : ($relatedCdnImage !== '' ? $relatedCdnImage : $relatedImageFallback), 'attr') ?>"
                             <?= $relatedLocalImage === '' && $relatedCdnImage !== '' ? 'data-image-fallback="' . esc($relatedImageFallback, 'attr') . '"' : '' ?>
                             <?= $relatedLocalImage !== '' && $relatedLocal1000Image !== '' ? 'srcset="' . esc($relatedLocalImage . ' 300w, ' . $relatedLocal1000Image . ' 1000w', 'attr') . '"' : '' ?>
                             sizes="(max-width: 600px) 46vw, (max-width: 1100px) 30vw, 300px"
@@ -653,8 +655,13 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                             const slot = (e.target.dataset.slot || e.target.value.split("-")[0] || "1").split(",")[0];
                             const namaVarian = e.target.dataset.name || e.target.value.split("-").slice(1).join("-") || "default";
                             const stok = Number(e.target.dataset.stok || 0);
-                            // Use the requested variant slot; size=300 selects the shared generic cover on R2.
-                            img<?= $ind_p ?>Elm.src = "<?= base_url('product-cover/' . $p['id']) ?>?slot=" + encodeURIComponent(slot) + '&v=<?= $relatedVersion ?>';
+                            // Keep the selected variant's slot and thumbnail source in sync.
+                            img<?= $ind_p ?>Elm.removeAttribute('srcset');
+                            img<?= $ind_p ?>Elm.dataset.imageFallback = "<?= base_url('product-cover/' . rawurlencode((string) $p['id'])) ?>?slot=" + encodeURIComponent(slot) + '&size=300&v=<?= $relatedVersion ?>';
+                            img<?= $ind_p ?>Elm.dataset.fallbackTried = '';
+                            img<?= $ind_p ?>Elm.classList.remove('is-loaded');
+                            img<?= $ind_p ?>Elm.closest('.gambar')?.classList.remove('is-image-loaded');
+                            img<?= $ind_p ?>Elm.src = <?= json_encode($productImageCdn !== '' ? $productImageCdn . '/products/300/' . rawurlencode((string) $p['id']) . '-' : base_url('product-cover/' . rawurlencode((string) $p['id'])) . '?slot=') ?> + encodeURIComponent(slot) + <?= json_encode($productImageCdn !== '' ? '.webp?v=' . $relatedVersion : '&size=300&v=' . $relatedVersion) ?>;
 
                             btnKeranjang<?= $ind_p ?>Elm.action = stok > 0 ? "/addcart/<?= $p['id'] ?>/" + encodeURIComponent(namaVarian) + "/1" : "";
                             const quickBtn = btnKeranjang<?= $ind_p ?>Elm.querySelector('button');

@@ -6380,3 +6380,17 @@ body.ilena-storefront .product-detail-soft #container-market .marketplace {
 @media (prefers-reduced-motion: reduce) {
     body.ilena-storefront .product-detail-soft .ilena-product-collection-link { transition: none; }
 }
+
+/* Related products use a compact grid and show the complete furniture photo. */
+body.ilena-storefront .ilena-product-related-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); column-gap: clamp(12px, 1.25vw, 18px); row-gap: 26px; }
+body.ilena-storefront .ilena-product-related-grid .card1 .gambar { background: #fff; }
+body.ilena-storefront .ilena-product-related-grid .card1 .gambar img { object-fit: contain; background: #fff; }
+body.ilena-storefront .ilena-product-related-grid .card1 .container-varian { min-height: 26px; margin: 5px 0 2px; }
+body.ilena-storefront .ilena-product-related-grid .card1 .container-varian label { width: 18px; height: 18px; }
+body.ilena-storefront .ilena-product-related-grid .card1 h5 { font-size: clamp(13px, 1vw, 15px); }
+@media (max-width: 900px) {
+    body.ilena-storefront .ilena-product-related-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+    body.ilena-storefront .ilena-product-related-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 12px; row-gap: 22px; }
+}
