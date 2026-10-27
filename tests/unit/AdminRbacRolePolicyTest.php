@@ -96,12 +96,17 @@ final class AdminRbacRolePolicyTest extends CIUnitTestCase
         }
         $db->query('CREATE TABLE ' . $db->getPrefix() . 'user (email TEXT PRIMARY KEY, role TEXT, active TEXT)');
         $db->table('user')->insertBatch([
+            ['email' => 'dev@example.test', 'role' => '1', 'active' => '1'],
             ['email' => 'staff@example.test', 'role' => '5', 'active' => '1'],
             ['email' => 'disabled@example.test', 'role' => '5', 'active' => '0'],
             ['email' => 'demoted@example.test', 'role' => '0', 'active' => '1'],
         ]);
 
         $rbac = new AdminRbacService();
+        $this->assertTrue($rbac->sessionAccountMatchesDatabase('dev@example.test', '1'));
+        $this->assertTrue($rbac->canAccessOnlineOrdersAsStaff('dev@example.test', '1'));
+        $this->assertFalse($rbac->canAccessOnlineOrdersAsStaff('demoted@example.test', '1'));
+        $this->assertFalse($rbac->canAccessOnlineOrdersAsStaff('disabled@example.test', '5'));
         $this->assertTrue($rbac->sessionAccountMatchesDatabase('STAFF@example.test', '5'));
         $this->assertFalse($rbac->sessionAccountMatchesDatabase('disabled@example.test', '5'));
         $this->assertFalse($rbac->sessionAccountMatchesDatabase('demoted@example.test', '5'));

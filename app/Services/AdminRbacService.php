@@ -207,6 +207,20 @@ class AdminRbacService
         }
     }
 
+    /** Validate the current account before granting privileged online-order access. */
+    public function canAccessOnlineOrdersAsStaff(?string $email, ?string $sessionRole): bool
+    {
+        if (!$this->sessionAccountMatchesDatabase($email, $sessionRole)) {
+            return false;
+        }
+
+        if ((string) $sessionRole === '1') {
+            return true;
+        }
+
+        return $this->hasPermission((string) $email, 'orders_online');
+    }
+
     public function hasAnyAdminAccess(string $email): bool
     {
         return count($this->userPermissions($email)) > 0;

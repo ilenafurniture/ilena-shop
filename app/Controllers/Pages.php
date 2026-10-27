@@ -2795,8 +2795,15 @@ class Pages extends BaseController
         $orderEmail = PaymentSafety::normalizeEmail((string)($order['email'] ?? ''));
         $sessionEmail = PaymentSafety::normalizeEmail((string)session()->get('email'));
         $verified = session()->get('isLogin') && (string)session()->get('active') === '1';
-        // Staff still need to service orders belonging to suspended customers.
-        if ($verified && ((string)session()->get('role') === '1' || ($sessionEmail !== '' && (new AdminRbacService())->hasPermission($sessionEmail,'orders_online')))) return true;
+        // Staff still need to service orders belonging to suspended customers, but
+        // the cached session role must still match the active account in the DB.
+        $sessionRole = (string) session()->get('role');
+        if ($verified && in_array($sessionRole, ['1', '5'], true)) {
+            if (!(new AdminRbacService())->canAccessOnlineOrdersAsStaff($sessionEmail, $sessionRole)) {
+                return false;
+            }
+            return true;
+        }
         $allowed = $verified && $sessionEmail !== '' && $sessionEmail !== 'tamu' && hash_equals($orderEmail, $sessionEmail);
         $expected = $this->orderAccessToken($orderId, $order);
         $rawToken = $this->request->getGet('access_token') ?? ((array)session()->get('checkout_order_tokens'))[$orderId] ?? '';
