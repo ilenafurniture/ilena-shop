@@ -80,6 +80,16 @@ foreach (['koleksi', 'jenis', 'ruang', 'varian'] as $multiFacet) {
     }
     $_GET[$multiFacet] = implode(' ', $normalizedFacetValues);
 }
+// A price range is a single-valued facet. Ignore malformed/repeated values
+// instead of letting an array or unknown range reach the price switch.
+if (isset($_GET['harga'])) {
+    if (!is_scalar($_GET['harga']) || !in_array((string) $_GET['harga'], ['0', '1', '2', '3', '4'], true)) {
+        unset($_GET['harga']);
+    } else {
+        $_GET['harga'] = (string) $_GET['harga'];
+    }
+}
+$hasAppliedCatalogFilters = isset($_GET['harga']) || !empty($_GET['koleksi']) || !empty($_GET['jenis']) || !empty($_GET['ruang']) || !empty($_GET['varian']);
 if (isset($_GET['koleksi'])) {
     if ($_GET['koleksi'] != '') {
         $koleksi = explode(" ", $_GET['koleksi']);
@@ -136,7 +146,9 @@ if (isset($_GET['harga'])) {
         $produkLama = $produk;
         $produk = [];
         foreach ($produkLama as $p) {
-            $hargaDiskon = (int)$p['harga'] * (100 - $p['diskon']) / 100;
+            // Use the same effective sale-price calculation as product cards
+            // and checkout, including scheduled discounts and rounding.
+            $hargaDiskon = \App\Services\CatalogPricing::unitPrice($p);
             switch ($_GET['harga']) {
                 case '0':
                     if ($hargaDiskon < 5000000)
@@ -188,6 +200,14 @@ $catalogPageUrl = static function (int $page) use ($catalogRoute, $isSmartSearch
     if ($page > 1) $params['pag'] = $page;
     return $catalogRoute . ($params ? '?' . http_build_query($params) : '');
 };
+$catalogWithoutPriceParams = [];
+if ($isSmartSearch && $smartQuery !== '') $catalogWithoutPriceParams['q'] = $smartQuery;
+foreach (['koleksi', 'jenis', 'ruang', 'varian'] as $facetKey) {
+    if (isset($_GET[$facetKey]) && is_scalar($_GET[$facetKey]) && $_GET[$facetKey] !== '') {
+        $catalogWithoutPriceParams[$facetKey] = (string) $_GET[$facetKey];
+    }
+}
+$catalogRemovePriceUrl = $catalogRoute . ($catalogWithoutPriceParams ? '?' . http_build_query($catalogWithoutPriceParams) : '');
 
 //nggabungin produk sejenis
 $produkLama = $produk;
@@ -636,6 +656,17 @@ if (isset($_GET['ruang'])) {
                 <p class="mt-3 mb-0"><a href="/product">Lihat semua produk</a></p>
             </section>
             <?php } ?>
+            <?php } ?>
+            <?php if (!$isSmartSearch && $catalogTotalResults === 0) { ?>
+            <section class="ilena-catalog-empty" role="status" aria-live="polite">
+                <p class="ilena-catalog-empty__eyebrow">Belum ada hasil</p>
+                <h2>Tidak ada produk yang cocok dengan kombinasi filter ini.</h2>
+                <p><?= isset($_GET['harga']) ? 'Rentang harga dihitung dari harga setelah diskon. Coba rentang harga lain atau kurangi pilihan koleksi.' : ($hasAppliedCatalogFilters ? 'Coba kurangi pilihan koleksi atau jenis, atau reset filter untuk melihat seluruh katalog.' : 'Produk sedang tidak tersedia. Silakan periksa kembali beberapa saat lagi.'); ?></p>
+                <div class="ilena-catalog-empty__actions">
+                    <?php if (isset($_GET['harga'])) { ?><a href="<?= esc($catalogRemovePriceUrl, 'attr'); ?>">Hapus filter harga</a><?php } ?>
+                    <?php if ($hasAppliedCatalogFilters) { ?><a href="<?= esc($isSmartSearch ? '/find?' . http_build_query(['q' => $smartQuery]) : '/product', 'attr'); ?>">Reset semua filter</a><?php } ?>
+                </div>
+            </section>
             <?php } ?>
             <div class="container-card1 ilena-catalog-grid">
                 <?php foreach ($produk as $ind_p => $p) { ?>
