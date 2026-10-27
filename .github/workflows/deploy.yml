@@ -57,9 +57,9 @@ jobs:
             echo "ERROR: LSPHP 8.3 or Composer is unavailable."
             exit 1
           fi
-          # Composer requires the CLI SAPI; the server's default PHP CLI is 8.1,
-          # so ignore only the root PHP constraint during installation. The web
-          # runtime and migrations use LSPHP 8.3 and satisfy the ^8.2 requirement.
+          # Composer requires the CLI SAPI; the server's default PHP CLI is 8.1.
+          # Skip PHP platform validation for installation only; the web runtime
+          # and migrations use LSPHP 8.3 and satisfy the project's ^8.2 requirement.
           COMPOSER_ALLOW_SUPERUSER=1 "$COMPOSER_BIN" install --no-dev --prefer-dist --no-interaction --optimize-autoloader --ignore-platform-req=php
 
           echo "[deploy] run database migrations"
