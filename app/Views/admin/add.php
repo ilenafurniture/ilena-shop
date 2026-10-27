@@ -623,13 +623,17 @@ const koleksi = <?= $koleksiJson ?>;
 const jenis   = <?= $jenisJson ?>;
 const idProduct = <?= \App\Services\ScriptJson::encode((string) ($idProduct ?? '')) ?>;
 const produk   = <?= isset($produkJson) ? $produkJson : 'null' ?>;
+const PRODUCT_IMAGE_VERSIONS = <?= isset($productImageVersionsJson) ? $productImageVersionsJson : '{}' ?>;
 
 // URL preview gambar lama saat edit. Wajib lewat route storage, bukan /img/barang,
 // supaya gambar R2/uploads langsung terbaca dan tidak balik ke asset Git lama.
 const PRODUCT_IMAGE_VERSION = <?= \App\Services\ScriptJson::encode((string) (($produk && !empty($produk['tgl_update'])) ? strtotime((string) $produk['tgl_update']) : time())) ?>;
 const URL_HOVER = <?= \App\Services\ScriptJson::encode(base_url('viewpichover/' . ($produk['id'] ?? '')) . '?proxy=1') ?>;
 function productCoverPreviewUrl(slot) {
-  return <?= \App\Services\ScriptJson::encode(base_url('product-cover/' . ($produk['id'] ?? '')) . '?proxy=1&slot=') ?> + encodeURIComponent(slot || "1");
+  const normalizedSlot = String(slot || '1');
+  const baseUrl = <?= \App\Services\ScriptJson::encode(base_url('product-cover/' . ($produk['id'] ?? '')) . '?proxy=1&size=300&slot=') ?>;
+  const version = PRODUCT_IMAGE_VERSIONS[normalizedSlot] || PRODUCT_IMAGE_VERSION;
+  return `${baseUrl}${encodeURIComponent(normalizedSlot)}&v=${encodeURIComponent(version)}`;
 }
 
 // === Helper: format waktu untuk input[type=datetime-local] ===
@@ -847,7 +851,7 @@ const App = () => {
         (v.urutan_gambar || '')
           .split(',')
           .filter(Boolean)
-          .map(n => makeImageItem(withCacheBuster(productCoverPreviewUrl(n)), null, n))
+          .map(n => makeImageItem(productCoverPreviewUrl(n), null, n))
       );
       setGambarSrc(src);
       setGambarFile(src.map(group => group.map(item => item.file)));

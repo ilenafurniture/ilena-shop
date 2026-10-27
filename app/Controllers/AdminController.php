@@ -1081,6 +1081,44 @@ class AdminController extends BaseController
         $product['deskripsi'] = json_decode($product['deskripsi'] ?? '[]', true);
         $product['varian']    = json_decode($product['varian'] ?? '[]', true);
 
+        // Give each admin preview a slot-specific cache key. Updating one photo
+        // must not invalidate the browser cache for every other product photo.
+        $productImageVersions = [];
+        $fallbackImageVersion = (string) (!empty($product['tgl_update']) ? strtotime((string) $product['tgl_update']) : time());
+        foreach (is_array($product['varian']) ? $product['varian'] : [] as $variant) {
+            foreach (explode(',', (string) ($variant['urutan_gambar'] ?? '')) as $slot) {
+                $slot = trim($slot);
+                if ($slot === '' || !ctype_digit($slot)) {
+                    continue;
+                }
+
+                $safeSlot = (string) ((int) $slot);
+                if (isset($productImageVersions[$safeSlot])) {
+                    continue;
+                }
+
+                $mtimes = [];
+                foreach ([
+                    "uploads/product-images/300/{$id_product}-{$safeSlot}.webp",
+                    "img/barang/300/{$id_product}-{$safeSlot}.webp",
+                    "uploads/product-images/1000/{$id_product}-{$safeSlot}.webp",
+                    "uploads/product-images/3000/{$id_product}-{$safeSlot}.webp",
+                    "img/barang/1000/{$id_product}-{$safeSlot}.webp",
+                    "img/barang/3000/{$id_product}-{$safeSlot}.webp",
+                ] as $relativePath) {
+                    $absolutePath = rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
+                        . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath);
+                    if (is_file($absolutePath)) {
+                        $mtimes[] = (int) filemtime($absolutePath);
+                    }
+                }
+
+                $productImageVersions[$safeSlot] = $mtimes === []
+                    ? $fallbackImageVersion
+                    : (string) max($mtimes);
+            }
+        }
+
         $koleksi = $this->koleksiModel->getKoleksi();
         $jenis   = $this->jenisModel->getJenis();
 
@@ -1110,6 +1148,7 @@ class AdminController extends BaseController
             'jenis'            => $jenis,
             'produk'           => $product,
             'produkJson'       => \App\Services\ScriptJson::encode($product),
+            'productImageVersionsJson' => \App\Services\ScriptJson::encode($productImageVersions),
             'idProduct'        => $id_product,
             'val'              => ['msg' => session()->getFlashdata('val-id')],
         ];
