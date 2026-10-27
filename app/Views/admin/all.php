@@ -20,19 +20,28 @@ $barangThumbUrl = function ($product) {
         $slots = array_values(array_filter(array_map('trim', explode(',', (string) $varian[0]['urutan_gambar']))));
         $slot = $slots[0] ?? '1';
     }
-    $sourceRelative = 'img/barang/1000/' . $id . '-' . $slot . '.webp';
-    $sourceAbsolute = FCPATH . $sourceRelative;
-    if (!is_file($sourceAbsolute)) {
-        $sourceRelative = 'img/barang/3000/' . $id . '-' . $slot . '.webp';
-        $sourceAbsolute = FCPATH . $sourceRelative;
+    $candidates = [
+        'uploads/product-images/300/' . $id . '-' . $slot . '.webp',
+        'img/barang/300/' . $id . '-' . $slot . '.webp',
+        'uploads/product-images/300/' . $id . '.webp',
+        'img/barang/300/' . $id . '.webp',
+    ];
+    $sourceRelative = null;
+    foreach ($candidates as $candidate) {
+        if (is_file(FCPATH . str_replace('/', DIRECTORY_SEPARATOR, $candidate))) {
+            $sourceRelative = $candidate;
+            break;
+        }
     }
-    if (!is_file($sourceAbsolute)) {
-        $sourceRelative = 'img/barang/300/' . $id . '.webp';
-        $sourceAbsolute = FCPATH . $sourceRelative;
-    }
-    $fileVersion = is_file($sourceAbsolute) ? (int) filemtime($sourceAbsolute) : time();
+    $sourceAbsolute = $sourceRelative !== null
+        ? FCPATH . str_replace('/', DIRECTORY_SEPARATOR, $sourceRelative)
+        : null;
+    $fileVersion = $sourceAbsolute !== null ? (int) filemtime($sourceAbsolute) : 0;
     $dbVersion = is_array($product) && !empty($product['tgl_update']) ? (int) strtotime((string) $product['tgl_update']) : 0;
-    $version = max($fileVersion, $dbVersion);
+    $version = max($fileVersion, $dbVersion) ?: 1;
+    if ($sourceRelative !== null) {
+        return base_url($sourceRelative) . '?v=' . $version;
+    }
     return base_url('product-cover/' . rawurlencode($id)) . '?slot=' . urlencode($slot) . '&size=300&v=' . $version;
 };
 ?>
@@ -197,8 +206,7 @@ $barangThumbUrl = function ($product) {
 }
 
 .product-select,
-#selectAllProducts,
-#selectAllProductsMobile {
+#selectAllProducts {
     width: 18px;
     height: 18px;
     accent-color: #b31217;
@@ -206,6 +214,22 @@ $barangThumbUrl = function ($product) {
 
 .filter-select {
     min-width: 220px;
+}
+
+.product-page-select-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    flex: 0 0 auto;
+    color: var(--slate-600);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.product-page-select-all input {
+    width: 18px;
+    height: 18px;
+    accent-color: #b31217;
 }
 
 .searchbox {
@@ -368,10 +392,6 @@ $barangThumbUrl = function ($product) {
     display: block;
 }
 
-.hide-ke-show-block {
-    display: none;
-}
-
 @media (max-width: 860px) {
     .admin-product-hero {
         padding: 16px;
@@ -403,18 +423,13 @@ $barangThumbUrl = function ($product) {
         min-width: 140px;
     }
 
-    .show-block-ke-hide {
-        display: none;
-    }
-
-    .hide-ke-show-block {
-        display: block;
-    }
+    .show-block-ke-hide { display: block; }
 }
 
 /* Mini table (mobile wrapper) */
 .mini-wrap {
-    width: 720px;
+    width: 100%;
+    min-width: 0;
 }
 
 /* membuat scroll-x */
@@ -551,7 +566,6 @@ $barangThumbUrl = function ($product) {
 .isi-table { padding: 13px 12px; border-bottom-color: #eae6de; }
 .isi-table:hover { background: rgba(248, 246, 241, .72); }
 .bulk-toolbar { border: 0; border-top: 1px solid #ded9cf; border-bottom: 1px solid #ded9cf; border-radius: 0; background: transparent; box-shadow: none; }
-.hide-ke-show-block { border-top: 1px solid #ded9cf; }
 @media (max-width: 860px) {
     .page-wrap { padding: 10px 12px 28px; }
     .admin-product-hero { padding: 8px 0 15px; }
@@ -561,7 +575,6 @@ $barangThumbUrl = function ($product) {
 }
 /* Mobile catalog: convert the legacy 720px mini-table into readable, tap-friendly rows. */
 @media (max-width: 860px) {
-    .hide-ke-show-block { overflow: visible !important; border-top: 0; }
     .mini-wrap { width:100%; min-width:0; }
     .mini-wrap > .header-table { display:none; }
     .mini-wrap > .isi-table {
@@ -612,6 +625,10 @@ $barangThumbUrl = function ($product) {
     <!-- Filter dan pencarian untuk seluruh katalog -->
     <div class="toolbar">
         <form class="toolbar-left" id="productFilterForm" method="get" action="/admin/product">
+            <label class="product-page-select-all" for="selectAllProducts">
+                <input id="selectAllProducts" type="checkbox" aria-label="Pilih semua produk di halaman ini">
+                <span>Pilih halaman</span>
+            </label>
             <div class="filter-select">
                 <select class="form-select" name="koleksi" aria-label="Filter koleksi" onchange="this.form.submit()">
                     <option value="" <?= $koleksiterpilih == '' ? 'selected' : '' ?>>Semua koleksi</option>
@@ -657,11 +674,9 @@ $barangThumbUrl = function ($product) {
     </div>
 
     <!-- Desktop-style table -->
-    <div class="container-table show-block-ke-hide">
+    <div class="container-table show-block-ke-hide mini-wrap">
         <div class="header-table">
-            <div style="flex: .35; color:black;" class="col-center">
-                <input id="selectAllProducts" type="checkbox" aria-label="Pilih semua produk di halaman ini">
-            </div>
+            <div style="flex: .35; color:black;" class="col-center"><strong>Pilih</strong></div>
             <div style="flex: .8; color:black;"><strong>Gambar</strong></div>
             <div style="flex: 2; color:black;"><strong>Nama & ID</strong></div>
             <div style="flex: 1; color:black;"><strong>Harga</strong></div>
@@ -733,86 +748,7 @@ $barangThumbUrl = function ($product) {
         <?php } ?>
     </div>
 
-    <!-- Mobile-friendly (scroll-x) -->
-    <div class="hide-ke-show-block" style="overflow:auto;">
-        <div class="container-table mini-wrap">
-            <div class="header-table">
-                <div style="flex: .45; color:black;" class="col-center">
-                    <input id="selectAllProductsMobile" type="checkbox" aria-label="Pilih semua produk di halaman ini">
-                </div>
-                <div style="flex: 1; color:black;"><strong>Gambar</strong></div>
-                <div style="flex: 1.4; color:black;"><strong>Nama & ID</strong></div>
-                <div style="flex: 1; color:black;"><strong>Harga</strong></div>
-                <div style="flex: 1; color:black;"><strong>Stok</strong></div>
-                <div style="flex: .8; color:black;"><strong>Status</strong></div>
-                <div style="flex: .8; color:black;" class="col-center"><strong>Aksi</strong></div>
-            </div>
-
-            <?php foreach ($produk as $ind_p => $p) { ?>
-            <div class="isi-table" data-filter="<?= strtolower($p['nama'].' '.$p['kategori'].' '.$p['id']); ?>">
-                <div style="flex: .45;" class="col-center">
-                    <input class="product-select" type="checkbox" value="<?= esc($p['id']); ?>"
-                        aria-label="Pilih produk <?= esc($p['nama']); ?>" onclick="event.stopPropagation();">
-                </div>
-                <div style="flex: 1; cursor:pointer"
-                    onclick="pergiKeProduct('<?= esc(str_replace(' ', '-', $p['nama']), 'js'); ?>')">
-                    <img style="width: 50px; height: 50px; object-fit:cover; border-radius:10px; border:1px solid var(--slate-200)"
-                        id="img<?= $ind_p ?>" src="<?= $barangThumbUrl($p); ?>"
-                        alt="<?= htmlspecialchars($p['nama'], ENT_QUOTES); ?>" loading="lazy" decoding="async">
-                </div>
-
-                <div style="flex: 1.4; cursor:pointer"
-                    class="d-flex flex-column align-items-start justify-content-center"
-                    onclick="pergiKeProduct('<?= esc(str_replace(' ', '-', $p['nama']), 'js'); ?>')">
-                    <span class="badge-chip" style="margin-bottom:4px;">
-                        <i class="material-icons">label</i><?= esc(ucfirst((string)($p['kategori'] ?? ''))); ?>
-                    </span>
-                    <p class="fw-bold m-0 mini-text-sm" style="letter-spacing:-.2px;"><?= esc(ucwords((string)($p['nama'] ?? ''))); ?></p>
-                    <p class="m-0 id-mono">#<?= esc($p['id'] ?? ''); ?></p>
-                </div>
-
-                <div style="flex: 1;" class="mini-text-sm mini-price">Rp
-                    <?= number_format((int)$p['harga'], 0, ',', '.'); ?></div>
-
-                <div style="flex: 1;" class="mini-text-sm">
-                    <span class="stock-summary-total"><?= (int)($p['stok_total'] ?? 0); ?> unit</span>
-                    <div class="stock-chip-list">
-                        <?php foreach (($p['varian'] ?? []) as $variant): if (!is_array($variant)) continue; $variantStock = max(0, (int)($variant['stok'] ?? 0)); ?>
-                        <span class="stock-chip <?= $variantStock === 0 ? 'is-empty' : ''; ?>"><?= esc($variant['nama'] ?? 'Varian'); ?> <strong><?= $variantStock; ?></strong></span>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-
-                <div style="flex: .8;">
-                    <div class="status-control">
-                      <div class="checkbox-apple">
-                        <input onchange="ubahStatus('<?= $p['id']; ?>', this)" class="yep" id="check-apple-m<?= $ind_p ?>"
-                            data-product-id="<?= esc($p['id'], 'attr'); ?>" type="checkbox" aria-label="Ubah status tayang <?= esc($p['nama'], 'attr'); ?>" <?= $p['status_tayang'] ? 'checked' : ''; ?>>
-                        <label for="check-apple-m<?= $ind_p ?>"></label>
-                      </div>
-                      <span data-status-label="<?= esc($p['id'], 'attr'); ?>" class="status-label <?= $p['status_tayang'] ? 'is-live' : ''; ?>"><?= $p['status_tayang'] ? 'Tayang' : 'Off'; ?></span>
-                    </div>
-                </div>
-
-                <div style="flex: .8;" class="col-center">
-                    <div class="actions" style="justify-content:center;">
-                        <a class="btn-icon" href="/admin/editproduct/<?= esc($p['id'], 'attr'); ?>" title="Edit produk" aria-label="Edit <?= esc($p['nama'], 'attr'); ?>"><i
-                                class="material-icons">edit</i></a>
-                        <form action="/admin/deleteproduct/<?= $p['id']; ?>" method="post" style="display:inline-flex"
-                            data-ilena-confirm="<?= esc('Hapus produk ' . $p['nama'] . '? Data gambar produk juga akan ikut dihapus.'); ?>" data-ilena-confirm-title="Hapus produk">
-                            <?= csrf_field(); ?>
-                            <button class="btn-icon btn-del" type="submit" title="Hapus">
-                                <i class="material-icons">delete</i>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <?php } ?>
-        </div>
-    </div>
-
-    <!-- Pagination (tetap sama) -->
+    <!-- Pagination -->
     <div class="container-pag">
         <?php if ($pag > 1) { ?>
         <a class="item-pag"
@@ -821,12 +757,24 @@ $barangThumbUrl = function ($product) {
         </a>
         <?php } ?>
 
-        <?php for ($i = 0; $i < $hitungPag; $i++) { ?>
-        <a class="item-pag <?= $pag == ($i + 1) ? 'active' : ''; ?>"
-            href="/admin/product?<?= esc(http_build_query(array_merge($paginationFilters, ['pag' => $i + 1])), 'attr') ?>">
-            <?= $i + 1; ?>
+        <?php
+            $pageStart = max(1, $pag - 2);
+            $pageEnd = min($hitungPag, $pag + 2);
+            if ($pageStart > 1):
+        ?>
+        <a class="item-pag" href="/admin/product?<?= esc(http_build_query(array_merge($paginationFilters, ['pag' => 1])), 'attr') ?>">1</a>
+        <?php if ($pageStart > 2): ?><span class="item-pag" aria-hidden="true">…</span><?php endif; ?>
+        <?php endif; ?>
+        <?php for ($i = $pageStart; $i <= $pageEnd; $i++): ?>
+        <a class="item-pag <?= $pag === $i ? 'active' : ''; ?>" <?= $pag === $i ? 'aria-current="page"' : ''; ?>
+            href="/admin/product?<?= esc(http_build_query(array_merge($paginationFilters, ['pag' => $i])), 'attr') ?>">
+            <?= $i; ?>
         </a>
-        <?php } ?>
+        <?php endfor; ?>
+        <?php if ($pageEnd < $hitungPag): ?>
+        <?php if ($pageEnd < $hitungPag - 1): ?><span class="item-pag" aria-hidden="true">…</span><?php endif; ?>
+        <a class="item-pag" href="/admin/product?<?= esc(http_build_query(array_merge($paginationFilters, ['pag' => $hitungPag])), 'attr') ?>"><?= $hitungPag; ?></a>
+        <?php endif; ?>
 
         <?php if ($pag < $hitungPag) { ?>
         <a class="item-pag"
@@ -891,7 +839,6 @@ function pergiKeProduct(nama_produk) {
     const editLink = document.getElementById('bulkEditLink');
     const clearBtn = document.getElementById('bulkClearBtn');
     const selectAll = document.getElementById('selectAllProducts');
-    const selectAllMobile = document.getElementById('selectAllProductsMobile');
 
     function uniqueCheckedIds() {
         const ids = [];
@@ -927,20 +874,12 @@ function pergiKeProduct(nama_produk) {
     if (selectAll) {
         selectAll.addEventListener('change', function() {
             setAllVisible(this.checked);
-            if (selectAllMobile) selectAllMobile.checked = this.checked;
-        });
-    }
-    if (selectAllMobile) {
-        selectAllMobile.addEventListener('change', function() {
-            setAllVisible(this.checked);
-            if (selectAll) selectAll.checked = this.checked;
         });
     }
     if (clearBtn) {
         clearBtn.addEventListener('click', function() {
             document.querySelectorAll('.product-select').forEach((checkbox) => checkbox.checked = false);
             if (selectAll) selectAll.checked = false;
-            if (selectAllMobile) selectAllMobile.checked = false;
             updateToolbar();
         });
     }
