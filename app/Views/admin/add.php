@@ -647,7 +647,15 @@ const PRODUCT_IMAGE_VERSIONS = <?= isset($productImageVersionsJson) ? $productIm
 // supaya gambar R2/uploads langsung terbaca dan tidak balik ke asset Git lama.
 const PRODUCT_IMAGE_VERSION = <?= \App\Services\ScriptJson::encode((string) (($produk && !empty($produk['tgl_update'])) ? strtotime((string) $produk['tgl_update']) : time())) ?>;
 const URL_HOVER = <?= \App\Services\ScriptJson::encode(base_url('viewpichover/' . ($produk['id'] ?? '')) . '?proxy=1') ?>;
+const PRODUCT_IMAGE_PREVIEW_URLS = <?= isset($productImagePreviewUrlsJson) ? $productImagePreviewUrlsJson : '{}' ?>;
 function productCoverPreviewUrl(slot) {
+  const normalizedSlot = String(slot || '1');
+  if (PRODUCT_IMAGE_PREVIEW_URLS[normalizedSlot]) return PRODUCT_IMAGE_PREVIEW_URLS[normalizedSlot];
+  const baseUrl = <?= \App\Services\ScriptJson::encode(base_url('product-cover/' . ($produk['id'] ?? '')) . '?proxy=1&size=300&slot=') ?>;
+  const version = PRODUCT_IMAGE_VERSIONS[normalizedSlot] || PRODUCT_IMAGE_VERSION;
+  return `${baseUrl}${encodeURIComponent(normalizedSlot)}&v=${encodeURIComponent(version)}`;
+}
+function productCoverProxyPreviewUrl(slot) {
   const normalizedSlot = String(slot || '1');
   const baseUrl = <?= \App\Services\ScriptJson::encode(base_url('product-cover/' . ($produk['id'] ?? '')) . '?proxy=1&size=300&slot=') ?>;
   const version = PRODUCT_IMAGE_VERSIONS[normalizedSlot] || PRODUCT_IMAGE_VERSION;
@@ -1558,8 +1566,19 @@ const App = () => {
                             <span className="img-no">{ind_g + 1}</span>
                             {ind_g === 0 && <span className="cover-chip">{ind_v === 0 ? 'Cover katalog' : 'Utama varian'}</span>}
                             <div className="missing-image-state" hidden>Foto tidak tersedia<br/>Unggah ulang</div>
-                            <img src={getImageSrc(g) || "/img/nopic.jpg"} alt={`Foto varian ${ind_v + 1} nomor ${ind_g + 1}`} loading="lazy" decoding="async"
-                              onError={(e) => { e.currentTarget.hidden = true; e.currentTarget.parentElement?.querySelector('.missing-image-state')?.removeAttribute('hidden'); }}
+                            <img src={getImageSrc(g) || "/img/nopic.jpg"} data-slot={getImageSlot(g) || ''} alt={`Foto varian ${ind_v + 1} nomor ${ind_g + 1}`} loading="lazy" decoding="async"
+                              onError={(e) => {
+                                const image = e.currentTarget;
+                                const slot = image.dataset.slot;
+                                const proxyFallback = slot ? productCoverProxyPreviewUrl(slot) : '';
+                                if (proxyFallback && image.dataset.proxyTried !== '1' && image.src !== proxyFallback) {
+                                  image.dataset.proxyTried = '1';
+                                  image.src = proxyFallback;
+                                  return;
+                                }
+                                image.hidden = true;
+                                image.parentElement?.querySelector('.missing-image-state')?.removeAttribute('hidden');
+                              }}
                               onLoad={(e) => { e.currentTarget.hidden = false; e.currentTarget.parentElement?.querySelector('.missing-image-state')?.setAttribute('hidden', 'hidden'); }} />
                           </div>
                           <div className="image-actions">

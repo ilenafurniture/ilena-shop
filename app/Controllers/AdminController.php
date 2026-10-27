@@ -1099,6 +1099,7 @@ class AdminController extends BaseController
         // Give each admin preview a slot-specific cache key. Updating one photo
         // must not invalidate the browser cache for every other product photo.
         $productImageVersions = [];
+        $productImagePreviewUrls = [];
         $fallbackImageVersion = (string) (!empty($product['tgl_update']) ? strtotime((string) $product['tgl_update']) : time());
         foreach (is_array($product['varian']) ? $product['varian'] : [] as $variant) {
             foreach (explode(',', (string) ($variant['urutan_gambar'] ?? '')) as $slot) {
@@ -1131,6 +1132,26 @@ class AdminController extends BaseController
                 $productImageVersions[$safeSlot] = $mtimes === []
                     ? $fallbackImageVersion
                     : (string) max($mtimes);
+
+                foreach ([
+                    "uploads/product-images/300/{$id_product}-{$safeSlot}.webp",
+                    "img/barang/300/{$id_product}-{$safeSlot}.webp",
+                    "uploads/product-images/1000/{$id_product}-{$safeSlot}.webp",
+                    "img/barang/1000/{$id_product}-{$safeSlot}.webp",
+                ] as $relativePath) {
+                    $absolutePath = rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
+                        . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath);
+                    if (is_file($absolutePath)) {
+                        $productImagePreviewUrls[$safeSlot] = base_url($relativePath) . '?v=' . rawurlencode($productImageVersions[$safeSlot]);
+                        break;
+                    }
+                }
+                if (!isset($productImagePreviewUrls[$safeSlot])) {
+                    $publicUrl = $this->r2ProductImages->publicUrl("products/300/{$id_product}-{$safeSlot}.webp");
+                    if ($publicUrl !== null) {
+                        $productImagePreviewUrls[$safeSlot] = $publicUrl . '?v=' . rawurlencode($productImageVersions[$safeSlot]);
+                    }
+                }
             }
         }
 
@@ -1164,6 +1185,7 @@ class AdminController extends BaseController
             'produk'           => $product,
             'produkJson'       => \App\Services\ScriptJson::encode($product),
             'productImageVersionsJson' => \App\Services\ScriptJson::encode($productImageVersions),
+            'productImagePreviewUrlsJson' => \App\Services\ScriptJson::encode($productImagePreviewUrls),
             'idProduct'        => $id_product,
             'val'              => ['msg' => session()->getFlashdata('val-id')],
         ];
