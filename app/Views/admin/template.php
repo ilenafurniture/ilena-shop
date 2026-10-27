@@ -1,3 +1,28 @@
+<?php
+$adminPath = trim(strtolower((string) service('uri')->getPath()), '/');
+$needsAdminReact = in_array($adminPath, ['admin/addproduct', 'admin/order/add', 'admin/orderofflineadd', 'admin/order/offline/add'], true)
+    || str_starts_with($adminPath, 'admin/editproduct/');
+$needsBootstrapJs = in_array($adminPath, ['admin/voucher', 'admin/orderoffline', 'admin/order/offline'], true)
+    || str_starts_with($adminPath, 'admin/orderoffline/')
+    || str_starts_with($adminPath, 'admin/order/offline/');
+$adminRole = (string) session()->get('role');
+$adminRbac = new \App\Services\AdminRbacService();
+$adminPermissions = $adminRole === '1' ? [] : $adminRbac->userPermissions((string) session()->get('email'));
+$canAdminPermission = static fn(string $permission): bool => $adminRole === '1' || in_array($permission, $adminPermissions, true);
+$websiteOrderTodoCount = 0;
+if ($canAdminPermission('orders_online')) {
+    $testOrderEmails = ['galihsuks123@gmail.com','ilenafurniture@gmail.com','galih8.4.2001@gmail.com','adityaanugrah494@gmail.com','tipaun0605@gmail.com','uuua5021@gmail.com'];
+    $websiteOrderTodoCount = (new \App\Models\PemesananModel())
+        ->whereIn('status', ['Proses', 'Menunggu Pembayaran'])
+        ->like('id_midtrans', 'IL', 'after')
+        ->whereNotIn('email', $testOrderEmails)
+        ->countAllResults();
+}
+$adminNavigationData = [
+    'canPermission' => $canAdminPermission,
+    'websiteOrderTodoCount' => $websiteOrderTodoCount,
+];
+?>
 <!DOCTYPE html>
 <html lang="id">
 
@@ -15,9 +40,6 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="<?= base_url('css/style.css?v=23-04-2025'); ?>">
     <link rel="icon" href="<?= base_url('img/logo/N.png?v=11-03-2025'); ?>" type="image/png">
-    <!-- SweetAlert2 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <!-- Layout guard supaya konten & sticky element ga tabrakan -->
     <style>
     :root {
@@ -215,20 +237,24 @@
 
     <div id="notif" class="notif">Isi notif</div>
 
+    <?php if ($needsBootstrapJs): ?>
     <script src="<?= base_url('js/bootstrap.bundle.min.js'); ?>"></script>
-    <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <?php endif; ?>
+    <?php if ($needsAdminReact): ?>
+    <script defer crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script defer crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script defer crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <?php endif; ?>
 
     <div class="admin-shell">
         <!-- Sidebar (Desktop) -->
         <aside class="admin-sidebar show-block-ke-hide">
-            <?= $this->include('admin/navbar'); ?>
+            <?= $this->include('admin/navbar', $adminNavigationData); ?>
         </aside>
 
         <!-- Navbar HP (Mobile) -->
         <div class="hide-ke-show-block">
-            <?= $this->include('admin/navbarHpAdmin'); ?>
+            <?= $this->include('admin/navbarHpAdmin', $adminNavigationData); ?>
         </div>
 
         <!-- Konten -->

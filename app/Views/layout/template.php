@@ -135,19 +135,6 @@
     </script> -->
     <!-- End Google Tag Manager -->
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6Q18QTYQE0"></script>
-    <script>
-    window.dataLayer = window.dataLayer || [];
-
-    function gtag() {
-        dataLayer.push(arguments);
-    }
-    gtag('js', new Date());
-
-    gtag('config', 'G-6Q18QTYQE0');
-    </script>
-
     <?php if (isset($produk)) {
         if (isset($produk['nama'])) { ?>
     <script type="application/ld+json">
@@ -330,9 +317,11 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
     });
     </script>
 
+    <?php if (!$isInternalArea && $layoutHeaderMode !== 'checkout'): ?>
     <script defer crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
     <script defer crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
     <script defer crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <?php endif; ?>
 
 
     <?php if (!$isInternalArea && in_array($layoutHeaderMode, ['full', 'auth', 'account'], true)): ?>

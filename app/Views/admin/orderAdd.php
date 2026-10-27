@@ -90,9 +90,6 @@ input {
     <h1 class="teks-sedang mb-4">Buat Pesanan</h1>
     <div id="container-react" style="flex: 1;" class="d-flex gap-3"></div>
 </div>
-<script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script>
 </script>
 <script type="text/babel">

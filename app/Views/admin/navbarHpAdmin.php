@@ -1,8 +1,7 @@
 <?php
 $lowerTitle = strtolower($title ?? '');
 $currentPath = trim(service('uri')->getPath(), '/');
-$rbacService = new \App\Services\AdminRbacService();
-$can = static fn(string $permission): bool => $rbacService->hasPermission(session()->get('email'), $permission);
+$can = $canPermission;
 $isActivePrefix = static function (array $prefixes) use ($currentPath): bool {
     foreach ($prefixes as $prefix) {
         $prefix = trim($prefix, '/');
@@ -13,15 +12,7 @@ $isActivePrefix = static function (array $prefixes) use ($currentPath): bool {
     return false;
 };
 
-$websiteOrderTodoCount = 0;
-if ($can('orders_online')) {
-    $testEmails = ['galihsuks123@gmail.com','ilenafurniture@gmail.com','galih8.4.2001@gmail.com','adityaanugrah494@gmail.com','tipaun0605@gmail.com','uuua5021@gmail.com'];
-    $websiteOrderTodoCount = (new \App\Models\PemesananModel())
-        ->whereIn('status', ['Proses', 'Menunggu Pembayaran'])
-        ->like('id_midtrans', 'IL', 'after')
-        ->whereNotIn('email', $testEmails)
-        ->countAllResults();
-}
+$websiteOrderTodoCount = (int) ($websiteOrderTodoCount ?? 0);
 
 $mobileItems = [
     ['show' => $can('dashboard'), 'label' => 'Home', 'icon' => 'space_dashboard', 'href' => '/admin', 'active' => $currentPath === 'admin' || $currentPath === 'admin/'],
