@@ -37,8 +37,11 @@ final class StorefrontLayoutPolicy
         if (in_array($path, ['/login', '/register', '/verify'], true)) {
             return 'auth';
         }
-        // The cart uses the same storefront shell as browsing pages. Keep only
-        // the actual checkout/payment steps on the focused footer.
+        // The cart is a purchase flow step: keep the full storefront header,
+        // but use the compact footer instead of the full discovery/footer columns.
+        if (preg_match('~^/cart(/|$)~', $path) === 1) {
+            return 'checkout';
+        }
         if (preg_match('~^/(shipping|payment|progresspay|successpay|cencelpay|expirepay)(/|$)~', $path) === 1) {
             return 'checkout';
         }

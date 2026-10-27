@@ -2989,33 +2989,101 @@ class AdminController extends BaseController
 
     public function actionAddVoucher()
     {
-        // normalisasi nilai & tipe
-        $tipe  = $this->request->getPost('tipe') ?: 'persen';
-        $nilai = (int)($this->request->getPost('nilai') ?? 0);
-
-        $data = [
-            'kode'   => strtoupper((string)$this->request->getPost('kode')),
-            'nama'   => (string)$this->request->getPost('nama'),
-            'deskripsi' => (string)$this->request->getPost('deskripsi'),
-            'tipe'   => $tipe,
-            'nilai'  => $nilai,
-            // fallback lama (optional): simpan juga nominal/satuan agar baris lama & baru konsisten
-            'satuan'  => ($tipe === 'persen') ? 'persen' : 'rupiah',
-            'nominal' => $nilai,
-
-            'minimal_belanja' => (int)($this->request->getPost('minimal_belanja') ?: 0),
-            'mulai'           => $this->request->getPost('mulai') ?: null,
-            'berakhir'        => $this->request->getPost('berakhir') ?: null,
-            'auto_apply'      => $this->request->getPost('auto_apply') ? 1 : 0,
-            'aktif'           => $this->request->getPost('aktif') ? 1 : 0,
-            'target'          => $this->request->getPost('target') ?: 'semua',
-            'max_pakai'       => (int)($this->request->getPost('max_pakai') ?: 0),
-            'sekali_pakai_per_user' => $this->request->getPost('sekali_pakai_per_user') ? 1 : 0,
-            // list_email biarkan null/[] di awal
-        ];
-
-        $this->voucherModel->insert($data);
+        try {
+            $data = $this->voucherPayloadFromRequest();
+            $this->voucherModel->insert($data);
+        } catch (\InvalidArgumentException $e) {
+            return redirect()->to('/admin/voucher')->with('msg', 'Gagal: ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            log_message('error', 'Voucher create failed: {error}', ['error' => $e->getMessage()]);
+            return redirect()->to('/admin/voucher')->with('msg', 'Gagal menyimpan voucher. Periksa kode dan data yang diisi.');
+        }
         return redirect()->to('/admin/voucher')->with('msg', 'Voucher berhasil ditambahkan!');
+    }
+
+    /** Build a validated payload shared by voucher create and edit. */
+    private function voucherPayloadFromRequest(?array $existing = null): array
+    {
+        $code = strtoupper(trim((string) $this->request->getPost('kode')));
+        if (!preg_match('/^[A-Z0-9][A-Z0-9_-]{2,39}$/', $code)) {
+            throw new \InvalidArgumentException('Kode harus 3–40 karakter: huruf, angka, tanda hubung, atau garis bawah.');
+        }
+        $duplicate = $this->voucherModel->where('kode', $code)->first();
+        if ($duplicate && (int) ($duplicate['id'] ?? 0) !== (int) ($existing['id'] ?? 0)) {
+            throw new \InvalidArgumentException('Kode voucher sudah digunakan.');
+        }
+
+        $name = trim((string) $this->request->getPost('nama'));
+        if ($name === '') throw new \InvalidArgumentException('Nama voucher wajib diisi.');
+
+        $type = (string) $this->request->getPost('tipe');
+        if (!in_array($type, ['persen', 'nominal'], true)) throw new \InvalidArgumentException('Jenis potongan tidak valid.');
+        $valueRaw = $this->request->getPost('nilai');
+        if ($valueRaw === null || !is_numeric($valueRaw)) throw new \InvalidArgumentException('Nilai voucher harus berupa angka.');
+        $value = (int) $valueRaw;
+        if ($value < 1 || ($type === 'persen' && $value > 100)) {
+            throw new \InvalidArgumentException($type === 'persen' ? 'Persentase harus antara 1–100%.' : 'Nominal potongan harus lebih dari 0.');
+        }
+
+        $minimum = filter_var($this->request->getPost('minimal_belanja') ?: 0, FILTER_VALIDATE_INT);
+        $maximum = filter_var($this->request->getPost('max_pakai') ?: 0, FILTER_VALIDATE_INT);
+        if ($minimum === false || $minimum < 0) throw new \InvalidArgumentException('Minimal belanja tidak boleh negatif.');
+        if ($maximum === false || $maximum < 0) throw new \InvalidArgumentException('Batas pemakaian tidak boleh negatif.');
+
+        $target = (string) $this->request->getPost('target');
+        if (!in_array($target, ['semua', 'baru', 'lama', 'spesifik'], true)) throw new \InvalidArgumentException('Target pengguna tidak valid.');
+        $start = trim((string) $this->request->getPost('mulai'));
+        $end = trim((string) $this->request->getPost('berakhir'));
+        foreach (['mulai' => $start, 'berakhir' => $end] as $label => $date) {
+            if ($date !== '') {
+                $parsed = \DateTimeImmutable::createFromFormat('!Y-m-d', $date);
+                $dateErrors = \DateTimeImmutable::getLastErrors();
+                if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)
+                    || !$parsed
+                    || ($dateErrors !== false && ($dateErrors['warning_count'] > 0 || $dateErrors['error_count'] > 0))
+                    || $parsed->format('Y-m-d') !== $date) {
+                    throw new \InvalidArgumentException('Tanggal ' . $label . ' tidak valid.');
+                }
+            }
+        }
+        if ($start !== '' && $end !== '' && $end < $start) {
+            throw new \InvalidArgumentException('Tanggal berakhir harus sama dengan atau sesudah tanggal mulai.');
+        }
+
+        $listEmail = (string) ($existing['list_email'] ?? '[]');
+        if ($target === 'spesifik') {
+            $emails = preg_split('/[,;\s]+/', strtolower(trim((string) $this->request->getPost('list_email'))), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+            foreach ($emails as $email) {
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) throw new \InvalidArgumentException('Daftar email spesifik berisi alamat yang tidak valid: ' . $email);
+            }
+            $historical = json_decode($listEmail, true);
+            if (is_array($historical)) $emails = array_merge($emails, array_map('strtolower', $historical));
+            foreach ($emails as $email) {
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) throw new \InvalidArgumentException('Daftar email tersimpan mengandung alamat tidak valid.');
+            }
+            $emails = array_values(array_unique($emails));
+            if ($emails === []) throw new \InvalidArgumentException('Masukkan minimal satu email untuk target spesifik.');
+            $listEmail = json_encode($emails, JSON_UNESCAPED_SLASHES);
+        }
+
+        return [
+            'kode' => $code,
+            'nama' => $name,
+            'deskripsi' => trim((string) $this->request->getPost('deskripsi')),
+            'tipe' => $type,
+            'nilai' => $value,
+            'satuan' => $type === 'persen' ? 'persen' : 'rupiah',
+            'nominal' => $value,
+            'minimal_belanja' => $minimum,
+            'max_pakai' => $maximum,
+            'mulai' => $start !== '' ? $start : null,
+            'berakhir' => $end !== '' ? $end : null,
+            'target' => $target,
+            'auto_apply' => $this->request->getPost('auto_apply') ? 1 : 0,
+            'sekali_pakai_per_user' => $this->request->getPost('sekali_pakai_per_user') ? 1 : 0,
+            'aktif' => $this->request->getPost('aktif') ? 1 : 0,
+            'list_email' => $listEmail,
+        ];
     }
 
     public function deleteVoucher($id)
@@ -3027,39 +3095,21 @@ class AdminController extends BaseController
     // Edit dari modal (POST /admin/voucher/edit/{id})
     public function editVoucher($id)
     {
+        if (!$this->request->is('post')) {
+            return redirect()->to('/admin/voucher')->with('msg', 'Buka voucher lewat tombol Edit di daftar.');
+        }
         $row = $this->voucherModel->find((int)$id);
         if (!$row) {
             return redirect()->to('/admin/voucher')->with('msg', 'Voucher tidak ditemukan.');
         }
-
-        $tipe  = $this->request->getPost('tipe') ?: ($row['tipe'] ?? 'persen');
-        $nilai = (int)($this->request->getPost('nilai') ?? ($row['nilai'] ?? 0));
-
-        $payload = [
-            'kode'   => strtoupper((string)$this->request->getPost('kode')),
-            'nama'   => (string)$this->request->getPost('nama'),
-            'deskripsi' => (string)$this->request->getPost('deskripsi'),
-            'tipe'   => $tipe,
-            'nilai'  => $nilai,
-            'satuan'  => ($tipe === 'persen') ? 'persen' : 'rupiah', // fallback lama
-            'nominal' => $nilai,                                    // fallback lama
-
-            'minimal_belanja' => (int)($this->request->getPost('minimal_belanja') ?? 0),
-            'mulai'           => $this->request->getPost('mulai') ?: null,
-            'berakhir'        => $this->request->getPost('berakhir') ?: null,
-            'target'          => $this->request->getPost('target') ?: 'semua',
-            'auto_apply'      => $this->request->getPost('auto_apply') ? 1 : 0,
-            'sekali_pakai_per_user' => $this->request->getPost('sekali_pakai_per_user') ? 1 : 0,
-        ];
-
-        // bersihkan field yang semuanya null agar tidak kena "There is no data to update"
-        $payload = array_filter($payload, static function($v){ return $v !== null; });
-
-        if ($payload === []) {
-            return redirect()->to('/admin/voucher')->with('msg', 'Tidak ada perubahan.');
+        try {
+            $this->voucherModel->update((int) $id, $this->voucherPayloadFromRequest($row));
+        } catch (\InvalidArgumentException $e) {
+            return redirect()->to('/admin/voucher')->with('msg', 'Gagal: ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            log_message('error', 'Voucher edit failed for {id}: {error}', ['id' => (int) $id, 'error' => $e->getMessage()]);
+            return redirect()->to('/admin/voucher')->with('msg', 'Gagal memperbarui voucher. Periksa kode dan data yang diisi.');
         }
-
-        $this->voucherModel->update((int)$id, $payload);
         return redirect()->to('/admin/voucher')->with('msg', 'Voucher berhasil diperbarui!');
     }
 
@@ -3080,14 +3130,15 @@ class AdminController extends BaseController
                                     : ((int)$aktifReq ? 1 : 0);
 
         if ((int)$row['aktif'] === $new) {
-            return $this->response->setJSON(['success'=>true,'message'=>'Tidak ada perubahan','data'=>['aktif'=>$new]]);
+            return $this->response->setJSON(['success'=>true,'message'=>'Tidak ada perubahan','data'=>['aktif'=>$new], 'csrfHash'=>csrf_hash()]);
         }
 
         $ok = $this->voucherModel->update((int)$id, ['aktif' => $new]);
         return $this->response->setJSON([
             'success' => (bool)$ok,
             'message' => $ok ? 'Berhasil mengubah status.' : 'Gagal mengubah status.',
-            'data'    => ['aktif' => $new]
+            'data'    => ['aktif' => $new],
+            'csrfHash' => csrf_hash(),
         ]);
     }
 

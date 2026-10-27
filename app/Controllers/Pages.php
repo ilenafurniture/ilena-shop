@@ -1714,7 +1714,8 @@ class Pages extends BaseController
             if ($isFirst) return ['ok'=>false,'msg'=>'Voucher khusus member lama.'];
         } elseif ($target === 'spesifik') {
             $list = json_decode($row['list_email'] ?? '[]', true);
-            if (is_array($list) && !in_array($email, $list, true)) {
+            $allowedEmails = is_array($list) ? array_map(static fn($value) => strtolower(trim((string) $value)), $list) : [];
+            if (!in_array(strtolower(trim($email)), $allowedEmails, true)) {
                 return ['ok'=>false,'msg'=>'Voucher ini khusus pengguna tertentu.'];
             }
         }
@@ -1886,10 +1887,15 @@ class Pages extends BaseController
                 }
             } catch (\Throwable $th) {}
 
-            // fallback list_email (kalau dipakai tracking)
-            $listEmail = json_decode($row['list_email'] ?? '[]', true);
-            if (is_array($listEmail) && in_array($email, $listEmail, true)) {
-                return ['ok'=>false,'msg'=>'Voucher ini sudah pernah kamu pakai.'];
+            // list_email is the allow-list for target=spesifik, not a usage ledger.
+            // Usage history belongs to voucher_usage; retain the legacy fallback only
+            // for older non-targeted vouchers.
+            if (strtolower((string) ($row['target'] ?? 'semua')) !== 'spesifik') {
+                $listEmail = json_decode($row['list_email'] ?? '[]', true);
+                $usedEmails = is_array($listEmail) ? array_map('strtolower', $listEmail) : [];
+                if (in_array(strtolower(trim($email)), $usedEmails, true)) {
+                    return ['ok'=>false,'msg'=>'Voucher ini sudah pernah kamu pakai.'];
+                }
             }
         }
 
@@ -1903,7 +1909,8 @@ class Pages extends BaseController
         }
         if ($target === 'spesifik') {
             $wl = json_decode($row['list_email'] ?? '[]', true);
-            if (is_array($wl) && !in_array($email, $wl, true)) {
+            $allowedEmails = is_array($wl) ? array_map(static fn($value) => strtolower(trim((string) $value)), $wl) : [];
+            if (!in_array(strtolower(trim($email)), $allowedEmails, true)) {
                 return ['ok'=>false,'msg'=>'Voucher ini khusus pengguna tertentu.'];
             }
         }

@@ -7,10 +7,10 @@ use CodeIgniter\Test\CIUnitTestCase;
 
 final class StorefrontLayoutPolicyTest extends CIUnitTestCase
 {
-    public function testCartUsesTheNormalStorefrontHeaderAndFooter(): void
+    public function testCartKeepsStorefrontHeaderButUsesCompactFooter(): void
     {
         $this->assertSame('full', StorefrontLayoutPolicy::headerMode('/cart'));
-        $this->assertSame('store', StorefrontLayoutPolicy::footerMode('/cart'));
+        $this->assertSame('checkout', StorefrontLayoutPolicy::footerMode('/cart'));
         $this->assertSame('full', StorefrontLayoutPolicy::headerMode('/product'));
         $this->assertSame('store', StorefrontLayoutPolicy::footerMode('/'));
     }
@@ -25,10 +25,13 @@ final class StorefrontLayoutPolicyTest extends CIUnitTestCase
 
     public function testAllStorefrontShellFamiliesStayInTheirOwnLayout(): void
     {
-        foreach (['/', '/product', '/find', '/cart', '/article', '/partner'] as $path) {
+        foreach (['/', '/product', '/find', '/article', '/partner'] as $path) {
             $this->assertSame('full', StorefrontLayoutPolicy::headerMode($path), $path);
             $this->assertSame('store', StorefrontLayoutPolicy::footerMode($path), $path);
         }
+
+        $this->assertSame('full', StorefrontLayoutPolicy::headerMode('/cart'), '/cart');
+        $this->assertSame('checkout', StorefrontLayoutPolicy::footerMode('/cart'), '/cart');
 
         foreach (['/login', '/register', '/verify'] as $path) {
             $this->assertSame('auth', StorefrontLayoutPolicy::headerMode($path), $path);
