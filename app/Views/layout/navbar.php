@@ -292,7 +292,7 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
                                 <div
                                     className={`d-flex gap-4 mb-3`}
                                 >
-                                    <div style={{ flex: 1 }}>
+                                    {productSelected.preview_image && <div style={{ flex: 1 }}>
                                         <img
                                             style={{
                                             borderRadius: '6px',
@@ -310,8 +310,8 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
                                             }}
                                             loading="lazy" decoding="async" alt={`${productSelected.nama} ${productSelected.koleksi}`}
                                         />
-                                    </div>
-                                    <div style={{ flex: 1 }}>
+                                    </div>}
+                                    <div style={{ flex: productSelected.preview_image ? 1 : 2 }}>
                                         <h3 className="teks-sedang mb-3">
                                             {productSelected.koleksi.charAt(0).toUpperCase() + productSelected.koleksi.slice(1)}
                                         </h3>

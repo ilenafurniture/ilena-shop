@@ -109,8 +109,10 @@ class Pages extends BaseController
                    AND selected_product.active = '1'"
             : '';
         $selectedProductId = $previewJoin !== '' ? 'COALESCE(selected_product.id, b.id)' : 'b.id';
+        $hasSelectedPreview = $previewJoin !== '' ? 'selected_product.id IS NOT NULL AS has_selected_preview' : '0 AS has_selected_preview';
         $produkNavbar = $this->barangModel->query(
             "SELECT chosen.id, chosen.nama, chosen.deskripsi, chosen.varian, chosen.tgl_update,
+                    {$hasSelectedPreview},
                     chosen.subkategori AS jenis, chosen.kategori AS koleksi
              FROM barang AS b
              INNER JOIN (
@@ -146,7 +148,7 @@ class Pages extends BaseController
                 'deskripsi' => $deskripsi,
                 'koleksi' => $koleksi,
                 'cover_slot' => $coverSlot,
-                'preview_image' => $this->menuPreviewImageUrl($produk, $coverSlot),
+                'preview_image' => !empty($produk['has_selected_preview']) ? $this->menuPreviewImageUrl($produk, $coverSlot) : '',
             ];
 
             if (str_contains($jenis, 'dresser')) {

@@ -28,7 +28,7 @@
     <header class="menu-preview-head">
         <div>
             <h1>Foto Preview Menu</h1>
-            <p>Pilih produk aktif yang paling mewakili setiap koleksi. Jika pilihan dikosongkan, website memakai produk representatif otomatis.</p>
+            <p>Pilih hanya foto preview yang ingin ditampilkan di menu. Baris tanpa pilihan tidak memuat gambar.</p>
         </div>
         <a class="btn btn-outline-secondary btn-sm" href="/" target="_blank" rel="noopener">Lihat website</a>
     </header>
@@ -41,7 +41,6 @@
         <div class="menu-preview-list">
             <?php foreach (($previews ?? []) as $index => $pair): ?>
             <?php $selectedId = (string) ($pair['selected_product_id'] ?? ''); ?>
-            <?php $imageProductId = $selectedId !== '' ? $selectedId : (string) ($pair['products'][0]['id'] ?? ''); ?>
             <div class="menu-preview-row">
                 <div class="menu-preview-label">
                     <strong><?= esc(ucfirst($pair['category'])); ?></strong>
@@ -50,15 +49,15 @@
                     <input type="hidden" name="previews[<?= $index ?>][subcategory]" value="<?= esc($pair['subcategory'], 'attr'); ?>">
                 </div>
                 <select class="menu-preview-select" name="previews[<?= $index ?>][product_id]" aria-label="Produk preview <?= esc($pair['category'] . ' ' . $pair['subcategory'], 'attr'); ?>" data-preview-select>
-                    <option value="">Otomatis — produk representatif</option>
+                    <option value="">Tanpa foto preview</option>
                     <?php foreach (($pair['products'] ?? []) as $product): ?>
                     <option value="<?= esc((string) $product['id'], 'attr'); ?>" <?= (string) $product['id'] === $selectedId ? 'selected' : ''; ?>><?= esc($product['nama']); ?> · #<?= esc((string) $product['id']); ?></option>
                     <?php endforeach; ?>
                 </select>
-                <?php if ($imageProductId !== ''): ?>
-                <img class="menu-preview-thumb" src="<?= esc(base_url('product-cover/' . rawurlencode($imageProductId) . '?size=300'), 'attr'); ?>" alt="Preview <?= esc($pair['category'] . ' ' . $pair['subcategory'], 'attr'); ?>" loading="lazy" decoding="async" data-preview-image>
+                <?php if ($selectedId !== ''): ?>
+                <img class="menu-preview-thumb" src="<?= esc(base_url('product-cover/' . rawurlencode($selectedId) . '?size=300'), 'attr'); ?>" alt="Preview <?= esc($pair['category'] . ' ' . $pair['subcategory'], 'attr'); ?>" loading="lazy" decoding="async" data-preview-image>
                 <?php else: ?>
-                <span class="menu-preview-thumb" aria-hidden="true"></span>
+                <span class="menu-preview-thumb" data-preview-empty>Tanpa foto</span>
                 <?php endif; ?>
             </div>
             <?php endforeach; ?>
@@ -75,11 +74,31 @@
 document.querySelectorAll('[data-preview-select]').forEach((select) => {
     select.addEventListener('change', () => {
         const row = select.closest('.menu-preview-row');
-        const image = row?.querySelector('[data-preview-image]');
-        if (!image) return;
-        const fallbackId = row.querySelector('input[name$="[category]"]')?.closest('.menu-preview-label')?.nextElementSibling?.querySelector('option:nth-child(2)')?.value || '';
-        const selectedId = select.value || fallbackId;
-        image.src = selectedId ? `/product-cover/${encodeURIComponent(selectedId)}?size=300` : '/img/ilena-image-placeholder.png';
+        if (!row) return;
+        let image = row.querySelector('[data-preview-image]');
+        const emptyState = row.querySelector('[data-preview-empty]');
+        if (!select.value) {
+            image?.remove();
+            if (!emptyState) {
+                const empty = document.createElement('span');
+                empty.className = 'menu-preview-thumb';
+                empty.dataset.previewEmpty = '';
+                empty.textContent = 'Tanpa foto';
+                row.append(empty);
+            }
+            return;
+        }
+        if (!image) {
+            image = document.createElement('img');
+            image.className = 'menu-preview-thumb';
+            image.alt = 'Preview produk terpilih';
+            image.loading = 'lazy';
+            image.decoding = 'async';
+            image.dataset.previewImage = '';
+            row.append(image);
+        }
+        emptyState?.remove();
+        image.src = `/product-cover/${encodeURIComponent(select.value)}?size=300`;
     });
 });
 </script>
