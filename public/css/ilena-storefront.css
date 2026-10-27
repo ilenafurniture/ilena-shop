@@ -4860,6 +4860,10 @@ body.ilena-storefront .product-detail-soft .ilena-product-related-heading h2 { m
         margin-bottom: 12px !important;
     }
     body.ilena-storefront .child-list-nav > .container > div:nth-child(2) > .d-flex > div { flex: 0 0 42% !important; }
+    body.ilena-storefront .child-list-nav > .container > div:nth-child(2) > .d-flex.text-only > div {
+        flex: 1 1 auto !important;
+        min-width: 0;
+    }
     body.ilena-storefront .child-list-nav > .container > div:nth-child(2) img {
         display: block;
         width: 100% !important;
@@ -4870,14 +4874,14 @@ body.ilena-storefront .product-detail-soft .ilena-product-related-heading h2 { m
         background: #f3efe9;
     }
     /* Soft edge fade (edge-fade) blends the menu editorial image into its warm panel. */
-    body.ilena-storefront .child-list-nav > .container > div:nth-child(2) > .d-flex > div:first-child {
+    body.ilena-storefront .child-list-nav > .container > div:nth-child(2) > .d-flex.has-preview-image > div:first-child {
         position: relative;
         flex: 0 0 42% !important;
         aspect-ratio: 4 / 3;
         overflow: hidden;
         background: #f3efe9;
     }
-    body.ilena-storefront .child-list-nav > .container > div:nth-child(2) > .d-flex > div:first-child img {
+    body.ilena-storefront .child-list-nav > .container > div:nth-child(2) > .d-flex.has-preview-image > div:first-child img {
         width: 100% !important;
         height: 100% !important;
         object-fit: cover !important;

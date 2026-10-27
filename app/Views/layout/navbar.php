@@ -289,9 +289,7 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
                         </div>
                         {productSelected && 
                             <div style={{ flex: 1 }}>
-                                <div
-                                    className={`d-flex gap-4 mb-3`}
-                                >
+                                <div className={`d-flex gap-4 mb-3 ${productSelected.preview_image ? 'has-preview-image' : 'text-only'}`}>
                                     {productSelected.preview_image && <div style={{ flex: 1 }}>
                                         <img
                                             style={{
