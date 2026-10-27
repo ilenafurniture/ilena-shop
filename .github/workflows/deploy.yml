@@ -50,7 +50,24 @@ jobs:
           done < <(git diff --name-only -z HEAD origin/main -- . ':(exclude)public/img/barang/**')
           git reset --soft origin/main
 
+          echo "[deploy] install locked production dependencies with LSPHP 8.3"
+          PHP_BIN=/usr/local/lsws/lsphp83/bin/lsphp
+          COMPOSER_BIN="$(command -v composer)"
+          if [ ! -x "$PHP_BIN" ] || [ -z "$COMPOSER_BIN" ]; then
+            echo "ERROR: LSPHP 8.3 or Composer is unavailable."
+            exit 1
+          fi
+          COMPOSER_ALLOW_SUPERUSER=1 "$PHP_BIN" "$COMPOSER_BIN" install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+
           echo "[deploy] run database migrations"
-          php spark migrate
+          spark_cli="$(mktemp /tmp/ilena-spark-cli.XXXXXX.php)"
+          trap 'rm -f "$spark_cli"' EXIT
+          cat > "$spark_cli" <<'PHP'
+        <?php
+        if (!defined('STDOUT')) define('STDOUT', fopen('php://stdout', 'wb'));
+        if (!defined('STDERR')) define('STDERR', fopen('php://stderr', 'wb'));
+        require '/mine/ilenafurniture.com/spark';
+        PHP
+          "$PHP_BIN" "$spark_cli" migrate
           echo "[deploy] completed"
         EOF
