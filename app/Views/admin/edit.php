@@ -15,8 +15,8 @@
     margin: 0 auto;
     color: var(--text);
     font-family: Inter, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    font-size: 13.5px;
-    line-height: 1.5;
+    font-size: 14px;
+    line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
 }
@@ -354,7 +354,8 @@
     padding: 8px 0 19px;
     border-bottom: 1px solid #ded9cf;
 }
-.page .grid { gap: clamp(24px, 4vw, 58px); }
+.page .grid { display: flex; flex-direction: column; gap: 0; }
+.page .grid > .stack { display: contents; }
 .page .stack { gap: 0; }
 .page > form > .grid > .stack > .edit-section {
     padding: 20px 0;
@@ -374,6 +375,33 @@
     line-height: 1.4;
     text-transform: uppercase;
 }
+.page > form > .grid > .stack > .edit-section { counter-increment: edit-section; }
+.page > form > .grid > .stack > .edit-section > .section-title:first-child::before {
+    content: counter(edit-section, decimal-leading-zero);
+    display: inline-block;
+    margin-right: 9px;
+    color: #a18b68;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .02em;
+}
+.page .field { gap: 5px; margin-bottom: 14px; }
+.page .label { color: #575247; font-size: 13px; font-weight: 600; }
+.page .inp, .page .sel, .page .ta { min-height: 44px; padding: .68rem .8rem; }
+.page .ta { min-height: 124px; }
+.page .hint { font-size: 12px; line-height: 1.5; }
+.page details { margin: 7px 0 14px; border-top: 1px solid #e3ded4; }
+.page details summary {
+    padding: 11px 0; color: #514a3d; cursor: pointer; font-size: 13px; font-weight: 600;
+    list-style: none; display: flex; align-items: center; justify-content: space-between;
+}
+.page details summary::-webkit-details-marker { display: none; }
+.page details summary::after { content: '+'; color: #8b684c; font-size: 18px; font-weight: 400; }
+.page details[open] summary::after { content: '−'; }
+.page .edit-section > .section-title:not(:first-child) { margin-top: 17px; }
+.page #container-varian { border-top: 1px solid #e3ded4; }
+.page .variant-section { border-bottom: 1px solid #e3ded4 !important; }
+.page .variant-section .section-title { color: #514a3d; letter-spacing: .04em; }
+.page .footer-actions { position: sticky; bottom: 0; z-index: 5; }
 .page #container-varian > .variant-section {
     margin: 0;
     padding: 18px 0 !important;
@@ -442,20 +470,20 @@
                 <div class="edit-section">
                     <div class="section-title">Detail Produk</div>
                     <div class="field">
-                        <label class="label">Nama Produk</label>
-                        <input class="inp" type="text" name="nama" required value="<?= $produk['nama']; ?>">
+                        <label class="label" for="produk-nama">Nama produk</label>
+                        <input class="inp" id="produk-nama" type="text" name="nama" required value="<?= esc($produk['nama'], 'attr'); ?>">
                     </div>
 
                     <div class="two">
                         <div class="field">
-                            <label class="label">Harga</label>
-                            <input class="inp" type="number" name="harga" required value="<?= $produk['harga']; ?>">
+                            <label class="label" for="produk-harga">Harga (Rp)</label>
+                            <input class="inp" id="produk-harga" type="number" min="0" step="1" name="harga" required value="<?= esc($produk['harga'], 'attr'); ?>">
                         </div>
                         <div class="field">
-                            <label class="label">Diskon</label>
+                            <label class="label" for="produk-diskon">Diskon</label>
                             <div class="input-group">
-                                <input class="inp" type="number" name="diskon" step="any" required
-                                    value="<?= $produk['diskon']; ?>">
+                                <input class="inp" id="produk-diskon" type="number" name="diskon" min="0" max="100" step="any" required
+                                    value="<?= esc($produk['diskon'], 'attr'); ?>">
                                 <span>%</span>
                             </div>
                             <div class="hint">Kosongkan atau 0 jika tidak ada diskon.</div>
@@ -489,20 +517,14 @@
 
                     <input type="text" name="id" value="<?= $produk['id']; ?>" hidden>
 
-                    <div class="two">
-                        <div class="field">
-                            <label class="label">Link Shopee</label>
-                            <input class="inp" type="text" name="shopee" value="<?= $produk['shopee']; ?>">
+                    <details>
+                        <summary>Link marketplace <span class="hint">Opsional</span></summary>
+                        <div class="two">
+                            <div class="field"><label class="label">Shopee</label><input class="inp" type="text" name="shopee" value="<?= esc($produk['shopee'] ?? '', 'attr'); ?>"></div>
+                            <div class="field"><label class="label">Tokopedia</label><input class="inp" type="text" name="tokped" value="<?= esc($produk['tokped'] ?? '', 'attr'); ?>"></div>
                         </div>
-                        <div class="field">
-                            <label class="label">Link Tokopedia</label>
-                            <input class="inp" type="text" name="tokped" value="<?= $produk['tokped']; ?>">
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label class="label">Link Tiktok</label>
-                        <input class="inp" type="text" name="tiktok" value="<?= $produk['tiktok']; ?>">
-                    </div>
+                        <div class="field"><label class="label">TikTok Shop</label><input class="inp" type="text" name="tiktok" value="<?= esc($produk['tiktok'] ?? '', 'attr'); ?>"></div>
+                    </details>
                 </div>
 
                 <div class="edit-section">
@@ -518,9 +540,8 @@
                             required><?= $produk['deskripsi']['perawatan']; ?></textarea>
                     </div>
 
-                    <div class="hr"></div>
-                    <div class="section-title">Ruangan</div>
-                    <div class="switches">
+                    <div class="section-title">Penempatan</div>
+                    <div class="switches" aria-label="Ruangan produk">
                         <label class="chip">
                             <input type="checkbox" name="ruang_tamu" <?= $produk['ruang_tamu'] ? 'checked' : ''; ?>>
                             Ruang Tamu
@@ -535,7 +556,8 @@
                         </label>
                     </div>
 
-                    <div class="hr"></div>
+                    <details>
+                    <summary>Dimensi &amp; berat <span class="hint">Opsional</span></summary>
                     <div class="two">
                         <div>
                             <div class="section-title">Dimensi Paket</div>
@@ -576,16 +598,13 @@
                             </div>
                         </div>
                     </div>
+                    </details>
                 </div>
 
                 <!-- Hidden JSON fields untuk backend -->
                 <input type="hidden" name="deskripsi" id="deskripsi-json">
                 <input type="hidden" name="varian" id="varian-json">
 
-                <div class="footer-actions">
-                    <button class="btn ghost" type="button" onclick="history.back()">Batal</button>
-                    <button class="btn primary" type="submit">Simpan Perubahan</button>
-                </div>
             </div>
 
             <!-- RIGHT -->
@@ -674,6 +693,11 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="footer-actions">
+            <a class="btn ghost" href="/admin/product">Batal</a>
+            <button class="btn primary" type="submit">Simpan perubahan</button>
         </div>
 
         <!-- tracker varian (tetap seperti versi kamu) -->
