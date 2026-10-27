@@ -636,10 +636,10 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                     });
                     </script>
                 </div>
-                <a href="<?= esc($relatedProductUrl, 'attr') ?>" class="text-dark">
-                    <p class="text-secondary text-sm-start m-0"><?= esc(strtolower((string) $p['kategori'])); ?></p>
-                    <h5><?= esc(str_replace('Tv', 'TV', ucwords((string) $p['nama']))); ?></h5>
-                    <div class="d-flex gap-2">
+                <a href="<?= esc($relatedProductUrl, 'attr') ?>" class="text-dark related-card-info">
+                    <p class="related-card-category"><?= esc(strtolower((string) $p['kategori'])); ?></p>
+                    <h5 class="related-card-name"><?= esc(str_replace('Tv', 'TV', ucwords((string) $p['nama']))); ?></h5>
+                    <div class="d-flex gap-2 related-card-prices">
                         <p class="harga">Rp
                             <?= number_format($p['harga'] * (100 - $p['diskon']) / 100, 0, ',', '.'); ?></p>
                         <?php if ($p['diskon'] > 0) { ?>
