@@ -549,10 +549,15 @@
 .page-wrap > .page-title { font-size:25px; font-weight:620; letter-spacing:-.035em; color:#29271f; margin-bottom:7px; }
 .edit-page-intro { color:#77736c!important; font-size:13px!important; margin:0 0 18px!important; }
 .form-grid { gap:26px; align-items:start; }
-.card { border:0; border-top:1px solid #ded9cf; border-radius:0; background:transparent; box-shadow:none; }
-.card-header { padding:13px 0 9px; border:0; background:transparent; }
+.card { border:0; border-radius:0; background:transparent; box-shadow:none; }
+.form-grid > .card { padding:0; }
+.form-grid > .card + .card { padding-left:28px; border-left:1px solid #eae5db; }
+.card-header { padding:0 0 10px; border:0; border-bottom:1px solid #ded9cf; background:transparent; }
 .card-header h2 { color:#302d25; font-size:16px; font-weight:650; letter-spacing:-.015em; }
-.card-body { padding:6px 0 16px; }
+.card-body { padding:11px 0 16px; }
+#container-varian > .card { padding:12px 0 15px; border:0!important; border-top:1px solid #eae5db!important; }
+#container-varian > .card:first-child { padding-top:0; border-top:0!important; }
+#container-varian > .card .card-body { padding:0; }
 .section-title { color:#6f675a; letter-spacing:.08em; font-size:11px; }
 .table-input td:first-child { color:#625b50; font-size:12.5px; }
 .form-control,.form-select { border-color:#e5e0d6; border-radius:7px!important; color:#302d25; background:#fff; font-size:13px; }
@@ -571,8 +576,9 @@
 .batch-upload-label:hover { border-color:#8b7959; background:#f5f1e9; }
 .batch-upload-label.is-disabled { opacity:.55; cursor:wait; }
 .batch-upload-label small { color:#817b70; font-weight:400; }
-.variant-tools { border-bottom:1px solid #eeeae3; padding-bottom:9px; margin-bottom:10px; }
+.variant-tools { border:0; padding-bottom:0; margin-bottom:10px; }
 .bottom-bar { background:linear-gradient(180deg,rgba(255,255,255,0),#fff 35%); }
+@media(max-width:992px){ .form-grid > .card + .card { padding:18px 0 0; border-left:0; border-top:1px solid #ded9cf; } }
 @media(max-width:640px){ .form-grid{gap:16px}.image-tile{width:112px}.item-gambar{width:100px;height:100px}.batch-upload-label{min-width:112px;height:142px}.card-header,.card-body{padding-left:0;padding-right:0} }
 
 @keyframes spin {
@@ -606,9 +612,6 @@
 
 <div class="page-wrap">
     <h1 class="page-title"><?= isset($idProduct) ? 'Edit' : 'Tambah' ?> Produk</h1>
-    <?php if (isset($idProduct)): ?>
-    <p class="edit-page-intro" style="margin:-8px 0 16px;color:#70675d;font-size:14px;">Perbarui informasi produk, foto, lalu variannya. Perubahan diterapkan setelah Anda menekan Simpan.</p>
-    <?php endif; ?>
     <div id="container-react"></div>
 </div>
 
@@ -1177,16 +1180,14 @@ const App = () => {
           <span>{uploadProgress.phase === 'processing'
             ? 'Unggahan selesai. Server sedang menyimpan produk dan menyiapkan gambar WebP.'
             : uploadProgress.percent === null ? 'Mengunggah data dan foto…' : `Mengunggah data dan foto: ${uploadProgress.percent}%`}</span>
-          <small>Persentase menunjukkan data yang sudah terkirim. Tahap penyimpanan server berlangsung setelah unggah selesai.</small>
         </div>
       </div>}
       {Boolean(idProduct) && <nav className="edit-guide" aria-label="Navigasi bagian edit produk">
-        <p><strong>Langkah edit:</strong> pilih bagian yang ingin diubah. Semua perubahan disimpan bersama melalui tombol Simpan.</p>
         <div className="edit-guide__steps">
-          <a href="#product-basic"><b>01</b> Info produk</a>
-          <a href="#product-description"><b>02</b> Deskripsi & ukuran</a>
-          <a href="#product-images"><b>03</b> Foto</a>
-          <a href="#product-variants"><b>04</b> Varian</a>
+          <a href="#product-basic">Info</a>
+          <a href="#product-description">Deskripsi</a>
+          <a href="#product-images">Foto</a>
+          <a href="#product-variants">Varian</a>
         </div>
       </nav>}
       <div className="form-grid" aria-busy={loading || resizeProgress.active}>
@@ -1196,9 +1197,8 @@ const App = () => {
           <div className="card-body">
             <table className="table-input w-100">
               <tbody>
-                <tr id="product-basic" className="edit-anchor"><td colSpan="2" className="section-title">Informasi produk</td></tr>
                 <tr>
-                  <td>Nama Produk</td>
+                  <td id="product-basic" className="edit-anchor">Nama Produk</td>
                   <td>
                     <input type="text" className="form-control"
                       value={formData.nama}
@@ -1450,9 +1450,8 @@ const App = () => {
         <div className="card edit-anchor" id="product-images">
           <div className="card-header"><h2>Media & Varian</h2></div>
           <div className="card-body">
-            <p className="media-help">WebP diterima langsung; AVIF dikonversi di browser · maks. {MAX_UPLOAD_MB} MB per foto · maks. {MAX_PRODUCT_IMAGES} foto. Server hanya menerima dan menyimpan WebP.</p>
+            <p className="media-help">WebP / AVIF · maks. {MAX_UPLOAD_MB} MB per foto · {MAX_PRODUCT_IMAGES} foto per produk</p>
             <div className="section-title">Foto hover</div>
-            <p className="media-help">Foto ini tampil sebagai gambar kedua saat pelanggan mengarahkan kursor ke produk.</p>
             <div style={{display:'flex',alignItems:'center',gap:'12px',marginBottom:'18px'}}>
               <img className="preview-hover" src={hoverSrc || "/img/nopic.jpg"} alt="Pratinjau gambar hover" />
               <input
@@ -1490,15 +1489,7 @@ const App = () => {
             </div>
 
             <div className="section-title edit-anchor" id="product-variants">Varian</div>
-            <div className="image-workflow-note">
-              <strong>Urutan foto menentukan tampilannya di toko.</strong>
-              <ol>
-                <li>Seret foto untuk mengatur urutan, atau fokuskan gagang lalu gunakan tombol panah keyboard.</li>
-                <li>Foto pertama pada varian pertama menjadi cover katalog; foto pertama tiap varian menjadi foto utamanya, lalu foto lain tampil di galeri detail.</li>
-                <li>Ganti atau hapus foto sebelum menyimpan. Perubahan baru berlaku setelah produk tersimpan.</li>
-              </ol>
-              <small>Progress resize menunjukkan tahapan browser; tahap kompresi WebP dapat membutuhkan waktu lebih lama, tergantung ukuran gambar dan perangkat.</small>
-            </div>
+            <p className="media-help">Foto pertama varian pertama menjadi cover. Seret untuk mengurutkan.</p>
             <span className="image-order-status" role="status" aria-live="polite">{imageOrderMessage}</span>
             {(resizeProgress.active || resizeProgress.message) && <div className="image-resize-progress" role="status" aria-live="polite">
               <div className="image-resize-progress__top"><span className="image-resize-progress__label">{resizeProgress.active && <span className="image-resize-progress__spinner" aria-hidden="true" />}{resizeProgress.active ? 'Sedang menyiapkan gambar' : 'Status gambar'}</span><strong>{resizeProgress.percent}%</strong></div>
@@ -1514,11 +1505,9 @@ const App = () => {
                     <div className="variant-tools">
                       <div>
                         <div className="section-title" style={{ margin:0 }}>Varian #{ind_v + 1}</div>
-                        <div className="variant-help">{(gambarSrc[ind_v] || []).length} foto · {ind_v === 0 ? 'foto pertama menjadi cover katalog' : 'foto pertama menjadi foto utama varian'}</div>
+                        <div className="variant-help">{(gambarSrc[ind_v] || []).length} foto</div>
                       </div>
                     </div>
-                    {ind_v === 0 && <p className="image-order-note">Foto pertama tampil di katalog.</p>}
-
                     <div className="container-gambar">
                       {gambarSrc.length > 0 && (gambarSrc[ind_v] || []).map((g, ind_g) => {
                         return (
@@ -1589,7 +1578,7 @@ const App = () => {
                                 ...formData,
                                 varian: formData.varian.map((vv, i) => i === ind_v ? { ...vv, stok: e.target.value } : vv)
                               })} required aria-describedby={idProduct ? `stock-help-${ind_v}` : undefined} />
-                            {Boolean(idProduct) && <small id={`stock-help-${ind_v}`} className="text-muted">Saldo stok dikelola melalui Mutasi agar transaksi terbaru tetap akurat.</small>}
+                            {Boolean(idProduct) && <small id={`stock-help-${ind_v}`} className="text-muted">Stok diatur melalui Mutasi.</small>}
                           </td>
                         </tr>
                       </tbody>
