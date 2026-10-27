@@ -6394,3 +6394,22 @@ body.ilena-storefront .ilena-product-related-grid .card1 h5 { font-size: clamp(1
 @media (max-width: 600px) {
     body.ilena-storefront .ilena-product-related-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 12px; row-gap: 22px; }
 }
+
+/* Product catalogue: balanced desktop rows and a restrained edge-fade on photos. */
+@media (min-width: 1200px) {
+    body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        column-gap: clamp(18px, 1.8vw, 28px);
+        row-gap: 42px;
+    }
+}
+@media (min-width: 901px) and (max-width: 1199px) {
+    body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid .card1 .gambar img.img-pic {
+    -webkit-mask-image: radial-gradient(ellipse 78% 82% at center, #000 86%, rgba(0,0,0,.94) 92%, transparent 100%);
+    mask-image: radial-gradient(ellipse 78% 82% at center, #000 86%, rgba(0,0,0,.94) 92%, transparent 100%);
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid .card1 .gambar img { transition: none !important; }
+}
