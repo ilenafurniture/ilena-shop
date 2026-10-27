@@ -54,6 +54,7 @@ class AdminRbacService
             'cancelorder' => 'orders_online',
             'admin/rbac' => 'rbac',
             'admin/product-bulk-edit' => 'products',
+            'admin/menu-previews' => 'products',
             'admin/producttable' => 'products',
             'admin/product' => 'products',
             'admin/addproduct' => 'products',
@@ -97,7 +98,7 @@ class AdminRbacService
             'admin/deletearticle' => 'content',
             'admin/addgaleriarticle' => 'content',
             'admin/homelayout' => 'content',
-            'admin/changepic' => 'content',
+            'admin/changepic' => 'products',
             'admin/partners' => 'content',
             'admin/seo-check' => 'products',
             'admin/surat-koreksi' => 'orders_offline',
@@ -151,15 +152,60 @@ class AdminRbacService
         if ((string)session()->get('role') !== '1'
             && preg_match('~^admin/surat-jalan/offline/(\d+)(?:/.*)?$~', $normalizedPath, $match)
         ) {
-            $db=\Config\Database::connect();
-            $isInterior=$db->table('surat_jalan sj')->join('project_interior pi','pi.kode_sj = sj.id_pesanan')->where('sj.id',(int)$match[1])->countAllResults()>0;
-            return $this->hasPermission($email, $isInterior ? 'project_interior' : 'orders_offline');
+            try {
+                $db = \Config\Database::connect();
+                $shipment = $db->table('surat_jalan')
+                    ->select('id_pesanan')
+                    ->where('id', (int) $match[1])
+                    ->get()
+                    ->getRowArray();
+
+                // Compare a column to a bound scalar instead of joining two text
+                // columns whose legacy production collations may differ.
+                $isInterior = false;
+                if ($shipment && isset($shipment['id_pesanan'])) {
+                    $isInterior = $db->table('project_interior')
+                        ->where('kode_sj', (string) $shipment['id_pesanan'])
+                        ->countAllResults() > 0;
+                }
+
+                return $this->hasPermission($email, $isInterior ? 'project_interior' : 'orders_offline');
+            } catch (\Throwable $th) {
+                log_message('error', 'RBAC shipment source lookup failed: {err}', ['err' => $th->getMessage()]);
+                return false;
+            }
         }
         if ($permission === null) {
             return (string) session()->get('role') === '1';
         }
 
         return $this->hasPermission($email, $permission);
+    }
+
+    /** Confirm a privileged session still matches the persisted account state. */
+    public function sessionAccountMatchesDatabase(?string $email, ?string $sessionRole): bool
+    {
+        $email = strtolower(trim((string) $email));
+        $sessionRole = (string) $sessionRole;
+        if ($email === '' || !in_array($sessionRole, ['1', '5'], true)) {
+            return false;
+        }
+
+        try {
+            $db = \Config\Database::connect();
+            $user = $db->table('user')
+                ->select('role, active')
+                ->where('email', $email)
+                ->get(1)
+                ->getRowArray();
+
+            return $user !== null
+                && (string) ($user['active'] ?? '') === '1'
+                && (string) ($user['role'] ?? '') === $sessionRole;
+        } catch (\Throwable $th) {
+            log_message('error', 'RBAC session account check failed: {err}', ['err' => $th->getMessage()]);
+            return false;
+        }
     }
 
     public function hasAnyAdminAccess(string $email): bool

@@ -1,0 +1,84 @@
+/* ILENA admin visual system: quiet luxury, readable data, minimal surfaces. */
+.ilena-admin-redesign {
+    --ia-ink: #25251f;
+    --ia-muted: #6d6c63;
+    --ia-line: #e4e2d9;
+    --ia-paper: #fbfaf7;
+    --ia-white: #fff;
+    --ia-forest: #263a31;
+    --ia-forest-soft: #e9efeb;
+    --ia-brass: #a47b4f;
+    --ia-danger: #a9473d;
+    --ia-radius: 8px;
+    --ia-focus: 0 0 0 3px rgba(164, 123, 79, .2);
+    color: var(--ia-ink) !important;
+    background: var(--ia-paper) !important;
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif !important;
+    font-size: 14px;
+    line-height: 1.55;
+}
+.ilena-admin-redesign *, .ilena-admin-redesign *::before, .ilena-admin-redesign *::after { box-sizing: border-box; }
+.ilena-admin-redesign .admin-shell { background: var(--ia-paper) !important; }
+.ilena-admin-redesign .admin-sidebar { width: 256px; min-width: 256px; background: #202923 !important; border-color: #354139 !important; }
+.ilena-admin-redesign .admin-content { min-width: 0; background: var(--ia-paper) !important; }
+.ilena-admin-redesign .admin-content-inner { max-width: 1680px; margin-inline: auto; padding: clamp(20px, 3vw, 42px) clamp(16px, 3vw, 48px); }
+
+/* Legacy wrappers become restrained work surfaces, not decorative cards. */
+.ilena-admin-redesign .admin-content-inner :is(.card, .admin-product-hero, .bulk-hero, .bulk-card, .page-wrap, .container-table, .container-list-product) {
+    border: 1px solid var(--ia-line) !important; border-radius: var(--ia-radius) !important;
+    box-shadow: none !important; background: var(--ia-white) !important;
+}
+.ilena-admin-redesign .admin-content-inner .card-header { background: transparent !important; border-bottom: 1px solid var(--ia-line) !important; }
+.ilena-admin-redesign .admin-content-inner :is(h1, h2, h3, h4, h5, .page-title) { color: var(--ia-ink); font-family: Georgia, "Times New Roman", serif; font-weight: 500; letter-spacing: -.025em; line-height: 1.2; }
+.ilena-admin-redesign .admin-content-inner h1 { font-size: clamp(25px, 2.5vw, 34px); }
+.ilena-admin-redesign .admin-content-inner h2 { font-size: clamp(21px, 2vw, 27px); }
+.ilena-admin-redesign .admin-content-inner :is(p, .text-muted, small, .form-text) { color: var(--ia-muted); }
+.ilena-admin-redesign .admin-content-inner label, .ilena-admin-redesign .admin-content-inner .form-label { color: #45463e; font-size: 12px; font-weight: 700; letter-spacing: .015em; }
+
+/* Compact controls with one consistent focus and action language. */
+.ilena-admin-redesign .admin-content-inner :is(input:not([type=checkbox]):not([type=radio]), select, textarea, .form-control, .form-select) {
+    min-height: 42px; border: 1px solid #d9d8d0 !important; border-radius: 6px !important;
+    color: var(--ia-ink) !important; background-color: #fff !important; box-shadow: none !important;
+    font: inherit; font-size: 13px; transition: border-color .16s ease, box-shadow .16s ease;
+}
+.ilena-admin-redesign .admin-content-inner textarea { min-height: 110px; }
+.ilena-admin-redesign .admin-content-inner :is(input, select, textarea, button, a):focus-visible { outline: 0 !important; box-shadow: var(--ia-focus) !important; border-color: var(--ia-brass) !important; }
+.ilena-admin-redesign .admin-content-inner :is(.btn, button, .btn-default-merah, .btn-bulk-primary) { min-height: 40px; border-radius: 6px !important; box-shadow: none !important; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: .01em; transition: background-color .16s ease, color .16s ease, border-color .16s ease; }
+.ilena-admin-redesign .admin-content-inner :is(.btn-primary, .btn-default-merah, .btn-bulk-primary) { color: #fff !important; background: var(--ia-forest) !important; border-color: var(--ia-forest) !important; }
+.ilena-admin-redesign .admin-content-inner :is(.btn-primary, .btn-default-merah, .btn-bulk-primary):hover { background: #344c40 !important; border-color: #344c40 !important; }
+.ilena-admin-redesign .admin-content-inner .btn-secondary { color: var(--ia-ink) !important; background: #f0efe9 !important; border-color: #e1dfd6 !important; }
+.ilena-admin-redesign .admin-content-inner :is(.btn-danger, .btn-bulk-danger) { background: var(--ia-danger) !important; border-color: var(--ia-danger) !important; }
+.ilena-admin-redesign .admin-content-inner :is(.btn, button):disabled { cursor: not-allowed; opacity: .55; }
+
+/* Data views use row separators and clear headers without cell clutter. */
+.ilena-admin-redesign .admin-content-inner :is(table, .table) { color: var(--ia-ink); font-size: 12px; border-color: var(--ia-line); }
+.ilena-admin-redesign .admin-content-inner :is(table, .table) thead th { color: #66675e; background: #f3f2ec; font-size: 10px; font-weight: 800; letter-spacing: .075em; text-transform: uppercase; white-space: nowrap; }
+.ilena-admin-redesign .admin-content-inner :is(table, .table) > :not(caption) > * > * { padding: 11px 12px; vertical-align: middle; border-color: var(--ia-line) !important; }
+.ilena-admin-redesign .admin-content-inner :is(table, .table) tbody tr:hover { background: #faf9f4; }
+.ilena-admin-redesign .admin-content-inner .table-responsive { border: 1px solid var(--ia-line); border-radius: 7px; background: #fff; }
+.ilena-admin-redesign .admin-content-inner :is(.badge, .status-badge) { border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: .02em; }
+.ilena-admin-redesign .admin-content-inner a:not(.btn) { color: #355a48; }
+
+/* Dark, quiet navigation anchors the shared admin layout. */
+.ilena-admin-redesign .admin-brand-mark { border-radius: 6px !important; background: #2d3b32 !important; color: #ddc59f !important; }
+.ilena-admin-redesign .admin-user-chip { border-radius: 6px !important; background: rgba(255,255,255,.035) !important; }
+.ilena-admin-redesign .admin-menu-list { gap: 14px !important; }
+.ilena-admin-redesign .admin-menu-item { min-height: 40px !important; border-radius: 5px !important; }
+.ilena-admin-redesign .admin-menu-item.active { box-shadow: inset 2px 0 #c5a274 !important; }
+.ilena-admin-redesign :is(.admin-mobile-header, .admin-mobile-drawer-panel) { font-family: inherit; }
+
+@media (max-width: 992px) {
+    .ilena-admin-redesign .admin-content-inner { padding: 18px 14px 104px; }
+    .ilena-admin-redesign .admin-sidebar { display: none !important; }
+    .ilena-admin-redesign .admin-content-inner :is(.table-responsive, .overflow-auto) { -webkit-overflow-scrolling: touch; }
+    .ilena-admin-redesign .admin-content-inner :is(.card, .page-wrap, .container-table) { border-radius: 6px !important; }
+}
+@media (max-width: 576px) {
+    .ilena-admin-redesign .admin-content-inner { padding-inline: 11px; }
+    .ilena-admin-redesign .admin-content-inner :is(h1, .page-title) { font-size: 25px; }
+    .ilena-admin-redesign .admin-content-inner :is(table, .table) > :not(caption) > * > * { padding: 9px 10px; }
+    .ilena-admin-redesign .admin-content-inner :is(.btn, button) { min-height: 42px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .ilena-admin-redesign *, .ilena-admin-redesign *::before, .ilena-admin-redesign *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

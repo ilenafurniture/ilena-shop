@@ -4496,10 +4496,28 @@ class Pages extends BaseController
             return redirect()->to('/verify');
         }
         $rbacService = new AdminRbacService();
-        if ((string)$getUser['role'] === '5' || ((string)$getUser['role'] !== '1' && $rbacService->hasAnyAdminAccess((string)$getUser['email']))) {
-            if (!$rbacService->hasAnyAdminAccess((string)$getUser['email'])) {
+        $userRole = (string) ($getUser['role'] ?? '');
+        $hasAdminAssignment = in_array($userRole, ['0', '3', '4', '5'], true)
+            && $rbacService->hasAnyAdminAccess((string) $getUser['email']);
+        if ($userRole === '5' || $hasAdminAssignment) {
+            if (!$hasAdminAssignment) {
                 session()->setFlashdata('msg', 'Akses admin belum aktif untuk email ini.');
                 return redirect()->to('/login');
+            }
+
+            // Legacy/user roles with an explicit RBAC assignment are promoted
+            // before the session is issued. Disabled warehouse and unknown
+            // roles never enter the admin branch.
+            if ($userRole !== '5') {
+                $this->userModel->where('email', (string) $getUser['email'])
+                    ->whereIn('role', ['0', '3', '4'])
+                    ->set(['role' => '5'])
+                    ->update();
+                $getUser = $this->userModel->getUser((string) $getUser['email']);
+                if (!$getUser || (string) ($getUser['role'] ?? '') !== '5') {
+                    session()->setFlashdata('msg', 'Akses admin belum aktif untuk email ini.');
+                    return redirect()->to('/login');
+                }
             }
 
             $ses_data = [

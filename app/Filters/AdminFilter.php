@@ -12,15 +12,24 @@ class AdminFilter implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        if (!session()->get('isLogin') || (string)session()->get('active') !== '1') {
+        if (!session()->get('isLogin')) {
             return redirect()->to('/');
-        } else if(session()->get('role') == '2'){
+        }
+
+        if (session()->get('role') == '2') {
             session()->destroy();
             return redirect()->to('/login')->with('msg', 'Akses akun Gudang sudah dinonaktifkan. Hubungi administrator.');
         }
 
         $rbac = new AdminRbacService();
         $email = (string)session()->get('email');
+        if ((string) session()->get('active') !== '1'
+            || !$rbac->sessionAccountMatchesDatabase($email, (string) session()->get('role'))
+        ) {
+            session()->destroy();
+            return redirect()->to('/login')->with('msg', 'Sesi admin sudah tidak aktif. Silakan masuk kembali.');
+        }
+
         $isSuperAdmin = (string)session()->get('role') === '1';
         $hasRbacAccess = $rbac->hasAnyAdminAccess($email);
 

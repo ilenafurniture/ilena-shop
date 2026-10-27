@@ -13,6 +13,7 @@ class MarketFilter implements FilterInterface
     public function before(RequestInterface $request, $arguments = null)
     {
         if (!session()->get('isLogin')) {
+            session()->destroy();
             return redirect()->to('/');
         }
 
@@ -22,6 +23,13 @@ class MarketFilter implements FilterInterface
 
         $rbac = new AdminRbacService();
         $email = (string) session()->get('email');
+        if ((string) session()->get('active') !== '1'
+            || !$rbac->sessionAccountMatchesDatabase($email, (string) session()->get('role'))
+        ) {
+            session()->destroy();
+            return redirect()->to('/login')->with('msg', 'Sesi marketplace sudah tidak aktif. Silakan masuk kembali.');
+        }
+
         if ((string) session()->get('role') !== '5' || !$rbac->hasPermission($email, 'marketplace')) {
             if (in_array((string) session()->get('role'), ['2', '3'], true)) {
                 session()->destroy();

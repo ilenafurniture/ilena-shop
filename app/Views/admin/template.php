@@ -195,9 +195,10 @@
         }
     }
     </style>
+    <link rel="stylesheet" href="<?= base_url('css/ilena-admin-redesign.css?v=20261027'); ?>">
 </head>
 
-<body>
+<body class="ilena-admin-redesign">
     <div class="toast start-50 translate-middle">
         <div class="toast-body">
             <p>Hello, world! This is a toast message.</p>
