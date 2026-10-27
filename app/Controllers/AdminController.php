@@ -787,8 +787,17 @@ class AdminController extends BaseController
 
             $parts = explode('_', (string)$ind_g);
             $urutan = (int)($parts[1] ?? 0);
-            $dG->move('imgdum');
+            // Never use the browser-supplied filename as a filesystem path.
+            // Keep the validated WebP in private staging with a server-generated name.
+            $stagingDir = rtrim(WRITEPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'cache';
+            if (!is_dir($stagingDir) && !@mkdir($stagingDir, 0775, true) && !is_dir($stagingDir)) {
+                throw new \RuntimeException('Folder staging gambar tidak dapat dibuat.');
+            }
+            $stagingName = 'product-' . bin2hex(random_bytes(16)) . '.webp';
+            $dG->move($stagingDir, $stagingName, true);
+            $stagingFile = $stagingDir . DIRECTORY_SEPARATOR . $stagingName;
 
+            try {
             $dest3000 = $toPublicPath('uploads/product-images/3000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
             $dest1000 = $toPublicPath('uploads/product-images/1000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
             $dest300 = $toPublicPath('uploads/product-images/300/' . $data['id'] . '.webp');
@@ -797,7 +806,7 @@ class AdminController extends BaseController
                 unlink($dest3000);
             }
             \Config\Services::image()
-                ->withFile('imgdum/' . $dG->getName())
+                ->withFile($stagingFile)
                 ->resize(3000, 3000, true, 'height')
                 ->save($dest3000);
             $this->uploadProductImageToR2($dest3000, 'uploads/product-images/3000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
@@ -806,7 +815,7 @@ class AdminController extends BaseController
                 unlink($dest1000);
             }
             \Config\Services::image()
-                ->withFile('imgdum/' . $dG->getName())
+                ->withFile($stagingFile)
                 ->resize(1000, 1000, true, 'height')
                 ->save($dest1000);
             $this->uploadProductImageToR2($dest1000, 'uploads/product-images/1000/' . $data['id'] . '-' . ($urutan + 1) . '.webp');
@@ -816,12 +825,14 @@ class AdminController extends BaseController
                     unlink($dest300);
                 }
                 \Config\Services::image()
-                    ->withFile('imgdum/' . $dG->getName())
+                    ->withFile($stagingFile)
                     ->resize(300, 300, true, 'height')
                     ->save($dest300);
                 $this->uploadProductImageToR2($dest300, 'uploads/product-images/300/' . $data['id'] . '.webp');
             }
-            @unlink('imgdum/' . $dG->getName());
+            } finally {
+                @unlink($stagingFile);
+            }
         }
 
         // ===== Jadwal diskon (baru, minimal patch) =====
@@ -2356,18 +2367,45 @@ class AdminController extends BaseController
     public function actionAddGaleriArticle()
     {
         $gambar = $this->request->getFile('file');
-        $id = date("YmdHis", strtotime("+7 hours"));
-        if ($gambar->isValid()) {
-            $fp = 'img/artikel';
-            $gambar->move($fp, $id . '.webp');
+        if (!$gambar || !$gambar->isValid() || $gambar->hasMoved()) {
+            return $this->response->setStatusCode(422)->setJSON(['success' => false, 'pesan' => 'File gambar tidak valid.']);
         }
-        $this->gambarArtikelModel->insert([
-            'id' => $id,
-            'url' => 'img/artikel/' . $id . '.webp'
-        ]);
+
+        $allowedMimes = ['image/webp', 'image/jpeg', 'image/png'];
+        if ($gambar->getSize() > 10 * 1024 * 1024 || !in_array($gambar->getMimeType(), $allowedMimes, true)) {
+            return $this->response->setStatusCode(422)->setJSON(['success' => false, 'pesan' => 'Gunakan JPG, PNG, atau WebP maksimal 10 MB.']);
+        }
+        $dimensions = @getimagesize($gambar->getTempName());
+        if (!$dimensions || $dimensions[0] < 1 || $dimensions[1] < 1 || $dimensions[0] > 10000 || $dimensions[1] > 10000 || ($dimensions[0] * $dimensions[1]) > 40000000) {
+            return $this->response->setStatusCode(422)->setJSON(['success' => false, 'pesan' => 'Dimensi gambar tidak valid atau terlalu besar.']);
+        }
+
+        $id = gmdate('YmdHis') . bin2hex(random_bytes(4));
+        $relativePath = 'img/artikel/' . $id . '.webp';
+        $outputPath = rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $relativePath);
+        $outputDir = dirname($outputPath);
+        if (!is_dir($outputDir) && !@mkdir($outputDir, 0775, true) && !is_dir($outputDir)) {
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'pesan' => 'Folder gambar artikel tidak tersedia.']);
+        }
+
+        try {
+            \Config\Services::image()
+                ->withFile($gambar->getTempName())
+                ->resize(2400, 2400, true, 'height')
+                ->save($outputPath, 82);
+            if (!is_file($outputPath) || filesize($outputPath) <= 0) {
+                throw new \RuntimeException('Output WebP kosong.');
+            }
+            $this->gambarArtikelModel->insert(['id' => $id, 'url' => $relativePath]);
+        } catch (\Throwable $e) {
+            @unlink($outputPath);
+            log_message('error', 'Article image upload failed: {message}', ['message' => $e->getMessage()]);
+            return $this->response->setStatusCode(422)->setJSON(['success' => false, 'pesan' => 'Gambar gagal diproses.']);
+        }
+
         return $this->response->setStatusCode(200)->setJSON([
             'success' => true,
-            'url' => 'img/artikel/' . $id . '.webp'
+            'url' => $relativePath
         ], false);
     }
     public function actionAddArticle()

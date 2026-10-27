@@ -4609,21 +4609,33 @@ class Pages extends BaseController
 
     public function editSandi($path)
     {
-        $sandi = (string) $this->request->getVar('sandi');
-        $sandiKonfirm = $this->request->getVar('sandiKonfirm');
-        $email = session()->get('email');
+        $sandiLama = (string) $this->request->getPost('sandiLama');
+        $sandi = (string) $this->request->getPost('sandi');
+        $sandiKonfirm = (string) $this->request->getPost('sandiKonfirm');
+        $email = strtolower(trim((string) session()->get('email')));
         $path = in_array($path, ['account', 'order'], true) ? $path : 'account';
-        if (!$email || strlen($sandi) < 12 || strlen($sandi) > 4096) {
-            session()->setFlashdata('msg-sandi', 'Kata sandi harus terdiri dari 12–4096 karakter.');
+        $user = $email !== '' ? $this->userModel->findByEmailIdentity($email) : null;
+        if (!$user || empty($user['sandi']) || !password_verify($sandiLama, (string) $user['sandi'])) {
+            session()->setFlashdata('msg-sandi', 'Kata sandi saat ini tidak sesuai.');
             return redirect()->to('/' . $path);
         }
-        if ($sandi != $sandiKonfirm) {
+        if (strlen($sandi) < 12 || strlen($sandi) > 72 || str_contains($sandi, "\0")) {
+            session()->setFlashdata('msg-sandi', 'Kata sandi baru harus terdiri dari 12–72 byte.');
+            return redirect()->to('/' . $path);
+        }
+        if (!hash_equals($sandi, $sandiKonfirm)) {
             session()->setFlashdata('msg-sandi', 'Sandi yang terkonfirmasi tidak cocok');
             return redirect()->to('/' . $path);
         }
-        $this->userModel->where(['email' => $email])->set([
+        $updated = $this->userModel->where(['email' => $user['email']])->set([
             'sandi' => password_hash($sandi, PASSWORD_DEFAULT),
         ])->update();
+        if (!$updated) {
+            session()->setFlashdata('msg-sandi', 'Perubahan kata sandi gagal. Silakan coba kembali.');
+            return redirect()->to('/' . $path);
+        }
+        // Rotate the current session ID after a credential change.
+        session()->regenerate(true);
         session()->setFlashdata('msg-sandi', 'Sandi Anda berhasil diubah');
         return redirect()->to('/' . $path);
     }

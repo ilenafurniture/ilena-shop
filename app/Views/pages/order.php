@@ -215,8 +215,12 @@
         <form action="/editsandi/order" method="post" novalidate>
             <?= csrf_field(); ?>
             <div class="mb-2">
+                <label class="mb-1">Sandi saat ini</label>
+                <input type="password" name="sandiLama" class="form-control" autocomplete="current-password" maxlength="72" required>
+            </div>
+            <div class="mb-2">
                 <label class="mb-1">Sandi baru Anda</label>
-                <input type="password" name="sandi" class="form-control" required>
+                <input type="password" name="sandi" class="form-control" autocomplete="new-password" minlength="12" maxlength="72" required>
             </div>
             <div class="mb-3">
                 <label class="mb-1">Konfirmasi Sandi</label>
