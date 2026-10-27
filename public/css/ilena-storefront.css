@@ -3269,16 +3269,16 @@ body.ilena-storefront .product-detail-soft .ilena-product-gallery {
     position: sticky; top: 112px; align-self: flex-start;
 }
 body.ilena-storefront .product-detail-soft .ilena-product-gallery__stage {
-    position: relative; overflow: hidden; aspect-ratio: 4 / 3; background: #fff;
+    position: relative; overflow: hidden; aspect-ratio: 4 / 3; background: var(--ilena-paper);
 }
 body.ilena-storefront .product-detail-soft img.img-detail-prev {
     display: block; width: 100%; height: 100%; aspect-ratio: auto; object-fit: contain !important; object-position: center; border-radius: 0;
-    background: #fff !important; box-shadow: none; transition: transform .6s cubic-bezier(.2,.7,.2,1), filter .3s ease;
+    background: var(--ilena-paper) !important; box-shadow: none; transition: transform .6s cubic-bezier(.2,.7,.2,1), filter .3s ease;
 }
 body.ilena-storefront .product-detail-soft .ilena-product-gallery__stage:hover > img.img-detail-prev { transform: none; }
 body.ilena-storefront .product-detail-soft .ilena-product-gallery__stage > figure.img-detail-prev {
     position: absolute !important; z-index: 2; inset: 0 !important; width: 100% !important; height: 100% !important; aspect-ratio: auto;
-    transform: none !important; border: 0; pointer-events: none; background-repeat: no-repeat; background-size: 260% 260% !important;
+    transform: none !important; border: 0; pointer-events: none; background-color: var(--ilena-paper); background-repeat: no-repeat; background-size: 260% 260% !important;
     opacity: 0; transition: opacity .14s ease;
 }
 body.ilena-storefront .product-detail-soft .ilena-product-gallery__stage > figure.img-detail-prev:not(.d-none) { opacity: 1; }
