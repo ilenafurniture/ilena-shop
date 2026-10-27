@@ -11,6 +11,7 @@
     </script>
 
     <link rel="stylesheet" href="<?= base_url('css/style.css'); ?>">
+    <link rel="stylesheet" href="<?= base_url('css/ilena-dialog.css?v=20261027'); ?>">
 </head>
 
 <body>
@@ -27,6 +28,7 @@
             <?= $this->renderSection('content'); ?>
         </div>
     </div>
+    <script src="<?= base_url('js/ilena-dialog.js?v=20261027'); ?>"></script>
 </body>
 
 </html>

@@ -220,7 +220,8 @@ input:focus {
             <?php elseif (($sj['status'] ?? '') !== 'final'): ?>
             <!-- Finalize button for draft -->
             <form method="post" action="<?= base_url('/admin/surat-jalan/offline/' . $sj['id'] . '/finalize') ?>"
-                onsubmit="return confirm('Finalize SJ ini? Nomor SJ global akan dibuat dan status berubah menjadi FINAL.');"
+                data-ilena-confirm="Finalisasi surat jalan? Nomor SJ global akan dibuat dan status berubah menjadi final."
+                data-ilena-confirm-title="Finalisasi surat jalan"
                 style="display:inline;">
                 <?= csrf_field() ?>
                 <button type="submit" class="btn-primary"

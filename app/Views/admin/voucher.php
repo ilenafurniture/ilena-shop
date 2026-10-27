@@ -565,7 +565,7 @@ input:checked+.slider:before {
                             </button>
 
                             <form method="post" action="/admin/voucher/delete/<?= (int)$v['id']; ?>" class="d-inline"
-                                onsubmit="return confirm('Hapus voucher <?= esc($v['kode'], 'js'); ?>?')">
+                                data-ilena-confirm="<?= esc('Hapus voucher ' . $v['kode'] . '?'); ?>" data-ilena-confirm-title="Hapus voucher">
                                 <?= csrf_field(); ?>
                                 <button class="btn btn-sm btn-outline-danger btn-chip" type="submit">Hapus</button>
                             </form>

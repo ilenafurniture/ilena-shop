@@ -7,7 +7,10 @@
     </script>
     <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
     gtag('js', new Date());
 
     gtag('config', 'AW-16806007994');
@@ -16,27 +19,47 @@
     <meta name="facebook-domain-verification" content="7gteseil6x5vlinogoixcvrdb7zoci" />
     <!-- Meta Pixel Code -->
     <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
+    ! function(f, b, e, v, n, t, s) {
+        if (f.fbq) return;
+        n = f.fbq = function() {
+            n.callMethod ?
+                n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+        };
+        if (!f._fbq) f._fbq = n;
+        n.push = n;
+        n.loaded = !0;
+        n.version = '2.0';
+        n.queue = [];
+        t = b.createElement(e);
+        t.async = !0;
+        t.src = v;
+        s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s)
+    }(window, document, 'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '1030536602870149');
     fbq('track', 'PageView');
     </script>
     <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=1030536602870149&ev=PageView&noscript=1"
-    /></noscript>
+            src="https://www.facebook.com/tr?id=1030536602870149&ev=PageView&noscript=1" /></noscript>
     <!-- End Meta Pixel Code -->
-     <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-K5BLN7VV');</script>
+    <!-- Google Tag Manager -->
+    <script>
+    (function(w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({
+            'gtm.start': new Date().getTime(),
+            event: 'gtm.js'
+        });
+        var f = d.getElementsByTagName(s)[0],
+            j = d.createElement(s),
+            dl = l != 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src =
+            'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-K5BLN7VV');
+    </script>
     <!-- End Google Tag Manager -->
     <script>
     ! function(w, d, t) {
@@ -196,21 +219,26 @@
     <?php } ?>
 
     <link rel="stylesheet" href="<?= base_url('css/style.css?v=' . filemtime(FCPATH . 'css/style.css')); ?>">
-    <link rel="stylesheet" href="<?= base_url('css/ilena-storefront.css?v=' . filemtime(FCPATH . 'css/ilena-storefront.css')); ?>">
+    <link rel="stylesheet" href="<?= base_url('css/ilena-dialog.css?v=20261027'); ?>">
+    <link rel="stylesheet"
+        href="<?= base_url('css/ilena-storefront.css?v=' . filemtime(FCPATH . 'css/ilena-storefront.css')); ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <?php $editorialPagePath = '/' . strtolower(trim((string) service('uri')->getPath(), '/')); ?>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
     <?php if (in_array($editorialPagePath, ['/', '/tentang', '/partner', '/article'], true)) : ?>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <?php endif; ?>
     <?php if (in_array($editorialPagePath, ['/tentang', '/partner'], true)) : ?>
-    <link rel="stylesheet" href="<?= base_url('css/ilena-editorial-pages.css?v=' . filemtime(FCPATH . 'css/ilena-editorial-pages.css')); ?>">
+    <link rel="stylesheet"
+        href="<?= base_url('css/ilena-editorial-pages.css?v=' . filemtime(FCPATH . 'css/ilena-editorial-pages.css')); ?>">
     <?php endif; ?>
     <link rel="icon" href="<?= base_url('img/logo/N.png?v=' . date('d-m-Y')); ?>" type="image/png">
     <script>
     (() => {
-        const fallbackImageUrl = <?= json_encode(base_url('img/ilena-image-placeholder.png'), JSON_UNESCAPED_SLASHES); ?>;
+        const fallbackImageUrl =
+            <?= json_encode(base_url('img/ilena-image-placeholder.png'), JSON_UNESCAPED_SLASHES); ?>;
         document.addEventListener('error', (event) => {
             const image = event.target;
             if (!(image instanceof HTMLImageElement)) return;
@@ -218,29 +246,28 @@
                 image.hidden = true;
                 return;
             }
-            // Let a component-specific onerror try its own alternate source first.
-            // Only use the shared placeholder if this dispatch leaves the source unchanged.
-            const failedSource = image.src;
-            queueMicrotask(() => {
-                if (!image.isConnected || image.dataset.ilenaFallbackApplied === 'true') return;
-                if (image.src !== failedSource) return;
-                image.dataset.ilenaFallbackApplied = 'true';
-                image.classList.add('ilena-image-fallback');
-                image.src = fallbackImageUrl;
-            });
+            image.dataset.ilenaFallbackApplied = 'true';
+            image.classList.add('ilena-image-fallback');
+            image.src = fallbackImageUrl;
         }, true);
     })();
     </script>
 </head>
 
 <?php
-$layoutPath = App\Services\StorefrontLayoutPolicy::normalizePath((string) service('uri')->getPath());
-$isInternalArea = App\Services\StorefrontLayoutPolicy::isInternal($layoutPath);
-$layoutHeaderMode = App\Services\StorefrontLayoutPolicy::headerMode($layoutPath);
+$layoutPath = trim((string) service('uri')->getPath(), '/');
+$isInternalArea = preg_match('~^(admin|analytics|market|editarticle|changepic|gantilokasi|cobainput|gamwm)(/|$)~i', $layoutPath) === 1;
+$layoutPath = '/' . strtolower(trim($layoutPath, '/'));
+$layoutIsAuthPage = in_array($layoutPath, ['/login', '/register', '/verify'], true);
+$layoutIsCheckoutPage = preg_match('~^/(cart|shipping|payment|progresspay|successpay|cencelpay|expirepay)(/|$)~', $layoutPath) === 1;
+$layoutIsAccountPage = preg_match('~^/(account|address|order|orderdetail|invoice|wishlist)(/|$)~', $layoutPath) === 1;
+$layoutHeaderMode = $layoutIsAuthPage ? 'auth' : ($layoutIsCheckoutPage ? 'checkout' : ($layoutIsAccountPage ? 'account' : 'full'));
 $layoutPageSegments = array_values(array_filter(explode('/', trim($layoutPath, '/'))));
 $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? 'home') ?: 'home';
 ?>
-<body class="<?= $isInternalArea ? 'ilena-internal' : 'ilena-storefront ilena-header--' . $layoutHeaderMode . ' ilena-page--' . esc($layoutPageSlug, 'attr'); ?>">
+
+<body
+    class="<?= $isInternalArea ? 'ilena-internal' : 'ilena-storefront ilena-header--' . $layoutHeaderMode . ' ilena-page--' . esc($layoutPageSlug, 'attr'); ?>">
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K5BLN7VV" height="0" width="0"
             style="display:none;visibility:hidden"></iframe></noscript>
@@ -283,12 +310,15 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
                     <button type="button" aria-label="Tutup pesan bantuan" data-close-chat-greeting>×</button>
                 </div>
                 <p class="ilena-chat-greeting__copy">Tim Ilena siap membantu Anda menemukan furniture yang tepat.</p>
-                <a data-kbot-wa href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20saya%20butuh%20bantuan" class="ilena-chat-greeting__link" target="_blank" rel="noopener noreferrer">Chat via WhatsApp <span aria-hidden="true">↗</span></a>
+                <a data-kbot-wa href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20saya%20butuh%20bantuan"
+                    class="ilena-chat-greeting__link" target="_blank" rel="noopener noreferrer">Chat via WhatsApp <span
+                        aria-hidden="true">↗</span></a>
             </div>
         </div>
         <div class="d-flex flex-column gap-2">
             <!--<a class="btn-circle" href="/form"><i class="material-icons">insert_comment</i></a>-->
-            <a data-kbot-wa class="btn-circle hitam ilena-floating-chat" id="btn-wa" aria-label="Chat Ilena Furniture via WhatsApp" title="Chat via WhatsApp"
+            <a data-kbot-wa class="btn-circle hitam ilena-floating-chat" id="btn-wa"
+                aria-label="Chat Ilena Furniture via WhatsApp" title="Chat via WhatsApp"
                 href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20mau%20tanya-tanya%20koleksinya">
                 <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
                     <path
@@ -298,9 +328,9 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
         </div>
     </div>
     <script>
-        document.querySelector('[data-close-chat-greeting]')?.addEventListener('click', () => {
-            document.getElementById('container-greeting-card')?.classList.add('d-none');
-        });
+    document.querySelector('[data-close-chat-greeting]')?.addEventListener('click', () => {
+        document.getElementById('container-greeting-card')?.classList.add('d-none');
+    });
     </script>
 
     <script defer crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
@@ -309,10 +339,10 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
 
 
     <?php if (!$isInternalArea && in_array($layoutHeaderMode, ['full', 'auth', 'account'], true)): ?>
-        <?= $this->include('layout/navbar', ['headerMode' => $layoutHeaderMode]); ?>
-        <?= $this->include('layout/navbarHp'); ?>
+    <?= $this->include('layout/navbar', ['headerMode' => $layoutHeaderMode]); ?>
+    <?= $this->include('layout/navbarHp'); ?>
     <?php elseif (!$isInternalArea): ?>
-        <?= $this->include('layout/navbarCompact', ['headerMode' => $layoutHeaderMode]); ?>
+    <?= $this->include('layout/navbarCompact', ['headerMode' => $layoutHeaderMode]); ?>
     <?php endif; ?>
     <div style="flex: 1; position: relative; min-height: 500px;">
         <?= $this->renderSection('content'); ?>
@@ -421,7 +451,10 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
     })();
     </script>
 
-    <script src="<?= base_url('js/ilena-smart-search.js?v=' . (is_file(FCPATH . 'js/ilena-smart-search.js') ? filemtime(FCPATH . 'js/ilena-smart-search.js') : time())); ?>" defer></script>
+    <script
+        src="<?= base_url('js/ilena-smart-search.js?v=' . (is_file(FCPATH . 'js/ilena-smart-search.js') ? filemtime(FCPATH . 'js/ilena-smart-search.js') : time())); ?>"
+        defer></script>
+    <script src="<?= base_url('js/ilena-dialog.js?v=20261027'); ?>"></script>
     <script src="https://go.kreasibot.com/k.js" data-kreasibot="ilenafurniture" defer></script>
 </body>
 

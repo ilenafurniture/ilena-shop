@@ -265,7 +265,7 @@ $old = static function (string $key, $default = '') {
 
                 <div class="bulk-actions">
                     <a class="btn-bulk-secondary" href="/admin/product">Batal</a>
-                    <button class="btn-bulk-primary" type="submit" onclick="return confirm('Simpan perubahan untuk <?= $productCount; ?> produk terpilih?')">
+                    <button class="btn-bulk-primary" type="submit" data-ilena-confirm="Simpan perubahan untuk <?= (int) $productCount; ?> produk terpilih?" data-ilena-confirm-title="Simpan perubahan massal" data-ilena-confirm-tone="info">
                         Simpan untuk <?= $productCount; ?> produk
                     </button>
                 </div>

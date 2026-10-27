@@ -57,7 +57,7 @@ $inactiveDays = (int)($inactiveDays ?? 7);
             <div class="d-flex flex-wrap justify-content-between gap-2 mb-3">
                 <button type="button" class="btn btn-light border" onclick="document.querySelectorAll('.spam-check').forEach(el => el.checked = true)">Pilih Semua</button>
                 <button type="button" class="btn btn-light border" onclick="document.querySelectorAll('.spam-check').forEach(el => el.checked = false)">Kosongkan</button>
-                <button type="submit" class="btn btn-danger ms-auto" onclick="return confirm('Hapus akun spam yang dipilih?')">Hapus Terpilih</button>
+        <button type="submit" class="btn btn-danger ms-auto" data-ilena-confirm="Hapus akun spam yang dipilih?" data-ilena-confirm-title="Hapus akun spam" data-ilena-confirm-tone="error">Hapus Terpilih</button>
             </div>
 
             <div class="table-responsive">

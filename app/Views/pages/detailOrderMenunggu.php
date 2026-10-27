@@ -577,7 +577,7 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
         <div class="pad cta-sticky" style="padding-top:0; display:grid; gap:8px;">
             <a href="#" id="btnCekPembayaran" class="btn-default-merah">Saya sudah membayar</a>
             <form method="post" action="/order/cancel/<?= rawurlencode($id_order); ?>?access_token=<?= rawurlencode($orderAccessToken ?? ''); ?>"
-                onsubmit="return confirm('Batalkan pesanan ini? Jika pembayaran sudah berhasil, status tidak dapat dibatalkan dari sini.');">
+                data-ilena-confirm="Batalkan pesanan ini? Jika pembayaran sudah berhasil, status tidak dapat dibatalkan dari sini." data-ilena-confirm-title="Batalkan pesanan">
                 <?= function_exists('csrf_field') ? csrf_field() : '' ?>
                 <button type="submit" class="btn btn-outline-secondary w-100" style="min-height:48px;">Batalkan pesanan</button>
             </form>

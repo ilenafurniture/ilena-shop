@@ -24,7 +24,7 @@
                 <div style="flex: 2;"><?= $a['kendala']; ?></div>
                 <div style="flex: 2;" class="d-flex align-items-center gap-1">
                     <form method="post" action="/admin/accreprint/<?= esc($a['id_midtrans'], 'attr'); ?>" class="d-inline"><?= csrf_field() ?><button class="btn-default" type="submit"><i class="material-icons">check</i></button></form>
-                    <form method="post" action="/admin/denyreprint/<?= esc($a['id_midtrans'], 'attr'); ?>" class="d-inline" onsubmit="return confirm('Tolak pengajuan cetak ulang ini?')"><?= csrf_field() ?><button class="btn-default-merah" type="submit"><i class="material-icons">close</i></button></form>
+                    <form method="post" action="/admin/denyreprint/<?= esc($a['id_midtrans'], 'attr'); ?>" class="d-inline" data-ilena-confirm="Tolak pengajuan cetak ulang ini?" data-ilena-confirm-title="Tolak cetak ulang"><?= csrf_field() ?><button class="btn-default-merah" type="submit"><i class="material-icons">close</i></button></form>
                 </div>
             </div>
         <?php } ?>

@@ -825,21 +825,11 @@ function formatRupiah(val) {
 }
 
 function saWarning(title, text) {
-    if (typeof Swal !== 'undefined') Swal.fire({
-        icon: 'warning',
-        title,
-        text
-    });
-    else alert(title + ' - ' + text);
+    return window.IlenaDialog.alert(text, {title, tone: 'warning'});
 }
 
 function saError(title, text) {
-    if (typeof Swal !== 'undefined') Swal.fire({
-        icon: 'error',
-        title,
-        text
-    });
-    else alert(title + ' - ' + text);
+    return window.IlenaDialog.alert(text, {title, tone: 'error'});
 }
 
 /* rupiah typing */
@@ -980,7 +970,7 @@ if (formPayment) {
 
 /* ---------- popup cetak invoice payment ---------- */
 document.querySelectorAll('.btn-print-payment').forEach(btn => {
-    btn.addEventListener('click', function(e) {
+    btn.addEventListener('click', async function(e) {
         e.preventDefault();
         const url = this.getAttribute('data-url') || '';
         const jenis = (this.getAttribute('data-jenis') || '').toLowerCase();
@@ -995,7 +985,7 @@ document.querySelectorAll('.btn-print-payment').forEach(btn => {
         const defaultChecked = (jenis === 'termin' || jenis === 'pelunasan');
 
         if (typeof Swal === 'undefined') {
-            const includeSj = confirm('Tampilkan Surat Jalan di invoice juga?');
+            const includeSj = await window.IlenaDialog.confirm('Tampilkan Surat Jalan di invoice juga?', {title: 'Opsi cetak invoice'});
             let finalUrl = url;
             if (includeSj && defaultChecked) finalUrl += (url.includes('?') ? '&' : '?') + 'show_sj=1';
             window.open(finalUrl, '_blank');

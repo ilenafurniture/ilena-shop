@@ -12,6 +12,7 @@
     </script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <link rel="stylesheet" href="/css/style_pdf.css" />
+    <link rel="stylesheet" href="<?= base_url('css/ilena-dialog.css?v=20261027'); ?>" />
 </head>
 
 <body>
@@ -116,11 +117,14 @@
     <form id="mark-printed" method="post" action="<?= site_url('admin/suratjalan/' . rawurlencode((string)$orderId) . '/printed'); ?>" hidden>
         <?= csrf_field(); ?>
     </form>
+    <script src="<?= base_url('js/ilena-dialog.js?v=20261027'); ?>"></script>
     <script>
     window.addEventListener('afterprint', function () {
-        if (window.confirm('Surat jalan sudah berhasil dicetak?')) {
+        window.IlenaDialog.confirm('Surat jalan sudah berhasil dicetak?', {title: 'Konfirmasi cetak'}).then(function (confirmed) {
+          if (confirmed) {
             document.getElementById('mark-printed').submit();
-        }
+          }
+        });
     }, { once: true });
     window.print();
     </script>

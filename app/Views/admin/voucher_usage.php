@@ -45,7 +45,7 @@
                         <td><?= esc($r['email']); ?></td>
                         <td><?= esc($r['used_at']); ?></td>
                         <td>
-                            <form method="post" action="/admin/voucher/usage/delete/<?= (int)$r['id']; ?>" onsubmit="return confirm('Hapus log ini?')">
+                            <form method="post" action="/admin/voucher/usage/delete/<?= (int)$r['id']; ?>" data-ilena-confirm="Hapus catatan penggunaan voucher ini?" data-ilena-confirm-title="Hapus catatan">
                                 <?= csrf_field(); ?>
                                 <button class="btn btn-sm btn-outline-danger" type="submit">Hapus</button>
                             </form>

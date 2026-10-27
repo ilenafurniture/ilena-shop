@@ -238,12 +238,58 @@ $statusTone = static function ($status) {
     .dash-grid { grid-template-columns: 1fr; }
     .quick-grid { grid-template-columns: 1fr; }
 }
+/* Ilena editorial dashboard: compact metrics and separators instead of oversized cards. */
+.dash-wrap { max-width:1480px; margin:0 auto; padding:10px clamp(14px,2vw,28px) 34px; gap:24px; color:#302d25; font-family:Inter,"Segoe UI",Arial,sans-serif; }
+.dash-hero { padding:8px 0 20px; border:0; border-bottom:1px solid #ded9cf; border-radius:0; background:transparent; color:#302d25; box-shadow:none; }
+.dash-kicker { color:#89785e; font-size:10px; letter-spacing:.14em; font-weight:700; }
+.dash-title { color:#29271f; font-size:clamp(23px,2.4vw,31px); font-weight:620; line-height:1.18; letter-spacing:-.04em; }
+.dash-subtitle { margin-top:7px; color:#77736c; font-size:13px; }
+.dash-btn { min-height:36px; padding:8px 12px; border:1px solid #ded9cf; border-radius:6px; color:#514a3d; background:#fff; backdrop-filter:none; font-size:12px; font-weight:600; transition:background .18s,border-color .18s,color .18s; }
+.dash-btn:hover { border-color:#a28e6b; color:#66583f; background:#f8f6f1; }
+.dash-btn.primary { border-color:#66583f; color:#fff; background:#66583f; }
+.dash-btn.primary:hover { background:#51452f; }
+.dash-grid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:0; border-top:1px solid #eae5db; border-bottom:1px solid #eae5db; }
+.dash-card { padding:16px 18px; border:0; border-radius:0; background:transparent; box-shadow:none; }
+.dash-grid .dash-card { min-height:108px; border-left:1px solid #eae5db; }
+.dash-grid .dash-card:first-child { border-left:0; padding-left:0; }
+.dash-grid .dash-card:last-child { padding-right:0; }
+.dash-stat { min-height:0; align-items:center; }
+.dash-icon { width:32px; height:32px; border-radius:50%; background:#f4f0e8; color:#806c4b; }
+.dash-icon .material-icons { font-size:18px; }
+.dash-label { margin-bottom:7px; color:#817b70; font-size:10px; letter-spacing:.09em; font-weight:650; }
+.dash-value { color:#302d25; font-size:26px; line-height:1.1; font-weight:620; letter-spacing:-.04em; }
+.dash-note { margin-top:5px; color:#817b70; font-size:11px; }
+.dash-two-col { grid-template-columns:minmax(0,1.4fr) minmax(260px,.65fr); gap:32px; }
+.dash-two-col > .dash-card,.dash-wrap > .dash-card { padding:0; border:0; background:transparent; box-shadow:none; }
+.dash-section-head { margin-bottom:8px; padding-bottom:10px; border-bottom:1px solid #ded9cf; }
+.dash-section-head h2 { color:#302d25; font-size:15px; font-weight:650; letter-spacing:-.02em; }
+.dash-section-head a { color:#806c4b; font-size:12px; font-weight:600; }
+.dash-section-head a:hover { color:#51452f; text-decoration:underline; }
+.dash-list { gap:0; }
+.dash-row { padding:11px 0; border:0; border-bottom:1px solid #eeeae3; border-radius:0; background:transparent; }
+.dash-row-title { color:#373229; font-size:12.5px; font-weight:620; }
+.dash-row-meta { margin-top:3px; color:#817b70; font-size:11px; }
+.dash-pill { min-height:24px; padding:4px 8px; border:1px solid transparent; border-radius:4px; font-size:10px; font-weight:650; }
+.dash-pill.success { color:#496b50; background:#f0f5ef; border-color:#e1e9df; }
+.dash-pill.warning { color:#876a36; background:#f8f4eb; border-color:#eee5d2; }
+.dash-pill.danger { color:#985b51; background:#f9f0ed; border-color:#efdfda; }
+.dash-pill.neutral { color:#6e685d; background:#f5f3ef; border-color:#e9e5dc; }
+.quick-grid { display:block; }
+.quick-card { min-height:0; flex-direction:row; align-items:center; justify-content:flex-start; gap:10px; padding:11px 2px; border:0; border-bottom:1px solid #eeeae3; border-radius:0; color:#373229; background:transparent; transition:padding .18s,color .18s,background .18s; }
+.quick-card:hover { padding-left:7px; color:#66583f; background:#faf9f6; box-shadow:none; transform:none; }
+.quick-card i { color:#8b7959; font-size:19px; }
+.quick-card span { font-size:12px; font-weight:600; }
+.empty-state { padding:16px 0; text-align:left; color:#817b70; background:transparent; border:0; border-bottom:1px solid #eeeae3; border-radius:0; font-size:12px; }
+.dash-wrap > .dash-card > .dash-section-head { margin-bottom:0; }
+@media(max-width:1100px){ .dash-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dash-grid .dash-card:nth-child(3){border-left:0;padding-left:0}.dash-grid .dash-card:nth-child(n+3){border-top:1px solid #eae5db} }
+@media(max-width:760px){ .dash-wrap{padding:8px 14px 28px;gap:19px}.dash-hero{padding:7px 0 16px}.dash-actions{gap:7px}.dash-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dash-grid .dash-card{padding:12px 10px;min-height:96px}.dash-grid .dash-card:nth-child(odd){border-left:0;padding-left:0}.dash-grid .dash-card:nth-child(even){border-left:1px solid #eae5db;padding-right:0}.dash-grid .dash-card:nth-child(n+3){border-top:1px solid #eae5db}.dash-stat{gap:6px}.dash-value{font-size:22px}.dash-note{font-size:10.5px}.dash-two-col{gap:22px}.dash-row{gap:8px}.quick-card{padding:10px 0} }
+@media(prefers-reduced-motion:reduce){ .dash-btn,.quick-card{transition:none} }
 </style>
 
 <div class="dash-wrap">
     <section class="dash-hero">
         <div>
-            <p class="dash-kicker">Website Operation</p>
+            <p class="dash-kicker">Ringkasan Operasional</p>
             <h1 class="dash-title">Dashboard Admin Ilena</h1>
             <p class="dash-subtitle">Pantau order website, produk, promo, dan konten dari satu tempat yang lebih ringkas.</p>
         </div>
@@ -264,9 +310,9 @@ $statusTone = static function ($status) {
         </div>
         <div class="dash-card dash-stat">
             <div>
-                <p class="dash-label">Omzet Website</p>
+                <p class="dash-label">Omzet Kumulatif</p>
                 <p class="dash-value" style="font-size:25px;"><?= $rupiah($stats['revenue']); ?></p>
-                <p class="dash-note"><?= number_format($stats['paidOrders'], 0, ',', '.'); ?> order terbayar/diproses</p>
+                <p class="dash-note"><?= number_format($stats['paidOrders'], 0, ',', '.'); ?> order diproses, dikirim, atau selesai</p>
             </div>
             <span class="dash-icon"><i class="material-icons">payments</i></span>
         </div>
@@ -329,6 +375,7 @@ $statusTone = static function ($status) {
             <h2>Stok Rendah</h2>
             <a href="/admin/product">Kelola produk</a>
         </div>
+        <p class="dash-row-meta" style="margin:8px 0 0;">Jumlah stok dijumlahkan dari semua varian; produk dengan total 3 unit atau kurang ditampilkan.</p>
         <div class="dash-list">
             <?php if (empty($lowStockProducts)): ?>
                 <div class="empty-state">Aman, belum ada produk dengan stok rendah.</div>

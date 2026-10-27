@@ -592,6 +592,30 @@ $barangThumbUrl = function ($product) {
     .overview-stat:first-child { padding-left: 0; }
     .mini-wrap { border-radius: 0; }
 }
+/* Mobile catalog: convert the legacy 720px mini-table into readable, tap-friendly rows. */
+@media (max-width: 860px) {
+    .hide-ke-show-block { overflow: visible !important; border-top: 0; }
+    .mini-wrap { width:100%; min-width:0; }
+    .mini-wrap > .header-table { display:none; }
+    .mini-wrap > .isi-table {
+        display:grid; grid-template-columns:38px 58px minmax(0,1fr); grid-template-rows:auto auto auto auto;
+        align-items:center; gap:3px 10px; min-height:0; padding:14px 2px;
+        border-bottom:1px solid #e9e4da; background:transparent;
+    }
+    .mini-wrap > .isi-table > div:nth-child(1) { grid-column:1; grid-row:1 / span 2; }
+    .mini-wrap > .isi-table > div:nth-child(2) { grid-column:2; grid-row:1 / span 2; }
+    .mini-wrap > .isi-table > div:nth-child(2) img { width:56px!important; height:56px!important; border-radius:5px!important; }
+    .mini-wrap > .isi-table > div:nth-child(3) { grid-column:3; grid-row:1; min-width:0; }
+    .mini-wrap > .isi-table > div:nth-child(4) { grid-column:3; grid-row:2; align-self:start; }
+    .mini-wrap > .isi-table > div:nth-child(5) { grid-column:1 / -1; grid-row:3; padding:7px 0 3px 48px; }
+    .mini-wrap > .isi-table > div:nth-child(6) { grid-column:1 / 3; grid-row:4; padding-left:48px; }
+    .mini-wrap > .isi-table > div:nth-child(7) { grid-column:3; grid-row:4; justify-self:end; }
+    .mini-wrap .stock-chip-list { display:flex; flex-wrap:wrap; gap:4px; }
+    .mini-wrap .stock-chip { font-size:10.5px; }
+    .mini-wrap .badge-chip { max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .mini-wrap .actions { gap:6px; }
+    .mini-wrap .btn-icon { width:36px; height:36px; }
+}
 </style>
 
 <div class="page-wrap">
@@ -730,7 +754,7 @@ $barangThumbUrl = function ($product) {
                     <a class="btn-icon" href="/admin/editproduct/<?= esc($p['id'], 'attr'); ?>" title="Edit produk" aria-label="Edit <?= esc($p['nama'], 'attr'); ?>"><i
                             class="material-icons">edit</i></a>
                     <form action="/admin/deleteproduct/<?= $p['id']; ?>" method="post" style="display:inline-flex"
-                        onsubmit="return confirm('Hapus produk <?= esc($p['nama'], 'js'); ?>? Data gambar produk juga akan ikut dihapus.')">
+                        data-ilena-confirm="<?= esc('Hapus produk ' . $p['nama'] . '? Data gambar produk juga akan ikut dihapus.'); ?>" data-ilena-confirm-title="Hapus produk">
                         <?= csrf_field(); ?>
                         <button class="btn-icon btn-del" type="submit" title="Hapus">
                             <i class="material-icons">delete</i>
@@ -808,7 +832,7 @@ $barangThumbUrl = function ($product) {
                         <a class="btn-icon" href="/admin/editproduct/<?= esc($p['id'], 'attr'); ?>" title="Edit produk" aria-label="Edit <?= esc($p['nama'], 'attr'); ?>"><i
                                 class="material-icons">edit</i></a>
                         <form action="/admin/deleteproduct/<?= $p['id']; ?>" method="post" style="display:inline-flex"
-                            onsubmit="return confirm('Hapus produk <?= esc($p['nama'], 'js'); ?>? Data gambar produk juga akan ikut dihapus.')">
+                            data-ilena-confirm="<?= esc('Hapus produk ' . $p['nama'] . '? Data gambar produk juga akan ikut dihapus.'); ?>" data-ilena-confirm-title="Hapus produk">
                             <?= csrf_field(); ?>
                             <button class="btn-icon btn-del" type="submit" title="Hapus">
                                 <i class="material-icons">delete</i>

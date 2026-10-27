@@ -812,7 +812,8 @@ hr {
                                     <?php if ($isDraft): ?>
                                     <!-- DRAFT MODE: finalisasi draft + edit -->
                                     <form method="post" action="/admin/order-offline/finalize"
-                                        onsubmit="return confirm('Finalisasi draft <?= esc($p['id_pesanan']); ?> ? Stok akan dipotong dan status berubah. Lanjutkan?');"
+                                        data-ilena-confirm="Finalisasi draft <?= esc($p['id_pesanan']); ?>? Stok akan dipotong dan status berubah."
+                                        data-ilena-confirm-title="Finalisasi draft"
                                         style="display:inline;">
                                         <?= csrf_field(); ?>
                                         <input type="hidden" name="id_pesanan" value="<?= esc($p['id_pesanan']); ?>">
@@ -846,7 +847,8 @@ hr {
                                     <?php else: ?>
                                     <!-- Buat SJ (FINAL, nomor global) -->
                                     <form method="post" action="<?= base_url('admin/surat-jalan/offline/create/' . urlencode($p['id_pesanan'])) ?>" class="d-inline"
-                                        onsubmit="return confirm('Buat Surat Jalan (FINAL) sekarang? Nomor SJ global akan dibuat. Lanjutkan?')">
+                                        data-ilena-confirm="Buat Surat Jalan final sekarang? Nomor SJ global akan dibuat."
+                                        data-ilena-confirm-title="Buat Surat Jalan">
                                         <?= csrf_field(); ?>
                                         <button class="btn text-danger" type="submit" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Buat SJ">
                                             <i class="material-icons">add</i>
@@ -1083,8 +1085,8 @@ var pesanan = <?= $pesananJson ?>;
 const alamatTagihanElm = document.querySelector('textarea[name="alamatTagihan"]');
 let pesananSelected = {};
 
-function alertSuccess(idPesanan) {
-    const check = window.confirm(`ID pesanan ${idPesanan} sudah lunas?`);
+async function alertSuccess(idPesanan) {
+    const check = await window.IlenaDialog.confirm(`ID pesanan ${idPesanan} sudah lunas?`, {title: 'Konfirmasi pembayaran'});
     if (check) {
         const form = document.createElement('form');
         form.method = 'POST';

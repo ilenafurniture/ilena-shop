@@ -133,3 +133,12 @@ Peta ini merekam permukaan route, view, dan guard yang ditemukan di repo lokal. 
 - Endpoint publik `POST /track/hit` sebelumnya mempercayai header `CF-Connecting-IP`/`X-Forwarded-For` dari request langsung dan menerima user-agent yang dikirim klien, sehingga pembatasan berbasis IP dapat dipalsukan. Endpoint kini memakai alamat klien yang diselesaikan CI4 dari proxy tepercaya, memberi throttle 120 request/menit/IP, mengabaikan bot dari user-agent request, serta membersihkan dan membatasi panjang path. Daftar proxy Cloudflare tercatat di `app/Config/App.php` dan perlu mengikuti daftar resmi Cloudflare.
 - HTTPS global dan cookie `Secure` kini aktif hanya pada `ENVIRONMENT=production`, sehingga produksi menegakkan HTTPS dan cookie autentikasi tidak terkirim melalui HTTP; pengembangan lokal HTTP tetap dapat dipakai.
 - Validasi lokal setelah perubahan: semua file PHP yang disentuh lolos `php -l`; `vendor/bin/phpunit.bat` lulus 88 test / 421 assertion. PHPUnit mengeluarkan warning lingkungan karena driver coverage tidak tersedia dan satu deprecation; tidak ada test gagal.
+
+### F. Cutover modul lokal offline/interior
+
+- Website ditetapkan fokus untuk penjualan online; pesanan offline dan Project Interior diarahkan ke Sistem Ilena.
+- Menu offline/interior di sidebar desktop dan drawer mobile disembunyikan. `AdminFilter` menolak GET/POST langsung ke endpoint modul lama dan mengarahkan staf kembali ke admin dengan pesan migrasi.
+- Fitur dapat dibuka kembali sementara dengan `ILENA_WEBSITE_LOCAL_SALES_ENABLED=true`; default selain string literal `true` adalah nonaktif.
+- Tidak ada tabel, record, invoice, pembayaran, stok, atau file historis yang dihapus. Endpoint arsip lama tidak ditampilkan melalui admin selama flag nonaktif; cadangan database perlu dipertahankan untuk kebutuhan audit.
+- Cakupan cutover ini hanya modul penjualan offline/interior website. Sinkronisasi order online ke Sistem Ilena tetap perlu verifikasi konfigurasi produksi dan penerimaan webhook sebelum dianggap koneksi live.
+- Regression suite cutover: 90 test / 430 assertion; tidak ada test gagal.

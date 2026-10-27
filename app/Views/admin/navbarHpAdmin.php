@@ -43,8 +43,6 @@ $mobileMenuGroups = [
     ],
     'Pesanan' => [
         ['show' => $can('orders_online'), 'label' => 'Pesanan Online', 'icon' => 'shopping_bag', 'href' => '/admin/order/online', 'active' => $isActivePrefix(['admin/order/online']), 'badge' => $websiteOrderTodoCount],
-        ['show' => $can('orders_offline'), 'label' => 'Pesanan Offline', 'icon' => 'point_of_sale', 'href' => '/admin/order/offline/sale', 'active' => $isActivePrefix(['admin/order/offline', 'admin/order-offline'])],
-        ['show' => $can('project_interior'), 'label' => 'Project Interior', 'icon' => 'chair', 'href' => '/admin/project-interior', 'active' => $isActivePrefix(['admin/project-interior', 'admin/order/offline/interior'])],
         ['show' => $can('mutasi'), 'label' => 'Mutasi Stok', 'icon' => 'swap_horiz', 'href' => '/admin/mutasi', 'active' => $isActivePrefix(['admin/mutasi', 'admin/mutasiconfirm', 'admin/labelbarang'])],
     ],
     'Konten & toko' => [

@@ -237,7 +237,7 @@
                     <?php } ?>
                     <?php if ($p['status'] == 'Menunggu Pembayaran') { ?>
                     <?php if (($p['data_mid']['payment_type'] ?? '') === 'admin'): ?>
-                    <form method="post" action="/admin/confirm-mp/<?= (int)$p['id']; ?>" class="d-inline" onsubmit="return confirm('Konfirmasi bahwa pembayaran manual telah diterima?');">
+                    <form method="post" action="/admin/confirm-mp/<?= (int)$p['id']; ?>" class="d-inline" data-ilena-confirm="Konfirmasi bahwa pembayaran manual telah diterima?" data-ilena-confirm-title="Konfirmasi pembayaran">
                         <?= csrf_field(); ?><button type="submit" class="btn" title="Konfirmasi pembayaran manual">Konfirmasi lunas</button>
                     </form>
                     <?php endif; ?>
@@ -304,7 +304,7 @@
                             <?php } ?>
                             <?php if ($p['status'] == 'Menunggu Pembayaran') { ?>
                             <?php if (($p['data_mid']['payment_type'] ?? '') === 'admin'): ?>
-                            <form method="post" action="/admin/confirm-mp/<?= (int)$p['id']; ?>" class="d-inline" onsubmit="return confirm('Konfirmasi bahwa pembayaran manual telah diterima?');">
+                            <form method="post" action="/admin/confirm-mp/<?= (int)$p['id']; ?>" class="d-inline" data-ilena-confirm="Konfirmasi bahwa pembayaran manual telah diterima?" data-ilena-confirm-title="Konfirmasi pembayaran">
                                 <?= csrf_field(); ?><button type="submit" class="btn" title="Konfirmasi pembayaran manual">Konfirmasi lunas</button>
                             </form>
                             <?php endif; ?>
@@ -431,8 +431,8 @@ function closeDetail() {
     containerOffcanvasElm.classList.remove("show")
 }
 
-function cancelOrder(idMidtrans) {
-    if (!window.confirm('Batalkan pesanan ini di Midtrans?')) return;
+async function cancelOrder(idMidtrans) {
+    if (!await window.IlenaDialog.confirm('Batalkan pesanan ini di Midtrans?', {title: 'Batalkan pesanan', tone: 'error'})) return;
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = '/cancelorder/' + encodeURIComponent(idMidtrans);

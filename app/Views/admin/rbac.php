@@ -119,7 +119,7 @@ $decodePermissions = $decodePermissions ?? static fn($v) => [];
                                 <input name="role_name" class="form-control fw-bold" style="max-width:320px" value="<?= esc($role['role_name']); ?>" required>
                                 <div class="d-flex gap-2">
                                     <button type="submit" class="btn btn-sm btn-dark">Update</button>
-                                    <button type="submit" form="delete-role-<?= esc($role['id']); ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Hapus role ini?')">Hapus</button>
+                                    <button type="submit" form="delete-role-<?= esc($role['id']); ?>" class="btn btn-sm btn-outline-danger" data-ilena-confirm="Hapus role ini?" data-ilena-confirm-title="Hapus role">Hapus</button>
                                 </div>
                             </div>
                             <div class="permission-grid">
@@ -165,7 +165,7 @@ $decodePermissions = $decodePermissions ?? static fn($v) => [];
                                     <?php endforeach; ?>
                                 </td>
                                 <td class="text-end">
-                                    <form action="/admin/rbac/assign/delete" method="post" onsubmit="return confirm('Hapus akses user ini?')">
+                                    <form action="/admin/rbac/assign/delete" method="post" data-ilena-confirm="Hapus akses untuk user ini?" data-ilena-confirm-title="Hapus akses">
                                         <?= csrf_field(); ?>
                                         <input type="hidden" name="email" value="<?= esc($row['email']); ?>">
                                         <button class="btn btn-sm btn-outline-danger">Hapus Akses</button>

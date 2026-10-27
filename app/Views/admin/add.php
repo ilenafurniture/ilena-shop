@@ -523,7 +523,57 @@
 .image-resize-progress__track { height:6px; margin:8px 0 6px; overflow:hidden; border-radius:999px; background:#eee9e2; }
 .image-resize-progress__fill { height:100%; border-radius:inherit; background:#9b7653; transition:width .2s ease; }
 .image-resize-progress small { display:block; color:#75695d; font-size:11px; line-height:1.45; }
+.resize-live-toast { position:fixed; z-index:990; right:22px; bottom:22px; width:min(390px,calc(100vw - 32px)); padding:15px 17px 14px; border:1px solid #e6dccb; border-radius:12px; background:rgba(255,253,249,.97); color:#3e352b; box-shadow:0 18px 48px rgba(40,32,23,.17); animation:resize-toast-in .28s cubic-bezier(.2,.8,.2,1) both; }
+.resize-live-toast__head { display:flex; align-items:center; gap:12px; }
+.resize-live-toast__icon { position:relative; display:grid; place-items:center; width:42px; height:42px; flex:0 0 42px; border-radius:50%; color:#fff; background:#66583f; }
+.resize-live-toast__icon:before,.resize-live-toast__icon:after { content:""; position:absolute; inset:-5px; border:1px solid rgba(162,142,107,.5); border-radius:50%; animation:resize-orbit 2.2s ease-out infinite; }
+.resize-live-toast__icon:after { animation-delay:1.1s; }
+.resize-live-toast__icon i { font-size:20px; animation:resize-camera 1.8s ease-in-out infinite; }
+.resize-live-toast__copy { min-width:0; }
+.resize-live-toast__title { display:block; color:#332b22; font-size:13px; font-weight:700; line-height:1.35; }
+.resize-live-toast__message { display:block; margin-top:3px; color:#776957; font-size:12px; line-height:1.45; }
+.resize-live-toast__filename { overflow:hidden; margin:9px 0 0 54px; color:#8b7959; font-size:11px; text-overflow:ellipsis; white-space:nowrap; }
+.resize-live-toast__track { position:relative; height:5px; margin:10px 0 0 54px; overflow:hidden; border-radius:999px; background:#ebe4d8; }
+.resize-live-toast__fill { position:relative; height:100%; border-radius:inherit; background:linear-gradient(90deg,#8b7959,#c5a777); transition:width .35s ease; }
+.resize-live-toast__fill.is-working:after { content:""; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent); transform:translateX(-100%); animation:resize-shimmer 1.15s ease-in-out infinite; }
+@keyframes resize-toast-in { from { opacity:0; transform:translateY(9px) scale(.985); } to { opacity:1; transform:translateY(0) scale(1); } }
+@keyframes resize-orbit { 0% { transform:scale(.82); opacity:.7; } 100% { transform:scale(1.45); opacity:0; } }
+@keyframes resize-camera { 0%,100% { transform:rotate(-7deg) scale(.96); } 50% { transform:rotate(7deg) scale(1.08); } }
+@keyframes resize-shimmer { to { transform:translateX(100%); } }
+@media(max-width:640px){ .resize-live-toast { right:12px; bottom:12px; width:calc(100vw - 24px); padding:13px 14px; } }
+@media(prefers-reduced-motion:reduce){ .resize-live-toast,.resize-live-toast__icon:before,.resize-live-toast__icon:after,.resize-live-toast__icon i,.resize-live-toast__fill.is-working:after { animation:none; } .resize-live-toast__fill { transition:none; } }
 @media (prefers-reduced-motion:reduce) { .save-progress__fill,.image-resize-progress__fill { transition:none; } .save-progress__fill.is-indeterminate { animation:none; width:70%; } .image-resize-progress__spinner,.spinner { animation:none; } }
+
+/* Product editor: compact editorial layout, aligned with Ilena admin styling. */
+.page-wrap { max-width: 1420px; color:#302d25; font-family:Inter,"Segoe UI",Arial,sans-serif; font-size:13.5px; }
+.page-wrap > .page-title { font-size:25px; font-weight:620; letter-spacing:-.035em; color:#29271f; margin-bottom:7px; }
+.edit-page-intro { color:#77736c!important; font-size:13px!important; margin:0 0 18px!important; }
+.form-grid { gap:26px; align-items:start; }
+.card { border:0; border-top:1px solid #ded9cf; border-radius:0; background:transparent; box-shadow:none; }
+.card-header { padding:13px 0 9px; border:0; background:transparent; }
+.card-header h2 { color:#302d25; font-size:16px; font-weight:650; letter-spacing:-.015em; }
+.card-body { padding:6px 0 16px; }
+.section-title { color:#6f675a; letter-spacing:.08em; font-size:11px; }
+.table-input td:first-child { color:#625b50; font-size:12.5px; }
+.form-control,.form-select { border-color:#e5e0d6; border-radius:7px!important; color:#302d25; background:#fff; font-size:13px; }
+.form-control:focus,.form-select:focus { border-color:#a28e6b; box-shadow:0 0 0 3px rgba(162,142,107,.13); }
+.btn-default { background:#66583f; border-radius:7px!important; }
+.btn-default:hover { background:#51452f; }
+.image-workflow-note { border:0; border-left:2px solid #a28e6b; border-radius:0; background:#f8f6f1; padding:10px 13px; }
+.image-tile { width:126px; padding:5px; border:1px solid #e8e3da; border-radius:8px; background:#fff; }
+.item-gambar { width:114px; height:114px; border-radius:5px; }
+.cover-chip { background:#66583f; }
+.image-actions { grid-template-columns:1fr 38px; }
+.image-actions button,.image-actions label { min-height:34px; border-radius:6px; font-size:11px; }
+.image-actions button:hover,.image-actions label:hover { border-color:#a28e6b; color:#66583f; }
+.image-actions .make-primary { grid-column:1 / -1; color:#66583f; border-color:#ded4c4; }
+.batch-upload-label { min-width:126px; height:156px; padding:12px; border:1px dashed #cfc4b2; border-radius:8px; background:#fbfaf7; color:#66583f; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; cursor:pointer; }
+.batch-upload-label:hover { border-color:#8b7959; background:#f5f1e9; }
+.batch-upload-label.is-disabled { opacity:.55; cursor:wait; }
+.batch-upload-label small { color:#817b70; font-weight:400; }
+.variant-tools { border-bottom:1px solid #eeeae3; padding-bottom:9px; margin-bottom:10px; }
+.bottom-bar { background:linear-gradient(180deg,rgba(255,255,255,0),#fff 35%); }
+@media(max-width:640px){ .form-grid{gap:16px}.image-tile{width:112px}.item-gambar{width:100px;height:100px}.batch-upload-label{min-width:112px;height:142px}.card-header,.card-body{padding-left:0;padding-right:0} }
 
 @keyframes spin {
     to {
@@ -561,8 +611,6 @@
     <?php endif; ?>
     <div id="container-react"></div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script type="text/babel">
     const { useState, useEffect, useRef } = React;
@@ -714,7 +762,7 @@ const App = () => {
   const [draggedImage, setDraggedImage] = useState(null);
   const [imageOrderMessage, setImageOrderMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [resizeProgress, setResizeProgress] = useState({ active: false, percent: 0, message: '' });
+  const [resizeProgress, setResizeProgress] = useState({ active: false, percent: 0, message: '', fileName: '' });
   const [uploadProgress, setUploadProgress] = useState({ phase: 'idle', percent: null });
   const resizeBusyRef = useRef(false);
   const idStr = useRef("1-00-000-XX");
@@ -937,12 +985,8 @@ const App = () => {
           return;
         }
 
-        Swal.fire({
-          title: 'Berhasil!',
-          text: `Produk berhasil ${idProduct ? 'diubah' : 'ditambahkan'}.`,
-          icon: 'success',
-          confirmButtonText: 'OK',
-        }).then(() => { window.location.href = `<?= base_url('admin/product'); ?>`; });
+        window.IlenaDialog.alert(`Produk berhasil ${idProduct ? 'diubah' : 'ditambahkan'}.`, { title: 'Berhasil' })
+          .then(() => { window.location.href = `<?= base_url('admin/product'); ?>`; });
       });
       xhr.addEventListener('error', () => {
         setLoading(false);
@@ -1013,10 +1057,10 @@ const App = () => {
       return undefined;
     }
     resizeBusyRef.current = true;
-    setResizeProgress({ active: true, percent: 3, message: 'Menyiapkan gambar…' });
+    setResizeProgress({ active: true, percent: 3, message: 'Menyiapkan gambar…', fileName: file?.name || 'Foto produk' });
     try {
       return await resizeImageBeforeUpload(file, maxSize, quality, (percent, message) => {
-        setResizeProgress({ active: true, percent, message });
+        setResizeProgress({ active: true, percent, message, fileName: file?.name || 'Foto produk' });
       });
     } catch (error) {
       console.error('Resize gambar gagal:', error);
@@ -1031,6 +1075,7 @@ const App = () => {
 
   const removeImage = (variantIndex, imageIndex) => {
     updateVariantImages(variantIndex, list => list.filter((_, i) => i !== imageIndex));
+    setImageOrderMessage('Foto dihapus dari rancangan. File tersimpan baru dihapus setelah Anda menekan Simpan.');
   };
 
   const addOrReplaceImage = async (variantIndex, file, imageIndex = null) => {
@@ -1060,6 +1105,39 @@ const App = () => {
     });
   };
 
+  // Select several photos at once, optimize one at a time to keep browser memory predictable.
+  const addMultipleImages = async (variantIndex, fileList) => {
+    const files = Array.from(fileList || []);
+    if (!files.length) return;
+    const existingCount = (gambarSrc || []).reduce((total, group) => total + (group || []).length, 0);
+    const room = Math.max(0, MAX_PRODUCT_IMAGES - existingCount);
+    if (room === 0) { setEror(`Batas ${MAX_PRODUCT_IMAGES} foto untuk satu produk sudah tercapai.`); return; }
+    const accepted = files.slice(0, room);
+    if (files.length > room) setEror(`Hanya ${room} foto yang dapat ditambahkan; batas produk adalah ${MAX_PRODUCT_IMAGES} foto.`);
+    const ready = [];
+    for (const file of accepted) {
+      if (fileTypeInvalid(file)) { setEror(`“${file.name}” dilewati: pilih file WebP atau AVIF.`); continue; }
+      if (fileTooLarge(file)) { setEror(`“${file.name}” dilewati: ukuran melebihi ${MAX_UPLOAD_MB} MB.`); continue; }
+      const optimized = await resizeForAdmin(file);
+      if (!optimized) { setEror(`“${file.name}” tidak dapat diproses menjadi WebP dan dilewati.`); continue; }
+      ready.push(makeImageItem(URL.createObjectURL(optimized), optimized, null));
+    }
+    if (ready.length) {
+      const readyFiles = ready.map(getImageFile);
+      setGambarSrc(previous => {
+        const next = (previous || []).map(group => [...(group || [])]);
+        next[variantIndex] = [...(next[variantIndex] || []), ...ready];
+        return next;
+      });
+      setGambarFile(previous => {
+        const next = (previous || []).map(group => [...(group || [])]);
+        next[variantIndex] = [...(next[variantIndex] || []), ...readyFiles];
+        return next;
+      });
+      setImageOrderMessage(`${ready.length} foto ditambahkan. Foto pertama pada varian ini menjadi foto utama setelah disimpan.`);
+    }
+  };
+
   // Badge status jadwal diskon
   const renderBadgeJadwal = () => {
     if (!formData.pakai_jadwal_diskon || !formData.diskon_mulai || !formData.diskon_selesai) return null;
@@ -1076,6 +1154,19 @@ const App = () => {
 
   return (
     <>
+      {resizeProgress.active && !loading && <aside className="resize-live-toast" role="status" aria-live="polite" aria-atomic="true">
+        <div className="resize-live-toast__head">
+          <span className="resize-live-toast__icon" aria-hidden="true"><i className="material-icons">auto_awesome</i></span>
+          <span className="resize-live-toast__copy">
+            <strong className="resize-live-toast__title">Sedang merapikan foto produkmu</strong>
+            <span className="resize-live-toast__message">Sabar ya, foto sedang dikompres supaya tampil tajam dan lebih ringan ✨</span>
+          </span>
+        </div>
+        <div className="resize-live-toast__filename" title={resizeProgress.fileName}>{resizeProgress.message} · {resizeProgress.fileName}</div>
+        <div className="resize-live-toast__track" role="progressbar" aria-label="Proses resize dan kompres foto" aria-valuemin="0" aria-valuemax="100" aria-valuenow={resizeProgress.percent} aria-valuetext={`${resizeProgress.percent}% — ${resizeProgress.message}`}>
+          <div className={`resize-live-toast__fill ${resizeProgress.percent >= 58 && resizeProgress.percent < 100 ? 'is-working' : ''}`} style={{ width: `${resizeProgress.percent}%` }} />
+        </div>
+      </aside>}
       {loading && <div className="loading-overlay show" role="dialog" aria-modal="true" aria-live="polite" aria-label="Status penyimpanan produk">
         <div className="loading-card">
           <span className="spinner" aria-hidden="true" />
@@ -1434,7 +1525,7 @@ const App = () => {
                         <div key={ind_g} className={`image-tile ${draggedImage?.variantIndex === ind_v && draggedImage?.imageIndex === ind_g ? 'is-dragging' : ''} ${draggedImage?.variantIndex === ind_v && draggedImage?.imageIndex !== ind_g ? 'is-drop-target' : ''}`}
                           onDragOver={(e) => { e.preventDefault(); if (e.dataTransfer) e.dataTransfer.dropEffect = 'move'; }}
                           onDrop={(e) => dropImage(e, ind_v, ind_g)}>
-                          <input id={`replace-file-${ind_v}-${ind_g}`} type="file" accept="image/webp,image/avif" onChange={(e) => { addOrReplaceImage(ind_v, e.target.files[0], ind_g); e.target.value = ''; }} />
+                          <input id={`replace-file-${ind_v}-${ind_g}`} type="file" accept="image/webp,image/avif" disabled={resizeProgress.active || loading} onChange={(e) => { addOrReplaceImage(ind_v, e.target.files[0], ind_g); e.target.value = ''; }} />
                           <span className="drag-handle" draggable="true" role="group" tabIndex="0" aria-keyshortcuts="ArrowLeft ArrowRight ArrowUp ArrowDown Home"
                             aria-label={`Seret foto ${ind_g + 1} varian ${v.nama || ind_v + 1} untuk mengubah urutan`}
                             title="Seret foto untuk mengubah urutan"
@@ -1456,14 +1547,15 @@ const App = () => {
                           <div className="image-actions">
                             <label htmlFor={`replace-file-${ind_v}-${ind_g}`} title="Ganti foto"><i className="material-icons">edit</i><span>Ganti</span></label>
                             <button type="button" className="danger" title="Hapus foto" onClick={() => removeImage(ind_v, ind_g)} aria-label={`Hapus foto ${ind_g + 1}`}><i className="material-icons">delete</i></button>
+                            {ind_g > 0 && <button type="button" className="make-primary" onClick={() => moveImageToFirst(ind_v, ind_g)} title={ind_v === 0 ? 'Jadikan cover katalog' : 'Jadikan foto utama varian'}><i className="material-icons">star</i> Jadikan {ind_v === 0 ? 'cover' : 'foto utama'}</button>}
                           </div>
                         </div>
                         );
                       })}
                       <div>
-                        <input type="file" accept="image/webp,image/avif" id={`file-${ind_v}`} style={{ display:'none' }}
-                          onChange={(e) => { addOrReplaceImage(ind_v, e.target.files[0]); e.target.value = ''; }} />
-                        <label htmlFor={`file-${ind_v}`} className="add-thumb">+ Foto</label>
+                        <input type="file" accept="image/webp,image/avif" id={`file-${ind_v}`} style={{ display:'none' }} multiple disabled={resizeProgress.active || loading}
+                          onChange={(e) => { addMultipleImages(ind_v, e.target.files); e.target.value = ''; }} />
+                        <label htmlFor={`file-${ind_v}`} className={`batch-upload-label ${resizeProgress.active || loading ? 'is-disabled' : ''}`} aria-disabled={resizeProgress.active || loading}><i className="material-icons">add_photo_alternate</i><strong>Tambah foto</strong><small>Pilih beberapa sekaligus</small><small>WebP / AVIF</small></label>
                       </div>
                     </div>
 

@@ -30,6 +30,18 @@ class AdminFilter implements FilterInterface
             return redirect()->to('/login')->with('msg', 'Sesi admin sudah tidak aktif. Silakan masuk kembali.');
         }
 
+        // Offline and interior workflows are being consolidated into Sistem
+        // Ilena. Keep their records untouched, but deny old website endpoints
+        // unless an operator explicitly re-enables them during transition.
+        if (env('ILENA_WEBSITE_LOCAL_SALES_ENABLED', 'false') !== 'true'
+            && $this->isWebsiteLocalSalesPath($request->getUri()->getPath())
+        ) {
+            return redirect()->to('/admin')->with(
+                'website_module_notice',
+                'Fitur pesanan offline dan project interior kini dikelola melalui Sistem Ilena. Data historis website tetap tersimpan.'
+            );
+        }
+
         $isSuperAdmin = (string)session()->get('role') === '1';
         $hasRbacAccess = $rbac->hasAnyAdminAccess($email);
 
@@ -41,6 +53,34 @@ class AdminFilter implements FilterInterface
             return redirect()->to($rbac->firstAllowedAdminUrl($email));
         }
     }
+
+    /** Identify legacy local sales routes, including their child actions. */
+    private function isWebsiteLocalSalesPath(string $path): bool
+    {
+        $path = trim(strtolower($path), '/');
+        foreach ([
+            'admin/order/offline',
+            'admin/order-offline',
+            'admin/getitemsoffline',
+            'admin/invoice-offline',
+            'admin/invoice-offline-dp',
+            'admin/surat-offline',
+            'admin/surat-koreksi',
+            'admin/benerinsurat',
+            'admin/actionbuatinvoice',
+            'admin/actionbuatdp',
+            'admin/actionaccorderoffline',
+            'admin/surat-jalan/offline',
+            'admin/project-interior',
+        ] as $prefix) {
+            if ($path === $prefix || str_starts_with($path, $prefix . '/')) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
         try {

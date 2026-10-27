@@ -196,6 +196,7 @@
     }
     </style>
     <link rel="stylesheet" href="<?= base_url('css/ilena-admin-redesign.css?v=20261027'); ?>">
+    <link rel="stylesheet" href="<?= base_url('css/ilena-dialog.css?v=20261027'); ?>">
 </head>
 
 <body class="ilena-admin-redesign">
@@ -233,6 +234,9 @@
         <!-- Konten -->
         <main class="admin-content">
             <div class="admin-content-inner">
+                <?php if ($moduleNotice = session()->getFlashdata('website_module_notice')): ?>
+                    <div class="alert alert-info" role="status"><?= esc($moduleNotice); ?></div>
+                <?php endif; ?>
                 <?= $this->renderSection('content'); ?>
             </div>
         </main>
@@ -308,6 +312,7 @@
         toastElm.classList.remove("show");
     }
     </script>
+    <script src="<?= base_url('js/ilena-dialog.js?v=20261027'); ?>"></script>
 </body>
 
 </html>

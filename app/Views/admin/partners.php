@@ -158,7 +158,7 @@ $val = static function (string $key, $default = '') use ($editPartner) {
                         <div class="partner-actions">
                             <a href="/admin/partners?edit=<?= esc($partner['id']); ?>" title="Edit"><i class="material-icons">edit</i></a>
                             <a href="<?= esc($partner['maps_url'] ?: '#'); ?>" target="_blank" title="Maps"><i class="material-icons">map</i></a>
-                            <form action="/admin/partners/delete/<?= esc($partner['id']); ?>" method="post" onsubmit="return confirm('Hapus partner <?= esc($partner['name'], 'js'); ?>?')">
+                            <form action="/admin/partners/delete/<?= esc($partner['id']); ?>" method="post" data-ilena-confirm="<?= esc('Hapus partner ' . $partner['name'] . '?'); ?>" data-ilena-confirm-title="Hapus partner">
                                 <?= csrf_field(); ?>
                                 <button class="danger" type="submit" title="Hapus"><i class="material-icons">delete</i></button>
                             </form>
