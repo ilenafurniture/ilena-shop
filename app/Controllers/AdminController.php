@@ -352,9 +352,46 @@ class AdminController extends BaseController
     
     public function listProduct()
     {
-        $product = $this->barangModel->getBarangAdmin();
+        $db = db_connect();
+        $collection = trim((string) $this->request->getGet('koleksi'));
+        $collectionName = str_replace('-', ' ', $collection);
+        $query = trim((string) $this->request->getGet('q'));
+        $page = max(1, (int) $this->request->getGet('pag'));
+        $pageSize = 10;
+
+        $applyFilters = static function ($builder) use ($collectionName, $query): void {
+            if ($collectionName !== '') {
+                $builder->where('kategori', $collectionName);
+            }
+            if ($query !== '') {
+                $builder->groupStart()
+                    ->like('nama', $query)
+                    ->orLike('kategori', $query)
+                    ->orLike('subkategori', $query)
+                    ->orLike('id', $query)
+                    ->groupEnd();
+            }
+        };
+
+        $filteredBuilder = $db->table('barang');
+        $applyFilters($filteredBuilder);
+        $filteredCount = $filteredBuilder->countAllResults();
+        $pageCount = (int) ceil($filteredCount / $pageSize);
+        $page = $pageCount > 0 ? min($page, $pageCount) : 1;
+
+        $productBuilder = $db->table('barang')
+            ->select('id, nama, kategori, subkategori, harga, varian, active, tgl_update');
+        $applyFilters($productBuilder);
+        $product = $productBuilder
+            ->orderBy('nama', 'ASC')
+            ->orderBy('id', 'ASC')
+            ->limit($pageSize, ($page - 1) * $pageSize)
+            ->get()
+            ->getResultArray();
+
         $koleksi = $this->koleksiModel->findAll();
-        $activeProductCount = 0;
+        $activeProductCount = $this->barangModel->where('active', '1')->countAllResults();
+        $totalProductCount = $this->barangModel->countAllResults();
         foreach ($product as $index_p => $p) {
             $decodedVarian = json_decode($p['varian'] ?? '[]', true);
             $product[$index_p]['varian'] = is_array($decodedVarian) ? $decodedVarian : [];
@@ -373,16 +410,23 @@ class AdminController extends BaseController
                 $product[$index_p]['allstok'] = '-';
             }
             $product[$index_p]['status_tayang'] = (string)($p['active'] ?? '0') === '1';
-            if ($product[$index_p]['status_tayang']) $activeProductCount++;
         }
         $data = [
             'title' => 'Produk Kami',
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'produk' => $product,
             'koleksi' => $koleksi,
-            'jumlah_produk' => count($product),
+            'jumlah_produk' => $totalProductCount,
             'jumlah_tayang' => $activeProductCount,
-            'jumlah_draft' => count($product) - $activeProductCount,
+            'jumlah_draft' => $totalProductCount - $activeProductCount,
+            'serverPaged' => true,
+            'totalProdukFiltered' => $filteredCount,
+            'currentPage' => $page,
+            'totalPages' => $pageCount,
+            'paginationFilters' => array_filter([
+                'koleksi' => $collection,
+                'q' => $query,
+            ], static fn ($value) => $value !== ''),
         ];
         return view('admin/all', $data);
     }

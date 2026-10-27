@@ -2,48 +2,15 @@
 <?= $this->section("content"); ?>
 
 <?php
-$koleksiterpilih = '';
-if (isset($_GET['koleksi'])) {
-    if ($_GET['koleksi'] != '') {
-        $koleksiselect = $_GET['koleksi'];
-        $produkLama = $produk;
-        $produk = [];
-        foreach ($produkLama as $p) {
-            if (strtolower(str_replace("-", " ", $koleksiselect)) == strtolower($p['kategori'])) {
-                array_push($produk, $p);
-            }
-        }
-        $koleksiterpilih = $koleksiselect;
-    }
-}
-
+$koleksiterpilih = trim((string) ($_GET['koleksi'] ?? ''));
 $queryProduk = trim((string) ($_GET['q'] ?? ''));
-if ($queryProduk !== '') {
-    $queryFolded = mb_strtolower($queryProduk, 'UTF-8');
-    $produk = array_values(array_filter($produk, static function (array $item) use ($queryFolded): bool {
-        $searchText = mb_strtolower(implode(' ', [
-            (string) ($item['nama'] ?? ''),
-            (string) ($item['kategori'] ?? ''),
-            (string) ($item['subkategori'] ?? ''),
-            (string) ($item['id'] ?? ''),
-        ]), 'UTF-8');
-        return mb_strpos($searchText, $queryFolded, 0, 'UTF-8') !== false;
-    }));
-}
-
-$totalProdukFiltered = count($produk);
-$hitungPag = (int) ceil($totalProdukFiltered / 10);
-$pag = max(1, (int) ($_GET['pag'] ?? 1));
-if ($hitungPag > 0) $pag = min($pag, $hitungPag);
-$paginationFilters = [];
-if ($koleksiterpilih !== '') $paginationFilters['koleksi'] = $koleksiterpilih;
-if ($queryProduk !== '') $paginationFilters['q'] = $queryProduk;
-$produkLama = array_slice($produk, ($pag - 1) * 10);
-$produk = [];
-for ($i = 0; $i < 10; $i++) {
-    if (isset($produkLama[$i]))
-        array_push($produk, $produkLama[$i]);
-}
+$totalProdukFiltered = (int) ($totalProdukFiltered ?? count($produk));
+$pag = (int) ($currentPage ?? max(1, (int) ($_GET['pag'] ?? 1)));
+$hitungPag = (int) ($totalPages ?? (int) ceil($totalProdukFiltered / 10));
+$paginationFilters = $paginationFilters ?? array_filter([
+    'koleksi' => $koleksiterpilih,
+    'q' => $queryProduk,
+], static fn ($value) => $value !== '');
 $barangThumbUrl = function ($product) {
     $id = is_array($product) ? ($product['id'] ?? '') : (string) $product;
     $varian = is_array($product) ? ($product['varian'] ?? []) : [];
