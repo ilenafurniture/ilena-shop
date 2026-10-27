@@ -2115,11 +2115,14 @@ class AdminController extends BaseController
 
     public function actionEditResi()
     {
+        $nama = trim((string) $this->request->getPost('nama'));
+        $deskripsi = trim((string) $this->request->getPost('deskripsi'));
+        $resi = trim((string) $this->request->getPost('resi'));
+        $idMid = trim((string) $this->request->getPost('idMid'));
+        if ($nama === '' || mb_strlen($nama) > 80 || $deskripsi === '' || mb_strlen($deskripsi) > 80 || $resi === '' || mb_strlen($resi) > 100 || $idMid === '') {
+            return redirect()->to('/admin/order/online')->with('msg', 'Pilih ekspedisi dan layanan, lalu isi nomor resi dengan benar.');
+        }
         $db=db_connect(); $db->transBegin();
-        $nama = $this->request->getPost('nama');
-        $deskripsi = $this->request->getPost('deskripsi');
-        $resi = $this->request->getPost('resi');
-        $idMid = $this->request->getPost('idMid');
         $order=$db->query('SELECT status, data_mid FROM pemesanan WHERE id_midtrans = ? FOR UPDATE',[$idMid])->getRowArray();
         $mid=json_decode($order['data_mid']??'{}',true)?:[];
         if (!$order || !in_array($order['status'],['Proses','Dikirim'],true) || ($mid['_app_payment_effects_applied']??null)===false || trim((string)$resi)==='') {

@@ -34,7 +34,7 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter): st
 .order-dialog .eyebrow,.resi-dialog .eyebrow{font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--o-muted)}.order-dialog .action,.resi-dialog .action{display:inline-flex;min-height:42px;align-items:center;justify-content:center;gap:8px;padding:0 15px;border:1px solid var(--o-line);border-radius:8px;background:transparent;color:var(--o-ink);font:600 13px/1.2 "Plus Jakarta Sans",sans-serif;text-decoration:none;cursor:pointer}.order-dialog .action:hover,.resi-dialog .action:hover{background:#f1ede6}.order-dialog .action-primary,.resi-dialog .action-primary{background:var(--o-accent);border-color:var(--o-accent);color:#fff}.order-dialog .action-primary:hover,.resi-dialog .action-primary:hover{background:#70482f;color:#fff}
 .order-dialog__head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;border-bottom:1px solid var(--o-line);padding-bottom:15px;margin-bottom:18px}.order-dialog__head h2{margin:3px 0;font-size:20px;letter-spacing:-.03em}.order-dialog__close{border:1px solid var(--o-line);background:transparent;border-radius:7px;width:40px;height:40px;cursor:pointer;color:var(--o-ink)}
 .order-dialog__customer{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 24px;margin-bottom:22px}.order-dialog__field label{display:block;color:var(--o-muted);font-size:11px;margin-bottom:3px}.order-dialog__field div{font-size:13px;font-weight:550;overflow-wrap:anywhere}.order-dialog__items{width:100%;border-collapse:collapse}.order-dialog__items th,.order-dialog__items td{padding:10px 7px;border-bottom:1px solid var(--o-line);text-align:left;font-size:13px}.order-dialog__items th{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--o-muted)}.order-dialog__items td:last-child,.order-dialog__items th:last-child{text-align:right;white-space:nowrap}.order-dialog__footer{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:20px}
-.resi-dialog{position:fixed;inset:0;z-index:1210;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(30,26,22,.54)}.resi-dialog.is-open{display:flex}.resi-dialog__panel{width:min(460px,100%);background:var(--o-paper);border-radius:12px;padding:24px}.resi-dialog h2{font-size:19px;margin:0 0 18px}.resi-dialog label{display:block;font-size:12px;font-weight:650;margin:12px 0 5px}.resi-dialog input{width:100%;height:44px;border:1px solid #ded7ce;border-radius:7px;padding:0 11px;background:#fff;font:inherit}.resi-dialog__actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+.resi-dialog{position:fixed;inset:0;z-index:1210;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(30,26,22,.54)}.resi-dialog.is-open{display:flex}.resi-dialog__panel{width:min(460px,100%);background:var(--o-paper);border-radius:12px;padding:24px}.resi-dialog h2{font-size:19px;margin:0 0 18px}.resi-dialog label{display:block;font-size:12px;font-weight:650;margin:12px 0 5px}.resi-dialog input,.resi-dialog select{width:100%;height:44px;border:1px solid #ded7ce;border-radius:7px;padding:0 11px;background:#fff;font:inherit}.resi-dialog__actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
 @media(max-width:1050px){.online-orders .order-row{grid-template-columns:minmax(170px,1fr) minmax(150px,1fr) minmax(135px,.8fr) minmax(130px,.75fr)}.online-orders .row-actions{grid-column:1/-1;justify-content:flex-start;padding-top:8px;border-top:1px solid #f0ebe5}}
 @media(max-width:700px){.online-orders{padding-top:0}.online-orders .page-head{align-items:flex-start;flex-direction:column;margin-bottom:18px}.online-orders .head-actions{width:100%}.online-orders .head-actions .action{flex:1}.online-orders .metrics{justify-content:space-between;margin-bottom:16px}.online-orders .metric{min-width:0;flex:1;padding:11px 6px 11px 0;margin-right:8px}.online-orders .metric strong{font-size:18px}.online-orders .metric span{font-size:10px}.online-orders .order-controls{align-items:stretch;flex-direction:column}.online-orders .filters{justify-content:stretch}.online-orders .search-box{max-width:none}.online-orders .filters select{flex:1;min-width:0}.online-orders .results-label{order:2}.online-orders .order-row{grid-template-columns:minmax(0,1fr) auto;gap:9px 12px;padding:15px 2px}.online-orders .order-row__id{grid-column:1}.online-orders .order-row__status{grid-column:2;grid-row:1;justify-self:end}.online-orders .order-row__customer{grid-column:1/-1}.online-orders .order-row__amount{grid-column:1}.online-orders .order-row__actions{grid-column:2;grid-row:3;justify-content:flex-end;padding:0;border:0}.online-orders .row-actions .icon-action{min-width:40px}.order-dialog__customer{grid-template-columns:1fr;gap:11px}.order-dialog__items th,.order-dialog__items td{padding:9px 4px;font-size:12px}.order-dialog__footer .action{flex:1}}
 @media(prefers-reduced-motion:reduce){.online-orders *,.order-dialog *,.resi-dialog *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
@@ -113,7 +113,7 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter): st
   </div>
 </div>
 
-<div class="resi-dialog" id="resiDialog" role="dialog" aria-modal="true" aria-labelledby="resiTitle" aria-hidden="true"><div class="resi-dialog__panel"><h2 id="resiTitle">Perbarui pengiriman</h2><form action="/admin/actioneditresi" method="post"><?= csrf_field() ?><input type="hidden" name="idMid"><label for="resi-courier">Ekspedisi</label><input id="resi-courier" type="text" name="nama" required><label for="resi-service">Layanan</label><input id="resi-service" type="text" name="deskripsi" required><label for="resi-number">Nomor resi</label><input id="resi-number" type="text" name="resi" required><div class="resi-dialog__actions"><button class="action" type="button" data-close-resi>Batal</button><button class="action action-primary" type="submit">Simpan resi</button></div></form></div></div>
+<div class="resi-dialog" id="resiDialog" role="dialog" aria-modal="true" aria-labelledby="resiTitle" aria-hidden="true"><div class="resi-dialog__panel"><h2 id="resiTitle">Perbarui pengiriman</h2><form action="/admin/actioneditresi" method="post"><?= csrf_field() ?><input type="hidden" name="idMid"><input type="hidden" name="nama"><input type="hidden" name="deskripsi"><label for="resi-courier">Ekspedisi</label><select id="resi-courier" required><option value="">Pilih ekspedisi</option><?php foreach (['JNE','J&T Express','SiCepat','AnterAja','Pos Indonesia','TIKI','Ninja Xpress','Lion Parcel','ID Express','SAP Express','GoSend','GrabExpress','Lainnya'] as $carrier): ?><option value="<?= esc($carrier, 'attr') ?>"><?= esc($carrier) ?></option><?php endforeach; ?></select><div id="resi-courier-custom-wrap" hidden><label for="resi-courier-custom">Nama ekspedisi</label><input id="resi-courier-custom" name="nama_custom" type="text" maxlength="80" autocomplete="off"></div><label for="resi-service">Layanan</label><select id="resi-service" required><option value="">Pilih layanan</option></select><div id="resi-service-custom-wrap" hidden><label for="resi-service-custom">Nama layanan</label><input id="resi-service-custom" name="deskripsi_custom" type="text" maxlength="80" autocomplete="off"></div><label for="resi-number">Nomor resi</label><input id="resi-number" type="text" name="resi" maxlength="100" required autocomplete="off"><div class="resi-dialog__actions"><button class="action" type="button" data-close-resi>Batal</button><button class="action action-primary" type="submit">Simpan resi</button></div></form></div></div>
 <?php if ($isDev): ?>
 <div class="resi-dialog delete-order-dialog" id="deleteOrderDialog" role="dialog" aria-modal="true" aria-labelledby="deleteOrderTitle" aria-hidden="true">
   <div class="resi-dialog__panel">
@@ -177,12 +177,49 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter): st
   detail.addEventListener('click', event => { if (event.target === detail) closeLayer(detail); });
 
   document.querySelectorAll('[data-edit-resi]').forEach(button => button.addEventListener('click', () => {
+    const courier = resi.querySelector('#resi-courier');
+    const service = resi.querySelector('#resi-service');
+    const savedCourier = button.dataset.editResiCourier || '';
+    const savedService = button.dataset.editResiService || '';
+    courier.value = [...courier.options].some(option => option.value === savedCourier) ? savedCourier : (savedCourier ? 'Lainnya' : '');
+    courier.dispatchEvent(new Event('change'));
+    if (courier.value === 'Lainnya') resi.querySelector('[name="nama_custom"]').value = savedCourier;
+    fillServiceChoices(savedService);
+    if (service.value === 'Lainnya') resi.querySelector('[name="deskripsi_custom"]').value = savedService;
     resi.querySelector('[name="idMid"]').value = button.dataset.editResi || '';
-    resi.querySelector('[name="nama"]').value = button.dataset.editResiCourier || '';
-    resi.querySelector('[name="deskripsi"]').value = button.dataset.editResiService || '';
-    resi.querySelector('[name="resi"]').value = button.dataset.editResiNumber || '';
+    resi.querySelector('[name="resi"]').value = button.dataset.editResiNumber === 'Menunggu pengiriman' ? '' : (button.dataset.editResiNumber || '');
     openLayer(resi);
   }));
+  const courierSelect = resi.querySelector('#resi-courier');
+  const serviceSelect = resi.querySelector('#resi-service');
+  const serviceChoices = {
+    'JNE': ['REG','YES','OKE','JTR','Cargo'], 'J&T Express': ['EZ','Eco','Super'],
+    'SiCepat': ['REG','BEST','HALU','GOKIL'], 'AnterAja': ['Reguler','Next Day','Same Day','Cargo'],
+    'Pos Indonesia': ['Pos Reguler','Pos Kilat Khusus','Pos Nextday'], 'TIKI': ['REG','ONS','ECO','TRC'],
+    'Ninja Xpress': ['Standard','Next Day','Cargo'], 'Lion Parcel': ['REGPACK','JAGOPACK','BOSSPACK'],
+    'ID Express': ['Reguler','Same Day'], 'SAP Express': ['Reguler','Same Day'],
+    'GoSend': ['Instant','Same Day'], 'GrabExpress': ['Instant','Same Day']
+  };
+  const fillServiceChoices = (selected = '') => {
+    serviceSelect.replaceChildren(new Option('Pilih layanan', ''), ...((serviceChoices[courierSelect.value] || ['Reguler']).map(value => new Option(value, value))), new Option('Lainnya', 'Lainnya'));
+    serviceSelect.value = [...serviceSelect.options].some(option => option.value === selected) ? selected : (selected ? 'Lainnya' : '');
+    serviceSelect.dispatchEvent(new Event('change'));
+  };
+  courierSelect.addEventListener('change', () => {
+    const custom = courierSelect.value === 'Lainnya';
+    resi.querySelector('#resi-courier-custom-wrap').hidden = !custom;
+    resi.querySelector('[name="nama_custom"]').required = custom;
+    fillServiceChoices();
+  });
+  serviceSelect.addEventListener('change', () => {
+    const custom = serviceSelect.value === 'Lainnya';
+    resi.querySelector('#resi-service-custom-wrap').hidden = !custom;
+    resi.querySelector('[name="deskripsi_custom"]').required = custom;
+  });
+  resi.querySelector('form').addEventListener('submit', () => {
+    resi.querySelector('[name="nama"]').value = courierSelect.value === 'Lainnya' ? resi.querySelector('[name="nama_custom"]').value.trim() : courierSelect.value;
+    resi.querySelector('[name="deskripsi"]').value = serviceSelect.value === 'Lainnya' ? resi.querySelector('[name="deskripsi_custom"]').value.trim() : serviceSelect.value;
+  });
   resi.querySelector('[data-close-resi]').addEventListener('click', () => closeLayer(resi));
   resi.addEventListener('click', event => { if (event.target === resi) closeLayer(resi); });
   if (deleteDialog) {
