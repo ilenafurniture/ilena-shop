@@ -4501,6 +4501,7 @@ class Pages extends BaseController
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'authFormNonce' => $authFormGuard->issue('login'),
+            'captchaError' => session()->getFlashdata('captcha_error'),
             'val' => [
                 'msg' => session()->getFlashdata('msg'),
                 'val_email' => session()->getFlashdata('val-email'),
@@ -4528,7 +4529,7 @@ class Pages extends BaseController
         }
         $captchaError = (new \App\Services\Auth\RecaptchaVerifier())->error($this->request->getPost('g-recaptcha-response'));
         if ($captchaError !== null) {
-            session()->setFlashdata('msg', $captchaError);
+            session()->setFlashdata('captcha_error', $captchaError);
             return redirect()->to('/login')->withInput();
         }
 
@@ -4748,6 +4749,7 @@ class Pages extends BaseController
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'authFormNonce' => $authFormGuard->issue('register'),
+            'captchaError' => session()->getFlashdata('captcha_error'),
             'val' => [
                 'val_nama' => session()->getFlashdata('val-nama'),
                 'val_email' => session()->getFlashdata('val-email'),
@@ -4780,7 +4782,7 @@ class Pages extends BaseController
         }
         $captchaError = (new \App\Services\Auth\RecaptchaVerifier())->error($this->request->getPost('g-recaptcha-response'));
         if ($captchaError !== null) {
-            session()->setFlashdata('msg', $captchaError);
+            session()->setFlashdata('captcha_error', $captchaError);
             return redirect()->to('/register')->withInput();
         }
 

@@ -132,7 +132,7 @@
                     </div>
                 </div>
 
-                <?= view('partials/auth_recaptcha', [], ['saveData' => false]); ?>
+                <?= view('partials/auth_recaptcha', ['error' => $captchaError ?? null], ['saveData' => false]); ?>
                 <div class="mb-3 d-flex w-100 justify-content-center">
                     <button id="btnSubmit" type="submit" class="btn btn-default btn-block" disabled>Daftar</button>
                 </div>
