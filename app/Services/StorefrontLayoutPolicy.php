@@ -37,8 +37,9 @@ final class StorefrontLayoutPolicy
         if (in_array($path, ['/login', '/register', '/verify'], true)) {
             return 'auth';
         }
-        // Keep cart conversion pages focused: use support/payment assurance, not the full discovery footer.
-        if (preg_match('~^/(cart|shipping|payment|progresspay|successpay|cencelpay|expirepay)(/|$)~', $path) === 1) {
+        // The cart uses the same storefront shell as browsing pages. Keep only
+        // the actual checkout/payment steps on the focused footer.
+        if (preg_match('~^/(shipping|payment|progresspay|successpay|cencelpay|expirepay)(/|$)~', $path) === 1) {
             return 'checkout';
         }
         if (preg_match('~^/(account|address|order|orderdetail|invoice|wishlist)(/|$)~', $path) === 1) {

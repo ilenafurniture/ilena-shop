@@ -5,7 +5,6 @@
 <style>
 .page {
     --bg: #f7f5f1;
-    --card: #fff;
     --muted: #77736c;
     --text: #26251f;
     --line: #e9e5dc;
@@ -41,14 +40,12 @@
     }
 }
 
-.card {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 16px;
+.edit-section {
+    min-width: 0;
+    padding: 20px 0;
 }
 
-.card+.card {
+.edit-section+.edit-section {
     margin-top: 12px;
 }
 
@@ -312,11 +309,11 @@
     transition: background .18s ease, border-color .18s ease, transform .18s ease;
 }
 .edit-back-link:hover { color: #332d23; background: #f6f2ea; border-color: #cfc3ae; transform: translateY(-1px); }
-.page .card {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    box-shadow: 0 7px 24px rgba(53, 45, 31, .045);
+.page .edit-section {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
 }
 .page .section-title { color: #343127; font-size: 14px; font-weight: 620; letter-spacing: -.01em; }
 .page .label { color: #656157; font-size: 12.5px; font-weight: 560; }
@@ -359,7 +356,7 @@
 }
 .page .grid { gap: clamp(24px, 4vw, 58px); }
 .page .stack { gap: 0; }
-.page > form > .grid > .stack > .card {
+.page > form > .grid > .stack > .edit-section {
     padding: 20px 0;
     border: 0;
     border-bottom: 1px solid #e3ded4;
@@ -367,9 +364,17 @@
     background: transparent;
     box-shadow: none;
 }
-.page > form > .grid > .stack > .card:first-child { padding-top: 8px; }
-.page .section-title { margin-bottom: 16px; color: #39352c; font-size: 14px; }
-.page #container-varian > .card {
+.page > form > .grid > .stack > .edit-section:first-child { padding-top: 8px; }
+.page .section-title {
+    margin-bottom: 16px;
+    color: #71644f;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .11em;
+    line-height: 1.4;
+    text-transform: uppercase;
+}
+.page #container-varian > .variant-section {
     margin: 0;
     padding: 18px 0 !important;
     border: 0;
@@ -378,7 +383,22 @@
     background: transparent;
     box-shadow: none;
 }
-.page #container-varian > .card:first-child { border-top: 0; padding-top: 2px !important; }
+.page .variant-section .section-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    color: #39352c;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+}
+.page #container-varian > .variant-section:first-child .section-title { margin-top: 0; }
+.page .variant-section .list-images { min-height: 0; }
+.page .variant-section .thumb { cursor: pointer; }
+.page .variant-section .uploader { flex-wrap: wrap; }
+.page #container-varian > .variant-section:first-child { border-top: 0; padding-top: 2px !important; }
 .page .footer-actions {
     position: sticky;
     bottom: 0;
@@ -396,7 +416,7 @@
     .edit-page-head { align-items: flex-start; }
     .edit-page-head p { max-width: 34ch; }
     .edit-back-link { flex: 0 0 auto; min-height: 38px; padding: 0 10px; }
-    .page > form > .grid > .stack > .card { padding: 17px 0; }
+    .page > form > .grid > .stack > .edit-section { padding: 17px 0; }
     .page .img-preview { max-width: 100%; }
 }
 </style>
@@ -419,7 +439,7 @@
         <div class="grid">
             <!-- LEFT -->
             <div class="stack">
-                <div class="card">
+                <div class="edit-section">
                     <div class="section-title">Detail Produk</div>
                     <div class="field">
                         <label class="label">Nama Produk</label>
@@ -485,7 +505,7 @@
                     </div>
                 </div>
 
-                <div class="card">
+                <div class="edit-section">
                     <div class="section-title">Deskripsi & Ukuran</div>
                     <div class="field">
                         <label class="label">Deskripsi</label>
@@ -570,10 +590,10 @@
 
             <!-- RIGHT -->
             <div class="stack">
-                <div class="card">
+                <div class="edit-section">
                     <div class="section-title">Foto Alternatif</div>
                     <div class="hint" style="margin-bottom:10px;">
-                        Maksimal 4MB per foto. Format yang diterima: WebP atau AVIF. Sistem menyimpan hasil olahan sebagai WebP.
+                        WebP atau AVIF · Maks. 4 MB per foto · Disimpan sebagai WebP.
                     </div>
                     <img id="imghover-preview" class="img-preview" src="/viewpichover/<?= $produk['id']; ?>?proxy=1&v=<?= $imageVersion; ?>" alt="">
                     <div class="uploader" style="margin-top:10px;">
@@ -583,11 +603,11 @@
                     </div>
                 </div>
 
-                <div class="card">
+                <div class="edit-section">
                     <div class="section-title">Varian</div>
                     <div id="container-varian" class="stack">
                         <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
-                        <div class="card" style="padding:12px;">
+                        <div class="variant-section">
                             <div class="section-title">Varian #<?= $ind_v + 1; ?></div>
                             <div class="list-images" id="container-gambar<?= $ind_v + 1; ?>">
                                 <!-- preview lama -->
@@ -746,7 +766,7 @@ function addVarian() {
     const no = ++counterJmlVarian;
 
     const html = `
-      <div class="card" style="padding:12px;">
+      <div class="variant-section">
         <div class="section-title">Varian #${no}</div>
 
         <div class="list-images" id="container-gambar${no}"></div>
@@ -784,10 +804,10 @@ function addVarian() {
 }
 
 function deleteVarian(event) {
-    const card = event.target.closest('.card');
+    const variantSection = event.target.closest('.variant-section');
     const containerVarian = document.getElementById("container-varian");
-    const urutanVarianKe = card.querySelector('[id^="container-gambar"]').id.replace('container-gambar', '');
-    containerVarian.removeChild(card);
+    const urutanVarianKe = variantSection.querySelector('[id^="container-gambar"]').id.replace('container-gambar', '');
+    containerVarian.removeChild(variantSection);
 
     // update tracker
     let varianArr = (hitungVarianInputElm.value || '').split(",").filter(Boolean);
@@ -857,7 +877,7 @@ function hapusSubvarian(varianNum, indexGambar, e) {
         deskripsiHidden.value = JSON.stringify(deskripsiJSON);
 
         // VARIAN JSON
-        const varianElems = Array.from(document.querySelectorAll('#container-varian > .card'));
+        const varianElems = Array.from(document.querySelectorAll('#container-varian > .variant-section'));
         const renameTargets = [];
         const usedSlots = new Set();
         form.querySelectorAll('#container-varian input[type="file"][data-slot]').forEach(inp => {
