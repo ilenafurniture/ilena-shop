@@ -50,14 +50,17 @@ jobs:
           done < <(git diff --name-only -z HEAD origin/main -- . ':(exclude)public/img/barang/**')
           git reset --soft origin/main
 
-          echo "[deploy] install locked production dependencies with LSPHP 8.3"
+          echo "[deploy] install locked production dependencies with Composer CLI"
           PHP_BIN=/usr/local/lsws/lsphp83/bin/lsphp
           COMPOSER_BIN="$(command -v composer)"
           if [ ! -x "$PHP_BIN" ] || [ -z "$COMPOSER_BIN" ]; then
             echo "ERROR: LSPHP 8.3 or Composer is unavailable."
             exit 1
           fi
-          COMPOSER_ALLOW_SUPERUSER=1 "$PHP_BIN" "$COMPOSER_BIN" install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+          # Composer requires the CLI SAPI; the server's default PHP CLI is 8.1,
+          # so ignore only the root PHP constraint during installation. The web
+          # runtime and migrations use LSPHP 8.3 and satisfy the ^8.2 requirement.
+          COMPOSER_ALLOW_SUPERUSER=1 "$COMPOSER_BIN" install --no-dev --prefer-dist --no-interaction --optimize-autoloader --ignore-platform-req=php
 
           echo "[deploy] run database migrations"
           spark_cli="$(mktemp /tmp/ilena-spark-cli.XXXXXX.php)"
