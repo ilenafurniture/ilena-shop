@@ -101,6 +101,79 @@ class HomeAssetManager
         return $urls;
     }
 
+    /** Width-specific URLs for responsive rendering; legacy assets keep their single fallback URL. */
+    public function responsivePublicUrls(): array
+    {
+        $urls = [];
+        foreach ($this->records() as $filename => $record) {
+            if (!isset(self::ASSETS[$filename]) || !is_array($record)) {
+                continue;
+            }
+
+            $version = preg_replace('/[^a-f0-9]/i', '', (string) ($record['version'] ?? '')) ?: '1';
+            $assetUrls = [];
+            if (($record['storage'] ?? '') === 'r2') {
+                $variants = is_array($record['variants'] ?? null) ? $record['variants'] : [];
+                foreach ([400, 800, 1200, 1600] as $width) {
+                    $key = (string) ($variants[(string) $width] ?? '');
+                    if ($key === '' && $width === 1600) {
+                        $key = (string) ($record['key'] ?? '');
+                    }
+                    if ($key !== '' && ($url = $this->r2->publicUrl($key)) !== null) {
+                        $assetUrls[(string) $width] = $url . '?v=' . rawurlencode($version);
+                    }
+                }
+            } else {
+                $path = (string) ($record['path'] ?? '');
+                if (!preg_match('#^uploads/home/[A-Za-z0-9._-]+\.webp$#', $path)) {
+                    continue;
+                }
+                foreach ([400, 800, 1200, 1600] as $width) {
+                    $assetUrls[(string) $width] = base_url('home-image/' . rawurlencode($filename) . '?v=' . rawurlencode($version) . '&w=' . $width);
+                }
+            }
+
+            if ($assetUrls !== []) {
+                $urls[$filename] = $assetUrls;
+            }
+        }
+
+        return $urls;
+    }
+
+    /** Backfill width variants for existing R2 assets in bounded, one-image-at-a-time batches. */
+    public function backfillResponsiveVariants(): array
+    {
+        $records = $this->records();
+        $result = ['updated' => [], 'skipped' => [], 'failed' => []];
+
+        foreach (self::ASSETS as $filename => $label) {
+            $record = $records[$filename] ?? null;
+            if (!is_array($record) || ($record['storage'] ?? '') !== 'r2') {
+                $result['skipped'][$filename] = 'bukan aset R2 yang sudah dimigrasikan';
+                continue;
+            }
+            if (is_array($record['variants'] ?? null)
+                && count(array_intersect(['400', '800', '1200', '1600'], array_map('strval', array_keys($record['variants'])))) === 4) {
+                $result['skipped'][$filename] = 'varian sudah tersedia';
+                continue;
+            }
+
+            try {
+                $object = $this->r2->getHomeAssetObject((string) ($record['key'] ?? ''));
+                if (!is_array($object) || !is_string($object['body'] ?? null) || $object['body'] === '') {
+                    throw new RuntimeException('Gagal mengambil sumber gambar R2.');
+                }
+                $this->storeSource($filename, $object['body']);
+                $result['updated'][$filename] = $label;
+            } catch (\Throwable $error) {
+                $result['failed'][$filename] = $error->getMessage();
+            }
+        }
+
+        return $result;
+    }
+
     public function upload(string $filename, UploadedFile $file): void
     {
         if (!isset(self::ASSETS[$filename])) {
@@ -167,36 +240,67 @@ class HomeAssetManager
         }
 
         $optimizer = new ResponsiveImageOptimizer();
-        $output = null;
-        foreach ([82, 76, 70, 64] as $quality) {
-            $candidate = $optimizer->toWebp($source, 1600, $quality);
-            if (is_string($candidate) && $candidate !== '' && strlen($candidate) <= self::MAX_OUTPUT_BYTES) {
-                $output = $candidate;
-                break;
+        $renditions = [];
+        $keysByTargetWidth = [];
+        foreach ([400, 800, 1200, 1600] as $requestedWidth) {
+            $targetWidth = min($width, $requestedWidth);
+            if (isset($keysByTargetWidth[$targetWidth])) {
+                $renditions[(string) $requestedWidth] = $renditions[(string) $keysByTargetWidth[$targetWidth]];
+                continue;
             }
-        }
-        if (!is_string($output)) {
-            throw new RuntimeException('Gambar gagal dikonversi ke WebP di bawah batas 900 KB.');
+
+            $output = null;
+            foreach ([82, 76, 70, 64] as $quality) {
+                $candidate = $optimizer->toWebp($source, $targetWidth, $quality);
+                if (is_string($candidate) && $candidate !== '' && strlen($candidate) <= self::MAX_OUTPUT_BYTES) {
+                    $output = $candidate;
+                    break;
+                }
+            }
+            if (!is_string($output)) {
+                throw new RuntimeException('Gambar gagal dikonversi ke WebP di bawah batas 900 KB.');
+            }
+
+            $variantVersion = substr(hash('sha256', $output), 0, 16);
+            $variantKey = 'home/assets/' . pathinfo($filename, PATHINFO_FILENAME) . '-' . $variantVersion . '-' . $targetWidth . '.webp';
+            $renditions[(string) $requestedWidth] = [
+                'key' => $variantKey,
+                'bytes' => $output,
+                'version' => $variantVersion,
+            ];
+            $keysByTargetWidth[$targetWidth] = $requestedWidth;
         }
 
-        $version = substr(hash('sha256', $output), 0, 16);
-        $key = 'home/assets/' . pathinfo($filename, PATHINFO_FILENAME) . '-' . $version . '.webp';
+        $largest = $renditions['1600'];
+        $key = $largest['key'];
+        $version = $largest['version'];
         if (!$this->r2->configured() || $this->r2->publicUrl($key) === null) {
             throw new RuntimeException('Storage R2/CDN belum terkonfigurasi; gambar lama tetap aktif.');
         }
 
         $temporary = tempnam(sys_get_temp_dir(), 'ilena-home-');
-        if ($temporary === false || file_put_contents($temporary, $output, LOCK_EX) === false) {
+        if ($temporary === false) {
             throw new RuntimeException('Gagal menyiapkan gambar untuk storage.');
         }
         try {
-            if (!$this->r2->uploadFile($temporary, $key, 'image/webp')) {
-                throw new RuntimeException('Upload ke storage CDN gagal; gambar lama tetap aktif.');
+            $variantKeys = [];
+            $variants = [];
+            foreach ($renditions as $size => $rendition) {
+                if (isset($variantKeys[$rendition['key']])) {
+                    $variants[$size] = $variantKeys[$rendition['key']];
+                    continue;
+                }
+                if (file_put_contents($temporary, $rendition['bytes'], LOCK_EX) === false
+                    || !$this->r2->uploadFile($temporary, $rendition['key'], 'image/webp')) {
+                    throw new RuntimeException('Upload varian gambar ke storage CDN gagal; gambar lama tetap aktif.');
+                }
+                $variantKeys[$rendition['key']] = $rendition['key'];
+                $variants[$size] = $rendition['key'];
             }
         } finally {
             @unlink($temporary);
         }
-        $record = ['version' => $version, 'storage' => 'r2', 'key' => $key];
+        $record = ['version' => $version, 'storage' => 'r2', 'key' => $key, 'variants' => $variants];
 
         $this->saveRecord($filename, $record);
     }

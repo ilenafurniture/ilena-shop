@@ -233,6 +233,21 @@ class R2ProductImageService
         ];
     }
 
+    /** Read fixed home-asset objects even when product-image R2 writes are disabled. */
+    public function getHomeAssetObject(string $key): ?array
+    {
+        if (!$this->configured() || !preg_match('#^home/assets/[A-Za-z0-9._-]+\.webp$#', $key)) {
+            return null;
+        }
+
+        $result = $this->request('GET', $key);
+        if ($result['status'] < 200 || $result['status'] >= 300 || !is_string($result['body'])) {
+            return null;
+        }
+
+        return ['body' => $result['body'], 'contentType' => 'image/webp'];
+    }
+
     /** Read the real current object state without relying on the positive/negative cache. */
     public function snapshotObject(string $key): array
     {

@@ -2771,6 +2771,7 @@ class AdminController extends BaseController
             }
         }
 
+        cache()->delete('ilena_home_slider_metadata_v1');
         session()->setFlashdata('msg', $assetMessages
             ? 'Home layout diperbarui. ' . implode(' ', $assetMessages)
             : 'Home layout telah diperbarui.');

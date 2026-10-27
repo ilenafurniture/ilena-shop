@@ -194,7 +194,8 @@
     <meta name="twitter:image" content="https://ilenafurniture.com/logo-icon.png">
     <title><?= $title; ?> | I L E N A</title>
     <link href="<?= base_url('css/bootstrap.min.css'); ?>" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/icon?family=Material+Icons" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"></noscript>
     <?php if ($title == 'Pembayaran') { ?>
     <!-- <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
         data-client-key="SB-Mid-client-aGWfdxs2btRH4xSd" async></script> -->
@@ -212,10 +213,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <?php $editorialPagePath = '/' . strtolower(trim((string) service('uri')->getPath(), '/')); ?>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
     <?php if (in_array($editorialPagePath, ['/', '/tentang', '/partner', '/article'], true)) : ?>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap"
-        rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
     <?php endif; ?>
     <?php if (in_array($editorialPagePath, ['/tentang', '/partner'], true)) : ?>
     <link rel="stylesheet"
@@ -284,7 +286,7 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
         </div>
     </div>
 
-    <script src="<?= base_url('js/bootstrap.bundle.min.js'); ?>"></script>
+    <script defer src="<?= base_url('js/bootstrap.bundle.min.js'); ?>"></script>
     <div
         class="container-melayang d-flex gap-2 align-items-end <?= isset($geser_container_melayang) ? 'geser' : ''; ?>">
         <div id="container-greeting-card" class="ilena-chat-greeting d-none">

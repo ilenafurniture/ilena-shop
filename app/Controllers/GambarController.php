@@ -417,7 +417,11 @@ class GambarController extends BaseController
         }
 
         if (is_string($sourceBytes) && strtolower((string) $this->request->getGet('format')) === 'webp') {
-            $maxWidth = $field === 'foto_hp' ? 900 : 1600;
+            $allowedWidths = $field === 'foto_hp' ? [320, 400, 640, 900] : [640, 900, 1200, 1600];
+            $requestedWidth = (int) $this->request->getGet('w');
+            $maxWidth = in_array($requestedWidth, $allowedWidths, true)
+                ? $requestedWidth
+                : ($field === 'foto_hp' ? 900 : 1600);
             $cacheKey = 'slider-' . $safeId . '-' . $field . '-' . $maxWidth . '-' . md5($sourceBytes);
             $optimizedPath = $this->optimizedHomeImagePath($cacheKey);
             $optimizedBytes = is_file($optimizedPath) ? @file_get_contents($optimizedPath) : false;
@@ -532,7 +536,7 @@ class GambarController extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Gambar tidak ditemukan');
         }
 
-        $allowedWidths = [640, 900, 1200, 1600];
+        $allowedWidths = [400, 640, 800, 900, 1200, 1600];
         $requestedWidth = (int) $this->request->getGet('w');
         $maxWidth = in_array($requestedWidth, $allowedWidths, true) ? $requestedWidth : 1200;
         $cacheKey = 'home-' . strtolower($filename) . '-' . $maxWidth . '-v1';

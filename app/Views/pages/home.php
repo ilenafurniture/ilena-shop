@@ -6,10 +6,52 @@ $homeImage = static function (string $file, int $width = 1200) use ($homeAssets)
     $file = basename($file);
     $version = substr(hash('sha256', $file), 0, 12);
     $width = in_array($width, [640, 900, 1200, 1600], true) ? $width : 1200;
-    if (!empty($homeAssets[$file]) && is_string($homeAssets[$file])) {
-        return $homeAssets[$file];
+    $asset = $homeAssets[$file] ?? null;
+    if (is_array($asset)) {
+        $widths = array_map('intval', array_keys($asset));
+        sort($widths);
+        foreach ($widths as $candidateWidth) {
+            if ($candidateWidth >= $width && isset($asset[(string) $candidateWidth])) {
+                return $asset[(string) $candidateWidth];
+            }
+        }
+        if (isset($asset['1600'])) {
+            return $asset['1600'];
+        }
+        if ($widths !== [] && isset($asset[(string) end($widths)])) {
+            return $asset[(string) end($widths)];
+        }
+    } elseif (is_string($asset) && $asset !== '') {
+        return $asset;
     }
     return base_url('home-image/' . rawurlencode($file) . '?v=' . $version . '&w=' . $width);
+};
+$homeImageSrcset = static function (string $file) use ($homeAssets, $homeImage): string {
+    $file = basename($file);
+    $asset = $homeAssets[$file] ?? null;
+    if (is_array($asset)) {
+        $parts = [];
+        foreach ([400, 800, 1200, 1600] as $width) {
+            if (isset($asset[(string) $width])) {
+                $parts[] = $asset[(string) $width] . ' ' . $width . 'w';
+            }
+        }
+        if (count($parts) > 1) {
+            return implode(', ', $parts);
+        }
+        return '';
+    }
+
+    $parts = [];
+    foreach ([640, 900, 1200, 1600] as $width) {
+        $parts[] = $homeImage($file, $width) . ' ' . $width . 'w';
+    }
+    return implode(', ', $parts);
+};
+$homeImageSet = static function (string $file) use ($homeImage): string {
+    $low = $homeImage($file, 640);
+    $high = $homeImage($file, 1200);
+    return 'image-set(url("' . $low . '") 1x, url("' . $high . '") 2x)';
 };
 ?>
 <?php if ($msg_active) { ?>
@@ -43,7 +85,7 @@ function closeModalVoucher() {
         <section class="ilena-home-popup__dialog ilena-home-popup__dialog--membership" role="dialog" aria-modal="true" aria-labelledby="membership-popup-title">
             <button type="button" class="ilena-home-popup__close" onclick="closeLoginModel()" aria-label="Tutup promo">&times;</button>
             <div class="ilena-home-popup__image">
-                <img loading="lazy" decoding="async" src="<?= $homeImage('1742444827619.webp') ?>" alt="Inspirasi interior Ilena Furniture">
+                <img loading="lazy" decoding="async" src="<?= $homeImage('1742444827619.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742444827619.webp'), 'attr') ?>" sizes="(max-width: 700px) 90vw, 45vw" alt="Inspirasi interior Ilena Furniture">
                 <span>Modern &amp; Stylish<br>Furniture <em>True to you</em></span>
             </div>
             <div class="ilena-home-popup__content">
@@ -75,7 +117,7 @@ function closeModalVoucher() {
                     </a>
                 </div>
             </div>
-            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445131798.webp') ?>"
+            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445131798.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445131798.webp'), 'attr') ?>" sizes="400px"
                 style="width: 400px; height: 400px; object-fit: cover; border-radius: 10px;" alt="">
         </div>
     </div>
@@ -246,17 +288,19 @@ function closeSecondAd() {
             if ($sliderId === '') {
                 continue;
             }
-            $desktopVersion = substr(md5((string) ($slider['foto'] ?? '')), 0, 12);
-            $mobileVersion = substr(md5((string) ($slider['foto_hp'] ?? '')), 0, 12);
+            $desktopVersion = substr(preg_replace('/[^a-f0-9]/i', '', (string) ($slider['foto_version'] ?? '')), 0, 12);
+            $mobileVersion = substr(preg_replace('/[^a-f0-9]/i', '', (string) ($slider['foto_hp_version'] ?? '')), 0, 12);
             $desktopSrc = '/imgheader/' . $sliderId . '?v=' . $desktopVersion . '&format=webp';
             $mobileSrc = '/imgheaderhp/' . $sliderId . '?v=' . $mobileVersion . '&format=webp';
+            $desktopSrcset = implode(', ', array_map(static fn (int $width): string => $desktopSrc . '&w=' . $width . ' ' . $width . 'w', [640, 900, 1200, 1600]));
+            $mobileSrcset = implode(', ', array_map(static fn (int $width): string => $mobileSrc . '&w=' . $width . ' ' . $width . 'w', [320, 400, 640, 900]));
             $isFirstSlide = $ind_s === 0;
         ?>
         <a <?= !empty($slider['url']) ? 'href="' . esc($slider['url'], 'attr') . '"' : ''; ?>
             class="<?= $isFirstSlide ? 'active' : 'kanan'; ?>">
             <picture>
-                <source media="(max-width: 700px)" srcset="<?= esc($mobileSrc, 'attr'); ?>">
-                <img src="<?= esc($desktopSrc, 'attr'); ?>" alt="<?= esc('Inspirasi furniture Ilena' . ($ind_s > 0 ? ' — promosi ' . ($ind_s + 1) : ''), 'attr'); ?>" decoding="async"<?= $isFirstSlide ? ' fetchpriority="high"' : ' loading="lazy"'; ?>>
+                <source media="(max-width: 700px)" srcset="<?= esc($mobileSrcset, 'attr'); ?>" sizes="100vw">
+                <img src="<?= esc($desktopSrc, 'attr'); ?>" srcset="<?= esc($desktopSrcset, 'attr'); ?>" sizes="100vw" alt="<?= esc('Inspirasi furniture Ilena' . ($ind_s > 0 ? ' — promosi ' . ($ind_s + 1) : ''), 'attr'); ?>" decoding="async"<?= $isFirstSlide ? ' fetchpriority="high"' : ' loading="lazy"'; ?>>
             </picture>
         </a>
         <?php endforeach; ?>
@@ -303,7 +347,7 @@ function closeSecondAd() {
 <!-- bagian windows -->
 <div class="p-5 ilena-home-hero">
     <div class="show-flex-ke-hide p-5 flex-column align-items-center justify-content-center"
-        data-lazy-bg="<?= esc($homeImage('1742972542166.png'), 'attr'); ?>" style="background-size:cover;background-position:center;background-color:#f4f1ec; width:100%; height:80svh;">
+        data-lazy-bg="<?= esc($homeImageSet('1742972542166.png'), 'attr'); ?>" style="background-size:cover;background-position:center;background-color:#f4f1ec; width:100%; height:80svh;">
         <p class="ilena-home-kicker">RUANG YANG MENCERITAKAN DIRI ANDA</p>
         <h1 class="teks-besar mb-2 text-center text-light">Modern & Stylish<br>Furniture</h1>
         <p class="text-handwrite py-1 px-2 text-light"
@@ -314,7 +358,7 @@ function closeSecondAd() {
     </div>
     <!-- bagian HP -->
     <div class="hide-ke-show-flex px-5 flex-column justify-content-center"
-        style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('<?= $homeImage('1742972542166.png', 900) ?>'); background-size: cover; width:100%; height:60svh;">
+        style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), <?= $homeImageSet('1742972542166.png') ?>; background-size: cover; width:100%; height:60svh;">
         <p class="ilena-home-kicker">RUANG YANG MENCERITAKAN DIRI ANDA</p>
         <h1 class="teks-besar text-light" style="font-size:34px;">Modern & Stylish<br>Furniture</h1>
         <p class="text-handwrite py-1 px-2 text-light"
@@ -330,7 +374,7 @@ function closeSecondAd() {
 .kontenLN {
     position: relative;
     flex: 2;
-    background: url('<?= $homeImage('1748239864605.jpg') ?>');
+    background: <?= $homeImageSet('1748239864605.jpg') ?>;
     background-size: cover;
     background-position: center;
     cursor: pointer;
@@ -393,7 +437,7 @@ function closeSecondAd() {
 .kontenLNMobile {
     position: relative;
     flex: 2;
-    background: url('<?= $homeImage('1742446101353.webp') ?>');
+    background: <?= $homeImageSet('1742446101353.webp') ?>;
     background-size: cover;
     background-position: center;
     cursor: pointer;
@@ -472,7 +516,7 @@ function closeSecondAd() {
 <div class="show-flex-ke-hide align-items-stretch ilena-home-mosaic" style="width:100%; height:80svh;">
     <a class="d-flex align-items-center ps-5 zoom-wrapper" href="<?= base_url('/product/bufet-tv-ilena-plint-base') ?>"
         style="text-decoration:none; flex:1; position: relative;">
-        <img loading="lazy" decoding="async" src="<?= $homeImage('1748320128043.jpg') ?>"
+        <img loading="lazy" decoding="async" src="<?= $homeImage('1748320128043.jpg', 800) ?>" srcset="<?= esc($homeImageSrcset('1748320128043.jpg'), 'attr') ?>" sizes="(max-width: 700px) 90vw, 33vw"
             alt="Background Image"
             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
         <div>
@@ -485,7 +529,7 @@ function closeSecondAd() {
         <a class="d-flex align-items-center ps-5 zoom-wrapper"
             href="<?= base_url('/product/coffee-table-ilena-cody') ?>"
             style="text-decoration:none; flex: 1; position: relative;">
-            <img loading="lazy" decoding="async" src="<?= $homeImage('1748318610868.jpg') ?>"
+            <img loading="lazy" decoding="async" src="<?= $homeImage('1748318610868.jpg', 800) ?>" srcset="<?= esc($homeImageSrcset('1748318610868.jpg'), 'attr') ?>" sizes="(max-width: 700px) 90vw, 33vw"
                 alt="Background Image"
                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
             <div>
@@ -498,7 +542,7 @@ function closeSecondAd() {
         </a>
         <a class="d-flex" style="text-decoration:none; flex: 1" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>">
             <div class="d-flex align-items-center ps-5 zoom-wrapper" style="flex:1; position: relative;">
-                <img loading="lazy" decoding="async" src="<?= $homeImage('1742973475864.png') ?>"
+                <img loading="lazy" decoding="async" src="<?= $homeImage('1742973475864.png', 800) ?>" srcset="<?= esc($homeImageSrcset('1742973475864.png'), 'attr') ?>" sizes="(max-width: 700px) 90vw, 33vw"
                     alt="Background Image"
                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
                 <div>
@@ -555,7 +599,7 @@ function closeSecondAd() {
 <!-- Bagian HP -->
 <div class="hide-ke-show-flex flex-column pt-2 gap-2 ilena-home-mosaic-mobile" style="width:100%; height:80svh;">
     <a href="<?= base_url('/product/bufet-tv-ilena-plint-base') ?>" class="d-flex align-items-center px-5"
-        data-lazy-bg="<?= esc($homeImage('1748320128043.jpg'), 'attr'); ?>" style="text-decoration:none; flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
+        data-lazy-bg="<?= esc($homeImageSet('1748320128043.jpg'), 'attr'); ?>" style="text-decoration:none; flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
         <div>
             <p class="text-light ms-2 m-0" style="font-size:12px;">Make you feel</p>
             <h1 class="text-light ms-2" style="font-size:28px;">Elegant</h1>
@@ -563,7 +607,7 @@ function closeSecondAd() {
         </div>
     </a>
     <a class="d-flex align-items-center px-5" href="<?= base_url('/product/coffee-table-ilena-cody') ?>"
-        data-lazy-bg="<?= esc($homeImage('1748318610868.jpg'), 'attr'); ?>" style="text-decoration:none; flex: 1; background-size:cover;background-position:center;background-color:#f4f1ec;">
+        data-lazy-bg="<?= esc($homeImageSet('1748318610868.jpg'), 'attr'); ?>" style="text-decoration:none; flex: 1; background-size:cover;background-position:center;background-color:#f4f1ec;">
         <div>
             <h1 class="text-light ms-2" style="font-size:28px;">Luxury</h1>
             <div class="d-flex gap-1 ms-2">
@@ -573,7 +617,7 @@ function closeSecondAd() {
         </div>
     </a>
     <a href="<?= base_url('product/bufet-tv-ilena-cabana') ?>" class="d-flex align-items-center px-5"
-        data-lazy-bg="<?= esc($homeImage('1742973475864.png'), 'attr'); ?>" style="text-decoration:none; flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
+        data-lazy-bg="<?= esc($homeImageSet('1742973475864.png'), 'attr'); ?>" style="text-decoration:none; flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
         <div>
             <h1 class="text-light ms-2" style="font-size:28px;">Simply</h1>
             <div class="d-flex gap-1 ms-2">
@@ -615,15 +659,15 @@ function closeSecondAd() {
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    data-lazy-bg="<?= esc($homeImage('1742448909605.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
+                    data-lazy-bg="<?= esc($homeImageSet('1742448909605.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
                 </div>
                 <div
-                    data-lazy-bg="<?= esc($homeImage('1742448940409.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
+                    data-lazy-bg="<?= esc($homeImageSet('1742448940409.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            data-lazy-bg="<?= esc($homeImage('1748241007946.jpg'), 'attr'); ?>" style=" flex:1; background-size:cover;background-position:center;background-color:#f4f1ec; height:100%; background-repeat: no-repeat;">
+            data-lazy-bg="<?= esc($homeImageSet('1748241007946.jpg'), 'attr'); ?>" style=" flex:1; background-size:cover;background-position:center;background-color:#f4f1ec; height:100%; background-repeat: no-repeat;">
         </div>
     </div>
     <div class="scroll-home-item">
@@ -642,15 +686,15 @@ function closeSecondAd() {
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    data-lazy-bg="<?= esc($homeImage('1742449015853.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
+                    data-lazy-bg="<?= esc($homeImageSet('1742449015853.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
                 </div>
                 <div
-                    data-lazy-bg="<?= esc($homeImage('1742449044439.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
+                    data-lazy-bg="<?= esc($homeImageSet('1742449044439.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            data-lazy-bg="<?= esc($homeImage('1742449070724.png'), 'attr'); ?>" style=" flex:1; background-size:cover;background-position:center;background-color:#f4f1ec; ">
+            data-lazy-bg="<?= esc($homeImageSet('1742449070724.png'), 'attr'); ?>" style=" flex:1; background-size:cover;background-position:center;background-color:#f4f1ec; ">
         </div>
     </div>
     <div class="scroll-home-item">
@@ -671,15 +715,15 @@ function closeSecondAd() {
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    data-lazy-bg="<?= esc($homeImage('1742449142002.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
+                    data-lazy-bg="<?= esc($homeImageSet('1742449142002.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
                 </div>
                 <div
-                    data-lazy-bg="<?= esc($homeImage('1742449164348.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
+                    data-lazy-bg="<?= esc($homeImageSet('1742449164348.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            data-lazy-bg="<?= esc($homeImage('1742449189905.png'), 'attr'); ?>" style=" flex:1; background-size:cover;background-position:center;background-color:#f4f1ec; ">
+            data-lazy-bg="<?= esc($homeImageSet('1742449189905.png'), 'attr'); ?>" style=" flex:1; background-size:cover;background-position:center;background-color:#f4f1ec; ">
         </div>
     </div>
     <div class="scroll-home-item">
@@ -699,15 +743,15 @@ function closeSecondAd() {
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    data-lazy-bg="<?= esc($homeImage('1742449272365.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
+                    data-lazy-bg="<?= esc($homeImageSet('1742449272365.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
                 </div>
                 <div
-                    data-lazy-bg="<?= esc($homeImage('1742449295384.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
+                    data-lazy-bg="<?= esc($homeImageSet('1742449295384.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            data-lazy-bg="<?= esc($homeImage('1742449317998.png'), 'attr'); ?>" style=" flex:1; background-size:cover;background-position:center;background-color:#f4f1ec; ">
+            data-lazy-bg="<?= esc($homeImageSet('1742449317998.png'), 'attr'); ?>" style=" flex:1; background-size:cover;background-position:center;background-color:#f4f1ec; ">
         </div>
     </div>
     <div class="scroll-home-item">
@@ -732,15 +776,15 @@ function closeSecondAd() {
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    data-lazy-bg="<?= esc($homeImage('1742449351540.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
+                    data-lazy-bg="<?= esc($homeImageSet('1742449351540.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
                 </div>
                 <div
-                    data-lazy-bg="<?= esc($homeImage('1742449375221.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
+                    data-lazy-bg="<?= esc($homeImageSet('1742449375221.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            data-lazy-bg="<?= esc($homeImage('1742449396827.png'), 'attr'); ?>" style=" flex:1; background-size:cover;background-position:center;background-color:#f4f1ec; ">
+            data-lazy-bg="<?= esc($homeImageSet('1742449396827.png'), 'attr'); ?>" style=" flex:1; background-size:cover;background-position:center;background-color:#f4f1ec; ">
         </div>
     </div>
 
@@ -762,15 +806,15 @@ function closeSecondAd() {
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    data-lazy-bg="<?= esc($homeImage('1742449442663.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
+                    data-lazy-bg="<?= esc($homeImageSet('1742449442663.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
                 </div>
                 <div
-                    data-lazy-bg="<?= esc($homeImage('1742449462506.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
+                    data-lazy-bg="<?= esc($homeImageSet('1742449462506.png'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            data-lazy-bg="<?= esc($homeImage('1742449486165.png'), 'attr'); ?>" style=" flex:1; background-size:cover;background-position:center;background-color:#f4f1ec; ">
+            data-lazy-bg="<?= esc($homeImageSet('1742449486165.png'), 'attr'); ?>" style=" flex:1; background-size:cover;background-position:center;background-color:#f4f1ec; ">
         </div>
     </div>
 
@@ -789,15 +833,15 @@ function closeSecondAd() {
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    data-lazy-bg="<?= esc($homeImage('1748244053696.jpg'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
+                    data-lazy-bg="<?= esc($homeImageSet('1748244053696.jpg'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
                 </div>
                 <div
-                    data-lazy-bg="<?= esc($homeImage('1748244032628.jpg'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
+                    data-lazy-bg="<?= esc($homeImageSet('1748244032628.jpg'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            data-lazy-bg="<?= esc($homeImage('1748243821780.jpg'), 'attr'); ?>" style=" flex:1; background-size:cover;background-position:center;background-color:#f4f1ec; ">
+            data-lazy-bg="<?= esc($homeImageSet('1748243821780.jpg'), 'attr'); ?>" style=" flex:1; background-size:cover;background-position:center;background-color:#f4f1ec; ">
         </div>
     </div>
 
@@ -816,15 +860,15 @@ function closeSecondAd() {
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
-                    data-lazy-bg="<?= esc($homeImage('1748244560652.jpg'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
+                    data-lazy-bg="<?= esc($homeImageSet('1748244560652.jpg'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
                 </div>
                 <div
-                    data-lazy-bg="<?= esc($homeImage('1748244523907.jpg'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
+                    data-lazy-bg="<?= esc($homeImageSet('1748244523907.jpg'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
                 </div>
             </div>
         </div>
         <div class="w-100"
-            data-lazy-bg="<?= esc($homeImage('1748244474986.jpg'), 'attr'); ?>" style=" flex:1; background-size:cover;background-position:center;background-color:#f4f1ec; ">
+            data-lazy-bg="<?= esc($homeImageSet('1748244474986.jpg'), 'attr'); ?>" style=" flex:1; background-size:cover;background-position:center;background-color:#f4f1ec; ">
         </div>
     </div>
 
@@ -1057,7 +1101,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 <!-- Bagian Windows -->
 <div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:40svh; min-height: 373px;">
-    <a href="<?= base_url('product/bufet-tv-ilena-cabana') ?>" data-lazy-bg="<?= esc($homeImage('1742449659675.webp'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:top;background-color:#f4f1ec;">
+    <a href="<?= base_url('product/bufet-tv-ilena-cabana') ?>" data-lazy-bg="<?= esc($homeImageSet('1742449659675.webp'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:top;background-color:#f4f1ec;">
     </a>
     <div style="flex:1; background-color:#7B441c; position:relative;">
         <div class="d-flex p-5 h-100 w-100 text-light flex-column" style="flex:1; position:absolute;">
@@ -1281,7 +1325,7 @@ function modalseries() {
 <div id="ruangan" class="container show-flex-ke-hide gap-3 my-5 ilena-home-room-grid" style="width:100%;">
     <a href="/product?ruang=tamu" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
         <div class="zoom-wrapper mb-2">
-            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445399641.webp') ?>" alt=""
+            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445399641.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445399641.webp'), 'attr') ?>" sizes="(max-width: 700px) 80vw, 34vw" alt=""
                 style="flex: 1; width: 100%; object-fit: cover;">
         </div>
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
@@ -1296,7 +1340,7 @@ function modalseries() {
     </a>
     <a href="/product?ruang=tidur" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
         <div class="zoom-wrapper mb-2">
-            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445431983.webp') ?>" alt=""
+            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445431983.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445431983.webp'), 'attr') ?>" sizes="(max-width: 700px) 80vw, 34vw" alt=""
                 style="flex: 1; width: 100%; object-fit: cover;">
         </div>
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
@@ -1308,7 +1352,7 @@ function modalseries() {
     </a>
     <a href="/product?ruang=keluarga" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
         <div class="zoom-wrapper mb-2">
-            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445475511.webp') ?>" alt=""
+            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445475511.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445475511.webp'), 'attr') ?>" sizes="(max-width: 700px) 80vw, 34vw" alt=""
                 style="flex: 1; width: 100%; object-fit: cover;">
         </div>
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
@@ -1340,7 +1384,7 @@ function modalseries() {
     <div class="d-flex gap-1 px-5 pt-5 pb-4" style="width: fit-content;">
         <a href="/product?ruang=tamu" class="ilena-home-room-card"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
-            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445542692.webp') ?>" alt=""
+            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445542692.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445542692.webp'), 'attr') ?>" sizes="80vw" alt=""
                 style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
             <div class="d-flex gap-4 justify-content-center mb-2">
                 <h5 style="font-weight: 500;" class="m-0">L</h5>
@@ -1354,7 +1398,7 @@ function modalseries() {
         </a>
         <a href="/product?ruang=tidur" class="ilena-home-room-card"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
-            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445603554.webp') ?>" alt=""
+            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445603554.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445603554.webp'), 'attr') ?>" sizes="80vw" alt=""
                 style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
             <div class="d-flex gap-4 justify-content-center mb-2">
                 <h5 style="font-weight: 500;" class="m-0">B</h5>
@@ -1365,7 +1409,7 @@ function modalseries() {
         </a>
         <a href="/product?ruang=keluarga" class="ilena-home-room-card"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
-            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445633826.webp') ?>" alt=""
+            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445633826.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445633826.webp'), 'attr') ?>" sizes="80vw" alt=""
                 style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
             <div class="d-flex gap-4 justify-content-center mb-2">
                 <h5 style="font-weight: 500;" class="m-0">L</h5>
@@ -1396,15 +1440,15 @@ function modalseries() {
                 </div>
             </div>
             <img loading="lazy" decoding="async" style="position: absolute; z-index: 4; top: 0; left: 0; width: 100%; height: 100%" class="d-block"
-                src="<?= $homeImage('1742445684882.webp') ?>"
+                src="<?= $homeImage('1742445684882.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445684882.webp'), 'attr') ?>" sizes="(max-width: 700px) 100vw, 50vw"
                 alt="Slide 2">
         </a>
         <a href="https://ilenafurniture.net/" class="kanan">
             <img loading="lazy" decoding="async" class="ls"
-                src="<?= $homeImage('1742445731467.png') ?>"
+                src="<?= $homeImage('1742445731467.png', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445731467.png'), 'attr') ?>" sizes="(max-width: 700px) 100vw, 50vw"
                 alt="Slide 2">
             <img loading="lazy" decoding="async" class="pt"
-                src="<?= $homeImage('1742445771003.png') ?>"
+                src="<?= $homeImage('1742445771003.png', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445771003.png'), 'attr') ?>" sizes="(max-width: 700px) 100vw, 50vw"
                 alt="Slide 2">
         </a>
     </div>
@@ -1612,7 +1656,7 @@ sliders.forEach((slider) => {
     const loadBackground = (element) => {
         const url = element.getAttribute('data-lazy-bg');
         if (!url) return;
-        element.style.backgroundImage = `url("${url.replace(/["\\]/g, '')}")`;
+        element.style.backgroundImage = url.startsWith('image-set(') ? url : `url("${url.replace(/["\\]/g, '')}")`;
         element.removeAttribute('data-lazy-bg');
     };
     if (!('IntersectionObserver' in window)) {

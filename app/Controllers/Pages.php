@@ -191,22 +191,15 @@ class Pages extends BaseController
     }
     public function index()
     {
-        $sliders = $this->gambarHeaderModel->findAll();
-        $produk  = $this->barangModel->where('active','1')->orderBy('pengunjung', 'desc')->findAll(4, 0);
-        $wishlist = $this->session->get('wishlist');
-        if (!isset($wishlist)) {
-            $wishlist = [];
-        }
+        $sliders = $this->gambarHeaderModel->getPublicHomeSlides();
+        $homeAssets = new HomeAssetManager();
         $data = [
             'title' => 'Home',
             'navbar' => $this->getNavbarData(),
             'metaKeyword' => 'ilena Furniture, Toko Furniture, Sorely Ilena Semarang, Cabana Ilena Semarang, Orca Ilena Semarang, Plint Base Ilena Semarang, Cutout Ilena Semarang, Living Room Ilena Semarang, Bed Room Ilena Semarang, Lounge Room Ilena Semarang',
-            'produk' => $produk,
-            'wishlist' => $wishlist,
             'sliders' => $sliders,
-            'homeAssets' => (new HomeAssetManager())->publicUrls(),
+            'homeAssets' => $homeAssets->responsivePublicUrls(),
             'msg_active' => session()->getFlashdata('msg_active') ? session()->getFlashdata('msg_active') : false,
-            'isLogin' => session()->get('isLogin') ? true : false,
         ];
         return view('pages/home', $data);
     }
