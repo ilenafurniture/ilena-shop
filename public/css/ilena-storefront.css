@@ -6254,3 +6254,129 @@ body.ilena-storefront.ilena-page--kebijakan .konten > .d-flex { font-size: 13px;
 @media (prefers-reduced-motion: reduce) {
     body.ilena-storefront .ilena-shipping-page .item-kurir { transition: none; }
 }
+
+/* Product information layout: clear hierarchy, calm spacing, and a distinct purchase action. */
+body.ilena-storefront .product-detail-soft .ilena-product-info {
+    max-width: 620px;
+    margin-inline: auto;
+}
+body.ilena-storefront .product-detail-soft .ilena-product-heading {
+    padding-bottom: 20px;
+}
+body.ilena-storefront .product-detail-soft .ilena-product-title-row {
+    align-items: flex-start;
+    gap: 12px;
+}
+body.ilena-storefront .product-detail-soft .ilena-product-title-row .teks-besar {
+    max-width: 17ch;
+    overflow-wrap: anywhere;
+}
+body.ilena-storefront .product-detail-soft .ilena-product-collection-link {
+    min-height: 34px;
+    margin-top: 5px;
+    font-size: 10px;
+    letter-spacing: .04em;
+    white-space: nowrap;
+}
+body.ilena-storefront .product-detail-soft .ilena-product-price {
+    align-items: baseline;
+    gap: 12px !important;
+    margin: 20px 0 12px !important;
+}
+body.ilena-storefront .product-detail-soft .harga {
+    margin: 0;
+    font-size: clamp(23px, 2vw, 27px);
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+}
+body.ilena-storefront .product-detail-soft .harga-diskon {
+    margin: 0;
+    color: #8a8179;
+    font-size: 13px;
+    text-decoration: line-through;
+    text-decoration-color: #b4aaa0;
+}
+body.ilena-storefront .product-detail-soft .ilena-product-description {
+    max-width: 56ch;
+    margin-bottom: 20px;
+    font-size: 13px;
+    line-height: 1.75;
+}
+body.ilena-storefront .product-detail-soft .ilena-product-options {
+    gap: 18px !important;
+    padding-block: 18px;
+}
+body.ilena-storefront .product-detail-soft .ilena-option-group + .ilena-option-group {
+    padding-top: 15px;
+    border-top: 1px solid #f0ece7;
+}
+body.ilena-storefront .product-detail-soft .ilena-option-heading {
+    margin-bottom: 11px;
+}
+body.ilena-storefront .product-detail-soft .ilena-product-purchase {
+    display: grid !important;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: stretch;
+    gap: 10px !important;
+    margin-top: 18px;
+}
+body.ilena-storefront .product-detail-soft .ilena-product-purchase .number-control {
+    min-width: 132px;
+}
+body.ilena-storefront .product-detail-soft .ilena-product-purchase #btn-keranjang {
+    min-width: 0;
+    width: 100%;
+    margin: 0;
+}
+body.ilena-storefront .product-detail-soft .ilena-product-purchase #btn-keranjang .btn-default-merah {
+    width: 100%;
+    min-height: 48px;
+    padding-inline: 16px;
+}
+body.ilena-storefront .product-detail-soft #info-habis {
+    margin-top: 9px !important;
+    color: var(--ilena-muted);
+    font-size: 11px !important;
+    line-height: 1.6;
+}
+body.ilena-storefront .product-detail-soft #container-market {
+    margin-top: 18px !important;
+    padding-block: 13px;
+}
+body.ilena-storefront .product-detail-soft #container-market > p {
+    margin-bottom: 9px !important;
+    color: var(--ilena-muted);
+    font-size: 10px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+body.ilena-storefront .product-detail-soft #container-market > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+body.ilena-storefront .product-detail-soft #container-market .marketplace {
+    width: auto;
+    min-width: 82px;
+    height: 36px;
+    padding: 7px 10px;
+}
+@media (max-width: 900px) {
+    body.ilena-storefront .product-detail-soft .ilena-product-info { max-width: none; }
+}
+@media (max-width: 600px) {
+    body.ilena-storefront .product-detail-soft .ilena-product-heading { padding-bottom: 15px; }
+    body.ilena-storefront .product-detail-soft .ilena-product-title-row { flex-direction: column; gap: 4px; }
+    body.ilena-storefront .product-detail-soft .ilena-product-title-row .teks-besar { max-width: 100%; }
+    body.ilena-storefront .product-detail-soft .ilena-product-collection-link { min-height: 28px; margin-top: 0; }
+    body.ilena-storefront .product-detail-soft .ilena-product-price { margin-block: 15px 10px !important; }
+    body.ilena-storefront .product-detail-soft .ilena-product-description { margin-bottom: 16px; font-size: 13px; }
+    body.ilena-storefront .product-detail-soft .ilena-product-options { gap: 14px !important; padding-block: 15px; }
+    body.ilena-storefront .product-detail-soft .ilena-product-purchase { grid-template-columns: minmax(116px, .8fr) minmax(0, 1.2fr); gap: 8px !important; margin-top: 15px; }
+    body.ilena-storefront .product-detail-soft .ilena-product-purchase .number-control { min-width: 0; }
+    body.ilena-storefront .product-detail-soft .ilena-product-purchase .number-control button { width: 34px; }
+    body.ilena-storefront .product-detail-soft .ilena-product-purchase .number-quantity { width: 34px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront .product-detail-soft .ilena-product-collection-link { transition: none; }
+}

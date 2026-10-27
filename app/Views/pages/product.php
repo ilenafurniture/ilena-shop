@@ -75,25 +75,48 @@ $assetVersion = function (string $relativePath) use ($produk): string {
     $path = FCPATH . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
     $fileVersion = is_file($path) ? (int) filemtime($path) : 0;
     $dbVersion = !empty($produk['tgl_update']) ? (int) strtotime((string) $produk['tgl_update']) : time();
-    return (string) max($fileVersion, $dbVersion);
+    return (string) ($fileVersion > 0 ? $fileVersion : $dbVersion);
 };
-$barangImgUrl = function (string $size, string $slot) use ($produk, $assetVersion, $productImageCdn): string {
+$productSlotVersion = function (string $slot) use ($produk, $assetVersion): string {
+    $mtimes = [];
+    foreach ([
+        'uploads/product-images/300/' . $produk['id'] . '-' . $slot . '.webp',
+        'img/barang/300/' . $produk['id'] . '-' . $slot . '.webp',
+        'uploads/product-images/1000/' . $produk['id'] . '-' . $slot . '.webp',
+        'uploads/product-images/3000/' . $produk['id'] . '-' . $slot . '.webp',
+        'img/barang/1000/' . $produk['id'] . '-' . $slot . '.webp',
+        'img/barang/3000/' . $produk['id'] . '-' . $slot . '.webp',
+    ] as $relativePath) {
+        $path = FCPATH . ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
+        if (is_file($path)) $mtimes[] = (int) filemtime($path);
+    }
+
+    return $mtimes === []
+        ? $assetVersion('uploads/product-images/300/' . $produk['id'] . '-' . $slot . '.webp')
+        : (string) max($mtimes);
+};
+$detailImageVersions = [];
+foreach ($detailSlotsByVariant as $slots) {
+    foreach ($slots as $slot) $detailImageVersions[(string) $slot] = $productSlotVersion((string) $slot);
+}
+$barangImgUrl = function (string $size, string $slot) use ($produk, $assetVersion, $productSlotVersion, $productImageCdn): string {
     $cdnSize = in_array($size, ['300', '1000', '3000'], true) ? $size : '1000';
+    $version = $productSlotVersion($slot);
     $uploadedRelative = 'uploads/product-images/' . $cdnSize . '/' . $produk['id'] . '-' . $slot . '.webp';
-    if (is_file(FCPATH . $uploadedRelative)) return base_url($uploadedRelative) . '?v=' . $assetVersion($uploadedRelative);
+    if (is_file(FCPATH . $uploadedRelative)) return base_url($uploadedRelative) . '?v=' . $version;
     $relative = 'img/barang/' . $size . '/' . $produk['id'] . '-' . $slot . '.webp';
     if (is_file(FCPATH . $relative)) {
-        return base_url($relative) . '?v=' . $assetVersion($relative);
+        return base_url($relative) . '?v=' . $version;
     }
     if ($size === '300') {
         return base_url('product-cover/' . rawurlencode((string) $produk['id']))
-            . '?slot=' . rawurlencode($slot) . '&size=300&v=' . $assetVersion('uploads/product-images/300/' . $produk['id'] . '-' . $slot . '.webp');
+            . '?slot=' . rawurlencode($slot) . '&size=300&v=' . $version;
     }
     if ($productImageCdn !== '') {
-        return $productImageCdn . '/products/' . $cdnSize . '/' . rawurlencode((string) $produk['id']) . '-' . rawurlencode($slot) . '.webp?v=' . $assetVersion($uploadedRelative);
+        return $productImageCdn . '/products/' . $cdnSize . '/' . rawurlencode((string) $produk['id']) . '-' . rawurlencode($slot) . '.webp?v=' . $version;
     }
     $route = $size === '3000' ? 'viewvar3000' : 'viewvar';
-    return base_url($route . '/' . $produk['id'] . '/' . $slot) . '?v=' . $assetVersion($relative);
+    return base_url($route . '/' . $produk['id'] . '/' . $slot) . '?v=' . $version;
 };
 $hoverImgUrl = function () use ($produk, $assetVersion, $productImageCdn): string {
     $uploadedRelative = 'uploads/product-images/hover/' . $produk['id'] . '.webp';
@@ -328,7 +351,7 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                     </form>
                 </div>
                 <?php } else { ?>
-                <div class="d-flex gap-2 align-items-stretch">
+                <div class="d-flex gap-2 align-items-stretch ilena-product-purchase">
                     <div class="number-control">
                         <button type="button" class="number-left" onclick="kurangJumlah()" aria-label="Kurangi jumlah"></button>
                         <input type="number" name="jumlah" class="number-quantity" value="1" min="1" aria-label="Jumlah pembelian">
@@ -463,13 +486,13 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
             <div class="limapuluh-ke-seratus ilena-product-gallery">
                 <div class="ilena-product-gallery__stage">
                     <figure class="img-detail-prev ilena-product-zoom d-none" aria-hidden="true"
-                        data-zoom-src="<?= esc(base_url('viewvar3000/' . rawurlencode((string) $produk['id']) . '/' . rawurlencode($gambarAwalDetail) . '?v=' . $detailVersion), 'attr') ?>"
+                        data-zoom-src="<?= esc(base_url('viewvar3000/' . rawurlencode((string) $produk['id']) . '/' . rawurlencode($gambarAwalDetail) . '?v=' . ($detailImageVersions[$gambarAwalDetail] ?? $detailVersion)), 'attr') ?>"
                         style="background-size: cover;">
                     </figure>
                     <img class="img-detail-prev"
                         <?= $defaultVariant['stok'] <= 0 ? 'style="filter: grayscale(90%)"' : ''; ?>
                         src="<?= esc($barangImgUrl('1000', $gambarAwalDetail), 'attr') ?>"
-                        data-image-fallback="<?= esc(base_url('product-cover/' . rawurlencode((string) $produk['id'])) . '?slot=' . rawurlencode($gambarAwalDetail) . '&v=' . $detailVersion, 'attr') ?>"
+                        data-image-fallback="<?= esc(base_url('product-cover/' . rawurlencode((string) $produk['id'])) . '?slot=' . rawurlencode($gambarAwalDetail) . '&v=' . ($detailImageVersions[$gambarAwalDetail] ?? $detailVersion), 'attr') ?>"
                         onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"
                         onmousemove="zoom(event)" onmouseleave="mouseoff(event)" alt="<?= esc($produk['nama'], 'attr') ?>" width="1000" height="1000" decoding="async" fetchpriority="high">
                 </div>
@@ -481,7 +504,7 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                             aria-label="Foto produk <?= $indx + 1 ?>" value="<?= $p_v ?>">
                         <label class="img-detail-select" for="gambar<?= $indx ?>" title="Foto produk <?= $indx + 1 ?>"><img
                                 src="<?= esc($barangImgUrl('300', $p_v), 'attr') ?>"
-                                data-image-fallback="<?= esc(base_url('product-cover/' . rawurlencode((string) $produk['id'])) . '?slot=' . rawurlencode((string) $p_v) . '&v=' . $detailVersion, 'attr') ?>"
+                                data-image-fallback="<?= esc(base_url('product-cover/' . rawurlencode((string) $produk['id'])) . '?slot=' . rawurlencode((string) $p_v) . '&v=' . ($detailImageVersions[(string) $p_v] ?? $detailVersion), 'attr') ?>"
                                 onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"
                                 alt="<?= esc($produk['nama'], 'attr') ?>" width="300" height="300" loading="lazy" decoding="async"></label>
                         <?php } ?>
@@ -669,6 +692,8 @@ let jumlahSelected = "1";
 let isStokHabis = <?= $defaultVariant['stok'] == '0' ? 'true' : 'false' ?>;
 const stokByVarianName = <?= json_encode(array_column($produk['varian'], 'stok', 'nama'), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 const detailVersion = "<?= $detailVersion ?>";
+const detailImageVersions = <?= json_encode($detailImageVersions, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+function detailSlotVersion(slot) { return String(detailImageVersions[String(slot)] || detailVersion); }
 const detailSlotsByVariant = <?= json_encode($detailSlotsByVariant, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 const detailBase1000 = "/viewvar/" + encodeURIComponent(<?= json_encode((string) $produk['id'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>) + "/";
 const detailBase3000 = "/viewvar3000/" + encodeURIComponent(<?= json_encode((string) $produk['id'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>) + "/";
@@ -685,17 +710,19 @@ function encodedCartUrl(productId, varianName, qty) {
     return "/addcart/" + productId + "/" + encodeURIComponent(varianName || "default") + "/" + Math.max(1, Number(qty || 1));
 }
 function detailImageUrl(slot) {
-    if (detailLocalSlots1000.includes(String(slot))) return detailStatic1000 + detailProductId + "-" + encodeURIComponent(slot) + ".webp?v=" + detailVersion;
-    if (detailLegacySlots1000.includes(String(slot))) return "/img/barang/1000/" + detailProductId + "-" + encodeURIComponent(slot) + ".webp?v=" + detailVersion;
-    if (detailR2CdnBase) return detailR2CdnBase + "/products/1000/" + encodeURIComponent(detailProductId) + "-" + encodeURIComponent(slot) + ".webp?v=" + detailVersion;
-    return detailBase1000 + slot + "?v=" + detailVersion;
+    const version = detailSlotVersion(slot);
+    if (detailLocalSlots1000.includes(String(slot))) return detailStatic1000 + detailProductId + "-" + encodeURIComponent(slot) + ".webp?v=" + version;
+    if (detailLegacySlots1000.includes(String(slot))) return "/img/barang/1000/" + detailProductId + "-" + encodeURIComponent(slot) + ".webp?v=" + version;
+    if (detailR2CdnBase) return detailR2CdnBase + "/products/1000/" + encodeURIComponent(detailProductId) + "-" + encodeURIComponent(slot) + ".webp?v=" + version;
+    return detailBase1000 + slot + "?v=" + version;
 }
 function detailZoomUrl(slot) {
-    if (detailLocalSlots3000.includes(String(slot))) return detailStatic3000 + detailProductId + "-" + encodeURIComponent(slot) + ".webp?v=" + detailVersion;
-    if (detailLegacySlots3000.includes(String(slot))) return "/img/barang/3000/" + detailProductId + "-" + encodeURIComponent(slot) + ".webp?v=" + detailVersion;
+    const version = detailSlotVersion(String(slot).split(',')[0]);
+    if (detailLocalSlots3000.includes(String(slot))) return detailStatic3000 + detailProductId + "-" + encodeURIComponent(slot) + ".webp?v=" + version;
+    if (detailLegacySlots3000.includes(String(slot))) return "/img/barang/3000/" + detailProductId + "-" + encodeURIComponent(slot) + ".webp?v=" + version;
     // Resolve a legacy high-resolution file only when zoom is actually invoked;
     // the endpoint falls back to the 1000px image for products without one.
-    return detailBase3000 + slot + "?v=" + detailVersion;
+    return detailBase3000 + slot + "?v=" + version;
 }
 const galleryThumbs = document.querySelector('.container-img-detail-select');
 function showSelectedProductPhoto(selectedPhoto) {
@@ -710,7 +737,7 @@ function showSelectedProductPhoto(selectedPhoto) {
     if (mainPhoto.dataset.gallerySelection === photoKey) return;
     mainPhoto.dataset.gallerySelection = photoKey;
     const requestedPhotoUrl = isHoverPhoto ? detailHoverUrl : detailImageUrl(slot);
-    const routeFallbackUrl = isHoverPhoto ? '' : detailBase1000 + encodeURIComponent(slot) + '?v=' + detailVersion;
+    const routeFallbackUrl = isHoverPhoto ? '' : detailBase1000 + encodeURIComponent(slot) + '?v=' + detailSlotVersion(slot);
     zoomLayer.classList.add('d-none');
     zoomLayer.setAttribute('aria-hidden', 'true');
     zoomLayer.style.backgroundImage = '';
@@ -779,7 +806,7 @@ radioVarianElm.forEach(elm => {
             label.htmlFor = input.id;
             label.title = 'Foto produk ' + (ind_x + 1);
             const thumbnail = document.createElement('img');
-            thumbnail.src = <?= json_encode(base_url('product-cover/' . rawurlencode((string) $produk['id'])), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?> + '?slot=' + encodeURIComponent(urutan) + '&size=300&v=' + detailVersion;
+            thumbnail.src = <?= json_encode(base_url('product-cover/' . rawurlencode((string) $produk['id'])), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?> + '?slot=' + encodeURIComponent(urutan) + '&size=300&v=' + detailSlotVersion(urutan);
             thumbnail.alt = '';
             thumbnail.loading = 'lazy';
             thumbnail.decoding = 'async';
