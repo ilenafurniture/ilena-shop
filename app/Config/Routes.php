@@ -78,6 +78,7 @@ $routes->get('/order', 'Pages::order', ['filter' => 'customerFilter']);
 $routes->get('/order/(:any)', 'Pages::order/$1', ['filter' => 'customerFilter']);
 $routes->post('/order/cancel/(:any)', 'Pages::cancelCustomerOrder/$1', ['filter' => ['customerFilter', 'csrf']]);
 $routes->get('/orderdetail/(:any)', 'Pages::orderDetail/$1', ['filter' => 'customerFilter']);
+$routes->get('/invoice/(:any)/pdf', 'Pages::invoicePdf/$1', ['filter' => 'customerFilter']);
 $routes->get('/invoice/(:any)', 'Pages::invoice/$1', ['filter' => 'customerFilter']);
 $routes->get('/account', 'Pages::account', ['filter' => 'customerLoginFilter']);
 

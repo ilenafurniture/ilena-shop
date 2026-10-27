@@ -2451,7 +2451,8 @@ class Pages extends BaseController
             $hasil = \App\Services\CatalogPricing::unitPrice($produk);
             $hargaAwal = max(0, (int)round((float)($produk['harga'] ?? 0)));
             $desc = json_decode($produk['deskripsi'] ?? '[]', true);
-            $dim = $desc['dimensi']['asli']['panjang'] ?? '';
+            $dimensi = is_array($desc['dimensi']['asli'] ?? null) ? $desc['dimensi']['asli'] : [];
+            $dim = $dimensi['panjang'] ?? '';
             $varLbl = ucfirst($element['varian'] ?? '');
 
             $itemDetails[] = [
@@ -2461,6 +2462,13 @@ class Pages extends BaseController
                 // historically accurate if catalog pricing changes later.
                 'original_price' => $hargaAwal,
                 'collection' => (string)($produk['kategori'] ?? ''),
+                'product_name' => (string)($produk['nama'] ?? ''),
+                'dimensions' => [
+                    'panjang' => (string)($dimensi['panjang'] ?? ''),
+                    'lebar' => (string)($dimensi['lebar'] ?? ''),
+                    'tinggi' => (string)($dimensi['tinggi'] ?? ''),
+                ],
+                'weight_kg' => (string)($dimensi['berat'] ?? ''),
                 'quantity' => $jumlah,
                 'name' => $produk['nama'] . " " . $dim . " (" . $varLbl . ")",
                 'variant' => (string)$element['varian'],
@@ -4098,13 +4106,12 @@ class Pages extends BaseController
                 break;
         }
     }
-    public function invoice($id_mid)
+    private function invoiceViewData(string $idMid): ?array
     {
-        $transaksi = $this->pemesananModel->getPemesanan($id_mid);
+        $transaksi = $this->pemesananModel->getPemesanan($idMid);
         if (!$transaksi || !$this->canAccessOrder($transaksi)) {
-            return $this->response->setStatusCode(404)->setBody('Pesanan tidak ditemukan.');
+            return null;
         }
-        // dd($transaksi);
         $items = json_decode((string)($transaksi['items'] ?? '[]'), true);
         if (!is_array($items)) $items = [];
         $dataMid = json_decode((string)($transaksi['data_mid'] ?? '{}'), true);
@@ -4127,6 +4134,10 @@ class Pages extends BaseController
             'data_mid' => $dataMid,
         ];
         foreach ($arr['items'] as $ind_i => $i) {
+            if (!is_array($i)) {
+                unset($arr['items'][$ind_i]);
+                continue;
+            }
             $itemId = $i['id'] ?? null;
             $itemName = strtolower(trim((string)($i['name'] ?? '')));
             if (!in_array($itemName, ['voucher', 'biaya admin', 'biaya ongkir', 'flash sale'], true)) {
@@ -4140,18 +4151,56 @@ class Pages extends BaseController
 
                 $arr['items'][$ind_i]['collection'] = $i['collection'] ?? ($barangCur['kategori'] ?? '');
                 $arr['items'][$ind_i]['detail'] = $barangCur ?? [];
+                $arr['items'][$ind_i]['product_name'] = $i['product_name'] ?? ($barangCur['nama'] ?? $i['name'] ?? 'Produk');
+                $arr['items'][$ind_i]['variant'] = $i['variant'] ?? $i['varian'] ?? '';
+                $description = json_decode((string)($barangCur['deskripsi'] ?? '{}'), true);
+                $fallbackDimensions = is_array($description['dimensi']['asli'] ?? null) ? $description['dimensi']['asli'] : [];
+                if (!is_array($i['dimensions'] ?? null)) {
+                    $arr['items'][$ind_i]['dimensions'] = [
+                        'panjang' => (string)($fallbackDimensions['panjang'] ?? ''),
+                        'lebar' => (string)($fallbackDimensions['lebar'] ?? ''),
+                        'tinggi' => (string)($fallbackDimensions['tinggi'] ?? ''),
+                    ];
+                }
+                $arr['items'][$ind_i]['weight_kg'] = (string)($i['weight_kg'] ?? $fallbackDimensions['berat'] ?? '');
             }
         }
 
         $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-        $data = [
+        return [
             'title' => 'Print Preview',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'transaksi' => $arr,
             'bulan' => $bulan
         ];
+    }
+
+    public function invoice($id_mid)
+    {
+        $data = $this->invoiceViewData((string)$id_mid);
+        if ($data === null) return $this->response->setStatusCode(404)->setBody('Pesanan tidak ditemukan.');
         return view('pages/invoice', $data);
+    }
+
+    public function invoicePdf($id_mid)
+    {
+        $data = $this->invoiceViewData((string)$id_mid);
+        if ($data === null) return $this->response->setStatusCode(404)->setBody('Pesanan tidak ditemukan.');
+
+        $safeId = preg_replace('/[^A-Za-z0-9_-]/', '_', (string)$data['transaksi']['id_midtrans']);
+        $data['title'] = 'Invoice Ilena Furniture';
+        $data['logoPath'] = FCPATH . 'img' . DIRECTORY_SEPARATOR . 'LogoIlena.png';
+        $html = view('pages/invoice_pdf', $data);
+        $pdf = new \Dompdf\Dompdf(['chroot' => FCPATH, 'isRemoteEnabled' => false]);
+        $pdf->loadHtml($html, 'UTF-8');
+        $pdf->setPaper('A4', 'portrait');
+        $pdf->render();
+
+        return $this->response
+            ->setHeader('Content-Type', 'application/pdf')
+            ->setHeader('Content-Disposition', 'attachment; filename="invoice-' . $safeId . '.pdf"')
+            ->setBody($pdf->output());
     }
 
     public function wishlist()

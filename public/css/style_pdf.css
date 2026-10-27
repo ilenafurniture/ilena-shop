@@ -113,7 +113,29 @@ body {
 .print .table th { line-height: 1.35; }
 .no-print { display: block; }
 
+.invoice-download {
+    position: fixed;
+    z-index: 10;
+    top: 16px;
+    right: 18px;
+    padding: 10px 16px;
+    border: 1px solid #806448;
+    border-radius: 2px;
+    background: #292520;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    text-decoration: none;
+    box-shadow: 0 5px 16px rgba(45, 35, 25, .14);
+}
+.invoice-download:hover,
+.invoice-download:focus-visible { background: #806448; color: #fff; }
+.product-title { margin: 0 0 3px !important; color: var(--invoice-ink) !important; font-size: 10px !important; font-weight: 700; }
+.product-meta { margin: 1px 0 0 !important; color: var(--invoice-muted) !important; font-size: 8px !important; line-height: 1.4 !important; }
+
 @media (max-width: 720px) {
+    .invoice-download { position: sticky; top: 8px; display: block; width: max-content; margin: 10px 10px 10px auto; }
     body { padding: 0; background: #fff; }
     .print { width: 100%; min-height: 0; padding: 24px 18px; box-shadow: none; }
     .invoice-head { margin-bottom: 28px !important; }

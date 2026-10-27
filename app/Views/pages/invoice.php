@@ -28,6 +28,7 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
 </head>
 
 <body>
+    <a class="invoice-download no-print" href="<?= esc(site_url('invoice/' . rawurlencode((string)($transaksi['id_midtrans'] ?? '')) . '/pdf')); ?>">Unduh PDF</a>
     <main class="print ilena-invoice">
         <?php if ($transaksi['status'] == 'Proses' || $transaksi['status'] == 'Dikirim' || $transaksi['status'] == 'Selesai') { ?>
         <div class="print-lunas">
@@ -147,9 +148,22 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
                 $totalHarga += $originalPrice * $quantity;
                 $diskonProduk += ($originalPrice - $unitPrice) * $quantity;
             ?>
+            <?php
+            $dimensions = is_array($item['dimensions'] ?? null) ? $item['dimensions'] : [];
+            $dimensionParts = [];
+            foreach (['panjang' => 'P', 'lebar' => 'L', 'tinggi' => 'T'] as $dimensionKey => $dimensionLabel) {
+                $dimensionValue = trim((string)($dimensions[$dimensionKey] ?? ''));
+                if ($dimensionValue !== '' && $dimensionValue !== '-') $dimensionParts[] = $dimensionLabel . ' ' . $dimensionValue . ' mm';
+            }
+            $variantLabel = trim((string)($item['variant'] ?? ''));
+            $weightLabel = trim((string)($item['weight_kg'] ?? ''));
+            ?>
             <div class="w-100 d-flex invoice-items__row">
                 <div style="flex: 3">
-                    <p class="mb-0">| <?= esc(mb_strtoupper((string)($item['collection'] ?? ''), 'UTF-8')) ?> | <?= esc($item['name'] ?? $item['id'] ?? 'Produk'); ?></p>
+                    <p class="product-title"><?= esc($item['product_name'] ?? $item['name'] ?? $item['id'] ?? 'Produk'); ?></p>
+                    <p class="product-meta">Kode: <?= esc($item['id'] ?? '—'); ?><?= !empty($item['collection']) ? ' · Koleksi: ' . esc($item['collection']) : '' ?></p>
+                    <?php if ($variantLabel !== ''): ?><p class="product-meta">Varian: <?= esc($variantLabel); ?></p><?php endif; ?>
+                    <?php if ($dimensionParts || ($weightLabel !== '' && $weightLabel !== '-')): ?><p class="product-meta">Dimensi: <?= $dimensionParts ? esc(implode(' × ', $dimensionParts)) : '—' ?><?= $weightLabel !== '' && $weightLabel !== '-' ? ' · Berat: ' . esc($weightLabel) . ' kg' : '' ?></p><?php endif; ?>
                 </div>
                 <div style="flex: 1">
                     <p class="text-center mb-0"><?= number_format($quantity); ?></p>
