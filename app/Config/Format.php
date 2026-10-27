@@ -64,6 +64,11 @@ class Format extends BaseConfig
     ];
 
     /**
+     * Maximum nesting depth when encoding JSON responses.
+     */
+    public int $jsonEncodeDepth = 512;
+
+    /**
      * A Factory method to return the appropriate formatter for the given mime type.
      *
      * @return FormatterInterface
