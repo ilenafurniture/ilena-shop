@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Services\SmartProductAssistant;
 use App\Services\ChatProviderSettings;
 use App\Services\ChatSupportSchedule;
+use App\Services\ChatFeedbackService;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class SupportChatController extends BaseController
@@ -70,6 +71,7 @@ class SupportChatController extends BaseController
             $conversation['context_product_id'] = $contextProductId;
         }
         $availability = $this->supportAvailability();
+        if ($conversation) (new ChatFeedbackService())->issuePromptIfIdle($db, $conversation, $visitor);
         return $this->json([
             'success' => true,
             'conversationKey' => $conversation['conversation_key'] ?? null,
@@ -88,6 +90,7 @@ class SupportChatController extends BaseController
         if (! $visitor) return $this->json(['success' => true, 'conversationKey' => null, 'messages' => [], 'status' => 'ai', 'humanAvailable' => $availability['open'], 'serviceHours' => $availability['hours'], 'whatsappUrl' => $availability['whatsappUrl']]);
         $conversation = $this->ownedConversation($visitor);
         if (! $conversation) return $this->json(['success' => true, 'conversationKey' => null, 'messages' => [], 'status' => 'ai', 'humanAvailable' => $availability['open'], 'serviceHours' => $availability['hours'], 'whatsappUrl' => $availability['whatsappUrl']]);
+        (new ChatFeedbackService())->issuePromptIfIdle($this->db(), $conversation, $visitor);
         $after = max(0, (int)$this->request->getGet('after'));
         return $this->json([
             'success' => true,
@@ -172,6 +175,7 @@ class SupportChatController extends BaseController
                 'context_product_id' => $contextProductId ?: ($conversation['context_product_id'] ?? null),
                 'last_message_at' => $now,
                 'updated_at' => $now,
+                ...( $db->fieldExists('feedback_prompted_at', 'ilena_chat_conversations') ? ['feedback_prompted_at' => null] : [] ),
             ]);
             if ($availability['open'] && ($conversation['status'] ?? 'ai') === 'ai') {
                 $db->table('ilena_chat_jobs')->insert([
@@ -229,6 +233,60 @@ class SupportChatController extends BaseController
         return $this->json(['success' => true, 'status' => 'human_waiting', 'humanAvailable' => true]);
     }
 
+    public function rate()
+    {
+        $input = $this->request->getJSON(true) ?? $this->request->getPost();
+        $rating = filter_var($input['rating'] ?? null, FILTER_VALIDATE_INT);
+        $conversationKey = trim((string)($input['conversationKey'] ?? ''));
+        if ($rating === false || $rating < 1 || $rating > 5 || ! preg_match('/^[a-f0-9]{64}$/', $conversationKey)) {
+            return $this->json(['success' => false, 'message' => 'Pilih penilaian dari 1 sampai 5 bintang.'], 422);
+        }
+        $db = $this->db();
+        if (! $db->tableExists('ilena_chat_feedback') || ! $db->fieldExists('feedback_prompted_at', 'ilena_chat_conversations')) {
+            return $this->json(['success' => false, 'message' => 'Fitur penilaian sedang disiapkan.'], 503);
+        }
+        $visitor = $this->visitorHash();
+        if (! $visitor) return $this->json(['success' => false, 'message' => 'Percakapan tidak ditemukan.'], 404);
+        $conversation = $db->table('ilena_chat_conversations')
+            ->where('conversation_key', $conversationKey)->where('visitor_hash', $visitor)->get()->getRowArray();
+        if (! $conversation || empty($conversation['feedback_prompted_at'])) {
+            return $this->json(['success' => false, 'message' => 'Penilaian belum tersedia untuk percakapan ini.'], 404);
+        }
+
+        $existing = $db->table('ilena_chat_feedback')->where('conversation_id', (int)$conversation['id'])->get()->getRowArray();
+        if ($existing) return $this->json(['success' => true, 'alreadyRated' => true, 'rating' => (int)$existing['rating']]);
+
+        $now = date('Y-m-d H:i:s');
+        $thankYou = 'Terima kasih, Kak. Penilaian Kakak sudah tersimpan dan membantu kami meningkatkan Kak Wawa.';
+        $db->transBegin();
+        try {
+            $db->table('ilena_chat_feedback')->insert([
+                'conversation_id' => (int)$conversation['id'],
+                'visitor_hash' => $visitor,
+                'rating' => $rating,
+                'rated_at' => $now,
+            ]);
+            $db->table('ilena_chat_messages')->insert([
+                'conversation_id' => (int)$conversation['id'],
+                'sender_type' => 'assistant',
+                'body' => $thankYou,
+                'metadata' => json_encode(['type' => 'kak_wawa_rating_thanks', 'rating' => $rating], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                'created_at' => $now,
+            ]);
+            $messageId = (int)$db->insertID();
+            $db->table('ilena_chat_conversations')->where('id', (int)$conversation['id'])->update(['last_message_at' => $now, 'updated_at' => $now]);
+            if ($db->transStatus() === false) throw new \RuntimeException('Penyimpanan penilaian gagal.');
+            $db->transCommit();
+            return $this->json(['success' => true, 'rating' => $rating, 'message' => ['id' => $messageId, 'sender_type' => 'assistant', 'body' => $thankYou, 'created_at' => $now]]);
+        } catch (\Throwable $e) {
+            $db->transRollback();
+            $existing = $db->table('ilena_chat_feedback')->where('conversation_id', (int)$conversation['id'])->get()->getRowArray();
+            if ($existing) return $this->json(['success' => true, 'alreadyRated' => true, 'rating' => (int)$existing['rating']]);
+            log_message('error', 'Ilena chat rating save failed: {message}', ['message' => $e->getMessage()]);
+            return $this->json(['success' => false, 'message' => 'Penilaian belum tersimpan. Silakan coba kembali.'], 500);
+        }
+    }
+
     private function messagesFor(int $conversationId, int $after, int $limit): array
     {
         $builder = $this->db()->table('ilena_chat_messages')->where('conversation_id', $conversationId);
@@ -247,6 +305,24 @@ class SupportChatController extends BaseController
 
     // ======================== Admin inbox ========================
 
+    private function feedbackData(): array
+    {
+        $db = $this->db();
+        if (! $db->tableExists('ilena_chat_feedback')) return ['stats' => ['count' => 0, 'average' => null], 'rows' => []];
+        $stats = $db->table('ilena_chat_feedback')->select('COUNT(*) AS rating_count, AVG(rating) AS average_rating', false)->get()->getRowArray();
+        $rows = $db->query('SELECT f.rating,f.rated_at,c.customer_email,c.context_product_id FROM ilena_chat_feedback f INNER JOIN ilena_chat_conversations c ON c.id=f.conversation_id ORDER BY f.rated_at DESC LIMIT 100')->getResultArray();
+        return [
+            'stats' => ['count' => (int)($stats['rating_count'] ?? 0), 'average' => isset($stats['average_rating']) ? (float)$stats['average_rating'] : null],
+            'rows' => $rows,
+        ];
+    }
+
+    public function adminFeedback()
+    {
+        $feedback = $this->feedbackData();
+        return $this->json(['success' => true, 'stats' => $feedback['stats'], 'items' => $feedback['rows']]);
+    }
+
     public function adminIndex()
     {
         $db = $this->db();
@@ -260,11 +336,14 @@ class SupportChatController extends BaseController
         $specs = $db->tableExists('ilena_chat_product_specs')
             ? $db->table('ilena_chat_product_specs')->orderBy('updated_at', 'DESC')->get(300)->getResultArray()
             : [];
+        $feedback = $this->feedbackData();
         return view('admin/supportChat', [
             'title' => 'Live Chat Ilena',
             'knowledge' => $knowledge,
             'products' => $products,
             'productSpecs' => $specs,
+            'feedbackStats' => $feedback['stats'],
+            'feedbackRows' => $feedback['rows'],
             'isDev' => (string) session()->get('role') === '1',
             'providerSettingsReady' => $providerSettings->tableReady(),
             'providerSettings' => $providerSettings->adminSummary(),
@@ -273,7 +352,8 @@ class SupportChatController extends BaseController
                 && $db->tableExists('ilena_chat_messages')
                 && $db->tableExists('ilena_chat_jobs')
                 && $db->tableExists('ilena_chat_knowledge')
-                && $db->tableExists('ilena_chat_product_specs'),
+                && $db->tableExists('ilena_chat_product_specs')
+                && $db->tableExists('ilena_chat_feedback'),
         ]);
     }
 

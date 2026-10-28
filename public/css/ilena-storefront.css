@@ -9121,12 +9121,11 @@ body.ilena-storefront .ilena-chat-compose textarea { border-color: #e8ddd4; bord
 body.ilena-storefront .ilena-chat-compose textarea:focus { border-color: #a54046; outline-color: rgba(165,64,70,.13); }
 body.ilena-storefront .ilena-chat-compose button { background: #96363c; box-shadow: 0 3px 8px rgba(150,54,60,.16); }
 body.ilena-storefront .ilena-chat-compose button:hover { background: #302724; }
-body.ilena-storefront .ilena-chat-footer { background: #fffaf5; }
+body.ilena-storefront .ilena-chat-footer { background: #fff; }
 body.ilena-storefront .ilena-chat-footer button,
-body.ilena-storefront .ilena-chat-footer a { color: #75665d; }
-body.ilena-storefront .ilena-chat-footer a[data-kbot-wa] { color: #a85f55; }
+body.ilena-storefront .ilena-chat-footer a { color: #716963; }
 body.ilena-storefront .ilena-chat-footer button:hover,
-body.ilena-storefront .ilena-chat-footer a:hover { color: #493d37; }
+body.ilena-storefront .ilena-chat-footer a:hover { color: #342925; }
 body.ilena-storefront .ilena-chat-notice { border-top-color: #eee4db; background: #fffaf5; color: #6f6259; }
 body.ilena-storefront .ilena-chat-notice a,
 body.ilena-storefront .ilena-chat-source { color: #a85f55; }
@@ -9439,3 +9438,50 @@ body.ilena-storefront .ilena-footer-vision--visible p { animation: ilena-footer-
     body.ilena-storefront .ilena-footer-vision * { animation: none !important; transition: none !important; }
     body.ilena-storefront .ilena-footer-vision .footer-vision-stroke { stroke-dashoffset: 0 !important; }
 }
+
+/* Keep Kak Wawa reachable above the fixed mobile navigation. */
+@media (max-width: 600px) {
+    body.ilena-storefront .container-melayang[data-ilena-chat-widget] {
+        position: fixed !important;
+        right: max(12px, env(safe-area-inset-right));
+        bottom: calc(74px + env(safe-area-inset-bottom));
+        z-index: 1046;
+    }
+    body.ilena-storefront .container-melayang[data-ilena-chat-widget] .ilena-floating-chat {
+        display: inline-flex !important;
+        width: 52px !important;
+        height: 52px !important;
+        min-height: 52px;
+    }
+    body.ilena-storefront .ilena-chat-greeting {
+        right: max(12px, env(safe-area-inset-right));
+        bottom: calc(74px + env(safe-area-inset-bottom));
+        z-index: 1047;
+        width: min(420px, calc(100vw - 24px));
+    }
+    body.ilena-storefront .ilena-chat-greeting__panel {
+        height: min(500px, calc(100dvh - 150px - env(safe-area-inset-bottom)));
+        max-height: min(500px, calc(100dvh - 150px - env(safe-area-inset-bottom)));
+    }
+}
+body.ilena-storefront .container-melayang[data-ilena-chat-widget] .ilena-floating-chat {
+    transition: opacity .45s ease, transform .55s cubic-bezier(.22,.68,.2,1), filter .45s ease, box-shadow .45s ease;
+}
+body.ilena-storefront .container-melayang[data-ilena-chat-widget].is-chat-idle .ilena-floating-chat {
+    opacity: .34;
+    transform: translate(14px, 5px) scale(.76);
+    filter: saturate(.72);
+    box-shadow: none;
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront .container-melayang[data-ilena-chat-widget] .ilena-floating-chat { transition: none; }
+    body.ilena-storefront .container-melayang[data-ilena-chat-widget].is-chat-idle .ilena-floating-chat { opacity: .55; transform: none; }
+}
+body.ilena-storefront .ilena-chat-rating { display: flex; gap: 7px; margin-top: 10px; }
+body.ilena-storefront .ilena-chat-rating button { display: grid; width: 38px; height: 38px; place-items: center; border: 1px solid #e7d9cf; border-radius: 50%; background: #fff; color: #a85f55; font-size: 20px; cursor: pointer; transition: background .16s ease, color .16s ease, transform .16s ease; }
+body.ilena-storefront .ilena-chat-rating button:hover,
+body.ilena-storefront .ilena-chat-rating button:focus-visible { transform: translateY(-2px); border-color: #a85f55; background: #fbf2ed; color: #754c43; outline: none; }
+body.ilena-storefront .ilena-chat-rating button:disabled { cursor: default; opacity: .62; }
+body.ilena-storefront .ilena-chat-rating.is-submitted button { color: #b48b5d; }
+@media (max-width: 600px) { body.ilena-storefront .ilena-chat-rating { gap: 5px; } body.ilena-storefront .ilena-chat-rating button { width: 36px; height: 36px; } }
+@media (prefers-reduced-motion: reduce) { body.ilena-storefront .ilena-chat-rating button { transition: none; } }

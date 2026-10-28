@@ -27,6 +27,7 @@
   let polling = false;
   let ready = false;
   let cursor = 0;
+  let currentConversationKey = '';
   let currentStatus = 'ai';
   let humanAvailable = null;
   let waitingForReply = false;
@@ -35,6 +36,8 @@
   let arrivalSoundPlayed = false;
   let audioContext = null;
   let pollTimer = null;
+  let launcherIdleTimer = null;
+  let lastActivityRefresh = 0;
 
   const safeText = (value) => String(value ?? '');
   const currency = (value) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(value) || 0);
@@ -180,6 +183,34 @@
         }
       } catch (_) {}
     }
+    if (meta.type === 'kak_wawa_rating_prompt') {
+      const rating = document.createElement('div');
+      rating.className = 'ilena-chat-rating';
+      rating.setAttribute('role', 'group');
+      rating.setAttribute('aria-label', 'Nilai pengalaman chat Kak Wawa');
+      for (let value = 1; value <= 5; value += 1) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = '★';
+        button.setAttribute('aria-label', value + ' dari 5 bintang');
+        button.title = value + ' dari 5 bintang';
+        button.addEventListener('click', async () => {
+          rating.querySelectorAll('button').forEach(item => { item.disabled = true; });
+          try {
+            const result = await api('/chat/rating', { method: 'POST', body: JSON.stringify({ conversationKey: currentConversationKey, rating: value }) });
+            rating.classList.add('is-submitted');
+            rating.setAttribute('aria-label', 'Penilaian ' + result.rating + ' dari 5 tersimpan');
+            if (result.message) appendMessage(result.message);
+            else showNotice('Penilaian Kakak sudah tersimpan. Terima kasih.');
+          } catch (error) {
+            rating.querySelectorAll('button').forEach(item => { item.disabled = false; });
+            showNotice(error?.message || 'Penilaian belum tersimpan. Silakan coba kembali.');
+          }
+        });
+        rating.append(button);
+      }
+      bubble.append(rating);
+    }
     const time = document.createElement('time'); time.textContent = safeText(message.created_at || ''); bubble.append(time);
     transcript.insertBefore(bubble, typing);
     transcript.scrollTop = transcript.scrollHeight;
@@ -228,6 +259,7 @@
     try {
       const productId = widget.dataset.contextProduct || '';
       const data = await api('/chat/bootstrap' + (productId ? '?product=' + encodeURIComponent(productId) : ''));
+      currentConversationKey = data.conversationKey || currentConversationKey;
       humanAvailable = data.humanAvailable === true;
       renderMessages(data.messages);
       updateStatus(data.status, humanAvailable);
@@ -242,6 +274,7 @@
     polling = true;
     try {
       const data = await api('/chat/poll?after=' + cursor);
+      currentConversationKey = data.conversationKey || currentConversationKey;
       renderMessages(data.messages, true);
       updateStatus(data.status, data.humanAvailable === true);
       if (data.humanAvailable === false && !waitingForReply) showNotice('Di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '). Pesan Anda tersimpan; tim akan membalas saat layanan buka.', data.whatsappUrl || '');
@@ -257,8 +290,36 @@
     }, delay);
   }
 
+  function scheduleLauncherIdle() {
+    if (launcherIdleTimer) window.clearTimeout(launcherIdleTimer);
+    launcherIdleTimer = null;
+    widget.classList.remove('is-chat-idle');
+    const pointerIsHovering = window.matchMedia?.('(hover: hover)').matches && widget.matches(':hover');
+    const focusIsInside = widget.contains(document.activeElement);
+    if (opened || document.hidden || pointerIsHovering || focusIsInside) return;
+    launcherIdleTimer = window.setTimeout(() => {
+      launcherIdleTimer = null;
+      if (!opened && !document.hidden) widget.classList.add('is-chat-idle');
+    }, 60000);
+  }
+  function wakeLauncher() {
+    if (launcherIdleTimer) window.clearTimeout(launcherIdleTimer);
+    launcherIdleTimer = null;
+    widget.classList.remove('is-chat-idle');
+    if (!opened) scheduleLauncherIdle();
+  }
+  function refreshLauncherIdleFromActivity() {
+    const now = Date.now();
+    if (now - lastActivityRefresh < 1000) return;
+    lastActivityRefresh = now;
+    scheduleLauncherIdle();
+  }
+
   function openChat() {
     opened = true; panel.classList.remove('d-none');
+    if (launcherIdleTimer) window.clearTimeout(launcherIdleTimer);
+    launcherIdleTimer = null;
+    widget.classList.remove('is-chat-idle');
     if (teaser) teaser.hidden = true;
     toggle.classList.remove('is-arrival');
     primeReplySound();
@@ -266,9 +327,17 @@
     bootstrap().finally(() => { if (!input.disabled) input.focus(); schedulePoll(); });
   }
   toggle.addEventListener('click', () => {
-    if (opened) { opened = false; panel.classList.add('d-none'); toggle.setAttribute('aria-expanded', 'false'); if (pollTimer) window.clearTimeout(pollTimer); pollTimer = null; }
+    if (opened) { opened = false; panel.classList.add('d-none'); toggle.setAttribute('aria-expanded', 'false'); if (pollTimer) window.clearTimeout(pollTimer); pollTimer = null; scheduleLauncherIdle(); }
     else openChat();
   });
+  widget.addEventListener('pointerenter', wakeLauncher);
+  widget.addEventListener('pointerleave', scheduleLauncherIdle);
+  widget.addEventListener('focusin', wakeLauncher);
+  widget.addEventListener('focusout', () => window.setTimeout(scheduleLauncherIdle, 0));
+  document.addEventListener('pointerdown', refreshLauncherIdleFromActivity, { passive: true });
+  document.addEventListener('touchstart', refreshLauncherIdleFromActivity, { passive: true });
+  document.addEventListener('keydown', refreshLauncherIdleFromActivity);
+  document.addEventListener('scroll', refreshLauncherIdleFromActivity, { passive: true });
   teaser?.querySelector('[data-greeting-open]')?.addEventListener('click', openChat);
   teaser?.querySelector('[data-greeting-dismiss]')?.addEventListener('click', () => {
     teaser.hidden = true;
@@ -285,7 +354,7 @@
     if (typeof form.requestSubmit === 'function') form.requestSubmit();
     else sendButton?.click();
   });
-  close.addEventListener('click', () => { opened = false; panel.classList.add('d-none'); toggle.setAttribute('aria-expanded', 'false'); if (pollTimer) window.clearTimeout(pollTimer); pollTimer = null; toggle.focus(); });
+  close.addEventListener('click', () => { opened = false; panel.classList.add('d-none'); toggle.setAttribute('aria-expanded', 'false'); if (pollTimer) window.clearTimeout(pollTimer); pollTimer = null; toggle.focus(); scheduleLauncherIdle(); });
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     const message = input.value.trim();
@@ -293,6 +362,7 @@
     sending = true; input.disabled = true; if (sendButton) sendButton.disabled = true; showNotice('');
     try {
       const data = await api('/chat/send', { method: 'POST', body: JSON.stringify({ message, productId: widget.dataset.contextProduct || '' }) });
+      currentConversationKey = data.conversationKey || currentConversationKey;
       input.value = ''; ready = true; updateStatus(data.status, data.humanAvailable);
       appendMessage({ id: data.messageId, sender_type: 'visitor', body: message, created_at: data.createdAt || '' });
       if (data.afterHoursReply) {
@@ -338,11 +408,17 @@
     if (soundEnabled) playReplyTone();
   });
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) return;
+    if (document.hidden) {
+      if (launcherIdleTimer) window.clearTimeout(launcherIdleTimer);
+      launcherIdleTimer = null;
+      return;
+    }
+    scheduleLauncherIdle();
     if (pollTimer) window.clearTimeout(pollTimer);
     pollTimer = null;
     poll().finally(() => schedulePoll(waitingForReply ? 2400 : 7000));
   });
+  scheduleLauncherIdle();
   const unlockArrivalSound = () => playWelcomeTone();
   document.addEventListener('pointerdown', unlockArrivalSound, { passive: true });
   document.addEventListener('keydown', unlockArrivalSound);
@@ -357,6 +433,6 @@
       window.setTimeout(() => toggle.classList.remove('is-arrival'), 1450);
       try { sessionStorage.setItem('ilenaChatGreetingSeen', '1'); } catch (_) {}
       if (navigator.userActivation?.hasBeenActive) playWelcomeTone();
-    }, 1450);
+    }, 2200);
   }
 })();

@@ -116,6 +116,7 @@ $routes->get('/chat/bootstrap', 'SupportChatController::bootstrap', ['filter' =>
 $routes->get('/chat/poll', 'SupportChatController::poll', ['filter' => 'customerFilter']);
 $routes->post('/chat/send', 'SupportChatController::send', ['filter' => ['customerFilter', 'csrf']]);
 $routes->post('/chat/handoff', 'SupportChatController::handoff', ['filter' => ['customerFilter', 'csrf']]);
+$routes->post('/chat/rating', 'SupportChatController::rate', ['filter' => ['customerFilter', 'csrf']]);
 
 
 // ==================== Admin Controller ====================
@@ -225,6 +226,7 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
     // Hybrid AI + Human Support Chat
     $routes->get('support-chat', 'SupportChatController::adminIndex');
     $routes->get('support-chat/queue', 'SupportChatController::adminQueue');
+    $routes->get('support-chat/feedback', 'SupportChatController::adminFeedback');
     $routes->get('support-chat/messages/(:num)', 'SupportChatController::adminMessages/$1');
     $routes->post('support-chat/reply/(:num)', 'SupportChatController::adminReply/$1');
     $routes->post('support-chat/claim/(:num)', 'SupportChatController::adminClaim/$1');
