@@ -9123,10 +9123,13 @@ body.ilena-storefront .ilena-chat-compose button { background: #96363c; box-shad
 body.ilena-storefront .ilena-chat-compose button:hover { background: #302724; }
 body.ilena-storefront .ilena-chat-footer { background: #fffaf5; }
 body.ilena-storefront .ilena-chat-footer button,
-body.ilena-storefront .ilena-chat-footer a { color: #81363b; }
+body.ilena-storefront .ilena-chat-footer a { color: #75665d; }
+body.ilena-storefront .ilena-chat-footer a[data-kbot-wa] { color: #a85f55; }
+body.ilena-storefront .ilena-chat-footer button:hover,
+body.ilena-storefront .ilena-chat-footer a:hover { color: #493d37; }
 body.ilena-storefront .ilena-chat-notice { border-top-color: #eee4db; background: #fffaf5; color: #6f6259; }
 body.ilena-storefront .ilena-chat-notice a,
-body.ilena-storefront .ilena-chat-source { color: #923940; }
+body.ilena-storefront .ilena-chat-source { color: #a85f55; }
 body.ilena-storefront .ilena-chat-greeting-teaser { display: grid; position: relative; width: min(338px, calc(100vw - 28px)); grid-template-columns: 36px minmax(0,1fr) auto; align-items: center; gap: 10px; align-self: flex-end; margin: 0 0 2px; padding: 13px 30px 13px 12px; border: 1px solid #eaded4; border-left: 3px solid #a54046; border-radius: 15px; background: #fffaf5; box-shadow: 0 12px 32px rgba(50,39,34,.16); animation: ilena-chat-arrival .48s cubic-bezier(.2,.75,.2,1) both; }
 body.ilena-storefront .ilena-chat-greeting-teaser[hidden] { display: none; }
 body.ilena-storefront .ilena-chat-greeting-teaser__mark { position: relative; display: block; width: 36px; height: 36px; overflow: hidden; border: 1px solid #eee3da; border-radius: 50%; background: #fff; color: #fffaf5; font: 500 21px/1 var(--ilena-font-display); }

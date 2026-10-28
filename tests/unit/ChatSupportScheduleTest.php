@@ -14,6 +14,9 @@ final class ChatSupportScheduleTest extends CIUnitTestCase
 
         $this->assertFalse($closed['open']);
         $this->assertStringContainsString('di luar jam layanan', mb_strtolower($reply['body']));
+        $this->assertStringContainsString('Terima kasih, pesan Kakak sudah kami simpan.', $reply['body']);
+        $this->assertStringContainsString('jam layanan berikutnya', $reply['body']);
+        $this->assertStringContainsString('Kakak dapat menghubungi kami melalui WhatsApp.', $reply['body']);
         $this->assertStringContainsString('08.00–16.00 WIB', $reply['body']);
         $this->assertSame('https://wa.me/628112938158?text=Halo', $reply['whatsappUrl']);
     }

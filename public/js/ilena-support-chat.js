@@ -101,7 +101,7 @@
         const gain = audioContext.createGain();
         oscillator.type = 'sine'; oscillator.frequency.value = frequency;
         gain.gain.setValueAtTime(0.0001, start + index * 0.1);
-        gain.gain.exponentialRampToValueAtTime(0.035, start + index * 0.1 + 0.025);
+        gain.gain.exponentialRampToValueAtTime(0.055, start + index * 0.1 + 0.025);
         gain.gain.exponentialRampToValueAtTime(0.0001, start + index * 0.1 + 0.16);
         oscillator.connect(gain); gain.connect(audioContext.destination);
         oscillator.start(start + index * 0.1); oscillator.stop(start + index * 0.1 + 0.17);
@@ -124,7 +124,7 @@
           oscillator.type = 'sine';
           oscillator.frequency.value = frequency;
           gain.gain.setValueAtTime(.0001, start + offset);
-          gain.gain.exponentialRampToValueAtTime(.022, start + offset + .025);
+          gain.gain.exponentialRampToValueAtTime(.034, start + offset + .025);
           gain.gain.exponentialRampToValueAtTime(.0001, start + offset + .19);
           oscillator.connect(gain); gain.connect(context.destination);
           oscillator.start(start + offset); oscillator.stop(start + offset + .2);
@@ -176,7 +176,7 @@
         if (url.protocol === 'https:' && url.hostname === 'wa.me') {
           const link = document.createElement('a');
           link.className = 'ilena-chat-source'; link.href = url.href; link.target = '_blank'; link.rel = 'noopener noreferrer';
-          link.textContent = 'WhatsApp sekarang'; bubble.append(link);
+          link.textContent = 'Silakan hubungi tim Ilena melalui WhatsApp'; bubble.append(link);
         }
       } catch (_) {}
     }
@@ -279,6 +279,12 @@
     input.value = button.dataset.chatSuggestion || '';
     form.requestSubmit();
   }));
+  input.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' || event.shiftKey || event.isComposing || event.keyCode === 229) return;
+    event.preventDefault();
+    if (typeof form.requestSubmit === 'function') form.requestSubmit();
+    else sendButton?.click();
+  });
   close.addEventListener('click', () => { opened = false; panel.classList.add('d-none'); toggle.setAttribute('aria-expanded', 'false'); if (pollTimer) window.clearTimeout(pollTimer); pollTimer = null; toggle.focus(); });
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -299,7 +305,7 @@
         }, true);
         waitingForReply = false;
         setTyping(false);
-        showNotice('Pesan tersimpan. Tim Ilena akan membalas saat layanan buka.', data.afterHoursReply.whatsappUrl || data.whatsappUrl || '');
+        showNotice('Terima kasih, pesan Kakak sudah kami simpan. Mohon maaf, saat ini tim Ilena sedang di luar jam layanan. Pesan Kakak akan kami balas pada jam layanan berikutnya (' + (data.serviceHours || '08.00–16.00 WIB') + '). Jika membutuhkan bantuan lebih cepat, Kakak dapat menghubungi kami melalui WhatsApp.', data.afterHoursReply.whatsappUrl || data.whatsappUrl || '');
       } else {
         waitingForReply = data.status === 'ai';
         if (waitingForReply) setTyping(true, 'Kak Wawa sedang menyiapkan jawaban');

@@ -321,7 +321,7 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
             </button>
         </div>
     </div>
-    <script defer src="<?= base_url('js/ilena-support-chat.js?v=20261028-10'); ?>"></script>
+    <script defer src="<?= base_url('js/ilena-support-chat.js?v=20261028-13'); ?>"></script>
 
     <?php if (!$isInternalArea && $layoutHeaderMode !== 'checkout'): ?>
     <script defer crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
