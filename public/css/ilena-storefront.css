@@ -7759,3 +7759,272 @@ body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1 .g
         transform: none;
     }
 }
+
+/* Mobile product detail polish: compact layout, uncropped product photos, precise swatches. */
+@media (max-width: 700px) {
+    body.ilena-storefront .product-detail-soft .ilena-product-layout { gap: 13px; }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-gallery__stage {
+        width: 100%;
+        max-height: min(96vw, 420px);
+        overflow: hidden;
+        background: #fff;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-gallery__stage > img.img-detail-prev {
+        padding: 0 !important;
+        object-fit: contain !important;
+        object-position: center;
+    }
+
+    body.ilena-storefront .product-detail-soft .img-detail-select {
+        flex-basis: 52px;
+        width: 52px;
+        height: 52px;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-detail { padding: 7px 0 28px; }
+    body.ilena-storefront .product-detail-soft .ilena-product-heading { padding-bottom: 8px; }
+
+    body.ilena-storefront .product-detail-soft .teks-besar {
+        font-size: clamp(25px, 7vw, 32px);
+        line-height: 1.12;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-price {
+        margin: 9px 0 8px !important;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-price .harga { font-size: 20px; }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-info > .ilena-product-options.hide-ke-show-flex {
+        gap: 10px !important;
+        margin-bottom: 11px;
+        padding: 10px 0;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-info .ilena-product-options .container-varian label {
+        box-sizing: border-box;
+        display: inline-flex;
+        flex: 0 0 38px;
+        width: 38px;
+        min-width: 38px;
+        height: 38px;
+        align-items: center;
+        justify-content: center;
+        padding: 4px;
+        overflow: hidden;
+        border: 1px solid transparent;
+        border-radius: 50% !important;
+        aspect-ratio: 1 / 1;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-info .ilena-product-options .container-varian label > span:first-child {
+        box-sizing: border-box;
+        display: block !important;
+        flex: 0 0 28px;
+        width: 28px !important;
+        min-width: 28px;
+        height: 28px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 50% !important;
+        aspect-ratio: 1 / 1;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-layout .ilena-size-option {
+        min-width: 64px;
+        min-height: 40px;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-purchase .number-control {
+        flex-basis: 104px;
+        width: 104px;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-related { margin-top: 22px; }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid .gambar img:is(.img-pic, .img-pic-hover) {
+        padding: 0 !important;
+        object-fit: contain !important;
+        object-position: center;
+        -webkit-mask-image: none;
+        mask-image: none;
+        background: #f8f7f4;
+        transform: none !important;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid .container-varian label {
+        box-sizing: border-box;
+        display: inline-flex;
+        flex: 0 0 24px;
+        width: 24px;
+        min-width: 24px;
+        height: 24px;
+        align-items: center;
+        justify-content: center;
+        padding: 2px;
+        overflow: hidden;
+        border-radius: 50% !important;
+        aspect-ratio: 1 / 1;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid .container-varian label > span:first-child {
+        box-sizing: border-box;
+        display: block !important;
+        flex: 0 0 18px;
+        width: 18px !important;
+        min-width: 18px;
+        height: 18px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 50% !important;
+        aspect-ratio: 1 / 1;
+    }
+}
+
+@media (max-width: 380px) {
+    body.ilena-storefront .product-detail-soft .ilena-product-layout { gap: 10px; }
+    body.ilena-storefront .product-detail-soft .ilena-product-heading { padding-bottom: 6px; }
+    body.ilena-storefront .product-detail-soft .ilena-product-info > .ilena-product-options.hide-ke-show-flex { gap: 8px !important; }
+    body.ilena-storefront .product-detail-soft .ilena-product-info .ilena-product-options .container-varian label {
+        flex-basis: 36px;
+        width: 36px;
+        min-width: 36px;
+        height: 36px;
+    }
+}
+
+/* Keep the touch gallery out of desktop layout. */
+body.ilena-storefront .ilena-mobile-lightbox { display: none; }
+
+/* Mobile-only full-screen product gallery with swipe and zoom controls. */
+@media (max-width: 700px) {
+    body.ilena-storefront.ilena-lightbox-open { overflow: hidden; }
+    body.ilena-storefront .product-detail-soft .ilena-product-gallery__stage > img.img-detail-prev { cursor: zoom-in; }
+
+    body.ilena-storefront .ilena-mobile-lightbox {
+        position: fixed;
+        z-index: 20000;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: max(18px, env(safe-area-inset-top)) 12px max(22px, env(safe-area-inset-bottom));
+        background: rgba(20, 19, 18, .98);
+        color: #fff;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity .18s ease, visibility .18s ease;
+        touch-action: none;
+    }
+
+    body.ilena-storefront .ilena-mobile-lightbox.is-open { opacity: 1; visibility: visible; pointer-events: auto; }
+
+    body.ilena-storefront .ilena-mobile-lightbox__viewport {
+        position: relative;
+        display: flex;
+        width: 100%;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    body.ilena-storefront .ilena-mobile-lightbox__image {
+        display: block;
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        transform-origin: center;
+        will-change: transform;
+        pointer-events: none;
+        -webkit-user-drag: none;
+    }
+
+    body.ilena-storefront .ilena-mobile-lightbox button {
+        color: #fff;
+        border: 1px solid rgba(255,255,255,.28);
+        background: rgba(35,33,31,.72);
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body.ilena-storefront .ilena-mobile-lightbox__close {
+        position: absolute;
+        z-index: 3;
+        top: max(12px, env(safe-area-inset-top));
+        right: 14px;
+        display: grid;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border-radius: 50%;
+        font-size: 29px;
+        line-height: 1;
+    }
+
+    body.ilena-storefront .ilena-mobile-lightbox__nav {
+        position: absolute;
+        z-index: 2;
+        top: 50%;
+        display: none;
+        width: 42px;
+        height: 52px;
+        padding: 0;
+        transform: translateY(-50%);
+        border-radius: 8px;
+        font-size: 32px;
+        line-height: 1;
+    }
+
+    body.ilena-storefront .ilena-mobile-lightbox.has-multiple .ilena-mobile-lightbox__nav { display: block; }
+    body.ilena-storefront .ilena-mobile-lightbox__prev { left: 8px; }
+    body.ilena-storefront .ilena-mobile-lightbox__next { right: 8px; }
+
+    body.ilena-storefront .ilena-mobile-lightbox__tools {
+        position: absolute;
+        z-index: 3;
+        right: 0;
+        bottom: max(20px, env(safe-area-inset-bottom));
+        left: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 22px;
+        pointer-events: none;
+    }
+
+    body.ilena-storefront .ilena-mobile-lightbox__tools button {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        font-size: 24px;
+        pointer-events: auto;
+    }
+
+    body.ilena-storefront .ilena-mobile-lightbox__counter {
+        min-width: 46px;
+        color: rgba(255,255,255,.88);
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+        text-align: center;
+    }
+
+    body.ilena-storefront .ilena-mobile-lightbox__hint {
+        position: absolute;
+        bottom: max(72px, calc(env(safe-area-inset-bottom) + 56px));
+        left: 0;
+        width: 100%;
+        margin: 0;
+        color: rgba(255,255,255,.62);
+        font-size: 10px;
+        text-align: center;
+        pointer-events: none;
+    }
+}

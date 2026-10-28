@@ -547,6 +547,18 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                 </div>
             </div>
         </div>
+        <div class="ilena-mobile-lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Galeri foto produk">
+            <button class="ilena-mobile-lightbox__close" type="button" aria-label="Tutup galeri">&times;</button>
+            <button class="ilena-mobile-lightbox__nav ilena-mobile-lightbox__prev" type="button" aria-label="Foto sebelumnya">‹</button>
+            <div class="ilena-mobile-lightbox__viewport"><img class="ilena-mobile-lightbox__image" alt=""></div>
+            <button class="ilena-mobile-lightbox__nav ilena-mobile-lightbox__next" type="button" aria-label="Foto berikutnya">›</button>
+            <div class="ilena-mobile-lightbox__tools">
+                <button class="ilena-mobile-lightbox__zoom-out" type="button" aria-label="Perkecil foto">−</button>
+                <span class="ilena-mobile-lightbox__counter" aria-live="polite"></span>
+                <button class="ilena-mobile-lightbox__zoom-in" type="button" aria-label="Perbesar foto">+</button>
+            </div>
+            <p class="ilena-mobile-lightbox__hint">Cubit untuk zoom · Geser untuk melihat foto lain</p>
+        </div>
         <?php if (count($produkSejenis) > 0) { ?>
         <section class="ilena-product-related" aria-labelledby="related-products-title">
         <div class="ilena-product-related-heading"><span>Pilihan untuk Anda</span><h2 id="related-products-title">Anda mungkin juga suka</h2></div>
@@ -779,6 +791,141 @@ galleryThumbs?.addEventListener('click', (event) => {
     const selectedPhoto = document.getElementById(label.htmlFor);
     if (selectedPhoto instanceof HTMLInputElement) showSelectedProductPhoto(selectedPhoto);
 });
+
+// Mobile-only full-screen product gallery. High-resolution images are requested only on demand.
+const mobileLightbox = document.querySelector('.ilena-mobile-lightbox');
+const lightboxImage = mobileLightbox?.querySelector('.ilena-mobile-lightbox__image');
+const lightboxViewport = mobileLightbox?.querySelector('.ilena-mobile-lightbox__viewport');
+const lightboxCounter = mobileLightbox?.querySelector('.ilena-mobile-lightbox__counter');
+let lightboxIndex = 0;
+let lightboxScale = 1;
+let lightboxX = 0;
+let lightboxY = 0;
+let lightboxPointers = new Map();
+let lightboxGesture = null;
+let lightboxPreviousFocus = null;
+
+function lightboxPhotos() {
+    return Array.from(galleryThumbs?.querySelectorAll('input[name="gambar"]') || []).map((input) => {
+        const thumb = galleryThumbs.querySelector(`label[for="${CSS.escape(input.id)}"] img`);
+        const hover = input.value === 'hover';
+        const slot = String(input.value || '').split(',')[0].trim();
+        return {
+            input,
+            src: hover ? detailHoverUrl : detailZoomUrl(slot),
+            fallback: thumb?.currentSrc || thumb?.src || document.querySelector('.ilena-product-gallery__stage > img.img-detail-prev')?.currentSrc || '',
+            alt: hover ? 'Detail permukaan produk' : `${document.querySelector('.ilena-product-info .teks-besar')?.textContent.trim() || 'Foto produk'} — foto ${input.getAttribute('aria-label')?.replace(/\D/g, '') || ''}`
+        };
+    }).filter((photo) => photo.src);
+}
+
+function resetLightboxZoom() {
+    lightboxScale = 1;
+    lightboxX = 0;
+    lightboxY = 0;
+    if (lightboxImage) lightboxImage.style.transform = '';
+}
+
+function renderLightboxPhoto(index) {
+    const photos = lightboxPhotos();
+    if (!photos.length || !lightboxImage || !mobileLightbox) return;
+    lightboxIndex = (index + photos.length) % photos.length;
+    const photo = photos[lightboxIndex];
+    photo.input.checked = true;
+    showSelectedProductPhoto(photo.input);
+    resetLightboxZoom();
+    lightboxImage.onerror = () => {
+        lightboxImage.onerror = null;
+        if (photo.fallback && lightboxImage.src !== photo.fallback) lightboxImage.src = photo.fallback;
+    };
+    lightboxImage.src = photo.src;
+    lightboxImage.alt = photo.alt;
+    if (lightboxCounter) lightboxCounter.textContent = `${lightboxIndex + 1} / ${photos.length}`;
+    mobileLightbox.classList.toggle('has-multiple', photos.length > 1);
+}
+
+function openMobileLightbox() {
+    if (!mobileLightbox || window.innerWidth > 700 || window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    const photos = lightboxPhotos();
+    if (!photos.length) return;
+    lightboxPreviousFocus = document.activeElement;
+    document.body.classList.add('ilena-lightbox-open');
+    mobileLightbox.classList.add('is-open');
+    mobileLightbox.setAttribute('aria-hidden', 'false');
+    renderLightboxPhoto(Math.max(0, photos.findIndex((photo) => photo.input.checked)));
+    mobileLightbox.querySelector('.ilena-mobile-lightbox__close')?.focus({ preventScroll: true });
+}
+
+function closeMobileLightbox() {
+    if (!mobileLightbox) return;
+    mobileLightbox.classList.remove('is-open');
+    mobileLightbox.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('ilena-lightbox-open');
+    lightboxPointers.clear();
+    if (lightboxPreviousFocus instanceof HTMLElement) lightboxPreviousFocus.focus({ preventScroll: true });
+}
+
+document.querySelector('.ilena-product-gallery__stage > img.img-detail-prev')?.addEventListener('click', openMobileLightbox);
+mobileLightbox?.querySelector('.ilena-mobile-lightbox__close')?.addEventListener('click', closeMobileLightbox);
+mobileLightbox?.querySelector('.ilena-mobile-lightbox__prev')?.addEventListener('click', () => renderLightboxPhoto(lightboxIndex - 1));
+mobileLightbox?.querySelector('.ilena-mobile-lightbox__next')?.addEventListener('click', () => renderLightboxPhoto(lightboxIndex + 1));
+mobileLightbox?.addEventListener('click', (event) => { if (event.target === mobileLightbox) closeMobileLightbox(); });
+document.addEventListener('keydown', (event) => {
+    if (!mobileLightbox?.classList.contains('is-open')) return;
+    if (event.key === 'Escape') closeMobileLightbox();
+    if (event.key === 'ArrowLeft') renderLightboxPhoto(lightboxIndex - 1);
+    if (event.key === 'ArrowRight') renderLightboxPhoto(lightboxIndex + 1);
+});
+
+function applyLightboxZoom(scale) {
+    lightboxScale = Math.max(1, Math.min(4, scale));
+    if (lightboxScale === 1) { lightboxX = 0; lightboxY = 0; }
+    if (lightboxImage) lightboxImage.style.transform = `translate3d(${lightboxX}px, ${lightboxY}px, 0) scale(${lightboxScale})`;
+    mobileLightbox?.classList.toggle('is-zoomed', lightboxScale > 1);
+}
+
+mobileLightbox?.querySelector('.ilena-mobile-lightbox__zoom-in')?.addEventListener('click', () => applyLightboxZoom(lightboxScale + .5));
+mobileLightbox?.querySelector('.ilena-mobile-lightbox__zoom-out')?.addEventListener('click', () => applyLightboxZoom(lightboxScale - .5));
+lightboxViewport?.addEventListener('pointerdown', (event) => {
+    lightboxViewport.setPointerCapture(event.pointerId);
+    lightboxPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (lightboxPointers.size === 2) {
+        const points = Array.from(lightboxPointers.values());
+        lightboxGesture = { distance: Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y), scale: lightboxScale };
+    } else {
+        lightboxGesture = { x: event.clientX, y: event.clientY, startX: lightboxX, startY: lightboxY, moved: false };
+    }
+});
+lightboxViewport?.addEventListener('pointermove', (event) => {
+    if (!lightboxPointers.has(event.pointerId) || !lightboxGesture) return;
+    lightboxPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (lightboxPointers.size >= 2) {
+        const points = Array.from(lightboxPointers.values());
+        const distance = Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y);
+        if (lightboxGesture.distance) applyLightboxZoom(lightboxGesture.scale * distance / lightboxGesture.distance);
+        return;
+    }
+    const dx = event.clientX - lightboxGesture.x;
+    const dy = event.clientY - lightboxGesture.y;
+    if (Math.abs(dx) + Math.abs(dy) > 8) lightboxGesture.moved = true;
+    if (lightboxScale > 1) {
+        lightboxX = lightboxGesture.startX + dx;
+        lightboxY = lightboxGesture.startY + dy;
+        applyLightboxZoom(lightboxScale);
+    }
+});
+const endLightboxGesture = (event) => {
+    if (!lightboxPointers.has(event.pointerId)) return;
+    const gesture = lightboxGesture;
+    const dx = gesture && 'x' in gesture ? event.clientX - gesture.x : 0;
+    lightboxPointers.delete(event.pointerId);
+    if (lightboxPointers.size < 2) lightboxGesture = null;
+    if (lightboxScale <= 1 && Math.abs(dx) > 55) renderLightboxPhoto(lightboxIndex + (dx < 0 ? 1 : -1));
+};
+lightboxViewport?.addEventListener('pointerup', endLightboxGesture);
+lightboxViewport?.addEventListener('pointercancel', endLightboxGesture);
+lightboxImage?.addEventListener('dblclick', () => applyLightboxZoom(lightboxScale > 1 ? 1 : 2));
+
 radioVarianElm.forEach(elm => {
     elm.addEventListener('change', (e) => {
         radioVarianElm.forEach(peer => {
