@@ -47,6 +47,35 @@ final class ChatAssistantEvaluationTest extends CIUnitTestCase
         }
     }
 
+    public function testCompanyProfileQuestionUsesProjectFactsWithoutProductFallbackOrProvider(): void
+    {
+        $result = (new SmartProductAssistant(new \stdClass()))->respond('Apa itu Ilena Furniture?');
+
+        $this->assertSame('company_facts', $result['mode']);
+        $this->assertStringContainsString('CV Catur Bhakti Mandiri', $result['answer']);
+        $this->assertStringContainsString('Mulai dari rumah', $result['answer']);
+        $this->assertStringNotContainsString('Saya memahami pertanyaan Anda', $result['answer']);
+        $this->assertSame([], $result['products']);
+        $this->assertNotEmpty($result['sources']);
+    }
+
+    public function testVisionMissionAnswersUseFactsFromTheProjectPages(): void
+    {
+        $assistant = new SmartProductAssistant(new \stdClass());
+
+        $vision = $assistant->respond('Apa visi Ilena?');
+        $mission = $assistant->respond('Apa misi Ilena?');
+        $both = $assistant->respond('Apa visi dan misi Ilena?');
+
+        $this->assertStringContainsString('Mulai dari rumah, tercipta senyum ramah', $vision['answer']);
+        $this->assertStringContainsString('Membangun dan menjaga kepercayaan konsumen', $mission['answer']);
+        $this->assertStringContainsString('keseimbangan ekosistem lingkungan', mb_strtolower($mission['answer']));
+        $this->assertSame('company_facts', $vision['mode']);
+        $this->assertSame('company_facts', $mission['mode']);
+        $this->assertStringContainsString('Mulai dari rumah', $both['answer']);
+        $this->assertStringContainsString('Membangun dan menjaga kepercayaan', $both['answer']);
+    }
+
     public static function deterministicCases(): array
     {
         return array_map(static fn(array $case): array => [$case], require dirname(__DIR__) . '/fixtures/kak_wawa_eval_cases.php');
