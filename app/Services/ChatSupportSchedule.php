@@ -14,12 +14,4 @@ final class ChatSupportSchedule
 
         return ['open' => $minute >= 480 && $minute < 960, 'hours' => self::HOURS];
     }
-
-    public static function afterHoursReply(string $whatsappUrl): array
-    {
-        return [
-            'body' => 'Tim CS sedang di luar jam layanan (' . self::HOURS . '), tetapi Kak Wawa tetap siap membantu Kakak di sini. Jika ingin berbicara langsung dengan tim, Kakak dapat menghubungi kami melalui WhatsApp.',
-            'whatsappUrl' => $whatsappUrl,
-        ];
-    }
 }

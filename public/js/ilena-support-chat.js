@@ -31,6 +31,7 @@
   let currentStatus = 'ai';
   let humanAvailable = null;
   let waitingForReply = false;
+  let lastNoticeKey = null;
   let soundEnabled = true;
   let arrivalSoundPending = false;
   let arrivalSoundPlayed = false;
@@ -42,6 +43,9 @@
   const safeText = (value) => String(value ?? '');
   const currency = (value) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(value) || 0);
   function showNotice(message, linkUrl = '') {
+    const noticeKey = JSON.stringify([message || '', linkUrl || '']);
+    if (noticeKey === lastNoticeKey) return;
+    lastNoticeKey = noticeKey;
     notice.replaceChildren();
     if (message) {
       notice.append(document.createTextNode(message));
@@ -250,9 +254,9 @@
     currentStatus = value || 'ai';
     humanAvailable = availability;
     if (status) {
-      if (currentStatus === 'human_waiting') status.textContent = humanAvailable ? 'Tim Ilena segera bergabung' : 'Tim sedang di luar jam layanan';
+      if (currentStatus === 'human_waiting') status.textContent = humanAvailable ? 'Tim Ilena segera bergabung' : 'CS sedang tidak tersedia';
       else if (currentStatus === 'human') status.textContent = 'Anda sedang dilayani tim Ilena';
-      else status.textContent = humanAvailable ? 'Kak Wawa · Tim 08.00–16.00 WIB' : 'Kak Wawa · Tim kembali pukul 08.00 WIB';
+      else status.textContent = humanAvailable ? 'Kak Wawa · CS 08.00–16.00 WIB' : 'CS sedang tidak tersedia · Kak Wawa siap membantu';
     }
     if (handoff) handoff.hidden = currentStatus !== 'ai' || humanAvailable === false;
     if (suggestions) suggestions.hidden = currentStatus === 'human';
@@ -309,7 +313,7 @@
       renderMessages(data.messages);
       updateStatus(data.status, humanAvailable);
       ready = true;
-      if (!humanAvailable) showNotice('Tim CS sedang di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '), tetapi Kak Wawa tetap siap membantu di sini.', data.whatsappUrl || '');
+      if (!humanAvailable) showNotice('Mohon maaf, CS sedang tidak tersedia di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '). Kak Wawa tetap siap membantu Kakak di sini.', data.whatsappUrl || '');
       else showNotice('');
     } catch (error) { handleError(error); }
     finally { sending = false; updateStatus(currentStatus, humanAvailable); }
@@ -322,7 +326,7 @@
       currentConversationKey = data.conversationKey || currentConversationKey;
       renderMessages(data.messages, true);
       updateStatus(data.status, data.humanAvailable === true);
-      if (data.humanAvailable === false && !waitingForReply) showNotice('Tim CS sedang di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '), tetapi Kak Wawa tetap siap membantu di sini.', data.whatsappUrl || '');
+      if (data.humanAvailable === false && !waitingForReply) showNotice('Mohon maaf, CS sedang tidak tersedia di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '). Kak Wawa tetap siap membantu Kakak di sini.', data.whatsappUrl || '');
     } catch (error) { handleError(error); }
     finally { polling = false; }
   }
@@ -411,21 +415,11 @@
       currentConversationKey = data.conversationKey || currentConversationKey;
       input.value = ''; ready = true; updateStatus(data.status, data.humanAvailable);
       appendMessage({ id: data.messageId, sender_type: 'visitor', body: message, created_at: data.createdAt || '' });
-      if (data.afterHoursReply) {
-        appendMessage({
-          id: data.afterHoursReply.messageId,
-          sender_type: 'assistant',
-          body: data.afterHoursReply.body,
-          metadata: { whatsappUrl: data.afterHoursReply.whatsappUrl },
-          created_at: data.afterHoursReply.createdAt || data.createdAt || '',
-        }, true);
-        waitingForReply = false;
-        setTyping(false);
-        showNotice('Tim CS sedang di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '), tetapi Kak Wawa tetap menyiapkan jawaban untuk Kakak. Jika ingin berbicara dengan tim, Kakak bisa menghubungi WhatsApp.', data.afterHoursReply.whatsappUrl || data.whatsappUrl || '');
-      } else {
-        waitingForReply = data.status === 'ai';
-        if (waitingForReply) setTyping(true, 'Kak Wawa sedang menyiapkan jawaban');
-        else if (data.status === 'human_waiting') setTyping(true, 'Pesan Anda menunggu tim Ilena');
+      waitingForReply = data.status === 'ai';
+      if (waitingForReply) setTyping(true, 'Kak Wawa sedang menyiapkan jawaban');
+      else if (data.status === 'human_waiting') setTyping(true, 'Pesan Anda menunggu tim Ilena');
+      if (data.humanAvailable === false) {
+        showNotice('Mohon maaf, CS sedang tidak tersedia di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '). Kak Wawa tetap membantu Kakak di sini.', data.whatsappUrl || '');
       }
     } catch (error) { handleError(error); }
     finally { sending = false; updateStatus(currentStatus, humanAvailable); if (!input.disabled) input.focus(); poll(); }

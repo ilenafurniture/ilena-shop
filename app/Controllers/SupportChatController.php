@@ -155,19 +155,6 @@ class SupportChatController extends BaseController
             ]);
             $messageId = (int)$db->insertID();
             $conversationStatus = (string) ($conversation['status'] ?? 'ai');
-            $afterHoursReply = null;
-            if (! $availability['open']) {
-                $afterHoursReply = ChatSupportSchedule::afterHoursReply($this->whatsappUrl($body));
-                $db->table('ilena_chat_messages')->insert([
-                    'conversation_id' => $conversationId,
-                    'sender_type' => 'assistant',
-                    'body' => $afterHoursReply['body'],
-                    'metadata' => json_encode(['whatsappUrl' => $afterHoursReply['whatsappUrl']], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-                    'created_at' => $now,
-                ]);
-                $afterHoursReply['messageId'] = (int) $db->insertID();
-                $afterHoursReply['createdAt'] = $now;
-            }
             $db->table('ilena_chat_conversations')->where('id', $conversationId)->update([
                 'context_product_id' => $contextProductId ?: ($conversation['context_product_id'] ?? null),
                 'last_message_at' => $now,
@@ -196,7 +183,6 @@ class SupportChatController extends BaseController
                 'humanAvailable' => $availability['open'],
                 'serviceHours' => $availability['hours'],
                 'whatsappUrl' => $this->whatsappUrl($body),
-                'afterHoursReply' => $afterHoursReply,
                 'createdAt' => $now,
             ]);
         } catch (\Throwable $e) {
