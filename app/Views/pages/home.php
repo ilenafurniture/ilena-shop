@@ -280,7 +280,7 @@ function closeSecondAd() {
 }
 </style>
 
-<div class="slider">
+<div class="slider ilena-home-banner-slider">
     <div class="slides">
         <?php foreach ($sliders as $ind_s => $slider): ?>
         <?php
@@ -1594,7 +1594,51 @@ sliders.forEach((slider) => {
     const dots = Array.from(slider.querySelectorAll('.dots .dot'));
     if (!track || slides.length < 2) return;
 
-    let activeIndex = 0;
+    let activeIndex = Math.max(0, slides.findIndex((slide) => slide.classList.contains('active')));
+    const mobileFade = slider.classList.contains('ilena-home-banner-slider') && window.matchMedia('(max-width: 700px)').matches;
+    if (mobileFade) {
+        const setActive = (index) => {
+            activeIndex = (index + slides.length) % slides.length;
+            slides.forEach((slide, slideIndex) => {
+                const active = slideIndex === activeIndex;
+                slide.classList.toggle('active', active);
+                slide.classList.remove('kiri', 'kanan');
+                slide.setAttribute('aria-hidden', active ? 'false' : 'true');
+            });
+            dots.forEach((dot, dotIndex) => dot.classList.toggle('active', dotIndex === activeIndex));
+        };
+
+        setActive(activeIndex);
+        dots.forEach((dot, index) => dot.addEventListener('click', () => setActive(index)));
+
+        let touchStartX = null;
+        let suppressMobileBannerClick = false;
+        track.addEventListener('touchstart', (event) => {
+            touchStartX = event.changedTouches[0]?.clientX ?? null;
+        }, { passive: true });
+        track.addEventListener('touchend', (event) => {
+            if (touchStartX === null) return;
+            const deltaX = (event.changedTouches[0]?.clientX ?? touchStartX) - touchStartX;
+            touchStartX = null;
+            if (Math.abs(deltaX) >= 45) {
+                setActive(activeIndex + (deltaX < 0 ? 1 : -1));
+                suppressMobileBannerClick = true;
+                window.setTimeout(() => { suppressMobileBannerClick = false; }, 350);
+            }
+        }, { passive: true });
+        track.addEventListener('click', (event) => {
+            if (!suppressMobileBannerClick) return;
+            event.preventDefault();
+            event.stopPropagation();
+            suppressMobileBannerClick = false;
+        }, true);
+
+        window.setInterval(() => {
+            if (document.visibilityState === 'visible') setActive(activeIndex + 1);
+        }, 7000);
+        return;
+    }
+
     const syncDots = () => {
         activeIndex = Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / track.clientWidth)));
         dots.forEach((dot, index) => dot.classList.toggle('active', index === activeIndex));

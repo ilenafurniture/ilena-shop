@@ -1615,6 +1615,99 @@ body.ilena-storefront .ilena-auth-captcha.is-verified .ilena-auth-captcha__messa
 }
 
 
+
+@media (max-width: 360px) {
+    body.ilena-storefront .navbar-hp-atas {
+        min-height: 50px !important;
+        height: 50px !important;
+        padding: 4px 7px !important;
+        gap: 5px !important;
+    }
+
+    body.ilena-storefront .navbar-hp-atas > a:first-child {
+        flex-basis: 30px !important;
+        width: 30px;
+        min-width: 30px !important;
+    }
+
+    body.ilena-storefront .navbar-hp-atas > a:first-child img {
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    body.ilena-storefront .navbar-hp-atas > div:last-of-type,
+    body.ilena-storefront .navbar-hp-atas .ilena-mobile-menu-button {
+        flex-basis: 36px !important;
+        width: 36px !important;
+        min-width: 36px !important;
+        height: 36px !important;
+        min-height: 36px !important;
+    }
+}
+
+/* Mobile homepage banner: dissolve between slides instead of translating sideways. */
+@media (max-width: 700px) {
+    body.ilena-storefront.ilena-page--home .ilena-home-banner-slider .slides {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        scroll-snap-type: none;
+        scroll-behavior: auto;
+        overscroll-behavior: none;
+        touch-action: pan-y;
+        cursor: default;
+    }
+
+    body.ilena-storefront.ilena-page--home .ilena-home-banner-slider .slides > a {
+        position: absolute !important;
+        inset: 0 !important;
+        display: block;
+        width: 100% !important;
+        min-width: 0 !important;
+        height: 100%;
+        overflow: hidden;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: none !important;
+        transition: opacity .65s cubic-bezier(.22,.61,.36,1), visibility 0s linear .65s;
+        cursor: default;
+        scroll-snap-align: none;
+    }
+
+    body.ilena-storefront.ilena-page--home .ilena-home-banner-slider .slides > a.active {
+        z-index: 1;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transition: opacity .65s cubic-bezier(.22,.61,.36,1), visibility 0s;
+    }
+
+    body.ilena-storefront.ilena-page--home .ilena-home-banner-slider .slides > a picture,
+    body.ilena-storefront.ilena-page--home .ilena-home-banner-slider .slides > a img {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
+    body.ilena-storefront.ilena-page--home .ilena-home-banner-slider .slides > a img {
+        object-fit: cover;
+        object-position: center;
+    }
+
+    body.ilena-storefront.ilena-page--home .ilena-home-banner-slider .dots { z-index: 2; }
+}
+
+@media (max-width: 700px) and (prefers-reduced-motion: reduce) {
+    body.ilena-storefront.ilena-page--home .ilena-home-banner-slider .slides > a,
+    body.ilena-storefront.ilena-page--home .ilena-home-banner-slider .slides > a.active {
+        transition: none;
+    }
+}
+
+
 @media (max-width: 380px) {
     body.ilena-storefront .ilena-auth-captcha { padding: 12px; }
     body.ilena-storefront .ilena-auth-captcha__widget { width: 100%; min-height: 68px; }
@@ -8284,4 +8377,121 @@ body.ilena-storefront .ilena-mobile-lightbox { display: none; }
 @media (max-width: 380px) {
     body.ilena-storefront .product-detail-soft .ilena-product-related-grid { gap: 16px 8px !important; }
     body.ilena-storefront .product-detail-soft .ilena-product-related-grid > .card1 .related-card-name { font-size: 12px !important; }
+}
+
+/* Prevent variant rings from becoming oval when global label padding/flex rules apply. */
+@media (max-width: 700px) {
+    body.ilena-storefront .product-detail-soft .ilena-product-info > .ilena-product-options.hide-ke-show-flex .ilena-option-group:first-child .container-varian label,
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid .container-varian label {
+        box-sizing: border-box !important;
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        aspect-ratio: 1 / 1;
+        flex-shrink: 0 !important;
+        line-height: 0;
+        overflow: visible;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-info > .ilena-product-options.hide-ke-show-flex .ilena-option-group:first-child .container-varian label > span:first-child,
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid .container-varian label > span:first-child {
+        box-sizing: border-box !important;
+        display: block !important;
+        aspect-ratio: 1 / 1;
+        flex-shrink: 0 !important;
+        overflow: hidden;
+        border-radius: 50% !important;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-info > .ilena-product-options.hide-ke-show-flex .ilena-option-group:first-child .container-varian label {
+        flex-basis: 28px !important;
+        width: 28px !important;
+        min-width: 28px !important;
+        max-width: 28px !important;
+        height: 28px !important;
+        padding: 2px !important;
+        border-radius: 50% !important;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-info > .ilena-product-options.hide-ke-show-flex .ilena-option-group:first-child .container-varian label > span:first-child {
+        flex-basis: 20px !important;
+        width: 20px !important;
+        min-width: 20px !important;
+        max-width: 20px !important;
+        height: 20px !important;
+        padding: 0 !important;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid .container-varian label {
+        flex-basis: 22px !important;
+        width: 22px !important;
+        min-width: 22px !important;
+        max-width: 22px !important;
+        height: 22px !important;
+        padding: 2px !important;
+        border-radius: 50% !important;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid .container-varian label > span:first-child {
+        flex-basis: 16px !important;
+        width: 16px !important;
+        min-width: 16px !important;
+        max-width: 16px !important;
+        height: 16px !important;
+        padding: 0 !important;
+    }
+}
+
+/* Phone header: full-bleed rectangular bar and reduced height for narrow screens. */
+@media (max-width: 600px) {
+    body.ilena-storefront .navbar-hp-atas {
+        box-sizing: border-box;
+        position: sticky;
+        top: 0;
+        left: 0;
+        z-index: 1045;
+        width: 100vw !important;
+        max-width: none !important;
+        min-height: 54px !important;
+        height: 54px !important;
+        margin-inline: calc(50% - 50vw) !important;
+        padding: 5px 9px !important;
+        gap: 7px !important;
+        border: 0;
+        border-bottom: 1px solid rgba(255,255,255,.09);
+        border-radius: 0 !important;
+        background: #282521 !important;
+        box-shadow: 0 4px 12px rgba(20,17,14,.12);
+    }
+
+    body.ilena-storefront .navbar-hp-atas > a:first-child {
+        flex: 0 0 32px !important;
+        width: 32px;
+        min-width: 32px !important;
+        min-height: 40px;
+    }
+
+    body.ilena-storefront .navbar-hp-atas > a:first-child img {
+        width: 30px !important;
+        height: 30px !important;
+    }
+
+    body.ilena-storefront .navbar-hp-atas .input {
+        min-height: 38px !important;
+        padding-inline: 11px !important;
+        font-size: 16px;
+    }
+
+    body.ilena-storefront .navbar-hp-atas > div:last-of-type,
+    body.ilena-storefront .navbar-hp-atas .ilena-mobile-menu-button {
+        flex: 0 0 38px !important;
+        width: 38px !important;
+        min-width: 38px !important;
+        height: 38px !important;
+        min-height: 38px !important;
+    }
+
+    body.ilena-storefront .navbar-hp-atas .ilena-mobile-menu-button i {
+        font-size: 19px !important;
+    }
 }
