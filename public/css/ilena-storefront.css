@@ -8779,3 +8779,109 @@ body.ilena-storefront .ilena-mobile-lightbox { display: none; }
         display: none !important;
     }
 }
+
+/* Visi & misi — quiet editorial layout with lightweight, scroll-led motion. */
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-page {
+    --vision-ink: #292c27;
+    --vision-muted: #77766f;
+    --vision-line: rgba(54, 61, 49, .17);
+    --vision-green: #496d58;
+    --vision-gold: #ad8d68;
+    position: relative;
+    overflow: hidden;
+    background: #f7f6f2;
+    color: var(--vision-ink);
+}
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-shell { width: min(1180px, calc(100% - 72px)); margin-inline: auto; }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-breadcrumb { display: flex; align-items: center; gap: 10px; padding-top: 26px; color: var(--vision-muted); font-size: 11px; }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-breadcrumb a { color: inherit; text-decoration: none; transition: color .2s ease; }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-breadcrumb a:hover { color: var(--vision-green); }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-hero { position: relative; min-height: 590px; padding: 116px 8% 72px; overflow: hidden; border-bottom: 1px solid var(--vision-line); }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-eyebrow,
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-index { display: flex; align-items: center; gap: 10px; color: var(--vision-green); font-size: 10px; font-weight: 650; letter-spacing: .16em; }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-eyebrow { margin: 0 0 28px; }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-eyebrow span,
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-index i { width: 25px; height: 1px; background: var(--vision-gold); }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-hero h1 { position: relative; z-index: 1; max-width: 850px; margin: 0; font-family: var(--ilena-font-display); font-size: clamp(50px, 7.2vw, 94px); font-weight: 400; letter-spacing: -.065em; line-height: .99; }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-hero h1 em { color: var(--vision-green); font-weight: 400; }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-hero-foot { position: relative; z-index: 1; display: grid; grid-template-columns: 150px minmax(240px, 470px); gap: 26px; align-items: start; margin-top: 62px; }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-hero-foot p { margin: 0; color: var(--vision-muted); font-size: 14px; line-height: 1.85; }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-orbit { position: absolute; right: 5%; top: 105px; width: 290px; aspect-ratio: 1; border: 1px solid rgba(73,109,88,.14); border-radius: 50%; pointer-events: none; }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-orbit::before,
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-orbit::after { content: ""; position: absolute; border: 1px solid rgba(173,141,104,.24); border-radius: 50%; }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-orbit::before { inset: 15%; }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-orbit::after { inset: 34%; background: radial-gradient(circle, rgba(73,109,88,.1), transparent 70%); }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-orbit--two { right: 15%; top: 200px; width: 110px; border-color: rgba(173,141,104,.3); animation: ilena-vision-orbit 24s linear infinite; }
+body.ilena-storefront.ilena-page--visimisi .ilena-values-section,
+body.ilena-storefront.ilena-page--visimisi .ilena-mission-section { padding: 100px 8%; border-bottom: 1px solid var(--vision-line); }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-section-heading { display: grid; grid-template-columns: 150px 1fr; gap: 26px; margin-bottom: 54px; }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-section-heading > .ilena-vision-index { padding-top: 12px; }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-section-heading h2 { margin: 0; font-family: var(--ilena-font-display); font-size: clamp(38px, 5vw, 60px); font-weight: 400; letter-spacing: -.05em; line-height: 1.08; }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-section-heading h2 span { color: var(--vision-green); }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-section-heading p { max-width: 590px; margin: 15px 0 0; color: var(--vision-muted); font-size: 13px; line-height: 1.8; }
+body.ilena-storefront.ilena-page--visimisi .ilena-values-layout { display: grid; grid-template-columns: minmax(250px, .78fr) 1.22fr; gap: clamp(40px, 8vw, 110px); align-items: center; }
+body.ilena-storefront.ilena-page--visimisi .ilena-values-art { position: sticky; top: 120px; margin: 0; padding: 30px; background: #eeede7; }
+body.ilena-storefront.ilena-page--visimisi .ilena-values-art img { display: block; width: 100%; height: auto; object-fit: contain; }
+body.ilena-storefront.ilena-page--visimisi .ilena-values-art figcaption { margin-top: 22px; color: var(--vision-muted); font-family: var(--ilena-font-display); font-size: 15px; line-height: 1.5; }
+body.ilena-storefront.ilena-page--visimisi .ilena-values-list,
+body.ilena-storefront.ilena-page--visimisi .ilena-mission-list { margin: 0; padding: 0; list-style: none; }
+body.ilena-storefront.ilena-page--visimisi .ilena-values-list li { position: relative; display: grid; grid-template-columns: 54px 1fr; gap: 18px; padding: 22px 0 25px; border-bottom: 1px solid var(--vision-line); }
+body.ilena-storefront.ilena-page--visimisi .ilena-value-initial { color: var(--vision-green); font-family: var(--ilena-font-display); font-size: 42px; line-height: 1; }
+body.ilena-storefront.ilena-page--visimisi .ilena-values-list h3,
+body.ilena-storefront.ilena-page--visimisi .ilena-mission-list h3 { margin: 0 0 7px; font-family: var(--ilena-font-display); font-size: 22px; font-weight: 500; letter-spacing: -.025em; }
+body.ilena-storefront.ilena-page--visimisi .ilena-values-list p,
+body.ilena-storefront.ilena-page--visimisi .ilena-mission-list p { max-width: 470px; margin: 0; color: var(--vision-muted); font-size: 12px; line-height: 1.75; }
+body.ilena-storefront.ilena-page--visimisi .ilena-value-line { position: absolute; right: 0; bottom: -1px; width: 0; height: 1px; background: var(--vision-green); transition: width .6s cubic-bezier(.2,.7,.25,1); }
+body.ilena-storefront.ilena-page--visimisi .ilena-values-list li.is-visible .ilena-value-line { width: 28%; transition-delay: 220ms; }
+body.ilena-storefront.ilena-page--visimisi .ilena-values-list li:hover .ilena-value-line { width: 100%; }
+body.ilena-storefront.ilena-page--visimisi .ilena-mission-section { padding-bottom: 120px; }
+body.ilena-storefront.ilena-page--visimisi .ilena-mission-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 34px; }
+body.ilena-storefront.ilena-page--visimisi .ilena-mission-list li { position: relative; padding: 25px 0 18px; border-top: 1px solid var(--vision-line); }
+body.ilena-storefront.ilena-page--visimisi .ilena-mission-mark { display: inline-block; margin-bottom: 28px; color: var(--vision-gold); font-size: 10px; letter-spacing: .13em; }
+body.ilena-storefront.ilena-page--visimisi .ilena-mission-list h3 { min-height: 54px; font-size: 20px; }
+body.ilena-storefront.ilena-page--visimisi .ilena-mission-list li::after { content: ""; position: absolute; top: -1px; left: 0; width: 34px; height: 1px; background: var(--vision-green); transform: scaleX(0); transform-origin: left; transition: transform .45s ease; }
+body.ilena-storefront.ilena-page--visimisi .ilena-mission-list li:hover::after { transform: scaleX(1); }
+body.ilena-storefront.ilena-page--visimisi .ilena-mission-list li.is-visible::after { transform: scaleX(.42); transition-delay: 240ms; }
+body.ilena-storefront.ilena-page--visimisi .ilena-mission-list li.is-visible:hover::after { transform: scaleX(1); }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-page.ilena-motion-ready [data-reveal] { opacity: 0; translate: 0 20px; transition: opacity .65s ease, translate .7s cubic-bezier(.2,.7,.25,1); }
+body.ilena-storefront.ilena-page--visimisi .ilena-vision-page.ilena-motion-ready [data-reveal].is-visible { opacity: 1; translate: 0 0; }
+body.ilena-storefront.ilena-page--visimisi .ilena-values-list li:nth-child(2),
+body.ilena-storefront.ilena-page--visimisi .ilena-mission-list li:nth-child(2) { transition-delay: 70ms; }
+body.ilena-storefront.ilena-page--visimisi .ilena-values-list li:nth-child(3),
+body.ilena-storefront.ilena-page--visimisi .ilena-mission-list li:nth-child(3) { transition-delay: 140ms; }
+@keyframes ilena-vision-orbit { to { rotate: 360deg; } }
+@media (max-width: 700px) {
+    body.ilena-storefront.ilena-page--visimisi .ilena-vision-shell { width: calc(100% - 36px); }
+    body.ilena-storefront.ilena-page--visimisi .ilena-vision-breadcrumb { padding-top: 18px; font-size: 10px; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-vision-hero { min-height: 570px; padding: 96px 4px 48px; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-vision-eyebrow { margin-bottom: 22px; font-size: 9px; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-vision-hero h1 { max-width: 580px; font-size: clamp(48px, 13vw, 72px); line-height: .99; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-vision-orbit--one { top: 210px; right: -105px; width: 240px; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-vision-orbit--two { top: 290px; right: 4px; width: 82px; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-vision-hero-foot { grid-template-columns: 1fr; gap: 18px; margin-top: 64px; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-vision-hero-foot p { max-width: 440px; font-size: 12px; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-values-section,
+    body.ilena-storefront.ilena-page--visimisi .ilena-mission-section { padding: 66px 4px; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-vision-section-heading { grid-template-columns: 1fr; gap: 22px; margin-bottom: 32px; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-vision-section-heading h2 { font-size: clamp(38px, 10vw, 52px); }
+    body.ilena-storefront.ilena-page--visimisi .ilena-vision-section-heading p { font-size: 12px; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-values-layout { grid-template-columns: 1fr; gap: 30px; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-values-art { position: relative; top: auto; padding: 20px; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-values-art img { max-height: 290px; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-values-art figcaption { margin-top: 14px; font-size: 13px; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-values-list li { grid-template-columns: 42px 1fr; gap: 12px; padding: 19px 0 21px; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-value-initial { font-size: 35px; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-values-list h3 { font-size: 20px; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-values-list p,
+    body.ilena-storefront.ilena-page--visimisi .ilena-mission-list p { font-size: 11px; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-mission-list { grid-template-columns: 1fr; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-mission-list li { padding: 22px 0 25px; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-mission-mark { margin-bottom: 15px; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-mission-list h3 { min-height: 0; font-size: 21px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront.ilena-page--visimisi .ilena-vision-page *,
+    body.ilena-storefront.ilena-page--visimisi .ilena-vision-page *::before,
+    body.ilena-storefront.ilena-page--visimisi .ilena-vision-page *::after { animation: none !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+    body.ilena-storefront.ilena-page--visimisi .ilena-vision-page.ilena-motion-ready [data-reveal] { opacity: 1; translate: none; }
+}
