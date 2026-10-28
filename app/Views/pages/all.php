@@ -402,6 +402,26 @@ if (isset($_GET['ruang'])) {
                 <?php } ?>
             </div>
         </div>
+        <div style="flex: 1;">
+            <!-- <div style="position: absolute;" class="w-100"> -->
+            <header class="ilena-catalog-intro <?= $hideGenericCatalogIntro ? 'ilena-catalog-intro--compact' : ''; ?>">
+                <div>
+                    <p class="ilena-catalog-intro__eyebrow"><?= $isSmartSearch ? 'PENCARIAN KATALOG' : 'ILENA <span>/</span> FURNITURE'; ?></p>
+                    <?php if ($isSmartSearch || !$hideGenericCatalogIntro) { ?>
+                    <h1><?= esc($isSmartSearch ? 'Temukan furniture pilihan' : $catalogHeading); ?></h1>
+                    <?php } ?>
+                    <?php if ($isSmartSearch) { ?>
+                    <p class="ilena-catalog-intro__description">Kami mencarikan furniture yang paling mendekati kebutuhan dan gaya ruang Anda.</p>
+                    <?php } ?>
+                </div>
+                <div class="ilena-catalog-intro__aside">
+                    <?php if (session()->get('role') == '1') { ?>
+                    <a href="/admin/addproduct" class="ilena-catalog-add">Tambah Produk <span aria-hidden="true">↗</span></a>
+                    <?php } ?>
+                    <p><strong><?= number_format($catalogTotalResults, 0, ',', '.'); ?></strong><span>DESAIN</span></p>
+                </div>
+            </header>
+
         <div class="hide-ke-show-block">
             <nav style="--bs-breadcrumb-divider: '/'; position: relative; height: <?= count($seluruhFilter) > 0 ? '80px' : '36px'; ?>"
                 aria-label="breadcrumb">
@@ -578,25 +598,6 @@ if (isset($_GET['ruang'])) {
             </div>
         </div>
 
-        <div style="flex: 1;">
-            <!-- <div style="position: absolute;" class="w-100"> -->
-            <header class="ilena-catalog-intro <?= $hideGenericCatalogIntro ? 'ilena-catalog-intro--compact' : ''; ?>">
-                <div>
-                    <p class="ilena-catalog-intro__eyebrow"><?= $isSmartSearch ? 'PENCARIAN KATALOG' : 'ILENA <span>/</span> FURNITURE'; ?></p>
-                    <?php if ($isSmartSearch || !$hideGenericCatalogIntro) { ?>
-                    <h1><?= esc($isSmartSearch ? 'Temukan furniture pilihan' : $catalogHeading); ?></h1>
-                    <?php } ?>
-                    <?php if ($isSmartSearch) { ?>
-                    <p class="ilena-catalog-intro__description">Kami mencarikan furniture yang paling mendekati kebutuhan dan gaya ruang Anda.</p>
-                    <?php } ?>
-                </div>
-                <div class="ilena-catalog-intro__aside">
-                    <?php if (session()->get('role') == '1') { ?>
-                    <a href="/admin/addproduct" class="ilena-catalog-add">Tambah Produk <span aria-hidden="true">↗</span></a>
-                    <?php } ?>
-                    <p><strong><?= number_format($catalogTotalResults, 0, ',', '.'); ?></strong><span>DESAIN</span></p>
-                </div>
-            </header>
             <?php if (session()->get('role') == '1') { ?>
             <p class="ilena-catalog-admin-note">Katalog produk</p>
             <?php } ?>
