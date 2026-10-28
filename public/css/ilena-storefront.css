@@ -1712,6 +1712,8 @@ body.ilena-storefront .ilena-auth-captcha.is-verified .ilena-auth-captcha__messa
 
 
 
+
+
 @media (max-width: 380px) {
     body.ilena-storefront .ilena-auth-captcha { padding: 12px; }
     body.ilena-storefront .ilena-auth-captcha__widget { width: 100%; min-height: 68px; }
@@ -8715,5 +8717,58 @@ body.ilena-storefront .ilena-mobile-lightbox { display: none; }
         opacity: 1 !important;
         translate: none !important;
         transform: none;
+    }
+}
+
+/* Reveal the mobile room strip as the user scrolls into it. */
+@media (max-width: 700px) {
+    body.ilena-storefront.ilena-page--home .ilena-home-room-scroll {
+        position: relative;
+    }
+
+    body.ilena-storefront.ilena-page--home .ilena-home-room-scroll::before {
+        content: "";
+        position: absolute;
+        z-index: 2;
+        top: 13px;
+        left: 20px;
+        width: 44px;
+        height: 1px;
+        background: #9a795e;
+        transform: scaleX(0);
+        transform-origin: left center;
+    }
+
+    body.ilena-storefront.ilena-page--home .ilena-home-room-scroll.ilena-scroll-motion-ready::before {
+        transition: transform 650ms cubic-bezier(.2,.7,.25,1);
+    }
+
+    body.ilena-storefront.ilena-page--home .ilena-home-room-scroll.ilena-scroll-motion-visible::before {
+        transform: scaleX(1);
+    }
+
+    body.ilena-storefront.ilena-page--home .ilena-home-room-scroll.ilena-scroll-motion-ready .ilena-home-room-card {
+        opacity: 0;
+        translate: 0 12px;
+        transition: opacity 420ms ease, translate 520ms cubic-bezier(.2,.7,.25,1);
+    }
+
+    body.ilena-storefront.ilena-page--home .ilena-home-room-scroll.ilena-scroll-motion-visible .ilena-home-room-card {
+        opacity: 1;
+        translate: 0 0;
+    }
+
+    body.ilena-storefront.ilena-page--home .ilena-home-room-scroll.ilena-scroll-motion-visible .ilena-home-room-card:nth-child(1) { transition-delay: 60ms; }
+    body.ilena-storefront.ilena-page--home .ilena-home-room-scroll.ilena-scroll-motion-visible .ilena-home-room-card:nth-child(2) { transition-delay: 140ms; }
+    body.ilena-storefront.ilena-page--home .ilena-home-room-scroll.ilena-scroll-motion-visible .ilena-home-room-card:nth-child(3) { transition-delay: 220ms; }
+}
+
+@media (max-width: 700px) and (prefers-reduced-motion: reduce) {
+    body.ilena-storefront.ilena-page--home .ilena-home-room-scroll::before,
+    body.ilena-storefront.ilena-page--home .ilena-home-room-scroll .ilena-home-room-card {
+        transition: none !important;
+        opacity: 1 !important;
+        translate: none !important;
+        transform: none !important;
     }
 }

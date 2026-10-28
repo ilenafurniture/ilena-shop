@@ -1587,6 +1587,21 @@ function modalseries() {
 <!-- End Bagian Windows Scroll -->
 
 <script>
+(() => {
+    const roomStrip = document.querySelector('.ilena-home-room-scroll');
+    if (!roomStrip || !('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    roomStrip.classList.add('ilena-scroll-motion-ready');
+    const revealRoomStrip = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            roomStrip.classList.add('ilena-scroll-motion-visible');
+            observer.disconnect();
+        });
+    }, { threshold: 0.16 });
+    revealRoomStrip.observe(roomStrip);
+})();
+
 const sliders = document.querySelectorAll('.slider');
 sliders.forEach((slider) => {
     const track = slider.querySelector('.slides');
