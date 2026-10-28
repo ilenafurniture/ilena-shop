@@ -9121,7 +9121,7 @@ body.ilena-storefront .ilena-chat-compose textarea { border-color: #e8ddd4; bord
 body.ilena-storefront .ilena-chat-compose textarea:focus { border-color: #a54046; outline-color: rgba(165,64,70,.13); }
 body.ilena-storefront .ilena-chat-compose button { background: #96363c; box-shadow: 0 3px 8px rgba(150,54,60,.16); }
 body.ilena-storefront .ilena-chat-compose button:hover { background: #302724; }
-body.ilena-storefront .ilena-chat-footer { background: #fff; }
+body.ilena-storefront .ilena-chat-footer { background: #fffaf5; }
 body.ilena-storefront .ilena-chat-footer button,
 body.ilena-storefront .ilena-chat-footer a { color: #716963; }
 body.ilena-storefront .ilena-chat-footer button:hover,
