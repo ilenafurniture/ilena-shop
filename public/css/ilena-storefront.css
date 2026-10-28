@@ -9733,3 +9733,13 @@ body.ilena-storefront .container-melayang .ilena-floating-chat:hover {
     body.ilena-storefront .ilena-chat-suggestions button,
     body.ilena-storefront .ilena-chat-compose button { transition: none; }
 }
+
+/* Keep the WhatsApp footer on the same paper surface as Kak Wawa's header. */
+body.ilena-storefront .ilena-chat-greeting__panel {
+    --wawa-header-surface: #f8f6f2;
+}
+body.ilena-storefront .ilena-chat-greeting__heading,
+body.ilena-storefront .ilena-chat-footer {
+    background: var(--wawa-header-surface) !important;
+    background-image: none !important;
+}

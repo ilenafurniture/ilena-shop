@@ -31,7 +31,11 @@
   let currentStatus = 'ai';
   let humanAvailable = null;
   let waitingForReply = false;
+  let waitingSince = 0;
+  let slowReplyNoticeShown = false;
   let lastNoticeKey = null;
+  let lastWhatsappUrl = '';
+  const pendingRequestIds = new Map();
   let soundEnabled = true;
   let arrivalSoundPending = false;
   let arrivalSoundPlayed = false;
@@ -56,30 +60,65 @@
     notice.hidden = !message;
   }
   function updateCsrf(data) { if (data?.csrfHash) csrf.value = data.csrfHash; }
+  function showOfflineNotice() {
+    showNotice('Mohon maaf, CS sedang tidak tersedia di luar jam layanan (08.00–16.00 WIB). Kak Wawa tetap siap membantu Kakak di sini.', lastWhatsappUrl);
+  }
   async function api(url, options = {}) {
     const headers = new Headers(options.headers || {});
+    const { timeoutMs = options.method === 'POST' ? 15000 : 10000, ...fetchOptions } = options;
     if (options.method === 'POST') {
       headers.set('X-CSRF-TOKEN', csrf.value);
       headers.set('Content-Type', 'application/json');
     }
-    let response;
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
     try {
-      response = await fetch(url, { ...options, headers, credentials: 'same-origin', cache: 'no-store' });
-    } catch (_) {
-      const error = new Error('Chat sedang sulit terhubung. Anda tetap bisa menghubungi tim Ilena melalui WhatsApp.');
-      error.data = { code: 'network_error' };
-      throw error;
+      let response;
+      try {
+        response = await fetch(url, { ...fetchOptions, headers, credentials: 'same-origin', cache: 'no-store', signal: controller.signal });
+      } catch (cause) {
+        const timedOut = controller.signal.aborted;
+        const error = new Error(timedOut ? 'Kak Wawa belum menerima konfirmasi dalam batas waktu.' : 'Koneksi Kak Wawa terputus sementara.');
+        error.data = { code: timedOut ? 'request_timeout' : 'network_error' };
+        error.cause = cause;
+        throw error;
+      }
+      let data;
+      try {
+        data = await response.json();
+      } catch (cause) {
+        if (controller.signal.aborted) {
+          const error = new Error('Kak Wawa belum menerima konfirmasi dalam batas waktu.');
+          error.data = { code: 'request_timeout' };
+          error.cause = cause;
+          throw error;
+        }
+        data = {};
+      }
+      updateCsrf(data);
+      if (!response.ok || !data.success) {
+        const known = ['Tunggu sebentar sebelum mengirim pesan lagi.', 'Pesan harus berisi 1–1.200 karakter.'];
+        const error = new Error(known.includes(data.message) ? data.message : 'Chat belum dapat memproses pesan. Silakan coba lagi atau lanjutkan melalui WhatsApp.');
+        error.data = data;
+        throw error;
+      }
+      return data;
+    } finally {
+      window.clearTimeout(timeout);
     }
-    let data;
-    try { data = await response.json(); } catch (_) { data = {}; }
-    updateCsrf(data);
-    if (!response.ok || !data.success) {
-      const known = ['Tunggu sebentar sebelum mengirim pesan lagi.', 'Pesan harus berisi 1–1.200 karakter.'];
-      const error = new Error(known.includes(data.message) ? data.message : 'Chat belum dapat memproses pesan. Silakan coba lagi atau lanjutkan melalui WhatsApp.');
-      error.data = data;
-      throw error;
-    }
-    return data;
+  }
+
+  function getClientRequestId(message) {
+    if (pendingRequestIds.has(message)) return pendingRequestIds.get(message);
+    const requestId = typeof window.crypto?.randomUUID === 'function'
+      ? window.crypto.randomUUID()
+      : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, character => {
+        const random = Math.floor(Math.random() * 16);
+        return (character === 'x' ? random : (random & 0x3) | 0x8).toString(16);
+      });
+    pendingRequestIds.set(message, requestId);
+    while (pendingRequestIds.size > 8) pendingRequestIds.delete(pendingRequestIds.keys().next().value);
+    return requestId;
   }
   function renderProduct(product) {
     const a = document.createElement('a');
@@ -246,7 +285,13 @@
     transcript.scrollTop = transcript.scrollHeight;
     if (message.sender_type === 'assistant' || message.sender_type === 'admin') {
       waitingForReply = false;
+      waitingSince = 0;
       setTyping(false);
+      if (slowReplyNoticeShown) {
+        slowReplyNoticeShown = false;
+        if (humanAvailable === false) showOfflineNotice();
+        else showNotice('');
+      }
       if (notify) playReplyTone();
     }
   }
@@ -290,16 +335,25 @@
       if (handoff && currentStatus === 'ai' && humanAvailable) handoff.disabled = false;
     }
   }
-  function handleError(error) {
+  function handleError(error, preservePendingReply = false) {
     const data = error?.data || {};
     if (data.code === 'outside_hours') {
       humanAvailable = false;
       updateStatus(currentStatus, false);
-      waitingForReply = false; setTyping(false);
+      waitingForReply = false; waitingSince = 0; setTyping(false);
       showNotice(data.message || 'Di luar jam layanan. Pesan Anda tetap bisa dikirim dan akan dibalas saat tim kembali.', data.whatsappUrl || '');
       return;
     }
-    waitingForReply = false; setTyping(false);
+    if (preservePendingReply && waitingForReply && ['request_timeout', 'network_error'].includes(data.code)) {
+      setTyping(false);
+      showNotice('Koneksi sempat terputus. Kak Wawa akan mencoba lagi tanpa mengirim ulang pesan Kakak.', lastWhatsappUrl);
+      return;
+    }
+    waitingForReply = false; waitingSince = 0; setTyping(false);
+    if (['request_timeout', 'network_error'].includes(data.code)) {
+      showNotice('Kak Wawa belum menerima konfirmasi. Jika pesan belum muncul, kirim ulang pesan yang sama; pesan tidak akan digandakan.', lastWhatsappUrl);
+      return;
+    }
     showNotice(error?.message || 'Chat sedang sulit terhubung. Silakan lanjutkan melalui WhatsApp.');
   }
   async function bootstrap() {
@@ -309,14 +363,22 @@
       const productId = widget.dataset.contextProduct || '';
       const data = await api('/chat/bootstrap' + (productId ? '?product=' + encodeURIComponent(productId) : ''));
       currentConversationKey = data.conversationKey || currentConversationKey;
+      lastWhatsappUrl = data.whatsappUrl || lastWhatsappUrl;
       humanAvailable = data.humanAvailable === true;
+      transcript.setAttribute('aria-live', 'off');
       renderMessages(data.messages);
       updateStatus(data.status, humanAvailable);
       ready = true;
-      if (!humanAvailable) showNotice('Mohon maaf, CS sedang tidak tersedia di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '). Kak Wawa tetap siap membantu Kakak di sini.', data.whatsappUrl || '');
+      const latestMessage = Array.isArray(data.messages) ? data.messages[data.messages.length - 1] : null;
+      if (data.status === 'ai' && latestMessage?.sender_type === 'visitor') {
+        waitingForReply = true;
+        waitingSince = Date.now();
+        setTyping(true, 'Kak Wawa sedang menyiapkan jawaban');
+      }
+      if (!humanAvailable) showOfflineNotice();
       else showNotice('');
     } catch (error) { handleError(error); }
-    finally { sending = false; updateStatus(currentStatus, humanAvailable); }
+    finally { transcript.setAttribute('aria-live', 'polite'); sending = false; updateStatus(currentStatus, humanAvailable); }
   }
   async function poll() {
     if (!opened || !ready || polling || document.hidden) return;
@@ -324,18 +386,29 @@
     try {
       const data = await api('/chat/poll?after=' + cursor);
       currentConversationKey = data.conversationKey || currentConversationKey;
+      lastWhatsappUrl = data.whatsappUrl || lastWhatsappUrl;
       renderMessages(data.messages, true);
       updateStatus(data.status, data.humanAvailable === true);
-      if (data.humanAvailable === false && !waitingForReply) showNotice('Mohon maaf, CS sedang tidak tersedia di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '). Kak Wawa tetap siap membantu Kakak di sini.', data.whatsappUrl || '');
-    } catch (error) { handleError(error); }
+      if (data.humanAvailable === false && !waitingForReply && !slowReplyNoticeShown) showOfflineNotice();
+    } catch (error) { handleError(error, true); }
     finally { polling = false; }
+  }
+  function nextPollDelay() {
+    if (!waitingForReply) return 15000;
+    const elapsed = Date.now() - (waitingSince || Date.now());
+    if (elapsed >= 30000 && !slowReplyNoticeShown) {
+      slowReplyNoticeShown = true;
+      setTyping(false);
+      showNotice('Maaf, jawaban Kak Wawa masih tertunda. Kakak tidak perlu mengirim ulang pesan; Kak Wawa akan terus memeriksa jawabannya.', lastWhatsappUrl);
+    }
+    return elapsed >= 30000 ? 12000 : 3000;
   }
   function schedulePoll(delay = 0) {
     if (!opened || !ready || pollTimer) return;
     pollTimer = window.setTimeout(async () => {
       pollTimer = null;
       await poll();
-      if (opened) schedulePoll(waitingForReply ? 2400 : 7000);
+      if (opened) schedulePoll(nextPollDelay());
     }, delay);
   }
 
@@ -410,19 +483,40 @@
     if (!message || sending) return;
     transcript.querySelectorAll('.ilena-chat-resolution button').forEach(button => { button.disabled = true; });
     sending = true; input.disabled = true; if (sendButton) sendButton.disabled = true; showNotice('');
+    const clientRequestId = getClientRequestId(message);
+    const sendPayload = JSON.stringify({ message, productId: widget.dataset.contextProduct || '', clientRequestId });
     try {
-      const data = await api('/chat/send', { method: 'POST', body: JSON.stringify({ message, productId: widget.dataset.contextProduct || '' }) });
+      let data;
+      try {
+        data = await api('/chat/send', { method: 'POST', body: sendPayload });
+      } catch (firstError) {
+        // A timeout can happen after the server commits. Retry once with the
+        // exact same request ID so the database returns the original message.
+        if (!['request_timeout', 'network_error'].includes(firstError?.data?.code)) throw firstError;
+        data = await api('/chat/send', { method: 'POST', body: sendPayload });
+      }
+      pendingRequestIds.delete(message);
       currentConversationKey = data.conversationKey || currentConversationKey;
+      lastWhatsappUrl = data.whatsappUrl || lastWhatsappUrl;
       input.value = ''; ready = true; updateStatus(data.status, data.humanAvailable);
       appendMessage({ id: data.messageId, sender_type: 'visitor', body: message, created_at: data.createdAt || '' });
       waitingForReply = data.status === 'ai';
+      waitingSince = waitingForReply ? Date.now() : 0;
+      slowReplyNoticeShown = false;
       if (waitingForReply) setTyping(true, 'Kak Wawa sedang menyiapkan jawaban');
       else if (data.status === 'human_waiting') setTyping(true, 'Pesan Anda menunggu tim Ilena');
       if (data.humanAvailable === false) {
-        showNotice('Mohon maaf, CS sedang tidak tersedia di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '). Kak Wawa tetap membantu Kakak di sini.', data.whatsappUrl || '');
+        showOfflineNotice();
       }
     } catch (error) { handleError(error); }
-    finally { sending = false; updateStatus(currentStatus, humanAvailable); if (!input.disabled) input.focus(); poll(); }
+    finally {
+      sending = false;
+      updateStatus(currentStatus, humanAvailable);
+      if (!input.disabled) input.focus();
+      if (pollTimer) window.clearTimeout(pollTimer);
+      pollTimer = null;
+      poll().finally(() => schedulePoll(nextPollDelay()));
+    }
   });
   handoff?.addEventListener('click', requestHandoff);
   soundButton?.addEventListener('click', async () => {
@@ -447,7 +541,7 @@
     scheduleLauncherIdle();
     if (pollTimer) window.clearTimeout(pollTimer);
     pollTimer = null;
-    poll().finally(() => schedulePoll(waitingForReply ? 2400 : 7000));
+    poll().finally(() => schedulePoll(nextPollDelay()));
   });
   scheduleLauncherIdle();
   const unlockArrivalSound = () => playWelcomeTone();

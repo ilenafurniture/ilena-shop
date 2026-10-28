@@ -60,6 +60,32 @@ class SupportChatController extends BaseController
         return $builder->orderBy('last_message_at', 'DESC')->orderBy('id', 'DESC')->get(1)->getRowArray() ?: null;
     }
 
+    private function chatMessageByRequestId(int $conversationId, string $requestId): ?array
+    {
+        if ($conversationId < 1 || $requestId === '' || ! $this->db()->fieldExists('client_request_id', 'ilena_chat_messages')) return null;
+        return $this->db()->table('ilena_chat_messages')
+            ->where('conversation_id', $conversationId)
+            ->where('sender_type', 'visitor')
+            ->where('client_request_id', $requestId)
+            ->get(1)->getRowArray() ?: null;
+    }
+
+    private function chatSendResponse(array $conversation, array $message, array $availability, bool $deduplicated = false): ResponseInterface
+    {
+        $body = (string) ($message['body'] ?? '');
+        return $this->json([
+            'success' => true,
+            'conversationKey' => $conversation['conversation_key'],
+            'messageId' => (int) $message['id'],
+            'status' => (string) ($conversation['status'] ?? 'ai'),
+            'humanAvailable' => $availability['open'],
+            'serviceHours' => $availability['hours'],
+            'whatsappUrl' => $this->whatsappUrl($body),
+            'createdAt' => (string) ($message['created_at'] ?? ''),
+            'deduplicated' => $deduplicated,
+        ]);
+    }
+
     public function bootstrap()
     {
         $db = $this->db();
@@ -109,11 +135,11 @@ class SupportChatController extends BaseController
         $input = $this->request->getJSON(true) ?? $this->request->getPost();
         $body = trim((string)($input['message'] ?? ''));
         if ($body === '' || mb_strlen($body) > 1200) return $this->json(['success' => false, 'message' => 'Pesan harus berisi 1–1.200 karakter.'], 422);
-        $availability = $this->supportAvailability();
-        $ip = (string) $this->request->getIPAddress();
-        if (function_exists('service') && ! service('throttler')->check('ilena-chat-send-' . hash('sha256', $ip), 12, 60)) {
-            return $this->json(['success' => false, 'message' => 'Tunggu sebentar sebelum mengirim pesan lagi.'], 429);
+        $clientRequestId = trim((string) ($input['clientRequestId'] ?? ''));
+        if ($clientRequestId !== '' && ! preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i', $clientRequestId)) {
+            return $this->json(['success' => false, 'message' => 'Permintaan chat tidak valid. Muat ulang halaman lalu coba kembali.'], 422);
         }
+        $availability = $this->supportAvailability();
         $visitor = $this->visitorHash(true);
         $db = $this->db();
         if (! $db->tableExists('ilena_chat_conversations') || ! $db->tableExists('ilena_chat_jobs')) {
@@ -121,6 +147,17 @@ class SupportChatController extends BaseController
         }
 
         $conversation = $this->ownedConversation($visitor);
+        if ($clientRequestId !== '' && $conversation) {
+            $existing = $this->chatMessageByRequestId((int) $conversation['id'], $clientRequestId);
+            if ($existing) {
+                if (! hash_equals((string) $existing['body'], $body)) return $this->json(['success' => false, 'message' => 'Pesan ini sudah terkirim dengan isi berbeda.'], 409);
+                return $this->chatSendResponse($conversation, $existing, $availability, true);
+            }
+        }
+        $ip = (string) $this->request->getIPAddress();
+        if (function_exists('service') && ! service('throttler')->check('ilena-chat-send-' . hash('sha256', $ip), 12, 60)) {
+            return $this->json(['success' => false, 'message' => 'Tunggu sebentar sebelum mengirim pesan lagi.'], 429);
+        }
         $contextProductId = trim((string)($input['productId'] ?? ''));
         if ($contextProductId !== '' && ! preg_match('/^[A-Za-z0-9_-]{1,64}$/', $contextProductId)) $contextProductId = '';
         $now = date('Y-m-d H:i:s');
@@ -151,10 +188,10 @@ class SupportChatController extends BaseController
                 'conversation_id' => $conversationId,
                 'sender_type' => 'visitor',
                 'body' => $body,
+                ...($clientRequestId !== '' && $db->fieldExists('client_request_id', 'ilena_chat_messages') ? ['client_request_id' => $clientRequestId] : []),
                 'created_at' => $now,
             ]);
             $messageId = (int)$db->insertID();
-            $conversationStatus = (string) ($conversation['status'] ?? 'ai');
             $db->table('ilena_chat_conversations')->where('id', $conversationId)->update([
                 'context_product_id' => $contextProductId ?: ($conversation['context_product_id'] ?? null),
                 'last_message_at' => $now,
@@ -175,18 +212,17 @@ class SupportChatController extends BaseController
             }
             if ($db->transStatus() === false) throw new \RuntimeException('Penyimpanan pesan gagal.');
             $db->transCommit();
-            return $this->json([
-                'success' => true,
-                'conversationKey' => $conversation['conversation_key'],
-                'messageId' => $messageId,
-                'status' => $conversationStatus,
-                'humanAvailable' => $availability['open'],
-                'serviceHours' => $availability['hours'],
-                'whatsappUrl' => $this->whatsappUrl($body),
-                'createdAt' => $now,
-            ]);
+            return $this->chatSendResponse($conversation, ['id' => $messageId, 'body' => $body, 'created_at' => $now], $availability);
         } catch (\Throwable $e) {
             $db->transRollback();
+            if ($clientRequestId !== '') {
+                $activeConversation = $this->ownedConversation($visitor);
+                $existing = $activeConversation ? $this->chatMessageByRequestId((int) $activeConversation['id'], $clientRequestId) : null;
+                if ($activeConversation && $existing) {
+                    if (! hash_equals((string) $existing['body'], $body)) return $this->json(['success' => false, 'message' => 'Pesan ini sudah terkirim dengan isi berbeda.'], 409);
+                    return $this->chatSendResponse($activeConversation, $existing, $availability, true);
+                }
+            }
             log_message('error', 'Ilena chat send failed: {message}', ['message' => $e->getMessage()]);
             return $this->json(['success' => false, 'message' => 'Pesan belum tersimpan. Coba kirim kembali.'], 500);
         }
