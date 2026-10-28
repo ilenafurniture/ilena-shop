@@ -46,6 +46,20 @@
 
   const safeText = (value) => String(value ?? '');
   const currency = (value) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(value) || 0);
+  function parseUtcChatTimestamp(value) {
+    const match = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})$/.exec(String(value || '').trim());
+    if (!match) return null;
+    const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]), Number(match[4]), Number(match[5]), Number(match[6])));
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+  function formatChatTimestamp(value) {
+    const date = parseUtcChatTimestamp(value);
+    if (!date) return safeText(value);
+    return new Intl.DateTimeFormat('id-ID', {
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23', timeZoneName: 'short',
+    }).format(date);
+  }
   function showNotice(message, linkUrl = '') {
     const noticeKey = JSON.stringify([message || '', linkUrl || '']);
     if (noticeKey === lastNoticeKey) return;
@@ -280,7 +294,11 @@
       actions.append(prompt, satisfied, askStaff);
       bubble.append(actions);
     }
-    const time = document.createElement('time'); time.textContent = safeText(message.created_at || ''); bubble.append(time);
+    const time = document.createElement('time');
+    const messageTime = parseUtcChatTimestamp(message.created_at);
+    if (messageTime) time.dateTime = messageTime.toISOString();
+    time.textContent = formatChatTimestamp(message.created_at || '');
+    bubble.append(time);
     transcript.insertBefore(bubble, typing);
     transcript.scrollTop = transcript.scrollHeight;
     if (message.sender_type === 'assistant' || message.sender_type === 'admin') {
