@@ -1,0 +1,309 @@
+<?php
+
+namespace App\Controllers;
+
+use App\Services\SmartProductAssistant;
+use CodeIgniter\HTTP\ResponseInterface;
+
+class SupportChatController extends BaseController
+{
+    private function db()
+    {
+        return db_connect();
+    }
+
+    private function visitorHash(bool $create = false): ?string
+    {
+        $token = (string)($this->request->getCookie('ilena_chat_visitor') ?? '');
+        if (preg_match('/^[a-f0-9]{64}$/', $token)) return hash('sha256', $token);
+        if (! $create) return null;
+
+        $token = bin2hex(random_bytes(32));
+        setcookie('ilena_chat_visitor', $token, [
+            'expires' => time() + 60 * 60 * 24 * 180,
+            'path' => '/',
+            'secure' => $this->request->isSecure(),
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
+        return hash('sha256', $token);
+    }
+
+    private function json(array $payload, int $status = 200): ResponseInterface
+    {
+        $payload['csrfHash'] = csrf_hash();
+        return $this->response->setStatusCode($status)->setJSON($payload);
+    }
+
+    private function ownedConversation(string $visitorHash, bool $includeClosed = false): ?array
+    {
+        $builder = $this->db()->table('ilena_chat_conversations')->where('visitor_hash', $visitorHash);
+        if (! $includeClosed) $builder->whereIn('status', ['ai', 'human_waiting', 'human']);
+        return $builder->orderBy('last_message_at', 'DESC')->orderBy('id', 'DESC')->get(1)->getRowArray() ?: null;
+    }
+
+    public function bootstrap()
+    {
+        $db = $this->db();
+        if (! $db->tableExists('ilena_chat_conversations')) return $this->json(['success' => false, 'message' => 'Chat sedang disiapkan.'], 503);
+        $visitor = $this->visitorHash(true);
+        $conversation = $this->ownedConversation($visitor);
+        $contextProductId = trim((string)$this->request->getGet('product'));
+        if ($contextProductId !== '' && $conversation && preg_match('/^[A-Za-z0-9_-]{1,64}$/', $contextProductId)) {
+            $db->table('ilena_chat_conversations')->where('id', (int)$conversation['id'])->update(['context_product_id' => $contextProductId]);
+            $conversation['context_product_id'] = $contextProductId;
+        }
+        return $this->json([
+            'success' => true,
+            'conversationKey' => $conversation['conversation_key'] ?? null,
+            'status' => $conversation['status'] ?? 'ai',
+            'messages' => $conversation ? $this->messagesFor((int)$conversation['id'], 0, 50) : [],
+        ]);
+    }
+
+    public function poll()
+    {
+        $visitor = $this->visitorHash();
+        if (! $visitor) return $this->json(['success' => true, 'conversationKey' => null, 'messages' => [], 'status' => 'ai']);
+        $conversation = $this->ownedConversation($visitor);
+        if (! $conversation) return $this->json(['success' => true, 'conversationKey' => null, 'messages' => [], 'status' => 'ai']);
+        $after = max(0, (int)$this->request->getGet('after'));
+        return $this->json([
+            'success' => true,
+            'conversationKey' => $conversation['conversation_key'],
+            'status' => $conversation['status'],
+            'messages' => $this->messagesFor((int)$conversation['id'], $after, 40),
+        ]);
+    }
+
+    public function send()
+    {
+        $visitor = $this->visitorHash(true);
+        $input = $this->request->getJSON(true) ?? $this->request->getPost();
+        $body = trim((string)($input['message'] ?? ''));
+        if ($body === '' || mb_strlen($body) > 1200) return $this->json(['success' => false, 'message' => 'Pesan harus berisi 1–1.200 karakter.'], 422);
+        $db = $this->db();
+        if (! $db->tableExists('ilena_chat_conversations') || ! $db->tableExists('ilena_chat_jobs')) {
+            return $this->json(['success' => false, 'message' => 'Layanan chat belum selesai disiapkan.'], 503);
+        }
+
+        $conversation = $this->ownedConversation($visitor);
+        $contextProductId = trim((string)($input['productId'] ?? ''));
+        if ($contextProductId !== '' && ! preg_match('/^[A-Za-z0-9_-]{1,64}$/', $contextProductId)) $contextProductId = '';
+        $now = date('Y-m-d H:i:s');
+        $db->transBegin();
+        try {
+            if (! $conversation) {
+                $key = bin2hex(random_bytes(32));
+                $db->table('ilena_chat_conversations')->insert([
+                    'conversation_key' => $key,
+                    'visitor_hash' => $visitor,
+                    'customer_email' => null,
+                    'status' => 'ai',
+                    'context_product_id' => $contextProductId ?: null,
+                    'last_message_at' => $now,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]);
+                $conversation = $db->table('ilena_chat_conversations')->where('conversation_key', $key)->get()->getRowArray();
+            }
+            $conversationId = (int)$conversation['id'];
+            $rateCount = $db->table('ilena_chat_messages')->where('conversation_id', $conversationId)
+                ->where('sender_type', 'visitor')->where('created_at >=', date('Y-m-d H:i:s', time() - 60))->countAllResults();
+            if ($rateCount >= 12) {
+                $db->transRollback();
+                return $this->json(['success' => false, 'message' => 'Tunggu sebentar sebelum mengirim pesan lagi.'], 429);
+            }
+            $db->table('ilena_chat_messages')->insert([
+                'conversation_id' => $conversationId,
+                'sender_type' => 'visitor',
+                'body' => $body,
+                'created_at' => $now,
+            ]);
+            $messageId = (int)$db->insertID();
+            $db->table('ilena_chat_conversations')->where('id', $conversationId)->update([
+                'context_product_id' => $contextProductId ?: ($conversation['context_product_id'] ?? null),
+                'last_message_at' => $now,
+                'updated_at' => $now,
+            ]);
+            if (($conversation['status'] ?? 'ai') === 'ai') {
+                $db->table('ilena_chat_jobs')->insert([
+                    'conversation_id' => $conversationId,
+                    'user_message_id' => $messageId,
+                    'status' => 'queued',
+                    'attempts' => 0,
+                    'available_at' => $now,
+                    'created_at' => $now,
+                ]);
+            }
+            if ($db->transStatus() === false) throw new \RuntimeException('Penyimpanan pesan gagal.');
+            $db->transCommit();
+            return $this->json(['success' => true, 'conversationKey' => $conversation['conversation_key'], 'messageId' => $messageId, 'status' => $conversation['status']]);
+        } catch (\Throwable $e) {
+            $db->transRollback();
+            log_message('error', 'Ilena chat send failed: {message}', ['message' => $e->getMessage()]);
+            return $this->json(['success' => false, 'message' => 'Pesan belum tersimpan. Coba kirim kembali.'], 500);
+        }
+    }
+
+    public function handoff()
+    {
+        $visitor = $this->visitorHash();
+        if (! $visitor) return $this->json(['success' => false, 'message' => 'Percakapan belum dimulai.'], 404);
+        $conversation = $this->ownedConversation($visitor);
+        if (! $conversation) return $this->json(['success' => false, 'message' => 'Percakapan tidak ditemukan.'], 404);
+        $this->db()->table('ilena_chat_conversations')->where('id', (int)$conversation['id'])->update([
+            'status' => 'human_waiting', 'last_message_at' => date('Y-m-d H:i:s'), 'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+        $this->db()->table('ilena_chat_messages')->insert([
+            'conversation_id' => (int)$conversation['id'], 'sender_type' => 'system',
+            'body' => 'Pelanggan meminta bantuan staf. Pesan berikutnya akan dilayani oleh tim Ilena.',
+            'created_at' => date('Y-m-d H:i:s'),
+        ]);
+        return $this->json(['success' => true, 'status' => 'human_waiting']);
+    }
+
+    private function messagesFor(int $conversationId, int $after, int $limit): array
+    {
+        $builder = $this->db()->table('ilena_chat_messages')->where('conversation_id', $conversationId);
+        if ($after > 0) {
+            $rows = $builder->where('id >', $after)->orderBy('id', 'ASC')->get($limit)->getResultArray();
+        } else {
+            $rows = array_reverse($builder->orderBy('id', 'DESC')->get($limit)->getResultArray());
+        }
+        foreach ($rows as &$row) {
+            $meta = json_decode((string)($row['metadata'] ?? ''), true);
+            $row['metadata'] = is_array($meta) ? $meta : null;
+        }
+        unset($row);
+        return $rows;
+    }
+
+    // ======================== Admin inbox ========================
+
+    public function adminIndex()
+    {
+        $db = $this->db();
+        $knowledge = $db->tableExists('ilena_chat_knowledge')
+            ? $db->table('ilena_chat_knowledge')->orderBy('updated_at', 'DESC')->get(200)->getResultArray()
+            : [];
+        $products = $db->tableExists('barang')
+            ? $db->table('barang')->select('id,nama,harga')->where('active', '1')->orderBy('nama', 'ASC')->get(500)->getResultArray()
+            : [];
+        $specs = $db->tableExists('ilena_chat_product_specs')
+            ? $db->table('ilena_chat_product_specs')->orderBy('updated_at', 'DESC')->get(300)->getResultArray()
+            : [];
+        return view('admin/supportChat', [
+            'title' => 'Live Chat Ilena',
+            'knowledge' => $knowledge,
+            'products' => $products,
+            'productSpecs' => $specs,
+            'chatReady' => $db->tableExists('ilena_chat_conversations')
+                && $db->tableExists('ilena_chat_messages')
+                && $db->tableExists('ilena_chat_jobs')
+                && $db->tableExists('ilena_chat_knowledge')
+                && $db->tableExists('ilena_chat_product_specs'),
+        ]);
+    }
+
+    public function adminQueue()
+    {
+        $rows = $this->db()->query("SELECT c.id,c.conversation_key,c.status,c.assigned_to,c.customer_email,c.context_product_id,c.last_message_at,c.created_at,(SELECT LEFT(m.body,220) FROM ilena_chat_messages m WHERE m.conversation_id=c.id ORDER BY m.id DESC LIMIT 1) AS last_body FROM ilena_chat_conversations c WHERE c.status <> 'closed' ORDER BY CASE WHEN c.status='human_waiting' THEN 0 WHEN c.status='human' THEN 1 ELSE 2 END,c.last_message_at DESC LIMIT 80")->getResultArray();
+        return $this->json(['success' => true, 'items' => $rows]);
+    }
+
+    public function adminMessages(int $id)
+    {
+        $conversation = $this->db()->table('ilena_chat_conversations')->where('id', $id)->get()->getRowArray();
+        if (! $conversation) return $this->json(['success' => false], 404);
+        $after = max(0, (int)$this->request->getGet('after'));
+        return $this->json(['success' => true, 'conversation' => $conversation, 'messages' => $this->messagesFor($id, $after, 80)]);
+    }
+
+    public function adminReply(int $id)
+    {
+        $body = trim((string)($this->request->getJSON(true)['message'] ?? $this->request->getPost('message') ?? ''));
+        if ($body === '' || mb_strlen($body) > 2000) return $this->json(['success' => false, 'message' => 'Balasan harus berisi 1–2.000 karakter.'], 422);
+        $db = $this->db();
+        $conversation = $db->table('ilena_chat_conversations')->where('id', $id)->where('status <>', 'closed')->get()->getRowArray();
+        if (! $conversation) return $this->json(['success' => false, 'message' => 'Percakapan sudah ditutup atau tidak ditemukan.'], 404);
+        $now = date('Y-m-d H:i:s');
+        $email = mb_substr(trim((string)session()->get('email')), 0, 191);
+        if (($conversation['status'] ?? '') === 'human' && !empty($conversation['assigned_to'])
+            && strcasecmp((string)$conversation['assigned_to'], $email) !== 0
+        ) {
+            return $this->json(['success' => false, 'message' => 'Percakapan sedang ditangani staf lain. Ambil antrean yang belum ditugaskan.'], 409);
+        }
+        $db->transBegin();
+        $db->table('ilena_chat_messages')->insert(['conversation_id' => $id, 'sender_type' => 'admin', 'sender_id' => $email, 'body' => $body, 'created_at' => $now]);
+        $db->table('ilena_chat_conversations')->where('id', $id)->update(['status' => 'human', 'assigned_to' => $email, 'last_message_at' => $now, 'updated_at' => $now]);
+        if ($db->transStatus() === false) { $db->transRollback(); return $this->json(['success' => false, 'message' => 'Balasan gagal disimpan.'], 500); }
+        $db->transCommit();
+        return $this->json(['success' => true, 'csrfHash' => csrf_hash()]);
+    }
+
+    public function adminClaim(int $id)
+    {
+        $db = $this->db();
+        $conversation = $db->table('ilena_chat_conversations')->where('id', $id)->whereIn('status', ['human_waiting', 'human'])->get()->getRowArray();
+        if (! $conversation) return $this->json(['success' => false, 'message' => 'Percakapan tidak ditemukan.'], 404);
+        $email = mb_substr(trim((string)session()->get('email')), 0, 191);
+        if (($conversation['status'] ?? '') === 'human' && !empty($conversation['assigned_to'])
+            && strcasecmp((string)$conversation['assigned_to'], $email) !== 0
+        ) {
+            return $this->json(['success' => false, 'message' => 'Percakapan sudah diambil oleh staf lain.'], 409);
+        }
+        $db->table('ilena_chat_conversations')->where('id', $id)->update(['status' => 'human', 'assigned_to' => $email, 'updated_at' => date('Y-m-d H:i:s')]);
+        return $this->json(['success' => true]);
+    }
+
+    public function adminClose(int $id)
+    {
+        $db = $this->db();
+        if (! $db->table('ilena_chat_conversations')->where('id', $id)->where('status <>', 'closed')->update([
+            'status' => 'closed', 'closed_at' => date('Y-m-d H:i:s'), 'updated_at' => date('Y-m-d H:i:s'),
+        ])) return $this->json(['success' => false, 'message' => 'Percakapan tidak ditemukan atau gagal ditutup.'], 404);
+        return $this->json(['success' => true]);
+    }
+
+    public function saveKnowledge()
+    {
+        $id = max(0, (int)$this->request->getPost('id'));
+        $title = trim((string)$this->request->getPost('title'));
+        $content = trim((string)$this->request->getPost('content'));
+        $source = trim((string)$this->request->getPost('source_url'));
+        $sourceParts = $source !== '' ? parse_url($source) : [];
+        $validSource = $source === '' || (filter_var($source, FILTER_VALIDATE_URL)
+            && in_array(strtolower((string)($sourceParts['scheme'] ?? '')), ['http', 'https'], true)
+            && empty($sourceParts['user']) && empty($sourceParts['pass']));
+        if ($title === '' || mb_strlen($title) > 191 || $content === '' || mb_strlen($content) > 30000 || ! $validSource) {
+            return redirect()->back()->withInput()->with('chat_error', 'Periksa judul, isi (maksimal 30.000 karakter), dan URL sumber.');
+        }
+        $data = ['title' => $title, 'content' => $content, 'source_url' => $source ?: null,
+            'is_published' => $this->request->getPost('is_published') ? 1 : 0,
+            'updated_by' => mb_substr((string)session()->get('email'), 0, 191), 'updated_at' => date('Y-m-d H:i:s')];
+        $table = $this->db()->table('ilena_chat_knowledge');
+        if ($id) $table->where('id', $id)->update($data);
+        else { $data['created_at'] = date('Y-m-d H:i:s'); $table->insert($data); }
+        return redirect()->to('/admin/support-chat#knowledge')->with('chat_notice', 'Sumber knowledge tersimpan.');
+    }
+
+    public function deleteKnowledge(int $id)
+    {
+        $this->db()->table('ilena_chat_knowledge')->where('id', $id)->delete();
+        return redirect()->to('/admin/support-chat#knowledge')->with('chat_notice', 'Sumber knowledge dihapus.');
+    }
+
+    public function saveProductSpec()
+    {
+        $id = trim((string)$this->request->getPost('product_id'));
+        $validProduct = $this->db()->table('barang')->select('id')->where('id', $id)->where('active', '1')->get()->getRowArray();
+        $values = [trim((string)$this->request->getPost('colors')), trim((string)$this->request->getPost('materials')), trim((string)$this->request->getPost('dimensions')), trim((string)$this->request->getPost('keywords'))];
+        if (! $validProduct || max(array_map('mb_strlen', $values)) > 5000) return redirect()->back()->withInput()->with('chat_error', 'Produk tidak valid atau spesifikasi terlalu panjang.');
+        $spec = ['product_id' => $id, 'colors' => mb_substr($values[0], 0, 500), 'materials' => mb_substr($values[1], 0, 500), 'dimensions' => mb_substr($values[2], 0, 255), 'keywords' => mb_substr($values[3], 0, 5000), 'updated_by' => mb_substr((string)session()->get('email'), 0, 191), 'updated_at' => date('Y-m-d H:i:s')];
+        $table = $this->db()->table('ilena_chat_product_specs');
+        $existing = $table->where('product_id', $id)->get()->getRowArray();
+        if ($existing) $table->where('product_id', $id)->update($spec); else $table->insert($spec);
+        return redirect()->to('/admin/support-chat#products')->with('chat_notice', 'Spesifikasi assistant tersimpan.');
+    }
+}

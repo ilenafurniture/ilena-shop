@@ -111,6 +111,12 @@ $routes->get('/home-image/(:segment)', 'GambarController::homeImage/$1');
 $routes->get('/imgheader/(:any)', 'GambarController::tampilGambarHeader/$1');
 $routes->get('/imgheaderhp/(:any)', 'GambarController::tampilGambarHeaderHp/$1');
 
+// Customer support chat: session-token ownership, CSRF on mutations, and short polling only.
+$routes->get('/chat/bootstrap', 'SupportChatController::bootstrap', ['filter' => 'customerFilter']);
+$routes->get('/chat/poll', 'SupportChatController::poll', ['filter' => 'customerFilter']);
+$routes->post('/chat/send', 'SupportChatController::send', ['filter' => ['customerFilter', 'csrf']]);
+$routes->post('/chat/handoff', 'SupportChatController::handoff', ['filter' => ['customerFilter', 'csrf']]);
+
 
 // ==================== Admin Controller ====================
 // CSRF applies once to every route in this group; do not add per-route csrf filters here.
@@ -215,6 +221,17 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
     $routes->post('voucher/toggle/(:num)', 'AdminController::toggleVoucher/$1');
     $routes->get('voucher/usage', 'AdminController::voucherUsage');
     $routes->post('voucher/usage/delete/(:num)', 'AdminController::deleteVoucherUsage/$1');
+
+    // Hybrid AI + Human Support Chat
+    $routes->get('support-chat', 'SupportChatController::adminIndex');
+    $routes->get('support-chat/queue', 'SupportChatController::adminQueue');
+    $routes->get('support-chat/messages/(:num)', 'SupportChatController::adminMessages/$1');
+    $routes->post('support-chat/reply/(:num)', 'SupportChatController::adminReply/$1');
+    $routes->post('support-chat/claim/(:num)', 'SupportChatController::adminClaim/$1');
+    $routes->post('support-chat/close/(:num)', 'SupportChatController::adminClose/$1');
+    $routes->post('support-chat/knowledge/save', 'SupportChatController::saveKnowledge');
+    $routes->post('support-chat/knowledge/delete/(:num)', 'SupportChatController::deleteKnowledge/$1');
+    $routes->post('support-chat/product-spec/save', 'SupportChatController::saveProductSpec');
 
 });
 

@@ -24,6 +24,7 @@ class AdminRbacService
             'activity_log' => ['label' => 'Log Aktivitas', 'description' => 'Lihat log aktivitas admin.'],
             'spam_cleanup' => ['label' => 'Cleanup Spam Akun', 'description' => 'Lihat dan hapus akun register spam/injection.'],
             'customers' => ['label' => 'Akun Pelanggan', 'description' => 'Lihat status akun dan kelola penangguhan pelanggan.'],
+            'support_chat' => ['label' => 'Live Chat & Knowledge Base', 'description' => 'Layani antrean chat pelanggan dan kelola sumber jawaban assistant.'],
             'marketplace' => ['label' => 'Workspace Marketplace', 'description' => 'Kelola katalog dan pesanan melalui workspace marketplace.'],
         ];
     }
@@ -106,6 +107,7 @@ class AdminRbacService
             'admin/activity-log' => 'activity_log',
             'admin/spam-cleanup' => 'spam_cleanup',
             'admin/customers' => 'customers',
+            'admin/support-chat' => 'support_chat',
             'admin/ordertoko' => 'orders_online',
             'market' => 'marketplace',
             'analytics' => 'analytics',
@@ -243,6 +245,7 @@ class AdminRbacService
             'activity_log' => '/admin/activity-log',
             'spam_cleanup' => '/admin/spam-cleanup',
             'customers' => '/admin/customers',
+            'support_chat' => '/admin/support-chat',
             'marketplace' => '/market/product',
         ];
 

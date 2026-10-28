@@ -1,0 +1,23 @@
+[Unit]
+Description=Ilena Shop AI support chat worker
+After=network-online.target mysql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Replace with the account that can read the app .env and write writable/.
+User=YOUR_APP_USER
+WorkingDirectory=/mine/ilenafurniture.com
+ExecStart=/usr/local/lsws/lsphp83/bin/lsphp /mine/ilenafurniture.com/ops/spark-cli.php chat:work
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/mine/ilenafurniture.com/writable
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
