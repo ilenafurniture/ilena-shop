@@ -32,7 +32,16 @@ $paymentLogos = [
     <div class="ilena-store-footer__main">
         <section class="ilena-store-footer__brand" aria-label="Ilena Furniture">
             <a href="/" aria-label="Ilena Furniture — Beranda"><img src="<?= base_url('img/LogoIlenaWhite.png'); ?>" width="140" height="22" alt="Ilena Furniture"></a>
-            <p>Modern &amp; Stylish<br>Furniture <span>True to you</span></p>
+            <div class="ilena-footer-vision" aria-label="Mulai dari rumah, tercipta senyum ramah.">
+                <svg class="ilena-footer-vision__mark" viewBox="0 0 96 56" aria-hidden="true" focusable="false">
+                    <path class="footer-vision-stroke" pathLength="1" d="M5 27 23 10l18 17M10 23v25h26V23M19 48V34h9v14" />
+                    <path class="footer-vision-stroke footer-vision-connect" pathLength="1" d="M42 31h13" />
+                    <circle class="footer-vision-stroke footer-vision-face" cx="73" cy="29" r="17" pathLength="1" />
+                    <path class="footer-vision-stroke footer-vision-smile" pathLength="1" d="M65 32q8 9 16 0" />
+                    <circle class="footer-vision-dot" cx="49" cy="31" r="2.2" />
+                </svg>
+                <p>Mulai dari rumah,<br><span>tercipta senyum ramah.</span></p>
+            </div>
         </section>
         <nav class="ilena-store-footer__column" aria-label="Jelajahi Ilena">
             <h2>Jelajahi</h2>
@@ -84,4 +93,19 @@ $paymentLogos = [
     </div>
     <div class="ilena-store-footer__mobile-clear" aria-hidden="true"></div>
 </footer>
+<?php endif; ?>
+<?php if (!$footerInternal && $footerMode === 'full'): ?>
+<script>
+(() => {
+    const vision = document.querySelector('.ilena-footer-vision');
+    if (!vision || !('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    vision.classList.add('ilena-footer-vision--ready');
+    const observer = new IntersectionObserver((entries, activeObserver) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        vision.classList.add('ilena-footer-vision--visible');
+        activeObserver.disconnect();
+    }, { threshold: 0.5 });
+    observer.observe(vision);
+})();
+</script>
 <?php endif; ?>

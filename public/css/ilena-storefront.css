@@ -9002,3 +9002,62 @@ body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex > * {
     body.ilena-storefront.ilena-page--home .ilena-home-hero-motion-bg .hero-motion-orbit,
     body.ilena-storefront.ilena-page--home .ilena-home-hero-motion-bg .hero-motion-glow { animation: none !important; }
 }
+
+/* Footer vision lockup: Ilena's house-to-smile motif, drawn as a small SVG. */
+body.ilena-storefront .ilena-store-footer__brand .ilena-footer-vision {
+    display: flex;
+    max-width: 260px;
+    align-items: center;
+    gap: 11px;
+    margin-top: 14px;
+}
+body.ilena-storefront .ilena-store-footer__brand .ilena-footer-vision__mark {
+    display: block;
+    flex: 0 0 68px;
+    width: 68px;
+    height: auto;
+    overflow: visible;
+}
+body.ilena-storefront .ilena-store-footer__brand .ilena-footer-vision p {
+    margin: 0;
+    color: rgba(245,241,235,.8);
+    font-family: var(--ilena-font-display);
+    font-size: 13px;
+    line-height: 1.42;
+}
+body.ilena-storefront .ilena-store-footer__brand .ilena-footer-vision p span {
+    color: #d4b99c;
+    font-size: inherit;
+    font-style: normal;
+    white-space: normal;
+}
+body.ilena-storefront .ilena-footer-vision .footer-vision-stroke {
+    fill: none;
+    stroke: #d4b99c;
+    stroke-width: 1.45;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+}
+body.ilena-storefront .ilena-footer-vision .footer-vision-stroke:not(.footer-vision-face) { stroke-dasharray: 1; stroke-dashoffset: 0; }
+body.ilena-storefront .ilena-footer-vision .footer-vision-face { stroke-dasharray: 1; stroke-dashoffset: 0; }
+body.ilena-storefront .ilena-footer-vision--ready .footer-vision-stroke { stroke-dashoffset: 1; }
+body.ilena-storefront .ilena-footer-vision--visible .footer-vision-stroke { animation: ilena-footer-vision-draw 1.05s cubic-bezier(.22,.68,.2,1) forwards; }
+body.ilena-storefront .ilena-footer-vision--visible .footer-vision-connect { animation-delay: 280ms; }
+body.ilena-storefront .ilena-footer-vision--visible .footer-vision-face { animation-delay: 420ms; }
+body.ilena-storefront .ilena-footer-vision--visible .footer-vision-smile { animation-delay: 700ms; }
+body.ilena-storefront .ilena-footer-vision .footer-vision-dot { fill: #fbf9f6; }
+body.ilena-storefront .ilena-footer-vision--visible .footer-vision-dot { animation: ilena-footer-vision-dot 780ms ease-in-out 720ms 2 alternate; }
+body.ilena-storefront .ilena-footer-vision--visible p { animation: ilena-footer-vision-copy 520ms ease-out 320ms both; }
+@keyframes ilena-footer-vision-draw { to { stroke-dashoffset: 0; } }
+@keyframes ilena-footer-vision-dot { to { translate: 5px -2px; opacity: .55; } }
+@keyframes ilena-footer-vision-copy { from { opacity: .55; translate: 0 3px; } to { opacity: 1; translate: 0 0; } }
+@media (max-width: 768px) {
+    body.ilena-storefront .ilena-store-footer__brand .ilena-footer-vision { margin-top: 10px; }
+    body.ilena-storefront .ilena-store-footer__brand .ilena-footer-vision__mark { flex-basis: 62px; width: 62px; }
+    body.ilena-storefront .ilena-store-footer__brand .ilena-footer-vision p { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront .ilena-footer-vision * { animation: none !important; transition: none !important; }
+    body.ilena-storefront .ilena-footer-vision .footer-vision-stroke { stroke-dashoffset: 0 !important; }
+}
