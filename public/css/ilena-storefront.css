@@ -6558,3 +6558,172 @@ body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1 .g
 @media (prefers-reduced-motion: reduce) {
     body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid .card1 .gambar img { transition: none !important; }
 }
+
+/* Mobile product experience: complete product photos, calm card density, and touch-ready detail controls. */
+@media (max-width: 700px) {
+    body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid,
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
+        column-gap: clamp(9px, 2.8vw, 14px);
+        row-gap: clamp(18px, 5vw, 26px);
+    }
+
+    body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid .card1,
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1 {
+        min-width: 0;
+        padding-bottom: 4px;
+    }
+
+    body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid .card1 .gambar,
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1 .gambar {
+        aspect-ratio: 1 / 1;
+        background: #fff;
+    }
+
+    body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid .card1 .gambar img,
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1 .gambar img {
+        padding: 5%;
+        object-fit: contain !important;
+        background: #fff;
+        transform: none;
+    }
+
+    body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid .card1 .gambar::before,
+    body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid .card1 .gambar::after {
+        display: none;
+    }
+
+    body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid .card1 .card1-content-img-kanan {
+        top: 7px;
+        right: 7px;
+        gap: 6px !important;
+        padding: 0;
+    }
+
+    body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid .card1 .card1-btn-img {
+        width: 34px;
+        height: 34px;
+        border-color: rgba(37, 34, 31, .08);
+        box-shadow: 0 2px 8px rgba(37, 34, 31, .08);
+    }
+
+    body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid .card1 .container-varian,
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1 .container-varian {
+        min-height: 28px;
+        gap: 6px;
+        margin: 6px 0 3px !important;
+    }
+
+    body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid .card1 .container-varian label,
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1 .container-varian label {
+        flex: 0 0 22px;
+        width: 22px;
+        min-width: 22px;
+        height: 22px;
+    }
+
+    body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid .card1 > a.text-dark > p:first-child,
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid .related-card-category {
+        margin-bottom: 3px;
+        font-size: 8px;
+        line-height: 1.35;
+    }
+
+    body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid .card1 h5,
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid .related-card-name {
+        min-height: 2.6em;
+        margin: 3px 0 5px;
+        font-size: clamp(13px, 3.6vw, 15px) !important;
+        line-height: 1.3;
+    }
+
+    body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid .card1 .harga,
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid .related-card-prices .harga {
+        font-size: 12px;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-detail {
+        padding: 12px 0 34px;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-layout {
+        gap: 18px;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-gallery__stage {
+        aspect-ratio: 1 / 1;
+        background: #fff;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-gallery__stage > img.img-detail-prev {
+        width: 100%;
+        height: 100%;
+        padding: 4%;
+        object-fit: contain !important;
+        background: #fff !important;
+    }
+
+    body.ilena-storefront .product-detail-soft .container-img-detail-select {
+        gap: 8px;
+        padding: 2px 2px 8px;
+        scroll-snap-type: x proximity;
+    }
+
+    body.ilena-storefront .product-detail-soft .img-detail-select {
+        flex-basis: 58px;
+        width: 58px;
+        height: 58px;
+        scroll-snap-align: start;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-heading {
+        padding-bottom: 14px;
+    }
+
+    body.ilena-storefront .product-detail-soft .teks-besar {
+        font-size: clamp(28px, 8vw, 36px);
+        line-height: 1.08;
+        overflow-wrap: anywhere;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-price {
+        gap: 7px !important;
+        margin: 14px 0 10px !important;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-description {
+        margin-bottom: 16px;
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-info > .d-flex.gap-2.align-items-stretch {
+        gap: 9px !important;
+    }
+
+    body.ilena-storefront .product-detail-soft #btn-keranjang,
+    body.ilena-storefront .product-detail-soft #btn-keranjang .btn-default-merah {
+        min-height: 48px;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-related {
+        margin-top: 30px;
+        padding-top: 18px;
+    }
+}
+
+@media (max-width: 380px) {
+    body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid,
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid {
+        column-gap: 8px;
+    }
+
+    body.ilena-storefront .ilena-catalog-page .ilena-catalog-grid .card1 .card1-btn-img {
+        width: 31px;
+        height: 31px;
+    }
+
+    body.ilena-storefront .product-detail-soft .ilena-product-layout { gap: 15px; }
+    body.ilena-storefront .product-detail-soft .img-detail-select { flex-basis: 54px; width: 54px; height: 54px; }
+}
