@@ -38,6 +38,17 @@ Generate the key once with `openssl rand -hex 32`. Keep it stable and private: c
 
 The provider must accept the OpenAI Chat Completions request/response shape and Bearer authentication; a regular Gemini-native endpoint, for example, is not interchangeable unless the provider offers a compatible endpoint. The worker sends only the customer's latest question and retrieved public product/knowledge snippets; it does not send customer email or the full conversation history.
 
+### OpenRouter Free quick setup
+
+The Dev-only **Gunakan OpenRouter Free** button fills the compatible endpoint and model ID:
+
+```text
+Endpoint: https://openrouter.ai/api/v1/chat/completions
+Model:    openrouter/free
+```
+
+This router automatically selects an available free model, but it does **not** create credentials. Create an OpenRouter account/API key in its dashboard, paste the key into the API key field, enable the provider, and save. Free model availability and rate limits can change; use the fallback/human handoff when provider capacity is unavailable. Review the provider's data handling before sending customer questions to it. The linked `awesome-free-llm-apis` repository is a catalog, not a source of reusable API keys.
+
 ## 3. Background worker (systemd; no cron)
 
 Copy `ops/ilena-chat-worker.service.example` to `/etc/systemd/system/ilena-chat-worker.service`, replace `YOUR_APP_USER` with the Linux account that can read `.env` and write `writable/`, then run:
