@@ -17,6 +17,7 @@
   const typingCopy = widget.querySelector('[data-chat-typing-copy]');
   const soundButton = widget.querySelector('[data-chat-sound]');
   const suggestions = widget.querySelector('.ilena-chat-suggestions');
+  const teaser = widget.querySelector('[data-chat-greeting]');
   const waLink = widget.querySelector('[data-kbot-wa]');
   const csrf = form?.querySelector('input[type="hidden"]');
   if (!panel || !toggle || !form || !input || !csrf) return;
@@ -29,7 +30,9 @@
   let currentStatus = 'ai';
   let humanAvailable = null;
   let waitingForReply = false;
-  let soundEnabled = false;
+  let soundEnabled = true;
+  let arrivalSoundPending = false;
+  let arrivalSoundPlayed = false;
   let audioContext = null;
   let pollTimer = null;
 
@@ -103,6 +106,43 @@
       });
     } catch (_) {}
   }
+  function playWelcomeTone() {
+    if (!arrivalSoundPending || arrivalSoundPlayed) return;
+    try {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      audioContext ||= new AudioContextClass();
+      const context = audioContext;
+      const play = () => {
+        if (context.state !== 'running' || arrivalSoundPlayed) return;
+        const start = context.currentTime;
+        [[523.25, 0], [659.25, .13]].forEach(([frequency, offset]) => {
+          const oscillator = context.createOscillator();
+          const gain = context.createGain();
+          oscillator.type = 'sine';
+          oscillator.frequency.value = frequency;
+          gain.gain.setValueAtTime(.0001, start + offset);
+          gain.gain.exponentialRampToValueAtTime(.022, start + offset + .025);
+          gain.gain.exponentialRampToValueAtTime(.0001, start + offset + .19);
+          oscillator.connect(gain); gain.connect(context.destination);
+          oscillator.start(start + offset); oscillator.stop(start + offset + .2);
+        });
+        arrivalSoundPlayed = true;
+        arrivalSoundPending = false;
+      };
+      const ready = context.state === 'suspended' ? context.resume() : Promise.resolve();
+      ready.then(play).catch(() => {});
+    } catch (_) {}
+  }
+  function primeReplySound() {
+    if (!soundEnabled) return;
+    try {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      audioContext ||= new AudioContextClass();
+      if (audioContext.state === 'suspended') audioContext.resume().catch(() => {});
+    } catch (_) {}
+  }
   function appendMessage(message, notify = false) {
     const id = Number(message.id) || 0;
     if (!id || id <= cursor) return;
@@ -153,7 +193,7 @@
     if (status) {
       if (currentStatus === 'human_waiting') status.textContent = humanAvailable ? 'Tim Ilena segera bergabung' : 'Tim sedang di luar jam layanan';
       else if (currentStatus === 'human') status.textContent = 'Anda sedang dilayani tim Ilena';
-      else status.textContent = humanAvailable ? 'Asisten Ilena · Tim 08.00–16.00 WIB' : 'Asisten Ilena · Tim kembali pukul 08.00 WIB';
+      else status.textContent = humanAvailable ? 'Kak Wawa · Tim 08.00–16.00 WIB' : 'Kak Wawa · Tim kembali pukul 08.00 WIB';
     }
     if (handoff) handoff.hidden = currentStatus !== 'ai' || humanAvailable === false;
     if (suggestions) suggestions.hidden = currentStatus === 'human';
@@ -161,7 +201,7 @@
     if (sendButton) sendButton.disabled = sending;
     input.placeholder = humanAvailable === false ? 'Tulis pesan untuk Ilena…' : 'Tulis pertanyaan…';
   }
-  function setTyping(value, copy = 'Asisten sedang mengetik') {
+  function setTyping(value, copy = 'Kak Wawa sedang mengetik') {
     if (!typing) return;
     typing.hidden = !value;
     if (typingCopy) typingCopy.textContent = copy;
@@ -217,12 +257,20 @@
 
   function openChat() {
     opened = true; panel.classList.remove('d-none');
+    if (teaser) teaser.hidden = true;
+    toggle.classList.remove('is-arrival');
+    primeReplySound();
     toggle.setAttribute('aria-expanded', 'true');
     bootstrap().finally(() => { if (!input.disabled) input.focus(); schedulePoll(); });
   }
   toggle.addEventListener('click', () => {
     if (opened) { opened = false; panel.classList.add('d-none'); toggle.setAttribute('aria-expanded', 'false'); if (pollTimer) window.clearTimeout(pollTimer); pollTimer = null; }
     else openChat();
+  });
+  teaser?.querySelector('[data-greeting-open]')?.addEventListener('click', openChat);
+  teaser?.querySelector('[data-greeting-dismiss]')?.addEventListener('click', () => {
+    teaser.hidden = true;
+    try { sessionStorage.setItem('ilenaChatGreetingSeen', '1'); } catch (_) {}
   });
   widget.querySelectorAll('[data-chat-suggestion]').forEach(button => button.addEventListener('click', () => {
     if (input.disabled) return;
@@ -246,7 +294,7 @@
           body: data.afterHoursReply.body,
           metadata: { whatsappUrl: data.afterHoursReply.whatsappUrl },
           created_at: data.afterHoursReply.createdAt || data.createdAt || '',
-        });
+        }, true);
         waitingForReply = false;
         setTyping(false);
         showNotice('Tim Ilena sedang di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '). Pesan Anda sudah tersimpan untuk ditindaklanjuti.', data.afterHoursReply.whatsappUrl || data.whatsappUrl || '');
@@ -287,4 +335,20 @@
     pollTimer = null;
     poll().finally(() => schedulePoll(waitingForReply ? 2400 : 7000));
   });
+  const unlockArrivalSound = () => playWelcomeTone();
+  document.addEventListener('pointerdown', unlockArrivalSound, { passive: true });
+  document.addEventListener('keydown', unlockArrivalSound);
+  let greetingSeen = false;
+  try { greetingSeen = sessionStorage.getItem('ilenaChatGreetingSeen') === '1'; } catch (_) {}
+  if (teaser && !greetingSeen) {
+    window.setTimeout(() => {
+      if (opened || document.hidden) return;
+      teaser.hidden = false;
+      arrivalSoundPending = true;
+      toggle.classList.add('is-arrival');
+      window.setTimeout(() => toggle.classList.remove('is-arrival'), 1450);
+      try { sessionStorage.setItem('ilenaChatGreetingSeen', '1'); } catch (_) {}
+      if (navigator.userActivation?.hasBeenActive) playWelcomeTone();
+    }, 1450);
+  }
 })();

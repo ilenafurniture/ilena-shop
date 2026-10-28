@@ -291,17 +291,17 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
         <section id="container-greeting-card" class="ilena-chat-greeting d-none" aria-label="Chat dengan Ilena" aria-live="polite">
             <div class="ilena-chat-greeting__panel">
                 <header class="ilena-chat-greeting__heading">
-                    <div class="ilena-chat-brand"><span class="ilena-chat-brand__mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3.5 10 8.5-7 8.5 7v10.5H3.5V10Z"/><path d="M9 20.5v-7h6v7M7 10.5h.01M17 10.5h.01"/></svg></span><span class="ilena-chat-brand__copy"><p>Asisten Ilena</p><small><i aria-hidden="true"></i><span data-chat-status>Siap membantu memilih furniture</span></small></span></div>
-                    <button type="button" class="ilena-chat-sound" data-chat-sound aria-pressed="false" aria-label="Aktifkan suara notifikasi" title="Suara notifikasi nonaktif"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Zm4 4a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12"/></svg></button>
+                    <div class="ilena-chat-brand"><span class="ilena-chat-brand__mark" aria-hidden="true"><img src="<?= base_url('img/LogoIlena-N.png'); ?>" alt="" loading="lazy" decoding="async"></span><span class="ilena-chat-brand__copy"><p>Kak Wawa</p><small><i aria-hidden="true"></i><span data-chat-status>Siap menemani Anda memilih</span></small></span></div>
+                    <button type="button" class="ilena-chat-sound" data-chat-sound aria-pressed="true" aria-label="Matikan suara notifikasi" title="Suara notifikasi aktif"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Zm4 4a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12"/></svg></button>
                     <button type="button" aria-label="Tutup chat" data-close-chat-greeting><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
                 </header>
                 <div class="ilena-chat-transcript" data-chat-messages aria-label="Riwayat chat">
-                    <div class="ilena-chat-welcome"><p class="ilena-chat-welcome__eyebrow">Temani memilih</p><h2>Furniture untuk ruang yang terasa milik Anda.</h2><p>Sebutkan ruang, ukuran, warna, atau anggaran. Kami bantu temukan pilihannya.</p><div class="ilena-chat-suggestions" aria-label="Mulai dari sini"><button type="button" data-chat-suggestion="Bantu saya cari sofa">Sofa</button><button type="button" data-chat-suggestion="Saya mencari meja untuk ruang makan">Meja makan</button><button type="button" data-chat-suggestion="Tampilkan pilihan sesuai budget saya">Cari sesuai anggaran</button></div></div>
-                    <div class="ilena-chat-typing" data-chat-typing role="status" aria-live="polite" hidden><span aria-hidden="true"><i></i><i></i><i></i></span><b data-chat-typing-copy>Asisten sedang mengetik</b></div>
+                    <div class="ilena-chat-welcome"><p class="ilena-chat-welcome__eyebrow">Selamat datang di Ilena</p><h2>Mari temukan furniture yang terasa pas.</h2><p>Ceritakan ruang, ukuran, warna, atau anggaran Anda. Kami siap membantu.</p><div class="ilena-chat-suggestions" aria-label="Mulai dari sini"><button type="button" data-chat-suggestion="Bantu saya cari sofa">Cari sofa</button><button type="button" data-chat-suggestion="Saya mencari meja untuk ruang makan">Meja makan</button><button type="button" data-chat-suggestion="Tampilkan pilihan sesuai budget saya">Sesuai anggaran</button></div></div>
+                    <div class="ilena-chat-typing" data-chat-typing role="status" aria-live="polite" hidden><span aria-hidden="true"><i></i><i></i><i></i></span><b data-chat-typing-copy>Kak Wawa sedang mengetik</b></div>
                 </div>
                 <form class="ilena-chat-compose" data-chat-form>
                     <?= csrf_field(); ?>
-                    <label class="visually-hidden" for="ilenaChatInput">Pesan untuk asisten Ilena</label>
+                    <label class="visually-hidden" for="ilenaChatInput">Pesan untuk Kak Wawa</label>
                     <textarea id="ilenaChatInput" name="message" rows="1" maxlength="1200" placeholder="Tulis pesan Anda…" required></textarea>
                     <button type="submit" aria-label="Kirim pesan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12 20 4l-5 16-3-7-8-1Zm8 1 8-9"/></svg></button>
                 </form>
@@ -310,12 +310,18 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
             </div>
         </section>
         <div class="d-flex flex-column gap-2">
+            <div class="ilena-chat-greeting-teaser" data-chat-greeting role="group" aria-label="Sapaan Kak Wawa" aria-live="polite" hidden>
+                <span class="ilena-chat-greeting-teaser__mark" aria-hidden="true"><img src="<?= base_url('img/LogoIlena-N.png'); ?>" alt="" loading="lazy" decoding="async"></span>
+                <div><strong>Halo, selamat datang.</strong><p>Saya siap membantu memilih furniture untuk ruang Anda.</p></div>
+                <button type="button" data-greeting-open>Mulai</button>
+                <button type="button" data-greeting-dismiss aria-label="Tutup sapaan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+            </div>
             <button type="button" class="btn-circle hitam ilena-floating-chat" id="ilenaAssistantLauncher" data-open-ilena-chat aria-label="Buka Asisten Belanja Ilena" aria-expanded="false" aria-controls="container-greeting-card">
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 11.5a7.5 7.5 0 0 1-11.2 6.5L4 19l1-4.4A7.5 7.5 0 1 1 20 11.5Z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01"/></svg>
             </button>
         </div>
     </div>
-    <script defer src="<?= base_url('js/ilena-support-chat.js?v=20261028-4'); ?>"></script>
+    <script defer src="<?= base_url('js/ilena-support-chat.js?v=20261028-8'); ?>"></script>
 
     <?php if (!$isInternalArea && $layoutHeaderMode !== 'checkout'): ?>
     <script defer crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
