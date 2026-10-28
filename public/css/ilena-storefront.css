@@ -8910,3 +8910,48 @@ body.ilena-storefront.ilena-page--visimisi .ilena-mission-list li:nth-child(3) {
     body.ilena-storefront.ilena-page--visimisi .ilena-vision-page.ilena-motion-ready [data-reveal] { opacity: 1; translate: none; }
     body.ilena-storefront.ilena-page--visimisi .ilena-vision-motion-art svg animateMotion { display: none; }
 }
+
+/* Subtle Ilena-colored motion graphic over the home hero photograph. */
+body.ilena-storefront.ilena-page--home .ilena-home-hero .show-flex-ke-hide,
+body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+}
+body.ilena-storefront.ilena-page--home .ilena-home-hero .show-flex-ke-hide::after,
+body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    top: 50%;
+    right: 5%;
+    width: min(38vw, 430px);
+    aspect-ratio: 1;
+    border: 1px solid rgba(251, 249, 246, .26);
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 50% 0%, #d5b99d 0 2px, transparent 3px),
+        radial-gradient(circle, transparent 53.5%, rgba(251,249,246,.22) 53.8% 54%, transparent 54.3%),
+        radial-gradient(circle, transparent 70%, rgba(213,185,157,.28) 70.2% 70.4%, transparent 70.7%),
+        linear-gradient(90deg, transparent 49.8%, rgba(251,249,246,.09) 50%, transparent 50.2%);
+    opacity: .76;
+    pointer-events: none;
+    translate: 0 -50%;
+    animation: ilena-home-hero-orbit 34s linear infinite;
+}
+body.ilena-storefront.ilena-page--home .ilena-home-hero .show-flex-ke-hide > *,
+body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex > * { z-index: 1; }
+@keyframes ilena-home-hero-orbit {
+    to { rotate: 360deg; }
+}
+@media (max-width: 700px) {
+    body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex::after {
+        right: -112px;
+        width: 260px;
+        opacity: .54;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront.ilena-page--home .ilena-home-hero .show-flex-ke-hide::after,
+    body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex::after { animation: none !important; }
+}
