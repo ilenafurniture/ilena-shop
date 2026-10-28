@@ -305,7 +305,7 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
                     <textarea id="ilenaChatInput" name="message" rows="1" maxlength="1200" placeholder="Tulis pesan Anda…" required></textarea>
                     <button type="submit" aria-label="Kirim pesan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12 20 4l-5 16-3-7-8-1Zm8 1 8-9"/></svg></button>
                 </form>
-                <footer class="ilena-chat-footer"><button type="button" data-chat-handoff>Bicara dengan tim</button><a data-kbot-wa href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20saya%20butuh%20bantuan" target="_blank" rel="noopener noreferrer">WhatsApp</a></footer>
+                <footer class="ilena-chat-footer"><a data-kbot-wa href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20saya%20butuh%20bantuan" target="_blank" rel="noopener noreferrer">WhatsApp</a></footer>
                 <p class="ilena-chat-notice" data-chat-notice role="status" hidden></p>
             </div>
         </section>
@@ -321,7 +321,7 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
             </button>
         </div>
     </div>
-    <script defer src="<?= base_url('js/ilena-support-chat.js?v=20261028-16'); ?>"></script>
+    <script defer src="<?= base_url('js/ilena-support-chat.js?v=20261028-17'); ?>"></script>
 
     <?php if (!$isInternalArea && $layoutHeaderMode !== 'checkout'): ?>
     <script defer crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>

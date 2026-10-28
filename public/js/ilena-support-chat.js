@@ -211,6 +211,32 @@
       }
       bubble.append(rating);
     }
+    if (meta.resolutionCheck === true) {
+      const actions = document.createElement('div');
+      actions.className = 'ilena-chat-resolution';
+      const prompt = document.createElement('p');
+      prompt.textContent = 'Apakah jawaban Kak Wawa sudah cukup, atau Kakak ingin dibantu tim Ilena?';
+      const satisfied = document.createElement('button');
+      satisfied.type = 'button';
+      satisfied.textContent = 'Jawaban sudah cukup';
+      satisfied.addEventListener('click', async () => {
+        actions.querySelectorAll('button').forEach(button => { button.disabled = true; });
+        try {
+          const result = await api('/chat/resolve', { method: 'POST', body: JSON.stringify({ conversationKey: currentConversationKey }) });
+          updateStatus(result.status, humanAvailable);
+          if (result.message) appendMessage(result.message);
+        } catch (error) {
+          actions.querySelectorAll('button').forEach(button => { button.disabled = false; });
+          showNotice(error?.message || 'Pilihan Kakak belum tersimpan. Silakan coba kembali.');
+        }
+      });
+      const askStaff = document.createElement('button');
+      askStaff.type = 'button';
+      askStaff.textContent = 'Ingin bicara dengan CS';
+      askStaff.addEventListener('click', requestHandoff);
+      actions.append(prompt, satisfied, askStaff);
+      bubble.append(actions);
+    }
     const time = document.createElement('time'); time.textContent = safeText(message.created_at || ''); bubble.append(time);
     transcript.insertBefore(bubble, typing);
     transcript.scrollTop = transcript.scrollHeight;
@@ -241,6 +267,25 @@
     if (value) transcript.scrollTop = transcript.scrollHeight;
   }
   function renderMessages(items, notify = false) { (items || []).forEach(item => appendMessage(item, notify)); }
+  async function requestHandoff() {
+    if (sending || currentStatus !== 'ai') return;
+    sending = true;
+    transcript.querySelectorAll('.ilena-chat-resolution button').forEach(button => { button.disabled = true; });
+    if (handoff) handoff.disabled = true;
+    try {
+      const data = await api('/chat/handoff', { method: 'POST', body: '{}' });
+      updateStatus(data.status, data.humanAvailable);
+      await poll();
+      showNotice('Permintaan Kakak sudah diteruskan ke tim Ilena.');
+    } catch (error) {
+      handleError(error);
+    } finally {
+      sending = false;
+      updateStatus(currentStatus, humanAvailable);
+      if (currentStatus === 'ai') transcript.querySelectorAll('.ilena-chat-resolution button').forEach(button => { button.disabled = false; });
+      if (handoff && currentStatus === 'ai' && humanAvailable) handoff.disabled = false;
+    }
+  }
   function handleError(error) {
     const data = error?.data || {};
     if (data.code === 'outside_hours') {
@@ -264,7 +309,7 @@
       renderMessages(data.messages);
       updateStatus(data.status, humanAvailable);
       ready = true;
-      if (!humanAvailable) showNotice('Di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '). Pesan tetap bisa dikirim; tim akan membalas saat layanan buka.', data.whatsappUrl || '');
+      if (!humanAvailable) showNotice('Tim CS sedang di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '), tetapi Kak Wawa tetap siap membantu di sini.', data.whatsappUrl || '');
       else showNotice('');
     } catch (error) { handleError(error); }
     finally { sending = false; updateStatus(currentStatus, humanAvailable); }
@@ -277,7 +322,7 @@
       currentConversationKey = data.conversationKey || currentConversationKey;
       renderMessages(data.messages, true);
       updateStatus(data.status, data.humanAvailable === true);
-      if (data.humanAvailable === false && !waitingForReply) showNotice('Di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '). Pesan Anda tersimpan; tim akan membalas saat layanan buka.', data.whatsappUrl || '');
+      if (data.humanAvailable === false && !waitingForReply) showNotice('Tim CS sedang di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '), tetapi Kak Wawa tetap siap membantu di sini.', data.whatsappUrl || '');
     } catch (error) { handleError(error); }
     finally { polling = false; }
   }
@@ -359,6 +404,7 @@
     event.preventDefault();
     const message = input.value.trim();
     if (!message || sending) return;
+    transcript.querySelectorAll('.ilena-chat-resolution button').forEach(button => { button.disabled = true; });
     sending = true; input.disabled = true; if (sendButton) sendButton.disabled = true; showNotice('');
     try {
       const data = await api('/chat/send', { method: 'POST', body: JSON.stringify({ message, productId: widget.dataset.contextProduct || '' }) });
@@ -375,7 +421,7 @@
         }, true);
         waitingForReply = false;
         setTyping(false);
-        showNotice('Terima kasih, pesan Kakak sudah kami simpan. Mohon maaf, saat ini tim Ilena sedang di luar jam layanan. Pesan Kakak akan kami balas pada jam layanan berikutnya (' + (data.serviceHours || '08.00–16.00 WIB') + '). Jika membutuhkan bantuan lebih cepat, Kakak dapat menghubungi kami melalui WhatsApp.', data.afterHoursReply.whatsappUrl || data.whatsappUrl || '');
+        showNotice('Tim CS sedang di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '), tetapi Kak Wawa tetap menyiapkan jawaban untuk Kakak. Jika ingin berbicara dengan tim, Kakak bisa menghubungi WhatsApp.', data.afterHoursReply.whatsappUrl || data.whatsappUrl || '');
       } else {
         waitingForReply = data.status === 'ai';
         if (waitingForReply) setTyping(true, 'Kak Wawa sedang menyiapkan jawaban');
@@ -384,16 +430,7 @@
     } catch (error) { handleError(error); }
     finally { sending = false; updateStatus(currentStatus, humanAvailable); if (!input.disabled) input.focus(); poll(); }
   });
-  handoff?.addEventListener('click', async () => {
-    if (sending || currentStatus !== 'ai') return;
-    sending = true; handoff.disabled = true;
-    try {
-      const data = await api('/chat/handoff', { method: 'POST', body: '{}' });
-      updateStatus(data.status, data.humanAvailable); await poll();
-      showNotice('Permintaan Anda sudah diteruskan ke tim Ilena.');
-    } catch (error) { handleError(error); }
-    finally { sending = false; if (currentStatus === 'ai' && humanAvailable) handoff.disabled = false; }
-  });
+  handoff?.addEventListener('click', requestHandoff);
   soundButton?.addEventListener('click', async () => {
     soundEnabled = !soundEnabled;
     if (soundEnabled) {

@@ -3,6 +3,8 @@
 namespace App\Commands;
 
 use App\Services\SmartProductAssistant;
+use App\Services\ChatConversationContext;
+use App\Services\ChatTelemetry;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 
@@ -40,6 +42,9 @@ class ChatWork extends BaseCommand
         $days = max(30, min(730, (int)env('ILENA_CHAT_RETENTION_DAYS', 180)));
         $cutoff = date('Y-m-d H:i:s', time() - ($days * 86400));
         $expired = $db->table('ilena_chat_conversations')->select('id')->where('last_message_at <', $cutoff)->limit(250)->get()->getResultArray();
+        if ($db->tableExists('ilena_chat_events')) {
+            $db->table('ilena_chat_events')->where('created_at <', date('Y-m-d H:i:s', time() - 90 * 86400))->delete();
+        }
         if (! $expired) return;
         $ids = array_map(static fn($row) => (int)$row['id'], $expired);
         $db->transBegin();
@@ -92,10 +97,22 @@ class ChatWork extends BaseCommand
             return true;
         }
 
-        $result = (new SmartProductAssistant($db))->respond((string)$message['body'], $conversation['context_product_id'] ?? null);
+        $historyRows = $db->table('ilena_chat_messages')->where('conversation_id', (int) $conversation['id'])
+            ->where('id <', (int) $message['id'])->whereIn('sender_type', ['visitor', 'assistant'])
+            ->orderBy('id', 'DESC')->get(8)->getResultArray();
+        $historyRows = array_reverse($historyRows);
+        $startedAt = microtime(true);
+        $result = (new SmartProductAssistant($db))->respond(
+            (string) $message['body'],
+            $conversation['context_product_id'] ?? null,
+            ChatConversationContext::normalize($historyRows)
+        );
+        $durationMs = (int) round((microtime(true) - $startedAt) * 1000);
         $now = date('Y-m-d H:i:s');
         $db->transBegin();
-        $metadata = json_encode(['products' => $result['products'], 'sources' => $result['sources']], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $metadata = json_encode(['products' => $result['products'], 'sources' => $result['sources'], 'resolutionCheck' => true,
+            'answerMode' => $result['mode'] ?? 'assisted', 'fallbackReason' => $result['fallbackReason'] ?? null,
+            'durationMs' => $durationMs], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         // INSERT ... SELECT makes the status check atomic with publication.
         // The SQL form is supported by both production MySQL and test SQLite.
         $db->query(
@@ -113,6 +130,8 @@ class ChatWork extends BaseCommand
             throw new \RuntimeException('Failed to persist assistant response.');
         }
         $db->transCommit();
+        $queueDelayMs = ! empty($job['created_at']) ? max(0, (time() - strtotime((string) $job['created_at'])) * 1000) : 0;
+        ChatTelemetry::record($db, (string) ($result['mode'] ?? 'assisted'), (string) ($result['fallbackReason'] ?? ''), $durationMs, $queueDelayMs);
         CLI::write('Chat job ' . (int)$job['id'] . ' completed.', 'green');
         return true;
     }

@@ -9129,6 +9129,12 @@ body.ilena-storefront .ilena-chat-footer a:hover { color: #342925; }
 body.ilena-storefront .ilena-chat-notice { border-top-color: #eee4db; background: #fffaf5; color: #6f6259; }
 body.ilena-storefront .ilena-chat-notice a,
 body.ilena-storefront .ilena-chat-source { color: #a85f55; }
+body.ilena-storefront .ilena-chat-resolution { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+body.ilena-storefront .ilena-chat-resolution p { flex-basis: 100%; margin: 0 0 2px; color: #716963; font-size: 10px; line-height: 1.45; }
+body.ilena-storefront .ilena-chat-resolution button { min-height: 32px; border: 1px solid #d9c9bb; border-radius: 999px; padding: 0 11px; background: #fffaf5; color: #613d35; font: 600 10px var(--ilena-font-body); cursor: pointer; transition: background .16s ease, border-color .16s ease, color .16s ease; }
+body.ilena-storefront .ilena-chat-resolution button:hover { border-color: #96363c; background: #96363c; color: #fffaf5; }
+body.ilena-storefront .ilena-chat-resolution button:disabled { opacity: .58; cursor: default; }
+body.ilena-storefront .ilena-chat-resolution button:focus-visible { outline: 2px solid #96363c; outline-offset: 2px; }
 body.ilena-storefront .ilena-chat-greeting-teaser { display: grid; position: relative; width: min(338px, calc(100vw - 28px)); grid-template-columns: 36px minmax(0,1fr) auto; align-items: center; gap: 10px; align-self: flex-end; margin: 0 0 2px; padding: 13px 30px 13px 12px; border: 1px solid #eaded4; border-left: 3px solid #a54046; border-radius: 15px; background: #fffaf5; box-shadow: 0 12px 32px rgba(50,39,34,.16); animation: ilena-chat-arrival .48s cubic-bezier(.2,.75,.2,1) both; }
 body.ilena-storefront .ilena-chat-greeting-teaser[hidden] { display: none; }
 body.ilena-storefront .ilena-chat-greeting-teaser__mark { position: relative; display: block; width: 36px; height: 36px; overflow: hidden; border: 1px solid #eee3da; border-radius: 50%; background: #fff; color: #fffaf5; font: 500 21px/1 var(--ilena-font-display); }

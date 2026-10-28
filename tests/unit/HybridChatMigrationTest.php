@@ -4,10 +4,12 @@ namespace Tests\Unit;
 
 use App\Database\Migrations\CreateHybridChatFoundation;
 use App\Database\Migrations\AddKakWawaFeedback;
+use App\Database\Migrations\AddKakWawaQualityControls;
 use CodeIgniter\Test\CIUnitTestCase;
 
 require_once APPPATH . 'Database/Migrations/2026-10-28-000005_CreateHybridChatFoundation.php';
 require_once APPPATH . 'Database/Migrations/2026-10-28-000007_AddKakWawaFeedback.php';
+require_once APPPATH . 'Database/Migrations/2026-10-28-000008_AddKakWawaQualityControls.php';
 
 final class HybridChatMigrationTest extends CIUnitTestCase
 {
@@ -16,6 +18,7 @@ final class HybridChatMigrationTest extends CIUnitTestCase
         $forge = \Config\Database::forge('tests');
         $migration = new CreateHybridChatFoundation($forge);
         $feedbackMigration = new AddKakWawaFeedback($forge);
+        $qualityMigration = new AddKakWawaQualityControls($forge);
         $tables = [
             'ilena_chat_conversations',
             'ilena_chat_messages',
@@ -27,13 +30,21 @@ final class HybridChatMigrationTest extends CIUnitTestCase
         try {
             $migration->up();
             $feedbackMigration->up();
+            $qualityMigration->up();
             foreach ($tables as $table) {
                 $this->assertTrue($forge->getConnection()->tableExists($table), $table . ' should exist after migration.');
             }
             $this->assertTrue($forge->getConnection()->tableExists('ilena_chat_feedback'));
+            $this->assertTrue($forge->getConnection()->tableExists('ilena_chat_events'));
+            $knowledgeFields = $forge->getConnection()->getFieldNames('ilena_chat_knowledge');
+            $this->assertContains('valid_from', $knowledgeFields);
+            $this->assertContains('expires_at', $knowledgeFields);
+            $this->assertContains('reviewed_at', $knowledgeFields);
+            $this->assertContains('revision', $knowledgeFields);
             $fieldNames = array_map(static fn ($field) => $field->name, $forge->getConnection()->getFieldData('ilena_chat_conversations'));
             $this->assertContains('feedback_prompted_at', $fieldNames, implode(', ', $fieldNames));
         } finally {
+            $qualityMigration->down();
             $feedbackMigration->down();
             $migration->down();
         }

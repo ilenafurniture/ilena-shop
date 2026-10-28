@@ -6,6 +6,7 @@ use App\Services\SmartProductAssistant;
 use App\Services\ChatProviderSettings;
 use App\Services\ChatSupportSchedule;
 use App\Services\ChatFeedbackService;
+use App\Services\ChatTelemetry;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class SupportChatController extends BaseController
@@ -166,10 +167,6 @@ class SupportChatController extends BaseController
                 ]);
                 $afterHoursReply['messageId'] = (int) $db->insertID();
                 $afterHoursReply['createdAt'] = $now;
-                if ($conversationStatus === 'ai') {
-                    $conversationStatus = 'human_waiting';
-                    $db->table('ilena_chat_conversations')->where('id', $conversationId)->update(['status' => $conversationStatus]);
-                }
             }
             $db->table('ilena_chat_conversations')->where('id', $conversationId)->update([
                 'context_product_id' => $contextProductId ?: ($conversation['context_product_id'] ?? null),
@@ -177,7 +174,9 @@ class SupportChatController extends BaseController
                 'updated_at' => $now,
                 ...( $db->fieldExists('feedback_prompted_at', 'ilena_chat_conversations') ? ['feedback_prompted_at' => null] : [] ),
             ]);
-            if ($availability['open'] && ($conversation['status'] ?? 'ai') === 'ai') {
+            // AI remains the first responder at all hours. Only an explicit
+            // handoff action moves the conversation into the staff queue.
+            if (($conversation['status'] ?? 'ai') === 'ai') {
                 $db->table('ilena_chat_jobs')->insert([
                     'conversation_id' => $conversationId,
                     'user_message_id' => $messageId,
@@ -222,6 +221,7 @@ class SupportChatController extends BaseController
         if (! $visitor) return $this->json(['success' => false, 'message' => 'Percakapan belum dimulai.'], 404);
         $conversation = $this->ownedConversation($visitor);
         if (! $conversation) return $this->json(['success' => false, 'message' => 'Percakapan tidak ditemukan.'], 404);
+        if (($conversation['status'] ?? '') !== 'ai') return $this->json(['success' => false, 'message' => 'Percakapan sudah ditangani tim Ilena.'], 409);
         $this->db()->table('ilena_chat_conversations')->where('id', (int)$conversation['id'])->update([
             'status' => 'human_waiting', 'last_message_at' => date('Y-m-d H:i:s'), 'updated_at' => date('Y-m-d H:i:s'),
         ]);
@@ -230,7 +230,43 @@ class SupportChatController extends BaseController
             'body' => 'Pelanggan meminta bantuan staf. Pesan berikutnya akan dilayani oleh tim Ilena.',
             'created_at' => date('Y-m-d H:i:s'),
         ]);
+        ChatTelemetry::record($this->db(), 'handoff', 'customer_requested_staff', 0);
         return $this->json(['success' => true, 'status' => 'human_waiting', 'humanAvailable' => true]);
+    }
+
+    public function resolve()
+    {
+        $input = $this->request->getJSON(true) ?? $this->request->getPost();
+        $conversationKey = trim((string)($input['conversationKey'] ?? ''));
+        if (! preg_match('/^[a-f0-9]{64}$/', $conversationKey)) {
+            return $this->json(['success' => false, 'message' => 'Percakapan tidak ditemukan.'], 422);
+        }
+        $visitor = $this->visitorHash();
+        if (! $visitor) return $this->json(['success' => false, 'message' => 'Percakapan tidak ditemukan.'], 404);
+        $db = $this->db();
+        $conversation = $db->table('ilena_chat_conversations')->where('conversation_key', $conversationKey)
+            ->where('visitor_hash', $visitor)->where('status', 'ai')->get()->getRowArray();
+        if (! $conversation) return $this->json(['success' => false, 'message' => 'Jawaban ini sudah diproses atau percakapan sedang ditangani tim.'], 409);
+
+        $now = date('Y-m-d H:i:s');
+        $thanks = 'Terima kasih, Kak. Senang bisa membantu. Kakak bisa memulai chat baru kapan saja.';
+        $db->transBegin();
+        try {
+            $db->table('ilena_chat_messages')->insert([
+                'conversation_id' => (int)$conversation['id'], 'sender_type' => 'assistant', 'body' => $thanks,
+                'metadata' => json_encode(['type' => 'kak_wawa_resolved'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                'created_at' => $now,
+            ]);
+            $messageId = (int)$db->insertID();
+            $db->table('ilena_chat_conversations')->where('id', (int)$conversation['id'])->where('status', 'ai')->update(['last_message_at' => $now, 'updated_at' => $now]);
+            if ($db->transStatus() === false) throw new \RuntimeException('Gagal menyimpan status percakapan.');
+            $db->transCommit();
+            return $this->json(['success' => true, 'status' => 'ai', 'message' => ['id' => $messageId, 'sender_type' => 'assistant', 'body' => $thanks, 'created_at' => $now]]);
+        } catch (\Throwable $e) {
+            $db->transRollback();
+            log_message('error', 'Ilena chat resolution failed: {message}', ['message' => $e->getMessage()]);
+            return $this->json(['success' => false, 'message' => 'Percakapan belum dapat ditutup. Silakan coba kembali.'], 500);
+        }
     }
 
     public function rate()
@@ -323,6 +359,11 @@ class SupportChatController extends BaseController
         return $this->json(['success' => true, 'stats' => $feedback['stats'], 'items' => $feedback['rows']]);
     }
 
+    public function adminTelemetry()
+    {
+        return $this->json(['success' => true] + ChatTelemetry::summary($this->db(), 7));
+    }
+
     public function adminIndex()
     {
         $db = $this->db();
@@ -353,7 +394,8 @@ class SupportChatController extends BaseController
                 && $db->tableExists('ilena_chat_jobs')
                 && $db->tableExists('ilena_chat_knowledge')
                 && $db->tableExists('ilena_chat_product_specs')
-                && $db->tableExists('ilena_chat_feedback'),
+                && $db->tableExists('ilena_chat_feedback')
+                && $db->tableExists('ilena_chat_events'),
         ]);
     }
 
@@ -404,7 +446,9 @@ class SupportChatController extends BaseController
 
     public function adminQueue()
     {
-        $rows = $this->db()->query("SELECT c.id,c.conversation_key,c.status,c.assigned_to,c.customer_email,c.context_product_id,c.last_message_at,c.created_at,(SELECT LEFT(m.body,220) FROM ilena_chat_messages m WHERE m.conversation_id=c.id ORDER BY m.id DESC LIMIT 1) AS last_body FROM ilena_chat_conversations c WHERE c.status <> 'closed' ORDER BY CASE WHEN c.status='human_waiting' THEN 0 WHEN c.status='human' THEN 1 ELSE 2 END,c.last_message_at DESC LIMIT 80")->getResultArray();
+        // AI-only chats are private to the customer/assistant unless the
+        // customer explicitly requests staff. Keep them out of the inbox.
+        $rows = $this->db()->query("SELECT c.id,c.conversation_key,c.status,c.assigned_to,c.customer_email,c.context_product_id,c.last_message_at,c.created_at,(SELECT LEFT(m.body,220) FROM ilena_chat_messages m WHERE m.conversation_id=c.id ORDER BY m.id DESC LIMIT 1) AS last_body FROM ilena_chat_conversations c WHERE c.status='human' OR (c.status='human_waiting' AND EXISTS (SELECT 1 FROM ilena_chat_messages handoff WHERE handoff.conversation_id=c.id AND handoff.sender_type='system' AND handoff.body='Pelanggan meminta bantuan staf. Pesan berikutnya akan dilayani oleh tim Ilena.')) ORDER BY CASE WHEN c.status='human_waiting' THEN 0 ELSE 1 END,c.last_message_at DESC LIMIT 80")->getResultArray();
         return $this->json(['success' => true, 'items' => $rows]);
     }
 
@@ -475,10 +519,32 @@ class SupportChatController extends BaseController
         if ($title === '' || mb_strlen($title) > 191 || $content === '' || mb_strlen($content) > 30000 || ! $validSource) {
             return redirect()->back()->withInput()->with('chat_error', 'Periksa judul, isi (maksimal 30.000 karakter), dan URL sumber.');
         }
+        $published = $this->request->getPost('is_published') ? 1 : 0;
         $data = ['title' => $title, 'content' => $content, 'source_url' => $source ?: null,
-            'is_published' => $this->request->getPost('is_published') ? 1 : 0,
+            'is_published' => $published,
             'updated_by' => mb_substr((string)session()->get('email'), 0, 191), 'updated_at' => date('Y-m-d H:i:s')];
+        if ($this->db()->fieldExists('valid_from', 'ilena_chat_knowledge')) {
+            $validFrom = trim((string) $this->request->getPost('valid_from'));
+            $expiresAt = trim((string) $this->request->getPost('expires_at'));
+            foreach ([$validFrom, $expiresAt] as $date) {
+                $parsed = $date === '' ? null : \DateTimeImmutable::createFromFormat('!Y-m-d', $date);
+                if ($date !== '' && (! preg_match('/^\d{4}-\d{2}-\d{2}$/', $date) || ! $parsed || $parsed->format('Y-m-d') !== $date)) {
+                    return redirect()->back()->withInput()->with('chat_error', 'Tanggal berlaku harus menggunakan format tanggal yang benar.');
+                }
+            }
+            if ($validFrom !== '' && $expiresAt !== '' && $expiresAt < $validFrom) {
+                return redirect()->back()->withInput()->with('chat_error', 'Tanggal akhir harus sama atau setelah tanggal mulai.');
+            }
+            $data['valid_from'] = $validFrom ?: null;
+            $data['expires_at'] = $expiresAt ?: null;
+            $data['reviewed_at'] = $published ? date('Y-m-d H:i:s') : null;
+            $data['reviewed_by'] = $published ? mb_substr((string) session()->get('email'), 0, 191) : null;
+        }
         $table = $this->db()->table('ilena_chat_knowledge');
+        if ($this->db()->fieldExists('revision', 'ilena_chat_knowledge')) {
+            $previous = $id ? $this->db()->table('ilena_chat_knowledge')->select('revision')->where('id', $id)->get()->getRowArray() : null;
+            $data['revision'] = $previous ? max(1, (int) ($previous['revision'] ?? 1)) + 1 : 1;
+        }
         if ($id) $table->where('id', $id)->update($data);
         else { $data['created_at'] = date('Y-m-d H:i:s'); $table->insert($data); }
         return redirect()->to('/admin/support-chat#knowledge')->with('chat_notice', 'Sumber knowledge tersimpan.');
