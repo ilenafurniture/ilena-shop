@@ -232,6 +232,7 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
     $routes->post('support-chat/knowledge/save', 'SupportChatController::saveKnowledge');
     $routes->post('support-chat/knowledge/delete/(:num)', 'SupportChatController::deleteKnowledge/$1');
     $routes->post('support-chat/product-spec/save', 'SupportChatController::saveProductSpec');
+    $routes->post('support-chat/provider/save', 'SupportChatController::saveProviderSettings');
 
 });
 

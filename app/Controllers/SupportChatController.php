@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Services\SmartProductAssistant;
+use App\Services\ChatProviderSettings;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class SupportChatController extends BaseController
@@ -184,6 +185,7 @@ class SupportChatController extends BaseController
     public function adminIndex()
     {
         $db = $this->db();
+        $providerSettings = new ChatProviderSettings($db);
         $knowledge = $db->tableExists('ilena_chat_knowledge')
             ? $db->table('ilena_chat_knowledge')->orderBy('updated_at', 'DESC')->get(200)->getResultArray()
             : [];
@@ -198,12 +200,57 @@ class SupportChatController extends BaseController
             'knowledge' => $knowledge,
             'products' => $products,
             'productSpecs' => $specs,
+            'isDev' => (string) session()->get('role') === '1',
+            'providerSettingsReady' => $providerSettings->tableReady(),
+            'providerSettings' => $providerSettings->adminSummary(),
+            'encryptionKeyReady' => $providerSettings->encryptionReady(),
             'chatReady' => $db->tableExists('ilena_chat_conversations')
                 && $db->tableExists('ilena_chat_messages')
                 && $db->tableExists('ilena_chat_jobs')
                 && $db->tableExists('ilena_chat_knowledge')
                 && $db->tableExists('ilena_chat_product_specs'),
         ]);
+    }
+
+    /** Provider credentials are a Dev-only setting, even if staff can use the inbox. */
+    public function saveProviderSettings()
+    {
+        if ((string) session()->get('role') !== '1') {
+            return redirect()->to('/admin/support-chat')->with('chat_error', 'Hanya Dev yang dapat mengubah provider AI.');
+        }
+
+        $endpoint = trim((string) $this->request->getPost('endpoint'));
+        $model = trim((string) $this->request->getPost('model'));
+        $apiKey = trim((string) $this->request->getPost('api_key'));
+        $enabled = $this->request->getPost('is_enabled') === '1';
+        $clearKey = $this->request->getPost('clear_api_key') === '1';
+        $parts = $endpoint !== '' ? parse_url($endpoint) : [];
+        $validEndpoint = $endpoint === '' || (
+            filter_var($endpoint, FILTER_VALIDATE_URL)
+            && strtolower((string) ($parts['scheme'] ?? '')) === 'https'
+            && ! empty($parts['host'])
+            && empty($parts['user'])
+            && empty($parts['pass'])
+            && empty($parts['fragment'])
+        );
+        $validModel = $model === '' || preg_match('~^[A-Za-z0-9][A-Za-z0-9._:/-]{0,159}$~', $model) === 1;
+        if (! $validEndpoint || ! $validModel || mb_strlen($endpoint) > 500 || mb_strlen($apiKey) > 4000) {
+            return redirect()->back()->withInput()->with('chat_error', 'Periksa endpoint HTTPS, ID model, dan panjang API key. Gunakan endpoint OpenAI-compatible yang tepercaya.');
+        }
+        if ($enabled && ($endpoint === '' || $model === '')) {
+            return redirect()->back()->withInput()->with('chat_error', 'Isi endpoint dan ID model sebelum mengaktifkan provider.');
+        }
+
+        $result = (new ChatProviderSettings($this->db()))->save(
+            $endpoint,
+            $model,
+            $apiKey,
+            $enabled,
+            $clearKey,
+            (string) session()->get('email')
+        );
+        return redirect()->to('/admin/support-chat#provider')
+            ->with($result['ok'] ? 'chat_notice' : 'chat_error', $result['message']);
     }
 
     public function adminQueue()

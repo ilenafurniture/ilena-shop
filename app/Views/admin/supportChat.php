@@ -4,6 +4,7 @@
 $knowledge = $knowledge ?? [];
 $products = $products ?? [];
 $productSpecs = $productSpecs ?? [];
+$providerSettings = $providerSettings ?? ['enabled' => false, 'endpoint' => '', 'model' => '', 'hasKey' => false, 'source' => 'env'];
 ?>
 <main class="support-chat-admin" data-ready="<?= !empty($chatReady) ? '1' : '0'; ?>">
   <div id="chatToast" class="support-chat-toast" role="status" aria-live="polite" hidden></div>
@@ -12,11 +13,13 @@ $productSpecs = $productSpecs ?? [];
     <div><p class="support-chat-eyebrow">Layanan pelanggan</p><h1>Live chat</h1><p>Assistant membantu lebih dulu; staf mengambil alih saat pelanggan memintanya.</p></div>
     <span class="support-chat-status"><i></i> Inbox &amp; sumber jawaban</span>
   </header>
+  <?php if (session()->getFlashdata('chat_notice')): ?><p class="support-chat-flash"><?= esc(session()->getFlashdata('chat_notice')); ?></p><?php endif; ?>
+  <?php if (session()->getFlashdata('chat_error')): ?><p class="support-chat-flash is-error"><?= esc(session()->getFlashdata('chat_error')); ?></p><?php endif; ?>
   <?php if (!$chatReady): ?>
     <div class="support-chat-notice">Jalankan migration chat sebelum membuka inbox: <code>/usr/local/lsws/lsphp83/bin/lsphp ops/spark-cli.php migrate</code>.</div>
   <?php else: ?>
     <nav class="support-chat-tabs" aria-label="Bagian live chat">
-      <a href="#inbox">Inbox</a><a href="#knowledge">Knowledge base</a><a href="#products">Spesifikasi produk</a>
+      <a href="#inbox">Inbox</a><a href="#knowledge">Knowledge base</a><a href="#products">Spesifikasi produk</a><?php if (!empty($isDev)): ?><a href="#provider">Provider AI</a><?php endif; ?>
     </nav>
     <section id="inbox" class="support-chat-inbox" aria-label="Antrean percakapan">
       <aside class="support-chat-queue"><div class="support-chat-queue-head"><h2>Antrean</h2><span id="chatQueueCount">0</span></div><div id="chatQueue" class="support-chat-queue-list"><p class="support-chat-muted">Memuat percakapan…</p></div></aside>
@@ -28,8 +31,6 @@ $productSpecs = $productSpecs ?? [];
     </section>
   <section id="knowledge" class="support-chat-settings">
     <header><div><h2>Knowledge base resmi</h2><p>Isi dengan FAQ, garansi, pengiriman, dan kebijakan terbitan Ilena. Assistant hanya menerima sumber yang dipublikasikan.</p></div></header>
-    <?php if (session()->getFlashdata('chat_notice')): ?><p class="support-chat-flash"><?= esc(session()->getFlashdata('chat_notice')); ?></p><?php endif; ?>
-    <?php if (session()->getFlashdata('chat_error')): ?><p class="support-chat-flash is-error"><?= esc(session()->getFlashdata('chat_error')); ?></p><?php endif; ?>
     <form method="post" action="/admin/support-chat/knowledge/save" class="support-chat-form" id="knowledgeForm">
       <?= csrf_field(); ?><input type="hidden" name="id" value="">
       <label>Judul<input name="title" maxlength="191" required placeholder="Contoh: Garansi produk"></label>
@@ -65,6 +66,27 @@ $productSpecs = $productSpecs ?? [];
       <?php foreach ($productSpecs as $spec): ?><button type="button" class="support-chat-spec-row" data-spec='<?= esc(json_encode($spec, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG), 'attr'); ?>'><strong><?= esc($spec['product_id']); ?></strong><span><?= esc(implode(' · ', array_filter([$spec['colors'] ?? '', $spec['materials'] ?? '', $spec['dimensions'] ?? '']))); ?></span><small>Edit</small></button><?php endforeach; ?>
     </div>
   </section>
+  <?php if (!empty($isDev)): ?>
+  <section id="provider" class="support-chat-settings">
+    <header><div><h2>Provider AI</h2><p>Pilih provider OpenAI-compatible, termasuk layanan yang menawarkan model gratis. Endpoint dan ID model mengikuti provider pilihan Anda.</p></div><span class="support-chat-provider-state <?= !empty($providerSettings['enabled']) ? 'is-on' : ''; ?>"><?= !empty($providerSettings['enabled']) ? 'Aktif' : 'Nonaktif'; ?></span></header>
+    <?php if (empty($providerSettingsReady)): ?>
+      <p class="support-chat-notice">Tabel pengaturan belum tersedia. Jalankan migrasi terbaru setelah deploy.</p>
+    <?php else: ?>
+      <?php if (empty($encryptionKeyReady)): ?><p class="support-chat-notice is-warning">Sebelum menyimpan API key, Dev perlu membuat <code>ILENA_CHAT_CREDENTIAL_KEY</code> (minimal 32 karakter) di <code>.env</code> server. Kunci ini khusus untuk mengenkripsi API key provider.</p><?php endif; ?>
+      <p class="support-chat-provider-current">Profil saat ini: <strong><?= esc($providerSettings['source'] === 'admin' ? 'Diatur dari Admin' : 'Konfigurasi .env'); ?></strong><?= !empty($providerSettings['hasKey']) ? ' · API key tersimpan' : ' · API key belum tersedia'; ?></p>
+      <form method="post" action="/admin/support-chat/provider/save" class="support-chat-form support-chat-provider-form">
+        <?= csrf_field(); ?>
+        <label>Endpoint API<input name="endpoint" type="url" maxlength="500" value="<?= esc($providerSettings['endpoint'], 'attr'); ?>" placeholder="https://provider.example/v1/chat/completions" autocomplete="url"><small>Wajib HTTPS dan mendukung format Chat Completions dengan Bearer API key.</small></label>
+        <label>ID model<input name="model" maxlength="160" value="<?= esc($providerSettings['model'], 'attr'); ?>" placeholder="Contoh sesuai katalog provider" autocomplete="off"></label>
+        <label>API key<input name="api_key" type="password" maxlength="4000" value="" placeholder="<?= !empty($providerSettings['hasKey']) ? 'Tersimpan — isi hanya untuk mengganti' : 'Tempel API key provider'; ?>" autocomplete="new-password"><small>Key tidak akan ditampilkan kembali. Kosongkan untuk mempertahankan key tersimpan.</small></label>
+        <label class="support-chat-check"><input type="checkbox" name="is_enabled" value="1" <?= !empty($providerSettings['enabled']) ? 'checked' : ''; ?>> Aktifkan jawaban AI generatif</label>
+        <?php if (!empty($providerSettings['hasKey'])): ?><label class="support-chat-check"><input type="checkbox" name="clear_api_key" value="1"> Hapus API key tersimpan</label><?php endif; ?>
+        <button type="submit">Simpan konfigurasi AI</button>
+      </form>
+      <p class="support-chat-provider-note">Worker akan memakai konfigurasi ini untuk pesan baru. Untuk mengganti model gratis, ubah endpoint, ID model, dan API key sesuai dashboard provider; lalu simpan. Jangan memasukkan API key provider yang tidak dipercaya.</p>
+    <?php endif; ?>
+  </section>
+  <?php endif; ?>
   <?php endif; ?>
 </main>
 <style>
@@ -72,6 +94,7 @@ $productSpecs = $productSpecs ?? [];
 @media(max-width:800px){.support-chat-head{align-items:start;flex-direction:column}.support-chat-inbox{grid-template-columns:1fr}.support-chat-queue{border-right:0;border-bottom:1px solid var(--sc-line)}.support-chat-queue-list{display:flex;max-height:150px;overflow:auto}.support-chat-conversation{min-width:220px;border-right:1px solid #f0ece6}.support-chat-messages{min-height:280px}.support-chat-form,.support-chat-spec-form{grid-template-columns:1fr}.support-chat-form label:first-child{grid-column:auto}.support-chat-thread-head{align-items:start;flex-direction:column}.support-chat-thread-actions{align-self:stretch}.support-chat-thread-actions button{flex:1}}
 @media(prefers-reduced-motion:reduce){.support-chat-admin *{scroll-behavior:auto!important;transition:none!important}}
 .support-chat-spec-row{display:flex;width:100%;align-items:center;gap:12px;padding:9px 0;border:0;border-bottom:1px solid var(--sc-line);background:transparent;text-align:left;color:inherit}.support-chat-spec-row strong{min-width:100px;color:var(--sc-ink)}.support-chat-spec-row small{margin-left:auto;color:#8b684c}.support-chat-toast{position:fixed;right:24px;bottom:24px;z-index:1500;max-width:min(400px,calc(100vw - 32px));padding:12px 15px;border:1px solid var(--sc-line);border-left:3px solid #6e956a;background:#fffdfa;box-shadow:0 10px 30px #29251f22;font-size:12px}.support-chat-toast.is-error{border-left-color:#a25142}.support-chat-confirm{width:min(380px,calc(100vw - 32px));border:1px solid var(--sc-line);padding:0;background:#fffdfa;color:var(--sc-ink);box-shadow:0 18px 55px #29251f40}.support-chat-confirm::backdrop{background:#211f1bb3;backdrop-filter:blur(2px)}.support-chat-confirm form{padding:18px}.support-chat-confirm form>div{display:flex;justify-content:end;gap:8px}.support-chat-confirm button{border:1px solid var(--sc-line);border-radius:6px;padding:8px 11px;background:#45634d;color:white;font-size:11px}.support-chat-confirm button.is-quiet{background:white;color:var(--sc-ink)}.support-chat-confirm button.is-danger{border-color:#8a493d;background:#8a493d}
+.support-chat-provider-state{align-self:center;color:#88796b;font-size:11px}.support-chat-provider-state.is-on{color:#42634a}.support-chat-provider-current,.support-chat-provider-note{max-width:880px;color:var(--sc-muted);font-size:11px}.support-chat-provider-current strong{color:var(--sc-ink)}.support-chat-provider-form small{color:var(--sc-muted);font-weight:400}.support-chat-provider-form label:first-child{grid-column:1/-1}.support-chat-provider-form .support-chat-check{display:flex;align-items:center}.support-chat-provider-form input[type=checkbox]{width:auto;min-height:0}.support-chat-notice.is-warning{border-left-color:#9a7654}
 </style>
 <script>
 (() => {

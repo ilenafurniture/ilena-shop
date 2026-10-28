@@ -20,18 +20,20 @@ cd /mine/ilenafurniture.com
 
 The migration creates `ilena_chat_conversations`, `ilena_chat_messages`, `ilena_chat_jobs`, `ilena_chat_knowledge`, and `ilena_chat_product_specs`. The existing product table is not altered. Product colors/materials/dimensions are entered in **Admin → Live Chat → Spesifikasi produk**.
 
-## 2. AI provider configuration
+## 2. Dev-managed AI provider
 
-Add these values to the server-only `.env`; do not commit the key:
+The Dev role configures an OpenAI-compatible provider from **Admin → Live Chat → Provider AI**. This supports providers that offer a free model tier; use their exact HTTPS Chat Completions endpoint, model ID, and Bearer API key. The settings form is hidden from operational staff and checks Dev role again server-side.
+
+Before saving a provider API key, add a separate encryption key to the server-only `.env`:
 
 ```dotenv
-ILENA_CHAT_AI_ENDPOINT="https://YOUR_OPENAI_COMPATIBLE_PROVIDER/v1/chat/completions"
-ILENA_CHAT_AI_MODEL="YOUR_CHAT_MODEL"
-ILENA_CHAT_AI_API_KEY="YOUR_SECRET_KEY"
+ILENA_CHAT_CREDENTIAL_KEY="GENERATE_AT_LEAST_32_RANDOM_CHARACTERS"
 ILENA_CHAT_RETENTION_DAYS=180
 ```
 
-The provider must accept the OpenAI Chat Completions request/response shape. Keep the credential server-side. The worker sends only the customer's latest question and retrieved public product/knowledge snippets; it does not send customer email or the full conversation history.
+Generate the key once with `openssl rand -hex 32`. Keep it stable and private: changing it makes the stored provider credential undecryptable. The API key is encrypted before it is stored in the settings table. The worker reads it only when processing a queued chat job. Never commit either secret or send it in chat. Existing `ILENA_CHAT_AI_ENDPOINT`, `ILENA_CHAT_AI_MODEL`, and `ILENA_CHAT_AI_API_KEY` environment settings remain a fallback until a Dev saves a provider profile.
+
+The provider must accept the OpenAI Chat Completions request/response shape and Bearer authentication; a regular Gemini-native endpoint, for example, is not interchangeable unless the provider offers a compatible endpoint. The worker sends only the customer's latest question and retrieved public product/knowledge snippets; it does not send customer email or the full conversation history.
 
 ## 3. Background worker (systemd; no cron)
 
@@ -50,7 +52,8 @@ The worker runs independently from LSAPI and sleeps when there are no queued AI 
 
 1. Open `/admin/rbac` as Dev and confirm the relevant staff role has **Live Chat & Knowledge Base**.
 2. Add and publish approved warranty, shipping, FAQ, and policy content under **Knowledge base**. A draft is never sent to the assistant.
-3. Add verified product specs for colors, materials, and dimensions. Recommendations remain grounded in active catalog products and use their existing product detail and cover-image routes.
-4. Open `/admin/support-chat`, send a test message from a private browser window, verify the assistant response, and test **Minta bantuan staf** and a staff reply.
+3. As Dev, open **Provider AI**, enter the selected free-tier provider's endpoint, model ID, and key, then enable it. If using an existing environment-based key for the first save, leave the key field blank and it will be encrypted into the settings table.
+4. Add verified product specs for colors, materials, and dimensions. Recommendations remain grounded in active catalog products and use their existing product detail and cover-image routes.
+5. Open `/admin/support-chat`, send a test message from a private browser window, verify the assistant response, and test **Minta bantuan staf** and a staff reply.
 
-The API key, database migration, and systemd service are activation requirements. Before they are configured, the existing site remains usable and the widget falls back to WhatsApp plus grounded catalog matching.
+The provider encryption key, provider profile, database migration, and systemd service are required for generative AI. Without a configured provider, the storefront remains usable with grounded catalog matching and human handoff; the assistant uses a fallback response.

@@ -152,9 +152,10 @@ class SmartProductAssistant
 
     private function askModel(string $query, ?string $contextProductId, array $products, array $sources, string $fallback): string
     {
-        $apiKey = trim((string)env('ILENA_CHAT_AI_API_KEY', ''));
-        $endpoint = trim((string)env('ILENA_CHAT_AI_ENDPOINT', ''));
-        $model = trim((string)env('ILENA_CHAT_AI_MODEL', ''));
+        $provider = (new ChatProviderSettings($this->db))->forWorker();
+        $apiKey = trim((string)($provider['apiKey'] ?? ''));
+        $endpoint = trim((string)($provider['endpoint'] ?? ''));
+        $model = trim((string)($provider['model'] ?? ''));
         if ($apiKey === '' || $endpoint === '' || $model === '' || ! function_exists('curl_init')
             || strtolower((string)parse_url($endpoint, PHP_URL_SCHEME)) !== 'https'
         ) return $fallback;
