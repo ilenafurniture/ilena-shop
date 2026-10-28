@@ -301,6 +301,33 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                     <p class="harga-diskon">Rp <?= number_format($produk['harga'], 0, ',', '.') ?></p>
                     <?php } ?>
                 </div>
+                <div class="ilena-product-options gap-2 hide-ke-show-flex">
+                    <section class="ilena-option-group" aria-labelledby="mobile-variant-label">
+                    <div class="ilena-option-heading"><p class="detail-mini-label w-100" id="mobile-variant-label">Warna / varian</p></div>
+                    <div class="container-varian mb-3 d-flex" role="radiogroup" aria-labelledby="mobile-variant-label">
+                        <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
+                        <input id="varian<?= $ind_v ?>-mobile"
+                            <?= $ind_v === 0 ? 'checked' : '' ?>
+                            value="<?= esc($v['urutan_gambar'], 'attr') ?>-<?= esc($v['nama'], 'attr') ?>-<?= $ind_v ?>"
+                            data-slot="<?= esc($v['urutan_gambar'], 'attr') ?>"
+                            data-name="<?= esc($v['nama'], 'attr') ?>"
+                            data-index="<?= $ind_v ?>"
+                            data-stok="<?= (int)($v['stok'] ?? 0) ?>"
+                            aria-label="Warna <?= esc($v['nama'], 'attr') ?>"
+                            type="radio" name="varian-mobile">
+                        <label for="varian<?= $ind_v ?>-mobile" title="<?= esc($v['nama'], 'attr') ?>"><span aria-hidden="true"
+                                style="background-color: <?= esc($v['kode'], 'attr') ?>"></span></label>
+                        <?php } ?>
+                    </div></section>
+                    <section class="ilena-option-group" aria-labelledby="mobile-size-label">
+                    <div class="ilena-option-heading"><p class="detail-mini-label w-100" id="mobile-size-label">Pilihan ukuran</p><span class="ilena-option-caption">Panjang</span></div>
+                    <div class="ilena-size-options">
+                        <?php foreach ($sizeOptions as $sizeOption) { $ind_ps = $sizeOption['index']; $ps = $sizeOption['product']; ?>
+                        <a href="/product/<?= rawurlencode(strtolower(str_replace(' ', '-', (string) $ps['nama']))) ?>/<?= (int) $ind_ps ?>"
+                            class="btn-default-abu ilena-size-option <?= $ind_ps == $indexNama ? 'border border-dark is-active' : '' ?>" <?= $ind_ps == $indexNama ? 'aria-current="page"' : '' ?>><?= esc($sizeOption['length']) ?><span>mm</span></a>
+                        <?php } ?>
+                    </div></section>
+                </div>
                 <div class="ilena-product-description"><?= $sanitizeProductHtml((string) ($produk['deskripsi']['deskripsi'] ?? '')); ?></div>
                 <div class="ilena-product-options gap-2 show-flex-ke-hide">
                     <section class="ilena-option-group" aria-labelledby="desktop-variant-label">
@@ -517,33 +544,6 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                                 alt="<?= esc($produk['nama'], 'attr') ?>" width="300" height="300" loading="lazy" decoding="async"></label>
                         <?php } ?>
                     </div>
-                </div>
-                <div class="ilena-product-options gap-2 hide-ke-show-flex">
-                    <section class="ilena-option-group" aria-labelledby="mobile-variant-label">
-                    <div class="ilena-option-heading"><p class="detail-mini-label w-100" id="mobile-variant-label">Warna / varian</p></div>
-                    <div class="container-varian mb-3 d-flex" role="radiogroup" aria-labelledby="mobile-variant-label">
-                        <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
-                        <input id="varian<?= $ind_v ?>-mobile"
-                            <?= $ind_v === 0 ? 'checked' : '' ?>
-                            value="<?= esc($v['urutan_gambar'], 'attr') ?>-<?= esc($v['nama'], 'attr') ?>-<?= $ind_v ?>"
-                            data-slot="<?= esc($v['urutan_gambar'], 'attr') ?>"
-                            data-name="<?= esc($v['nama'], 'attr') ?>"
-                            data-index="<?= $ind_v ?>"
-                            data-stok="<?= (int)($v['stok'] ?? 0) ?>"
-                            aria-label="Warna <?= esc($v['nama'], 'attr') ?>"
-                            type="radio" name="varian-mobile">
-                        <label for="varian<?= $ind_v ?>-mobile" title="<?= esc($v['nama'], 'attr') ?>"><span aria-hidden="true"
-                                style="background-color: <?= esc($v['kode'], 'attr') ?>"></span></label>
-                        <?php } ?>
-                    </div></section>
-                    <section class="ilena-option-group" aria-labelledby="mobile-size-label">
-                    <div class="ilena-option-heading"><p class="detail-mini-label w-100" id="mobile-size-label">Pilihan ukuran</p><span class="ilena-option-caption">Panjang</span></div>
-                    <div class="ilena-size-options">
-                        <?php foreach ($sizeOptions as $sizeOption) { $ind_ps = $sizeOption['index']; $ps = $sizeOption['product']; ?>
-                        <a href="/product/<?= rawurlencode(strtolower(str_replace(' ', '-', (string) $ps['nama']))) ?>/<?= (int) $ind_ps ?>"
-                            class="btn-default-abu ilena-size-option <?= $ind_ps == $indexNama ? 'border border-dark is-active' : '' ?>" <?= $ind_ps == $indexNama ? 'aria-current="page"' : '' ?>><?= esc($sizeOption['length']) ?><span>mm</span></a>
-                        <?php } ?>
-                    </div></section>
                 </div>
             </div>
         </div>
