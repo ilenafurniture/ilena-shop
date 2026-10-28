@@ -1597,8 +1597,39 @@ sliders.forEach((slider) => {
     let activeIndex = Math.max(0, slides.findIndex((slide) => slide.classList.contains('active')));
     const mobileFade = slider.classList.contains('ilena-home-banner-slider') && window.matchMedia('(max-width: 700px)').matches;
     if (mobileFade) {
-        const setActive = (index) => {
-            activeIndex = (index + slides.length) % slides.length;
+        let switchRequest = 0;
+        slides.forEach((slide, index) => slide.setAttribute('aria-hidden', index === activeIndex ? 'false' : 'true'));
+        dots.forEach((dot, index) => dot.classList.toggle('active', index === activeIndex));
+
+        const waitForSlideImage = (slide) => new Promise((resolve) => {
+            const image = slide.querySelector('img');
+            if (!image) { resolve(); return; }
+            image.loading = 'eager';
+            if (image.complete && image.naturalWidth > 0) {
+                if (typeof image.decode === 'function') image.decode().catch(() => {}).finally(resolve);
+                else resolve();
+                return;
+            }
+            let settled = false;
+            const finish = () => {
+                if (settled) return;
+                settled = true;
+                image.removeEventListener('load', finish);
+                image.removeEventListener('error', finish);
+                resolve();
+            };
+            image.addEventListener('load', finish, { once: true });
+            image.addEventListener('error', finish, { once: true });
+            window.setTimeout(finish, 5000);
+        });
+
+        const setActive = async (index) => {
+            const nextIndex = (index + slides.length) % slides.length;
+            if (nextIndex === activeIndex) return;
+            const request = ++switchRequest;
+            await waitForSlideImage(slides[nextIndex]);
+            if (request !== switchRequest) return;
+            activeIndex = nextIndex;
             slides.forEach((slide, slideIndex) => {
                 const active = slideIndex === activeIndex;
                 slide.classList.toggle('active', active);
@@ -1607,8 +1638,6 @@ sliders.forEach((slider) => {
             });
             dots.forEach((dot, dotIndex) => dot.classList.toggle('active', dotIndex === activeIndex));
         };
-
-        setActive(activeIndex);
         dots.forEach((dot, index) => dot.addEventListener('click', () => setActive(index)));
 
         let touchStartX = null;
