@@ -291,33 +291,31 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
         <section id="container-greeting-card" class="ilena-chat-greeting d-none" aria-label="Chat dengan Ilena" aria-live="polite">
             <div class="ilena-chat-greeting__panel">
                 <header class="ilena-chat-greeting__heading">
-                    <div class="ilena-chat-brand"><span class="ilena-chat-brand__mark" aria-hidden="true">I</span><span><p>Asisten Ilena</p><small data-chat-status>Siap membantu memilih furniture</small></span></div>
-                    <button type="button" class="ilena-chat-sound" data-chat-sound aria-pressed="false" aria-label="Aktifkan suara notifikasi" title="Suara notifikasi nonaktif">♪</button>
-                    <button type="button" aria-label="Tutup chat" data-close-chat-greeting>×</button>
+                    <div class="ilena-chat-brand"><span class="ilena-chat-brand__mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3.5 10 8.5-7 8.5 7v10.5H3.5V10Z"/><path d="M9 20.5v-7h6v7M7 10.5h.01M17 10.5h.01"/></svg></span><span class="ilena-chat-brand__copy"><p>Asisten Ilena</p><small><i aria-hidden="true"></i><span data-chat-status>Siap membantu memilih furniture</span></small></span></div>
+                    <button type="button" class="ilena-chat-sound" data-chat-sound aria-pressed="false" aria-label="Aktifkan suara notifikasi" title="Suara notifikasi nonaktif"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Zm4 4a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12"/></svg></button>
+                    <button type="button" aria-label="Tutup chat" data-close-chat-greeting><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
                 </header>
-                <div class="ilena-chat-transcript" data-chat-messages aria-label="Riwayat chat"><p class="ilena-chat-empty">Halo, selamat datang di Ilena Furniture. Saya siap membantu Anda menemukan furniture yang sesuai. Coba tanyakan berdasarkan budget, warna, bahan, atau ukuran.</p><div class="ilena-chat-typing" data-chat-typing role="status" aria-live="polite" hidden><span aria-hidden="true"><i></i><i></i><i></i></span><b data-chat-typing-copy>Asisten sedang mengetik</b></div></div>
+                <div class="ilena-chat-transcript" data-chat-messages aria-label="Riwayat chat">
+                    <div class="ilena-chat-welcome"><p class="ilena-chat-welcome__eyebrow">Temani memilih</p><h2>Furniture untuk ruang yang terasa milik Anda.</h2><p>Sebutkan ruang, ukuran, warna, atau anggaran. Kami bantu temukan pilihannya.</p><div class="ilena-chat-suggestions" aria-label="Mulai dari sini"><button type="button" data-chat-suggestion="Bantu saya cari sofa">Sofa</button><button type="button" data-chat-suggestion="Saya mencari meja untuk ruang makan">Meja makan</button><button type="button" data-chat-suggestion="Tampilkan pilihan sesuai budget saya">Cari sesuai anggaran</button></div></div>
+                    <div class="ilena-chat-typing" data-chat-typing role="status" aria-live="polite" hidden><span aria-hidden="true"><i></i><i></i><i></i></span><b data-chat-typing-copy>Asisten sedang mengetik</b></div>
+                </div>
                 <form class="ilena-chat-compose" data-chat-form>
                     <?= csrf_field(); ?>
                     <label class="visually-hidden" for="ilenaChatInput">Pesan untuk asisten Ilena</label>
-                    <textarea id="ilenaChatInput" name="message" rows="2" maxlength="1200" placeholder="Tulis pertanyaan…" required></textarea>
-                    <button type="submit" aria-label="Kirim pesan">Kirim</button>
+                    <textarea id="ilenaChatInput" name="message" rows="1" maxlength="1200" placeholder="Tulis pesan Anda…" required></textarea>
+                    <button type="submit" aria-label="Kirim pesan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12 20 4l-5 16-3-7-8-1Zm8 1 8-9"/></svg></button>
                 </form>
-                <footer class="ilena-chat-footer"><button type="button" data-chat-handoff>Minta bantuan staf</button><a data-kbot-wa href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20saya%20butuh%20bantuan" target="_blank" rel="noopener noreferrer">Lanjut ke WhatsApp</a></footer>
+                <footer class="ilena-chat-footer"><span>Bantuan langsung</span><button type="button" data-chat-handoff>Bicara dengan tim</button><a data-kbot-wa href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20saya%20butuh%20bantuan" target="_blank" rel="noopener noreferrer">WhatsApp</a></footer>
                 <p class="ilena-chat-notice" data-chat-notice role="status" hidden></p>
             </div>
         </section>
         <div class="d-flex flex-column gap-2">
-            <div class="ilena-chat-greeting-teaser" data-chat-greeting hidden><span class="ilena-chat-greeting-teaser__dot" aria-hidden="true"></span><p>Halo, saya asisten Ilena. Perlu bantuan memilih furniture?</p><button type="button" data-greeting-open>Buka chat</button><button type="button" data-greeting-dismiss aria-label="Tutup sapaan">×</button></div>
-            <button type="button" class="btn-circle hitam ilena-floating-chat" id="btn-wa" data-open-ilena-chat aria-label="Buka chat assistant Ilena" aria-expanded="false" aria-controls="container-greeting-card" title="Chat dengan Ilena">
-                <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-                    <path
-                        d="M16.04 3C8.86 3 3.02 8.83 3.02 16c0 2.29.6 4.53 1.74 6.5L3 29l6.66-1.74A12.93 12.93 0 0 0 16.04 29C23.22 29 29 23.17 29 16S23.22 3 16.04 3Zm0 23.8c-2.02 0-4-.54-5.74-1.56l-.41-.24-3.95 1.03 1.05-3.84-.27-.44A10.8 10.8 0 0 1 5.22 16c0-5.96 4.85-10.8 10.82-10.8 5.96 0 10.76 4.84 10.76 10.8s-4.8 10.8-10.76 10.8Zm5.93-8.09c-.32-.16-1.91-.94-2.21-1.05-.3-.11-.52-.16-.73.16-.21.32-.84 1.05-1.03 1.26-.19.22-.38.24-.7.08-.32-.16-1.37-.5-2.61-1.6-.97-.86-1.62-1.93-1.81-2.25-.19-.32-.02-.5.14-.66.15-.15.32-.38.48-.57.16-.19.21-.32.32-.54.11-.22.05-.41-.03-.57-.08-.16-.73-1.76-1-2.41-.26-.63-.53-.54-.73-.55h-.62c-.21 0-.57.08-.86.41-.3.32-1.13 1.1-1.13 2.68s1.16 3.11 1.32 3.32c.16.22 2.28 3.48 5.52 4.88.77.33 1.38.53 1.85.68.78.25 1.49.21 2.05.13.63-.09 1.91-.78 2.18-1.53.27-.76.27-1.4.19-1.53-.08-.14-.3-.22-.62-.38Z" />
-                </svg>
-                <span class="ilena-floating-chat__label">Chat dengan Ilena</span>
+            <button type="button" class="btn-circle hitam ilena-floating-chat" id="ilenaAssistantLauncher" data-open-ilena-chat aria-label="Buka Asisten Belanja Ilena" aria-expanded="false" aria-controls="container-greeting-card">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 11.5a7.5 7.5 0 0 1-11.2 6.5L4 19l1-4.4A7.5 7.5 0 1 1 20 11.5Z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01"/></svg>
             </button>
         </div>
     </div>
-    <script defer src="<?= base_url('js/ilena-support-chat.js?v=20261028-2'); ?>"></script>
+    <script defer src="<?= base_url('js/ilena-support-chat.js?v=20261028-4'); ?>"></script>
 
     <?php if (!$isInternalArea && $layoutHeaderMode !== 'checkout'): ?>
     <script defer crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>

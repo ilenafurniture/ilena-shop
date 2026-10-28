@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Services\SmartProductAssistant;
 use App\Services\ChatProviderSettings;
+use App\Services\ChatSupportSchedule;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class SupportChatController extends BaseController
@@ -39,9 +40,7 @@ class SupportChatController extends BaseController
     /** Store support hours are 08:00–16:00 Asia/Jakarta, every day. */
     private function supportAvailability(): array
     {
-        $now = new \DateTimeImmutable('now', new \DateTimeZone('Asia/Jakarta'));
-        $minute = ((int) $now->format('G') * 60) + (int) $now->format('i');
-        return ['open' => $minute >= 480 && $minute < 960, 'hours' => '08.00–16.00 WIB', 'whatsappUrl' => $this->whatsappUrl()];
+        return ChatSupportSchedule::availability() + ['whatsappUrl' => $this->whatsappUrl()];
     }
 
     private function whatsappUrl(string $message = ''): string
@@ -107,14 +106,6 @@ class SupportChatController extends BaseController
         $body = trim((string)($input['message'] ?? ''));
         if ($body === '' || mb_strlen($body) > 1200) return $this->json(['success' => false, 'message' => 'Pesan harus berisi 1–1.200 karakter.'], 422);
         $availability = $this->supportAvailability();
-        if (! $availability['open']) {
-            return $this->json([
-                'success' => false,
-                'code' => 'outside_hours',
-                'message' => 'Tim Ilena sedang di luar jam layanan. Silakan teruskan pertanyaan Anda melalui WhatsApp.',
-                'whatsappUrl' => $this->whatsappUrl($body),
-            ], 200);
-        }
         $ip = (string) $this->request->getIPAddress();
         if (function_exists('service') && ! service('throttler')->check('ilena-chat-send-' . hash('sha256', $ip), 12, 60)) {
             return $this->json(['success' => false, 'message' => 'Tunggu sebentar sebelum mengirim pesan lagi.'], 429);
@@ -159,12 +150,30 @@ class SupportChatController extends BaseController
                 'created_at' => $now,
             ]);
             $messageId = (int)$db->insertID();
+            $conversationStatus = (string) ($conversation['status'] ?? 'ai');
+            $afterHoursReply = null;
+            if (! $availability['open']) {
+                $afterHoursReply = ChatSupportSchedule::afterHoursReply($this->whatsappUrl($body));
+                $db->table('ilena_chat_messages')->insert([
+                    'conversation_id' => $conversationId,
+                    'sender_type' => 'assistant',
+                    'body' => $afterHoursReply['body'],
+                    'metadata' => json_encode(['whatsappUrl' => $afterHoursReply['whatsappUrl']], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                    'created_at' => $now,
+                ]);
+                $afterHoursReply['messageId'] = (int) $db->insertID();
+                $afterHoursReply['createdAt'] = $now;
+                if ($conversationStatus === 'ai') {
+                    $conversationStatus = 'human_waiting';
+                    $db->table('ilena_chat_conversations')->where('id', $conversationId)->update(['status' => $conversationStatus]);
+                }
+            }
             $db->table('ilena_chat_conversations')->where('id', $conversationId)->update([
                 'context_product_id' => $contextProductId ?: ($conversation['context_product_id'] ?? null),
                 'last_message_at' => $now,
                 'updated_at' => $now,
             ]);
-            if (($conversation['status'] ?? 'ai') === 'ai') {
+            if ($availability['open'] && ($conversation['status'] ?? 'ai') === 'ai') {
                 $db->table('ilena_chat_jobs')->insert([
                     'conversation_id' => $conversationId,
                     'user_message_id' => $messageId,
@@ -176,7 +185,17 @@ class SupportChatController extends BaseController
             }
             if ($db->transStatus() === false) throw new \RuntimeException('Penyimpanan pesan gagal.');
             $db->transCommit();
-            return $this->json(['success' => true, 'conversationKey' => $conversation['conversation_key'], 'messageId' => $messageId, 'status' => $conversation['status'], 'humanAvailable' => true, 'createdAt' => $now]);
+            return $this->json([
+                'success' => true,
+                'conversationKey' => $conversation['conversation_key'],
+                'messageId' => $messageId,
+                'status' => $conversationStatus,
+                'humanAvailable' => $availability['open'],
+                'serviceHours' => $availability['hours'],
+                'whatsappUrl' => $this->whatsappUrl($body),
+                'afterHoursReply' => $afterHoursReply,
+                'createdAt' => $now,
+            ]);
         } catch (\Throwable $e) {
             $db->transRollback();
             log_message('error', 'Ilena chat send failed: {message}', ['message' => $e->getMessage()]);

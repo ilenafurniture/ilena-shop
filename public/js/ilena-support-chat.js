@@ -16,8 +16,8 @@
   const typing = widget.querySelector('[data-chat-typing]');
   const typingCopy = widget.querySelector('[data-chat-typing-copy]');
   const soundButton = widget.querySelector('[data-chat-sound]');
+  const suggestions = widget.querySelector('.ilena-chat-suggestions');
   const waLink = widget.querySelector('[data-kbot-wa]');
-  const teaser = widget.querySelector('[data-chat-greeting]');
   const csrf = form?.querySelector('input[type="hidden"]');
   if (!panel || !toggle || !form || !input || !csrf) return;
 
@@ -107,9 +107,10 @@
     const id = Number(message.id) || 0;
     if (!id || id <= cursor) return;
     cursor = id;
+    transcript.querySelector('.ilena-chat-welcome')?.remove();
     transcript.querySelector('.ilena-chat-empty')?.remove();
     const bubble = document.createElement('div');
-    bubble.className = 'ilena-chat-bubble' + (message.sender_type === 'visitor' ? ' is-visitor' : message.sender_type === 'system' ? ' is-system' : '');
+    bubble.className = 'ilena-chat-bubble' + (message.sender_type === 'visitor' ? ' is-visitor' : message.sender_type === 'system' ? ' is-system' : message.sender_type === 'admin' ? ' is-staff' : ' is-assistant');
     const body = document.createElement('div'); body.textContent = safeText(message.body); bubble.append(body);
     const meta = message.metadata && typeof message.metadata === 'object' ? message.metadata : {};
     if (Array.isArray(meta.products) && meta.products.length) {
@@ -126,6 +127,16 @@
           const link = document.createElement('a'); link.className = 'ilena-chat-source'; link.href = url.href; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = 'Sumber resmi: ' + safeText(source.title || 'Baca selengkapnya'); bubble.append(link);
         } catch (_) {}
       });
+    }
+    if (typeof meta.whatsappUrl === 'string') {
+      try {
+        const url = new URL(meta.whatsappUrl, location.origin);
+        if (url.protocol === 'https:' && url.hostname === 'wa.me') {
+          const link = document.createElement('a');
+          link.className = 'ilena-chat-source'; link.href = url.href; link.target = '_blank'; link.rel = 'noopener noreferrer';
+          link.textContent = 'Hubungi Ilena melalui WhatsApp'; bubble.append(link);
+        }
+      } catch (_) {}
     }
     const time = document.createElement('time'); time.textContent = safeText(message.created_at || ''); bubble.append(time);
     transcript.insertBefore(bubble, typing);
@@ -145,15 +156,10 @@
       else status.textContent = humanAvailable ? 'Asisten Ilena · Tim 08.00–16.00 WIB' : 'Asisten Ilena · Tim kembali pukul 08.00 WIB';
     }
     if (handoff) handoff.hidden = currentStatus !== 'ai' || humanAvailable === false;
-    if (humanAvailable === false) {
-      input.disabled = true;
-      if (sendButton) sendButton.disabled = true;
-      input.placeholder = 'Lanjutkan pertanyaan melalui WhatsApp';
-    } else {
-      input.disabled = sending;
-      if (sendButton) sendButton.disabled = sending;
-      input.placeholder = 'Tulis pertanyaan…';
-    }
+    if (suggestions) suggestions.hidden = currentStatus === 'human';
+    input.disabled = sending;
+    if (sendButton) sendButton.disabled = sending;
+    input.placeholder = humanAvailable === false ? 'Tulis pesan untuk Ilena…' : 'Tulis pertanyaan…';
   }
   function setTyping(value, copy = 'Asisten sedang mengetik') {
     if (!typing) return;
@@ -184,7 +190,7 @@
       renderMessages(data.messages);
       updateStatus(data.status, humanAvailable);
       ready = true;
-      if (!humanAvailable) showNotice('Tim Ilena melayani ' + (data.serviceHours || '08.00–16.00 WIB') + '. Di luar waktu tersebut, lanjutkan melalui WhatsApp.', data.whatsappUrl || '');
+      if (!humanAvailable) showNotice('Tim Ilena sedang di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '). Pesan Anda tetap bisa dikirim; tim akan menindaklanjuti saat layanan dibuka.', data.whatsappUrl || '');
       else showNotice('');
     } catch (error) { handleError(error); }
     finally { sending = false; updateStatus(currentStatus, humanAvailable); }
@@ -196,7 +202,7 @@
       const data = await api('/chat/poll?after=' + cursor);
       renderMessages(data.messages, true);
       updateStatus(data.status, data.humanAvailable === true);
-      if (data.humanAvailable === false && !waitingForReply) showNotice('Tim Ilena melayani ' + (data.serviceHours || '08.00–16.00 WIB') + '. Anda bisa lanjut melalui WhatsApp.', data.whatsappUrl || '');
+      if (data.humanAvailable === false && !waitingForReply) showNotice('Tim Ilena sedang di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '). Pesan Anda tetap tersimpan untuk ditindaklanjuti.', data.whatsappUrl || '');
     } catch (error) { handleError(error); }
     finally { polling = false; }
   }
@@ -212,15 +218,17 @@
   function openChat() {
     opened = true; panel.classList.remove('d-none');
     toggle.setAttribute('aria-expanded', 'true');
-    if (teaser) teaser.hidden = true;
     bootstrap().finally(() => { if (!input.disabled) input.focus(); schedulePoll(); });
   }
   toggle.addEventListener('click', () => {
     if (opened) { opened = false; panel.classList.add('d-none'); toggle.setAttribute('aria-expanded', 'false'); if (pollTimer) window.clearTimeout(pollTimer); pollTimer = null; }
     else openChat();
   });
-  widget.querySelector('[data-greeting-open]')?.addEventListener('click', openChat);
-  widget.querySelector('[data-greeting-dismiss]')?.addEventListener('click', () => { if (teaser) teaser.hidden = true; });
+  widget.querySelectorAll('[data-chat-suggestion]').forEach(button => button.addEventListener('click', () => {
+    if (input.disabled) return;
+    input.value = button.dataset.chatSuggestion || '';
+    form.requestSubmit();
+  }));
   close.addEventListener('click', () => { opened = false; panel.classList.add('d-none'); toggle.setAttribute('aria-expanded', 'false'); if (pollTimer) window.clearTimeout(pollTimer); pollTimer = null; toggle.focus(); });
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -231,10 +239,22 @@
       const data = await api('/chat/send', { method: 'POST', body: JSON.stringify({ message, productId: widget.dataset.contextProduct || '' }) });
       input.value = ''; ready = true; updateStatus(data.status, data.humanAvailable);
       appendMessage({ id: data.messageId, sender_type: 'visitor', body: message, created_at: data.createdAt || '' });
-      waitingForReply = data.status === 'ai';
-      if (waitingForReply) setTyping(true, 'Asisten sedang menyiapkan jawaban');
-      else if (data.status === 'human_waiting') setTyping(true, 'Pesan Anda menunggu tim Ilena');
-      showNotice('');
+      if (data.afterHoursReply) {
+        appendMessage({
+          id: data.afterHoursReply.messageId,
+          sender_type: 'assistant',
+          body: data.afterHoursReply.body,
+          metadata: { whatsappUrl: data.afterHoursReply.whatsappUrl },
+          created_at: data.afterHoursReply.createdAt || data.createdAt || '',
+        });
+        waitingForReply = false;
+        setTyping(false);
+        showNotice('Tim Ilena sedang di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '). Pesan Anda sudah tersimpan untuk ditindaklanjuti.', data.afterHoursReply.whatsappUrl || data.whatsappUrl || '');
+      } else {
+        waitingForReply = data.status === 'ai';
+        if (waitingForReply) setTyping(true, 'Asisten sedang menyiapkan jawaban');
+        else if (data.status === 'human_waiting') setTyping(true, 'Pesan Anda menunggu tim Ilena');
+      }
     } catch (error) { handleError(error); }
     finally { sending = false; updateStatus(currentStatus, humanAvailable); if (!input.disabled) input.focus(); poll(); }
   });
@@ -267,16 +287,4 @@
     pollTimer = null;
     poll().finally(() => schedulePoll(waitingForReply ? 2400 : 7000));
   });
-  let greetingSeen = false;
-  try { greetingSeen = sessionStorage.getItem('ilenaChatGreetingSeen') === '1'; } catch (_) {}
-  if (teaser && !greetingSeen) {
-    window.setTimeout(() => {
-      let seen = false;
-      try { seen = sessionStorage.getItem('ilenaChatGreetingSeen') === '1'; } catch (_) {}
-      if (!opened && !seen) {
-        teaser.hidden = false;
-        try { sessionStorage.setItem('ilenaChatGreetingSeen', '1'); } catch (_) {}
-      }
-    }, 1800);
-  }
 })();
