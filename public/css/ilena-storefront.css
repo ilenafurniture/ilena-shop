@@ -8772,3 +8772,10 @@ body.ilena-storefront .ilena-mobile-lightbox { display: none; }
         transform: none !important;
     }
 }
+
+/* Keep the fixed WhatsApp bubble from crowding the mobile storefront. */
+@media (max-width: 600px) {
+    body.ilena-storefront .container-melayang {
+        display: none !important;
+    }
+}
