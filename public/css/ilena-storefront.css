@@ -17,6 +17,8 @@ body.ilena-storefront {
     text-rendering: optimizeLegibility;
 }
 
+
+
 /* style.css assigns Inter to every element; normalize it on customer pages. */
 body.ilena-storefront * {
     font-family: var(--ilena-font-body);
@@ -8544,6 +8546,25 @@ body.ilena-storefront .ilena-mobile-lightbox { display: none; }
     body.ilena-storefront.ilena-page--home .ilena-home-banner-slider .slides > a.active { transition: none; }
 }
 
+/* Align the mobile drawer exactly below the top bar, preventing an exposed gap. */
+@media (max-width: 600px) {
+    body.ilena-storefront .navbar-hp-atas {
+        min-height: 64px !important;
+        height: 64px !important;
+        align-items: center;
+    }
+
+    body.ilena-storefront .expend-hp {
+        top: 64px !important;
+        right: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: calc(100dvh - 128px - env(safe-area-inset-bottom)) !important;
+        max-height: calc(100dvh - 128px - env(safe-area-inset-bottom));
+        border-radius: 0 !important;
+    }
+}
+
 /* Mobile selected-color ring: use a true circular border, not layered shadows. */
 @media (max-width: 700px) {
     body.ilena-storefront .product-detail-soft .ilena-product-info > .ilena-product-options.hide-ke-show-flex .ilena-option-group:first-child .container-varian label,
@@ -8629,5 +8650,70 @@ body.ilena-storefront .ilena-mobile-lightbox { display: none; }
         border-radius: 50% !important;
         background: transparent !important;
         box-shadow: none !important;
+    }
+}
+
+/* Mobile home hero: a single, lightweight entrance sequence (no image/JS animation). */
+@media (max-width: 700px) {
+    body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex .ilena-home-kicker,
+    body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex h1,
+    body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex > a {
+        animation: ilena-mobile-hero-arrive 520ms cubic-bezier(.2,.7,.25,1) both;
+    }
+
+    body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex .ilena-home-kicker {
+        animation-delay: 70ms;
+        position: relative;
+        width: fit-content;
+    }
+
+    body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex .ilena-home-kicker::after {
+        content: "";
+        display: block;
+        width: 38px;
+        height: 1px;
+        margin-top: 9px;
+        background: currentColor;
+        opacity: .72;
+        transform: scaleX(0);
+        transform-origin: left center;
+        animation: ilena-mobile-hero-rule 420ms cubic-bezier(.2,.7,.25,1) 260ms both;
+    }
+
+    body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex h1 {
+        animation-delay: 150ms;
+    }
+
+    body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex > a {
+        animation-delay: 240ms;
+        transition: color 180ms ease, opacity 180ms ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex > a:active {
+        opacity: .78;
+        translate: 0 2px;
+    }
+}
+
+@keyframes ilena-mobile-hero-arrive {
+    from { opacity: 0; translate: 0 9px; }
+    to { opacity: 1; translate: 0 0; }
+}
+
+@keyframes ilena-mobile-hero-rule {
+    to { transform: scaleX(1); }
+}
+
+@media (max-width: 700px) and (prefers-reduced-motion: reduce) {
+    body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex .ilena-home-kicker,
+    body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex .ilena-home-kicker::after,
+    body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex h1,
+    body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex > a {
+        animation: none !important;
+        transition: none !important;
+        opacity: 1 !important;
+        translate: none !important;
+        transform: none;
     }
 }
