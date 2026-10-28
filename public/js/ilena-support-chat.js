@@ -45,6 +45,7 @@
   let lastActivityRefresh = 0;
 
   const safeText = (value) => String(value ?? '');
+  const cleanChatCopy = (value) => safeText(value).replace(/^(?:saya\s+memahami\s+(?:pertanyaan|pesan|bahasa)\b[^.!?]{0,240}(?:bahasa\s+indonesia|dalam\s+bahasa\s+indonesia)[^.!?]*[.!?]\s*)+/iu, '').trim();
   const currency = (value) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(value) || 0);
   function parseUtcChatTimestamp(value) {
     const match = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})$/.exec(String(value || '').trim());
@@ -213,7 +214,7 @@
     transcript.querySelector('.ilena-chat-empty')?.remove();
     const bubble = document.createElement('div');
     bubble.className = 'ilena-chat-bubble' + (message.sender_type === 'visitor' ? ' is-visitor' : message.sender_type === 'system' ? ' is-system' : message.sender_type === 'admin' ? ' is-staff' : ' is-assistant');
-    const body = document.createElement('div'); body.textContent = safeText(message.body); bubble.append(body);
+    const body = document.createElement('div'); body.textContent = cleanChatCopy(message.body); bubble.append(body);
     const meta = message.metadata && typeof message.metadata === 'object' ? message.metadata : {};
     if (Array.isArray(meta.products) && meta.products.length) {
       const products = document.createElement('div'); products.className = 'ilena-chat-products';
