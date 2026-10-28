@@ -8839,6 +8839,59 @@ body.ilena-storefront .container-melayang .ilena-floating-chat:active { transfor
     body.ilena-storefront .ilena-chat-greeting { animation: none; }
 }
 
+/* Ilena assistant: black, ivory and signature red; small and self-contained. */
+body.ilena-storefront .ilena-chat-greeting__panel { border-color: #1e1b1c; border-radius: 10px; background: #fff; }
+body.ilena-storefront .ilena-chat-greeting__heading { display: flex; align-items: center; gap: 9px; padding: 11px 12px; border: 0; background: #171516; color: #fff; }
+body.ilena-storefront .ilena-chat-brand { display: flex; min-width: 0; flex: 1; align-items: center; gap: 9px; }
+body.ilena-storefront .ilena-chat-brand__mark { display: grid; width: 31px; height: 31px; flex: 0 0 31px; place-items: center; border: 1px solid #d9a1a5; border-radius: 50%; color: #f2dadd; font-family: var(--ilena-font-display); font-size: 17px; }
+body.ilena-storefront .ilena-chat-greeting__heading p { margin: 0; color: #fff; font-size: 15px; }
+body.ilena-storefront .ilena-chat-greeting__heading small { color: #ddd5d4; font-size: 10px; }
+body.ilena-storefront .ilena-chat-greeting__heading button { display: grid; width: 30px; height: 30px; flex: 0 0 30px; place-items: center; border: 1px solid #51474a; border-radius: 50%; background: transparent; color: #fff; font-size: 17px; }
+body.ilena-storefront .ilena-chat-greeting__heading button:hover { border-color: #d64a55; background: #a9232e; color: white; }
+body.ilena-storefront .ilena-chat-greeting__heading .ilena-chat-sound[aria-pressed="true"] { border-color: #d64a55; background: #a9232e; }
+body.ilena-storefront .ilena-chat-transcript { gap: 9px; padding: 12px; background: #fbfaf9; font-size: 12px; }
+body.ilena-storefront .ilena-chat-empty { max-width: 300px; color: #403b3b; line-height: 1.65; }
+body.ilena-storefront .ilena-chat-bubble { border-color: #e9e3e2; border-radius: 9px 9px 9px 2px; color: #282425; }
+body.ilena-storefront .ilena-chat-bubble.is-visitor { border-color: #c83743; border-radius: 9px 9px 2px 9px; background: #a9232e; color: #fff; }
+body.ilena-storefront .ilena-chat-bubble.is-visitor time { color: #f3d9db; }
+body.ilena-storefront .ilena-chat-bubble.is-system { color: #6c6262; }
+body.ilena-storefront .ilena-chat-source { color: #9c202c; }
+body.ilena-storefront .ilena-chat-compose { gap: 6px; padding: 8px 10px; border-color: #eee8e7; }
+body.ilena-storefront .ilena-chat-compose textarea { min-height: 38px; max-height: 84px; border-color: #d8cece; border-radius: 8px; font-size: 12px; }
+body.ilena-storefront .ilena-chat-compose textarea:focus { border-color: #a9232e; outline: 2px solid #a9232e33; }
+body.ilena-storefront .ilena-chat-compose button { min-height: 38px; border-color: #a9232e; border-radius: 7px; background: #a9232e; }
+body.ilena-storefront .ilena-chat-compose button:hover { border-color: #171516; background: #171516; }
+body.ilena-storefront .ilena-chat-footer { align-items: center; padding: 0 12px 9px; background: #fff; }
+body.ilena-storefront .ilena-chat-footer button, body.ilena-storefront .ilena-chat-footer a { color: #a9232e; font-size: 10px; }
+body.ilena-storefront .ilena-chat-footer button:hover, body.ilena-storefront .ilena-chat-footer a:hover { color: #171516; }
+body.ilena-storefront .ilena-chat-notice { border-top: 1px solid #eee8e7; background: #fff; color: #514748; line-height: 1.5; }
+body.ilena-storefront .ilena-chat-notice a { color: #a9232e; font-weight: 700; }
+body.ilena-storefront .ilena-chat-typing { display: flex; width: fit-content; align-items: center; gap: 8px; padding: 7px 10px; border: 1px solid #eee8e7; border-radius: 9px 9px 9px 2px; background: #fff; color: #6c6262; font-size: 10px; }
+body.ilena-storefront .ilena-chat-typing[hidden] { display: none; }
+body.ilena-storefront .ilena-chat-typing span { display: flex; gap: 3px; }
+body.ilena-storefront .ilena-chat-typing i { width: 4px; height: 4px; border-radius: 50%; background: #a9232e; animation: ilena-chat-dot 1s ease-in-out infinite; }
+body.ilena-storefront .ilena-chat-typing i:nth-child(2) { animation-delay: .14s; }
+body.ilena-storefront .ilena-chat-typing i:nth-child(3) { animation-delay: .28s; }
+body.ilena-storefront .ilena-chat-greeting-teaser { position: relative; display: grid; width: min(280px, calc(100vw - 76px)); grid-template-columns: 8px 1fr auto; align-items: center; gap: 7px; padding: 9px 28px 9px 10px; border: 1px solid #2a2526; border-right: 3px solid #b42632; border-radius: 8px; background: #fff; box-shadow: 0 8px 24px #17151622; animation: ilena-chat-teaser-in .36s cubic-bezier(.2,.8,.2,1) both; }
+body.ilena-storefront .ilena-chat-greeting-teaser[hidden] { display: none; }
+body.ilena-storefront .ilena-chat-greeting-teaser__dot { width: 7px; height: 7px; border-radius: 50%; background: #b42632; box-shadow: 0 0 0 3px #b4263220; }
+body.ilena-storefront .ilena-chat-greeting-teaser p { margin: 0; color: #262122; font-size: 10px; line-height: 1.45; }
+body.ilena-storefront .ilena-chat-greeting-teaser [data-greeting-open] { border: 0; padding: 5px 7px; border-radius: 5px; background: #171516; color: #fff; font-size: 9px; white-space: nowrap; }
+body.ilena-storefront .ilena-chat-greeting-teaser [data-greeting-dismiss] { position: absolute; top: 2px; right: 3px; border: 0; padding: 0 4px; background: transparent; color: #706869; font-size: 16px; }
+body.ilena-storefront .ilena-chat-greeting-teaser button:focus-visible, body.ilena-storefront .ilena-chat-sound:focus-visible { outline: 2px solid #d64a55; outline-offset: 2px; }
+@keyframes ilena-chat-dot { 0%,60%,100% { opacity: .35; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
+@keyframes ilena-chat-teaser-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (max-width: 600px) {
+    body.ilena-storefront .ilena-chat-greeting { right: max(8px, env(safe-area-inset-right)); width: min(340px, calc(100vw - 16px)); }
+    body.ilena-storefront .ilena-chat-greeting__panel { max-height: min(68dvh, calc(100dvh - 108px - env(safe-area-inset-bottom))); }
+    body.ilena-storefront .ilena-chat-transcript { min-height: 112px; padding: 10px; }
+    body.ilena-storefront .ilena-chat-products { grid-template-columns: 1fr; }
+    body.ilena-storefront .ilena-chat-greeting-teaser { width: min(258px, calc(100vw - 72px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront .ilena-chat-greeting-teaser, body.ilena-storefront .ilena-chat-typing i { animation: none; }
+}
+
 /* Visi & misi — quiet editorial layout with lightweight, scroll-led motion. */
 body.ilena-storefront.ilena-page--visimisi .ilena-vision-page {
     --vision-ink: var(--ilena-ink);

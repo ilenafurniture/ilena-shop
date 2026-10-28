@@ -36,6 +36,22 @@ class SupportChatController extends BaseController
         return $this->response->setStatusCode($status)->setJSON($payload);
     }
 
+    /** Store support hours are 08:00–16:00 Asia/Jakarta, every day. */
+    private function supportAvailability(): array
+    {
+        $now = new \DateTimeImmutable('now', new \DateTimeZone('Asia/Jakarta'));
+        $minute = ((int) $now->format('G') * 60) + (int) $now->format('i');
+        return ['open' => $minute >= 480 && $minute < 960, 'hours' => '08.00–16.00 WIB', 'whatsappUrl' => $this->whatsappUrl()];
+    }
+
+    private function whatsappUrl(string $message = ''): string
+    {
+        $text = $message !== ''
+            ? 'Halo Ilena, saya ingin bertanya: ' . mb_substr($message, 0, 400)
+            : 'Halo Ilena, saya membutuhkan bantuan.';
+        return 'https://wa.me/628112938158?text=' . rawurlencode($text);
+    }
+
     private function ownedConversation(string $visitorHash, bool $includeClosed = false): ?array
     {
         $builder = $this->db()->table('ilena_chat_conversations')->where('visitor_hash', $visitorHash);
@@ -54,35 +70,56 @@ class SupportChatController extends BaseController
             $db->table('ilena_chat_conversations')->where('id', (int)$conversation['id'])->update(['context_product_id' => $contextProductId]);
             $conversation['context_product_id'] = $contextProductId;
         }
+        $availability = $this->supportAvailability();
         return $this->json([
             'success' => true,
             'conversationKey' => $conversation['conversation_key'] ?? null,
             'status' => $conversation['status'] ?? 'ai',
             'messages' => $conversation ? $this->messagesFor((int)$conversation['id'], 0, 50) : [],
+            'humanAvailable' => $availability['open'],
+            'serviceHours' => $availability['hours'],
+            'whatsappUrl' => $availability['whatsappUrl'],
         ]);
     }
 
     public function poll()
     {
+        $availability = $this->supportAvailability();
         $visitor = $this->visitorHash();
-        if (! $visitor) return $this->json(['success' => true, 'conversationKey' => null, 'messages' => [], 'status' => 'ai']);
+        if (! $visitor) return $this->json(['success' => true, 'conversationKey' => null, 'messages' => [], 'status' => 'ai', 'humanAvailable' => $availability['open'], 'serviceHours' => $availability['hours'], 'whatsappUrl' => $availability['whatsappUrl']]);
         $conversation = $this->ownedConversation($visitor);
-        if (! $conversation) return $this->json(['success' => true, 'conversationKey' => null, 'messages' => [], 'status' => 'ai']);
+        if (! $conversation) return $this->json(['success' => true, 'conversationKey' => null, 'messages' => [], 'status' => 'ai', 'humanAvailable' => $availability['open'], 'serviceHours' => $availability['hours'], 'whatsappUrl' => $availability['whatsappUrl']]);
         $after = max(0, (int)$this->request->getGet('after'));
         return $this->json([
             'success' => true,
             'conversationKey' => $conversation['conversation_key'],
             'status' => $conversation['status'],
             'messages' => $this->messagesFor((int)$conversation['id'], $after, 40),
+            'humanAvailable' => $availability['open'],
+            'serviceHours' => $availability['hours'],
+            'whatsappUrl' => $availability['whatsappUrl'],
         ]);
     }
 
     public function send()
     {
-        $visitor = $this->visitorHash(true);
         $input = $this->request->getJSON(true) ?? $this->request->getPost();
         $body = trim((string)($input['message'] ?? ''));
         if ($body === '' || mb_strlen($body) > 1200) return $this->json(['success' => false, 'message' => 'Pesan harus berisi 1–1.200 karakter.'], 422);
+        $availability = $this->supportAvailability();
+        if (! $availability['open']) {
+            return $this->json([
+                'success' => false,
+                'code' => 'outside_hours',
+                'message' => 'Tim Ilena sedang di luar jam layanan. Silakan teruskan pertanyaan Anda melalui WhatsApp.',
+                'whatsappUrl' => $this->whatsappUrl($body),
+            ], 200);
+        }
+        $ip = (string) $this->request->getIPAddress();
+        if (function_exists('service') && ! service('throttler')->check('ilena-chat-send-' . hash('sha256', $ip), 12, 60)) {
+            return $this->json(['success' => false, 'message' => 'Tunggu sebentar sebelum mengirim pesan lagi.'], 429);
+        }
+        $visitor = $this->visitorHash(true);
         $db = $this->db();
         if (! $db->tableExists('ilena_chat_conversations') || ! $db->tableExists('ilena_chat_jobs')) {
             return $this->json(['success' => false, 'message' => 'Layanan chat belum selesai disiapkan.'], 503);
@@ -139,7 +176,7 @@ class SupportChatController extends BaseController
             }
             if ($db->transStatus() === false) throw new \RuntimeException('Penyimpanan pesan gagal.');
             $db->transCommit();
-            return $this->json(['success' => true, 'conversationKey' => $conversation['conversation_key'], 'messageId' => $messageId, 'status' => $conversation['status']]);
+            return $this->json(['success' => true, 'conversationKey' => $conversation['conversation_key'], 'messageId' => $messageId, 'status' => $conversation['status'], 'humanAvailable' => true, 'createdAt' => $now]);
         } catch (\Throwable $e) {
             $db->transRollback();
             log_message('error', 'Ilena chat send failed: {message}', ['message' => $e->getMessage()]);
@@ -149,6 +186,15 @@ class SupportChatController extends BaseController
 
     public function handoff()
     {
+        $availability = $this->supportAvailability();
+        if (! $availability['open']) {
+            return $this->json([
+                'success' => false,
+                'code' => 'outside_hours',
+                'message' => 'Tim Ilena sedang di luar jam layanan. Silakan hubungi kami melalui WhatsApp.',
+                'whatsappUrl' => $this->whatsappUrl(),
+            ], 200);
+        }
         $visitor = $this->visitorHash();
         if (! $visitor) return $this->json(['success' => false, 'message' => 'Percakapan belum dimulai.'], 404);
         $conversation = $this->ownedConversation($visitor);
@@ -161,7 +207,7 @@ class SupportChatController extends BaseController
             'body' => 'Pelanggan meminta bantuan staf. Pesan berikutnya akan dilayani oleh tim Ilena.',
             'created_at' => date('Y-m-d H:i:s'),
         ]);
-        return $this->json(['success' => true, 'status' => 'human_waiting']);
+        return $this->json(['success' => true, 'status' => 'human_waiting', 'humanAvailable' => true]);
     }
 
     private function messagesFor(int $conversationId, int $after, int $limit): array
@@ -225,13 +271,17 @@ class SupportChatController extends BaseController
         $enabled = $this->request->getPost('is_enabled') === '1';
         $clearKey = $this->request->getPost('clear_api_key') === '1';
         $parts = $endpoint !== '' ? parse_url($endpoint) : [];
+        $endpointHost = strtolower((string) ($parts['host'] ?? ''));
         $validEndpoint = $endpoint === '' || (
             filter_var($endpoint, FILTER_VALIDATE_URL)
             && strtolower((string) ($parts['scheme'] ?? '')) === 'https'
             && ! empty($parts['host'])
+            && (($parts['port'] ?? 443) === 443)
             && empty($parts['user'])
             && empty($parts['pass'])
             && empty($parts['fragment'])
+            && ! filter_var($endpointHost, FILTER_VALIDATE_IP)
+            && ! preg_match('/(?:^|\.)(localhost|local|internal|test)$/i', $endpointHost)
         );
         $validModel = $model === '' || preg_match('~^[A-Za-z0-9][A-Za-z0-9._:/-]{0,159}$~', $model) === 1;
         if (! $validEndpoint || ! $validModel || mb_strlen($endpoint) > 500 || mb_strlen($apiKey) > 4000) {

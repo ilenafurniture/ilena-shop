@@ -7,6 +7,9 @@
 - AI jobs are queued in MySQL and answered by the independent CLI worker, never by the customer-facing PHP request.
 - Inactive conversations and their messages are removed after 180 days by the worker to bound database growth (`ILENA_CHAT_RETENTION_DAYS` can be set from 30 to 730 days).
 - Without an AI API key, product retrieval and human handoff still work, but generated AI replies are replaced by a grounded fallback message.
+- Store chat is available from 08:00 to 16:00 WIB (Asia/Jakarta). Outside these hours, the customer-facing chat directs new questions to Ilena WhatsApp.
+- Customer chat sends are limited per visitor and per client IP; provider calls run only from the worker, require HTTPS on port 443, pin a public IPv4 address, do not follow redirects, and cap response size.
+- The assistant answers only Ilena furniture/store questions. Off-topic questions receive a short, polite redirect to WhatsApp.
 - Staff access uses the `support_chat` RBAC permission. Dev always has access; operational roles include the permission going forward.
 
 ## 1. Database

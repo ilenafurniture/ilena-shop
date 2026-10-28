@@ -291,21 +291,23 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
         <section id="container-greeting-card" class="ilena-chat-greeting d-none" aria-label="Chat dengan Ilena" aria-live="polite">
             <div class="ilena-chat-greeting__panel">
                 <header class="ilena-chat-greeting__heading">
-                    <div><p>Asisten Ilena</p><small data-chat-status>Siap membantu memilih furniture</small></div>
+                    <div class="ilena-chat-brand"><span class="ilena-chat-brand__mark" aria-hidden="true">I</span><span><p>Asisten Ilena</p><small data-chat-status>Siap membantu memilih furniture</small></span></div>
+                    <button type="button" class="ilena-chat-sound" data-chat-sound aria-pressed="false" aria-label="Aktifkan suara notifikasi" title="Suara notifikasi nonaktif">♪</button>
                     <button type="button" aria-label="Tutup chat" data-close-chat-greeting>×</button>
                 </header>
-                <div class="ilena-chat-transcript" data-chat-messages aria-label="Riwayat chat"><p class="ilena-chat-empty">Tanyakan produk berdasarkan budget, warna, bahan, atau ukuran.</p></div>
+                <div class="ilena-chat-transcript" data-chat-messages aria-label="Riwayat chat"><p class="ilena-chat-empty">Halo, selamat datang di Ilena Furniture. Saya siap membantu Anda menemukan furniture yang sesuai. Coba tanyakan berdasarkan budget, warna, bahan, atau ukuran.</p><div class="ilena-chat-typing" data-chat-typing role="status" aria-live="polite" hidden><span aria-hidden="true"><i></i><i></i><i></i></span><b data-chat-typing-copy>Asisten sedang mengetik</b></div></div>
                 <form class="ilena-chat-compose" data-chat-form>
                     <?= csrf_field(); ?>
                     <label class="visually-hidden" for="ilenaChatInput">Pesan untuk asisten Ilena</label>
                     <textarea id="ilenaChatInput" name="message" rows="2" maxlength="1200" placeholder="Tulis pertanyaan…" required></textarea>
                     <button type="submit" aria-label="Kirim pesan">Kirim</button>
                 </form>
-                <footer class="ilena-chat-footer"><button type="button" data-chat-handoff>Minta bantuan staf</button><a data-kbot-wa href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20saya%20butuh%20bantuan" target="_blank" rel="noopener noreferrer">WhatsApp</a></footer>
+                <footer class="ilena-chat-footer"><button type="button" data-chat-handoff>Minta bantuan staf</button><a data-kbot-wa href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20saya%20butuh%20bantuan" target="_blank" rel="noopener noreferrer">Lanjut ke WhatsApp</a></footer>
                 <p class="ilena-chat-notice" data-chat-notice role="status" hidden></p>
             </div>
         </section>
         <div class="d-flex flex-column gap-2">
+            <div class="ilena-chat-greeting-teaser" data-chat-greeting hidden><span class="ilena-chat-greeting-teaser__dot" aria-hidden="true"></span><p>Halo, saya asisten Ilena. Perlu bantuan memilih furniture?</p><button type="button" data-greeting-open>Buka chat</button><button type="button" data-greeting-dismiss aria-label="Tutup sapaan">×</button></div>
             <button type="button" class="btn-circle hitam ilena-floating-chat" id="btn-wa" data-open-ilena-chat aria-label="Buka chat assistant Ilena" aria-expanded="false" aria-controls="container-greeting-card" title="Chat dengan Ilena">
                 <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
                     <path
@@ -315,7 +317,7 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
             </button>
         </div>
     </div>
-    <script defer src="<?= base_url('js/ilena-support-chat.js?v=20261028-1'); ?>"></script>
+    <script defer src="<?= base_url('js/ilena-support-chat.js?v=20261028-2'); ?>"></script>
 
     <?php if (!$isInternalArea && $layoutHeaderMode !== 'checkout'): ?>
     <script defer crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
