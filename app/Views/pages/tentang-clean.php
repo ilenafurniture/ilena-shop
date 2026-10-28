@@ -9,11 +9,28 @@
         <p class="ilena-editorial__eyebrow">Cerita Ilena</p>
         <h1 id="about-title">Furniture untuk ruang<br>yang terasa seperti rumah.</h1>
         <p class="ilena-editorial__intro">Berangkat dari pengalaman panjang dalam manufaktur, Ilena hadir untuk membawa furniture yang fungsional, berkualitas, dan dekat dengan kehidupan sehari-hari.</p>
+        <div class="ilena-about__vision" aria-label="Visi Ilena: Mulai dari rumah, tercipta senyum ramah.">
+            <svg class="ilena-about__vision-mark" viewBox="0 0 96 56" aria-hidden="true" focusable="false">
+                <path class="vision-mark-stroke" pathLength="1" d="M5 27 23 10l18 17M10 23v25h26V23M19 48V34h9v14" />
+                <path class="vision-mark-stroke vision-mark-connect" pathLength="1" d="M42 31h13" />
+                <circle class="vision-mark-stroke vision-mark-face" cx="73" cy="29" r="17" pathLength="1" />
+                <path class="vision-mark-stroke vision-mark-smile" pathLength="1" d="M65 32q8 9 16 0" />
+                <circle class="vision-mark-dot" cx="49" cy="31" r="2.2" />
+            </svg>
+            <p>Mulai dari rumah,<br><em>tercipta senyum ramah.</em></p>
+        </div>
     </header>
 
     <section class="ilena-about__story" aria-labelledby="about-story-title">
         <div class="ilena-about__image">
             <img src="https://img.ilenafurniture.com/image/1742450062282.webp/?apikey=<?= esc($apikey_img_ilena, 'attr'); ?>" alt="Furniture Ilena dalam ruang bergaya urban" width="960" height="640" fetchpriority="high">
+            <svg class="ilena-about-motion-art" viewBox="0 0 520 320" aria-hidden="true" focusable="false">
+                <circle class="about-motion-orbit-line" cx="260" cy="164" r="148" />
+                <path class="about-motion-path" pathLength="1" d="M91 190v-48c0-19 15-34 34-34h270c19 0 34 15 34 34v48M70 183h380v53H70zM91 236l-9 28m347-28 9 28" />
+                <path class="about-motion-path about-motion-detail" pathLength="1" d="M111 183v-37c0-11 9-20 20-20h112v57m22-57h112c11 0 20 9 20 20v37m-152-57v57m-115 20h304" />
+                <path class="about-motion-path about-motion-measure" pathLength="1" d="M91 78h338m-338-8v16m338-16v16" />
+                <g class="about-motion-orbit-marker"><circle cx="260" cy="16" r="4" /><circle cx="260" cy="16" r="8" /></g>
+            </svg>
         </div>
         <div class="ilena-about__copy">
             <p class="ilena-editorial__eyebrow">Dirancang untuk keseharian</p>
@@ -63,4 +80,22 @@
         </address>
     </section>
 </main>
+<script>
+(() => {
+    const visual = document.querySelector('.ilena-about__image');
+    if (!visual || !('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    visual.classList.add('ilena-about-motion-ready');
+    const observer = new IntersectionObserver((entries, activeObserver) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                visual.classList.add('ilena-about-motion-active');
+                visual.classList.add('ilena-about-motion-visible');
+            } else {
+                visual.classList.remove('ilena-about-motion-active');
+            }
+        });
+    }, { threshold: 0.18 });
+    observer.observe(visual);
+})();
+</script>
 <?= $this->endSection(); ?>

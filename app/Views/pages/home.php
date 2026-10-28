@@ -359,6 +359,16 @@ function closeSecondAd() {
     <!-- bagian HP -->
     <div class="hide-ke-show-flex px-5 flex-column justify-content-center"
         style="background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), <?= $homeImageSet('1742972542166.png') ?>; background-size: cover; width:100%; height:60svh;">
+        <svg class="ilena-home-hero-motion-bg" viewBox="0 0 320 320" aria-hidden="true" focusable="false">
+            <circle class="hero-motion-ring" cx="160" cy="160" r="139" />
+            <circle class="hero-motion-ring hero-motion-ring--inner" cx="160" cy="160" r="105" />
+            <path class="hero-motion-cross" d="M160 10v38m0 224v38M10 160h38m224 0h38" />
+            <g class="hero-motion-orbit">
+                <circle cx="160" cy="21" r="4" />
+                <circle class="hero-motion-satellite" cx="160" cy="45" r="2" />
+            </g>
+            <circle class="hero-motion-glow" cx="160" cy="160" r="61" />
+        </svg>
         <p class="ilena-home-kicker">RUANG YANG MENCERITAKAN DIRI ANDA</p>
         <h1 class="teks-besar text-light" style="font-size:34px;">Modern & Stylish<br>Furniture</h1>
         <p class="text-handwrite py-1 px-2 text-light"

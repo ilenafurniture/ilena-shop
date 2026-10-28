@@ -1166,3 +1166,102 @@ body.ilena-storefront .ilena-partners__map.is-ready:active { cursor: grabbing; }
     body.ilena-storefront .ilena-partners__map-buttons button:first-child,
     body.ilena-storefront .ilena-partners__map-buttons button:nth-child(2) { flex: 0 0 44px; }
 }
+
+/* About-page motion graphic: a fine furniture drawing over Ilena's own room image. */
+body.ilena-storefront .ilena-about__image {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+}
+body.ilena-storefront .ilena-about__image .ilena-about-motion-art {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 5%;
+    overflow: visible;
+    pointer-events: none;
+}
+body.ilena-storefront .ilena-about-motion-art .about-motion-orbit-line {
+    fill: none;
+    stroke: rgba(251,249,246,.48);
+    stroke-width: 1;
+    stroke-dasharray: 1 7;
+    vector-effect: non-scaling-stroke;
+}
+body.ilena-storefront .ilena-about-motion-art .about-motion-path {
+    fill: none;
+    stroke: rgba(251,249,246,.82);
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+}
+body.ilena-storefront .ilena-about-motion-art .about-motion-detail { stroke: rgba(213,185,157,.88); stroke-width: 1.15; }
+body.ilena-storefront .ilena-about-motion-art .about-motion-measure { stroke: rgba(251,249,246,.55); stroke-width: .9; }
+body.ilena-storefront .ilena-about__image.ilena-about-motion-ready .about-motion-path { stroke-dasharray: 1; stroke-dashoffset: 1; }
+body.ilena-storefront .ilena-about__image.ilena-about-motion-visible .about-motion-path { animation: ilena-about-draw 2.4s cubic-bezier(.22,.68,.2,1) forwards; }
+body.ilena-storefront .ilena-about__image.ilena-about-motion-visible .about-motion-detail { animation-delay: 320ms; }
+body.ilena-storefront .ilena-about__image.ilena-about-motion-visible .about-motion-measure { animation-delay: 620ms; }
+body.ilena-storefront .ilena-about-motion-art .about-motion-orbit-marker {
+    fill: #d5b99d;
+    transform-box: view-box;
+    transform-origin: 260px 164px;
+    animation: ilena-about-orbit 32s linear infinite;
+}
+body.ilena-storefront .ilena-about__image.ilena-about-motion-ready:not(.ilena-about-motion-active) .about-motion-orbit-marker { animation-play-state: paused; }
+body.ilena-storefront .ilena-about-motion-art .about-motion-orbit-marker circle:last-child { fill: none; stroke: rgba(213,185,157,.75); stroke-width: 1; }
+@keyframes ilena-about-draw { to { stroke-dashoffset: 0; } }
+@keyframes ilena-about-orbit { to { rotate: 360deg; } }
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront .ilena-about-motion-art .about-motion-orbit-marker { animation: none !important; }
+    body.ilena-storefront .ilena-about__image.ilena-about-motion-ready .about-motion-path { stroke-dashoffset: 0; }
+    body.ilena-storefront .ilena-about__image.ilena-about-motion-visible .about-motion-path { animation: none !important; }
+}
+
+/* The About-page vision, illustrated as a house welcoming a smile. */
+body.ilena-storefront .ilena-about__vision {
+    display: inline-flex;
+    max-width: 100%;
+    align-items: center;
+    gap: 15px;
+    margin-top: 28px;
+    padding-top: 17px;
+    border-top: 1px solid var(--editorial-rule);
+}
+body.ilena-storefront .ilena-about__vision-mark { display: block; flex: 0 0 82px; width: 82px; height: auto; overflow: visible; }
+body.ilena-storefront .ilena-about__vision p {
+    margin: 0;
+    color: var(--editorial-muted);
+    font-family: var(--ilena-font-display, Georgia, "Times New Roman", serif);
+    font-size: clamp(15px, 1.6vw, 19px);
+    line-height: 1.38;
+}
+body.ilena-storefront .ilena-about__vision p em { color: #8b684c; font-style: normal; }
+body.ilena-storefront .ilena-about__vision .vision-mark-stroke {
+    fill: none;
+    stroke: #8b684c;
+    stroke-width: 1.35;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+}
+body.ilena-storefront .ilena-about__vision .vision-mark-stroke:not(.vision-mark-face) { stroke-dasharray: 1; stroke-dashoffset: 1; animation: ilena-about-vision-draw 1.25s cubic-bezier(.22,.68,.2,1) forwards; }
+body.ilena-storefront .ilena-about__vision .vision-mark-connect { animation-delay: 420ms !important; }
+body.ilena-storefront .ilena-about__vision .vision-mark-face { stroke-dasharray: 1; stroke-dashoffset: 1; animation: ilena-about-vision-draw 1s ease-out 550ms forwards; }
+body.ilena-storefront .ilena-about__vision .vision-mark-smile { stroke: #a67c5b; animation-delay: 900ms !important; }
+body.ilena-storefront .ilena-about__vision .vision-mark-dot { fill: #c3a17f; transform-box: view-box; transform-origin: center; animation: ilena-about-vision-dot 2.2s ease-in-out 1.25s infinite alternate; }
+@keyframes ilena-about-vision-draw { to { stroke-dashoffset: 0; } }
+@keyframes ilena-about-vision-dot { to { translate: 4px -2px; opacity: .5; } }
+@media (max-width: 480px) {
+    body.ilena-storefront .ilena-about__vision { gap: 11px; margin-top: 22px; padding-top: 14px; }
+    body.ilena-storefront .ilena-about__vision-mark { flex-basis: 70px; width: 70px; }
+    body.ilena-storefront .ilena-about__vision p { font-size: 15px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront .ilena-about__vision .vision-mark-stroke,
+    body.ilena-storefront .ilena-about__vision .vision-mark-dot { animation: none !important; }
+    body.ilena-storefront .ilena-about__vision .vision-mark-stroke { stroke-dashoffset: 0; }
+}

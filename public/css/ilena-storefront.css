@@ -8955,3 +8955,50 @@ body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex > * {
     body.ilena-storefront.ilena-page--home .ilena-home-hero .show-flex-ke-hide::after,
     body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex::after { animation: none !important; }
 }
+@media (max-width: 700px) {
+    body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex::after { content: none !important; }
+    body.ilena-storefront.ilena-page--home .ilena-home-hero .ilena-home-hero-motion-bg {
+        position: absolute;
+        z-index: 0 !important;
+        top: 50%;
+        right: -96px;
+        display: block;
+        width: min(76vw, 300px);
+        height: auto;
+        overflow: visible;
+        opacity: .8;
+        pointer-events: none;
+        transform: translateY(-50%);
+    }
+    body.ilena-storefront.ilena-page--home .ilena-home-hero-motion-bg .hero-motion-ring,
+    body.ilena-storefront.ilena-page--home .ilena-home-hero-motion-bg .hero-motion-cross {
+        fill: none;
+        stroke: rgba(251,249,246,.36);
+        stroke-width: 1;
+        vector-effect: non-scaling-stroke;
+    }
+    body.ilena-storefront.ilena-page--home .ilena-home-hero-motion-bg .hero-motion-ring--inner {
+        stroke: rgba(213,185,157,.48);
+        stroke-dasharray: 1 7;
+    }
+    body.ilena-storefront.ilena-page--home .ilena-home-hero-motion-bg .hero-motion-cross { stroke: rgba(251,249,246,.22); }
+    body.ilena-storefront.ilena-page--home .ilena-home-hero-motion-bg .hero-motion-orbit {
+        fill: #d5b99d;
+        transform-box: view-box;
+        transform-origin: 160px 160px;
+        animation: ilena-home-mobile-orbit 27s linear infinite;
+    }
+    body.ilena-storefront.ilena-page--home .ilena-home-hero-motion-bg .hero-motion-satellite { fill: #fbf9f6; opacity: .75; }
+    body.ilena-storefront.ilena-page--home .ilena-home-hero-motion-bg .hero-motion-glow {
+        fill: rgba(213,185,157,.07);
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: ilena-home-mobile-glow 5s ease-in-out infinite alternate;
+    }
+}
+@keyframes ilena-home-mobile-orbit { to { rotate: 360deg; } }
+@keyframes ilena-home-mobile-glow { to { scale: 1.16; opacity: .45; } }
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront.ilena-page--home .ilena-home-hero-motion-bg .hero-motion-orbit,
+    body.ilena-storefront.ilena-page--home .ilena-home-hero-motion-bg .hero-motion-glow { animation: none !important; }
+}
