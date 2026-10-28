@@ -18,7 +18,7 @@ final class ChatSupportSchedule
     public static function afterHoursReply(string $whatsappUrl): array
     {
         return [
-            'body' => 'Terima kasih, pesan Anda sudah tersimpan. Tim Ilena sedang di luar jam layanan (' . self::HOURS . ') dan akan menindaklanjuti saat layanan dibuka kembali. Jika ingin bantuan sekarang, silakan hubungi kami melalui WhatsApp.',
+            'body' => 'Terima kasih, pesan Anda tersimpan. Tim Ilena akan membalas saat layanan buka (' . self::HOURS . ').',
             'whatsappUrl' => $whatsappUrl,
         ];
     }

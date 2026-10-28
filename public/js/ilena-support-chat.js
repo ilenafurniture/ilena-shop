@@ -43,10 +43,6 @@
     if (message) {
       notice.append(document.createTextNode(message));
       if (linkUrl && waLink) {
-        const link = document.createElement('a');
-        link.href = linkUrl; link.target = '_blank'; link.rel = 'noopener noreferrer';
-        link.textContent = ' Buka WhatsApp';
-        notice.append(link);
         waLink.href = linkUrl;
       }
     }
@@ -88,6 +84,12 @@
     info.append(title, price);
     const detail = [product.colors, product.materials, product.dimensions].filter(Boolean).join(' · ');
     if (detail) { const meta = document.createElement('small'); meta.textContent = detail; info.append(meta); }
+    if (product.stockKnown === true && Number.isFinite(Number(product.stockTotalAvailable))) {
+      const stock = document.createElement('small');
+      const available = Math.max(0, Number(product.stockTotalAvailable));
+      stock.textContent = available > 0 ? 'Stok tersedia: ' + new Intl.NumberFormat('id-ID').format(available) : 'Stok habis';
+      info.append(stock);
+    }
     a.append(image, info); return a;
   }
   function playReplyTone() {
@@ -174,7 +176,7 @@
         if (url.protocol === 'https:' && url.hostname === 'wa.me') {
           const link = document.createElement('a');
           link.className = 'ilena-chat-source'; link.href = url.href; link.target = '_blank'; link.rel = 'noopener noreferrer';
-          link.textContent = 'Hubungi Ilena melalui WhatsApp'; bubble.append(link);
+          link.textContent = 'WhatsApp sekarang'; bubble.append(link);
         }
       } catch (_) {}
     }
@@ -214,7 +216,7 @@
       humanAvailable = false;
       updateStatus(currentStatus, false);
       waitingForReply = false; setTyping(false);
-      showNotice(data.message || 'Tim Ilena sedang di luar jam layanan. Silakan tinggalkan pesan melalui WhatsApp.', data.whatsappUrl || '');
+      showNotice(data.message || 'Di luar jam layanan. Pesan Anda tetap bisa dikirim dan akan dibalas saat tim kembali.', data.whatsappUrl || '');
       return;
     }
     waitingForReply = false; setTyping(false);
@@ -230,7 +232,7 @@
       renderMessages(data.messages);
       updateStatus(data.status, humanAvailable);
       ready = true;
-      if (!humanAvailable) showNotice('Tim Ilena sedang di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '). Pesan Anda tetap bisa dikirim; tim akan menindaklanjuti saat layanan dibuka.', data.whatsappUrl || '');
+      if (!humanAvailable) showNotice('Di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '). Pesan tetap bisa dikirim; tim akan membalas saat layanan buka.', data.whatsappUrl || '');
       else showNotice('');
     } catch (error) { handleError(error); }
     finally { sending = false; updateStatus(currentStatus, humanAvailable); }
@@ -242,7 +244,7 @@
       const data = await api('/chat/poll?after=' + cursor);
       renderMessages(data.messages, true);
       updateStatus(data.status, data.humanAvailable === true);
-      if (data.humanAvailable === false && !waitingForReply) showNotice('Tim Ilena sedang di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '). Pesan Anda tetap tersimpan untuk ditindaklanjuti.', data.whatsappUrl || '');
+      if (data.humanAvailable === false && !waitingForReply) showNotice('Di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '). Pesan Anda tersimpan; tim akan membalas saat layanan buka.', data.whatsappUrl || '');
     } catch (error) { handleError(error); }
     finally { polling = false; }
   }
@@ -297,10 +299,10 @@
         }, true);
         waitingForReply = false;
         setTyping(false);
-        showNotice('Tim Ilena sedang di luar jam layanan (' + (data.serviceHours || '08.00–16.00 WIB') + '). Pesan Anda sudah tersimpan untuk ditindaklanjuti.', data.afterHoursReply.whatsappUrl || data.whatsappUrl || '');
+        showNotice('Pesan tersimpan. Tim Ilena akan membalas saat layanan buka.', data.afterHoursReply.whatsappUrl || data.whatsappUrl || '');
       } else {
         waitingForReply = data.status === 'ai';
-        if (waitingForReply) setTyping(true, 'Asisten sedang menyiapkan jawaban');
+        if (waitingForReply) setTyping(true, 'Kak Wawa sedang menyiapkan jawaban');
         else if (data.status === 'human_waiting') setTyping(true, 'Pesan Anda menunggu tim Ilena');
       }
     } catch (error) { handleError(error); }

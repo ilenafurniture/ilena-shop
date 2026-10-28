@@ -210,7 +210,7 @@ class SupportChatController extends BaseController
             return $this->json([
                 'success' => false,
                 'code' => 'outside_hours',
-                'message' => 'Tim Ilena sedang di luar jam layanan. Silakan hubungi kami melalui WhatsApp.',
+                'message' => 'Tim Ilena sedang di luar jam layanan. Pesan Anda tetap bisa dikirim.',
                 'whatsappUrl' => $this->whatsappUrl(),
             ], 200);
         }

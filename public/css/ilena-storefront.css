@@ -9086,6 +9086,7 @@ body.ilena-storefront .ilena-chat-typing i:nth-child(3) { animation-delay: .28s;
 }
 
 /* Warm Ilena concierge palette and an arrival greeting with restrained motion. */
+body.ilena-storefront .container-melayang .ilena-chat-dock { align-items: flex-end; }
 body.ilena-storefront .container-melayang .ilena-floating-chat { background: #302724 !important; border-color: #302724; box-shadow: 0 8px 22px rgba(48,39,36,.22); }
 body.ilena-storefront .container-melayang .ilena-floating-chat:hover { background: #8f353a !important; border-color: #8f353a; }
 body.ilena-storefront .container-melayang .ilena-floating-chat::after { background: #ad4247; border-color: #302724; }
