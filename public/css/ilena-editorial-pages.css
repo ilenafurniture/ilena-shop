@@ -708,7 +708,8 @@ body.ilena-storefront .ilena-partners__suggestions button {
 }
 
 body.ilena-storefront .ilena-partners__suggestions button:hover,
-body.ilena-storefront .ilena-partners__suggestions button:focus-visible {
+body.ilena-storefront .ilena-partners__suggestions button:focus-visible,
+body.ilena-storefront .ilena-partners__suggestions button[aria-selected="true"] {
     background: #f7f4f0;
     outline: 0;
 }
@@ -776,6 +777,12 @@ body.ilena-storefront .ilena-partners__item {
     gap: 20px;
     padding: 20px 0;
     border-top: 1px solid var(--editorial-rule);
+    transition: background-color 180ms ease, border-color 180ms ease;
+}
+
+body.ilena-storefront .ilena-partners__item.is-map-selected {
+    box-shadow: inset 3px 0 #8e3935;
+    background: linear-gradient(90deg, rgba(142, 57, 53, .07), rgba(142, 57, 53, 0) 72%);
 }
 
 body.ilena-storefront .ilena-partners__item[hidden] {
@@ -825,6 +832,12 @@ body.ilena-storefront .ilena-partners__map-link {
     font-size: 13px;
     font-weight: 650;
     white-space: nowrap;
+}
+
+body.ilena-storefront .ilena-partners__map-link:focus-visible,
+body.ilena-storefront .ilena-partners__map-preview summary:focus-visible {
+    outline: 2px solid #8e3935;
+    outline-offset: 3px;
 }
 
 body.ilena-storefront .ilena-partners__actions {
@@ -1048,7 +1061,7 @@ body.ilena-storefront .ilena-partners__pagination a {
     body.ilena-storefront .ilena-partners__map-link,
     body.ilena-storefront .ilena-partners__map-preview summary {
         display: inline-flex;
-        min-height: 42px;
+        min-height: 44px;
         align-items: center;
         padding: 0 2px;
         font-size: 12px;
@@ -1194,6 +1207,7 @@ body.ilena-storefront .ilena-partners__item {
     transition: background-color .18s ease, border-color .18s ease;
 }
 body.ilena-storefront .ilena-partners__item:hover { background: linear-gradient(90deg, rgba(248,246,242,.9), transparent 72%); }
+body.ilena-storefront .ilena-partners__item.is-map-selected:hover { background: linear-gradient(90deg, rgba(142, 57, 53, .1), rgba(142, 57, 53, 0) 72%); }
 body.ilena-storefront .ilena-partners__image { border-radius: 2px; }
 body.ilena-storefront .ilena-partners__map-link,
 body.ilena-storefront .ilena-partners__map-preview summary { transition: color .18s ease; }

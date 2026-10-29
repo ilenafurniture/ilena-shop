@@ -4,6 +4,7 @@
 $activePartners = is_array($partners ?? null) ? $partners : [];
 $partnerQuery = (string) ($partnerQuery ?? '');
 $partnerTotal = (int) ($partnerTotal ?? count($activePartners));
+$partnerNetworkTotal = (int) ($partnerNetworkTotal ?? $partnerTotal);
 $partnerPage = (int) ($partnerPage ?? 1);
 $partnerPages = (int) ($partnerPages ?? 1);
 $partnerPerPage = (int) ($partnerPerPage ?? 10);
@@ -26,7 +27,7 @@ $partnerLast = min($partnerPage * $partnerPerPage, $partnerTotal);
         <aside class="ilena-partners__hero-note" aria-label="Ringkasan jaringan partner">
             <span class="ilena-partners__hero-mark" aria-hidden="true">I</span>
             <p class="ilena-editorial__eyebrow">Ruang untuk menemukan</p>
-            <p class="ilena-partners__hero-stat"><strong><?= number_format($partnerTotal, 0, ',', '.'); ?></strong><span>partner pilihan</span></p>
+            <p class="ilena-partners__hero-stat"><strong><?= number_format($partnerNetworkTotal, 0, ',', '.'); ?></strong><span>partner terdaftar</span></p>
             <a href="#ilena-partner-map">Lihat jangkauan <span aria-hidden="true">↗</span></a>
         </aside>
     </header>
@@ -54,7 +55,7 @@ $partnerLast = min($partnerPage * $partnerPerPage, $partnerTotal);
                 </button>
             </div>
         </div>
-        <div id="ilena-partner-map" class="ilena-partners__map" role="region" aria-label="Peta lokasi partner resmi Ilena" data-partners="<?= esc(json_encode($mapPartners ?? [], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), 'attr'); ?>">
+        <div id="ilena-partner-map" class="ilena-partners__map" role="region" aria-label="Peta lokasi partner resmi Ilena" data-directory-url="<?= esc(site_url('partner'), 'attr'); ?>" data-partners="<?= esc(json_encode($mapPartners ?? [], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), 'attr'); ?>">
             <p class="ilena-partners__map-status">Peta lokasi partner akan dimuat saat bagian ini terlihat.</p>
         </div>
         <p class="ilena-partners__map-note" id="partner-map-feedback" aria-live="polite">Pilih penanda untuk melihat partner dan petunjuk arah. Peta dapat dijelajahi dengan mouse, keyboard, atau sentuhan.</p>
@@ -101,7 +102,7 @@ $partnerLast = min($partnerPage * $partnerPerPage, $partnerTotal);
                     $partnerMapQuery = trim(implode(', ', array_filter([$partnerAddress, $partnerCity, $partnerName], static fn ($value) => $value !== '')));
                     $partnerMapEmbed = 'https://www.google.com/maps?q=' . rawurlencode($partnerMapQuery) . '&output=embed';
                     ?>
-                    <li class="ilena-partners__item">
+                    <li class="ilena-partners__item" data-partner-id="<?= (int) ($partner['id'] ?? 0); ?>">
                         <img class="ilena-partners__image<?= $partnerImage === '' ? ' is-placeholder' : ''; ?>"
                             src="<?= esc($partnerImage !== '' ? $partnerImage : $partnerFallbackImage, 'attr'); ?>"
                             data-fallback-src="<?= esc($partnerFallbackImage, 'attr'); ?>" alt="" width="112" height="84"
@@ -115,6 +116,10 @@ $partnerLast = min($partnerPage * $partnerPerPage, $partnerTotal);
                             <div class="ilena-partners__actions">
                                 <?php if ($partnerHref !== ''): ?>
                                     <a class="ilena-partners__map-link" href="<?= esc($partnerHref, 'attr'); ?>" target="_blank" rel="noopener noreferrer" aria-label="Buka <?= esc($partnerName, 'attr'); ?> di Google Maps">Buka di Maps <span aria-hidden="true">↗</span></a>
+                                <?php endif; ?>
+                                <?php if (is_array($partner['coords'] ?? null) && count($partner['coords']) === 2): ?>
+                                    <a class="ilena-partners__map-link" href="#ilena-partner-map" data-map-focus="<?= (int) ($partner['id'] ?? 0); ?>">Lihat di peta</a>
+                                    <a class="ilena-partners__map-link" href="https://www.google.com/maps/dir/?api=1&amp;destination=<?= esc($partner['coords'][0] . ',' . $partner['coords'][1], 'attr'); ?>" target="_blank" rel="noopener noreferrer" aria-label="Petunjuk arah ke <?= esc($partnerName, 'attr'); ?>">Petunjuk arah <span aria-hidden="true">↗</span></a>
                                 <?php endif; ?>
                                 <?php if ($partnerMapQuery !== ''): ?>
                                     <details class="ilena-partners__map-preview">
@@ -175,6 +180,15 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
     const stopWords = new Set(['di', 'ke', 'dari', 'dan', 'yang', 'ada', 'mana', 'dimana', 'cari', 'carikan', 'tolong', 'untuk', 'kota', 'wilayah', 'in', 'where', 'is', 'the', 'please', 'find']);
     const genericWords = new Set([...synonymGroups[0], ...synonymGroups[2]]);
     const normalize = (value) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    const searchEntries = partners.map((partner) => ({
+        partner,
+        fields: [partner.name || '', partner.city || '', partner.address || ''].map((value) => {
+            const normalized = normalize(value);
+            return { value: normalized, words: normalized.split(/\s+/).filter(Boolean) };
+        })
+    }));
+    let activeOption = -1;
+    let suggestionTimer = 0;
     const editDistance = (a, b) => {
         const row = Array.from({ length: b.length + 1 }, (_, i) => i);
         for (let i = 1; i <= a.length; i++) {
@@ -191,23 +205,22 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
     const renderSuggestions = () => {
         const words = normalize(input.value).split(/\s+/).filter(word => word.length > 1 && !stopWords.has(word) && !genericWords.has(word));
         list.replaceChildren();
+        input.removeAttribute('aria-activedescendant');
         if (words.length === 0) {
             list.hidden = true;
             input.setAttribute('aria-expanded', 'false');
             return;
         }
-        const ranked = partners.map((partner) => {
-            const fields = [normalize(partner.name || ''), normalize(partner.city || ''), normalize(partner.address || '')];
+        const ranked = searchEntries.map(({ partner, fields }) => {
             let score = 0;
             words.forEach((word) => {
                 let variants = [word];
                 synonymGroups.forEach(group => { if (group.includes(word)) variants = variants.concat(group); });
                 let best = 0;
                 variants.forEach(variant => fields.forEach((field, index) => {
-                    const fieldWords = field.split(/\s+/);
                     const weight = index === 0 ? 8 : index === 1 ? 7 : 3;
-                    if (field.includes(variant)) best = Math.max(best, weight + 2);
-                    fieldWords.forEach(candidate => {
+                    if (field.value.includes(variant)) best = Math.max(best, weight + 2);
+                    field.words.forEach(candidate => {
                         const distance = editDistance(variant, candidate);
                         if (distance <= (variant.length >= 8 ? 2 : variant.length >= 5 ? 1 : 0)) best = Math.max(best, weight - distance);
                     });
@@ -217,10 +230,13 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
             return { partner, score };
         }).filter(item => item.score > 0).sort((a, b) => b.score - a.score).slice(0, 6);
 
-        ranked.forEach(({ partner }) => {
+        activeOption = -1;
+        ranked.forEach(({ partner }, index) => {
             const button = document.createElement('button');
             button.type = 'button';
             button.role = 'option';
+            button.id = `partner-suggestion-${index}`;
+            button.setAttribute('aria-selected', 'false');
             const name = document.createElement('strong');
             name.textContent = partner.name || 'Partner Ilena';
             const city = document.createElement('span');
@@ -232,6 +248,7 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
                 if (citySelect) citySelect.value = Array.from(citySelect.options).some(option => option.value === partner.city) ? partner.city : '';
                 list.hidden = true;
                 input.setAttribute('aria-expanded', 'false');
+                input.removeAttribute('aria-activedescendant');
                 form.requestSubmit();
             });
             list.appendChild(button);
@@ -240,23 +257,44 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
         input.setAttribute('aria-expanded', String(ranked.length > 0));
     };
 
-    input.addEventListener('input', renderSuggestions);
+    const scheduleSuggestions = () => {
+        window.clearTimeout(suggestionTimer);
+        suggestionTimer = window.setTimeout(renderSuggestions, 120);
+    };
+    input.addEventListener('input', scheduleSuggestions);
     input.addEventListener('focus', renderSuggestions);
     form.querySelector('select[name="city"]')?.addEventListener('change', () => form.requestSubmit());
     input.addEventListener('keydown', event => {
         if (event.key === 'Escape') {
             list.hidden = true;
             input.setAttribute('aria-expanded', 'false');
+            input.removeAttribute('aria-activedescendant');
         }
-        if (event.key === 'Enter' && !list.hidden && list.querySelector('button')) {
+        const options = Array.from(list.querySelectorAll('[role="option"]'));
+        if (!list.hidden && options.length && ['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
             event.preventDefault();
-            list.querySelector('button').click();
+            if (event.key === 'Home') activeOption = 0;
+            else if (event.key === 'End') activeOption = options.length - 1;
+            else if (activeOption < 0) activeOption = event.key === 'ArrowDown' ? 0 : options.length - 1;
+            else activeOption = (activeOption + (event.key === 'ArrowDown' ? 1 : -1) + options.length) % options.length;
+            options.forEach((option, index) => {
+                option.setAttribute('aria-selected', String(index === activeOption));
+                if (index === activeOption) {
+                    input.setAttribute('aria-activedescendant', option.id);
+                    option.scrollIntoView({ block: 'nearest' });
+                }
+            });
+        }
+        if (event.key === 'Enter' && !list.hidden && options.length) {
+            event.preventDefault();
+            options[Math.max(0, activeOption)].click();
         }
     });
     document.addEventListener('click', event => {
         if (!form.contains(event.target)) {
             list.hidden = true;
             input.setAttribute('aria-expanded', 'false');
+            input.removeAttribute('aria-activedescendant');
         }
     });
 })();
@@ -269,7 +307,44 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
     const status = mapElement.querySelector('.ilena-partners__map-status');
     const feedback = document.getElementById('partner-map-feedback');
     const mapButtons = document.querySelectorAll('.ilena-partners__map-buttons button');
+    const directoryUrl = mapElement.dataset.directoryUrl || '/partner';
     let initialized = false;
+    let pendingFocusId = '';
+    let map;
+    let markers = [];
+    const selectDirectoryPartner = (id) => {
+        const item = Array.from(document.querySelectorAll('.ilena-partners__item[data-partner-id]'))
+            .find((candidate) => candidate.dataset.partnerId === String(id));
+        document.querySelectorAll('.ilena-partners__item.is-map-selected').forEach((selected) => {
+            selected.classList.remove('is-map-selected');
+            selected.removeAttribute('aria-current');
+        });
+        if (!item) return false;
+        item.classList.add('is-map-selected');
+        item.setAttribute('aria-current', 'location');
+        item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return true;
+    };
+    const focusPartner = (id) => {
+        const entry = markers.find((candidate) => String(candidate.location.id) === String(id));
+        if (!entry || !map) {
+            if (feedback) feedback.textContent = 'Koordinat lokasi ini belum tersedia di peta.';
+            return;
+        }
+        map.setView(entry.point, Math.max(map.getZoom(), 12), { animate: true });
+        entry.marker.openPopup();
+        selectDirectoryPartner(id);
+        if (feedback) feedback.textContent = `Peta menyorot ${entry.location.name || 'partner Ilena'}${entry.location.city ? `, ${entry.location.city}` : ''}.`;
+    };
+    document.addEventListener('click', (event) => {
+        const trigger = event.target.closest('[data-map-focus]');
+        if (!trigger) return;
+        event.preventDefault();
+        pendingFocusId = trigger.dataset.mapFocus || '';
+        mapElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        initializeMap();
+        if (map) focusPartner(pendingFocusId);
+    });
     const initializeMap = () => {
         if (initialized) return;
         initialized = true;
@@ -289,14 +364,14 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
         };
         const start = () => {
             if (status) status.remove();
-            const map = L.map(mapElement, { scrollWheelZoom: true, zoomControl: false, keyboard: true, zoomSnap: 0.5 });
+            map = L.map(mapElement, { scrollWheelZoom: true, zoomControl: false, keyboard: true, zoomSnap: 0.5 });
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }).addTo(map);
 
             const bounds = [];
-            const markers = [];
+            markers = [];
             let userMarker = null;
             locations.forEach((location) => {
                 const point = [Number(location.lat), Number(location.lng)];
@@ -327,7 +402,19 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
                 direction.rel = 'noopener noreferrer';
                 direction.textContent = 'Petunjuk arah ↗';
                 popup.appendChild(direction);
+                const listUrl = new URL(directoryUrl, window.location.origin);
+                if (location.name) listUrl.searchParams.set('q', location.name);
+                if (location.city) listUrl.searchParams.set('city', location.city);
+                const directoryLink = document.createElement('a');
+                directoryLink.href = `${listUrl.pathname}${listUrl.search}#partner-directory`;
+                directoryLink.textContent = 'Lihat di daftar';
+                popup.appendChild(directoryLink);
                 marker.bindPopup(popup);
+                marker.on('click', () => {
+                    if (!selectDirectoryPartner(location.id) && feedback) {
+                        feedback.textContent = `${location.name || 'Partner Ilena'}${location.city ? `, ${location.city}` : ''} dipilih di peta. Buka “Lihat di daftar” pada penanda untuk menampilkannya di hasil pencarian.`;
+                    }
+                });
             });
 
             if (bounds.length === 1) map.setView(bounds[0], 12);
@@ -336,6 +423,7 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
             mapButtons.forEach((button) => { button.disabled = false; });
             mapElement.classList.add('is-ready');
             map.invalidateSize();
+            if (pendingFocusId) focusPartner(pendingFocusId);
 
             mapButtons.forEach((button) => button.addEventListener('click', () => {
                 const action = button.dataset.mapAction;
@@ -367,7 +455,10 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
                         if (userMarker) userMarker.remove();
                         userMarker = L.circleMarker(point, { radius: 8, color: '#fff', weight: 3, fillColor: '#292622', fillOpacity: 1 }).addTo(map);
                         userMarker.bindPopup('Lokasi Anda · hanya tersimpan di perangkat ini');
-                        if (nearest) nearest.marker.openPopup();
+                        if (nearest) {
+                            nearest.marker.openPopup();
+                            selectDirectoryPartner(nearest.location.id);
+                        }
                         const distance = nearest ? distanceKm(point, nearest.point) : null;
                         if (feedback) feedback.textContent = nearest
                             ? `Partner terdekat: ${nearest.location.name || 'Partner Ilena'}${nearest.location.city ? `, ${nearest.location.city}` : ''} · sekitar ${distance < 1 ? `${Math.round(distance * 1000)} m` : `${distance.toFixed(1)} km`}. Lokasi hanya digunakan di perangkat ini.`

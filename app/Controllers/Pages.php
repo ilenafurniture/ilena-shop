@@ -5433,6 +5433,7 @@ class Pages extends BaseController
             $hasCoords = $lat !== null && $lat !== '' && $lng !== null && $lng !== '';
 
             return [
+                'id' => (int) ($row['id'] ?? 0),
                 'name' => $row['name'] ?? '',
                 'city' => $row['city'] ?? '',
                 'address' => $row['address'] ?? '',
@@ -5453,6 +5454,7 @@ class Pages extends BaseController
             }
 
             return [
+                'id' => (int) ($row['id'] ?? 0),
                 'name' => (string) ($row['name'] ?? ''),
                 'city' => (string) ($row['city'] ?? ''),
                 'address' => (string) ($row['address'] ?? ''),
@@ -5477,6 +5479,7 @@ class Pages extends BaseController
             'partnerSuggestions' => $suggestionRows,
             'partnerQuery' => $query,
             'partnerTotal' => $totalPartners,
+            'partnerNetworkTotal' => count($allPartnerRows),
             'partnerPage' => $page,
             'partnerPages' => $totalPages,
             'partnerPerPage' => $perPage,
