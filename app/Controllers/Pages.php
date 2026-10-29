@@ -89,7 +89,7 @@ class Pages extends BaseController
         // This data is shared by public pages and only changes when catalog
         // metadata changes. Cache it briefly to avoid repeating a full
         // representative-product aggregation on every PHP request.
-        $navbarCacheKey = 'ilena_public_navbar_data_v2';
+        $navbarCacheKey = 'ilena_public_navbar_data_v3';
         $cachedNavbar = cache()->get($navbarCacheKey);
         if (is_array($cachedNavbar)) {
             return $cachedNavbar;
@@ -124,11 +124,39 @@ class Pages extends BaseController
              INNER JOIN barang AS chosen ON chosen.id = {$selectedProductId}
              WHERE b.active = '1' ORDER BY b.subkategori ASC, b.kategori ASC"
         )->getResultArray();
+        $menuDescriptionOverrides = [
+            'dresser-3-drawer' => [
+                'cabana' => 'Dresser 3 tingkat dengan desain modern minimalis, dilengkapi tiga laci vertikal dan handle mushroom yang elegan. Menggunakan material premium dan memiliki penyimpanan multifungsi.',
+                'sorely' => 'Lemari laci 3 tingkat dengan desain minimalis, handle mushroom hitam, dan kaki kokoh. Dibuat dari material premium untuk penyimpanan yang praktis dan stylish.',
+            ],
+            'dresser-4-drawer' => [
+                'cody' => 'Lemari 4 laci series Cody dengan corak serat kayu unik, desain modern, dan material premium untuk penyimpanan multifungsi.',
+            ],
+            'dresser-5-drawer' => [
+                'cabana' => 'Dresser 5 tingkat dengan desain modern minimalis, handle mushroom hitam, dan material premium untuk penyimpanan multifungsi.',
+                'cutout' => 'Dresser 5 laci dengan corak kayu unik, desain modern minimalis, dan material premium untuk penyimpanan multifungsi.',
+                'socoplate' => 'Lemari laci 5 tingkat dengan desain minimalis, handle ergonomis, serta kaki besi kokoh yang elegan. Dibuat dari material premium untuk penyimpanan multifungsi.',
+                'sorely' => 'Lemari laci 5 tingkat series Sorely dengan desain minimalis, handle mushroom hitam, kaki kokoh, dan material premium untuk penyimpanan multifungsi.',
+            ],
+            'dresser-6-drawer' => [
+                'cabana' => 'Dresser 6 tingkat dengan desain modern minimalis, handle mushroom hitam, dan material premium untuk penyimpanan multifungsi.',
+                'cutout' => 'Dresser 6 laci series Cutout dengan corak kayu unik, sentuhan modern minimalis bergaya Japanese, dan material premium untuk penyimpanan multifungsi.',
+                'metal-frame' => 'Lemari laci 6 tingkat dengan desain modern, perpaduan kayu solid dan rangka besi kokoh, serta material premium untuk penyimpanan multifungsi.',
+                'orca' => 'Dresser 6 laci dengan desain modern minimalis, perpaduan warna kayu hangat dan putih, serta material premium yang kokoh untuk penyimpanan multifungsi.',
+                'plint-base' => 'Lemari laci 6 tingkat series Plint Base dengan desain minimalis, handle ergonomis, dan material premium untuk penyimpanan multifungsi.',
+                'water-case' => 'Lemari laci 6 tingkat series Water Case dengan desain minimalis, handle frameless, dan material premium untuk penyimpanan multifungsi.',
+            ],
+        ];
         $hasil = [];
         foreach ($produkNavbar as $produk) {
             $jenis = (string) ($produk['jenis'] ?? '');
             $koleksi = (string) ($produk['koleksi'] ?? '');
             $deskripsi = json_decode($produk['deskripsi'] ?? '{}', true) ?? [];
+            $jenisKey = trim((string) preg_replace('/[^a-z0-9]+/i', '-', strtolower($jenis)), '-');
+            $koleksiKey = trim((string) preg_replace('/[^a-z0-9]+/i', '-', strtolower($koleksi)), '-');
+            if (isset($menuDescriptionOverrides[$jenisKey][$koleksiKey])) {
+                $deskripsi['deskripsi'] = $menuDescriptionOverrides[$jenisKey][$koleksiKey];
+            }
             $deskripsi['perawatan'] = '';
             $rawText = $deskripsi['deskripsi'] ?? '';
             $text = strip_tags($rawText);
