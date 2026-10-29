@@ -157,12 +157,26 @@
     <?php }
     } ?>
 
-    <meta property="og:title" content="<?= isset($metaTitle) ? $metaTitle : 'Ilena Furniture'; ?>">
-    <meta property="og:description"
-        content="<?= isset($metaDeskripsi) ? $metaDeskripsi : 'Toko Online furniture Semarang meliputi produk buffet tv, bed, lemari pakaian, coffee table, meja konsol, rak buku, dresser, meja nakas, dll. '; ?>">
-    <meta property="og:image"
-        content="<?= isset($metaImage) ? $metaImage : 'https://ilenafurniture.com/img/logo/N.png'; ?>">
-    <meta property="og:url" content="https://ilenafurniture.com">
+    <?php
+    $documentTitle = trim((string) ($metaTitle ?? ''));
+    if ($documentTitle === '') {
+        $documentTitle = trim((string) ($title ?? 'Ilena Furniture')) . ' | I L E N A';
+    }
+    $documentDescription = trim((string) ($metaDeskripsi ?? 'Toko online Ilena Furniture menghadirkan furniture untuk ruang tamu, kamar tidur, dan kebutuhan rumah Anda.'));
+    $canonicalPath = trim((string) service('uri')->getPath(), '/');
+    $defaultCanonicalUrl = $canonicalPath === '' ? rtrim(base_url(), '/') . '/' : site_url($canonicalPath);
+    $documentUrl = trim((string) ($metaUrl ?? $defaultCanonicalUrl));
+    if ($documentUrl === '') {
+        $documentUrl = $defaultCanonicalUrl;
+    }
+    $documentImage = trim((string) ($metaImage ?? 'https://ilenafurniture.com/img/logo/N.png'));
+    $documentImageAlt = trim((string) ($metaImageAlt ?? 'Ilena Furniture'));
+    ?>
+    <meta property="og:title" content="<?= esc($documentTitle, 'attr'); ?>">
+    <meta property="og:description" content="<?= esc($documentDescription, 'attr'); ?>">
+    <meta property="og:image" content="<?= esc($documentImage, 'attr'); ?>">
+    <meta property="og:image:alt" content="<?= esc($documentImageAlt, 'attr'); ?>">
+    <meta property="og:url" content="<?= esc($documentUrl, 'attr'); ?>">
     <meta property="og:type" content="website">
     <meta charset="UTF-8">
     <meta name="theme-color" content="#e84a49">
@@ -172,27 +186,20 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="ilena furniture">
     <meta name="author" content="Ilena Furniture">
-    <meta name="title" content="<?= $title ?> | I L E N A">
-    <meta data-rh="true" name="title" content="<?= $title ?> | I L E N A">
-    <meta name="description"
-        content="<?= isset($metaDeskripsi) ? $metaDeskripsi : 'Toko Online furniture Semarang meliputi produk buffet tv, bed, lemari pakaian, coffee table, meja konsol, rak buku, dresser, meja nakas, dll. '; ?>">
-    <meta name="keywords"
-        content="<?= isset($metaKeyword) ? $metaKeyword : 'Sorely Ilena Semarang,Cabana Ilena Semarang,Orca Ilena Semarang,Plint Base Ilena Semarang,Cutout Ilena Semarang,Living Room Ilena Semarang,Bed Room Ilena Semarang,Lounge Room Ilena Semarang'; ?>">
+    <meta name="title" content="<?= esc($documentTitle, 'attr'); ?>">
+    <meta name="description" content="<?= esc($documentDescription, 'attr'); ?>">
+    <?php if (isset($metaKeyword) && trim((string) $metaKeyword) !== '') : ?>
+    <meta name="keywords" content="<?= esc($metaKeyword, 'attr'); ?>">
+    <?php endif; ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta data-rh="true" property="og:title" content="<?= isset($metaTitle) ? $metaTitle : 'Ilena Furniture'; ?>">
-    <meta data-rh="true" property="og:site_name" content="Ilena Furniture">
-    <meta data-rh="true" property="og:url" content="https://ilenafurniture.com/">
-    <meta data-rh="true" property="og:image" content="https://ilenafurniture.com/logo-icon.png">
-    <meta data-rh="true" property="product:price:currency" content="Rp">
-    <meta data-rh="true" property="product:price:amount" content="0">
+    <meta property="og:site_name" content="Ilena Furniture">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://ilenafurniture.com">
+    <link rel="canonical" href="<?= esc($documentUrl, 'attr'); ?>">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<?= $title ?> | I L E N A">
-    <meta name="twitter:description"
-        content="<?= isset($metaDeskripsi) ? $metaDeskripsi : 'Toko Online furniture Semarang meliputi produk buffet tv, bed, lemari pakaian, coffee table, meja konsol, rak buku, dresser, meja nakas, dll. '; ?>">
-    <meta name="twitter:image" content="https://ilenafurniture.com/logo-icon.png">
-    <title><?= $title; ?> | I L E N A</title>
+    <meta name="twitter:title" content="<?= esc($documentTitle, 'attr'); ?>">
+    <meta name="twitter:description" content="<?= esc($documentDescription, 'attr'); ?>">
+    <meta name="twitter:image" content="<?= esc($documentImage, 'attr'); ?>">
+    <title><?= esc($documentTitle); ?></title>
     <link href="<?= base_url('css/bootstrap.min.css'); ?>" rel="stylesheet">
     <link rel="preload" as="style" href="https://fonts.googleapis.com/icon?family=Material+Icons" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"></noscript>
@@ -215,7 +222,7 @@
     <?php $editorialPagePath = '/' . strtolower(trim((string) service('uri')->getPath(), '/')); ?>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
-    <?php if (in_array($editorialPagePath, ['/', '/tentang', '/partner', '/article'], true)) : ?>
+    <?php if (in_array($editorialPagePath, ['/', '/tentang', '/partner', '/article', '/iklan'], true)) : ?>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
     <?php endif; ?>

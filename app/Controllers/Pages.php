@@ -5544,8 +5544,10 @@ class Pages extends BaseController
             'apikey_img_ilena'  => $this->apikey_img_ilena,
             'metaTitle'         => 'Promo Furniture Sepaket Ilena — Gratis Ongkir',
             'metaDeskripsi'     => 'Desain interior rumah baru jadi mudah! Pilih furniture sepaket Ilena: estetik, premium, dan saat ini gratis ongkir ke seluruh Indonesia.',
-            'metaKeyword'       => 'promo furniture, furniture sepaket, gratis ongkir, ilena furniture, jasa interior rumah baru',
+            'metaKeyword'       => 'promo furniture Ilena, furniture sepaket, furniture rumah baru, koleksi Cody, Plint Base, Cabana',
+            'metaUrl'           => site_url('iklan'),
             'metaImage'         => 'https://img.ilenafurniture.com/image/1748320128043.jpg/?apikey=' . $this->apikey_img_ilena,
+            'metaImageAlt'      => 'Promo furniture sepaket Ilena Furniture',
             'series'            => $series,
             'msg_active'        => false,
         ];
