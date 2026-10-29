@@ -414,10 +414,13 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
         </section>
         <div class="ilena-chat-dock d-flex flex-column gap-2">
             <div class="ilena-chat-greeting-teaser" data-chat-greeting role="group" aria-label="Sapaan Kak Wawa" aria-live="polite" hidden>
+                <div class="ilena-chat-greeting-teaser__bubble">
+                    <button type="button" data-greeting-dismiss aria-label="Tutup sapaan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+                    <strong>Hai, Kak!</strong>
+                    <p>Mau cari inspirasi untuk ruang Kakak?</p>
+                    <button type="button" data-greeting-open aria-label="Mulai chat dengan Kak Wawa">Ngobrol dengan Wawa</button>
+                </div>
                 <span class="ilena-chat-greeting-teaser__mark" aria-hidden="true"><img data-wawa-avatar="greeting" alt="" width="360" height="360" loading="lazy" decoding="async"></span>
-                <div class="ilena-chat-greeting-teaser__copy"><span class="ilena-chat-greeting-teaser__eyebrow"><i aria-hidden="true"></i> Teman belanja ILENA</span><strong>Butuh ide untuk ruang Kakak?</strong><p>Ceritakan saja, Wawa bantu carikan.</p></div>
-                <button type="button" data-greeting-open aria-label="Mulai chat dengan Kak Wawa">Tanya Kak Wawa</button>
-                <button type="button" data-greeting-dismiss aria-label="Tutup sapaan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
             </div>
             <button type="button" class="btn-circle hitam ilena-floating-chat" id="ilenaAssistantLauncher" data-open-ilena-chat aria-label="Buka Asisten Belanja Ilena" aria-expanded="false" aria-controls="container-greeting-card">
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 11.5a7.5 7.5 0 0 1-11.2 6.5L4 19l1-4.4A7.5 7.5 0 1 1 20 11.5Z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01"/></svg>
