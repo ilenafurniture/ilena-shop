@@ -322,6 +322,7 @@
     if (status) {
       if (currentStatus === 'human_waiting') status.textContent = humanAvailable ? 'Tim Ilena segera bergabung' : 'CS sedang tidak tersedia';
       else if (currentStatus === 'human') status.textContent = 'Anda sedang dilayani tim Ilena';
+      else if (currentStatus === 'closed') status.textContent = 'Percakapan selesai · Kakak bisa mengirim pesan untuk memulai yang baru';
       else status.textContent = humanAvailable ? 'Kak Wawa · CS 08.00–16.00 WIB' : 'CS sedang tidak tersedia · Kak Wawa siap membantu';
     }
     if (handoff) handoff.hidden = currentStatus !== 'ai' || humanAvailable === false;
@@ -337,6 +338,15 @@
     if (value) transcript.scrollTop = transcript.scrollHeight;
   }
   function renderMessages(items, notify = false) { (items || []).forEach(item => appendMessage(item, notify)); }
+  function resetTranscriptForConversationChange() {
+    cursor = 0;
+    transcript.querySelectorAll('.ilena-chat-bubble, .ilena-chat-empty, .ilena-chat-welcome').forEach(node => node.remove());
+    waitingForReply = false;
+    waitingSince = 0;
+    slowReplyNoticeShown = false;
+    setTyping(false);
+    showNotice('');
+  }
   async function requestHandoff() {
     if (sending || currentStatus !== 'ai') return;
     if (!humanAvailable) { showOfflineNotice(); return; }
@@ -429,7 +439,9 @@
     if (!opened || !ready || polling || document.hidden) return;
     polling = true;
     try {
-      const data = await api('/chat/poll?after=' + cursor);
+      const data = await api('/chat/poll?after=' + cursor + '&conversationKey=' + encodeURIComponent(currentConversationKey));
+      const conversationChanged = !!data.conversationKey && !!currentConversationKey && data.conversationKey !== currentConversationKey;
+      if (conversationChanged) resetTranscriptForConversationChange();
       currentConversationKey = data.conversationKey || currentConversationKey;
       lastWhatsappUrl = data.whatsappUrl || lastWhatsappUrl;
       renderMessages(data.messages, true);
@@ -541,9 +553,12 @@
         data = await api('/chat/send', { method: 'POST', body: sendPayload });
       }
       pendingRequestIds.delete(message);
+      const conversationChanged = !!data.conversationKey && !!currentConversationKey && data.conversationKey !== currentConversationKey;
+      if (conversationChanged || data.newConversation) resetTranscriptForConversationChange();
       currentConversationKey = data.conversationKey || currentConversationKey;
       lastWhatsappUrl = data.whatsappUrl || lastWhatsappUrl;
       input.value = ''; ready = true; updateStatus(data.status, data.humanAvailable);
+      if (data.conversationStartMessage) appendMessage(data.conversationStartMessage);
       appendMessage({ id: data.messageId, sender_type: 'visitor', body: message, created_at: data.createdAt || '' });
       waitingForReply = data.status === 'ai';
       waitingSince = waitingForReply ? Date.now() : 0;

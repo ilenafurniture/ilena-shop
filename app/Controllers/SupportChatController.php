@@ -12,6 +12,8 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class SupportChatController extends BaseController
 {
+    private const AI_RESOLVED_IDLE_SECONDS = 86400;
+
     private function db()
     {
         return db_connect();
@@ -61,6 +63,55 @@ class SupportChatController extends BaseController
         return $builder->orderBy('last_message_at', 'DESC')->orderBy('id', 'DESC')->get(1)->getRowArray() ?: null;
     }
 
+    private function latestClosedConversation(string $visitorHash): ?array
+    {
+        return $this->db()->table('ilena_chat_conversations')->where('visitor_hash', $visitorHash)
+            ->where('status', 'closed')->orderBy('closed_at', 'DESC')->orderBy('id', 'DESC')->get(1)->getRowArray() ?: null;
+    }
+
+    private function shouldArchiveResolvedAiConversation(array $conversation): bool
+    {
+        if (($conversation['status'] ?? '') !== 'ai') return false;
+        $lastMessage = strtotime((string)($conversation['last_message_at'] ?? ''));
+        if (! $lastMessage || time() - $lastMessage < self::AI_RESOLVED_IDLE_SECONDS) return false;
+
+        $db = $this->db();
+        $resolved = $db->fieldExists('resolved_at', 'ilena_chat_conversations') && ! empty($conversation['resolved_at']);
+        $rated = $db->tableExists('ilena_chat_feedback')
+            && $db->table('ilena_chat_feedback')->where('conversation_id', (int)$conversation['id'])->countAllResults() > 0;
+        return $resolved || $rated;
+    }
+
+    private function archiveResolvedAiConversation(array $conversation): bool
+    {
+        if (! $this->shouldArchiveResolvedAiConversation($conversation)) return false;
+        $db = $this->db();
+        $builder = $db->table('ilena_chat_conversations')->where('id', (int)$conversation['id'])
+            ->where('visitor_hash', (string)$conversation['visitor_hash'])->where('status', 'ai');
+        if (! empty($conversation['last_message_at'])) $builder->where('last_message_at', $conversation['last_message_at']);
+        $now = date('Y-m-d H:i:s');
+        $builder->update(['status' => 'closed', 'closed_at' => $now, 'updated_at' => $now]);
+        return $db->affectedRows() === 1;
+    }
+
+    private function restartNoticeMessage(int $conversationId): ?array
+    {
+        $row = $this->db()->table('ilena_chat_messages')->where('conversation_id', $conversationId)
+            ->where('sender_type', 'system')->where('body', 'Kita mulai percakapan baru ya, Kak.')
+            ->orderBy('id', 'ASC')->get(1)->getRowArray();
+        if (! $row) return null;
+        $row['metadata'] = ['type' => 'conversation_restart_notice'];
+        return $row;
+    }
+
+    private function customerConversation(string $visitorHash): ?array
+    {
+        $conversation = $this->ownedConversation($visitorHash);
+        if ($conversation && $this->archiveResolvedAiConversation($conversation)) $conversation = null;
+        if (! $conversation) $conversation = $this->latestClosedConversation($visitorHash);
+        return $conversation;
+    }
+
     private function chatMessageByRequestId(int $conversationId, string $requestId): ?array
     {
         if ($conversationId < 1 || $requestId === '' || ! $this->db()->fieldExists('client_request_id', 'ilena_chat_messages')) return null;
@@ -71,7 +122,7 @@ class SupportChatController extends BaseController
             ->get(1)->getRowArray() ?: null;
     }
 
-    private function chatSendResponse(array $conversation, array $message, array $availability, bool $deduplicated = false): ResponseInterface
+    private function chatSendResponse(array $conversation, array $message, array $availability, bool $deduplicated = false, ?array $startMessage = null): ResponseInterface
     {
         $body = (string) ($message['body'] ?? '');
         return $this->json([
@@ -84,6 +135,8 @@ class SupportChatController extends BaseController
             'whatsappUrl' => $this->whatsappUrl($body),
             'createdAt' => (string) ($message['created_at'] ?? ''),
             'deduplicated' => $deduplicated,
+            'newConversation' => $startMessage !== null,
+            'conversationStartMessage' => $startMessage,
         ]);
     }
 
@@ -92,7 +145,7 @@ class SupportChatController extends BaseController
         $db = $this->db();
         if (! $db->tableExists('ilena_chat_conversations')) return $this->json(['success' => false, 'message' => 'Chat sedang disiapkan.'], 503);
         $visitor = $this->visitorHash(true);
-        $conversation = $this->ownedConversation($visitor);
+        $conversation = $this->customerConversation($visitor);
         $contextProductId = trim((string)$this->request->getGet('product'));
         if ($contextProductId !== '' && $conversation && preg_match('/^[A-Za-z0-9_-]{1,64}$/', $contextProductId)) {
             $db->table('ilena_chat_conversations')->where('id', (int)$conversation['id'])->update(['context_product_id' => $contextProductId]);
@@ -116,10 +169,11 @@ class SupportChatController extends BaseController
         $availability = $this->supportAvailability();
         $visitor = $this->visitorHash();
         if (! $visitor) return $this->json(['success' => true, 'conversationKey' => null, 'messages' => [], 'status' => 'ai', 'humanAvailable' => $availability['open'], 'serviceHours' => $availability['hours'], 'whatsappUrl' => $availability['whatsappUrl']]);
-        $conversation = $this->ownedConversation($visitor);
+        $conversation = $this->customerConversation($visitor);
         if (! $conversation) return $this->json(['success' => true, 'conversationKey' => null, 'messages' => [], 'status' => 'ai', 'humanAvailable' => $availability['open'], 'serviceHours' => $availability['hours'], 'whatsappUrl' => $availability['whatsappUrl']]);
         (new ChatFeedbackService())->issuePromptIfIdle($this->db(), $conversation, $visitor);
-        $after = max(0, (int)$this->request->getGet('after'));
+        $requestedKey = trim((string)$this->request->getGet('conversationKey'));
+        $after = hash_equals((string)$conversation['conversation_key'], $requestedKey) ? max(0, (int)$this->request->getGet('after')) : 0;
         return $this->json([
             'success' => true,
             'conversationKey' => $conversation['conversation_key'],
@@ -152,9 +206,10 @@ class SupportChatController extends BaseController
             $existing = $this->chatMessageByRequestId((int) $conversation['id'], $clientRequestId);
             if ($existing) {
                 if (! hash_equals((string) $existing['body'], $body)) return $this->json(['success' => false, 'message' => 'Pesan ini sudah terkirim dengan isi berbeda.'], 409);
-                return $this->chatSendResponse($conversation, $existing, $availability, true);
+                return $this->chatSendResponse($conversation, $existing, $availability, true, $this->restartNoticeMessage((int)$conversation['id']));
             }
         }
+        if ($conversation && $this->archiveResolvedAiConversation($conversation)) $conversation = null;
         $ip = (string) $this->request->getIPAddress();
         if (function_exists('service') && ! service('throttler')->check('ilena-chat-send-' . hash('sha256', $ip), 12, 60)) {
             return $this->json(['success' => false, 'message' => 'Tunggu sebentar sebelum mengirim pesan lagi.'], 429);
@@ -162,9 +217,11 @@ class SupportChatController extends BaseController
         $contextProductId = trim((string)($input['productId'] ?? ''));
         if ($contextProductId !== '' && ! preg_match('/^[A-Za-z0-9_-]{1,64}$/', $contextProductId)) $contextProductId = '';
         $now = date('Y-m-d H:i:s');
+        $startMessage = null;
         $db->transBegin();
         try {
             if (! $conversation) {
+                $previousConversation = $this->latestClosedConversation($visitor);
                 $key = bin2hex(random_bytes(32));
                 $db->table('ilena_chat_conversations')->insert([
                     'conversation_key' => $key,
@@ -177,6 +234,17 @@ class SupportChatController extends BaseController
                     'updated_at' => $now,
                 ]);
                 $conversation = $db->table('ilena_chat_conversations')->where('conversation_key', $key)->get()->getRowArray();
+                if ($previousConversation) {
+                    $noticeBody = 'Kita mulai percakapan baru ya, Kak.';
+                    $db->table('ilena_chat_messages')->insert([
+                        'conversation_id' => (int)$conversation['id'],
+                        'sender_type' => 'system',
+                        'body' => $noticeBody,
+                        'metadata' => json_encode(['type' => 'conversation_restart_notice'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                        'created_at' => $now,
+                    ]);
+                    $startMessage = ['id' => (int)$db->insertID(), 'sender_type' => 'system', 'body' => $noticeBody, 'metadata' => ['type' => 'conversation_restart_notice'], 'created_at' => $now];
+                }
             }
             $conversationId = (int)$conversation['id'];
             $rateCount = $db->table('ilena_chat_messages')->where('conversation_id', $conversationId)
@@ -213,7 +281,7 @@ class SupportChatController extends BaseController
             }
             if ($db->transStatus() === false) throw new \RuntimeException('Penyimpanan pesan gagal.');
             $db->transCommit();
-            return $this->chatSendResponse($conversation, ['id' => $messageId, 'body' => $body, 'created_at' => $now], $availability);
+            return $this->chatSendResponse($conversation, ['id' => $messageId, 'body' => $body, 'created_at' => $now], $availability, false, $startMessage);
         } catch (\Throwable $e) {
             $db->transRollback();
             if ($clientRequestId !== '') {
@@ -221,7 +289,7 @@ class SupportChatController extends BaseController
                 $existing = $activeConversation ? $this->chatMessageByRequestId((int) $activeConversation['id'], $clientRequestId) : null;
                 if ($activeConversation && $existing) {
                     if (! hash_equals((string) $existing['body'], $body)) return $this->json(['success' => false, 'message' => 'Pesan ini sudah terkirim dengan isi berbeda.'], 409);
-                    return $this->chatSendResponse($activeConversation, $existing, $availability, true);
+                    return $this->chatSendResponse($activeConversation, $existing, $availability, true, $this->restartNoticeMessage((int)$activeConversation['id']));
                 }
             }
             log_message('error', 'Ilena chat send failed: {message}', ['message' => $e->getMessage()]);
@@ -304,7 +372,9 @@ class SupportChatController extends BaseController
                 'created_at' => $now,
             ]);
             $messageId = (int)$db->insertID();
-            $db->table('ilena_chat_conversations')->where('id', (int)$conversation['id'])->where('status', 'ai')->update(['last_message_at' => $now, 'updated_at' => $now]);
+            $conversationUpdate = ['last_message_at' => $now, 'updated_at' => $now];
+            if ($db->fieldExists('resolved_at', 'ilena_chat_conversations')) $conversationUpdate['resolved_at'] = $now;
+            $db->table('ilena_chat_conversations')->where('id', (int)$conversation['id'])->where('status', 'ai')->update($conversationUpdate);
             if ($db->transStatus() === false) throw new \RuntimeException('Gagal menyimpan status percakapan.');
             $db->transCommit();
             return $this->json(['success' => true, 'status' => 'ai', 'message' => ['id' => $messageId, 'sender_type' => 'assistant', 'body' => $thanks, 'created_at' => $now]]);
