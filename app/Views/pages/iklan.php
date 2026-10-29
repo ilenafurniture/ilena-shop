@@ -3,23 +3,22 @@
 
 <style>
 .ilena-iklan-page {
-    --iklan-ink: #25221f; --iklan-muted: #716a63; --iklan-line: #e5ded6; --iklan-paper: #f5f2ed; --iklan-accent: #8b684c;
-    color: var(--iklan-ink); overflow: clip; background: #fff;
+    --iklan-ink: #25221f; --iklan-muted: #716a63; --iklan-line: #e5ded6; --iklan-paper: #f5f2ed; --iklan-accent: #8e3935;
+    color: var(--iklan-ink); background: #fff;
 }
 .ilena-iklan-page :where(*, *::before, *::after) { box-sizing: border-box; }
 .ilena-iklan-page .iklan-section { padding: clamp(64px, 8vw, 112px) clamp(18px, 4vw, 56px); }
 .ilena-iklan-page .iklan-container { width: min(100%, 1320px); margin-inline: auto; }
 .ilena-iklan-page .iklan-hero {
-    position: relative; display: flex; min-height: min(82svh, 850px); align-items: center; padding: clamp(52px, 8vw, 110px) clamp(20px, 7vw, 100px);
+    position: relative; display: flex; min-height: min(82vh, 850px); min-height: min(82svh, 850px); align-items: center; padding: clamp(52px, 8vw, 110px) clamp(20px, 7vw, 100px);
     overflow: hidden; color: #fff; background: #38322d;
 }
 .ilena-iklan-page .iklan-hero::before {
-    position: absolute; inset: 0; z-index: 0; content: ""; background:
-        linear-gradient(90deg, rgba(23,20,18,.72) 0%, rgba(23,20,18,.42) 52%, rgba(23,20,18,.08) 100%),
-        url('https://img.ilenafurniture.com/image/1748320128043.jpg/?apikey=<?= $apikey_img_ilena ?>') center 55% / cover no-repeat;
-    transform: scale(1.015);
+    position: absolute; inset: 0; z-index: 1; content: "";
+    background: linear-gradient(90deg, rgba(23,20,18,.78) 0%, rgba(23,20,18,.5) 48%, rgba(23,20,18,.12) 100%);
 }
-.ilena-iklan-page .iklan-hero > .iklan-container { position: relative; z-index: 1; }
+.ilena-iklan-page .iklan-hero-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 55%; }
+.ilena-iklan-page .iklan-hero > .iklan-container { position: relative; z-index: 2; }
 .ilena-iklan-page .iklan-hero .iklan-container { max-width: 1320px; }
 .ilena-iklan-page .iklan-badge {
     display: inline-flex; align-items: center; gap: 8px; margin: 0 0 20px; padding: 8px 11px;
@@ -30,6 +29,8 @@
     max-width: 800px; margin: 0 0 18px; color: #fff; font-family: var(--ilena-font-display, Georgia, serif);
     font-size: clamp(40px, 6.3vw, 78px); font-weight: 500; letter-spacing: -.045em; line-height: 1.02;
 }
+.ilena-iklan-page .iklan-h1 { text-wrap: balance; }
+.ilena-iklan-page .iklan-h1 .iklan-desktop-break { display: block; }
 .ilena-iklan-page .iklan-h2 {
     margin: 0 0 14px; color: var(--iklan-ink); font-family: var(--ilena-font-display, Georgia, serif);
     font-size: clamp(28px, 4vw, 46px); font-weight: 500; letter-spacing: -.035em; line-height: 1.12;
@@ -40,11 +41,11 @@
 .ilena-iklan-page .iklan-btn-outline,
 .ilena-iklan-page .iklan-btn-dark {
     display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px;
-    border: 1px solid var(--iklan-accent); border-radius: 0; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-decoration: none;
+    border: 1px solid var(--iklan-accent); border-radius: 0; min-height: 44px; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-decoration: none;
     transition: color .2s ease, background .2s ease, border-color .2s ease;
 }
 .ilena-iklan-page .iklan-btn-primary { background: var(--iklan-accent); color: #fff !important; }
-.ilena-iklan-page .iklan-btn-primary:hover { border-color: #715138; background: #715138; }
+.ilena-iklan-page .iklan-btn-primary:hover { border-color: #712c29; background: #712c29; }
 .ilena-iklan-page .iklan-btn-outline { border-color: rgba(255,255,255,.78); background: transparent; color: #fff !important; }
 .ilena-iklan-page .iklan-btn-outline:hover { background: #fff; color: var(--iklan-ink) !important; }
 .ilena-iklan-page .iklan-btn-dark { border-color: var(--iklan-ink); background: var(--iklan-ink); color: #fff !important; }
@@ -69,7 +70,7 @@
 .ilena-iklan-page .series-tag { margin-bottom: 6px; color: var(--iklan-accent); font-size: 9px; font-weight: 650; letter-spacing: .15em; text-transform: uppercase; }
 .ilena-iklan-page .series-name { margin-bottom: 8px; color: var(--iklan-ink); font-family: var(--ilena-font-display, Georgia, serif); font-size: 22px; font-weight: 500; }
 .ilena-iklan-page .series-desc { flex: 1; margin-bottom: 16px; color: var(--iklan-muted); font-size: 13px; line-height: 1.7; }
-.ilena-iklan-page .series-link { display: inline-flex; min-height: 40px; align-items: center; gap: 7px; color: var(--iklan-accent); font-size: 11px; font-weight: 600; text-decoration: none; }
+.ilena-iklan-page .series-link { display: inline-flex; min-height: 44px; align-items: center; gap: 7px; color: var(--iklan-accent); font-size: 11px; font-weight: 600; text-decoration: none; }
 .ilena-iklan-page .series-link:hover { color: var(--iklan-ink); }
 .ilena-iklan-page .testi-section { background: var(--iklan-paper); }
 .ilena-iklan-page .testi-card { height: 100%; padding: 22px 0; border: 0; border-top: 1px solid #d8c8b8; border-radius: 0; background: transparent; box-shadow: none; }
@@ -83,33 +84,58 @@
 .ilena-iklan-page .final-cta .iklan-h2 { color: #fff; }
 .ilena-iklan-page .cta-mini-benefit { display: inline-flex; align-items: center; gap: 6px; margin: 6px 10px; color: rgba(255,255,255,.78); font-size: 11px; }
 .ilena-iklan-page .cta-mini-benefit i { color: #c6a98d; font-size: 17px; }
-.ilena-iklan-page a:focus-visible { outline: 2px solid #b79473; outline-offset: 3px; }
+.ilena-iklan-page a:focus-visible { outline: 2px solid #8e3935; outline-offset: 3px; }
+.ilena-iklan-page :where(a, button) { touch-action: manipulation; }
+.ilena-iklan-page .iklan-section-heading { max-width: 800px; margin: 0 auto 42px; text-align: center; }
+.ilena-iklan-page .iklan-section-heading .iklan-sub-dark { margin-bottom: 0; }
+.ilena-iklan-page .benefit-card, .ilena-iklan-page .value-card, .ilena-iklan-page .series-card, .ilena-iklan-page .testi-card { min-width: 0; }
+.ilena-iklan-page .series-img { height: auto; }
+ .ilena-iklan-page.iklan-motion-ready [data-iklan-reveal] { opacity: 0; transform: translate3d(0, 22px, 0); transition: opacity 520ms ease, transform 520ms cubic-bezier(.2,.7,.2,1); transition-delay: var(--iklan-reveal-delay, 0ms); }
+.ilena-iklan-page.iklan-motion-ready [data-iklan-reveal].is-visible { opacity: 1; transform: translate3d(0, 0, 0); }
+.ilena-iklan-page .benefit-icon i { transform: translateY(5px); transition: transform 420ms cubic-bezier(.2,.7,.2,1); }
+.ilena-iklan-page.iklan-motion-ready [data-iklan-reveal].is-visible .benefit-icon i { transform: translateY(0); }
+.ilena-iklan-page .iklan-btn-primary, .ilena-iklan-page .iklan-btn-outline, .ilena-iklan-page .iklan-btn-dark { min-height: 48px; }
+.ilena-iklan-page #series { scroll-margin-top: 88px; }
 @media (max-width: 700px) {
-    .ilena-iklan-page .iklan-section { padding: 58px 18px; }
-    .ilena-iklan-page .iklan-hero { min-height: 76svh; padding: 48px 20px; }
-    .ilena-iklan-page .iklan-hero::before { background-position: 58% center; background-image: linear-gradient(90deg, rgba(23,20,18,.72), rgba(23,20,18,.25)), url('https://img.ilenafurniture.com/image/1748320128043.jpg/?apikey=<?= $apikey_img_ilena ?>'); }
+    .ilena-iklan-page .iklan-section { padding: 54px 18px; }
+    .ilena-iklan-page .iklan-hero { min-height: min(76vh, 720px); min-height: min(76svh, 720px); padding: 46px 20px; }
+    .ilena-iklan-page .iklan-hero::before { background: linear-gradient(90deg, rgba(23,20,18,.76), rgba(23,20,18,.42)); }
+    .ilena-iklan-page .iklan-hero-image { object-position: 58% center; }
     .ilena-iklan-page .iklan-h1 { font-size: clamp(38px, 11vw, 56px); }
+    .ilena-iklan-page .iklan-h1 .iklan-desktop-break { display: none; }
     .ilena-iklan-page .iklan-sub-dark { margin-bottom: 26px; font-size: 13px; }
-    .ilena-iklan-page .iklan-btn-primary, .ilena-iklan-page .iklan-btn-outline { min-height: 46px; padding-inline: 14px; font-size: 10px; }
+    .ilena-iklan-page .iklan-actions { display: grid !important; grid-template-columns: 1fr; gap: 10px !important; max-width: 360px; }
+    .ilena-iklan-page .final-cta .iklan-actions { margin-inline: auto; }
+    .ilena-iklan-page .iklan-btn-primary, .ilena-iklan-page .iklan-btn-outline { width: 100%; min-height: 48px; padding-inline: 14px; font-size: 11px; }
     .ilena-iklan-page .stat-card { padding: 16px 0; }
     .ilena-iklan-page .value-card, .ilena-iklan-page .benefit-card { padding-top: 18px; }
     .ilena-iklan-page .series-body { padding-top: 14px; }
     .ilena-iklan-page .series-name { font-size: 19px; }
     .ilena-iklan-page .testi-card { padding-block: 18px; }
+    .ilena-iklan-page .iklan-section-heading { margin-bottom: 30px; }
+    .ilena-iklan-page .cta-mini-benefit { margin-inline: 6px; font-size: 10px; }
+}
+@media (max-width: 380px) {
+    .ilena-iklan-page .iklan-section { padding-inline: 15px; }
+    .ilena-iklan-page .iklan-hero { padding-inline: 16px; }
+    .ilena-iklan-page .iklan-h1 { font-size: clamp(35px, 10.8vw, 42px); }
+    .ilena-iklan-page .iklan-badge { font-size: 9px; letter-spacing: .1em; }
 }
 @media (prefers-reduced-motion: reduce) {
-    .ilena-iklan-page *, .ilena-iklan-page *::before, .ilena-iklan-page *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    .ilena-iklan-page *, .ilena-iklan-page *::before, .ilena-iklan-page *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+    .ilena-iklan-page.iklan-motion-ready [data-iklan-reveal] { opacity: 1; transform: none; }
 }
 </style>
 
-<main class="ilena-iklan-page">
+<main class="ilena-iklan-page" aria-label="Promo furniture Ilena">
 <!-- 1. HERO -->
 <section class="iklan-hero">
-    <div class="iklan-container w-100 px-4">
+    <img class="iklan-hero-image" src="<?= esc('https://img.ilenafurniture.com/image/1748320128043.jpg/?apikey=' . $apikey_img_ilena, 'attr'); ?>" alt="" width="1920" height="1200" fetchpriority="high" decoding="async">
+    <div class="iklan-container w-100 px-4" data-iklan-reveal>
         <span class="iklan-badge">PROMO TERBATAS · GRATIS ONGKIR</span>
-        <h1 class="iklan-h1">Desain Interior Rumah Baru<br>Jadi Mudah & Estetik</h1>
+        <h1 class="iklan-h1">Desain Interior Rumah Baru<span class="iklan-desktop-break"><br></span> Jadi Mudah & Estetik</h1>
         <p class="iklan-sub">Pilih furniture sepaket dari Ilena — modern, premium, dan saat ini <b>gratis ongkir</b> ke seluruh Indonesia. Tinggal pasang, rumah langsung jadi.</p>
-        <div class="d-flex gap-3 flex-wrap">
+        <div class="d-flex gap-3 flex-wrap iklan-actions">
             <a href="#series" class="iklan-btn-primary">Lihat Koleksi Series</a>
             <a data-kbot-wa href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20mau%20tanya-tanya%20koleksinya" class="iklan-btn-outline" target="_blank" rel="noopener">Klaim Gratis Ongkir</a>
         </div>
@@ -117,22 +143,22 @@
 </section>
 
 <!-- 2. TRUST BADGES -->
-<section class="iklan-section iklan-stats">
+<section class="iklan-section iklan-stats" aria-label="Keunggulan layanan">
     <div class="iklan-container">
         <div class="row g-3">
-            <div class="col-md-4 col-12">
+            <div class="col-md-4 col-12" data-iklan-reveal>
                 <div class="stat-card">
                     <div class="stat-num">10+</div>
                     <div class="stat-label">Series Koleksi Premium</div>
                 </div>
             </div>
-            <div class="col-md-4 col-12">
+            <div class="col-md-4 col-12" data-iklan-reveal>
                 <div class="stat-card">
                     <div class="stat-num">100%</div>
                     <div class="stat-label">Promo Gratis Ongkir</div>
                 </div>
             </div>
-            <div class="col-md-4 col-12">
+            <div class="col-md-4 col-12" data-iklan-reveal>
                 <div class="stat-card">
                     <div class="stat-num">Rapi</div>
                     <div class="stat-label">Hemat Waktu Belanja</div>
@@ -143,28 +169,28 @@
 </section>
 
 <!-- 3. PROBLEM / SOLUTION -->
-<section class="iklan-section">
+<section class="iklan-section" aria-labelledby="iklan-problem-title">
     <div class="iklan-container">
-        <div class="text-center mb-5">
-            <h2 class="iklan-h2">Renovasi Selesai, Bingung Cari Furniture?</h2>
+        <div class="iklan-section-heading" data-iklan-reveal>
+            <h2 id="iklan-problem-title" class="iklan-h2">Renovasi Selesai, Bingung Cari Furniture?</h2>
             <p class="iklan-sub-dark">Banding-bandingin di marketplace bikin pusing. Beda toko, beda style, ongkos pengiriman bikin budget bengkak. Ilena bantu beresin semuanya.</p>
         </div>
         <div class="row g-4">
-            <div class="col-md-4 col-12">
+            <div class="col-md-4 col-12" data-iklan-reveal>
                 <div class="benefit-card">
                     <div class="benefit-icon"><i class="material-icons">schedule</i></div>
                     <h3 class="benefit-title">Hemat Waktu</h3>
                     <p class="benefit-text">Nggak perlu lagi bandingin puluhan toko. Satu series, satu konsep, langsung jadi.</p>
                 </div>
             </div>
-            <div class="col-md-4 col-12">
+            <div class="col-md-4 col-12" data-iklan-reveal>
                 <div class="benefit-card">
                     <div class="benefit-icon"><i class="material-icons">verified</i></div>
                     <h3 class="benefit-title">Desain Pasti Cocok</h3>
                     <p class="benefit-text">Setiap series dirancang satu kesatuan — warna, tekstur, dan gaya saling melengkapi.</p>
                 </div>
             </div>
-            <div class="col-md-4 col-12">
+            <div class="col-md-4 col-12" data-iklan-reveal>
                 <div class="benefit-card">
                     <div class="benefit-icon"><i class="material-icons">savings</i></div>
                     <h3 class="benefit-title">Hemat Biaya Kirim</h3>
@@ -176,26 +202,26 @@
 </section>
 
 <!-- 4. VALUE PROPOSITION -->
-<section class="iklan-section" style="background:#fff;">
+<section class="iklan-section" style="background:#fff;" aria-labelledby="iklan-value-title">
     <div class="iklan-container">
-        <div class="text-center mb-5">
-            <h2 class="iklan-h2">Kenapa Pilih Ilena?</h2>
+        <div class="iklan-section-heading" data-iklan-reveal>
+            <h2 id="iklan-value-title" class="iklan-h2">Kenapa Pilih Ilena?</h2>
             <p class="iklan-sub-dark">Bukan sekadar jual furniture, kami bantu kamu wujudkan rumah impian dengan tiga keunggulan utama.</p>
         </div>
         <div class="row g-4">
-            <div class="col-md-4 col-12">
+            <div class="col-md-4 col-12" data-iklan-reveal>
                 <div class="value-card">
                     <h3>Desain Sepaket</h3>
                     <p>Beli satu series, dapat satu konsep ruangan utuh. Cocok untuk yang mau hasil rapi tanpa pusing match-matching.</p>
                 </div>
             </div>
-            <div class="col-md-4 col-12">
+            <div class="col-md-4 col-12" data-iklan-reveal>
                 <div class="value-card">
                     <h3>Kualitas Premium</h3>
                     <p>Material pilihan, finishing presisi, dirancang untuk tahan dipakai harian dengan estetika yang bertahan lama.</p>
                 </div>
             </div>
-            <div class="col-md-4 col-12">
+            <div class="col-md-4 col-12" data-iklan-reveal>
                 <div class="value-card">
                     <h3>Bebas Ongkir</h3>
                     <p>Selama periode promo, gratis ongkir ke seluruh Indonesia. Harga yang kamu lihat, itu yang kamu bayar.</p>
@@ -206,17 +232,17 @@
 </section>
 
 <!-- 5. PRODUCT SERIES SHOWCASE -->
-<section id="series" class="iklan-section iklan-stats">
+<section id="series" class="iklan-section iklan-stats" aria-labelledby="iklan-series-title">
     <div class="iklan-container">
-        <div class="text-center mb-5">
-            <h2 class="iklan-h2">Series Pilihan untuk Rumahmu</h2>
+        <div class="iklan-section-heading" data-iklan-reveal>
+            <h2 id="iklan-series-title" class="iklan-h2">Series Pilihan untuk Rumahmu</h2>
             <p class="iklan-sub-dark">Tiga series paling diminati customer Ilena. Klik untuk lihat detail produknya.</p>
         </div>
-        <div class="row g-4">
+        <div class="row g-4 iklan-series-grid">
             <?php foreach ($series as $s): ?>
-            <div class="col-md-4 col-12">
+            <div class="col-md-4 col-12" data-iklan-reveal>
                 <div class="series-card">
-                    <img src="<?= esc($s['image']) ?>" alt="<?= esc($s['nama']) ?>" class="series-img" loading="lazy">
+                    <img src="<?= esc($s['image']) ?>" alt="<?= esc($s['nama']) ?>" class="series-img" width="480" height="360" loading="lazy" decoding="async">
                     <div class="series-body">
                         <div class="series-tag"><?= esc($s['gaya']) ?></div>
                         <div class="series-name"><?= esc($s['nama']) ?></div>
@@ -234,14 +260,14 @@
 </section>
 
 <!-- 6. TESTIMONIALS -->
-<section class="iklan-section testi-section">
+<section class="iklan-section testi-section" aria-labelledby="iklan-testimonial-title">
     <div class="iklan-container">
-        <div class="text-center mb-5">
-            <h2 class="iklan-h2">Kata Mereka yang Sudah Pakai</h2>
+        <div class="iklan-section-heading" data-iklan-reveal>
+            <h2 id="iklan-testimonial-title" class="iklan-h2">Kata Mereka yang Sudah Pakai</h2>
             <p class="iklan-sub-dark">Ratusan customer Ilena sudah merasakan kemudahan beli furniture sepaket.</p>
         </div>
         <div class="row g-4">
-            <div class="col-md-6 col-12">
+            <div class="col-md-6 col-12" data-iklan-reveal>
                 <div class="testi-card">
                     <div class="testi-stars">★★★★★</div>
                     <p class="testi-quote">"Awalnya bingung mau cari furniture buat rumah baru. Pilih Cody Series Ilena, semuanya match. Tetangga sampai tanya jasa interiornya."</p>
@@ -255,7 +281,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-12">
+            <div class="col-md-6 col-12" data-iklan-reveal>
                 <div class="testi-card">
                     <div class="testi-stars">★★★★★</div>
                     <p class="testi-quote">"Kualitas di luar ekspektasi. Pengiriman ke Surabaya gratis ongkir, packing rapi banget. Recommended untuk yang lagi siap-siap pindahan."</p>
@@ -274,16 +300,16 @@
 </section>
 
 <!-- 7. FINAL CTA -->
-<section class="iklan-section final-cta">
+<section class="iklan-section final-cta" aria-labelledby="iklan-final-title">
     <div class="iklan-container">
         <span class="iklan-badge">⏰ STOK TERBATAS</span>
-        <h2 class="iklan-h2">Yuk Wujudkan Rumah Impianmu Sekarang</h2>
-        <p class="iklan-sub mx-auto" style="color:#d4d4d4;">Promo gratis ongkir berlaku selama stok masih tersedia. Konsultasikan kebutuhanmu langsung ke tim kami via WhatsApp.</p>
-        <div class="d-flex gap-3 flex-wrap justify-content-center mb-4">
+        <h2 id="iklan-final-title" class="iklan-h2" data-iklan-reveal>Yuk Wujudkan Rumah Impianmu Sekarang</h2>
+        <p class="iklan-sub mx-auto" style="color:#d4d4d4;" data-iklan-reveal>Promo gratis ongkir berlaku selama stok masih tersedia. Konsultasikan kebutuhanmu langsung ke tim kami via WhatsApp.</p>
+        <div class="d-flex gap-3 flex-wrap justify-content-center mb-4 iklan-actions" data-iklan-reveal>
             <a href="<?= base_url('/product') ?>" class="iklan-btn-primary">Belanja Sekarang</a>
             <a data-kbot-wa href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20mau%20tanya-tanya%20koleksinya" class="iklan-btn-outline" target="_blank" rel="noopener">Chat WhatsApp</a>
         </div>
-        <div class="mt-3">
+        <div class="mt-3" data-iklan-reveal>
             <span class="cta-mini-benefit"><i class="material-icons">local_shipping</i> Gratis Ongkir</span>
             <span class="cta-mini-benefit"><i class="material-icons">verified</i> Garansi Kualitas</span>
             <span class="cta-mini-benefit"><i class="material-icons">support_agent</i> CS Responsif</span>
@@ -293,4 +319,36 @@
 </section>
 
 </main>
+<script>
+(() => {
+    const page = document.querySelector('.ilena-iklan-page');
+    if (!page) return;
+    const targets = Array.from(page.querySelectorAll('[data-iklan-reveal]'));
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (!targets.length || !('IntersectionObserver' in window) || reducedMotion) {
+        targets.forEach((target) => target.classList.add('is-visible'));
+        return;
+    }
+
+    try {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
+            });
+        }, { threshold: 0.12, rootMargin: '0px 0px -36px 0px' });
+
+        targets.forEach((target) => {
+            const siblings = Array.from(target.parentElement?.children ?? []).filter((item) => item.hasAttribute('data-iklan-reveal'));
+            target.style.setProperty('--iklan-reveal-delay', `${Math.min(Math.max(siblings.indexOf(target), 0) * 75, 225)}ms`);
+        });
+        page.classList.add('iklan-motion-ready');
+        targets.forEach((target) => observer.observe(target));
+    } catch {
+        page.classList.remove('iklan-motion-ready');
+        targets.forEach((target) => target.classList.add('is-visible'));
+    }
+})();
+</script>
 <?= $this->endSection(); ?>
