@@ -49,6 +49,7 @@
   let greetingAvatarFile = '';
   let greetingDismissed = false;
   let greetingOpened = false;
+  let greetingAutoHideTimer = null;
   const wawaAvatarPools = {
     greeting: ['wawa1-sapaan', 'wawa2-sapaan'],
     thinking: ['wawa1-berfikir', 'wawa2-berfikir'],
@@ -557,10 +558,21 @@
       if (!opened && !document.hidden) widget.classList.add('is-chat-idle');
     }, 60000);
   }
+  function scheduleGreetingAutoHide(delay = 22000) {
+    if (!teaser || teaser.hidden || opened || greetingOpened || greetingDismissed) return;
+    if (greetingAutoHideTimer) window.clearTimeout(greetingAutoHideTimer);
+    greetingAutoHideTimer = window.setTimeout(() => {
+      greetingAutoHideTimer = null;
+      const pointerIsHovering = window.matchMedia?.('(hover: hover)').matches && widget.matches(':hover');
+      const focusIsInside = widget.contains(document.activeElement);
+      if (!opened && !greetingOpened && !greetingDismissed && !pointerIsHovering && !focusIsInside) teaser.hidden = true;
+    }, delay);
+  }
   function wakeLauncher() {
     if (launcherIdleTimer) window.clearTimeout(launcherIdleTimer);
     launcherIdleTimer = null;
     widget.classList.remove('is-chat-idle');
+    scheduleGreetingAutoHide();
     if (!opened) scheduleLauncherIdle();
   }
   function refreshLauncherIdleFromActivity() {
@@ -568,11 +580,14 @@
     if (now - lastActivityRefresh < 1000) return;
     lastActivityRefresh = now;
     scheduleLauncherIdle();
+    scheduleGreetingAutoHide();
   }
 
   function openChat() {
     opened = true;
     greetingOpened = true;
+    if (greetingAutoHideTimer) window.clearTimeout(greetingAutoHideTimer);
+    greetingAutoHideTimer = null;
     try { sessionStorage.setItem('ilenaChatGreetingOpened', '1'); } catch (_) {}
     if (greetingAvatarFile) setWawaHeader('greeting', greetingAvatarFile);
     else setWawaHeader('greeting');
@@ -591,7 +606,7 @@
     else openChat();
   });
   widget.addEventListener('pointerenter', wakeLauncher);
-  widget.addEventListener('pointerleave', scheduleLauncherIdle);
+  widget.addEventListener('pointerleave', () => { scheduleLauncherIdle(); scheduleGreetingAutoHide(); });
   widget.addEventListener('focusin', wakeLauncher);
   widget.addEventListener('focusout', () => window.setTimeout(scheduleLauncherIdle, 0));
   document.addEventListener('pointerdown', refreshLauncherIdleFromActivity, { passive: true });
@@ -601,6 +616,8 @@
   teaser?.querySelector('[data-greeting-open]')?.addEventListener('click', openChat);
   teaser?.querySelector('[data-greeting-dismiss]')?.addEventListener('click', () => {
     greetingDismissed = true;
+    if (greetingAutoHideTimer) window.clearTimeout(greetingAutoHideTimer);
+    greetingAutoHideTimer = null;
     teaser.hidden = true;
     try {
       sessionStorage.setItem('ilenaChatGreetingSeen', '1');
@@ -714,9 +731,7 @@
       if (reminder) sessionStorage.setItem('ilenaChatGreetingReminderShown', '1');
     } catch (_) {}
     if (navigator.userActivation?.hasBeenActive) playWelcomeTone();
-    window.setTimeout(() => {
-      if (!opened && !greetingOpened && !greetingDismissed) teaser.hidden = true;
-    }, reminder ? 18000 : 22000);
+    scheduleGreetingAutoHide(reminder ? 18000 : 22000);
     return true;
   }
   if (teaser && !greetingSeen && !greetingDismissed && !greetingOpened) {
