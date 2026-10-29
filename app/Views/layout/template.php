@@ -388,7 +388,7 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
         <section id="container-greeting-card" class="ilena-chat-greeting d-none" aria-label="Chat dengan Ilena">
             <div class="ilena-chat-greeting__panel">
                 <header class="ilena-chat-greeting__heading">
-                    <div class="ilena-chat-brand"><span class="ilena-chat-brand__mark" aria-hidden="true"><img src="<?= base_url('img/LogoIlena-N.png'); ?>" alt="" loading="lazy" decoding="async"></span><span class="ilena-chat-brand__copy"><p>Kak Wawa</p><small><i aria-hidden="true"></i><span data-chat-status>Siap menemani Anda memilih</span></small></span></div>
+                    <div class="ilena-chat-brand"><span class="ilena-chat-brand__mark ilena-chat-brand__mark--wawa" aria-hidden="true"><img src="<?= base_url('img/kak-wawa-welcome.webp'); ?>" alt="" loading="lazy" decoding="async"></span><span class="ilena-chat-brand__copy"><p>Kak Wawa</p><small><i aria-hidden="true"></i><span data-chat-status>Siap menemani Anda memilih</span></small></span></div>
                     <button type="button" class="ilena-chat-sound" data-chat-sound aria-pressed="true" aria-label="Matikan suara notifikasi" title="Suara notifikasi aktif"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Zm4 4a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12"/></svg></button>
                     <button type="button" aria-label="Tutup chat" data-close-chat-greeting><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
                 </header>
@@ -414,9 +414,9 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
         </section>
         <div class="ilena-chat-dock d-flex flex-column gap-2">
             <div class="ilena-chat-greeting-teaser" data-chat-greeting role="group" aria-label="Sapaan Kak Wawa" aria-live="polite" hidden>
-                <span class="ilena-chat-greeting-teaser__mark" aria-hidden="true"><img src="<?= base_url('img/LogoIlena-N.png'); ?>" alt="" loading="lazy" decoding="async"></span>
-                <div><strong>Halo, selamat datang.</strong><p>Saya siap membantu memilih furniture untuk ruang Anda.</p></div>
-                <button type="button" data-greeting-open>Mulai</button>
+                <span class="ilena-chat-greeting-teaser__mark" aria-hidden="true"><img src="<?= base_url('img/kak-wawa-welcome.webp'); ?>" alt="" width="512" height="512" loading="lazy" decoding="async"></span>
+                <div class="ilena-chat-greeting-teaser__copy"><span class="ilena-chat-greeting-teaser__eyebrow"><i aria-hidden="true"></i> Teman belanja ILENA</span><strong>Butuh ide untuk ruang Kakak?</strong><p>Ceritakan saja, Wawa bantu carikan.</p></div>
+                <button type="button" data-greeting-open aria-label="Mulai chat dengan Kak Wawa">Tanya Kak Wawa</button>
                 <button type="button" data-greeting-dismiss aria-label="Tutup sapaan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
             </div>
             <button type="button" class="btn-circle hitam ilena-floating-chat" id="ilenaAssistantLauncher" data-open-ilena-chat aria-label="Buka Asisten Belanja Ilena" aria-expanded="false" aria-controls="container-greeting-card">
