@@ -154,6 +154,8 @@
     }
     $documentImage = trim((string) ($metaImage ?? 'https://ilenafurniture.com/img/logo/N.png'));
     $documentImageAlt = trim((string) ($metaImageAlt ?? 'Ilena Furniture'));
+    $siteBaseUrl = rtrim(base_url(), '/') . '/';
+    $isHomePage = $canonicalPath === '';
     $documentRobots = trim((string) ($metaRobots ?? ''));
     if ($documentRobots === '') {
         $noindexPrefixes = ['admin', 'dev', 'staff', 'cart', 'wishlist', 'address', 'login', 'register', 'verify', 'account', 'order', 'orderdetail', 'invoice', 'shipping', 'payment', 'find', 'search'];
@@ -174,6 +176,59 @@
         }
     }
     ?>
+    <?php if ($isHomePage) : ?>
+    <?php
+    $organizationId = $siteBaseUrl . '#organization';
+    $siteIdentity = [
+        '@context' => 'https://schema.org',
+        '@graph' => [
+            [
+                '@type' => 'OnlineStore',
+                '@id' => $organizationId,
+                'name' => 'Ilena Furniture',
+                'alternateName' => ['ILENA', 'I L E N A'],
+                'legalName' => 'CV Catur Bhakti Mandiri',
+                'url' => $siteBaseUrl,
+                'logo' => [
+                    '@type' => 'ImageObject',
+                    'url' => base_url('img/logo/N.png'),
+                    'width' => 161,
+                    'height' => 160,
+                ],
+                'image' => base_url('img/logo/N.png'),
+                'description' => 'Ilena Furniture adalah merek furniture modern dari CV Catur Bhakti Mandiri, produsen furniture berbahan kayu di Semarang, Jawa Tengah, untuk kebutuhan rumah, perkantoran, dan perhotelan.',
+                'slogan' => 'Mulai dari rumah, tercipta senyum ramah.',
+                'knowsAbout' => ['Furniture rumah', 'Furniture perkantoran', 'Furniture perhotelan', 'Desain interior'],
+                'email' => 'cs@ilenafurniture.com',
+                'telephone' => '+628112938158',
+                'address' => [
+                    '@type' => 'PostalAddress',
+                    'streetAddress' => 'Jalan Lingkar Taman Industri, Jatibarang, Mijen',
+                    'addressLocality' => 'Semarang',
+                    'addressRegion' => 'Jawa Tengah',
+                    'addressCountry' => 'ID',
+                ],
+                'contactPoint' => [
+                    '@type' => 'ContactPoint',
+                    'contactType' => 'customer service',
+                    'email' => 'cs@ilenafurniture.com',
+                    'telephone' => '+628112938158',
+                ],
+            ],
+            [
+                '@type' => 'WebSite',
+                '@id' => $siteBaseUrl . '#website',
+                'url' => $siteBaseUrl,
+                'name' => 'Ilena Furniture',
+                'alternateName' => 'ILENA',
+                'inLanguage' => 'id-ID',
+                'publisher' => ['@id' => $organizationId],
+            ],
+        ],
+    ];
+    ?>
+    <script type="application/ld+json"><?= json_encode($siteIdentity, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?></script>
+    <?php endif; ?>
     <?php if (isset($produk['nama'], $produk['id']) && is_array($produk)) : ?>
     <?php
     $schemaVariantRows = is_array($produk['varian'] ?? null) ? $produk['varian'] : [];
