@@ -20,6 +20,10 @@
   const soundButton = widget.querySelector('[data-chat-sound]');
   const suggestions = widget.querySelector('.ilena-chat-suggestions');
   const teaser = widget.querySelector('[data-chat-greeting]');
+  const wawaImageBase = widget.dataset.wawaImageBase || '';
+  const wawaHeaderAvatar = widget.querySelector('[data-wawa-avatar="header"]');
+  const wawaGreetingAvatar = widget.querySelector('[data-wawa-avatar="greeting"]');
+  const wawaTypingAvatar = widget.querySelector('[data-wawa-avatar="typing"]');
   const waLink = widget.querySelector('[data-kbot-wa]');
   const csrf = form?.querySelector('input[type="hidden"]');
   if (!panel || !toggle || !form || !input || !csrf) return;
@@ -42,12 +46,54 @@
   let arrivalSoundPending = false;
   let arrivalSoundPlayed = false;
   let audioContext = null;
+  let greetingAvatarFile = '';
+  const wawaAvatarPools = {
+    greeting: ['wawa1-sapaan', 'wawa2-sapaan'],
+    thinking: ['wawa1-berfikir', 'wawa2-berfikir'],
+    response: ['wawa1-respon', 'wawa1-mencatat', 'wawa2-solusi'],
+    note: ['wawa1-mencatat'],
+    unsure: ['wawa2-binggung'],
+    gratitude: ['wawa1-terimakasih'],
+    happy: ['wawa1-senang', 'wawa2-senang'],
+    solved: ['wawa2-sip'],
+    solution: ['wawa2-solusi'],
+  };
+  const wawaAvatarCursors = new Map();
   let pollTimer = null;
   let launcherIdleTimer = null;
   let lastActivityRefresh = 0;
 
   const safeText = (value) => String(value ?? '');
   const cleanChatCopy = (value) => safeText(value).replace(/^(?:saya\s+memahami\s+(?:pertanyaan|pesan|bahasa)\b[^.!?]{0,240}(?:bahasa\s+indonesia|dalam\s+bahasa\s+indonesia)[^.!?]*[.!?]\s*)+/iu, '').trim();
+  function nextWawaAvatar(mood) {
+    const pool = wawaAvatarPools[mood] || wawaAvatarPools.response;
+    const index = wawaAvatarCursors.get(mood) ?? Math.floor(Math.random() * pool.length);
+    wawaAvatarCursors.set(mood, (index + 1) % pool.length);
+    return pool[index % pool.length];
+  }
+  function applyWawaAvatar(image, file) {
+    if (!image || !file || !wawaImageBase || image.dataset.wawaFile === file) return;
+    image.dataset.wawaFile = file;
+    image.src = wawaImageBase + encodeURIComponent(file) + '.webp';
+  }
+  function setWawaHeader(mood, file = '') {
+    applyWawaAvatar(wawaHeaderAvatar, file || nextWawaAvatar(mood));
+  }
+  function assistantAvatarMood(message, metadata) {
+    const reason = safeText(metadata?.fallbackReason);
+    const copy = cleanChatCopy(message.body || '').toLocaleLowerCase('id-ID');
+    if (metadata?.type === 'kak_wawa_resolved') return 'solved';
+    if (metadata?.type === 'kak_wawa_rating_prompt') return 'greeting';
+    if (metadata?.type === 'kak_wawa_rating_thanks') return 'gratitude';
+    if (['no_retrieval_evidence', 'provider_request_failed', 'provider_http_error', 'provider_empty'].includes(reason)) return 'unsure';
+    if (/^(halo|hai|hi|selamat pagi|selamat siang|selamat sore|selamat malam)\b|ada yang bisa.{0,40}bantu/.test(copy)) return 'greeting';
+    if (/terima kasih|terimakasih|sama-sama|sama sama/.test(copy)) return 'gratitude';
+    if (/tersimpan|sudah dicatat|saya catat|kami catat|diteruskan ke tim/.test(copy)) return 'note';
+    if (Array.isArray(metadata?.products) && metadata.products.length) return 'solution';
+    if (/senang|berhasil|sudah cukup|sip, kak/.test(copy)) return 'happy';
+    if (/pilihan|rekomendasi|solusi|cara yang bisa/.test(copy)) return 'solution';
+    return 'response';
+  }
   const currency = (value) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(value) || 0);
   function parseUtcChatTimestamp(value) {
     const match = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})$/.exec(String(value || '').trim());
@@ -164,7 +210,7 @@
         const gain = audioContext.createGain();
         oscillator.type = 'sine'; oscillator.frequency.value = frequency;
         gain.gain.setValueAtTime(0.0001, start + index * 0.1);
-        gain.gain.exponentialRampToValueAtTime(0.055, start + index * 0.1 + 0.025);
+        gain.gain.exponentialRampToValueAtTime(0.085, start + index * 0.1 + 0.025);
         gain.gain.exponentialRampToValueAtTime(0.0001, start + index * 0.1 + 0.16);
         oscillator.connect(gain); gain.connect(audioContext.destination);
         oscillator.start(start + index * 0.1); oscillator.stop(start + index * 0.1 + 0.17);
@@ -187,7 +233,7 @@
           oscillator.type = 'sine';
           oscillator.frequency.value = frequency;
           gain.gain.setValueAtTime(.0001, start + offset);
-          gain.gain.exponentialRampToValueAtTime(.034, start + offset + .025);
+          gain.gain.exponentialRampToValueAtTime(.055, start + offset + .025);
           gain.gain.exponentialRampToValueAtTime(.0001, start + offset + .19);
           oscillator.connect(gain); gain.connect(context.destination);
           oscillator.start(start + offset); oscillator.stop(start + offset + .2);
@@ -218,6 +264,16 @@
     bubble.className = 'ilena-chat-bubble' + (message.sender_type === 'visitor' ? ' is-visitor' : message.sender_type === 'system' ? ' is-system' : message.sender_type === 'admin' ? ' is-staff' : ' is-assistant');
     const body = document.createElement('div'); body.textContent = cleanChatCopy(message.body); bubble.append(body);
     const meta = message.metadata && typeof message.metadata === 'object' ? message.metadata : {};
+    let messageNode = bubble;
+    if (message.sender_type === 'assistant') {
+      const avatarFile = nextWawaAvatar(assistantAvatarMood(message, meta));
+      const row = document.createElement('div'); row.className = 'ilena-chat-message-row';
+      const avatar = document.createElement('span'); avatar.className = 'ilena-chat-message-avatar'; avatar.setAttribute('aria-hidden', 'true');
+      const portrait = document.createElement('img'); portrait.alt = ''; portrait.width = 360; portrait.height = 360; portrait.loading = 'lazy'; portrait.decoding = 'async';
+      applyWawaAvatar(portrait, avatarFile);
+      avatar.append(portrait); row.append(avatar, bubble); messageNode = row;
+      applyWawaAvatar(wawaHeaderAvatar, avatarFile);
+    }
     if (Array.isArray(meta.products) && meta.products.length) {
       const products = document.createElement('div'); products.className = 'ilena-chat-products';
       meta.products.slice(0, 4).forEach(product => products.append(renderProduct(product)));
@@ -260,7 +316,7 @@
             const result = await api('/chat/rating', { method: 'POST', body: JSON.stringify({ conversationKey: currentConversationKey, rating: value }) });
             rating.classList.add('is-submitted');
             rating.setAttribute('aria-label', 'Penilaian ' + result.rating + ' dari 5 tersimpan');
-            if (result.message) appendMessage(result.message);
+            if (result.message) appendMessage({ ...result.message, metadata: { type: 'kak_wawa_rating_thanks' } });
             else showNotice('Penilaian Kakak sudah tersimpan. Terima kasih.');
           } catch (error) {
             rating.querySelectorAll('button').forEach(item => { item.disabled = false; });
@@ -284,7 +340,7 @@
         try {
           const result = await api('/chat/resolve', { method: 'POST', body: JSON.stringify({ conversationKey: currentConversationKey }) });
           updateStatus(result.status, humanAvailable);
-          if (result.message) appendMessage(result.message);
+          if (result.message) appendMessage({ ...result.message, metadata: { type: 'kak_wawa_resolved' } });
         } catch (error) {
           actions.querySelectorAll('button').forEach(button => { button.disabled = false; });
           showNotice(error?.message || 'Pilihan Kakak belum tersimpan. Silakan coba kembali.');
@@ -302,7 +358,7 @@
     if (messageTime) time.dateTime = messageTime.toISOString();
     time.textContent = formatChatTimestamp(message.created_at || '');
     bubble.append(time);
-    transcript.insertBefore(bubble, typing);
+    transcript.insertBefore(messageNode, typing);
     transcript.scrollTop = transcript.scrollHeight;
     if (message.sender_type === 'assistant' || message.sender_type === 'admin') {
       waitingForReply = false;
@@ -317,8 +373,10 @@
     }
   }
   function updateStatus(value, availability = humanAvailable) {
+    const previousStatus = currentStatus;
     currentStatus = value || 'ai';
     humanAvailable = availability;
+    if (currentStatus === 'human_waiting' && previousStatus !== 'human_waiting') setWawaHeader('note');
     if (status) {
       if (currentStatus === 'human_waiting') status.textContent = humanAvailable ? 'Tim Ilena segera bergabung' : 'CS sedang tidak tersedia';
       else if (currentStatus === 'human') status.textContent = 'Anda sedang dilayani tim Ilena';
@@ -335,6 +393,12 @@
     if (!typing) return;
     typing.hidden = !value;
     if (typingCopy) typingCopy.textContent = copy;
+    if (value) {
+      const mood = /menunggu tim|diteruskan ke tim/i.test(copy) ? 'note' : 'thinking';
+      const avatarFile = nextWawaAvatar(mood);
+      applyWawaAvatar(wawaTypingAvatar, avatarFile);
+      applyWawaAvatar(wawaHeaderAvatar, avatarFile);
+    }
     if (value) transcript.scrollTop = transcript.scrollHeight;
   }
   function renderMessages(items, notify = false) { (items || []).forEach(item => appendMessage(item, notify)); }
@@ -495,7 +559,10 @@
   }
 
   function openChat() {
-    opened = true; panel.classList.remove('d-none');
+    opened = true;
+    if (greetingAvatarFile) setWawaHeader('greeting', greetingAvatarFile);
+    else setWawaHeader('greeting');
+    panel.classList.remove('d-none');
     if (launcherIdleTimer) window.clearTimeout(launcherIdleTimer);
     launcherIdleTimer = null;
     widget.classList.remove('is-chat-idle');
@@ -612,6 +679,8 @@
   if (teaser && !greetingSeen) {
     window.setTimeout(() => {
       if (opened || document.hidden) return;
+      greetingAvatarFile = nextWawaAvatar('greeting');
+      applyWawaAvatar(wawaGreetingAvatar, greetingAvatarFile);
       teaser.hidden = false;
       arrivalSoundPending = true;
       toggle.classList.add('is-arrival');

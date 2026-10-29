@@ -9914,3 +9914,23 @@ body.ilena-storefront .ilena-chat-brand__mark--wawa img { width: 36px; height: 3
     82% { transform: translateY(-3px) rotate(-2deg); }
     89% { transform: translateY(0) rotate(2deg); }
 }
+body.ilena-storefront [data-wawa-avatar]:not([src]) { visibility: hidden; }
+body.ilena-storefront .ilena-chat-brand__mark--wawa { overflow: hidden; background: #f3e8df; }
+body.ilena-storefront .ilena-chat-brand__mark--wawa img { display: block; width: 38px; height: 38px; object-fit: contain; }
+body.ilena-storefront .ilena-chat-message-row { display: flex; width: 100%; align-items: flex-start; gap: 7px; }
+body.ilena-storefront .ilena-chat-message-avatar {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    margin-top: 5px;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 50%;
+    background: #f3e8df;
+}
+body.ilena-storefront .ilena-chat-message-avatar img { display: block; width: 42px; height: 42px; object-fit: contain; }
+body.ilena-storefront .ilena-chat-message-row .ilena-chat-bubble.is-assistant { width: auto; max-width: none; min-width: 0; flex: 1 1 auto; }
+body.ilena-storefront .ilena-chat-typing__avatar { display: block; width: 31px; height: 31px; flex: 0 0 31px; border-radius: 50%; background: #f3e8df; object-fit: contain; }
+body.ilena-storefront .ilena-chat-greeting-teaser__mark { overflow: hidden; background: #f3e8df; }
+body.ilena-storefront .ilena-chat-greeting-teaser__mark img { object-fit: contain; }

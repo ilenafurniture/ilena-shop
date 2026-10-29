@@ -384,17 +384,17 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
     </div>
 
     <script defer src="<?= base_url('js/bootstrap.bundle.min.js'); ?>"></script>
-    <div class="container-melayang d-flex gap-2 align-items-end <?= isset($geser_container_melayang) ? 'geser' : ''; ?>" data-ilena-chat-widget data-context-product="<?= isset($produk) && is_array($produk) && isset($produk['id']) ? esc((string)$produk['id'], 'attr') : ''; ?>">
+    <div class="container-melayang d-flex gap-2 align-items-end <?= isset($geser_container_melayang) ? 'geser' : ''; ?>" data-ilena-chat-widget data-wawa-image-base="<?= esc(base_url('img/fotowawa/optimized/'), 'attr'); ?>" data-context-product="<?= isset($produk) && is_array($produk) && isset($produk['id']) ? esc((string)$produk['id'], 'attr') : ''; ?>">
         <section id="container-greeting-card" class="ilena-chat-greeting d-none" aria-label="Chat dengan Ilena">
             <div class="ilena-chat-greeting__panel">
                 <header class="ilena-chat-greeting__heading">
-                    <div class="ilena-chat-brand"><span class="ilena-chat-brand__mark ilena-chat-brand__mark--wawa" aria-hidden="true"><img src="<?= base_url('img/kak-wawa-welcome.webp'); ?>" alt="" loading="lazy" decoding="async"></span><span class="ilena-chat-brand__copy"><p>Kak Wawa</p><small><i aria-hidden="true"></i><span data-chat-status>Siap menemani Anda memilih</span></small></span></div>
+                    <div class="ilena-chat-brand"><span class="ilena-chat-brand__mark ilena-chat-brand__mark--wawa" aria-hidden="true"><img data-wawa-avatar="header" alt="" width="360" height="360" loading="lazy" decoding="async"></span><span class="ilena-chat-brand__copy"><p>Kak Wawa</p><small><i aria-hidden="true"></i><span data-chat-status>Siap menemani Anda memilih</span></small></span></div>
                     <button type="button" class="ilena-chat-sound" data-chat-sound aria-pressed="true" aria-label="Matikan suara notifikasi" title="Suara notifikasi aktif"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Zm4 4a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12"/></svg></button>
                     <button type="button" aria-label="Tutup chat" data-close-chat-greeting><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
                 </header>
                 <div class="ilena-chat-transcript" data-chat-messages role="log" aria-live="polite" aria-relevant="additions" aria-atomic="false" aria-label="Riwayat chat">
                     <div class="ilena-chat-welcome"><p class="ilena-chat-welcome__eyebrow">Selamat datang di Ilena</p><h2>Mari temukan furniture yang terasa pas.</h2><p>Ceritakan ruang, ukuran, warna, atau anggaran Anda. Kami siap membantu.</p><div class="ilena-chat-suggestions" aria-label="Mulai dari sini"><button type="button" data-chat-suggestion="Bantu saya cari sofa">Cari sofa</button><button type="button" data-chat-suggestion="Saya mencari meja untuk ruang makan">Meja makan</button><button type="button" data-chat-suggestion="Tampilkan pilihan sesuai budget saya">Sesuai anggaran</button></div></div>
-                    <div class="ilena-chat-typing" data-chat-typing role="status" aria-live="polite" hidden><span aria-hidden="true"><i></i><i></i><i></i></span><b data-chat-typing-copy>Kak Wawa sedang mengetik</b></div>
+                    <div class="ilena-chat-typing" data-chat-typing role="status" aria-live="polite" hidden><img class="ilena-chat-typing__avatar" data-wawa-avatar="typing" alt="" width="360" height="360" loading="lazy" decoding="async"><span aria-hidden="true"><i></i><i></i><i></i></span><b data-chat-typing-copy>Kak Wawa sedang mengetik</b></div>
                 </div>
                 <form class="ilena-chat-compose" data-chat-form>
                     <?= csrf_field(); ?>
@@ -414,7 +414,7 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
         </section>
         <div class="ilena-chat-dock d-flex flex-column gap-2">
             <div class="ilena-chat-greeting-teaser" data-chat-greeting role="group" aria-label="Sapaan Kak Wawa" aria-live="polite" hidden>
-                <span class="ilena-chat-greeting-teaser__mark" aria-hidden="true"><img src="<?= base_url('img/kak-wawa-welcome.webp'); ?>" alt="" width="512" height="512" loading="lazy" decoding="async"></span>
+                <span class="ilena-chat-greeting-teaser__mark" aria-hidden="true"><img data-wawa-avatar="greeting" alt="" width="360" height="360" loading="lazy" decoding="async"></span>
                 <div class="ilena-chat-greeting-teaser__copy"><span class="ilena-chat-greeting-teaser__eyebrow"><i aria-hidden="true"></i> Teman belanja ILENA</span><strong>Butuh ide untuk ruang Kakak?</strong><p>Ceritakan saja, Wawa bantu carikan.</p></div>
                 <button type="button" data-greeting-open aria-label="Mulai chat dengan Kak Wawa">Tanya Kak Wawa</button>
                 <button type="button" data-greeting-dismiss aria-label="Tutup sapaan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
