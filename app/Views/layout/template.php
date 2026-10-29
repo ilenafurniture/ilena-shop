@@ -135,34 +135,17 @@
     </script> -->
     <!-- End Google Tag Manager -->
 
-    <?php if (isset($produk)) {
-        if (isset($produk['nama'])) { ?>
-    <script type="application/ld+json">
-    {
-        "@context": "https://ilenafurniture.com/",
-        "@type": "produk",
-        "name": "<?= $produk['nama'] ?>",
-        "image": "https://ilenafurniture.com/viewpic/<?= $produk['id'] ?>",
-        "description": "<?= $produk['deskripsi']['deskripsi'] ?>",
-        "sku": "<?= $produk['id']; ?>",
-        "offers": {
-            "@type": "Offer",
-            "priceCurrency": "IDR",
-            "price": "<?= $produk['harga'] ?>",
-            "itemCondition": "New",
-            "availability": "in_stok"
-        }
-    }
-    </script>
-    <?php }
-    } ?>
-
     <?php
     $documentTitle = trim((string) ($metaTitle ?? ''));
     if ($documentTitle === '') {
         $documentTitle = trim((string) ($title ?? 'Ilena Furniture')) . ' | I L E N A';
     }
-    $documentDescription = trim((string) ($metaDeskripsi ?? 'Toko online Ilena Furniture menghadirkan furniture untuk ruang tamu, kamar tidur, dan kebutuhan rumah Anda.'));
+    $documentDescription = trim((string) ($metaDeskripsi ?? ''));
+    if ($documentDescription === '') {
+        $descriptionSubject = trim((string) ($title ?? 'Ilena Furniture'));
+        $documentDescription = ($descriptionSubject !== '' ? $descriptionSubject . ' — ' : '')
+            . 'Informasi produk, koleksi, dan layanan dari Ilena Furniture untuk melengkapi rumah Anda.';
+    }
     $canonicalPath = trim((string) service('uri')->getPath(), '/');
     $defaultCanonicalUrl = $canonicalPath === '' ? rtrim(base_url(), '/') . '/' : site_url($canonicalPath);
     $documentUrl = trim((string) ($metaUrl ?? $defaultCanonicalUrl));
@@ -171,7 +154,58 @@
     }
     $documentImage = trim((string) ($metaImage ?? 'https://ilenafurniture.com/img/logo/N.png'));
     $documentImageAlt = trim((string) ($metaImageAlt ?? 'Ilena Furniture'));
+    $documentRobots = trim((string) ($metaRobots ?? ''));
+    if ($documentRobots === '') {
+        $noindexPrefixes = ['admin', 'dev', 'staff', 'cart', 'wishlist', 'address', 'login', 'register', 'verify', 'account', 'order', 'orderdetail', 'invoice', 'shipping', 'payment', 'find', 'search'];
+        $robotsPath = strtolower($canonicalPath);
+        $documentRobots = 'index, follow';
+        foreach ($noindexPrefixes as $prefix) {
+            if ($robotsPath === $prefix || str_starts_with($robotsPath, $prefix . '/')) {
+                $documentRobots = 'noindex, follow';
+                break;
+            }
+        }
+        $requestQuery = service('request')->getGet();
+        if ($canonicalPath === 'product' && array_intersect(['koleksi', 'jenis', 'ruang', 'q', 'cari'], array_keys($requestQuery))) {
+            $documentRobots = 'noindex, follow';
+        }
+        if ($canonicalPath === 'partner' && array_intersect(['q', 'city', 'page'], array_keys($requestQuery))) {
+            $documentRobots = 'noindex, follow';
+        }
+    }
     ?>
+    <?php if (isset($produk['nama'], $produk['id']) && is_array($produk)) : ?>
+    <?php
+    $schemaVariantRows = is_array($produk['varian'] ?? null) ? $produk['varian'] : [];
+    $schemaStock = 0;
+    foreach ($schemaVariantRows as $schemaVariant) {
+        if (is_array($schemaVariant)) $schemaStock += max(0, (int) ($schemaVariant['stok'] ?? 0));
+    }
+    $schemaPrice = \App\Services\CatalogPricing::unitPrice($produk);
+    $schemaDescription = trim((string) preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags((string) ($produk['deskripsi']['deskripsi'] ?? '')), ENT_QUOTES | ENT_HTML5, 'UTF-8')));
+    $schemaProduct = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Product',
+        'name' => (string) $produk['nama'],
+        'image' => $documentImage,
+        'sku' => (string) $produk['id'],
+        'brand' => ['@type' => 'Brand', 'name' => 'Ilena Furniture'],
+        'category' => (string) ($produk['kategori'] ?? 'Furniture'),
+    ];
+    if ($schemaDescription !== '') $schemaProduct['description'] = $schemaDescription;
+    if ($schemaPrice > 0) {
+        $schemaProduct['offers'] = [
+            '@type' => 'Offer',
+            'url' => $documentUrl,
+            'priceCurrency' => 'IDR',
+            'price' => $schemaPrice,
+            'itemCondition' => 'https://schema.org/NewCondition',
+            'availability' => $schemaStock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        ];
+    }
+    ?>
+    <script type="application/ld+json"><?= json_encode($schemaProduct, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?></script>
+    <?php endif; ?>
     <meta property="og:title" content="<?= esc($documentTitle, 'attr'); ?>">
     <meta property="og:description" content="<?= esc($documentDescription, 'attr'); ?>">
     <meta property="og:image" content="<?= esc($documentImage, 'attr'); ?>">
@@ -188,12 +222,9 @@
     <meta name="author" content="Ilena Furniture">
     <meta name="title" content="<?= esc($documentTitle, 'attr'); ?>">
     <meta name="description" content="<?= esc($documentDescription, 'attr'); ?>">
-    <?php if (isset($metaKeyword) && trim((string) $metaKeyword) !== '') : ?>
-    <meta name="keywords" content="<?= esc($metaKeyword, 'attr'); ?>">
-    <?php endif; ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:site_name" content="Ilena Furniture">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="<?= esc($documentRobots, 'attr'); ?>">
     <link rel="canonical" href="<?= esc($documentUrl, 'attr'); ?>">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<?= esc($documentTitle, 'attr'); ?>">

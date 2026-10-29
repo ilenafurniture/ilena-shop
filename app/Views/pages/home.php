@@ -527,7 +527,7 @@ function closeSecondAd() {
     <a class="d-flex align-items-center ps-5 zoom-wrapper" href="<?= base_url('/product/bufet-tv-ilena-plint-base') ?>"
         style="text-decoration:none; flex:1; position: relative;">
         <img loading="lazy" decoding="async" src="<?= $homeImage('1748320128043.jpg', 800) ?>" srcset="<?= esc($homeImageSrcset('1748320128043.jpg'), 'attr') ?>" sizes="(max-width: 700px) 90vw, 33vw"
-            alt="Background Image"
+            alt="Furniture ruang keluarga dari koleksi Plint Base Ilena"
             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
         <div>
             <p class="text-light">Make you feel</p>
@@ -540,7 +540,7 @@ function closeSecondAd() {
             href="<?= base_url('/product/coffee-table-ilena-cody') ?>"
             style="text-decoration:none; flex: 1; position: relative;">
             <img loading="lazy" decoding="async" src="<?= $homeImage('1748318610868.jpg', 800) ?>" srcset="<?= esc($homeImageSrcset('1748318610868.jpg'), 'attr') ?>" sizes="(max-width: 700px) 90vw, 33vw"
-                alt="Background Image"
+                alt="Meja kopi Cody dengan desain modern Ilena"
                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
             <div>
                 <h1 class="teks-besar text-light mb-3">Luxury</h1>
@@ -553,7 +553,7 @@ function closeSecondAd() {
         <a class="d-flex" style="text-decoration:none; flex: 1" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>">
             <div class="d-flex align-items-center ps-5 zoom-wrapper" style="flex:1; position: relative;">
                 <img loading="lazy" decoding="async" src="<?= $homeImage('1742973475864.png', 800) ?>" srcset="<?= esc($homeImageSrcset('1742973475864.png'), 'attr') ?>" sizes="(max-width: 700px) 90vw, 33vw"
-                    alt="Background Image"
+                    alt="Bufet TV Cabana untuk ruang keluarga"
                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
                 <div>
                     <h1 class="teks-besar text-light mb-3">Simply</h1>
@@ -1335,7 +1335,7 @@ function modalseries() {
 <div id="ruangan" class="container show-flex-ke-hide gap-3 my-5 ilena-home-room-grid" data-home-scroll-reveal style="width:100%;">
     <a href="/product?ruang=tamu" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
         <div class="zoom-wrapper mb-2">
-            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445399641.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445399641.webp'), 'attr') ?>" sizes="(max-width: 700px) 80vw, 34vw" alt=""
+            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445399641.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445399641.webp'), 'attr') ?>" sizes="(max-width: 700px) 80vw, 34vw" alt="Inspirasi furniture untuk ruang tamu Ilena"
                 style="flex: 1; width: 100%; object-fit: cover;">
         </div>
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
@@ -1350,7 +1350,7 @@ function modalseries() {
     </a>
     <a href="/product?ruang=tidur" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
         <div class="zoom-wrapper mb-2">
-            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445431983.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445431983.webp'), 'attr') ?>" sizes="(max-width: 700px) 80vw, 34vw" alt=""
+            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445431983.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445431983.webp'), 'attr') ?>" sizes="(max-width: 700px) 80vw, 34vw" alt="Inspirasi furniture untuk kamar tidur Ilena"
                 style="flex: 1; width: 100%; object-fit: cover;">
         </div>
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
@@ -1362,7 +1362,7 @@ function modalseries() {
     </a>
     <a href="/product?ruang=keluarga" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
         <div class="zoom-wrapper mb-2">
-            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445475511.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445475511.webp'), 'attr') ?>" sizes="(max-width: 700px) 80vw, 34vw" alt=""
+            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445475511.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445475511.webp'), 'attr') ?>" sizes="(max-width: 700px) 80vw, 34vw" alt="Inspirasi furniture untuk ruang keluarga Ilena"
                 style="flex: 1; width: 100%; object-fit: cover;">
         </div>
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
@@ -1394,7 +1394,7 @@ function modalseries() {
     <div class="d-flex gap-1 px-5 pt-5 pb-4" style="width: fit-content;">
         <a href="/product?ruang=tamu" class="ilena-home-room-card"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
-            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445542692.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445542692.webp'), 'attr') ?>" sizes="80vw" alt=""
+            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445542692.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445542692.webp'), 'attr') ?>" sizes="80vw" alt="Inspirasi ruang tamu dengan furniture Ilena"
                 style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
             <div class="d-flex gap-4 justify-content-center mb-2">
                 <h5 style="font-weight: 500;" class="m-0">L</h5>
@@ -1408,7 +1408,7 @@ function modalseries() {
         </a>
         <a href="/product?ruang=tidur" class="ilena-home-room-card"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
-            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445603554.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445603554.webp'), 'attr') ?>" sizes="80vw" alt=""
+            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445603554.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445603554.webp'), 'attr') ?>" sizes="80vw" alt="Inspirasi kamar tidur dengan furniture Ilena"
                 style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
             <div class="d-flex gap-4 justify-content-center mb-2">
                 <h5 style="font-weight: 500;" class="m-0">B</h5>
@@ -1419,7 +1419,7 @@ function modalseries() {
         </a>
         <a href="/product?ruang=keluarga" class="ilena-home-room-card"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
-            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445633826.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445633826.webp'), 'attr') ?>" sizes="80vw" alt=""
+            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445633826.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445633826.webp'), 'attr') ?>" sizes="80vw" alt="Inspirasi ruang lounge dengan furniture Ilena"
                 style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
             <div class="d-flex gap-4 justify-content-center mb-2">
                 <h5 style="font-weight: 500;" class="m-0">L</h5>

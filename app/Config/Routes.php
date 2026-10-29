@@ -7,6 +7,7 @@ use CodeIgniter\Router\RouteCollection;
  */
 
 // ==================== Frontend ====================
+$routes->get('/sitemap.xml', 'Pages::sitemap');
 $routes->get('/faq', 'Pages::faq', ['filter' => 'customerFilter']);
 
 // Artikel (frontend)

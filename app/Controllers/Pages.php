@@ -217,19 +217,88 @@ class Pages extends BaseController
 
         return base_url('product-cover/' . $id) . '?slot=' . rawurlencode($slot) . '&size=300' . ($version !== '' ? '&v=' . rawurlencode($version) : '');
     }
+
+    protected function seoDescription(string $source, string $fallback): string
+    {
+        $text = html_entity_decode(strip_tags($source), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = trim((string) preg_replace('/\s+/u', ' ', $text));
+        if ($text === '') return $fallback;
+        if (mb_strlen($text, 'UTF-8') > 158) {
+            $text = rtrim(mb_substr($text, 0, 155, 'UTF-8')) . '…';
+        }
+        return $text;
+    }
+
     public function index()
     {
         $sliders = $this->gambarHeaderModel->getPublicHomeSlides();
         $homeAssets = new HomeAssetManager();
+        $homePublicAssets = $homeAssets->responsivePublicUrls();
         $data = [
             'title' => 'Home',
             'navbar' => $this->getNavbarData(),
-            'metaKeyword' => 'ilena Furniture, Toko Furniture, Sorely Ilena Semarang, Cabana Ilena Semarang, Orca Ilena Semarang, Plint Base Ilena Semarang, Cutout Ilena Semarang, Living Room Ilena Semarang, Bed Room Ilena Semarang, Lounge Room Ilena Semarang',
+            'metaTitle' => 'Furniture Modern & Stylish untuk Rumah | Ilena Furniture',
+            'metaDeskripsi' => 'Temukan furniture modern untuk ruang tamu, kamar tidur, dan ruang keluarga di Ilena. Jelajahi koleksi pilihan untuk menghadirkan rumah yang nyaman dan berkarakter.',
+            'metaImage' => $homePublicAssets['1742972542166.png']['1200'] ?? base_url('img/logo/N.png'),
+            'metaImageAlt' => 'Inspirasi ruang dan furniture Ilena Furniture',
             'sliders' => $sliders,
-            'homeAssets' => $homeAssets->responsivePublicUrls(),
+            'homeAssets' => $homePublicAssets,
             'msg_active' => session()->getFlashdata('msg_active') ? session()->getFlashdata('msg_active') : false,
         ];
         return view('pages/home', $data);
+    }
+
+    /** Serve a fresh sitemap containing only public canonical content URLs. */
+    public function sitemap()
+    {
+        $cacheKey = 'ilena_public_sitemap_v2';
+        $xml = cache()->get($cacheKey);
+        if (!is_string($xml) || $xml === '') {
+            $base = rtrim(base_url(), '/') . '/';
+            $urls = [];
+            foreach (['', 'product', 'tentang', 'partner', 'syarat', 'kebijakan', 'visimisi', 'iklan', 'faq', 'article'] as $path) {
+                $urls[$base . $path] = null;
+            }
+
+            $products = $this->barangModel
+                ->select('nama, tgl_update')
+                ->where('active', '1')
+                ->orderBy('nama', 'asc')
+                ->findAll();
+            foreach ($products as $product) {
+                $name = trim((string) ($product['nama'] ?? ''));
+                if ($name === '') continue;
+                $slug = strtolower(str_replace(' ', '-', $name));
+                $url = $base . 'product/' . rawurlencode($slug);
+                if (!array_key_exists($url, $urls)) {
+                    $updatedAt = strtotime((string) ($product['tgl_update'] ?? ''));
+                    $urls[$url] = $updatedAt !== false ? gmdate('Y-m-d', $updatedAt) : null;
+                }
+            }
+
+            foreach ($this->artikelModel->select('path, waktu')->findAll() as $article) {
+                $slug = trim((string) ($article['path'] ?? ''));
+                if ($slug === '') continue;
+                $url = $base . 'article/' . rawurlencode($slug);
+                $updatedAt = strtotime((string) ($article['waktu'] ?? ''));
+                $urls[$url] = $updatedAt !== false ? gmdate('Y-m-d', $updatedAt) : null;
+            }
+
+            $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+            $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+            foreach ($urls as $url => $lastmod) {
+                $xml .= "  <url><loc>" . htmlspecialchars($url, ENT_XML1 | ENT_QUOTES, 'UTF-8') . '</loc>';
+                if ($lastmod !== null) $xml .= '<lastmod>' . $lastmod . '</lastmod>';
+                $xml .= "</url>\n";
+            }
+            $xml .= "</urlset>\n";
+            cache()->save($cacheKey, $xml, 3600);
+        }
+
+        return $this->response
+            ->setContentType('application/xml', 'UTF-8')
+            ->setHeader('Cache-Control', 'public, max-age=3600')
+            ->setBody($xml);
     }
     public function indexGalih()
     {
@@ -742,6 +811,8 @@ class Pages extends BaseController
             }
             $product['varian'] = array_values($variantsByName);
             $ind_nama = $variantIndex;
+            $metaImageSlots = preg_split('/\s*,\s*/', (string) ($product['varian'][0]['urutan_gambar'] ?? '1')) ?: ['1'];
+            $metaImageSlot = preg_replace('/[^0-9]/', '', (string) ($metaImageSlots[0] ?? '1')) ?: '1';
 
             $produkSejenis = $this->barangModel
                 ->where(['subkategori' => $product['subkategori']])
@@ -768,8 +839,10 @@ class Pages extends BaseController
                 'produkSejenis' => $seluruhBarangFilter,
                 'produkSemua'   => $productsemua,
                 'indexNama'     => $ind_nama,
-                'metaDeskripsi' => $product['nama'] . ' ilena futniture Ilena Semarang',
-                'metaKeyword'   => $product['kategori'] . ' Ilena Semarang'
+                'metaTitle'     => ucwords($product['nama']) . ' | Ilena Furniture',
+                'metaDeskripsi' => $this->seoDescription((string) ($product['deskripsi']['deskripsi'] ?? ''), 'Lihat detail, harga, pilihan warna, dan ketersediaan ' . ucwords($product['nama']) . ' dari Ilena Furniture.'),
+                'metaImage'     => base_url('product-cover/' . rawurlencode((string) $product['id'])) . '?slot=' . rawurlencode($metaImageSlot) . '&size=1000',
+                'metaImageAlt'  => ucwords($product['nama']) . ' — furniture Ilena Furniture',
             ];
 
             // menambah pengunjung
@@ -805,6 +878,8 @@ class Pages extends BaseController
 
             $data = [
                 'title' => $titlePage,
+                'metaTitle' => ($jenisParam === 'diskon' ? 'Furniture Diskon' : ($jenisParam === 'bundling' ? 'Furniture Bundling' : 'Koleksi Furniture')) . ' | Ilena Furniture',
+                'metaDeskripsi' => 'Jelajahi furniture Ilena untuk berbagai ruang dan gaya hunian. Lihat detail produk, harga, pilihan warna, dan ketersediaannya.',
                 'navbar' => $this->getNavbarData(),
                 'apikey_img_ilena' => $this->apikey_img_ilena,
                 'produk' => $product,
@@ -884,7 +959,7 @@ class Pages extends BaseController
         ];
 
         $data = [
-            'title' => 'Produk Kami',
+            'title' => 'Produk ' . ucwords(str_replace('-', ' ', $kategori)),
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'produk' => $seluruhBarangFilter,
@@ -892,8 +967,8 @@ class Pages extends BaseController
             'koleksi' => $koleksi,
             'jenis' => $jenis,
             'kategori' => $kategori,
+            'metaTitle' => 'Furniture ' . ucwords(str_replace('-', ' ', $kategori)) . ' | Ilena Furniture',
             'metaDeskripsi' => $meta[$kategori]['deskripsi'],
-            'metaKeyword' => implode(',', $meta[$kategori]['keywords'])
         ];
         return view('pages/all', $data);
     }
@@ -5110,6 +5185,8 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Visi dan Misi',
+            'metaTitle' => 'Visi & Misi Ilena Furniture',
+            'metaDeskripsi' => 'Kenali visi, misi, dan nilai yang menjadi dasar Ilena Furniture dalam menghadirkan furniture yang nyaman, fungsional, dan berkarakter untuk rumah Anda.',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
         ];
@@ -5119,6 +5196,8 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'FAQ',
+            'metaTitle' => 'FAQ: Informasi Produk, Pesanan & Layanan | Ilena Furniture',
+            'metaDeskripsi' => 'Temukan jawaban tentang produk, pemesanan, pembayaran, pengiriman, dan layanan Ilena Furniture. Hubungi tim kami jika Anda membutuhkan bantuan lebih lanjut.',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
         ];
@@ -5203,6 +5282,7 @@ class Pages extends BaseController
                 'komen'             => json_decode($artikel['komen'], true),
                 'komenJson'         => $artikel['komen'],
                 'metaDeskripsi'     => $artikel['deskripsi'],
+                'metaTitle'         => $artikel['judul'] . ' | Artikel Ilena Furniture',
                 'metaKeyword'       => $artikel['keywords'],
                 'wishlist'          => $wishlist,
                 'bulan'             => $bulan
@@ -5226,6 +5306,8 @@ class Pages extends BaseController
 
             $data = [
                 'title'            => 'Artikel',
+                'metaTitle'        => 'Inspirasi Rumah & Furniture | Artikel Ilena Furniture',
+                'metaDeskripsi'    => 'Baca inspirasi penataan ruang, panduan memilih furniture, dan cerita seputar hunian dari Ilena Furniture.',
                 'navbar'           => $this->getNavbarData(),
                 'apikey_img_ilena' => $this->apikey_img_ilena,
                 'artikel'          => array_values(array_filter($artikel, function ($value, $key) {
@@ -5256,6 +5338,8 @@ class Pages extends BaseController
         }
         $data = [
             'title' => 'Artikel | ' . ucwords($category),
+            'metaTitle' => 'Artikel ' . ucwords($category) . ' | Ilena Furniture',
+            'metaDeskripsi' => 'Baca artikel dan inspirasi ' . strtolower($category) . ' untuk membantu Anda merancang ruang yang nyaman bersama Ilena Furniture.',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'artikel' => array_values(array_filter($artikel, function ($value, $key) {
@@ -5296,6 +5380,8 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Tentang Kami',
+            'metaTitle' => 'Tentang Ilena Furniture: Cerita & Nilai Kami',
+            'metaDeskripsi' => 'Kenali Ilena Furniture, perjalanan kami menghadirkan furniture modern, dan nilai yang menginspirasi setiap koleksi untuk rumah Anda.',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
         ];
@@ -5465,6 +5551,8 @@ class Pages extends BaseController
 
         $data = [
             'title' => 'Mitra Kami',
+            'metaTitle' => 'Lokasi Mitra & Showroom Ilena Furniture',
+            'metaDeskripsi' => 'Temukan mitra dan showroom Ilena Furniture, lihat lokasi di peta, lalu kunjungi untuk mengenal koleksi furniture kami lebih dekat.',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'partners' => $partners,
@@ -5557,6 +5645,8 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Kontak Kami',
+            'metaTitle' => 'Kontak Ilena Furniture',
+            'metaDeskripsi' => 'Hubungi tim Ilena Furniture untuk pertanyaan produk, pemesanan, kerja sama, atau bantuan layanan pelanggan.',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
         ];
@@ -5566,6 +5656,8 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Syarat & Ketentuan',
+            'metaTitle' => 'Syarat & Ketentuan | Ilena Furniture',
+            'metaDeskripsi' => 'Baca syarat dan ketentuan penggunaan website serta layanan belanja online Ilena Furniture.',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
         ];
@@ -5575,6 +5667,8 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Kebijakan Privasi',
+            'metaTitle' => 'Kebijakan Privasi | Ilena Furniture',
+            'metaDeskripsi' => 'Pelajari cara Ilena Furniture mengelola informasi dan privasi pengguna saat menggunakan website serta layanan kami.',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
         ];
