@@ -9306,6 +9306,26 @@ body.ilena-storefront.ilena-page--visimisi .ilena-mission-list li:nth-child(3) {
 }
 
 /* Subtle Ilena-colored motion graphic over the home hero photograph. */
+body.ilena-storefront.ilena-page--home.ilena-home-scroll-motion-ready [data-home-scroll-reveal] {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0);
+    transition: opacity 680ms cubic-bezier(.2,.7,.25,1), transform 760ms cubic-bezier(.2,.7,.25,1);
+    will-change: opacity, transform;
+}
+body.ilena-storefront.ilena-page--home.ilena-home-scroll-motion-ready [data-home-scroll-reveal].is-scroll-visible {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    will-change: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront.ilena-page--home [data-home-scroll-reveal] {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+        will-change: auto !important;
+    }
+}
+
 body.ilena-storefront.ilena-page--home .ilena-home-hero .show-flex-ke-hide,
 body.ilena-storefront.ilena-page--home .ilena-home-hero .hide-ke-show-flex {
     position: relative;

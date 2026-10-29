@@ -523,7 +523,7 @@ function closeSecondAd() {
     }
 }
 </style>
-<div class="show-flex-ke-hide align-items-stretch ilena-home-mosaic" style="width:100%; height:80svh;">
+<div class="show-flex-ke-hide align-items-stretch ilena-home-mosaic" data-home-scroll-reveal style="width:100%; height:80svh;">
     <a class="d-flex align-items-center ps-5 zoom-wrapper" href="<?= base_url('/product/bufet-tv-ilena-plint-base') ?>"
         style="text-decoration:none; flex:1; position: relative;">
         <img loading="lazy" decoding="async" src="<?= $homeImage('1748320128043.jpg', 800) ?>" srcset="<?= esc($homeImageSrcset('1748320128043.jpg'), 'attr') ?>" sizes="(max-width: 700px) 90vw, 33vw"
@@ -607,7 +607,7 @@ function closeSecondAd() {
 
 
 <!-- Bagian HP -->
-<div class="hide-ke-show-flex flex-column pt-2 gap-2 ilena-home-mosaic-mobile" style="width:100%; height:80svh;">
+<div class="hide-ke-show-flex flex-column pt-2 gap-2 ilena-home-mosaic-mobile" data-home-scroll-reveal style="width:100%; height:80svh;">
     <a href="<?= base_url('/product/bufet-tv-ilena-plint-base') ?>" class="d-flex align-items-center px-5"
         data-lazy-bg="<?= esc($homeImageSet('1748320128043.jpg'), 'attr'); ?>" style="text-decoration:none; flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
         <div>
@@ -1003,7 +1003,7 @@ if (scrollHomeElm && inputScrollHomeElm.length) {
 
 
 <!-- Bagian Desktop -->
-<div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:80svh; position:relative;">
+<div class="show-flex-ke-hide align-items-stretch" data-home-scroll-reveal style="width:100%; height:80svh; position:relative;">
     <div class="d-flex align-items-center" style="flex:1;">
         <div class="p-5">
             <p class="mb-1 ms-1" style="letter-spacing:1em;">ILENA</p>
@@ -1046,7 +1046,7 @@ if (scrollHomeElm && inputScrollHomeElm.length) {
 </div>
 
 <!-- Bagian Hp -->
-<div class="hide-ke-show-flex align-items-stretch" style="width:100%; height:40svh; position:relative;">
+<div class="hide-ke-show-flex align-items-stretch" data-home-scroll-reveal style="width:100%; height:40svh; position:relative;">
     <div class="d-flex align-items-center" style="flex:1;">
         <div class="px-5">
             <p class="mb-1 ms-1" style="letter-spacing:1em;">ILENA</p>
@@ -1057,7 +1057,7 @@ if (scrollHomeElm && inputScrollHomeElm.length) {
     </div>
 </div>
 <div class="hide-ke-show-flex align-items-stretch"
-    style="width:100%; height:40svh; position:relative; min-height: 414px;">
+    style="width:100%; height:40svh; position:relative; min-height: 414px;" data-home-scroll-reveal>
     <div class="kontenLNMobile">
         <!-- <div class="overlayBed" id="overlayBed">
             <a href="/product?koleksi=cabana&jenis=king-bed+queen-bed+single-bed"
@@ -1110,7 +1110,7 @@ document.addEventListener("DOMContentLoaded", function() {
 </script>
 
 <!-- Bagian Windows -->
-<div class="show-flex-ke-hide align-items-stretch" style="width:100%; height:40svh; min-height: 373px;">
+<div class="show-flex-ke-hide align-items-stretch" data-home-scroll-reveal style="width:100%; height:40svh; min-height: 373px;">
     <a href="<?= base_url('product/bufet-tv-ilena-cabana') ?>" data-lazy-bg="<?= esc($homeImageSet('1742449659675.webp'), 'attr'); ?>" style="flex:1; background-size:cover;background-position:top;background-color:#f4f1ec;">
     </a>
     <div style="flex:1; background-color:#7B441c; position:relative;">
@@ -1139,7 +1139,7 @@ document.addEventListener("DOMContentLoaded", function() {
 </div>
 
 <!-- Bagian HP -->
-<div class="hide-ke-show-flex" style="width:100%; height:40svh;">
+<div class="hide-ke-show-flex" data-home-scroll-reveal style="width:100%; height:40svh;">
     <div style="flex:1; background-color:#7B441c; position:relative;">
         <div class="d-flex p-5 h-100 w-100 text-light flex-column" style="flex:1; position:absolute;">
             <div style="flex:1;" class="h-100 d-flex flex-column justify-content-between">
@@ -1332,7 +1332,7 @@ function modalseries() {
 </style>
 
 <!-- Bagian Windows -->
-<div id="ruangan" class="container show-flex-ke-hide gap-3 my-5 ilena-home-room-grid" style="width:100%;">
+<div id="ruangan" class="container show-flex-ke-hide gap-3 my-5 ilena-home-room-grid" data-home-scroll-reveal style="width:100%;">
     <a href="/product?ruang=tamu" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
         <div class="zoom-wrapper mb-2">
             <img loading="lazy" decoding="async" src="<?= $homeImage('1742445399641.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445399641.webp'), 'attr') ?>" sizes="(max-width: 700px) 80vw, 34vw" alt=""
@@ -1596,6 +1596,24 @@ function modalseries() {
 </div> -->
 <!-- End Bagian Windows Scroll -->
 
+<script>
+(() => {
+    const revealItems = Array.from(document.querySelectorAll('[data-home-scroll-reveal]'));
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (!revealItems.length || reduceMotion || !('IntersectionObserver' in window)) return;
+
+    document.body.classList.add('ilena-home-scroll-motion-ready');
+    const observer = new IntersectionObserver((entries, activeObserver) => {
+        entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('is-scroll-visible');
+            activeObserver.unobserve(entry.target);
+        });
+    }, { threshold: 0.14, rootMargin: '0px 0px -7% 0px' });
+
+    revealItems.forEach((item) => observer.observe(item));
+})();
+</script>
 <script>
 (() => {
     const roomStrip = document.querySelector('.ilena-home-room-scroll');
