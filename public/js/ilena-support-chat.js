@@ -239,7 +239,7 @@
         if (url.protocol === 'https:' && url.hostname === 'wa.me') {
           const link = document.createElement('a');
           link.className = 'ilena-chat-source'; link.href = url.href; link.target = '_blank'; link.rel = 'noopener noreferrer';
-          link.textContent = 'Silakan hubungi tim Ilena melalui WhatsApp'; bubble.append(link);
+          link.textContent = 'Lanjutkan pertanyaan ini melalui WhatsApp'; bubble.append(link);
         }
       } catch (_) {}
     }

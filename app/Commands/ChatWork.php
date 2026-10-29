@@ -5,6 +5,7 @@ namespace App\Commands;
 use App\Services\SmartProductAssistant;
 use App\Services\ChatConversationContext;
 use App\Services\ChatTelemetry;
+use App\Services\ChatWhatsappLink;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 
@@ -48,7 +49,7 @@ class ChatWork extends BaseCommand
         if (! $expired) return;
         $ids = array_map(static fn($row) => (int)$row['id'], $expired);
         $db->transBegin();
-        foreach (['ilena_chat_jobs', 'ilena_chat_messages', 'ilena_chat_reads'] as $table) {
+        foreach (['ilena_chat_jobs', 'ilena_chat_messages', 'ilena_chat_reads', 'ilena_chat_feedback'] as $table) {
             if ($db->tableExists($table)) $db->table($table)->whereIn('conversation_id', $ids)->delete();
         }
         // Conversations use id, not conversation_id.
@@ -112,6 +113,7 @@ class ChatWork extends BaseCommand
         $db->transBegin();
         $metadata = json_encode(['products' => $result['products'], 'sources' => $result['sources'], 'resolutionCheck' => true,
             'answerMode' => $result['mode'] ?? 'assisted', 'fallbackReason' => $result['fallbackReason'] ?? null,
+            ...($this->shouldOfferWhatsApp($result) ? ['whatsappUrl' => ChatWhatsappLink::forQuestion((string) $message['body'])] : []),
             'durationMs' => $durationMs], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         // INSERT ... SELECT makes the status check atomic with publication.
         // The SQL form is supported by both production MySQL and test SQLite.
@@ -134,5 +136,18 @@ class ChatWork extends BaseCommand
         ChatTelemetry::record($db, (string) ($result['mode'] ?? 'assisted'), (string) ($result['fallbackReason'] ?? ''), $durationMs, $queueDelayMs);
         CLI::write('Chat job ' . (int)$job['id'] . ' completed.', 'green');
         return true;
+    }
+
+    /** Offer the WhatsApp route only when the assistant cannot confidently resolve the request. */
+    private function shouldOfferWhatsApp(array $result): bool
+    {
+        return in_array((string) ($result['fallbackReason'] ?? ''), [
+            'no_retrieval_evidence',
+            'provider_request_failed',
+            'provider_http_error',
+            'provider_empty',
+            'off_topic',
+            'media_generation_not_supported',
+        ], true);
     }
 }

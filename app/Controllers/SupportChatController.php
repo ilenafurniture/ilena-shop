@@ -8,6 +8,7 @@ use App\Services\ChatSupportSchedule;
 use App\Services\ChatFeedbackService;
 use App\Services\ChatTelemetry;
 use App\Services\ChatContactDetails;
+use App\Services\ChatWhatsappLink;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class SupportChatController extends BaseController
@@ -50,10 +51,7 @@ class SupportChatController extends BaseController
 
     private function whatsappUrl(string $message = ''): string
     {
-        $text = $message !== ''
-            ? 'Halo Ilena, saya ingin bertanya: ' . mb_substr($message, 0, 400)
-            : 'Halo Ilena, saya membutuhkan bantuan.';
-        return 'https://wa.me/628112938158?text=' . rawurlencode($text);
+        return ChatWhatsappLink::forQuestion($message);
     }
 
     private function ownedConversation(string $visitorHash, bool $includeClosed = false): ?array
