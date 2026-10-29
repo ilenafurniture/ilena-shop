@@ -13,6 +13,12 @@ class SmartProductAssistant
         $this->db = $db ?? db_connect();
     }
 
+    /** Keep restricted prompts out of reusable FAQ drafts as well as model retrieval. */
+    public function isRestrictedKnowledgeCandidate(string $query): bool
+    {
+        return $this->isUnsafeRequest($query) || $this->isUnsupportedMediaGenerationRequest($query);
+    }
+
     /** @return array{answer:string,products:array<int,array<string,mixed>>,sources:array<int,array<string,mixed>>} */
     public function respond(string $query, ?string $contextProductId = null, array $history = []): array
     {
@@ -577,21 +583,44 @@ class SmartProductAssistant
         }
         $rows = $builder->limit(250)->get()->getResultArray();
         $terms = $this->terms($query);
+        if ($terms === []) return [];
+        $queryText = $this->normalizeSearchText($query);
         $ranked = [];
         foreach ($rows as $row) {
-            $text = mb_strtolower((string)$row['title'] . ' ' . (string)$row['content']);
+            $title = (string) $row['title'];
+            $content = (string) $row['content'];
+            $titleTerms = array_fill_keys($this->terms($title), true);
+            $contentTerms = array_fill_keys($this->terms($content), true);
+            $covered = [];
             $score = 0;
-            foreach ($terms as $term) if (mb_strpos($text, $term) !== false) $score++;
+            foreach ($terms as $term) {
+                if (isset($titleTerms[$term])) { $score += 4; $covered[$term] = true; }
+                elseif (isset($contentTerms[$term])) { $score++; $covered[$term] = true; }
+            }
+            $coverage = count($covered) / count($terms);
+            $titleText = $this->normalizeSearchText($title);
+            $contentText = $this->normalizeSearchText($content);
+            if (mb_strlen($queryText) >= 6 && mb_strpos($titleText, $queryText) !== false) $score += 8;
+            elseif (mb_strlen($queryText) >= 6 && mb_strpos($contentText, $queryText) !== false) $score += 4;
+            // A single incidental shared word is not enough for multi-topic queries.
+            if (count($terms) > 2 && $coverage < 0.25) continue;
             if ($score > 0) {
                 $ranked[] = ['score' => $score, 'data' => [
                     'title' => (string)$row['title'],
                     'content' => mb_substr(trim(strip_tags((string)$row['content'])), 0, 1600),
                     'source_url' => (string)($row['source_url'] ?? ''),
-                ]];
+                ], 'coverage' => $coverage];
             }
         }
-        usort($ranked, static fn($a, $b) => $b['score'] <=> $a['score']);
+        usort($ranked, static fn($a, $b) => ($b['score'] <=> $a['score']) ?: ($b['coverage'] <=> $a['coverage']));
         return array_column(array_slice($ranked, 0, max(1, min(6, $limit))), 'data');
+    }
+
+    private function normalizeSearchText(string $text): string
+    {
+        $text = mb_strtolower(html_entity_decode(strip_tags($text), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        $text = (string) preg_replace('/[^\p{L}\p{N}]+/u', ' ', $text);
+        return trim((string) preg_replace('/\s+/u', ' ', $text));
     }
 
     private function askModel(string $query, ?string $contextProductId, array $products, array $sources, string $fallback, array $history = []): string
@@ -751,6 +780,16 @@ PROMPT;
             'armario'=>'lemari', 'armoire'=>'lemari', 'schrank'=>'lemari', '衣柜'=>'lemari',
             'estoque'=>'stok', 'lagerbestand'=>'stok', '库存'=>'stok', '在庫'=>'stok', '재고'=>'stok', 'مخزون'=>'stok', 'สต็อก'=>'stok', 'स्टॉक'=>'stok',
             'disponible'=>'tersedia', 'disponível'=>'tersedia', 'verfügbar'=>'tersedia', 'उपलब्ध'=>'tersedia',
+            'ongkir'=>'shipping', 'pengiriman'=>'shipping', 'delivery'=>'shipping', 'expedition'=>'shipping', 'ekspedisi'=>'shipping', 'kurir'=>'shipping',
+            'warranty'=>'garansi', 'guarantee'=>'garansi',
+            'discount'=>'promo', 'promotion'=>'promo', 'voucher'=>'promo', 'sale'=>'promo',
+            'payment'=>'pembayaran', 'pay'=>'pembayaran', 'transfer'=>'pembayaran',
+            'purchase'=>'pembelian', 'buy'=>'pembelian', 'order'=>'pembelian', 'checkout'=>'pembelian',
+            'refund'=>'pengembalian', 'return'=>'pengembalian', 'exchange'=>'pengembalian', 'retur'=>'pengembalian',
+            'location'=>'lokasi', 'showroom'=>'lokasi', 'store'=>'lokasi',
+            'material'=>'bahan', 'wood'=>'kayu', 'fabric'=>'kain',
+            'size'=>'ukuran', 'dimension'=>'ukuran', 'dimensions'=>'ukuran',
+            'assembly'=>'perakitan', 'install'=>'perakitan', 'installation'=>'perakitan',
         ];
         foreach ($synonyms as $foreign => $local) $normalized = str_replace($foreign, ' ' . $local . ' ', $normalized);
         $words = preg_split('/[^\p{L}\p{N}]+/u', $normalized, -1, PREG_SPLIT_NO_EMPTY) ?: [];

@@ -611,6 +611,55 @@ class SupportChatController extends BaseController
         return $this->json(['success' => true, 'conversation' => $conversation, 'messages' => $this->messagesFor($id, $after, 80)]);
     }
 
+    /** Save an explicitly selected, staff-authored answer as an unpublished KB draft. */
+    public function draftKnowledgeFromChat(int $id)
+    {
+        $input = $this->request->getJSON(true) ?? [];
+        $questionId = max(0, (int) ($input['questionMessageId'] ?? 0));
+        $answerId = max(0, (int) ($input['answerMessageId'] ?? 0));
+        if ($questionId < 1 || $answerId <= $questionId) {
+            return $this->json(['success' => false, 'message' => 'Pilih pasangan tanya-jawab yang valid.'], 422);
+        }
+
+        $db = $this->db();
+        $pair = $db->table('ilena_chat_messages')
+            ->where('conversation_id', $id)
+            ->whereIn('id', [$questionId, $answerId])
+            ->orderBy('id', 'ASC')->get()->getResultArray();
+        if (count($pair) !== 2 || (int) $pair[0]['id'] !== $questionId || (int) $pair[1]['id'] !== $answerId
+            || $pair[0]['sender_type'] !== 'visitor' || $pair[1]['sender_type'] !== 'admin') {
+            return $this->json(['success' => false, 'message' => 'Hanya pertanyaan pelanggan dengan jawaban staf yang dapat dijadikan draf.'], 422);
+        }
+        $interveningQuestion = $db->table('ilena_chat_messages')->where('conversation_id', $id)
+            ->where('sender_type', 'visitor')->where('id >', $questionId)->where('id <', $answerId)->countAllResults();
+        if ($interveningQuestion > 0) return $this->json(['success' => false, 'message' => 'Pilih jawaban staf yang tepat untuk pertanyaan tersebut.'], 422);
+
+        $question = trim((string) $pair[0]['body']);
+        $answer = trim((string) $pair[1]['body']);
+        $sensitive = '/(?:[\w.+-]+@[\w.-]+\.[a-z]{2,}|(?:\+?\d[\d ().-]{8,}\d)|\b(?:alamat lengkap|nomor telepon pribadi|email pribadi|nomor pesanan|order id|tracking order|riwayat pesanan|pesanan pribadi|akun pelanggan|data pelanggan|password|kata sandi|otp|api.?key|access token|kredensial)\b)/iu';
+        if ($question === '' || $answer === '' || mb_strlen($question) > 1200 || mb_strlen($answer) > 2000
+            || (new SmartProductAssistant($db))->isRestrictedKnowledgeCandidate($question)
+            || preg_match($sensitive, $question . "\n" . $answer) === 1) {
+            return $this->json(['success' => false, 'message' => 'Pasangan ini berisi data atau topik sensitif, jadi tidak dibuat sebagai draf.'], 422);
+        }
+
+        $title = 'FAQ chat: ' . mb_substr(preg_replace('/\s+/u', ' ', $question), 0, 175);
+        $content = "Pertanyaan pelanggan: {$question}\n\nJawaban staf: {$answer}";
+        $existing = $db->table('ilena_chat_knowledge')->where('title', $title)->where('content', $content)->get(1)->getRowArray();
+        if ($existing) return $this->json(['success' => true, 'message' => 'Draf serupa sudah ada di Knowledge base.', 'knowledgeId' => (int) $existing['id'], 'duplicate' => true]);
+
+        $now = date('Y-m-d H:i:s');
+        $data = [
+            'title' => $title, 'content' => $content, 'source_url' => null, 'is_published' => 0,
+            'updated_by' => mb_substr((string) session()->get('email'), 0, 191), 'created_at' => $now, 'updated_at' => $now,
+        ];
+        if ($db->fieldExists('valid_from', 'ilena_chat_knowledge')) $data += ['valid_from' => null, 'expires_at' => null, 'reviewed_at' => null, 'reviewed_by' => null];
+        if ($db->fieldExists('revision', 'ilena_chat_knowledge')) $data['revision'] = 1;
+        $db->table('ilena_chat_knowledge')->insert($data);
+        if ($db->affectedRows() !== 1) return $this->json(['success' => false, 'message' => 'Draf belum tersimpan.'], 500);
+        return $this->json(['success' => true, 'message' => 'Draf tersimpan. Periksa dan terbitkan hanya setelah isinya terverifikasi.', 'knowledgeId' => (int) $db->insertID()]);
+    }
+
     public function adminRead(int $id)
     {
         $db = $this->db();

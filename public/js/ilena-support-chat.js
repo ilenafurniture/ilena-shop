@@ -47,6 +47,8 @@
   let arrivalSoundPlayed = false;
   let audioContext = null;
   let greetingAvatarFile = '';
+  let greetingDismissed = false;
+  let greetingOpened = false;
   const wawaAvatarPools = {
     greeting: ['wawa1-sapaan', 'wawa2-sapaan'],
     thinking: ['wawa1-berfikir', 'wawa2-berfikir'],
@@ -570,6 +572,8 @@
 
   function openChat() {
     opened = true;
+    greetingOpened = true;
+    try { sessionStorage.setItem('ilenaChatGreetingOpened', '1'); } catch (_) {}
     if (greetingAvatarFile) setWawaHeader('greeting', greetingAvatarFile);
     else setWawaHeader('greeting');
     panel.classList.remove('d-none');
@@ -596,8 +600,12 @@
   document.addEventListener('scroll', refreshLauncherIdleFromActivity, { passive: true });
   teaser?.querySelector('[data-greeting-open]')?.addEventListener('click', openChat);
   teaser?.querySelector('[data-greeting-dismiss]')?.addEventListener('click', () => {
+    greetingDismissed = true;
     teaser.hidden = true;
-    try { sessionStorage.setItem('ilenaChatGreetingSeen', '1'); } catch (_) {}
+    try {
+      sessionStorage.setItem('ilenaChatGreetingSeen', '1');
+      sessionStorage.setItem('ilenaChatGreetingDismissed', '1');
+    } catch (_) {}
   });
   widget.querySelectorAll('[data-chat-suggestion]').forEach(button => button.addEventListener('click', () => {
     if (input.disabled) return;
@@ -686,18 +694,40 @@
   document.addEventListener('pointerdown', unlockArrivalSound, { passive: true });
   document.addEventListener('keydown', unlockArrivalSound);
   let greetingSeen = false;
-  try { greetingSeen = sessionStorage.getItem('ilenaChatGreetingSeen') === '1'; } catch (_) {}
-  if (teaser && !greetingSeen) {
+  try {
+    greetingSeen = sessionStorage.getItem('ilenaChatGreetingSeen') === '1';
+    greetingDismissed = sessionStorage.getItem('ilenaChatGreetingDismissed') === '1';
+    greetingOpened = sessionStorage.getItem('ilenaChatGreetingOpened') === '1';
+  } catch (_) {}
+  function showGreetingTeaser(reminder = false) {
+    if (!teaser || opened || greetingOpened || greetingDismissed || document.hidden) return false;
+    greetingAvatarFile = nextWawaAvatar('greeting');
+    applyWawaAvatar(wawaGreetingAvatar, greetingAvatarFile);
+    teaser.hidden = false;
+    teaser.classList.add('is-arrival');
+    arrivalSoundPending = true;
+    toggle.classList.add('is-arrival');
+    window.setTimeout(() => teaser.classList.remove('is-arrival'), 2300);
+    window.setTimeout(() => toggle.classList.remove('is-arrival'), 1450);
+    try {
+      sessionStorage.setItem('ilenaChatGreetingSeen', '1');
+      if (reminder) sessionStorage.setItem('ilenaChatGreetingReminderShown', '1');
+    } catch (_) {}
+    if (navigator.userActivation?.hasBeenActive) playWelcomeTone();
     window.setTimeout(() => {
-      if (opened || document.hidden) return;
-      greetingAvatarFile = nextWawaAvatar('greeting');
-      applyWawaAvatar(wawaGreetingAvatar, greetingAvatarFile);
-      teaser.hidden = false;
-      arrivalSoundPending = true;
-      toggle.classList.add('is-arrival');
-      window.setTimeout(() => toggle.classList.remove('is-arrival'), 1450);
-      try { sessionStorage.setItem('ilenaChatGreetingSeen', '1'); } catch (_) {}
-      if (navigator.userActivation?.hasBeenActive) playWelcomeTone();
+      if (!opened && !greetingOpened && !greetingDismissed) teaser.hidden = true;
+    }, reminder ? 18000 : 22000);
+    return true;
+  }
+  if (teaser && !greetingSeen && !greetingDismissed && !greetingOpened) {
+    window.setTimeout(() => {
+      if (showGreetingTeaser()) {
+        window.setTimeout(() => {
+          let reminderShown = false;
+          try { reminderShown = sessionStorage.getItem('ilenaChatGreetingReminderShown') === '1'; } catch (_) {}
+          if (!reminderShown) showGreetingTeaser(true);
+        }, 8 * 60 * 1000);
+      }
     }, 2200);
   }
 })();

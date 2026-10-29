@@ -231,6 +231,7 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
     $routes->get('support-chat/feedback', 'SupportChatController::adminFeedback');
     $routes->get('support-chat/telemetry', 'SupportChatController::adminTelemetry');
     $routes->get('support-chat/messages/(:num)', 'SupportChatController::adminMessages/$1');
+    $routes->post('support-chat/knowledge/draft-from-chat/(:num)', 'SupportChatController::draftKnowledgeFromChat/$1');
     $routes->post('support-chat/read/(:num)', 'SupportChatController::adminRead/$1');
     $routes->post('support-chat/reply/(:num)', 'SupportChatController::adminReply/$1');
     $routes->post('support-chat/claim/(:num)', 'SupportChatController::adminClaim/$1');

@@ -417,8 +417,8 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
                 <div class="ilena-chat-greeting-teaser__bubble">
                     <button type="button" data-greeting-dismiss aria-label="Tutup sapaan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
                     <strong>Hai, Kak!</strong>
-                    <p>Mau cari inspirasi untuk ruang Kakak?</p>
-                    <button type="button" data-greeting-open aria-label="Mulai chat dengan Kak Wawa">Ngobrol dengan Wawa</button>
+                    <p>Mau cari furnitur yang pas untuk ruang Kakak?</p>
+                    <button type="button" data-greeting-open aria-label="Mulai chat dengan Kak Wawa">Tanya Wawa</button>
                 </div>
                 <span class="ilena-chat-greeting-teaser__mark" aria-hidden="true"><img data-wawa-avatar="greeting" alt="" width="360" height="360" loading="lazy" decoding="async"></span>
             </div>

@@ -10079,3 +10079,91 @@ body.ilena-storefront .ilena-chat-greeting-teaser button:focus-visible { outline
     body.ilena-storefront .ilena-chat-greeting-teaser__mark img,
     body.ilena-storefront .ilena-chat-greeting-teaser__bubble [data-greeting-open] { animation: none !important; transition: none !important; }
 }
+/* Make the first greeting unmistakable without turning it into a blocking card. */
+body.ilena-storefront .ilena-chat-greeting-teaser__bubble {
+    width: min(234px, calc(100vw - 112px));
+    padding-top: 10px;
+    border-top: 2px solid #982d36;
+    box-shadow: 0 9px 24px rgba(39, 31, 27, .19);
+}
+body.ilena-storefront .ilena-chat-greeting-teaser__bubble strong { font-size: 16px; }
+body.ilena-storefront .ilena-chat-greeting-teaser__bubble p { color: #554942; font-size: 11px; }
+body.ilena-storefront .ilena-chat-greeting-teaser__bubble [data-greeting-open] {
+    min-height: 30px;
+    margin-top: 8px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 5px;
+    background: #922b32;
+    color: #fffdfa;
+    font-size: 10px;
+    box-shadow: 0 3px 8px rgba(146, 43, 50, .18);
+}
+body.ilena-storefront .ilena-chat-greeting-teaser__bubble [data-greeting-open]:hover {
+    background: #302724;
+    color: #fffdfa;
+    box-shadow: 0 4px 11px rgba(48, 39, 36, .2);
+    transform: translateY(-1px);
+}
+body.ilena-storefront .ilena-chat-greeting-teaser__mark { width: 82px; height: 86px; flex-basis: 82px; }
+body.ilena-storefront .ilena-chat-greeting-teaser__mark img { width: 88px; height: 88px; }
+body.ilena-storefront .ilena-chat-greeting-teaser__mark::before {
+    position: absolute;
+    inset: 15px 9px 7px;
+    border: 1px solid rgba(146, 43, 50, .38);
+    border-radius: 50%;
+    content: "";
+    opacity: 0;
+    pointer-events: none;
+}
+body.ilena-storefront .ilena-chat-greeting-teaser.is-arrival .ilena-chat-greeting-teaser__bubble {
+    border-color: #922b32;
+    box-shadow: 0 12px 30px rgba(91, 34, 35, .24);
+    animation: ilena-wawa-greeting-emphasis .82s cubic-bezier(.18,.78,.24,1.18) both;
+}
+body.ilena-storefront .ilena-chat-greeting-teaser.is-arrival .ilena-chat-greeting-teaser__mark::before {
+    animation: ilena-wawa-arrival-ring 1s ease-out .08s 2 both;
+}
+body.ilena-storefront .ilena-chat-greeting-teaser.is-arrival .ilena-chat-greeting-teaser__mark img {
+    animation: ilena-wawa-wave-arrival .94s cubic-bezier(.3,.7,.3,1) .06s 1 both;
+}
+body.ilena-storefront .ilena-chat-greeting-teaser.is-arrival .ilena-chat-greeting-teaser__bubble [data-greeting-open] {
+    animation: ilena-wawa-cta-arrival .72s ease-out .42s 1 both;
+}
+@keyframes ilena-wawa-greeting-emphasis {
+    0% { opacity: 0; transform: translate3d(13px, 9px, 0) scale(.88); }
+    66% { opacity: 1; transform: translate3d(-2px, -2px, 0) scale(1.045); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+@keyframes ilena-wawa-arrival-ring {
+    0% { opacity: .6; transform: scale(.78); }
+    100% { opacity: 0; transform: scale(1.2); }
+}
+@keyframes ilena-wawa-wave-arrival {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    22% { transform: translateY(-5px) rotate(-8deg); }
+    48% { transform: translateY(0) rotate(8deg); }
+    73% { transform: translateY(-2px) rotate(-4deg); }
+}
+@keyframes ilena-wawa-cta-arrival {
+    0% { transform: scale(.94); box-shadow: 0 0 0 0 rgba(146,43,50,.28); }
+    55% { transform: scale(1.04); box-shadow: 0 0 0 5px rgba(146,43,50,.13); }
+    100% { transform: scale(1); box-shadow: 0 3px 8px rgba(146,43,50,.18); }
+}
+@media (max-width: 600px) {
+    body.ilena-storefront .ilena-chat-greeting-teaser__bubble {
+        width: min(208px, calc(100vw - 98px));
+        padding-top: 8px;
+    }
+    body.ilena-storefront .ilena-chat-greeting-teaser__bubble strong { font-size: 14px; }
+    body.ilena-storefront .ilena-chat-greeting-teaser__bubble p { font-size: 10px; }
+    body.ilena-storefront .ilena-chat-greeting-teaser__bubble [data-greeting-open] { min-height: 29px; font-size: 9px; }
+    body.ilena-storefront .ilena-chat-greeting-teaser__mark { width: 70px; height: 74px; flex-basis: 70px; }
+    body.ilena-storefront .ilena-chat-greeting-teaser__mark img { width: 76px; height: 76px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront .ilena-chat-greeting-teaser.is-arrival .ilena-chat-greeting-teaser__bubble,
+    body.ilena-storefront .ilena-chat-greeting-teaser.is-arrival .ilena-chat-greeting-teaser__mark::before,
+    body.ilena-storefront .ilena-chat-greeting-teaser.is-arrival .ilena-chat-greeting-teaser__mark img,
+    body.ilena-storefront .ilena-chat-greeting-teaser.is-arrival .ilena-chat-greeting-teaser__bubble [data-greeting-open] { animation: none !important; }
+}
