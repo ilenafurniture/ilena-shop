@@ -201,18 +201,28 @@
     }
     a.append(image, info); return a;
   }
-  function playReplyTone() {
-    if (!soundEnabled || !audioContext) return;
+  function getChatAudioContext() {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return null;
+    if (!audioContext || audioContext.state === 'closed') audioContext = new AudioContextClass();
+    return audioContext;
+  }
+  async function playReplyTone() {
+    if (!soundEnabled) return;
     try {
-      const start = audioContext.currentTime;
+      const context = getChatAudioContext();
+      if (!context) return;
+      if (context.state === 'suspended') await context.resume();
+      if (!soundEnabled || context.state !== 'running') return;
+      const start = context.currentTime + 0.01;
       [660, 880].forEach((frequency, index) => {
-        const oscillator = audioContext.createOscillator();
-        const gain = audioContext.createGain();
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
         oscillator.type = 'sine'; oscillator.frequency.value = frequency;
         gain.gain.setValueAtTime(0.0001, start + index * 0.1);
         gain.gain.exponentialRampToValueAtTime(0.085, start + index * 0.1 + 0.025);
         gain.gain.exponentialRampToValueAtTime(0.0001, start + index * 0.1 + 0.16);
-        oscillator.connect(gain); gain.connect(audioContext.destination);
+        oscillator.connect(gain); gain.connect(context.destination);
         oscillator.start(start + index * 0.1); oscillator.stop(start + index * 0.1 + 0.17);
       });
     } catch (_) {}
@@ -220,10 +230,8 @@
   function playWelcomeTone() {
     if (!arrivalSoundPending || arrivalSoundPlayed) return;
     try {
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContextClass) return;
-      audioContext ||= new AudioContextClass();
-      const context = audioContext;
+      const context = getChatAudioContext();
+      if (!context) return;
       const play = () => {
         if (context.state !== 'running' || arrivalSoundPlayed) return;
         const start = context.currentTime;
@@ -248,10 +256,8 @@
   function primeReplySound() {
     if (!soundEnabled) return;
     try {
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContextClass) return;
-      audioContext ||= new AudioContextClass();
-      if (audioContext.state === 'suspended') audioContext.resume().catch(() => {});
+      const context = getChatAudioContext();
+      if (context?.state === 'suspended') context.resume().catch(() => {});
     } catch (_) {}
   }
   function appendMessage(message, notify = false) {
@@ -515,14 +521,18 @@
     finally { polling = false; }
   }
   function nextPollDelay() {
-    if (!waitingForReply) return 15000;
-    const elapsed = Date.now() - (waitingSince || Date.now());
-    if (elapsed >= 30000 && !slowReplyNoticeShown) {
-      slowReplyNoticeShown = true;
-      setTyping(false);
-      showNotice('Maaf, jawaban Kak Wawa masih tertunda. Kakak tidak perlu mengirim ulang pesan; Kak Wawa akan terus memeriksa jawabannya.', lastWhatsappUrl);
+    if (waitingForReply) {
+      const elapsed = Date.now() - (waitingSince || Date.now());
+      if (elapsed >= 30000 && !slowReplyNoticeShown) {
+        slowReplyNoticeShown = true;
+        setTyping(false);
+        showNotice('Maaf, jawaban Kak Wawa masih tertunda. Kakak tidak perlu mengirim ulang pesan; Kak Wawa akan terus memeriksa jawabannya.', lastWhatsappUrl);
+      }
+      return elapsed >= 30000 ? 6000 : 2000;
     }
-    return elapsed >= 30000 ? 12000 : 3000;
+    if (currentStatus === 'human') return 4000;
+    if (currentStatus === 'human_waiting') return 10000;
+    return 15000;
   }
   function schedulePoll(delay = 0) {
     if (!opened || !ready || pollTimer) return;
@@ -650,8 +660,8 @@
     soundEnabled = !soundEnabled;
     if (soundEnabled) {
       try {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        if (AudioContextClass) { audioContext ||= new AudioContextClass(); await audioContext.resume(); }
+        const context = getChatAudioContext();
+        if (context?.state === 'suspended') await context.resume();
       } catch (_) { soundEnabled = false; }
     }
     soundButton.setAttribute('aria-pressed', soundEnabled ? 'true' : 'false');
@@ -666,6 +676,7 @@
       return;
     }
     scheduleLauncherIdle();
+    primeReplySound();
     if (pollTimer) window.clearTimeout(pollTimer);
     pollTimer = null;
     poll().finally(() => schedulePoll(nextPollDelay()));
