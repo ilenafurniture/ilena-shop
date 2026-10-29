@@ -7,6 +7,7 @@ use App\Services\ChatProviderSettings;
 use App\Services\ChatSupportSchedule;
 use App\Services\ChatFeedbackService;
 use App\Services\ChatTelemetry;
+use App\Services\ChatContactDetails;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class SupportChatController extends BaseController
@@ -239,20 +240,43 @@ class SupportChatController extends BaseController
                 'whatsappUrl' => $this->whatsappUrl(),
             ], 200);
         }
+        $input = $this->request->getJSON(true) ?? $this->request->getPost();
+        try {
+            $contact = ChatContactDetails::normalize((string)($input['name'] ?? ''), (string)($input['phone'] ?? ''));
+        } catch (\InvalidArgumentException $error) {
+            return $this->json(['success' => false, 'code' => 'invalid_contact', 'message' => $error->getMessage()], 422);
+        }
         $visitor = $this->visitorHash();
         if (! $visitor) return $this->json(['success' => false, 'message' => 'Percakapan belum dimulai.'], 404);
         $conversation = $this->ownedConversation($visitor);
         if (! $conversation) return $this->json(['success' => false, 'message' => 'Percakapan tidak ditemukan.'], 404);
         if (($conversation['status'] ?? '') !== 'ai') return $this->json(['success' => false, 'message' => 'Percakapan sudah ditangani tim Ilena.'], 409);
-        $this->db()->table('ilena_chat_conversations')->where('id', (int)$conversation['id'])->update([
-            'status' => 'human_waiting', 'last_message_at' => date('Y-m-d H:i:s'), 'updated_at' => date('Y-m-d H:i:s'),
+        $db = $this->db();
+        if (! $db->fieldExists('customer_name', 'ilena_chat_conversations') || ! $db->fieldExists('customer_phone', 'ilena_chat_conversations')) {
+            return $this->json(['success' => false, 'message' => 'Formulir kontak staf sedang disiapkan. Silakan coba kembali sebentar lagi.'], 503);
+        }
+        $now = date('Y-m-d H:i:s');
+        $db->transBegin();
+        $db->table('ilena_chat_conversations')->where('id', (int)$conversation['id'])->where('status', 'ai')->update([
+            'customer_name' => $contact['name'],
+            'customer_phone' => $contact['phone'],
+            'status' => 'human_waiting', 'last_message_at' => $now, 'updated_at' => $now,
         ]);
-        $this->db()->table('ilena_chat_messages')->insert([
+        if ($db->affectedRows() !== 1) {
+            $db->transRollback();
+            return $this->json(['success' => false, 'message' => 'Percakapan sudah berubah. Muat ulang lalu coba kembali.'], 409);
+        }
+        $db->table('ilena_chat_messages')->insert([
             'conversation_id' => (int)$conversation['id'], 'sender_type' => 'system',
             'body' => 'Pelanggan meminta bantuan staf. Pesan berikutnya akan dilayani oleh tim Ilena.',
-            'created_at' => date('Y-m-d H:i:s'),
+            'created_at' => $now,
         ]);
-        ChatTelemetry::record($this->db(), 'handoff', 'customer_requested_staff', 0);
+        if ($db->transStatus() === false) {
+            $db->transRollback();
+            return $this->json(['success' => false, 'message' => 'Permintaan bantuan belum tersimpan. Coba kembali.'], 500);
+        }
+        $db->transCommit();
+        ChatTelemetry::record($db, 'handoff', 'customer_requested_staff', 0);
         return $this->json(['success' => true, 'status' => 'human_waiting', 'humanAvailable' => true]);
     }
 
@@ -470,7 +494,7 @@ class SupportChatController extends BaseController
     {
         // AI-only chats are private to the customer/assistant unless the
         // customer explicitly requests staff. Keep them out of the inbox.
-        $rows = $this->db()->query("SELECT c.id,c.conversation_key,c.status,c.assigned_to,c.customer_email,c.context_product_id,c.last_message_at,c.created_at,(SELECT LEFT(m.body,220) FROM ilena_chat_messages m WHERE m.conversation_id=c.id ORDER BY m.id DESC LIMIT 1) AS last_body FROM ilena_chat_conversations c WHERE c.status='human' OR (c.status='human_waiting' AND EXISTS (SELECT 1 FROM ilena_chat_messages handoff WHERE handoff.conversation_id=c.id AND handoff.sender_type='system' AND handoff.body='Pelanggan meminta bantuan staf. Pesan berikutnya akan dilayani oleh tim Ilena.')) ORDER BY CASE WHEN c.status='human_waiting' THEN 0 ELSE 1 END,c.last_message_at DESC LIMIT 80")->getResultArray();
+        $rows = $this->db()->query("SELECT c.id,c.conversation_key,c.status,c.assigned_to,c.customer_name,c.customer_phone,c.customer_email,c.context_product_id,c.last_message_at,c.created_at,(SELECT LEFT(m.body,220) FROM ilena_chat_messages m WHERE m.conversation_id=c.id ORDER BY m.id DESC LIMIT 1) AS last_body FROM ilena_chat_conversations c WHERE c.status='human' OR (c.status='human_waiting' AND EXISTS (SELECT 1 FROM ilena_chat_messages handoff WHERE handoff.conversation_id=c.id AND handoff.sender_type='system' AND handoff.body='Pelanggan meminta bantuan staf. Pesan berikutnya akan dilayani oleh tim Ilena.')) ORDER BY CASE WHEN c.status='human_waiting' THEN 0 ELSE 1 END,c.last_message_at DESC LIMIT 80")->getResultArray();
         return $this->json(['success' => true, 'items' => $rows]);
     }
 

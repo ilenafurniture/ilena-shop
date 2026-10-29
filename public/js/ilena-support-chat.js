@@ -8,6 +8,8 @@
   const close = widget.querySelector('[data-close-chat-greeting]');
   const transcript = widget.querySelector('[data-chat-messages]');
   const form = widget.querySelector('[data-chat-form]');
+  const contactForm = widget.querySelector('[data-chat-contact-form]');
+  const contactCancel = widget.querySelector('[data-chat-contact-cancel]');
   const input = form?.elements.message;
   const sendButton = form?.querySelector('button[type="submit"]');
   const status = widget.querySelector('[data-chat-status]');
@@ -113,7 +115,7 @@
       updateCsrf(data);
       if (!response.ok || !data.success) {
         const known = ['Tunggu sebentar sebelum mengirim pesan lagi.', 'Pesan harus berisi 1–1.200 karakter.'];
-        const error = new Error(known.includes(data.message) ? data.message : 'Chat belum dapat memproses pesan. Silakan coba lagi atau lanjutkan melalui WhatsApp.');
+        const error = new Error(data.code === 'invalid_contact' || known.includes(data.message) ? data.message : 'Chat belum dapat memproses pesan. Silakan coba lagi atau lanjutkan melalui WhatsApp.');
         error.data = data;
         throw error;
       }
@@ -337,12 +339,34 @@
   function renderMessages(items, notify = false) { (items || []).forEach(item => appendMessage(item, notify)); }
   async function requestHandoff() {
     if (sending || currentStatus !== 'ai') return;
+    if (!humanAvailable) { showOfflineNotice(); return; }
+    if (contactForm) {
+      contactForm.hidden = false;
+      showNotice('Lengkapi nama dan nomor WhatsApp agar permintaan dapat diteruskan ke staf.');
+      contactForm.elements.contactName?.focus();
+      return;
+    }
+    showNotice('Formulir kontak belum tersedia. Silakan hubungi Ilena melalui WhatsApp.', lastWhatsappUrl);
+  }
+  async function submitHandoff(event) {
+    event.preventDefault();
+    if (sending || currentStatus !== 'ai' || !contactForm) return;
+    if (!contactForm.checkValidity()) {
+      showNotice(!contactForm.elements.contactName.value.trim()
+        ? 'Mohon isi nama Kakak terlebih dahulu.'
+        : 'Mohon isi nomor WhatsApp yang valid agar staf dapat menghubungi Kakak.');
+      contactForm.querySelector(':invalid')?.focus();
+      return;
+    }
     sending = true;
     transcript.querySelectorAll('.ilena-chat-resolution button').forEach(button => { button.disabled = true; });
-    if (handoff) handoff.disabled = true;
+    const submitButton = contactForm.querySelector('button[type="submit"]');
+    if (submitButton) submitButton.disabled = true;
     try {
-      const data = await api('/chat/handoff', { method: 'POST', body: '{}' });
+      const data = await api('/chat/handoff', { method: 'POST', body: JSON.stringify({ name: contactForm.elements.contactName.value, phone: contactForm.elements.contactPhone.value }) });
       updateStatus(data.status, data.humanAvailable);
+      contactForm.hidden = true;
+      contactForm.reset();
       await poll();
       showNotice('Permintaan Kakak sudah diteruskan ke tim Ilena.');
     } catch (error) {
@@ -351,9 +375,11 @@
       sending = false;
       updateStatus(currentStatus, humanAvailable);
       if (currentStatus === 'ai') transcript.querySelectorAll('.ilena-chat-resolution button').forEach(button => { button.disabled = false; });
-      if (handoff && currentStatus === 'ai' && humanAvailable) handoff.disabled = false;
+      if (submitButton) submitButton.disabled = false;
     }
   }
+  contactForm?.addEventListener('submit', submitHandoff);
+  contactCancel?.addEventListener('click', () => { contactForm.hidden = true; contactForm.reset(); showNotice(''); });
   function handleError(error, preservePendingReply = false) {
     const data = error?.data || {};
     if (data.code === 'outside_hours') {

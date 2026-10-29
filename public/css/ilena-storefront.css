@@ -9135,6 +9135,17 @@ body.ilena-storefront .ilena-chat-resolution button { min-height: 32px; border: 
 body.ilena-storefront .ilena-chat-resolution button:hover { border-color: #96363c; background: #96363c; color: #fffaf5; }
 body.ilena-storefront .ilena-chat-resolution button:disabled { opacity: .58; cursor: default; }
 body.ilena-storefront .ilena-chat-resolution button:focus-visible { outline: 2px solid #96363c; outline-offset: 2px; }
+body.ilena-storefront .ilena-chat-contact { display: grid; gap: 9px; padding: 12px 14px; border-top: 1px solid #eee4db; background: #fffaf5; }
+body.ilena-storefront .ilena-chat-contact[hidden] { display: none !important; }
+body.ilena-storefront .ilena-chat-contact > div:first-child strong { color: #342925; font-size: 12px; }
+body.ilena-storefront .ilena-chat-contact > div:first-child p { margin: 3px 0 0; color: #716963; font-size: 10px; line-height: 1.45; }
+body.ilena-storefront .ilena-chat-contact label { display: grid; gap: 4px; color: #54473f; font-size: 10px; font-weight: 650; }
+body.ilena-storefront .ilena-chat-contact input { width: 100%; min-height: 38px; border: 1px solid #e8ddd4; border-radius: 9px; padding: 7px 10px; background: #fff; color: #342925; font: 500 12px var(--ilena-font-body); }
+body.ilena-storefront .ilena-chat-contact input:focus { border-color: #a54046; outline: 3px solid rgba(165,64,70,.12); }
+body.ilena-storefront .ilena-chat-contact__actions { display: flex; gap: 7px; }
+body.ilena-storefront .ilena-chat-contact__actions button { min-height: 34px; border: 1px solid #d9c9bb; border-radius: 999px; padding: 0 12px; background: #fff; color: #613d35; font: 650 10px var(--ilena-font-body); cursor: pointer; }
+body.ilena-storefront .ilena-chat-contact__actions button[type="submit"] { border-color: #96363c; background: #96363c; color: #fffaf5; }
+body.ilena-storefront .ilena-chat-contact__actions button:disabled { opacity: .58; cursor: default; }
 body.ilena-storefront .ilena-chat-greeting-teaser { display: grid; position: relative; width: min(338px, calc(100vw - 28px)); grid-template-columns: 36px minmax(0,1fr) auto; align-items: center; gap: 10px; align-self: flex-end; margin: 0 0 2px; padding: 13px 30px 13px 12px; border: 1px solid #eaded4; border-left: 3px solid #a54046; border-radius: 15px; background: #fffaf5; box-shadow: 0 12px 32px rgba(50,39,34,.16); animation: ilena-chat-arrival .48s cubic-bezier(.2,.75,.2,1) both; }
 body.ilena-storefront .ilena-chat-greeting-teaser[hidden] { display: none; }
 body.ilena-storefront .ilena-chat-greeting-teaser__mark { position: relative; display: block; width: 36px; height: 36px; overflow: hidden; border: 1px solid #eee3da; border-radius: 50%; background: #fff; color: #fffaf5; font: 500 21px/1 var(--ilena-font-display); }

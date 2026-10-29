@@ -305,6 +305,12 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
                     <textarea id="ilenaChatInput" name="message" rows="1" maxlength="1200" placeholder="Tulis pesan Anda…" required></textarea>
                     <button type="submit" aria-label="Kirim pesan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12 20 4l-5 16-3-7-8-1Zm8 1 8-9"/></svg></button>
                 </form>
+                <form class="ilena-chat-contact" data-chat-contact-form hidden>
+                    <div><strong>Hubungkan ke tim Ilena</strong><p>Nama dan nomor WhatsApp akan disimpan pada percakapan ini agar staf dapat menghubungi Kakak.</p></div>
+                    <label>Nama<input name="contactName" type="text" autocomplete="name" minlength="2" maxlength="100" required></label>
+                    <label>Nomor WhatsApp<input name="contactPhone" type="tel" inputmode="tel" autocomplete="tel" minlength="8" maxlength="24" pattern="[+0-9 ().-]{8,24}" placeholder="08xx atau +62xx" required></label>
+                    <div class="ilena-chat-contact__actions"><button type="submit">Teruskan ke CS</button><button type="button" data-chat-contact-cancel>Batal</button></div>
+                </form>
                 <footer class="ilena-chat-footer"><a data-kbot-wa href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20saya%20butuh%20bantuan" target="_blank" rel="noopener noreferrer">WhatsApp</a></footer>
                 <p class="ilena-chat-notice" data-chat-notice role="status" hidden></p>
             </div>

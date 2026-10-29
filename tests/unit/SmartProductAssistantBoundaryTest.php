@@ -43,6 +43,74 @@ final class SmartProductAssistantBoundaryTest extends CIUnitTestCase
         }
     }
 
+    public function testQuestionAskingWhoKakWawaIsGetsDirectIdentityAnswer(): void
+    {
+        foreach (['mau tanya siapa wawa', 'Kak Wawa itu siapa?', 'Who is Wawa?'] as $question) {
+            $result = (new SmartProductAssistant(new \stdClass()))->respond($question);
+
+            $this->assertSame('assistant_identity', $result['mode']);
+            $this->assertStringContainsString('pendamping virtual ILENA Furniture', $result['answer']);
+            $this->assertSame([], $result['products']);
+        }
+    }
+
+    public function testCapabilityQuestionExplainsWhatKakWawaCanDoWithoutProductCards(): void
+    {
+        foreach (['Wawa bisa bantu apa?', 'Kak Wawa bisa membantu apa?', 'What can Wawa do?'] as $question) {
+            $result = (new SmartProductAssistant(new \stdClass()))->respond($question);
+
+            $this->assertSame('assistant_capabilities', $result['mode']);
+            $this->assertStringContainsString('mengecek stok', $result['answer']);
+            $this->assertSame([], $result['products']);
+        }
+    }
+
+    public function testThanksAndAcknowledgementsDoNotTriggerProductSearch(): void
+    {
+        foreach ([['Terima kasih, Kak!', 'Sama-sama, Kak!'], ['oke', 'Baik, Kak.']] as [$query, $expected]) {
+            $result = (new SmartProductAssistant(new \stdClass()))->respond($query);
+
+            $this->assertSame('acknowledgement', $result['mode']);
+            $this->assertStringStartsWith($expected, $result['answer']);
+            $this->assertSame([], $result['products']);
+        }
+    }
+
+    public function testFarewellServiceHoursAndStaffRequestsGetUsefulDirectGuidance(): void
+    {
+        $cases = [
+            ['sampai jumpa, Kak!', 'farewell', 'Sampai jumpa'],
+            ['CS buka jam berapa?', 'service_hours', '08.00–16.00 WIB'],
+            ['Saya mau bicara dengan CS', 'staff_handoff_guidance', 'Minta bantuan staf'],
+        ];
+
+        foreach ($cases as [$query, $mode, $expected]) {
+            $result = (new SmartProductAssistant(new \stdClass()))->respond($query);
+
+            $this->assertSame($mode, $result['mode']);
+            $this->assertStringContainsString($expected, $result['answer']);
+            $this->assertSame([], $result['products']);
+            $this->assertSame([], $result['sources']);
+        }
+    }
+
+    public function testChatInvitationAndLanguageQuestionsGetConciseIndonesianReplies(): void
+    {
+        $cases = [
+            ['Boleh tanya, Kak?', 'chat_invitation', 'Silakan tanyakan'],
+            ['Can I ask?', 'chat_invitation', 'Silakan tanyakan'],
+            ['Do you understand English?', 'assistant_language', 'bahasa Indonesia'],
+        ];
+
+        foreach ($cases as [$query, $mode, $expected]) {
+            $result = (new SmartProductAssistant(new \stdClass()))->respond($query);
+
+            $this->assertSame($mode, $result['mode']);
+            $this->assertStringContainsString($expected, $result['answer']);
+            $this->assertSame([], $result['products']);
+        }
+    }
+
     public function testVagueRecommendationAsksForCriteriaInsteadOfSelectingPopularProducts(): void
     {
         $result = (new SmartProductAssistant(new \stdClass()))->respond('Rekomendasi dong');
@@ -118,6 +186,20 @@ final class SmartProductAssistantBoundaryTest extends CIUnitTestCase
         $this->assertStringContainsString('tidak dapat menjalankan kode', $result['answer']);
         $this->assertSame([], $result['products']);
         $this->assertSame([], $result['sources']);
+    }
+
+    public function testCreativeMediaGenerationRequestsAreDeclinedButCatalogImageRequestsRemainAllowed(): void
+    {
+        foreach (['Bikin gambar sofa untuk saya', 'Generate an image of a chair', 'Edit foto produk ini'] as $query) {
+            $result = (new SmartProductAssistant(new \stdClass()))->respond($query);
+
+            $this->assertSame('unsupported_generation', $result['mode']);
+            $this->assertStringContainsString('tidak membuat atau mengedit konten kreatif', $result['answer']);
+            $this->assertSame([], $result['products']);
+        }
+
+        $method = new \ReflectionMethod(new SmartProductAssistant(new \stdClass()), 'isUnsupportedMediaGenerationRequest');
+        $this->assertFalse($method->invoke(new SmartProductAssistant(new \stdClass()), 'Tampilkan gambar produk Sofa Cody'));
     }
 
     public function testStockReplyUsesOnlyKnownAvailableQuantities(): void
