@@ -106,6 +106,14 @@ body.ilena-storefront .ilena-about__profile-image {
     margin: 0;
 }
 
+body.ilena-storefront .ilena-about__hero-visual {
+    margin: 0;
+}
+
+body.ilena-storefront .ilena-about__hero-caption {
+    display: none;
+}
+
 body.ilena-storefront .ilena-about__copy p:not(.ilena-editorial__eyebrow),
 body.ilena-storefront .ilena-about__profile > div > p:not(.ilena-editorial__eyebrow),
 body.ilena-storefront .ilena-about__contact > div > p:not(.ilena-editorial__eyebrow) {
@@ -185,6 +193,15 @@ body.ilena-storefront .ilena-about__contact address a {
     font-weight: 600;
 }
 
+body.ilena-storefront .ilena-about__contact-actions a {
+    display: block;
+    width: fit-content;
+    min-height: 40px;
+    color: #8e3935;
+    font-size: 14px;
+    font-weight: 600;
+}
+
 body.ilena-storefront .ilena-about__contact address {
     display: flex;
     flex-direction: column;
@@ -210,14 +227,23 @@ body.ilena-storefront .ilena-about__contact address strong {
     }
 
     body.ilena-storefront .ilena-about .ilena-editorial__hero {
-        max-width: 820px;
-        padding-block: 68px 56px;
+        display: grid;
+        max-width: none;
+        grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+        align-items: center;
+        gap: clamp(42px, 6vw, 82px);
+        padding-block: 54px 68px;
+    }
+
+    body.ilena-storefront .ilena-about__hero-copy {
+        min-width: 0;
     }
 
     body.ilena-storefront .ilena-about .ilena-editorial__hero h1 {
-        max-width: 760px;
-        font-size: clamp(42px, 5vw, 66px);
-        line-height: 1.06;
+        max-width: 610px;
+        font-size: clamp(48px, 5.25vw, 72px);
+        line-height: 1.02;
+        text-wrap: balance;
     }
 
     body.ilena-storefront .ilena-about .ilena-editorial__intro {
@@ -234,8 +260,72 @@ body.ilena-storefront .ilena-about__contact address strong {
     }
 
     body.ilena-storefront .ilena-about__story {
-        grid-template-columns: minmax(0, 1.12fr) minmax(310px, .88fr);
+        grid-template-columns: minmax(0, 1.25fr) minmax(250px, .75fr);
+        align-items: end;
+        gap: clamp(44px, 8vw, 112px);
+        padding-block: 52px 58px;
+    }
+
+    body.ilena-storefront .ilena-about__hero-visual {
+        width: 100%;
+        height: clamp(390px, 39vw, 510px);
+        margin: 0;
+    }
+
+    body.ilena-storefront .ilena-about__hero-visual img {
+        height: 100%;
+        aspect-ratio: auto;
+        object-position: center;
+    }
+
+    body.ilena-storefront .ilena-about__hero-caption {
+        display: block;
+        position: absolute;
+        z-index: 3;
+        right: 22px;
+        bottom: 20px;
+        max-width: 250px;
+        padding: 10px 14px;
+        border-left: 2px solid #9a4a43;
+        background: rgba(251, 249, 246, .92);
+        color: var(--editorial-ink);
+        font-family: var(--ilena-font-display, Georgia, "Times New Roman", serif);
+        font-size: 15px;
+        line-height: 1.35;
+    }
+
+    body.ilena-storefront .ilena-about__story .ilena-about__copy {
+        max-width: 680px;
+    }
+
+    body.ilena-storefront .ilena-about__experience {
+        display: flex;
         align-items: center;
+        gap: 18px;
+        min-height: 100px;
+        padding-left: clamp(20px, 3vw, 42px);
+        border-left: 1px solid var(--editorial-rule);
+    }
+
+    body.ilena-storefront .ilena-about__experience > span {
+        color: #8e3935;
+        font-family: var(--ilena-font-display, Georgia, "Times New Roman", serif);
+        font-size: clamp(58px, 6vw, 78px);
+        font-weight: 400;
+        letter-spacing: -.06em;
+        line-height: .9;
+    }
+
+    body.ilena-storefront .ilena-about__experience p {
+        margin: 0;
+        color: var(--editorial-muted);
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    body.ilena-storefront .ilena-about__experience strong {
+        color: var(--editorial-ink);
+        font-weight: 650;
     }
 
     body.ilena-storefront .ilena-about__image img {
@@ -338,7 +428,7 @@ body.ilena-storefront .ilena-about__contact address strong {
         padding: 8px 12px;
         border-left: 1px solid var(--editorial-rule);
         color: #544d46;
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 600;
         letter-spacing: .035em;
         line-height: 1.45;
@@ -358,6 +448,59 @@ body.ilena-storefront .ilena-about__contact address strong {
     body.ilena-storefront .ilena-about__contact > div > p:not(.ilena-editorial__eyebrow),
     body.ilena-storefront .ilena-about__contact address {
         font-size: 13px;
+    }
+
+    body.ilena-storefront .ilena-about__contact-actions {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px 20px;
+        margin-top: 18px;
+    }
+
+    body.ilena-storefront .ilena-about__contact-actions a {
+        display: inline-flex;
+        min-height: 46px;
+        align-items: center;
+        gap: 12px;
+        margin: 0;
+        text-decoration: none;
+        transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
+    }
+
+    body.ilena-storefront .ilena-about__contact-primary {
+        padding: 0 18px;
+        background: #8e3935;
+        color: #fff !important;
+    }
+
+    body.ilena-storefront .ilena-about__contact-primary:hover {
+        background: #702c29;
+        transform: translateY(-1px);
+    }
+
+    body.ilena-storefront .ilena-about__contact-secondary {
+        color: #8e3935 !important;
+        text-underline-offset: 4px;
+    }
+
+    body.ilena-storefront .ilena-about__contact-actions a:focus-visible {
+        outline: 3px solid #c9a187;
+        outline-offset: 3px;
+    }
+}
+
+@media (max-width: 768px) {
+    body.ilena-storefront .ilena-about__hero-visual {
+        margin-top: 24px;
+    }
+
+    body.ilena-storefront .ilena-about__experience {
+        display: none;
+    }
+
+    body.ilena-storefront .ilena-about__contact-actions {
+        display: contents;
     }
 }
 

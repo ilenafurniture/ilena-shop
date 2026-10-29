@@ -6,23 +6,22 @@
     </nav>
 
     <header class="ilena-editorial__hero">
-        <p class="ilena-editorial__eyebrow">Cerita Ilena</p>
-        <h1 id="about-title">Furniture untuk ruang<br>yang terasa seperti rumah.</h1>
-        <p class="ilena-editorial__intro">Berangkat dari pengalaman panjang dalam manufaktur, Ilena hadir untuk membawa furniture yang fungsional, berkualitas, dan dekat dengan kehidupan sehari-hari.</p>
-        <div class="ilena-about__vision" aria-label="Visi Ilena: Mulai dari rumah, tercipta senyum ramah.">
-            <svg class="ilena-about__vision-mark" viewBox="0 0 96 56" aria-hidden="true" focusable="false">
-                <path class="vision-mark-stroke" pathLength="1" d="M5 27 23 10l18 17M10 23v25h26V23M19 48V34h9v14" />
-                <path class="vision-mark-stroke vision-mark-connect" pathLength="1" d="M42 31h13" />
-                <circle class="vision-mark-stroke vision-mark-face" cx="73" cy="29" r="17" pathLength="1" />
-                <path class="vision-mark-stroke vision-mark-smile" pathLength="1" d="M65 32q8 9 16 0" />
-                <circle class="vision-mark-dot" cx="49" cy="31" r="2.2" />
-            </svg>
-            <p>Mulai dari rumah,<br><em>tercipta senyum ramah.</em></p>
+        <div class="ilena-about__hero-copy">
+            <p class="ilena-editorial__eyebrow">Cerita Ilena</p>
+            <h1 id="about-title">Furniture untuk ruang<br>yang terasa seperti rumah.</h1>
+            <p class="ilena-editorial__intro">Berangkat dari pengalaman panjang dalam manufaktur, Ilena hadir untuk membawa furniture yang fungsional, berkualitas, dan dekat dengan kehidupan sehari-hari.</p>
+            <div class="ilena-about__vision" aria-label="Visi Ilena: Mulai dari rumah, tercipta senyum ramah.">
+                <svg class="ilena-about__vision-mark" viewBox="0 0 96 56" aria-hidden="true" focusable="false">
+                    <path class="vision-mark-stroke" pathLength="1" d="M5 27 23 10l18 17M10 23v25h26V23M19 48V34h9v14" />
+                    <path class="vision-mark-stroke vision-mark-connect" pathLength="1" d="M42 31h13" />
+                    <circle class="vision-mark-stroke vision-mark-face" cx="73" cy="29" r="17" pathLength="1" />
+                    <path class="vision-mark-stroke vision-mark-smile" pathLength="1" d="M65 32q8 9 16 0" />
+                    <circle class="vision-mark-dot" cx="49" cy="31" r="2.2" />
+                </svg>
+                <p>Mulai dari rumah,<br><em>tercipta senyum ramah.</em></p>
+            </div>
         </div>
-    </header>
-
-    <section class="ilena-about__story" aria-labelledby="about-story-title">
-        <div class="ilena-about__image">
+        <figure class="ilena-about__hero-visual ilena-about__image">
             <img src="https://img.ilenafurniture.com/image/1742450062282.webp/?apikey=<?= esc($apikey_img_ilena, 'attr'); ?>" alt="Furniture Ilena dalam ruang bergaya urban" width="960" height="640" fetchpriority="high">
             <svg class="ilena-about-motion-art" viewBox="0 0 520 320" aria-hidden="true" focusable="false">
                 <circle class="about-motion-orbit-line" cx="260" cy="164" r="148" />
@@ -31,13 +30,21 @@
                 <path class="about-motion-path about-motion-measure" pathLength="1" d="M91 78h338m-338-8v16m338-16v16" />
                 <g class="about-motion-orbit-marker"><circle cx="260" cy="16" r="4" /><circle cx="260" cy="16" r="8" /></g>
             </svg>
-        </div>
+            <figcaption class="ilena-about__hero-caption">Ruang yang nyaman dimulai dari rumah.</figcaption>
+        </figure>
+    </header>
+
+    <section class="ilena-about__story" aria-labelledby="about-story-title">
         <div class="ilena-about__copy">
             <p class="ilena-editorial__eyebrow">Dirancang untuk keseharian</p>
-            <h2 id="about-story-title">Crafted for modern living.</h2>
+            <h2 id="about-story-title">Dirancang untuk kehidupan modern.</h2>
             <p>Ilena lahir pada 2024 di bawah naungan CV Catur Bhakti Mandiri, perusahaan dengan pengalaman sekitar 30 tahun di bidang furniture. Kami mengembangkan bisnis ritel dan interior dengan memahami kebutuhan ruang dan kebiasaan masyarakat urban.</p>
             <p>Setiap ruang punya ceritanya sendiri. Kami ingin membantu Anda membentuk ruang yang nyaman, fungsional, dan mencerminkan siapa Anda.</p>
         </div>
+        <aside class="ilena-about__experience" aria-label="Sekitar 30 tahun pengalaman manufaktur">
+            <span aria-hidden="true">30</span>
+            <p><strong>Tahun pengalaman</strong><br>menjadi landasan Ilena dalam memahami furniture.</p>
+        </aside>
     </section>
 
     <section class="ilena-about__profile" aria-labelledby="about-profile-title">
@@ -70,8 +77,10 @@
             <p class="ilena-editorial__eyebrow">Kami siap membantu</p>
             <h2 id="about-contact-title">Mari terhubung.</h2>
             <p>Hubungi tim Ilena untuk pertanyaan seputar produk, pemesanan, atau kerja sama.</p>
-            <a href="mailto:cs@ilenafurniture.com">cs@ilenafurniture.com</a>
-            <a href="https://wa.me/628112938158" target="_blank" rel="noopener noreferrer">WhatsApp 0811-2938-158</a>
+            <div class="ilena-about__contact-actions">
+                <a class="ilena-about__contact-primary" href="https://wa.me/628112938158" target="_blank" rel="noopener noreferrer">Hubungi melalui WhatsApp <span aria-hidden="true">↗</span></a>
+                <a class="ilena-about__contact-secondary" href="mailto:cs@ilenafurniture.com">cs@ilenafurniture.com</a>
+            </div>
         </div>
         <address>
             <strong>Ilena Furniture</strong>
