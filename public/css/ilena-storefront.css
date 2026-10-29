@@ -10079,87 +10079,97 @@ body.ilena-storefront .ilena-chat-greeting-teaser button:focus-visible { outline
     body.ilena-storefront .ilena-chat-greeting-teaser__mark img,
     body.ilena-storefront .ilena-chat-greeting-teaser__bubble [data-greeting-open] { animation: none !important; transition: none !important; }
 }
-/* Make the first greeting unmistakable without turning it into a blocking card. */
+/* Clear, unmistakable speech-bubble greeting beside Wawa's portrait. */
 body.ilena-storefront .ilena-chat-greeting-teaser__bubble {
-    width: min(234px, calc(100vw - 112px));
-    padding-top: 10px;
-    border-top: 2px solid #982d36;
-    box-shadow: 0 9px 24px rgba(39, 31, 27, .19);
+    width: min(226px, calc(100vw - 112px));
+    margin: 0 0 12px;
+    padding: 12px 29px 11px 14px;
+    border: 1px solid #e5d5ca;
+    border-radius: 17px 17px 5px 17px;
+    background: #fffdf9;
+    box-shadow: 0 8px 20px rgba(39, 31, 27, .16);
 }
-body.ilena-storefront .ilena-chat-greeting-teaser__bubble strong { font-size: 16px; }
-body.ilena-storefront .ilena-chat-greeting-teaser__bubble p { color: #554942; font-size: 11px; }
+body.ilena-storefront .ilena-chat-greeting-teaser__bubble::after {
+    right: -7px;
+    bottom: 13px;
+    width: 13px;
+    height: 13px;
+    border-color: #e5d5ca;
+    background: #fffdf9;
+}
+body.ilena-storefront .ilena-chat-greeting-teaser__bubble strong { color: #2c2522; font-size: 15px; }
+body.ilena-storefront .ilena-chat-greeting-teaser__bubble p { color: #625750; font-size: 11px; }
 body.ilena-storefront .ilena-chat-greeting-teaser__bubble [data-greeting-open] {
+    display: inline-flex;
     min-height: 30px;
+    align-items: center;
     margin-top: 8px;
-    padding: 0 12px;
+    padding: 0 11px;
     border: 0;
     border-radius: 5px;
-    background: #922b32;
+    background: #962f38;
     color: #fffdfa;
     font-size: 10px;
-    box-shadow: 0 3px 8px rgba(146, 43, 50, .18);
+    box-shadow: 0 2px 6px rgba(115, 31, 39, .16);
 }
 body.ilena-storefront .ilena-chat-greeting-teaser__bubble [data-greeting-open]:hover {
     background: #302724;
     color: #fffdfa;
-    box-shadow: 0 4px 11px rgba(48, 39, 36, .2);
     transform: translateY(-1px);
 }
-body.ilena-storefront .ilena-chat-greeting-teaser__mark { width: 82px; height: 86px; flex-basis: 82px; }
-body.ilena-storefront .ilena-chat-greeting-teaser__mark img { width: 88px; height: 88px; }
+body.ilena-storefront .ilena-chat-greeting-teaser__mark { width: 78px; height: 84px; flex-basis: 78px; }
+body.ilena-storefront .ilena-chat-greeting-teaser__mark img { width: 84px; height: 84px; }
 body.ilena-storefront .ilena-chat-greeting-teaser__mark::before {
     position: absolute;
-    inset: 15px 9px 7px;
-    border: 1px solid rgba(146, 43, 50, .38);
+    inset: 13px 7px 5px;
+    border: 1px solid rgba(150, 47, 56, .32);
     border-radius: 50%;
     content: "";
     opacity: 0;
     pointer-events: none;
 }
 body.ilena-storefront .ilena-chat-greeting-teaser.is-arrival .ilena-chat-greeting-teaser__bubble {
-    border-color: #922b32;
-    box-shadow: 0 12px 30px rgba(91, 34, 35, .24);
-    animation: ilena-wawa-greeting-emphasis .82s cubic-bezier(.18,.78,.24,1.18) both;
+    animation: ilena-wawa-greeting-emphasis .6s cubic-bezier(.2,.72,.25,1) both;
 }
 body.ilena-storefront .ilena-chat-greeting-teaser.is-arrival .ilena-chat-greeting-teaser__mark::before {
-    animation: ilena-wawa-arrival-ring 1s ease-out .08s 2 both;
+    animation: ilena-wawa-arrival-ring .9s ease-out .08s 2 both;
 }
 body.ilena-storefront .ilena-chat-greeting-teaser.is-arrival .ilena-chat-greeting-teaser__mark img {
-    animation: ilena-wawa-wave-arrival .94s cubic-bezier(.3,.7,.3,1) .06s 1 both;
+    animation: ilena-wawa-wave-arrival .94s ease-out .06s 1 both;
 }
 body.ilena-storefront .ilena-chat-greeting-teaser.is-arrival .ilena-chat-greeting-teaser__bubble [data-greeting-open] {
-    animation: ilena-wawa-cta-arrival .72s ease-out .42s 1 both;
+    animation: ilena-wawa-cta-arrival .65s ease-out .3s 1 both;
 }
 @keyframes ilena-wawa-greeting-emphasis {
-    0% { opacity: 0; transform: translate3d(13px, 9px, 0) scale(.88); }
-    66% { opacity: 1; transform: translate3d(-2px, -2px, 0) scale(1.045); }
-    100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+    from { opacity: 0; transform: translate3d(8px, 6px, 0) scale(.96); }
+    to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
 }
 @keyframes ilena-wawa-arrival-ring {
-    0% { opacity: .6; transform: scale(.78); }
-    100% { opacity: 0; transform: scale(1.2); }
+    0% { opacity: .48; transform: scale(.82); }
+    100% { opacity: 0; transform: scale(1.18); }
 }
 @keyframes ilena-wawa-wave-arrival {
     0%, 100% { transform: translateY(0) rotate(0); }
-    22% { transform: translateY(-5px) rotate(-8deg); }
-    48% { transform: translateY(0) rotate(8deg); }
-    73% { transform: translateY(-2px) rotate(-4deg); }
+    22% { transform: translateY(-4px) rotate(-6deg); }
+    48% { transform: translateY(0) rotate(6deg); }
+    73% { transform: translateY(-1px) rotate(-3deg); }
 }
 @keyframes ilena-wawa-cta-arrival {
-    0% { transform: scale(.94); box-shadow: 0 0 0 0 rgba(146,43,50,.28); }
-    55% { transform: scale(1.04); box-shadow: 0 0 0 5px rgba(146,43,50,.13); }
-    100% { transform: scale(1); box-shadow: 0 3px 8px rgba(146,43,50,.18); }
+    0% { transform: scale(.97); box-shadow: 0 0 0 0 rgba(150,47,56,.22); }
+    55% { transform: scale(1.025); box-shadow: 0 0 0 4px rgba(150,47,56,.1); }
+    100% { transform: scale(1); box-shadow: 0 2px 6px rgba(115,31,39,.16); }
 }
 @media (max-width: 600px) {
     body.ilena-storefront .ilena-chat-greeting-teaser__bubble {
-        width: min(208px, calc(100vw - 98px));
-        padding-top: 8px;
+        width: min(197px, calc(100vw - 96px));
+        margin-bottom: 10px;
+        padding: 10px 26px 9px 11px;
     }
     body.ilena-storefront .ilena-chat-greeting-teaser__bubble strong { font-size: 14px; }
     body.ilena-storefront .ilena-chat-greeting-teaser__bubble p { font-size: 10px; }
-    body.ilena-storefront .ilena-chat-greeting-teaser__bubble [data-greeting-open] { min-height: 29px; font-size: 9px; }
-    body.ilena-storefront .ilena-chat-greeting-teaser__mark { width: 70px; height: 74px; flex-basis: 70px; }
-    body.ilena-storefront .ilena-chat-greeting-teaser__mark img { width: 76px; height: 76px; }
+    body.ilena-storefront .ilena-chat-greeting-teaser__bubble [data-greeting-open] { min-height: 28px; font-size: 9px; }
+    body.ilena-storefront .ilena-chat-greeting-teaser__mark { width: 66px; height: 72px; flex-basis: 66px; }
+    body.ilena-storefront .ilena-chat-greeting-teaser__mark img { width: 72px; height: 72px; }
 }
 @media (prefers-reduced-motion: reduce) {
     body.ilena-storefront .ilena-chat-greeting-teaser.is-arrival .ilena-chat-greeting-teaser__bubble,
