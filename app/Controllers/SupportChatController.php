@@ -441,7 +441,8 @@ class SupportChatController extends BaseController
                 && $db->tableExists('ilena_chat_knowledge')
                 && $db->tableExists('ilena_chat_product_specs')
                 && $db->tableExists('ilena_chat_feedback')
-                && $db->tableExists('ilena_chat_events'),
+                && $db->tableExists('ilena_chat_events')
+                && $db->tableExists('ilena_chat_reads'),
         ]);
     }
 
@@ -494,7 +495,36 @@ class SupportChatController extends BaseController
     {
         // AI-only chats are private to the customer/assistant unless the
         // customer explicitly requests staff. Keep them out of the inbox.
-        $rows = $this->db()->query("SELECT c.id,c.conversation_key,c.status,c.assigned_to,c.customer_name,c.customer_phone,c.customer_email,c.context_product_id,c.last_message_at,c.created_at,(SELECT LEFT(m.body,220) FROM ilena_chat_messages m WHERE m.conversation_id=c.id ORDER BY m.id DESC LIMIT 1) AS last_body FROM ilena_chat_conversations c WHERE c.status='human' OR (c.status='human_waiting' AND EXISTS (SELECT 1 FROM ilena_chat_messages handoff WHERE handoff.conversation_id=c.id AND handoff.sender_type='system' AND handoff.body='Pelanggan meminta bantuan staf. Pesan berikutnya akan dilayani oleh tim Ilena.')) ORDER BY CASE WHEN c.status='human_waiting' THEN 0 ELSE 1 END,c.last_message_at DESC LIMIT 80")->getResultArray();
+        $db = $this->db();
+        $email = mb_substr(trim((string) session()->get('email')), 0, 191);
+        $bucket = (string) $this->request->getGet('bucket');
+        $bucket = in_array($bucket, ['waiting', 'mine', 'team', 'closed'], true) ? $bucket : 'all';
+        $term = mb_substr(trim((string) $this->request->getGet('q')), 0, 100);
+        $where = [];
+        $binds = [$email];
+
+        if ($bucket === 'closed') {
+            $where[] = "c.status='closed'";
+        } else {
+            $where[] = "(c.status='human' OR (c.status='human_waiting' AND EXISTS (SELECT 1 FROM ilena_chat_messages handoff WHERE handoff.conversation_id=c.id AND handoff.sender_type='system' AND handoff.body='Pelanggan meminta bantuan staf. Pesan berikutnya akan dilayani oleh tim Ilena.')))";
+            if ($bucket === 'waiting') $where[] = "c.status='human_waiting'";
+            if ($bucket === 'mine') { $where[] = "c.status='human' AND c.assigned_to=?"; $binds[] = $email; }
+            if ($bucket === 'team') { $where[] = "c.status='human' AND c.assigned_to IS NOT NULL AND c.assigned_to<>?"; $binds[] = $email; }
+        }
+        if ($term !== '') {
+            $like = '%' . $term . '%';
+            $where[] = "(c.customer_name LIKE ? OR c.customer_phone LIKE ? OR c.customer_email LIKE ? OR c.context_product_id LIKE ? OR EXISTS (SELECT 1 FROM ilena_chat_messages search_m WHERE search_m.conversation_id=c.id AND search_m.body LIKE ?))";
+            array_push($binds, $like, $like, $like, $like, $like);
+        }
+
+        $sql = "SELECT c.id,c.conversation_key,c.status,c.assigned_to,c.customer_name,c.customer_phone,c.customer_email,c.context_product_id,c.last_message_at,c.created_at,"
+            . "(SELECT LEFT(m.body,220) FROM ilena_chat_messages m WHERE m.conversation_id=c.id ORDER BY m.id DESC LIMIT 1) AS last_body,"
+            . "(SELECT m.sender_type FROM ilena_chat_messages m WHERE m.conversation_id=c.id ORDER BY m.id DESC LIMIT 1) AS last_sender,"
+            . "(SELECT COUNT(*) FROM ilena_chat_messages unread WHERE unread.conversation_id=c.id AND unread.sender_type='visitor' AND unread.id>COALESCE((SELECT r.last_read_message_id FROM ilena_chat_reads r WHERE r.conversation_id=c.id AND r.staff_id=?),0)) AS unread_count "
+            . 'FROM ilena_chat_conversations c WHERE ' . implode(' AND ', $where)
+            . ($bucket === 'closed' ? ' ORDER BY c.closed_at DESC,c.id DESC' : " ORDER BY CASE WHEN c.status='human_waiting' THEN 0 ELSE 1 END,c.last_message_at DESC,c.id DESC")
+            . ' LIMIT 80';
+        $rows = $db->query($sql, $binds)->getResultArray();
         return $this->json(['success' => true, 'items' => $rows]);
     }
 
@@ -502,8 +532,31 @@ class SupportChatController extends BaseController
     {
         $conversation = $this->db()->table('ilena_chat_conversations')->where('id', $id)->get()->getRowArray();
         if (! $conversation) return $this->json(['success' => false], 404);
+        if (! empty($conversation['context_product_id']) && $this->db()->tableExists('barang')) {
+            $product = $this->db()->table('barang')->select('nama')->where('id', (string) $conversation['context_product_id'])->get()->getRowArray();
+            if ($product) {
+                $conversation['context_product_name'] = (string) $product['nama'];
+                $conversation['context_product_url'] = '/product/' . rawurlencode(strtolower(str_replace(' ', '-', (string) $product['nama'])));
+            }
+        }
         $after = max(0, (int)$this->request->getGet('after'));
         return $this->json(['success' => true, 'conversation' => $conversation, 'messages' => $this->messagesFor($id, $after, 80)]);
+    }
+
+    public function adminRead(int $id)
+    {
+        $db = $this->db();
+        $conversation = $db->table('ilena_chat_conversations')->select('id')->where('id', $id)->get()->getRowArray();
+        if (! $conversation) return $this->json(['success' => false, 'message' => 'Percakapan tidak ditemukan.'], 404);
+        $latest = $db->table('ilena_chat_messages')->selectMax('id', 'last_id')->where('conversation_id', $id)->get()->getRowArray();
+        $staff = mb_substr(trim((string) session()->get('email')), 0, 191);
+        $db->table('ilena_chat_reads')->replace([
+            'conversation_id' => $id,
+            'staff_id' => $staff,
+            'last_read_message_id' => (int) ($latest['last_id'] ?? 0),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+        return $this->json(['success' => true]);
     }
 
     public function adminReply(int $id)
@@ -515,12 +568,24 @@ class SupportChatController extends BaseController
         if (! $conversation) return $this->json(['success' => false, 'message' => 'Percakapan sudah ditutup atau tidak ditemukan.'], 404);
         $now = date('Y-m-d H:i:s');
         $email = mb_substr(trim((string)session()->get('email')), 0, 191);
-        if (($conversation['status'] ?? '') === 'human' && !empty($conversation['assigned_to'])
-            && strcasecmp((string)$conversation['assigned_to'], $email) !== 0
-        ) {
-            return $this->json(['success' => false, 'message' => 'Percakapan sedang ditangani staf lain. Ambil antrean yang belum ditugaskan.'], 409);
+        if (! empty($conversation['assigned_to']) && strcasecmp((string)$conversation['assigned_to'], $email) !== 0) {
+            return $this->json(['success' => false, 'message' => 'Percakapan sedang ditangani staf lain.'], 409);
         }
         $db->transBegin();
+        if (($conversation['status'] ?? '') === 'human_waiting' || empty($conversation['assigned_to'])) {
+            $db->table('ilena_chat_conversations')->where('id', $id)->groupStart()
+                ->where('status', 'human_waiting')->orGroupStart()
+                    ->where('status', 'human')->groupStart()->where('assigned_to', null)->orWhere('assigned_to', '')->groupEnd()
+                ->groupEnd()->groupEnd()
+                ->update(['status' => 'human', 'assigned_to' => $email, 'updated_at' => $now]);
+            if ($db->affectedRows() !== 1) {
+                $db->transRollback();
+                $latest = $db->table('ilena_chat_conversations')->where('id', $id)->get()->getRowArray();
+                if (! $latest || ($latest['status'] ?? '') === 'closed') return $this->json(['success' => false, 'message' => 'Percakapan sudah ditutup.'], 409);
+                if (strcasecmp((string) ($latest['assigned_to'] ?? ''), $email) !== 0) return $this->json(['success' => false, 'message' => 'Percakapan baru saja diambil staf lain.'], 409);
+                $db->transBegin();
+            }
+        }
         $db->table('ilena_chat_messages')->insert(['conversation_id' => $id, 'sender_type' => 'admin', 'sender_id' => $email, 'body' => $body, 'created_at' => $now]);
         $db->table('ilena_chat_conversations')->where('id', $id)->update(['status' => 'human', 'assigned_to' => $email, 'last_message_at' => $now, 'updated_at' => $now]);
         if ($db->transStatus() === false) { $db->transRollback(); return $this->json(['success' => false, 'message' => 'Balasan gagal disimpan.'], 500); }
@@ -531,21 +596,34 @@ class SupportChatController extends BaseController
     public function adminClaim(int $id)
     {
         $db = $this->db();
-        $conversation = $db->table('ilena_chat_conversations')->where('id', $id)->whereIn('status', ['human_waiting', 'human'])->get()->getRowArray();
-        if (! $conversation) return $this->json(['success' => false, 'message' => 'Percakapan tidak ditemukan.'], 404);
         $email = mb_substr(trim((string)session()->get('email')), 0, 191);
-        if (($conversation['status'] ?? '') === 'human' && !empty($conversation['assigned_to'])
-            && strcasecmp((string)$conversation['assigned_to'], $email) !== 0
-        ) {
-            return $this->json(['success' => false, 'message' => 'Percakapan sudah diambil oleh staf lain.'], 409);
+        $current = $db->table('ilena_chat_conversations')->where('id', $id)->whereIn('status', ['human_waiting', 'human'])->get()->getRowArray();
+        if (! $current) return $this->json(['success' => false, 'message' => 'Percakapan tidak ditemukan atau sudah ditutup.'], 404);
+        if (($current['status'] ?? '') === 'human' && strcasecmp((string) ($current['assigned_to'] ?? ''), $email) === 0) {
+            return $this->json(['success' => true, 'alreadyAssigned' => true]);
         }
-        $db->table('ilena_chat_conversations')->where('id', $id)->update(['status' => 'human', 'assigned_to' => $email, 'updated_at' => date('Y-m-d H:i:s')]);
-        return $this->json(['success' => true]);
+        $db->table('ilena_chat_conversations')->where('id', $id)->groupStart()
+            ->where('status', 'human_waiting')->orGroupStart()
+                ->where('status', 'human')->groupStart()->where('assigned_to', null)->orWhere('assigned_to', '')->groupEnd()
+            ->groupEnd()->groupEnd()
+            ->update(['status' => 'human', 'assigned_to' => $email, 'updated_at' => date('Y-m-d H:i:s')]);
+        if ($db->affectedRows() === 1) return $this->json(['success' => true]);
+        $latest = $db->table('ilena_chat_conversations')->where('id', $id)->get()->getRowArray();
+        if ($latest && ($latest['status'] ?? '') === 'human' && strcasecmp((string) ($latest['assigned_to'] ?? ''), $email) === 0) {
+            return $this->json(['success' => true, 'alreadyAssigned' => true]);
+        }
+        return $this->json(['success' => false, 'message' => 'Percakapan sudah diambil staf lain. Perbarui antrean.'], 409);
     }
 
     public function adminClose(int $id)
     {
         $db = $this->db();
+        $conversation = $db->table('ilena_chat_conversations')->where('id', $id)->where('status <>', 'closed')->get()->getRowArray();
+        if (! $conversation) return $this->json(['success' => false, 'message' => 'Percakapan tidak ditemukan atau sudah ditutup.'], 404);
+        $email = mb_substr(trim((string) session()->get('email')), 0, 191);
+        if (! empty($conversation['assigned_to']) && strcasecmp((string) $conversation['assigned_to'], $email) !== 0) {
+            return $this->json(['success' => false, 'message' => 'Percakapan sedang ditangani staf lain.'], 409);
+        }
         if (! $db->table('ilena_chat_conversations')->where('id', $id)->where('status <>', 'closed')->update([
             'status' => 'closed', 'closed_at' => date('Y-m-d H:i:s'), 'updated_at' => date('Y-m-d H:i:s'),
         ])) return $this->json(['success' => false, 'message' => 'Percakapan tidak ditemukan atau gagal ditutup.'], 404);

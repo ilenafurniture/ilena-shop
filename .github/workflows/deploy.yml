@@ -72,5 +72,10 @@ jobs:
         require '/mine/ilenafurniture.com/spark';
         PHP
           "$PHP_BIN" "$spark_cli" migrate
+
+          echo "[deploy] restart Kak Wawa chat worker to load deployed code"
+          systemctl restart ilena-chat-worker
+          systemctl is-active --quiet ilena-chat-worker
+          echo "[deploy] chat worker active"
           echo "[deploy] completed"
         EOF

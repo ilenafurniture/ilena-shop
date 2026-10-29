@@ -48,7 +48,7 @@ class ChatWork extends BaseCommand
         if (! $expired) return;
         $ids = array_map(static fn($row) => (int)$row['id'], $expired);
         $db->transBegin();
-        foreach (['ilena_chat_jobs', 'ilena_chat_messages'] as $table) {
+        foreach (['ilena_chat_jobs', 'ilena_chat_messages', 'ilena_chat_reads'] as $table) {
             if ($db->tableExists($table)) $db->table($table)->whereIn('conversation_id', $ids)->delete();
         }
         // Conversations use id, not conversation_id.
