@@ -1968,7 +1968,10 @@ class Pages extends BaseController
                     return ['ok'=>false,'msg'=>'Voucher sudah mencapai limit pemakaian.'];
                 }
             }
-        } catch (\Throwable $th) {}
+        } catch (\Throwable $th) {
+            log_message('error', 'Pemeriksaan kuota voucher gagal: {error}', ['error' => $th->getMessage()]);
+            return ['ok' => false, 'msg' => 'Voucher sedang tidak dapat diverifikasi. Coba kembali sebentar lagi.'];
+        }
 
         // 5) Sekali per user
         if (!empty($row['sekali_pakai_per_user'])) {
@@ -1981,7 +1984,10 @@ class Pages extends BaseController
                         return ['ok'=>false,'msg'=>'Voucher ini hanya dapat digunakan sekali per pengguna.'];
                     }
                 }
-            } catch (\Throwable $th) {}
+            } catch (\Throwable $th) {
+                log_message('error', 'Pemeriksaan batas voucher per pengguna gagal: {error}', ['error' => $th->getMessage()]);
+                return ['ok' => false, 'msg' => 'Voucher sedang tidak dapat diverifikasi. Coba kembali sebentar lagi.'];
+            }
 
             // list_email is the allow-list for target=spesifik, not a usage ledger.
             // Usage history belongs to voucher_usage; retain the legacy fallback only
@@ -2096,6 +2102,20 @@ class Pages extends BaseController
             if ($kode === '' || $kode === 'Voucher') continue;
 
             try {
+                $reservationConsumed = (new \App\Services\Payments\VoucherReservationService())->consume((string) ($order['id_midtrans'] ?? ''));
+                if ($reservationConsumed) {
+                    $vRec = $this->voucherModel->where('kode', $kode)->first();
+                    if ($vRec) {
+                        $listEmail = json_decode($vRec['list_email'] ?? '[]', true);
+                        if (!is_array($listEmail)) $listEmail = [];
+                        if (!in_array($email, $listEmail, true)) {
+                            $listEmail[] = $email;
+                            $this->voucherModel->update($vRec['id'], ['list_email' => json_encode($listEmail)]);
+                        }
+                    }
+                    continue;
+                }
+
                 $exists = $this->voucherUsageModel
                     ->where(['kode_voucher' => $kode, 'email' => $email])
                     ->countAllResults();
@@ -2632,6 +2652,22 @@ class Pages extends BaseController
                 . '?idorder=' . rawurlencode($idFix) . '&access_token=' . rawurlencode($this->orderAccessToken($idFix)));
         }
 
+        $voucherReservationCreated = false;
+        if ($voucher && !$isSandboxCheckout) {
+            try {
+                $voucherReservation = (new \App\Services\Payments\VoucherReservationService())->reserve((int) $voucher['id'], $idFix, $email);
+                if (empty($voucherReservation['ok'])) {
+                    session()->setFlashdata('msg', $voucherReservation['message'] ?? 'Voucher baru saja mencapai batas pemakaian.');
+                    return redirect()->to('/payment/' . $index_kurir);
+                }
+                $voucherReservationCreated = empty($voucherReservation['existing']);
+            } catch (\Throwable $error) {
+                log_message('error', 'Voucher checkout reservation failed for {order}: {error}', ['order' => $idFix, 'error' => $error->getMessage()]);
+                session()->setFlashdata('msg', 'Voucher sedang tidak dapat diamankan. Coba kembali sebentar lagi.');
+                return redirect()->to('/payment/' . $index_kurir);
+            }
+        }
+
         $customField = json_encode(['e'=>$email,'n'=>$nama,'h'=>$nohp,'a'=>$alamat,'i'=>session()->get('keranjang'),'k'=>$kurirTerpilih,'v'=>$voucher]);
         $arrPostField = [
             "transaction_details" => ["order_id"=>$idFix, "gross_amount"=>(int)$total],
@@ -2691,11 +2727,13 @@ class Pages extends BaseController
             try {
                 $reservation = (new \App\Services\Payments\StockReservationService())->reserve($idFix, $cartCheck['cart']);
             } catch (\Throwable $error) {
+                if ($voucherReservationCreated) (new \App\Services\Payments\VoucherReservationService())->release($idFix);
                 log_message('error', 'Could not reserve checkout stock for {order}: {error}', ['order' => $idFix, 'error' => $error->getMessage()]);
                 session()->setFlashdata('msg', 'Stok belum dapat diamankan. Coba kembali setelah beberapa saat.');
                 return redirect()->to('/payment/' . $index_kurir);
             }
             if (empty($reservation['ok'])) {
+                if ($voucherReservationCreated) (new \App\Services\Payments\VoucherReservationService())->release($idFix);
                 session()->setFlashdata('msg', $reservation['message'] ?? 'Stok berubah. Perbarui keranjang sebelum membayar.');
                 return redirect()->to('/cart');
             }
@@ -2715,6 +2753,7 @@ class Pages extends BaseController
                 'id_marketplace'=>'','status_print'=>'siap','keterangan_suratjalan'=>''])) throw new \RuntimeException('Checkout attempt could not be saved');
         } catch (\Throwable $error) {
             if (!$isSandboxCheckout) (new \App\Services\Payments\StockReservationService())->release($idFix);
+            if ($voucherReservationCreated) (new \App\Services\Payments\VoucherReservationService())->release($idFix);
             log_message('error','Checkout persistence failed: {error}',['error'=>$error->getMessage()]);
             return redirect()->to('/payment/'.$index_kurir)->with('msg','Pesanan belum tersimpan; belum ada permintaan pembayaran dikirim.');
         }
@@ -2760,6 +2799,7 @@ class Pages extends BaseController
             }
             $this->pemesananModel->where('id_midtrans',$idFix)->where('status','Menunggu Pembayaran')->set(['status'=>'Gagal'])->update();
             if (db_connect()->affectedRows()===1 && !$isSandboxCheckout) (new \App\Services\Payments\StockReservationService())->release($idFix);
+            if (!$isSandboxCheckout) (new \App\Services\Payments\VoucherReservationService())->release($idFix);
             session()->remove(['checkout_pending_order_id','checkout_operation_fingerprint','checkout_order_id','checkout_operation_key']);
             session()->setFlashdata('msg', $hasilMidtrans['status_message'] ?? 'Transaksi gagal');
             return redirect()->to('/payment/' . $index_kurir);
@@ -2799,6 +2839,7 @@ class Pages extends BaseController
             $updated=$result['order']; $status=(string)$updated['status'];
             if ($result['applied']) {
                 if ($environment!=='sandbox' && $status==='Proses') { $this->markVoucherUsed($updated); $this->sendMetaCapiPurchase($updated); }
+                if ($environment!=='sandbox' && in_array($status, ['Kadaluarsa', 'Ditolak', 'Gagal', 'Dibatalkan'], true)) (new \App\Services\Payments\VoucherReservationService())->release((string) $updated['id_midtrans']);
                 if (in_array($status,['Kadaluarsa','Ditolak','Gagal','Dibatalkan'],true)) $this->deleteOrderFromIlenaSistem($updated);
                 $this->sendOrderPaymentEmail($updated,$status);
                 if ($environment!=='sandbox') $this->sendAdminOrderPaymentEmail($updated,$status);
@@ -2932,6 +2973,7 @@ class Pages extends BaseController
                 $result=(new \App\Services\Payments\PaymentTransitionService(db_connect()))->apply($provider,$environment,fn($paid)=>$this->processPaidOrder($paid));
                 $order=$result['order'];
                 if ($result['applied'] && $order['status']==='Proses' && $environment!=='sandbox') { $this->markVoucherUsed($order); $this->sendMetaCapiPurchase($order); }
+                if ($result['applied'] && $environment!=='sandbox' && in_array($order['status'], ['Kadaluarsa', 'Ditolak', 'Gagal', 'Dibatalkan'], true)) (new \App\Services\Payments\VoucherReservationService())->release((string) $order['id_midtrans']);
                 if ($result['applied'] && in_array($order['status'],['Proses','Menunggu Pembayaran'],true)) $this->syncOrderToIlenaSistem($order);
                 if ($result['applied'] && in_array($order['status'],['Kadaluarsa','Ditolak','Gagal','Dibatalkan'],true)) $this->deleteOrderFromIlenaSistem($order);
             } catch (\Throwable $e) { log_message('error','Payment status reconciliation deferred for {order}: {error}',['order'=>$orderId,'error'=>$e->getMessage()]); }

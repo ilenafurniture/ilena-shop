@@ -9774,3 +9774,18 @@ body.ilena-storefront .ilena-chat-footer {
     background: var(--wawa-header-surface) !important;
     background-image: none !important;
 }
+/* Keyboard-only bypass to the unique page content landmark. */
+.ilena-skip-link {
+    position: fixed;
+    z-index: 100000;
+    inset: 8px auto auto 8px;
+    transform: translateY(calc(-100% - 12px));
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #fff;
+    color: #171411;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, .18);
+    font-weight: 700;
+}
+.ilena-skip-link:focus { transform: translateY(0); outline: 3px solid #9f1d24; outline-offset: 2px; }
+#main-content:focus { outline: none; }

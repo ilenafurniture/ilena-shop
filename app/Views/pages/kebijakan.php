@@ -10,81 +10,30 @@
                 </li>
             </ol>
         </nav>
-        <!-- <p><strong>Terakhir Diperbarui:</strong> Mei 2024</p> -->
+        <p class="text-center text-muted">Terakhir diperbarui: 29 Oktober 2026</p>
         <h1 class="text-center">Kebijakan Privasi</h1>
         <h5 class="mb-4 text-center" style="color: var(--hijau)">Ilena Furniture</h5>
         <hr class="my-5">
-        <p>Ilena Furniture selalu mengedepankan kepercayaan yang telah pelanggan berikan dengan cara menjaga
-            dan melindungi informasi serta data pribadi pelanggan sebagai pengguna situs website Ilena Furniture.
-            Kebijakan privasi ini disusun dengan seksama sebagai wujud komitmen Kami melindungi dan menjaga segala
-            bentuk data atau informasi pribadi pengguna dari situs website Ilena Furniture.
-        </p>
-        <p>Untuk menghindari perbedaan persepsi, diharapkan membaca dan memahami kebijakan privasi dari awal hingga akhir.
-            Setiap informasi yang Kami peroleh ketika proses pemesanan, akan digunakan secara sah sesuai dengan
-            Undang-Undang Konsumen No. 8 Tahun 1999. Situs Ilena Furniture tidak akan mengungkap atau menyampaikan
-            informasi rahasia ini kepada pihak ketiga tanpa izin dari pemilik informasi tersebut. Akan tetapi,
-            terdapat pengecualian apabila dikemudian hari terdapat informasi tertentu yang perlu dilaporkan untuk
-            keperluan hukum yang berlaku di Indonesia.</p>
-        <p class="mb-5">Dengan mengunjungi dan menggunakan situs ini, Anda dianggap telah setuju dengan persyaratan yang tercantum
-            dalam kebijakan privasi. Dengan ini, dimohon kepada pelanggan untuk membaca dan menelaah kebijakan privasi
-            ini dengan seksama.</p>
+        <p>Ilena Furniture menggunakan data yang diperlukan untuk memproses pesanan, mengirimkan produk, menjaga keamanan akun, dan membantu pelanggan. Kebijakan ini menjelaskan data yang diproses melalui website, termasuk saat Kakak berbelanja sebagai tamu atau menggunakan Kak Wawa.</p>
 
-        <h3 style="letter-spacing: -1px;">Informasi yang Kami Kumpulkan</h3>
-        <p>Saat pengunjung situs Ilena Furniture melakukan registrasi akun, maka berikut ini adalah informasi yang
-            akan Kami peroleh:</p>
-        <div class="d-flex">
-            <div style="width: 20px;">
-                <p class="m-0">1.</p>
-            </div>
-            <div style="width: 100px;">
-                <p class="m-0">Nama</p>
-            </div>
-            <div style="width: 10px;">
-                <p class="m-0">:</p>
-            </div>
-        </div>
-        <div class="d-flex">
-            <div style="width: 20px;">
-                <p class="m-0">2.</p>
-            </div>
-            <div style="width: 100px;">
-                <p class="m-0">Alamat email</p>
-            </div>
-            <div style="width: 10px;">
-                <p class="m-0">:</p>
-            </div>
-        </div>
-        <div class="d-flex mb-2">
-            <div style="width: 20px;">
-                <p class="m-0">3.</p>
-            </div>
-            <div style="width: 100px;">
-                <p class="m-0">Nomor telpon</p>
-            </div>
-            <div style="width: 10px;">
-                <p class="m-0">:</p>
-            </div>
-        </div>
-        <p class="mb-5">Ilena Furniture hanya akan mengumpulkan informasi tersebut jika pengguna dalam hal ini pemilik akun tersebut
-            bersedia menyerahkan informasinya kepada Kami. Apabila memilih untuk tidak memberikan informasi diatas, maka
-            Kami tidak dapat melayani atau melakukan kesepakatan apapun bersama dengan Anda. Kami tidak akan menjual
-            atau menyebarluaskan informasi pribadi pelanggan kepada pihak manapun. Informasi yang dikumpulkan secara
-            online hanya akan digunakan secara internal dalam Perusahaan untuk melayani Anda sebagai konsumen dengan
-            maksimal.</p>
+        <h3 style="letter-spacing: -1px;">Data yang diproses</h3>
+        <ul>
+            <li>Data akun: nama, email, nomor telepon, alamat, dan informasi autentikasi yang diperlukan untuk akun.</li>
+            <li>Data pesanan: produk, varian, jumlah, harga, alamat tujuan, pilihan pengiriman, pembayaran, serta status dan riwayat transaksi.</li>
+            <li>Data layanan pelanggan: isi percakapan Kak Wawa, konteks halaman/produk yang dibagikan ke chat, serta nama dan nomor WhatsApp jika Kakak meminta dihubungkan ke staf.</li>
+            <li>Data teknis: alamat IP, informasi perangkat/peramban, cookie sesi, dan interaksi website untuk keamanan, operasional, analitik, serta pengukuran kampanye.</li>
+        </ul>
 
-        <h3 style="letter-spacing: -1px;">Promosi</h3>
-        <p class="mb-5">Setelah terjadi pembelian barang dan berlangganan newsletter dari situs Ilena Furniture, maka Anda akan
-            terus mendapatkan update produk terbaru, berita, dan penawaran spesial melalui email. Anda memiliki hak
-            untuk menerima atau menolak materi promosi yang telah dikirimkan tersebut. Apabila dirasa ingin berhenti
-            untuk berlangganan newsletter, maka cukup dengan melakukan klik unsubscribe pada bagian bawah setiap
-            newsletter atau email promosi yang Kami berikan secara khusus kepada Anda sebagai pelanggan.</p>
+        <h3 style="letter-spacing: -1px;">Tujuan dan pemrosesan oleh penyedia layanan</h3>
+        <p>Data digunakan untuk membuat dan mengelola akun, memvalidasi pembayaran, menyiapkan pesanan, mengatur pengiriman, memberi dukungan pelanggan, mencegah penyalahgunaan, dan meningkatkan layanan. Data yang diperlukan dapat diproses oleh penyedia pembayaran, ekspedisi, hosting, analitik/iklan, dan—jika layanan AI diaktifkan—penyedia model AI untuk menghasilkan balasan Kak Wawa. Penyedia hanya menerima data yang diperlukan untuk fungsi terkait. Jangan kirim kata sandi, data kartu, atau informasi rahasia melalui chat.</p>
+        <p>Website dapat menggunakan cookie sesi agar fitur akun dan keranjang bekerja serta teknologi analitik/iklan dari Google, Meta, dan TikTok untuk memahami kunjungan dan mengukur kampanye. Pengaturan cookie juga dapat dikendalikan melalui peramban. Jika penyedia memproses data dari luar Indonesia, pemrosesan mengikuti pengaturan dan ketentuan penyedia yang digunakan.</p>
 
-        <h3 style="letter-spacing: -1px;">Pembaruan Kebijakan Privasi</h3>
-        <p class="mb-5">Kebijakan privasi ini akan mengalami pembaharuan secara berkala pada kurun waktu tertentu sebagai upaya
-            pengembangan serta kemajuan situs Ilena Furniture dalam melakukan pelayanan terbaik kepada Pelanggan.
-            Diharapkan agar melakukan pemeriksaan secara berkala pada halaman ini untuk mengetahui perubahan-perubahan
-            tersebut. Kebijakan privasi ini berlaku untuk semua informasi tentang Anda dan akun Anda yang telah ada di
-            website Kami.</p>
+        <h3 style="letter-spacing: -1px;">Retensi dan pilihan Kakak</h3>
+        <p>Data transaksi disimpan selama diperlukan untuk pemenuhan pesanan, pencatatan, keamanan, dan kewajiban yang berlaku. Riwayat percakapan Kak Wawa dijadwalkan untuk dihapus setelah 180 hari; data dapat disimpan lebih lama jika diperlukan untuk menyelesaikan permintaan layanan, sengketa, atau kewajiban yang berlaku. Permintaan akses, koreksi, atau penghapusan data dapat disampaikan ke <a href="mailto:cs@ilenafurniture.com">cs@ilenafurniture.com</a>, dengan tetap memperhatikan catatan transaksi yang harus dipertahankan.</p>
+        <p>Pesanan dapat dilakukan tanpa membuat akun. Kakak dapat memilih untuk tidak melanjutkan chat atau menolak materi promosi. Kami tidak menjual data pribadi. Data dapat dibagikan jika diperlukan untuk layanan yang Kakak minta, keamanan, atau kewajiban hukum.</p>
+
+        <h3 style="letter-spacing: -1px;">Pembaruan kebijakan</h3>
+        <p class="mb-5">Kami dapat memperbarui kebijakan ini saat layanan atau cara pemrosesan berubah. Versi terbaru dan tanggal pembaruannya ditampilkan pada halaman ini.</p>
 
         <h3 style="letter-spacing: -1px;">Kontak Kami</h3>
         <p>Dengan senang hati Kami menerima segala kritik dan saran yang membangun dari para pelanggan sebagai bentuk

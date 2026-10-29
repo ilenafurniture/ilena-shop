@@ -341,12 +341,16 @@ $layoutPath = trim((string) service('uri')->getPath(), '/');
 $layoutPath = '/' . strtolower(trim($layoutPath, '/'));
 $isInternalArea = App\Services\StorefrontLayoutPolicy::isInternal($layoutPath);
 $layoutHeaderMode = App\Services\StorefrontLayoutPolicy::headerMode($layoutPath);
+$needsReactRuntime = in_array($layoutHeaderMode, ['full', 'auth', 'account'], true) || $layoutPath === '/article';
+$contentProvidesMain = in_array($layoutPath, ['/contact', '/iklan', '/partner', '/visimisi', '/tentang'], true)
+    || str_starts_with($layoutPath, '/invoice/');
 $layoutPageSegments = array_values(array_filter(explode('/', trim($layoutPath, '/'))));
 $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? 'home') ?: 'home';
 ?>
 
 <body
     class="<?= $isInternalArea ? 'ilena-internal' : 'ilena-storefront ilena-header--' . $layoutHeaderMode . ' ilena-page--' . esc($layoutPageSlug, 'attr'); ?>">
+    <?php if (!$isInternalArea): ?><a class="ilena-skip-link" href="#main-content">Lewati ke konten utama</a><?php endif; ?>
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K5BLN7VV" height="0" width="0"
             style="display:none;visibility:hidden"></iframe></noscript>
@@ -422,7 +426,7 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
     </div>
     <script defer src="<?= base_url('js/ilena-support-chat.js?v=' . filemtime(FCPATH . 'js/ilena-support-chat.js')); ?>"></script>
 
-    <?php if (!$isInternalArea && $layoutHeaderMode !== 'checkout'): ?>
+    <?php if (!$isInternalArea && $needsReactRuntime): ?>
     <script defer crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
     <script defer crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
     <script defer crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -435,9 +439,9 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
     <?php elseif (!$isInternalArea): ?>
     <?= $this->include('layout/navbarCompact', ['headerMode' => $layoutHeaderMode]); ?>
     <?php endif; ?>
-    <div style="flex: 1; position: relative; min-height: 500px;">
+    <<?= $contentProvidesMain ? 'div' : 'main'; ?> id="main-content" tabindex="-1" style="flex: 1; position: relative; min-height: 500px;">
         <?= $this->renderSection('content'); ?>
-    </div>
+    </<?= $contentProvidesMain ? 'div' : 'main'; ?>>
     <?= $this->include('layout/footer'); ?>
     <script>
     const toastElm = document.querySelector(".toast")
