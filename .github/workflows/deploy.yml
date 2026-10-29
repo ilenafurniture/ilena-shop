@@ -99,8 +99,8 @@ jobs:
           "$PHP_BIN" "$spark_cli" migrate
 
           echo "[deploy] restart Kak Wawa chat worker to load deployed code"
-          systemctl restart ilena-chat-worker
-          systemctl is-active --quiet ilena-chat-worker
+          sudo -n /usr/bin/systemctl restart ilena-chat-worker.service
+          sudo -n /usr/bin/systemctl is-active --quiet ilena-chat-worker.service
           echo "[deploy] chat worker active"
           echo "[deploy] run local-origin smoke checks"
           for path in / /product /login; do
