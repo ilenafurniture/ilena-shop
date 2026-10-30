@@ -1,6 +1,25 @@
 <?= $this->extend('layout/template'); ?>
 <?= $this->section('content'); ?>
-<?php $isEnglish = service('request')->getLocale() === 'en'; ?>
+<?php
+$isEnglish = service('request')->getLocale() === 'en';
+$artikel = is_array($artikel ?? null) ? array_values($artikel) : [];
+$artikelPopuler = is_array($artikelPopuler ?? null) ? $artikelPopuler : [];
+$bulan = is_array($bulan ?? null) ? $bulan : ($isEnglish
+    ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    : ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des']);
+$artikel3Baru = is_array($artikel3Baru ?? null) ? $artikel3Baru : json_decode((string) ($artikel3BaruJson ?? '[]'), true);
+$artikel3Baru = is_array($artikel3Baru) ? array_values($artikel3Baru) : [];
+if ($artikel3Baru === [] && $artikel !== []) {
+    $artikel3Baru = array_slice($artikel, 0, 3);
+}
+foreach ($artikel3Baru as &$artikelHero) {
+    if (is_array($artikelHero['kategori'] ?? null)) {
+        $artikelHero['kategori_label'] = $artikelHero['kategori_label'] ?? ilena_article_category_label((string) ($artikelHero['kategori'][0] ?? ''));
+        $artikelHero['kategori'] = (string) ($artikelHero['kategori'][0] ?? '');
+    }
+}
+unset($artikelHero);
+?>
 
 <style>
 /* ====== HERO ====== */
@@ -643,7 +662,7 @@ function titleCase(s){const t=s.toLowerCase().split(' ');for(let i=0;i<t.length;
 const {useState,useEffect,useRef}=React;
 const artikel3Baru=<?= json_encode($artikel3Baru, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
 const localePrefix=<?= json_encode($isEnglish ? '/en' : '', JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
-const inis=artikel3Baru[0];
+const inis=artikel3Baru[0] || {judul:'',deskripsi:'',id:'',kategori:'',path:'',header:''};
 const dataCategoryFromBackend='<?= isset($category) ? esc(ilena_article_category_label((string) $category), 'js') : ''; ?>';
 const App=()=> {
   const intervalRef=useRef(null);
@@ -657,7 +676,7 @@ const App=()=> {
     {teks:<?= json_encode($isEnglish ? 'Recommendations' : 'Rekomendasi'); ?>,link:localePrefix+'/article/category/rekomendasi',gambar:'https://images.unsplash.com/photo-1624269305543-efbc8d89f1d3?q=80&w=1025&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',deskripsi:<?= json_encode($isEnglish ? 'Find the right choices for your needs' : 'Pentingnya mendapatkan yang tepat sesuai kebutuhan'); ?>},
   ];
   useEffect(()=>{intervalRef.current=setInterval(()=>{setImg(p=>{const i=p.indexOf('active')+1>=p.length?0:p.indexOf('active')+1;return p.map((x,ix)=>ix===i?'active':'')})},5000);return()=>clearInterval(intervalRef.current)},[]);
-  useEffect(()=>{const idx=img.indexOf('active');const cur={...artikel3Baru[idx]};setImgSelected({...judulSplitter(cur.judul),deskripsi:cur.deskripsi,id:cur.id,kategori:cur.kategori_label||titleCase(cur.kategori),path:cur.path,header:cur.header})},[img]);
+  useEffect(()=>{if(!artikel3Baru.length)return;const idx=img.indexOf('active');const cur=artikel3Baru[idx];if(!cur)return;setImgSelected({...judulSplitter(cur.judul||''),deskripsi:cur.deskripsi||'',id:cur.id||'',kategori:cur.kategori_label||titleCase(cur.kategori||''),path:cur.path||'',header:cur.header||''})},[img]);
 
   return(
     <>
@@ -753,6 +772,7 @@ ReactDOM.render(<App />, document.getElementById("container-react-artikel"));
 
     <!-- ===== Hero 3 artikel ===== -->
     <div class="ubah-padding">
+        <?php if (count($artikel) >= 3): ?>
         <div class="baris-ke-kolom ubah-gap">
             <div style="flex:2;">
                 <a href="<?= esc(ilena_store_path('/article/' . $artikel[0]['path']), 'attr'); ?>"
@@ -798,6 +818,9 @@ ReactDOM.render(<App />, document.getElementById("container-react-artikel"));
                 </a>
             </div>
         </div>
+        <?php else: ?>
+        <p class="text-secondary py-4"><?= $isEnglish ? 'New articles will appear here soon.' : 'Artikel terbaru akan segera hadir.'; ?></p>
+        <?php endif; ?>
     </div>
 
     <!-- ======= PAGINATION (ATAS) ======= -->
