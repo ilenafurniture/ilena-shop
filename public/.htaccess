@@ -25,10 +25,9 @@ Options -Indexes
 	# current multilingual sitemap through CodeIgniter, even while that file exists.
 	RewriteRule ^sitemap\.xml$ index.php/sitemap.xml [L,NC,QSA]
 
-	# Rewrite "www.example.com -> example.com"
-	RewriteCond %{HTTPS} !=on
-	RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-	RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
+	# Use one canonical host and HTTPS URL for the public furniture domain.
+	RewriteCond %{HTTP_HOST} ^www\.ilenafurniture\.com$ [NC]
+	RewriteRule ^ https://ilenafurniture.com%{REQUEST_URI} [R=301,L,NE]
 
 	# Checks to see if the user is attempting to access a valid file,
 	# such as an image or css document, if this isn't true it sends the

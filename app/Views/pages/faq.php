@@ -148,7 +148,7 @@
                 </div>
                 <p class="sub-sub-faq">Bagaimana caranya mendapatkan katalog fisik Ilena?</p>
                 <div class="isinya">
-                    <p class="mb-0">SKami menyediakan katalog fisik yang bisa Anda dapatkan melalui toko
+                    <p class="mb-0">Kami menyediakan katalog fisik yang bisa Anda dapatkan melalui toko
                         offline yang telah bekerja sama dengan kami. Info daftar toko dapat Anda lihat
                         melalui website kami di <a href="/" target="_blank"
                             style="text-decoration:none; color:red; font-size:13px;">Ilena Furniture</a>.

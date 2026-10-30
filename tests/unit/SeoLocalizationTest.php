@@ -83,4 +83,15 @@ final class SeoLocalizationTest extends CIUnitTestCase
             $this->assertStringContainsString('aria-live="polite" aria-atomic="true"', $template);
         }
     }
+
+    public function testCanonicalHostAndFaqCopy(): void
+    {
+        $rewrite = file_get_contents(FCPATH . '.htaccess');
+        $faq = file_get_contents(APPPATH . 'Views/pages/faq.php');
+
+        $this->assertStringContainsString('RewriteCond %{HTTP_HOST} ^www\\.ilenafurniture\\.com$ [NC]', $rewrite);
+        $this->assertStringContainsString('RewriteRule ^ https://ilenafurniture.com%{REQUEST_URI} [R=301,L,NE]', $rewrite);
+        $this->assertStringNotContainsString('SKami', $faq);
+        $this->assertStringContainsString('Kami menyediakan katalog fisik', $faq);
+    }
 }
