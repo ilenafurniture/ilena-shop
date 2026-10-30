@@ -50,13 +50,24 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
                 <?php } ?>
             </div>
         </div>
-        <div class="ilena-search-popover" id="ilena-desktop-search" data-search-popover hidden>
-            <form action="/find" method="get" class="ilena-global-search" data-global-search role="search">
-                <label class="ilena-sr-only" for="global-search-desktop">Cari produk atau koleksi</label>
-                <input id="global-search-desktop" placeholder="Cari produk atau koleksi" class="input" name="q"
-                    type="search" autocomplete="off" autocapitalize="off" aria-autocomplete="list" aria-expanded="false" aria-controls="global-search-desktop-listbox">
-                <div class="ilena-search-suggestions" id="global-search-desktop-listbox" role="listbox" hidden></div>
-            </form>
+        <div class="ilena-search-overlay" id="ilena-desktop-search" data-search-popover hidden>
+            <section class="ilena-search-dialog" data-search-dialog role="dialog" aria-modal="true" aria-labelledby="ilena-search-title">
+                <div class="ilena-search-dialog__heading">
+                    <div>
+                        <p class="ilena-search-dialog__eyebrow">Ilena Furniture</p>
+                        <h2 id="ilena-search-title">Temukan yang tepat untuk rumah</h2>
+                    </div>
+                    <button type="button" class="ilena-search-close" data-search-close aria-label="Tutup pencarian">×</button>
+                </div>
+                <form action="/find" method="get" class="ilena-global-search" data-global-search role="search">
+                    <label class="ilena-sr-only" for="global-search-desktop">Cari produk atau koleksi</label>
+                    <span class="material-icons ilena-search-dialog__icon" aria-hidden="true">search</span>
+                    <input id="global-search-desktop" placeholder="Cari produk, koleksi, atau kategori" class="input" name="q"
+                        type="search" autocomplete="off" autocapitalize="off" aria-autocomplete="list" aria-expanded="false" aria-controls="global-search-desktop-listbox">
+                    <div class="ilena-search-suggestions" id="global-search-desktop-listbox" role="listbox" hidden></div>
+                </form>
+                <p class="ilena-search-dialog__hint">Ketik nama produk atau koleksi untuk mulai mencari.</p>
+            </section>
         </div>
     </div>
 </nav>
@@ -64,28 +75,52 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
 (() => {
     const toggle = document.querySelector('[data-search-toggle]');
     const panel = document.querySelector('[data-search-popover]');
+    const dialog = panel?.querySelector('[data-search-dialog]');
     const input = document.getElementById('global-search-desktop');
-    if (!toggle || !panel || !input) return;
+    const closeButton = panel?.querySelector('[data-search-close]');
+    if (!toggle || !panel || !dialog || !input || !closeButton) return;
 
     const closeSearch = () => {
         panel.hidden = true;
+        document.body.classList.remove('ilena-search-open');
         toggle.setAttribute('aria-expanded', 'false');
         toggle.setAttribute('aria-label', 'Buka pencarian');
     };
     toggle.addEventListener('click', () => {
         const opening = panel.hidden;
         panel.hidden = !opening;
+        document.body.classList.toggle('ilena-search-open', opening);
         toggle.setAttribute('aria-expanded', String(opening));
         toggle.setAttribute('aria-label', opening ? 'Tutup pencarian' : 'Buka pencarian');
         if (opening) window.requestAnimationFrame(() => input.focus());
     });
-    document.addEventListener('pointerdown', (event) => {
-        if (!panel.hidden && !panel.contains(event.target) && !toggle.contains(event.target)) closeSearch();
+    closeButton.addEventListener('click', () => {
+        closeSearch();
+        toggle.focus();
     });
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && !panel.hidden) {
+    panel.addEventListener('pointerdown', (event) => {
+        if (event.target === panel) {
             closeSearch();
             toggle.focus();
+        }
+    });
+    document.addEventListener('keydown', (event) => {
+        if (panel.hidden) return;
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            closeSearch();
+            toggle.focus();
+        } else if (event.key === 'Tab') {
+            const focusable = [...dialog.querySelectorAll('button:not([disabled]), input:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])')];
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
         }
     });
 })();

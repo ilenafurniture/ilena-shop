@@ -417,17 +417,74 @@ class Pages extends BaseController
         return $ranked;
     }
 
+    /**
+     * Keep a compact text index warm so each keystroke does not read every
+     * active product row from MySQL. Product details are refreshed before
+     * being returned to a visitor.
+     */
+    private function getSmartCatalogSearchIndex(): array
+    {
+        $cache = cache();
+        $cacheKey = 'ilena_smart_catalog_search_index_v1';
+        $cached = $cache->get($cacheKey);
+        if (is_array($cached)) return $cached;
+
+        $rows = $this->barangModel
+            ->select('id,nama,pencarian,kategori,subkategori,varian,deskripsi,pengunjung')
+            ->where('active', '1')
+            ->findAll();
+        $index = array_map(static function (array $product): array {
+            $product['deskripsi'] = mb_substr((string) ($product['deskripsi'] ?? ''), 0, 700);
+            return $product;
+        }, $rows);
+
+        $cache->save($cacheKey, $index, 30);
+        return $index;
+    }
+
+    /** Re-hydrate current active product rows and preserve text-match order. */
+    private function refreshSmartCatalogMatches(array $ranked, ?int $limit = null): array
+    {
+        if ($ranked === []) return [];
+
+        $ids = array_values(array_unique(array_filter(array_map(
+            static fn (array $match): string => (string) ($match['product']['id'] ?? ''),
+            $ranked
+        ))));
+        if ($limit !== null) $ids = array_slice($ids, 0, max(1, $limit * 2));
+        if ($ids === []) return [];
+
+        $freshRows = $this->barangModel
+            ->where('active', '1')
+            ->whereIn('id', $ids)
+            ->findAll();
+        $freshById = [];
+        foreach ($freshRows as $product) $freshById[(string) $product['id']] = $product;
+
+        $matches = [];
+        foreach ($ranked as $match) {
+            $id = (string) ($match['product']['id'] ?? '');
+            if (!isset($freshById[$id])) continue;
+            $match['product'] = $freshById[$id];
+            $matches[] = $match;
+            if ($limit !== null && count($matches) >= $limit) break;
+        }
+        return $matches;
+    }
+
     public function searchSuggestions()
     {
         $query = mb_substr(trim((string) $this->request->getGet('q')), 0, 100);
         if (mb_strlen($this->normalizeSmartCatalogQuery($query)) < 2) {
             return $this->response->setJSON(['items' => []]);
         }
-        $products = $this->barangModel->where('active', '1')->findAll();
-        $ranked = array_slice($this->rankSmartCatalog($query, $products), 0, 7);
+        $products = $this->getSmartCatalogSearchIndex();
+        $ranked = array_slice($this->rankSmartCatalog($query, $products), 0, 16);
+        $ranked = $this->refreshSmartCatalogMatches($ranked, 7);
         $items = array_map(static function (array $item): array {
             $product = $item['product'];
             return [
+                'id' => (string) ($product['id'] ?? ''),
                 'name' => (string) ($product['nama'] ?? ''),
                 'category' => trim((string) ($product['subkategori'] ?? '')),
                 'collection' => trim((string) ($product['kategori'] ?? '')),
@@ -439,7 +496,7 @@ class Pages extends BaseController
     public function findSmart()
     {
         $query = mb_substr(trim((string) $this->request->getGet('q')), 0, 100);
-        $productRows = $this->barangModel->where('active', '1')->findAll();
+        $productRows = $this->getSmartCatalogSearchIndex();
         $queryForMatching = $query;
         $smartFilters = [];
         $normalizedQuery = $this->normalizeSmartCatalogQuery($query);
@@ -511,6 +568,7 @@ class Pages extends BaseController
         }
 
         $ranked = $this->rankSmartCatalog($queryForMatching, $productRows);
+        $ranked = $this->refreshSmartCatalogMatches($ranked);
         $ranked = array_values(array_filter($ranked, static function (array $item) use ($smartMaxPrice, $smartMinPrice): bool {
             $price = (float) ($item['product']['harga'] ?? 0);
             return ($smartMaxPrice === null || $price <= $smartMaxPrice) && ($smartMinPrice === null || $price >= $smartMinPrice);
@@ -519,8 +577,13 @@ class Pages extends BaseController
         $suggestions = [];
         if ($products === [] && $query !== '') {
             $fallback = $this->rankSmartCatalog($queryForMatching, $productRows, true);
-            $suggestions = array_column(array_slice(array_filter($fallback, static fn (array $item): bool => $item['score'] > 0 || $item['distance'] <= 2), 0, 5), 'product');
-            if ($suggestions === []) $suggestions = array_column(array_slice($this->rankSmartCatalog('', $productRows), 0, 5), 'product');
+            $fallback = array_slice(array_filter($fallback, static fn (array $item): bool => $item['score'] > 0 || $item['distance'] <= 2), 0, 10);
+            $fallback = $this->refreshSmartCatalogMatches($fallback, 5);
+            $suggestions = array_column($fallback, 'product');
+            if ($suggestions === []) {
+                $popular = array_slice($this->rankSmartCatalog('', $productRows), 0, 10);
+                $suggestions = array_column($this->refreshSmartCatalogMatches($popular, 5), 'product');
+            }
         }
 
         $wishlist = $this->session->get('wishlist');
