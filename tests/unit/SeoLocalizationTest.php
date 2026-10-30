@@ -64,4 +64,23 @@ final class SeoLocalizationTest extends CIUnitTestCase
         $this->assertStringContainsString("'koleksiJenis' => [", $method);
         $this->assertStringContainsString('\'jenis\' => $jenis', $method);
     }
+
+    public function testSingleCollectionFilterGetsSpecificTitleWhileRemainingNonIndexable(): void
+    {
+        $controller = file_get_contents(APPPATH . 'Controllers/Pages.php');
+        $layout = file_get_contents(APPPATH . 'Views/layout/template.php');
+
+        $this->assertStringContainsString('$singleCollectionName . \' Furniture Collection\'', $controller);
+        $this->assertStringContainsString('\'Furniture \' . $singleCollectionName', $controller);
+        $this->assertStringContainsString('$localeNeutralPath === \'product\' && $requestQuery !== []', $layout);
+    }
+
+    public function testToastTemplatesDoNotShipDemoPlaceholderCopy(): void
+    {
+        foreach ([APPPATH . 'Views/layout/template.php', APPPATH . 'Views/admin/template.php'] as $templatePath) {
+            $template = file_get_contents($templatePath);
+            $this->assertStringNotContainsString('Hello, world! This is a toast message.', $template);
+            $this->assertStringContainsString('aria-live="polite" aria-atomic="true"', $template);
+        }
+    }
 }

@@ -405,7 +405,7 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
 
     <div class="toast start-50 translate-middle">
         <div class="toast-body">
-            <p>Hello, world! This is a toast message.</p>
+            <p aria-live="polite" aria-atomic="true"></p>
             <div class="mt-2 pt-2 border-top d-flex gap-1">
                 <form method="post">
                     <?= csrf_field(); ?>

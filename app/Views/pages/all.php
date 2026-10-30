@@ -413,6 +413,8 @@ if (isset($_GET['ruang'])) {
                     <p class="ilena-catalog-intro__eyebrow"><?= $isSmartSearch ? esc(lang('Store.catalogSearchEyebrow')) : 'ILENA <span>/</span> FURNITURE'; ?></p>
                     <?php if ($isSmartSearch || !$hideGenericCatalogIntro) { ?>
                     <h1><?= esc($isSmartSearch ? lang('Store.searchHeading') : $catalogHeading); ?></h1>
+                    <?php } else { ?>
+                    <h1 class="visually-hidden"><?= esc($catalogHeading); ?></h1>
                     <?php } ?>
                     <?php if ($isSmartSearch) { ?>
                     <p class="ilena-catalog-intro__description"><?= esc(lang('Store.searchDescription')); ?></p>

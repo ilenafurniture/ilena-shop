@@ -1016,6 +1016,18 @@ class Pages extends BaseController
 
             // ambil data default seperti sistem lama
             $product = $this->barangModel->getBarangNama();
+            $requestedCollection = strtolower(trim((string) ($this->request->getGet('koleksi') ?? '')));
+            $singleCollectionName = null;
+            if ($requestedCollection !== '' && ! preg_match('/[\s+,]/', $requestedCollection)) {
+                foreach ($koleksi as $collectionRow) {
+                    $collectionName = trim((string) ($collectionRow['nama'] ?? ''));
+                    $collectionSlug = strtolower(str_replace(' ', '-', $collectionName));
+                    if ($collectionName !== '' && hash_equals($collectionSlug, $requestedCollection)) {
+                        $singleCollectionName = ucwords($collectionName);
+                        break;
+                    }
+                }
+            }
 
             if ($jenisParam === 'diskon') {
                 // semua produk dengan diskon > 0
@@ -1030,6 +1042,16 @@ class Pages extends BaseController
                         && stripos($row['nama'] ?? '', 'bundling') !== false;
                 }));
                 $titlePage = $this->request->getLocale() === 'en' ? 'Furniture Bundles on Sale' : 'Bundling Sedang Diskon';
+            } elseif ($singleCollectionName !== null
+                && trim((string) ($this->request->getGet('jenis') ?? '')) === ''
+                && trim((string) ($this->request->getGet('ruang') ?? '')) === ''
+                && trim((string) ($this->request->getGet('harga') ?? '')) === ''
+                && trim((string) ($this->request->getGet('varian') ?? '')) === ''
+                && trim((string) ($this->request->getGet('q') ?? '')) === ''
+            ) {
+                $titlePage = $this->request->getLocale() === 'en'
+                    ? $singleCollectionName . ' Furniture'
+                    : 'Furniture ' . $singleCollectionName;
             } else {
                 $titlePage = $this->request->getLocale() === 'en' ? 'Our Products' : 'Produk Kami';
             }
@@ -1038,8 +1060,8 @@ class Pages extends BaseController
             $data = [
                 'title' => $titlePage,
                 'metaTitle' => ($this->request->getLocale() === 'en'
-                    ? ($jenisParam === 'diskon' ? 'Furniture on Sale' : ($jenisParam === 'bundling' ? 'Furniture Bundles' : 'Furniture Collection'))
-                    : ($jenisParam === 'diskon' ? 'Furniture Diskon' : ($jenisParam === 'bundling' ? 'Furniture Bundling' : 'Koleksi Furniture'))) . ' | Ilena Furniture',
+                    ? ($jenisParam === 'diskon' ? 'Furniture on Sale' : ($jenisParam === 'bundling' ? 'Furniture Bundles' : ($singleCollectionName !== null && $titlePage === $singleCollectionName . ' Furniture' ? $singleCollectionName . ' Furniture Collection' : 'Furniture Collection')))
+                    : ($jenisParam === 'diskon' ? 'Furniture Diskon' : ($jenisParam === 'bundling' ? 'Furniture Bundling' : ($singleCollectionName !== null && $titlePage === 'Furniture ' . $singleCollectionName ? 'Furniture ' . $singleCollectionName : 'Koleksi Furniture')))) . ' | Ilena Furniture',
                 'metaDeskripsi' => $this->request->getLocale() === 'en'
                     ? 'Explore Ilena furniture for different rooms and home styles. Compare product details, prices, colors, and availability.'
                     : 'Jelajahi furniture Ilena untuk berbagai ruang dan gaya hunian. Lihat detail produk, harga, pilihan warna, dan ketersediaannya.',
