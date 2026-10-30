@@ -297,7 +297,7 @@ function closeSecondAd() {
             $isFirstSlide = $ind_s === 0;
         ?>
         <a <?= !empty($slider['url']) ? 'href="' . esc($slider['url'], 'attr') . '"' : ''; ?>
-            class="<?= $isFirstSlide ? 'active' : 'kanan'; ?>">
+            class="<?= $isFirstSlide ? 'active' : 'kanan'; ?>" aria-hidden="<?= $isFirstSlide ? 'false' : 'true'; ?>">
             <picture>
                 <source media="(max-width: 700px)" srcset="<?= esc($mobileSrcset, 'attr'); ?>" sizes="100vw">
                 <img src="<?= esc($desktopSrc, 'attr'); ?>" srcset="<?= esc($desktopSrcset, 'attr'); ?>" sizes="100vw" alt="<?= esc('Inspirasi furniture Ilena' . ($ind_s > 0 ? ' — promosi ' . ($ind_s + 1) : ''), 'attr'); ?>" decoding="async"<?= $isFirstSlide ? ' fetchpriority="high"' : ' loading="lazy"'; ?>>
@@ -307,7 +307,7 @@ function closeSecondAd() {
     </div>
     <div class="dots">
         <?php foreach ($sliders as $key => $slider): ?>
-        <div class="dot <?= $key === 0 ? 'active' : ''; ?>"></div>
+        <button type="button" class="dot <?= $key === 0 ? 'active' : ''; ?>" aria-label="Tampilkan banner <?= $key + 1; ?>" aria-pressed="<?= $key === 0 ? 'true' : 'false'; ?>"></button>
         <?php endforeach; ?>
     </div>
 </div>
@@ -1633,7 +1633,7 @@ function modalseries() {
     revealRoomStrip.observe(roomStrip);
 })();
 
-const sliders = document.querySelectorAll('.slider');
+const sliders = document.querySelectorAll('.ilena-home-banner-slider');
 sliders.forEach((slider) => {
     const track = slider.querySelector('.slides');
     const slides = Array.from(track?.children ?? []);
@@ -1641,53 +1641,63 @@ sliders.forEach((slider) => {
     if (!track || slides.length < 2) return;
 
     let activeIndex = Math.max(0, slides.findIndex((slide) => slide.classList.contains('active')));
-    const mobileFade = slider.classList.contains('ilena-home-banner-slider') && window.matchMedia('(max-width: 700px)').matches;
-    if (mobileFade) {
-        let switchRequest = 0;
+    let switchRequest = 0;
+    let hovered = false;
+    let focused = false;
+    let touchStartX = null;
+    let pointerStartX = null;
+    let suppressClick = false;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const mobile = window.matchMedia('(max-width: 700px)');
+
+    const syncControls = () => {
         slides.forEach((slide, index) => slide.setAttribute('aria-hidden', index === activeIndex ? 'false' : 'true'));
-        dots.forEach((dot, index) => dot.classList.toggle('active', index === activeIndex));
-
-        const waitForSlideImage = (slide) => new Promise((resolve) => {
-            const image = slide.querySelector('img');
-            if (!image) { resolve(); return; }
-            image.loading = 'eager';
-            if (image.complete && image.naturalWidth > 0) {
-                if (typeof image.decode === 'function') image.decode().catch(() => {}).finally(resolve);
-                else resolve();
-                return;
-            }
-            let settled = false;
-            const finish = () => {
-                if (settled) return;
-                settled = true;
-                image.removeEventListener('load', finish);
-                image.removeEventListener('error', finish);
-                resolve();
-            };
-            image.addEventListener('load', finish, { once: true });
-            image.addEventListener('error', finish, { once: true });
-            window.setTimeout(finish, 5000);
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === activeIndex);
+            dot.setAttribute('aria-pressed', String(index === activeIndex));
         });
+    };
+    syncControls();
 
-        const setActive = async (index) => {
-            const nextIndex = (index + slides.length) % slides.length;
-            if (nextIndex === activeIndex) return;
-            const request = ++switchRequest;
-            await waitForSlideImage(slides[nextIndex]);
-            if (request !== switchRequest) return;
-            activeIndex = nextIndex;
-            slides.forEach((slide, slideIndex) => {
-                const active = slideIndex === activeIndex;
-                slide.classList.toggle('active', active);
-                slide.classList.remove('kiri', 'kanan');
-                slide.setAttribute('aria-hidden', active ? 'false' : 'true');
-            });
-            dots.forEach((dot, dotIndex) => dot.classList.toggle('active', dotIndex === activeIndex));
+    const waitForSlideImage = (slide) => new Promise((resolve) => {
+        const image = slide.querySelector('img');
+        if (!image) { resolve(); return; }
+        image.loading = 'eager';
+        if (image.complete && image.naturalWidth > 0) {
+            if (typeof image.decode === 'function') image.decode().catch(() => {}).finally(resolve);
+            else resolve();
+            return;
+        }
+        let settled = false;
+        const finish = () => {
+            if (settled) return;
+            settled = true;
+            image.removeEventListener('load', finish);
+            image.removeEventListener('error', finish);
+            resolve();
         };
-        dots.forEach((dot, index) => dot.addEventListener('click', () => setActive(index)));
+        image.addEventListener('load', finish, { once: true });
+        image.addEventListener('error', finish, { once: true });
+        window.setTimeout(finish, 5000);
+    });
 
-        let touchStartX = null;
-        let suppressMobileBannerClick = false;
+    const setActive = async (index) => {
+        const nextIndex = (index + slides.length) % slides.length;
+        if (nextIndex === activeIndex) return;
+        const request = ++switchRequest;
+        await waitForSlideImage(slides[nextIndex]);
+        if (request !== switchRequest) return;
+        activeIndex = nextIndex;
+        slides.forEach((slide, slideIndex) => {
+            slide.classList.toggle('active', slideIndex === activeIndex);
+            slide.classList.remove('kiri', 'kanan');
+        });
+        syncControls();
+    };
+
+    dots.forEach((dot, index) => dot.addEventListener('click', () => setActive(index)));
+
+    if (mobile.matches) {
         track.addEventListener('touchstart', (event) => {
             touchStartX = event.changedTouches[0]?.clientX ?? null;
         }, { passive: true });
@@ -1697,75 +1707,47 @@ sliders.forEach((slider) => {
             touchStartX = null;
             if (Math.abs(deltaX) >= 45) {
                 setActive(activeIndex + (deltaX < 0 ? 1 : -1));
-                suppressMobileBannerClick = true;
-                window.setTimeout(() => { suppressMobileBannerClick = false; }, 350);
+                suppressClick = true;
+                window.setTimeout(() => { suppressClick = false; }, 350);
             }
         }, { passive: true });
-        track.addEventListener('click', (event) => {
-            if (!suppressMobileBannerClick) return;
-            event.preventDefault();
-            event.stopPropagation();
-            suppressMobileBannerClick = false;
-        }, true);
-
-        window.setInterval(() => {
-            if (document.visibilityState === 'visible') setActive(activeIndex + 1);
-        }, 7000);
-        return;
+    } else {
+        track.addEventListener('pointerdown', (event) => {
+            if (event.pointerType !== 'mouse' || event.button !== 0) return;
+            pointerStartX = event.clientX;
+            track.classList.add('is-grabbing');
+        });
+        window.addEventListener('pointerup', (event) => {
+            if (pointerStartX === null) return;
+            const deltaX = event.clientX - pointerStartX;
+            pointerStartX = null;
+            track.classList.remove('is-grabbing');
+            if (Math.abs(deltaX) < 45) return;
+            setActive(activeIndex + (deltaX < 0 ? 1 : -1));
+            suppressClick = true;
+            window.setTimeout(() => { suppressClick = false; }, 300);
+        });
+        track.addEventListener('dragstart', (event) => event.preventDefault());
     }
 
-    const syncDots = () => {
-        activeIndex = Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / track.clientWidth)));
-        dots.forEach((dot, index) => dot.classList.toggle('active', index === activeIndex));
-    };
-    const goTo = (index) => {
-        activeIndex = (index + slides.length) % slides.length;
-        track.scrollTo({
-            left: activeIndex * track.clientWidth,
-            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
-        });
-        dots.forEach((dot, dotIndex) => dot.classList.toggle('active', dotIndex === activeIndex));
-    };
-
-    track.addEventListener('scroll', syncDots, { passive: true });
-    let dragStartX = 0;
-    let dragStartScroll = 0;
-    let dragging = false;
-    let suppressClick = false;
-    track.addEventListener('mousedown', (event) => {
-        if (event.button !== 0) return;
-        dragStartX = event.clientX;
-        dragStartScroll = track.scrollLeft;
-        dragging = false;
-        track.classList.add('is-grabbing');
-    });
-    window.addEventListener('mousemove', (event) => {
-        if (!(event.buttons & 1) || !track.classList.contains('is-grabbing')) return;
-        const distance = event.clientX - dragStartX;
-        if (!dragging && Math.abs(distance) < 6) return;
-        dragging = true;
-        track.classList.add('is-dragging');
-        track.scrollLeft = dragStartScroll - distance;
-        event.preventDefault();
-    });
-    const finishDrag = () => {
-        track.classList.remove('is-grabbing');
-        if (!dragging) return;
-        dragging = false;
-        track.classList.remove('is-dragging');
-        suppressClick = true;
-        window.setTimeout(() => { suppressClick = false; }, 250);
-    };
-    window.addEventListener('mouseup', finishDrag);
-    track.addEventListener('dragstart', (event) => event.preventDefault());
     track.addEventListener('click', (event) => {
         if (!suppressClick) return;
         event.preventDefault();
         event.stopPropagation();
         suppressClick = false;
     }, true);
-    dots.forEach((dot, index) => dot.addEventListener('click', () => goTo(index)));
-    window.setInterval(() => goTo(activeIndex + 1), 7000);
+    slider.addEventListener('mouseenter', () => { hovered = true; });
+    slider.addEventListener('mouseleave', () => { hovered = false; });
+    slider.addEventListener('focusin', () => { focused = true; });
+    slider.addEventListener('focusout', (event) => {
+        if (!slider.contains(event.relatedTarget)) focused = false;
+    });
+
+    window.setInterval(() => {
+        if (document.visibilityState === 'visible' && !hovered && !focused && !reduceMotion.matches) {
+            setActive(activeIndex + 1);
+        }
+    }, 7000);
 });
 </script>
 <script>
