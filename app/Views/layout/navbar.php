@@ -178,15 +178,27 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
         const handleCloseHover = (type) => {
             switch (type) {
                 case 'jenis':
-                    setEnterNavbar({...enterNavbar, jenis: false});
+                    setEnterNavbar((current) => ({ ...current, jenis: false }));
                     break;
                 case 'kategori':
-                    setEnterNavbar({...enterNavbar, kategori: false});
+                    setEnterNavbar((current) => ({ ...current, kategori: false }));
                     break;
                 default:
                     break;
             }
         }
+        useEffect(() => {
+            const interactionRoot = document.getElementById('container-react');
+            if (!interactionRoot) return undefined;
+
+            const closeWhenPointerLeavesNavigation = (event) => {
+                if (event.relatedTarget instanceof Node && interactionRoot.contains(event.relatedTarget)) return;
+                setEnterNavbar({ jenis: false, kategori: false });
+            };
+
+            interactionRoot.addEventListener('mouseleave', closeWhenPointerLeavesNavigation);
+            return () => interactionRoot.removeEventListener('mouseleave', closeWhenPointerLeavesNavigation);
+        }, []);
         useEffect(()=>{
             if(!enterNavbar.jenis && !enterNavbar.kategori){
                 setProductSelected(null);
