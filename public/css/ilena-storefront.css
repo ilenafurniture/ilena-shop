@@ -10428,3 +10428,26 @@ body.ilena-storefront .ilena-chat-compose button svg { width: 19px; height: 19px
 @media (prefers-reduced-motion: reduce) {
     body.ilena-storefront .ilena-chat-resize-handle { transition: none !important; }
 }
+
+/* Desktop footer typography: improve legibility without changing mobile sizing. */
+@media (min-width: 769px) {
+    body.ilena-storefront .ilena-store-footer__brand p { font-size: 12px; }
+    body.ilena-storefront .ilena-store-footer__column h2 {
+        font-size: clamp(11px, .82vw, 12px);
+        letter-spacing: .12em;
+    }
+    body.ilena-storefront .ilena-store-footer__column a,
+    body.ilena-storefront .ilena-store-footer__bottom a,
+    body.ilena-storefront .ilena-store-footer__sister a,
+    body.ilena-storefront .ilena-store-footer__midtrans a {
+        color: rgba(245, 241, 235, .78);
+        font-size: clamp(12px, .95vw, 14px);
+        line-height: 1.65;
+    }
+    body.ilena-storefront .ilena-store-footer__midtrans { font-size: 11px; }
+    body.ilena-storefront .ilena-store-footer__sister,
+    body.ilena-storefront .ilena-store-footer__bottom {
+        color: rgba(245, 241, 235, .68);
+        font-size: 11px;
+    }
+}
