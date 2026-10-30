@@ -10,21 +10,25 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
 </div>
 <nav class="nav show-block-ke-hide ilena-topbar">
     <div class="container py-3 ilena-topbar__container">
-        <div class="d-flex w-100 justify-content-between align-items-center ilena-topbar__inner">
-            <div class="ilena-topbar__search-slot">
-                <form action="/find" method="get" class="ilena-global-search" data-global-search role="search">
-                    <label class="ilena-sr-only" for="global-search-desktop">Cari produk</label>
-                    <input id="global-search-desktop" placeholder="Cari produk atau koleksi" class="input" name="q"
-                        type="search" autocomplete="off" autocapitalize="off" aria-autocomplete="list" aria-expanded="false" aria-controls="global-search-desktop-listbox">
-                    <div class="ilena-search-suggestions" id="global-search-desktop-listbox" role="listbox" hidden></div>
-                </form>
-            </div>
+        <div class="d-flex w-100 justify-content-between align-items-center ilena-topbar__inner ilena-topbar__inner--<?= esc($headerMode, 'attr'); ?>">
             <div class="navbar-brand-pair">
                 <a class="navbar-brand-ilena" href="/" aria-label="Ilena Furniture - Beranda">
                     <img src="<?= base_url('/img/Logo Putih Ilena 1.png'); ?>" alt="Ilena Furniture" width="150" height="30" decoding="async">
                 </a>
             </div>
+            <?php if ($headerMode === 'full'): ?>
+                <div class="ilena-topbar__main-nav" role="navigation" aria-label="Menu utama">
+                    <a href="/product">Furniture Collection</a>
+                    <a href="https://ilenafurniture.net/" target="_blank" rel="noopener noreferrer">Custom Interior</a>
+                    <a href="/partner">Partner Store</a>
+                    <a href="/article">Article</a>
+                    <a href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20saya%20ingin%20menghubungi%20tim%20Ilena" target="_blank" rel="noopener noreferrer">Contact Us</a>
+                </div>
+            <?php endif; ?>
             <div class="d-flex justify-content-end ilena-topbar__actions">
+                <button type="button" class="ilena-header-action ilena-search-toggle" aria-label="Buka pencarian" aria-expanded="false" aria-controls="ilena-desktop-search" data-search-toggle>
+                    <i class="material-icons" aria-hidden="true">search</i>
+                </button>
                 <?php if (session()->get('isLogin') && in_array((string) session()->get('role'), ['1', '5'], true)) { ?>
                     <?php if ((string) session()->get('role') === '1') { ?>
                         <a href="/admin/product" class="btn d-flex align-items-center">
@@ -46,8 +50,46 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
                 <?php } ?>
             </div>
         </div>
+        <div class="ilena-search-popover" id="ilena-desktop-search" data-search-popover hidden>
+            <form action="/find" method="get" class="ilena-global-search" data-global-search role="search">
+                <label class="ilena-sr-only" for="global-search-desktop">Cari produk atau koleksi</label>
+                <input id="global-search-desktop" placeholder="Cari produk atau koleksi" class="input" name="q"
+                    type="search" autocomplete="off" autocapitalize="off" aria-autocomplete="list" aria-expanded="false" aria-controls="global-search-desktop-listbox">
+                <div class="ilena-search-suggestions" id="global-search-desktop-listbox" role="listbox" hidden></div>
+            </form>
+        </div>
     </div>
 </nav>
+<script>
+(() => {
+    const toggle = document.querySelector('[data-search-toggle]');
+    const panel = document.querySelector('[data-search-popover]');
+    const input = document.getElementById('global-search-desktop');
+    if (!toggle || !panel || !input) return;
+
+    const closeSearch = () => {
+        panel.hidden = true;
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', 'Buka pencarian');
+    };
+    toggle.addEventListener('click', () => {
+        const opening = panel.hidden;
+        panel.hidden = !opening;
+        toggle.setAttribute('aria-expanded', String(opening));
+        toggle.setAttribute('aria-label', opening ? 'Tutup pencarian' : 'Buka pencarian');
+        if (opening) window.requestAnimationFrame(() => input.focus());
+    });
+    document.addEventListener('pointerdown', (event) => {
+        if (!panel.hidden && !panel.contains(event.target) && !toggle.contains(event.target)) closeSearch();
+    });
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !panel.hidden) {
+            closeSearch();
+            toggle.focus();
+        }
+    });
+})();
+</script>
 <?php if ($headerMode === 'full'): ?>
 <div class="ilena-shipping-bar show-block-ke-hide" role="note" aria-label="Promo pengiriman">
     <div class="container ilena-shipping-bar__inner">
@@ -55,15 +97,6 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
         <p class="m-0">Lebih hemat dengan <strong>Free Ongkir hingga 100%</strong></p>
     </div>
 </div>
-<nav class="ilena-primary-nav show-block-ke-hide" aria-label="Jelajahi Ilena">
-    <div class="ilena-primary-nav__inner">
-        <a href="/product">Furniture Collection</a>
-        <a href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20saya%20ingin%20bertanya%20tentang%20custom%20interior" target="_blank" rel="noopener noreferrer">Custom Interior</a>
-        <a href="/partner">Partner Store</a>
-        <a href="/article">Article</a>
-        <a href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20saya%20ingin%20menghubungi%20tim%20Ilena" target="_blank" rel="noopener noreferrer">Contact Us</a>
-    </div>
-</nav>
 <style>
     #container-react {
         position: sticky;

@@ -26,7 +26,7 @@
         <div class="expend-hp" id="mobile-menu-drawer" role="navigation" aria-label="Menu koleksi">
             <nav class="ilena-mobile-primary-links" aria-label="Jelajahi Ilena">
                 <a href="/product">Furniture Collection</a>
-                <a href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20saya%20ingin%20bertanya%20tentang%20custom%20interior" target="_blank" rel="noopener noreferrer">Custom Interior</a>
+                <a href="https://ilenafurniture.net/" target="_blank" rel="noopener noreferrer">Custom Interior</a>
                 <a href="/partner">Partner Store</a>
                 <a href="/article">Article</a>
                 <a href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20saya%20ingin%20menghubungi%20tim%20Ilena" target="_blank" rel="noopener noreferrer">Contact Us</a>
