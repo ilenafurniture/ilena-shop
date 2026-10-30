@@ -18,6 +18,7 @@
   const typing = widget.querySelector('[data-chat-typing]');
   const typingCopy = widget.querySelector('[data-chat-typing-copy]');
   const soundButton = widget.querySelector('[data-chat-sound]');
+  const sizeButtons = widget.querySelectorAll('[data-chat-size]');
   const suggestions = widget.querySelector('.ilena-chat-suggestions');
   const teaser = widget.querySelector('[data-chat-greeting]');
   const wawaImageBase = widget.dataset.wawaImageBase || '';
@@ -53,6 +54,31 @@
     'invalidLength': 'Messages must be between 1 and 1,200 characters.'
   };
   const copy = (key, indonesian) => isEnglish ? (chatCopy[key] || indonesian) : indonesian;
+  const chatWidths = [360, 420, 500, 580];
+  let chatWidthIndex = 1;
+  try {
+    const savedWidth = Number(localStorage.getItem('ilenaChatWidth'));
+    const savedIndex = chatWidths.indexOf(savedWidth);
+    if (savedIndex >= 0) chatWidthIndex = savedIndex;
+  } catch (_) {}
+  function applyChatWidth() {
+    if (window.matchMedia('(max-width: 600px)').matches) return;
+    const availableWidth = Math.max(320, window.innerWidth - 40);
+    widget.style.setProperty('--wawa-chat-width', `${Math.min(chatWidths[chatWidthIndex], availableWidth)}px`);
+    sizeButtons.forEach(button => {
+      const disabled = button.dataset.chatSize === 'smaller' ? chatWidthIndex === 0 : chatWidthIndex === chatWidths.length - 1;
+      button.disabled = disabled;
+      button.setAttribute('aria-disabled', String(disabled));
+    });
+  }
+  sizeButtons.forEach(button => button.addEventListener('click', () => {
+    const step = button.dataset.chatSize === 'smaller' ? -1 : 1;
+    chatWidthIndex = Math.max(0, Math.min(chatWidths.length - 1, chatWidthIndex + step));
+    applyChatWidth();
+    try { localStorage.setItem('ilenaChatWidth', String(chatWidths[chatWidthIndex])); } catch (_) {}
+  }));
+  applyChatWidth();
+  window.addEventListener('resize', applyChatWidth, { passive: true });
   const wawaHeaderAvatar = widget.querySelector('[data-wawa-avatar="header"]');
   const wawaGreetingAvatar = widget.querySelector('[data-wawa-avatar="greeting"]');
   const wawaTypingAvatar = widget.querySelector('[data-wawa-avatar="typing"]');

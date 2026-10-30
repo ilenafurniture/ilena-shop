@@ -10352,3 +10352,58 @@ body.ilena-storefront .ilena-search-dialog :focus-visible { outline:2px solid #8
  body.ilena-storefront.ilena-page--home .ilena-home-banner-slider .slides > a img { transition:none; }
  body.ilena-storefront.ilena-page--home .ilena-home-banner-slider .slides > a.active img { transform:none; }
 }
+
+/* Kak Wawa welcome: clearer first step, response-time cue, and user-sized desktop panel. */
+@media (min-width: 601px) {
+    body.ilena-storefront .ilena-chat-greeting {
+        width: min(var(--wawa-chat-width, 420px), calc(100vw - 40px));
+        transition: width .2s cubic-bezier(.2,.7,.2,1);
+    }
+    body.ilena-storefront .ilena-chat-size-controls { display: inline-flex; flex: 0 0 auto; gap: 3px; margin-left: auto; }
+}
+body.ilena-storefront .ilena-chat-greeting__panel {
+    display: flex; width: 100%; min-width: 0; min-height: 0; flex-direction: column; overflow: hidden; background: #f8f6f2; container-type: inline-size;
+}
+body.ilena-storefront .ilena-chat-greeting__heading { gap: 7px; }
+body.ilena-storefront .ilena-chat-brand, body.ilena-storefront .ilena-chat-brand__copy { min-width: 0; }
+body.ilena-storefront .ilena-chat-brand { flex: 1 1 auto; }
+body.ilena-storefront .ilena-chat-size-controls button {
+    display: grid; width: 31px; height: 31px; flex: 0 0 31px; place-items: center;
+    border: 1px solid #e2dcd5; border-radius: 8px; background: #fffdfa; color: #4a413c; cursor: pointer;
+    transition: border-color .16s ease, background .16s ease, color .16s ease, opacity .16s ease;
+}
+body.ilena-storefront .ilena-chat-size-controls svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+body.ilena-storefront .ilena-chat-size-controls button:hover:not(:disabled) { border-color: #a82d35; background: #a82d35; color: #fff; }
+body.ilena-storefront .ilena-chat-size-controls button:disabled { cursor: default; opacity: .42; }
+body.ilena-storefront .ilena-chat-size-controls button:focus-visible { outline: 2px solid #a82d35; outline-offset: 2px; }
+body.ilena-storefront .ilena-chat-transcript { min-width: 0; }
+body.ilena-storefront .ilena-chat-welcome { max-width: 100%; padding: 6px 2px 12px 13px; }
+body.ilena-storefront .ilena-chat-welcome h2 { max-width: 460px; font-size: clamp(26px, 3vw, 34px); line-height: 1.12; letter-spacing: -.028em; text-wrap: balance; }
+body.ilena-storefront .ilena-chat-welcome > p:not(.ilena-chat-welcome__eyebrow) { max-width: 420px; }
+body.ilena-storefront .ilena-chat-reply-time { display: flex; align-items: center; gap: 7px; margin: -5px 0 16px; color: #625d55; font-size: 11px; line-height: 1.4; }
+body.ilena-storefront .ilena-chat-reply-time span { display: grid; width: 21px; height: 21px; flex: 0 0 21px; place-items: center; border: 1px solid #e4d9ce; border-radius: 50%; background: #fffdfa; color: #8e3037; font-size: 14px; }
+body.ilena-storefront .ilena-chat-suggestions { display: flex; flex-wrap: wrap; gap: 7px; }
+body.ilena-storefront .ilena-chat-suggestions button { min-width: 0; min-height: 36px; border-radius: 999px; padding-inline: 13px; font-size: 11px; line-height: 1.25; }
+body.ilena-storefront .ilena-chat-compose { align-items: center; gap: 9px; padding: 12px 14px; }
+body.ilena-storefront .ilena-chat-compose textarea { min-height: 42px; border-radius: 13px; background: #fff; }
+body.ilena-storefront .ilena-chat-compose button { display: grid; width: 42px; min-height: 42px; flex: 0 0 42px; place-items: center; border-radius: 12px; padding: 0; background: #9d2932; }
+body.ilena-storefront .ilena-chat-compose button:hover { background: #74222a; }
+body.ilena-storefront .ilena-chat-compose button svg { width: 19px; height: 19px; }
+@container (max-width: 400px) {
+    body.ilena-storefront .ilena-chat-products { grid-template-columns: 1fr; }
+    body.ilena-storefront .ilena-chat-bubble { max-width: 96%; }
+    body.ilena-storefront .ilena-chat-product { grid-template-columns: 48px minmax(0, 1fr); }
+    body.ilena-storefront .ilena-chat-product img { width: 48px; height: 48px; }
+}
+@media (max-width: 600px) {
+    body.ilena-storefront .ilena-chat-size-controls { display: none; }
+    body.ilena-storefront .ilena-chat-greeting__panel { min-width: 0; }
+    body.ilena-storefront .ilena-chat-welcome { padding-left: 11px; }
+    body.ilena-storefront .ilena-chat-welcome h2 { font-size: clamp(24px, 7.2vw, 29px); }
+    body.ilena-storefront .ilena-chat-reply-time { font-size: 10px; }
+    body.ilena-storefront .ilena-chat-suggestions { gap: 6px; }
+    body.ilena-storefront .ilena-chat-suggestions button { min-height: 34px; padding-inline: 10px; font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront .ilena-chat-greeting, body.ilena-storefront .ilena-chat-size-controls button { transition: none !important; }
+}
