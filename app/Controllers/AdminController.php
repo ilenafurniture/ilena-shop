@@ -384,7 +384,7 @@ class AdminController extends BaseController
         $page = $pageCount > 0 ? min($page, $pageCount) : 1;
 
         $productBuilder = $db->table('barang')
-            ->select('id, nama, kategori, subkategori, harga, varian, active, tgl_update');
+            ->select('id, nama, kategori, subkategori, harga, varian, deskripsi, active, tgl_update');
         $applyFilters($productBuilder);
         $product = $productBuilder
             ->orderBy('nama', 'ASC')
@@ -399,6 +399,8 @@ class AdminController extends BaseController
         foreach ($product as $index_p => $p) {
             $decodedVarian = json_decode($p['varian'] ?? '[]', true);
             $product[$index_p]['varian'] = is_array($decodedVarian) ? $decodedVarian : [];
+            $decodedDescription = json_decode($p['deskripsi'] ?? '{}', true);
+            $product[$index_p]['deskripsi'] = is_array($decodedDescription) ? $decodedDescription : [];
             $product[$index_p]['allstok'] = '';
             $product[$index_p]['stok_total'] = 0;
             $product[$index_p]['jumlah_varian'] = count($product[$index_p]['varian']);

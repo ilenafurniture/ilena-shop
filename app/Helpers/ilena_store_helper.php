@@ -61,10 +61,12 @@ if (! function_exists('ilena_catalog_type_label')) {
 
 if (! function_exists('ilena_variant_display_name')) {
     /** Translate common color/finish labels for display only; submitted variant values remain unchanged. */
-    function ilena_variant_display_name(string $name, ?string $locale = null): string
+    function ilena_variant_display_name(string $name, ?string $locale = null, ?string $englishName = null): string
     {
         $locale ??= service('request')->getLocale();
         if ($locale !== 'en') return $name;
+        $englishName = trim((string) $englishName);
+        if ($englishName !== '') return $englishName;
         $normalized = strtolower(trim($name));
         return [
             'putih' => 'White', 'hitam' => 'Black', 'cokelat' => 'Brown', 'coklat' => 'Brown',
@@ -72,6 +74,36 @@ if (! function_exists('ilena_variant_display_name')) {
             'biru' => 'Blue', 'merah' => 'Red', 'hijau' => 'Green', 'natural' => 'Natural',
             'alami' => 'Natural', 'oak' => 'Oak', 'walnut' => 'Walnut', 'sonoma' => 'Sonoma',
         ][$normalized] ?? $name;
+    }
+}
+
+if (! function_exists('ilena_variant_translation_ready')) {
+    /** A custom label needs its own English name; known finish/color labels use the built-in map. */
+    function ilena_variant_translation_ready(string $name, ?string $englishName = null): bool
+    {
+        if (trim((string) $englishName) !== '') return true;
+        return ilena_variant_display_name($name, 'en') !== $name;
+    }
+}
+
+if (! function_exists('ilena_product_variant_display_name')) {
+    /** Resolve an authored English variant label while keeping the stored inventory name unchanged. */
+    function ilena_product_variant_display_name(array $product, string $variantName, ?string $locale = null): string
+    {
+        $locale ??= service('request')->getLocale();
+        $variants = $product['varian'] ?? [];
+        if (is_string($variants)) $variants = json_decode($variants, true) ?: [];
+        if ($locale === 'en' && is_array($variants)) {
+            foreach ($variants as $variant) {
+                if (! is_array($variant)
+                    || strcasecmp(trim((string) ($variant['nama'] ?? '')), trim($variantName)) !== 0
+                ) continue;
+
+                return ilena_variant_display_name($variantName, $locale, (string) ($variant['nama_en'] ?? ''));
+            }
+        }
+
+        return ilena_variant_display_name($variantName, $locale);
     }
 }
 

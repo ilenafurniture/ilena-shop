@@ -315,9 +315,9 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                             data-name="<?= esc($v['nama'], 'attr') ?>"
                             data-index="<?= $ind_v ?>"
                             data-stok="<?= (int)($v['stok'] ?? 0) ?>"
-                            aria-label="<?= esc(sprintf(lang('Store.colorForProduct'), ilena_variant_display_name((string) $v['nama'])), 'attr') ?>"
+                            aria-label="<?= esc(sprintf(lang('Store.colorForProduct'), ilena_variant_display_name((string) $v['nama'], null, (string) ($v['nama_en'] ?? ''))), 'attr') ?>"
                             type="radio" name="varian-mobile">
-                        <label for="varian<?= $ind_v ?>-mobile" title="<?= esc(ilena_variant_display_name((string) $v['nama']), 'attr') ?>"><span aria-hidden="true"
+                        <label for="varian<?= $ind_v ?>-mobile" title="<?= esc(ilena_variant_display_name((string) $v['nama'], null, (string) ($v['nama_en'] ?? '')), 'attr') ?>"><span aria-hidden="true"
                                 style="background-color: <?= esc($v['kode'], 'attr') ?>"></span></label>
                         <?php } ?>
                     </div></section>
@@ -343,10 +343,10 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                             data-name="<?= esc($v['nama'], 'attr') ?>"
                             data-index="<?= $ind_v ?>"
                             data-stok="<?= (int)($v['stok'] ?? 0) ?>"
-                            aria-label="<?= esc(sprintf(lang('Store.colorForProduct'), ilena_variant_display_name((string) $v['nama'])), 'attr') ?>"
+                            aria-label="<?= esc(sprintf(lang('Store.colorForProduct'), ilena_variant_display_name((string) $v['nama'], null, (string) ($v['nama_en'] ?? ''))), 'attr') ?>"
                             type="radio"
                             name="varian">
-                        <label for="varian<?= $ind_v ?>" title="<?= esc(ilena_variant_display_name((string) $v['nama']), 'attr') ?>"><span aria-hidden="true"
+                        <label for="varian<?= $ind_v ?>" title="<?= esc(ilena_variant_display_name((string) $v['nama'], null, (string) ($v['nama_en'] ?? '')), 'attr') ?>"><span aria-hidden="true"
                                 style="background-color: <?= esc($v['kode'], 'attr') ?>"></span></label>
                         <?php } ?>
                     </div></section>

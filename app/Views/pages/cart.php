@@ -19,7 +19,7 @@
                 </div>
             <?php endif; ?>
             <div class="container-keranjang show-block-ke-hide">
-                <?php foreach ($keranjang as $index => $k) { $cartProductName = ilena_product_display_name((array) ($k['detail'] ?? [])); $cartProductName = $cartProductName !== '' ? $cartProductName : lang('Store.productFallback'); $cartCategory = ilena_catalog_type_label((string) ($k['detail']['kategori'] ?? '')); $cartVariant = ilena_variant_display_name((string) ($k['varian'] ?? '')); ?>
+                <?php foreach ($keranjang as $index => $k) { $cartProduct = (array) ($k['detail'] ?? []); $cartProductName = ilena_product_display_name($cartProduct); $cartProductName = $cartProductName !== '' ? $cartProductName : lang('Store.productFallback'); $cartCategory = ilena_catalog_type_label((string) ($cartProduct['kategori'] ?? '')); $cartVariant = ilena_product_variant_display_name($cartProduct, (string) ($k['varian'] ?? '')); ?>
                 <div class="item-keranjang">
                     <a href="<?= esc(ilena_store_path('/product/' . str_replace(' ', '-', (string) $k['detail']['nama'])), 'attr'); ?>" style="display:block;">
                         <img src="<?= esc($k['src_gambar'] ?? '', 'attr'); ?>" alt="<?= esc($cartProductName, 'attr'); ?>">
@@ -76,7 +76,7 @@
             </div>
 
             <div class="hide-ke-show-block">
-                <?php foreach ($keranjang as $index => $k) { $cartProductName = ilena_product_display_name((array) ($k['detail'] ?? [])); $cartProductName = $cartProductName !== '' ? $cartProductName : lang('Store.productFallback'); $cartCategory = ilena_catalog_type_label((string) ($k['detail']['kategori'] ?? '')); $cartVariant = ilena_variant_display_name((string) ($k['varian'] ?? '')); ?>
+                <?php foreach ($keranjang as $index => $k) { $cartProduct = (array) ($k['detail'] ?? []); $cartProductName = ilena_product_display_name($cartProduct); $cartProductName = $cartProductName !== '' ? $cartProductName : lang('Store.productFallback'); $cartCategory = ilena_catalog_type_label((string) ($cartProduct['kategori'] ?? '')); $cartVariant = ilena_product_variant_display_name($cartProduct, (string) ($k['varian'] ?? '')); ?>
                 <div class="item-keranjang-hp">
                     <a href="<?= esc(ilena_store_path('/product/' . str_replace(' ', '-', (string) $k['detail']['nama'])), 'attr'); ?>" style="display:block;">
                         <img src="<?= esc($k['src_gambar'] ?? '', 'attr'); ?>" alt="<?= esc($cartProductName, 'attr'); ?>">

@@ -33,6 +33,36 @@ final class ProductInputPolicyTest extends TestCase
         self::assertNull(ProductInputPolicy::validate($this->validPayload()));
     }
 
+    public function testAcceptsEnglishProductAndVariantLabelsWithinLimits(): void
+    {
+        $payload = $this->validPayload();
+        $description = json_decode($payload['deskripsi'], true);
+        $description['nama_en'] = 'Ilena Dining Chair';
+        $description['deskripsi_en'] = 'A comfortable chair.';
+        $description['perawatan_en'] = 'Wipe with a soft cloth.';
+        $payload['deskripsi'] = json_encode($description);
+        $variants = json_decode($payload['varian'], true);
+        $variants[0]['nama_en'] = 'Natural Oak';
+        $payload['varian'] = json_encode($variants);
+
+        self::assertNull(ProductInputPolicy::validate($payload));
+    }
+
+    public function testRejectsEnglishProductAndVariantLabelsOverLimits(): void
+    {
+        $payload = $this->validPayload();
+        $description = json_decode($payload['deskripsi'], true);
+        $description['nama_en'] = str_repeat('x', 181);
+        $payload['deskripsi'] = json_encode($description);
+        self::assertSame('Konten bahasa Inggris pada produk melebihi batas karakter.', ProductInputPolicy::validate($payload));
+
+        $payload = $this->validPayload();
+        $variants = json_decode($payload['varian'], true);
+        $variants[0]['nama_en'] = str_repeat('x', 101);
+        $payload['varian'] = json_encode($variants);
+        self::assertSame('Nama varian Inggris maksimal 100 karakter.', ProductInputPolicy::validate($payload));
+    }
+
     public function testRejectsInvalidPriceAndDiscount(): void
     {
         $payload = $this->validPayload();

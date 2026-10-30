@@ -149,6 +149,23 @@ $barangThumbUrl = function ($product) {
     white-space: nowrap;
 }
 
+.translation-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 5px;
+    padding: 3px 8px;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    color: #64748b;
+    background: #f8fafc;
+    font-size: 10px;
+    line-height: 1.3;
+    font-weight: 650;
+}
+.translation-status.is-ready { color: #166534; border-color: #bbf7d0; background: #f0fdf4; }
+.translation-status.is-incomplete { color: #92400e; border-color: #fde68a; background: #fffbeb; }
+
 .bulk-toolbar {
     display: none;
     align-items: center;
@@ -686,6 +703,20 @@ $barangThumbUrl = function ($product) {
         </div>
 
         <?php foreach ($produk as $ind_p => $p) { ?>
+        <?php
+            $englishProduct = is_array($p['deskripsi'] ?? null) ? $p['deskripsi'] : [];
+            $hasIndonesianCare = trim((string) ($englishProduct['perawatan'] ?? '')) !== '';
+            $englishProductReady = trim((string) ($englishProduct['nama_en'] ?? '')) !== ''
+                && trim((string) ($englishProduct['deskripsi_en'] ?? '')) !== ''
+                && (!$hasIndonesianCare || trim((string) ($englishProduct['perawatan_en'] ?? '')) !== '');
+            foreach (($p['varian'] ?? []) as $productVariant) {
+                if (!is_array($productVariant)) continue;
+                if (!ilena_variant_translation_ready((string) ($productVariant['nama'] ?? ''), (string) ($productVariant['nama_en'] ?? ''))) {
+                    $englishProductReady = false;
+                    break;
+                }
+            }
+        ?>
         <div class="isi-table" data-filter="<?= strtolower($p['nama'].' '.$p['kategori'].' '.$p['id']); ?>">
             <div style="flex: .35;" class="col-center">
                 <input class="product-select" type="checkbox" value="<?= esc($p['id']); ?>"
@@ -705,6 +736,9 @@ $barangThumbUrl = function ($product) {
                 <p class="fw-bold m-0" style="font-size: 15px; letter-spacing:-.2px; color:#111827">
                     <?= esc(strtoupper((string)($p['nama'] ?? ''))); ?></p>
                 <p class="m-0 id-mono">#<?= esc($p['id'] ?? ''); ?></p>
+                <span class="translation-status <?= $englishProductReady ? 'is-ready' : 'is-incomplete'; ?>" title="<?= $englishProductReady ? 'Nama, deskripsi, dan label varian Inggris tersedia' : 'Lengkapi konten atau nama varian Inggris di Edit Produk'; ?>">
+                    <?= $englishProductReady ? 'EN siap' : 'EN perlu dilengkapi'; ?>
+                </span>
             </div>
 
             <div style="flex: 1;" class="price">Rp <?= number_format((int)$p['harga'], 0, ',', '.'); ?></div>
@@ -733,6 +767,7 @@ $barangThumbUrl = function ($product) {
 
             <div style="flex: 1;" class="col-center">
                 <div class="actions">
+                    <a class="btn-icon" href="/en/product/<?= esc(rawurlencode(strtolower(str_replace(' ', '-', (string) ($p['nama'] ?? '')))), 'attr'); ?>" title="Pratinjau halaman Inggris" aria-label="Pratinjau <?= esc($p['nama'] ?? 'produk', 'attr'); ?> dalam bahasa Inggris"><i class="material-icons">language</i></a>
                     <a class="btn-icon" href="/admin/editproduct/<?= esc($p['id'], 'attr'); ?>" title="Edit produk" aria-label="Edit <?= esc($p['nama'], 'attr'); ?>"><i
                             class="material-icons">edit</i></a>
                     <form action="/admin/deleteproduct/<?= $p['id']; ?>" method="post" style="display:inline-flex"

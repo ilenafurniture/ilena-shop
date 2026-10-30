@@ -1370,18 +1370,18 @@ const App = () => {
                   </td>
                 </tr>
                 <tr>
-                  <td>English product name (optional)</td>
+                  <td>Nama produk Inggris <span className="text-muted">(opsional)</span></td>
                   <td><input className="form-control" maxLength="180" value={formData.deskripsi.nama_en || ''}
                     onChange={e => setFormData({ ...formData, deskripsi: { ...formData.deskripsi, nama_en: e.target.value } })} /></td>
                 </tr>
                 <tr>
-                  <td>English description (optional)</td>
+                  <td>Deskripsi Inggris <span className="text-muted">(opsional)</span></td>
                   <td><textarea className="form-control" rows="3" maxLength="3000"
                     value={formData.deskripsi.deskripsi_en || ''}
                     onChange={e => setFormData({ ...formData, deskripsi: { ...formData.deskripsi, deskripsi_en: e.target.value } })} /></td>
                 </tr>
                 <tr>
-                  <td>English care / specifications (optional)</td>
+                  <td>Perawatan / spesifikasi Inggris <span className="text-muted">(opsional)</span></td>
                   <td><textarea className="form-control" rows="3" maxLength="3000"
                     value={formData.deskripsi.perawatan_en || ''}
                     onChange={e => setFormData({ ...formData, deskripsi: { ...formData.deskripsi, perawatan_en: e.target.value } })} /></td>
@@ -1629,6 +1629,17 @@ const App = () => {
                           </td>
                         </tr>
                         <tr>
+                          <td>Nama varian Inggris</td>
+                          <td>
+                            <input className="form-control" maxLength={100} value={v.nama_en || ''}
+                              placeholder="Opsional, misalnya Natural Oak"
+                              onChange={e => setFormData({
+                                ...formData,
+                                varian: formData.varian.map((vv, i) => i === ind_v ? { ...vv, nama_en: e.target.value } : vv)
+                              })} />
+                          </td>
+                        </tr>
+                        <tr>
                           <td>Kode Warna</td>
                           <td>
                             <input className="form-control" value={v.kode}
@@ -1661,7 +1672,7 @@ const App = () => {
               onClick={() => {
                 setFormData({
                   ...formData,
-                  varian: [...(formData.varian || []), { nama: "", kode: "", stok: "", urutan_gambar: "" }]
+                  varian: [...(formData.varian || []), { nama: "", nama_en: "", kode: "", stok: "", urutan_gambar: "" }]
                 });
                 setGambarFile([...(gambarFile || []), []]);
                 setGambarSrc([...(gambarSrc || []), []]);

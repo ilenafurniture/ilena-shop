@@ -161,7 +161,7 @@
 }
 
 .col-action {
-    width: 120px;
+    width: 156px;
     white-space: nowrap;
     text-align: right
 }
@@ -178,6 +178,22 @@
     font-size: 12px;
     color: #0f172a;
 }
+
+.translation-status {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 6px;
+    padding: 3px 8px;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    color: #64748b;
+    background: #f8fafc;
+    font-size: 10px;
+    line-height: 1.3;
+    font-weight: 650;
+}
+.translation-status.is-ready { color: #166534; border-color: #bbf7d0; background: #f0fdf4; }
+.translation-status.is-incomplete { color: #92400e; border-color: #fde68a; background: #fffbeb; }
 
 /* Action buttons (ikon teks) */
 .action-group {
@@ -289,6 +305,14 @@
                             <div class="truncate-1" title="<?= esc($a['judul'] ?? '', 'attr'); ?>">
                                 <?= esc($a['judul'] ?? ''); ?>
                             </div>
+                            <?php
+                                $englishArticleReady = trim((string) ($a['judul_en'] ?? '')) !== ''
+                                    && trim((string) ($a['deskripsi_en'] ?? '')) !== ''
+                                    && trim((string) ($a['isi_en'] ?? '')) !== '';
+                            ?>
+                            <span class="translation-status <?= $englishArticleReady ? 'is-ready' : 'is-incomplete'; ?>">
+                                <?= $englishArticleReady ? 'EN siap' : 'EN perlu dilengkapi'; ?>
+                            </span>
                         </td>
                         <td class="col-tanggal"><?= esc(date('d/m/Y H:i', strtotime($a['waktu'] ?? 'now'))); ?></td>
                         <td class="col-penulis"><?= esc($a['penulis'] ?? ''); ?></td>
@@ -302,6 +326,9 @@
                                 <a class="btn-icon" href="/article/<?= esc($a['path'] ?? '', 'attr'); ?>" title="Lihat artikel"
                                     aria-label="Lihat artikel">
                                     <i class="material-icons">open_in_new</i>
+                                </a>
+                                <a class="btn-icon" href="/en/article/<?= esc(rawurlencode((string) ($a['path'] ?? '')), 'attr'); ?>" title="Pratinjau bahasa Inggris" aria-label="Pratinjau <?= esc($a['judul'] ?? 'artikel', 'attr'); ?> dalam bahasa Inggris">
+                                    <i class="material-icons">language</i>
                                 </a>
                                 <a class="btn-icon" href="/admin/editarticle/<?= esc($a['id'] ?? '', 'attr'); ?>" title="Edit artikel"
                                     aria-label="Edit artikel">

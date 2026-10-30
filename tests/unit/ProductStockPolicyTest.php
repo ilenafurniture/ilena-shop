@@ -5,8 +5,10 @@ final class ProductStockPolicyTest extends CIUnitTestCase
 {
     public function testStaleProductFormCannotRestoreSoldStockOrCreateStock(): void
     {
-        $result=ProductStockPolicy::rebase([['nama'=>'Oak','stok'=>2]],[['nama'=>'Oak','stok'=>10,'urutan_gambar'=>'2'],['nama'=>'Walnut','stok'=>99]]);
+        $result=ProductStockPolicy::rebase([['nama'=>'Oak','stok'=>2]],[['nama'=>'Oak','nama_en'=>'Natural Oak','stok'=>10,'urutan_gambar'=>'2'],['nama'=>'Walnut','nama_en'=>'Dark Walnut','stok'=>99]]);
         $this->assertSame(2,$result[0]['stok']); $this->assertSame(0,$result[1]['stok']); $this->assertSame('2',$result[0]['urutan_gambar']);
+        $this->assertSame('Natural Oak',$result[0]['nama_en']);
+        $this->assertSame('Dark Walnut',$result[1]['nama_en']);
     }
     public function testStockedVariantCannotDisappearDuringMetadataEdit(): void
     {

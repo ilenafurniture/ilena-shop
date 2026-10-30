@@ -26,6 +26,15 @@ final class ProductInputPolicy
         if ($description === null || !isset($description['dimensi']['asli'], $description['dimensi']['paket'])) {
             return 'Deskripsi atau data dimensi produk tidak valid.';
         }
+        foreach ([
+            'nama_en' => 180,
+            'deskripsi_en' => 3000,
+            'perawatan_en' => 3000,
+        ] as $field => $maxLength) {
+            if (mb_strlen(trim((string) ($description[$field] ?? '')), 'UTF-8') > $maxLength) {
+                return 'Konten bahasa Inggris pada produk melebihi batas karakter.';
+            }
+        }
         foreach (['asli', 'paket'] as $dimensionType) {
             foreach (['panjang', 'lebar', 'tinggi', 'berat'] as $field) {
                 $value = $description['dimensi'][$dimensionType][$field] ?? null;
@@ -46,10 +55,14 @@ final class ProductInputPolicy
                 return 'Format varian produk tidak valid.';
             }
             $variantName = trim((string) ($variant['nama'] ?? ''));
+            $variantEnglishName = trim((string) ($variant['nama_en'] ?? ''));
             $variantCode = trim((string) ($variant['kode'] ?? ''));
             $stock = $variant['stok'] ?? null;
             if ($variantName === '' || $variantCode === '' || !preg_match('/^\d+$/', (string) $stock)) {
                 return 'Setiap varian wajib memiliki nama, kode, dan stok bilangan bulat nol atau lebih.';
+            }
+            if (mb_strlen($variantEnglishName, 'UTF-8') > 100) {
+                return 'Nama varian Inggris maksimal 100 karakter.';
             }
             if ((float) $stock > 2147483647) {
                 return 'Jumlah stok varian melebihi batas.';

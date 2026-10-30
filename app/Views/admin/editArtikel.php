@@ -133,8 +133,8 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>Title (English)</td>
-                                <td><input type="text" class="form-control" name="judul_en" maxlength="180" value="<?= esc($artikel['judul_en'] ?? '', 'attr'); ?>" placeholder="Optional English title"></td>
+                                <td>Judul Inggris <span class="text-muted">(opsional)</span></td>
+                                <td><input type="text" class="form-control" name="judul_en" maxlength="180" value="<?= esc($artikel['judul_en'] ?? '', 'attr'); ?>" placeholder="Judul artikel dalam bahasa Inggris"></td>
                             </tr>
                             <tr>
                                 <td>Penulis</td>
@@ -180,8 +180,8 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>Keywords (English)</td>
-                                <td><input type="text" class="form-control" name="keywords_en" maxlength="500" value="<?= esc($artikel['keywords_en'] ?? '', 'attr'); ?>" placeholder="Comma-separated English keywords (optional)"></td>
+                                <td>Kata kunci Inggris <span class="text-muted">(opsional)</span></td>
+                                <td><input type="text" class="form-control" name="keywords_en" maxlength="500" value="<?= esc($artikel['keywords_en'] ?? '', 'attr'); ?>" placeholder="Pisahkan dengan koma"></td>
                             </tr>
                             <tr>
                                 <td>Deskripsi</td>
@@ -192,8 +192,8 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>Description (English)</td>
-                                <td><textarea name="deskripsi_en" class="form-control" maxlength="1000" placeholder="Optional English meta description"><?= esc($artikel['deskripsi_en'] ?? ''); ?></textarea></td>
+                                <td>Deskripsi Inggris <span class="text-muted">(opsional)</span></td>
+                                <td><textarea name="deskripsi_en" class="form-control" maxlength="1000" placeholder="Deskripsi singkat untuk halaman Inggris"><?= esc($artikel['deskripsi_en'] ?? ''); ?></textarea></td>
                             </tr>
                         </tbody>
                     </table>
@@ -204,7 +204,7 @@
                 <textarea name="isi" id="content"><?= esc($artikel['isi'] ?? ''); ?></textarea>
             </div>
             <div class="container mt-3">
-                <h5>Article content (English, optional)</h5>
+                <h5>Isi artikel Inggris <span class="text-muted">(opsional)</span></h5>
                 <textarea name="isi_en" id="content-en"><?= esc($artikel['isi_en'] ?? ''); ?></textarea>
             </div>
             <button type="submit" class="btn-default mt-2 w-100">Simpan</button>

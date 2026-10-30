@@ -356,8 +356,8 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>Title (English)</td>
-                            <td><input type="text" class="form-control" name="judul_en" maxlength="180" placeholder="Optional English title"></td>
+                            <td>Judul Inggris <span class="text-muted">(opsional)</span></td>
+                            <td><input type="text" class="form-control" name="judul_en" maxlength="180" placeholder="Judul artikel dalam bahasa Inggris"></td>
                         </tr>
                         <tr>
                             <td>Penulis</td>
@@ -407,8 +407,8 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>Keywords (English)</td>
-                            <td><input type="text" class="form-control" name="keywords_en" maxlength="500" placeholder="Comma-separated English keywords (optional)"></td>
+                            <td>Kata kunci Inggris <span class="text-muted">(opsional)</span></td>
+                            <td><input type="text" class="form-control" name="keywords_en" maxlength="500" placeholder="Pisahkan dengan koma"></td>
                         </tr>
                         <tr>
                             <td>Deskripsi</td>
@@ -420,8 +420,8 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>Description (English)</td>
-                            <td><textarea name="deskripsi_en" class="form-control" maxlength="1000" rows="4" style="width:100%;" placeholder="Optional English meta description"></textarea></td>
+                            <td>Deskripsi Inggris <span class="text-muted">(opsional)</span></td>
+                            <td><textarea name="deskripsi_en" class="form-control" maxlength="1000" rows="4" style="width:100%;" placeholder="Deskripsi singkat untuk halaman Inggris"></textarea></td>
                         </tr>
                     </tbody>
                 </table>
@@ -432,7 +432,7 @@
                 <textarea name="isi" id="content"></textarea>
             </div>
             <div class="container mt-3 seo-card">
-                <h5 class="mb-2">Article content (English, optional)</h5>
+                <h5 class="mb-2">Isi artikel Inggris <span class="text-muted">(opsional)</span></h5>
                 <textarea name="isi_en" id="content-en"></textarea>
             </div>
 

@@ -745,9 +745,9 @@ if (isset($_GET['ruang'])) {
                     <div class="container-varian mb-1 d-flex">
                         <?php foreach (json_decode($p['varian'], true) as $ind_v => $v) { ?>
                         <input id="varian-<?= $ind_p ?>-<?= $ind_v ?>"
-                            value="<?= esc($v['urutan_gambar'], 'attr') ?>-<?= esc($v['nama'], 'attr') ?>" aria-label="<?= esc(lang('Store.colorOption') . ' ' . ilena_variant_display_name((string) $v['nama']), 'attr') ?>" type="radio"
+                            value="<?= esc($v['urutan_gambar'], 'attr') ?>-<?= esc($v['nama'], 'attr') ?>" aria-label="<?= esc(lang('Store.colorOption') . ' ' . ilena_variant_display_name((string) $v['nama'], null, (string) ($v['nama_en'] ?? '')), 'attr') ?>" type="radio"
                             name="varian<?= $ind_p ?>">
-                        <label for="varian-<?= $ind_p ?>-<?= $ind_v ?>" title="<?= esc(ilena_variant_display_name((string) $v['nama']), 'attr') ?>"><span
+                        <label for="varian-<?= $ind_p ?>-<?= $ind_v ?>" title="<?= esc(ilena_variant_display_name((string) $v['nama'], null, (string) ($v['nama_en'] ?? '')), 'attr') ?>"><span
                                 style="background-color: <?= $v['kode'] ?>"></span></label>
                         <?php } ?>
                         <script>

@@ -551,7 +551,7 @@
                             required><?= $produk['deskripsi']['deskripsi']; ?></textarea>
                     </div>
                     <div class="field">
-                        <label class="label">English product name (optional)</label>
+                        <label class="label">Nama produk Inggris <span class="muted">(opsional)</span></label>
                         <input class="inp" type="text" name="nama_en" maxlength="180" value="<?= esc($produk['deskripsi']['nama_en'] ?? '', 'attr'); ?>">
                     </div>
                     <div class="field">
@@ -560,11 +560,11 @@
                             required><?= $produk['deskripsi']['perawatan']; ?></textarea>
                     </div>
                     <div class="field">
-                        <label class="label">English description (optional)</label>
+                        <label class="label">Deskripsi Inggris <span class="muted">(opsional)</span></label>
                         <textarea class="ta" name="deskripsi_en" maxlength="3000"><?= esc($produk['deskripsi']['deskripsi_en'] ?? ''); ?></textarea>
                     </div>
                     <div class="field">
-                        <label class="label">English care / specifications (optional)</label>
+                        <label class="label">Perawatan / spesifikasi Inggris <span class="muted">(opsional)</span></label>
                         <textarea class="ta" name="perawatan_en" maxlength="3000"><?= esc($produk['deskripsi']['perawatan_en'] ?? ''); ?></textarea>
                     </div>
 
@@ -694,13 +694,18 @@
                                 <div class="field">
                                     <label class="label">Nama</label>
                                     <input class="inp" type="text" name="nama-var<?= $ind_v + 1; ?>"
-                                        value="<?= $v['nama']; ?>" required>
+                                        value="<?= esc($v['nama'] ?? '', 'attr'); ?>" required>
                                 </div>
                                 <div class="field">
                                     <label class="label">Kode Warna</label>
                                     <input class="inp" type="text" name="kode-var<?= $ind_v + 1; ?>"
                                         value="<?= $v['kode']; ?>" required>
                                 </div>
+                            </div>
+                            <div class="field">
+                                <label class="label" for="nama-en-var<?= $ind_v + 1; ?>">Nama varian Inggris <span class="muted">(opsional)</span></label>
+                                <input class="inp" type="text" id="nama-en-var<?= $ind_v + 1; ?>" name="nama-en-var<?= $ind_v + 1; ?>"
+                                    maxlength="100" value="<?= esc($v['nama_en'] ?? '', 'attr'); ?>" placeholder="Contoh: Natural Oak">
                             </div>
                             <div class="field">
                                 <label class="label">Stok</label>
@@ -845,6 +850,10 @@ function addVarian() {
           </div>
         </div>
         <div class="field">
+          <label class="label" for="nama-en-var${no}">Nama varian Inggris <span class="muted">(opsional)</span></label>
+          <input class="inp" type="text" id="nama-en-var${no}" name="nama-en-var${no}" maxlength="100" placeholder="Contoh: Natural Oak">
+        </div>
+        <div class="field">
           <label class="label">Stok</label>
           <input class="inp" type="text" name="stok-var${no}" required>
         </div>
@@ -957,6 +966,7 @@ function hapusSubvarian(varianNum, indexGambar, e) {
         const varianArr = varianElems.map((card, idx) => {
             const no = idx + 1;
             const nama = card.querySelector(`input[name="nama-var${no}"]`)?.value || '';
+            const namaEn = card.querySelector(`input[name="nama-en-var${no}"]`)?.value || '';
             const kode = card.querySelector(`input[name="kode-var${no}"]`)?.value || '';
             const stok = card.querySelector(`input[name="stok-var${no}"]`)?.value || '0';
 
@@ -985,6 +995,7 @@ function hapusSubvarian(varianNum, indexGambar, e) {
             return {
                 id: String(no),
                 nama,
+                nama_en: namaEn.trim().slice(0, 100),
                 kode,
                 stok,
                 urutan_gambar: urutan.join(',')
