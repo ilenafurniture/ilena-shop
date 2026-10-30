@@ -31,4 +31,12 @@ final class ChatWhatsappLinkTest extends CIUnitTestCase
 
         $this->assertSame('Halo Ilena, saya membutuhkan bantuan seputar produk atau layanan.', $params['text'] ?? null);
     }
+
+    public function testEnglishHandoffLinkStartsWithEnglishMessage(): void
+    {
+        $url = ChatWhatsappLink::forQuestion('Is Cody available?', 'en');
+        parse_str((string) parse_url($url, PHP_URL_QUERY), $params);
+
+        $this->assertSame('Hello Ilena, I have a question: Is Cody available?', $params['text'] ?? null);
+    }
 }

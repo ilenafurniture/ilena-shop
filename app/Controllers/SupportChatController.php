@@ -44,14 +44,24 @@ class SupportChatController extends BaseController
     }
 
     /** Store support hours are 08:00–16:00 Asia/Jakarta, every day. */
-    private function supportAvailability(): array
+    private function chatLocale(?string $locale = null): string
     {
-        return ChatSupportSchedule::availability() + ['whatsappUrl' => $this->whatsappUrl()];
+        if ($locale === null) $locale = (string) $this->request->getGet('locale');
+        if ($locale === '' && method_exists($this->request, 'getJSON')) {
+            $input = $this->request->getJSON(true) ?? [];
+            $locale = (string) ($input['locale'] ?? '');
+        }
+        return in_array(strtolower(trim((string) $locale)), ['en', 'en-us', 'en-gb'], true) ? 'en' : 'id';
     }
 
-    private function whatsappUrl(string $message = ''): string
+    private function supportAvailability(?string $locale = null): array
     {
-        return ChatWhatsappLink::forQuestion($message);
+        return ChatSupportSchedule::availability() + ['whatsappUrl' => $this->whatsappUrl('', $locale)];
+    }
+
+    private function whatsappUrl(string $message = '', ?string $locale = null): string
+    {
+        return ChatWhatsappLink::forQuestion($message, $locale ?? $this->chatLocale());
     }
 
     private function ownedConversation(string $visitorHash, bool $includeClosed = false): ?array
@@ -130,7 +140,7 @@ class SupportChatController extends BaseController
             'status' => (string) ($conversation['status'] ?? 'ai'),
             'humanAvailable' => $availability['open'],
             'serviceHours' => $availability['hours'],
-            'whatsappUrl' => $this->whatsappUrl($body),
+            'whatsappUrl' => $this->whatsappUrl($body, $this->chatLocale()),
             'createdAt' => (string) ($message['created_at'] ?? ''),
             'deduplicated' => $deduplicated,
             'newConversation' => $startMessage !== null,
@@ -149,7 +159,7 @@ class SupportChatController extends BaseController
             $db->table('ilena_chat_conversations')->where('id', (int)$conversation['id'])->update(['context_product_id' => $contextProductId]);
             $conversation['context_product_id'] = $contextProductId;
         }
-        $availability = $this->supportAvailability();
+        $availability = $this->supportAvailability($this->chatLocale());
         if ($conversation) (new ChatFeedbackService())->issuePromptIfIdle($db, $conversation, $visitor);
         return $this->json([
             'success' => true,
@@ -164,7 +174,7 @@ class SupportChatController extends BaseController
 
     public function poll()
     {
-        $availability = $this->supportAvailability();
+        $availability = $this->supportAvailability($this->chatLocale());
         $visitor = $this->visitorHash();
         if (! $visitor) return $this->json(['success' => true, 'conversationKey' => null, 'messages' => [], 'status' => 'ai', 'humanAvailable' => $availability['open'], 'serviceHours' => $availability['hours'], 'whatsappUrl' => $availability['whatsappUrl']]);
         $conversation = $this->customerConversation($visitor);
@@ -187,12 +197,13 @@ class SupportChatController extends BaseController
     {
         $input = $this->request->getJSON(true) ?? $this->request->getPost();
         $body = trim((string)($input['message'] ?? ''));
+        $responseLocale = $this->chatLocale((string) ($input['locale'] ?? ''));
         if ($body === '' || mb_strlen($body) > 1200) return $this->json(['success' => false, 'message' => 'Pesan harus berisi 1–1.200 karakter.'], 422);
         $clientRequestId = trim((string) ($input['clientRequestId'] ?? ''));
         if ($clientRequestId !== '' && ! preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i', $clientRequestId)) {
             return $this->json(['success' => false, 'message' => 'Permintaan chat tidak valid. Muat ulang halaman lalu coba kembali.'], 422);
         }
-        $availability = $this->supportAvailability();
+        $availability = $this->supportAvailability($responseLocale);
         $visitor = $this->visitorHash(true);
         $db = $this->db();
         if (! $db->tableExists('ilena_chat_conversations') || ! $db->tableExists('ilena_chat_jobs')) {
@@ -227,6 +238,7 @@ class SupportChatController extends BaseController
                     'customer_email' => null,
                     'status' => 'ai',
                     'context_product_id' => $contextProductId ?: null,
+                    ...($db->fieldExists('response_locale', 'ilena_chat_conversations') ? ['response_locale' => $responseLocale] : []),
                     'last_message_at' => $now,
                     'created_at' => $now,
                     'updated_at' => $now,
@@ -261,6 +273,7 @@ class SupportChatController extends BaseController
             $messageId = (int)$db->insertID();
             $db->table('ilena_chat_conversations')->where('id', $conversationId)->update([
                 'context_product_id' => $contextProductId ?: ($conversation['context_product_id'] ?? null),
+                ...($db->fieldExists('response_locale', 'ilena_chat_conversations') ? ['response_locale' => $responseLocale] : []),
                 'last_message_at' => $now,
                 'updated_at' => $now,
                 ...( $db->fieldExists('feedback_prompted_at', 'ilena_chat_conversations') ? ['feedback_prompted_at' => null] : [] ),
@@ -271,6 +284,7 @@ class SupportChatController extends BaseController
                 $db->table('ilena_chat_jobs')->insert([
                     'conversation_id' => $conversationId,
                     'user_message_id' => $messageId,
+                    ...($db->fieldExists('response_locale', 'ilena_chat_jobs') ? ['response_locale' => $responseLocale] : []),
                     'status' => 'queued',
                     'attempts' => 0,
                     'available_at' => $now,
@@ -297,16 +311,17 @@ class SupportChatController extends BaseController
 
     public function handoff()
     {
-        $availability = $this->supportAvailability();
+        $input = $this->request->getJSON(true) ?? $this->request->getPost();
+        $responseLocale = $this->chatLocale((string) ($input['locale'] ?? ''));
+        $availability = $this->supportAvailability($responseLocale);
         if (! $availability['open']) {
             return $this->json([
                 'success' => false,
                 'code' => 'outside_hours',
                 'message' => 'Tim Ilena sedang di luar jam layanan. Pesan Anda tetap bisa dikirim.',
-                'whatsappUrl' => $this->whatsappUrl(),
+                'whatsappUrl' => $this->whatsappUrl('', $responseLocale),
             ], 200);
         }
-        $input = $this->request->getJSON(true) ?? $this->request->getPost();
         try {
             $contact = ChatContactDetails::normalize((string)($input['name'] ?? ''), (string)($input['phone'] ?? ''));
         } catch (\InvalidArgumentException $error) {
@@ -335,6 +350,7 @@ class SupportChatController extends BaseController
         $db->table('ilena_chat_messages')->insert([
             'conversation_id' => (int)$conversation['id'], 'sender_type' => 'system',
             'body' => 'Pelanggan meminta bantuan staf. Pesan berikutnya akan dilayani oleh tim Ilena.',
+            'metadata' => json_encode(['type' => 'customer_handoff'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
             'created_at' => $now,
         ]);
         if ($db->transStatus() === false) {

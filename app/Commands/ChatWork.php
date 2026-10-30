@@ -106,14 +106,15 @@ class ChatWork extends BaseCommand
         $result = (new SmartProductAssistant($db))->respond(
             (string) $message['body'],
             $conversation['context_product_id'] ?? null,
-            ChatConversationContext::normalize($historyRows)
+            ChatConversationContext::normalize($historyRows),
+            (string) ($job['response_locale'] ?? $conversation['response_locale'] ?? 'id')
         );
         $durationMs = (int) round((microtime(true) - $startedAt) * 1000);
         $now = date('Y-m-d H:i:s');
         $db->transBegin();
         $metadata = json_encode(['products' => $result['products'], 'sources' => $result['sources'], 'resolutionCheck' => true,
             'answerMode' => $result['mode'] ?? 'assisted', 'fallbackReason' => $result['fallbackReason'] ?? null,
-            ...($this->shouldOfferWhatsApp($result) ? ['whatsappUrl' => ChatWhatsappLink::forQuestion((string) $message['body'])] : []),
+            ...($this->shouldOfferWhatsApp($result) ? ['whatsappUrl' => ChatWhatsappLink::forQuestion((string) $message['body'], (string) ($job['response_locale'] ?? 'id'))] : []),
             'durationMs' => $durationMs], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         // INSERT ... SELECT makes the status check atomic with publication.
         // The SQL form is supported by both production MySQL and test SQLite.
