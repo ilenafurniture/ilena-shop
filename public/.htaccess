@@ -21,6 +21,10 @@ Options -Indexes
 	RewriteCond %{REQUEST_URI} (.+)/$
 	RewriteRule ^ %1 [L,R=301]
 
+	# The checked-in sitemap.xml is a legacy placeholder. Always generate the
+	# current multilingual sitemap through CodeIgniter, even while that file exists.
+	RewriteRule ^sitemap\.xml$ index.php/sitemap.xml [L,NC,QSA]
+
 	# Rewrite "www.example.com -> example.com"
 	RewriteCond %{HTTPS} !=on
 	RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]

@@ -370,7 +370,7 @@ function closeSecondAd() {
             <circle class="hero-motion-glow" cx="160" cy="160" r="61" />
         </svg>
         <p class="ilena-home-kicker"><?= esc(lang('Store.homeKicker')); ?></p>
-        <h1 class="teks-besar text-light" style="font-size:34px;"><?= esc(lang('Store.heroSlogan')); ?></h1>
+        <h2 class="teks-besar text-light" style="font-size:34px;"><?= esc(lang('Store.heroSlogan')); ?></h2>
         <p class="text-handwrite py-1 px-2 text-light"
             style="font-size:20px; transform: rotate(-10deg) translate(50px, -15px);">True to you</p>
         <a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>" class="btn-underline text-light" style="transform: translateY(100px);">
@@ -553,7 +553,7 @@ function closeSecondAd() {
             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
         <div>
             <p class="text-light"><?= esc(lang('Store.homeMakeYouFeel')); ?></p>
-            <h1 class="teks-besar text-light mb-5"><?= esc(lang('Store.homeElegant')); ?></h1>
+            <h2 class="teks-besar text-light mb-5"><?= esc(lang('Store.homeElegant')); ?></h2>
             <div style="width:120px; height:2px; background-color:white;"></div>
         </div>
     </a>
@@ -565,7 +565,7 @@ function closeSecondAd() {
                 alt="<?= esc(lang('Store.homeCodyTableAlt'), 'attr'); ?>"
                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
             <div>
-                <h1 class="teks-besar text-light mb-3"><?= esc(lang('Store.homeLuxury')); ?></h1>
+                <h2 class="teks-besar text-light mb-3"><?= esc(lang('Store.homeLuxury')); ?></h2>
                 <div class="d-flex gap-3">
                     <div style="width:20px; height:20px; background-color:white;"></div>
                     <div style="width:20px; height:20px; border: 2px solid white;"></div>
@@ -578,7 +578,7 @@ function closeSecondAd() {
                     alt="<?= esc(lang('Store.homeCabanaConsoleAlt'), 'attr'); ?>"
                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
                 <div>
-                    <h1 class="teks-besar text-light mb-3"><?= esc(lang('Store.homeSimply')); ?></h1>
+                    <h2 class="teks-besar text-light mb-3"><?= esc(lang('Store.homeSimply')); ?></h2>
                     <div class="d-flex gap-3">
                         <div style="width:20px; height:20px; border: 2px solid white;"></div>
                         <div style="width:20px; height:20px; background-color:white;"></div>
@@ -595,7 +595,7 @@ function closeSecondAd() {
         style="text-decoration:none; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/11 comp.png'); background-size: cover; background-position:center;">
         <div>
             <p class="text-light"><?= esc(lang('Store.homeMakeYouFeel')); ?></p>
-            <h1 class="teks-besar text-light mb-5"><?= esc(lang('Store.homeElegant')); ?></h1>
+            <h2 class="teks-besar text-light mb-5"><?= esc(lang('Store.homeElegant')); ?></h2>
             <div style="width:120px; height:2px; background-color:white;"></div>
         </div>
     </a>
@@ -603,7 +603,7 @@ function closeSecondAd() {
         <a class="d-flex align-items-center ps-5" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
             style="text-decoration:none; flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/n1 comp.png'); background-size: cover; background-position:center;">
             <div>
-                <h1 class="teks-besar text-light mb-3"><?= esc(lang('Store.homeLuxury')); ?></h1>
+                <h2 class="teks-besar text-light mb-3"><?= esc(lang('Store.homeLuxury')); ?></h2>
                 <div class="d-flex gap-3">
                     <div style="width:20px; height:20px; background-color:white;"></div>
                     <div style="width:20px; height:20px; border: 2px solid white;"></div>
@@ -614,7 +614,7 @@ function closeSecondAd() {
             <div class="d-flex align-items-center ps-5"
                 style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/s comp.png'); background-size: cover; background-position:center;">
                 <div>
-                    <h1 class="teks-besar text-light mb-3"><?= esc(lang('Store.homeSimply')); ?></h1>
+                    <h2 class="teks-besar text-light mb-3"><?= esc(lang('Store.homeSimply')); ?></h2>
                     <div class="d-flex gap-3">
                         <div style="width:20px; height:20px; border: 2px solid white;"></div>
                         <div style="width:20px; height:20px; background-color:white;"></div>
@@ -634,14 +634,14 @@ function closeSecondAd() {
         data-lazy-bg="<?= esc($homeImageSet('1748320128043.jpg'), 'attr'); ?>" style="text-decoration:none; flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
         <div>
             <p class="text-light ms-2 m-0" style="font-size:12px;"><?= esc(lang('Store.homeMakeYouFeel')); ?></p>
-            <h1 class="text-light ms-2" style="font-size:28px;"><?= esc(lang('Store.homeElegant')); ?></h1>
+            <h2 class="text-light ms-2" style="font-size:28px;"><?= esc(lang('Store.homeElegant')); ?></h2>
             <div style="width:60px; height:1px; background-color:white;" class="m-2"></div>
         </div>
     </a>
     <a class="d-flex align-items-center px-5" href="<?= base_url('/product/coffee-table-ilena-cody') ?>"
         data-lazy-bg="<?= esc($homeImageSet('1748318610868.jpg'), 'attr'); ?>" style="text-decoration:none; flex: 1; background-size:cover;background-position:center;background-color:#f4f1ec;">
         <div>
-            <h1 class="text-light ms-2" style="font-size:28px;"><?= esc(lang('Store.homeLuxury')); ?></h1>
+            <h2 class="text-light ms-2" style="font-size:28px;"><?= esc(lang('Store.homeLuxury')); ?></h2>
             <div class="d-flex gap-1 ms-2">
                 <div style="width:15px; height:15px; background-color:white;"></div>
                 <div style="width:15px; height:15px; border: 1px solid white;"></div>
@@ -651,7 +651,7 @@ function closeSecondAd() {
     <a href="<?= base_url('product/bufet-tv-ilena-cabana') ?>" class="d-flex align-items-center px-5"
         data-lazy-bg="<?= esc($homeImageSet('1742973475864.png'), 'attr'); ?>" style="text-decoration:none; flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
         <div>
-            <h1 class="text-light ms-2" style="font-size:28px;"><?= esc(lang('Store.homeSimply')); ?></h1>
+            <h2 class="text-light ms-2" style="font-size:28px;"><?= esc(lang('Store.homeSimply')); ?></h2>
             <div class="d-flex gap-1 ms-2">
                 <div style="width:15px; height:15px; border: 1px solid white;"></div>
                 <div style="width:15px; height:15px; background-color:white;"></div>
@@ -678,9 +678,9 @@ function closeSecondAd() {
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <a href="<?= base_url('/product?koleksi=industrial') ?>" style="text-decoration:none; color:black;">
-                    <h1 class="teks-besar m-0">Industrial</h1>
+                    <h2 class="teks-besar m-0">Industrial</h2>
                 </a>
-                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <h2 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
                 <p class="m-0"><?= esc(lang('Store.homeSeriesIndustrial')); ?></p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
@@ -701,9 +701,9 @@ function closeSecondAd() {
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <a href="<?= base_url('/product?koleksi=sorely') ?>" style="text-decoration:none; color:black;">
-                    <h1 class="teks-besar m-0">Sorely</h1>
+                    <h2 class="teks-besar m-0">Sorely</h2>
                 </a>
-                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <h2 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
                 <p class="m-0"><?= esc(lang('Store.homeSeriesSorely')); ?></p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
@@ -724,9 +724,9 @@ function closeSecondAd() {
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <a href="<?= base_url('/product?koleksi=watercase') ?>" style="text-decoration:none; color:black;">
-                    <h1 class="teks-besar m-0">Water Case</h1>
+                    <h2 class="teks-besar m-0">Water Case</h2>
                 </a>
-                <h1 style=" font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <h2 style=" font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
                 <p class="m-0"><?= esc(lang('Store.homeSeriesWaterCase')); ?></p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
@@ -747,9 +747,9 @@ function closeSecondAd() {
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <a href="<?= base_url('/product?koleksi=plintbase') ?>" style="text-decoration:none; color:black;">
-                    <h1 class="teks-besar m-0">Plint Base</h1>
+                    <h2 class="teks-besar m-0">Plint Base</h2>
                 </a>
-                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <h2 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
                 <p class="m-0"><?= esc(lang('Store.homeSeriesPlintBase')); ?></p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
@@ -770,9 +770,9 @@ function closeSecondAd() {
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <a href="<?= base_url('/product?koleksi=    ') ?>" style="text-decoration:none; color:black;">
-                    <h1 class="teks-besar m-0">Cut Out</h1>
+                    <h2 class="teks-besar m-0">Cut Out</h2>
                 </a>
-                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <h2 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
                 <p class="m-0"><?= esc(lang('Store.homeSeriesCutout')); ?></p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
@@ -794,9 +794,9 @@ function closeSecondAd() {
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <a href="<?= base_url('/product?koleksi=orca') ?>" style="text-decoration:none; color:black;">
-                    <h1 class="teks-besar m-0">Orca</h1>
+                    <h2 class="teks-besar m-0">Orca</h2>
                 </a>
-                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <h2 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
                 <p class="m-0"><?= esc(lang('Store.homeSeriesOrca')); ?></p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
@@ -818,9 +818,9 @@ function closeSecondAd() {
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <a href="<?= base_url('/product?koleksi=cody') ?>" style="text-decoration:none; color:black;">
-                    <h1 class="teks-besar m-0">Cody</h1>
+                    <h2 class="teks-besar m-0">Cody</h2>
                 </a>
-                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <h2 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
                 <p class="m-0"><?= esc(lang('Store.homeSeriesCody')); ?></p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
@@ -842,9 +842,9 @@ function closeSecondAd() {
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <a href="<?= base_url('/product?koleksi=metalframe') ?>" style="text-decoration:none; color:black;">
-                    <h1 class="teks-besar m-0">Metal Frame</h1>
+                    <h2 class="teks-besar m-0">Metal Frame</h2>
                 </a>
-                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <h2 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
                 <p class="m-0"><?= esc(lang('Store.homeSeriesMetalFrame')); ?></p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
@@ -866,9 +866,9 @@ function closeSecondAd() {
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <a href="<?= base_url('/product?koleksi=socoplate') ?>" style="text-decoration:none; color:black;">
-                    <h1 class="teks-besar m-0">Socoplate</h1>
+                    <h2 class="teks-besar m-0">Socoplate</h2>
                 </a>
-                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <h2 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
                 <p class="m-0"><?= esc(lang('Store.homeSeriesSocoplate')); ?></p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
@@ -889,9 +889,9 @@ function closeSecondAd() {
             <div class="pt-4" style="width:20px; height: 20px; opacity: 0;"></div>
             <div style="flex:6;">
                 <a href="<?= base_url('/product?koleksi=cabana') ?>" style="text-decoration:none; color:black;">
-                    <h1 class="teks-besar m-0">Cabana</h1>
+                    <h2 class="teks-besar m-0">Cabana</h2>
                 </a>
-                <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
+                <h2 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h2>
                 <p class="m-0"><?= esc(lang('Store.homeSeriesCabana')); ?></p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
@@ -980,9 +980,9 @@ if (scrollHomeElm && inputScrollHomeElm.length) {
     <div class="d-flex align-items-center" style="flex:1;">
         <div class="p-5">
             <p class="mb-1 ms-1" style="letter-spacing:1em;">ILENA</p>
-            <h1 class="teks-besar" style="font-size:80px;"><?= esc(lang('Store.homeFreshPerspective')); ?></h1>
-            <h1 style="color:#7B441c; font-size:80px;" class="teks-besar"><?= esc(lang('Store.homeNewArrivals')); ?>
-            </h1>
+            <h2 class="teks-besar" style="font-size:80px;"><?= esc(lang('Store.homeFreshPerspective')); ?></h2>
+            <h2 style="color:#7B441c; font-size:80px;" class="teks-besar"><?= esc(lang('Store.homeNewArrivals')); ?>
+            </h2>
         </div>
     </div>
     <div class="kontenLN">
@@ -1023,9 +1023,9 @@ if (scrollHomeElm && inputScrollHomeElm.length) {
     <div class="d-flex align-items-center" style="flex:1;">
         <div class="px-5">
             <p class="mb-1 ms-1" style="letter-spacing:1em;">ILENA</p>
-            <h1 class="teks-sedang" style="font-size:40px;"><?= esc(lang('Store.homeFreshPerspective')); ?></h1>
-            <h1 style="color:#7B441c; font-size:40px;" class="teks-sedang"><?= esc(lang('Store.homeNewArrivals')); ?>
-            </h1>
+            <h2 class="teks-sedang" style="font-size:40px;"><?= esc(lang('Store.homeFreshPerspective')); ?></h2>
+            <h2 style="color:#7B441c; font-size:40px;" class="teks-sedang"><?= esc(lang('Store.homeNewArrivals')); ?>
+            </h2>
         </div>
     </div>
 </div>
@@ -1104,7 +1104,7 @@ document.addEventListener("DOMContentLoaded", function() {
     </div>
     <div style="flex:1; background-color:white;" class="d-flex flex-column justify-content-center align-items-center">
         <p class="teks-sedang">EST</p>
-        <h1 class=" mb-2 teks-besar" style="font-weight:600px; font-size:100px; color:  #7B441c;">2024</h1>
+        <h2 class=" mb-2 teks-besar" style="font-weight:600px; font-size:100px; color:  #7B441c;">2024</h2>
         <p class="m-0 fw-bold" style=" letter-spacing:1em;">ILENA</p>
     </div>
 </div>

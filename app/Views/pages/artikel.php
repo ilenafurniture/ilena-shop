@@ -2,6 +2,29 @@
 <?= $this->section('content'); ?>
 <?php $isEnglish = service('request')->getLocale() === 'en'; ?>
 <?php $safeArticleHtml = (new \App\Services\ArticleContentSanitizer())->sanitize((string) ($artikel['isi'] ?? '')); ?>
+<?php
+$articleStructuredData = [
+    '@context' => 'https://schema.org',
+    '@type' => 'Article',
+    'headline' => (string) ($artikel['judul'] ?? ''),
+    'description' => (string) ($metaDeskripsi ?? ''),
+    'image' => [(string) ($metaImage ?? base_url('img/logo/N.png'))],
+    'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => (string) ($metaUrl ?? current_url())],
+    'publisher' => [
+        '@type' => 'Organization',
+        'name' => 'Ilena Furniture',
+        'logo' => ['@type' => 'ImageObject', 'url' => base_url('img/logo/N.png')],
+    ],
+    'inLanguage' => $isEnglish ? 'en' : 'id-ID',
+];
+if (trim((string) ($articleAuthor ?? '')) !== '') {
+    $articleStructuredData['author'] = ['@type' => 'Person', 'name' => (string) $articleAuthor];
+}
+if (trim((string) ($articlePublishedIso ?? '')) !== '') {
+    $articleStructuredData['datePublished'] = (string) $articlePublishedIso;
+}
+?>
+<script type="application/ld+json"><?= json_encode($articleStructuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?></script>
 <style>
 .isi-artikel h1 {
     font-weight: 500;
@@ -103,7 +126,7 @@
                             <?php } ?>
                         </div>
                     </div>
-                    <h1 class="teks-besar mb-4"><?= esc($artikel['judul'] ?? ''); ?></h1>
+                    <h2 class="teks-besar mb-4"><?= esc($artikel['judul'] ?? ''); ?></h2>
                     <div class="d-flex justify-content-between">
                         <p class="m-0 text-secondary"><?= $isEnglish ? 'Written by' : 'Ditulis oleh'; ?> <?= esc($artikel['penulis'] ?? ''); ?></p>
                         <p class="m-0 text-secondary"><?= $isEnglish ? 'Last updated' : 'Terakhir diubah pada'; ?> <?= $artikel['waktu']; ?></p>

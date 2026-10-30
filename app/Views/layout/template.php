@@ -136,24 +136,35 @@
     <!-- End Google Tag Manager -->
 
     <?php
+    $isEnglishDocument = service('request')->getLocale() === 'en';
     $documentTitle = trim((string) ($metaTitle ?? ''));
     if ($documentTitle === '') {
-        $documentTitle = trim((string) ($title ?? 'Ilena Furniture')) . ' | I L E N A';
+        $documentTitle = trim((string) ($title ?? 'Ilena Furniture')) . ' | Ilena Furniture';
     }
     $documentDescription = trim((string) ($metaDeskripsi ?? ''));
     if ($documentDescription === '') {
         $descriptionSubject = trim((string) ($title ?? 'Ilena Furniture'));
-        $documentDescription = ($descriptionSubject !== '' ? $descriptionSubject . ' — ' : '')
-            . 'Informasi produk, koleksi, dan layanan dari Ilena Furniture untuk melengkapi rumah Anda.';
+        $documentDescription = $isEnglishDocument
+            ? (($descriptionSubject !== '' ? $descriptionSubject . ' — ' : '') . 'Explore Ilena Furniture collections, product information, and services for a more comfortable home.')
+            : (($descriptionSubject !== '' ? $descriptionSubject . ' — ' : '') . 'Jelajahi koleksi, informasi produk, dan layanan Ilena Furniture untuk rumah yang lebih nyaman.');
     }
     $canonicalPath = trim((string) service('uri')->getPath(), '/');
     $defaultCanonicalUrl = $canonicalPath === '' ? rtrim(base_url(), '/') . '/' : site_url($canonicalPath);
     $localeNeutralPath = trim(App\Services\StorefrontLayoutPolicy::normalizePath($canonicalPath), '/');
     $idAlternateUrl = $localeNeutralPath === '' ? rtrim(base_url(), '/') . '/' : site_url($localeNeutralPath);
     $enAlternateUrl = $localeNeutralPath === '' ? rtrim(base_url(), '/') . '/en' : site_url('en/' . $localeNeutralPath);
+    $metaAlternateUrls = isset($metaAlternateUrls) && is_array($metaAlternateUrls)
+        ? $metaAlternateUrls
+        : ['id' => $idAlternateUrl, 'en' => $enAlternateUrl, 'x-default' => $idAlternateUrl];
+    $alternateIdUrl = trim((string) ($metaAlternateUrls['id'] ?? $idAlternateUrl));
+    $alternateEnUrl = trim((string) ($metaAlternateUrls['en'] ?? ''));
+    $alternateDefaultUrl = trim((string) ($metaAlternateUrls['x-default'] ?? $alternateIdUrl));
     $documentUrl = trim((string) ($metaUrl ?? $defaultCanonicalUrl));
     if ($documentUrl === '') {
         $documentUrl = $defaultCanonicalUrl;
+    }
+    if (!preg_match('#^https?://#i', $documentUrl)) {
+        $documentUrl = site_url(ltrim($documentUrl, '/'));
     }
     $documentImage = trim((string) ($metaImage ?? 'https://ilenafurniture.com/img/logo/N.png'));
     $documentImageAlt = trim((string) ($metaImageAlt ?? 'Ilena Furniture'));
@@ -161,7 +172,7 @@
     $isHomePage = $localeNeutralPath === '';
     $documentRobots = trim((string) ($metaRobots ?? ''));
     if ($documentRobots === '') {
-        $noindexPrefixes = ['admin', 'dev', 'staff', 'cart', 'wishlist', 'address', 'login', 'register', 'verify', 'account', 'order', 'orderdetail', 'invoice', 'shipping', 'payment', 'find', 'search'];
+        $noindexPrefixes = ['admin', 'dev', 'staff', 'cart', 'wishlist', 'address', 'login', 'register', 'verify', 'account', 'order', 'orderdetail', 'invoice', 'shipping', 'payment', 'progresspay', 'successpay', 'cencelpay', 'expirepay', 'find', 'search'];
         $robotsPath = strtolower($localeNeutralPath);
         $documentRobots = 'index, follow';
         foreach ($noindexPrefixes as $prefix) {
@@ -171,7 +182,7 @@
             }
         }
         $requestQuery = service('request')->getGet();
-        if ($localeNeutralPath === 'product' && array_intersect(['koleksi', 'jenis', 'ruang', 'q', 'cari'], array_keys($requestQuery))) {
+        if ($localeNeutralPath === 'product' && $requestQuery !== []) {
             $documentRobots = 'noindex, follow';
         }
         if ($localeNeutralPath === 'partner' && array_intersect(['q', 'city', 'page'], array_keys($requestQuery))) {
@@ -199,7 +210,9 @@
                     'height' => 160,
                 ],
                 'image' => base_url('img/logo/N.png'),
-                'description' => 'Ilena Furniture adalah merek furniture modern dari CV Catur Bhakti Mandiri, produsen furniture berbahan kayu di Semarang, Jawa Tengah, untuk kebutuhan rumah, perkantoran, dan perhotelan.',
+                'description' => $isEnglishDocument
+                    ? 'Ilena Furniture is an Indonesian furniture brand by CV Catur Bhakti Mandiri, creating furniture for homes, offices, and hospitality spaces.'
+                    : 'Ilena Furniture adalah merek furniture modern dari CV Catur Bhakti Mandiri, produsen furniture berbahan kayu di Semarang, Jawa Tengah, untuk kebutuhan rumah, perkantoran, dan perhotelan.',
                 'slogan' => 'Mulai dari rumah, tercipta senyum ramah.',
                 'knowsAbout' => ['Furniture rumah', 'Furniture perkantoran', 'Furniture perhotelan', 'Desain interior'],
                 'email' => 'cs@ilenafurniture.com',
@@ -224,7 +237,7 @@
                 'url' => $siteBaseUrl,
                 'name' => 'Ilena Furniture',
                 'alternateName' => 'ILENA',
-                'inLanguage' => 'id-ID',
+                'inLanguage' => $isEnglishDocument ? 'en' : 'id-ID',
                 'publisher' => ['@id' => $organizationId],
             ],
         ],
@@ -240,15 +253,23 @@
         if (is_array($schemaVariant)) $schemaStock += max(0, (int) ($schemaVariant['stok'] ?? 0));
     }
     $schemaPrice = \App\Services\CatalogPricing::unitPrice($produk);
-    $schemaDescription = trim((string) preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags((string) ($produk['deskripsi']['deskripsi'] ?? '')), ENT_QUOTES | ENT_HTML5, 'UTF-8')));
+    $schemaProductName = function_exists('ilena_product_display_name')
+        ? ilena_product_display_name($produk, $isEnglishDocument ? 'en' : 'id')
+        : (string) $produk['nama'];
+    $rawSchemaDescription = $isEnglishDocument && trim((string) ($produk['deskripsi']['deskripsi_en'] ?? '')) !== ''
+        ? (string) $produk['deskripsi']['deskripsi_en']
+        : (string) ($produk['deskripsi']['deskripsi'] ?? '');
+    $schemaDescription = trim((string) preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags($rawSchemaDescription), ENT_QUOTES | ENT_HTML5, 'UTF-8')));
     $schemaProduct = [
         '@context' => 'https://schema.org',
         '@type' => 'Product',
-        'name' => (string) $produk['nama'],
+        'name' => $schemaProductName,
         'image' => $documentImage,
         'sku' => (string) $produk['id'],
         'brand' => ['@type' => 'Brand', 'name' => 'Ilena Furniture'],
-        'category' => (string) ($produk['kategori'] ?? 'Furniture'),
+        'category' => function_exists('ilena_catalog_type_label')
+            ? ilena_catalog_type_label((string) ($produk['kategori'] ?? 'Furniture'), $isEnglishDocument ? 'en' : 'id')
+            : (string) ($produk['kategori'] ?? 'Furniture'),
     ];
     if ($schemaDescription !== '') $schemaProduct['description'] = $schemaDescription;
     if ($schemaPrice > 0) {
@@ -269,8 +290,9 @@
     <meta property="og:image" content="<?= esc($documentImage, 'attr'); ?>">
     <meta property="og:image:alt" content="<?= esc($documentImageAlt, 'attr'); ?>">
     <meta property="og:url" content="<?= esc($documentUrl, 'attr'); ?>">
-    <meta property="og:type" content="website">
-    <meta property="og:locale" content="<?= service('request')->getLocale() === 'en' ? 'en_US' : 'id_ID'; ?>">
+    <meta property="og:type" content="<?= isset($produk['id']) && is_array($produk) ? 'product' : 'website'; ?>">
+    <meta property="og:locale" content="<?= $isEnglishDocument ? 'en_US' : 'id_ID'; ?>">
+    <?php if ($alternateEnUrl !== '') : ?><meta property="og:locale:alternate" content="<?= $isEnglishDocument ? 'id_ID' : 'en_US'; ?>"><?php endif; ?>
     <meta charset="UTF-8">
     <meta name="theme-color" content="#e84a49">
     <meta name="msapplication-navbutton-color" content="#e84a49">
@@ -285,13 +307,14 @@
     <meta property="og:site_name" content="Ilena Furniture">
     <meta name="robots" content="<?= esc($documentRobots, 'attr'); ?>">
     <link rel="canonical" href="<?= esc($documentUrl, 'attr'); ?>">
-    <link rel="alternate" hreflang="id" href="<?= esc($idAlternateUrl, 'attr'); ?>">
-    <link rel="alternate" hreflang="en" href="<?= esc($enAlternateUrl, 'attr'); ?>">
-    <link rel="alternate" hreflang="x-default" href="<?= esc($idAlternateUrl, 'attr'); ?>">
+    <?php if ($alternateIdUrl !== '') : ?><link rel="alternate" hreflang="id" href="<?= esc($alternateIdUrl, 'attr'); ?>"><?php endif; ?>
+    <?php if ($alternateEnUrl !== '') : ?><link rel="alternate" hreflang="en" href="<?= esc($alternateEnUrl, 'attr'); ?>"><?php endif; ?>
+    <?php if ($alternateDefaultUrl !== '') : ?><link rel="alternate" hreflang="x-default" href="<?= esc($alternateDefaultUrl, 'attr'); ?>"><?php endif; ?>
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<?= esc($documentTitle, 'attr'); ?>">
     <meta name="twitter:description" content="<?= esc($documentDescription, 'attr'); ?>">
     <meta name="twitter:image" content="<?= esc($documentImage, 'attr'); ?>">
+    <meta name="twitter:image:alt" content="<?= esc($documentImageAlt, 'attr'); ?>">
     <title><?= esc($documentTitle); ?></title>
     <link href="<?= base_url('css/bootstrap.min.css'); ?>" rel="stylesheet">
     <link rel="preload" as="style" href="https://fonts.googleapis.com/icon?family=Material+Icons" onload="this.onload=null;this.rel='stylesheet'">

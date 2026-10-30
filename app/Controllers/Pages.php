@@ -283,17 +283,39 @@ class Pages extends BaseController
     /** Serve a fresh sitemap containing only public canonical content URLs. */
     public function sitemap()
     {
-        $cacheKey = 'ilena_public_sitemap_v2';
+        $cacheKey = 'ilena_public_sitemap_v3';
         $xml = cache()->get($cacheKey);
         if (!is_string($xml) || $xml === '') {
             $base = rtrim(base_url(), '/') . '/';
-            $urls = [];
-            foreach (['', 'product', 'tentang', 'partner', 'syarat', 'kebijakan', 'visimisi', 'iklan', 'faq', 'article'] as $path) {
-                $urls[$base . $path] = null;
+            $entries = [];
+            $addEntry = static function (string $path, ?string $lastmod = null, bool $hasEnglish = true) use (&$entries, $base): void {
+                $path = trim($path, '/');
+                $idUrl = $base . $path;
+                $entries[$idUrl] = [
+                    'id' => $idUrl,
+                    'en' => $hasEnglish ? $base . 'en' . ($path !== '' ? '/' . $path : '') : null,
+                    'lastmod' => $lastmod,
+                ];
+            };
+
+            foreach (['', 'product', 'tentang', 'partner', 'syarat', 'kebijakan', 'visimisi', 'iklan', 'faq', 'contact', 'article'] as $path) {
+                $addEntry($path);
+            }
+
+            $categories = $this->barangModel
+                ->select('kategori')
+                ->where('active', '1')
+                ->distinct()
+                ->findAll();
+            foreach ($categories as $category) {
+                $categoryName = trim((string) ($category['kategori'] ?? ''));
+                if ($categoryName === '') continue;
+                $categorySlug = strtolower(str_replace(' ', '-', $categoryName));
+                $addEntry('product/category/' . rawurlencode($categorySlug));
             }
 
             $products = $this->barangModel
-                ->select('nama, tgl_update')
+                ->select('nama, deskripsi, tgl_update')
                 ->where('active', '1')
                 ->orderBy('nama', 'asc')
                 ->findAll();
@@ -301,27 +323,51 @@ class Pages extends BaseController
                 $name = trim((string) ($product['nama'] ?? ''));
                 if ($name === '') continue;
                 $slug = strtolower(str_replace(' ', '-', $name));
-                $url = $base . 'product/' . rawurlencode($slug);
-                if (!array_key_exists($url, $urls)) {
-                    $updatedAt = strtotime((string) ($product['tgl_update'] ?? ''));
-                    $urls[$url] = $updatedAt !== false ? gmdate('Y-m-d', $updatedAt) : null;
-                }
+                $updatedAt = strtotime((string) ($product['tgl_update'] ?? ''));
+                $description = json_decode((string) ($product['deskripsi'] ?? '{}'), true);
+                $hasEnglish = is_array($description)
+                    && trim((string) ($description['nama_en'] ?? '')) !== ''
+                    && trim((string) ($description['deskripsi_en'] ?? '')) !== '';
+                $addEntry('product/' . rawurlencode($slug), $updatedAt !== false ? gmdate('Y-m-d', $updatedAt) : null, $hasEnglish);
             }
 
-            foreach ($this->artikelModel->select('path, waktu')->findAll() as $article) {
+            // Keep sitemap generation available during staggered deployments where the
+            // optional article-translation migration has not reached every environment.
+            $articleColumns = ['path', 'waktu'];
+            foreach (['judul_en', 'deskripsi_en', 'isi_en'] as $localizedColumn) {
+                if (db_connect()->fieldExists($localizedColumn, 'artikel')) {
+                    $articleColumns[] = $localizedColumn;
+                }
+            }
+            foreach ($this->artikelModel->select($articleColumns)->findAll() as $article) {
                 $slug = trim((string) ($article['path'] ?? ''));
                 if ($slug === '') continue;
-                $url = $base . 'article/' . rawurlencode($slug);
                 $updatedAt = strtotime((string) ($article['waktu'] ?? ''));
-                $urls[$url] = $updatedAt !== false ? gmdate('Y-m-d', $updatedAt) : null;
+                $hasEnglish = trim((string) ($article['judul_en'] ?? '')) !== ''
+                    && trim((string) ($article['deskripsi_en'] ?? '')) !== ''
+                    && trim((string) ($article['isi_en'] ?? '')) !== '';
+                $addEntry('article/' . rawurlencode($slug), $updatedAt !== false ? gmdate('Y-m-d', $updatedAt) : null, $hasEnglish);
             }
 
             $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-            $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
-            foreach ($urls as $url => $lastmod) {
-                $xml .= "  <url><loc>" . htmlspecialchars($url, ENT_XML1 | ENT_QUOTES, 'UTF-8') . '</loc>';
-                if ($lastmod !== null) $xml .= '<lastmod>' . $lastmod . '</lastmod>';
+            $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">' . "\n";
+            foreach ($entries as $entry) {
+                $xml .= "  <url><loc>" . htmlspecialchars($entry['id'], ENT_XML1 | ENT_QUOTES, 'UTF-8') . '</loc>';
+                $xml .= '<xhtml:link rel="alternate" hreflang="id" href="' . htmlspecialchars($entry['id'], ENT_XML1 | ENT_QUOTES, 'UTF-8') . '" />';
+                if ($entry['en'] !== null) {
+                    $xml .= '<xhtml:link rel="alternate" hreflang="en" href="' . htmlspecialchars($entry['en'], ENT_XML1 | ENT_QUOTES, 'UTF-8') . '" />';
+                    $xml .= '<xhtml:link rel="alternate" hreflang="x-default" href="' . htmlspecialchars($entry['id'], ENT_XML1 | ENT_QUOTES, 'UTF-8') . '" />';
+                }
+                if ($entry['lastmod'] !== null) $xml .= '<lastmod>' . $entry['lastmod'] . '</lastmod>';
                 $xml .= "</url>\n";
+                if ($entry['en'] !== null) {
+                    $xml .= '  <url><loc>' . htmlspecialchars($entry['en'], ENT_XML1 | ENT_QUOTES, 'UTF-8') . '</loc>';
+                    $xml .= '<xhtml:link rel="alternate" hreflang="id" href="' . htmlspecialchars($entry['id'], ENT_XML1 | ENT_QUOTES, 'UTF-8') . '" />';
+                    $xml .= '<xhtml:link rel="alternate" hreflang="en" href="' . htmlspecialchars($entry['en'], ENT_XML1 | ENT_QUOTES, 'UTF-8') . '" />';
+                    $xml .= '<xhtml:link rel="alternate" hreflang="x-default" href="' . htmlspecialchars($entry['id'], ENT_XML1 | ENT_QUOTES, 'UTF-8') . '" />';
+                    if ($entry['lastmod'] !== null) $xml .= '<lastmod>' . $entry['lastmod'] . '</lastmod>';
+                    $xml .= "</url>\n";
+                }
             }
             $xml .= "</urlset>\n";
             cache()->save($cacheKey, $xml, 3600);
@@ -910,6 +956,11 @@ class Pages extends BaseController
             $metaImageSlots = preg_split('/\s*,\s*/', (string) ($product['varian'][0]['urutan_gambar'] ?? '1')) ?: ['1'];
             $metaImageSlot = preg_replace('/[^0-9]/', '', (string) ($metaImageSlots[0] ?? '1')) ?: '1';
             $englishProductDescription = trim((string) ($product['deskripsi']['deskripsi_en'] ?? ''));
+            $englishProductName = trim((string) ($product['deskripsi']['nama_en'] ?? ''));
+            $hasEnglishProductCopy = $englishProductName !== '' && $englishProductDescription !== '';
+            $productPath = 'product/' . strtolower(str_replace(' ', '-', (string) $product['nama']));
+            $productIdUrl = site_url($productPath);
+            $productEnUrl = site_url('en/' . $productPath);
             $descriptionForMeta = $this->request->getLocale() === 'en' && $englishProductDescription !== ''
                 ? $englishProductDescription
                 : (string) ($product['deskripsi']['deskripsi'] ?? '');
@@ -943,7 +994,15 @@ class Pages extends BaseController
                 'metaDeskripsi' => $this->seoDescription($descriptionForMeta, $this->request->getLocale() === 'en' ? 'Explore the details, price, color options, and availability of ' . ucwords($productDisplayName) . ' by Ilena Furniture.' : 'Lihat detail, harga, pilihan warna, dan ketersediaan ' . ucwords($productDisplayName) . ' dari Ilena Furniture.'),
                 'metaImage'     => base_url('product-cover/' . rawurlencode((string) $product['id'])) . '?slot=' . rawurlencode($metaImageSlot) . '&size=1000',
                 'metaImageAlt'  => ucwords($productDisplayName) . ' — furniture Ilena Furniture',
+                'metaUrl'       => $this->request->getLocale() === 'en' && $hasEnglishProductCopy ? $productEnUrl : $productIdUrl,
+                'metaAlternateUrls' => $hasEnglishProductCopy
+                    ? ['id' => $productIdUrl, 'en' => $productEnUrl, 'x-default' => $productIdUrl]
+                    : ['id' => $productIdUrl, 'x-default' => $productIdUrl],
             ];
+            if (!$hasEnglishProductCopy && $this->request->getLocale() === 'en') {
+                $data['metaUrl'] = $productIdUrl;
+                $data['metaRobots'] = 'noindex, follow';
+            }
 
             // menambah pengunjung
             $this->barangModel->where(['id' => $product['id']])
@@ -1019,62 +1078,49 @@ class Pages extends BaseController
             }
         }
 
-        $meta = [
-            'cabana' => [
-                'deskripsi' => 'Temukan furniture rumah tangga modern berkualitas di Cabana Ilena Semarang',
-                'keywords' => ['Cabana Ilena', 'Cabana Ilena Semarang,Living Room Ilena', 'Living Room', 'Ilena Semarang', 'Bed Room Ilena', 'Bed Room Ilena Semarang', 'Lounge Room Ilena', 'Lounge Room Ilena Semarang'],
-            ],
-            'sorely' => [
-                'deskripsi' => 'Sempurnakan rumah dengan furniture modern ala sorely Ilena Semarang',
-                'keywords' => ['Sorely Ilena', 'Sorely Ilena Semarang,Living Room Ilena', 'Living Room', 'Ilena Semarang', 'Bed Room Ilena', 'Bed Room Ilena Semarang', 'Lounge Room Ilena', 'Lounge Room Ilena Semarang'],
-            ],
-            'orca' => [
-                'deskripsi' => 'Buat interior lebih sempurna dengan furniture elegan dari Orca ilena Semarang',
-                'keywords' => ['Orca Ilena,Orca Ilena Semarang,Living Room Ilena', 'Living Room', 'Ilena Semarang', 'Bed Room Ilena', 'Bed Room Ilena Semarang', 'Lounge Room Ilena', 'Lounge Room Ilena Semarang'],
-            ],
-            'water-case' => [
-                'deskripsi' => 'Pilih furniture terbaik untuk hunian dengan beli Water case Ilena Semarang',
-                'keywords' => ['Water Case Ilena,Water Case Ilena Semarang,Living Room Ilena', 'Living Room', 'Ilena Semarang', 'Bed Room Ilena', 'Bed Room Ilena Semarang', 'Lounge Room Ilena', 'Lounge Room Ilena Semarang'],
-            ],
-            'plint-base' => [
-                'deskripsi' => 'Beli sekarang furniture model terbaru ala plint base Ilena Semarang',
-                'keywords' => ['Plint Base Ilena,Plint Base Ilena Semarang,Living Room Ilena', 'Living Room', 'Ilena Semarang', 'Bed Room Ilena', 'Bed Room Ilena Semarang', 'Lounge Room Ilena', 'Lounge Room Ilena Semarang'],
-            ],
-            'cutout' => [
-                'deskripsi' => 'Pastikan furniture rumah selalu keren dan berkualitas dengan beli CutOut Ilena Semarang',
-                'keywords' => ['Cutout Ilena,Cutout Ilena Semarang,Living Room Ilena', 'Living Room', 'Ilena Semarang', 'Bed Room Ilena', 'Bed Room Ilena Semarang', 'Lounge Room Ilena', 'Lounge Room Ilena Semarang'],
-            ],
-            'industrial' => [
-                'deskripsi' => 'Pastikan furniture rumah selalu keren dan berkualitas dengan beli Industrial Ilena Semarang',
-                'keywords' => ['Industrial Ilena,Industrial Ilena Semarang,Living Room Ilena', 'Living Room', 'Ilena Semarang', 'Bed Room Ilena', 'Bed Room Ilena Semarang', 'Lounge Room Ilena', 'Lounge Room Ilena Semarang'],
-            ],
-            'metal-frame' => [
-                'deskripsi' => 'Pastikan furniture rumah selalu keren dan berkualitas dengan beli Metal Frame Ilena Semarang',
-                'keywords' => ['Metal Frame Ilena,Metal Frame Ilena Semarang,Living Room Ilena', 'Living Room', 'Ilena Semarang', 'Bed Room Ilena', 'Bed Room Ilena Semarang', 'Lounge Room Ilena', 'Lounge Room Ilena Semarang'],
-            ],
-            'socoplate' => [
-                'deskripsi' => 'Pastikan furniture rumah selalu keren dan berkualitas dengan beli Socoplate Ilena Semarang',
-                'keywords' => ['Socoplate Ilena,Socoplate Ilena Semarang,Living Room Ilena', 'Living Room', 'Ilena Semarang', 'Bed Room Ilena', 'Bed Room Ilena Semarang', 'Lounge Room Ilena', 'Lounge Room Ilena Semarang'],
-            ],
-            'cody' => [
-                'deskripsi' => 'Pastikan furniture rumah selalu keren dan berkualitas dengan beli Cody Ilena Semarang',
-                'keywords' => ['Cody Ilena,Cody Ilena Semarang,Living Room Ilena', 'Living Room', 'Ilena Semarang', 'Bed Room Ilena', 'Bed Room Ilena Semarang', 'Lounge Room Ilena', 'Lounge Room Ilena Semarang'],
-            ],
+        // Write useful, locale-specific snippets for collection landing pages.
+        // Avoid the former keyword lists: they were not rendered and repeated city/room terms.
+        $collectionSeo = [
+            'cabana' => ['Cabana', 'Jelajahi pilihan furniture Cabana dari Ilena. Bandingkan produk, ukuran, warna, harga, dan ketersediaan untuk menemukan yang sesuai dengan rumah Anda.', 'Explore Ilena’s Cabana furniture collection. Compare product details, sizes, colors, prices, and availability to find the right fit for your home.'],
+            'sorely' => ['Sorely', 'Lihat koleksi furniture Sorely dari Ilena dan telusuri detail setiap produk, pilihan warna, ukuran, harga, serta ketersediaannya.', 'Explore Ilena’s Sorely furniture collection and review each product’s details, color options, sizes, prices, and availability.'],
+            'orca' => ['Orca', 'Temukan furniture koleksi Orca dari Ilena. Periksa detail produk, pilihan warna, ukuran, harga, dan stok sebelum menentukan pilihan.', 'Discover Ilena’s Orca furniture collection. Check product details, colors, sizes, prices, and stock before choosing.'],
+            'water-case' => ['Water Case', 'Jelajahi furniture koleksi Water Case dari Ilena. Lihat detail produk, pilihan yang tersedia, harga, dan informasi stok terkini.', 'Browse Ilena’s Water Case furniture collection for product details, available options, prices, and current stock information.'],
+            'plint-base' => ['Plint Base', 'Kenali pilihan furniture Plint Base dari Ilena melalui detail produk, warna, ukuran, harga, dan ketersediaan yang tercantum.', 'Explore Ilena’s Plint Base furniture range, with product details, colors, sizes, prices, and availability shown on each listing.'],
+            'cutout' => ['Cutout', 'Lihat pilihan furniture Cutout dari Ilena dan bandingkan spesifikasi, warna, ukuran, harga, serta ketersediaan setiap produk.', 'Browse Ilena’s Cutout furniture and compare product specifications, colors, sizes, prices, and availability.'],
+            'industrial' => ['Industrial', 'Jelajahi koleksi furniture Industrial dari Ilena. Temukan detail produk dan bandingkan pilihan ukuran, warna, harga, serta stok yang tersedia.', 'Explore Ilena’s Industrial furniture collection. Review product details and compare available sizes, colors, prices, and stock.'],
+            'metal-frame' => ['Metal Frame', 'Temukan pilihan furniture Metal Frame dari Ilena. Periksa informasi produk, ukuran, warna, harga, dan ketersediaan sebelum membeli.', 'Discover Ilena’s Metal Frame furniture range. Check product information, sizes, colors, prices, and availability before purchasing.'],
+            'socoplate' => ['Socoplate', 'Jelajahi furniture koleksi Socoplate dari Ilena. Bandingkan detail produk, ukuran, pilihan warna, harga, dan ketersediaan.', 'Browse Ilena’s Socoplate furniture collection and compare product details, sizes, color options, prices, and availability.'],
+            'cody' => ['Cody', 'Lihat koleksi furniture Cody dari Ilena dan temukan informasi produk, pilihan warna, ukuran, harga, serta stok yang tersedia.', 'Explore Ilena’s Cody furniture collection for product information, color options, sizes, prices, and available stock.'],
         ];
+        $collection = $collectionSeo[$kategori] ?? [
+            ucwords(str_replace('-', ' ', $kategori)),
+            'Jelajahi pilihan furniture ' . ucwords(str_replace('-', ' ', $kategori)) . ' dari Ilena. Lihat detail produk, harga, dan ketersediaan.',
+            'Explore Ilena’s ' . ucwords(str_replace('-', ' ', $kategori)) . ' furniture selection, with product details, prices, and availability.',
+        ];
+        $isEnglish = $this->request->getLocale() === 'en';
+        $collectionName = $collection[0];
 
         $data = [
-            'title' => ($this->request->getLocale() === 'en' ? 'Furniture ' : 'Produk ') . ucwords(str_replace('-', ' ', $kategori)),
+            'title' => ($isEnglish ? $collectionName . ' Furniture' : 'Furniture ' . $collectionName),
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'produk' => $seluruhBarangFilter,
+            'koleksiJenis' => [
+                'koleksi' => $koleksi,
+                'jenis' => $jenis,
+            ],
             'wishlist' => $wishlist,
             'koleksi' => $koleksi,
             'jenis' => $jenis,
             'kategori' => $kategori,
-            'metaTitle' => 'Furniture ' . ucwords(str_replace('-', ' ', $kategori)) . ' | Ilena Furniture',
-            'metaDeskripsi' => $this->request->getLocale() === 'en'
-                ? 'Explore the ' . ucwords(str_replace('-', ' ', $kategori)) . ' furniture collection by Ilena Furniture, with product details, color options, and availability.'
-                : ($meta[$kategori]['deskripsi'] ?? 'Temukan furniture pilihan dari Ilena Furniture.'),
+            'metaTitle' => ($isEnglish ? $collectionName . ' Furniture Collection' : 'Furniture ' . $collectionName) . ' | Ilena Furniture',
+            'metaDeskripsi' => $isEnglish ? $collection[2] : $collection[1],
+            'metaUrl' => site_url(($isEnglish ? 'en/' : '') . 'product/category/' . rawurlencode((string) $kategori)),
+            'metaAlternateUrls' => [
+                'id' => site_url('product/category/' . rawurlencode((string) $kategori)),
+                'en' => site_url('en/product/category/' . rawurlencode((string) $kategori)),
+                'x-default' => site_url('product/category/' . rawurlencode((string) $kategori)),
+            ],
         ];
         return view('pages/all', $data);
     }
@@ -5391,6 +5437,14 @@ class Pages extends BaseController
         $artikel = ilena_localize_article_record($artikel);
 
         if ($judul_article) {
+            $articlePublishedTimestamp = strtotime((string) ($artikel['waktu'] ?? ''));
+            $articlePublishedIso = $articlePublishedTimestamp !== false ? date(DATE_ATOM, $articlePublishedTimestamp) : '';
+            $articleSlug = trim((string) ($artikel['path'] ?? $judul_article));
+            $articleIdUrl = site_url('article/' . rawurlencode($articleSlug));
+            $articleEnUrl = site_url('en/article/' . rawurlencode($articleSlug));
+            $hasEnglishArticleCopy = trim((string) ($artikel['judul_en'] ?? '')) !== ''
+                && trim((string) ($artikel['deskripsi_en'] ?? '')) !== ''
+                && trim((string) ($artikel['isi_en'] ?? '')) !== '';
             // ++ pengunjung
             $this->artikelModel->where(['id' => $artikel['id']])
                 ->set(['pengunjung' => $artikel['pengunjung'] + 1])
@@ -5459,9 +5513,23 @@ class Pages extends BaseController
                 'metaDeskripsi'     => $artikel['deskripsi'],
                 'metaTitle'         => $artikel['judul'] . ($this->request->getLocale() === 'en' ? ' | Ilena Furniture Article' : ' | Artikel Ilena Furniture'),
                 'metaKeyword'       => $artikel['keywords'],
+                'metaImage'         => preg_match('#^https?://#i', trim((string) ($artikel['header'] ?? '')))
+                    ? trim((string) $artikel['header'])
+                    : base_url(ltrim(trim((string) ($artikel['header'] ?? 'img/logo/N.png')), '/')),
+                'metaImageAlt'      => trim((string) ($artikel['judul'] ?? 'Ilena Furniture article')),
+                'metaUrl'           => $this->request->getLocale() === 'en' && $hasEnglishArticleCopy ? $articleEnUrl : $articleIdUrl,
+                'articlePublishedIso' => $articlePublishedIso,
+                'articleAuthor'     => trim((string) ($artikel['penulis'] ?? '')),
+                'metaAlternateUrls' => $hasEnglishArticleCopy
+                    ? ['id' => $articleIdUrl, 'en' => $articleEnUrl, 'x-default' => $articleIdUrl]
+                    : ['id' => $articleIdUrl, 'x-default' => $articleIdUrl],
                 'wishlist'          => $wishlist,
                 'bulan'             => $bulan
             ];
+            if (!$hasEnglishArticleCopy && $this->request->getLocale() === 'en') {
+                $data['metaUrl'] = $articleIdUrl;
+                $data['metaRobots'] = 'noindex, follow';
+            }
             return view('pages/artikel', $data);
         } else {
             // Halaman daftar artikel

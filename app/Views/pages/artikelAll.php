@@ -713,8 +713,8 @@ const App=()=> {
       }
       <div className="container">
         <div className={innerWidth.current<700?'py-4':'py-5'}>
-          <h1 className="teks-besar mb-5 show-block-ke-hide"><?= $isEnglish ? 'Categories' : 'Kategori'; ?></h1>
-          <h1 className="teks-besar mb-3 hide-ke-show-block"><?= $isEnglish ? 'Categories' : 'Kategori'; ?></h1>
+          <h2 className="teks-besar mb-5 show-block-ke-hide"><?= $isEnglish ? 'Categories' : 'Kategori'; ?></h2>
+          <h2 className="teks-besar mb-3 hide-ke-show-block"><?= $isEnglish ? 'Categories' : 'Kategori'; ?></h2>
           <div className="container-kategori-artikel">
             {[
               {teks:<?= json_encode($isEnglish ? 'Tips & ideas' : 'Tips & Trik'); ?>,link:localePrefix+'/article/category/tips-trik',gambar:'https://cdn.pixabay.com/photo/2020/03/05/17/35/tips-4905013_1280.jpg',deskripsi:<?= json_encode($isEnglish ? 'Practical ideas to make everyday living easier' : 'Lebih banyak tahu berbagai life hack yang mempermudah hidup'); ?>},
