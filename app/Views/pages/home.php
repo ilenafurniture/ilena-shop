@@ -59,10 +59,10 @@ $homeImageSet = static function (string $file) use ($homeImage): string {
     <div class="ilena-home-popup__backdrop" onclick="closeModalVoucher()">
         <section class="ilena-home-popup__dialog ilena-home-popup__dialog--voucher" role="dialog" aria-modal="true" aria-labelledby="voucher-popup-title" onclick="event.stopPropagation()">
             <button type="button" class="ilena-home-popup__close" onclick="closeModalVoucher()" aria-label="<?= esc(lang('Store.dismissPromo'), 'attr'); ?>">&times;</button>
-            <span class="ilena-home-popup__eyebrow">ILENA MEMBER BENEFIT</span>
+            <span class="ilena-home-popup__eyebrow"><?= esc(lang('Store.homeMemberBenefit')); ?></span>
             <h2 id="voucher-popup-title"><?= esc(lang('Store.welcomePromo')); ?></h2>
             <p><?= esc(lang('Store.promoDescription')); ?></p>
-            <small>*S&amp;K diskon berlaku 1 bulan sejak menjadi member.</small>
+            <small><?= esc(lang('Store.homeVoucherTerms')); ?></small>
             <a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>" class="ilena-home-popup__primary"><?= esc(lang('Store.exploreCollection')); ?></a>
             <button type="button" class="ilena-home-popup__dismiss" onclick="closeModalVoucher()"><?= esc(lang('Store.later')); ?></button>
         </section>
@@ -85,11 +85,11 @@ function closeModalVoucher() {
         <section class="ilena-home-popup__dialog ilena-home-popup__dialog--membership" role="dialog" aria-modal="true" aria-labelledby="membership-popup-title">
             <button type="button" class="ilena-home-popup__close" onclick="closeLoginModel()" aria-label="<?= esc(lang('Store.dismissPromo'), 'attr'); ?>">&times;</button>
             <div class="ilena-home-popup__image">
-                <img loading="lazy" decoding="async" src="<?= $homeImage('1742444827619.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742444827619.webp'), 'attr') ?>" sizes="(max-width: 700px) 90vw, 45vw" alt="Inspirasi interior Ilena Furniture">
+                <img loading="lazy" decoding="async" src="<?= $homeImage('1742444827619.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742444827619.webp'), 'attr') ?>" sizes="(max-width: 700px) 90vw, 45vw" alt="<?= esc(lang('Store.homeInteriorImageAlt'), 'attr'); ?>">
                 <span>Modern &amp; Stylish<br>Furniture <em>True to you</em></span>
             </div>
             <div class="ilena-home-popup__content">
-                <span class="ilena-home-popup__eyebrow">ILENA MEMBERSHIP</span>
+                <span class="ilena-home-popup__eyebrow"><?= esc(lang('Store.homeMembership')); ?></span>
                 <h2 id="membership-popup-title"><?= esc(lang('Store.membershipTitle')); ?></h2>
                 <p><?= esc(lang('Store.membershipDescription')); ?></p>
                 <a href="<?= esc(ilena_store_path('/register'), 'attr'); ?>" class="ilena-home-popup__primary"><?= esc(lang('Store.joinMembership')); ?></a>
@@ -113,7 +113,7 @@ function closeModalVoucher() {
                 <div class="d-flex flex-column align-items-center position-relative w-100" style="height: 100%;">
 
                     <a href="<?= esc(ilena_store_path('/product?jenis=bundling'), 'attr'); ?>" class="btn-popup text-center mt-2">
-                        Lihat Produk
+                        <?= esc(lang('Store.homeViewProducts')); ?>
                     </a>
                 </div>
             </div>
@@ -300,14 +300,14 @@ function closeSecondAd() {
             class="<?= $isFirstSlide ? 'active' : 'kanan'; ?>" aria-hidden="<?= $isFirstSlide ? 'false' : 'true'; ?>">
             <picture>
                 <source media="(max-width: 700px)" srcset="<?= esc($mobileSrcset, 'attr'); ?>" sizes="100vw">
-                <img src="<?= esc($desktopSrc, 'attr'); ?>" srcset="<?= esc($desktopSrcset, 'attr'); ?>" sizes="100vw" alt="<?= esc('Inspirasi furniture Ilena' . ($ind_s > 0 ? ' — promosi ' . ($ind_s + 1) : ''), 'attr'); ?>" decoding="async"<?= $isFirstSlide ? ' fetchpriority="high"' : ' loading="lazy"'; ?>>
+                <img src="<?= esc($desktopSrc, 'attr'); ?>" srcset="<?= esc($desktopSrcset, 'attr'); ?>" sizes="100vw" alt="<?= esc(lang('Store.homeBannerAlt', [$ind_s + 1]), 'attr'); ?>" decoding="async"<?= $isFirstSlide ? ' fetchpriority="high"' : ' loading="lazy"'; ?>>
             </picture>
         </a>
         <?php endforeach; ?>
     </div>
     <div class="dots">
         <?php foreach ($sliders as $key => $slider): ?>
-        <button type="button" class="dot <?= $key === 0 ? 'active' : ''; ?>" aria-label="Tampilkan banner <?= $key + 1; ?>" aria-pressed="<?= $key === 0 ? 'true' : 'false'; ?>"></button>
+        <button type="button" class="dot <?= $key === 0 ? 'active' : ''; ?>" aria-label="<?= esc(lang('Store.homeShowBanner', [$key + 1]), 'attr'); ?>" aria-pressed="<?= $key === 0 ? 'true' : 'false'; ?>"></button>
         <?php endforeach; ?>
     </div>
 </div>
@@ -379,7 +379,7 @@ function closeSecondAd() {
     </div>
 </div>
 
-<section class="ilena-home-promise" aria-label="Keunggulan Ilena Furniture">
+<section class="ilena-home-promise" aria-label="<?= esc(lang('Store.whyIlena'), 'attr'); ?>">
     <p class="ilena-home-promise__brand"><?= esc(lang('Store.promiseBrand')); ?></p>
     <div class="ilena-home-promise__items">
         <span><?= esc(lang('Store.firstOrder')); ?></span>
@@ -549,11 +549,11 @@ function closeSecondAd() {
     <a class="d-flex align-items-center ps-5 zoom-wrapper" href="<?= base_url('/product/bufet-tv-ilena-plint-base') ?>"
         style="text-decoration:none; flex:1; position: relative;">
         <img loading="lazy" decoding="async" src="<?= $homeImage('1748320128043.jpg', 800) ?>" srcset="<?= esc($homeImageSrcset('1748320128043.jpg'), 'attr') ?>" sizes="(max-width: 700px) 90vw, 33vw"
-            alt="Furniture ruang keluarga dari koleksi Plint Base Ilena"
+            alt="<?= esc(lang('Store.homePlintBaseAlt'), 'attr'); ?>"
             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
         <div>
-            <p class="text-light">Make you feel</p>
-            <h1 class="teks-besar text-light mb-5">Elegant</h1>
+            <p class="text-light"><?= esc(lang('Store.homeMakeYouFeel')); ?></p>
+            <h1 class="teks-besar text-light mb-5"><?= esc(lang('Store.homeElegant')); ?></h1>
             <div style="width:120px; height:2px; background-color:white;"></div>
         </div>
     </a>
@@ -562,10 +562,10 @@ function closeSecondAd() {
             href="<?= base_url('/product/coffee-table-ilena-cody') ?>"
             style="text-decoration:none; flex: 1; position: relative;">
             <img loading="lazy" decoding="async" src="<?= $homeImage('1748318610868.jpg', 800) ?>" srcset="<?= esc($homeImageSrcset('1748318610868.jpg'), 'attr') ?>" sizes="(max-width: 700px) 90vw, 33vw"
-                alt="Meja kopi Cody dengan desain modern Ilena"
+                alt="<?= esc(lang('Store.homeCodyTableAlt'), 'attr'); ?>"
                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
             <div>
-                <h1 class="teks-besar text-light mb-3">Luxury</h1>
+                <h1 class="teks-besar text-light mb-3"><?= esc(lang('Store.homeLuxury')); ?></h1>
                 <div class="d-flex gap-3">
                     <div style="width:20px; height:20px; background-color:white;"></div>
                     <div style="width:20px; height:20px; border: 2px solid white;"></div>
@@ -575,10 +575,10 @@ function closeSecondAd() {
         <a class="d-flex" style="text-decoration:none; flex: 1" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>">
             <div class="d-flex align-items-center ps-5 zoom-wrapper" style="flex:1; position: relative;">
                 <img loading="lazy" decoding="async" src="<?= $homeImage('1742973475864.png', 800) ?>" srcset="<?= esc($homeImageSrcset('1742973475864.png'), 'attr') ?>" sizes="(max-width: 700px) 90vw, 33vw"
-                    alt="Bufet TV Cabana untuk ruang keluarga"
+                    alt="<?= esc(lang('Store.homeCabanaConsoleAlt'), 'attr'); ?>"
                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
                 <div>
-                    <h1 class="teks-besar text-light mb-3">Simply</h1>
+                    <h1 class="teks-besar text-light mb-3"><?= esc(lang('Store.homeSimply')); ?></h1>
                     <div class="d-flex gap-3">
                         <div style="width:20px; height:20px; border: 2px solid white;"></div>
                         <div style="width:20px; height:20px; background-color:white;"></div>
@@ -594,8 +594,8 @@ function closeSecondAd() {
     <a class="d-flex align-items-center ps-5" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
         style="text-decoration:none; flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/11 comp.png'); background-size: cover; background-position:center;">
         <div>
-            <p class="text-light">Make you feel</p>
-            <h1 class="teks-besar text-light mb-5">Elegant</h1>
+            <p class="text-light"><?= esc(lang('Store.homeMakeYouFeel')); ?></p>
+            <h1 class="teks-besar text-light mb-5"><?= esc(lang('Store.homeElegant')); ?></h1>
             <div style="width:120px; height:2px; background-color:white;"></div>
         </div>
     </a>
@@ -603,7 +603,7 @@ function closeSecondAd() {
         <a class="d-flex align-items-center ps-5" href="<?= base_url('product/bufet-tv-ilena-cabana') ?>"
             style="text-decoration:none; flex: 1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/n1 comp.png'); background-size: cover; background-position:center;">
             <div>
-                <h1 class="teks-besar text-light mb-3">Luxury</h1>
+                <h1 class="teks-besar text-light mb-3"><?= esc(lang('Store.homeLuxury')); ?></h1>
                 <div class="d-flex gap-3">
                     <div style="width:20px; height:20px; background-color:white;"></div>
                     <div style="width:20px; height:20px; border: 2px solid white;"></div>
@@ -614,7 +614,7 @@ function closeSecondAd() {
             <div class="d-flex align-items-center ps-5"
                 style="flex:1; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('./img/foto/s comp.png'); background-size: cover; background-position:center;">
                 <div>
-                    <h1 class="teks-besar text-light mb-3">Simply</h1>
+                    <h1 class="teks-besar text-light mb-3"><?= esc(lang('Store.homeSimply')); ?></h1>
                     <div class="d-flex gap-3">
                         <div style="width:20px; height:20px; border: 2px solid white;"></div>
                         <div style="width:20px; height:20px; background-color:white;"></div>
@@ -633,15 +633,15 @@ function closeSecondAd() {
     <a href="<?= base_url('/product/bufet-tv-ilena-plint-base') ?>" class="d-flex align-items-center px-5"
         data-lazy-bg="<?= esc($homeImageSet('1748320128043.jpg'), 'attr'); ?>" style="text-decoration:none; flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
         <div>
-            <p class="text-light ms-2 m-0" style="font-size:12px;">Make you feel</p>
-            <h1 class="text-light ms-2" style="font-size:28px;">Elegant</h1>
+            <p class="text-light ms-2 m-0" style="font-size:12px;"><?= esc(lang('Store.homeMakeYouFeel')); ?></p>
+            <h1 class="text-light ms-2" style="font-size:28px;"><?= esc(lang('Store.homeElegant')); ?></h1>
             <div style="width:60px; height:1px; background-color:white;" class="m-2"></div>
         </div>
     </a>
     <a class="d-flex align-items-center px-5" href="<?= base_url('/product/coffee-table-ilena-cody') ?>"
         data-lazy-bg="<?= esc($homeImageSet('1748318610868.jpg'), 'attr'); ?>" style="text-decoration:none; flex: 1; background-size:cover;background-position:center;background-color:#f4f1ec;">
         <div>
-            <h1 class="text-light ms-2" style="font-size:28px;">Luxury</h1>
+            <h1 class="text-light ms-2" style="font-size:28px;"><?= esc(lang('Store.homeLuxury')); ?></h1>
             <div class="d-flex gap-1 ms-2">
                 <div style="width:15px; height:15px; background-color:white;"></div>
                 <div style="width:15px; height:15px; border: 1px solid white;"></div>
@@ -651,7 +651,7 @@ function closeSecondAd() {
     <a href="<?= base_url('product/bufet-tv-ilena-cabana') ?>" class="d-flex align-items-center px-5"
         data-lazy-bg="<?= esc($homeImageSet('1742973475864.png'), 'attr'); ?>" style="text-decoration:none; flex:1; background-size:cover;background-position:center;background-color:#f4f1ec;">
         <div>
-            <h1 class="text-light ms-2" style="font-size:28px;">Simply</h1>
+            <h1 class="text-light ms-2" style="font-size:28px;"><?= esc(lang('Store.homeSimply')); ?></h1>
             <div class="d-flex gap-1 ms-2">
                 <div style="width:15px; height:15px; border: 1px solid white;"></div>
                 <div style="width:15px; height:15px; background-color:white;"></div>
@@ -681,13 +681,7 @@ function closeSecondAd() {
                     <h1 class="teks-besar m-0">Industrial</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Menjadi diri sendiri dengan berkreasi sesuai kata hati masihkah terasa sulit?
-                    Mari mulai
-                    dengan berbenah ruang yang merefleksikan karakter diri. Industrial Series hadir untuk
-                    menjadi teman
-                    yang tepat untuk berdiri tegak tanpa takut menjadi beda, unik, menawan dengan
-                    elegan.<Br>Mari mulai
-                    dari sekarang, bersama Ilena.</p>
+                <p class="m-0"><?= esc(lang('Store.homeSeriesIndustrial')); ?></p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
@@ -710,11 +704,7 @@ function closeSecondAd() {
                     <h1 class="teks-besar m-0">Sorely</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Terinspirasi oleh keindahan perpaduan dua material: kayu hangat dan logam tebal.
-                    Dibuat
-                    dengan sungguh-sungguh untuk melengkapi interior estetis, menghadirkan kenyamanan dan
-                    ketenangan
-                    bagi setiap penghuninya. Kami berbagi semangat kami dengan nama Ilena.</p>
+                <p class="m-0"><?= esc(lang('Store.homeSeriesSorely')); ?></p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
@@ -737,13 +727,7 @@ function closeSecondAd() {
                     <h1 class="teks-besar m-0">Water Case</h1>
                 </a>
                 <h1 style=" font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Secara spesial dirancang untuk memberikan kehangatan dan kenyamanan pada hunian
-                    rumah.
-                    water case series hadir dengan menunjukkan kesederhanaan sebuah desain yang memiliki fungsi
-                    sesuai
-                    dengan kebutuhan dan memperindah rumah dengan sentuhan interior yang bersahaja dalam balutan
-                    gaya
-                    modern klasik ala Ilena Furniture.</p>
+                <p class="m-0"><?= esc(lang('Store.homeSeriesWaterCase')); ?></p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
@@ -766,12 +750,7 @@ function closeSecondAd() {
                     <h1 class="teks-besar m-0">Plint Base</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Ilena memaknai minimalis sebagai mahakarya indah yang dibalut dalam
-                    kesederhanaan.
-                    Dengan
-                    kepraktisan fungsinya, plint base menjawab kebutuhan furniture secara menyeluruh dan relevan
-                    hingga
-                    dalam waktu berdekade lamanya. Inilah Classic modern yang Anda butuhkan</p>
+                <p class="m-0"><?= esc(lang('Store.homeSeriesPlintBase')); ?></p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
@@ -794,17 +773,7 @@ function closeSecondAd() {
                     <h1 class="teks-besar m-0">Cut Out</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Kami percaya bahwa sebuah ruangan didesain dengan sepenuh hati akan memberikan
-                    energi
-                    positif bagi setiap penghuninya. Bekal inilah yang membuat Ilena terus melakukan inovasi
-                    untuk
-                    menghadirkan furniture terbaik bagi Anda. Cut Out hadir dengan series dalam balutan gaya
-                    minimalis
-                    dengan mengadopsi budaya Jepang yang terkenal mengutamakan fungsi dan kepraktisan. Desainnya
-                    yang
-                    sederhana dengan sedikit aksen memudahkan Anda untuk merawat dan menempatkan dalam segala
-                    konsep
-                    ruang menjadi lebih sempurna dengan Cut Out series dari Ilena.</p>
+                <p class="m-0"><?= esc(lang('Store.homeSeriesCutout')); ?></p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
@@ -828,13 +797,7 @@ function closeSecondAd() {
                     <h1 class="teks-besar m-0">Orca</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Merancang dengan sepenuh hati furniture bertemakan modern dengan sentuhan warna
-                    basic
-                    yang menjadi aksen menonjol jadi ciri khas dari series Orca. Hadir dengan menonjolkan
-                    teksture khas
-                    kayu yang unik dipadukan dengan finishing satin yang solid. Desain ini dipersembahkan untuk
-                    Anda
-                    yang menyukai perabotan kayu dengan sentuhan modern masa kini.</p>
+                <p class="m-0"><?= esc(lang('Store.homeSeriesOrca')); ?></p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
@@ -858,10 +821,7 @@ function closeSecondAd() {
                     <h1 class="teks-besar m-0">Cody</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Menghadirkan karakter Japandi yang hangat melalui garis desain bersih,
-                    material kayu yang natural, dan proporsi yang ringan. Series Cody cocok untuk Anda
-                    yang ingin menciptakan ruang modern, nyaman, dan tetap terasa homey untuk aktivitas
-                    sehari-hari.</p>
+                <p class="m-0"><?= esc(lang('Store.homeSeriesCody')); ?></p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
@@ -885,10 +845,7 @@ function closeSecondAd() {
                     <h1 class="teks-besar m-0">Metal Frame</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Dirancang untuk menghadirkan kesan modern industrial yang kokoh tanpa
-                    mengurangi sisi elegan pada ruangan. Perpaduan rangka metal dan material kayu
-                    memberi tampilan tegas, tahan lama, serta mudah dipadukan dengan berbagai konsep
-                    interior masa kini.</p>
+                <p class="m-0"><?= esc(lang('Store.homeSeriesMetalFrame')); ?></p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
@@ -912,10 +869,7 @@ function closeSecondAd() {
                     <h1 class="teks-besar m-0">Socoplate</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Series Socoplate menonjolkan desain modern minimalis dengan aksen logam
-                    sebagai highlight yang memperkuat karakter furniture. Sentuhan detailnya membuat
-                    ruangan terlihat lebih rapi, berkelas, dan fungsional untuk kebutuhan rumah
-                    modern.</p>
+                <p class="m-0"><?= esc(lang('Store.homeSeriesSocoplate')); ?></p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
@@ -938,10 +892,7 @@ function closeSecondAd() {
                     <h1 class="teks-besar m-0">Cabana</h1>
                 </a>
                 <h1 style="font-size: 20px; letter-spacing: 2em;" class="mb-3">SERIES</h1>
-                <p class="m-0">Cabana hadir dengan bentuk simpel, storage maksimal, dan tampilan timeless
-                    yang mudah menyatu dengan berbagai gaya interior. Pilihan tepat untuk Anda yang
-                    membutuhkan furniture praktis, elegan, serta tetap relevan digunakan dalam jangka
-                    panjang.</p>
+                <p class="m-0"><?= esc(lang('Store.homeSeriesCabana')); ?></p>
             </div>
             <div class="d-flex gap-4" style="flex:4;">
                 <div
@@ -1012,7 +963,7 @@ if (scrollHomeElm && inputScrollHomeElm.length) {
         }
     }, { passive: true });
     inputScrollHomeElm.forEach((input, index) => {
-        input.setAttribute('aria-label', 'Tampilkan koleksi ' + (index + 1));
+        input.setAttribute('aria-label', <?= json_encode(lang('Store.homeShowCollection'), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?> + ' ' + (index + 1));
         input.addEventListener('change', () => {
             if (input.checked) scrollHomeElm.scrollTo({ left: slideWidth() * index, behavior: 'smooth' });
         });
@@ -1029,8 +980,8 @@ if (scrollHomeElm && inputScrollHomeElm.length) {
     <div class="d-flex align-items-center" style="flex:1;">
         <div class="p-5">
             <p class="mb-1 ms-1" style="letter-spacing:1em;">ILENA</p>
-            <h1 class="teks-besar" style="font-size:80px;">On The Fance,</h1>
-            <h1 style="color:#7B441c; font-size:80px;" class="teks-besar">Let's Look New Arrival
+            <h1 class="teks-besar" style="font-size:80px;"><?= esc(lang('Store.homeFreshPerspective')); ?></h1>
+            <h1 style="color:#7B441c; font-size:80px;" class="teks-besar"><?= esc(lang('Store.homeNewArrivals')); ?>
             </h1>
         </div>
     </div>
@@ -1057,7 +1008,7 @@ if (scrollHomeElm && inputScrollHomeElm.length) {
         <div class="overlayMeja" id="overlayMeja-desktop">
             <a href="<?= esc(ilena_store_path('/product?koleksi=cody&jenis=queen-bed'), 'attr'); ?>" class="d-flex gap-3 align-items-center">
                 <div>
-                    <p class="m-0 fw-bold">Bed Cody</p>
+                    <p class="m-0 fw-bold"><?= esc(lang('Store.homeBedCody')); ?></p>
                     <p class="m-0 fw-regular">Cody</p>
                 </div>
                 <i class="material-icons">arrow_forward</i>
@@ -1072,8 +1023,8 @@ if (scrollHomeElm && inputScrollHomeElm.length) {
     <div class="d-flex align-items-center" style="flex:1;">
         <div class="px-5">
             <p class="mb-1 ms-1" style="letter-spacing:1em;">ILENA</p>
-            <h1 class="teks-sedang" style="font-size:40px;">On The Fance,</h1>
-            <h1 style="color:#7B441c; font-size:40px;" class="teks-sedang">Let's Look New Arrival
+            <h1 class="teks-sedang" style="font-size:40px;"><?= esc(lang('Store.homeFreshPerspective')); ?></h1>
+            <h1 style="color:#7B441c; font-size:40px;" class="teks-sedang"><?= esc(lang('Store.homeNewArrivals')); ?>
             </h1>
         </div>
     </div>
@@ -1094,7 +1045,7 @@ if (scrollHomeElm && inputScrollHomeElm.length) {
         <div class="overlayMeja" id="overlayMeja-mobile">
             <a href="<?= esc(ilena_store_path('/product?koleksi=cody&jenis=queen-bed'), 'attr'); ?>" class="d-flex gap-3 align-items-center">
                 <div>
-                    <p class="m-0 fw-bold">Bed Cody</p>
+                    <p class="m-0 fw-bold"><?= esc(lang('Store.homeBedCody')); ?></p>
                     <p class="m-0 fw-regular">Cody</p>
                 </div>
                 <i class="material-icons">arrow_forward</i>
@@ -1139,16 +1090,14 @@ document.addEventListener("DOMContentLoaded", function() {
         <div class="d-flex p-5 h-100 w-100 text-light flex-column" style="flex:1; position:absolute;">
             <div style="flex:1;" class="h-100 d-flex flex-column justify-content-between">
                 <div>
-                    <h3 class="mb-3 teks-sedang fw-bold">Inaugural<br>Season</h3>
-                    <p>Ilena hadir pertama kali dengan memperkenalkan 10 series terbaik. Terinspirasi dari berbagai
-                        hal
-                        baik dengan harapan dapat membawa kebaikan, untuk Anda.</p>
+                    <h3 class="mb-3 teks-sedang fw-bold"><?= esc(lang('Store.homeInauguralTitle')); ?></h3>
+                    <p><?= esc(lang('Store.homeInauguralBody')); ?></p>
                 </div>
             </div>
             <div class="d-flex h-100 align-items-end justify-content-end w-100">
                 <a onclick="modalseries()" class="border-bottom gap-2 d-flex align-items-center kesana"
                     style="cursor: pointer;">
-                    <p class="m-0">Lihat series</p><i class="material-icons text-light">arrow_forward</i>
+            <p class="m-0"><?= esc(lang('Store.viewSeries')); ?></p><i class="material-icons text-light">arrow_forward</i>
                 </a>
             </div>
         </div>
@@ -1166,16 +1115,14 @@ document.addEventListener("DOMContentLoaded", function() {
         <div class="d-flex p-5 h-100 w-100 text-light flex-column" style="flex:1; position:absolute;">
             <div style="flex:1;" class="h-100 d-flex flex-column justify-content-between">
                 <div>
-                    <h3 class="mb-2 teks-besar fw-bold" style="font-size:36px;">Inaugural Season</h3>
-                    <p>Ilena hadir pertama kali dengan memperkenalkan 10 series terbaik. Terinspirasi dari berbagai
-                        hal
-                        baik dengan harapan dapat membawa kebaikan, untuk Anda.</p>
+                    <h3 class="mb-2 teks-besar fw-bold" style="font-size:36px;"><?= esc(lang('Store.homeInauguralTitle')); ?></h3>
+                    <p><?= esc(lang('Store.homeInauguralBody')); ?></p>
                 </div>
             </div>
             <div class="d-flex h-100 align-items-end justify-content-end w-100">
                 <a onclick="modalseries()" class="border-bottom gap-2 d-flex align-items-center kesana"
                     style="cursor: pointer;">
-                    <p class="m-0">Lihat series</p><i class="material-icons text-light">arrow_forward</i>
+                    <p class="m-0"><?= esc(lang('Store.viewSeries')); ?></p><i class="material-icons text-light">arrow_forward</i>
                 </a>
             </div>
         </div>
@@ -1355,13 +1302,13 @@ function modalseries() {
 
 <!-- Bagian Windows -->
 <section class="ilena-home-collections-heading" aria-labelledby="ilena-home-collections-title">
-    <div><p class="ilena-home-section-kicker">Ruang yang saling melengkapi</p><h2 id="ilena-home-collections-title">Furniture Collection</h2><p>Pilih satu koleksi untuk mulai menyusun ruang yang terasa utuh.</p></div>
-    <a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>" class="ilena-home-text-link">Lihat semua koleksi</a>
+    <div><p class="ilena-home-section-kicker"><?= esc(lang('Store.homeCollectionsKicker')); ?></p><h2 id="ilena-home-collections-title"><?= esc(lang('Store.collection')); ?></h2><p><?= esc(lang('Store.homeCollectionsIntro')); ?></p></div>
+    <a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>" class="ilena-home-text-link"><?= esc(lang('Store.homeAllCollections')); ?></a>
 </section>
 <div id="ruangan" class="container show-flex-ke-hide gap-3 my-5 ilena-home-room-grid" data-home-scroll-reveal style="width:100%;">
     <a href="<?= esc(ilena_store_path('/product?ruang=tamu'), 'attr'); ?>" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
         <div class="zoom-wrapper mb-2">
-            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445399641.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445399641.webp'), 'attr') ?>" sizes="(max-width: 700px) 80vw, 34vw" alt="Inspirasi furniture untuk ruang tamu Ilena"
+            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445399641.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445399641.webp'), 'attr') ?>" sizes="(max-width: 700px) 80vw, 34vw" alt="<?= esc(lang('Store.homeLivingRoomAlt'), 'attr'); ?>"
                 style="flex: 1; width: 100%; object-fit: cover;">
         </div>
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
@@ -1372,11 +1319,11 @@ function modalseries() {
             <h5 style="font-weight: 500;" class="m-0">N</h5>
             <h5 style="font-weight: 500;" class="m-0">G</h5>
         </div>
-        <h5 class="text-center fw-bold" style="font-size: 13px; height: fit-content">Living room</h5>
+        <h5 class="text-center fw-bold" style="font-size: 13px; height: fit-content"><?= esc(lang('Store.livingRoom')); ?></h5>
     </a>
     <a href="<?= esc(ilena_store_path('/product?ruang=tidur'), 'attr'); ?>" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
         <div class="zoom-wrapper mb-2">
-            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445431983.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445431983.webp'), 'attr') ?>" sizes="(max-width: 700px) 80vw, 34vw" alt="Inspirasi furniture untuk kamar tidur Ilena"
+            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445431983.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445431983.webp'), 'attr') ?>" sizes="(max-width: 700px) 80vw, 34vw" alt="<?= esc(lang('Store.homeBedroomAlt'), 'attr'); ?>"
                 style="flex: 1; width: 100%; object-fit: cover;">
         </div>
         <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
@@ -1384,7 +1331,7 @@ function modalseries() {
             <h5 style="font-weight: 500;" class="m-0">E</h5>
             <h5 style="font-weight: 500;" class="m-0">D</h5>
         </div>
-        <h5 class="text-center fw-bold" style="font-size: 13px; height: fit-content">Bedroom</h5>
+        <h5 class="text-center fw-bold" style="font-size: 13px; height: fit-content"><?= esc(lang('Store.bedroom')); ?></h5>
     </a>
 </div>
 
@@ -1405,7 +1352,7 @@ function modalseries() {
     <div class="d-flex gap-1 px-5 pt-5 pb-4" style="width: fit-content;">
         <a href="<?= esc(ilena_store_path('/product?ruang=tamu'), 'attr'); ?>" class="ilena-home-room-card"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
-            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445542692.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445542692.webp'), 'attr') ?>" sizes="80vw" alt="Inspirasi ruang tamu dengan furniture Ilena"
+            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445542692.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445542692.webp'), 'attr') ?>" sizes="80vw" alt="<?= esc(lang('Store.homeLivingRoomAlt'), 'attr'); ?>"
                 style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
             <div class="d-flex gap-4 justify-content-center mb-2">
                 <h5 style="font-weight: 500;" class="m-0">L</h5>
@@ -1415,29 +1362,29 @@ function modalseries() {
                 <h5 style="font-weight: 500;" class="m-0">N</h5>
                 <h5 style="font-weight: 500;" class="m-0">G</h5>
             </div>
-            <h5 class="text-center text-secondary fw-bold" style="font-size: 13px">Living room</h5>
+            <h5 class="text-center text-secondary fw-bold" style="font-size: 13px"><?= esc(lang('Store.livingRoom')); ?></h5>
         </a>
         <a href="<?= esc(ilena_store_path('/product?ruang=tidur'), 'attr'); ?>" class="ilena-home-room-card"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
-            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445603554.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445603554.webp'), 'attr') ?>" sizes="80vw" alt="Inspirasi kamar tidur dengan furniture Ilena"
+            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445603554.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445603554.webp'), 'attr') ?>" sizes="80vw" alt="<?= esc(lang('Store.homeBedroomAlt'), 'attr'); ?>"
                 style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
             <div class="d-flex gap-4 justify-content-center mb-2">
                 <h5 style="font-weight: 500;" class="m-0">B</h5>
                 <h5 style="font-weight: 500;" class="m-0">E</h5>
                 <h5 style="font-weight: 500;" class="m-0">D</h5>
             </div>
-            <h5 class="text-center text-secondary fw-bold" style="font-size: 13px">Bedroom</h5>
+            <h5 class="text-center text-secondary fw-bold" style="font-size: 13px"><?= esc(lang('Store.bedroom')); ?></h5>
         </a>
     </div>
 </div>
 
 <section class="ilena-home-partners" aria-labelledby="ilena-home-partners-title" data-home-scroll-reveal>
     <div>
-        <p class="ilena-home-section-kicker">Lebih dekat dengan Ilena</p>
-        <h2 id="ilena-home-partners-title">Ilena Furniture Partner Store</h2>
-        <p>Temukan Ilena Furniture di kotamu. Kunjungi halaman mitra untuk melihat lokasi dan informasi toko.</p>
+        <p class="ilena-home-section-kicker"><?= esc(lang('Store.homePartnersKicker')); ?></p>
+        <h2 id="ilena-home-partners-title"><?= esc(lang('Store.partnerStore')); ?></h2>
+        <p><?= esc(lang('Store.homePartnersIntro')); ?></p>
     </div>
-    <a href="<?= esc(ilena_store_path('/partner'), 'attr'); ?>" class="ilena-home-text-link">Temukan lokasi mitra</a>
+    <a href="<?= esc(ilena_store_path('/partner'), 'attr'); ?>" class="ilena-home-text-link"><?= esc(lang('Store.homeFindPartner')); ?></a>
 </section>
 
 <div class="slider">
