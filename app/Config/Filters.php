@@ -34,6 +34,7 @@ class Filters extends BaseConfig
         'marketFilter'   => \App\Filters\MarketFilter::class,
         'loginToko'   => \App\Filters\LoginToko::class,
         'corsFilter'    => \App\Filters\CorsFilter::class,
+        'canonicalHost' => \App\Filters\CanonicalHost::class,
     ];
 
     /**
@@ -44,6 +45,7 @@ class Filters extends BaseConfig
      */
     public array $globals = [
         'before' => [
+            'canonicalHost',
             // 'honeypot',
             // 'csrf',
             // 'invalidchars',

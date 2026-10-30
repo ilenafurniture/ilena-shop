@@ -94,4 +94,17 @@ final class SeoLocalizationTest extends CIUnitTestCase
         $this->assertStringNotContainsString('SKami', $faq);
         $this->assertStringContainsString('Kami menyediakan katalog fisik', $faq);
     }
+
+    public function testCanonicalHostFilterPreservesGetPathAndQuery(): void
+    {
+        $filter = file_get_contents(APPPATH . 'Filters/CanonicalHost.php');
+        $config = file_get_contents(APPPATH . 'Config/Filters.php');
+
+        $this->assertStringContainsString("'www.ilenafurniture.com'", $filter);
+        $this->assertStringContainsString("['GET', 'HEAD']", $filter);
+        $this->assertStringContainsString('$uri->getPath()', $filter);
+        $this->assertStringContainsString('$target .= \'?\' . $query', $filter);
+        $this->assertStringContainsString('redirect()->to($target, 301)', $filter);
+        $this->assertStringContainsString("'canonicalHost' => \\App\\Filters\\CanonicalHost::class", $config);
+    }
 }
