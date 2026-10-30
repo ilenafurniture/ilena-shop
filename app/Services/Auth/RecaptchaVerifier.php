@@ -18,10 +18,10 @@ final class RecaptchaVerifier
         $hosts = array_values(array_filter(array_map('strtolower', array_map('trim', explode(',', $this->config->allowedHostnames)))));
         if (trim($this->config->siteKey) === '' || trim($this->config->secretKey) === '' || $hosts === []) {
             log_message('error', 'Ilena authentication CAPTCHA is enabled but configuration is incomplete.');
-            return 'Verifikasi keamanan sedang tidak tersedia. Silakan coba beberapa saat lagi.';
+            return lang('Store.authCaptchaUnavailable');
         }
         if (!is_string($token) || trim($token) === '' || strlen($token) > 8192) {
-            return 'Selesaikan verifikasi keamanan terlebih dahulu.';
+            return lang('Store.authCaptchaRequired');
         }
 
         try {
@@ -43,13 +43,13 @@ final class RecaptchaVerifier
             if (($body['success'] ?? false) !== true || !empty($body['error-codes'])
                 || !in_array($hostname, $hosts, true) || $issuedAt === false
                 || $issuedAt < time() - 120 || $issuedAt > time() + 30) {
-                return 'Verifikasi keamanan gagal atau kedaluwarsa. Silakan ulangi.';
+                return lang('Store.authCaptchaRejected');
             }
 
             return null;
         } catch (\Throwable $error) {
             log_message('error', 'Ilena authentication CAPTCHA verification failed: {type}', ['type' => get_class($error)]);
-            return 'Verifikasi keamanan sedang terganggu. Silakan coba beberapa saat lagi.';
+            return lang('Store.authCaptchaInterrupted');
         }
     }
 }

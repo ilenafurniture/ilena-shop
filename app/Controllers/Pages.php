@@ -89,7 +89,7 @@ class Pages extends BaseController
         // This data is shared by public pages and only changes when catalog
         // metadata changes. Cache it briefly to avoid repeating a full
         // representative-product aggregation on every PHP request.
-        $navbarCacheKey = 'ilena_public_navbar_data_v3';
+        $navbarCacheKey = 'ilena_public_navbar_data_v4';
         $cachedNavbar = cache()->get($navbarCacheKey);
         if (is_array($cachedNavbar)) {
             return $cachedNavbar;
@@ -147,6 +147,29 @@ class Pages extends BaseController
                 'water-case' => 'Lemari laci 6 tingkat series Water Case dengan desain minimalis, handle frameless, dan material premium untuk penyimpanan multifungsi.',
             ],
         ];
+        $menuDescriptionOverridesEn = [
+            'dresser-3-drawer' => [
+                'cabana' => 'A modern minimalist three-drawer dresser with elegant mushroom handles, premium materials, and versatile storage.',
+                'sorely' => 'A minimalist three-drawer dresser with black mushroom handles and sturdy legs, made from premium materials for practical, stylish storage.',
+            ],
+            'dresser-4-drawer' => [
+                'cody' => 'A four-drawer Cody dresser with distinctive wood grain, modern styling, and premium materials for versatile storage.',
+            ],
+            'dresser-5-drawer' => [
+                'cabana' => 'A modern minimalist five-drawer dresser with black mushroom handles and premium materials for versatile storage.',
+                'cutout' => 'A five-drawer dresser with distinctive wood grain, modern minimalist styling, and premium materials for versatile storage.',
+                'socoplate' => 'A five-drawer dresser with minimalist styling, ergonomic handles, and elegant, sturdy metal legs. Crafted from premium materials for versatile storage.',
+                'sorely' => 'A five-drawer Sorely dresser with minimalist styling, black mushroom handles, sturdy legs, and premium materials for versatile storage.',
+            ],
+            'dresser-6-drawer' => [
+                'cabana' => 'A modern minimalist six-drawer dresser with black mushroom handles and premium materials for versatile storage.',
+                'cutout' => 'A six-drawer Cutout dresser with distinctive wood grain, Japanese-inspired minimalist styling, and premium materials for versatile storage.',
+                'metal-frame' => 'A modern six-drawer dresser combining solid wood, a sturdy metal frame, and premium materials for versatile storage.',
+                'orca' => 'A sturdy six-drawer dresser with modern minimalist styling, warm wood tones, and white accents.',
+                'plint-base' => 'A six-drawer Plint Base dresser with minimalist styling, ergonomic handles, and premium materials for versatile storage.',
+                'water-case' => 'A six-drawer Water Case dresser with minimalist styling, frameless handles, and premium materials for versatile storage.',
+            ],
+        ];
         $hasil = [];
         foreach ($produkNavbar as $produk) {
             $jenis = (string) ($produk['jenis'] ?? '');
@@ -157,6 +180,11 @@ class Pages extends BaseController
             if (isset($menuDescriptionOverrides[$jenisKey][$koleksiKey])) {
                 $deskripsi['deskripsi'] = $menuDescriptionOverrides[$jenisKey][$koleksiKey];
             }
+            if (trim((string) ($deskripsi['deskripsi_en'] ?? '')) === ''
+                && isset($menuDescriptionOverridesEn[$jenisKey][$koleksiKey])
+            ) {
+                $deskripsi['deskripsi_en'] = $menuDescriptionOverridesEn[$jenisKey][$koleksiKey];
+            }
             $deskripsi['perawatan'] = '';
             $rawText = $deskripsi['deskripsi'] ?? '';
             $text = strip_tags($rawText);
@@ -164,6 +192,9 @@ class Pages extends BaseController
             $text = trim($text);
             $text = str_replace(["\r\n", "\r", "\n"], ' ', $text);
             $deskripsi['deskripsi'] = $text;
+            $englishText = strip_tags((string) ($deskripsi['deskripsi_en'] ?? ''));
+            $englishText = html_entity_decode($englishText, ENT_QUOTES, 'UTF-8');
+            $deskripsi['deskripsi_en'] = trim(str_replace(["\r\n", "\r", "\n"], ' ', $englishText));
             $varian = json_decode($produk['varian'] ?? '[]', true) ?: [];
             $coverSlot = '1';
             if (!empty($varian[0]['urutan_gambar'])) {

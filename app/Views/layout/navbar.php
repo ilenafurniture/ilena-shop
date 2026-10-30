@@ -203,9 +203,34 @@ $enLanguageUrl = '/en' . ($pathWithoutLocale !== '' ? '/' . $pathWithoutLocale :
     }
 </style>
 <div id="container-react" class="tampilHp"></div>
+<?php
+    $navbarLocale = service('request')->getLocale() === 'en' ? 'en' : 'id';
+    $navbarLabelMap = [];
+    $rememberNavbarLabel = static function ($label) use (&$navbarLabelMap, $navbarLocale): void {
+        if (!is_string($label) || trim($label) === '') return;
+        $navbarLabelMap[$label] = $navbarLocale === 'en'
+            ? ilena_catalog_type_label($label, 'en')
+            : ucfirst($label);
+    };
+    foreach (($navbar ?? []) as $categoryLabel => $categoryProducts) {
+        $rememberNavbarLabel($categoryLabel);
+        if (!is_array($categoryProducts)) continue;
+        foreach ($categoryProducts as $subCategoryLabel => $productsOrProduct) {
+            if (is_string($subCategoryLabel)) $rememberNavbarLabel($subCategoryLabel);
+            $menuProducts = is_array($productsOrProduct) ? $productsOrProduct : [];
+            if (isset($menuProducts['koleksi'])) $menuProducts = [$menuProducts];
+            foreach ($menuProducts as $menuProduct) {
+                if (is_array($menuProduct)) $rememberNavbarLabel($menuProduct['koleksi'] ?? null);
+            }
+        }
+    }
+?>
 <script type="text/babel">
     const { useState, useEffect, useRef } = React;
-    const navbar = JSON.parse('<?= json_encode($navbar ?? []); ?>');
+    const navbar = <?= json_encode($navbar ?? [], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
+    const navbarLabelMap = <?= json_encode($navbarLabelMap, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
+    const localePrefix = <?= json_encode($navbarLocale === 'en' ? '/en' : ''); ?>;
+    const displayNavbarLabel = (label) => navbarLabelMap[label] || String(label || '').replace(/\b\w/g, letter => letter.toUpperCase());
     const App = () => {
         const containerNavbarListNav = useRef();
         const [jenisSelected , setJenisSelected] = useState({
@@ -314,17 +339,17 @@ $enLanguageUrl = '/en' . ($pathWithoutLocale !== '' ? '/' . $pathWithoutLocale :
                             <a
                                 className="text-center w-100 d-block"
                                 style={{ textDecoration: 'none', color: jenisSelected.category == category ? 'var(--merah)' : 'black' }}
-                                href={`/product?jenis=${category.replace(' ', '-')}`}
-                            >{category.charAt(0).toUpperCase() + category.slice(1)}
+                                href={`${localePrefix}/product?jenis=${encodeURIComponent(category.replace(/ /g, '-'))}`}
+                            >{displayNavbarLabel(category)}
                             </a>
                             :
                             <a
                                 className="text-center w-100 d-block"
                                 style={{ textDecoration: 'none', color: jenisSelected.category == category ? 'var(--merah)' : 'black' }}
-                                href={`/product?jenis=${Object.entries(products).reduce((prev, [index, isi]) => {
+                                href={`${localePrefix}/product?jenis=${encodeURIComponent(Object.entries(products).reduce((prev, [index, isi]) => {
                                     return `${prev}${prev == '' ? '' : '+'}${index.split(' ').join('-')}`;
-                                }, "")}`}
-                            >{category.charAt(0).toUpperCase() + category.slice(1)}
+                                }, ""))}`}
+                            >{displayNavbarLabel(category)}
                             </a>
                             }
                         </div>
@@ -354,10 +379,10 @@ $enLanguageUrl = '/en' . ($pathWithoutLocale !== '' ? '/' . $pathWithoutLocale :
                                                 fontSize: '20px',
                                                 color: product.id == productSelected.id ? 'var(--merah)' : 'black',
                                             }}
-                                            href={`/product?koleksi=${product.koleksi.replace(' ', '-')}&jenis=${jenisSelected.category.replace(' ', '-')}`}
+                                            href={`${localePrefix}/product?koleksi=${encodeURIComponent(product.koleksi.replace(/ /g, '-'))}&jenis=${encodeURIComponent(jenisSelected.category.replace(/ /g, '-'))}`}
                                             onMouseOver={() => handleHover(product)}
                                         >
-                                            {product.koleksi.charAt(0).toUpperCase() + product.koleksi.slice(1)}
+                                            {displayNavbarLabel(product.koleksi)}
                                         </a>
                                     </div>
                                 </div>
@@ -365,7 +390,7 @@ $enLanguageUrl = '/en' . ($pathWithoutLocale !== '' ? '/' . $pathWithoutLocale :
                             : Object.entries(jenisSelected.products).map(([subCategory, subProducts]) => (
                                 <div key={subCategory}>
                                     <p className="m-0" style={{ fontSize: '14px' }}>
-                                        Jelajahi {subCategory.charAt(0).toUpperCase() + subCategory.slice(1)}
+                                        {<?= json_encode(lang('Store.navExplorePrefix')); ?>} {displayNavbarLabel(subCategory)}
                                     </p>
                                     <div className="ms-2">
                                         {subProducts.map((product) => (
@@ -378,10 +403,10 @@ $enLanguageUrl = '/en' . ($pathWithoutLocale !== '' ? '/' . $pathWithoutLocale :
                                                     fontSize: '20px',
                                                     color: product.id == productSelected.id ? 'var(--merah)' : 'black',
                                                 }}
-                                                href={`/product?koleksi=${product.koleksi.replace(' ', '-')}&jenis=${subCategory.split(' ').join('-')}`}
+                                                href={`${localePrefix}/product?koleksi=${encodeURIComponent(product.koleksi.replace(/ /g, '-'))}&jenis=${encodeURIComponent(subCategory.split(' ').join('-'))}`}
                                                 onMouseOver={() => handleHover(product)}
                                             >
-                                                {product.koleksi.charAt(0).toUpperCase() + product.koleksi.slice(1)}
+                                                {displayNavbarLabel(product.koleksi)}
                                             </a>
                                         ))}
                                     </div>
@@ -413,11 +438,11 @@ $enLanguageUrl = '/en' . ($pathWithoutLocale !== '' ? '/' . $pathWithoutLocale :
                                     </div>}
                                     <div style={{ flex: productSelected.preview_image ? 1 : 2 }}>
                                         <h3 className="teks-sedang mb-3">
-                                            {productSelected.koleksi.charAt(0).toUpperCase() + productSelected.koleksi.slice(1)}
+                                            {displayNavbarLabel(productSelected.koleksi)}
                                         </h3>
-                                        <p style={{ textAlign: 'justify' }} className="mb-2">{productSelected.deskripsi.deskripsi}</p>
+                                        <p style={{ textAlign: 'justify' }} className="mb-2">{<?= json_encode($navbarLocale === 'en' ? 'deskripsi_en' : 'deskripsi'); ?> && productSelected.deskripsi[<?= json_encode($navbarLocale === 'en' ? 'deskripsi_en' : 'deskripsi'); ?>] || <?= json_encode(lang('Store.navProductDescriptionFallback')); ?>}</p>
                                         <a
-                                            href={`/product/${productSelected.nama.toLowerCase().split(' ').join('-')}`}
+                                            href={`${localePrefix}/product/${encodeURIComponent(productSelected.nama.toLowerCase().split(' ').join('-'))}`}
                                             style={{
                                                 display: 'inline',
                                                 fontSize: '10px',
@@ -425,12 +450,12 @@ $enLanguageUrl = '/en' . ($pathWithoutLocale !== '' ? '/' . $pathWithoutLocale :
                                                 color: 'var(--merah)',
                                             }}
                                         >
-                                            lihat selengkapnya..
+                                            {<?= json_encode(lang('Store.navViewDetails')); ?>}
                                         </a>
                                     </div>
                                 </div>
                                 <p className="text-secondary">
-                                    Terinspirasi oleh keindahan perpaduan dua material: kayu hangat dan logam tebal. Dibuat dengan sungguh-sungguh untuk melengkapi interior estetis, menghadirkan kenyamanan dan ketenangan bagi setiap penghuninya. Kami berbagi semangat kami dengan nama Ilena.
+                                    {<?= json_encode(lang('Store.navBrandStory')); ?>}
                                 </p>
                             </div>
                         }
