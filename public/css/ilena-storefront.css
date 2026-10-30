@@ -10310,6 +10310,7 @@ body.ilena-storefront .ilena-search-dialog :focus-visible { outline:2px solid #8
   z-index:1; opacity:1; visibility:visible; pointer-events:auto;
   transition:opacity .72s cubic-bezier(.22,.61,.36,1),visibility 0s;
  }
+ body.ilena-storefront.ilena-page--home .ilena-home-banner-slider .dots { z-index:3; }
  body.ilena-storefront.ilena-page--home .ilena-home-banner-slider .slides > a picture,
  body.ilena-storefront.ilena-page--home .ilena-home-banner-slider .slides > a img { display:block; width:100%; height:100%; }
  body.ilena-storefront.ilena-page--home .ilena-home-banner-slider .slides > a img {
