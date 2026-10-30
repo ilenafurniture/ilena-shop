@@ -379,6 +379,28 @@ function closeSecondAd() {
     </div>
 </div>
 
+<section class="ilena-home-promise" aria-label="Keunggulan Ilena Furniture">
+    <p class="ilena-home-promise__brand">Proudly Indonesian furniture brand</p>
+    <div class="ilena-home-promise__items">
+        <span>First order <strong>5% OFF</strong> with membership</span>
+        <span>Furniture pilihan untuk rumah yang terasa <em>True to You</em></span>
+        <span>Program free shipping untuk area dan produk terpilih</span>
+    </div>
+</section>
+
+<section class="ilena-home-reasons" aria-labelledby="ilena-home-reasons-title" data-home-scroll-reveal>
+    <div class="ilena-home-reasons__intro">
+        <p class="ilena-home-section-kicker">Dibuat untuk hidup sehari-hari</p>
+        <h2 id="ilena-home-reasons-title">A Better Furniture Experience</h2>
+        <p>Temukan furniture yang menyatukan fungsi, kenyamanan, dan karakter ruang—dengan layanan Ilena yang membantu sejak memilih.</p>
+    </div>
+    <div class="ilena-home-reasons__list">
+        <article><span>01</span><div><h3>Lebih mudah memilih</h3><p>Informasi koleksi dan detail produk tersedia untuk membantu Kakak menemukan pilihan yang sesuai.</p></div></article>
+        <article><span>02</span><div><h3>Siap melengkapi ruang</h3><p>Sebagian besar produk dikirim dalam kondisi terakit. Beberapa produk memerlukan perakitan; cek informasi produk sebelum memesan.</p></div></article>
+        <article><span>03</span><div><h3>Belanja lebih tenang</h3><p>Nikmati program pengiriman dan garansi produk sesuai ketentuan yang berlaku.</p></div></article>
+    </div>
+</section>
+
 <!-- Bagian Windows -->
 <style>
 .kontenLN {
@@ -1332,6 +1354,10 @@ function modalseries() {
 </style>
 
 <!-- Bagian Windows -->
+<section class="ilena-home-collections-heading" aria-labelledby="ilena-home-collections-title">
+    <div><p class="ilena-home-section-kicker">Ruang yang saling melengkapi</p><h2 id="ilena-home-collections-title">Furniture Collection</h2><p>Pilih satu koleksi untuk mulai menyusun ruang yang terasa utuh.</p></div>
+    <a href="/product" class="ilena-home-text-link">Lihat semua koleksi</a>
+</section>
 <div id="ruangan" class="container show-flex-ke-hide gap-3 my-5 ilena-home-room-grid" data-home-scroll-reveal style="width:100%;">
     <a href="/product?ruang=tamu" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
         <div class="zoom-wrapper mb-2">
@@ -1346,7 +1372,7 @@ function modalseries() {
             <h5 style="font-weight: 500;" class="m-0">N</h5>
             <h5 style="font-weight: 500;" class="m-0">G</h5>
         </div>
-        <h5 class="text-center fw-bold" style="font-size: 13px; height: fit-content">ROOM</h5>
+        <h5 class="text-center fw-bold" style="font-size: 13px; height: fit-content">Living room</h5>
     </a>
     <a href="/product?ruang=tidur" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
         <div class="zoom-wrapper mb-2">
@@ -1358,22 +1384,7 @@ function modalseries() {
             <h5 style="font-weight: 500;" class="m-0">E</h5>
             <h5 style="font-weight: 500;" class="m-0">D</h5>
         </div>
-        <h5 class="text-center fw-bold" style="font-size: 13px; height: fit-content">ROOM</h5>
-    </a>
-    <a href="/product?ruang=keluarga" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
-        <div class="zoom-wrapper mb-2">
-            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445475511.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445475511.webp'), 'attr') ?>" sizes="(max-width: 700px) 80vw, 34vw" alt="Inspirasi furniture untuk ruang keluarga Ilena"
-                style="flex: 1; width: 100%; object-fit: cover;">
-        </div>
-        <div class="d-flex gap-4 justify-content-center mb-2" style="height: fit-content">
-            <h5 style="font-weight: 500;" class="m-0">L</h5>
-            <h5 style="font-weight: 500;" class="m-0">O</h5>
-            <h5 style="font-weight: 500;" class="m-0">U</h5>
-            <h5 style="font-weight: 500;" class="m-0">N</h5>
-            <h5 style="font-weight: 500;" class="m-0">G</h5>
-            <h5 style="font-weight: 500;" class="m-0">E</h5>
-        </div>
-        <h5 class="text-center fw-bold" style="font-size: 13px; height: fit-content">ROOM</h5>
+        <h5 class="text-center fw-bold" style="font-size: 13px; height: fit-content">Bedroom</h5>
     </a>
 </div>
 
@@ -1404,7 +1415,7 @@ function modalseries() {
                 <h5 style="font-weight: 500;" class="m-0">N</h5>
                 <h5 style="font-weight: 500;" class="m-0">G</h5>
             </div>
-            <h5 class="text-center text-secondary fw-bold" style="font-size: 13px">ROOM</h5>
+            <h5 class="text-center text-secondary fw-bold" style="font-size: 13px">Living room</h5>
         </a>
         <a href="/product?ruang=tidur" class="ilena-home-room-card"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
@@ -1415,27 +1426,19 @@ function modalseries() {
                 <h5 style="font-weight: 500;" class="m-0">E</h5>
                 <h5 style="font-weight: 500;" class="m-0">D</h5>
             </div>
-            <h5 class="text-center text-secondary fw-bold" style="font-size: 13px">ROOM</h5>
-        </a>
-        <a href="/product?ruang=keluarga" class="ilena-home-room-card"
-            style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
-            <img loading="lazy" decoding="async" src="<?= $homeImage('1742445633826.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445633826.webp'), 'attr') ?>" sizes="80vw" alt="Inspirasi ruang lounge dengan furniture Ilena"
-                style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
-            <div class="d-flex gap-4 justify-content-center mb-2">
-                <h5 style="font-weight: 500;" class="m-0">L</h5>
-                <h5 style="font-weight: 500;" class="m-0">O</h5>
-                <h5 style="font-weight: 500;" class="m-0">U</h5>
-                <h5 style="font-weight: 500;" class="m-0">N</h5>
-                <h5 style="font-weight: 500;" class="m-0">G</h5>
-                <h5 style="font-weight: 500;" class="m-0">E</h5>
-            </div>
-            <h5 class="text-center text-secondary fw-bold" style="font-size: 13px">ROOM</h5>
+            <h5 class="text-center text-secondary fw-bold" style="font-size: 13px">Bedroom</h5>
         </a>
     </div>
 </div>
 
-
-
+<section class="ilena-home-partners" aria-labelledby="ilena-home-partners-title" data-home-scroll-reveal>
+    <div>
+        <p class="ilena-home-section-kicker">Lebih dekat dengan Ilena</p>
+        <h2 id="ilena-home-partners-title">Ilena Furniture Partner Store</h2>
+        <p>Temukan Ilena Furniture di kotamu. Kunjungi halaman mitra untuk melihat lokasi dan informasi toko.</p>
+    </div>
+    <a href="/partner" class="ilena-home-text-link">Temukan lokasi mitra</a>
+</section>
 
 <div class="slider">
     <div class="slides">

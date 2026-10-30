@@ -10177,3 +10177,63 @@ body.ilena-storefront .ilena-chat-greeting-teaser.is-arrival .ilena-chat-greetin
     body.ilena-storefront .ilena-chat-greeting-teaser.is-arrival .ilena-chat-greeting-teaser__mark img,
     body.ilena-storefront .ilena-chat-greeting-teaser.is-arrival .ilena-chat-greeting-teaser__bubble [data-greeting-open] { animation: none !important; }
 }
+/* Keep the revised homepage section styling authoritative after legacy cascade rules. */
+body.ilena-storefront .ilena-home-promise { display:grid; grid-template-columns:minmax(180px,.8fr) 2.2fr; align-items:center; gap:24px; max-width:1440px; margin:0 auto; padding:22px var(--ilena-home-gutter,clamp(18px,5vw,72px)); border-bottom:1px solid var(--ilena-line); }
+body.ilena-storefront .ilena-home-reasons { display:grid; grid-template-columns:minmax(260px,.9fr) minmax(0,1.1fr); gap:clamp(36px,8vw,120px); max-width:1320px; margin:clamp(70px,9vw,128px) auto; padding:0 var(--ilena-home-gutter,clamp(18px,5vw,72px)); }
+body.ilena-storefront .ilena-home-collections-heading { display:flex; justify-content:space-between; align-items:end; gap:22px; max-width:1440px; margin:clamp(70px,9vw,128px) auto 0; padding:0 var(--ilena-home-gutter,clamp(18px,5vw,72px)); }
+body.ilena-storefront.ilena-page--home .ilena-home-room-grid a>div:nth-child(2), body.ilena-storefront.ilena-page--home .ilena-home-room-scroll a>div:nth-child(2) { display:none!important; }
+body.ilena-storefront.ilena-page--home .ilena-home-room-grid a>h5, body.ilena-storefront.ilena-page--home .ilena-home-room-scroll a>h5 { margin-top:8px!important; color:var(--ilena-ink)!important; font-size:16px!important; letter-spacing:0!important; text-transform:none; }
+@media (max-width:700px) {
+    body.ilena-storefront .ilena-home-promise { display:block; padding:16px var(--ilena-home-gutter,18px); }
+    body.ilena-storefront .ilena-home-promise__items { overflow-x:auto; justify-content:flex-start; gap:10px; padding-bottom:4px; scroll-snap-type:x mandatory; }
+    body.ilena-storefront .ilena-home-promise__items span { flex:0 0 min(76vw,270px); padding:10px 12px; border-left:2px solid #a6312c; background:#f4efea; scroll-snap-align:start; }
+    body.ilena-storefront .ilena-home-reasons { display:block; margin:58px auto; padding-inline:20px; }
+    body.ilena-storefront .ilena-home-reasons__list { margin-top:30px; }
+    body.ilena-storefront .ilena-home-collections-heading { align-items:start; flex-direction:column; margin:56px auto 0; padding-inline:20px; }
+    body.ilena-storefront .ilena-home-collections-heading h2 { font-size:39px; }
+}
+
+/* Final cascade for the revised homepage merchandising and mobile quick links. */
+body.ilena-storefront .ilena-primary-nav { position:relative; z-index:98; border-bottom:1px solid var(--ilena-line); background:#fff; }
+body.ilena-storefront .ilena-primary-nav__inner { display:flex; justify-content:center; align-items:center; gap:clamp(22px,4vw,58px); max-width:1440px; min-height:48px; margin:0 auto; padding:0 24px; }
+body.ilena-storefront .ilena-primary-nav a { color:var(--ilena-ink); text-decoration:none; font-size:12px; font-weight:600; letter-spacing:.035em; }
+body.ilena-storefront .ilena-primary-nav a:hover { color:#8f2c29; }
+body.ilena-storefront .ilena-home-promise { display:grid; grid-template-columns:minmax(180px,.8fr) 2.2fr; align-items:center; gap:24px; max-width:1440px; margin:0 auto; padding:22px var(--ilena-home-gutter,clamp(18px,5vw,72px)); border-bottom:1px solid var(--ilena-line); }
+body.ilena-storefront .ilena-home-promise__brand { margin:0; color:#8f2c29; font-size:12px; font-weight:700; }
+body.ilena-storefront .ilena-home-promise__items { display:flex; justify-content:space-between; gap:18px; color:var(--ilena-muted); font-size:12px; }
+body.ilena-storefront .ilena-home-promise__items span { flex:1; }
+body.ilena-storefront .ilena-home-promise__items strong { color:#8f2c29; }
+body.ilena-storefront .ilena-home-promise__items em { color:var(--ilena-ink); font-style:normal; }
+body.ilena-storefront .ilena-home-reasons { display:grid; grid-template-columns:minmax(260px,.9fr) minmax(0,1.1fr); gap:clamp(36px,8vw,120px); max-width:1320px; margin:clamp(70px,9vw,128px) auto; padding:0 var(--ilena-home-gutter,clamp(18px,5vw,72px)); }
+body.ilena-storefront .ilena-home-section-kicker { margin:0 0 14px; color:#8f2c29; font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
+body.ilena-storefront .ilena-home-reasons h2, body.ilena-storefront .ilena-home-collections-heading h2 { margin:0; font-family:var(--ilena-font-display); font-size:clamp(34px,4.5vw,58px); font-weight:500; line-height:1.02; }
+body.ilena-storefront .ilena-home-reasons__intro>p:last-child, body.ilena-storefront .ilena-home-collections-heading>div>p:last-child { max-width:48ch; margin:18px 0 0; color:var(--ilena-muted); font-size:14px; line-height:1.8; }
+body.ilena-storefront .ilena-home-reasons__list article { display:grid; grid-template-columns:38px 1fr; gap:18px; padding:20px 0; border-bottom:1px solid var(--ilena-line); }
+body.ilena-storefront .ilena-home-reasons__list article:first-child { border-top:1px solid var(--ilena-line); }
+body.ilena-storefront .ilena-home-reasons__list article>span { padding-top:3px; color:#9d3731; font-size:11px; font-weight:700; }
+body.ilena-storefront .ilena-home-reasons__list h3 { margin:0 0 5px; font-size:16px; font-weight:650; }
+body.ilena-storefront .ilena-home-reasons__list p { max-width:58ch; margin:0; color:var(--ilena-muted); font-size:13px; line-height:1.7; }
+body.ilena-storefront .ilena-home-collections-heading { display:flex; justify-content:space-between; align-items:end; gap:22px; max-width:1440px; margin:clamp(70px,9vw,128px) auto 0; padding:0 var(--ilena-home-gutter,clamp(18px,5vw,72px)); }
+body.ilena-storefront .ilena-home-text-link { flex:0 0 auto; padding-bottom:6px; border-bottom:1px solid #8f2c29; color:#8f2c29; font-size:12px; font-weight:700; text-decoration:none; }
+body.ilena-storefront.ilena-page--home .ilena-home-room-grid a>div:nth-child(2), body.ilena-storefront.ilena-page--home .ilena-home-room-scroll a>div:nth-child(2) { display:none!important; }
+body.ilena-storefront.ilena-page--home .ilena-home-room-grid a>h5, body.ilena-storefront.ilena-page--home .ilena-home-room-scroll a>h5 { margin-top:8px!important; color:var(--ilena-ink)!important; font-size:16px!important; letter-spacing:0!important; text-transform:none; }
+body.ilena-storefront .ilena-mobile-primary-links { display:none; }
+@media (max-width:700px) {
+ body.ilena-storefront .ilena-home-promise { display:block; padding:16px var(--ilena-home-gutter,18px); }
+ body.ilena-storefront .ilena-home-promise__brand { margin-bottom:10px; font-size:11px; }
+ body.ilena-storefront .ilena-home-promise__items { overflow-x:auto; justify-content:flex-start; gap:10px; padding-bottom:4px; scroll-snap-type:x mandatory; }
+ body.ilena-storefront .ilena-home-promise__items span { flex:0 0 min(76vw,270px); padding:10px 12px; border-left:2px solid #a6312c; background:#f4efea; scroll-snap-align:start; }
+ body.ilena-storefront .ilena-home-reasons { display:block; margin:58px auto; padding-inline:20px; }
+ body.ilena-storefront .ilena-home-reasons__list { margin-top:30px; }
+ body.ilena-storefront .ilena-home-reasons__list article { grid-template-columns:28px 1fr; gap:12px; padding:16px 0; }
+ body.ilena-storefront .ilena-home-reasons__list h3 { font-size:15px; }
+ body.ilena-storefront .ilena-home-reasons__list p { font-size:12px; }
+ body.ilena-storefront .ilena-home-collections-heading { align-items:start; flex-direction:column; margin:56px auto 0; padding-inline:20px; }
+ body.ilena-storefront .ilena-home-collections-heading h2 { font-size:39px; }
+ body.ilena-storefront .ilena-mobile-primary-links { display:grid; grid-template-columns:1fr 1fr; gap:0 16px; margin:0 0 22px; padding:0 0 18px; border-bottom:1px solid rgba(255,255,255,.2); }
+ body.ilena-storefront .ilena-mobile-primary-links a { min-height:44px; display:flex; align-items:center; color:#fff; font-size:13px; font-weight:600; text-decoration:none; }
+}
+body.ilena-storefront .ilena-home-partners { display:flex; justify-content:space-between; align-items:end; gap:28px; max-width:1320px; margin:clamp(64px,8vw,112px) auto; padding:clamp(26px,4vw,52px) var(--ilena-home-gutter,clamp(18px,5vw,72px)); border-top:1px solid var(--ilena-line); border-bottom:1px solid var(--ilena-line); background:linear-gradient(100deg,#f4efea 0%,#fbf9f6 72%); }
+body.ilena-storefront .ilena-home-partners h2 { max-width:18ch; margin:0; font-family:var(--ilena-font-display); font-size:clamp(32px,4vw,50px); font-weight:500; line-height:1.02; }
+body.ilena-storefront .ilena-home-partners p:last-child { max-width:56ch; margin:14px 0 0; color:var(--ilena-muted); font-size:14px; line-height:1.7; }
+@media (max-width:700px) { body.ilena-storefront .ilena-home-partners { align-items:start; flex-direction:column; gap:20px; margin:52px auto; padding:28px 20px; } body.ilena-storefront .ilena-home-partners h2 { font-size:36px; } body.ilena-storefront .ilena-home-partners p:last-child { font-size:13px; } }

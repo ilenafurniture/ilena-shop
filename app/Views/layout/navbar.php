@@ -55,6 +55,15 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
         <p class="m-0">Lebih hemat dengan <strong>Free Ongkir hingga 100%</strong></p>
     </div>
 </div>
+<nav class="ilena-primary-nav show-block-ke-hide" aria-label="Jelajahi Ilena">
+    <div class="ilena-primary-nav__inner">
+        <a href="/product">Furniture Collection</a>
+        <a href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20saya%20ingin%20bertanya%20tentang%20custom%20interior" target="_blank" rel="noopener noreferrer">Custom Interior</a>
+        <a href="/partner">Partner Store</a>
+        <a href="/article">Article</a>
+        <a href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20saya%20ingin%20menghubungi%20tim%20Ilena" target="_blank" rel="noopener noreferrer">Contact Us</a>
+    </div>
+</nav>
 <style>
     #container-react {
         position: sticky;
