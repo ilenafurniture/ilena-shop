@@ -417,11 +417,11 @@ class GambarController extends BaseController
         }
 
         if (is_string($sourceBytes) && strtolower((string) $this->request->getGet('format')) === 'webp') {
-            $allowedWidths = $field === 'foto_hp' ? [320, 400, 640, 900] : [640, 900, 1200, 1600];
+            $allowedWidths = $field === 'foto_hp' ? [320, 400, 640, 900] : [640, 900, 1200, 1600, 1920];
             $requestedWidth = (int) $this->request->getGet('w');
             $maxWidth = in_array($requestedWidth, $allowedWidths, true)
                 ? $requestedWidth
-                : ($field === 'foto_hp' ? 900 : 1600);
+                : ($field === 'foto_hp' ? 900 : 1920);
             $cacheKey = 'slider-' . $safeId . '-' . $field . '-' . $maxWidth . '-' . md5($sourceBytes);
             $optimizedPath = $this->optimizedHomeImagePath($cacheKey);
             $optimizedBytes = is_file($optimizedPath) ? @file_get_contents($optimizedPath) : false;

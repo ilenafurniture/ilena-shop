@@ -292,7 +292,7 @@ function closeSecondAd() {
             $mobileVersion = substr(preg_replace('/[^a-f0-9]/i', '', (string) ($slider['foto_hp_version'] ?? '')), 0, 12);
             $desktopSrc = '/imgheader/' . $sliderId . '?v=' . $desktopVersion . '&format=webp';
             $mobileSrc = '/imgheaderhp/' . $sliderId . '?v=' . $mobileVersion . '&format=webp';
-            $desktopSrcset = implode(', ', array_map(static fn (int $width): string => $desktopSrc . '&w=' . $width . ' ' . $width . 'w', [640, 900, 1200, 1600]));
+            $desktopSrcset = implode(', ', array_map(static fn (int $width): string => $desktopSrc . '&w=' . $width . ' ' . $width . 'w', [640, 900, 1200, 1600, 1920]));
             $mobileSrcset = implode(', ', array_map(static fn (int $width): string => $mobileSrc . '&w=' . $width . ' ' . $width . 'w', [320, 400, 640, 900]));
             $isFirstSlide = $ind_s === 0;
         ?>
