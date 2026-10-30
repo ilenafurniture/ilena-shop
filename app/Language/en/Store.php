@@ -131,7 +131,7 @@ return [
     'signIn' => 'Sign in',
     'heroSlogan' => 'Modern & Stylish Furniture',
     'whyIlena' => 'Why choose Ilena?',
-    'footerSlogan' => 'From your home, a warmer smile begins.',
+    'footerSlogan' => 'Mulai dari rumah, tercipta senyum ramah.',
     'footerLegal' => 'Legal information',
     'searchHeading' => 'Find furniture for your home',
     'searchDescription' => 'We found furniture that best matches your needs and the character of your space.',
