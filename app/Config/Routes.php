@@ -249,6 +249,14 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
 
 // English storefront routes. Indonesian keeps its established unprefixed URLs;
 // the locale placeholder lets CodeIgniter set the request locale for /en/... .
+// Register non-localized admin paths before locale-only matching is enabled.
+$routes->get('/analytics', 'Analytics::index', ['filter' => 'adminFilter']);
+$routes->get('/analytics/live', 'Analytics::live', ['filter' => 'adminFilter']);
+$routes->get('/analytics/exportCsv', 'Analytics::exportCsv', ['filter' => 'adminFilter']);
+$routes->get('/analytics/exportPdf', 'Analytics::exportPdf', ['filter' => 'adminFilter']);
+$routes->post('/analytics/blacklist/add', 'Analytics::addBlacklist', ['filter' => ['adminFilter', 'csrf']]);
+$routes->post('/analytics/blacklist/del/(:any)', 'Analytics::delBlacklist/$1', ['filter' => ['adminFilter', 'csrf']]);
+
 $routes->useSupportedLocalesOnly(true);
 $routes->group('{locale}', ['filter' => 'customerFilter'], static function ($routes) {
     $routes->get('', 'Pages::index');
@@ -332,16 +340,6 @@ $routes->post('/market/submitorder', 'MarketplaceController::submitOrder', ['fil
 $routes->post('/maket/submitorder', 'MarketplaceController::submitOrder', ['filter' => ['marketFilter', 'csrf']]);
 
 // routes untuk nyolong raja ongkir (sesuai punya kamu - tapi ini aneh karena actionnya submitOrder)
-
-
-// ==================== Analytics (admin) ====================
-$routes->get('/analytics', 'Analytics::index', ['filter' => 'adminFilter']);
-$routes->get('/analytics/live', 'Analytics::live', ['filter' => 'adminFilter']);
-$routes->get('/analytics/exportCsv', 'Analytics::exportCsv', ['filter' => 'adminFilter']);
-$routes->get('/analytics/exportPdf', 'Analytics::exportPdf', ['filter' => 'adminFilter']);
-$routes->post('/analytics/blacklist/add', 'Analytics::addBlacklist', ['filter' => ['adminFilter', 'csrf']]);
-$routes->post('/analytics/blacklist/del/(:any)', 'Analytics::delBlacklist/$1', ['filter' => ['adminFilter', 'csrf']]);
-
 
 // Tracking
 $routes->post('/track/hit', 'Track::hit');

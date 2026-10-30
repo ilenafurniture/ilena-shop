@@ -398,12 +398,9 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
     <div class="container-melayang d-flex gap-2 align-items-end <?= isset($geser_container_melayang) ? 'geser' : ''; ?>" data-ilena-chat-widget data-chat-locale="<?= esc(service('request')->getLocale(), 'attr'); ?>" data-wawa-image-base="<?= esc(base_url('img/fotowawa/'), 'attr'); ?>" data-wawa-image-version="<?= esc($wawaImageVersion, 'attr'); ?>" data-context-product="<?= isset($produk) && is_array($produk) && isset($produk['id']) ? esc((string)$produk['id'], 'attr') : ''; ?>">
         <section id="container-greeting-card" class="ilena-chat-greeting d-none" aria-label="<?= esc(lang('Store.chatAriaLabel'), 'attr'); ?>">
             <div class="ilena-chat-greeting__panel">
+                <div class="ilena-chat-resize-handle" data-chat-resize role="group" tabindex="0" aria-label="<?= esc(lang('Store.chatResize'), 'attr'); ?>" title="<?= esc(lang('Store.chatResize'), 'attr'); ?>"></div>
                 <header class="ilena-chat-greeting__heading">
                     <div class="ilena-chat-brand"><span class="ilena-chat-brand__mark ilena-chat-brand__mark--wawa" aria-hidden="true"><img data-wawa-avatar="header" alt="" width="360" height="360" loading="lazy" decoding="async"></span><span class="ilena-chat-brand__copy"><p>Kak Wawa</p><small><i aria-hidden="true"></i><span data-chat-status><?= esc(lang('Store.chatReady')); ?></span></small></span></div>
-                    <div class="ilena-chat-size-controls" role="group" aria-label="<?= esc(lang('Store.chatSizeGroup'), 'attr'); ?>">
-                        <button type="button" data-chat-size="smaller" aria-label="<?= esc(lang('Store.chatNarrower'), 'attr'); ?>" title="<?= esc(lang('Store.chatNarrower'), 'attr'); ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M7 7l-5 5 5 5"/></svg></button>
-                        <button type="button" data-chat-size="larger" aria-label="<?= esc(lang('Store.chatWider'), 'attr'); ?>" title="<?= esc(lang('Store.chatWider'), 'attr'); ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-2-5 5 5-5 5"/></svg></button>
-                    </div>
                     <button type="button" class="ilena-chat-sound" data-chat-sound aria-pressed="true" aria-label="<?= esc(lang('Store.chatMuteSound'), 'attr'); ?>" title="<?= esc(lang('Store.chatSoundOn'), 'attr'); ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Zm4 4a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12"/></svg></button>
                     <button type="button" aria-label="<?= esc(lang('Store.chatClose'), 'attr'); ?>" data-close-chat-greeting><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
                 </header>

@@ -18,7 +18,7 @@
   const typing = widget.querySelector('[data-chat-typing]');
   const typingCopy = widget.querySelector('[data-chat-typing-copy]');
   const soundButton = widget.querySelector('[data-chat-sound]');
-  const sizeButtons = widget.querySelectorAll('[data-chat-size]');
+  const resizeHandle = widget.querySelector('[data-chat-resize]');
   const suggestions = widget.querySelector('.ilena-chat-suggestions');
   const teaser = widget.querySelector('[data-chat-greeting]');
   const wawaImageBase = widget.dataset.wawaImageBase || '';
@@ -54,31 +54,68 @@
     'invalidLength': 'Messages must be between 1 and 1,200 characters.'
   };
   const copy = (key, indonesian) => isEnglish ? (chatCopy[key] || indonesian) : indonesian;
-  const chatWidths = [360, 420, 500, 580];
-  let chatWidthIndex = 1;
+  const chatMinWidth = 360;
+  const chatMinHeight = 420;
+  let chatFrame = { width: 420, height: 570 };
   try {
-    const savedWidth = Number(localStorage.getItem('ilenaChatWidth'));
-    const savedIndex = chatWidths.indexOf(savedWidth);
-    if (savedIndex >= 0) chatWidthIndex = savedIndex;
+    const savedFrame = JSON.parse(localStorage.getItem('ilenaChatFrame') || 'null');
+    if (savedFrame && Number.isFinite(savedFrame.width) && Number.isFinite(savedFrame.height)) {
+      chatFrame = { width: savedFrame.width, height: savedFrame.height };
+    }
   } catch (_) {}
-  function applyChatWidth() {
-    if (window.matchMedia('(max-width: 600px)').matches) return;
-    const availableWidth = Math.max(320, window.innerWidth - 40);
-    widget.style.setProperty('--wawa-chat-width', `${Math.min(chatWidths[chatWidthIndex], availableWidth)}px`);
-    sizeButtons.forEach(button => {
-      const disabled = button.dataset.chatSize === 'smaller' ? chatWidthIndex === 0 : chatWidthIndex === chatWidths.length - 1;
-      button.disabled = disabled;
-      button.setAttribute('aria-disabled', String(disabled));
-    });
+  function applyChatFrame() {
+    if (window.matchMedia('(max-width: 600px)').matches) {
+      widget.style.removeProperty('--wawa-chat-width');
+      panel.style.removeProperty('height');
+      return;
+    }
+    const maxWidth = Math.max(chatMinWidth, Math.min(640, window.innerWidth - 40));
+    const maxHeight = Math.max(chatMinHeight, Math.min(780, window.innerHeight - 110));
+    chatFrame.width = Math.min(maxWidth, Math.max(chatMinWidth, chatFrame.width));
+    chatFrame.height = Math.min(maxHeight, Math.max(chatMinHeight, chatFrame.height));
+    widget.style.setProperty('--wawa-chat-width', `${chatFrame.width}px`);
+    panel.style.height = `${chatFrame.height}px`;
   }
-  sizeButtons.forEach(button => button.addEventListener('click', () => {
-    const step = button.dataset.chatSize === 'smaller' ? -1 : 1;
-    chatWidthIndex = Math.max(0, Math.min(chatWidths.length - 1, chatWidthIndex + step));
-    applyChatWidth();
-    try { localStorage.setItem('ilenaChatWidth', String(chatWidths[chatWidthIndex])); } catch (_) {}
-  }));
-  applyChatWidth();
-  window.addEventListener('resize', applyChatWidth, { passive: true });
+  function saveChatFrame() {
+    try { localStorage.setItem('ilenaChatFrame', JSON.stringify(chatFrame)); } catch (_) {}
+  }
+  let resizeStart = null;
+  resizeHandle?.addEventListener('pointerdown', event => {
+    if (event.button !== 0 || window.matchMedia('(max-width: 600px)').matches) return;
+    const bounds = panel.getBoundingClientRect();
+    resizeStart = { x: event.clientX, y: event.clientY, width: bounds.width, height: bounds.height };
+    event.preventDefault();
+    resizeHandle.setPointerCapture(event.pointerId);
+  });
+  resizeHandle?.addEventListener('pointermove', event => {
+    if (!resizeStart) return;
+    chatFrame = {
+      width: resizeStart.width - (event.clientX - resizeStart.x),
+      height: resizeStart.height - (event.clientY - resizeStart.y),
+    };
+    applyChatFrame();
+  });
+  const finishResize = event => {
+    if (!resizeStart) return;
+    resizeStart = null;
+    if (resizeHandle.hasPointerCapture(event.pointerId)) resizeHandle.releasePointerCapture(event.pointerId);
+    saveChatFrame();
+  };
+  resizeHandle?.addEventListener('pointerup', finishResize);
+  resizeHandle?.addEventListener('pointercancel', finishResize);
+  resizeHandle?.addEventListener('keydown', event => {
+    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
+    event.preventDefault();
+    const step = event.shiftKey ? 40 : 16;
+    if (event.key === 'ArrowLeft') chatFrame.width += step;
+    if (event.key === 'ArrowRight') chatFrame.width -= step;
+    if (event.key === 'ArrowUp') chatFrame.height += step;
+    if (event.key === 'ArrowDown') chatFrame.height -= step;
+    applyChatFrame();
+    saveChatFrame();
+  });
+  applyChatFrame();
+  window.addEventListener('resize', applyChatFrame, { passive: true });
   const wawaHeaderAvatar = widget.querySelector('[data-wawa-avatar="header"]');
   const wawaGreetingAvatar = widget.querySelector('[data-wawa-avatar="greeting"]');
   const wawaTypingAvatar = widget.querySelector('[data-wawa-avatar="typing"]');
