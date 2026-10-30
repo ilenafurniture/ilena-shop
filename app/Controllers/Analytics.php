@@ -3,6 +3,8 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\M_Tracking;
+use App\Services\AnalyticsCsvSanitizer;
+use App\Services\AnalyticsOptions;
 use Dompdf\Dompdf;
 
 class Analytics extends BaseController
@@ -11,31 +13,10 @@ class Analytics extends BaseController
      * Ambil & normalisasi opsi filter dari query string.
      * Default range = bulan ini.
      */
-    private function parseOpts(): array
+    private function parseOpts(bool $live = false): array
     {
-        // default: bulan ini
-        $start = $this->request->getGet('start') ?: date('Y-m-01');
-        $end   = $this->request->getGet('end')   ?: date('Y-m-t');
-
-        $minDur = (int)($this->request->getGet('min_duration') ?? 5);
-        $lowAvg = (int)($this->request->getGet('exclude_low_avg_duration') ?? 0);
-        $maxDay = (int)($this->request->getGet('exclude_high_hits_per_day') ?? 0);
-
-        // custom exclude IPs via query param: ?exclude_ips=1.2.3.4,5.6.7.8
-        $excludeIps = [];
-        $ipsParam = trim((string)$this->request->getGet('exclude_ips'));
-        if ($ipsParam !== '') {
-            $excludeIps = array_values(array_filter(array_map('trim', explode(',', $ipsParam))));
-        }
-
-        return [
-            'start' => $start,
-            'end'   => $end,
-            'min_duration'              => max(0, $minDur),
-            'exclude_low_avg_duration'  => $lowAvg,   // 0 = off
-            'exclude_high_hits_per_day' => $maxDay,   // 0 = off
-            'exclude_ips'               => $excludeIps, // empty => pakai blacklist table
-        ];
+        $defaultEnd = $live ? date('Y-m-d') : date('Y-m-t');
+        return AnalyticsOptions::normalize($this->request->getGet() ?? [], $defaultEnd);
     }
 
     /**
@@ -94,18 +75,7 @@ class Analytics extends BaseController
     {
         $m = new M_Tracking();
 
-        $q = $this->request->getGet();
-
-        $opt = [
-            'start' => $q['start'] ?? date('Y-m-01'),
-            'end'   => $q['end']   ?? date('Y-m-d'),
-            'min_duration'              => isset($q['min_duration']) ? (int)$q['min_duration'] : 5,
-            'exclude_low_avg_duration'  => isset($q['exclude_low_avg_duration']) ? (int)$q['exclude_low_avg_duration'] : 0,
-            'exclude_high_hits_per_day' => isset($q['exclude_high_hits_per_day']) ? (int)$q['exclude_high_hits_per_day'] : 0,
-            'exclude_ips' => !empty($q['exclude_ips'])
-                ? array_values(array_filter(array_map('trim', explode(',', $q['exclude_ips']))))
-                : [],
-        ];
+        $opt = $this->parseOpts(true);
 
         $summaryNow = $m->getSummary($opt);
         $topNow     = $m->getTopPaths($opt, 10);
@@ -160,7 +130,7 @@ class Analytics extends BaseController
         fputcsv($fh, ['Top Paths (max 100)']);
         fputcsv($fh, ['path', 'jumlah']);
         foreach ($top as $r) {
-            fputcsv($fh, [$r['path'] ?: '/', $r['jumlah']]);
+            fputcsv($fh, [AnalyticsCsvSanitizer::text((string) ($r['path'] ?: '/')), $r['jumlah']]);
         }
 
         fputcsv($fh, []);
@@ -218,21 +188,27 @@ class Analytics extends BaseController
      */
     public function addBlacklist()
     {
-        $ip     = trim((string)$this->request->getPost('ip'));
-        $alasan = trim((string)$this->request->getPost('alasan'));
+        $ipInput = $this->request->getPost('ip');
+        $reasonInput = $this->request->getPost('alasan');
+        $ip     = is_string($ipInput) ? trim($ipInput) : '';
+        $alasan = is_string($reasonInput) ? trim($reasonInput) : '';
 
         if ($ip === '') {
             return redirect()->back()->with('err', 'IP wajib diisi');
+        }
+        if (filter_var($ip, FILTER_VALIDATE_IP) === false) {
+            return redirect()->back()->with('err', 'Format IP tidak valid');
         }
 
         $db = \Config\Database::connect();
         try {
             $db->table('tracking_ip_blacklist')->insert([
                 'ip'     => $ip,
-                'alasan' => $alasan ?: null,
+                'alasan' => $alasan === '' ? null : mb_substr($alasan, 0, 180),
             ]);
         } catch (\Throwable $e) {
-            return redirect()->back()->with('err', 'Gagal menambah: '.$e->getMessage());
+            log_message('error', 'Analytics blacklist insert failed: {message}', ['message' => $e->getMessage()]);
+            return redirect()->back()->with('err', 'Gagal menambah IP ke blacklist.');
         }
 
         return redirect()->back()->with('ok', 'IP ditambahkan ke blacklist');
@@ -243,6 +219,11 @@ class Analytics extends BaseController
      */
     public function delBlacklist($ip)
     {
+        $ip = is_string($ip) ? trim($ip) : '';
+        if (filter_var($ip, FILTER_VALIDATE_IP) === false) {
+            return redirect()->back()->with('err', 'Format IP tidak valid');
+        }
+
         $db = \Config\Database::connect();
         $db->table('tracking_ip_blacklist')->where('ip', $ip)->delete();
         return redirect()->back()->with('ok', 'IP dihapus dari blacklist');

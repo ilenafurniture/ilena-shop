@@ -17,16 +17,21 @@ class Track extends BaseController
         }
 
         $raw = $this->request->getBody();
-        $json = json_decode($raw, true) ?: [];
+        $decoded = json_decode($raw, true);
+        $json = is_array($decoded) ? $decoded : [];
 
         $ua = (string) $this->request->getUserAgent();
         if (stripos($ua, 'bot') !== false || stripos($ua, 'crawl') !== false) {
             return $this->response->setStatusCode(204); // abaikan bot
         }
 
-        $path = trim((string) ($json['path'] ?? '/')) ?: '/';
+        $pathInput = $json['path'] ?? '/';
+        $path = is_string($pathInput) ? (trim($pathInput) ?: '/') : '/';
         $path = mb_substr((string) preg_replace('/[\x00-\x1F\x7F]/u', '', $path), 0, 300);
-        $durasi = max(0, (int)($json['durasi'] ?? 0));
+        $durationInput = $json['durasi'] ?? 0;
+        $durasi = is_scalar($durationInput) && is_numeric($durationInput)
+            ? max(0, min(86400, (int) $durationInput))
+            : 0;
         $now    = date('Y-m-d H:i:s');
 
         // Simpan (kamu sudah punya M_Tracking)

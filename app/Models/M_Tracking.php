@@ -10,12 +10,17 @@ class M_Tracking extends Model
     public $useTimestamps    = false;
 
     protected $defaultHumanMin = 5; // detik
+    private ?array $blacklistCache = null;
 
     /** Ambil daftar IP blacklist */
     public function getBlacklist(): array
     {
-        $db = \Config\Database::connect();
-        return $db->table('tracking_ip_blacklist')->select('ip')->get()->getResultArray();
+        if ($this->blacklistCache === null) {
+            $db = \Config\Database::connect();
+            $this->blacklistCache = $db->table('tracking_ip_blacklist')->select('ip')->get()->getResultArray();
+        }
+
+        return $this->blacklistCache;
     }
 
     /** Build builder dengan semua filter */
@@ -35,7 +40,10 @@ class M_Tracking extends Model
         if ($minDur > 0) $builder->where('durasi >=', $minDur);
 
         // Blacklist IP
-        $blacklist = $opt['exclude_ips'] ?? array_map(fn($r)=>$r['ip'], $this->getBlacklist());
+        $blacklist = array_values(array_unique(array_merge(
+            array_column($this->getBlacklist(), 'ip'),
+            $opt['exclude_ips'] ?? []
+        )));
         if (!empty($blacklist)) $builder->whereNotIn('ip', $blacklist);
 
         // Anti-bot tambahan (opsional):
