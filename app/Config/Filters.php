@@ -48,11 +48,9 @@ class Filters extends BaseConfig
             // 'csrf',
             // 'invalidchars',
         ],
-        'after' => [
+        'after' => ENVIRONMENT === 'development' ? [
             'toolbar',
-            // 'honeypot',
-            // 'secureheaders',
-        ],
+        ] : [],
     ];
 
     /**
