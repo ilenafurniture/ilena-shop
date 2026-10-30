@@ -53,4 +53,25 @@ final class StorefrontLayoutPolicyTest extends CIUnitTestCase
         $this->assertTrue(StorefrontLayoutPolicy::isInternal('/admin/product'));
         $this->assertFalse(StorefrontLayoutPolicy::isInternal('/cart'));
     }
+
+    public function testLocalizedPathsUseTheSameShellPolicy(): void
+    {
+        foreach (['/en/cart', '/id/cart'] as $path) {
+            $this->assertSame('full', StorefrontLayoutPolicy::headerMode($path), $path);
+            $this->assertSame('checkout', StorefrontLayoutPolicy::footerMode($path), $path);
+        }
+
+        foreach (['/en/login', '/id/register'] as $path) {
+            $this->assertSame('auth', StorefrontLayoutPolicy::headerMode($path), $path);
+            $this->assertSame('auth', StorefrontLayoutPolicy::footerMode($path), $path);
+        }
+
+        foreach (['/en/account', '/id/wishlist'] as $path) {
+            $this->assertSame('account', StorefrontLayoutPolicy::headerMode($path), $path);
+            $this->assertSame('account', StorefrontLayoutPolicy::footerMode($path), $path);
+        }
+
+        $this->assertSame('/', StorefrontLayoutPolicy::normalizePath('/en'));
+        $this->assertSame('/partner', StorefrontLayoutPolicy::normalizePath('/en/partner/'));
+    }
 }

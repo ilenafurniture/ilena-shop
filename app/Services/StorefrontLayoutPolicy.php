@@ -7,7 +7,10 @@ final class StorefrontLayoutPolicy
 {
     public static function normalizePath(string $path): string
     {
-        return '/' . strtolower(trim($path, '/'));
+        $path = '/' . strtolower(trim($path, '/'));
+        $path = (string) preg_replace('~^/(?:en|id)(?=/|$)~', '', $path, 1);
+
+        return $path === '' ? '/' : $path;
     }
 
     public static function isInternal(string $path): bool

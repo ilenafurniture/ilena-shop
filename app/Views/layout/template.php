@@ -148,8 +148,7 @@
     }
     $canonicalPath = trim((string) service('uri')->getPath(), '/');
     $defaultCanonicalUrl = $canonicalPath === '' ? rtrim(base_url(), '/') . '/' : site_url($canonicalPath);
-    $localeNeutralPath = preg_replace('#^en(?:/|$)#', '', $canonicalPath) ?? $canonicalPath;
-    $localeNeutralPath = trim($localeNeutralPath, '/');
+    $localeNeutralPath = trim(App\Services\StorefrontLayoutPolicy::normalizePath($canonicalPath), '/');
     $idAlternateUrl = $localeNeutralPath === '' ? rtrim(base_url(), '/') . '/' : site_url($localeNeutralPath);
     $enAlternateUrl = $localeNeutralPath === '' ? rtrim(base_url(), '/') . '/en' : site_url('en/' . $localeNeutralPath);
     $documentUrl = trim((string) ($metaUrl ?? $defaultCanonicalUrl));
@@ -159,11 +158,11 @@
     $documentImage = trim((string) ($metaImage ?? 'https://ilenafurniture.com/img/logo/N.png'));
     $documentImageAlt = trim((string) ($metaImageAlt ?? 'Ilena Furniture'));
     $siteBaseUrl = rtrim(base_url(), '/') . '/';
-    $isHomePage = $canonicalPath === '';
+    $isHomePage = $localeNeutralPath === '';
     $documentRobots = trim((string) ($metaRobots ?? ''));
     if ($documentRobots === '') {
         $noindexPrefixes = ['admin', 'dev', 'staff', 'cart', 'wishlist', 'address', 'login', 'register', 'verify', 'account', 'order', 'orderdetail', 'invoice', 'shipping', 'payment', 'find', 'search'];
-        $robotsPath = strtolower($canonicalPath);
+        $robotsPath = strtolower($localeNeutralPath);
         $documentRobots = 'index, follow';
         foreach ($noindexPrefixes as $prefix) {
             if ($robotsPath === $prefix || str_starts_with($robotsPath, $prefix . '/')) {
@@ -172,10 +171,10 @@
             }
         }
         $requestQuery = service('request')->getGet();
-        if ($canonicalPath === 'product' && array_intersect(['koleksi', 'jenis', 'ruang', 'q', 'cari'], array_keys($requestQuery))) {
+        if ($localeNeutralPath === 'product' && array_intersect(['koleksi', 'jenis', 'ruang', 'q', 'cari'], array_keys($requestQuery))) {
             $documentRobots = 'noindex, follow';
         }
-        if ($canonicalPath === 'partner' && array_intersect(['q', 'city', 'page'], array_keys($requestQuery))) {
+        if ($localeNeutralPath === 'partner' && array_intersect(['q', 'city', 'page'], array_keys($requestQuery))) {
             $documentRobots = 'noindex, follow';
         }
     }
@@ -313,7 +312,12 @@
         href="<?= base_url('css/ilena-storefront.css?v=' . filemtime(FCPATH . 'css/ilena-storefront.css')); ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <?php $editorialPagePath = '/' . strtolower(trim((string) service('uri')->getPath(), '/')); ?>
+    <?php
+    // Public pages may be prefixed with /en. Resolve assets against the
+    // locale-neutral route so both /partner and /en/partner share the shell.
+    $layoutPath = App\Services\StorefrontLayoutPolicy::normalizePath((string) service('uri')->getPath());
+    $editorialPagePath = $layoutPath;
+    ?>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
     <?php if (in_array($editorialPagePath, ['/', '/tentang', '/partner', '/article', '/iklan'], true)) : ?>
@@ -345,8 +349,6 @@
 </head>
 
 <?php
-$layoutPath = trim((string) service('uri')->getPath(), '/');
-$layoutPath = '/' . strtolower(trim($layoutPath, '/'));
 $isInternalArea = App\Services\StorefrontLayoutPolicy::isInternal($layoutPath);
 $layoutHeaderMode = App\Services\StorefrontLayoutPolicy::headerMode($layoutPath);
 $needsReactRuntime = in_array($layoutHeaderMode, ['full', 'auth', 'account'], true) || $layoutPath === '/article';
