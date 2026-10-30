@@ -102,6 +102,7 @@ class AdminController extends BaseController
     protected $partnerModel;
     protected R2ProductImageService $r2ProductImages;
     protected HomeAssetManager $homeAssetManager;
+    private bool $sliderUploadStorageUnavailable = false;
 
 
 
@@ -2799,8 +2800,15 @@ class AdminController extends BaseController
         }
 
         $uploadDir = FCPATH . 'uploads' . DIRECTORY_SEPARATOR . 'slider';
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
+        if (!is_dir($uploadDir) && !@mkdir($uploadDir, 0775, true) && !is_dir($uploadDir)) {
+            $this->sliderUploadStorageUnavailable = true;
+            log_message('error', 'Home slider upload directory could not be created.');
+            return null;
+        }
+        if (!is_writable($uploadDir)) {
+            $this->sliderUploadStorageUnavailable = true;
+            log_message('error', 'Home slider upload directory is not writable by the PHP worker.');
+            return null;
         }
 
         $fileStem = 'header-' . $id . '-' . $device . '-' . date('YmdHis') . '-' . bin2hex(random_bytes(4));
@@ -2826,6 +2834,8 @@ class AdminController extends BaseController
 
     public function actionHomeLayout()
     {
+        $this->sliderUploadStorageUnavailable = false;
+
         $image1 = $this->request->getFile('image1');
         $image1hp = $this->request->getFile('image1-hp');
         $url1 = $this->request->getPost('url1');
@@ -2882,6 +2892,9 @@ class AdminController extends BaseController
         }
 
         cache()->delete('ilena_home_slider_metadata_v1');
+        if ($this->sliderUploadStorageUnavailable) {
+            array_unshift($assetMessages, 'Foto slider tidak tersimpan karena folder upload belum dapat ditulis. Foto lama tetap aktif.');
+        }
         session()->setFlashdata('msg', $assetMessages
             ? 'Home layout diperbarui. ' . implode(' ', $assetMessages)
             : 'Home layout telah diperbarui.');
