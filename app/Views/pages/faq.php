@@ -45,9 +45,12 @@
                 ['How should I care for my Ilena furniture?', 'Keep furniture away from prolonged direct sunlight and place it in a well-ventilated room. Follow any care instructions supplied with your product.'],
             ],
         ];
-        foreach ($faqGroups as $groupIndex => $items): ?>
+        $faqGroupNumber = 0;
+        foreach ($faqGroups as $groupTitle => $items):
+            $faqGroupNumber++;
+        ?>
         <div class="container-faq">
-            <div class="tigapuluh-ke-seratus"><p class="nomor"><?= sprintf('%02d', $groupIndex + 1); ?></p><p class="sub-faq"><?= esc($groupIndex); ?></p></div>
+            <div class="tigapuluh-ke-seratus"><p class="nomor"><?= sprintf('%02d', $faqGroupNumber); ?></p><p class="sub-faq"><?= esc($groupTitle); ?></p></div>
             <div style="flex: 1" class="isi-faq">
                 <?php foreach ($items as [$question, $answer]): ?>
                 <p class="sub-sub-faq"><?= esc($question); ?></p>

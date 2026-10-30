@@ -673,7 +673,7 @@ if (isset($_GET['ruang'])) {
             <?php } ?>
             <div class="container-card1 ilena-catalog-grid">
                 <?php foreach ($produk as $ind_p => $p) { ?>
-                <?php $cardVersion = !empty($p['tgl_update']) ? (int) strtotime((string) $p['tgl_update']) : time(); $displayProductName = ilena_product_display_name($p); ?>
+                <?php $cardVersion = !empty($p['tgl_update']) ? (int) strtotime((string) $p['tgl_update']) : time(); $displayProductName = ilena_product_display_name($p); $displayProductCategory = ilena_catalog_type_label((string) ($p['kategori'] ?? '')); ?>
                 <div class="card1" data-product-card>
                     <div style="position: relative;">
                         <span class="card1-content-img-kiri"
@@ -685,18 +685,18 @@ if (isset($_GET['ruang'])) {
                                 if (in_array($p['id'], $wishlist)) { ?>
                             <form action="<?= esc(ilena_store_path('/delwishlist/' . $p['id']), 'attr'); ?>" method="post">
                                 <?= csrf_field(); ?>
-                                <button type="submit" class="card1-btn-img" aria-label="<?= esc(lang('Store.removeFromWishlist') . ': ' . $p['nama'], 'attr'); ?>" title="<?= esc(lang('Store.removeFromWishlist'), 'attr'); ?>"><i
+                                <button type="submit" class="card1-btn-img" aria-label="<?= esc(lang('Store.removeFromWishlist') . ': ' . $displayProductName, 'attr'); ?>" title="<?= esc(lang('Store.removeFromWishlist'), 'attr'); ?>"><i
                                         class="material-icons">favorite</i></button>
                             </form>
                             <?php } else { ?>
                             <form action="<?= esc(ilena_store_path('/addwishlist/' . $p['id']), 'attr'); ?>" method="post">
                                 <?= csrf_field(); ?>
-                                <button type="submit" class="card1-btn-img" aria-label="<?= esc(lang('Store.saveToWishlist') . ': ' . $p['nama'], 'attr'); ?>" title="<?= esc(lang('Store.saveToWishlist'), 'attr'); ?>"><i
+                                <button type="submit" class="card1-btn-img" aria-label="<?= esc(lang('Store.saveToWishlist') . ': ' . $displayProductName, 'attr'); ?>" title="<?= esc(lang('Store.saveToWishlist'), 'attr'); ?>"><i
                                         class="material-icons">favorite_border</i></button>
                             </form>
                             <?php } ?>
                             <form method="post" id="card<?= $ind_p ?>"
-                                action="<?= esc(ilena_store_path('/addcart/' . $p['id'] . '/' . rawurlencode(json_decode($p['varian'], true)[0]['nama']) . '/1'), 'attr'); ?>"><?= csrf_field(); ?><button class="card1-btn-img" aria-label="<?= esc(lang('Store.addProductToCart', [$p['nama']]), 'attr'); ?>" title="<?= esc(lang('Store.addToCartTitle'), 'attr'); ?>"><i class="material-icons">shopping_bag</i>
+                                action="<?= esc(ilena_store_path('/addcart/' . $p['id'] . '/' . rawurlencode(json_decode($p['varian'], true)[0]['nama']) . '/1'), 'attr'); ?>"><?= csrf_field(); ?><button class="card1-btn-img" aria-label="<?= esc(lang('Store.addProductToCart', [$displayProductName]), 'attr'); ?>" title="<?= esc(lang('Store.addToCartTitle'), 'attr'); ?>"><i class="material-icons">shopping_bag</i>
                                 </button>
                             </form>
                         </div>
@@ -779,7 +779,7 @@ if (isset($_GET['ruang'])) {
                         </script>
                     </div>
                     <a href="<?= esc(ilena_store_path('/product/' . str_replace(' ', '-', (string) $p['nama'])), 'attr'); ?>" class="text-dark">
-                        <p class="text-secondary text-sm-start m-0"><?= strtolower($p['kategori']); ?></p>
+                        <p class="text-secondary text-sm-start m-0"><?= esc($displayProductCategory); ?></p>
                         <h5 style="font-size:18px;"><?= esc(str_replace('Tv', 'TV', ucwords($displayProductName))); ?></h5>
                         <div class="d-flex gap-2">
                             <p class="harga">Rp

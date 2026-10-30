@@ -506,6 +506,7 @@ return [
     'allPartners' => 'View all partners',
     'contactIlenaSupport' => 'Contact Ilena support',
     'productEdit' => 'Edit product',
+    'productFallback' => 'Product',
     'removeProduct' => 'Remove',
     'increaseQuantity' => 'Increase quantity',
     'specificationsHeading' => 'PRODUCT SPECIFICATIONS',

@@ -19,17 +19,17 @@
                 </div>
             <?php endif; ?>
             <div class="container-keranjang show-block-ke-hide">
-                <?php foreach ($keranjang as $index => $k) { ?>
+                <?php foreach ($keranjang as $index => $k) { $cartProductName = ilena_product_display_name((array) ($k['detail'] ?? [])); $cartProductName = $cartProductName !== '' ? $cartProductName : lang('Store.productFallback'); $cartCategory = ilena_catalog_type_label((string) ($k['detail']['kategori'] ?? '')); $cartVariant = ilena_variant_display_name((string) ($k['varian'] ?? '')); ?>
                 <div class="item-keranjang">
                     <a href="<?= esc(ilena_store_path('/product/' . str_replace(' ', '-', (string) $k['detail']['nama'])), 'attr'); ?>" style="display:block;">
-                        <img src="<?= $k['src_gambar'] ?>" alt="Gambar Keranjang">
+                        <img src="<?= esc($k['src_gambar'] ?? '', 'attr'); ?>" alt="<?= esc($cartProductName, 'attr'); ?>">
                     </a>
                     <div style="flex: 1;" class="d-flex flex-column">
                         <a href="<?= esc(ilena_store_path('/product/' . str_replace(' ', '-', (string) $k['detail']['nama'])), 'attr'); ?>"
                             style="text-decoration:none; color: black;">
-                            <p class="m-0"><?= ucfirst($k['detail']['kategori']) ?></p>
-                            <h1 class="nama-barang"><?= ucwords($k['detail']['nama']) ?></h1>
-                            <p class="my-2"><?= esc(lang('Store.variantLabel')); ?>: <?= ucfirst($k['varian']) ?></p>
+                            <p class="m-0"><?= esc($cartCategory); ?></p>
+                            <h1 class="nama-barang"><?= esc($cartProductName); ?></h1>
+                            <p class="my-2"><?= esc(lang('Store.variantLabel')); ?>: <?= esc($cartVariant); ?></p>
                         </a>
                         <div class="d-flex align-items-end flex-grow-1">
                             <div class="d-flex align-items-center gap-4">
@@ -76,24 +76,24 @@
             </div>
 
             <div class="hide-ke-show-block">
-                <?php foreach ($keranjang as $index => $k) { ?>
+                <?php foreach ($keranjang as $index => $k) { $cartProductName = ilena_product_display_name((array) ($k['detail'] ?? [])); $cartProductName = $cartProductName !== '' ? $cartProductName : lang('Store.productFallback'); $cartCategory = ilena_catalog_type_label((string) ($k['detail']['kategori'] ?? '')); $cartVariant = ilena_variant_display_name((string) ($k['varian'] ?? '')); ?>
                 <div class="item-keranjang-hp">
                     <a href="<?= esc(ilena_store_path('/product/' . str_replace(' ', '-', (string) $k['detail']['nama'])), 'attr'); ?>" style="display:block;">
-                        <img src="<?= $k['src_gambar'] ?>" alt="Gambar Keranjang">
+                        <img src="<?= esc($k['src_gambar'] ?? '', 'attr'); ?>" alt="<?= esc($cartProductName, 'attr'); ?>">
                     </a>
                     <div style="flex: 1;" class="d-flex flex-column justify-content-between">
                         <a href="<?= esc(ilena_store_path('/product/' . str_replace(' ', '-', (string) $k['detail']['nama'])), 'attr'); ?>"
                             style="text-decoration:none; color: black;" class="d-flex flex-column h-100">
                             <div style="flex: 1">
-                                <p class="m-0" style="letter-spacing: -1px;"><?= ucwords($k['detail']['kategori']); ?>
+                                <p class="m-0" style="letter-spacing: -1px;"><?= esc($cartCategory); ?>
                                 </p>
-                                <h1 class="nama-barang"><?= ucwords($k['detail']['nama']) ?></h1>
+                                <h1 class="nama-barang"><?= esc($cartProductName); ?></h1>
                             </div>
                             <p class="harga-hp">
                                 Rp
                                 <?= number_format($k['detail']['harga'] * (100 - $k['detail']['diskon']) / 100, 0, ',', '.'); ?>
                             </p>
-                            <p class="m-0" style="font-size: 10px;"><?= esc(lang('Store.variantLabel')); ?>: <?= ucfirst($k['varian']) ?></p>
+                            <p class="m-0" style="font-size: 10px;"><?= esc(lang('Store.variantLabel')); ?>: <?= esc($cartVariant); ?></p>
                         </a>
                     </div>
 

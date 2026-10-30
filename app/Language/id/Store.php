@@ -505,6 +505,7 @@ return [
     'statusRejected' => 'Ditolak',
     'statusCancelled' => 'Dibatalkan',
     'productEdit' => 'Edit produk',
+    'productFallback' => 'Produk',
     'removeProduct' => 'Hapus',
     'increaseQuantity' => 'Tambah jumlah',
     'specificationsHeading' => 'SPESIFIKASI PRODUK',

@@ -50,7 +50,10 @@ $productCoverUrl = function (string $id, array $varianList, array $product = [])
             <?php
           // Normalisasi/guard data produk
           $p_id        = $p['id']        ?? '';
-          $p_nama      = $p['nama']      ?? 'Produk';
+          $p_slugNama  = (string) ($p['nama'] ?? '');
+          $p_nama      = ilena_product_display_name($p);
+          $p_nama      = $p_nama !== '' ? $p_nama : lang('Store.productFallback');
+          $p_kategori  = ilena_catalog_type_label((string) ($p['kategori'] ?? 'Furniture'));
           $p_harga     = (int)($p['harga']  ?? 0);
           $p_diskon    = (int)($p['diskon'] ?? 0);
           $p_gbrHover  = !empty($p['gambar_hover']);
@@ -67,13 +70,13 @@ $productCoverUrl = function (string $id, array $varianList, array $product = [])
                         </span>
                     </div>
 
-                    <a href="<?= esc(ilena_store_path('/product/' . str_replace(' ', '-', $p_nama)), 'attr'); ?>" class="gambar">
+                    <a href="<?= esc(ilena_store_path('/product/' . str_replace(' ', '-', $p_slugNama)), 'attr'); ?>" class="gambar">
                         <img class="<?= $p_gbrHover ? '' : 'nonhover'; ?> img-pic" id="<?= $imgMainId ?>"
                             src="<?= $productCoverUrl((string)$p_id, $varianList, $p); ?>"
-                            alt="<?= htmlspecialchars($p_nama, ENT_QUOTES); ?>" loading="lazy" decoding="async">
+                            alt="<?= esc($p_nama, 'attr'); ?>" loading="lazy" decoding="async">
                         <?php if ($p_gbrHover): ?>
                         <img class="img-pic-hover" src="/viewpichover/<?= $p_id; ?>?v=<?= time(); ?>"
-                            alt="<?= htmlspecialchars($p_nama . ' (hover)', ENT_QUOTES); ?>" loading="lazy" decoding="async">
+                            alt="<?= esc($p_nama . ' (hover)', 'attr'); ?>" loading="lazy" decoding="async">
                         <?php endif; ?>
                     </a>
                 </div>
@@ -98,8 +101,8 @@ $productCoverUrl = function (string $id, array $varianList, array $product = [])
                 </div>
 
                 <!-- Nama & Harga -->
-                <p class="ilena-wishlist-category"><?= esc($p['kategori'] ?? 'Furniture'); ?></p>
-                <h5><?= htmlspecialchars($p_nama, ENT_QUOTES); ?></h5>
+                <p class="ilena-wishlist-category"><?= esc($p_kategori); ?></p>
+                <h5><?= esc($p_nama); ?></h5>
                 <div class="d-flex gap-2">
                     <p class="harga">
                         Rp <?= number_format( $p_harga * (100 - $p_diskon) / 100, 0, ',', '.'); ?>
