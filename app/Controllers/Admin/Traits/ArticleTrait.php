@@ -37,7 +37,7 @@ trait ArticleTrait
      */
     public function articleCategory($kategori)
     {
-        $artikel = $this->artikelModel->getArtikelKategori(str_replace("-", " ", $kategori));
+        $artikel = $this->artikelModel->getArtikelKategori(ilena_article_category_from_slug((string) $kategori));
         $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
         if (!$artikel) return redirect()->to('article');
         foreach ($artikel as $ind_a => $a) {

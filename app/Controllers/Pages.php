@@ -5470,8 +5470,7 @@ class Pages extends BaseController
 
     public function articleCategory($category)
     {
-        $category = str_replace('-', ' ', $category);
-        $category = str_replace('@', '&', $category);
+        $category = ilena_article_category_from_slug((string) $category);
         $artikel = $this->artikelModel->like('kategori', $category, 'both')->findAll();
         $bulan = $this->request->getLocale() === 'en'
             ? ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]

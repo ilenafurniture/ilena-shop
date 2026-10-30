@@ -111,6 +111,19 @@ if (! function_exists('ilena_article_category_label')) {
     }
 }
 
+if (! function_exists('ilena_article_category_from_slug')) {
+    /** Convert public article-category slugs to their stored category names. */
+    function ilena_article_category_from_slug(string $slug): string
+    {
+        $slug = strtolower(trim(rawurldecode($slug)));
+        if (in_array($slug, ['tips-trik', 'tips-and-trik', 'tips-ideas', 'tips-and-ideas'], true)) {
+            return 'tips & trik';
+        }
+
+        return trim(str_replace(['@', '-'], ['&', ' '], $slug));
+    }
+}
+
 if (! function_exists('ilena_localize_payment_guide')) {
     /** Translate built-in Midtrans payment instructions without changing stored payment data. */
     function ilena_localize_payment_guide(array $guide, string $locale): array
