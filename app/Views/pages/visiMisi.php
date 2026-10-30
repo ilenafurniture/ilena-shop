@@ -3,17 +3,17 @@
 <main class="ilena-vision-page">
     <div class="ilena-vision-shell">
         <nav class="ilena-vision-breadcrumb" aria-label="breadcrumb">
-            <a href="/">Beranda</a><span aria-hidden="true">/</span><span aria-current="page">Visi, misi &amp; nilai</span>
+            <a href="<?= esc(ilena_store_path('/'), 'attr'); ?>"><?= lang('Store.home'); ?></a><span aria-hidden="true">/</span><span aria-current="page"><?= lang('Store.visionValues'); ?></span>
         </nav>
 
         <section class="ilena-vision-hero" aria-labelledby="ilena-vision-title">
             <div class="ilena-vision-hero-copy">
-                <p class="ilena-vision-eyebrow" data-reveal>ILENA FURNITURE <span></span> NILAI KAMI</p>
+                <p class="ilena-vision-eyebrow" data-reveal>ILENA FURNITURE <span></span> <?= lang('Store.ourValues'); ?></p>
                 <h1 id="ilena-vision-title" data-reveal>Mulai dari <em>rumah,</em><br>tercipta senyum ramah.</h1>
             </div>
-            <figure class="ilena-vision-motion-art" data-reveal aria-label="Animasi garis ilustrasi rumah dan furnitur Ilena">
+                <figure class="ilena-vision-motion-art" data-reveal aria-label="<?= esc(lang('Store.visionMotionTitle'), 'attr'); ?>">
                 <svg viewBox="0 0 520 440" role="img" aria-labelledby="ilena-motion-title" focusable="false">
-                    <title id="ilena-motion-title">Ruang nyaman dimulai dari rumah</title>
+                    <title id="ilena-motion-title"><?= lang('Store.visionMotionTitle'); ?></title>
                     <circle class="vision-art-halo" cx="260" cy="220" r="174" />
                     <circle class="vision-art-orbit" cx="260" cy="220" r="145" />
                     <path class="vision-art-house" d="M92 215 260 76l168 139M124 204v153h272V204M202 357v-92c0-30 26-55 58-55s58 25 58 55v92" />
@@ -25,50 +25,50 @@
                         <animateMotion dur="22s" repeatCount="indefinite" path="M0 0 A145 145 0 1 0 -290 0 A145 145 0 1 0 0 0" />
                     </circle>
                 </svg>
-                <span class="ilena-vision-motion-caption"><i></i> Ruang untuk tumbuh bersama</span>
+                <span class="ilena-vision-motion-caption"><i></i> <?= lang('Store.visionMotionCaption'); ?></span>
             </figure>
             <div class="ilena-vision-hero-foot" data-reveal>
-                <span class="ilena-vision-index">01 <i></i> VISI</span>
-                <p>Ilena hadir di tengah-tengah masyarakat Indonesia dengan mengusung visi: mulai dari rumah, tercipta senyum ramah. Satu kalimat ini menjadi representasi bahwa Ilena dengan tangan terbuka akan selalu ada bagi masyarakat Indonesia melalui produk unggulan yang jadi solusi tepat melengkapi interior jadi lebih sempurna.</p>
+                <span class="ilena-vision-index">01 <i></i> <?= lang('Store.vision'); ?></span>
+                <p><?= lang('Store.visionParagraph'); ?></p>
             </div>
         </section>
 
         <section class="ilena-values-section" aria-labelledby="ilena-values-title">
             <div class="ilena-vision-section-heading" data-reveal>
-                <span class="ilena-vision-index">02 <i></i> BUDAYA</span>
+                <span class="ilena-vision-index">02 <i></i> <?= lang('Store.ourCulture'); ?></span>
                 <div>
-                    <h2 id="ilena-values-title">Nilai budaya <span>RAMAH</span></h2>
-                    <p>Kami berkomitmen untuk terus berkembang dan berinovasi dalam menghasilkan produk unggulan dengan penuh RAMAH, sebagai pilar utama yang tersampaikan pada rangkaian berikut ini:</p>
+                    <h2 id="ilena-values-title"><?= lang('Store.ramahCultureTitle'); ?></h2>
+                    <p><?= lang('Store.ramahCultureBody'); ?></p>
                 </div>
             </div>
 
             <div class="ilena-values-layout">
                 <figure class="ilena-values-art" data-reveal>
-                    <img src="<?= base_url('img/Ramah Ilena/Ramah Ilena Full.png'); ?>" alt="Ilustrasi rumah dan nilai budaya RAMAH Ilena" loading="lazy" decoding="async">
-                    <figcaption>Nilai yang menumbuhkan rasa nyaman, mulai dari rumah.</figcaption>
+                    <img src="<?= base_url('img/Ramah Ilena/Ramah Ilena Full.png'); ?>" alt="<?= esc(lang('Store.valuesImageAlt'), 'attr'); ?>" loading="lazy" decoding="async">
+                    <figcaption><?= lang('Store.valuesCaption'); ?></figcaption>
                 </figure>
                 <ol class="ilena-values-list">
-                    <li data-reveal><span class="ilena-value-initial">R</span><div><h3>Ragam</h3><p>Toleransi terhadap segala bentuk perbedaan dan menjadikannya sebagai semangat dalam mencapai tujuan bersama.</p></div><span class="ilena-value-line" aria-hidden="true"></span></li>
-                    <li data-reveal><span class="ilena-value-initial">A</span><div><h3>Amanah</h3><p>Menjaga kualitas produk dan pelayanan terhadap konsumen secara maksimal.</p></div><span class="ilena-value-line" aria-hidden="true"></span></li>
-                    <li data-reveal><span class="ilena-value-initial">M</span><div><h3>Modern</h3><p>Tertuju pada modernisasi dengan menciptakan efisiensi terhadap produk.</p></div><span class="ilena-value-line" aria-hidden="true"></span></li>
-                    <li data-reveal><span class="ilena-value-initial">A</span><div><h3>Adaptif</h3><p>Terbuka dengan perkembangan zaman dan teknologi yang mempengaruhi perubahan kebutuhan serta keinginan manusia.</p></div><span class="ilena-value-line" aria-hidden="true"></span></li>
-                    <li data-reveal><span class="ilena-value-initial">H</span><div><h3>Harmonis</h3><p>Menciptakan relasi yang sehat antara karyawan dan perusahaan sebagai satu kesatuan yang tidak bisa terpisahkan.</p></div><span class="ilena-value-line" aria-hidden="true"></span></li>
+                    <li data-reveal><span class="ilena-value-initial">R</span><div><h3>Ragam</h3><p><?= lang('Store.valueRagam'); ?></p></div><span class="ilena-value-line" aria-hidden="true"></span></li>
+                    <li data-reveal><span class="ilena-value-initial">A</span><div><h3>Amanah</h3><p><?= lang('Store.valueAmanah'); ?></p></div><span class="ilena-value-line" aria-hidden="true"></span></li>
+                    <li data-reveal><span class="ilena-value-initial">M</span><div><h3>Modern</h3><p><?= lang('Store.valueModern'); ?></p></div><span class="ilena-value-line" aria-hidden="true"></span></li>
+                    <li data-reveal><span class="ilena-value-initial">A</span><div><h3>Adaptif</h3><p><?= lang('Store.valueAdaptif'); ?></p></div><span class="ilena-value-line" aria-hidden="true"></span></li>
+                    <li data-reveal><span class="ilena-value-initial">H</span><div><h3>Harmonis</h3><p><?= lang('Store.valueHarmonis'); ?></p></div><span class="ilena-value-line" aria-hidden="true"></span></li>
                 </ol>
             </div>
         </section>
 
         <section class="ilena-mission-section" aria-labelledby="ilena-mission-title">
             <div class="ilena-vision-section-heading" data-reveal>
-                <span class="ilena-vision-index">03 <i></i> ARAH KAMI</span>
+                <span class="ilena-vision-index">03 <i></i> <?= lang('Store.ourDirection'); ?></span>
                 <div>
-                    <h2 id="ilena-mission-title">Misi <span>yang kami jaga.</span></h2>
-                    <p>Tiga komitmen yang menjadi arah dalam melayani dan bertumbuh bersama.</p>
+                    <h2 id="ilena-mission-title"><?= lang('Store.missionTitle'); ?></h2>
+                    <p><?= lang('Store.missionIntro'); ?></p>
                 </div>
             </div>
             <ol class="ilena-mission-list">
-                <li data-reveal><span class="ilena-mission-mark" aria-hidden="true">01</span><div><h3>Membangun &amp; Menjaga Kepercayaan Konsumen</h3><p>Menjadikan kepuasan konsumen sebagai prioritas melalui pelayanan prima dan produk unggulan.</p></div></li>
-                    <li data-reveal><span class="ilena-mission-mark" aria-hidden="true">02</span><div><h3>Mendukung Keseimbangan Ekosistem Lingkungan</h3><p>Menjaga lingkungan dan kelanjutan ekosistem hutan dengan hanya menggunakan material bahan yang jelas asal-usulnya.</p></div></li>
-                <li data-reveal><span class="ilena-mission-mark" aria-hidden="true">03</span><div><h3>Memiliki Satu Tujuan Bersama</h3><p>Membangun tim yang solid dan bersinergi sesuai dengan nilai perusahaan untuk terus berkembang dan mencapai satu tujuan bersama.</p></div></li>
+                <li data-reveal><span class="ilena-mission-mark" aria-hidden="true">01</span><div><h3><?= lang('Store.missionTrustTitle'); ?></h3><p><?= lang('Store.missionTrustBody'); ?></p></div></li>
+                <li data-reveal><span class="ilena-mission-mark" aria-hidden="true">02</span><div><h3><?= lang('Store.missionEnvironmentTitle'); ?></h3><p><?= lang('Store.missionEnvironmentBody'); ?></p></div></li>
+                <li data-reveal><span class="ilena-mission-mark" aria-hidden="true">03</span><div><h3><?= lang('Store.missionPurposeTitle'); ?></h3><p><?= lang('Store.missionPurposeBody'); ?></p></div></li>
             </ol>
         </section>
     </div>

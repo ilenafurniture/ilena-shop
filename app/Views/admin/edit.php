@@ -551,9 +551,21 @@
                             required><?= $produk['deskripsi']['deskripsi']; ?></textarea>
                     </div>
                     <div class="field">
+                        <label class="label">English product name (optional)</label>
+                        <input class="inp" type="text" name="nama_en" maxlength="180" value="<?= esc($produk['deskripsi']['nama_en'] ?? '', 'attr'); ?>">
+                    </div>
+                    <div class="field">
                         <label class="label">Spesifikasi / Perawatan</label>
                         <textarea class="ta" name="perawatan"
                             required><?= $produk['deskripsi']['perawatan']; ?></textarea>
+                    </div>
+                    <div class="field">
+                        <label class="label">English description (optional)</label>
+                        <textarea class="ta" name="deskripsi_en" maxlength="3000"><?= esc($produk['deskripsi']['deskripsi_en'] ?? ''); ?></textarea>
+                    </div>
+                    <div class="field">
+                        <label class="label">English care / specifications (optional)</label>
+                        <textarea class="ta" name="perawatan_en" maxlength="3000"><?= esc($produk['deskripsi']['perawatan_en'] ?? ''); ?></textarea>
                     </div>
 
                     <div class="section-title">Penempatan</div>
@@ -901,9 +913,15 @@ function hapusSubvarian(varianNum, indexGambar, e) {
         // DESKRIPSI JSON
         const deskripsiText = document.querySelector('textarea[name="deskripsi_teks"]').value || '';
         const perawatanText = document.querySelector('textarea[name="perawatan"]').value || '';
+        const deskripsiEnText = document.querySelector('textarea[name="deskripsi_en"]').value || '';
+        const perawatanEnText = document.querySelector('textarea[name="perawatan_en"]').value || '';
+        const namaEnText = document.querySelector('input[name="nama_en"]').value || '';
         const deskripsiJSON = {
             deskripsi: deskripsiText,
             perawatan: perawatanText,
+            nama_en: namaEnText.trim().slice(0, 180),
+            deskripsi_en: deskripsiEnText,
+            perawatan_en: perawatanEnText,
             dimensi: {
                 paket: {
                     panjang: document.querySelector('input[name="panjang-paket"]').value,

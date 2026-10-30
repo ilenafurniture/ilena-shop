@@ -143,7 +143,7 @@ body.ilena-storefront .expend-hp {
     }
     body.ilena-storefront .ilena-utility-bar__inner {
         box-sizing: border-box; display: flex; width: 100%; max-width: 1440px; min-height: 38px;
-        align-items: center; justify-content: flex-start; margin: 0 auto; padding-inline: clamp(20px, 3vw, 42px);
+        align-items: center; justify-content: space-between; margin: 0 auto; padding-inline: clamp(20px, 3vw, 42px);
     }
     body.ilena-storefront .ilena-utility-bar__inner a {
         position: relative; display: inline-flex; min-height: 38px; align-items: center; line-height: 0;
@@ -163,10 +163,35 @@ body.ilena-storefront .expend-hp {
     }
     body.ilena-storefront .ilena-utility-bar__inner a:hover::after,
     body.ilena-storefront .ilena-utility-bar__inner a:focus-visible::after { transform: scaleX(1); }
+    body.ilena-storefront .ilena-language-switch {
+        display: inline-flex; align-items: center; gap: 9px; min-height: 38px;
+        color: rgba(255,255,255,.52); font-size: 11px; letter-spacing: .08em;
+    }
+    body.ilena-storefront .ilena-language-switch a {
+        display: inline-flex; min-height: 30px; align-items: center; color: rgba(255,255,255,.68);
+        font-weight: 600; text-decoration: none; transition: color .18s ease;
+    }
+    body.ilena-storefront .ilena-language-switch a::after { display: none; }
+    body.ilena-storefront .ilena-language-switch a:hover,
+    body.ilena-storefront .ilena-language-switch a:focus-visible,
+    body.ilena-storefront .ilena-language-switch a[aria-current="page"] { color: #ead6bc; }
+    body.ilena-storefront .ilena-language-switch a:focus-visible { outline: 2px solid #ead6bc; outline-offset: 2px; }
     body.ilena-storefront .ilena-topbar { display: block; }
     body.ilena-storefront .navbar-hp-atas,
     body.ilena-storefront .navbar-hp,
     body.ilena-storefront .expend-hp { display: none !important; }
+}
+body.ilena-storefront .ilena-mobile-language-switch {
+    display: flex; gap: 18px; padding: 14px 0; border-top: 1px solid rgba(255,255,255,.18);
+}
+body.ilena-storefront .ilena-mobile-language-switch a {
+    color: rgba(255,255,255,.72); font-size: 13px; text-decoration: none;
+}
+body.ilena-storefront .ilena-mobile-language-switch a[aria-current="page"] {
+    color: #ead6bc; font-weight: 700;
+}
+body.ilena-storefront .ilena-mobile-language-switch a:focus-visible {
+    outline: 2px solid #ead6bc; outline-offset: 3px;
 }
 @media (max-width: 600px) {
     body.ilena-storefront .ilena-topbar { display: none !important; }

@@ -200,7 +200,7 @@
     class="<?= $msgSandi ? 'd-flex' : 'd-none'; ?> justify-content-center align-items-center">
     <div class="p-4 bg-light modal-card">
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <h2>Ganti Sandi</h2>
+            <h2><?= lang('Store.changePassword'); ?></h2>
             <button type="button" class="btn-close-ghost" onclick="closeEditSandi()">
                 <i class="material-icons">close</i>
             </button>
@@ -212,27 +212,27 @@
         </div>
         <?php } ?>
 
-        <form action="/editsandi/order" method="post" novalidate>
+        <form action="<?= esc(ilena_store_path('/editsandi/order'), 'attr'); ?>" method="post" novalidate>
             <?= csrf_field(); ?>
             <div class="mb-2">
-                <label class="mb-1">Sandi saat ini</label>
+                <label class="mb-1"><?= lang('Store.currentPassword'); ?></label>
                 <input type="password" name="sandiLama" class="form-control" autocomplete="current-password" maxlength="72" required>
             </div>
             <div class="mb-2">
-                <label class="mb-1">Sandi baru Anda</label>
+                <label class="mb-1"><?= lang('Store.newPassword'); ?></label>
                 <input type="password" name="sandi" class="form-control" autocomplete="new-password" minlength="12" maxlength="72" required>
             </div>
             <div class="mb-3">
-                <label class="mb-1">Konfirmasi Sandi</label>
+                <label class="mb-1"><?= lang('Store.confirmPassword'); ?></label>
                 <input type="password" class="form-control" oninput="konfirmasiSandi(event)" required
                     name="sandiKonfirm">
                 <div class="invalid-feedback">
-                    Kata sandi tidak cocok
+                    <?= lang('Store.passwordMismatch'); ?>
                 </div>
             </div>
             <div class="d-flex justify-content-center gap-2">
-                <button type="submit" class="btn-default">Ubah</button>
-                <button type="button" class="btn-teks-aja" onclick="closeEditSandi()">Batal</button>
+                <button type="submit" class="btn-default"><?= lang('Store.update'); ?></button>
+                <button type="button" class="btn-teks-aja" onclick="closeEditSandi()"><?= lang('Store.cancel'); ?></button>
             </div>
         </form>
     </div>
@@ -242,7 +242,7 @@
     <!-- Kolom kanan (ringkasan akun) ditaruh duluan di DOM kecil? tetap: tidak ubah sistem -->
     <div class="tigapuluh-ke-seratus">
         <div class="card p-4 account-card">
-            <h2>Akun Saya</h2>
+            <h2><?= lang('Store.accountTitle'); ?></h2>
 
             <div class="account-row mt-2">
                 <p>Email</p>
@@ -250,16 +250,16 @@
             </div>
 
             <div class="account-row">
-                <p>Sandi</p>
-                <a class="btn-teks-aja" onclick="openGantiSandi()">Ganti Sandi</a>
+                <p><?= lang('Store.password'); ?></p>
+                <a class="btn-teks-aja" onclick="openGantiSandi()"><?= lang('Store.changePassword'); ?></a>
             </div>
 
             <span class="garis my-2"></span>
 
-            <a href="/account" class="mb-2 btn-default-abu w-100 text-center">Profile</a>
-            <a href="/order" class="mb-2 btn-default-abu w-100 text-center">Pesanan</a>
-            <form action="/logout" method="post">
-                <?= csrf_field(); ?><button type="submit" class="btn-default-merah w-100 text-center">Keluar</button>
+            <a href="<?= esc(ilena_store_path('/account'), 'attr'); ?>" class="mb-2 btn-default-abu w-100 text-center"><?= lang('Store.profileNav'); ?></a>
+            <a href="<?= esc(ilena_store_path('/order'), 'attr'); ?>" class="mb-2 btn-default-abu w-100 text-center"><?= lang('Store.ordersNav'); ?></a>
+            <form action="<?= esc(ilena_store_path('/logout'), 'attr'); ?>" method="post">
+                <?= csrf_field(); ?><button type="submit" class="btn-default-merah w-100 text-center"><?= lang('Store.logout'); ?></button>
             </form>
         </div>
     </div>
@@ -268,18 +268,18 @@
     <div style="flex:1;">
         <header class="ilena-order-heading">
             <div>
-                <p class="ilena-order-heading__eyebrow">AKUN <span>/</span> RIWAYAT TRANSAKSI</p>
-                <h1>Pesanan Saya</h1>
+                <p class="ilena-order-heading__eyebrow"><?= service('request')->getLocale() === 'en' ? 'ACCOUNT' : 'AKUN'; ?> <span>/</span> <?= lang('Store.transactionHistory'); ?></p>
+                <h1><?= lang('Store.myOrders'); ?></h1>
             </div>
-            <span class="ilena-order-heading__count"><?= count($pesanan); ?> pesanan</span>
+            <span class="ilena-order-heading__count"><?= count($pesanan); ?> <?= lang('Store.orderCount'); ?></span>
         </header>
 
         <?php if (empty($pesanan)) : ?>
         <section class="ilena-order-empty" aria-live="polite">
-            <p class="ilena-order-empty__eyebrow">RIWAYAT PESANAN</p>
-            <h2>Belum ada pesanan</h2>
-            <p>Pesanan yang Anda buat akan muncul di sini agar mudah dilacak dan ditinjau.</p>
-            <a href="/product">Jelajahi koleksi <span aria-hidden="true">↗</span></a>
+            <p class="ilena-order-empty__eyebrow"><?= lang('Store.orderHistory'); ?></p>
+            <h2><?= lang('Store.noOrders'); ?></h2>
+            <p><?= lang('Store.noOrdersBody'); ?></p>
+            <a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>"><?= lang('Store.exploreCollection'); ?> <span aria-hidden="true">↗</span></a>
         </section>
         <?php else : ?>
 
@@ -287,19 +287,19 @@
         <div style="overflow-x: auto;" class="show-block-ke-hide">
             <div class="container-table">
                 <div class="header-table">
-                    <div>ID Pesanan</div>
-                    <div>Tanggal</div>
-                    <div>Penerima</div>
-                    <div>Harga</div>
-                    <div>Status</div>
+                    <div><?= lang('Store.orderId'); ?></div>
+                    <div><?= lang('Store.date'); ?></div>
+                    <div><?= lang('Store.recipient'); ?></div>
+                    <div><?= lang('Store.price'); ?></div>
+                    <div><?= lang('Store.status'); ?></div>
                 </div>
 
                 <?php foreach ($pesanan as $ind_p => $p) { ?>
-                <div class="isi-table" onclick="openDetail(<?= $ind_p; ?>)" title="Lihat detail pesanan">
+                <div class="isi-table" onclick="openDetail(<?= $ind_p; ?>)" title="<?= esc(lang('Store.viewOrderDetails'), 'attr'); ?>">
                     <div class="text-truncate"><?= $p['id_midtrans']; ?></div>
                     <?php
                         $transactionTime = strtotime($p['data_mid']['transaction_time']);
-                        $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+                        $bulan = service('request')->getLocale() === 'en' ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] : ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
                         $tgl = date("d", $transactionTime) . " " . $bulan[(int)date("m", $transactionTime) - 1] . " " . date("Y H:i:s", $transactionTime);
                         ?>
                     <div><?= $tgl; ?></div>
@@ -317,7 +317,8 @@
                           elseif(strpos($s,'refund')!==false) $cls.='refund';
                           else $cls.='kadaluarsa';
                         ?>
-                        <span class="<?= $cls; ?>"><?= $p['status']; ?></span>
+                        <?php $statusLabel = in_array($s, ['proses','capture','settlement'], true) ? lang('Store.statusProcessing') : (in_array($s, ['menunggu pembayaran','pending'], true) ? lang('Store.statusPending') : (in_array($s, ['kadaluarsa','expire'], true) ? lang('Store.statusExpired') : (in_array($s, ['ditolak','deny','gagal','failure'], true) ? lang('Store.statusRejected') : (in_array($s, ['dibatalkan','cancel'], true) ? lang('Store.statusCancelled') : $p['status'])))); ?>
+                        <span class="<?= $cls; ?>"><?= esc($statusLabel); ?></span>
                     </div>
                 </div>
                 <?php } ?>
@@ -328,11 +329,11 @@
         <div style="overflow-x: auto;" class="hide-ke-show-block">
             <div class="container-table" style="width: 660px;">
                 <div class="header-table">
-                    <div>ID Pesanan</div>
-                    <div>Tanggal</div>
-                    <div>Penerima</div>
-                    <div>Harga</div>
-                    <div>Status</div>
+                    <div><?= lang('Store.orderId'); ?></div>
+                    <div><?= lang('Store.date'); ?></div>
+                    <div><?= lang('Store.recipient'); ?></div>
+                    <div><?= lang('Store.price'); ?></div>
+                    <div><?= lang('Store.status'); ?></div>
                 </div>
 
                 <?php foreach ($pesanan as $ind_p => $p) { ?>
@@ -340,7 +341,7 @@
                     <div class="text-truncate"><?= $p['id_midtrans']; ?></div>
                     <?php
                         $transactionTime = strtotime($p['data_mid']['transaction_time']);
-                        $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+                        $bulan = service('request')->getLocale() === 'en' ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] : ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
                         $tgl = date("d", $transactionTime) . " " . $bulan[(int)date("m", $transactionTime) - 1] . " " . date("Y H:i:s", $transactionTime);
                         ?>
                     <div><?= $tgl; ?></div>
@@ -358,7 +359,8 @@
                           elseif(strpos($s,'refund')!==false) $cls.='refund';
                           else $cls.='kadaluarsa';
                         ?>
-                        <span class="<?= $cls; ?>"><?= $p['status']; ?></span>
+                        <?php $statusLabel = in_array($s, ['proses','capture','settlement'], true) ? lang('Store.statusProcessing') : (in_array($s, ['menunggu pembayaran','pending'], true) ? lang('Store.statusPending') : (in_array($s, ['kadaluarsa','expire'], true) ? lang('Store.statusExpired') : (in_array($s, ['ditolak','deny','gagal','failure'], true) ? lang('Store.statusRejected') : (in_array($s, ['dibatalkan','cancel'], true) ? lang('Store.statusCancelled') : $p['status'])))); ?>
+                        <span class="<?= $cls; ?>"><?= esc($statusLabel); ?></span>
                     </div>
                 </div>
                 <?php } ?>
@@ -371,51 +373,50 @@
 <!-- Offcanvas detail -->
 <div class="container-offcanvas" style="z-index: 100;">
     <div class="d-flex justify-content-end">
-        <button class="btn btn-light btn-close-ghost" onclick="closeDetail()" title="Tutup">
+        <button class="btn btn-light btn-close-ghost" onclick="closeDetail()" title="<?= esc(lang('Store.close'), 'attr'); ?>">
             <i class="material-icons">close</i>
         </button>
     </div>
 
     <div class="mt-2 d-flex justify-content-between pb-1">
-        <p class="m-0 w-50" style="letter-spacing: -1px;">ID Pesanan</p>
+        <p class="m-0 w-50" style="letter-spacing: -1px;"><?= lang('Store.orderId'); ?></p>
         <p class="w-50 fw-bold m-0 text-end" style="letter-spacing: -1px;" id="id">#ILENA00001</p>
     </div>
     <div class="mt-2 d-flex justify-content-between pb-1">
-        <p class="w-50 m-0" style="letter-spacing: -1px;">Nama Penerima</p>
+        <p class="w-50 m-0" style="letter-spacing: -1px;"><?= lang('Store.recipientName'); ?></p>
         <p class="w-50 fw-bold m-0 text-end" style="letter-spacing: -1px;" id="nama">—</p>
     </div>
     <div class="mt-2 d-flex justify-content-between pb-1">
-        <p class="w-50 m-0" style="letter-spacing: -1px;">Nohp Penerima</p>
+        <p class="w-50 m-0" style="letter-spacing: -1px;"><?= lang('Store.recipientPhone'); ?></p>
         <p class="w-50 fw-bold m-0 text-end" style="letter-spacing: -1px;" id="nohp">—</p>
     </div>
     <div class="mt-2 d-flex justify-content-between pb-1">
-        <p class="w-50 m-0" style="letter-spacing: -1px;">Alamat Penerima</p>
+        <p class="w-50 m-0" style="letter-spacing: -1px;"><?= lang('Store.recipientAddress'); ?></p>
         <p class="w-50 fw-bold m-0 text-end" style="letter-spacing: -1px;" id="alamat">—</p>
     </div>
     <div class="mt-2 d-flex justify-content-between pb-1">
-        <p class="w-50 m-0" style="letter-spacing: -1px;">Email Pemesan</p>
+        <p class="w-50 m-0" style="letter-spacing: -1px;"><?= lang('Store.orderEmail'); ?></p>
         <p class="w-50 fw-bold m-0 text-end" style="letter-spacing: -1px;" id="email">—</p>
     </div>
 
-    <h3 class="my-3">Produk</h3>
+    <h3 class="my-3"><?= lang('Store.products'); ?></h3>
     <div id="item">
         <div class="d-flex mb-1 border-bottom pb-1">
-            <p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;">Nama</p>
-            <p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;">Jumlah</p>
-            <p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;">Harga</p>
+            <p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;"><?= lang('Store.name'); ?></p>
+            <p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;"><?= lang('Store.quantity'); ?></p>
+            <p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;"><?= lang('Store.price'); ?></p>
         </div>
     </div>
 
     <span class="garis my-4"></span>
 
     <div class="d-flex justify-content-center gap-2">
-        <a href="" class="btn-default" id="btn-invoice">Invoice</a>
-        <a href="" class="btn-default" id="btn-detail">Detail Pemesanan</a>
+        <a href="" class="btn-default" id="btn-invoice"><?= lang('Store.invoice'); ?></a>
+        <a href="" class="btn-default" id="btn-detail"><?= lang('Store.orderDetails'); ?></a>
     </div>
 
     <div class="my-3 text-center" style="color:var(--muted); font-size:.85rem;">
-        Tekan <b>Esc</b> atau tombol <i class="material-icons" style="font-size:1rem;vertical-align:-2px;">close</i>
-        untuk menutup.
+        <?= lang('Store.closeHint'); ?>
     </div>
 </div>
 
@@ -433,6 +434,7 @@ const itemElm = document.getElementById("item");
 const containerOffcanvasElm = document.querySelector(".container-offcanvas");
 const btnInvoiceElm = document.getElementById('btn-invoice');
 const btnDetailElm = document.getElementById('btn-detail');
+const storeRoutePrefix = <?= json_encode(service('request')->getLocale() === 'en' ? '/en' : ''); ?>;
 
 const sandiElm = document.querySelector('input[name="sandi"]');
 const editSandiElm = document.getElementById('edit-sandi');
@@ -483,9 +485,9 @@ function openDetail(indP) {
     // header
     itemElm.innerHTML =
         '<div class="d-flex mb-1 border-bottom pb-1">' +
-        '<p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;">Nama</p>' +
-        '<p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;">Jumlah</p>' +
-        '<p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;">Harga</p>' +
+        '<p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;"><?= esc(lang('Store.name'), 'js'); ?></p>' +
+        '<p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;"><?= esc(lang('Store.quantity'), 'js'); ?></p>' +
+        '<p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;"><?= esc(lang('Store.price'), 'js'); ?></p>' +
         '</div>';
 
     (p.items || []).forEach(el => {
@@ -503,8 +505,8 @@ function openDetail(indP) {
         }
     });
 
-    btnInvoiceElm.href = '/invoice/' + p.id_midtrans;
-    btnDetailElm.href = '/orderdetail/' + (String(p.status || '').toLowerCase()) + '?idorder=' + p.id_midtrans;
+    btnInvoiceElm.href = storeRoutePrefix + '/invoice/' + p.id_midtrans;
+    btnDetailElm.href = storeRoutePrefix + '/orderdetail/' + (String(p.status || '').toLowerCase()) + '?idorder=' + p.id_midtrans;
 
     containerOffcanvasElm.classList.add("show");
 }

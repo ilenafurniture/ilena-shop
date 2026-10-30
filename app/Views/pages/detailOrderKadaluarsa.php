@@ -1,4 +1,5 @@
 <?php
+$isEnglish = service('request')->getLocale() === 'en';
 // Pastikan id_order ada dalam URL
 $id_order = (string)(service('request')->getGet('idorder') ?? '');
 $pemesananSelectedArr = array_filter($pemesananAll, function ($p) use ($id_order) {
@@ -327,8 +328,8 @@ foreach ($items as $it) {
 </style>
 
 <div class="order-expired">
-    <h1 class="title">Pesanan Kedaluwarsa</h1>
-    <p class="subtitle">Waktu pembayaran untuk pesanan ini sudah berakhir.</p>
+    <h1 class="title"><?= $isEnglish ? 'Expired Order' : 'Pesanan Kedaluwarsa'; ?></h1>
+    <p class="subtitle"><?= $isEnglish ? 'The payment period for this order has ended.' : 'Waktu pembayaran untuk pesanan ini sudah berakhir.'; ?></p>
 
     <!-- Bar: ID + status + copy -->
     <div class="bar">
@@ -337,11 +338,11 @@ foreach ($items as $it) {
                 <i class="material-icons" style="font-size:16px;">receipt_long</i>
                 ID: <b><?= $pemesananSelected['id_midtrans']; ?></b>
             </span>
-            <span class="badge-expired">Kedaluwarsa</span>
+            <span class="badge-expired"><?= $isEnglish ? 'Expired' : 'Kedaluwarsa'; ?></span>
         </div>
         <button class="copy-btn" onclick="copytext('<?= $pemesananSelected['id_midtrans']; ?>')"
-            title="Salin ID Pesanan">
-            <i class="material-icons" style="font-size:16px;">content_copy</i> Salin
+            title="<?= $isEnglish ? 'Copy order ID' : 'Salin ID Pesanan'; ?>">
+            <i class="material-icons" style="font-size:16px;">content_copy</i> <?= $isEnglish ? 'Copy' : 'Salin'; ?>
         </button>
     </div>
 
@@ -349,11 +350,11 @@ foreach ($items as $it) {
         <!-- Ringkasan 2 kolom -->
         <div class="grid">
             <div>
-                <p class="label m-0">Jumlah Tagihan</p>
+                <p class="label m-0"><?= $isEnglish ? 'Amount Due' : 'Jumlah Tagihan'; ?></p>
                 <p class="num m-0">Rp <?= number_format($dataMid['gross_amount'], 0, ',', '.'); ?></p>
             </div>
             <div>
-                <p class="label m-0">Waktu Kedaluwarsa</p>
+                <p class="label m-0"><?= $isEnglish ? 'Expiration Time' : 'Waktu Kedaluwarsa'; ?></p>
                 <p class="text m-0"><b><?= $waktuExpireFix; ?> WIB</b></p>
             </div>
         </div>
@@ -361,11 +362,11 @@ foreach ($items as $it) {
         <hr class="hr">
 
         <div>
-            <p class="text m-0"><b>Rincian Pembayaran</b></p>
+            <p class="text m-0"><b><?= $isEnglish ? 'Payment Breakdown' : 'Rincian Pembayaran'; ?></b></p>
             <div class="list-line"><span class="muted">Subtotal</span><span>Rp
                     <?= number_format($subtotal, 0, ',', '.'); ?></span></div>
             <?php if ($diskonVoucher > 0): ?>
-            <div class="list-line"><span class="muted">Diskon Voucher</span><span>- Rp
+            <div class="list-line"><span class="muted"><?= $isEnglish ? 'Voucher Discount' : 'Diskon Voucher'; ?></span><span>- Rp
                     <?= number_format($diskonVoucher, 0, ',', '.'); ?></span></div>
             <?php endif; ?>
             <?php if ($diskonFlash > 0): ?>
@@ -373,14 +374,14 @@ foreach ($items as $it) {
                     <?= number_format($diskonFlash, 0, ',', '.'); ?></span></div>
             <?php endif; ?>
             <?php if ($biayaOngkir > 0): ?>
-            <div class="list-line"><span class="muted">Biaya Ongkir</span><span>Rp
+            <div class="list-line"><span class="muted"><?= $isEnglish ? 'Shipping Fee' : 'Biaya Ongkir'; ?></span><span>Rp
                     <?= number_format($biayaOngkir, 0, ',', '.'); ?></span></div>
             <?php endif; ?>
             <?php if ($biayaAdmin > 0): ?>
-            <div class="list-line"><span class="muted">Biaya Admin Pembayaran</span><span>Rp
+            <div class="list-line"><span class="muted"><?= $isEnglish ? 'Payment Admin Fee' : 'Biaya Admin Pembayaran'; ?></span><span>Rp
                     <?= number_format($biayaAdmin, 0, ',', '.'); ?></span></div>
             <?php endif; ?>
-            <div class="list-line total"><span>Total Tagihan</span><span>Rp
+            <div class="list-line total"><span><?= $isEnglish ? 'Total Due' : 'Total Tagihan'; ?></span><span>Rp
                     <?= number_format($dataMid['gross_amount'], 0, ',', '.'); ?></span></div>
         </div>
 
@@ -391,10 +392,10 @@ foreach ($items as $it) {
             <div class="card pad">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;">
                     <div>
-                        <p class="text m-0"><b>Metode Pembayaran</b></p>
-                        <p class="muted m-0">Nomor/QR di bawah sudah tidak aktif.</p>
+                        <p class="text m-0"><b><?= $isEnglish ? 'Payment Method' : 'Metode Pembayaran'; ?></b></p>
+                        <p class="muted m-0"><?= $isEnglish ? 'The number/QR below is no longer active.' : 'Nomor/QR di bawah sudah tidak aktif.'; ?></p>
                     </div>
-                    <span class="badge-expired">Tidak Aktif</span>
+                    <span class="badge-expired"><?= $isEnglish ? 'Inactive' : 'Tidak Aktif'; ?></span>
                 </div>
                 <img class="method-logo dim" src="/img/pembayaran/<?= $bank; ?>.webp" alt="<?= $bank; ?>">
                 <?php if ($bank === 'mandiri' && !empty($biller_code)): ?>
@@ -403,7 +404,7 @@ foreach ($items as $it) {
                         <div class="k">Biller Code</div>
                         <div class="v"><?= $biller_code; ?></div>
                     </div>
-                    <button class="copy-btn" onclick="copytext('<?= $biller_code; ?>')" title="Salin Biller Code">
+                    <button class="copy-btn" onclick="copytext('<?= $biller_code; ?>')" title="<?= $isEnglish ? 'Copy Biller Code' : 'Salin Biller Code'; ?>">
                         <i class="material-icons" style="font-size:16px;">content_copy</i>
                     </button>
                 </div>
@@ -412,26 +413,27 @@ foreach ($items as $it) {
                 <div class="kvs dim" style="margin-top:6px;">
                     <div>
                         <div class="k">
-                            <?= ($bank === 'toko' || $bank === 'market') ? 'Keterangan' : 'Virtual Account'; ?></div>
+                            <?= ($bank === 'toko' || $bank === 'market') ? ($isEnglish ? 'Details' : 'Keterangan') : 'Virtual Account'; ?></div>
                         <div class="v"><?= $va_number; ?></div>
                     </div>
                     <?php if($bank !== 'toko' && $bank !== 'market'): ?>
-                    <button class="copy-btn" onclick="copytext('<?= $va_number; ?>')" title="Salin">
+                    <button class="copy-btn" onclick="copytext('<?= $va_number; ?>')" title="<?= $isEnglish ? 'Copy' : 'Salin'; ?>">
                         <i class="material-icons" style="font-size:16px;">content_copy</i>
                     </button>
                     <?php endif; ?>
                 </div>
                 <?php else: ?>
-                <p class="muted m-0 dim" style="margin-top:6px;">Tidak ada nomor yang ditampilkan untuk metode ini.</p>
+                <p class="muted m-0 dim" style="margin-top:6px;"><?= $isEnglish ? 'No number is available for this payment method.' : 'Tidak ada nomor yang ditampilkan untuk metode ini.'; ?></p>
                 <?php endif; ?>
             </div>
 
             <!-- Petunjuk (tetap ditampilkan jika ingin melakukan pembayaran baru) -->
             <div class="card pad">
-                <p class="text m-0"><b>Petunjuk Pembayaran</b></p>
-                <p class="muted m-0">Gunakan panduan berikut bila membuat pembayaran baru.</p>
+                <p class="text m-0"><b><?= $isEnglish ? 'Payment Instructions' : 'Petunjuk Pembayaran'; ?></b></p>
+                <p class="muted m-0"><?= $isEnglish ? 'Use these instructions if you place a new order.' : 'Gunakan panduan berikut bila membuat pembayaran baru.'; ?></p>
                 <div class="accordion accordion-flush mt-2" id="accordionFlushExample">
-                    <?php foreach ($carapembayaranSelected as $ind_c => $c) { ?>
+                    <?php foreach ($carapembayaranSelected as $ind_c => $c) {
+                    $c = ilena_localize_payment_guide($c, $isEnglish ? 'en' : 'id'); ?>
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed fw-semibold" type="button"
@@ -456,21 +458,21 @@ foreach ($items as $it) {
 
         <!-- Catatan & Aksi -->
         <div class="note">
-            Nomor pembayaran pada pesanan ini sudah kedaluwarsa. Jika kamu ingin melanjutkan, silakan buat pesanan baru.
-            Jika kamu sudah membayar sebelumnya, status akan diperbarui otomatis setelah diverifikasi.
+            <?= $isEnglish ? 'The payment number for this order has expired. Place a new order if you wish to continue.' : 'Nomor pembayaran pada pesanan ini sudah kedaluwarsa. Jika kamu ingin melanjutkan, silakan buat pesanan baru.'; ?>
+            <?= $isEnglish ? 'If you already paid, the status will update automatically after verification.' : 'Jika kamu sudah membayar sebelumnya, status akan diperbarui otomatis setelah diverifikasi.'; ?>
         </div>
 
         <hr class="hr">
 
         <div class="actions">
-            <a href="/order" class="btn-order">Kembali ke Pesanan Saya</a>
-            <a href="/" class="btn-ghost">Belanja Lagi</a>
+            <a href="<?= ilena_store_path('/order'); ?>" class="btn-order"><?= $isEnglish ? 'Back to My Orders' : 'Kembali ke Pesanan Saya'; ?></a>
+            <a href="<?= ilena_store_path('/'); ?>" class="btn-ghost"><?= $isEnglish ? 'Continue Shopping' : 'Belanja Lagi'; ?></a>
         </div>
     </div>
 </div>
 
 <!-- Toast copy -->
-<div id="toastCopy" class="order-expired toast">Disalin</div>
+<div id="toastCopy" class="order-expired toast"><?= $isEnglish ? 'Copied' : 'Disalin'; ?></div>
 
 <?= $this->endSection(); ?>
 

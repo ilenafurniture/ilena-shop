@@ -1,5 +1,6 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
+<?php $isEnglish = service('request')->getLocale() === 'en'; ?>
 
 <?php
 // ====== helper kecil (tidak mengubah sistem) ======
@@ -207,9 +208,9 @@ $waktuStart = sprintf('%02d:%02d:%02d', floor($selisihDetik/3600), floor(($selis
 
 <div class="order-wait">
     <header class="order-wait__hero">
-        <p class="order-wait__eyebrow">PESANAN DIBUAT <span>/</span> MENUNGGU PEMBAYARAN</p>
-        <h1 class="title">Selesaikan pembayaran Anda</h1>
-        <p class="order-wait__description">Gunakan detail pembayaran berikut sebelum batas waktu berakhir.</p>
+        <p class="order-wait__eyebrow"><?= $isEnglish ? 'ORDER PLACED' : 'PESANAN DIBUAT'; ?> <span>/</span> <?= $isEnglish ? 'AWAITING PAYMENT' : 'MENUNGGU PEMBAYARAN'; ?></p>
+        <h1 class="title"><?= $isEnglish ? 'Complete your payment' : 'Selesaikan pembayaran Anda'; ?></h1>
+        <p class="order-wait__description"><?= $isEnglish ? 'Use the payment details below before they expire.' : 'Gunakan detail pembayaran berikut sebelum batas waktu berakhir.'; ?></p>
     </header>
 
     <!-- Bar ID Pesanan -->
@@ -218,8 +219,8 @@ $waktuStart = sprintf('%02d:%02d:%02d', floor($selisihDetik/3600), floor(($selis
             <i class="material-icons" style="font-size:16px;">receipt_long</i>
             ID: <b><?= $pemesanan['id_midtrans']; ?></b>
         </span>
-        <button class="copy-btn" onclick="copytext('<?= $pemesanan['id_midtrans']; ?>')" title="Salin ID Pesanan">
-            <i class="material-icons" style="font-size:16px;">content_copy</i> Salin
+        <button class="copy-btn" onclick="copytext('<?= $pemesanan['id_midtrans']; ?>')" title="<?= esc($isEnglish ? 'Copy order ID' : 'Salin ID Pesanan', 'attr'); ?>">
+            <i class="material-icons" style="font-size:16px;">content_copy</i> <?= $isEnglish ? 'Copy' : 'Salin'; ?>
         </button>
     </div>
 
@@ -229,11 +230,11 @@ $waktuStart = sprintf('%02d:%02d:%02d', floor($selisihDetik/3600), floor(($selis
             <!-- Kolom kiri: jumlah & timer -->
             <div class="card pad">
                 <div class="center">
-                    <p class="label m-0">Jumlah Tagihan</p>
+                    <p class="label m-0"><?= $isEnglish ? 'Amount due' : 'Jumlah Tagihan'; ?></p>
                     <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:4px;">
                         <p class="num-lg m-0">Rp <?= number_format($dataMid['gross_amount'], 0, ',', '.'); ?></p>
                         <button class="copy-btn" onclick="copytext('<?= (int)$dataMid['gross_amount']; ?>')"
-                            title="Salin nominal">
+                            title="<?= esc($isEnglish ? 'Copy amount' : 'Salin nominal', 'attr'); ?>">
                             <i class="material-icons" style="font-size:16px;">content_copy</i>
                         </button>
                     </div>
@@ -242,26 +243,26 @@ $waktuStart = sprintf('%02d:%02d:%02d', floor($selisihDetik/3600), floor(($selis
                 <div class="hr"></div>
 
                 <div class="center">
-                    <p class="label m-0">Waktu Pembayaran</p>
+                    <p class="label m-0"><?= $isEnglish ? 'Payment timer' : 'Waktu Pembayaran'; ?></p>
                     <p class="count waktu m-0" style="margin-top:4px;"><?= $waktuStart; ?></p>
-                    <p class="muted m-0" style="margin-top:2px;">Bayar sebelum: <?= $waktuExpireFix; ?> WIB</p>
+                    <p class="muted m-0" style="margin-top:2px;"><?= $isEnglish ? 'Pay before:' : 'Bayar sebelum:'; ?> <?= $waktuExpireFix; ?> WIB</p>
                 </div>
             </div>
 
             <!-- Kolom kanan: VA -->
             <div class="card pad">
-                <p class="label m-0 center">Nomor Virtual Account</p>
+                <p class="label m-0 center"><?= $isEnglish ? 'Virtual account number' : 'Nomor Virtual Account'; ?></p>
                 <img class="method-logo" src="/img/pembayaran/<?= $bank; ?>.webp" alt="<?= $bank; ?>">
                 <div class="kvs" style="margin-top:6px;">
                     <div>
                         <div class="k">Virtual Account</div>
                         <div class="v"><?= $va_number; ?></div>
                     </div>
-                    <button class="copy-btn" onclick="copytext('<?= $va_number; ?>')" title="Salin VA">
+                    <button class="copy-btn" onclick="copytext('<?= $va_number; ?>')" title="<?= esc($isEnglish ? 'Copy account number' : 'Salin VA', 'attr'); ?>">
                         <i class="material-icons" style="font-size:16px;">content_copy</i>
                     </button>
                 </div>
-                <p class="muted m-0 center" style="margin-top:6px;">Gunakan nomor di atas sesuai bank yang dipilih.</p>
+                <p class="muted m-0 center" style="margin-top:6px;"><?= $isEnglish ? 'Use the number above with the selected bank.' : 'Gunakan nomor di atas sesuai bank yang dipilih.'; ?></p>
             </div>
         </div>
 
@@ -269,12 +270,12 @@ $waktuStart = sprintf('%02d:%02d:%02d', floor($selisihDetik/3600), floor(($selis
 
         <!-- Produk yang dibeli (hanya item barang, sembunyikan voucher/ongkir/admin) -->
         <div class="card pad">
-            <p class="m-0" style="font-weight:700;">Produk yang dibeli</p>
+            <p class="m-0" style="font-weight:700;"><?= $isEnglish ? 'Items in your order' : 'Produk yang dibeli'; ?></p>
             <div class="mini mt-1">
                 <div class="head">
-                    <div class="center">Nama</div>
-                    <div class="center">Jumlah</div>
-                    <div class="center">Harga</div>
+                    <div class="center"><?= $isEnglish ? 'Item' : 'Nama'; ?></div>
+                    <div class="center"><?= $isEnglish ? 'Quantity' : 'Jumlah'; ?></div>
+                    <div class="center"><?= $isEnglish ? 'Price' : 'Harga'; ?></div>
                 </div>
                 <div class="scroll">
                     <?php foreach ($items as $i):
@@ -294,9 +295,10 @@ $waktuStart = sprintf('%02d:%02d:%02d', floor($selisihDetik/3600), floor(($selis
         <div class="hr"></div>
 
         <!-- Petunjuk Pembayaran -->
-        <p class="m-0 center" style="font-weight:700;">Petunjuk Pembayaran</p>
+        <p class="m-0 center" style="font-weight:700;"><?= $isEnglish ? 'Payment instructions' : 'Petunjuk Pembayaran'; ?></p>
         <div class="accordion accordion-flush mt-1" id="accordionFlushExample">
-            <?php foreach ($caraPembayaran as $ind_c => $c) { ?>
+            <?php foreach ($caraPembayaran as $ind_c => $c) {
+                    $c = ilena_localize_payment_guide($c, $isEnglish ? 'en' : 'id'); ?>
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse"
@@ -372,7 +374,7 @@ function copytext(text) {
     }
     const toast = document.getElementById('toastCopy');
     if (!toast) return;
-    toast.textContent = 'Disalin';
+    toast.textContent = <?= json_encode($isEnglish ? 'Copied' : 'Disalin', JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 1200);
 }

@@ -51,15 +51,15 @@
   let greetingOpened = false;
   let greetingAutoHideTimer = null;
   const wawaAvatarPools = {
-    greeting: ['wawa1-sapaan', 'wawa2-sapaan'],
-    thinking: ['wawa1-berfikir', 'wawa2-berfikir'],
-    response: ['wawa1-respon', 'wawa1-mencatat', 'wawa2-solusi'],
-    note: ['wawa1-mencatat'],
-    unsure: ['wawa2-binggung'],
-    gratitude: ['wawa1-terimakasih'],
-    happy: ['wawa1-senang', 'wawa2-senang'],
-    solved: ['wawa2-sip'],
-    solution: ['wawa2-solusi'],
+    greeting: ['Friendly Furniture Welcome Sticker-8.webp', 'Cheerful Apron Avatar with Sparkles-2.webp'],
+    thinking: ['ChatGPT Image Oct 29, 2026, 06_42_06 PM-5.webp', 'Grateful Anime Apron Avatar-7.webp'],
+    response: ['Cheerful Winking Apron Avatar-6.webp', 'Winking Woman Giving Thumbs Up-3.webp'],
+    note: ['Grateful Anime Apron Avatar-7.webp'],
+    unsure: ['Grateful Anime Apron Avatar-7.webp', 'ChatGPT Image Oct 29, 2026, 06_42_06 PM-5.webp'],
+    gratitude: ['Joyful Thank-You Avatar with Hearts-4.webp', 'Grateful Anime Apron Avatar-7.webp'],
+    happy: ['Cheerful Apron Avatar with Sparkles-2.webp', 'Cheerful Winking Apron Avatar-6.webp', 'ChatGPT Image Oct 29, 2026, 06_42_06 PM-5.webp'],
+    solved: ['Winking Woman Giving Thumbs Up-3.webp', 'Joyful Thank-You Avatar with Hearts-4.webp'],
+    solution: ['Cheerful Winking Apron Avatar-6.webp', 'Winking Woman Giving Thumbs Up-3.webp'],
   };
   const wawaAvatarCursors = new Map();
   let pollTimer = null;
@@ -77,7 +77,7 @@
   function applyWawaAvatar(image, file) {
     if (!image || !file || !wawaImageBase || image.dataset.wawaFile === file) return;
     image.dataset.wawaFile = file;
-    image.src = wawaImageBase + encodeURIComponent(file) + '.webp';
+    image.src = wawaImageBase + encodeURIComponent(file);
   }
   function setWawaHeader(mood, file = '') {
     applyWawaAvatar(wawaHeaderAvatar, file || nextWawaAvatar(mood));

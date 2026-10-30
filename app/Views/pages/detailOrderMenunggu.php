@@ -1,15 +1,16 @@
 <?php
+$isEnglish = service('request')->getLocale() === 'en';
 $id_order = (string)(service('request')->getGet('idorder') ?? '');
 $pemesananSelectedArr = array_filter($pemesananAll, function ($p) use ($id_order) {
     return $p['id_midtrans'] == $id_order;
 });
 if (count($pemesananSelectedArr) <= 0) {
-    header('Location: /order');
+    header('Location: ' . ilena_store_path('/order'));
     die();
 }
 $pemesananSelected = array_values($pemesananSelectedArr)[0];
 if (in_array($pemesananSelected['status'], $statusSelain)) {
-    header('Location: ' . '/orderdetail/' . strtolower($pemesananSelected['status']) . '?idorder=' . $id_order . '&access_token=' . rawurlencode((string)($_GET['access_token'] ?? '')));
+    header('Location: ' . ilena_store_path('/orderdetail/' . strtolower($pemesananSelected['status'])) . '?idorder=' . rawurlencode($id_order) . '&access_token=' . rawurlencode((string)($_GET['access_token'] ?? '')));
     die();
 }
 
@@ -63,7 +64,7 @@ $waktuExpire = strtotime($dataMid['expiry_time'] ?? '+60 minutes');
 $waktuCurr   = strtotime("+7 Hours");
 $waktuSelisih = $waktuExpire - $waktuCurr;
 $waktu = date("H:i:s", $waktuSelisih);
-$bulan = $bulan ?? ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
+$bulan = $bulan ?? ($isEnglish ? ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] : ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des']);
 $waktuExpireFix = date("d", $waktuExpire) . " " . $bulan[(int)date("m", $waktuExpire) - 1] . " " . date("Y H:i:s", $waktuExpire);
 
 /* === Breakdown pembayaran dari $items === */
@@ -87,9 +88,9 @@ foreach ($items as $it) {
     }
 }
 $grossAmount = (int)($dataMid['gross_amount'] ?? ($subtotal - $diskonVoucher - $diskonFlash + $biayaAdmin));
-$statusText = $pemesananSelected['status'] ?? 'Menunggu Pembayaran';
+$statusText = $isEnglish ? 'Awaiting Payment' : ($pemesananSelected['status'] ?? 'Menunggu Pembayaran');
 
-/* === FILTER: hanya produk fisik untuk tabel Ringkasan Pesanan === */
+/* === FILTER: hanya produk fisik untuk tabel <?= $isEnglish ? 'Order Summary' : 'Ringkasan Pesanan'; ?> === */
 $excludeNames = ['voucher','flash sale','biaya admin','biaya ongkir'];
 $showItems = array_values(array_filter($items, function($it) use ($excludeNames) {
     $nm = strtolower($it['name']);
@@ -366,9 +367,9 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
 
 <div class="order-simple">
     <header class="ilena-order-detail-heading">
-        <p class="ilena-order-detail-heading__eyebrow">DETAIL PESANAN <span>/</span> PEMBAYARAN</p>
-        <h1>Menunggu pembayaran</h1>
-        <p class="ilena-order-detail-heading__description">Selesaikan pembayaran sebelum batas waktu agar pesanan dapat segera diproses.</p>
+        <p class="ilena-order-detail-heading__eyebrow"><?= $isEnglish ? 'ORDER DETAILS <span>/</span> PAYMENT' : 'DETAIL PESANAN <span>/</span> PEMBAYARAN'; ?></p>
+        <h1><?= $isEnglish ? 'Awaiting payment' : 'Menunggu pembayaran'; ?></h1>
+        <p class="ilena-order-detail-heading__description"><?= $isEnglish ? 'Complete payment before the deadline so we can process your order.' : 'Selesaikan pembayaran sebelum batas waktu agar pesanan dapat segera diproses.'; ?></p>
     </header>
     <!-- Header: ID & Status -->
     <div class="between" style="margin-bottom:10px;">
@@ -378,48 +379,48 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
             <span class="pill"><?= $statusText; ?></span>
         </div>
         <button class="copy-btn" onclick="copytext('<?= $pemesananSelected['id_midtrans']; ?>')"
-            title="Salin ID Pesanan">
-            <i class="material-icons" style="font-size:16px;">content_copy</i> Salin
+            title="<?= $isEnglish ? 'Copy order ID' : 'Salin ID Pesanan'; ?>">
+            <i class="material-icons" style="font-size:16px;">content_copy</i> <?= $isEnglish ? 'Copy' : 'Salin'; ?>
         </button>
     </div>
 
     <div class="card pad">
         <?php if (empty($dataMid['transaction_id'])): ?>
-            <p class="pemberitahuan" role="status">Konfirmasi penyedia pembayaran sedang diperiksa. Jangan membuat pembayaran kedua; gunakan tombol cek status atau hubungi Customer Care dengan ID pesanan ini.</p>
+            <p class="pemberitahuan" role="status"><?= $isEnglish ? 'The payment provider is still confirming this transaction. Please do not pay again. Check the status or contact Customer Care with this order ID.' : 'Konfirmasi penyedia pembayaran sedang diperiksa. Jangan membuat pembayaran kedua; gunakan tombol cek status atau hubungi Customer Care dengan ID pesanan ini.'; ?></p>
         <?php endif; ?>
         <!-- Ringkasan singkat -->
         <div class="grid pad" style="padding-top:0;">
             <div class="center">
-                <p class="eyebrow m-0">Total Tagihan</p>
+                <p class="eyebrow m-0"><?= $isEnglish ? 'Amount Due' : 'Total Tagihan'; ?></p>
                 <div class="row-center" style="margin-top:4px;">
                     <p class="num-lg m-0">Rp <?= number_format($grossAmount, 0, ',', '.'); ?></p>
-                    <button class="copy-btn" onclick="copytext('<?= (int)$grossAmount; ?>')" title="Salin nominal">
+                    <button class="copy-btn" onclick="copytext('<?= (int)$grossAmount; ?>')" title="<?= $isEnglish ? 'Copy amount' : 'Salin nominal'; ?>">
                         <i class="material-icons" style="font-size:16px;">content_copy</i>
                     </button>
                 </div>
             </div>
             <div class="center">
-                <p class="eyebrow m-0">Hitung Mundur</p>
+                <p class="eyebrow m-0"><?= $isEnglish ? 'Countdown' : 'Hitung Mundur'; ?></p>
                 <p class="num-md waktu m-0" style="margin-top:4px;"><?= $waktu; ?></p>
-                <p class="muted m-0" style="margin-top:2px;">Batas: <?= $waktuExpireFix; ?> WIB</p>
+                <p class="muted m-0" style="margin-top:2px;"><?= $isEnglish ? 'Deadline:' : 'Batas:'; ?> <?= $waktuExpireFix; ?> WIB</p>
             </div>
         </div>
 
         <div id="expiredNote" class="muted d-none center" style="margin-top:6px;">
-            Waktu pembayaran habis. Jika sudah transfer, status akan ter-update otomatis. Kamu bisa cek di menu
-            <a href="/order">Pesanan</a>.
+            <?= $isEnglish ? 'The payment window has expired. If you have paid, the status will update automatically. Check your' : 'Waktu pembayaran habis. Jika sudah transfer, status akan ter-update otomatis. Kamu bisa cek di menu'; ?>
+            <a href="<?= ilena_store_path('/order'); ?>"><?= $isEnglish ? 'Orders' : 'Pesanan'; ?></a>.
         </div>
 
         <hr class="hr">
 
         <!-- Dua kolom: Metode & Ringkasan -->
         <div class="grid pad" style="padding-top:0;">
-            <!-- Metode Pembayaran -->
+            <!-- <?= $isEnglish ? 'Payment Method' : 'Metode Pembayaran'; ?> -->
             <div class="card pad">
                 <div class="between" style="align-items:flex-start;">
                     <div>
-                        <p class="title">Metode Pembayaran</p>
-                        <p class="muted m-0">Gunakan info berikut untuk menyelesaikan pembayaran.</p>
+                        <p class="title"><?= $isEnglish ? 'Payment Method' : 'Metode Pembayaran'; ?></p>
+                        <p class="muted m-0"><?= $isEnglish ? 'Use the details below to complete your payment.' : 'Gunakan info berikut untuk menyelesaikan pembayaran.'; ?></p>
                     </div>
                     <span class="pill"><?= strtoupper($bank); ?></span>
                 </div>
@@ -428,7 +429,7 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
                 <?php if ($bank === 'qris'): ?>
                 <div class="center">
                     <img class="qris" src="<?= $va_number; ?>" alt="QRIS">
-                    <p class="muted m-0">Scan QR via aplikasi pembayaran yang mendukung QRIS.</p>
+                    <p class="muted m-0"><?= $isEnglish ? 'Scan this QR with a payment app that supports QRIS.' : 'Scan QR via aplikasi pembayaran yang mendukung QRIS.'; ?></p>
                 </div>
 
                 <?php elseif ($bank === 'mandiri' && !empty($biller_code)): ?>
@@ -437,7 +438,7 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
                         <div class="k">Biller Code</div>
                         <div class="v"><?= $biller_code; ?></div>
                     </div>
-                    <button class="copy-btn" onclick="copytext('<?= $biller_code; ?>')" title="Salin Biller Code">
+                    <button class="copy-btn" onclick="copytext('<?= $biller_code; ?>')" title="<?= $isEnglish ? 'Copy Biller Code' : 'Salin Biller Code'; ?>">
                         <i class="material-icons" style="font-size:16px;">content_copy</i></button>
                 </div>
                 <div class="kvs" style="margin-top:6px;">
@@ -445,40 +446,39 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
                         <div class="k">Virtual Account</div>
                         <div class="v"><?= $va_number; ?></div>
                     </div>
-                    <button class="copy-btn" onclick="copytext('<?= $va_number; ?>')" title="Salin VA">
+                    <button class="copy-btn" onclick="copytext('<?= $va_number; ?>')" title="<?= $isEnglish ? 'Copy VA' : 'Salin VA'; ?>">
                         <i class="material-icons" style="font-size:16px;">content_copy</i></button>
                 </div>
                 <p class="muted m-0" style="margin-top:6px;">Masukkan Biller Code & VA saat bayar via ATM/MBanking
                     Mandiri.</p>
 
                 <?php elseif ($bank === 'card'): ?>
-                <p class="muted m-0">Pembayaran kartu diproses otomatis. Jika status belum berubah, tunggu beberapa saat
-                    atau lihat panduan di bawah.</p>
+                <p class="muted m-0"><?= $isEnglish ? 'Card payments are processed automatically. If the status has not changed, wait a moment or see the guide below.' : 'Pembayaran kartu diproses otomatis. Jika status belum berubah, tunggu beberapa saat atau lihat panduan di bawah.'; ?></p>
 
                 <?php else: ?>
                 <div class="kvs" style="margin-top:6px;">
                     <div>
                         <div class="k">
-                            <?= ($bank === 'toko' || $bank === 'market') ? 'Keterangan' : 'Virtual Account'; ?></div>
+                            <?= ($bank === 'toko' || $bank === 'market') ? ($isEnglish ? 'Details' : 'Keterangan') : 'Virtual Account'; ?></div>
                         <div class="v"><?= $va_number; ?></div>
                     </div>
                     <?php if(!empty($va_number) && $bank !== 'toko' && $bank !== 'market'): ?>
-                    <button class="copy-btn" onclick="copytext('<?= $va_number; ?>')" title="Salin VA">
+                    <button class="copy-btn" onclick="copytext('<?= $va_number; ?>')" title="<?= $isEnglish ? 'Copy VA' : 'Salin VA'; ?>">
                         <i class="material-icons" style="font-size:16px;">content_copy</i></button>
                     <?php endif; ?>
                 </div>
-                <p class="muted m-0" style="margin-top:6px;">Transfer sesuai metode bank yang dipilih.</p>
+                <p class="muted m-0" style="margin-top:6px;"><?= $isEnglish ? 'Transfer using the selected bank payment method.' : 'Transfer sesuai metode bank yang dipilih.'; ?></p>
                 <?php endif; ?>
             </div>
 
-            <!-- Ringkasan Pesanan & Pembayaran & Penerima -->
+            <!-- <?= $isEnglish ? 'Order Summary' : 'Ringkasan Pesanan'; ?> & Pembayaran & Penerima -->
             <div class="card pad">
-                <p class="title">Ringkasan Pesanan</p>
+                <p class="title"><?= $isEnglish ? 'Order Summary' : 'Ringkasan Pesanan'; ?></p>
                 <div class="table-mini mt-1">
                     <div class="head">
-                        <div class="center">Nama</div>
-                        <div class="center">Jumlah</div>
-                        <div class="center">Harga</div>
+                        <div class="center"><?= $isEnglish ? 'Item' : 'Nama'; ?></div>
+                        <div class="center"><?= $isEnglish ? 'Qty' : 'Jumlah'; ?></div>
+                        <div class="center"><?= $isEnglish ? 'Price' : 'Harga'; ?></div>
                     </div>
                     <div class="scroll">
                         <?php foreach ($showItems as $i) { ?>
@@ -493,15 +493,15 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
 
                 <hr class="hr">
 
-                <p class="title">Rincian Pembayaran</p>
+                <p class="title"><?= $isEnglish ? 'Payment Breakdown' : 'Rincian Pembayaran'; ?></p>
                 <div class="mt-1">
                     <div class="list-line">
-                        <span class="muted">Subtotal</span>
+                        <span class="muted"><?= $isEnglish ? 'Subtotal' : 'Subtotal'; ?></span>
                         <span><b>Rp <?= number_format($subtotal, 0, ',', '.'); ?></b></span>
                     </div>
                     <?php if ($diskonVoucher > 0): ?>
                     <div class="list-line">
-                        <span class="muted">Diskon Voucher</span>
+                        <span class="muted"><?= $isEnglish ? 'Voucher Discount' : 'Diskon Voucher'; ?></span>
                         <span>- Rp <?= number_format($diskonVoucher, 0, ',', '.'); ?></span>
                     </div>
                     <?php endif; ?>
@@ -513,31 +513,31 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
                     <?php endif; ?>
                     <?php if ($biayaOngkir > 0): ?>
                     <div class="list-line">
-                        <span class="muted">Biaya Ongkir</span>
+                        <span class="muted"><?= $isEnglish ? 'Shipping Fee' : 'Biaya Ongkir'; ?></span>
                         <span>Rp <?= number_format($biayaOngkir, 0, ',', '.'); ?></span>
                     </div>
                     <?php endif; ?>
                     <?php if ($biayaAdmin > 0): ?>
                     <div class="list-line">
-                        <span class="muted">Biaya Admin Pembayaran</span>
+                        <span class="muted"><?= $isEnglish ? 'Payment Admin Fee' : 'Biaya Admin Pembayaran'; ?></span>
                         <span>Rp <?= number_format($biayaAdmin, 0, ',', '.'); ?></span>
                     </div>
                     <?php endif; ?>
                     <div class="list-line total">
-                        <span>Total Bayar</span>
+                        <span><?= $isEnglish ? 'Total' : 'Total Bayar'; ?></span>
                         <span>Rp <?= number_format($grossAmount, 0, ',', '.'); ?></span>
                     </div>
                 </div>
 
                 <hr class="hr">
 
-                <p class="title">Info Penerima</p>
+                <p class="title"><?= $isEnglish ? 'Recipient Details' : 'Info Penerima'; ?></p>
                 <div class="mt-1">
                     <div class="kv"><span
-                            class="muted">Nama</span><span><b><?= $pemesananSelected['nama']; ?></b></span></div>
-                    <div class="kv"><span class="muted">No. HP</span><span><?= $pemesananSelected['nohp']; ?></span>
+                            class="muted"><?= $isEnglish ? 'Name' : 'Nama'; ?></span><span><b><?= $pemesananSelected['nama']; ?></b></span></div>
+                    <div class="kv"><span class="muted"><?= $isEnglish ? 'Phone' : 'No. HP'; ?></span><span><?= $pemesananSelected['nohp']; ?></span>
                     </div>
-                    <div class="kv"><span class="muted">Alamat</span><span><?= $pemesananSelected['alamat']; ?></span>
+                    <div class="kv"><span class="muted"><?= $isEnglish ? 'Address' : 'Alamat'; ?></span><span><?= $pemesananSelected['alamat']; ?></span>
                     </div>
                     <div class="kv"><span class="muted">Email</span><span><?= $pemesananSelected['email']; ?></span>
                     </div>
@@ -547,11 +547,12 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
 
         <hr class="hr">
 
-        <!-- Langkah Pembayaran -->
+        <!-- <?= $isEnglish ? 'Payment Instructions' : 'Langkah Pembayaran'; ?> -->
         <div class="pad" style="padding-top:0;">
-            <p class="title center">Langkah Pembayaran</p>
+            <p class="title center"><?= $isEnglish ? 'Payment Instructions' : 'Langkah Pembayaran'; ?></p>
             <div class="accordion accordion-flush mt-1" id="accordionFlushExample">
-                <?php foreach ($carapembayaranSelected as $ind_c => $c) { ?>
+                <?php foreach ($carapembayaranSelected as $ind_c => $c) {
+                    $c = ilena_localize_payment_guide($c, $isEnglish ? 'en' : 'id'); ?>
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse"
@@ -575,11 +576,11 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
 
         <!-- CTA -->
         <div class="pad cta-sticky" style="padding-top:0; display:grid; gap:8px;">
-            <a href="#" id="btnCekPembayaran" class="btn-default-merah">Saya sudah membayar</a>
-            <form method="post" action="/order/cancel/<?= rawurlencode($id_order); ?>?access_token=<?= rawurlencode($orderAccessToken ?? ''); ?>"
-                data-ilena-confirm="Batalkan pesanan ini? Jika pembayaran sudah berhasil, status tidak dapat dibatalkan dari sini." data-ilena-confirm-title="Batalkan pesanan">
+            <a href="#" id="btnCekPembayaran" class="btn-default-merah"><?= $isEnglish ? 'I have paid' : 'Saya sudah membayar'; ?></a>
+            <form method="post" action="<?= ilena_store_path('/order/cancel/' . rawurlencode($id_order)); ?>?access_token=<?= rawurlencode($orderAccessToken ?? ''); ?>"
+                data-ilena-confirm="<?= $isEnglish ? 'Cancel this order? If payment has succeeded, it cannot be cancelled here.' : 'Batalkan pesanan ini? Jika pembayaran sudah berhasil, status tidak dapat dibatalkan dari sini.'; ?>" data-ilena-confirm-title="<?= $isEnglish ? 'Cancel order' : 'Batalkan pesanan'; ?>">
                 <?= function_exists('csrf_field') ? csrf_field() : '' ?>
-                <button type="submit" class="btn btn-outline-secondary w-100" style="min-height:48px;">Batalkan pesanan</button>
+                <button type="submit" class="btn btn-outline-secondary w-100" style="min-height:48px;"><?= $isEnglish ? 'Cancel order' : 'Batalkan pesanan'; ?></button>
             </form>
             <?php if (!empty($orderActionMessage)): ?><p class="muted m-0" role="status"><?= esc($orderActionMessage); ?></p><?php endif; ?>
         </div>
@@ -587,7 +588,7 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
 </div>
 
 <!-- Toast copy -->
-<div id="toastCopy" class="order-simple toast">Disalin</div>
+<div id="toastCopy" class="order-simple toast"><?= $isEnglish ? 'Copied' : 'Disalin'; ?></div>
 
 <script>
 // Countdown stabil pakai epoch server → tidak reload loop
@@ -631,7 +632,7 @@ function copytext(text) {
     }
     const toast = document.getElementById('toastCopy');
     if (!toast) return;
-    toast.textContent = 'Disalin';
+    toast.textContent = <?= json_encode($isEnglish ? 'Copied' : 'Disalin'); ?>;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 1200);
 }
@@ -661,17 +662,17 @@ async function cekStatusPembayaran(manual = false) {
             return;
         }
         if (manual) {
-            showOrderToast('Pembayaran belum terkonfirmasi. Jika sudah transfer, tunggu notifikasi bank/Midtrans masuk.');
+            showOrderToast(<?= json_encode($isEnglish ? 'Payment is not confirmed yet. If you have paid, please wait for confirmation from your bank or Midtrans.' : 'Pembayaran belum terkonfirmasi. Jika sudah transfer, tunggu notifikasi bank/Midtrans masuk.'); ?>);
         }
     } catch (e) {
-        if (manual) showOrderToast('Status belum bisa dicek. Coba beberapa saat lagi.');
+        if (manual) showOrderToast(<?= json_encode($isEnglish ? 'The status cannot be checked right now. Please try again shortly.' : 'Status belum bisa dicek. Coba beberapa saat lagi.'); ?>);
     }
 }
 
 if (btnCekPembayaran) {
     btnCekPembayaran.addEventListener('click', function(e) {
         e.preventDefault();
-        showOrderToast('Mengecek status pembayaran...');
+        showOrderToast(<?= json_encode($isEnglish ? 'Checking payment status...' : 'Mengecek status pembayaran...'); ?>);
         cekStatusPembayaran(true);
     });
 }

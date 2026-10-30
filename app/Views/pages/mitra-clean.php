@@ -11,84 +11,85 @@ $partnerPerPage = (int) ($partnerPerPage ?? 10);
 $partnerFallbackImage = base_url('img/ilena-image-placeholder.png');
 $partnerFirst = $partnerTotal === 0 ? 0 : (($partnerPage - 1) * $partnerPerPage) + 1;
 $partnerLast = min($partnerPage * $partnerPerPage, $partnerTotal);
+$isEnglish = service('request')->getLocale() === 'en';
 ?>
 <main class="ilena-editorial ilena-partners" aria-labelledby="partners-title">
     <nav class="ilena-editorial__breadcrumb" aria-label="Breadcrumb">
-        <a href="/">Beranda</a><span aria-hidden="true">/</span><span aria-current="page">Mitra kami</span>
+        <a href="<?= esc(ilena_store_path('/'), 'attr'); ?>"><?= $isEnglish ? 'Home' : 'Beranda'; ?></a><span aria-hidden="true">/</span><span aria-current="page"><?= $isEnglish ? 'Our partners' : 'Mitra kami'; ?></span>
     </nav>
 
     <header class="ilena-editorial__hero ilena-partners__hero">
         <div class="ilena-partners__hero-copy">
-            <p class="ilena-editorial__eyebrow">Jaringan resmi Ilena</p>
-            <h1 id="partners-title">Lebih dekat<br>dengan Ilena.</h1>
-            <p class="ilena-editorial__intro">Temukan partner dan toko yang menyediakan produk Ilena. Cari berdasarkan nama, kota, atau alamat.</p>
-            <a class="ilena-editorial__text-link" href="#partner-directory">Jelajahi partner <span aria-hidden="true">↓</span></a>
+            <p class="ilena-editorial__eyebrow"><?= $isEnglish ? 'The Ilena partner network' : 'Jaringan resmi Ilena'; ?></p>
+            <h1 id="partners-title"><?= $isEnglish ? 'Closer to<br>Ilena.' : 'Lebih dekat<br>dengan Ilena.'; ?></h1>
+            <p class="ilena-editorial__intro"><?= $isEnglish ? 'Find partner stores that carry Ilena products. Search by store name, city, or address.' : 'Temukan partner dan toko yang menyediakan produk Ilena. Cari berdasarkan nama, kota, atau alamat.'; ?></p>
+            <a class="ilena-editorial__text-link" href="#partner-directory"><?= $isEnglish ? 'Explore partners' : 'Jelajahi partner'; ?> <span aria-hidden="true">↓</span></a>
         </div>
-        <aside class="ilena-partners__hero-note" aria-label="Ringkasan jaringan partner">
+        <aside class="ilena-partners__hero-note" aria-label="<?= esc($isEnglish ? 'Partner network overview' : 'Ringkasan jaringan partner', 'attr'); ?>">
             <span class="ilena-partners__hero-mark" aria-hidden="true">I</span>
-            <p class="ilena-editorial__eyebrow">Ruang untuk menemukan</p>
-            <p class="ilena-partners__hero-stat"><strong><?= number_format($partnerNetworkTotal, 0, ',', '.'); ?></strong><span>partner terdaftar</span></p>
-            <a href="#ilena-partner-map">Lihat jangkauan <span aria-hidden="true">↗</span></a>
+            <p class="ilena-editorial__eyebrow"><?= $isEnglish ? 'Find your nearest store' : 'Ruang untuk menemukan'; ?></p>
+            <p class="ilena-partners__hero-stat"><strong><?= number_format($partnerNetworkTotal, 0, ',', '.'); ?></strong><span><?= $isEnglish ? 'listed partners' : 'partner terdaftar'; ?></span></p>
+            <a href="#ilena-partner-map"><?= $isEnglish ? 'View the network' : 'Lihat jangkauan'; ?> <span aria-hidden="true">↗</span></a>
         </aside>
     </header>
 
     <section class="ilena-partners__map-section" aria-labelledby="partner-map-title">
         <div class="ilena-editorial__section-heading">
             <div>
-                <p class="ilena-editorial__eyebrow">Jangkauan toko</p>
-                <h2 id="partner-map-title">Temukan Ilena di sekitar Anda</h2>
+                <p class="ilena-editorial__eyebrow"><?= $isEnglish ? 'Store network' : 'Jangkauan toko'; ?></p>
+                <h2 id="partner-map-title"><?= $isEnglish ? 'Find Ilena near you' : 'Temukan Ilena di sekitar Anda'; ?></h2>
             </div>
-            <p class="ilena-partners__count"><strong><?= count($mapPartners ?? []); ?></strong> lokasi bertitik di peta</p>
+            <p class="ilena-partners__count"><strong><?= count($mapPartners ?? []); ?></strong> <?= $isEnglish ? 'locations on the map' : 'lokasi bertitik di peta'; ?></p>
         </div>
-        <div class="ilena-partners__map-tools" aria-label="Kontrol peta">
-            <p>Jelajahi lokasi dengan scroll, geser, atau cubit untuk zoom.</p>
+        <div class="ilena-partners__map-tools" aria-label="<?= esc($isEnglish ? 'Map controls' : 'Kontrol peta', 'attr'); ?>">
+            <p><?= $isEnglish ? 'Explore the map by scrolling, dragging, or pinching to zoom.' : 'Jelajahi lokasi dengan scroll, geser, atau cubit untuk zoom.'; ?></p>
             <div class="ilena-partners__map-buttons">
-                <button type="button" data-map-action="zoom-in" aria-label="Perbesar peta" disabled>＋</button>
-                <button type="button" data-map-action="zoom-out" aria-label="Perkecil peta" disabled>−</button>
-                <button type="button" data-map-action="fit" aria-label="Tampilkan semua partner" disabled>
+                <button type="button" data-map-action="zoom-in" aria-label="<?= esc($isEnglish ? 'Zoom in' : 'Perbesar peta', 'attr'); ?>" disabled>＋</button>
+                <button type="button" data-map-action="zoom-out" aria-label="<?= esc($isEnglish ? 'Zoom out' : 'Perkecil peta', 'attr'); ?>" disabled>−</button>
+                <button type="button" data-map-action="fit" aria-label="<?= esc($isEnglish ? 'Show all partners' : 'Tampilkan semua partner', 'attr'); ?>" disabled>
                     <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7V3h4M13 3h4v4M17 13v4h-4M7 17H3v-4M3 3l5 5m9-5-5 5m5 9-5-5m-9 5 5-5"/></svg>
-                    <span>Semua lokasi</span>
+                    <span><?= $isEnglish ? 'All locations' : 'Semua lokasi'; ?></span>
                 </button>
-                <button type="button" data-map-action="locate" aria-label="Cari partner terdekat dari lokasi saya" disabled>
+                <button type="button" data-map-action="locate" aria-label="<?= esc($isEnglish ? 'Find partners near my location' : 'Cari partner terdekat dari lokasi saya', 'attr'); ?>" disabled>
                     <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><circle cx="10" cy="10" r="2"/><path d="M10 1v3m0 12v3M1 10h3m12 0h3"/></svg>
-                    <span>Di dekat saya</span>
+                    <span><?= $isEnglish ? 'Near me' : 'Di dekat saya'; ?></span>
                 </button>
             </div>
         </div>
-        <div id="ilena-partner-map" class="ilena-partners__map" role="region" aria-label="Peta lokasi partner resmi Ilena" data-directory-url="<?= esc(site_url('partner'), 'attr'); ?>" data-partners="<?= esc(json_encode($mapPartners ?? [], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), 'attr'); ?>">
-            <p class="ilena-partners__map-status">Peta lokasi partner akan dimuat saat bagian ini terlihat.</p>
+        <div id="ilena-partner-map" class="ilena-partners__map" role="region" aria-label="<?= esc($isEnglish ? 'Map of official Ilena partners' : 'Peta lokasi partner resmi Ilena', 'attr'); ?>" data-directory-url="<?= esc(ilena_store_path('/partner'), 'attr'); ?>" data-partners="<?= esc(json_encode($mapPartners ?? [], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), 'attr'); ?>">
+            <p class="ilena-partners__map-status"><?= $isEnglish ? 'The partner map will load when this section is in view.' : 'Peta lokasi partner akan dimuat saat bagian ini terlihat.'; ?></p>
         </div>
-        <p class="ilena-partners__map-note" id="partner-map-feedback" aria-live="polite">Pilih penanda untuk melihat partner dan petunjuk arah. Peta dapat dijelajahi dengan mouse, keyboard, atau sentuhan.</p>
+        <p class="ilena-partners__map-note" id="partner-map-feedback" aria-live="polite"><?= $isEnglish ? 'Select a marker to view a partner and directions. Explore the map with a mouse, keyboard, or touch.' : 'Pilih penanda untuk melihat partner dan petunjuk arah. Peta dapat dijelajahi dengan mouse, keyboard, atau sentuhan.'; ?></p>
     </section>
 
     <section id="partner-directory" class="ilena-partners__directory" aria-labelledby="partner-directory-title">
         <div class="ilena-editorial__section-heading">
             <div>
-                <p class="ilena-editorial__eyebrow">Temukan lokasi</p>
-                <h2 id="partner-directory-title">Partner Ilena</h2>
+                <p class="ilena-editorial__eyebrow"><?= $isEnglish ? 'Find a location' : 'Temukan lokasi'; ?></p>
+                <h2 id="partner-directory-title"><?= $isEnglish ? 'Ilena partners' : 'Partner Ilena'; ?></h2>
             </div>
-            <p class="ilena-partners__count">Menampilkan <strong><?= $partnerFirst; ?>–<?= $partnerLast; ?></strong> dari <strong><?= $partnerTotal; ?></strong> partner</p>
+            <p class="ilena-partners__count"><?= $isEnglish ? 'Showing' : 'Menampilkan'; ?> <strong><?= $partnerFirst; ?>–<?= $partnerLast; ?></strong> <?= $isEnglish ? 'of' : 'dari'; ?> <strong><?= $partnerTotal; ?></strong> <?= $isEnglish ? 'partners' : 'partner'; ?></p>
         </div>
 
-        <form class="ilena-partners__search" action="/partner" method="get" role="search" data-search-index="<?= esc(json_encode($partnerSearchIndex ?? [], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT), 'attr'); ?>">
+        <form class="ilena-partners__search" action="<?= esc(ilena_store_path('/partner'), 'attr'); ?>" method="get" role="search" data-search-index="<?= esc(json_encode($partnerSearchIndex ?? [], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT), 'attr'); ?>">
             <div class="ilena-partners__search-main">
-                <label class="sr-only" for="partner-search">Cari partner berdasarkan nama, kota, atau alamat</label>
+                <label class="sr-only" for="partner-search"><?= $isEnglish ? lang('Store.partnerSearchLabel') : 'Cari partner berdasarkan nama, kota, atau alamat'; ?></label>
                 <span aria-hidden="true">⌕</span>
-                <input id="partner-search" name="q" type="search" value="<?= esc($partnerQuery, 'attr'); ?>" placeholder="Coba: toko mebel di Surabaya" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="partner-search-suggestions">
-                <div class="ilena-partners__suggestions" id="partner-search-suggestions" role="listbox" aria-label="Saran partner" hidden></div>
+                <input id="partner-search" name="q" type="search" value="<?= esc($partnerQuery, 'attr'); ?>" placeholder="<?= esc($isEnglish ? lang('Store.partnerSearchPlaceholder') : 'Coba: toko mebel di Surabaya', 'attr'); ?>" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="partner-search-suggestions">
+                <div class="ilena-partners__suggestions" id="partner-search-suggestions" role="listbox" aria-label="<?= esc($isEnglish ? lang('Store.partnerSearchSuggestions') : 'Saran partner', 'attr'); ?>" hidden></div>
             </div>
             <label class="ilena-partners__city-filter">
-                <span class="sr-only">Filter berdasarkan kota</span>
-                <select name="city" aria-label="Filter berdasarkan kota">
-                    <option value="">Semua kota</option>
+                <span class="sr-only"><?= $isEnglish ? 'Filter by city' : 'Filter berdasarkan kota'; ?></span>
+                <select name="city" aria-label="<?= esc($isEnglish ? 'Filter by city' : 'Filter berdasarkan kota', 'attr'); ?>">
+                    <option value=""><?= $isEnglish ? lang('Store.allCities') : 'Semua kota'; ?></option>
                     <?php foreach (($partnerCities ?? []) as $city): ?>
                         <option value="<?= esc($city, 'attr'); ?>" <?= ($partnerCityFilter ?? '') === $city ? 'selected' : ''; ?>><?= esc($city); ?></option>
                     <?php endforeach; ?>
                 </select>
             </label>
-            <button type="submit">Cari</button>
+            <button type="submit"><?= $isEnglish ? lang('Store.search') : 'Cari'; ?></button>
         </form>
-        <p class="ilena-partners__search-hint">Cari dengan nama toko, kota, alamat, atau kalimat seperti “toko mebel dekat Solo”. Kami juga memahami beberapa variasi ejaan.</p>
+        <p class="ilena-partners__search-hint"><?= $isEnglish ? lang('Store.partnerSearchHint') : 'Cari dengan nama toko, kota, alamat, atau kalimat seperti “toko mebel dekat Solo”. Kami juga memahami beberapa variasi ejaan.'; ?></p>
 
         <?php if ($activePartners !== []): ?>
             <ul class="ilena-partners__list" id="partner-list">
@@ -109,23 +110,23 @@ $partnerLast = min($partnerPage * $partnerPerPage, $partnerTotal);
                             loading="lazy" decoding="async">
                         <div class="ilena-partners__details">
                             <?php if ($partnerCity !== ''): ?><p class="ilena-editorial__eyebrow"><?= esc($partnerCity); ?></p><?php endif; ?>
-                            <h3><?= esc($partnerName !== '' ? $partnerName : 'Partner Ilena'); ?></h3>
+                            <h3><?= esc($partnerName !== '' ? $partnerName : ($isEnglish ? 'Ilena partner' : 'Partner Ilena')); ?></h3>
                             <?php if ($partnerAddress !== ''): ?><address><?= esc($partnerAddress); ?></address><?php endif; ?>
                         </div>
                         <?php if ($partnerHref !== '' || $partnerMapQuery !== ''): ?>
                             <div class="ilena-partners__actions">
                                 <?php if ($partnerHref !== ''): ?>
-                                    <a class="ilena-partners__map-link" href="<?= esc($partnerHref, 'attr'); ?>" target="_blank" rel="noopener noreferrer" aria-label="Buka <?= esc($partnerName, 'attr'); ?> di Google Maps">Buka di Maps <span aria-hidden="true">↗</span></a>
+                                    <a class="ilena-partners__map-link" href="<?= esc($partnerHref, 'attr'); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?= esc(($isEnglish ? 'Open ' : 'Buka ') . $partnerName . ($isEnglish ? ' on Google Maps' : ' di Google Maps'), 'attr'); ?>"><?= $isEnglish ? lang('Store.openInMaps') : 'Buka di Maps'; ?> <span aria-hidden="true">↗</span></a>
                                 <?php endif; ?>
                                 <?php if (is_array($partner['coords'] ?? null) && count($partner['coords']) === 2): ?>
-                                    <a class="ilena-partners__map-link" href="#ilena-partner-map" data-map-focus="<?= (int) ($partner['id'] ?? 0); ?>">Lihat di peta</a>
-                                    <a class="ilena-partners__map-link" href="https://www.google.com/maps/dir/?api=1&amp;destination=<?= esc($partner['coords'][0] . ',' . $partner['coords'][1], 'attr'); ?>" target="_blank" rel="noopener noreferrer" aria-label="Petunjuk arah ke <?= esc($partnerName, 'attr'); ?>">Petunjuk arah <span aria-hidden="true">↗</span></a>
+                                    <a class="ilena-partners__map-link" href="#ilena-partner-map" data-map-focus="<?= (int) ($partner['id'] ?? 0); ?>"><?= $isEnglish ? lang('Store.viewOnMap') : 'Lihat di peta'; ?></a>
+                                    <a class="ilena-partners__map-link" href="https://www.google.com/maps/dir/?api=1&amp;destination=<?= esc($partner['coords'][0] . ',' . $partner['coords'][1], 'attr'); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?= esc(($isEnglish ? 'Directions to ' : 'Petunjuk arah ke ') . $partnerName, 'attr'); ?>"><?= $isEnglish ? lang('Store.directions') : 'Petunjuk arah'; ?> <span aria-hidden="true">↗</span></a>
                                 <?php endif; ?>
                                 <?php if ($partnerMapQuery !== ''): ?>
                                     <details class="ilena-partners__map-preview">
-                                        <summary aria-label="Tampilkan peta <?= esc($partnerName, 'attr'); ?>">Pratinjau peta <span aria-hidden="true">＋</span></summary>
+                                        <summary aria-label="<?= esc(($isEnglish ? 'Show map for ' : 'Tampilkan peta ') . $partnerName, 'attr'); ?>"><?= $isEnglish ? lang('Store.mapPreview') : 'Pratinjau peta'; ?> <span aria-hidden="true">＋</span></summary>
                                         <div class="ilena-partners__map-frame">
-                                            <iframe title="Peta lokasi <?= esc($partnerName, 'attr'); ?>" data-map-src="<?= esc($partnerMapEmbed, 'attr'); ?>" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+                                            <iframe title="<?= esc(($isEnglish ? 'Map for ' : 'Peta lokasi ') . $partnerName, 'attr'); ?>" data-map-src="<?= esc($partnerMapEmbed, 'attr'); ?>" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
                                         </div>
                                     </details>
                                 <?php endif; ?>
@@ -135,27 +136,27 @@ $partnerLast = min($partnerPage * $partnerPerPage, $partnerTotal);
                 <?php endforeach; ?>
             </ul>
             <?php if ($partnerPages > 1): ?>
-                <nav class="ilena-partners__pagination" aria-label="Halaman daftar partner">
-                    <?php if ($partnerPage > 1): ?><a href="<?= site_url('partner') . '?' . http_build_query(array_filter(['q' => $partnerQuery, 'city' => $partnerCityFilter ?? '', 'page' => $partnerPage - 1], static fn ($value) => $value !== '')); ?>" rel="prev">← Sebelumnya</a><?php endif; ?>
-                    <span>Halaman <?= $partnerPage; ?> dari <?= $partnerPages; ?></span>
-                    <?php if ($partnerPage < $partnerPages): ?><a href="<?= site_url('partner') . '?' . http_build_query(array_filter(['q' => $partnerQuery, 'city' => $partnerCityFilter ?? '', 'page' => $partnerPage + 1], static fn ($value) => $value !== '')); ?>" rel="next">Berikutnya →</a><?php endif; ?>
+                <nav class="ilena-partners__pagination" aria-label="<?= esc($isEnglish ? 'Partner directory pages' : 'Halaman daftar partner', 'attr'); ?>">
+                    <?php if ($partnerPage > 1): ?><a href="<?= esc(ilena_store_path('/partner') . '?' . http_build_query(array_filter(['q' => $partnerQuery, 'city' => $partnerCityFilter ?? '', 'page' => $partnerPage - 1], static fn ($value) => $value !== '')), 'attr'); ?>" rel="prev">← <?= $isEnglish ? lang('Store.previous') : 'Sebelumnya'; ?></a><?php endif; ?>
+                    <span><?= $isEnglish ? sprintf(lang('Store.pageOf'), $partnerPage, $partnerPages) : 'Halaman ' . $partnerPage . ' dari ' . $partnerPages; ?></span>
+                    <?php if ($partnerPage < $partnerPages): ?><a href="<?= esc(ilena_store_path('/partner') . '?' . http_build_query(array_filter(['q' => $partnerQuery, 'city' => $partnerCityFilter ?? '', 'page' => $partnerPage + 1], static fn ($value) => $value !== '')), 'attr'); ?>" rel="next"><?= $isEnglish ? lang('Store.next') : 'Berikutnya'; ?> →</a><?php endif; ?>
                 </nav>
             <?php endif; ?>
         <?php else: ?>
             <div class="ilena-partners__empty">
-                <h3><?= $partnerQuery !== '' || ($partnerCityFilter ?? '') !== '' ? 'Belum menemukan partner yang cocok' : 'Informasi partner sedang diperbarui'; ?></h3>
-                <p>Coba ejaan lain, hapus filter kota, atau cari dengan nama kota/alamat yang lebih singkat.</p>
+                <h3><?= $partnerQuery !== '' || ($partnerCityFilter ?? '') !== '' ? ($isEnglish ? lang('Store.partnerNoMatch') : 'Belum menemukan partner yang cocok') : ($isEnglish ? lang('Store.partnerUpdating') : 'Informasi partner sedang diperbarui'); ?></h3>
+                <p><?= $isEnglish ? lang('Store.partnerTryAgain') : 'Coba ejaan lain, hapus filter kota, atau cari dengan nama kota/alamat yang lebih singkat.'; ?></p>
                 <?php if (($partnerSuggestions ?? []) !== []): ?>
-                    <p class="ilena-partners__empty-label">Mungkin lokasi ini yang Anda cari:</p>
+                    <p class="ilena-partners__empty-label"><?= $isEnglish ? lang('Store.possibleLocation') : 'Mungkin lokasi ini yang Anda cari:'; ?></p>
                     <div class="ilena-partners__alternatives">
                         <?php foreach ($partnerSuggestions as $suggestion): ?>
                             <?php $suggestionName = trim((string) ($suggestion['name'] ?? '')); $suggestionCity = trim((string) ($suggestion['city'] ?? '')); ?>
-                            <a href="<?= site_url('partner') . '?' . http_build_query(['q' => $suggestionName]); ?>"><strong><?= esc($suggestionName); ?></strong><span><?= esc($suggestionCity); ?></span></a>
+                            <a href="<?= esc(ilena_store_path('/partner') . '?' . http_build_query(['q' => $suggestionName]), 'attr'); ?>"><strong><?= esc($suggestionName); ?></strong><span><?= esc($suggestionCity); ?></span></a>
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
-                <a class="ilena-partners__reset" href="<?= site_url('partner'); ?>">Lihat semua partner</a>
-                <p>Butuh bantuan? <a href="mailto:cs@ilenafurniture.com">Hubungi Customer Service Ilena</a>.</p>
+                <a class="ilena-partners__reset" href="<?= esc(ilena_store_path('/partner'), 'attr'); ?>"><?= $isEnglish ? lang('Store.allPartners') : 'Lihat semua partner'; ?></a>
+                <p><?= $isEnglish ? 'Need help?' : 'Butuh bantuan?'; ?> <a href="mailto:cs@ilenafurniture.com"><?= $isEnglish ? lang('Store.contactIlenaSupport') : 'Hubungi Customer Service Ilena'; ?></a>.</p>
             </div>
         <?php endif; ?>
     </section>
@@ -304,6 +305,28 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
     const mapElement = document.getElementById('ilena-partner-map');
     if (!mapElement) return;
 
+    const mapCopy = <?= json_encode([
+        'noCoordinates' => lang('Store.partnerMapNoCoordinates'),
+        'highlightPrefix' => lang('Store.partnerMapHighlightPrefix'),
+        'partner' => lang('Store.partnerMapPartner'),
+        'noLocations' => lang('Store.partnerMapNoLocations'),
+        'directions' => lang('Store.partnerMapDirections'),
+        'viewDirectory' => lang('Store.partnerMapViewDirectory'),
+        'selectedSuffix' => lang('Store.partnerMapSelectedSuffix'),
+        'fitAll' => lang('Store.partnerMapFitAll'),
+        'geolocationUnsupported' => lang('Store.partnerMapGeolocationUnsupported'),
+        'locating' => lang('Store.partnerMapLocating'),
+        'yourLocation' => lang('Store.partnerMapYourLocation'),
+        'nearestPrefix' => lang('Store.partnerMapNearestPrefix'),
+        'locationPrivacy' => lang('Store.partnerMapLocationPrivacy'),
+        'locationFoundNoPartner' => lang('Store.partnerMapLocationFoundNoPartner'),
+        'locationUnavailable' => lang('Store.partnerMapLocationUnavailable'),
+        'loadFailed' => lang('Store.partnerMapLoadFailed'),
+        'loadFailedFallback' => lang('Store.partnerMapLoadFailedFallback'),
+        'distanceMeters' => lang('Store.partnerMapDistanceMeters'),
+        'distanceKilometers' => lang('Store.partnerMapDistanceKilometers'),
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+
     const status = mapElement.querySelector('.ilena-partners__map-status');
     const feedback = document.getElementById('partner-map-feedback');
     const mapButtons = document.querySelectorAll('.ilena-partners__map-buttons button');
@@ -328,13 +351,13 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
     const focusPartner = (id) => {
         const entry = markers.find((candidate) => String(candidate.location.id) === String(id));
         if (!entry || !map) {
-            if (feedback) feedback.textContent = 'Koordinat lokasi ini belum tersedia di peta.';
+            if (feedback) feedback.textContent = mapCopy.noCoordinates;
             return;
         }
         map.setView(entry.point, Math.max(map.getZoom(), 12), { animate: true });
         entry.marker.openPopup();
         selectDirectoryPartner(id);
-        if (feedback) feedback.textContent = `Peta menyorot ${entry.location.name || 'partner Ilena'}${entry.location.city ? `, ${entry.location.city}` : ''}.`;
+        if (feedback) feedback.textContent = `${mapCopy.highlightPrefix} ${entry.location.name || mapCopy.partner}${entry.location.city ? `, ${entry.location.city}` : ''}.`;
     };
     document.addEventListener('click', (event) => {
         const trigger = event.target.closest('[data-map-focus]');
@@ -350,7 +373,7 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
         initialized = true;
         const locations = JSON.parse(mapElement.dataset.partners || '[]');
         if (!locations.length) {
-            if (status) status.textContent = 'Belum ada data koordinat partner untuk ditampilkan.';
+            if (status) status.textContent = mapCopy.noLocations;
             return;
         }
 
@@ -389,7 +412,7 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
                 const popup = document.createElement('div');
                 popup.className = 'ilena-partners__map-popup';
                 const name = document.createElement('strong');
-                name.textContent = location.name || 'Partner Ilena';
+                name.textContent = location.name || mapCopy.partner;
                 popup.appendChild(name);
                 if (location.city) {
                     const city = document.createElement('span');
@@ -400,19 +423,19 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
                 direction.href = `https://www.google.com/maps/dir/?api=1&destination=${point[0]},${point[1]}`;
                 direction.target = '_blank';
                 direction.rel = 'noopener noreferrer';
-                direction.textContent = 'Petunjuk arah ↗';
+                direction.textContent = mapCopy.directions;
                 popup.appendChild(direction);
                 const listUrl = new URL(directoryUrl, window.location.origin);
                 if (location.name) listUrl.searchParams.set('q', location.name);
                 if (location.city) listUrl.searchParams.set('city', location.city);
                 const directoryLink = document.createElement('a');
                 directoryLink.href = `${listUrl.pathname}${listUrl.search}#partner-directory`;
-                directoryLink.textContent = 'Lihat di daftar';
+                directoryLink.textContent = mapCopy.viewDirectory;
                 popup.appendChild(directoryLink);
                 marker.bindPopup(popup);
                 marker.on('click', () => {
                     if (!selectDirectoryPartner(location.id) && feedback) {
-                        feedback.textContent = `${location.name || 'Partner Ilena'}${location.city ? `, ${location.city}` : ''} dipilih di peta. Buka “Lihat di daftar” pada penanda untuk menampilkannya di hasil pencarian.`;
+                        feedback.textContent = `${location.name || mapCopy.partner}${location.city ? `, ${location.city}` : ''} ${mapCopy.selectedSuffix} “${mapCopy.viewDirectory}”.`;
                     }
                 });
             });
@@ -432,15 +455,15 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
                 if (action === 'fit') {
                     if (bounds.length === 1) map.setView(bounds[0], 12);
                     else if (bounds.length > 1) map.fitBounds(bounds, { padding: [28, 28], maxZoom: 7 });
-                    if (feedback) feedback.textContent = 'Peta menampilkan kembali semua lokasi partner.';
+                    if (feedback) feedback.textContent = mapCopy.fitAll;
                 }
                 if (action === 'locate') {
                     if (!navigator.geolocation) {
-                        if (feedback) feedback.textContent = 'Browser ini belum mendukung pencarian lokasi.';
+                        if (feedback) feedback.textContent = mapCopy.geolocationUnsupported;
                         return;
                     }
                     button.disabled = true;
-                    if (feedback) feedback.textContent = 'Mencari lokasi Anda…';
+                    if (feedback) feedback.textContent = mapCopy.locating;
                     navigator.geolocation.getCurrentPosition((position) => {
                         const point = [position.coords.latitude, position.coords.longitude];
                         const distanceKm = (a, b) => {
@@ -454,18 +477,21 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
                         map.setView(nearest ? nearest.point : point, nearest ? 12 : 11, { animate: true });
                         if (userMarker) userMarker.remove();
                         userMarker = L.circleMarker(point, { radius: 8, color: '#fff', weight: 3, fillColor: '#292622', fillOpacity: 1 }).addTo(map);
-                        userMarker.bindPopup('Lokasi Anda · hanya tersimpan di perangkat ini');
+                        userMarker.bindPopup(mapCopy.yourLocation);
                         if (nearest) {
                             nearest.marker.openPopup();
                             selectDirectoryPartner(nearest.location.id);
                         }
                         const distance = nearest ? distanceKm(point, nearest.point) : null;
+                        const distanceLabel = distance === null ? '' : distance < 1
+                            ? mapCopy.distanceMeters.replace('{value}', String(Math.round(distance * 1000)))
+                            : mapCopy.distanceKilometers.replace('{value}', distance.toFixed(1));
                         if (feedback) feedback.textContent = nearest
-                            ? `Partner terdekat: ${nearest.location.name || 'Partner Ilena'}${nearest.location.city ? `, ${nearest.location.city}` : ''} · sekitar ${distance < 1 ? `${Math.round(distance * 1000)} m` : `${distance.toFixed(1)} km`}. Lokasi hanya digunakan di perangkat ini.`
-                            : 'Lokasi Anda ditemukan, tetapi belum ada partner dengan koordinat yang tersedia.';
+                            ? `${mapCopy.nearestPrefix} ${nearest.location.name || mapCopy.partner}${nearest.location.city ? `, ${nearest.location.city}` : ''} · ${distanceLabel}. ${mapCopy.locationPrivacy}`
+                            : mapCopy.locationFoundNoPartner;
                         button.disabled = false;
                     }, () => {
-                        if (feedback) feedback.textContent = 'Lokasi tidak tersedia. Izinkan akses lokasi atau jelajahi peta secara manual.';
+                        if (feedback) feedback.textContent = mapCopy.locationUnavailable;
                         button.disabled = false;
                     }, { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 });
                 }
@@ -483,8 +509,8 @@ document.querySelectorAll('.ilena-partners__image').forEach((image) => {
         script.onload = start;
         script.onerror = () => {
             initialized = false;
-            if (status) status.textContent = 'Peta gagal dimuat. Silakan coba muat ulang halaman.';
-            if (feedback) feedback.textContent = 'Peta gagal dimuat. Anda tetap dapat mencari partner melalui daftar di bawah.';
+            if (status) status.textContent = mapCopy.loadFailed;
+            if (feedback) feedback.textContent = mapCopy.loadFailedFallback;
         };
         document.head.appendChild(script);
     };

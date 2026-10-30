@@ -1,5 +1,6 @@
 <?= $this->extend('layout/template'); ?>
 <?= $this->section('content'); ?>
+<?php $isEnglish = service('request')->getLocale() === 'en'; ?>
 
 <style>
 /* ====== HERO ====== */
@@ -624,7 +625,7 @@ input[name="cari"]+button {
 <!-- ===== Search overlay (tetap) ===== -->
 <div style="position: absolute; z-index: 4;" class="w-100 pt-4">
     <div class="container">
-        <form action="/actionsearcharticle" method="post">
+        <form action="<?= esc(ilena_store_path('/actionsearcharticle'), 'attr'); ?>" method="post">
             <?= csrf_field(); ?>
             <div class="d-flex align-items-center gap-3">
                 <input type="text" name="cari" class="py-1" value="<?= isset($cari) ? $cari : ''; ?>">
@@ -640,22 +641,23 @@ input[name="cari"]+button {
     function judulSplitter(j){const a=j.split(" ");const j1=`${a[0]} ${a[1]}`;a.splice(0,2);const half=Math.ceil(a.length/2);const j2=a.filter((_,i)=>i<half).join(" ");const j3=a.filter((_,i)=>i>=half).join(" ");return{judul1:j1,judul2:j2,judul3:j3}}
 function titleCase(s){const t=s.toLowerCase().split(' ');for(let i=0;i<t.length;i++){t[i]=t[i].charAt(0).toUpperCase()+t[i].substring(1)}return t.join(' ')}
 const {useState,useEffect,useRef}=React;
-const artikel3Baru=JSON.parse('<?= $artikel3BaruJson; ?>');
+const artikel3Baru=<?= json_encode($artikel3Baru, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
+const localePrefix=<?= json_encode($isEnglish ? '/en' : '', JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
 const inis=artikel3Baru[0];
-const dataCategoryFromBackend='<?= isset($category) ? ucwords($category) : ''; ?>';
+const dataCategoryFromBackend='<?= isset($category) ? esc(ilena_article_category_label((string) $category), 'js') : ''; ?>';
 const App=()=> {
   const intervalRef=useRef(null);
   const [img,setImg]=useState(['active','','']);
-  const [imgSelected,setImgSelected]=useState({...judulSplitter(inis.judul),deskripsi:inis.deskripsi,id:inis.id,kategori:titleCase(inis.kategori),path:inis.path,header:inis.header});
+  const [imgSelected,setImgSelected]=useState({...judulSplitter(inis.judul),deskripsi:inis.deskripsi,id:inis.id,kategori:inis.kategori_label||titleCase(inis.kategori),path:inis.path,header:inis.header});
   const innerWidth=useRef(window.innerWidth);
   const categories=[
-    {teks:'Tips & Trik',link:'/article/category/tips-@-trik',gambar:'https://cdn.pixabay.com/photo/2020/03/05/17/35/tips-4905013_1280.jpg',deskripsi:'Lebih banyak tahu berbagai life hack yang mempermudah hidup'},
-    {teks:'Edukasi',link:'/article/category/edukasi',gambar:'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=1122&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',deskripsi:'Beragam informasi seputar furniture & properti terbaru'},
-    {teks:'Fun Fact',link:'/article/category/fun-fact',gambar:'https://images.unsplash.com/photo-1676276375656-c4864c632a08?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',deskripsi:'Ketahui serba-serbi fakta menarik yang menginspirasi'},
-    {teks:'Rekomendasi',link:'/article/category/rekomendasi',gambar:'https://images.unsplash.com/photo-1624269305543-efbc8d89f1d3?q=80&w=1025&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',deskripsi:'Pentingnya mendapatkan yang tepat sesuai kebutuhan'},
+    {teks:<?= json_encode($isEnglish ? 'Tips & ideas' : 'Tips & Trik'); ?>,link:localePrefix+'/article/category/tips-@-trik',gambar:'https://cdn.pixabay.com/photo/2020/03/05/17/35/tips-4905013_1280.jpg',deskripsi:<?= json_encode($isEnglish ? 'Practical ideas to make everyday living easier' : 'Lebih banyak tahu berbagai life hack yang mempermudah hidup'); ?>},
+    {teks:<?= json_encode($isEnglish ? 'Guides' : 'Edukasi'); ?>,link:localePrefix+'/article/category/edukasi',gambar:'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=1122&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',deskripsi:<?= json_encode($isEnglish ? 'Updates and insights on furniture and interiors' : 'Beragam informasi seputar furniture & properti terbaru'); ?>},
+    {teks:'Fun Fact',link:localePrefix+'/article/category/fun-fact',gambar:'https://images.unsplash.com/photo-1676276375656-c4864c632a08?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',deskripsi:<?= json_encode($isEnglish ? 'Interesting facts and inspiration for your home' : 'Ketahui serba-serbi fakta menarik yang menginspirasi'); ?>},
+    {teks:<?= json_encode($isEnglish ? 'Recommendations' : 'Rekomendasi'); ?>,link:localePrefix+'/article/category/rekomendasi',gambar:'https://images.unsplash.com/photo-1624269305543-efbc8d89f1d3?q=80&w=1025&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',deskripsi:<?= json_encode($isEnglish ? 'Find the right choices for your needs' : 'Pentingnya mendapatkan yang tepat sesuai kebutuhan'); ?>},
   ];
   useEffect(()=>{intervalRef.current=setInterval(()=>{setImg(p=>{const i=p.indexOf('active')+1>=p.length?0:p.indexOf('active')+1;return p.map((x,ix)=>ix===i?'active':'')})},5000);return()=>clearInterval(intervalRef.current)},[]);
-  useEffect(()=>{const idx=img.indexOf('active');const cur={...artikel3Baru[idx]};setImgSelected({...judulSplitter(cur.judul),deskripsi:cur.deskripsi,id:cur.id,kategori:titleCase(cur.kategori),path:cur.path,header:cur.header})},[img]);
+  useEffect(()=>{const idx=img.indexOf('active');const cur={...artikel3Baru[idx]};setImgSelected({...judulSplitter(cur.judul),deskripsi:cur.deskripsi,id:cur.id,kategori:cur.kategori_label||titleCase(cur.kategori),path:cur.path,header:cur.header})},[img]);
 
   return(
     <>
@@ -672,7 +674,7 @@ const App=()=> {
                     <p className="m-0" style={{color:'rgb(219, 219, 219)'}}>{imgSelected.deskripsi}</p>
                   </div>
                   <div className="d-flex gap-2">
-                    <a href={`/article/${imgSelected.path}`} className="btn-lonjong-putih-outline">Baca selengkapnya</a>
+                    <a href={`${localePrefix}/article/${imgSelected.path}`} className="btn-lonjong-putih-outline"><?= $isEnglish ? 'Read more' : 'Baca selengkapnya'; ?></a>
                   </div>
                 </div>
               </div>
@@ -692,14 +694,14 @@ const App=()=> {
       }
       <div className="container">
         <div className={innerWidth.current<700?'py-4':'py-5'}>
-          <h1 className="teks-besar mb-5 show-block-ke-hide">Categories</h1>
-          <h1 className="teks-besar mb-3 hide-ke-show-block">Categories</h1>
+          <h1 className="teks-besar mb-5 show-block-ke-hide"><?= $isEnglish ? 'Categories' : 'Kategori'; ?></h1>
+          <h1 className="teks-besar mb-3 hide-ke-show-block"><?= $isEnglish ? 'Categories' : 'Kategori'; ?></h1>
           <div className="container-kategori-artikel">
             {[
-              {teks:'Tips & Trik',link:'/article/category/tips-@-trik',gambar:'https://cdn.pixabay.com/photo/2020/03/05/17/35/tips-4905013_1280.jpg',deskripsi:'Lebih banyak tahu berbagai life hack yang mempermudah hidup'},
-              {teks:'Edukasi',link:'/article/category/edukasi',gambar:'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=1122&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',deskripsi:'Beragam informasi seputar furniture & properti terbaru'},
-              {teks:'Fun Fact',link:'/article/category/fun-fact',gambar:'https://images.unsplash.com/photo-1676276375656-c4864c632a08?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',deskripsi:'Ketahui serba-serbi fakta menarik yang menginspirasi'},
-              {teks:'Rekomendasi',link:'/article/category/rekomendasi',gambar:'https://images.unsplash.com/photo-1624269305543-efbc8d89f1d3?q=80&w=1025&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',deskripsi:'Pentingnya mendapatkan yang tepat sesuai kebutuhan'}
+              {teks:<?= json_encode($isEnglish ? 'Tips & ideas' : 'Tips & Trik'); ?>,link:localePrefix+'/article/category/tips-@-trik',gambar:'https://cdn.pixabay.com/photo/2020/03/05/17/35/tips-4905013_1280.jpg',deskripsi:<?= json_encode($isEnglish ? 'Practical ideas to make everyday living easier' : 'Lebih banyak tahu berbagai life hack yang mempermudah hidup'); ?>},
+              {teks:<?= json_encode($isEnglish ? 'Guides' : 'Edukasi'); ?>,link:localePrefix+'/article/category/edukasi',gambar:'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=1122&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',deskripsi:<?= json_encode($isEnglish ? 'Updates and insights on furniture and interiors' : 'Beragam informasi seputar furniture & properti terbaru'); ?>},
+              {teks:'Fun Fact',link:localePrefix+'/article/category/fun-fact',gambar:'https://images.unsplash.com/photo-1676276375656-c4864c632a08?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',deskripsi:<?= json_encode($isEnglish ? 'Interesting facts and inspiration for your home' : 'Ketahui serba-serbi fakta menarik yang menginspirasi'); ?>},
+              {teks:<?= json_encode($isEnglish ? 'Recommendations' : 'Rekomendasi'); ?>,link:localePrefix+'/article/category/rekomendasi',gambar:'https://images.unsplash.com/photo-1624269305543-efbc8d89f1d3?q=80&w=1025&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',deskripsi:<?= json_encode($isEnglish ? 'Find the right choices for your needs' : 'Pentingnya mendapatkan yang tepat sesuai kebutuhan'); ?>}
             ].map((c,i)=>(
               <a key={i} href={c.link} className="item-kategori-artikel">
                 <img className="item-kategori-artikel__image" src={c.gambar} alt="" loading="lazy" decoding="async" />
@@ -724,23 +726,23 @@ ReactDOM.render(<App />, document.getElementById("container-react-artikel"));
 <div class="container">
     <hr>
     <div class="ubah-padding">
-        <h3 class="teks-sedang mb-3">Popular now</h3>
+        <h3 class="teks-sedang mb-3"><?= $isEnglish ? 'Popular now' : 'Populer saat ini'; ?></h3>
         <div class="d-flex baris-ke-kolom">
             <?php foreach ($artikelPopuler as $ind_a => $a) { if ($ind_a < 3) { ?>
             <?php if ($ind_a != 0) { ?><div class="bg-secondary show-block-ke-hide" style="width:1px;opacity:.2"></div>
             <?php } ?>
             <div style="flex:1;">
                 <div class="mb-2">
-                    <span style="font-size:small;"><?= ucwords($a['kategori']); ?></span>
+                    <span style="font-size:small;"><?= esc(ilena_article_category_label((string) $a['kategori'])); ?></span>
                     <span class="text-secondary" style="font-size:small;">•</span>
                     <span class="text-secondary" style="font-size:small;">
                         <?= date("d", strtotime($a['waktu'])) . " " . $bulan[date("m", strtotime($a['waktu'])) - 1] . " " . date("Y", strtotime($a['waktu'])); ?>
                     </span>
                 </div>
-                <p class="fw-bold mb-1"><?= $a['judul']; ?></p>
-                <a href="/article/<?= $a['path']; ?>" class="btn-selengkapnya">
+                <p class="fw-bold mb-1"><?= esc($a['judul'] ?? ''); ?></p>
+                <a href="<?= esc(ilena_store_path('/article/' . $a['path']), 'attr'); ?>" class="btn-selengkapnya">
                     <div class="d-flex align-items-center">
-                        <p>Baca selengkapnya</p><i class="material-icons">arrow_forward</i>
+                        <p><?= $isEnglish ? 'Read more' : 'Baca selengkapnya'; ?></p><i class="material-icons">arrow_forward</i>
                     </div>
                 </a>
             </div>
@@ -753,44 +755,44 @@ ReactDOM.render(<App />, document.getElementById("container-react-artikel"));
     <div class="ubah-padding">
         <div class="baris-ke-kolom ubah-gap">
             <div style="flex:2;">
-                <a href="/article/<?= esc($artikel[0]['path'], 'attr'); ?>"
+                <a href="<?= esc(ilena_store_path('/article/' . $artikel[0]['path']), 'attr'); ?>"
                     style="height:100%;"
                     class="w-full artikel-list-besar">
                     <img class="article-card-cover" src="<?= esc($artikel[0]['header'], 'attr'); ?>" alt="" loading="lazy" decoding="async" width="1200" height="800">
                     <div>
                         <div style="flex:1;" class="d-flex justify-content-end">
-                            <snap class="kategori"><?= ucwords($artikel[0]['kategori'][0]); ?></snap>
+                            <snap class="kategori"><?= esc(ilena_article_category_label((string) $artikel[0]['kategori'][0])); ?></snap>
                         </div>
                         <p class="tanggal show-block-ke-hide"><?= $artikel[0]['waktu']; ?></p>
-                        <p class="judul"><?= $artikel[0]['judul']; ?></p>
+                        <p class="judul"><?= esc($artikel[0]['judul'] ?? ''); ?></p>
                         <p class="tanggal hide-ke-show-block m-0"><?= $artikel[0]['waktu']; ?></p>
                     </div>
                 </a>
             </div>
             <div style="flex:1;" class="d-flex flex-column ubah-gap">
-                <a href="/article/<?= esc($artikel[1]['path'], 'attr'); ?>"
+                <a href="<?= esc(ilena_store_path('/article/' . $artikel[1]['path']), 'attr'); ?>"
                     style="height:50%;"
                     class="w-full artikel-list-kecil">
                     <img class="article-card-cover" src="<?= esc($artikel[1]['header'], 'attr'); ?>" alt="" loading="lazy" decoding="async" width="900" height="600">
                     <div>
                         <div style="flex:1;" class="d-flex justify-content-end">
-                            <snap class="kategori"><?= ucwords($artikel[1]['kategori'][0]); ?></snap>
+                            <snap class="kategori"><?= esc(ilena_article_category_label((string) $artikel[1]['kategori'][0])); ?></snap>
                         </div>
                         <p class="tanggal show-block-ke-hide"><?= $artikel[1]['waktu']; ?></p>
-                        <p class="judul"><?= $artikel[1]['judul']; ?></p>
+                        <p class="judul"><?= esc($artikel[1]['judul'] ?? ''); ?></p>
                         <p class="tanggal hide-ke-show-block m-0"><?= $artikel[1]['waktu']; ?></p>
                     </div>
                 </a>
-                <a href="/article/<?= esc($artikel[2]['path'], 'attr'); ?>"
+                <a href="<?= esc(ilena_store_path('/article/' . $artikel[2]['path']), 'attr'); ?>"
                     style="height:50%;"
                     class="w-full artikel-list-kecil">
                     <img class="article-card-cover" src="<?= esc($artikel[2]['header'], 'attr'); ?>" alt="" loading="lazy" decoding="async" width="900" height="600">
                     <div>
                         <div style="flex:1;" class="d-flex justify-content-end">
-                            <snap class="kategori"><?= ucwords($artikel[2]['kategori'][0]); ?></snap>
+                            <snap class="kategori"><?= esc(ilena_article_category_label((string) $artikel[2]['kategori'][0])); ?></snap>
                         </div>
                         <p class="tanggal show-block-ke-hide"><?= $artikel[2]['waktu']; ?></p>
-                        <p class="judul"><?= $artikel[2]['judul']; ?></p>
+                        <p class="judul"><?= esc($artikel[2]['judul'] ?? ''); ?></p>
                         <p class="tanggal hide-ke-show-block m-0"><?= $artikel[2]['waktu']; ?></p>
                     </div>
                 </a>
@@ -805,14 +807,14 @@ ReactDOM.render(<App />, document.getElementById("container-react-artikel"));
     <!-- ===== Grid artikel bawah (Desktop) ===== -->
     <div id="home-articles-desktop" class="container-artikel-list ubah-gap mb-3">
         <?php foreach ($artikel as $ind_a => $a) { if ($ind_a > 2) { ?>
-        <a href="/article/<?= esc($a['path'], 'attr'); ?>" class="artikel-list">
+        <a href="<?= esc(ilena_store_path('/article/' . $a['path']), 'attr'); ?>" class="artikel-list">
             <img class="article-card-cover" src="<?= esc($a['header'], 'attr'); ?>" alt="" loading="lazy" decoding="async" width="900" height="700">
             <div>
                 <div style="flex:1;" class="d-flex justify-content-end">
-                    <snap class="kategori"><?= ucwords($a['kategori'][0]); ?></snap>
+                    <snap class="kategori"><?= esc(ilena_article_category_label((string) $a['kategori'][0])); ?></snap>
                 </div>
                 <p class="tanggal"><?= $a['waktu']; ?></p>
-                <p class="judul"><?= $a['judul']; ?></p>
+                <p class="judul"><?= esc($a['judul'] ?? ''); ?></p>
             </div>
         </a>
         <?php } } ?>

@@ -1,32 +1,45 @@
 <?php
 $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $headerMode : 'full';
+$activeLocale = service('request')->getLocale() === 'en' ? 'en' : 'id';
+$currentPath = trim(service('uri')->getPath(), '/');
+$pathWithoutLocale = preg_replace('#^(?:id|en)(?:/|$)#', '', $currentPath);
+$pathWithoutLocale = trim((string) $pathWithoutLocale, '/');
+$queryString = service('request')->getUri()->getQuery();
+$languageQuery = $queryString !== '' ? '?' . $queryString : '';
+$idLanguageUrl = '/' . $pathWithoutLocale . $languageQuery;
+$enLanguageUrl = '/en' . ($pathWithoutLocale !== '' ? '/' . $pathWithoutLocale : '') . $languageQuery;
 ?>
 <div class="ilena-utility-bar" aria-label="Lunarea Furniture">
     <div class="ilena-utility-bar__inner">
-        <a href="https://lunareafurniture.com" target="_blank" rel="noopener noreferrer" aria-label="Kunjungi Lunarea Furniture">
+        <a href="https://lunareafurniture.com" target="_blank" rel="noopener noreferrer" aria-label="<?= esc(lang('Store.visitLunarea'), 'attr'); ?>">
             <img src="<?= base_url('img/logolunareanavbar.webp'); ?>" alt="Lunarea Furniture" width="150" height="30" decoding="async">
         </a>
+        <nav class="ilena-language-switch" aria-label="<?= esc(lang('Store.language'), 'attr'); ?>">
+            <a href="<?= esc($idLanguageUrl, 'attr'); ?>" lang="id" hreflang="id"<?= $activeLocale === 'id' ? ' aria-current="page"' : ''; ?>>ID</a>
+            <span aria-hidden="true">/</span>
+            <a href="<?= esc($enLanguageUrl, 'attr'); ?>" lang="en" hreflang="en"<?= $activeLocale === 'en' ? ' aria-current="page"' : ''; ?>>EN</a>
+        </nav>
     </div>
 </div>
 <nav class="nav show-block-ke-hide ilena-topbar">
     <div class="container py-3 ilena-topbar__container">
         <div class="d-flex w-100 justify-content-between align-items-center ilena-topbar__inner ilena-topbar__inner--<?= esc($headerMode, 'attr'); ?>">
             <div class="navbar-brand-pair">
-                <a class="navbar-brand-ilena" href="/" aria-label="Ilena Furniture - Beranda">
+                <a class="navbar-brand-ilena" href="<?= esc($activeLocale === 'en' ? '/en' : '/', 'attr'); ?>" aria-label="Ilena Furniture — <?= esc(lang('Store.home'), 'attr'); ?>">
                     <img src="<?= base_url('/img/Logo Putih Ilena 1.png'); ?>" alt="Ilena Furniture" width="150" height="30" decoding="async">
                 </a>
             </div>
             <?php if ($headerMode === 'full'): ?>
                 <div class="ilena-topbar__main-nav" role="navigation" aria-label="Menu utama">
-                    <a href="/product">Furniture Collection</a>
-                    <a href="https://ilenafurniture.net/" target="_blank" rel="noopener noreferrer">Custom Interior</a>
-                    <a href="/partner">Partner Store</a>
-                    <a href="/article">Article</a>
-                    <a href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20saya%20ingin%20menghubungi%20tim%20Ilena" target="_blank" rel="noopener noreferrer">Contact Us</a>
+                    <a href="<?= esc($activeLocale === 'en' ? '/en/product' : '/product', 'attr'); ?>"><?= esc(lang('Store.collection')); ?></a>
+                    <a href="https://ilenafurniture.net/" target="_blank" rel="noopener noreferrer"><?= esc(lang('Store.customInterior')); ?></a>
+                    <a href="<?= esc($activeLocale === 'en' ? '/en/partner' : '/partner', 'attr'); ?>"><?= esc(lang('Store.partnerStore')); ?></a>
+                    <a href="<?= esc($activeLocale === 'en' ? '/en/article' : '/article', 'attr'); ?>"><?= esc(lang('Store.article')); ?></a>
+                    <a href="https://wa.me/628112938158?text=<?= rawurlencode(lang('Store.whatsAppContactMessage')); ?>" target="_blank" rel="noopener noreferrer"><?= esc(lang('Store.contactUs')); ?></a>
                 </div>
             <?php endif; ?>
             <div class="d-flex justify-content-end ilena-topbar__actions">
-                <button type="button" class="ilena-header-action ilena-search-toggle" aria-label="Buka pencarian" aria-expanded="false" aria-controls="ilena-desktop-search" data-search-toggle>
+                <button type="button" class="ilena-header-action ilena-search-toggle" aria-label="<?= esc(lang('Store.openSearch'), 'attr'); ?>" aria-expanded="false" aria-controls="ilena-desktop-search" data-search-toggle>
                     <i class="material-icons" aria-hidden="true">search</i>
                 </button>
                 <?php if (session()->get('isLogin') && in_array((string) session()->get('role'), ['1', '5'], true)) { ?>
@@ -35,18 +48,18 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
                             <i class="material-icons text-light">chevron_left</i>
                             <p class="m-0 text-light">Admin</p>
                         </a>
-                        <form action="/logout" method="post" class="m-0"><input type="hidden" name="<?= csrf_token(); ?>" value="<?= csrf_hash(); ?>"><button type="submit" class="btn" style="padding-right: 0"><i class="material-icons text-light">exit_to_app</i></button></form>
+                        <form action="<?= esc(ilena_store_path('/logout'), 'attr'); ?>" method="post" class="m-0"><input type="hidden" name="<?= csrf_token(); ?>" value="<?= csrf_hash(); ?>"><button type="submit" class="btn" style="padding-right: 0"><i class="material-icons text-light">exit_to_app</i></button></form>
                     <?php } else { ?>
                         <a href="<?= esc(session()->get('admin_home') ?: '/admin'); ?>" class="btn d-flex align-items-center">
                             <i class="material-icons text-light">chevron_left</i>
-                            <p class="m-0 text-light">Workspace</p>
+                            <p class="m-0 text-light"><?= esc(lang('Store.workspace')); ?></p>
                         </a>
-                        <form action="/logout" method="post" class="m-0"><input type="hidden" name="<?= csrf_token(); ?>" value="<?= csrf_hash(); ?>"><button type="submit" class="btn" style="padding-right: 0"><i class="material-icons text-light">exit_to_app</i></button></form>
+                        <form action="<?= esc(ilena_store_path('/logout'), 'attr'); ?>" method="post" class="m-0"><input type="hidden" name="<?= csrf_token(); ?>" value="<?= csrf_hash(); ?>"><button type="submit" class="btn" style="padding-right: 0"><i class="material-icons text-light">exit_to_app</i></button></form>
                     <?php } ?>
                 <?php } else { ?>
-                    <a href="/wishlist" class="ilena-header-action" aria-label="Wishlist"><i class="material-icons" aria-hidden="true">favorite_border</i><span class="ilena-sr-only">Wishlist</span></a>
-                    <a href="/cart" class="ilena-header-action" aria-label="Keranjang"><i class="material-icons" aria-hidden="true">shopping_bag</i><span class="ilena-sr-only">Keranjang</span></a>
-                    <a href="<?= session()->get('isLogin') ? '/account' : '/login'; ?>" class="ilena-header-action" aria-label="<?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?>"><i class="material-icons" aria-hidden="true">person_outline</i><span class="ilena-sr-only"><?= session()->get('isLogin') ? 'Akun saya' : 'Masuk'; ?></span></a>
+                    <a href="<?= esc(ilena_store_path('/wishlist'), 'attr'); ?>" class="ilena-header-action" aria-label="<?= esc(lang('Store.favorites'), 'attr'); ?>"><i class="material-icons" aria-hidden="true">favorite_border</i><span class="ilena-sr-only"><?= esc(lang('Store.favorites')); ?></span></a>
+                    <a href="<?= esc(ilena_store_path('/cart'), 'attr'); ?>" class="ilena-header-action" aria-label="<?= esc(lang('Store.cartTitle'), 'attr'); ?>"><i class="material-icons" aria-hidden="true">shopping_bag</i><span class="ilena-sr-only"><?= esc(lang('Store.cartTitle')); ?></span></a>
+                    <a href="<?= esc(ilena_store_path(session()->get('isLogin') ? '/account' : '/login'), 'attr'); ?>" class="ilena-header-action" aria-label="<?= esc(session()->get('isLogin') ? lang('Store.myAccount') : lang('Store.signIn'), 'attr'); ?>"><i class="material-icons" aria-hidden="true">person_outline</i><span class="ilena-sr-only"><?= esc(session()->get('isLogin') ? lang('Store.myAccount') : lang('Store.signIn')); ?></span></a>
                 <?php } ?>
             </div>
         </div>
@@ -55,18 +68,18 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
                 <div class="ilena-search-dialog__heading">
                     <div>
                         <p class="ilena-search-dialog__eyebrow">Ilena Furniture</p>
-                        <h2 id="ilena-search-title">Temukan yang tepat untuk rumah</h2>
+                        <h2 id="ilena-search-title"><?= esc(lang('Store.searchTitle')); ?></h2>
                     </div>
-                    <button type="button" class="ilena-search-close" data-search-close aria-label="Tutup pencarian">×</button>
+                    <button type="button" class="ilena-search-close" data-search-close aria-label="<?= esc(lang('Store.dismiss'), 'attr'); ?>">×</button>
                 </div>
-                <form action="/find" method="get" class="ilena-global-search" data-global-search role="search">
-                    <label class="ilena-sr-only" for="global-search-desktop">Cari produk atau koleksi</label>
+                <form action="<?= esc($activeLocale === 'en' ? '/en/find' : '/find', 'attr'); ?>" method="get" class="ilena-global-search" data-global-search role="search">
+                    <label class="ilena-sr-only" for="global-search-desktop"><?= esc(lang('Store.searchLabel')); ?></label>
                     <span class="material-icons ilena-search-dialog__icon" aria-hidden="true">search</span>
-                    <input id="global-search-desktop" placeholder="Cari produk, koleksi, atau kategori" class="input" name="q"
+                    <input id="global-search-desktop" placeholder="<?= esc(lang('Store.searchPlaceholder'), 'attr'); ?>" class="input" name="q"
                         type="search" autocomplete="off" autocapitalize="off" aria-autocomplete="list" aria-expanded="false" aria-controls="global-search-desktop-listbox">
                     <div class="ilena-search-suggestions" id="global-search-desktop-listbox" role="listbox" hidden></div>
                 </form>
-                <p class="ilena-search-dialog__hint">Ketik nama produk atau koleksi untuk mulai mencari.</p>
+                <p class="ilena-search-dialog__hint"><?= esc(lang('Store.searchHint')); ?></p>
             </section>
         </div>
     </div>
@@ -91,7 +104,7 @@ $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $
         panel.hidden = !opening;
         document.body.classList.toggle('ilena-search-open', opening);
         toggle.setAttribute('aria-expanded', String(opening));
-        toggle.setAttribute('aria-label', opening ? 'Tutup pencarian' : 'Buka pencarian');
+        toggle.setAttribute('aria-label', opening ? <?= json_encode(lang('Store.dismiss'), JSON_UNESCAPED_UNICODE) ?> : <?= json_encode(lang('Store.openSearch'), JSON_UNESCAPED_UNICODE) ?>);
         if (opening) window.requestAnimationFrame(() => input.focus());
     });
     closeButton.addEventListener('click', () => {

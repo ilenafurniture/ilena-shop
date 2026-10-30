@@ -370,16 +370,16 @@ hr {
 
 <div class="payment-shell container ilena-payment-page">
     <div class="payment-bc">
-        <a href="/address">Alamat</a> &nbsp;>&nbsp; <span class="active">Rincian Pembayaran</span>
+        <a href="<?= esc(ilena_store_path('/address'), 'attr'); ?>"><?= lang('Store.address'); ?></a> &nbsp;>&nbsp; <span class="active"><?= lang('Store.addressDetails'); ?></span>
     </div>
 
     <header class="ilena-payment-heading">
         <div>
-            <p class="ilena-payment-heading__eyebrow">LANGKAH 03 <span>/</span> PEMBAYARAN</p>
-            <h1>Tinjau pesanan Anda</h1>
-            <p class="ilena-payment-heading__description">Pastikan detail pesanan sudah sesuai, lalu pilih metode pembayaran.</p>
+            <p class="ilena-payment-heading__eyebrow"><?= lang('Store.step'); ?> 03 <span>/</span> <?= lang('Store.payment'); ?></p>
+            <h1><?= lang('Store.reviewOrder'); ?></h1>
+            <p class="ilena-payment-heading__description"><?= lang('Store.reviewOrderHint'); ?></p>
         </div>
-        <span class="ilena-payment-heading__count"><?= count($keranjang); ?> item pesanan</span>
+        <span class="ilena-payment-heading__count"><?= count($keranjang); ?> <?= lang('Store.orderItems'); ?></span>
     </header>
 
     <?php if (!empty($msg)) : ?>
@@ -391,16 +391,16 @@ hr {
         <div>
             <!-- Informasi Pembeli -->
             <div class="card-soft mb-2">
-                <div class="hd">Informasi Pembeli</div>
+                <div class="hd"><?= lang('Store.buyerInfo'); ?></div>
                 <div class="bd">
                     <div class="kv">
-                        <div class="k">Nama</div>
+                        <div class="k"><?= lang('Store.fullName'); ?></div>
                         <div class="v"><?= esc($user['nama'] ?? ''); ?></div>
-                        <div class="k">No HP</div>
+                        <div class="k"><?= lang('Store.phone'); ?></div>
                         <div class="v"><?= esc($user['no_hp'] ?? ''); ?></div>
                         <div class="k">Email</div>
                         <div class="v"><?= esc($user['email'] ?? ''); ?></div>
-                        <div class="k">Alamat</div>
+                        <div class="k"><?= lang('Store.address'); ?></div>
                         <div class="v"><?= esc($user['alamat'] ?? ''); ?></div>
                     </div>
                 </div>
@@ -408,7 +408,7 @@ hr {
 
             <!-- Informasi Barang -->
             <div class="card-soft mb-2">
-                <div class="hd">Informasi Barang</div>
+                <div class="hd"><?= lang('Store.itemInfo'); ?></div>
                 <div class="bd">
                     <?php if (count($keranjang) > 0): ?>
                     <?php foreach ($keranjang as $k):
@@ -426,33 +426,33 @@ hr {
                             <div style="font-weight:700;color:var(--ink);letter-spacing:-.02em;"><?= esc($nama); ?>
                             </div>
                             <div class="item-info mt-1">
-                                <div class="k">Varian</div>
+                                <div class="k"><?= lang('Store.variantLabel'); ?></div>
                                 <div class="v"><?= esc($varian); ?></div>
                             </div>
                             <div class="item-info">
-                                <div class="k">Jumlah</div>
-                                <div class="v"><?= $jumlah; ?> buah</div>
+                                <div class="k"><?= lang('Store.quantity'); ?></div>
+                                <div class="v"><?= $jumlah; ?> <?= lang('Store.pieces'); ?></div>
                             </div>
                             <div class="item-info">
-                                <div class="k">Harga</div>
+                                <div class="k"><?= lang('Store.price'); ?></div>
                                 <div class="v">Rp <?= number_format($hargaSatuan, 0, ',', '.'); ?></div>
                             </div>
                         </div>
                     </div>
                     <?php endforeach; ?>
                     <?php else: ?>
-                    <div class="small">Keranjang kosong.</div>
+                    <div class="small"><?= lang('Store.emptyCart'); ?></div>
                     <?php endif; ?>
                 </div>
             </div>
 
             <!-- Metode Pembayaran -->
             <div class="card-soft">
-                <div class="hd">Metode Pembayaran</div>
+                <div class="hd"><?= lang('Store.paymentMethod'); ?></div>
                 <div class="bd">
                     <div class="container-pembayaran">
                         <?php foreach ($listPaymentMethod as $l) : ?>
-                        <a href="/payment/method/<?= esc($l);  ?>/<?= $indexAddress; ?>"
+                        <a href="<?= esc(ilena_store_path('/payment/method/' . rawurlencode($l) . '/' . $indexAddress), 'attr'); ?>"
                             class="item-logo-pembayaran <?= ($l == $paymentMethod) ? 'active' : '' ?>">
                             <img src="/img/pembayaran/<?= esc($l); ?>.webp" alt="<?= esc($l); ?>">
                         </a>
@@ -467,19 +467,19 @@ hr {
         <div>
             <!-- Redeem Voucher -->
             <div class="section-toggle mb-2" onclick="toggleRedeem()">
-                <p class="m-0">Redeem Kode Voucher</p>
+                <p class="m-0"><?= lang('Store.redeemVoucher'); ?></p>
                 <i class="material-icons">expand_more</i>
             </div>
             <div id="redeemBox" class="redeem-box mb-2">
-                <form action="/redeemvoucher/<?= $indexAddress; ?>" method="post" class="d-flex gap-2 flex-wrap"
+                <form action="<?= esc(ilena_store_path('/redeemvoucher/' . $indexAddress), 'attr'); ?>" method="post" class="d-flex gap-2 flex-wrap"
                     novalidate>
                     <?= function_exists('csrf_field') ? csrf_field() : '' ?>
-                    <input type="text" name="code" class="form-control" placeholder="Masukkan kode voucher" required
+                    <input type="text" name="code" class="form-control" placeholder="<?= esc(lang('Store.enterVoucher'), 'attr'); ?>" required
                         style="flex:1;min-width:180px;">
-                    <button type="submit" class="btn-default-merah">Terapkan</button>
+                    <button type="submit" class="btn-default-merah"><?= lang('Store.apply'); ?></button>
                 </form>
                 <div class="small mt-2">
-                    Kode valid akan ditambahkan ke pilihan voucher. Kamu tetap memilih sendiri (hanya 1 voucher aktif).
+                    <?= lang('Store.voucherHelp'); ?>
                 </div>
             </div>
 
@@ -488,7 +488,7 @@ hr {
             <?php if (count($list) > 0) : ?>
             <div class="section-toggle mb-2" onclick="toggleVoucherList()">
                 <p class="m-0">
-                    <?= is_array($selected) ? ucwords(esc($selected['nama'] ?? 'Voucher')) : 'Pilih Voucher'; ?>
+                    <?= is_array($selected) ? ucwords(esc($selected['nama'] ?? lang('Store.chooseVoucher'))) : lang('Store.chooseVoucher'); ?>
                 </p>
                 <i class="material-icons">arrow_forward_ios</i>
             </div>
@@ -510,22 +510,22 @@ hr {
                     <div>
                         <div class="name">
                             <?= ucwords(esc($vNama)); ?>
-                            <?php if ($isMemberBaru): ?><span class="badge">Member Baru</span><?php endif; ?>
-                            <?php if ($isRec): ?><span class="badge rec">Direkomendasikan</span><?php endif; ?>
+                            <?php if ($isMemberBaru): ?><span class="badge"><?= lang('Store.newMember'); ?></span><?php endif; ?>
+                            <?php if ($isRec): ?><span class="badge rec"><?= lang('Store.recommended'); ?></span><?php endif; ?>
                         </div>
                         <div class="meta">
-                            Potongan <?= esc($vNom).' '.esc($vSat); ?>
-                            <?php if ($estCut !== null): ?> · Potensi hemat: Rp
+                            <?= lang('Store.discount'); ?> <?= esc($vNom).' '.esc($vSat); ?>
+                            <?php if ($estCut !== null): ?> · <?= lang('Store.potentialSavings'); ?>: Rp
                             <?= number_format($estCut,0,',','.'); ?><?php endif; ?>
                         </div>
                     </div>
                     <?php if ($isActive): ?>
-                    <form action="/cancelvoucher/<?= $vId . "-" . $indexAddress; ?>" method="post" class="m-0">
-                        <?= csrf_field(); ?><button type="submit" class="btn-plain">Lepas</button>
+                    <form action="<?= esc(ilena_store_path('/cancelvoucher/' . $vId . '-' . $indexAddress), 'attr'); ?>" method="post" class="m-0">
+                        <?= csrf_field(); ?><button type="submit" class="btn-plain"><?= lang('Store.removeVoucher'); ?></button>
                     </form>
                     <?php else: ?>
-                    <form action="/usevoucher/<?= $vId . "-" . $indexAddress; ?>" method="post" class="m-0">
-                        <?= csrf_field(); ?><button type="submit" class="btn-plain">Pakai</button>
+                    <form action="<?= esc(ilena_store_path('/usevoucher/' . $vId . '-' . $indexAddress), 'attr'); ?>" method="post" class="m-0">
+                        <?= csrf_field(); ?><button type="submit" class="btn-plain"><?= lang('Store.useVoucher'); ?></button>
                     </form>
                     <?php endif; ?>
                 </div>
@@ -535,34 +535,34 @@ hr {
 
             <!-- Ringkasan -->
             <div class="card-soft mt-2">
-                <div class="hd">Ringkasan Pesanan</div>
+                <div class="hd"><?= lang('Store.orderSummary'); ?></div>
                 <div class="bd">
                     <?php if ($isMemberBaruSelected): ?>
-                    <div class="alert-soft mb-2">🎉 Selamat! Kamu mendapatkan <b>Voucher Member Baru</b>.</div>
+                    <div class="alert-soft mb-2"><?= lang('Store.congratulations'); ?></div>
                     <?php endif; ?>
 
                     <div class="sum-row">
-                        <div class="k">Harga</div>
+                        <div class="k"><?= lang('Store.price'); ?></div>
                         <div class="v">Rp <?= number_format((int)$hargaTotal, 0, ',', '.'); ?></div>
                     </div>
 
                     <?php if (is_array($selected)) : ?>
                     <div class="sum-row">
-                        <div class="k">Potongan Voucher</div>
+                        <div class="k"><?= lang('Store.voucherDiscount'); ?></div>
                         <div class="v">- Rp <?= number_format((int)($selected['rupiah'] ?? 0), 0, ',', '.'); ?></div>
                     </div>
                     <?php endif; ?>
 
                     <?php if ($flashSale > 0) : ?>
                     <div class="sum-row">
-                        <div class="k">Potongan Flash Sale</div>
+                        <div class="k"><?= lang('Store.flashSaleDiscount'); ?></div>
                         <div class="v">- Rp <?= number_format((int)$flashSale, 0, ',', '.'); ?></div>
                     </div>
                     <?php endif; ?>
 
                     <div class="sum-row">
                         <div class="k">
-                            Biaya Ongkir
+                            <?= lang('Store.shippingCost'); ?>
                             <?php if (!empty($kurir) && is_array($kurir)): ?>
                             <div class="small">
                                 <?= strtoupper(esc($kurir['nama'] ?? '')); ?>
@@ -572,7 +572,7 @@ hr {
                         </div>
                         <div class="v">
                             <?php if (!empty($kurir['gratis_ongkir'])): ?>
-                                <span class="text-success fw-bold">Gratis</span>
+                                <span class="text-success fw-bold"><?= lang('Store.free'); ?></span>
                                 <div class="small text-secondary text-decoration-line-through">
                                     Rp <?= number_format((int)($kurir['harga_asli'] ?? 0), 0, ',', '.'); ?>
                                 </div>
@@ -584,14 +584,14 @@ hr {
 
                     <div class="sum-row">
                         <div class="k">
-                            Biaya Admin Pembayaran
+                            <?= lang('Store.paymentAdminFee'); ?>
                             <div class="small"><?= strtoupper(esc($paymentMethod)); ?></div>
                         </div>
                         <div class="v">Rp <?= number_format((int)$biayaAdmin, 0, ',', '.'); ?></div>
                     </div>
                     <hr>
                     <div class="sum-row sum-total">
-                        <div class="k">TOTAL</div>
+                        <div class="k"><?= lang('Store.total'); ?></div>
                         <div class="v">Rp <?= number_format((int)$grossAmount, 0, ',', '.'); ?></div>
                     </div>
 
@@ -599,10 +599,10 @@ hr {
                     <form method="post" action="/admin/ordertoko/<?= esc($indexAddress, 'url'); ?>">
                         <?= csrf_field(); ?>
                         <input type="hidden" name="shop_order_token" value="<?= esc($shopOrderToken ?? '', 'attr'); ?>">
-                        <button type="submit" class="btn-default-merah w-100 mt-2">Pesankan</button>
+                        <button type="submit" class="btn-default-merah w-100 mt-2"><?= lang('Store.placeOrder'); ?></button>
                     </form>
                     <?php else : ?>
-                    <button onclick="bayar(event)" class="btn-default-merah w-100 mt-2">Bayar</button>
+                    <button onclick="bayar(event)" class="btn-default-merah w-100 mt-2"><?= lang('Store.pay'); ?></button>
                     <?php endif; ?>
                 </div>
             </div>
@@ -617,10 +617,10 @@ function bayar(e) {
     if (button.dataset.submitting === '1') return;
     button.dataset.submitting = '1';
     button.disabled = true;
-    button.innerHTML = "Memproses…";
+    button.innerHTML = <?= json_encode(lang('Store.processing')); ?>;
     const timeStamp = Math.floor(Date.now() / 1000);
     const form = document.getElementById('checkout-submit-form');
-    form.action = "/actionpaycore/" + btoa(timeStamp + ":" + "<?= $indexAddress; ?>");
+    form.action = <?= json_encode(ilena_store_path('/actionpaycore/')); ?> + btoa(timeStamp + ":" + "<?= $indexAddress; ?>");
     form.submit();
 }
 

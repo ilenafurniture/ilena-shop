@@ -1,5 +1,6 @@
 <?= $this->extend('layout/template'); ?>
 <?= $this->section('content'); ?>
+<?php $isEnglish = service('request')->getLocale() === 'en'; ?>
 <?php $safeArticleHtml = (new \App\Services\ArticleContentSanitizer())->sanitize((string) ($artikel['isi'] ?? '')); ?>
 <style>
 .isi-artikel h1 {
@@ -45,30 +46,30 @@
                     <div class="d-flex justify-content-between mb-1 align-items-center">
                         <div class="d-flex gap-1">
                             <?php foreach ($artikel['kategori'] as $k) { ?>
-                            <h5 class="badge rounded-pill text-bg-secondary"><?= esc(ucfirst($k)); ?></h5>
+                            <h5 class="badge rounded-pill text-bg-secondary"><?= esc(ilena_article_category_label((string) $k)); ?></h5>
                             <?php } ?>
                         </div>
                         <div class="d-flex gap-2 align-items-center">
                             <div class="d-flex gap-1 align-items-center">
-                                <form action="/addlikearticle/<?= esc($artikel['id'], 'url') ?>" method="post" class="m-0"><?= csrf_field(); ?><button type="submit" class="btn-sm border-0 bg-transparent"><i class="material-icons text-secondary" style="font-size: 13px;">thumb_up</i></button></form>
+                                <form action="<?= esc(ilena_store_path('/addlikearticle/' . $artikel['id']), 'attr'); ?>" method="post" class="m-0"><?= csrf_field(); ?><button type="submit" class="btn-sm border-0 bg-transparent" aria-label="<?= esc($isEnglish ? 'Like article' : 'Sukai artikel', 'attr'); ?>"><i class="material-icons text-secondary" style="font-size: 13px;">thumb_up</i></button></form>
                                 <?php if ($artikel['suka'] > 0) { ?>
                                 <p class="m-0" style="font-size: 13px;"><?= $artikel['suka']; ?></p>
                                 <?php } ?>
                             </div>
                             <div class="d-flex gap-1 align-items-center">
-                                <form action="/addsharearticle/<?= esc($artikel['id'], 'url') ?>" method="post" class="m-0"><?= csrf_field(); ?><button type="submit" class="btn-sm border-0 bg-transparent"><i class="material-icons text-secondary" style="font-size: 13px;">share</i></button></form>
+                                <form action="<?= esc(ilena_store_path('/addsharearticle/' . $artikel['id']), 'attr'); ?>" method="post" class="m-0"><?= csrf_field(); ?><button type="submit" class="btn-sm border-0 bg-transparent" aria-label="<?= esc($isEnglish ? 'Share article' : 'Bagikan artikel', 'attr'); ?>"><i class="material-icons text-secondary" style="font-size: 13px;">share</i></button></form>
                                 <?php if ($artikel['bagikan'] > 0) { ?>
                                 <p class="m-0" style="font-size: 13px;"><?= $artikel['bagikan']; ?></p>
                                 <?php } ?>
                             </div>
                             <?php if (session()->get('role') == 1) { ?>
-                            <a href="/editarticle/<?= $artikel['id'] ?>" class="btn btn-default">Edit</a>
+                            <a href="/editarticle/<?= $artikel['id'] ?>" class="btn btn-default"><?= $isEnglish ? 'Edit' : 'Edit'; ?></a>
                             <?php } ?>
                         </div>
                     </div>
                     <h1 class="teks-besar mb-3"><?= esc($artikel['judul'] ?? ''); ?></h1>
                     <div class="d-flex justify-content-between">
-                        <p class="m-0 text-secondary">Ditulis oleh <?= esc($artikel['penulis'] ?? ''); ?></p>
+                        <p class="m-0 text-secondary"><?= $isEnglish ? 'Written by' : 'Ditulis oleh'; ?> <?= esc($artikel['penulis'] ?? ''); ?></p>
                         <p class="m-0 text-secondary"><?= $artikel['waktu']; ?></p>
                     </div>
                     <div style="height: 1px; background-color: #888;" class="my-3"></div>
@@ -84,12 +85,12 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="d-flex gap-1 mb-3">
                             <?php foreach ($artikel['kategori'] as $k) { ?>
-                            <h5 class="badge rounded-pill text-bg-secondary"><?= esc(ucfirst($k)); ?></h5>
+                            <h5 class="badge rounded-pill text-bg-secondary"><?= esc(ilena_article_category_label((string) $k)); ?></h5>
                             <?php } ?>
                         </div>
                         <div class="d-flex gap-2 align-items-center">
                             <div class="d-flex gap-1 align-items-center">
-                                <form action="/addlikearticle/<?= esc($artikel['id'], 'url') ?>" method="post" class="m-0"><?= csrf_field(); ?><button type="submit" class="btn border-0 bg-transparent"><i class="material-icons text-secondary">thumb_up</i></button></form>
+                                <form action="<?= esc(ilena_store_path('/addlikearticle/' . $artikel['id']), 'attr'); ?>" method="post" class="m-0"><?= csrf_field(); ?><button type="submit" class="btn border-0 bg-transparent" aria-label="<?= esc($isEnglish ? 'Like article' : 'Sukai artikel', 'attr'); ?>"><i class="material-icons text-secondary">thumb_up</i></button></form>
                                 <?php if ($artikel['suka'] > 0) { ?>
                                 <p class="m-0"><?= $artikel['suka']; ?></p>
                                 <?php } ?>
@@ -98,14 +99,14 @@
                             <a href="/admin/editarticle/<?= esc($artikel['id'] ?? '', 'attr'); ?>" class="btn btn-default">Edit</a>
                             <button
                                 data-title="<?= esc($artikel['judul'] ?? '', 'attr'); ?>" data-url="/admin/deletearticle/<?= esc($artikel['id'] ?? '', 'attr'); ?>" onclick="triggerToast('Hapus artikel ' + this.dataset.title + '?', this.dataset.url)"
-                                class="btn btn-default">Hapus</button>
+                                class="btn btn-default"><?= $isEnglish ? 'Delete' : 'Hapus'; ?></button>
                             <?php } ?>
                         </div>
                     </div>
                     <h1 class="teks-besar mb-4"><?= esc($artikel['judul'] ?? ''); ?></h1>
                     <div class="d-flex justify-content-between">
-                        <p class="m-0 text-secondary">Ditulis oleh <?= esc($artikel['penulis'] ?? ''); ?></p>
-                        <p class="m-0 text-secondary">Terakhir diubah pada <?= $artikel['waktu']; ?></p>
+                        <p class="m-0 text-secondary"><?= $isEnglish ? 'Written by' : 'Ditulis oleh'; ?> <?= esc($artikel['penulis'] ?? ''); ?></p>
+                        <p class="m-0 text-secondary"><?= $isEnglish ? 'Last updated' : 'Terakhir diubah pada'; ?> <?= $artikel['waktu']; ?></p>
                     </div>
                     <div style="height: 1px; background-color: #888;" class="my-3"></div>
                     <div class="isi-artikel">
@@ -260,16 +261,16 @@
             </style>
 
             <div class="mb-5">
-                <h5 class="jdl-section mb-3">Artikel Serupa</h5>
+                <h5 class="jdl-section mb-3"><?= $isEnglish ? 'Related articles' : 'Artikel Serupa'; ?></h5>
 
                 <!-- Desktop/Grid -->
                 <div id="rel-container-desktop" class="container-artikel-list ubah-gap mb-3">
                     <?php foreach ($artikelTerkait as $ind_a => $a) { ?>
-                    <a href="/article/<?= esc($a['path'], 'attr'); ?>" class="artikel-list">
+                    <a href="<?= esc(ilena_store_path('/article/' . $a['path']), 'attr'); ?>" class="artikel-list">
                         <img class="article-card-cover" src="<?= esc($a['header'], 'attr'); ?>" alt="" loading="lazy" decoding="async" width="900" height="700">
                         <div>
                             <div style="flex: 1;" class="d-flex justify-content-end">
-                                <snap class="kategori"><?= ucwords($a['kategori'][0]); ?></snap>
+                                <snap class="kategori"><?= esc(ilena_article_category_label((string) $a['kategori'][0])); ?></snap>
                             </div>
                             <p class="tanggal"><?= $a['waktu']; ?></p>
                             <p class="judul"><?= $a['judul']; ?></p>
@@ -281,13 +282,13 @@
                 <!-- Mobile/List -->
                 <div id="rel-container-mobile" class="container-artikel-list-hp gap-3 mb-3">
                     <?php foreach ($artikelTerkait as $ind_a => $a) { ?>
-                    <a href="/article/<?= $a['path']; ?>" class="artikel-list gap-3">
+                    <a href="<?= esc(ilena_store_path('/article/' . $a['path']), 'attr'); ?>" class="artikel-list gap-3">
                         <div class="image">
                             <img src="<?= esc($a['header'], 'attr'); ?>" alt="" loading="lazy" decoding="async" width="240" height="180">
                         </div>
                         <div style="flex: 1;">
                             <div class="mb-1 tanggal">
-                                <span><?= ucwords($a['kategori'][0]); ?></span>
+                                <span><?= esc(ilena_article_category_label((string) $a['kategori'][0])); ?></span>
                                 <span class="text-secondary">•</span>
                                 <span class="text-secondary">
                                     <?= date("d", strtotime($a['waktu'])) . " " . $bulan[date("m", strtotime($a['waktu'])) - 1] . " " . date("Y", strtotime($a['waktu'])); ?>
@@ -304,7 +305,7 @@
 
             <?php if (count($produkTerkait) > 0) { ?>
             <div class="mb-5">
-                <h5 class="jdl-section">Produk Terkait</h5>
+                <h5 class="jdl-section"><?= $isEnglish ? 'Related products' : 'Produk Terkait'; ?></h5>
                 <div class="container-card1">
                     <?php foreach ($produkTerkait as $ind_p => $p) { ?>
                     <div class="card1">
@@ -318,14 +319,14 @@
                                             ? '<a class="card1-btn-img" href="/admin/editproduct/' . $p['id'] . '"><i class="material-icons">edit</i></a>'
                                             : '' ?>
                                 <?= in_array($p['id'], $wishlist)
-                                            ? '<form method="post" action="/delwishlist/' . esc($p['id'], 'attr') . '">' . csrf_field() . '<button class="card1-btn-img" type="submit"><i class="material-icons">favorite</i></button></form>'
-                                            : '<form method="post" action="/addwishlist/' . esc($p['id'], 'attr') . '">' . csrf_field() . '<button class="card1-btn-img" type="submit"><i class="material-icons">favorite_border</i></button></form>' ?>
+                                            ? '<form method="post" action="' . esc(ilena_store_path('/delwishlist/' . $p['id']), 'attr') . '">' . csrf_field() . '<button class="card1-btn-img" type="submit"><i class="material-icons">favorite</i></button></form>'
+                                            : '<form method="post" action="' . esc(ilena_store_path('/addwishlist/' . $p['id']), 'attr') . '">' . csrf_field() . '<button class="card1-btn-img" type="submit"><i class="material-icons">favorite_border</i></button></form>' ?>
                                 <form method="post" id="card<?= $ind_p ?>" class="m-0"
-                                    action="/addcart/<?= $p['id'] ?>/<?= rawurlencode(json_decode($p['varian'], true)[0]['nama']) ?>/1">
+                                    action="<?= esc(ilena_store_path('/addcart/' . $p['id'] . '/' . rawurlencode(json_decode($p['varian'], true)[0]['nama']) . '/1'), 'attr'); ?>">
                                     <?= csrf_field(); ?><button type="submit" class="card1-btn-img"><i class="material-icons">shopping_bag</i></button>
                                 </form>
                             </div>
-                            <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="gambar">
+                            <a href="<?= esc(ilena_store_path('/product/' . str_replace(' ', '-', $p['nama'])), 'attr'); ?>" class="gambar">
                                 <img class="<?= $p['gambar_hover'] ? '' : 'nonhover'; ?> img-pic" id="img<?= $ind_p ?>"
                                     src="/viewpic/<?= esc($p['id'], 'attr'); ?>" alt="<?= esc($p['nama'], 'attr'); ?>" loading="lazy" decoding="async">
                                 <img class="<?= $p['gambar_hover'] ? '' : 'nonhover'; ?> img-pic-hover"
@@ -349,14 +350,14 @@
                                 elm.addEventListener('change', (e) => {
                                     const img<?= $ind_p ?>Elm = document.getElementById(
                                         "img<?= $ind_p ?>");
-                                    img<?= $ind_p ?>Elm.src = "/viewvar/<?= $p['id']; ?>/" + e.target
+                                    img<?= $ind_p ?>Elm.src = "<?= esc(ilena_store_path('/viewvar/' . $p['id']), 'js'); ?>/" + e.target
                                         .value.split("-")[0].split(",")[0];
-                                    btnKeranjang<?= $ind_p ?>Elm.action = "/addcart/<?= $p['id'] ?>/" + encodeURIComponent(e.target.value.split("-")[1]) + "/1";
+                                    btnKeranjang<?= $ind_p ?>Elm.action = "<?= esc(ilena_store_path('/addcart/' . $p['id']), 'js'); ?>/" + encodeURIComponent(e.target.value.split("-")[1]) + "/1";
                                 })
                             });
                             </script>
                         </div>
-                        <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="text-dark">
+                        <a href="<?= esc(ilena_store_path('/product/' . str_replace(' ', '-', $p['nama'])), 'attr'); ?>" class="text-dark">
                             <p class="text-secondary text-sm-start m-0"><?= strtolower($p['kategori']); ?></p>
                             <h5 style="font-size:18px;"><?= str_replace('Tv', 'TV', ucwords($p['nama'])); ?></h5>
                             <div class="d-flex gap-2">
@@ -374,7 +375,7 @@
             <?php } ?>
 
             <div class="mx-auto mt-2" style="width: fit-content;">
-                <a href="/product" class="btn mx-auto btn-default" style="width: fit-content;">Lihat Semua Produk</a>
+                <a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>" class="btn mx-auto btn-default" style="width: fit-content;"><?= $isEnglish ? 'View all products' : 'Lihat Semua Produk'; ?></a>
             </div>
         </div>
     </div>

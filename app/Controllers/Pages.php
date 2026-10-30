@@ -231,14 +231,15 @@ class Pages extends BaseController
 
     public function index()
     {
+        $isEnglish = $this->request->getLocale() === 'en';
         $sliders = $this->gambarHeaderModel->getPublicHomeSlides();
         $homeAssets = new HomeAssetManager();
         $homePublicAssets = $homeAssets->responsivePublicUrls();
         $data = [
-            'title' => 'Home',
+            'title' => $isEnglish ? 'Home' : 'Home',
             'navbar' => $this->getNavbarData(),
-            'metaTitle' => 'Furniture Modern & Stylish untuk Rumah | Ilena Furniture',
-            'metaDeskripsi' => 'Temukan furniture modern untuk ruang tamu, kamar tidur, dan ruang keluarga di Ilena. Jelajahi koleksi pilihan untuk menghadirkan rumah yang nyaman dan berkarakter.',
+            'metaTitle' => $isEnglish ? 'Modern & Stylish Furniture for Your Home | Ilena Furniture' : 'Furniture Modern & Stylish untuk Rumah | Ilena Furniture',
+            'metaDeskripsi' => $isEnglish ? 'Discover modern furniture for your living room, bedroom, and family spaces. Explore Ilena collections designed to make your home comfortable and full of character.' : 'Temukan furniture modern untuk ruang tamu, kamar tidur, dan ruang keluarga di Ilena. Jelajahi koleksi pilihan untuk menghadirkan rumah yang nyaman dan berkarakter.',
             'metaImage' => $homePublicAssets['1742972542166.png']['1200'] ?? base_url('img/logo/N.png'),
             'metaImageAlt' => 'Inspirasi ruang dan furniture Ilena Furniture',
             'sliders' => $sliders,
@@ -322,12 +323,12 @@ class Pages extends BaseController
     public function actionFind()
     {
         $query = mb_substr(trim((string) $this->request->getVar('cari')), 0, 100);
-        return redirect()->to('/find?' . http_build_query(['q' => $query]));
+        return redirect()->to(ilena_store_path('/find?' . http_build_query(['q' => $query])));
     }
     public function find($teks)
     {
         $cari = str_replace('-', ' ', (string) $teks);
-        return redirect()->to('/find?' . http_build_query(['q' => $cari]));
+        return redirect()->to(ilena_store_path('/find?' . http_build_query(['q' => $cari])));
     }
 
     private function normalizeSmartCatalogQuery(string $value): string
@@ -874,8 +875,13 @@ class Pages extends BaseController
             }
             $product['varian'] = array_values($variantsByName);
             $ind_nama = $variantIndex;
+            $productDisplayName = ilena_product_display_name($product, $this->request->getLocale());
             $metaImageSlots = preg_split('/\s*,\s*/', (string) ($product['varian'][0]['urutan_gambar'] ?? '1')) ?: ['1'];
             $metaImageSlot = preg_replace('/[^0-9]/', '', (string) ($metaImageSlots[0] ?? '1')) ?: '1';
+            $englishProductDescription = trim((string) ($product['deskripsi']['deskripsi_en'] ?? ''));
+            $descriptionForMeta = $this->request->getLocale() === 'en' && $englishProductDescription !== ''
+                ? $englishProductDescription
+                : (string) ($product['deskripsi']['deskripsi'] ?? '');
 
             $produkSejenis = $this->barangModel
                 ->where(['subkategori' => $product['subkategori']])
@@ -894,7 +900,7 @@ class Pages extends BaseController
             }
 
             $data = [
-                'title'         => ucwords($product['nama']),
+                'title'         => ucwords($productDisplayName),
                 'navbar'        => $this->getNavbarData(),
                 'apikey_img_ilena' => $this->apikey_img_ilena,
                 'produk'        => $product,
@@ -902,10 +908,10 @@ class Pages extends BaseController
                 'produkSejenis' => $seluruhBarangFilter,
                 'produkSemua'   => $productsemua,
                 'indexNama'     => $ind_nama,
-                'metaTitle'     => ucwords($product['nama']) . ' | Ilena Furniture',
-                'metaDeskripsi' => $this->seoDescription((string) ($product['deskripsi']['deskripsi'] ?? ''), 'Lihat detail, harga, pilihan warna, dan ketersediaan ' . ucwords($product['nama']) . ' dari Ilena Furniture.'),
+                'metaTitle'     => ucwords($productDisplayName) . ' | Ilena Furniture',
+                'metaDeskripsi' => $this->seoDescription($descriptionForMeta, $this->request->getLocale() === 'en' ? 'Explore the details, price, color options, and availability of ' . ucwords($productDisplayName) . ' by Ilena Furniture.' : 'Lihat detail, harga, pilihan warna, dan ketersediaan ' . ucwords($productDisplayName) . ' dari Ilena Furniture.'),
                 'metaImage'     => base_url('product-cover/' . rawurlencode((string) $product['id'])) . '?slot=' . rawurlencode($metaImageSlot) . '&size=1000',
-                'metaImageAlt'  => ucwords($product['nama']) . ' — furniture Ilena Furniture',
+                'metaImageAlt'  => ucwords($productDisplayName) . ' — furniture Ilena Furniture',
             ];
 
             // menambah pengunjung
@@ -926,23 +932,27 @@ class Pages extends BaseController
                 $product = array_values(array_filter($product, function ($row) {
                     return (float)($row['diskon'] ?? 0) > 0;
                 }));
-                $titlePage = 'Produk Diskon';
+                $titlePage = $this->request->getLocale() === 'en' ? 'Discounted Products' : 'Produk Diskon';
             } elseif ($jenisParam === 'bundling') {
                 // (opsional) produk yang namanya mengandung "bundling" dan sedang diskon
                 $product = array_values(array_filter($product, function ($row) {
                     return (float)($row['diskon'] ?? 0) > 0
                         && stripos($row['nama'] ?? '', 'bundling') !== false;
                 }));
-                $titlePage = 'Bundling Sedang Diskon';
+                $titlePage = $this->request->getLocale() === 'en' ? 'Furniture Bundles on Sale' : 'Bundling Sedang Diskon';
             } else {
-                $titlePage = 'Produk Kami'; // default persis seperti sistem lama
+                $titlePage = $this->request->getLocale() === 'en' ? 'Our Products' : 'Produk Kami';
             }
             // ====== END TAMBAHAN ======
 
             $data = [
                 'title' => $titlePage,
-                'metaTitle' => ($jenisParam === 'diskon' ? 'Furniture Diskon' : ($jenisParam === 'bundling' ? 'Furniture Bundling' : 'Koleksi Furniture')) . ' | Ilena Furniture',
-                'metaDeskripsi' => 'Jelajahi furniture Ilena untuk berbagai ruang dan gaya hunian. Lihat detail produk, harga, pilihan warna, dan ketersediaannya.',
+                'metaTitle' => ($this->request->getLocale() === 'en'
+                    ? ($jenisParam === 'diskon' ? 'Furniture on Sale' : ($jenisParam === 'bundling' ? 'Furniture Bundles' : 'Furniture Collection'))
+                    : ($jenisParam === 'diskon' ? 'Furniture Diskon' : ($jenisParam === 'bundling' ? 'Furniture Bundling' : 'Koleksi Furniture'))) . ' | Ilena Furniture',
+                'metaDeskripsi' => $this->request->getLocale() === 'en'
+                    ? 'Explore Ilena furniture for different rooms and home styles. Compare product details, prices, colors, and availability.'
+                    : 'Jelajahi furniture Ilena untuk berbagai ruang dan gaya hunian. Lihat detail produk, harga, pilihan warna, dan ketersediaannya.',
                 'navbar' => $this->getNavbarData(),
                 'apikey_img_ilena' => $this->apikey_img_ilena,
                 'produk' => $product,
@@ -1022,7 +1032,7 @@ class Pages extends BaseController
         ];
 
         $data = [
-            'title' => 'Produk ' . ucwords(str_replace('-', ' ', $kategori)),
+            'title' => ($this->request->getLocale() === 'en' ? 'Furniture ' : 'Produk ') . ucwords(str_replace('-', ' ', $kategori)),
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'produk' => $seluruhBarangFilter,
@@ -1031,7 +1041,9 @@ class Pages extends BaseController
             'jenis' => $jenis,
             'kategori' => $kategori,
             'metaTitle' => 'Furniture ' . ucwords(str_replace('-', ' ', $kategori)) . ' | Ilena Furniture',
-            'metaDeskripsi' => $meta[$kategori]['deskripsi'],
+            'metaDeskripsi' => $this->request->getLocale() === 'en'
+                ? 'Explore the ' . ucwords(str_replace('-', ' ', $kategori)) . ' furniture collection by Ilena Furniture, with product details, color options, and availability.'
+                : ($meta[$kategori]['deskripsi'] ?? 'Temukan furniture pilihan dari Ilena Furniture.'),
         ];
         return view('pages/all', $data);
     }
@@ -1039,7 +1051,7 @@ class Pages extends BaseController
     {
         // Pastikan user terverifikasi
         if (session()->get('active') === '0') {
-            return redirect()->to('/verify');
+            return redirect()->to(ilena_store_path('/verify'));
         }
 
         // Ambil keranjang dari session (fallback ke array kosong)
@@ -1083,7 +1095,7 @@ class Pages extends BaseController
             $keranjang = array_values($keranjang);
             session()->set('keranjang', $keranjang);
             $this->syncCartToUser($keranjang);
-            return redirect()->to('/cart');
+            return redirect()->to(ilena_store_path('/cart'));
         }
 
         // Perbaiki jumlah jika stok kurang
@@ -1094,7 +1106,7 @@ class Pages extends BaseController
             }
             session()->set('keranjang', $keranjang);
             $this->syncCartToUser($keranjang);
-            return redirect()->to('/cart');
+            return redirect()->to(ilena_store_path('/cart'));
         }
 
         // Hitung total harga dan pasang detail gambar
@@ -1130,7 +1142,7 @@ class Pages extends BaseController
         $jumlah = max(1, (int)$jumlah);
         $product = $this->barangModel->getBarang($idbarang);
         if (!$product) {
-            return redirect()->to('/cart')->with('msg', 'Produk sudah tidak tersedia. Keranjang tidak berubah.');
+            return redirect()->to(ilena_store_path('/cart'))->with('msg', 'Produk sudah tidak tersedia. Keranjang tidak berubah.');
         }
 
         $variants = json_decode((string) ($product['varian'] ?? '[]'), true);
@@ -1142,7 +1154,7 @@ class Pages extends BaseController
             }
         }
         if ($availableStock === null || $availableStock < 1) {
-            return redirect()->to('/cart')->with('msg', 'Varian tidak tersedia atau stoknya habis. Keranjang tidak berubah.');
+            return redirect()->to(ilena_store_path('/cart'))->with('msg', 'Varian tidak tersedia atau stoknya habis. Keranjang tidak berubah.');
         }
 
         $keranjang = session()->get('keranjang') ?? [];
@@ -1173,7 +1185,7 @@ class Pages extends BaseController
         if ($requestedTotal > $availableStock) {
             session()->setFlashdata('msg', 'Jumlah disesuaikan dengan stok tersedia (' . $availableStock . ').');
         }
-        return redirect()->to('/cart');
+        return redirect()->to(ilena_store_path('/cart'));
     }
 
     public function reduceCart($idx)
@@ -1188,7 +1200,7 @@ class Pages extends BaseController
         $keranjang = array_values($keranjang);
         session()->set('keranjang', $keranjang);
         $this->syncCartToUser($keranjang);
-        return redirect()->to('/cart');
+        return redirect()->to(ilena_store_path('/cart'));
     }
 
     public function deleteCart($idx)
@@ -1200,7 +1212,7 @@ class Pages extends BaseController
         $keranjang = array_values($keranjang);
         session()->set('keranjang', $keranjang);
         $this->syncCartToUser($keranjang);
-        return redirect()->to('/cart');
+        return redirect()->to(ilena_store_path('/cart'));
     }
 
     private function syncCartToUser(array $cart)
@@ -1236,13 +1248,13 @@ class Pages extends BaseController
 
     public function address()
     {
-        if (session()->get('active') == '0') return redirect()->to('/verify');
+        if (session()->get('active') == '0') return redirect()->to(ilena_store_path('/verify'));
         $keranjang = session()->get('keranjang');
         if (!isset($keranjang)) {
-            return redirect()->to('/cart');
+            return redirect()->to(ilena_store_path('/cart'));
         } else {
             if (count($keranjang) <= 0) {
-                return redirect()->to('/cart');
+                return redirect()->to(ilena_store_path('/cart'));
             }
         }
         $provinsi = $this->provinsiModel->getProvinsi();
@@ -1250,7 +1262,7 @@ class Pages extends BaseController
         $cartCheck = $this->validateCheckoutCart($keranjang);
         if (!$cartCheck['ok']) {
             session()->setFlashdata('msg', $cartCheck['msg']);
-            return redirect()->to('/cart');
+            return redirect()->to(ilena_store_path('/cart'));
         }
         $keranjang = $cartCheck['cart'];
         $hargaTotal = $cartCheck['subtotal'];
@@ -1282,7 +1294,7 @@ class Pages extends BaseController
     {
         // dd($this->request->getVar());
         $checkPage = $this->request->getPost('checkpage') === 'account' ? 'account' : 'address';
-        $redirectPath = $checkPage === 'account' ? '/account' : '/address';
+        $redirectPath = ilena_store_path($checkPage === 'account' ? '/account' : '/address');
         $emailPem = CheckoutEmailPolicy::normalize($this->request->getPost('emailPem'));
         if ($emailPem === null) {
             session()->setFlashdata('msg', 'Email tidak valid atau termasuk email sementara. Gunakan email pribadi yang aktif.');
@@ -1331,7 +1343,7 @@ class Pages extends BaseController
     public function deleteAddress($ind_add, $pathname)
     {
         $alamat = $this->session->get('alamat');
-        $redirectPath = $pathname === 'account' ? '/account' : '/address';
+        $redirectPath = ilena_store_path($pathname === 'account' ? '/account' : '/address');
         if (!is_array($alamat) || !array_key_exists($ind_add, $alamat)) {
             return redirect()->to($redirectPath);
         }
@@ -1354,9 +1366,11 @@ class Pages extends BaseController
         $kecamatan = explode("-", $this->request->getVar('kecamatanEdit'));
         $kodepos = explode("-", $this->request->getVar('kodeposEdit'));
         $alamatAdd = $this->request->getVar('alamat_add');
-        $pathnameUrl = in_array($this->request->getVar('url'), ['/address', '/account'], true)
-            ? $this->request->getVar('url')
-            : '/address';
+        $postedPath = (string) $this->request->getPost('url');
+        $normalizedPath = preg_replace('#^/en(?=/|$)#', '', $postedPath) ?: '/';
+        $pathnameUrl = in_array($normalizedPath, ['/address', '/account'], true)
+            ? ilena_store_path($normalizedPath)
+            : ilena_store_path('/address');
 
         if ($emailPem === null) {
             session()->setFlashdata('msg', 'Email tidak valid atau termasuk email sementara. Gunakan email pribadi yang aktif.');
@@ -1400,22 +1414,22 @@ class Pages extends BaseController
     {
         $alamat = $this->session->get('alamat');
         if (!is_array($alamat) || !array_key_exists($ind_add, $alamat)) {
-            return redirect()->to('/address');
+            return redirect()->to(ilena_store_path('/address'));
         }
 
         $alamatselected = $alamat[$ind_add];
         if (CheckoutEmailPolicy::normalize($alamatselected['email_pemesan'] ?? null) === null) {
             session()->setFlashdata('msg', 'Email pemesan tidak valid atau termasuk email sementara. Perbarui alamat dengan email pribadi yang aktif.');
-            return redirect()->to('/address');
+            return redirect()->to(ilena_store_path('/address'));
         }
         $keranjang = $this->session->get('keranjang');
         if (!isset($keranjang)) {
-            return redirect()->to('/product');
+            return redirect()->to(ilena_store_path('/product'));
         }
         $cartCheck = $this->validateCheckoutCart($keranjang);
         if (!$cartCheck['ok']) {
             session()->setFlashdata('msg', $cartCheck['msg']);
-            return redirect()->to('/cart');
+            return redirect()->to(ilena_store_path('/cart'));
         }
         $keranjang = $cartCheck['cart'];
         $hargaTotal = $cartCheck['subtotal'];
@@ -1426,7 +1440,7 @@ class Pages extends BaseController
 
         if (empty($kurir)) {
             session()->setFlashdata('msg', 'Pilihan kurir belum tersedia untuk alamat ini. Silakan cek alamat atau hubungi admin.');
-            return redirect()->to('/address');
+            return redirect()->to(ilena_store_path('/address'));
         }
 
         $data = [
@@ -1570,14 +1584,14 @@ class Pages extends BaseController
 
     public function payment($index_kurir)
     {
-        if (session()->get('active') == '0') return redirect()->to('/verify');
+        if (session()->get('active') == '0') return redirect()->to(ilena_store_path('/verify'));
 
         $pendingId=(string)session()->get('checkout_pending_order_id');
         if ($pendingId!=='') {
             $pendingOrder=$this->pemesananModel->getPemesanan($pendingId);
             if ($pendingOrder && $this->canAccessOrder($pendingOrder) && in_array($pendingOrder['status'],['Menunggu Pembayaran','Proses','Dikirim','Selesai'],true)) {
                 if ($pendingOrder['status']!=='Menunggu Pembayaran') session()->remove(['checkout_pending_order_id','checkout_operation_fingerprint','checkout_operation_key','checkout_order_id']);
-                return redirect()->to('/orderdetail/'.rawurlencode(strtolower($pendingOrder['status'])).'?idorder='.rawurlencode($pendingId).'&access_token='.rawurlencode($this->orderAccessToken($pendingId,$pendingOrder)));
+                return redirect()->to(ilena_store_path('/orderdetail/'.rawurlencode(strtolower($pendingOrder['status'])).'?idorder='.rawurlencode($pendingId).'&access_token='.rawurlencode($this->orderAccessToken($pendingId,$pendingOrder))));
             }
             session()->remove(['checkout_pending_order_id','checkout_operation_fingerprint','checkout_operation_key','checkout_order_id']);
         }
@@ -1586,25 +1600,25 @@ class Pages extends BaseController
         $alamatselected = $this->session->get('alamatTerpilih');
         $kurir = $this->session->get('kurir');
 
-        if (!is_array($alamatselected) || empty($alamatselected)) return redirect()->to('/address');
+        if (!is_array($alamatselected) || empty($alamatselected)) return redirect()->to(ilena_store_path('/address'));
         $paymentEmailCandidate = session()->get('isLogin') && (string)session()->get('email') !== '' && (string)session()->get('email') !== 'tamu'
             ? session()->get('email')
             : ($alamatselected['email_pemesan'] ?? null);
         if (CheckoutEmailPolicy::normalize($paymentEmailCandidate) === null
             || CheckoutEmailPolicy::normalize($alamatselected['email_pemesan'] ?? null) === null) {
             session()->setFlashdata('msg', 'Email pemesan tidak valid atau termasuk email sementara. Perbarui alamat dengan email pribadi yang aktif.');
-            return redirect()->to('/address');
+            return redirect()->to(ilena_store_path('/address'));
         }
-        if (!is_array($kurir) || !array_key_exists($index_kurir, $kurir)) return redirect()->to('/address');
+        if (!is_array($kurir) || !array_key_exists($index_kurir, $kurir)) return redirect()->to(ilena_store_path('/address'));
         if (!is_array($keranjang) || empty($keranjang)) {
             session()->setFlashdata('msg','Keranjangmu kosong.');
-            return redirect()->to('/cart');
+            return redirect()->to(ilena_store_path('/cart'));
         }
 
         $cartCheck = $this->validateCheckoutCart($keranjang);
         if (!$cartCheck['ok']) {
             session()->setFlashdata('msg', $cartCheck['msg']);
-            return redirect()->to('/cart');
+            return redirect()->to(ilena_store_path('/cart'));
         }
         $keranjang = $cartCheck['cart'];
         $hargaTotal = (float)$cartCheck['subtotal'];
@@ -1795,25 +1809,25 @@ class Pages extends BaseController
         $method = strtolower(trim((string)$method));
         if (!array_key_exists($method, $this->paymentFees())) {
             session()->setFlashdata('msg', 'Metode pembayaran tidak valid.');
-            return redirect()->to('/payment/' . $ind_add);
+            return redirect()->to(ilena_store_path('/payment/' . $ind_add));
         }
 
         session()->set('payment_method', $method);
-        return redirect()->to('/payment/' . $ind_add);
+        return redirect()->to(ilena_store_path('/payment/' . $ind_add));
     }
 
     public function useVoucher($data)
     {
         [$ind_voucher, $ind_address] = explode('-', $data);
         session()->set('voucher', $ind_voucher);
-        return redirect()->to('/payment/' . $ind_address);
+        return redirect()->to(ilena_store_path('/payment/' . $ind_address));
     }
 
     public function cancelVoucher($data)
     {
         [$ind_voucher, $ind_address] = explode('-', $data);
         session()->remove('voucher');
-        return redirect()->to('/payment/' . $ind_address);
+        return redirect()->to(ilena_store_path('/payment/' . $ind_address));
     }
 
     private function validateVoucherByCode(string $code, string $email, float $subtotal): array
@@ -1914,7 +1928,7 @@ class Pages extends BaseController
         log_message('debug', '[REDEEM] method='.$this->request->getMethod().' ind_add='.$ind_add);
 
         if (strtolower($this->request->getMethod()) !== 'post') {
-            return redirect()->to('/payment/'.$ind_add);
+            return redirect()->to(ilena_store_path('/payment/' . $ind_add));
         }
 
         // Terima `code` atau `kode` (kompat semua view)
@@ -1924,21 +1938,21 @@ class Pages extends BaseController
 
         if ($code === '') {
             session()->setFlashdata('msg','Kode voucher kosong.');
-            return redirect()->to('/payment/'.$ind_add);
+            return redirect()->to(ilena_store_path('/payment/' . $ind_add));
         }
 
         // Cek alamat & keranjang
         $alamatTerpilih = $this->session->get('alamatTerpilih');
         if (!is_array($alamatTerpilih) || empty($alamatTerpilih)) {
             session()->setFlashdata('msg','Alamat tidak valid.');
-            return redirect()->to('/payment/'.$ind_add);
+            return redirect()->to(ilena_store_path('/payment/' . $ind_add));
         }
         $email = (string)($alamatTerpilih['email_pemesan'] ?? '');
 
         $keranjang = $this->session->get('keranjang');
         if (!is_array($keranjang) || empty($keranjang)) {
             session()->setFlashdata('msg','Keranjang kosong.');
-            return redirect()->to('/payment/'.$ind_add);
+            return redirect()->to(ilena_store_path('/payment/' . $ind_add));
         }
 
         // Hitung subtotal (setara payment())
@@ -1958,7 +1972,7 @@ class Pages extends BaseController
         $row = $this->voucherModel->where('LOWER(kode)', strtolower($code))->first();
         if (!$row) {
             session()->setFlashdata('msg','Kode voucher tidak ditemukan.');
-            return redirect()->to('/payment/'.$ind_add);
+            return redirect()->to(ilena_store_path('/payment/' . $ind_add));
         }
         log_message('debug', '[REDEEM] voucher found id='.$row['id'].' kode='.$row['kode']);
 
@@ -1969,7 +1983,7 @@ class Pages extends BaseController
             $reason = (string)($elig['msg'] ?? 'Voucher tidak memenuhi syarat.');
             session()->setFlashdata('msg', $reason);
             log_message('debug', '[REDEEM] not eligible: '.$reason);
-            return redirect()->to('/payment/'.$ind_add);
+            return redirect()->to(ilena_store_path('/payment/' . $ind_add));
         }
 
         // CLAIM BERHASIL → tambahkan ke daftar pilihan (bukan auto-apply)
@@ -1985,7 +1999,7 @@ class Pages extends BaseController
         $msg = 'Voucher "'.$row['kode'].'" berhasil diklaim.';
         session()->setFlashdata('msg', $msg);
 
-        return redirect()->to('/payment/'.$ind_add);
+        return redirect()->to(ilena_store_path('/payment/' . $ind_add));
     }
 
 
@@ -2093,7 +2107,7 @@ class Pages extends BaseController
     public function removeVoucher($ind_add)
     {
         $this->session->remove('voucher');
-        return redirect()->to('/payment/'.$ind_add);
+        return redirect()->to(ilena_store_path('/payment/' . $ind_add));
     }
 
     private function midtransTestEmails(): array
@@ -2552,27 +2566,28 @@ class Pages extends BaseController
         if (!$this->request->is('post')) {
             return $this->response->setStatusCode(405)->setBody('Metode checkout tidak valid.');
         }
+        session()->set('ilena_checkout_locale', $this->request->getLocale() === 'en' ? 'en' : 'id');
         $deCodeToken = base64_decode($token, true);
         if (!is_string($deCodeToken)) {
             session()->setFlashdata('msg', 'Token checkout tidak valid.');
-            return redirect()->to('/address');
+            return redirect()->to(ilena_store_path('/address'));
         }
         $parts = explode(':', $deCodeToken);
         if (count($parts) < 2) {
             session()->setFlashdata('msg', 'Token tidak valid');
-            return redirect()->to('/address');
+            return redirect()->to(ilena_store_path('/address'));
         }
 
         [$stamp, $index_kurir] = $parts;
         if (!is_numeric($stamp) || (time() - (int)$stamp) > 600 || (int)$stamp > time() + 60) {
             session()->setFlashdata('msg', 'Token kadaluarsa, silakan ulangi pembayaran');
-            return redirect()->to('/payment/' . $index_kurir);
+            return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
         }
         $expectedNonce = (string)session()->get('checkout_nonce');
         $submittedNonce = (string)$this->request->getPost('checkout_nonce');
         if ($expectedNonce === '' || $submittedNonce === '' || !hash_equals($expectedNonce, $submittedNonce)) {
             session()->setFlashdata('msg', 'Permintaan checkout sudah digunakan atau kedaluwarsa. Periksa status pesanan sebelum mencoba lagi.');
-            return redirect()->to('/payment/' . $index_kurir);
+            return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
         }
 
         $pembayaran = (string)session()->get('payment_method');
@@ -2580,21 +2595,21 @@ class Pages extends BaseController
         $kurir = session()->get('kurir');
         if (!is_array($alamatselected) || empty($alamatselected)) {
             session()->setFlashdata('msg','Alamat tidak ditemukan, silakan ulangi.');
-            return redirect()->to('/address');
+            return redirect()->to(ilena_store_path('/address'));
         }
         $checkoutContactEmail = CheckoutEmailPolicy::normalize($alamatselected['email_pemesan'] ?? null);
         if ($checkoutContactEmail === null) {
             session()->setFlashdata('msg', 'Email pemesan tidak valid atau termasuk email sementara. Perbarui alamat dengan email pribadi yang aktif.');
-            return redirect()->to('/address');
+            return redirect()->to(ilena_store_path('/address'));
         }
         if (!is_array($kurir) || !array_key_exists($index_kurir, $kurir)) {
             session()->setFlashdata('msg','Kurir tidak ditemukan, silakan pilih ulang.');
-            return redirect()->to('/address');
+            return redirect()->to(ilena_store_path('/address'));
         }
 
         if ($pembayaran === 'card' && !$this->validate(['tokencc'=>'required'])) {
             session()->setFlashdata('msg','Data kartu belum lengkap');
-            return redirect()->to('/payment/' . $index_kurir)->withInput();
+            return redirect()->to(ilena_store_path('/payment/' . $index_kurir))->withInput();
         }
 
         $sessionEmail = (string)session()->get('email');
@@ -2602,7 +2617,7 @@ class Pages extends BaseController
         $paymentEmail = CheckoutEmailPolicy::normalize($paymentEmailCandidate);
         if ($paymentEmail === null) {
             session()->setFlashdata('msg', 'Email pemesan tidak valid atau termasuk email sementara. Perbarui alamat dengan email pribadi yang aktif.');
-            return redirect()->to('/address');
+            return redirect()->to(ilena_store_path('/address'));
         }
         $email = PaymentSafety::normalizeEmail($paymentEmail);
         $isSandboxCheckout = session()->get('isLogin') && $sessionEmail !== 'tamu' && PaymentSafety::isTestEmail($sessionEmail, $this->midtransTestEmails());
@@ -2616,7 +2631,7 @@ class Pages extends BaseController
         $cartCheck = $this->validateCheckoutCart((array)(session()->get('keranjang') ?? []));
         if (!$cartCheck['ok']) {
             session()->setFlashdata('msg', $cartCheck['msg']);
-            return redirect()->to('/cart');
+            return redirect()->to(ilena_store_path('/cart'));
         }
 
         $subtotal = (float)$cartCheck['subtotal'];
@@ -2662,7 +2677,7 @@ class Pages extends BaseController
                 $elig = $this->checkVoucherEligibility($vd, $email, $subtotal);
                 if (empty($elig['ok'])) {
                     session()->setFlashdata('msg', $elig['msg'] ?? 'Voucher tidak memenuhi syarat.');
-                    return redirect()->to('/payment/' . $index_kurir);
+                    return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
                 }
                 $diskonVoucher = (int)($elig['cut'] ?? 0);
                 $voucher = ['d' => $diskonVoucher, 'id' => $vd['id'], 'kode' => $vd['kode']];
@@ -2703,16 +2718,16 @@ class Pages extends BaseController
         $currentFingerprint = \App\Services\CheckoutState::fingerprint($cartCheck['cart'], $alamatselected, $kurirTerpilih, $pembayaran, session()->get('voucher'));
         if (!hash_equals((string)session()->get('checkout_operation_fingerprint'), $currentFingerprint)) {
             session()->setFlashdata('msg', 'Keranjang atau pilihan pembayaran berubah. Periksa kembali ringkasan sebelum membayar.');
-            return redirect()->to('/payment/' . $index_kurir);
+            return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
         }
         if ($idFix === '' || $idempotencyKey === '') {
             session()->setFlashdata('msg', 'Sesi checkout kedaluwarsa. Muat ulang pembayaran sebelum melanjutkan.');
-            return redirect()->to('/payment/' . $index_kurir);
+            return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
         }
         $existingOrder = $this->pemesananModel->getPemesanan($idFix);
         if ($existingOrder) {
-            return redirect()->to('/orderdetail/' . rawurlencode(strtolower((string)$existingOrder['status']))
-                . '?idorder=' . rawurlencode($idFix) . '&access_token=' . rawurlencode($this->orderAccessToken($idFix)));
+            return redirect()->to(ilena_store_path('/orderdetail/' . rawurlencode(strtolower((string)$existingOrder['status']))
+                . '?idorder=' . rawurlencode($idFix) . '&access_token=' . rawurlencode($this->orderAccessToken($idFix))));
         }
 
         $voucherReservationCreated = false;
@@ -2721,13 +2736,13 @@ class Pages extends BaseController
                 $voucherReservation = (new \App\Services\Payments\VoucherReservationService())->reserve((int) $voucher['id'], $idFix, $email);
                 if (empty($voucherReservation['ok'])) {
                     session()->setFlashdata('msg', $voucherReservation['message'] ?? 'Voucher baru saja mencapai batas pemakaian.');
-                    return redirect()->to('/payment/' . $index_kurir);
+                    return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
                 }
                 $voucherReservationCreated = empty($voucherReservation['existing']);
             } catch (\Throwable $error) {
                 log_message('error', 'Voucher checkout reservation failed for {order}: {error}', ['order' => $idFix, 'error' => $error->getMessage()]);
                 session()->setFlashdata('msg', 'Voucher sedang tidak dapat diamankan. Coba kembali sebentar lagi.');
-                return redirect()->to('/payment/' . $index_kurir);
+                return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
             }
         }
 
@@ -2783,7 +2798,7 @@ class Pages extends BaseController
                 $arrPostField["credit_card"] = ["token_id"=>$this->request->getPost('tokencc')];
                 break;
             default:
-                return redirect()->to('/payment/' . $index_kurir);
+                return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
         }
 
         if (!$isSandboxCheckout) {
@@ -2793,12 +2808,12 @@ class Pages extends BaseController
                 if ($voucherReservationCreated) (new \App\Services\Payments\VoucherReservationService())->release($idFix);
                 log_message('error', 'Could not reserve checkout stock for {order}: {error}', ['order' => $idFix, 'error' => $error->getMessage()]);
                 session()->setFlashdata('msg', 'Stok belum dapat diamankan. Coba kembali setelah beberapa saat.');
-                return redirect()->to('/payment/' . $index_kurir);
+                return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
             }
             if (empty($reservation['ok'])) {
                 if ($voucherReservationCreated) (new \App\Services\Payments\VoucherReservationService())->release($idFix);
                 session()->setFlashdata('msg', $reservation['message'] ?? 'Stok berubah. Perbarui keranjang sebelum membayar.');
-                return redirect()->to('/cart');
+                return redirect()->to(ilena_store_path('/cart'));
             }
         }
 
@@ -2818,7 +2833,7 @@ class Pages extends BaseController
             if (!$isSandboxCheckout) (new \App\Services\Payments\StockReservationService())->release($idFix);
             if ($voucherReservationCreated) (new \App\Services\Payments\VoucherReservationService())->release($idFix);
             log_message('error','Checkout persistence failed: {error}',['error'=>$error->getMessage()]);
-            return redirect()->to('/payment/'.$index_kurir)->with('msg','Pesanan belum tersimpan; belum ada permintaan pembayaran dikirim.');
+            return redirect()->to(ilena_store_path('/payment/' . $index_kurir))->with('msg','Pesanan belum tersimpan; belum ada permintaan pembayaran dikirim.');
         }
         $orderTokens=(array)session()->get('checkout_order_tokens'); $orderTokens[$idFix]=$accessToken;
         session()->set('checkout_order_tokens',array_slice($orderTokens,-20,null,true));
@@ -2852,20 +2867,20 @@ class Pages extends BaseController
                 'error' => $err,
             ]);
             session()->setFlashdata('msg', 'Pembayaran belum mendapat konfirmasi. Pesanan belum ditampilkan sebagai berhasil; muat ulang dan periksa status sebelum mencoba lagi.');
-            return redirect()->to('/orderdetail/menunggu%20pembayaran?idorder='.rawurlencode($idFix).'&access_token='.rawurlencode($accessToken));
+            return redirect()->to(ilena_store_path('/orderdetail/menunggu%20pembayaran?idorder='.rawurlencode($idFix).'&access_token='.rawurlencode($accessToken)));
         }
         $hasilMidtrans = json_decode((string)$response, true);
         if (substr($hasilMidtrans['status_code'] ?? '', 0, 1) !== '2') {
             // Unknown/duplicate/provider failures must not start a second payment.
             if ($httpCode >= 500 || $httpCode === 409 || in_array((string)($hasilMidtrans['status_code']??''),['406','409','500','502','503','504'],true) || !is_array($hasilMidtrans)) {
-                return redirect()->to('/orderdetail/menunggu%20pembayaran?idorder='.rawurlencode($idFix).'&access_token='.rawurlencode($accessToken));
+                return redirect()->to(ilena_store_path('/orderdetail/menunggu%20pembayaran?idorder='.rawurlencode($idFix).'&access_token='.rawurlencode($accessToken)));
             }
             $this->pemesananModel->where('id_midtrans',$idFix)->where('status','Menunggu Pembayaran')->set(['status'=>'Gagal'])->update();
             if (db_connect()->affectedRows()===1 && !$isSandboxCheckout) (new \App\Services\Payments\StockReservationService())->release($idFix);
             if (!$isSandboxCheckout) (new \App\Services\Payments\VoucherReservationService())->release($idFix);
             session()->remove(['checkout_pending_order_id','checkout_operation_fingerprint','checkout_order_id','checkout_operation_key']);
             session()->setFlashdata('msg', $hasilMidtrans['status_message'] ?? 'Transaksi gagal');
-            return redirect()->to('/payment/' . $index_kurir);
+            return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
         }
 
         try {
@@ -2877,12 +2892,12 @@ class Pages extends BaseController
             if (in_array($status,['Proses','Menunggu Pembayaran'],true)) $this->syncOrderToIlenaSistem($trx);
         } catch (\Throwable $e) {
             log_message('error','Charge response reconciliation pending for {order}: {error}',['order'=>$idFix,'error'=>$e->getMessage()]);
-            return redirect()->to('/orderdetail/menunggu%20pembayaran?idorder='.rawurlencode($idFix).'&access_token='.rawurlencode($this->orderAccessToken($idFix)));
+            return redirect()->to(ilena_store_path('/orderdetail/menunggu%20pembayaran?idorder='.rawurlencode($idFix).'&access_token='.rawurlencode($this->orderAccessToken($idFix))));
         }
         session()->remove(['voucher', 'voucher_claimed', 'keranjang', 'kurir', 'kurirTerpilih', 'alamatTerpilih', 'hargaKeseluruhan', 'checkout_nonce', 'checkout_operation_fingerprint', 'checkout_operation_created_at', 'checkout_operation_key', 'checkout_order_id', 'checkout_pending_order_id']);
         $this->syncCartToUser([]);
 
-        return redirect()->to('/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($idFix) . '&access_token=' . rawurlencode($this->orderAccessToken($idFix)));
+        return redirect()->to(ilena_store_path('/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($idFix) . '&access_token=' . rawurlencode($this->orderAccessToken($idFix))));
     }
 
     public function updateTransaction()
@@ -3047,12 +3062,16 @@ class Pages extends BaseController
             'order_id' => $orderId,
             'status' => $status,
             'paid' => in_array($status, ['Proses', 'Dikirim', 'Selesai'], true),
-            'detail_url' => site_url('/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId) . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $order))),
+            'detail_url' => site_url(ilena_store_path('/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId) . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $order)))),
         ]);
     }
 
     private function redirectFromMidtrans(string $fallbackStatus = 'Menunggu Pembayaran')
     {
+        $checkoutLocale = (string) (session()->get('ilena_checkout_locale') ?? '');
+        $redirectLocale = in_array($checkoutLocale, ['id', 'en'], true)
+            ? $checkoutLocale
+            : $this->request->getLocale();
         $orderId = (string)(
             $this->request->getGet('order_id')
             ?? $this->request->getGet('idorder')
@@ -3060,14 +3079,14 @@ class Pages extends BaseController
         );
 
         if ($orderId === '') {
-            return redirect()->to('/order');
+            return redirect()->to(ilena_store_path('/order', $redirectLocale));
         }
 
         if ($this->isLunareaOrderId($orderId)) {
             return redirect()->to('https://lunareafurniture.com/order/' . rawurlencode($orderId));
         }
         $order = $this->pemesananModel->getPemesanan($orderId);
-        if (!$order || !$this->canAccessOrder($order)) return redirect()->to('/order');
+        if (!$order || !$this->canAccessOrder($order)) return redirect()->to(ilena_store_path('/order', $redirectLocale));
         $status = $fallbackStatus;
         $order = $this->pemesananModel->getPemesanan($orderId);
         if ($order && !empty($order['status'])) {
@@ -3085,7 +3104,8 @@ class Pages extends BaseController
             return redirect()->to('https://lunareafurniture.com/order/' . rawurlencode($orderId));
         }
 
-        return redirect()->to('/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId) . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $order)));
+        $detailPath = '/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId) . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $order));
+        return redirect()->to(ilena_store_path($detailPath, $redirectLocale));
     }
 
     public function cancelCustomerOrder(string $orderId)
@@ -3096,8 +3116,8 @@ class Pages extends BaseController
         }
         if (($order['status'] ?? '') !== 'Menunggu Pembayaran') {
             session()->setFlashdata('order_action_message', 'Pesanan ini sudah tidak dapat dibatalkan dari halaman ini.');
-            return redirect()->to('/orderdetail/' . rawurlencode(strtolower((string)$order['status']))
-                . '?idorder=' . rawurlencode($orderId) . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $order)));
+            return redirect()->to(ilena_store_path('/orderdetail/' . rawurlencode(strtolower((string)$order['status']))
+                . '?idorder=' . rawurlencode($orderId) . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $order))));
         }
 
         $environment = PaymentSafety::environment($order, $this->midtransTestEmails(), 'email');
@@ -3170,8 +3190,8 @@ class Pages extends BaseController
             $this->deleteOrderFromIlenaSistem($updatedOrder);
             $this->sendOrderPaymentEmail($updatedOrder, 'Dibatalkan');
         }
-        return redirect()->to('/orderdetail/dibatalkan?idorder=' . rawurlencode($orderId)
-            . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $updatedOrder)));
+        return redirect()->to(ilena_store_path('/orderdetail/dibatalkan?idorder=' . rawurlencode($orderId)
+            . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $updatedOrder))));
     }
 
     public function cancelOrder($id_midtrans)
@@ -4310,7 +4330,7 @@ class Pages extends BaseController
             case 'gagal':
                 return view('pages/detailOrderBatal', $data);
             default:
-                return redirect()->to('/order');
+                return redirect()->to(ilena_store_path('/order'));
                 break;
         }
     }
@@ -4374,7 +4394,9 @@ class Pages extends BaseController
             }
         }
 
-        $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+        $bulan = $this->request->getLocale() === 'en'
+            ? ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            : ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
         return [
             'title' => 'Print Preview',
             'navbar' => $this->getNavbarData(),
@@ -4444,7 +4466,7 @@ class Pages extends BaseController
                     ->update();
             }
 
-            return redirect()->to('/wishlist');
+            return redirect()->to(ilena_store_path('/wishlist'));
         }
 
         foreach ($wishlist as $w) {
@@ -4513,10 +4535,10 @@ class Pages extends BaseController
         // Non-AJAX: tetap seperti sistem lama (redirect ke product)
         $barang = $this->barangModel->getBarang($id_barang);
         if ($barang && !empty($barang['nama'])) {
-            return redirect()->to('/product/' . str_replace(' ', '-', $barang['nama']));
+            return redirect()->to(ilena_store_path('/product/' . str_replace(' ', '-', $barang['nama'])));
         }
         // Fallback aman jika barang sudah tidak ada
-        return redirect()->to('/wishlist');
+        return redirect()->to(ilena_store_path('/wishlist'));
     }
 
     public function delWishlist($id_barang)
@@ -4558,10 +4580,10 @@ class Pages extends BaseController
         // Non-AJAX (tetap jalur lama): redirect ke halaman produk terkait
         $barang = $this->barangModel->getBarang($id_barang);
         if ($barang && !empty($barang['nama'])) {
-            return redirect()->to('/product/' . str_replace(' ', '-', $barang['nama']));
+            return redirect()->to(ilena_store_path('/product/' . str_replace(' ', '-', $barang['nama'])));
         }
         // Fallback aman
-        return redirect()->to('/wishlist');
+        return redirect()->to(ilena_store_path('/wishlist'));
     }
 
     public function wishlistToCart()
@@ -4614,14 +4636,14 @@ class Pages extends BaseController
                 ->update();
         }
 
-        return redirect()->to('/cart');
+        return redirect()->to(ilena_store_path('/cart'));
     }
 
 
     public function actionSearchArticle()
     {
         $cari = $this->request->getVar('cari');
-        return redirect()->to('/article/find/' . str_replace(' ', '-', $cari));
+        return redirect()->to(ilena_store_path('/article/find/' . str_replace(' ', '-', (string) $cari)));
     }
     public function findArticle($cari)
     {
@@ -4629,6 +4651,9 @@ class Pages extends BaseController
         $this->artikelModel->groupStart();
         foreach ($kataKunci as $kata) {
             $this->artikelModel->orLike('judul', $kata, 'both');
+            if ($this->request->getLocale() === 'en') {
+                $this->artikelModel->orLike('judul_en', $kata, 'both');
+            }
         }
         $this->artikelModel->groupEnd();
         $relevan = $this->artikelModel->findAll();
@@ -4659,8 +4684,12 @@ class Pages extends BaseController
 
         // Gabungkan dua hasil
         $artikel = array_merge($relevan, $tambahan);
-        $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+        $bulan = $this->request->getLocale() === 'en'
+            ? ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            : ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
         $artikelPopuler = $this->artikelModel->orderBy('pengunjung', 'desc')->limit(3, 0)->findAll();
+        $artikel = array_map(static fn (array $row): array => ilena_localize_article_record($row), $artikel);
+        $artikelPopuler = array_map(static fn (array $row): array => ilena_localize_article_record($row), $artikelPopuler);
         $artikel3Baru = [];
         foreach ($artikel as $ind_a => $a) {
             $artikel[$ind_a]['kategori'] = explode(",", $a['kategori']);
@@ -4677,8 +4706,11 @@ class Pages extends BaseController
             }
         }
 
+        $isEnglish = $this->request->getLocale() === 'en';
         $data = [
-            'title' => 'Artikel',
+            'title' => $isEnglish ? 'Articles' : 'Artikel',
+            'metaTitle' => $isEnglish ? 'Home & Furniture Inspiration | Ilena Furniture Articles' : 'Inspirasi Rumah & Furniture | Artikel Ilena Furniture',
+            'metaDeskripsi' => $isEnglish ? 'Explore room styling inspiration, furniture guides, and home stories from Ilena Furniture.' : 'Baca inspirasi penataan ruang, panduan memilih furniture, dan cerita seputar hunian dari Ilena Furniture.',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'artikel' => array_values(array_filter($artikel, function ($value, $key) {
@@ -4729,16 +4761,16 @@ class Pages extends BaseController
         ]);
         if (!$validForm) {
             session()->setFlashdata('msg', 'Form login kedaluwarsa. Silakan muat ulang halaman dan coba lagi.');
-            return redirect()->to('/login');
+            return redirect()->to(ilena_store_path('/login'));
         }
         if (!(new \App\Services\Auth\AuthAttemptLimiter())->allow('login', (string)$this->request->getIPAddress(), $emailIdentity, 20, 8, 900)) {
             session()->setFlashdata('msg', 'Terlalu banyak percobaan login. Tunggu beberapa saat lalu coba lagi.');
-            return redirect()->to('/login');
+            return redirect()->to(ilena_store_path('/login'));
         }
         $captchaError = (new \App\Services\Auth\RecaptchaVerifier())->error($this->request->getPost('g-recaptcha-response'));
         if ($captchaError !== null) {
             session()->setFlashdata('captcha_error', $captchaError);
-            return redirect()->to('/login')->withInput();
+            return redirect()->to(ilena_store_path('/login'))->withInput();
         }
 
         if (!$this->validate([
@@ -4758,7 +4790,7 @@ class Pages extends BaseController
             $validation = \Config\Services::validation();
             session()->setFlashdata('val-email', $validation->getError('email'));
             session()->setFlashdata('val-sandi', $validation->getError('sandi'));
-            return redirect()->to('/login')->withInput();
+            return redirect()->to(ilena_store_path('/login'))->withInput();
         }
 
         $email = $this->request->getVar('email');
@@ -4766,12 +4798,12 @@ class Pages extends BaseController
         $getUser = $this->userModel->getUser($email);
         if (!$getUser) {
             session()->setFlashdata('msg', 'Email atau kata sandi salah');
-            return redirect()->to('/login');
+            return redirect()->to(ilena_store_path('/login'));
         }
         $authSandi = password_verify($sandi, $getUser['sandi']);
         if (!$authSandi) {
             session()->setFlashdata('msg', 'Email atau kata sandi salah');
-            return redirect()->to('/login');
+            return redirect()->to(ilena_store_path('/login'));
         }
 
         if (in_array((string)($getUser['role'] ?? ''), ['0', '4'], true)) {
@@ -4780,7 +4812,7 @@ class Pages extends BaseController
                 $until = new \DateTimeImmutable($suspension['until'], new \DateTimeZone('UTC'));
                 $when = $until->format('d M Y H:i') . ' UTC';
                 session()->setFlashdata('msg', 'Akun Anda ditangguhkan ' . $when . '. Silakan hubungi admin.');
-                return redirect()->to('/login');
+                return redirect()->to(ilena_store_path('/login'));
             }
         }
 
@@ -4803,7 +4835,7 @@ class Pages extends BaseController
             session()->regenerate(true);
             session()->set($ses_data);
             session()->setFlashdata('msg', "Email " . $email . " perlu diverifikasi");
-            return redirect()->to('/verify');
+            return redirect()->to(ilena_store_path('/verify'));
         }
         $rbacService = new AdminRbacService();
         $userRole = (string) ($getUser['role'] ?? '');
@@ -4812,7 +4844,7 @@ class Pages extends BaseController
         if ($userRole === '5' || $hasAdminAssignment) {
             if (!$hasAdminAssignment) {
                 session()->setFlashdata('msg', 'Akses admin belum aktif untuk email ini.');
-                return redirect()->to('/login');
+                return redirect()->to(ilena_store_path('/login'));
             }
 
             // Legacy/user roles with an explicit RBAC assignment are promoted
@@ -4826,7 +4858,7 @@ class Pages extends BaseController
                 $getUser = $this->userModel->getUser((string) $getUser['email']);
                 if (!$getUser || (string) ($getUser['role'] ?? '') !== '5') {
                     session()->setFlashdata('msg', 'Akses admin belum aktif untuk email ini.');
-                    return redirect()->to('/login');
+                    return redirect()->to(ilena_store_path('/login'));
                 }
             }
 
@@ -4882,7 +4914,7 @@ class Pages extends BaseController
             session()->regenerate(true);
             session()->set($ses_data);
             $this->mergePendingGuestState();
-            return redirect()->to(!empty(session()->get('keranjang')) ? '/cart' : site_url('/'));
+            return redirect()->to(ilena_store_path(!empty(session()->get('keranjang')) ? '/cart' : '/'));
         } else if ($getUser['role'] == '1') {
             $ses_data = [
                 'active' => '1',
@@ -4895,7 +4927,7 @@ class Pages extends BaseController
             session()->set($ses_data);
             return redirect()->to('/admin');
         } else if (in_array((string)$getUser['role'], ['2', '3'], true)) {
-            return redirect()->to('/login')->with('msg', 'Akses akun ini belum diatur. Hubungi Admin utama.');
+            return redirect()->to(ilena_store_path('/login'))->with('msg', 'Akses akun ini belum diatur. Hubungi Admin utama.');
         }
     }
     private function mergePendingGuestState(): void
@@ -4927,27 +4959,27 @@ class Pages extends BaseController
         $user = $email !== '' ? $this->userModel->findByEmailIdentity($email) : null;
         if (!$user || empty($user['sandi']) || !password_verify($sandiLama, (string) $user['sandi'])) {
             session()->setFlashdata('msg-sandi', 'Kata sandi saat ini tidak sesuai.');
-            return redirect()->to('/' . $path);
+            return redirect()->to(ilena_store_path('/' . $path));
         }
         if (strlen($sandi) < 12 || strlen($sandi) > 72 || str_contains($sandi, "\0")) {
             session()->setFlashdata('msg-sandi', 'Kata sandi baru harus terdiri dari 12–72 byte.');
-            return redirect()->to('/' . $path);
+            return redirect()->to(ilena_store_path('/' . $path));
         }
         if (!hash_equals($sandi, $sandiKonfirm)) {
             session()->setFlashdata('msg-sandi', 'Sandi yang terkonfirmasi tidak cocok');
-            return redirect()->to('/' . $path);
+            return redirect()->to(ilena_store_path('/' . $path));
         }
         $updated = $this->userModel->where(['email' => $user['email']])->set([
             'sandi' => password_hash($sandi, PASSWORD_DEFAULT),
         ])->update();
         if (!$updated) {
             session()->setFlashdata('msg-sandi', 'Perubahan kata sandi gagal. Silakan coba kembali.');
-            return redirect()->to('/' . $path);
+            return redirect()->to(ilena_store_path('/' . $path));
         }
         // Rotate the current session ID after a credential change.
         session()->regenerate(true);
         session()->setFlashdata('msg-sandi', 'Sandi Anda berhasil diubah');
-        return redirect()->to('/' . $path);
+        return redirect()->to(ilena_store_path('/' . $path));
     }
     public function register()
     {
@@ -4982,16 +5014,16 @@ class Pages extends BaseController
         ], 3);
         if (!$validForm) {
             session()->setFlashdata('msg', 'Form pendaftaran kedaluwarsa atau tidak valid. Silakan muat ulang halaman.');
-            return redirect()->to('/register');
+            return redirect()->to(ilena_store_path('/register'));
         }
         if (!(new \App\Services\Auth\AuthAttemptLimiter())->allow('register', (string)$this->request->getIPAddress(), $emailIdentity, 8, 3, 3600)) {
             session()->setFlashdata('msg', 'Terlalu banyak percobaan pendaftaran. Coba lagi nanti.');
-            return redirect()->to('/register')->withInput();
+            return redirect()->to(ilena_store_path('/register'))->withInput();
         }
         $captchaError = (new \App\Services\Auth\RecaptchaVerifier())->error($this->request->getPost('g-recaptcha-response'));
         if ($captchaError !== null) {
             session()->setFlashdata('captcha_error', $captchaError);
-            return redirect()->to('/register')->withInput();
+            return redirect()->to(ilena_store_path('/register'))->withInput();
         }
 
         $errors = (new \App\Services\Auth\RegistrationInput())->errors($registration);
@@ -5002,7 +5034,7 @@ class Pages extends BaseController
             foreach (['nama', 'email', 'sandi', 'nohp', 'validasi-syarat'] as $field) {
                 session()->setFlashdata('val-' . ($field === 'validasi-syarat' ? 'syarat' : $field), $errors[$field] ?? '');
             }
-            return redirect()->to('/register')->withInput();
+            return redirect()->to(ilena_store_path('/register'))->withInput();
         }
 
         $emailUser = $registration['email'];
@@ -5012,7 +5044,7 @@ class Pages extends BaseController
             // Recheck under a per-email lock: two concurrent signups must not create two identities.
             if ($this->userModel->findByEmailIdentity($emailUser)) {
                 session()->setFlashdata('val-email', 'Email sudah terdaftar. Silakan masuk dengan akun Anda.');
-                return redirect()->to('/register')->withInput();
+                return redirect()->to(ilena_store_path('/register'))->withInput();
             }
 
             $otp_number = random_int(100000, 999999);
@@ -5033,7 +5065,7 @@ class Pages extends BaseController
             if (!$email->send()) {
                 log_message('error', 'Registration verification email could not be sent.');
                 session()->setFlashdata('msg', 'Email verifikasi belum dapat dikirim. Coba lagi nanti.');
-                return redirect()->to('/register')->withInput();
+                return redirect()->to(ilena_store_path('/register'))->withInput();
             }
 
             $insertedUser = $this->userModel->insert([
@@ -5072,7 +5104,7 @@ class Pages extends BaseController
             unset($atomic); // Roll back account/profile together before returning an error.
             log_message('error', 'Registration persistence failed: {type}', ['type' => get_class($error)]);
             session()->setFlashdata('msg', 'Pendaftaran belum berhasil disimpan. Silakan coba lagi.');
-            return redirect()->to('/register')->withInput();
+            return redirect()->to(ilena_store_path('/register'))->withInput();
         }
 
         if (!session()->get('isLogin')) session()->set([
@@ -5092,14 +5124,14 @@ class Pages extends BaseController
         session()->set($ses_data);
         session()->set('otp_last_sent_at', time());
         session()->setFlashdata('msg', "OTP telah dikirim ke email " . $emailUser . " dan berlaku hingga " . $waktu_otp_tanggal);
-        return redirect()->to('/verify');
+        return redirect()->to(ilena_store_path('/verify'));
     }
     public function verify()
     {
         $email = session()->get('email');
         if (!$email || !$this->userModel->getUser($email)) {
             session()->setFlashdata('msg', 'Sesi verifikasi sudah berakhir. Silakan daftar/login ulang.');
-            return redirect()->to('/login');
+            return redirect()->to(ilena_store_path('/login'));
         }
 
         $data = [
@@ -5120,24 +5152,24 @@ class Pages extends BaseController
         $getUser = $this->userModel->getUser($email);
         if (!$email || !$getUser) {
             session()->setFlashdata('msg', 'Sesi verifikasi sudah berakhir. Silakan daftar/login ulang.');
-            return redirect()->to('/login');
+            return redirect()->to(ilena_store_path('/login'));
         }
         if (in_array((string)($getUser['role'] ?? ''), ['0', '4'], true)
             && (new \App\Services\AccountSuspensionService())->isSuspended((string)$email)) {
             session()->destroy();
             session()->setFlashdata('msg', 'Akun Anda ditangguhkan. Silakan hubungi admin.');
-            return redirect()->to('/login');
+            return redirect()->to(ilena_store_path('/login'));
         }
         if ((string)($getUser['active'] ?? '1') !== '0') {
-            return redirect()->to('/');
+            return redirect()->to(ilena_store_path('/'));
         }
 
         if (!(new \App\Services\Auth\AuthAttemptLimiter())->allow('otp_verify', (string)$this->request->getIPAddress(), (string)$email, 30, 8, 300)) {
-            return redirect()->to('/verify')->with('msg', 'Terlalu banyak percobaan OTP. Tunggu beberapa saat sebelum mencoba lagi.');
+            return redirect()->to(ilena_store_path('/verify'))->with('msg', 'Terlalu banyak percobaan OTP. Tunggu beberapa saat sebelum mencoba lagi.');
         }
         if (preg_match('/^\d{6}$/', (string)$otp) !== 1 || !hash_equals((string)$getUser['otp'], (string)$otp)) {
             session()->setFlashdata('val_verify', "OTP salah");
-            return redirect()->to("/verify");
+            return redirect()->to(ilena_store_path("/verify"));
         }
         $waktu_otp = time();
         if ($waktu_otp > (int)$getUser['waktu_otp']) {
@@ -5156,7 +5188,7 @@ class Pages extends BaseController
             if (!$sendemail->send()) {
                 log_message('error', 'Expired verification OTP email could not be sent.');
                 session()->setFlashdata('msg', 'Email verifikasi belum dapat dikirim. Coba lagi nanti.');
-                return redirect()->to('/verify');
+                return redirect()->to(ilena_store_path('/verify'));
             }
 
             $this->userModel->where('email', $email)->set([
@@ -5165,7 +5197,7 @@ class Pages extends BaseController
             ])->update();
             session()->set('otp_last_sent_at', time());
             session()->setFlashdata('msg', "OTP telah diperbarui dan sudah dikirim kembali ke email " . $email);
-            return redirect()->to("/verify");
+            return redirect()->to(ilena_store_path("/verify"));
         }
 
         $getPembeli = $this->pembeliModel->getPembeli($email);
@@ -5199,7 +5231,7 @@ class Pages extends BaseController
         session()->set($ses_data);
         session()->setFlashdata('msg_active', true);
         $this->mergePendingGuestState();
-        return redirect()->to(!empty(session()->get('keranjang')) ? '/cart' : site_url('/'));
+        return redirect()->to(ilena_store_path(!empty(session()->get('keranjang')) ? '/cart' : '/'));
     }
     public function kirimOTP()
     {
@@ -5207,25 +5239,25 @@ class Pages extends BaseController
         $getUser = $this->userModel->getUser($emailUser);
         if (!$emailUser || !$getUser) {
             session()->setFlashdata('msg', 'Sesi verifikasi sudah berakhir. Silakan daftar/login ulang.');
-            return redirect()->to('/login');
+            return redirect()->to(ilena_store_path('/login'));
         }
         if (in_array((string)($getUser['role'] ?? ''), ['0', '4'], true)
             && (new \App\Services\AccountSuspensionService())->isSuspended((string)$emailUser)) {
             session()->destroy();
             session()->setFlashdata('msg', 'Akun Anda ditangguhkan. Silakan hubungi admin.');
-            return redirect()->to('/login');
+            return redirect()->to(ilena_store_path('/login'));
         }
         if ((string)($getUser['active'] ?? '1') !== '0') {
-            return redirect()->to('/');
+            return redirect()->to(ilena_store_path('/'));
         }
         if (!(new \App\Services\Auth\AuthAttemptLimiter())->allow('otp_resend', (string)$this->request->getIPAddress(), (string)$emailUser, 10, 5, 3600)) {
             session()->setFlashdata('msg', 'Terlalu banyak permintaan kode verifikasi. Coba lagi nanti.');
-            return redirect()->to('/verify');
+            return redirect()->to(ilena_store_path('/verify'));
         }
         $lastSent = (int)session()->get('otp_last_sent_at');
         if ($lastSent > 0 && time() - $lastSent < 60) {
             session()->setFlashdata('msg', 'Tunggu sebentar sebelum meminta kode OTP baru.');
-            return redirect()->to('/verify');
+            return redirect()->to(ilena_store_path('/verify'));
         }
 
         $otp_number = random_int(100000, 999999);
@@ -5243,7 +5275,7 @@ class Pages extends BaseController
         if (!$email->send()) {
             log_message('error', 'Verification OTP resend email could not be sent.');
             session()->setFlashdata('msg', 'Email verifikasi belum dapat dikirim. Coba lagi nanti.');
-            return redirect()->to('/verify');
+            return redirect()->to(ilena_store_path('/verify'));
         }
 
         $this->userModel->where('email', $emailUser)->set([
@@ -5253,14 +5285,14 @@ class Pages extends BaseController
         session()->set('otp_last_sent_at', time());
 
         session()->setFlashdata('msg', "OTP telah dikirim ke email " . $emailUser . " dan berlaku hingga " . $waktu_otp_tanggal);
-        return redirect()->to('/verify');
+        return redirect()->to(ilena_store_path('/verify'));
     }
     public function actionLogout()
     {
         // $ses_data = ['email', 'role', 'alamat', 'wishlist', 'keranjang', 'isLogin', 'active', 'transaksi', 'nama', 'nohp'];
         session()->destroy();
         session()->setFlashdata('msg', 'Kamu telah keluar');
-        return redirect()->to('/login');
+        return redirect()->to(ilena_store_path('/login'));
     }
     public function account()
     {
@@ -5288,10 +5320,11 @@ class Pages extends BaseController
     }
     public function visiMisi()
     {
+        $isEnglish = $this->request->getLocale() === 'en';
         $data = [
-            'title' => 'Visi dan Misi',
-            'metaTitle' => 'Visi & Misi Ilena Furniture',
-            'metaDeskripsi' => 'Kenali visi, misi, dan nilai yang menjadi dasar Ilena Furniture dalam menghadirkan furniture yang nyaman, fungsional, dan berkarakter untuk rumah Anda.',
+            'title' => $isEnglish ? 'Vision & Mission' : 'Visi dan Misi',
+            'metaTitle' => $isEnglish ? 'Ilena Furniture Vision & Mission' : 'Visi & Misi Ilena Furniture',
+            'metaDeskripsi' => $isEnglish ? 'Discover the vision, mission, and values behind Ilena Furniture and our approach to comfortable, functional, characterful homes.' : 'Kenali visi, misi, dan nilai yang menjadi dasar Ilena Furniture dalam menghadirkan furniture yang nyaman, fungsional, dan berkarakter untuk rumah Anda.',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
         ];
@@ -5299,10 +5332,11 @@ class Pages extends BaseController
     }
     public function faq()
     {
+        $isEnglish = $this->request->getLocale() === 'en';
         $data = [
             'title' => 'FAQ',
-            'metaTitle' => 'FAQ: Informasi Produk, Pesanan & Layanan | Ilena Furniture',
-            'metaDeskripsi' => 'Temukan jawaban tentang produk, pemesanan, pembayaran, pengiriman, dan layanan Ilena Furniture. Hubungi tim kami jika Anda membutuhkan bantuan lebih lanjut.',
+            'metaTitle' => $isEnglish ? 'FAQ: Products, Orders & Customer Service | Ilena Furniture' : 'FAQ: Informasi Produk, Pesanan & Layanan | Ilena Furniture',
+            'metaDeskripsi' => $isEnglish ? 'Find answers about Ilena Furniture products, ordering, payment, delivery, and customer service. Contact our team if you need further assistance.' : 'Temukan jawaban tentang produk, pemesanan, pembayaran, pengiriman, dan layanan Ilena Furniture. Hubungi tim kami jika Anda membutuhkan bantuan lebih lanjut.',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
         ];
@@ -5317,9 +5351,13 @@ class Pages extends BaseController
         }
 
         $artikel = $this->artikelModel->getArtikelJudul($judul_article);
-        $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+        $bulan = $this->request->getLocale() === 'en'
+            ? ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            : ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
 
-        if (!$artikel) return redirect()->to('article');
+        if (!$artikel) return redirect()->to(ilena_store_path('/article'));
+
+        $artikel = ilena_localize_article_record($artikel);
 
         if ($judul_article) {
             // ++ pengunjung
@@ -5356,6 +5394,7 @@ class Pages extends BaseController
 
             // Normalisasi artikel terkait
             foreach ($artikelTerkait as $ind_a => $a) {
+                $artikelTerkait[$ind_a] = ilena_localize_article_record($a);
                 $artikelTerkait[$ind_a]['kategori'] = explode(",", $a['kategori']);
                 $artikelTerkait[$ind_a]['waktu'] = date("d", strtotime($a['waktu'])) . " " .
                     $bulan[date("m", strtotime($a['waktu'])) - 1] . " " .
@@ -5377,7 +5416,7 @@ class Pages extends BaseController
                 ->findAll(10, 0);
 
             $data = [
-                'title'             => 'Artikel ' . $artikel['judul'],
+                'title'             => ($this->request->getLocale() === 'en' ? 'Article ' : 'Artikel ') . $artikel['judul'],
                 'navbar'            => $this->getNavbarData(),
                 'apikey_img_ilena'  => $this->apikey_img_ilena,
                 'artikel'           => $artikel,
@@ -5387,21 +5426,23 @@ class Pages extends BaseController
                 'komen'             => json_decode($artikel['komen'], true),
                 'komenJson'         => $artikel['komen'],
                 'metaDeskripsi'     => $artikel['deskripsi'],
-                'metaTitle'         => $artikel['judul'] . ' | Artikel Ilena Furniture',
+                'metaTitle'         => $artikel['judul'] . ($this->request->getLocale() === 'en' ? ' | Ilena Furniture Article' : ' | Artikel Ilena Furniture'),
                 'metaKeyword'       => $artikel['keywords'],
                 'wishlist'          => $wishlist,
                 'bulan'             => $bulan
             ];
             return view('pages/artikel', $data);
         } else {
-            // Halaman daftar artikel (tanpa perubahan)
+            // Halaman daftar artikel
+            $artikel = $this->artikelModel->orderBy('waktu', 'desc')->findAll();
+            $artikel = array_map(static fn (array $row): array => ilena_localize_article_record($row), $artikel);
             $artikelPopuler = $this->artikelModel->orderBy('pengunjung', 'desc')->limit(5, 0)->findAll();
+            $artikelPopuler = array_map(static fn (array $row): array => ilena_localize_article_record($row), $artikelPopuler);
             $artikel3Baru = $this->artikelModel
-                ->select('judul')->select('path')->select('kategori')->select('deskripsi')->select('id')->select('header')
+                ->select('judul, judul_en, path, kategori, deskripsi, deskripsi_en, id, header')
                 ->orderBy('id', 'asc')->limit(3, 0)->findAll();
+            $artikel3Baru = array_map(static fn (array $row): array => ilena_localize_article_record($row), $artikel3Baru);
 
-            // Catatan: pastikan $artikel terdefinisi jika memang diperlukan di sini.
-            // (Di kode asli, foreach ($artikel as ...) dipakai, pastikan Anda sudah menyiapkan $artikel sebelumnya.)
             foreach ($artikel as $ind_a => $a) {
                 $artikel[$ind_a]['kategori'] = explode(",", $a['kategori']);
                 $artikel[$ind_a]['waktu'] = date("d", strtotime($a['waktu'])) . " " .
@@ -5409,10 +5450,11 @@ class Pages extends BaseController
                     date("Y", strtotime($a['waktu']));
             }
 
+            $isEnglish = $this->request->getLocale() === 'en';
             $data = [
-                'title'            => 'Artikel',
-                'metaTitle'        => 'Inspirasi Rumah & Furniture | Artikel Ilena Furniture',
-                'metaDeskripsi'    => 'Baca inspirasi penataan ruang, panduan memilih furniture, dan cerita seputar hunian dari Ilena Furniture.',
+                'title'            => $isEnglish ? 'Articles' : 'Artikel',
+                'metaTitle'        => $isEnglish ? 'Home & Furniture Inspiration | Ilena Furniture Articles' : 'Inspirasi Rumah & Furniture | Artikel Ilena Furniture',
+                'metaDeskripsi'    => $isEnglish ? 'Explore room styling inspiration, furniture guides, and home stories from Ilena Furniture.' : 'Baca inspirasi penataan ruang, panduan memilih furniture, dan cerita seputar hunian dari Ilena Furniture.',
                 'navbar'           => $this->getNavbarData(),
                 'apikey_img_ilena' => $this->apikey_img_ilena,
                 'artikel'          => array_values(array_filter($artikel, function ($value, $key) {
@@ -5431,20 +5473,29 @@ class Pages extends BaseController
         $category = str_replace('-', ' ', $category);
         $category = str_replace('@', '&', $category);
         $artikel = $this->artikelModel->like('kategori', $category, 'both')->findAll();
-        $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-        if (!$artikel) return redirect()->to('article');
+        $bulan = $this->request->getLocale() === 'en'
+            ? ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            : ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+        if (!$artikel) return redirect()->to(ilena_store_path('/article'));
         $artikelPopuler = $this->artikelModel->orderBy('pengunjung', 'desc')->limit(5, 0)->findAll();
+        $artikel = array_map(static fn (array $row): array => ilena_localize_article_record($row), $artikel);
+        $artikelPopuler = array_map(static fn (array $row): array => ilena_localize_article_record($row), $artikelPopuler);
         $artikel3Baru = $this->artikelModel
-            ->select('judul')->select('path')->select('kategori')->select('deskripsi')->select('id')->select('header')
+            ->select('judul, judul_en, path, kategori, deskripsi, deskripsi_en, id, header')
             ->orderBy('id', 'asc')->limit(3, 0)->findAll();
+        $artikel3Baru = array_map(static fn (array $row): array => ilena_localize_article_record($row), $artikel3Baru);
         foreach ($artikel as $ind_a => $a) {
             $artikel[$ind_a]['kategori'] = explode(",", $a['kategori']);
             $artikel[$ind_a]['waktu'] = date("d", strtotime($a['waktu'])) . " " . $bulan[date("m", strtotime($a['waktu'])) - 1] . " " . date("Y", strtotime($a['waktu']));
         }
+        $isEnglish = $this->request->getLocale() === 'en';
+        $categoryLabel = ilena_article_category_label($category);
         $data = [
-            'title' => 'Artikel | ' . ucwords($category),
-            'metaTitle' => 'Artikel ' . ucwords($category) . ' | Ilena Furniture',
-            'metaDeskripsi' => 'Baca artikel dan inspirasi ' . strtolower($category) . ' untuk membantu Anda merancang ruang yang nyaman bersama Ilena Furniture.',
+            'title' => ($isEnglish ? 'Articles | ' : 'Artikel | ') . $categoryLabel,
+            'metaTitle' => ($isEnglish ? 'Articles ' : 'Artikel ') . $categoryLabel . ' | Ilena Furniture',
+            'metaDeskripsi' => $isEnglish
+                ? 'Read ' . strtolower($categoryLabel) . ' articles and ideas to help create a more comfortable home with Ilena Furniture.'
+                : 'Baca artikel dan inspirasi ' . strtolower($category) . ' untuk membantu Anda merancang ruang yang nyaman bersama Ilena Furniture.',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'artikel' => array_values(array_filter($artikel, function ($value, $key) {
@@ -5462,31 +5513,32 @@ class Pages extends BaseController
     {
         $artikelCurr = $this->artikelModel->getArtikel($id_artikel);
         if (!$artikelCurr) {
-            return redirect()->to('/article');
+            return redirect()->to(ilena_store_path('/article'));
         }
 
         $this->artikelModel->where(['id' => $id_artikel])->set(['suka' => $artikelCurr['suka'] + 1])->update();
-        return redirect()->to('/article/' . ($artikelCurr['path'] ?? urlencode($artikelCurr['judul'])));
+        return redirect()->to(ilena_store_path('/article/' . ($artikelCurr['path'] ?? urlencode($artikelCurr['judul']))));
     }
 
     public function addShareArticle($id_artikel)
     {
         $artikelCurr = $this->artikelModel->getArtikel($id_artikel);
         if (!$artikelCurr) {
-            return redirect()->to('/article');
+            return redirect()->to(ilena_store_path('/article'));
         }
 
         $bagikan = (int)($artikelCurr['bagikan'] ?? 0);
         $this->artikelModel->where(['id' => $id_artikel])->set(['bagikan' => $bagikan + 1])->update();
-        return redirect()->to('/article/' . ($artikelCurr['path'] ?? urlencode($artikelCurr['judul'])));
+        return redirect()->to(ilena_store_path('/article/' . ($artikelCurr['path'] ?? urlencode($artikelCurr['judul']))));
     }
 
     public function tentang()
     {
+        $isEnglish = $this->request->getLocale() === 'en';
         $data = [
-            'title' => 'Tentang Kami',
-            'metaTitle' => 'Tentang Ilena Furniture: Cerita & Nilai Kami',
-            'metaDeskripsi' => 'Kenali Ilena Furniture, perjalanan kami menghadirkan furniture modern, dan nilai yang menginspirasi setiap koleksi untuk rumah Anda.',
+            'title' => $isEnglish ? 'About Us' : 'Tentang Kami',
+            'metaTitle' => $isEnglish ? 'About Ilena Furniture: Our Story & Values' : 'Tentang Ilena Furniture: Cerita & Nilai Kami',
+            'metaDeskripsi' => $isEnglish ? 'Discover Ilena Furniture, our journey in creating modern furniture, and the values behind every collection for your home.' : 'Kenali Ilena Furniture, perjalanan kami menghadirkan furniture modern, dan nilai yang menginspirasi setiap koleksi untuk rumah Anda.',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
         ];
@@ -5494,6 +5546,7 @@ class Pages extends BaseController
     }
     public function partner()
     {
+        $isEnglish = $this->request->getLocale() === 'en';
         $this->ensurePartnerTable();
         $query = mb_substr(trim((string) $this->request->getGet('q')), 0, 80);
         $requestedCity = mb_substr(trim((string) $this->request->getGet('city')), 0, 100);
@@ -5655,9 +5708,9 @@ class Pages extends BaseController
         }, $mapPartnerRows), static fn (array $partner): bool => $partner !== []));
 
         $data = [
-            'title' => 'Mitra Kami',
-            'metaTitle' => 'Lokasi Mitra & Showroom Ilena Furniture',
-            'metaDeskripsi' => 'Temukan mitra dan showroom Ilena Furniture, lihat lokasi di peta, lalu kunjungi untuk mengenal koleksi furniture kami lebih dekat.',
+            'title' => $isEnglish ? 'Our Partners' : 'Mitra Kami',
+            'metaTitle' => $isEnglish ? 'Ilena Furniture Partner Stores and Showrooms' : 'Lokasi Mitra & Showroom Ilena Furniture',
+            'metaDeskripsi' => $isEnglish ? 'Find Ilena Furniture partners and showrooms, explore their locations, and visit to discover our furniture collections.' : 'Temukan mitra dan showroom Ilena Furniture, lihat lokasi di peta, lalu kunjungi untuk mengenal koleksi furniture kami lebih dekat.',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'partners' => $partners,
@@ -5707,38 +5760,42 @@ class Pages extends BaseController
     }
     public function iklan()
     {
+        $isEnglish = $this->request->getLocale() === 'en';
         $series = [
             [
                 'nama'      => 'Cody Series',
                 'gaya'      => 'Japandi · Hangat & Estetik',
                 'deskripsi' => 'Perpaduan kayu solid dan garis bersih ala Japandi. Cocok untuk ruang tamu yang ingin tampil hangat tanpa kesan ramai.',
+                'description_en' => 'A warm Japandi-inspired blend of wood tones and clean lines, ideal for a calm and inviting living room.',
                 'image'     => 'https://img.ilenafurniture.com/image/1748318610868.jpg/?apikey=' . $this->apikey_img_ilena,
-                'link'      => base_url('/product/coffee-table-ilena-cody'),
+                'link'      => ilena_store_path('/product/coffee-table-ilena-cody'),
             ],
             [
                 'nama'      => 'Plint Base Series',
                 'gaya'      => 'Modern · Elegan & Premium',
                 'deskripsi' => 'Desain minimalis dengan finishing premium. Pilihan tepat untuk rumah modern yang mengutamakan estetika & ketahanan.',
+                'description_en' => 'A minimalist design with a refined finish, made for modern homes that value both style and everyday durability.',
                 'image'     => 'https://img.ilenafurniture.com/image/1748320128043.jpg/?apikey=' . $this->apikey_img_ilena,
-                'link'      => base_url('/product/bufet-tv-ilena-plint-base'),
+                'link'      => ilena_store_path('/product/bufet-tv-ilena-plint-base'),
             ],
             [
                 'nama'      => 'Cabana Series',
                 'gaya'      => 'Timeless · Simply & Tahan Lama',
                 'deskripsi' => 'Bentuk simpel dengan storage maksimal. Series yang akan tetap relevan walau tren interior berganti.',
+                'description_en' => 'A simple silhouette with generous storage, designed to remain timeless as interior trends evolve.',
                 'image'     => 'https://img.ilenafurniture.com/image/1742973475864.png/?apikey=' . $this->apikey_img_ilena,
-                'link'      => base_url('/product/bufet-tv-ilena-cabana'),
+                'link'      => ilena_store_path('/product/bufet-tv-ilena-cabana'),
             ],
         ];
 
         $data = [
-            'title'             => 'Promo Furniture Sepaket — Gratis Ongkir',
+            'title'             => $isEnglish ? 'Coordinated Furniture Collections — Delivery Offers' : 'Promo Furniture Sepaket — Gratis Ongkir',
             'navbar'            => $this->getNavbarData(),
             'apikey_img_ilena'  => $this->apikey_img_ilena,
-            'metaTitle'         => 'Promo Furniture Sepaket Ilena — Gratis Ongkir',
-            'metaDeskripsi'     => 'Desain interior rumah baru jadi mudah! Pilih furniture sepaket Ilena: estetik, premium, dan saat ini gratis ongkir ke seluruh Indonesia.',
+            'metaTitle'         => $isEnglish ? 'Ilena Coordinated Furniture Collections and Delivery Offers' : 'Promo Furniture Sepaket Ilena — Gratis Ongkir',
+            'metaDeskripsi'     => $isEnglish ? 'Furnish your home with coordinated Ilena furniture collections. Explore considered designs, product details, and current delivery offers.' : 'Desain interior rumah baru jadi mudah! Pilih furniture sepaket Ilena: estetik, premium, dan saat ini gratis ongkir ke seluruh Indonesia.',
             'metaKeyword'       => 'promo furniture Ilena, furniture sepaket, furniture rumah baru, koleksi Cody, Plint Base, Cabana',
-            'metaUrl'           => site_url('iklan'),
+            'metaUrl'           => site_url(($isEnglish ? 'en/' : '') . 'iklan'),
             'metaImage'         => 'https://img.ilenafurniture.com/image/1748320128043.jpg/?apikey=' . $this->apikey_img_ilena,
             'metaImageAlt'      => 'Promo furniture sepaket Ilena Furniture',
             'series'            => $series,
@@ -5749,9 +5806,9 @@ class Pages extends BaseController
     public function contact()
     {
         $data = [
-            'title' => 'Kontak Kami',
-            'metaTitle' => 'Kontak Ilena Furniture',
-            'metaDeskripsi' => 'Hubungi tim Ilena Furniture untuk pertanyaan produk, pemesanan, kerja sama, atau bantuan layanan pelanggan.',
+            'title' => $this->request->getLocale() === 'en' ? 'Contact Us' : 'Kontak Kami',
+            'metaTitle' => $this->request->getLocale() === 'en' ? 'Contact Ilena Furniture' : 'Kontak Ilena Furniture',
+            'metaDeskripsi' => $this->request->getLocale() === 'en' ? 'Contact the Ilena Furniture team about products, orders, partnerships, or customer support.' : 'Hubungi tim Ilena Furniture untuk pertanyaan produk, pemesanan, kerja sama, atau bantuan layanan pelanggan.',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
         ];
@@ -5759,10 +5816,11 @@ class Pages extends BaseController
     }
     public function syarat()
     {
+        $isEnglish = $this->request->getLocale() === 'en';
         $data = [
-            'title' => 'Syarat & Ketentuan',
-            'metaTitle' => 'Syarat & Ketentuan | Ilena Furniture',
-            'metaDeskripsi' => 'Baca syarat dan ketentuan penggunaan website serta layanan belanja online Ilena Furniture.',
+            'title' => $isEnglish ? 'Terms & Conditions' : 'Syarat & Ketentuan',
+            'metaTitle' => $isEnglish ? 'Terms & Conditions | Ilena Furniture' : 'Syarat & Ketentuan | Ilena Furniture',
+            'metaDeskripsi' => $isEnglish ? 'Read the terms and conditions for using the Ilena Furniture website and online shopping services.' : 'Baca syarat dan ketentuan penggunaan website serta layanan belanja online Ilena Furniture.',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
         ];
@@ -5770,10 +5828,11 @@ class Pages extends BaseController
     }
     public function kebijakan()
     {
+        $isEnglish = $this->request->getLocale() === 'en';
         $data = [
-            'title' => 'Kebijakan Privasi',
-            'metaTitle' => 'Kebijakan Privasi | Ilena Furniture',
-            'metaDeskripsi' => 'Pelajari cara Ilena Furniture mengelola informasi dan privasi pengguna saat menggunakan website serta layanan kami.',
+            'title' => $isEnglish ? 'Privacy Policy' : 'Kebijakan Privasi',
+            'metaTitle' => $isEnglish ? 'Privacy Policy | Ilena Furniture' : 'Kebijakan Privasi | Ilena Furniture',
+            'metaDeskripsi' => $isEnglish ? 'Learn how Ilena Furniture handles user information and privacy when you use our website and services.' : 'Pelajari cara Ilena Furniture mengelola informasi dan privasi pengguna saat menggunakan website serta layanan kami.',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
         ];

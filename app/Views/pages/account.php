@@ -6,31 +6,31 @@
     style="position: fixed; width: 100vw; height: 100svh; background-color: rgba(0,0,0,0.7); z-index: 100; top: 0; left: 0;"
     class="<?= $msgSandi ? 'd-flex' : 'd-none'; ?> justify-content-center align-items-center">
     <div class="p-4 bg-light ilena-account-password-modal">
-        <h2 style="letter-spacing: -1px">Ganti Sandi</h2>
+        <h2 style="letter-spacing: -1px"><?= lang('Store.changePassword'); ?></h2>
         <?php if ($msgSandi) { ?>
         <div class="pemberitahuan my-1 mx-auto" style="width: fit-content;" role="alert">
             <?= $msgSandi; ?>
         </div>
         <?php } ?>
-        <form action="/editsandi/account" method="post">
+        <form action="<?= esc(ilena_store_path('/editsandi/account'), 'attr'); ?>" method="post">
             <?= csrf_field(); ?>
             <div class="mb-1">
-                <label for="current-password-account">Sandi saat ini</label>
+                <label for="current-password-account"><?= lang('Store.currentPassword'); ?></label>
                 <input id="current-password-account" type="password" name="sandiLama" class="form-control" autocomplete="current-password" maxlength="72" required>
             </div>
             <div class="mb-1">
-                <label for="">Sandi baru Anda</label>
+                <label for=""><?= lang('Store.newPassword'); ?></label>
                 <input type="password" name="sandi" class="form-control" autocomplete="new-password" minlength="12" maxlength="72" required>
             </div>
             <div class="mb-2">
-                <label for="">Konfirmasi Sandi</label>
+                <label for=""><?= lang('Store.confirmPassword'); ?></label>
                 <input type="password" class="form-control" oninput="konfirmasiSandi(event)" required
                     name="sandiKonfirm">
-                <div class="invalid-feedback">Kata sandi tidak cocok</div>
+                <div class="invalid-feedback"><?= lang('Store.passwordMismatch'); ?></div>
             </div>
             <div class="d-flex justify-content-center gap-1">
-                <button type="submit" class="btn-default">Ubah</button>
-                <button class="btn-teks-aja" onclick="closeEditSandi()">Batal</button>
+                <button type="submit" class="btn-default"><?= lang('Store.update'); ?></button>
+                <button class="btn-teks-aja" onclick="closeEditSandi()"><?= lang('Store.cancel'); ?></button>
             </div>
         </form>
     </div>
@@ -287,20 +287,20 @@
 <div class="container konten baris-ke-kolom ilena-account-page">
     <div class="tigapuluh-ke-seratus">
         <div class="card p-4 ilena-account-nav">
-            <h2 style="letter-spacing: -1px">Akun Saya</h2>
+            <h2 style="letter-spacing: -1px"><?= lang('Store.accountTitle'); ?></h2>
             <div class="mt-2 d-flex justify-content-between py-1">
                 <p class="m-0">Email</p>
                 <p class="fw-bold m-0"><?= esc($email); ?></p>
             </div>
             <div class="d-flex justify-content-between py-1">
-                <p class="m-0">Sandi</p>
-                <a class="btn-teks-aja" onclick="openGantiSandi()">Ganti Sandi</a>
+                <p class="m-0"><?= lang('Store.password'); ?></p>
+                <a class="btn-teks-aja" onclick="openGantiSandi()"><?= lang('Store.changePassword'); ?></a>
             </div>
             <span class="garis my-2"></span>
-            <a href="/account" class="mb-1 btn-default-abu">Profile</a>
-            <a href="/order" class="mb-1 btn-default-abu">Pesanan</a>
-            <form action="/logout" method="post">
-                <?= csrf_field(); ?><button type="submit" class="btn-default-merah">Keluar</button>
+            <a href="<?= esc(ilena_store_path('/account'), 'attr'); ?>" class="mb-1 btn-default-abu"><?= lang('Store.profileNav'); ?></a>
+            <a href="<?= esc(ilena_store_path('/order'), 'attr'); ?>" class="mb-1 btn-default-abu"><?= lang('Store.ordersNav'); ?></a>
+            <form action="<?= esc(ilena_store_path('/logout'), 'attr'); ?>" method="post">
+                <?= csrf_field(); ?><button type="submit" class="btn-default-merah"><?= lang('Store.logout'); ?></button>
             </form>
         </div>
     </div>
@@ -308,9 +308,9 @@
     <div class="ilena-account-main" style="flex:1;">
         <header class="ilena-account-heading">
             <div>
-                <p class="ilena-account-heading__eyebrow">AKUN <span>/</span> PROFIL</p>
-                <h1>Profil saya</h1>
-                <p class="ilena-account-heading__description">Kelola informasi akun dan alamat pengiriman Anda.</p>
+                <p class="ilena-account-heading__eyebrow"><?= service('request')->getLocale() === 'en' ? 'ACCOUNT' : 'AKUN'; ?> <span>/</span> <?= lang('Store.profileNav'); ?></p>
+                <h1><?= lang('Store.profileHeading'); ?></h1>
+                <p class="ilena-account-heading__description"><?= lang('Store.profileDescription'); ?></p>
             </div>
         </header>
 
@@ -323,15 +323,15 @@
             <p class="fw-bold m-0"><?= esc($nama); ?></p>
         </div>
         <div class="ilena-account-profile-row ilena-account-password-row mb-4 d-flex justify-content-between py-1">
-            <p class="m-0">Sandi</p>
-            <a class="btn-teks-aja" onclick="openGantiSandi()">Ganti Sandi</a>
+            <p class="m-0"><?= lang('Store.password'); ?></p>
+            <a class="btn-teks-aja" onclick="openGantiSandi()"><?= lang('Store.changePassword'); ?></a>
         </div>
         <span class="garis"></span>
 
         <?php if (session()->get('active') != '0') { ?>
         <div class="ilena-account-section-heading my-4">
-            <h2>Alamat pengiriman</h2>
-            <p><?= count($alamat) <= 0 ? 'Belum ada alamat tersimpan' : count($alamat) . ' alamat tersimpan'; ?></p>
+            <h2><?= lang('Store.shippingAddresses'); ?></h2>
+            <p><?= count($alamat) <= 0 ? lang('Store.noSavedAddresses') : count($alamat) . ' ' . lang('Store.savedAddresses'); ?></p>
         </div>
 
         <?php if ($msg) { ?>
@@ -347,13 +347,13 @@
                     <p class="mb-1 nama"><?= esc($a['nama_penerima']) ?></p>
                     <p class="mb-1"><?= esc($a['alamat_lengkap']) ?></p>
                     <p class="mb-1"><?= esc($a['nohp_penerima']) ?></p>
-                    <p class="mb-1"><b style="font-weight: 600;">Pemesan</b> : <?= esc($a['email_pemesan']) ?></p>
+                    <p class="mb-1"><b style="font-weight: 600;"><?= lang('Store.ordererInfo'); ?></b> : <?= esc($a['email_pemesan']) ?></p>
                 </div>
                 <div style="width: 100px" class="d-flex gap-3 justify-content-end align-items-start">
                     <a class="btn-teks-aja text-dark" data-bs-toggle="modal" data-bs-target="#editModal" type="button"
-                        onclick="openEditModal(<?= (int)$ind_a; ?>)">Edit</a>
-                    <form action="/deleteaddress/<?= (int)$ind_a; ?>/account" method="post" class="m-0">
-                        <?= csrf_field(); ?><button type="submit" class="btn-teks-aja">Hapus</button>
+                        onclick="openEditModal(<?= (int)$ind_a; ?>)"><?= lang('Store.edit'); ?></a>
+                    <form action="<?= esc(ilena_store_path('/deleteaddress/' . (int)$ind_a . '/account'), 'attr'); ?>" method="post" class="m-0">
+                        <?= csrf_field(); ?><button type="submit" class="btn-teks-aja"><?= lang('Store.delete'); ?></button>
                     </form>
                 </div>
             </div>
@@ -361,7 +361,7 @@
         </div>
 
         <button type="button" class="btn-teks-aja ilena-account-add-address" data-bs-toggle="modal" data-bs-target="#exampleModal">
-            <i class="material-icons">add</i> Tambah Alamat
+            <i class="material-icons">add</i> <?= lang('Store.addAddress'); ?>
         </button>
 
         <!-- ====== Voucher Saya ====== -->
@@ -374,8 +374,8 @@
 
         <?php if ($showVoucherSection): ?>
         <div class="ilena-account-section-heading my-4">
-            <h2>Voucher saya</h2>
-            <p>Voucher yang terikat akun atau sudah Anda klaim.</p>
+            <h2><?= lang('Store.voucherTitle'); ?></h2>
+            <p><?= lang('Store.voucherDescription'); ?></p>
 
             <div class="vch-grid">
                 <?php if (count($voucherUser) > 0): ?>
@@ -392,18 +392,18 @@
                 <div class="vch-card">
                     <div class="vch-hd">
                         <div class="vch-code"><?= esc($kode) ?></div>
-                        <?php if($target==='baru'): ?><span class="vch-badge">Member Baru</span><?php endif; ?>
+                        <?php if($target==='baru'): ?><span class="vch-badge"><?= lang('Store.newMember'); ?></span><?php endif; ?>
                     </div>
                     <div class="vch-body"><b><?= esc($nama) ?></b></div>
                     <div class="vch-meta">
-                        Tipe:
+                        <?= lang('Store.voucherType'); ?>:
                         <?= $tipe==='persen' ? (number_format($nilai,0).'%') : ('Rp '.number_format($nilai,0,',','.')) ?>
-                        <?php if($mulai || $akhir): ?> · Periode: <?= esc($mulai) ?> – <?= esc($akhir) ?><?php endif; ?>
-                        · Status: <?= $aktif ? 'Aktif' : 'Nonaktif'; ?>
+                        <?php if($mulai || $akhir): ?> · <?= lang('Store.period'); ?>: <?= esc($mulai) ?> – <?= esc($akhir) ?><?php endif; ?>
+                        · <?= lang('Store.status'); ?>: <?= $aktif ? lang('Store.statusActive') : lang('Store.statusInactive'); ?>
                     </div>
                     <div class="vch-actions">
                         <button class="btn-chip primary" type="button"
-                            onclick="salinKode('<?= esc($kode, 'attr') ?>')">Salin Kode</button>
+                            onclick="salinKode('<?= esc($kode, 'attr') ?>')"><?= lang('Store.copyCode'); ?></button>
                     </div>
                 </div>
                 <?php endforeach; ?>
@@ -421,17 +421,17 @@
                 <div class="vch-card">
                     <div class="vch-hd">
                         <div class="vch-code"><?= esc($kode) ?></div>
-                        <span class="vch-badge">Diklaim</span>
+                        <span class="vch-badge"><?= lang('Store.claimed'); ?></span>
                     </div>
                     <div class="vch-body"><b><?= esc($nama) ?></b></div>
                     <div class="vch-meta">
-                        Tipe:
+                        <?= lang('Store.voucherType'); ?>:
                         <?= $tipe==='persen' ? (number_format($nilai,0).'%') : ('Rp '.number_format($nilai,0,',','.')) ?>
-                        <?php if($mulai || $akhir): ?> · Periode: <?= esc($mulai) ?> – <?= esc($akhir) ?><?php endif; ?>
+                        <?php if($mulai || $akhir): ?> · <?= lang('Store.period'); ?>: <?= esc($mulai) ?> – <?= esc($akhir) ?><?php endif; ?>
                     </div>
                     <div class="vch-actions">
                         <button class="btn-chip primary" type="button"
-                            onclick="salinKode('<?= esc($kode, 'attr') ?>')">Salin Kode</button>
+                            onclick="salinKode('<?= esc($kode, 'attr') ?>')"><?= lang('Store.copyCode'); ?></button>
                     </div>
                 </div>
                 <?php endforeach; ?>
@@ -440,10 +440,10 @@
                 <div class="vch-card">
                     <div class="vch-hd">
                         <div class="vch-code">#<?= (int)$cid ?></div>
-                        <span class="vch-badge">Diklaim</span>
+                        <span class="vch-badge"><?= lang('Store.claimed'); ?></span>
                     </div>
-                    <div class="vch-body"><b>Voucher diklaim</b></div>
-                    <div class="vch-meta">Detail voucher akan tampil saat checkout.</div>
+                    <div class="vch-body"><b><?= lang('Store.claimedVoucher'); ?></b></div>
+                    <div class="vch-meta"><?= lang('Store.voucherDetailsAtCheckout'); ?></div>
                 </div>
                 <?php endforeach; ?>
                 <?php endif; ?>
@@ -454,43 +454,43 @@
 
         <!-- Add Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <form action="/addaddress" method="post">
+            <form action="<?= esc(ilena_store_path('/addaddress'), 'attr'); ?>" method="post">
                 <?= csrf_field(); ?>
                 <input type="text" value="account" name="checkpage" style="display: none;">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title" id="exampleModalLabel">Alamat Baru</h1>
+                            <h1 class="modal-title" id="exampleModalLabel"><?= lang('Store.newAddress'); ?></h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <div class="pb-3 border-bottom">
-                                <h5 class="mb-2">Informasi Pemesan</h5>
+                                <h5 class="mb-2"><?= lang('Store.ordererInfo'); ?></h5>
                                 <div class="form-floating mb-1">
-                                    <input type="email" class="form-control" placeholder="Email" name="emailPem"
+                            <input type="email" class="form-control" placeholder="<?= esc(lang('Store.addressEmailPlaceholder'), 'attr'); ?>" name="emailPem"
                                         required value="<?= esc($email); ?>">
-                                    <label for="floatingInput">Email</label>
+                                    <label for="floatingInput"><?= lang('Store.email'); ?></label>
                                 </div>
                             </div>
 
                             <div class="py-3">
-                                <h5 class="mb-2">Informasi Penerima</h5>
+                                <h5 class="mb-2"><?= lang('Store.recipientInfo'); ?></h5>
                                 <div class="form-floating mb-1">
-                                    <input type="text" class="form-control" placeholder="Nama" name="nama" required
+                            <input type="text" class="form-control" placeholder="<?= esc(lang('Store.addressContactNamePlaceholder'), 'attr'); ?>" name="nama" required
                                         value="<?= esc($nama); ?>">
-                                    <label for="floatingInput">Nama Lengkap</label>
+                                    <label for="floatingInput"><?= lang('Store.fullName'); ?></label>
                                 </div>
                                 <div class="form-floating mb-1">
-                                    <input type="number" class="form-control" placeholder="Nomor Handphone" name="nohp"
+                            <input type="number" class="form-control" placeholder="<?= esc(lang('Store.addressPhonePlaceholder'), 'attr'); ?>" name="nohp"
                                         required value="<?= esc($nohp); ?>">
-                                    <label for="floatingInput">No. HP (WA)</label>
+                                    <label for="floatingInput"><?= lang('Store.mobileNumber'); ?></label>
                                 </div>
 
                                 <div class="form-alamat d-flex mb-1 gap-1">
                                     <div class="form-floating w-50">
                                         <select class="form-select" aria-label="Default select example" name="provinsi"
                                             required>
-                                            <option value="">-- Pilih provinsi --</option>
+                                            <option value=""><?= lang('Store.chooseProvince'); ?></option>
                                             <?php if (!empty($provinsi) && is_array($provinsi)): ?>
                                             <?php foreach ($provinsi as $p):
                                                     $pid   = $p['province_id'] ?? ($p['id'] ?? ($p['value'] ?? ''));
@@ -503,14 +503,14 @@
                                             <?php endforeach; ?>
                                             <?php endif; ?>
                                         </select>
-                                        <label for="floatingProvinsi">Provinsi</label>
+                                        <label for="floatingProvinsi"><?= lang('Store.province'); ?></label>
                                     </div>
                                     <div class="form-floating w-50">
                                         <select class="form-select" aria-label="Default select example" name="kota"
                                             required>
-                                            <option value="">-- Pilih kota --</option>
+                                            <option value=""><?= lang('Store.chooseCity'); ?></option>
                                         </select>
-                                        <label for="floatingProvinsi">Kabupaten/Kota</label>
+                                        <label for="floatingProvinsi"><?= lang('Store.city'); ?></label>
                                     </div>
                                 </div>
 
@@ -518,31 +518,31 @@
                                     <div class="form-floating w-50">
                                         <select class="form-select" aria-label="Default select example" name="kecamatan"
                                             required>
-                                            <option value="">-- Pilih kecamatan --</option>
+                                            <option value=""><?= lang('Store.chooseDistrict'); ?></option>
                                         </select>
-                                        <label for="floatingProvinsi">Kecamatan</label>
+                                        <label for="floatingProvinsi"><?= lang('Store.district'); ?></label>
                                     </div>
                                     <div class="form-floating w-50">
                                         <select class="form-select" aria-label="Default select example" name="kodepos"
                                             required>
-                                            <option value="">-- Pilih Desa --</option>
+                                            <option value=""><?= lang('Store.chooseVillage'); ?></option>
                                         </select>
-                                        <label for="floatingProvinsi">Desa/Kelurahan</label>
+                                        <label for="floatingProvinsi"><?= lang('Store.village'); ?></label>
                                     </div>
                                 </div>
 
                                 <div class="form-alamat form-floating mb-1">
-                                    <input type="text" class="form-control" placeholder="Alamat" name="alamat_add"
+                            <input type="text" class="form-control" placeholder="<?= esc(lang('Store.addressStreetPlaceholder'), 'attr'); ?>" name="alamat_add"
                                         required>
-                                    <label for="floatingInput">Jalan, Nomor Rumah, RT-RW</label>
-                                    <div class="invalid-feedback">Tidak boleh mengandung karakter /</div>
+                                    <label for="floatingInput"><?= lang('Store.streetAddress'); ?></label>
+                                    <div class="invalid-feedback"><?= lang('Store.invalidAddressSlash'); ?></div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-teks-aja" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-lonjong">Tambah</button>
+                            <button type="button" class="btn btn-teks-aja" data-bs-dismiss="modal"><?= lang('Store.cancel'); ?></button>
+                            <button type="submit" class="btn btn-lonjong"><?= lang('Store.add'); ?></button>
                         </div>
                     </div>
                 </div>
@@ -553,41 +553,41 @@
         <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <form method="post" id="formEdit">
                 <?= csrf_field(); ?>
-                <input type="text" value="<?= $_SERVER['REQUEST_URI']; ?>" class="d-none" name="url">
+                <input type="text" value="<?= esc(service('request')->getUri()->getPath(), 'attr'); ?>" class="d-none" name="url">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title" id="exampleModalLabel">Edit Alamat</h1>
+                            <h1 class="modal-title" id="exampleModalLabel"><?= lang('Store.editAddress'); ?></h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <div class="pb-3 border-bottom">
-                                <h5 class="mb-2">Informasi Pemesan</h5>
+                                <h5 class="mb-2"><?= lang('Store.ordererInfo'); ?></h5>
                                 <div class="form-floating mb-1">
-                                    <input type="email" class="form-control" placeholder="Email" name="emailPem"
+                            <input type="email" class="form-control" placeholder="<?= esc(lang('Store.addressEmailPlaceholder'), 'attr'); ?>" name="emailPem"
                                         required id="inputEmail">
-                                    <label for="floatingInput">Email</label>
+                                    <label for="floatingInput"><?= lang('Store.email'); ?></label>
                                 </div>
                             </div>
 
                             <div class="py-3">
-                                <h5 class="mb-2">Informasi Penerima</h5>
+                                <h5 class="mb-2"><?= lang('Store.recipientInfo'); ?></h5>
                                 <div class="form-floating mb-1">
-                                    <input type="text" class="form-control" placeholder="Nama" name="nama" required
+                            <input type="text" class="form-control" placeholder="<?= esc(lang('Store.addressContactNamePlaceholder'), 'attr'); ?>" name="nama" required
                                         id="inputNama">
-                                    <label for="floatingInput">Nama Lengkap</label>
+                                    <label for="floatingInput"><?= lang('Store.fullName'); ?></label>
                                 </div>
                                 <div class="form-floating mb-1">
-                                    <input type="number" class="form-control" placeholder="Nomor Handphone" name="nohp"
+                            <input type="number" class="form-control" placeholder="<?= esc(lang('Store.addressPhonePlaceholder'), 'attr'); ?>" name="nohp"
                                         required id="inputNohp">
-                                    <label for="floatingInput">No. HP (WA)</label>
+                                    <label for="floatingInput"><?= lang('Store.mobileNumber'); ?></label>
                                 </div>
 
                                 <div class="form-alamat d-flex mb-1 gap-1">
                                     <div class="form-floating w-50">
                                         <select class="form-select" aria-label="Default select example"
                                             name="provinsiEdit" required>
-                                            <option value="">-- Pilih provinsi --</option>
+                                            <option value=""><?= lang('Store.chooseProvince'); ?></option>
                                             <?php if (!empty($provinsi) && is_array($provinsi)): ?>
                                             <?php foreach ($provinsi as $p):
                                                     $pid   = $p['province_id'] ?? ($p['id'] ?? ($p['value'] ?? ''));
@@ -600,14 +600,14 @@
                                             <?php endforeach; ?>
                                             <?php endif; ?>
                                         </select>
-                                        <label for="floatingProvinsi">Provinsi</label>
+                                        <label for="floatingProvinsi"><?= lang('Store.province'); ?></label>
                                     </div>
                                     <div class="form-floating w-50">
                                         <select class="form-select" aria-label="Default select example" name="kotaEdit"
                                             required>
-                                            <option value="">-- Pilih kota --</option>
+                                            <option value=""><?= lang('Store.chooseCity'); ?></option>
                                         </select>
-                                        <label for="floatingProvinsi">Kabupaten/Kota</label>
+                                        <label for="floatingProvinsi"><?= lang('Store.city'); ?></label>
                                     </div>
                                 </div>
 
@@ -615,31 +615,31 @@
                                     <div class="form-floating w-50">
                                         <select class="form-select" aria-label="Default select example"
                                             name="kecamatanEdit" required>
-                                            <option value="">-- Pilih kecamatan --</option>
+                                            <option value=""><?= lang('Store.chooseDistrict'); ?></option>
                                         </select>
-                                        <label for="floatingProvinsi">Kecamatan</label>
+                                        <label for="floatingProvinsi"><?= lang('Store.district'); ?></label>
                                     </div>
                                     <div class="form-floating w-50">
                                         <select class="form-select" aria-label="Default select example"
                                             name="kodeposEdit" required>
-                                            <option value="">-- Pilih Desa --</option>
+                                            <option value=""><?= lang('Store.chooseVillage'); ?></option>
                                         </select>
-                                        <label for="floatingProvinsi">Desa/Kelurahan</label>
+                                        <label for="floatingProvinsi"><?= lang('Store.village'); ?></label>
                                     </div>
                                 </div>
 
                                 <div class="form-alamat form-floating mb-1">
-                                    <input type="text" class="form-control" placeholder="Alamat" name="alamat_add"
+                            <input type="text" class="form-control" placeholder="<?= esc(lang('Store.addressStreetPlaceholder'), 'attr'); ?>" name="alamat_add"
                                         required>
-                                    <label for="floatingInput">Jalan, Nomor Rumah, RT-RW</label>
-                                    <div class="invalid-feedback">Tidak boleh mengandung karakter /</div>
+                                    <label for="floatingInput"><?= lang('Store.streetAddress'); ?></label>
+                                    <div class="invalid-feedback"><?= lang('Store.invalidAddressSlash'); ?></div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-teks-aja" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-lonjong">Simpan</button>
+                            <button type="button" class="btn btn-teks-aja" data-bs-dismiss="modal"><?= lang('Store.cancel'); ?></button>
+                            <button type="submit" class="btn btn-lonjong"><?= lang('Store.save'); ?></button>
                         </div>
                     </div>
                 </div>
@@ -665,7 +665,14 @@ const inputNamaElm = document.getElementById("inputNama");
 const inputNohpElm = document.getElementById("inputNohp");
 const formEditElm = document.getElementById("formEdit");
 
+const addressCopy = <?= json_encode([
+    'chooseCity' => lang('Store.chooseCity'), 'chooseDistrict' => lang('Store.chooseDistrict'), 'chooseVillage' => lang('Store.chooseVillage'),
+    'loadingCity' => lang('Store.addressLoadingCity'), 'loadingDistrict' => lang('Store.addressLoadingDistrict'), 'loadingVillage' => lang('Store.addressLoadingVillage'),
+    'loadCityFailed' => lang('Store.addressLoadCityFailed'), 'loadDistrictFailed' => lang('Store.addressLoadDistrictFailed'), 'loadVillageFailed' => lang('Store.addressLoadVillageFailed'),
+    'cityListFailed' => lang('Store.addressCityListFailed'), 'districtListFailed' => lang('Store.addressDistrictListFailed'), 'villageListFailed' => lang('Store.addressVillageListFailed'),
+], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
 const alamatJson = JSON.parse(<?= json_encode($alamatJson, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>);
+const storeRoutePrefix = <?= json_encode(service('request')->getLocale() === 'en' ? '/en' : ''); ?>;
 const sandiElm = document.querySelector('input[name="sandi"]');
 const editSandiElm = document.getElementById('edit-sandi');
 
@@ -692,9 +699,9 @@ function titleCase(str = '') {
 async function salinKode(k) {
     try {
         await navigator.clipboard.writeText(k);
-        alert('Kode ' + k + ' disalin.');
+    alert(<?= json_encode(lang('Store.addressCopySuccess')) ?>.replace('%s', k));
     } catch (e) {
-        alert('Gagal menyalin kode.');
+    alert(<?= json_encode(lang('Store.addressCopyFailed')) ?>);
     }
 }
 
@@ -705,9 +712,9 @@ async function getKota(idprov) {
         const res = await fetch(`/getkota/${idprov}`);
         const json = await res.json();
         const hasil = json?.rajaongkir?.results ?? json?.results ?? json?.data?.results ?? [];
-        kotaElm.innerHTML = '<option value="">-- Pilih kota --</option>';
-        kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
-        kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        kotaElm.innerHTML = `<option value="">${addressCopy.chooseCity}</option>`;
+        kecElm.innerHTML = `<option value="">${addressCopy.chooseDistrict}</option>`;
+        kodeElm.innerHTML = `<option value="">${addressCopy.chooseVillage}</option>`;
         hasil.forEach(el => {
             const id = el.city_id ?? el.id ?? el.value;
             const nama0 = el.city_name ?? el.label ?? el.name ?? '';
@@ -719,7 +726,7 @@ async function getKota(idprov) {
             kotaElm.appendChild(opt);
         });
     } catch (e) {
-        kotaElm.innerHTML = '<option value="">(Gagal memuat kota)</option>';
+        kotaElm.innerHTML = `<option value="">${addressCopy.loadCityFailed}</option>`;
         console.error(e);
     }
 }
@@ -728,8 +735,8 @@ async function getKec(idkota) {
         const res = await fetch(`/getkec/${idkota}`);
         const json = await res.json();
         const hasil = json?.rajaongkir?.results ?? json?.results ?? json?.data?.results ?? [];
-        kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
-        kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        kecElm.innerHTML = `<option value="">${addressCopy.chooseDistrict}</option>`;
+        kodeElm.innerHTML = `<option value="">${addressCopy.chooseVillage}</option>`;
         hasil.forEach(el => {
             const id = el.subdistrict_id ?? el.id ?? el.value;
             const nama = String(el.subdistrict_name ?? el.label ?? el.name ?? '').split('/')[0];
@@ -739,7 +746,7 @@ async function getKec(idkota) {
             kecElm.appendChild(opt);
         });
     } catch (e) {
-        kecElm.innerHTML = '<option value="">(Gagal memuat kecamatan)</option>';
+        kecElm.innerHTML = `<option value="">${addressCopy.loadDistrictFailed}</option>`;
         console.error(e);
     }
 }
@@ -748,7 +755,7 @@ async function getKode(kecId) {
         const res = await fetch(`/getkode/${kecId}`); // kirim ID kecamatan
         const json = await res.json();
         const hasil = json?.results ?? json?.data?.results ?? json ?? [];
-        kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        kodeElm.innerHTML = `<option value="">${addressCopy.chooseVillage}</option>`;
         hasil.forEach(el => {
             const desa = titleCase(String(el.DesaKelurahan ?? el.desa ?? el.label ?? el.name ?? '').split(
                 '/')[0]);
@@ -759,25 +766,25 @@ async function getKode(kecId) {
             kodeElm.appendChild(opt);
         });
     } catch (e) {
-        kodeElm.innerHTML = '<option value="">(Gagal memuat desa)</option>';
+        kodeElm.innerHTML = `<option value="">${addressCopy.loadVillageFailed}</option>`;
         console.error(e);
     }
 }
 provElm?.addEventListener("change", (e) => {
-    kotaElm.innerHTML = '<option value="">Loading..</option>';
-    kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
-    kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+    kotaElm.innerHTML = `<option value="">${addressCopy.loadingCity}</option>`;
+    kecElm.innerHTML = `<option value="">${addressCopy.chooseDistrict}</option>`;
+    kodeElm.innerHTML = `<option value="">${addressCopy.chooseVillage}</option>`;
     const idprov = Number(String(e.target.value || '').split("-")[0]);
     if (idprov > 0) getKota(idprov);
 });
 kotaElm?.addEventListener("change", (e) => {
-    kecElm.innerHTML = '<option value="">Loading..</option>';
-    kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+    kecElm.innerHTML = `<option value="">${addressCopy.loadingDistrict}</option>`;
+    kodeElm.innerHTML = `<option value="">${addressCopy.chooseVillage}</option>`;
     const idkota = Number(String(e.target.value || '').split("-")[0]);
     if (idkota > 0) getKec(idkota);
 });
 kecElm?.addEventListener("change", (e) => {
-    kodeElm.innerHTML = '<option value="">Loading..</option>';
+    kodeElm.innerHTML = `<option value="">${addressCopy.loadingVillage}</option>`;
     const idkec = String(e.target.value || '').split("-")[0]; // kirim ID kecamatan ke endpoint
     if (idkec) getKode(idkec);
 });
@@ -788,9 +795,9 @@ async function getKotaEdit(idprov) {
         const res = await fetch(`/getkota/${idprov}`);
         const json = await res.json();
         const hasil = json?.rajaongkir?.results ?? json?.results ?? json?.data?.results ?? [];
-        kotaElmEdit.innerHTML = '<option value="">-- Pilih kota --</option>';
-        kecElmEdit.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
-        kodeElmEdit.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        kotaElmEdit.innerHTML = `<option value="">${addressCopy.chooseCity}</option>`;
+        kecElmEdit.innerHTML = `<option value="">${addressCopy.chooseDistrict}</option>`;
+        kodeElmEdit.innerHTML = `<option value="">${addressCopy.chooseVillage}</option>`;
         hasil.forEach(el => {
             const id = el.city_id ?? el.id ?? el.value;
             const nama0 = el.city_name ?? el.label ?? el.name ?? '';
@@ -802,7 +809,7 @@ async function getKotaEdit(idprov) {
             kotaElmEdit.appendChild(opt);
         });
     } catch (e) {
-        kotaElmEdit.innerHTML = '<option value="">(Gagal memuat kota)</option>';
+        kotaElmEdit.innerHTML = `<option value="">${addressCopy.loadCityFailed}</option>`;
         console.error(e);
     }
 }
@@ -811,8 +818,8 @@ async function getKecEdit(idkota) {
         const res = await fetch(`/getkec/${idkota}`);
         const json = await res.json();
         const hasil = json?.rajaongkir?.results ?? json?.results ?? json?.data?.results ?? [];
-        kecElmEdit.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
-        kodeElmEdit.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        kecElmEdit.innerHTML = `<option value="">${addressCopy.chooseDistrict}</option>`;
+        kodeElmEdit.innerHTML = `<option value="">${addressCopy.chooseVillage}</option>`;
         hasil.forEach(el => {
             const id = el.subdistrict_id ?? el.id ?? el.value;
             const nama = String(el.subdistrict_name ?? el.label ?? el.name ?? '').split('/')[0];
@@ -822,7 +829,7 @@ async function getKecEdit(idkota) {
             kecElmEdit.appendChild(opt);
         });
     } catch (e) {
-        kecElmEdit.innerHTML = '<option value="">(Gagal memuat kecamatan)</option>';
+        kecElmEdit.innerHTML = `<option value="">${addressCopy.loadDistrictFailed}</option>`;
         console.error(e);
     }
 }
@@ -831,7 +838,7 @@ async function getKodeEdit(kecId) {
         const res = await fetch(`/getkode/${kecId}`);
         const json = await res.json();
         const hasil = json?.results ?? json?.data?.results ?? json ?? [];
-        kodeElmEdit.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        kodeElmEdit.innerHTML = `<option value="">${addressCopy.chooseVillage}</option>`;
         hasil.forEach(el => {
             const desa = titleCase(String(el.DesaKelurahan ?? el.desa ?? el.label ?? el.name ?? '').split(
                 '/')[0]);
@@ -842,25 +849,25 @@ async function getKodeEdit(kecId) {
             kodeElmEdit.appendChild(opt);
         });
     } catch (e) {
-        kodeElmEdit.innerHTML = '<option value="">(Gagal memuat desa)</option>';
+        kodeElmEdit.innerHTML = `<option value="">${addressCopy.loadVillageFailed}</option>`;
         console.error(e);
     }
 }
 provElmEdit?.addEventListener("change", (e) => {
-    kotaElmEdit.innerHTML = '<option value="">Loading..</option>';
-    kecElmEdit.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
-    kodeElmEdit.innerHTML = '<option value="">-- Pilih Desa --</option>';
+    kotaElmEdit.innerHTML = `<option value="">${addressCopy.loadingCity}</option>`;
+    kecElmEdit.innerHTML = `<option value="">${addressCopy.chooseDistrict}</option>`;
+    kodeElmEdit.innerHTML = `<option value="">${addressCopy.chooseVillage}</option>`;
     const idprov = Number(String(e.target.value || '').split("-")[0]);
     if (idprov > 0) getKotaEdit(idprov);
 });
 kotaElmEdit?.addEventListener("change", (e) => {
-    kecElmEdit.innerHTML = '<option value="">Loading..</option>';
-    kodeElmEdit.innerHTML = '<option value="">-- Pilih Desa --</option>';
+    kecElmEdit.innerHTML = `<option value="">${addressCopy.loadingDistrict}</option>`;
+    kodeElmEdit.innerHTML = `<option value="">${addressCopy.chooseVillage}</option>`;
     const idkota = Number(String(e.target.value || '').split("-")[0]);
     if (idkota > 0) getKecEdit(idkota);
 });
 kecElmEdit?.addEventListener("change", (e) => {
-    kodeElmEdit.innerHTML = '<option value="">Loading..</option>';
+    kodeElmEdit.innerHTML = `<option value="">${addressCopy.loadingVillage}</option>`;
     const idkec = String(e.target.value || '').split("-")[0]; // kirim ID kecamatan
     if (idkec) getKodeEdit(idkec);
 });
@@ -871,7 +878,7 @@ function openEditModal(ind_add) {
     inputEmailElm.value = a.email_pemesan || '';
     inputNamaElm.value = a.nama_penerima || '';
     inputNohpElm.value = a.nohp_penerima || '';
-    formEditElm.action = "/editaddress/" + ind_add;
+    formEditElm.action = storeRoutePrefix + "/editaddress/" + ind_add;
 }
 </script>
 

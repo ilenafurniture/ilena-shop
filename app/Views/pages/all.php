@@ -56,8 +56,12 @@ $productCoverUrl = function (array $product): string {
 };
 $isSmartSearch = isset($find);
 $smartQuery = (string) ($find ?? '');
-$catalogRoute = $isSmartSearch ? '/find' : '/product';
+$catalogRoute = ilena_store_path($isSmartSearch ? '/find' : '/product');
 $catalogHeading = (string) ($title ?? 'Produk Kami');
+$isEnglish = service('request')->getLocale() === 'en';
+if ($isEnglish && trim($catalogHeading) === 'Produk Kami') {
+    $catalogHeading = lang('Store.productDetails');
+}
 $hideGenericCatalogIntro = !$isSmartSearch && mb_strtolower(trim($catalogHeading)) === 'produk kami';
 ?>
 <?php
@@ -259,7 +263,7 @@ if (isset($_GET['ruang'])) {
             style="position: sticky; top: 50px; height:fit-content">
             <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample" aria-expanded="false"
                 aria-controls="collapseExample">
-                Koleksi
+                <?= esc(lang('Store.catalogCollection')); ?>
             </div>
             <div class="collapse py-2" id="collapseExample">
                 <?php foreach ($koleksiJenis['koleksi'] as $ind_k => $k) { ?>
@@ -279,7 +283,7 @@ if (isset($_GET['ruang'])) {
 
             <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample1" aria-expanded="false"
                 aria-controls="collapseExample1">
-                Jenis
+                <?= esc(lang('Store.catalogType')); ?>
             </div>
             <div class="collapse py-2" id="collapseExample1">
                 <?php foreach ($koleksiJenis['jenis'] as $ind_j => $j) { ?>
@@ -291,7 +295,7 @@ if (isset($_GET['ruang'])) {
                             <svg viewBox="0 0 12 10" height="10px" width="12px">
                                 <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                             </svg></span>
-                        <p><?= ucfirst($j['nama']); ?></p>
+                        <p><?= esc(ilena_catalog_type_label((string) $j['nama'])); ?></p>
                     </label>
                 </div>
                 <?php } ?>
@@ -299,7 +303,7 @@ if (isset($_GET['ruang'])) {
 
             <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample4" aria-expanded="false"
                 aria-controls="collapseExample4">
-                Room Set
+                <?= esc(lang('Store.catalogRoom')); ?>
             </div>
             <div class="collapse py-2" id="collapseExample4">
                 <div class="checkbox-wrapper-46">
@@ -309,7 +313,7 @@ if (isset($_GET['ruang'])) {
                             <svg viewBox="0 0 12 10" height="10px" width="12px">
                                 <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                             </svg></span>
-                        <p>Ruang Tamu</p>
+                        <p><?= esc(lang('Store.livingRoom')); ?></p>
                     </label>
                 </div>
                 <div class="checkbox-wrapper-46">
@@ -319,7 +323,7 @@ if (isset($_GET['ruang'])) {
                             <svg viewBox="0 0 12 10" height="10px" width="12px">
                                 <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                             </svg></span>
-                        <p>Ruang Keluarga</p>
+                        <p><?= esc(lang('Store.familyRoom')); ?></p>
                     </label>
                 </div>
                 <div class="checkbox-wrapper-46">
@@ -329,14 +333,14 @@ if (isset($_GET['ruang'])) {
                             <svg viewBox="0 0 12 10" height="10px" width="12px">
                                 <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                             </svg></span>
-                        <p>Ruang Tidur</p>
+                        <p><?= esc(lang('Store.bedroom')); ?></p>
                     </label>
                 </div>
             </div>
 
             <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample2" aria-expanded="false"
                 aria-controls="collapseExample2">
-                Harga
+                <?= esc(lang('Store.catalogPrice')); ?>
             </div>
             <div class="collapse py-2" id="collapseExample2">
                 <div class="checkbox-wrapper-46">
@@ -347,7 +351,7 @@ if (isset($_GET['ruang'])) {
                             <svg viewBox="0 0 12 10" height="10px" width="12px">
                                 <polyline points="3.5 6 4.5 9 10.5 3"></polyline>
                             </svg></span>
-                        <p>Di bawah Rp 1.000.000</p>
+                        <p><?= esc(lang('Store.priceUnderOneMillion')); ?></p>
                     </label>
                 </div>
                 <div class="checkbox-wrapper-46">
@@ -358,7 +362,7 @@ if (isset($_GET['ruang'])) {
                             <svg viewBox="0 0 12 10" height="10px" width="12px">
                                 <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                             </svg></span>
-                        <p>Rp 1.000.000 – < Rp 3.000.000</p>
+                        <p><?= esc(lang('Store.priceOneToThreeMillion')); ?></p>
                     </label>
                 </div>
                 <div class="checkbox-wrapper-46">
@@ -369,7 +373,7 @@ if (isset($_GET['ruang'])) {
                             <svg viewBox="0 0 12 10" height="10px" width="12px">
                                 <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                             </svg></span>
-                        <p>Rp 3.000.000 – < Rp 5.000.000</p>
+                        <p><?= esc(lang('Store.priceThreeToFiveMillion')); ?></p>
                     </label>
                 </div>
                 <div class="checkbox-wrapper-46">
@@ -380,7 +384,7 @@ if (isset($_GET['ruang'])) {
                             <svg viewBox="0 0 12 10" height="10px" width="12px">
                                 <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                             </svg></span>
-                        <p>Rp 5.000.000 – < Rp 10.000.000</p>
+                        <p><?= esc(lang('Store.priceFiveToTenMillion')); ?></p>
                     </label>
                 </div>
                 <div class="checkbox-wrapper-46">
@@ -391,14 +395,14 @@ if (isset($_GET['ruang'])) {
                             <svg viewBox="0 0 12 10" height="10px" width="12px">
                                 <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                             </svg></span>
-                        <p>Rp 10.000.000 ke atas</p>
+                        <p><?= esc(lang('Store.priceOverTenMillion')); ?></p>
                     </label>
                 </div>
             </div>
             <div class="d-flex gap-3 mt-2">
-                <a class="btn-filter btn-lonjong">Terapkan</a>
+                <a class="btn-filter btn-lonjong"><?= esc(lang('Store.applyFilters')); ?></a>
                 <?php if (!empty($_GET['koleksi']) || !empty($_GET['jenis']) || !empty($_GET['harga']) || !empty($_GET['ruang'])) { ?>
-                <a class="btn-teks-aja" href="<?= $isSmartSearch ? '/find?' . http_build_query(['q' => $smartQuery]) : '/product'; ?>">Hapus Filter</a>
+                <a class="btn-teks-aja" href="<?= esc(ilena_store_path($isSmartSearch ? '/find?' . http_build_query(['q' => $smartQuery]) : '/product'), 'attr'); ?>"><?= esc(lang('Store.clearFilters')); ?></a>
                 <?php } ?>
             </div>
         </div>
@@ -406,19 +410,19 @@ if (isset($_GET['ruang'])) {
             <!-- <div style="position: absolute;" class="w-100"> -->
             <header class="ilena-catalog-intro <?= $hideGenericCatalogIntro ? 'ilena-catalog-intro--compact' : ''; ?>">
                 <div>
-                    <p class="ilena-catalog-intro__eyebrow"><?= $isSmartSearch ? 'PENCARIAN KATALOG' : 'ILENA <span>/</span> FURNITURE'; ?></p>
+                    <p class="ilena-catalog-intro__eyebrow"><?= $isSmartSearch ? esc(lang('Store.catalogSearchEyebrow')) : 'ILENA <span>/</span> FURNITURE'; ?></p>
                     <?php if ($isSmartSearch || !$hideGenericCatalogIntro) { ?>
-                    <h1><?= esc($isSmartSearch ? 'Temukan furniture pilihan' : $catalogHeading); ?></h1>
+                    <h1><?= esc($isSmartSearch ? lang('Store.searchHeading') : $catalogHeading); ?></h1>
                     <?php } ?>
                     <?php if ($isSmartSearch) { ?>
-                    <p class="ilena-catalog-intro__description">Kami mencarikan furniture yang paling mendekati kebutuhan dan gaya ruang Anda.</p>
+                    <p class="ilena-catalog-intro__description"><?= esc(lang('Store.searchDescription')); ?></p>
                     <?php } ?>
                 </div>
                 <div class="ilena-catalog-intro__aside">
                     <?php if (session()->get('role') == '1') { ?>
                     <a href="/admin/addproduct" class="ilena-catalog-add">Tambah Produk <span aria-hidden="true">↗</span></a>
                     <?php } ?>
-                    <p><strong><?= number_format($catalogTotalResults, 0, ',', '.'); ?></strong><span>DESAIN</span></p>
+                    <p><strong><?= number_format($catalogTotalResults, 0, ',', '.'); ?></strong><span><?= esc(lang('Store.designs')); ?></span></p>
                 </div>
             </header>
 
@@ -426,8 +430,8 @@ if (isset($_GET['ruang'])) {
             <nav style="--bs-breadcrumb-divider: '/'; position: relative; height: <?= count($seluruhFilter) > 0 ? '80px' : '36px'; ?>"
                 aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Beranda</a></li>
-                    <li class="breadcrumb-item"><a href="/product">Produk</a></li>
+                    <li class="breadcrumb-item"><a href="<?= esc(ilena_store_path('/'), 'attr'); ?>"><?= esc(lang('Store.home')); ?></a></li>
+                    <li class="breadcrumb-item"><a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>"><?= esc(lang('Store.catalogProducts')); ?></a></li>
                 </ol>
                 <div class="container-badge-filter mb-2" style="position: absolute;">
                     <?php foreach ($seluruhFilter as $ind_f => $f) {
@@ -444,13 +448,13 @@ if (isset($_GET['ruang'])) {
             <label for="container-filter" class="w-100">
                 <div class="d-flex gap-2 align-items-center w-100 justify-content-center btn-lonjong">
                     <i class="material-icons">filter_list</i>
-                    <p class="m-0">Filter</p>
+                    <p class="m-0"><?= esc(lang('Store.filter')); ?></p>
                 </div>
             </label>
             <div class="container-filter mt-2">
                 <div class="item-filter" data-bs-toggle="collapse" href="#collapseExampleMobile" aria-expanded="false"
                     aria-controls="collapseExampleMobile">
-                    Koleksi
+                    <?= esc(lang('Store.catalogCollection')); ?>
                 </div>
                 <div class="collapse py-2" id="collapseExampleMobile">
                     <?php foreach ($koleksiJenis['koleksi'] as $ind_k => $k) { ?>
@@ -470,7 +474,7 @@ if (isset($_GET['ruang'])) {
 
                 <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample1Mobile" aria-expanded="false"
                     aria-controls="collapseExample1Mobile">
-                    Jenis
+                    <?= esc(lang('Store.catalogType')); ?>
                 </div>
                 <div class="collapse py-2" id="collapseExample1Mobile">
                     <?php foreach ($koleksiJenis['jenis'] as $ind_j => $j) { ?>
@@ -482,7 +486,7 @@ if (isset($_GET['ruang'])) {
                                 <svg viewBox="0 0 12 10" height="10px" width="12px">
                                     <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                                 </svg></span>
-                            <p><?= ucfirst($j['nama']); ?></p>
+                            <p><?= esc(ilena_catalog_type_label((string) $j['nama'])); ?></p>
                         </label>
                     </div>
                     <?php } ?>
@@ -490,7 +494,7 @@ if (isset($_GET['ruang'])) {
 
                 <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample4Mobile" aria-expanded="false"
                     aria-controls="collapseExample4Mobile">
-                    Room Set
+                    <?= esc(lang('Store.catalogRoom')); ?>
                 </div>
                 <div class="collapse py-2" id="collapseExample4Mobile">
                     <div class="checkbox-wrapper-46">
@@ -501,7 +505,7 @@ if (isset($_GET['ruang'])) {
                                 <svg viewBox="0 0 12 10" height="10px" width="12px">
                                     <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                                 </svg></span>
-                            <p>Ruang Tamu</p>
+                        <p><?= esc(lang('Store.livingRoom')); ?></p>
                         </label>
                     </div>
                     <div class="checkbox-wrapper-46">
@@ -512,7 +516,7 @@ if (isset($_GET['ruang'])) {
                                 <svg viewBox="0 0 12 10" height="10px" width="12px">
                                     <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                                 </svg></span>
-                            <p>Ruang Keluarga</p>
+                        <p><?= esc(lang('Store.familyRoom')); ?></p>
                         </label>
                     </div>
                     <div class="checkbox-wrapper-46">
@@ -523,14 +527,14 @@ if (isset($_GET['ruang'])) {
                                 <svg viewBox="0 0 12 10" height="10px" width="12px">
                                     <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                                 </svg></span>
-                            <p>Ruang Tidur</p>
+                        <p><?= esc(lang('Store.bedroom')); ?></p>
                         </label>
                     </div>
                 </div>
 
                 <div class="item-filter" data-bs-toggle="collapse" href="#collapseExample2Mobile" aria-expanded="false"
                     aria-controls="collapseExample2Mobile">
-                    Harga
+                    <?= esc(lang('Store.catalogPrice')); ?>
                 </div>
                 <div class="collapse py-2" id="collapseExample2Mobile">
                     <div class="checkbox-wrapper-46">
@@ -541,7 +545,7 @@ if (isset($_GET['ruang'])) {
                                 <svg viewBox="0 0 12 10" height="10px" width="12px">
                                     <polyline points="3.5 6 4.5 9 10.5 3"></polyline>
                                 </svg></span>
-                            <p>Di bawah Rp 1.000.000</p>
+                            <p><?= esc(lang('Store.priceUnderOneMillion')); ?></p>
                         </label>
                     </div>
                     <div class="checkbox-wrapper-46">
@@ -552,7 +556,7 @@ if (isset($_GET['ruang'])) {
                                 <svg viewBox="0 0 12 10" height="10px" width="12px">
                                     <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                                 </svg></span>
-                            <p>Rp 1.000.000 – < Rp 3.000.000</p>
+                            <p><?= esc(lang('Store.priceOneToThreeMillion')); ?></p>
                         </label>
                     </div>
                     <div class="checkbox-wrapper-46">
@@ -563,7 +567,7 @@ if (isset($_GET['ruang'])) {
                                 <svg viewBox="0 0 12 10" height="10px" width="12px">
                                     <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                                 </svg></span>
-                            <p>Rp 3.000.000 – < Rp 5.000.000</p>
+                            <p><?= esc(lang('Store.priceThreeToFiveMillion')); ?></p>
                         </label>
                     </div>
                     <div class="checkbox-wrapper-46">
@@ -574,7 +578,7 @@ if (isset($_GET['ruang'])) {
                                 <svg viewBox="0 0 12 10" height="10px" width="12px">
                                     <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                                 </svg></span>
-                            <p>Rp 5.000.000 – < Rp 10.000.000</p>
+                            <p><?= esc(lang('Store.priceFiveToTenMillion')); ?></p>
                         </label>
                     </div>
                     <div class="checkbox-wrapper-46">
@@ -585,27 +589,27 @@ if (isset($_GET['ruang'])) {
                                 <svg viewBox="0 0 12 10" height="10px" width="12px">
                                     <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                                 </svg></span>
-                            <p>Rp 10.000.000 ke atas</p>
+                            <p><?= esc(lang('Store.priceOverTenMillion')); ?></p>
                         </label>
                     </div>
                 </div>
                 <div class="d-flex gap-3 mt-2">
-                    <a class="btn-filter btn-lonjong">Terapkan</a>
+                <a class="btn-filter btn-lonjong"><?= esc(lang('Store.applyFilters')); ?></a>
                     <?php if (!empty($_GET['koleksi']) || !empty($_GET['jenis']) || !empty($_GET['harga']) || !empty($_GET['ruang'])) { ?>
-                    <a class="btn-teks-aja" href="<?= $isSmartSearch ? '/find?' . http_build_query(['q' => $smartQuery]) : '/product'; ?>">Hapus Filter</a>
+                    <a class="btn-teks-aja" href="<?= esc(ilena_store_path($isSmartSearch ? '/find?' . http_build_query(['q' => $smartQuery]) : '/product'), 'attr'); ?>"><?= esc(lang('Store.clearFilters')); ?></a>
                     <?php } ?>
                 </div>
             </div>
         </div>
 
             <?php if (session()->get('role') == '1') { ?>
-            <p class="ilena-catalog-admin-note">Katalog produk</p>
+            <p class="ilena-catalog-admin-note"><?= esc(lang('Store.catalogAdminNote')); ?></p>
             <?php } ?>
             <div class="d-flex gap-4 align-items-stretch mb-3 ilena-catalog-toolbar">
                 <div style="width: fit-content;" class="show-flex-ke-hide justify-content-center align-items-center">
-                    <button class="btn btn-sm btn-outline-dark d-flex align-items-center" type="button" data-filter-sidebar-toggle aria-controls="catalogFilterSidebar" aria-expanded="false" aria-label="Tampilkan filter" onclick="showFilterDesktop()">
+                    <button class="btn btn-sm btn-outline-dark d-flex align-items-center" type="button" data-filter-sidebar-toggle aria-controls="catalogFilterSidebar" aria-expanded="false" aria-label="<?= esc(lang('Store.showFilters'), 'attr'); ?>" onclick="showFilterDesktop()">
                         <i class="material-icons" aria-hidden="true">arrow_forward_ios</i>
-                        <p class="m-0" style="line-height: 7px;">Filter</p>
+                        <p class="m-0" style="line-height: 7px;"><?= esc(lang('Store.filter')); ?></p>
                     </button>
                 </div>
                 <div style="width: 1px; background-color:darkgrey;" class="show-block-ke-hide"></div>
@@ -613,8 +617,8 @@ if (isset($_GET['ruang'])) {
                     <nav style="--bs-breadcrumb-divider: '/'; position: relative; <?= (isset($_GET['koleksi']) || isset($_GET['jenis']) || isset($_GET['ruang'])) ? 'height: 60px' : ''; ?>"
                         aria-label="breadcrumb" class="show-block-ke-hide">
                         <ol class="breadcrumb <?= count($seluruhFilter) > 0 ? 'mb-2' : 'm-0'; ?>">
-                            <li class="breadcrumb-item"><a href="/">Beranda</a></li>
-                            <li class="breadcrumb-item"><a href="/product">Produk</a></li>
+                            <li class="breadcrumb-item"><a href="<?= esc(ilena_store_path('/'), 'attr'); ?>"><?= esc(lang('Store.home')); ?></a></li>
+                            <li class="breadcrumb-item"><a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>"><?= esc(lang('Store.catalogProducts')); ?></a></li>
                             <!-- <li class="breadcrumb-item">Meja TV</li> -->
                         </ol>
                         <div class="container-badge-filter" style="position: absolute;">
@@ -631,45 +635,45 @@ if (isset($_GET['ruang'])) {
             </div>
             <?php if ($isSmartSearch) { ?>
             <div class="ilena-smart-search-summary" role="status" aria-live="polite">
-                <div><span class="ilena-smart-search-summary__label">Hasil pencarian</span><h2>“<?= esc($find); ?>”</h2></div>
-                <p><strong><?= number_format($catalogTotalResults, 0, ',', '.'); ?></strong> produk ditemukan</p>
+                <div><span class="ilena-smart-search-summary__label"><?= esc(lang('Store.searchResults')); ?></span><h2>“<?= esc($find); ?>”</h2></div>
+                <p><strong><?= number_format($catalogTotalResults, 0, ',', '.'); ?></strong> <?= esc(lang('Store.productsFound')); ?></p>
             </div>
             <?php if (!empty($smartFilters)) { ?>
-            <div class="ilena-smart-search-chips" aria-label="Kriteria yang dikenali dari pencarian">
-                <span class="ilena-smart-search-chips__label">Cocok dengan</span>
+            <div class="ilena-smart-search-chips" aria-label="<?= esc(lang('Store.smartSearchCriteria'), 'attr'); ?>">
+                <span class="ilena-smart-search-chips__label"><?= esc(lang('Store.matches')); ?></span>
                 <?php foreach ($smartFilters as $smartFilter) { ?><span class="badge rounded-pill text-bg-light"><?= esc($smartFilter); ?></span><?php } ?>
             </div>
             <?php } ?>
             <?php if (empty($produk)) { ?>
             <section class="ilena-smart-search-empty" aria-live="polite">
-                <h2>Belum menemukan produk yang cocok</h2>
-                <p>Coba kata kunci yang lebih umum atau pilih salah satu pencarian yang mendekati kebutuhan Anda.</p>
+                <h2><?= esc(lang('Store.smartSearchNoMatchTitle')); ?></h2>
+                <p><?= esc(lang('Store.smartSearchNoMatchBody')); ?></p>
                 <?php if (!empty($smartSuggestions)) { ?>
-                <p class="ilena-smart-search-empty__label">Pencarian yang mungkin Anda maksud</p>
+                <p class="ilena-smart-search-empty__label"><?= esc(lang('Store.suggestedSearches')); ?></p>
                 <div class="ilena-smart-search-chips">
                     <?php foreach ($smartSuggestions as $suggestion) { ?>
-                    <a href="<?= esc('/find?' . http_build_query(['q' => $suggestion['nama'] ?? '']), 'attr'); ?>"><?= esc($suggestion['nama'] ?? 'Lihat produk'); ?></a>
+                    <a href="<?= esc(ilena_store_path('/find?' . http_build_query(['q' => $suggestion['nama'] ?? ''])), 'attr'); ?>"><?= esc($suggestion['nama'] ?? lang('Store.viewProduct')); ?></a>
                     <?php } ?>
                 </div>
                 <?php } ?>
-                <p class="mt-3 mb-0"><a href="/product">Lihat semua produk</a></p>
+                <p class="mt-3 mb-0"><a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>"><?= esc(lang('Store.viewAllProducts')); ?></a></p>
             </section>
             <?php } ?>
             <?php } ?>
             <?php if (!$isSmartSearch && $catalogTotalResults === 0) { ?>
             <section class="ilena-catalog-empty" role="status" aria-live="polite">
-                <p class="ilena-catalog-empty__eyebrow">Belum ada hasil</p>
-                <h2>Tidak ada produk yang cocok dengan kombinasi filter ini.</h2>
-                <p><?= isset($_GET['harga']) ? 'Rentang harga dihitung dari harga setelah diskon. Coba rentang harga lain atau kurangi pilihan koleksi.' : ($hasAppliedCatalogFilters ? 'Coba kurangi pilihan koleksi atau jenis, atau reset filter untuk melihat seluruh katalog.' : 'Produk sedang tidak tersedia. Silakan periksa kembali beberapa saat lagi.'); ?></p>
+                <p class="ilena-catalog-empty__eyebrow"><?= esc(lang('Store.noResults')); ?></p>
+                <h2><?= esc(lang('Store.noMatchingProducts')); ?></h2>
+                <p><?= esc(isset($_GET['harga']) ? lang('Store.priceFilterHint') : ($hasAppliedCatalogFilters ? lang('Store.catalogFilterHint') : lang('Store.catalogUnavailable'))); ?></p>
                 <div class="ilena-catalog-empty__actions">
-                    <?php if (isset($_GET['harga'])) { ?><a href="<?= esc($catalogRemovePriceUrl, 'attr'); ?>">Hapus filter harga</a><?php } ?>
-                    <?php if ($hasAppliedCatalogFilters) { ?><a href="<?= esc($isSmartSearch ? '/find?' . http_build_query(['q' => $smartQuery]) : '/product', 'attr'); ?>">Reset semua filter</a><?php } ?>
+                    <?php if (isset($_GET['harga'])) { ?><a href="<?= esc($catalogRemovePriceUrl, 'attr'); ?>"><?= esc(lang('Store.clearPriceFilter')); ?></a><?php } ?>
+                    <?php if ($hasAppliedCatalogFilters) { ?><a href="<?= esc(ilena_store_path($isSmartSearch ? '/find?' . http_build_query(['q' => $smartQuery]) : '/product'), 'attr'); ?>"><?= esc(lang('Store.resetFilters')); ?></a><?php } ?>
                 </div>
             </section>
             <?php } ?>
             <div class="container-card1 ilena-catalog-grid">
                 <?php foreach ($produk as $ind_p => $p) { ?>
-                <?php $cardVersion = !empty($p['tgl_update']) ? (int) strtotime((string) $p['tgl_update']) : time(); ?>
+                <?php $cardVersion = !empty($p['tgl_update']) ? (int) strtotime((string) $p['tgl_update']) : time(); $displayProductName = ilena_product_display_name($p); ?>
                 <div class="card1" data-product-card>
                     <div style="position: relative;">
                         <span class="card1-content-img-kiri"
@@ -679,24 +683,24 @@ if (isset($_GET['ruang'])) {
                             <a class="card1-btn-img" href="/admin/editproduct/<?= $p['id'] ?>" title="Edit produk"><i class="material-icons">edit</i></a>
                             <?php }
                                 if (in_array($p['id'], $wishlist)) { ?>
-                            <form action="/delwishlist/<?= $p['id'] ?>" method="post">
+                            <form action="<?= esc(ilena_store_path('/delwishlist/' . $p['id']), 'attr'); ?>" method="post">
                                 <?= csrf_field(); ?>
-                                <button type="submit" class="card1-btn-img" aria-label="Hapus <?= esc($p['nama'], 'attr'); ?> dari favorit" title="Hapus dari favorit"><i
+                                <button type="submit" class="card1-btn-img" aria-label="<?= esc(lang('Store.removeFromWishlist') . ': ' . $p['nama'], 'attr'); ?>" title="<?= esc(lang('Store.removeFromWishlist'), 'attr'); ?>"><i
                                         class="material-icons">favorite</i></button>
                             </form>
                             <?php } else { ?>
-                            <form action="/addwishlist/<?= $p['id'] ?>" method="post">
+                            <form action="<?= esc(ilena_store_path('/addwishlist/' . $p['id']), 'attr'); ?>" method="post">
                                 <?= csrf_field(); ?>
-                                <button type="submit" class="card1-btn-img" aria-label="Simpan <?= esc($p['nama'], 'attr'); ?> ke favorit" title="Simpan ke favorit"><i
+                                <button type="submit" class="card1-btn-img" aria-label="<?= esc(lang('Store.saveToWishlist') . ': ' . $p['nama'], 'attr'); ?>" title="<?= esc(lang('Store.saveToWishlist'), 'attr'); ?>"><i
                                         class="material-icons">favorite_border</i></button>
                             </form>
                             <?php } ?>
                             <form method="post" id="card<?= $ind_p ?>"
-                                action="/addcart/<?= $p['id'] ?>/<?= rawurlencode(json_decode($p['varian'], true)[0]['nama']) ?>/1"><?= csrf_field(); ?><button class="card1-btn-img" aria-label="Tambah <?= esc($p['nama'], 'attr'); ?> ke keranjang" title="Tambah ke keranjang"><i class="material-icons">shopping_bag</i>
+                                action="<?= esc(ilena_store_path('/addcart/' . $p['id'] . '/' . rawurlencode(json_decode($p['varian'], true)[0]['nama']) . '/1'), 'attr'); ?>"><?= csrf_field(); ?><button class="card1-btn-img" aria-label="<?= esc(lang('Store.addProductToCart', [$p['nama']]), 'attr'); ?>" title="<?= esc(lang('Store.addToCartTitle'), 'attr'); ?>"><i class="material-icons">shopping_bag</i>
                                 </button>
                             </form>
                         </div>
-                        <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="gambar">
+                        <a href="<?= esc(ilena_store_path('/product/' . str_replace(' ', '-', (string) $p['nama'])), 'attr'); ?>" class="gambar">
                             <?php
                                 $cardVariantsForImage = json_decode($p['varian'] ?? '[]', true) ?: [];
                                 $cardSlotsForImage = array_values(array_filter(array_map('trim', explode(',', (string) ($cardVariantsForImage[0]['urutan_gambar'] ?? '1')))));
@@ -725,7 +729,7 @@ if (isset($_GET['ruang'])) {
                                 <?= $cardLocalSrc === '' && $cardCdnSrc !== '' ? 'data-image-fallback="' . esc($cardFallback, 'attr') . '"' : '' ?>
                                 <?= $cardLocalSrc !== '' && $cardLocal1000Src !== '' ? 'srcset="' . esc($cardLocalSrc . ' 300w, ' . $cardLocal1000Src . ' 1000w', 'attr') . '"' : ($cardLocalSrc === '' && $cardCdnSrc !== '' ? 'srcset="' . esc($cardCdnSrcset, 'attr') . '"' : '') ?>
                                 sizes="(max-width: 600px) 46vw, (max-width: 1100px) 30vw, 300px"
-                                width="300" height="300" alt="<?= esc($p['nama'], 'attr') ?>"
+                                width="300" height="300" alt="<?= esc($displayProductName, 'attr') ?>"
                                 loading="<?= $ind_p < 2 ? 'eager' : 'lazy' ?>" fetchpriority="<?= $ind_p === 0 ? 'high' : 'auto' ?>" decoding="async"
                                 onload="this.classList.add('is-loaded');this.closest('.gambar')?.classList.add('is-image-loaded')"
                                 onerror="if(this.dataset.imageFallback&&!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.removeAttribute('srcset');this.src=this.dataset.imageFallback;return;}this.classList.add('is-loaded');this.closest('.gambar')?.classList.add('is-image-loaded')">
@@ -734,16 +738,16 @@ if (isset($_GET['ruang'])) {
                                 data-src="<?= esc(is_file(FCPATH . 'uploads/product-images/hover/' . $p['id'] . '.webp') ? (base_url('uploads/product-images/hover/' . rawurlencode((string) $p['id']) . '.webp') . '?v=' . $cardVersion) : ($productCdnImageUrl('products/hover/' . rawurlencode((string) $p['id']) . '.webp', $cardVersion) ?: (base_url('viewpichover/' . $p['id']) . '?v=' . $cardVersion)), 'attr') ?>"
                                 data-image-fallback="<?= esc(base_url('viewpichover/' . rawurlencode((string) $p['id'])) . '?v=' . $cardVersion, 'attr') ?>"
                                 onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"
-                                alt="<?= esc($p['nama'], 'attr') ?>" loading="lazy" decoding="async">
+                                alt="<?= esc($displayProductName, 'attr') ?>" loading="lazy" decoding="async">
                             <?php } ?>
                         </a>
                     </div>
                     <div class="container-varian mb-1 d-flex">
                         <?php foreach (json_decode($p['varian'], true) as $ind_v => $v) { ?>
                         <input id="varian-<?= $ind_p ?>-<?= $ind_v ?>"
-                            value="<?= esc($v['urutan_gambar'], 'attr') ?>-<?= esc($v['nama'], 'attr') ?>" aria-label="Warna <?= esc($v['nama'], 'attr') ?>" type="radio"
+                            value="<?= esc($v['urutan_gambar'], 'attr') ?>-<?= esc($v['nama'], 'attr') ?>" aria-label="<?= esc(lang('Store.colorOption') . ' ' . ilena_variant_display_name((string) $v['nama']), 'attr') ?>" type="radio"
                             name="varian<?= $ind_p ?>">
-                        <label for="varian-<?= $ind_p ?>-<?= $ind_v ?>" title="<?= esc($v['nama'], 'attr') ?>"><span
+                        <label for="varian-<?= $ind_p ?>-<?= $ind_v ?>" title="<?= esc(ilena_variant_display_name((string) $v['nama']), 'attr') ?>"><span
                                 style="background-color: <?= $v['kode'] ?>"></span></label>
                         <?php } ?>
                         <script>
@@ -767,16 +771,16 @@ if (isset($_GET['ruang'])) {
                                     ? productImageCdnBase<?= $ind_p ?> + "/products/1000/<?= rawurlencode((string) $p['id']) ?>-" + encodeURIComponent(selectedSlot) + ".webp?v=<?= $cardVersion ?>"
                                     : fallbackImage;
 
-                                btnKeranjang<?= $ind_p ?>Elm.action = "/addcart/<?= $p['id'] ?>/" + e
+                                btnKeranjang<?= $ind_p ?>Elm.action = <?= json_encode(ilena_store_path('/addcart/' . $p['id'] . '/'), JSON_UNESCAPED_SLASHES) ?> + e
                                     .target
                                     .value.split("-")[1] + "/1";
                             })
                         });
                         </script>
                     </div>
-                    <a href="/product/<?= str_replace(' ', '-', $p['nama']); ?>" class="text-dark">
+                    <a href="<?= esc(ilena_store_path('/product/' . str_replace(' ', '-', (string) $p['nama'])), 'attr'); ?>" class="text-dark">
                         <p class="text-secondary text-sm-start m-0"><?= strtolower($p['kategori']); ?></p>
-                        <h5 style="font-size:18px;"><?= str_replace('Tv', 'TV', ucwords($p['nama'])); ?></h5>
+                        <h5 style="font-size:18px;"><?= esc(str_replace('Tv', 'TV', ucwords($displayProductName))); ?></h5>
                         <div class="d-flex gap-2">
                             <p class="harga">Rp
                                 <?= number_format($p['harga'] * (100 - $p['diskon']) / 100, 0, ',', '.'); ?></p>
@@ -796,11 +800,11 @@ if (isset($_GET['ruang'])) {
                 <?php } ?>
                 <?php for ($i = 0; $i < $hitungPag; $i++) { ?>
                 <a class="item-pag <?= $pag == ($i + 1) ? 'active' : ''; ?>"
-                    href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&ruang=<?= isset($_GET['ruang']) ? $_GET['ruang'] : ''; ?>&pag=<?= $i + 1; ?>"><?= $i + 1; ?></a>
+                    href="<?= esc(ilena_store_path('/product?koleksi=' . rawurlencode((string) ($_GET['koleksi'] ?? '')) . '&jenis=' . rawurlencode((string) ($_GET['jenis'] ?? '')) . '&harga=' . rawurlencode((string) ($_GET['harga'] ?? '')) . '&ruang=' . rawurlencode((string) ($_GET['ruang'] ?? '')) . '&pag=' . ($i + 1)), 'attr'); ?>"><?= $i + 1; ?></a>
                 <?php } ?>
                 <?php if ($pag < $hitungPag) { ?>
                 <a class="item-pag"
-                    href="/product?koleksi=<?= isset($_GET['koleksi']) ? $_GET['koleksi'] : ''; ?>&jenis=<?= isset($_GET['jenis']) ? $_GET['jenis'] : ''; ?>&harga=<?= isset($_GET['harga']) ? $_GET['harga'] : ''; ?>&ruang=<?= isset($_GET['ruang']) ? $_GET['ruang'] : ''; ?>&pag=<?= $pag + 1; ?>"><i
+                    href="<?= esc(ilena_store_path('/product?koleksi=' . rawurlencode((string) ($_GET['koleksi'] ?? '')) . '&jenis=' . rawurlencode((string) ($_GET['jenis'] ?? '')) . '&harga=' . rawurlencode((string) ($_GET['harga'] ?? '')) . '&ruang=' . rawurlencode((string) ($_GET['ruang'] ?? '')) . '&pag=' . ($pag + 1)), 'attr'); ?>"><i
                         class="material-icons">arrow_forward_ios</i></a>
                 <?php } ?>
             </div> -->
@@ -812,7 +816,7 @@ if (isset($_GET['ruang'])) {
                 // Menampilkan tombol 'Prev'
                 if ($pag > 1) { ?>
                 <a class="item-pag"
-                    href="<?= esc($catalogPageUrl($pag - 1), 'attr'); ?>" aria-label="Halaman sebelumnya"><i
+                    href="<?= esc($catalogPageUrl($pag - 1), 'attr'); ?>" aria-label="<?= esc(lang('Store.previousPage'), 'attr'); ?>"><i
                         class="material-icons">arrow_back_ios</i></a>
                 <?php } ?>
 
@@ -827,14 +831,14 @@ if (isset($_GET['ruang'])) {
                 // Menampilkan tombol 'Next'
                 if ($pag < $hitungPag) { ?>
                 <a class="item-pag"
-                    href="<?= esc($catalogPageUrl($pag + 1), 'attr'); ?>" aria-label="Halaman berikutnya"><i
+                    href="<?= esc($catalogPageUrl($pag + 1), 'attr'); ?>" aria-label="<?= esc(lang('Store.nextPage'), 'attr'); ?>"><i
                         class="material-icons">arrow_forward_ios</i></a>
                 <?php } ?>
             </div>
 
             <!-- </div> -->
             <!-- Artikel kategori -->
-            <?php if (isset($_GET['jenis'])) {
+            <?php if (!$isEnglish && isset($_GET['jenis'])) {
                 switch ($_GET['jenis']) {
                     case 'bookshelf': ?>
             <hr class="my-5">
@@ -1680,6 +1684,13 @@ if (isset($_GET['ruang'])) {
             <?php break;
                 }
             } ?>
+            <?php if ($isEnglish && isset($_GET['jenis']) && (string) $_GET['jenis'] !== '') { ?>
+            <hr class="my-5">
+            <section class="container my-4" aria-labelledby="catalog-editorial-title">
+                <h2 id="catalog-editorial-title"><?= esc(lang('Store.catalogEditorialTitle')); ?></h2>
+                <p><?= esc(lang('Store.catalogEditorialBody')); ?></p>
+            </section>
+            <?php } ?>
         </div>
     </div>
 </div>
@@ -1821,7 +1832,7 @@ btnFilterElm.forEach(elm => {
 // });
 
 function pergiKeProduct(id_produk) {
-    window.location.href = "/product/" + id_produk
+    window.location.href = <?= json_encode(ilena_store_path('/product/'), JSON_UNESCAPED_SLASHES) ?> + id_produk
 }
 
 function openMeta(e) {

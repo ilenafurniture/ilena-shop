@@ -3,17 +3,17 @@
 <div class="container konten baris-ke-kolom ilena-shipping-page">
     <div style="flex:1;">
         <nav class="path ilena-checkout-steps" aria-label="Tahapan checkout">
-            <a href="/address">Alamat</a><span aria-hidden="true">/</span>
-            <span aria-current="step">Pengiriman</span><span aria-hidden="true">/</span>
-            <span>Rincian pembayaran</span>
+            <a href="<?= esc(ilena_store_path('/address'), 'attr'); ?>"><?= lang('Store.address'); ?></a><span aria-hidden="true">/</span>
+            <span aria-current="step"><?= lang('Store.shipping'); ?></span><span aria-hidden="true">/</span>
+            <span><?= lang('Store.addressDetails'); ?></span>
         </nav>
         <header class="ilena-shipping-heading">
             <div>
-                <p class="ilena-shipping-heading__eyebrow">LANGKAH 02 <span>/</span> PENGIRIMAN</p>
-                <h1>Pilih layanan pengiriman</h1>
-                <p class="ilena-shipping-heading__description">Pilih kurir yang paling sesuai dengan waktu dan biaya pengiriman Anda.</p>
+                <p class="ilena-shipping-heading__eyebrow"><?= lang('Store.step'); ?> 02 <span>/</span> <?= lang('Store.shipping'); ?></p>
+                <h1><?= lang('Store.shippingServices'); ?></h1>
+                <p class="ilena-shipping-heading__description"><?= lang('Store.shippingDescription'); ?></p>
             </div>
-            <span class="ilena-shipping-heading__count"><?= count($kurir); ?> layanan tersedia</span>
+            <span class="ilena-shipping-heading__count"><?= count($kurir); ?> <?= lang('Store.servicesAvailable'); ?></span>
         </header>
         <div class="container-kurir my-4">
             <?php foreach ($kurir as $index_k => $k) { ?>
@@ -23,11 +23,11 @@
                 <div style="flex: 1;">
                     <p class="mb-1 nama"><?= esc(strtoupper($k['nama'])) ?> <?= esc($k['deskripsi']) ?></p>
                     <?php if($k['estimasi']) { ?>
-                    <p class="mb-1">Estimasi pengiriman <?= esc($k['estimasi']) ?> hari</p>
+                    <p class="mb-1"><?= lang('Store.deliveryEstimate'); ?> <?= esc($k['estimasi']) ?> <?= lang('Store.days'); ?></p>
                     <?php } ?>
                     <p class="mb-1" style="font-weight: 600;">
                         <?php if (!empty($k['gratis_ongkir'])): ?>
-                            <span class="text-success">Gratis</span>
+                            <span class="text-success"><?= lang('Store.free'); ?></span>
                             <span class="text-secondary text-decoration-line-through ms-2">
                                 Rp <?= number_format((int)($k['harga_asli'] ?? 0), 0, ',', '.'); ?>
                             </span>
@@ -50,10 +50,10 @@
     </div>
     <div class="tigapuluh-ke-seratus">
         <div class="card p-4">
-            <h4>Ringkasan pesanan</h4>
+            <h4><?= lang('Store.orderSummary'); ?></h4>
             <div class="mt-2 d-flex justify-content-between py-1">
                 <p class="m-0">
-                    harga
+                    <?= lang('Store.price'); ?>
                 </p>
                 <p class="fw-bold m-0">
                     Rp <?= number_format($hargaTotal, 0, ',', '.'); ?>
@@ -61,35 +61,34 @@
             </div>
             <div class="d-flex justify-content-between py-1">
                 <p class="m-0">
-                    Biaya Ongkir
+                    <?= lang('Store.shippingCost'); ?>
                 </p>
                 <p id="harga-ongkir" class="fw-bold m-0">
-                    <?= !empty($kurir[0]['gratis_ongkir']) ? 'Gratis' : 'Rp ' . number_format($kurir[0]['harga'], 0, ',', '.'); ?>
+                    <?= !empty($kurir[0]['gratis_ongkir']) ? lang('Store.free') : 'Rp ' . number_format($kurir[0]['harga'], 0, ',', '.'); ?>
                 </p>
             </div>
             <div class="d-flex justify-content-between py-1">
                 <p class="m-0">
-                    Biaya Admin Pembayaran
+                    <?= lang('Store.paymentAdminFee'); ?>
                 </p>
                 <p class="fw-bold m-0 text-secondary">
-                    Dihitung nanti
+                    <?= lang('Store.calculatedLater'); ?>
                 </p>
             </div>
             <p class="m-0 text-secondary ilena-shipping-fee-note">
-                Biaya admin mengikuti metode pembayaran yang dipilih di halaman berikutnya.
+                <?= lang('Store.paymentFeeNote'); ?>
             </p>
             <span class="garis my-2"></span>
             <div class="d-flex justify-content-between py-1">
                 <p class="m-0">
-                    TOTAL
+                    <?= lang('Store.total'); ?>
                 </p>
                 <p class="fw-bold m-0" id="harga-keseluruhan">
                     Rp <?= number_format($hargaKeseluruhan, 0, ',', '.'); ?>
                 </p>
             </div>
-            <a id="btn-payment" <?= count($alamat) > 0 ? 'href="/payment/0"' : '' ?>
-                class="btn-default-merah <?= count($alamat) > 0 ? '' : 'disabled' ?> w-100 mt-4 text-center">Rincian
-                Pembayaran</a>
+            <a id="btn-payment" <?= count($alamat) > 0 ? 'href="' . esc(ilena_store_path('/payment/0'), 'attr') . '"' : '' ?>
+                class="btn-default-merah <?= count($alamat) > 0 ? '' : 'disabled' ?> w-100 mt-4 text-center"><?= lang('Store.addressDetails'); ?></a>
         </div>
     </div>
 </div>
@@ -98,14 +97,15 @@ const radioKurirElm = document.querySelectorAll('input[name="kurir"]');
 const hargaOngkirElm = document.getElementById('harga-ongkir');
 const hargaKeseluruhan = document.getElementById('harga-keseluruhan');
 const btnPaymentElm = document.getElementById('btn-payment');
+const storeRoutePrefix = <?= json_encode(service('request')->getLocale() === 'en' ? '/en' : ''); ?>;
 
 radioKurirElm.forEach((element, ind) => {
     element.addEventListener('change', (e) => {
-        hargaOngkirElm.innerHTML = Number(e.target.value) <= 0 ? 'Gratis' : 'Rp ' + e.target.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        hargaOngkirElm.innerHTML = Number(e.target.value) <= 0 ? <?= json_encode(lang('Store.free')); ?> : 'Rp ' + e.target.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         hargaKeseluruhan.innerHTML = 'Rp ' + (Number(e.target.value) + <?= $hargaTotal ?>)
             .toString().replace(/\B(?=(\d{3})+(?!\d))/g,
                 ".");
-        btnPaymentElm.href = '/payment/' + ind;
+        btnPaymentElm.href = storeRoutePrefix + '/payment/' + ind;
     })
 });
 </script>

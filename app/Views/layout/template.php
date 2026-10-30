@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" translate="no">
+<html lang="<?= esc(service('request')->getLocale(), 'attr'); ?>" translate="no">
 
 <head>
     <!-- Google tag (gtag.js) -->
@@ -148,6 +148,10 @@
     }
     $canonicalPath = trim((string) service('uri')->getPath(), '/');
     $defaultCanonicalUrl = $canonicalPath === '' ? rtrim(base_url(), '/') . '/' : site_url($canonicalPath);
+    $localeNeutralPath = preg_replace('#^en(?:/|$)#', '', $canonicalPath) ?? $canonicalPath;
+    $localeNeutralPath = trim($localeNeutralPath, '/');
+    $idAlternateUrl = $localeNeutralPath === '' ? rtrim(base_url(), '/') . '/' : site_url($localeNeutralPath);
+    $enAlternateUrl = $localeNeutralPath === '' ? rtrim(base_url(), '/') . '/en' : site_url('en/' . $localeNeutralPath);
     $documentUrl = trim((string) ($metaUrl ?? $defaultCanonicalUrl));
     if ($documentUrl === '') {
         $documentUrl = $defaultCanonicalUrl;
@@ -267,6 +271,7 @@
     <meta property="og:image:alt" content="<?= esc($documentImageAlt, 'attr'); ?>">
     <meta property="og:url" content="<?= esc($documentUrl, 'attr'); ?>">
     <meta property="og:type" content="website">
+    <meta property="og:locale" content="<?= service('request')->getLocale() === 'en' ? 'en_US' : 'id_ID'; ?>">
     <meta charset="UTF-8">
     <meta name="theme-color" content="#e84a49">
     <meta name="msapplication-navbutton-color" content="#e84a49">
@@ -281,6 +286,9 @@
     <meta property="og:site_name" content="Ilena Furniture">
     <meta name="robots" content="<?= esc($documentRobots, 'attr'); ?>">
     <link rel="canonical" href="<?= esc($documentUrl, 'attr'); ?>">
+    <link rel="alternate" hreflang="id" href="<?= esc($idAlternateUrl, 'attr'); ?>">
+    <link rel="alternate" hreflang="en" href="<?= esc($enAlternateUrl, 'attr'); ?>">
+    <link rel="alternate" hreflang="x-default" href="<?= esc($idAlternateUrl, 'attr'); ?>">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<?= esc($documentTitle, 'attr'); ?>">
     <meta name="twitter:description" content="<?= esc($documentDescription, 'attr'); ?>">
@@ -384,7 +392,7 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
     </div>
 
     <script defer src="<?= base_url('js/bootstrap.bundle.min.js'); ?>"></script>
-    <div class="container-melayang d-flex gap-2 align-items-end <?= isset($geser_container_melayang) ? 'geser' : ''; ?>" data-ilena-chat-widget data-wawa-image-base="<?= esc(base_url('img/fotowawa/optimized/'), 'attr'); ?>" data-context-product="<?= isset($produk) && is_array($produk) && isset($produk['id']) ? esc((string)$produk['id'], 'attr') : ''; ?>">
+    <div class="container-melayang d-flex gap-2 align-items-end <?= isset($geser_container_melayang) ? 'geser' : ''; ?>" data-ilena-chat-widget data-wawa-image-base="<?= esc(base_url('img/fotowawa/'), 'attr'); ?>" data-context-product="<?= isset($produk) && is_array($produk) && isset($produk['id']) ? esc((string)$produk['id'], 'attr') : ''; ?>">
         <section id="container-greeting-card" class="ilena-chat-greeting d-none" aria-label="Chat dengan Ilena">
             <div class="ilena-chat-greeting__panel">
                 <header class="ilena-chat-greeting__heading">

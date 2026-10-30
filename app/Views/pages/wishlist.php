@@ -37,11 +37,11 @@ $productCoverUrl = function (string $id, array $varianList, array $product = [])
     <div class="konten">
         <header class="ilena-wishlist-heading">
             <div>
-                <p class="ilena-wishlist-heading__eyebrow">AKUN <span>/</span> FAVORIT</p>
-                <h1>Produk tersimpan</h1>
-                <p class="ilena-wishlist-heading__description">Koleksi pilihan yang ingin Anda simpan untuk nanti.</p>
+                <p class="ilena-wishlist-heading__eyebrow"><?= service('request')->getLocale() === 'en' ? 'ACCOUNT' : 'AKUN'; ?> <span>/</span> <?= lang('Store.favorites'); ?></p>
+                <h1><?= lang('Store.savedProducts'); ?></h1>
+                <p class="ilena-wishlist-heading__description"><?= lang('Store.savedProductsDescription'); ?></p>
             </div>
-            <span class="ilena-wishlist-heading__count"><?= $wishlistCount; ?> produk</span>
+            <span class="ilena-wishlist-heading__count"><?= $wishlistCount; ?> <?= lang('Store.productsCount'); ?></span>
         </header>
 
         <?php if ($wishlistCount > 0): ?>
@@ -67,7 +67,7 @@ $productCoverUrl = function (string $id, array $varianList, array $product = [])
                         </span>
                     </div>
 
-                    <a href="/product/<?= str_replace(' ', '-', $p_nama); ?>" class="gambar">
+                    <a href="<?= esc(ilena_store_path('/product/' . str_replace(' ', '-', $p_nama)), 'attr'); ?>" class="gambar">
                         <img class="<?= $p_gbrHover ? '' : 'nonhover'; ?> img-pic" id="<?= $imgMainId ?>"
                             src="<?= $productCoverUrl((string)$p_id, $varianList, $p); ?>"
                             alt="<?= htmlspecialchars($p_nama, ENT_QUOTES); ?>" loading="lazy" decoding="async">
@@ -112,11 +112,11 @@ $productCoverUrl = function (string $id, array $varianList, array $product = [])
                 <!-- Tombol wishlist + keranjang -->
                 <div class="ilena-wishlist-actions">
                     <?php if ($isInWishlist($p_id)): ?>
-                    <form action="/delwishlist/<?= $p_id ?>" method="post" class="ilena-wishlist-remove-form">
+                    <form action="<?= esc(ilena_store_path('/delwishlist/' . $p_id), 'attr'); ?>" method="post" class="ilena-wishlist-remove-form">
                         <?= function_exists('csrf_field') ? csrf_field() : '' ?>
                         <button type="submit" class="btn-teks-aja ilena-wishlist-remove">
                             <i class="material-icons" style="font-size:18px;">favorite</i>
-                            Hapus
+                            <?= lang('Store.removeFavorite'); ?>
                         </button>
                     </form>
                     <?php endif; ?>
@@ -127,12 +127,12 @@ $productCoverUrl = function (string $id, array $varianList, array $product = [])
                 $namaVarAwal = $varianList[0]['nama'] ?? 'default';
               ?>
                     <form id="keranjang-<?= $ind_p ?>" method="post"
-                        action="<?= $stokAwal > 0 ? '/addcart/' . $p_id . '/' . urlencode($namaVarAwal) . '/1' : ''; ?>">
+                        action="<?= $stokAwal > 0 ? esc(ilena_store_path('/addcart/' . $p_id . '/' . urlencode($namaVarAwal) . '/1'), 'attr') : ''; ?>">
                         <?= function_exists('csrf_field') ? csrf_field() : '' ?>
                         <button id="btn-keranjang-<?= $ind_p ?>"
                             class="btn-default-merah <?= $stokAwal > 0 ? '' : 'disabled'; ?>"
                             <?= $stokAwal > 0 ? '' : 'disabled'; ?> type="submit">
-                            <?= $stokAwal > 0 ? 'Keranjang' : 'Stok habis'; ?>
+                            <?= $stokAwal > 0 ? lang('Store.addToCart') : lang('Store.soldOut'); ?>
                         </button>
                     </form>
                 </div>
@@ -140,6 +140,9 @@ $productCoverUrl = function (string $id, array $varianList, array $product = [])
                 <!-- Script varian → gambar & tombol -->
                 <script>
                 (function() {
+                    const storeRoutePrefix = <?= json_encode(service('request')->getLocale() === 'en' ? '/en' : ''); ?>;
+                    const addToCartLabel = <?= json_encode(lang('Store.addToCart')); ?>;
+                    const soldOutLabel = <?= json_encode(lang('Store.soldOut')); ?>;
                     const imgMain = document.getElementById("<?= $imgMainId ?>");
                     const radios = document.querySelectorAll('input[name="varian<?= $ind_p ?>"]');
                     const btn = document.getElementById("btn-keranjang-<?= $ind_p ?>");
@@ -158,9 +161,9 @@ $productCoverUrl = function (string $id, array $varianList, array $product = [])
 
                             // update tombol & form
                             form.action = stok > 0 ?
-                                "/addcart/<?= $p_id; ?>/" + encodeURIComponent(namaVar) + "/1" :
+                                storeRoutePrefix + "/addcart/<?= $p_id; ?>/" + encodeURIComponent(namaVar) + "/1" :
                                 "";
-                            btn.textContent = stok > 0 ? "Keranjang" : "Stok habis";
+                            btn.textContent = stok > 0 ? addToCartLabel : soldOutLabel;
                             btn.classList.toggle("disabled", stok <= 0);
                             btn.disabled = stok <= 0;
                         });
@@ -173,10 +176,10 @@ $productCoverUrl = function (string $id, array $varianList, array $product = [])
         <?php else: ?>
         <section class="ilena-wishlist-empty" aria-live="polite">
             <span class="material-icons" aria-hidden="true">favorite_border</span>
-            <p class="ilena-wishlist-empty__eyebrow">BELUM ADA FAVORIT</p>
-            <h2>Simpan produk yang Anda sukai.</h2>
-            <p>Tekan ikon favorit pada produk untuk menyimpannya di sini.</p>
-            <a href="/product">Jelajahi koleksi <span aria-hidden="true">↗</span></a>
+            <p class="ilena-wishlist-empty__eyebrow"><?= lang('Store.favoriteEmptyEyebrow'); ?></p>
+            <h2><?= lang('Store.favoriteEmptyTitle'); ?></h2>
+            <p><?= lang('Store.favoriteEmptyBody'); ?></p>
+            <a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>"><?= lang('Store.exploreCollection'); ?> <span aria-hidden="true">↗</span></a>
         </section>
         <?php endif; ?>
     </div>

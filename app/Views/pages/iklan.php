@@ -1,5 +1,6 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
+<?php $isEnglish = service('request')->getLocale() === 'en'; ?>
 
 <style>
 .ilena-iklan-page {
@@ -148,17 +149,17 @@
 }
 </style>
 
-<main class="ilena-iklan-page" aria-label="Promo furniture Ilena">
+<main class="ilena-iklan-page" aria-label="<?= esc($isEnglish ? 'Ilena furniture promotion' : 'Promo furniture Ilena', 'attr'); ?>">
 <!-- 1. HERO -->
 <section class="iklan-hero">
     <img class="iklan-hero-image" src="<?= esc('https://img.ilenafurniture.com/image/1748320128043.jpg/?apikey=' . $apikey_img_ilena, 'attr'); ?>" alt="" width="1920" height="1200" fetchpriority="high" decoding="async">
     <div class="iklan-container w-100 px-4" data-iklan-reveal>
-        <span class="iklan-badge">Promo terbatas · Gratis ongkir</span>
-        <h1 class="iklan-h1">Desain Interior Rumah Baru<span class="iklan-desktop-break"><br></span> Jadi Mudah & Estetik</h1>
-        <p class="iklan-sub">Pilih furniture sepaket dari Ilena — modern, premium, dan saat ini <b>gratis ongkir</b> ke seluruh Indonesia. Tinggal pasang, rumah langsung jadi.</p>
+        <span class="iklan-badge"><?= $isEnglish ? lang('Store.limitedPromotion') : 'Promo terbatas · Gratis ongkir'; ?></span>
+        <h1 class="iklan-h1"><?= $isEnglish ? 'Furnishing your new home' : 'Desain Interior Rumah Baru'; ?><span class="iklan-desktop-break"><br></span><?= $isEnglish ? 'Made easy & beautiful' : ' Jadi Mudah & Estetik'; ?></h1>
+        <p class="iklan-sub"><?= $isEnglish ? lang('Store.bundleHeroBody') : 'Pilih furniture sepaket dari Ilena — modern, premium, dan saat ini '; ?><?php if (!$isEnglish): ?><b>gratis ongkir</b> ke seluruh Indonesia. Tinggal pasang, rumah langsung jadi.<?php endif; ?></p>
         <div class="d-flex gap-3 flex-wrap iklan-actions">
-            <a href="#series" class="iklan-btn-primary">Lihat Koleksi Series</a>
-            <a data-kbot-wa href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20mau%20tanya-tanya%20koleksinya" class="iklan-btn-outline" target="_blank" rel="noopener">Klaim Gratis Ongkir</a>
+            <a href="#series" class="iklan-btn-primary"><?= $isEnglish ? lang('Store.viewSeries') : 'Lihat Koleksi Series'; ?></a>
+            <a data-kbot-wa href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20mau%20tanya-tanya%20koleksinya" class="iklan-btn-outline" target="_blank" rel="noopener"><?= $isEnglish ? lang('Store.claimFreeShipping') : 'Klaim Gratis Ongkir'; ?></a>
         </div>
     </div>
 </section>
@@ -170,19 +171,19 @@
             <div class="col-md-4 col-12" data-iklan-reveal>
                 <div class="stat-card">
                     <div class="stat-num">10+</div>
-                    <div class="stat-label">Series Koleksi Premium</div>
+                    <div class="stat-label"><?= $isEnglish ? lang('Store.collectionSeries') : 'Series Koleksi Premium'; ?></div>
                 </div>
             </div>
             <div class="col-md-4 col-12" data-iklan-reveal>
                 <div class="stat-card">
                     <div class="stat-num">100%</div>
-                    <div class="stat-label">Promo Gratis Ongkir</div>
+                    <div class="stat-label"><?= $isEnglish ? lang('Store.freeShippingPromo') : 'Promo Gratis Ongkir'; ?></div>
                 </div>
             </div>
             <div class="col-md-4 col-12" data-iklan-reveal>
                 <div class="stat-card">
-                    <div class="stat-num">Rapi</div>
-                    <div class="stat-label">Hemat Waktu Belanja</div>
+                    <div class="stat-num"><?= $isEnglish ? 'Easy' : 'Rapi'; ?></div>
+                    <div class="stat-label"><?= $isEnglish ? lang('Store.shoppingTimeSaved') : 'Hemat Waktu Belanja'; ?></div>
                 </div>
             </div>
         </div>
@@ -193,29 +194,29 @@
 <section class="iklan-section" aria-labelledby="iklan-problem-title">
     <div class="iklan-container">
         <div class="iklan-section-heading" data-iklan-reveal>
-            <h2 id="iklan-problem-title" class="iklan-h2">Renovasi Selesai, Bingung Cari Furniture?</h2>
-            <p class="iklan-sub-dark">Banding-bandingin di marketplace bikin pusing. Beda toko, beda style, ongkos pengiriman bikin budget bengkak. Ilena bantu beresin semuanya.</p>
+            <h2 id="iklan-problem-title" class="iklan-h2"><?= $isEnglish ? lang('Store.renovationQuestion') : 'Renovasi Selesai, Bingung Cari Furniture?'; ?></h2>
+            <p class="iklan-sub-dark"><?= $isEnglish ? lang('Store.bundleProblemBody') : 'Banding-bandingin di marketplace bikin pusing. Beda toko, beda style, ongkos pengiriman bikin budget bengkak. Ilena bantu beresin semuanya.'; ?></p>
         </div>
         <div class="row g-4">
             <div class="col-md-4 col-12" data-iklan-reveal>
                 <div class="benefit-card">
                     <div class="benefit-icon"><i class="material-icons">schedule</i></div>
-                    <h3 class="benefit-title">Hemat Waktu</h3>
-                    <p class="benefit-text">Nggak perlu lagi bandingin puluhan toko. Satu series, satu konsep, langsung jadi.</p>
+                    <h3 class="benefit-title"><?= $isEnglish ? lang('Store.saveTime') : 'Hemat Waktu'; ?></h3>
+                    <p class="benefit-text"><?= $isEnglish ? lang('Store.saveTimeBody') : 'Nggak perlu lagi bandingin puluhan toko. Satu series, satu konsep, langsung jadi.'; ?></p>
                 </div>
             </div>
             <div class="col-md-4 col-12" data-iklan-reveal>
                 <div class="benefit-card">
                     <div class="benefit-icon"><i class="material-icons">verified</i></div>
-                    <h3 class="benefit-title">Desain Pasti Cocok</h3>
-                    <p class="benefit-text">Setiap series dirancang satu kesatuan — warna, tekstur, dan gaya saling melengkapi.</p>
+                    <h3 class="benefit-title"><?= $isEnglish ? lang('Store.designThatFits') : 'Desain Pasti Cocok'; ?></h3>
+                    <p class="benefit-text"><?= $isEnglish ? lang('Store.designThatFitsBody') : 'Setiap series dirancang satu kesatuan — warna, tekstur, dan gaya saling melengkapi.'; ?></p>
                 </div>
             </div>
             <div class="col-md-4 col-12" data-iklan-reveal>
                 <div class="benefit-card">
                     <div class="benefit-icon"><i class="material-icons">savings</i></div>
-                    <h3 class="benefit-title">Hemat Biaya Kirim</h3>
-                    <p class="benefit-text">Promo gratis ongkir bantu kamu pangkas biaya pengiriman antar pulau yang biasanya bikin kaget.</p>
+                    <h3 class="benefit-title"><?= $isEnglish ? lang('Store.shippingSavings') : 'Hemat Biaya Kirim'; ?></h3>
+                    <p class="benefit-text"><?= $isEnglish ? lang('Store.shippingSavingsBody') : 'Promo gratis ongkir bantu kamu pangkas biaya pengiriman antar pulau yang biasanya bikin kaget.'; ?></p>
                 </div>
             </div>
         </div>
@@ -226,26 +227,26 @@
 <section class="iklan-section" style="background:#fff;" aria-labelledby="iklan-value-title">
     <div class="iklan-container">
         <div class="iklan-section-heading" data-iklan-reveal>
-            <h2 id="iklan-value-title" class="iklan-h2">Kenapa Pilih Ilena?</h2>
-            <p class="iklan-sub-dark">Bukan sekadar jual furniture, kami bantu kamu wujudkan rumah impian dengan tiga keunggulan utama.</p>
+            <h2 id="iklan-value-title" class="iklan-h2"><?= $isEnglish ? lang('Store.whyChooseIlena') : 'Kenapa Pilih Ilena?'; ?></h2>
+            <p class="iklan-sub-dark"><?= $isEnglish ? lang('Store.whyChooseIlenaBody') : 'Bukan sekadar jual furniture, kami bantu kamu wujudkan rumah impian dengan tiga keunggulan utama.'; ?></p>
         </div>
         <div class="row g-4">
             <div class="col-md-4 col-12" data-iklan-reveal>
                 <div class="value-card">
-                    <h3>Desain Sepaket</h3>
-                    <p>Beli satu series, dapat satu konsep ruangan utuh. Cocok untuk yang mau hasil rapi tanpa pusing match-matching.</p>
+                    <h3><?= $isEnglish ? lang('Store.coordinatedSet') : 'Desain Sepaket'; ?></h3>
+                    <p><?= $isEnglish ? lang('Store.coordinatedSetBody') : 'Beli satu series, dapat satu konsep ruangan utuh. Cocok untuk yang mau hasil rapi tanpa pusing match-matching.'; ?></p>
                 </div>
             </div>
             <div class="col-md-4 col-12" data-iklan-reveal>
                 <div class="value-card">
-                    <h3>Kualitas Premium</h3>
-                    <p>Material pilihan, finishing presisi, dirancang untuk tahan dipakai harian dengan estetika yang bertahan lama.</p>
+                    <h3><?= $isEnglish ? lang('Store.premiumQuality') : 'Kualitas Premium'; ?></h3>
+                    <p><?= $isEnglish ? lang('Store.premiumQualityBody') : 'Material pilihan, finishing presisi, dirancang untuk tahan dipakai harian dengan estetika yang bertahan lama.'; ?></p>
                 </div>
             </div>
             <div class="col-md-4 col-12" data-iklan-reveal>
                 <div class="value-card">
-                    <h3>Bebas Ongkir</h3>
-                    <p>Selama periode promo, gratis ongkir ke seluruh Indonesia. Harga yang kamu lihat, itu yang kamu bayar.</p>
+                    <h3><?= $isEnglish ? lang('Store.freeDelivery') : 'Bebas Ongkir'; ?></h3>
+                    <p><?= $isEnglish ? lang('Store.freeDeliveryBody') : 'Selama periode promo, gratis ongkir ke seluruh Indonesia. Harga yang kamu lihat, itu yang kamu bayar.'; ?></p>
                 </div>
             </div>
         </div>
@@ -256,8 +257,8 @@
 <section id="series" class="iklan-section iklan-stats" aria-labelledby="iklan-series-title">
     <div class="iklan-container">
         <div class="iklan-section-heading" data-iklan-reveal>
-            <h2 id="iklan-series-title" class="iklan-h2">Series Pilihan untuk Rumahmu</h2>
-            <p class="iklan-sub-dark">Tiga series paling diminati customer Ilena. Klik untuk lihat detail produknya.</p>
+            <h2 id="iklan-series-title" class="iklan-h2"><?= $isEnglish ? lang('Store.featuredCollections') : 'Series Pilihan untuk Rumahmu'; ?></h2>
+            <p class="iklan-sub-dark"><?= $isEnglish ? lang('Store.featuredCollectionsBody') : 'Tiga series paling diminati customer Ilena. Klik untuk lihat detail produknya.'; ?></p>
         </div>
         <div class="row g-4 iklan-series-grid">
             <?php foreach ($series as $s): ?>
@@ -267,15 +268,15 @@
                     <div class="series-body">
                         <div class="series-tag"><?= esc($s['gaya']) ?></div>
                     <h3 class="series-name"><?= esc($s['nama']) ?></h3>
-                        <p class="series-desc"><?= esc($s['deskripsi']) ?></p>
-                        <a href="<?= esc($s['link']) ?>" class="series-link">Cek Detail <i class="material-icons" style="font-size:16px;">arrow_forward</i></a>
+                        <p class="series-desc"><?= esc($isEnglish ? ($s['description_en'] ?? $s['deskripsi']) : $s['deskripsi']); ?></p>
+                        <a href="<?= esc($s['link']) ?>" class="series-link"><?= $isEnglish ? lang('Store.checkDetails') : 'Cek Detail'; ?> <i class="material-icons" style="font-size:16px;">arrow_forward</i></a>
                     </div>
                 </div>
             </div>
             <?php endforeach; ?>
         </div>
         <div class="text-center mt-5">
-            <a href="<?= base_url('/product') ?>" class="iklan-btn-primary">Lihat Semua Produk</a>
+            <a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>" class="iklan-btn-primary"><?= $isEnglish ? lang('Store.viewAllProducts') : 'Lihat Semua Produk'; ?></a>
         </div>
     </div>
 </section>
@@ -284,34 +285,34 @@
 <section class="iklan-section testi-section" aria-labelledby="iklan-testimonial-title">
     <div class="iklan-container">
         <div class="iklan-section-heading" data-iklan-reveal>
-            <h2 id="iklan-testimonial-title" class="iklan-h2">Kata Mereka yang Sudah Pakai</h2>
-            <p class="iklan-sub-dark">Ratusan customer Ilena sudah merasakan kemudahan beli furniture sepaket.</p>
+            <h2 id="iklan-testimonial-title" class="iklan-h2"><?= $isEnglish ? lang('Store.customerStories') : 'Kata Mereka yang Sudah Pakai'; ?></h2>
+            <p class="iklan-sub-dark"><?= $isEnglish ? lang('Store.customerStoriesBody') : 'Ratusan customer Ilena sudah merasakan kemudahan beli furniture sepaket.'; ?></p>
         </div>
         <div class="row g-4">
             <div class="col-md-6 col-12" data-iklan-reveal>
                 <div class="testi-card">
-                    <div class="testi-stars" role="img" aria-label="Penilaian 5 dari 5">★★★★★</div>
-                    <p class="testi-quote"><q>Awalnya bingung mau cari furniture buat rumah baru. Pilih Cody Series Ilena, semuanya match. Tetangga sampai tanya jasa interiornya.</q></p>
+                    <div class="testi-stars" role="img" aria-label="<?= esc($isEnglish ? 'Rated 5 out of 5' : 'Penilaian 5 dari 5', 'attr'); ?>">★★★★★</div>
+                    <p class="testi-quote"><q><?= $isEnglish ? 'I was unsure which furniture to choose for our new home. We chose Ilena’s Cody collection and everything came together beautifully.' : 'Awalnya bingung mau cari furniture buat rumah baru. Pilih Cody Series Ilena, semuanya match. Tetangga sampai tanya jasa interiornya.'; ?></q></p>
                     <div class="d-flex align-items-center">
                         <div class="testi-avatar">R</div>
                         <div>
                             <p class="testi-name">Ratna Wijaya</p>
                             <p class="testi-loc">Jakarta Selatan</p>
-                            <span class="verif-badge">✓ Pembeli Terverifikasi</span>
+                            <span class="verif-badge">✓ <?= $isEnglish ? lang('Store.verifiedBuyer') : 'Pembeli Terverifikasi'; ?></span>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-md-6 col-12" data-iklan-reveal>
                 <div class="testi-card">
-                    <div class="testi-stars" role="img" aria-label="Penilaian 5 dari 5">★★★★★</div>
-                    <p class="testi-quote"><q>Kualitas di luar ekspektasi. Pengiriman ke Surabaya gratis ongkir, packing rapi banget. Recommended untuk yang lagi siap-siap pindahan.</q></p>
+                    <div class="testi-stars" role="img" aria-label="<?= esc($isEnglish ? 'Rated 5 out of 5' : 'Penilaian 5 dari 5', 'attr'); ?>">★★★★★</div>
+                    <p class="testi-quote"><q><?= $isEnglish ? 'The quality exceeded my expectations. Delivery to Surabaya was covered by the offer, and the packaging was very neat.' : 'Kualitas di luar ekspektasi. Pengiriman ke Surabaya gratis ongkir, packing rapi banget. Recommended untuk yang lagi siap-siap pindahan.'; ?></q></p>
                     <div class="d-flex align-items-center">
                         <div class="testi-avatar">B</div>
                         <div>
                             <p class="testi-name">Bayu Pratama</p>
                             <p class="testi-loc">Surabaya</p>
-                            <span class="verif-badge">✓ Pembeli Terverifikasi</span>
+                            <span class="verif-badge">✓ <?= $isEnglish ? lang('Store.verifiedBuyer') : 'Pembeli Terverifikasi'; ?></span>
                         </div>
                     </div>
                 </div>
@@ -323,18 +324,18 @@
 <!-- 7. FINAL CTA -->
 <section class="iklan-section final-cta" aria-labelledby="iklan-final-title">
     <div class="iklan-container">
-        <span class="iklan-badge">Stok terbatas</span>
-        <h2 id="iklan-final-title" class="iklan-h2" data-iklan-reveal>Yuk Wujudkan Rumah Impianmu Sekarang</h2>
-        <p class="iklan-sub mx-auto" style="color:#d4d4d4;" data-iklan-reveal>Promo gratis ongkir berlaku selama stok masih tersedia. Konsultasikan kebutuhanmu langsung ke tim kami via WhatsApp.</p>
+        <span class="iklan-badge"><?= $isEnglish ? lang('Store.limitedStock') : 'Stok terbatas'; ?></span>
+        <h2 id="iklan-final-title" class="iklan-h2" data-iklan-reveal><?= $isEnglish ? lang('Store.makeDreamHome') : 'Yuk Wujudkan Rumah Impianmu Sekarang'; ?></h2>
+        <p class="iklan-sub mx-auto" style="color:#d4d4d4;" data-iklan-reveal><?= $isEnglish ? lang('Store.promotionTermsBody') : 'Promo gratis ongkir berlaku selama stok masih tersedia. Konsultasikan kebutuhanmu langsung ke tim kami via WhatsApp.'; ?></p>
         <div class="d-flex gap-3 flex-wrap justify-content-center mb-4 iklan-actions" data-iklan-reveal>
-            <a href="<?= base_url('/product') ?>" class="iklan-btn-primary">Belanja Sekarang</a>
-            <a data-kbot-wa href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20mau%20tanya-tanya%20koleksinya" class="iklan-btn-outline" target="_blank" rel="noopener">Chat WhatsApp</a>
+            <a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>" class="iklan-btn-primary"><?= $isEnglish ? lang('Store.shopNow') : 'Belanja Sekarang'; ?></a>
+            <a data-kbot-wa href="https://wa.me/628112938158?text=Halo%20Ilena%2C%20mau%20tanya-tanya%20koleksinya" class="iklan-btn-outline" target="_blank" rel="noopener"><?= $isEnglish ? lang('Store.chatWhatsApp') : 'Chat WhatsApp'; ?></a>
         </div>
         <div class="mt-3" data-iklan-reveal>
-            <span class="cta-mini-benefit"><i class="material-icons">local_shipping</i> Gratis Ongkir</span>
-            <span class="cta-mini-benefit"><i class="material-icons">verified</i> Garansi Kualitas</span>
-            <span class="cta-mini-benefit"><i class="material-icons">support_agent</i> CS Responsif</span>
-            <span class="cta-mini-benefit"><i class="material-icons">credit_card</i> Pembayaran Aman</span>
+            <span class="cta-mini-benefit"><i class="material-icons">local_shipping</i> <?= $isEnglish ? lang('Store.freeDelivery') : 'Gratis Ongkir'; ?></span>
+            <span class="cta-mini-benefit"><i class="material-icons">verified</i> <?= $isEnglish ? lang('Store.qualityWarranty') : 'Garansi Kualitas'; ?></span>
+            <span class="cta-mini-benefit"><i class="material-icons">support_agent</i> <?= $isEnglish ? lang('Store.responsiveSupport') : 'CS Responsif'; ?></span>
+            <span class="cta-mini-benefit"><i class="material-icons">credit_card</i> <?= $isEnglish ? lang('Store.securePayment') : 'Pembayaran Aman'; ?></span>
         </div>
     </div>
 </section>
@@ -379,7 +380,7 @@ $iklanStructuredData = [
     'name' => (string) ($metaTitle ?? 'Promo Furniture Sepaket Ilena'),
     'description' => (string) ($metaDeskripsi ?? ''),
     'url' => (string) ($metaUrl ?? site_url('iklan')),
-    'inLanguage' => 'id-ID',
+    'inLanguage' => service('request')->getLocale() === 'en' ? 'en-US' : 'id-ID',
     'isPartOf' => [
         '@type' => 'WebSite',
         'name' => 'Ilena Furniture',

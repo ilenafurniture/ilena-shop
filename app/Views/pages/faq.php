@@ -1,5 +1,65 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
+<?php $isEnglish = service('request')->getLocale() === 'en'; ?>
+<?php if ($isEnglish): ?>
+<div class="container d-flex justify-content-center ilena-faq-page">
+    <div class="konten">
+        <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="/en">Home</a></li><li class="breadcrumb-item active" aria-current="page">FAQ</li></ol></nav>
+        <p class="ilena-faq-page__eyebrow">Ilena help</p>
+        <h1 class="ilena-faq-page__title">Frequently asked questions</h1>
+        <p class="ilena-faq-page__intro">Helpful information about our products, orders, payments, delivery, and furniture care.</p>
+        <?php
+        $faqGroups = [
+            'PRODUCTS' => [
+                ['How can I check product availability?', 'Open the product page to see the available stock for each option. For the latest confirmation, contact our customer service team.'],
+                ['Where can I find current promotions?', 'Check the Ilena website for current offers. Promotions may have specific eligibility, stock, and delivery terms.'],
+                ['Where are Ilena products shipped from?', 'Orders are shipped from our facility in Jatibarang, Mijen, Semarang, Central Java.'],
+            ],
+            'CATALOGUE' => [
+                ['Where can I find the Ilena catalogue?', 'You can browse our products on this website and access the digital catalogue through the official catalogue link or customer service.'],
+                ['Can I buy Ilena products on e-commerce platforms?', 'Selected Ilena products are also available through established Indonesian e-commerce platforms.'],
+                ['How often is the catalogue updated?', 'We update catalogue information as new products are introduced. Please refer to the website for the latest product details.'],
+            ],
+            'ORDERS & PURCHASES' => [
+                ['Can I order without creating an account?', 'Yes. You can add products to your cart, continue to checkout, and provide delivery details as a guest. You may also sign in to manage your account and order history.'],
+                ['Where can I view my orders?', 'Sign in and open your account’s order history. Guest-order tracking is available using the order details provided after checkout.'],
+                ['Can I request custom furniture?', 'Custom interior and furniture enquiries are handled separately. Visit ilenafurniture.net to learn about the interior service.'],
+            ],
+            'PAYMENT' => [
+                ['Which payment methods are available?', 'Available methods are shown during checkout and may vary. Select a method on the payment page to see its instructions.'],
+                ['Is it safe to pay on the Ilena website?', 'Use only the payment options shown at checkout. Never share your password, one-time code, or full card details with anyone.'],
+                ['What if my payment fails?', 'Check the payment status in your order details, then follow the instructions shown there. Contact customer service if the status remains unclear.'],
+            ],
+            'DELIVERY' => [
+                ['How much does delivery cost?', 'Delivery costs depend on the destination, products, and any active promotion. The applicable amount is shown before you confirm payment.'],
+                ['How long does delivery take?', 'Delivery estimates depend on the destination and expedition. Check the order details or contact customer service for an update.'],
+                ['Can I track my order?', 'When tracking information is available, you can view it from your order details.'],
+                ['Are products delivered assembled?', 'Assembly requirements vary by product. Please review the product details before ordering.'],
+            ],
+            'CANCELLATIONS & RETURNS' => [
+                ['How do I ask to cancel an order?', 'Open your order details and check whether the cancellation option is available. If it is not shown, contact customer service with your order number.'],
+                ['What should I do if an item arrives damaged or incorrect?', 'Contact Ilena customer service as soon as possible and include your order number and clear photos of the issue so our team can review it.'],
+                ['How are warranty or replacement requests handled?', 'Eligibility and next steps depend on the product and applicable terms. Contact customer service with your order details and supporting photos.'],
+            ],
+            'FURNITURE CARE' => [
+                ['How should I care for my Ilena furniture?', 'Keep furniture away from prolonged direct sunlight and place it in a well-ventilated room. Follow any care instructions supplied with your product.'],
+            ],
+        ];
+        foreach ($faqGroups as $groupIndex => $items): ?>
+        <div class="container-faq">
+            <div class="tigapuluh-ke-seratus"><p class="nomor"><?= sprintf('%02d', $groupIndex + 1); ?></p><p class="sub-faq"><?= esc($groupIndex); ?></p></div>
+            <div style="flex: 1" class="isi-faq">
+                <?php foreach ($items as [$question, $answer]): ?>
+                <p class="sub-sub-faq"><?= esc($question); ?></p>
+                <div class="isinya"><p><?= esc($answer); ?></p></div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php endforeach; ?>
+        <p>If you need help with a specific order, contact <a href="mailto:cs@ilenafurniture.com">Ilena customer service</a>.</p>
+    </div>
+</div>
+<?php else: ?>
 <div class="container d-flex justify-content-center ilena-faq-page">
     <div class="konten">
         <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
@@ -610,4 +670,5 @@
         </div>
     </div>
 </div>
+<?php endif; ?>
 <?= $this->endSection(); ?>

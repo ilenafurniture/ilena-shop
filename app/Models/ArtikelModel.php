@@ -22,6 +22,10 @@ class ArtikelModel extends Model
         'bagikan',
         'keywords',
         'pengunjung',
+        'judul_en',
+        'deskripsi_en',
+        'keywords_en',
+        'isi_en',
     ];
 
     public function getArtikel($id = false)

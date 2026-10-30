@@ -356,6 +356,10 @@
                             </td>
                         </tr>
                         <tr>
+                            <td>Title (English)</td>
+                            <td><input type="text" class="form-control" name="judul_en" maxlength="180" placeholder="Optional English title"></td>
+                        </tr>
+                        <tr>
                             <td>Penulis</td>
                             <td>
                                 <div class="baris"><input type="text" class="form-control" name="penulis" required>
@@ -403,6 +407,10 @@
                             </td>
                         </tr>
                         <tr>
+                            <td>Keywords (English)</td>
+                            <td><input type="text" class="form-control" name="keywords_en" maxlength="500" placeholder="Comma-separated English keywords (optional)"></td>
+                        </tr>
+                        <tr>
                             <td>Deskripsi</td>
                             <td>
                                 <div class="baris" style="width:100%;">
@@ -411,6 +419,10 @@
                                 </div>
                             </td>
                         </tr>
+                        <tr>
+                            <td>Description (English)</td>
+                            <td><textarea name="deskripsi_en" class="form-control" maxlength="1000" rows="4" style="width:100%;" placeholder="Optional English meta description"></textarea></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -418,6 +430,10 @@
             <div class="container mt-3 seo-card">
                 <h5 class="mb-2" style="font-weight:800; letter-spacing:-.2px;">Isi Artikel</h5>
                 <textarea name="isi" id="content"></textarea>
+            </div>
+            <div class="container mt-3 seo-card">
+                <h5 class="mb-2">Article content (English, optional)</h5>
+                <textarea name="isi_en" id="content-en"></textarea>
             </div>
 
             <button type="submit" class="btn-default mt-3 w-100">Buat</button>
@@ -809,8 +825,9 @@ inputKeywordsElm.addEventListener('input', (e) => {
 
 /* ===== TinyMCE ===== */
 tinymce.init({
-    selector: "#content",
+    selector: "#content, #content-en",
     setup: function(editor) {
+        if (editor.id !== 'content') return;
         editor.on('input', function() {
             contentArtikel = editor.getContent()
             checkKeywordDensity(contentArtikel, inputKeywordsElm.value);

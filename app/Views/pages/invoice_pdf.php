@@ -1,14 +1,16 @@
 <?php
 $mid = is_array($transaksi['data_mid'] ?? null) ? $transaksi['data_mid'] : [];
+$isEnglish = service('request')->getLocale() === 'en';
 $items = is_array($transaksi['items'] ?? null) ? $transaksi['items'] : [];
 $courier = is_array($transaksi['kurir'] ?? null) ? $transaksi['kurir'] : [];
 $timestamp = strtotime((string)($mid['transaction_time'] ?? '')) ?: 0;
 $status = (string)($transaksi['status'] ?? '');
+$statusDisplay = $isEnglish ? (['Proses' => 'Processing', 'Dikirim' => 'Shipped', 'Selesai' => 'Completed', 'Menunggu Pembayaran' => 'Awaiting payment', 'Dibatalkan' => 'Cancelled', 'Kedaluwarsa' => 'Expired', 'Gagal' => 'Failed'][$status] ?? $status) : $status;
 $courierName = trim((string)($courier['nama'] ?? ''));
 $courierService = trim((string)($courier['deskripsi'] ?? ''));
 $courierLabel = $courierName !== '' && strcasecmp($courierName, 'Menunggu pengiriman') !== 0
     ? (($courierService !== '' && stripos($courierService, $courierName) === 0) ? $courierService : trim($courierName . ' ' . $courierService))
-    : 'Menunggu pengiriman';
+    : ($isEnglish ? 'Awaiting shipment' : 'Menunggu pengiriman');
 $rupiah = static fn (int $value): string => 'Rp ' . number_format($value, 0, ',', '.');
 $specialNames = ['voucher', 'biaya ongkir', 'biaya admin', 'flash sale'];
 $productSubtotal = 0;
@@ -66,6 +68,13 @@ $paymentLabels = [
 $paymentLabel = $paymentLabels[$paymentType] ?? ($paymentType === 'bank_transfer'
     ? (isset($mid['va_numbers'][0]['bank']) ? strtoupper((string)$mid['va_numbers'][0]['bank']) . ' VA' : (isset($mid['permata_va_number']) ? 'Bank Permata VA' : 'Transfer bank'))
     : ($paymentType !== '' ? ucwords(str_replace('_', ' ', $paymentType)) : 'Belum tersedia'));
+if ($isEnglish) {
+    $paymentLabel = [
+        'Kartu kredit' => 'Credit card', 'Pembayaran manual' => 'Manual payment',
+        'Pembayaran marketplace' => 'Marketplace payment', 'Transfer bank' => 'Bank transfer',
+        'Belum tersedia' => 'Not available',
+    ][$paymentLabel] ?? $paymentLabel;
+}
 $paymentReference = trim((string)($mid['permata_va_number'] ?? $mid['bca_va_number'] ?? ''));
 if ($paymentReference === '' && isset($mid['va_numbers'][0]['va_number'])) $paymentReference = (string)$mid['va_numbers'][0]['va_number'];
 $paid = in_array($status, ['Proses', 'Dikirim', 'Selesai'], true);
@@ -75,10 +84,10 @@ if (is_file($logoPath ?? '')) {
 }
 ?>
 <!doctype html>
-<html lang="id">
+<html lang="<?= $isEnglish ? 'en' : 'id'; ?>">
 <head>
     <meta charset="UTF-8">
-    <title>Invoice <?= esc($transaksi['id_midtrans'] ?? '') ?> | Ilena Furniture</title>
+    <title><?= $isEnglish ? 'Invoice' : 'Invoice'; ?> <?= esc($transaksi['id_midtrans'] ?? '') ?> | Ilena Furniture</title>
     <style>
         @page { size: A4 portrait; margin: 12mm; }
         * { box-sizing: border-box; }
@@ -126,53 +135,53 @@ if (is_file($logoPath ?? '')) {
     <td><?= $logoData !== '' ? '<img class="logo" src="' . $logoData . '" alt="Ilena Furniture">' : '<strong>ILENA FURNITURE</strong>' ?></td>
     <td class="invoice-title">INVOICE<div class="number muted"><?= esc($transaksi['id_midtrans'] ?? '—') ?></div>
         <?php if ($timestamp): ?><div class="number muted"><?= esc(date('d/m/Y H:i', $timestamp)) ?> WIB</div><?php endif; ?>
-        <div class="status"><?= $paid ? 'LUNAS' : esc(strtoupper($status ?: 'STATUS PESANAN')) ?></div>
+        <div class="status"><?= $paid ? ($isEnglish ? 'PAID' : 'LUNAS') : esc(strtoupper($statusDisplay ?: ($isEnglish ? 'ORDER STATUS' : 'STATUS PESANAN'))) ?></div>
     </td>
 </tr></table>
 
 <table class="parties"><tr>
-    <td><p class="eyebrow">Penjual</p><p><strong>Ilena Furniture</strong></p><p class="muted">Invoice resmi pesanan Ilena Furniture</p></td>
-    <td><p class="eyebrow">Informasi pembeli</p><p><strong><?= esc($transaksi['nama'] ?? '—') ?></strong></p>
+    <td><p class="eyebrow"><?= $isEnglish ? 'Seller' : 'Penjual'; ?></p><p><strong>Ilena Furniture</strong></p><p class="muted"><?= $isEnglish ? 'Official Ilena Furniture order invoice' : 'Invoice resmi pesanan Ilena Furniture'; ?></p></td>
+    <td><p class="eyebrow"><?= $isEnglish ? 'Buyer information' : 'Informasi pembeli'; ?></p><p><strong><?= esc($transaksi['nama'] ?? '—') ?></strong></p>
         <?php if (!empty($transaksi['email'])): ?><p><?= esc($transaksi['email']) ?></p><?php endif; ?>
         <?php if (!empty($transaksi['nohp'])): ?><p><?= esc($transaksi['nohp']) ?></p><?php endif; ?>
-        <p class="muted"><?= nl2br(esc($transaksi['alamat'] ?? 'Alamat tidak tersedia')) ?></p>
+        <p class="muted"><?= nl2br(esc($transaksi['alamat'] ?? ($isEnglish ? 'Address unavailable' : 'Alamat tidak tersedia'))) ?></p>
     </td>
 </tr></table>
 
-<p class="section-title">Rincian produk</p>
-<table class="items"><thead><tr><th class="product">Produk & spesifikasi</th><th class="qty">Qty</th><th class="unit">Harga satuan</th><th class="total">Jumlah</th></tr></thead><tbody>
+<p class="section-title"><?= $isEnglish ? 'Product details' : 'Rincian produk'; ?></p>
+<table class="items"><thead><tr><th class="product"><?= $isEnglish ? 'Product & specifications' : 'Produk & spesifikasi'; ?></th><th class="qty"><?= $isEnglish ? 'Qty' : 'Qty'; ?></th><th class="unit"><?= $isEnglish ? 'Unit price' : 'Harga satuan'; ?></th><th class="total"><?= $isEnglish ? 'Amount' : 'Jumlah'; ?></th></tr></thead><tbody>
 <?php foreach ($products as $product): ?>
     <tr><td class="product"><div class="product-name"><?= esc($product['name']) ?></div><div class="meta">
-        <?php if ($product['sku'] !== ''): ?><div>Kode produk: <?= esc($product['sku']) ?></div><?php endif; ?>
-        <?php if ($product['collection'] !== ''): ?><div>Koleksi: <?= esc($product['collection']) ?></div><?php endif; ?>
-        <?php if ($product['variant'] !== ''): ?><div>Varian: <?= esc($product['variant']) ?></div><?php endif; ?>
-        <?php if ($product['dimensions'] !== ''): ?><div>Dimensi: <?= esc($product['dimensions']) ?></div><?php endif; ?>
-        <?php if ($product['weight'] !== '' && $product['weight'] !== '-'): ?><div>Berat: <?= esc($product['weight']) ?> kg</div><?php endif; ?>
+        <?php if ($product['sku'] !== ''): ?><div><?= $isEnglish ? 'Product code' : 'Kode produk'; ?>: <?= esc($product['sku']) ?></div><?php endif; ?>
+        <?php if ($product['collection'] !== ''): ?><div><?= $isEnglish ? 'Collection' : 'Koleksi'; ?>: <?= esc($product['collection']) ?></div><?php endif; ?>
+        <?php if ($product['variant'] !== ''): ?><div><?= $isEnglish ? 'Variant' : 'Varian'; ?>: <?= esc($product['variant']) ?></div><?php endif; ?>
+        <?php if ($product['dimensions'] !== ''): ?><div><?= $isEnglish ? 'Dimensions' : 'Dimensi'; ?>: <?= esc($product['dimensions']) ?></div><?php endif; ?>
+        <?php if ($product['weight'] !== '' && $product['weight'] !== '-'): ?><div><?= $isEnglish ? 'Weight' : 'Berat'; ?>: <?= esc($product['weight']) ?> kg</div><?php endif; ?>
     </div></td><td class="qty"><?= number_format($product['qty']) ?></td>
         <td class="unit"><?php if ($product['original'] > $product['price']): ?><div class="strike"><?= esc($rupiah($product['original'])) ?></div><?php endif; ?><?= esc($rupiah($product['price'])) ?></td>
         <td class="total"><?= esc($rupiah($product['total'])) ?></td></tr>
 <?php endforeach; ?>
-<?php if (!$products): ?><tr><td class="empty" colspan="4">Rincian produk tidak tersedia.</td></tr><?php endif; ?>
+<?php if (!$products): ?><tr><td class="empty" colspan="4"><?= $isEnglish ? 'Product details are unavailable.' : 'Rincian produk tidak tersedia.'; ?></td></tr><?php endif; ?>
 </tbody></table>
 
 <table class="totals">
-    <tr><td>Subtotal harga produk</td><td><?= esc($rupiah($productSubtotal)) ?></td></tr>
-    <?php if ($productDiscount > 0): ?><tr><td>Diskon produk</td><td>− <?= esc($rupiah($productDiscount)) ?></td></tr><?php endif; ?>
-    <?php if ($voucherDiscount > 0): ?><tr><td>Diskon voucher<?= $voucherCodes ? ' (' . esc(implode(', ', array_unique($voucherCodes))) . ')' : '' ?></td><td>− <?= esc($rupiah($voucherDiscount)) ?></td></tr><?php endif; ?>
-    <?php if ($flashDiscount > 0): ?><tr><td>Diskon Flash Sale</td><td>− <?= esc($rupiah($flashDiscount)) ?></td></tr><?php endif; ?>
-    <?php if ($hasShipping): ?><tr><td>Ongkos kirim</td><td><?= $shipping > 0 ? esc($rupiah($shipping)) : 'Gratis' ?></td></tr><?php endif; ?>
-    <?php if ($adminFee > 0): ?><tr><td>Biaya admin pembayaran</td><td><?= esc($rupiah($adminFee)) ?></td></tr><?php endif; ?>
-    <tr class="grand"><td>Total tagihan</td><td><?= esc($rupiah($gross)) ?></td></tr>
+    <tr><td><?= $isEnglish ? 'Product subtotal' : 'Subtotal harga produk'; ?></td><td><?= esc($rupiah($productSubtotal)) ?></td></tr>
+    <?php if ($productDiscount > 0): ?><tr><td><?= $isEnglish ? 'Product discount' : 'Diskon produk'; ?></td><td>− <?= esc($rupiah($productDiscount)) ?></td></tr><?php endif; ?>
+    <?php if ($voucherDiscount > 0): ?><tr><td><?= $isEnglish ? 'Voucher discount' : 'Diskon voucher'; ?><?= $voucherCodes ? ' (' . esc(implode(', ', array_unique($voucherCodes))) . ')' : '' ?></td><td>− <?= esc($rupiah($voucherDiscount)) ?></td></tr><?php endif; ?>
+    <?php if ($flashDiscount > 0): ?><tr><td><?= $isEnglish ? 'Flash Sale discount' : 'Diskon Flash Sale'; ?></td><td>− <?= esc($rupiah($flashDiscount)) ?></td></tr><?php endif; ?>
+    <?php if ($hasShipping): ?><tr><td><?= $isEnglish ? 'Shipping' : 'Ongkos kirim'; ?></td><td><?= $shipping > 0 ? esc($rupiah($shipping)) : ($isEnglish ? 'Free' : 'Gratis') ?></td></tr><?php endif; ?>
+    <?php if ($adminFee > 0): ?><tr><td><?= $isEnglish ? 'Payment administration fee' : 'Biaya admin pembayaran'; ?></td><td><?= esc($rupiah($adminFee)) ?></td></tr><?php endif; ?>
+    <tr class="grand"><td><?= $isEnglish ? 'Total due' : 'Total tagihan'; ?></td><td><?= esc($rupiah($gross)) ?></td></tr>
 </table>
 
 <table class="fulfillment"><tr>
-    <td><p class="eyebrow">Pengiriman</p><p><strong><?= esc($courierLabel) ?></strong></p>
-        <?php $tracking = trim((string)($transaksi['resi'] ?? '')); if ($tracking !== '' && strcasecmp($tracking, 'Menunggu pengiriman') !== 0): ?><p class="muted">Nomor resi: <?= esc($tracking) ?></p><?php endif; ?>
+    <td><p class="eyebrow"><?= $isEnglish ? 'Shipping' : 'Pengiriman'; ?></p><p><strong><?= esc($courierLabel) ?></strong></p>
+        <?php $tracking = trim((string)($transaksi['resi'] ?? '')); if ($tracking !== '' && strcasecmp($tracking, 'Menunggu pengiriman') !== 0): ?><p class="muted"><?= $isEnglish ? 'Tracking number' : 'Nomor resi'; ?>: <?= esc($tracking) ?></p><?php endif; ?>
     </td>
-    <td><p class="eyebrow">Pembayaran</p><p><strong><?= esc($paymentLabel) ?></strong></p>
-        <?php if ($paymentReference !== ''): ?><p class="muted">Nomor VA: <?= esc($paymentReference) ?></p><?php endif; ?>
-        <p class="muted">Status: <?= esc($status ?: 'Tidak tersedia') ?></p>
+    <td><p class="eyebrow"><?= $isEnglish ? 'Payment' : 'Pembayaran'; ?></p><p><strong><?= esc($paymentLabel) ?></strong></p>
+        <?php if ($paymentReference !== ''): ?><p class="muted"><?= $isEnglish ? 'Virtual account number' : 'Nomor VA'; ?>: <?= esc($paymentReference) ?></p><?php endif; ?>
+        <p class="muted"><?= $isEnglish ? 'Status' : 'Status'; ?>: <?= esc($statusDisplay ?: ($isEnglish ? 'Unavailable' : 'Tidak tersedia')) ?></p>
     </td>
 </tr></table>
-<p class="note">Invoice ini diterbitkan secara elektronik oleh <strong>Ilena Furniture</strong>. Simpan dokumen ini sebagai bukti transaksi. Jika membutuhkan bantuan, hubungi layanan pelanggan Ilena Furniture.</p>
+<p class="note"><?= $isEnglish ? 'This invoice was issued electronically by' : 'Invoice ini diterbitkan secara elektronik oleh'; ?> <strong>Ilena Furniture</strong>. <?= $isEnglish ? 'Keep this document as proof of purchase. For assistance, contact Ilena Furniture customer service.' : 'Simpan dokumen ini sebagai bukti transaksi. Jika membutuhkan bantuan, hubungi layanan pelanggan Ilena Furniture.'; ?></p>
 </body></html>

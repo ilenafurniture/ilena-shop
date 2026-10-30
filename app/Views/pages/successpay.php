@@ -1,5 +1,6 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
+<?php $isEnglish = service('request')->getLocale() === 'en'; ?>
 
 <?php
 // ---- Optional: breakdown ringan untuk tampilan (tidak mengubah sistem) ----
@@ -253,9 +254,8 @@ $totalBayar = (int)$dataMid['gross_amount'];
     <!-- Hero -->
     <div class="hero">
         <i class="material-icons" style="color:#10b981;font-size:44px;">check_circle</i>
-        <h1 class="title">Pembayaran Berhasil</h1>
-        <p class="desc">Pesanan akan segera kami proses. Simpan URL halaman ini untuk memantau status pesanan. Atau
-            login sebagai member untuk melihat seluruh riwayat pesanan Anda.</p>
+        <h1 class="title"><?= $isEnglish ? 'Payment successful' : 'Pembayaran Berhasil'; ?></h1>
+        <p class="desc"><?= $isEnglish ? 'We will process your order shortly. Save this page to check its status, or sign in to view your order history.' : 'Pesanan akan segera kami proses. Simpan URL halaman ini untuk memantau status pesanan. Atau login sebagai member untuk melihat seluruh riwayat pesanan Anda.'; ?></p>
     </div>
 
     <!-- Bar: ID + status + copy -->
@@ -265,10 +265,10 @@ $totalBayar = (int)$dataMid['gross_amount'];
                 <i class="material-icons" style="font-size:16px;">receipt_long</i>
                 ID: <b><?= $pemesanan['id_midtrans']; ?></b>
             </span>
-            <span class="badge-ok">Berhasil</span>
+            <span class="badge-ok"><?= $isEnglish ? 'Successful' : 'Berhasil'; ?></span>
         </div>
-        <button class="copy-btn" onclick="copytext('<?= $pemesanan['id_midtrans']; ?>')" title="Salin ID Pesanan">
-            <i class="material-icons" style="font-size:16px;">content_copy</i> Salin
+        <button class="copy-btn" onclick="copytext('<?= $pemesanan['id_midtrans']; ?>')" title="<?= esc($isEnglish ? 'Copy order ID' : 'Salin ID Pesanan', 'attr'); ?>">
+            <i class="material-icons" style="font-size:16px;">content_copy</i> <?= $isEnglish ? 'Copy' : 'Salin'; ?>
         </button>
     </div>
 
@@ -276,19 +276,19 @@ $totalBayar = (int)$dataMid['gross_amount'];
         <!-- Ringkasan atas -->
         <div class="grid pad" style="padding-top:0;">
             <div class="center">
-                <p class="label m-0">Jumlah Tagihan</p>
+                <p class="label m-0"><?= $isEnglish ? 'Amount paid' : 'Jumlah Tagihan'; ?></p>
                 <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;">
                     <p class="num-lg m-0">Rp <?= number_format($dataMid['gross_amount'], 0, ',', '.'); ?></p>
                     <button class="copy-btn" onclick="copytext('<?= (int)$dataMid['gross_amount']; ?>')"
-                        title="Salin nominal">
+                        title="<?= esc($isEnglish ? 'Copy amount' : 'Salin nominal', 'attr'); ?>">
                         <i class="material-icons" style="font-size:16px;">content_copy</i>
                     </button>
                 </div>
             </div>
             <div class="center">
-                <p class="label m-0">Metode Pembayaran</p>
+                <p class="label m-0"><?= $isEnglish ? 'Payment method' : 'Metode Pembayaran'; ?></p>
                 <?php if ($dataMid['payment_type'] == 'credit_card') { ?>
-                <p class="num-md m-0" style="margin-top:4px;">Kartu Kredit</p>
+                <p class="num-md m-0" style="margin-top:4px;"><?= $isEnglish ? 'Credit card' : 'Kartu Kredit'; ?></p>
                 <?php } else { ?>
                 <img class="method-logo" src="/img/pembayaran/<?= $bank; ?>.webp" alt="<?= $bank; ?>">
                 <?php } ?>
@@ -301,7 +301,7 @@ $totalBayar = (int)$dataMid['gross_amount'];
         <div class="grid pad" style="padding-top:0;">
             <!-- Kiri: Ekspedisi / Resi / Status -->
             <div class="card pad">
-                <p class="num-md m-0" style="margin-bottom:6px;">Ekspedisi</p>
+                <p class="num-md m-0" style="margin-bottom:6px;"><?= $isEnglish ? 'Shipping' : 'Ekspedisi'; ?></p>
 
                 <?php if ($pemesanan['resi'] != 'Menunggu pengiriman') { ?>
                 <div style="display:flex;gap:10px;align-items:center;">
@@ -311,24 +311,24 @@ $totalBayar = (int)$dataMid['gross_amount'];
                         <p class="m-0" style="font-weight:700;letter-spacing:-.02em;"><?= strtoupper($kurir['nama']) ?>
                             <?= $kurir['deskripsi'] ?></p>
                         <?php if (isset($kurir['estimasi'])) { ?>
-                        <p class="m-0 muted">Estimasi <?= $kurir['estimasi'] ?> hari</p>
+                        <p class="m-0 muted"><?= $isEnglish ? 'Estimated delivery:' : 'Estimasi'; ?> <?= $kurir['estimasi'] ?> <?= $isEnglish ? 'days' : 'hari'; ?></p>
                         <?php } ?>
                     </div>
                 </div>
                 <?php } else { ?>
                 <div>
-                    <p class="m-0">Barang sedang diproses untuk pengiriman.</p>
-                    <p class="m-0 muted">*Pesanan di atas pukul 12:00 akan diproses esok hari.</p>
+                    <p class="m-0"><?= $isEnglish ? 'Your order is being prepared for shipment.' : 'Barang sedang diproses untuk pengiriman.'; ?></p>
+                    <p class="m-0 muted"><?= $isEnglish ? '*Orders placed after 12:00 will be processed the next day.' : '*Pesanan di atas pukul 12:00 akan diproses esok hari.'; ?></p>
                 </div>
                 <?php } ?>
 
                 <div class="hr"></div>
 
-                <p class="m-0">Resi</p>
+                <p class="m-0"><?= $isEnglish ? 'Tracking number' : 'Resi'; ?></p>
                 <div style="display:flex;align-items:center;gap:6px;margin-top:2px;">
                     <p class="m-0" style="font-weight:700;"><?= $pemesanan['resi']; ?></p>
                     <?php if ($pemesanan['resi'] != 'Menunggu pengiriman') { ?>
-                    <button class="copy-btn" onclick="copytext('<?= $pemesanan['resi']; ?>')" title="Salin Resi">
+                    <button class="copy-btn" onclick="copytext('<?= $pemesanan['resi']; ?>')" title="<?= esc($isEnglish ? 'Copy tracking number' : 'Salin Resi', 'attr'); ?>">
                         <i class="material-icons" style="font-size:16px;">content_copy</i>
                     </button>
                     <?php } ?>
@@ -336,7 +336,7 @@ $totalBayar = (int)$dataMid['gross_amount'];
 
                 <div class="hr"></div>
 
-                <p class="m-0">Status Pesanan</p>
+                <p class="m-0"><?= $isEnglish ? 'Order status' : 'Status Pesanan'; ?></p>
                 <span class="badge rounded-pill <?php
           switch ($pemesanan['status']) {
             case 'Menunggu Pembayaran': echo 'text-bg-primary'; break;
@@ -347,20 +347,20 @@ $totalBayar = (int)$dataMid['gross_amount'];
             case 'Gagal': echo 'text-bg-danger'; break;
             default: echo 'text-bg-dark'; break;
           } ?>">
-                    <?= ucfirst($pemesanan['status']); ?>
+                    <?= esc($isEnglish ? (['Menunggu Pembayaran' => 'Awaiting payment', 'Proses' => 'Processing', 'Dikirim' => 'Shipped', 'Selesai' => 'Completed', 'Dibatalkan' => 'Cancelled', 'Gagal' => 'Failed'][$pemesanan['status']] ?? $pemesanan['status']) : ucfirst($pemesanan['status'])); ?>
                 </span>
             </div>
 
             <!-- Kanan: Items & Rincian Pembayaran -->
             <div class="card pad">
-                <p class="num-md m-0">Ringkasan Pesanan</p>
+                <p class="num-md m-0"><?= $isEnglish ? 'Order summary' : 'Ringkasan Pesanan'; ?></p>
 
                 <!-- Tabel items (hanya produk, sembunyikan voucher/ongkir/admin di sini) -->
                 <div class="mini mt-1">
                     <div class="head">
-                        <div class="center">Nama</div>
-                        <div class="center">Jumlah</div>
-                        <div class="center">Harga</div>
+                        <div class="center"><?= $isEnglish ? 'Item' : 'Nama'; ?></div>
+                        <div class="center"><?= $isEnglish ? 'Quantity' : 'Jumlah'; ?></div>
+                        <div class="center"><?= $isEnglish ? 'Price' : 'Harga'; ?></div>
                     </div>
                     <div class="scroll">
                         <?php foreach ($items as $i) {
@@ -379,12 +379,12 @@ $totalBayar = (int)$dataMid['gross_amount'];
                 <div class="hr"></div>
 
                 <!-- Rincian Pembayaran -->
-                <p class="num-md m-0">Rincian Pembayaran</p>
+                <p class="num-md m-0"><?= $isEnglish ? 'Payment breakdown' : 'Rincian Pembayaran'; ?></p>
                 <div class="mt-1">
                     <div class="list-line"><span class="muted">Subtotal</span><span><b>Rp
                                 <?= number_format($subtotal, 0, ',', '.'); ?></b></span></div>
                     <?php if ($diskonVoucher > 0): ?>
-                    <div class="list-line"><span class="muted">Diskon Voucher</span><span>- Rp
+                    <div class="list-line"><span class="muted"><?= $isEnglish ? 'Voucher discount' : 'Diskon Voucher'; ?></span><span>- Rp
                             <?= number_format($diskonVoucher, 0, ',', '.'); ?></span></div>
                     <?php endif; ?>
                     <?php if ($diskonFlash > 0): ?>
@@ -392,14 +392,14 @@ $totalBayar = (int)$dataMid['gross_amount'];
                             <?= number_format($diskonFlash, 0, ',', '.'); ?></span></div>
                     <?php endif; ?>
                     <?php if ($biayaOngkir > 0): ?>
-                    <div class="list-line"><span class="muted">Biaya Ongkir</span><span>Rp
+                    <div class="list-line"><span class="muted"><?= $isEnglish ? 'Shipping' : 'Biaya Ongkir'; ?></span><span>Rp
                             <?= number_format($biayaOngkir, 0, ',', '.'); ?></span></div>
                     <?php endif; ?>
                     <?php if ($biayaAdmin > 0): ?>
-                    <div class="list-line"><span class="muted">Biaya Admin Pembayaran</span><span>Rp
+                    <div class="list-line"><span class="muted"><?= $isEnglish ? 'Payment administration fee' : 'Biaya Admin Pembayaran'; ?></span><span>Rp
                             <?= number_format($biayaAdmin, 0, ',', '.'); ?></span></div>
                     <?php endif; ?>
-                    <div class="list-line total"><span>Total Bayar</span><span>Rp
+                    <div class="list-line total"><span><?= $isEnglish ? 'Total paid' : 'Total Bayar'; ?></span><span>Rp
                             <?= number_format($totalBayar, 0, ',', '.'); ?></span></div>
                 </div>
             </div>
@@ -408,14 +408,14 @@ $totalBayar = (int)$dataMid['gross_amount'];
         <?php if (session()->get('isLogin')) { ?>
         <div class="hr"></div>
         <div style="display:flex;justify-content:center;">
-            <a href="/order" class="btn-default-merah">Pesanan Saya</a>
+            <a href="<?= esc(ilena_store_path('/order'), 'attr'); ?>" class="btn-default-merah"><?= $isEnglish ? 'My orders' : 'Pesanan Saya'; ?></a>
         </div>
         <?php } ?>
     </div>
 </div>
 
 <!-- Toast copy -->
-<div id="toastCopy" class="order-success toast">Disalin</div>
+<div id="toastCopy" class="order-success toast"><?= $isEnglish ? 'Copied' : 'Disalin'; ?></div>
 
 <?= $this->endSection(); ?>
 
@@ -442,7 +442,7 @@ $totalBayar = (int)$dataMid['gross_amount'];
             }
             const toast = document.getElementById('toastCopy');
             if (!toast) return;
-            toast.textContent = 'Disalin';
+            toast.textContent = <?= json_encode($isEnglish ? 'Copied' : 'Disalin', JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 1200);
         }

@@ -1,6 +1,8 @@
 <?= $this->extend("layout/template"); ?>
 <?= $this->section("content"); ?>
+<?php $isEnglish = service('request')->getLocale() === 'en'; ?>
 <?php
+$displayProductName = ilena_product_display_name($produk, $isEnglish ? 'en' : 'id');
 $defaultVariant = $produk['varian'][0] ?? ['nama' => 'default', 'stok' => 0, 'urutan_gambar' => '1'];
 $sanitizeProductHtml = static function (string $html): string {
     if (!class_exists(\DOMDocument::class)) return nl2br(esc(strip_tags($html)));
@@ -275,22 +277,22 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
     <div class="konten w-100 ilena-product-detail">
         <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb" class="show-block-ke-hide">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/product">Produk Kami</a></li>
+                <li class="breadcrumb-item"><a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>"><?= esc(lang('Store.productDetails')); ?></a></li>
                 <li class="breadcrumb-item"><a
-                        href="/product?koleksi=<?= rawurlencode((string) $produk['kategori']); ?>"><?= ucfirst($produk['kategori']); ?></a>
+                        href="<?= esc(ilena_store_path('/product?koleksi=' . rawurlencode((string) $produk['kategori'])), 'attr'); ?>"><?= esc(ilena_catalog_type_label((string) $produk['kategori'])); ?></a>
                 </li>
                 <li class="breadcrumb-item"><a
-                        href="/product?jenis=<?= rawurlencode((string) $produk['subkategori']); ?>"><?= ucfirst($produk['subkategori']); ?></a>
+                        href="<?= esc(ilena_store_path('/product?jenis=' . rawurlencode((string) $produk['subkategori'])), 'attr'); ?>"><?= esc(ilena_catalog_type_label((string) $produk['subkategori'])); ?></a>
                 </li>
             </ol>
         </nav>
         <div class="baris-ke-kolom-reverse w-100 ilena-product-layout">
             <div class="limapuluh-ke-seratus ilena-product-info">
                 <div class="ilena-product-heading">
-                    <p class="ilena-product-eyebrow"><?= esc(ucwords($produk['kategori'])); ?> <span>/</span> ILENA FURNITURE</p>
+                    <p class="ilena-product-eyebrow"><?= esc(ilena_catalog_type_label((string) $produk['kategori'])); ?> <span>/</span> ILENA FURNITURE</p>
                     <div class="ilena-product-title-row">
-                        <h1 class="teks-besar"><?= esc(str_replace('Tv', 'TV', ucwords($produk['nama']))) ?></h1>
-                        <a href="/product?koleksi=<?= rawurlencode($produk['kategori']); ?>" class="ilena-product-collection-link" aria-label="Lihat koleksi <?= esc($produk['kategori'], 'attr'); ?>">Lihat koleksi <span aria-hidden="true">↗</span></a>
+                        <h1 class="teks-besar"><?= esc(str_replace('Tv', 'TV', ucwords($displayProductName))) ?></h1>
+                        <a href="<?= esc(ilena_store_path('/product?koleksi=' . rawurlencode((string) $produk['kategori'])), 'attr'); ?>" class="ilena-product-collection-link" aria-label="<?= esc(lang('Store.viewCollection') . ' ' . $produk['kategori'], 'attr'); ?>"><?= esc(lang('Store.viewCollection')); ?> <span aria-hidden="true">↗</span></a>
                     </div>
                 </div>
 
@@ -303,7 +305,7 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                 </div>
                 <div class="ilena-product-options gap-2 hide-ke-show-flex">
                     <section class="ilena-option-group" aria-labelledby="mobile-variant-label">
-                    <div class="ilena-option-heading"><p class="detail-mini-label w-100" id="mobile-variant-label">Warna / varian</p></div>
+                    <div class="ilena-option-heading"><p class="detail-mini-label w-100" id="mobile-variant-label"><?= esc(lang('Store.colorVariant')); ?></p></div>
                     <div class="container-varian mb-3 d-flex" role="radiogroup" aria-labelledby="mobile-variant-label">
                         <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
                         <input id="varian<?= $ind_v ?>-mobile"
@@ -313,25 +315,25 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                             data-name="<?= esc($v['nama'], 'attr') ?>"
                             data-index="<?= $ind_v ?>"
                             data-stok="<?= (int)($v['stok'] ?? 0) ?>"
-                            aria-label="Warna <?= esc($v['nama'], 'attr') ?>"
+                            aria-label="<?= esc(sprintf(lang('Store.colorForProduct'), ilena_variant_display_name((string) $v['nama'])), 'attr') ?>"
                             type="radio" name="varian-mobile">
-                        <label for="varian<?= $ind_v ?>-mobile" title="<?= esc($v['nama'], 'attr') ?>"><span aria-hidden="true"
+                        <label for="varian<?= $ind_v ?>-mobile" title="<?= esc(ilena_variant_display_name((string) $v['nama']), 'attr') ?>"><span aria-hidden="true"
                                 style="background-color: <?= esc($v['kode'], 'attr') ?>"></span></label>
                         <?php } ?>
                     </div></section>
                     <section class="ilena-option-group" aria-labelledby="mobile-size-label">
-                    <div class="ilena-option-heading"><p class="detail-mini-label w-100" id="mobile-size-label">Pilihan ukuran</p><span class="ilena-option-caption">Panjang</span></div>
+                    <div class="ilena-option-heading"><p class="detail-mini-label w-100" id="mobile-size-label"><?= esc(lang('Store.chooseSize')); ?></p><span class="ilena-option-caption"><?= esc(lang('Store.length')); ?></span></div>
                     <div class="ilena-size-options">
                         <?php foreach ($sizeOptions as $sizeOption) { $ind_ps = $sizeOption['index']; $ps = $sizeOption['product']; ?>
-                        <a href="/product/<?= rawurlencode(strtolower(str_replace(' ', '-', (string) $ps['nama']))) ?>/<?= (int) $ind_ps ?>"
+                        <a href="<?= esc(ilena_store_path('/product/' . rawurlencode(strtolower(str_replace(' ', '-', (string) $ps['nama']))) . '/' . (int) $ind_ps), 'attr'); ?>"
                             class="btn-default-abu ilena-size-option <?= $ind_ps == $indexNama ? 'border border-dark is-active' : '' ?>" <?= $ind_ps == $indexNama ? 'aria-current="page"' : '' ?>><?= esc($sizeOption['length']) ?><span>mm</span></a>
                         <?php } ?>
                     </div></section>
                 </div>
-                <div class="ilena-product-description"><?= $sanitizeProductHtml((string) ($produk['deskripsi']['deskripsi'] ?? '')); ?></div>
+                <div class="ilena-product-description"><?= $sanitizeProductHtml((string) (($isEnglish && trim((string) ($produk['deskripsi']['deskripsi_en'] ?? '')) !== '') ? $produk['deskripsi']['deskripsi_en'] : ($produk['deskripsi']['deskripsi'] ?? ''))); ?></div>
                 <div class="ilena-product-options gap-2 show-flex-ke-hide">
                     <section class="ilena-option-group" aria-labelledby="desktop-variant-label">
-                    <div class="ilena-option-heading"><p class="detail-mini-label" id="desktop-variant-label">Warna / varian</p></div>
+                    <div class="ilena-option-heading"><p class="detail-mini-label" id="desktop-variant-label"><?= esc(lang('Store.colorVariant')); ?></p></div>
                     <div class="container-varian mb-3 d-flex" role="radiogroup" aria-labelledby="desktop-variant-label">
                         <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
                         <input id="varian<?= $ind_v ?>"
@@ -341,18 +343,18 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                             data-name="<?= esc($v['nama'], 'attr') ?>"
                             data-index="<?= $ind_v ?>"
                             data-stok="<?= (int)($v['stok'] ?? 0) ?>"
-                            aria-label="Warna <?= esc($v['nama'], 'attr') ?>"
+                            aria-label="<?= esc(sprintf(lang('Store.colorForProduct'), ilena_variant_display_name((string) $v['nama'])), 'attr') ?>"
                             type="radio"
                             name="varian">
-                        <label for="varian<?= $ind_v ?>" title="<?= esc($v['nama'], 'attr') ?>"><span aria-hidden="true"
+                        <label for="varian<?= $ind_v ?>" title="<?= esc(ilena_variant_display_name((string) $v['nama']), 'attr') ?>"><span aria-hidden="true"
                                 style="background-color: <?= esc($v['kode'], 'attr') ?>"></span></label>
                         <?php } ?>
                     </div></section>
                     <section class="ilena-option-group" aria-labelledby="desktop-size-label">
-                    <div class="ilena-option-heading"><p class="detail-mini-label" id="desktop-size-label">Pilihan ukuran</p><span class="ilena-option-caption">Panjang</span></div>
+                    <div class="ilena-option-heading"><p class="detail-mini-label" id="desktop-size-label"><?= esc(lang('Store.chooseSize')); ?></p><span class="ilena-option-caption"><?= esc(lang('Store.length')); ?></span></div>
                     <div class="ilena-size-options">
                         <?php foreach ($sizeOptions as $sizeOption) { $ind_ps = $sizeOption['index']; $ps = $sizeOption['product']; ?>
-                        <a href="/product/<?= rawurlencode(strtolower(str_replace(' ', '-', (string) $ps['nama']))) ?>/<?= (int) $ind_ps ?>"
+                        <a href="<?= esc(ilena_store_path('/product/' . rawurlencode(strtolower(str_replace(' ', '-', (string) $ps['nama']))) . '/' . (int) $ind_ps), 'attr'); ?>"
                             class="btn-default-abu ilena-size-option <?= $ind_ps == $indexNama ? 'border border-dark is-active' : '' ?>" <?= $ind_ps == $indexNama ? 'aria-current="page"' : '' ?>><?= esc($sizeOption['length']) ?><span>mm</span></a>
                         <?php } ?>
                     </div></section>
@@ -362,47 +364,44 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                     <a class="btn-default d-flex justify-content-center align-items-center"
                         href="/admin/editproduct/<?= $produk['id']; ?>">
                         <i class="material-icons">edit</i>
-                        <p class="m-0">Edit</p>
+                        <p class="m-0"><?= esc(lang('Store.productEdit')); ?></p>
                     </a>
                     <!-- <a class="btn-default-merah d-flex justify-content-center align-items-center"
                         href="/admin/deleteproduct/<?= $produk['id']; ?>">
                         <i class="material-icons">delete</i>
-                        <p class="m-0">Hapus</p>
+                        <p class="m-0"><?= esc(lang('Store.removeProduct')); ?></p>
                     </a> -->
                 <form action="/admin/deleteproduct/<?= $produk['id']; ?>" method="post">
                     <?= csrf_field(); ?>
                         <button class="btn-default-merah d-flex justify-content-center align-items-center"
                             type="submit"><i class="material-icons">delete</i>
-                            <p class="m-0">Hapus</p>
+                            <p class="m-0"><?= esc(lang('Store.removeProduct')); ?></p>
                         </button>
                     </form>
                 </div>
                 <?php } else { ?>
                 <div class="d-flex gap-2 align-items-stretch ilena-product-purchase">
                     <div class="number-control">
-                        <button type="button" class="number-left" onclick="kurangJumlah()" aria-label="Kurangi jumlah"></button>
-                        <input type="number" name="jumlah" class="number-quantity" value="1" min="1" aria-label="Jumlah pembelian">
-                        <button type="button" class="number-right" onclick="tambahJumlah()" aria-label="Tambah jumlah"></button>
+                        <button type="button" class="number-left" onclick="kurangJumlah()" aria-label="<?= esc(lang('Store.decreaseQuantity'), 'attr'); ?>"></button>
+                        <input type="number" name="jumlah" class="number-quantity" value="1" min="1" aria-label="<?= esc(lang('Store.purchaseQuantity'), 'attr'); ?>">
+                        <button type="button" class="number-right" onclick="tambahJumlah()" aria-label="<?= esc(lang('Store.increaseQuantity'), 'attr'); ?>"></button>
                     </div>
                     <form id="btn-keranjang" method="post"
-                        action="<?= $defaultVariant['stok'] > 0 ? '/addcart/' . $produk['id'] . '/' . rawurlencode($defaultVariant['nama']) . '/1' : ''; ?>">
+                        action="<?= $defaultVariant['stok'] > 0 ? ilena_store_path('/addcart/' . $produk['id'] . '/' . rawurlencode($defaultVariant['nama']) . '/1') : ''; ?>">
                         <?= csrf_field(); ?>
                         <button class="btn-default-merah <?= $defaultVariant['stok'] > 0 ? '' : 'disabled'; ?>"
                             <?= $defaultVariant['stok'] > 0 ? '' : 'disabled'; ?>
-                            type="submit"><?= $defaultVariant['stok'] > 0 ? 'Keranjang' : 'Stok habis'; ?></button>
+                            type="submit"><?= $defaultVariant['stok'] > 0 ? esc(lang('Store.cart')) : esc(lang('Store.soldOut')); ?></button>
                     </form>
 
                 </div>
                 <?php } ?>
                 <p id="info-habis" class="mt-2 <?= $defaultVariant['stok'] <= 0 ? '' : 'd-none'; ?>"
-                    style="font-size: 10px;">*Produk ini bisa di pre-order dengan menghubungi <a
-                        href="https://wa.me/+628112938158" class="btn-teks-aja" style="display: inline;">Customer
-                        Service</a> kami</p>
+                    style="font-size: 10px;">*<?= esc(lang('Store.preorderLead')); ?> <a
+                        href="https://wa.me/+628112938158" class="btn-teks-aja" style="display: inline;"><?= esc(lang('Store.customerService')); ?></a> <?= esc(lang('Store.ours')); ?></p>
                 <?php if ($produk['tokped'] || $produk['shopee'] || $produk['tiktok']) { ?>
                 <div class="mt-4 <?= $defaultVariant['stok'] <= 0 ? 'd-none' : ''; ?>" id="container-market">
-                    <p class="mb-2">
-                        Produk ini juga tersedia di
-                    </p>
+                    <p class="mb-2"><?= esc(lang('Store.alsoAvailableOn')); ?></p>
                     <div>
                         <?php if ($produk['tokped']) { ?>
                         <a href="<?= esc((string) $produk['tokped'], 'attr'); ?>" rel="noopener noreferrer" title="Tokopedia" target="_blank"><img
@@ -420,15 +419,15 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                 </div>
                 <?php }
                 if (in_array($produk['id'], $wishlist)) { ?>
-                <form action="/delwishlist/<?= $produk['id'] ?>" method="post">
+                <form action="<?= esc(ilena_store_path('/delwishlist/' . $produk['id']), 'attr'); ?>" method="post">
                     <?= csrf_field(); ?>
-                    <button type="submit" class="btn-teks-aja my-3"><i class="material-icons">favorite</i>Hapus</button>
+                    <button type="submit" class="btn-teks-aja my-3"><i class="material-icons">favorite</i><?= esc(lang('Store.removeFromWishlist')); ?></button>
                 </form>
                 <?php } else { ?>
-                <form action="/addwishlist/<?= $produk['id'] ?>" method="post">
+                <form action="<?= esc(ilena_store_path('/addwishlist/' . $produk['id']), 'attr'); ?>" method="post">
                     <?= csrf_field(); ?>
                     <button type="submit" class="btn-teks-aja my-3"><i
-                            class="material-icons">favorite_border</i>Simpan</button>
+                            class="material-icons">favorite_border</i><?= esc(lang('Store.saveToWishlist')); ?></button>
                 </form>
                 <?php } ?>
                 <hr>
@@ -437,14 +436,14 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#flush-collapse2" aria-expanded="false" aria-controls="flush-collapse2">
-                                SPESIFIKASI PRODUK
+                                <?= esc(lang('Store.specificationsHeading')); ?>
                             </button>
                         </h2>
                         <div id="flush-collapse2" class="accordion-collapse collapse"
                             data-bs-parent="#accordionFlushExample">
                             <div class="accordion-body">
                                 <p class="mb-0">
-                                    <?= esc((string) ($produk['deskripsi']['perawatan'] ?? 'Informasi perawatan belum tersedia.')) ?>
+                                    <?= esc((string) (($isEnglish && trim((string) ($produk['deskripsi']['perawatan_en'] ?? '')) !== '') ? $produk['deskripsi']['perawatan_en'] : ($produk['deskripsi']['perawatan'] ?? lang('Store.maintenanceInfoMissing')))) ?>
                                 </p>
                             </div>
                         </div>
@@ -453,55 +452,55 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#flush-collapse1" aria-expanded="false" aria-controls="flush-collapse1">
-                                DIMENSI
+                                <?= esc(lang('Store.dimensionsHeading')); ?>
                             </button>
                         </h2>
                         <div id="flush-collapse1" class="accordion-collapse collapse"
                             data-bs-parent="#accordionFlushExample">
                             <div class="accordion-body">
-                                <p class="mb-0 fw-bold">Dimensi Produk</p>
+                                <p class="mb-0 fw-bold"><?= esc(lang('Store.productDimensions')); ?></p>
                                 <ul>
                                     <li>
                                         <p class="mb-0">
-                                            Panjang : <?= esc((string) ($produk['deskripsi']['dimensi']['asli']['panjang'] ?? '-')) ?> mm
+                                            <?= esc(lang('Store.lengthLabel')); ?> : <?= esc((string) ($produk['deskripsi']['dimensi']['asli']['panjang'] ?? '-')) ?> mm
                                         </p>
                                     </li>
                                     <li>
                                         <p class="mb-0">
-                                            Lebar : <?= esc((string) ($produk['deskripsi']['dimensi']['asli']['lebar'] ?? '-')) ?> mm
+                                            <?= esc(lang('Store.widthLabel')); ?> : <?= esc((string) ($produk['deskripsi']['dimensi']['asli']['lebar'] ?? '-')) ?> mm
                                         </p>
                                     </li>
                                     <li>
                                         <p class="mb-0">
-                                            Tinggi : <?= esc((string) ($produk['deskripsi']['dimensi']['asli']['tinggi'] ?? '-')) ?> mm
+                                            <?= esc(lang('Store.heightLabel')); ?> : <?= esc((string) ($produk['deskripsi']['dimensi']['asli']['tinggi'] ?? '-')) ?> mm
                                         </p>
                                     </li>
                                     <li>
                                         <p class="mb-0">
-                                            Berat : <?= esc((string) ($produk['deskripsi']['dimensi']['asli']['berat'] ?? '-')) ?> kg
+                                            <?= esc(lang('Store.weightLabel')); ?> : <?= esc((string) ($produk['deskripsi']['dimensi']['asli']['berat'] ?? '-')) ?> kg
                                         </p>
                                     </li>
                                 </ul>
-                                <p class="mb-0 mt-1 fw-bold">Dimensi Kemasan</p>
+                                <p class="mb-0 mt-1 fw-bold"><?= esc(lang('Store.packageDimensions')); ?></p>
                                 <ul>
                                     <li>
                                         <p class="mb-0">
-                                            Panjang : <?= esc((string) ($produk['deskripsi']['dimensi']['paket']['panjang'] ?? '-')) ?> mm
+                                            <?= esc(lang('Store.lengthLabel')); ?> : <?= esc((string) ($produk['deskripsi']['dimensi']['paket']['panjang'] ?? '-')) ?> mm
                                         </p>
                                     </li>
                                     <li>
                                         <p class="mb-0">
-                                            Lebar : <?= esc((string) ($produk['deskripsi']['dimensi']['paket']['lebar'] ?? '-')) ?> mm
+                                            <?= esc(lang('Store.widthLabel')); ?> : <?= esc((string) ($produk['deskripsi']['dimensi']['paket']['lebar'] ?? '-')) ?> mm
                                         </p>
                                     </li>
                                     <li>
                                         <p class="mb-0">
-                                            Tinggi : <?= esc((string) ($produk['deskripsi']['dimensi']['paket']['tinggi'] ?? '-')) ?> mm
+                                            <?= esc(lang('Store.heightLabel')); ?> : <?= esc((string) ($produk['deskripsi']['dimensi']['paket']['tinggi'] ?? '-')) ?> mm
                                         </p>
                                     </li>
                                     <li>
                                         <p class="mb-0">
-                                            Berat : <?= esc((string) ($produk['deskripsi']['dimensi']['paket']['berat'] ?? '-')) ?> kg
+                                            <?= esc(lang('Store.weightLabel')); ?> : <?= esc((string) ($produk['deskripsi']['dimensi']['paket']['berat'] ?? '-')) ?> kg
                                         </p>
                                     </li>
                                 </ul>
@@ -521,47 +520,47 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                         src="<?= esc($barangImgUrl('1000', $gambarAwalDetail), 'attr') ?>"
                         data-image-fallback="<?= esc(base_url('product-cover/' . rawurlencode((string) $produk['id'])) . '?slot=' . rawurlencode($gambarAwalDetail) . '&v=' . ($detailImageVersions[$gambarAwalDetail] ?? $detailVersion), 'attr') ?>"
                         onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"
-                        onmousemove="zoom(event)" onmouseleave="mouseoff(event)" alt="<?= esc($produk['nama'], 'attr') ?>" width="1000" height="1000" decoding="async" fetchpriority="high">
+onmousemove="zoom(event)" onmouseleave="mouseoff(event)" alt="<?= esc($displayProductName, 'attr') ?>" width="1000" height="1000" decoding="async" fetchpriority="high">
                 </div>
                 <div class="mb-3 mt-3" style="overflow: auto">
                     <div class="container-img-detail-select"
                         <?= $defaultVariant['stok'] <= 0 ? 'style="filter: grayscale(90%)"' : ''; ?>>
                         <?php foreach ($filterExistingSlots($defaultVariant['urutan_gambar']) as $indx => $p_v) { ?>
                         <input <?= $indx == 0 ? 'checked' : '' ?> id="gambar<?= $indx ?>" type="radio" name="gambar"
-                            aria-label="Foto produk <?= $indx + 1 ?>" value="<?= $p_v ?>">
-                        <label class="img-detail-select" for="gambar<?= $indx ?>" title="Foto produk <?= $indx + 1 ?>"><img
+                            aria-label="<?= esc(sprintf(lang('Store.productPhotoNumber'), $indx + 1), 'attr'); ?>" value="<?= $p_v ?>">
+                        <label class="img-detail-select" for="gambar<?= $indx ?>" title="<?= esc(sprintf(lang('Store.productPhotoNumber'), $indx + 1), 'attr'); ?>"><img
                                 src="<?= esc($barangImgUrl('300', $p_v), 'attr') ?>"
                                 data-image-fallback="<?= esc(base_url('product-cover/' . rawurlencode((string) $produk['id'])) . '?slot=' . rawurlencode((string) $p_v) . '&v=' . ($detailImageVersions[(string) $p_v] ?? $detailVersion), 'attr') ?>"
                                 onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"
-                                alt="<?= esc($produk['nama'], 'attr') ?>" width="300" height="300" loading="lazy" decoding="async"></label>
+alt="<?= esc($displayProductName, 'attr') ?>" width="300" height="300" loading="lazy" decoding="async"></label>
                         <?php } ?>
                         <?php if ($punyaGambarHoverDetail) { ?>
-                        <input id="gambar-hover" type="radio" name="gambar" aria-label="Lihat detail permukaan" value="hover">
-                        <label class="img-detail-select" for="gambar-hover" title="Lihat detail permukaan"><img
+                        <input id="gambar-hover" type="radio" name="gambar" aria-label="<?= esc(lang('Store.surfaceDetail'), 'attr'); ?>" value="hover">
+                        <label class="img-detail-select" for="gambar-hover" title="<?= esc(lang('Store.surfaceDetail'), 'attr'); ?>"><img
                                 src="<?= esc($hoverImgUrl(), 'attr') ?>"
                                 data-image-fallback="<?= esc(base_url('viewpichover/' . rawurlencode((string) $produk['id'])) . '?v=' . $detailVersion, 'attr') ?>"
                                 onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"
-                                alt="<?= esc($produk['nama'], 'attr') ?>" width="300" height="300" loading="lazy" decoding="async"></label>
+alt="<?= esc($displayProductName, 'attr') ?>" width="300" height="300" loading="lazy" decoding="async"></label>
                         <?php } ?>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="ilena-mobile-lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Galeri foto produk">
-            <button class="ilena-mobile-lightbox__close" type="button" aria-label="Tutup galeri">&times;</button>
-            <button class="ilena-mobile-lightbox__nav ilena-mobile-lightbox__prev" type="button" aria-label="Foto sebelumnya">‹</button>
+        <div class="ilena-mobile-lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="<?= esc(lang('Store.productGalleryLabel'), 'attr'); ?>">
+            <button class="ilena-mobile-lightbox__close" type="button" aria-label="<?= esc(lang('Store.closeGallery'), 'attr'); ?>">&times;</button>
+            <button class="ilena-mobile-lightbox__nav ilena-mobile-lightbox__prev" type="button" aria-label="<?= esc(lang('Store.previousPhoto'), 'attr'); ?>">‹</button>
             <div class="ilena-mobile-lightbox__viewport"><img class="ilena-mobile-lightbox__image" alt=""></div>
-            <button class="ilena-mobile-lightbox__nav ilena-mobile-lightbox__next" type="button" aria-label="Foto berikutnya">›</button>
+            <button class="ilena-mobile-lightbox__nav ilena-mobile-lightbox__next" type="button" aria-label="<?= esc(lang('Store.nextPhoto'), 'attr'); ?>">›</button>
             <div class="ilena-mobile-lightbox__tools">
-                <button class="ilena-mobile-lightbox__zoom-out" type="button" aria-label="Perkecil foto">−</button>
+                <button class="ilena-mobile-lightbox__zoom-out" type="button" aria-label="<?= esc(lang('Store.zoomOutPhoto'), 'attr'); ?>">−</button>
                 <span class="ilena-mobile-lightbox__counter" aria-live="polite"></span>
-                <button class="ilena-mobile-lightbox__zoom-in" type="button" aria-label="Perbesar foto">+</button>
+                <button class="ilena-mobile-lightbox__zoom-in" type="button" aria-label="<?= esc(lang('Store.zoomInPhoto'), 'attr'); ?>">+</button>
             </div>
-            <p class="ilena-mobile-lightbox__hint">Cubit untuk zoom · Geser untuk melihat foto lain</p>
+            <p class="ilena-mobile-lightbox__hint"><?= esc(lang('Store.zoomHint')); ?></p>
         </div>
         <?php if (count($produkSejenis) > 0) { ?>
         <section class="ilena-product-related" aria-labelledby="related-products-title">
-        <div class="ilena-product-related-heading"><span>Pilihan untuk Anda</span><h2 id="related-products-title">Anda mungkin juga suka</h2></div>
+        <div class="ilena-product-related-heading"><span><?= esc(lang('Store.relatedPicks')); ?></span><h2 id="related-products-title"><?= esc(lang('Store.youMayAlsoLike')); ?></h2></div>
         <div class="container-card1 ilena-catalog-grid ilena-product-related-grid">
             <?php foreach ($produkSejenis as $ind_p => $p) { ?>
             <?php
@@ -591,7 +590,7 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                 $cardVarianAwalStok = (int) ($relatedVariantData[0]['stok'] ?? 0);
                 $relatedSlots = array_values(array_filter(array_map('trim', explode(',', (string) ($relatedVariantData[0]['urutan_gambar'] ?? '1')))));
                 $relatedCardSlot = $relatedSlots[0] ?? '1';
-                $relatedProductUrl = '/product/' . rawurlencode(str_replace(' ', '-', (string) $p['nama']));
+                $relatedProductUrl = ilena_store_path('/product/' . rawurlencode(str_replace(' ', '-', (string) $p['nama'])));
                 $relatedImageFallback = base_url('product-cover/' . rawurlencode((string) $p['id'])) . '?slot=' . rawurlencode($relatedCardSlot) . '&size=300&v=' . $relatedVersion;
                 $relatedCdnImage = $productImageCdn !== '' ? $productImageCdn . '/products/300/' . rawurlencode((string) $p['id']) . '-' . rawurlencode($relatedCardSlot) . '.webp?v=' . $relatedVersion : '';
                 $relatedLocalSlot300Relative = 'uploads/product-images/300/' . $p['id'] . '-' . $relatedCardSlot . '.webp';
@@ -611,22 +610,22 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                         <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
                     <div class="d-flex flex-column gap-2 card1-content-img-kanan">
                         <?php if (session()->get('role') == '1') { ?>
-                        <a class="card1-btn-img" href="/admin/editproduct/<?= esc((string) $p['id'], 'attr') ?>" title="Edit produk" aria-label="Edit <?= esc($p['nama'], 'attr') ?>"><i class="material-icons">edit</i></a>
+                        <a class="card1-btn-img" href="/admin/editproduct/<?= esc((string) $p['id'], 'attr') ?>" title="<?= esc(lang('Store.editProductTitle'), 'attr') ?>" aria-label="<?= esc(sprintf(lang('Store.productEdit') . ' %s', $p['nama']), 'attr') ?>"><i class="material-icons">edit</i></a>
                         <?php }
                                 if (in_array($p['id'], $wishlist)) { ?>
-                        <form action="/delwishlist/<?= esc((string) $p['id'], 'attr') ?>" method="post">
+                        <form action="<?= esc(ilena_store_path('/delwishlist/' . rawurlencode((string) $p['id'])), 'attr'); ?>" method="post">
                             <?= csrf_field(); ?>
-                            <button type="submit" class="card1-btn-img" aria-label="Hapus <?= esc($p['nama'], 'attr') ?> dari wishlist"><i class="material-icons">favorite</i></button>
+                            <button type="submit" class="card1-btn-img" aria-label="<?= esc(sprintf(lang('Store.removeProductFromWishlist'), $p['nama']), 'attr') ?>"><i class="material-icons">favorite</i></button>
                         </form>
                         <?php } else { ?>
-                        <form action="/addwishlist/<?= esc((string) $p['id'], 'attr') ?>" method="post">
+                        <form action="<?= esc(ilena_store_path('/addwishlist/' . rawurlencode((string) $p['id'])), 'attr'); ?>" method="post">
                             <?= csrf_field(); ?>
-                            <button type="submit" class="card1-btn-img" aria-label="Simpan <?= esc($p['nama'], 'attr') ?> ke wishlist"><i
+                            <button type="submit" class="card1-btn-img" aria-label="<?= esc(sprintf(lang('Store.saveProductToWishlist'), $p['nama']), 'attr') ?>"><i
                                     class="material-icons">favorite_border</i></button>
                         </form>
                         <?php } ?>
                         <form method="post" id="card<?= $ind_p ?>"
-                            action="<?= $cardVarianAwalStok > 0 ? '/addcart/' . rawurlencode((string) $p['id']) . '/' . rawurlencode($cardVarianAwal) . '/1' : '' ?>"><?= csrf_field(); ?><button type="submit" class="card1-btn-img" aria-label="Tambah <?= esc($p['nama'], 'attr') ?> ke keranjang" title="Tambah ke keranjang" <?= $cardVarianAwalStok > 0 ? '' : 'disabled' ?>><i class="material-icons">shopping_bag</i>
+                            action="<?= $cardVarianAwalStok > 0 ? ilena_store_path('/addcart/' . rawurlencode((string) $p['id']) . '/' . rawurlencode($cardVarianAwal) . '/1') : '' ?>"><?= csrf_field(); ?><button type="submit" class="card1-btn-img" aria-label="<?= esc(sprintf(lang('Store.addProductToCart'), $p['nama']), 'attr') ?>" title="<?= esc(lang('Store.addToCartTitle'), 'attr') ?>" <?= $cardVarianAwalStok > 0 ? '' : 'disabled' ?>><i class="material-icons">shopping_bag</i>
                             </button>
                         </form>
                     </div>
@@ -646,7 +645,7 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                         <?php } ?>
                     </a>
                 </div>
-                <div class="container-varian mb-1 d-flex" role="radiogroup" aria-label="Pilih warna <?= esc($p['nama'], 'attr') ?>">
+                <div class="container-varian mb-1 d-flex" role="radiogroup" aria-label="<?= esc(sprintf(lang('Store.colorForProduct'), $p['nama']), 'attr') ?>">
                     <?php foreach ($relatedVariantData as $ind_v => $v) { ?>
                     <input id="varian-<?= $ind_p ?>-<?= $ind_v ?>"
                         <?= $ind_v === 0 ? 'checked' : '' ?>
@@ -654,7 +653,7 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                         data-slot="<?= esc($v['urutan_gambar'], 'attr') ?>"
                         data-name="<?= esc($v['nama'], 'attr') ?>"
                         data-stok="<?= (int)($v['stok'] ?? 0) ?>"
-                        type="radio" name="varian<?= $ind_p ?>" aria-label="Warna <?= esc($v['nama'], 'attr') ?>">
+                        type="radio" name="varian<?= $ind_p ?>" aria-label="<?= esc(sprintf(lang('Store.colorForProduct'), $v['nama']), 'attr') ?>">
                     <label for="varian-<?= $ind_p ?>-<?= $ind_v ?>" title="<?= esc($v['nama'], 'attr') ?>"><span
                             style="background-color: <?= esc((string) $v['kode'], 'attr') ?>"></span></label>
                     <?php } ?>
@@ -675,7 +674,7 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                             img<?= $ind_p ?>Elm.closest('.gambar')?.classList.remove('is-image-loaded');
                             img<?= $ind_p ?>Elm.src = <?= json_encode($productImageCdn !== '' ? $productImageCdn . '/products/300/' . rawurlencode((string) $p['id']) . '-' : base_url('product-cover/' . rawurlencode((string) $p['id'])) . '?slot=') ?> + encodeURIComponent(slot) + <?= json_encode($productImageCdn !== '' ? '.webp?v=' . $relatedVersion : '&size=300&v=' . $relatedVersion) ?>;
 
-                            btnKeranjang<?= $ind_p ?>Elm.action = stok > 0 ? "/addcart/<?= $p['id'] ?>/" + encodeURIComponent(namaVarian) + "/1" : "";
+                            btnKeranjang<?= $ind_p ?>Elm.action = stok > 0 ? <?= json_encode(ilena_store_path('/addcart/' . $p['id'] . '/'), JSON_UNESCAPED_SLASHES) ?> + encodeURIComponent(namaVarian) + "/1" : "";
                             const quickBtn = btnKeranjang<?= $ind_p ?>Elm.querySelector('button');
                             if (quickBtn) quickBtn.disabled = stok <= 0;
                         })
@@ -683,8 +682,8 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                     </script>
                 </div>
                 <a href="<?= esc($relatedProductUrl, 'attr') ?>" class="text-dark related-card-info">
-                    <p class="related-card-category"><?= esc(strtolower((string) $p['kategori'])); ?></p>
-                    <h5 class="related-card-name"><?= esc(str_replace('Tv', 'TV', ucwords((string) $p['nama']))); ?></h5>
+                    <p class="related-card-category"><?= esc(ilena_catalog_type_label((string) $p['kategori'])); ?></p>
+                    <h5 class="related-card-name"><?= esc(str_replace('Tv', 'TV', ucwords(ilena_product_display_name($p)))); ?></h5>
                     <div class="d-flex gap-2 related-card-prices">
                         <p class="harga">Rp
                             <?= number_format($p['harga'] * (100 - $p['diskon']) / 100, 0, ',', '.'); ?></p>
@@ -726,7 +725,7 @@ const detailLegacySlots1000 = <?= json_encode(array_values(array_filter(array_un
 const detailLocalSlots3000 = <?= json_encode(array_values(array_filter(array_unique(array_merge(...array_map(static fn($v) => array_map('trim', explode(',', (string)($v['urutan_gambar'] ?? ''))), $produk['varian']))), static fn($slot) => $slot !== '' && is_file(FCPATH . 'uploads/product-images/3000/' . $produk['id'] . '-' . $slot . '.webp')))) ?>;
 const detailLegacySlots3000 = <?= json_encode(array_values(array_filter(array_unique(array_merge(...array_map(static fn($v) => array_map('trim', explode(',', (string)($v['urutan_gambar'] ?? ''))), $produk['varian']))), static fn($slot) => $slot !== '' && is_file(FCPATH . 'img/barang/3000/' . $produk['id'] . '-' . $slot . '.webp')))) ?>;
 function encodedCartUrl(productId, varianName, qty) {
-    return "/addcart/" + productId + "/" + encodeURIComponent(varianName || "default") + "/" + Math.max(1, Number(qty || 1));
+    return <?= json_encode(ilena_store_path('/addcart/'), JSON_UNESCAPED_SLASHES) ?> + productId + "/" + encodeURIComponent(varianName || "default") + "/" + Math.max(1, Number(qty || 1));
 }
 function detailImageUrl(slot) {
     const version = detailSlotVersion(slot);

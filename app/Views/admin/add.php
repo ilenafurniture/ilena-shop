@@ -765,6 +765,9 @@ const App = () => {
     harga: '',
     deskripsi: {
       deskripsi: '',
+      nama_en: '',
+      deskripsi_en: '',
+      perawatan_en: '',
       dimensi: {
         asli:  { panjang:"", lebar:"", tinggi:"", berat:"" },
         paket: { panjang:"", lebar:"", tinggi:"", berat:"" }
@@ -1365,6 +1368,23 @@ const App = () => {
                       onChange={e => setFormData({ ...formData, deskripsi: { ...formData.deskripsi, perawatan: e.target.value } })}
                       required />
                   </td>
+                </tr>
+                <tr>
+                  <td>English product name (optional)</td>
+                  <td><input className="form-control" maxLength="180" value={formData.deskripsi.nama_en || ''}
+                    onChange={e => setFormData({ ...formData, deskripsi: { ...formData.deskripsi, nama_en: e.target.value } })} /></td>
+                </tr>
+                <tr>
+                  <td>English description (optional)</td>
+                  <td><textarea className="form-control" rows="3" maxLength="3000"
+                    value={formData.deskripsi.deskripsi_en || ''}
+                    onChange={e => setFormData({ ...formData, deskripsi: { ...formData.deskripsi, deskripsi_en: e.target.value } })} /></td>
+                </tr>
+                <tr>
+                  <td>English care / specifications (optional)</td>
+                  <td><textarea className="form-control" rows="3" maxLength="3000"
+                    value={formData.deskripsi.perawatan_en || ''}
+                    onChange={e => setFormData({ ...formData, deskripsi: { ...formData.deskripsi, perawatan_en: e.target.value } })} /></td>
                 </tr>
 
                 <tr><td colSpan="2" className="section-title">Bentuk Paket</td></tr>

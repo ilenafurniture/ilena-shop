@@ -2,9 +2,10 @@
 <?= $this->section("content"); ?>
 
 <?php
+$isEnglish = service('request')->getLocale() === 'en';
 // === helper kecil (tidak mengubah flow sistem) ===
 $waktuExpireEpoch = strtotime($dataMid['expiry_time']);
-$bulan = $bulan ?? ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
+$bulan = $bulan ?? ($isEnglish ? ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] : ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des']);
 $waktuExpireFix = date("d", $waktuExpireEpoch) . " " . $bulan[(int)date("m", $waktuExpireEpoch) - 1] . " " . date("Y H:i:s", $waktuExpireEpoch);
 ?>
 
@@ -199,9 +200,9 @@ $waktuExpireFix = date("d", $waktuExpireEpoch) . " " . $bulan[(int)date("m", $wa
 
 <div class="order-expired">
     <header class="order-expired__hero">
-        <p class="order-expired__eyebrow">STATUS PESANAN <span>/</span> WAKTU HABIS</p>
-        <h1 class="title">Batas pembayaran berakhir</h1>
-        <p class="order-expired__description">Nomor pembayaran ini sudah tidak aktif. Anda dapat melihat detail pesanan atau kembali memilih produk.</p>
+        <p class="order-expired__eyebrow"><?= $isEnglish ? 'ORDER STATUS <span>/</span> PAYMENT EXPIRED' : 'STATUS PESANAN <span>/</span> WAKTU HABIS'; ?></p>
+        <h1 class="title"><?= $isEnglish ? 'Payment deadline passed' : 'Batas pembayaran berakhir'; ?></h1>
+        <p class="order-expired__description"><?= $isEnglish ? 'This payment number is no longer active. View your order details or continue browsing products.' : 'Nomor pembayaran ini sudah tidak aktif. Anda dapat melihat detail pesanan atau kembali memilih produk.'; ?></p>
     </header>
 
     <!-- Bar ID Pesanan -->
@@ -210,8 +211,8 @@ $waktuExpireFix = date("d", $waktuExpireEpoch) . " " . $bulan[(int)date("m", $wa
             <i class="material-icons" style="font-size:16px;">receipt_long</i>
             ID: <b><?= $pemesanan['id_midtrans']; ?></b>
         </span>
-        <button class="copy-btn" onclick="copytext('<?= $pemesanan['id_midtrans']; ?>')" title="Salin ID Pesanan">
-            <i class="material-icons" style="font-size:16px;">content_copy</i> Salin
+        <button class="copy-btn" onclick="copytext('<?= $pemesanan['id_midtrans']; ?>')" title="<?= $isEnglish ? 'Copy order ID' : 'Salin ID Pesanan'; ?>">
+            <i class="material-icons" style="font-size:16px;">content_copy</i> <?= $isEnglish ? 'Copy' : 'Salin'; ?>
         </button>
     </div>
 
@@ -220,11 +221,11 @@ $waktuExpireFix = date("d", $waktuExpireEpoch) . " " . $bulan[(int)date("m", $wa
         <div class="grid pad" style="padding-top:0;">
             <div class="card pad">
                 <div class="center">
-                    <p class="label m-0">Jumlah Tagihan</p>
+                    <p class="label m-0"><?= $isEnglish ? 'Amount Due' : 'Jumlah Tagihan'; ?></p>
                     <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:4px;">
                         <p class="num-lg m-0">Rp <?= number_format($dataMid['gross_amount'], 0, ',', '.'); ?></p>
                         <button class="copy-btn" onclick="copytext('<?= (int)$dataMid['gross_amount']; ?>')"
-                            title="Salin nominal">
+                            title="<?= $isEnglish ? 'Copy amount' : 'Salin nominal'; ?>">
                             <i class="material-icons" style="font-size:16px;">content_copy</i>
                         </button>
                     </div>
@@ -233,27 +234,25 @@ $waktuExpireFix = date("d", $waktuExpireEpoch) . " " . $bulan[(int)date("m", $wa
                 <div class="hr"></div>
 
                 <div class="center">
-                    <p class="label m-0">Pembayaran berakhir pada</p>
+                    <p class="label m-0"><?= $isEnglish ? 'Payment expired on' : 'Pembayaran berakhir pada'; ?></p>
                     <p class="num-lg m-0" style="margin-top:4px;"><?= $waktuExpireFix; ?> WIB</p>
-                    <p class="muted m-0" style="margin-top:2px;">Silakan lakukan pemesanan ulang jika masih ingin
-                        melanjutkan.</p>
+                    <p class="muted m-0" style="margin-top:2px;"><?= $isEnglish ? 'Please place a new order if you would still like to continue.' : 'Silakan lakukan pemesanan ulang jika masih ingin melanjutkan.'; ?></p>
                 </div>
             </div>
 
             <div class="card pad">
-                <p class="label m-0 center">Nomor Virtual Account</p>
+                <p class="label m-0 center">Virtual Account Number</p>
                 <img class="method-logo" src="/img/pembayaran/<?= $bank; ?>.webp" alt="<?= $bank; ?>">
                 <div class="kvs" style="margin-top:6px;">
                     <div>
                         <div class="k">Virtual Account</div>
                         <div class="v"><?= $va_number; ?></div>
                     </div>
-                    <button class="copy-btn" onclick="copytext('<?= $va_number; ?>')" title="Salin VA">
+                    <button class="copy-btn" onclick="copytext('<?= $va_number; ?>')" title="<?= $isEnglish ? 'Copy VA' : 'Salin VA'; ?>">
                         <i class="material-icons" style="font-size:16px;">content_copy</i>
                     </button>
                 </div>
-                <p class="muted m-0 center" style="margin-top:6px;">Nomor VA tidak lagi aktif karena melewati batas
-                    waktu.</p>
+                <p class="muted m-0 center" style="margin-top:6px;"><?= $isEnglish ? 'This VA number is inactive because the payment deadline has passed.' : 'Nomor VA tidak lagi aktif karena melewati batas waktu.'; ?></p>
             </div>
         </div>
 
@@ -261,12 +260,12 @@ $waktuExpireFix = date("d", $waktuExpireEpoch) . " " . $bulan[(int)date("m", $wa
 
         <!-- Produk yang dibeli (hanya item barang, sembunyikan voucher/ongkir/admin) -->
         <div class="card pad">
-            <p class="m-0" style="font-weight:700;">Produk yang dibeli</p>
+            <p class="m-0" style="font-weight:700;"><?= $isEnglish ? 'Purchased Items' : 'Produk yang dibeli'; ?></p>
             <div class="mini mt-1">
                 <div class="head">
-                    <div class="center">Nama</div>
-                    <div class="center">Jumlah</div>
-                    <div class="center">Harga</div>
+                    <div class="center"><?= $isEnglish ? 'Item' : 'Nama'; ?></div>
+                    <div class="center"><?= $isEnglish ? 'Qty' : 'Jumlah'; ?></div>
+                    <div class="center"><?= $isEnglish ? 'Price' : 'Harga'; ?></div>
                 </div>
                 <div class="scroll">
                     <?php foreach ($items as $i):
@@ -286,9 +285,10 @@ $waktuExpireFix = date("d", $waktuExpireEpoch) . " " . $bulan[(int)date("m", $wa
         <div class="hr"></div>
 
         <!-- Petunjuk Pembayaran -->
-        <p class="m-0 center" style="font-weight:700;">Petunjuk Pembayaran</p>
+        <p class="m-0 center" style="font-weight:700;"><?= $isEnglish ? 'Payment Instructions' : 'Petunjuk Pembayaran'; ?></p>
         <div class="accordion accordion-flush mt-1" id="accordionFlushExample">
-            <?php foreach ($caraPembayaran as $ind_c => $c) { ?>
+            <?php foreach ($caraPembayaran as $ind_c => $c) {
+                    $c = ilena_localize_payment_guide($c, $isEnglish ? 'en' : 'id'); ?>
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse"
@@ -311,13 +311,13 @@ $waktuExpireFix = date("d", $waktuExpireEpoch) . " " . $bulan[(int)date("m", $wa
 
         <!-- CTA -->
         <div style="display:flex; justify-content:center;">
-            <a href="/order" class="btn-default-merah">Kembali ke Pesanan Saya</a>
+            <a href="<?= ilena_store_path('/order'); ?>" class="btn-default-merah"><?= $isEnglish ? 'Back to My Orders' : 'Kembali ke Pesanan Saya'; ?></a>
         </div>
     </div>
 </div>
 
 <!-- Toast copy -->
-<div id="toastCopy" class="order-expired toast">Disalin</div>
+<div id="toastCopy" class="order-expired toast"><?= $isEnglish ? 'Copied' : 'Disalin'; ?></div>
 
 <script>
 // Guard: jika halaman ini dipakai terpisah & copytext belum ada, definisikan ringan
@@ -341,7 +341,7 @@ if (typeof copytext !== 'function') {
         }
         const toast = document.getElementById('toastCopy');
         if (!toast) return;
-        toast.textContent = 'Disalin';
+        toast.textContent = <?= json_encode($isEnglish ? 'Copied' : 'Disalin'); ?>;
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 1200);
     }

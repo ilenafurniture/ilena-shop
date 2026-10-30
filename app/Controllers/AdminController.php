@@ -2567,6 +2567,7 @@ class AdminController extends BaseController
     private function articleInput(string $id = ''): array
     {
         $title = trim((string) $this->request->getPost('judul'));
+        $titleEn = trim((string) $this->request->getPost('judul_en'));
         $author = trim((string) $this->request->getPost('penulis'));
         $category = strtolower(trim((string) $this->request->getPost('kategori')));
         $when = trim((string) $this->request->getPost('waktu'));
@@ -2594,6 +2595,10 @@ class AdminController extends BaseController
         }
         return [
             'judul' => $title, 'path' => $candidate, 'penulis' => $author,
+            'judul_en' => $titleEn !== '' ? mb_substr($titleEn, 0, 180) : null,
+            'keywords_en' => mb_substr(trim((string) $this->request->getPost('keywords_en')), 0, 500),
+            'deskripsi_en' => mb_substr(trim((string) $this->request->getPost('deskripsi_en')), 0, 1000),
+            'isi_en' => (new \App\Services\ArticleContentSanitizer())->sanitize((string) $this->request->getPost('isi_en')),
             'keywords' => trim((string) $this->request->getPost('keywords')),
             'kategori' => $category, 'deskripsi' => trim((string) $this->request->getPost('deskripsi')),
             'waktu' => $date->format('Y-m-d H:i:s'), 'isi' => (new \App\Services\ArticleContentSanitizer())->sanitize((string) $this->request->getPost('isi')),

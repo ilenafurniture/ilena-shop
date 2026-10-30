@@ -58,13 +58,13 @@ $homeImageSet = static function (string $file) use ($homeImage): string {
 <div id="modal-voucher" class="ilena-home-popup ilena-home-popup--active" role="presentation">
     <div class="ilena-home-popup__backdrop" onclick="closeModalVoucher()">
         <section class="ilena-home-popup__dialog ilena-home-popup__dialog--voucher" role="dialog" aria-modal="true" aria-labelledby="voucher-popup-title" onclick="event.stopPropagation()">
-            <button type="button" class="ilena-home-popup__close" onclick="closeModalVoucher()" aria-label="Tutup promo">&times;</button>
+            <button type="button" class="ilena-home-popup__close" onclick="closeModalVoucher()" aria-label="<?= esc(lang('Store.dismissPromo'), 'attr'); ?>">&times;</button>
             <span class="ilena-home-popup__eyebrow">ILENA MEMBER BENEFIT</span>
-            <h2 id="voucher-popup-title">Selamat datang di ruang yang lebih istimewa.</h2>
-            <p>Klaim voucher diskon 5% Anda dan temukan furniture yang terasa true to you.</p>
+            <h2 id="voucher-popup-title"><?= esc(lang('Store.welcomePromo')); ?></h2>
+            <p><?= esc(lang('Store.promoDescription')); ?></p>
             <small>*S&amp;K diskon berlaku 1 bulan sejak menjadi member.</small>
-            <a href="/product" class="ilena-home-popup__primary">Jelajahi koleksi</a>
-            <button type="button" class="ilena-home-popup__dismiss" onclick="closeModalVoucher()">Nanti saja</button>
+            <a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>" class="ilena-home-popup__primary"><?= esc(lang('Store.exploreCollection')); ?></a>
+            <button type="button" class="ilena-home-popup__dismiss" onclick="closeModalVoucher()"><?= esc(lang('Store.later')); ?></button>
         </section>
     </div>
 </div>
@@ -83,18 +83,18 @@ function closeModalVoucher() {
 <div id="login-modal" class="d-none" aria-hidden="true">
     <div class="ilena-home-popup__backdrop" onclick="closeLoginModel(event)">
         <section class="ilena-home-popup__dialog ilena-home-popup__dialog--membership" role="dialog" aria-modal="true" aria-labelledby="membership-popup-title">
-            <button type="button" class="ilena-home-popup__close" onclick="closeLoginModel()" aria-label="Tutup promo">&times;</button>
+            <button type="button" class="ilena-home-popup__close" onclick="closeLoginModel()" aria-label="<?= esc(lang('Store.dismissPromo'), 'attr'); ?>">&times;</button>
             <div class="ilena-home-popup__image">
                 <img loading="lazy" decoding="async" src="<?= $homeImage('1742444827619.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742444827619.webp'), 'attr') ?>" sizes="(max-width: 700px) 90vw, 45vw" alt="Inspirasi interior Ilena Furniture">
                 <span>Modern &amp; Stylish<br>Furniture <em>True to you</em></span>
             </div>
             <div class="ilena-home-popup__content">
                 <span class="ilena-home-popup__eyebrow">ILENA MEMBERSHIP</span>
-                <h2 id="membership-popup-title">Ruang pilihanmu, dengan keuntungan khusus.</h2>
-                <p>Nikmati diskon 5% untuk pembelian pertama dan inspirasi furniture pilihan Ilena.</p>
-                <a href="/register" class="ilena-home-popup__primary">Gabung membership</a>
-                <p class="ilena-home-popup__login">Sudah punya akun? <a href="/login">Masuk</a></p>
-                <button type="button" class="ilena-home-popup__dismiss" onclick="closeLoginModel()">Nanti saja</button>
+                <h2 id="membership-popup-title"><?= esc(lang('Store.membershipTitle')); ?></h2>
+                <p><?= esc(lang('Store.membershipDescription')); ?></p>
+                <a href="<?= esc(ilena_store_path('/register'), 'attr'); ?>" class="ilena-home-popup__primary"><?= esc(lang('Store.joinMembership')); ?></a>
+                <p class="ilena-home-popup__login"><?= esc(lang('Store.alreadyMember')); ?> <a href="<?= esc(ilena_store_path('/login'), 'attr'); ?>"><?= esc(lang('Store.signIn')); ?></a></p>
+                <button type="button" class="ilena-home-popup__dismiss" onclick="closeLoginModel()"><?= esc(lang('Store.later')); ?></button>
             </div>
         </section>
     </div>
@@ -112,7 +112,7 @@ function closeModalVoucher() {
                 </div>
                 <div class="d-flex flex-column align-items-center position-relative w-100" style="height: 100%;">
 
-                    <a href="/product?jenis=bundling" class="btn-popup text-center mt-2">
+                    <a href="<?= esc(ilena_store_path('/product?jenis=bundling'), 'attr'); ?>" class="btn-popup text-center mt-2">
                         Lihat Produk
                     </a>
                 </div>
@@ -314,15 +314,15 @@ function closeSecondAd() {
 
 <!-- <div class="slider">
     <div class="slides">
-        <a href="/product?koleksi=industrial&jenis=coffee-table" class="active">
+        <a href="<?= esc(ilena_store_path('/product?koleksi=industrial&jenis=coffee-table'), 'attr'); ?>" class="active">
             <img class="ls" src="imgheader/1" alt="Slide 1">
             <img class="pt" src="imgheaderhp/1" alt="Slide 1">
         </a>
-        <a href="/register" class="kanan">
+        <a href="<?= esc(ilena_store_path('/register'), 'attr'); ?>" class="kanan">
             <img class="ls" src="imgheader/2" alt="Slide 2">
             <img class="pt" src="imgheaderhp/2" alt="Slide 2">
         </a>
-        <a href="/product" class="kanan">
+        <a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>" class="kanan">
             <img class="ls" src="imgheader/3" alt="Slide 3">
             <img class="pt" src="imgheaderhp/3" alt="Slide 3">
         </a>
@@ -348,12 +348,12 @@ function closeSecondAd() {
 <div class="p-5 ilena-home-hero">
     <div class="show-flex-ke-hide p-5 flex-column align-items-center justify-content-center"
         data-lazy-bg="<?= esc($homeImageSet('1742972542166.png'), 'attr'); ?>" style="background-size:cover;background-position:center;background-color:#f4f1ec; width:100%; height:80svh;">
-        <p class="ilena-home-kicker">RUANG YANG MENCERITAKAN DIRI ANDA</p>
-        <h1 class="teks-besar mb-2 text-center text-light">Modern & Stylish<br>Furniture</h1>
+        <p class="ilena-home-kicker"><?= esc(lang('Store.homeKicker')); ?></p>
+        <h1 class="teks-besar mb-2 text-center text-light"><?= esc(lang('Store.heroSlogan')); ?></h1>
         <p class="text-handwrite py-1 px-2 text-light"
             style="font-size:30px; transform: rotate(-10deg) translate(100px, -20px);">True to you</p>
-        <a href="/product" class="d-flex align-items-center gap-2 kesana">
-            <p class="m-0 fw-bold">Telusuri</p><i class="material-icons text-light">arrow_forward</i>
+        <a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>" class="d-flex align-items-center gap-2 kesana">
+            <p class="m-0 fw-bold"><?= esc(lang('Store.browse')); ?></p><i class="material-icons text-light">arrow_forward</i>
         </a>
     </div>
     <!-- bagian HP -->
@@ -369,35 +369,35 @@ function closeSecondAd() {
             </g>
             <circle class="hero-motion-glow" cx="160" cy="160" r="61" />
         </svg>
-        <p class="ilena-home-kicker">RUANG YANG MENCERITAKAN DIRI ANDA</p>
-        <h1 class="teks-besar text-light" style="font-size:34px;">Modern & Stylish<br>Furniture</h1>
+        <p class="ilena-home-kicker"><?= esc(lang('Store.homeKicker')); ?></p>
+        <h1 class="teks-besar text-light" style="font-size:34px;"><?= esc(lang('Store.heroSlogan')); ?></h1>
         <p class="text-handwrite py-1 px-2 text-light"
             style="font-size:20px; transform: rotate(-10deg) translate(50px, -15px);">True to you</p>
-        <a href="/product" class="btn-underline text-light" style="transform: translateY(100px);">
-            <p class="m-0 fw-bold">Telusuri</p><i class="material-icons text-light">arrow_forward</i>
+        <a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>" class="btn-underline text-light" style="transform: translateY(100px);">
+            <p class="m-0 fw-bold"><?= esc(lang('Store.browse')); ?></p><i class="material-icons text-light">arrow_forward</i>
         </a>
     </div>
 </div>
 
 <section class="ilena-home-promise" aria-label="Keunggulan Ilena Furniture">
-    <p class="ilena-home-promise__brand">Proudly Indonesian furniture brand</p>
+    <p class="ilena-home-promise__brand"><?= esc(lang('Store.promiseBrand')); ?></p>
     <div class="ilena-home-promise__items">
-        <span>First order <strong>5% OFF</strong> with membership</span>
-        <span>Furniture pilihan untuk rumah yang terasa <em>True to You</em></span>
-        <span>Program free shipping untuk area dan produk terpilih</span>
+        <span><?= esc(lang('Store.firstOrder')); ?></span>
+        <span><?= esc(lang('Store.promiseSelection')); ?></span>
+        <span><?= esc(lang('Store.shippingProgram')); ?></span>
     </div>
 </section>
 
 <section class="ilena-home-reasons" aria-labelledby="ilena-home-reasons-title" data-home-scroll-reveal>
     <div class="ilena-home-reasons__intro">
-        <p class="ilena-home-section-kicker">Dibuat untuk hidup sehari-hari</p>
-        <h2 id="ilena-home-reasons-title">A Better Furniture Experience</h2>
-        <p>Temukan furniture yang menyatukan fungsi, kenyamanan, dan karakter ruang—dengan layanan Ilena yang membantu sejak memilih.</p>
+        <p class="ilena-home-section-kicker"><?= esc(lang('Store.homeSectionKicker')); ?></p>
+        <h2 id="ilena-home-reasons-title"><?= esc(lang('Store.whyIlena')); ?></h2>
+        <p><?= esc(lang('Store.homeIntro')); ?></p>
     </div>
     <div class="ilena-home-reasons__list">
-        <article><span>01</span><div><h3>Lebih mudah memilih</h3><p>Informasi koleksi dan detail produk tersedia untuk membantu Kakak menemukan pilihan yang sesuai.</p></div></article>
-        <article><span>02</span><div><h3>Siap melengkapi ruang</h3><p>Sebagian besar produk dikirim dalam kondisi terakit. Beberapa produk memerlukan perakitan; cek informasi produk sebelum memesan.</p></div></article>
-        <article><span>03</span><div><h3>Belanja lebih tenang</h3><p>Nikmati program pengiriman dan garansi produk sesuai ketentuan yang berlaku.</p></div></article>
+        <article><span>01</span><div><h3><?= esc(lang('Store.reasonChooseTitle')); ?></h3><p><?= esc(lang('Store.reasonChooseBody')); ?></p></div></article>
+        <article><span>02</span><div><h3><?= esc(lang('Store.reasonAssembledTitle')); ?></h3><p><?= esc(lang('Store.reasonAssembledBody')); ?></p></div></article>
+        <article><span>03</span><div><h3><?= esc(lang('Store.reasonCareTitle')); ?></h3><p><?= esc(lang('Store.reasonCareBody')); ?></p></div></article>
     </div>
 </section>
 
@@ -1036,7 +1036,7 @@ if (scrollHomeElm && inputScrollHomeElm.length) {
     </div>
     <div class="kontenLN">
         <!-- <div class="overlayBed">
-            <a href="/product?koleksi=cabana&jenis=king-bed+queen-bed+single-bed"
+            <a href="<?= esc(ilena_store_path('/product?koleksi=cabana&jenis=king-bed+queen-bed+single-bed'), 'attr'); ?>"
                 class="d-flex gap-3 align-items-center">
                 <div>
                     <p class="m-0 fw-bold">Bed Cabana</p>
@@ -1046,7 +1046,7 @@ if (scrollHomeElm && inputScrollHomeElm.length) {
             </a>
         </div> -->
         <!-- <div class="overlayMeja">
-            <a href="/product?koleksi=cabana&jenis=side-table" class="d-flex gap-3 align-items-center">
+            <a href="<?= esc(ilena_store_path('/product?koleksi=cabana&jenis=side-table'), 'attr'); ?>" class="d-flex gap-3 align-items-center">
                 <div>
                     <p class="m-0 fw-bold">Side Table</p>
                     <p class="m-0 fw-regular">Cabana</p>
@@ -1055,7 +1055,7 @@ if (scrollHomeElm && inputScrollHomeElm.length) {
             </a>
         </div> -->
         <div class="overlayMeja" id="overlayMeja-desktop">
-            <a href="/product?koleksi=cody&jenis=queen-bed" class="d-flex gap-3 align-items-center">
+            <a href="<?= esc(ilena_store_path('/product?koleksi=cody&jenis=queen-bed'), 'attr'); ?>" class="d-flex gap-3 align-items-center">
                 <div>
                     <p class="m-0 fw-bold">Bed Cody</p>
                     <p class="m-0 fw-regular">Cody</p>
@@ -1082,7 +1082,7 @@ if (scrollHomeElm && inputScrollHomeElm.length) {
     style="width:100%; height:40svh; position:relative; min-height: 414px;" data-home-scroll-reveal>
     <div class="kontenLNMobile">
         <!-- <div class="overlayBed" id="overlayBed">
-            <a href="/product?koleksi=cabana&jenis=king-bed+queen-bed+single-bed"
+            <a href="<?= esc(ilena_store_path('/product?koleksi=cabana&jenis=king-bed+queen-bed+single-bed'), 'attr'); ?>"
                 class="d-flex gap-3 align-items-center">
                 <div>
                     <p class="m-0 fw-bold">Bed Cabana</p>
@@ -1092,7 +1092,7 @@ if (scrollHomeElm && inputScrollHomeElm.length) {
             </a>
         </div> -->
         <div class="overlayMeja" id="overlayMeja-mobile">
-            <a href="/product?koleksi=cody&jenis=queen-bed" class="d-flex gap-3 align-items-center">
+            <a href="<?= esc(ilena_store_path('/product?koleksi=cody&jenis=queen-bed'), 'attr'); ?>" class="d-flex gap-3 align-items-center">
                 <div>
                     <p class="m-0 fw-bold">Bed Cody</p>
                     <p class="m-0 fw-regular">Cody</p>
@@ -1220,38 +1220,38 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="modal-series" onclick="closemodalseries()" class="d-none justify-content-center align-items-center"
     style="z-index:2; position:fixed; top:0; left:0; width:100%; height:100svh; background-color:rgba(0,0,0,0.8);">
     <div style="border-radius:4px;" class="p-5 gap-2 show-flex-ke-hide flex-wrap justify-content-center">
-        <a href="/product?koleksi=sorely" class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+        <a href="<?= esc(ilena_store_path('/product?koleksi=sorely'), 'attr'); ?>" class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Sorely</p>
         </a>
-        <a href="/product?koleksi=cabana" class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+        <a href="<?= esc(ilena_store_path('/product?koleksi=cabana'), 'attr'); ?>" class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Cabana</p>
         </a>
-        <a href="/product?koleksi=orca" class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+        <a href="<?= esc(ilena_store_path('/product?koleksi=orca'), 'attr'); ?>" class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Orca</p>
         </a>
-        <a href="/product?koleksi=water-case"
+        <a href="<?= esc(ilena_store_path('/product?koleksi=water-case'), 'attr'); ?>"
             class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Water Case</p>
         </a>
-        <a href="/product?koleksi=plint-base"
+        <a href="<?= esc(ilena_store_path('/product?koleksi=plint-base'), 'attr'); ?>"
             class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Plint Base</p>
         </a>
-        <a href="/product?koleksi=cutout" class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+        <a href="<?= esc(ilena_store_path('/product?koleksi=cutout'), 'attr'); ?>" class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Cutout</p>
         </a>
-        <a href="/product?koleksi=industrial"
+        <a href="<?= esc(ilena_store_path('/product?koleksi=industrial'), 'attr'); ?>"
             class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Industrial</p>
         </a>
-        <a href="/product?koleksi=metal-frame"
+        <a href="<?= esc(ilena_store_path('/product?koleksi=metal-frame'), 'attr'); ?>"
             class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Metal Frame</p>
         </a>
-        <a href="/product?koleksi=cody" class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
+        <a href="<?= esc(ilena_store_path('/product?koleksi=cody'), 'attr'); ?>" class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">COdy</p>
         </a>
-        <a href="/product?koleksi=socoplate"
+        <a href="<?= esc(ilena_store_path('/product?koleksi=socoplate'), 'attr'); ?>"
             class="modalseriesbox p-5 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Socoplate</p>
         </a>
@@ -1259,47 +1259,47 @@ document.addEventListener("DOMContentLoaded", function() {
         </div> -->
     </div>
     <div class="hide-ke-show-block" style="width: 70vw;">
-        <a href="/product?koleksi=sorely" style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
+        <a href="<?= esc(ilena_store_path('/product?koleksi=sorely'), 'attr'); ?>" style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
             class="p-4 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Sorely</p>
         </a>
-        <a href="/product?koleksi=cabana" style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
+        <a href="<?= esc(ilena_store_path('/product?koleksi=cabana'), 'attr'); ?>" style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
             class="p-4 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Cabana</p>
         </a>
-        <a href="/product?koleksi=cody" style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
+        <a href="<?= esc(ilena_store_path('/product?koleksi=cody'), 'attr'); ?>" style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
             class="p-4 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Cody</p>
         </a>
-        <a href="/product?koleksi=water-case"
+        <a href="<?= esc(ilena_store_path('/product?koleksi=water-case'), 'attr'); ?>"
             style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
             class="p-4 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Water Case</p>
         </a>
-        <a href="/product?koleksi=plint-base"
+        <a href="<?= esc(ilena_store_path('/product?koleksi=plint-base'), 'attr'); ?>"
             style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
             class="p-4 d-flex justify-content-center align-items-center">1
             <p class="m-0 fw-bold">Plint Base</p>
         </a>
-        <a href="/product?koleksi=cutout" style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
+        <a href="<?= esc(ilena_store_path('/product?koleksi=cutout'), 'attr'); ?>" style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
             class="p-4 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Cutout</p>
         </a>
-        <a href="/product?koleksi=industrial"
+        <a href="<?= esc(ilena_store_path('/product?koleksi=industrial'), 'attr'); ?>"
             style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
             class="p-4 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Industrial</p>
         </a>
-        <a href="/product?koleksi=metal-frame"
+        <a href="<?= esc(ilena_store_path('/product?koleksi=metal-frame'), 'attr'); ?>"
             style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
             class="p-4 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Metal Frame</p>
         </a>
-        <a href="/product?koleksi=cody" style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
+        <a href="<?= esc(ilena_store_path('/product?koleksi=cody'), 'attr'); ?>" style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
             class="p-4 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Cody</p>
         </a>
-        <a href="/product?koleksi=socoplate" style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
+        <a href="<?= esc(ilena_store_path('/product?koleksi=socoplate'), 'attr'); ?>" style="border-bottom: 1px solid grey; text-decoration: none; color: white;"
             class="p-4 d-flex justify-content-center align-items-center">
             <p class="m-0 fw-bold">Socoplate</p>
         </a>
@@ -1356,10 +1356,10 @@ function modalseries() {
 <!-- Bagian Windows -->
 <section class="ilena-home-collections-heading" aria-labelledby="ilena-home-collections-title">
     <div><p class="ilena-home-section-kicker">Ruang yang saling melengkapi</p><h2 id="ilena-home-collections-title">Furniture Collection</h2><p>Pilih satu koleksi untuk mulai menyusun ruang yang terasa utuh.</p></div>
-    <a href="/product" class="ilena-home-text-link">Lihat semua koleksi</a>
+    <a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>" class="ilena-home-text-link">Lihat semua koleksi</a>
 </section>
 <div id="ruangan" class="container show-flex-ke-hide gap-3 my-5 ilena-home-room-grid" data-home-scroll-reveal style="width:100%;">
-    <a href="/product?ruang=tamu" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
+    <a href="<?= esc(ilena_store_path('/product?ruang=tamu'), 'attr'); ?>" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
         <div class="zoom-wrapper mb-2">
             <img loading="lazy" decoding="async" src="<?= $homeImage('1742445399641.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445399641.webp'), 'attr') ?>" sizes="(max-width: 700px) 80vw, 34vw" alt="Inspirasi furniture untuk ruang tamu Ilena"
                 style="flex: 1; width: 100%; object-fit: cover;">
@@ -1374,7 +1374,7 @@ function modalseries() {
         </div>
         <h5 class="text-center fw-bold" style="font-size: 13px; height: fit-content">Living room</h5>
     </a>
-    <a href="/product?ruang=tidur" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
+    <a href="<?= esc(ilena_store_path('/product?ruang=tidur'), 'attr'); ?>" style="flex: 1; text-decoration:none; color:black;" class="d-flex flex-column">
         <div class="zoom-wrapper mb-2">
             <img loading="lazy" decoding="async" src="<?= $homeImage('1742445431983.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445431983.webp'), 'attr') ?>" sizes="(max-width: 700px) 80vw, 34vw" alt="Inspirasi furniture untuk kamar tidur Ilena"
                 style="flex: 1; width: 100%; object-fit: cover;">
@@ -1403,7 +1403,7 @@ function modalseries() {
 
 <div class="hide-ke-show-block ilena-home-room-scroll" id="scroll-set">
     <div class="d-flex gap-1 px-5 pt-5 pb-4" style="width: fit-content;">
-        <a href="/product?ruang=tamu" class="ilena-home-room-card"
+        <a href="<?= esc(ilena_store_path('/product?ruang=tamu'), 'attr'); ?>" class="ilena-home-room-card"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
             <img loading="lazy" decoding="async" src="<?= $homeImage('1742445542692.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445542692.webp'), 'attr') ?>" sizes="80vw" alt="Inspirasi ruang tamu dengan furniture Ilena"
                 style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
@@ -1417,7 +1417,7 @@ function modalseries() {
             </div>
             <h5 class="text-center text-secondary fw-bold" style="font-size: 13px">Living room</h5>
         </a>
-        <a href="/product?ruang=tidur" class="ilena-home-room-card"
+        <a href="<?= esc(ilena_store_path('/product?ruang=tidur'), 'attr'); ?>" class="ilena-home-room-card"
             style="width: 80vw; text-decoration:none; color:black; scroll-snap-align: center; display: block;">
             <img loading="lazy" decoding="async" src="<?= $homeImage('1742445603554.webp', 800) ?>" srcset="<?= esc($homeImageSrcset('1742445603554.webp'), 'attr') ?>" sizes="80vw" alt="Inspirasi kamar tidur dengan furniture Ilena"
                 style=" height: auto; width: 100%; border-radius:4px;" class="mb-2">
@@ -1437,12 +1437,12 @@ function modalseries() {
         <h2 id="ilena-home-partners-title">Ilena Furniture Partner Store</h2>
         <p>Temukan Ilena Furniture di kotamu. Kunjungi halaman mitra untuk melihat lokasi dan informasi toko.</p>
     </div>
-    <a href="/partner" class="ilena-home-text-link">Temukan lokasi mitra</a>
+    <a href="<?= esc(ilena_store_path('/partner'), 'attr'); ?>" class="ilena-home-text-link">Temukan lokasi mitra</a>
 </section>
 
 <div class="slider">
     <div class="slides">
-        <a href="/product" class="active">
+        <a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>" class="active">
             <div style="position: absolute; z-index: 5; top: 0; left: 0; width: 100%; height: 100%"
                 class="d-flex justify-content-center align-items-center flex-column container-find-out">
                 <p class="find-out-text">Find Out More</p>
@@ -1569,7 +1569,7 @@ function modalseries() {
             <div style="position:relative;">
                 <div class="d-flex flex-column w-100 h-100 justify-content-center align-items-center"
                     style="position:absolute;">
-                    <a href="/product" class="findout">Find Out More</a>
+                    <a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>" class="findout">Find Out More</a>
                 </div>
                 <img src="<?= base_url('/img/foto/find out more watercase comp.png') ?>" class="d-block w-100"
                     style="object-fit: cover; object-position: top;" alt="Geser 1">
@@ -1589,7 +1589,7 @@ function modalseries() {
             <div style="position:relative;">
                 <div class="d-flex flex-column w-100 h-100 justify-content-center align-items-center"
                     style="position:absolute;">
-                    <a href="/product" class="findout">Find Out More</a>
+                    <a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>" class="findout">Find Out More</a>
                 </div>
                 <img src="<?= base_url('/img/foto/find out more watercase comp.png') ?>" class="d-block w-100"
                     style=" object-fit: cover; object-position: top;" alt="Geser 3">

@@ -1,4 +1,5 @@
 <?php
+$isEnglish = service('request')->getLocale() === 'en';
 $id_order = (string)(service('request')->getGet('idorder') ?? '');
 $pemesananSelectedArr = array_filter($pemesananAll, function ($p) use ($id_order) {
     return $p['id_midtrans'] == $id_order;
@@ -333,33 +334,32 @@ $grossAmount = (int)($dataMid['gross_amount'] ?? 0);
 
     <div class="py-2 text-light w-100 text-center"
         style="letter-spacing:-.2px;border-radius:8px;color: #000000   ;background: var(--dark);">
-        ID Pesanan : <span id="transaction_id" class="fw-bold"
+        <?= $isEnglish ? 'Order ID:' : 'ID Pesanan :'; ?> <span id="transaction_id" class="fw-bold"
             style="color: var(--primary);"><?= $pemesananSelected['id_midtrans']; ?></span>
         <button class="copy-btn" onclick="copytext('<?= $pemesananSelected['id_midtrans']; ?>')"
-            aria-label="Salin ID Pesanan">
+            aria-label="<?= $isEnglish ? 'Copy order ID' : 'Salin ID Pesanan'; ?>">
             <i class="material-icons" style="font-size:16px;">content_copy</i>
         </button>
     </div>
     <hr>
-    <h1 class="header-title text-center mb-3 mt-4" style="font-size:22px;letter-spacing:-.5px;"><?= esc(($pemesananSelected['status'] ?? '') === 'Proses' ? 'Pembayaran Berhasil' : 'Pesanan ' . ($pemesananSelected['status'] ?? '')); ?></h1>
+    <h1 class="header-title text-center mb-3 mt-4" style="font-size:22px;letter-spacing:-.5px;"><?= esc(($pemesananSelected['status'] ?? '') === 'Proses' ? ($isEnglish ? 'Payment Successful' : 'Pembayaran Berhasil') : (($isEnglish ? 'Order ' : 'Pesanan ') . ($pemesananSelected['status'] ?? ''))); ?></h1>
     <div class="success center mb-2"><i class="material-icons">check_circle</i></div>
     <hr>
 
     <!-- Identitas Pembeli -->
     <div class="card pad mb-3">
-        <p class="title center">Identitas Pembeli</p>
-        <div class="kv"><span class="muted">Nama</span><span><b><?= $pemesananSelected['nama']; ?></b></span></div>
+        <p class="title center"><?= $isEnglish ? 'Customer Details' : 'Identitas Pembeli'; ?></p>
+        <div class="kv"><span class="muted"><?= $isEnglish ? 'Name' : 'Nama'; ?></span><span><b><?= $pemesananSelected['nama']; ?></b></span></div>
         <div class="kv"><span class="muted">Email</span><span><?= $pemesananSelected['email']; ?></span></div>
-        <div class="kv"><span class="muted">Telepon</span><span><?= $pemesananSelected['nohp']; ?></span></div>
-        <div class="kv"><span class="muted">Alamat</span><span><?= $pemesananSelected['alamat']; ?></span></div>
+        <div class="kv"><span class="muted"><?= $isEnglish ? 'Phone' : 'Telepon'; ?></span><span><?= $pemesananSelected['nohp']; ?></span></div>
+        <div class="kv"><span class="muted"><?= $isEnglish ? 'Address' : 'Alamat'; ?></span><span><?= $pemesananSelected['alamat']; ?></span></div>
     </div>
 
     <!-- Nominal + Metode -->
     <div class="card pad mb-3">
         <div class="grid">
             <div class="center">
-                <p class="muted m-0" style="font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;">Jumlah
-                    Tagihan</p>
+                <p class="muted m-0" style="font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;"><?= $isEnglish ? 'Amount Due' : 'Jumlah Tagihan'; ?></p>
                 <div style="display:inline-flex;align-items:center;gap:8px;margin-top:4px;">
                     <div id="transaction_value" class="d-none"><?= (int)$grossAmount; ?></div>
                     <p class="num-lg m-0">Rp <?= number_format($grossAmount, 0, ',', '.'); ?></p>
@@ -370,17 +370,16 @@ $grossAmount = (int)($dataMid['gross_amount'] ?? 0);
                 </div>
             </div>
             <div class="center">
-                <p class="muted m-0" style="font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;">Metode
-                    Pembayaran</p>
+                <p class="muted m-0" style="font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;"><?= $isEnglish ? 'Payment Method' : 'Metode Pembayaran'; ?></p>
                 <?php if (($dataMid['payment_type'] ?? '') === 'credit_card') { ?>
-                <p class="m-0" style="font-weight:700;">Kartu Kredit/Debit</p>
+                <p class="m-0" style="font-weight:700;"><?= $isEnglish ? 'Credit/Debit Card' : 'Kartu Kredit/Debit'; ?></p>
                 <?php } else { ?>
                 <img class="method-logo" src="/img/pembayaran/<?= $bank; ?>.webp" alt="<?= $bank; ?>">
                 <?php } ?>
                 <?php if ($waktuTransaksiFix): ?>
-                <p class="muted m-0">Waktu transaksi: <?= $waktuTransaksiFix; ?></p>
+                <p class="muted m-0"><?= $isEnglish ? 'Transaction time:' : 'Waktu transaksi:'; ?> <?= $waktuTransaksiFix; ?></p>
                 <?php else: ?>
-                <p class="muted m-0">Waktu transaksi: -</p>
+                <p class="muted m-0"><?= $isEnglish ? 'Transaction time:' : 'Waktu transaksi:'; ?> -</p>
                 <?php endif; ?>
             </div>
         </div>
@@ -388,13 +387,13 @@ $grossAmount = (int)($dataMid['gross_amount'] ?? 0);
 
     <!-- Ringkasan Item -->
     <div class="card pad mb-3">
-        <p class="title">Ringkasan Item</p>
+        <p class="title"><?= $isEnglish ? 'Order Items' : 'Ringkasan Item'; ?></p>
         <?php if (count($showItems) > 0): ?>
         <div class="table-mini mt-1">
             <div class="head">
-                <div class="center">Nama</div>
-                <div class="center">Jumlah</div>
-                <div class="center">Harga</div>
+                <div class="center"><?= $isEnglish ? 'Item' : 'Nama'; ?></div>
+                <div class="center"><?= $isEnglish ? 'Qty' : 'Jumlah'; ?></div>
+                <div class="center"><?= $isEnglish ? 'Price' : 'Harga'; ?></div>
             </div>
             <?php foreach ($showItems as $i) { ?>
             <div class="row">
@@ -405,17 +404,17 @@ $grossAmount = (int)($dataMid['gross_amount'] ?? 0);
             <?php } ?>
         </div>
         <?php else: ?>
-        <p class="muted m-0">Tidak ada item produk untuk ditampilkan.</p>
+        <p class="muted m-0"><?= $isEnglish ? 'There are no product items to display.' : 'Tidak ada item produk untuk ditampilkan.'; ?></p>
         <?php endif; ?>
     </div>
 
     <!-- Rincian Pembayaran -->
     <div class="card pad mb-3">
-        <p class="title">Rincian Pembayaran</p>
+        <p class="title"><?= $isEnglish ? 'Payment Breakdown' : 'Rincian Pembayaran'; ?></p>
         <div class="list-line"><span class="muted">Subtotal</span><span><b>Rp
                     <?= number_format($subtotal, 0, ',', '.'); ?></b></span></div>
         <?php if ($diskonVoucher > 0): ?>
-        <div class="list-line"><span class="muted">Diskon Voucher</span><span>- Rp
+        <div class="list-line"><span class="muted"><?= $isEnglish ? 'Voucher Discount' : 'Diskon Voucher'; ?></span><span>- Rp
                 <?= number_format($diskonVoucher, 0, ',', '.'); ?></span></div>
         <?php endif; ?>
         <?php if ($diskonFlash > 0): ?>
@@ -423,22 +422,22 @@ $grossAmount = (int)($dataMid['gross_amount'] ?? 0);
                 <?= number_format($diskonFlash, 0, ',', '.'); ?></span></div>
         <?php endif; ?>
         <?php if ($biayaOngkir > 0): ?>
-        <div class="list-line"><span class="muted">Biaya Ongkir</span><span>Rp
+        <div class="list-line"><span class="muted"><?= $isEnglish ? 'Shipping Fee' : 'Biaya Ongkir'; ?></span><span>Rp
                 <?= number_format($biayaOngkir, 0, ',', '.'); ?></span></div>
         <?php endif; ?>
         <?php if ($biayaAdmin > 0): ?>
-        <div class="list-line"><span class="muted">Biaya Admin Pembayaran</span><span>Rp
+        <div class="list-line"><span class="muted"><?= $isEnglish ? 'Payment Admin Fee' : 'Biaya Admin Pembayaran'; ?></span><span>Rp
                 <?= number_format($biayaAdmin, 0, ',', '.'); ?></span></div>
         <?php endif; ?>
-        <div class="list-line total"><span>Total Bayar</span><span>Rp
+        <div class="list-line total"><span><?= $isEnglish ? 'Total Paid' : 'Total Bayar'; ?></span><span>Rp
                 <?= number_format($grossAmount, 0, ',', '.'); ?></span></div>
     </div>
 
     <!-- Ekspedisi & Resi -->
     <div class="card pad mb-3">
-        <p class="title">Pengiriman</p>
+        <p class="title"><?= $isEnglish ? 'Shipping' : 'Pengiriman'; ?></p>
         <div>
-            <p class="m-0 muted">Ekspedisi</p>
+            <p class="m-0 muted"><?= $isEnglish ? 'Carrier' : 'Ekspedisi'; ?></p>
             <?php if ($pemesananSelected['resi'] != 'Menunggu pengiriman' && !empty($kurir) && !empty($kurir['nama'])) { ?>
             <div class="between" style="gap:10px;margin-top:6px;">
                 <div style="display:flex;align-items:center;gap:10px;">
@@ -447,26 +446,26 @@ $grossAmount = (int)($dataMid['gross_amount'] ?? 0);
                     <div>
                         <p class="m-0 fw-bold"><?= strtoupper($kurir['nama']); ?> <?= $kurir['deskripsi'] ?? ''; ?></p>
                         <?php if (isset($kurir['estimasi'])) { ?>
-                        <p class="m-0 muted">Estimasi <?= $kurir['estimasi']; ?> hari</p>
+                        <p class="m-0 muted"><?= $isEnglish ? 'Estimated' : 'Estimasi'; ?> <?= $kurir['estimasi']; ?> <?= $isEnglish ? 'days' : 'hari'; ?></p>
                         <?php } ?>
                     </div>
                 </div>
             </div>
             <?php } else { ?>
             <div style="margin-top:6px;">
-                <p class="m-0"><?= esc(match ($pemesananSelected['status'] ?? '') { 'Dikirim'=>'Pesanan sedang dikirim.', 'Selesai'=>'Pesanan selesai.', 'Refund'=>'Pembayaran telah dikembalikan.', 'Partial Refund'=>'Sebagian pembayaran telah dikembalikan.', default=>'Barang masih kami proses untuk pengiriman.' }); ?></p>
-                <p class="m-0 muted" style="font-size:12.5px">*Pesanan setelah jam 12:00 diproses di hari berikutnya.
+                <p class="m-0"><?= esc(match ($pemesananSelected['status'] ?? '') { 'Dikirim'=>($isEnglish ? 'Your order is on its way.' : 'Pesanan sedang dikirim.'), 'Selesai'=>($isEnglish ? 'Order completed.' : 'Pesanan selesai.'), 'Refund'=>($isEnglish ? 'Payment has been refunded.' : 'Pembayaran telah dikembalikan.'), 'Partial Refund'=>($isEnglish ? 'A partial refund has been issued.' : 'Sebagian pembayaran telah dikembalikan.'), default=>($isEnglish ? 'Your order is being prepared for shipping.' : 'Barang masih kami proses untuk pengiriman.') }); ?></p>
+                <p class="m-0 muted" style="font-size:12.5px"><?= $isEnglish ? '*Orders placed after 12:00 PM are processed the next day.' : '*Pesanan setelah jam 12:00 diproses di hari berikutnya.'; ?>
                 </p>
             </div>
             <?php } ?>
 
             <div style="margin-top:10px;">
-                <p class="m-0 muted">Resi</p>
+                <p class="m-0 muted"><?= $isEnglish ? 'Tracking Number' : 'Resi'; ?></p>
                 <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
                     <span style="font-weight:700;word-break:break-word"><?= $pemesananSelected['resi']; ?></span>
                     <?php if ($pemesananSelected['resi'] != 'Menunggu pengiriman') { ?>
-                    <button class="copy-btn" onclick="copytext('<?= $pemesananSelected['resi']; ?>')" title="Salin Resi"
-                        aria-label="Salin nomor resi">
+                    <button class="copy-btn" onclick="copytext('<?= $pemesananSelected['resi']; ?>')" title="<?= $isEnglish ? 'Copy tracking number' : 'Salin Resi'; ?>"
+                        aria-label="<?= $isEnglish ? 'Copy tracking number' : 'Salin nomor resi'; ?>">
                         <i class="material-icons" style="font-size:16px;">content_copy</i>
                     </button>
                     <?php } ?>
@@ -474,7 +473,7 @@ $grossAmount = (int)($dataMid['gross_amount'] ?? 0);
             </div>
 
             <div style="margin-top:10px;">
-                <p class="m-0 muted">Status Pesanan</p>
+                <p class="m-0 muted"><?= $isEnglish ? 'Order Status' : 'Status Pesanan'; ?></p>
                 <span class="badge rounded-pill <?= getStatusClass($pemesananSelected['status']); ?>"
                     style="margin-top:4px;">
                     <?= ucfirst($pemesananSelected['status']); ?>
@@ -485,9 +484,9 @@ $grossAmount = (int)($dataMid['gross_amount'] ?? 0);
 
     <?php if (session()->get('isLogin')) { ?>
     <div class="center">
-        <a href="/order" class="btn-order"
+        <a href="<?= ilena_store_path('/order'); ?>" class="btn-order"
             style="display:inline-block;padding:10px 18px;background:#ff4747;color:#fff;border-radius:8px;text-decoration:none;font-size:14px;">
-            Pesanan Saya
+            <?= $isEnglish ? 'My Orders' : 'Pesanan Saya'; ?>
         </a>
     </div>
     <?php } ?>
@@ -507,7 +506,7 @@ function getStatusClass($status) {
 }
 ?>
 
-<div id="toastCopy" class="order-success toast">Disalin</div>
+<div id="toastCopy" class="order-success toast"><?= $isEnglish ? 'Copied' : 'Disalin'; ?></div>
 
 <script>
 // helper copy + toast

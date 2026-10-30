@@ -133,6 +133,10 @@
                                 </td>
                             </tr>
                             <tr>
+                                <td>Title (English)</td>
+                                <td><input type="text" class="form-control" name="judul_en" maxlength="180" value="<?= esc($artikel['judul_en'] ?? '', 'attr'); ?>" placeholder="Optional English title"></td>
+                            </tr>
+                            <tr>
                                 <td>Penulis</td>
                                 <td>
                                     <div class="baris"><input type="text" class="form-control" name="penulis" required maxlength="120" value="<?= esc($artikel['penulis'] ?? '', 'attr'); ?>">
@@ -176,12 +180,20 @@
                                 </td>
                             </tr>
                             <tr>
+                                <td>Keywords (English)</td>
+                                <td><input type="text" class="form-control" name="keywords_en" maxlength="500" value="<?= esc($artikel['keywords_en'] ?? '', 'attr'); ?>" placeholder="Comma-separated English keywords (optional)"></td>
+                            </tr>
+                            <tr>
                                 <td>Deskripsi</td>
                                 <td>
                                     <div class="baris">
                                         <textarea name="deskripsi" class="form-control" maxlength="1000" required><?= esc($artikel['deskripsi'] ?? ''); ?></textarea>
                                     </div>
                                 </td>
+                            </tr>
+                            <tr>
+                                <td>Description (English)</td>
+                                <td><textarea name="deskripsi_en" class="form-control" maxlength="1000" placeholder="Optional English meta description"><?= esc($artikel['deskripsi_en'] ?? ''); ?></textarea></td>
                             </tr>
                         </tbody>
                     </table>
@@ -190,6 +202,10 @@
             <div class="container mt-3">
                 <h5>Isi Artikel</h5>
                 <textarea name="isi" id="content"><?= esc($artikel['isi'] ?? ''); ?></textarea>
+            </div>
+            <div class="container mt-3">
+                <h5>Article content (English, optional)</h5>
+                <textarea name="isi_en" id="content-en"><?= esc($artikel['isi_en'] ?? ''); ?></textarea>
             </div>
             <button type="submit" class="btn-default mt-2 w-100">Simpan</button>
         </form>
@@ -214,7 +230,7 @@
     });
 
     tinymce.init({
-        selector: "#content",
+        selector: "#content, #content-en",
         convert_urls: true,
         relative_urls: false,
         remove_script_host: false,

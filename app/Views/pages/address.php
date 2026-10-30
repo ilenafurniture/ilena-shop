@@ -371,15 +371,15 @@ input[type="radio"][name="address"]:checked+.item-address {
 <!-- ===== Add Modal ===== -->
 <div id="addModalContainer" class="modal-layer d-none">
     <div class="modal-card">
-        <form action="/addaddress" method="post">
+        <form action="<?= esc(ilena_store_path('/addaddress'), 'attr'); ?>" method="post">
             <?= csrf_field(); ?>
             <input type="text" value="address" name="checkpage" class="d-none">
             <div class="modal-content">
                 <?php if(!session()->get('isLogin')) { ?>
                 <div class="d-flex align-items-start p-3">
                     <div style="flex: 2" class="d-flex flex-column justify-content-center align-items-center">
-                        <p class="mb-2">Ingin menyimpan alamat?</p>
-                        <a href="/login" class="btn-default-merah">Login member</a>
+                        <p class="mb-2"><?= lang('Store.saveAddress'); ?></p>
+                        <a href="<?= esc(ilena_store_path('/login'), 'attr'); ?>" class="btn-default-merah"><?= lang('Store.memberLogin'); ?></a>
                     </div>
                     <div stype="flex: 1">
                         <button onclick="closeAllModal()" type="button" class="btn-close" aria-label="Close"></button>
@@ -389,7 +389,7 @@ input[type="radio"][name="address"]:checked+.item-address {
                 <?php } ?>
 
                 <div class="modal-header">
-                    <h2 class="modal-title">Alamat Baru</h2>
+                    <h2 class="modal-title"><?= lang('Store.newAddress'); ?></h2>
                     <?php if(session()->get('isLogin')) { ?>
                     <button onclick="closeAllModal()" type="button" class="btn-close" aria-label="Close"></button>
                     <?php } ?>
@@ -397,73 +397,73 @@ input[type="radio"][name="address"]:checked+.item-address {
 
                 <div class="modal-body">
                     <div class="pb-3 border-bottom">
-                        <h5 class="mb-2" style="font-weight:700; letter-spacing:-.01em;">Informasi Pemesan</h5>
+                        <h5 class="mb-2" style="font-weight:700; letter-spacing:-.01em;"><?= lang('Store.ordererInfo'); ?></h5>
                         <div class="form-floating mb-2">
-                            <input type="email" class="form-control" placeholder="Email" name="emailPem" required
+                            <input type="email" class="form-control" placeholder="<?= esc(lang('Store.addressEmailPlaceholder'), 'attr'); ?>" name="emailPem" required
                                 value="<?= esc(old('emailPem', $email), 'attr'); ?>">
-                            <label>Email</label>
+                            <label><?= lang('Store.email'); ?></label>
                         </div>
                     </div>
 
                     <div class="py-3">
-                        <h5 class="mb-2" style="font-weight:700; letter-spacing:-.01em;">Informasi Penerima</h5>
+                        <h5 class="mb-2" style="font-weight:700; letter-spacing:-.01em;"><?= lang('Store.recipientInfo'); ?></h5>
                         <div class="form-floating mb-2">
-                            <input type="text" class="form-control" placeholder="Nama" name="nama" required
+                            <input type="text" class="form-control" placeholder="<?= esc(lang('Store.addressContactNamePlaceholder'), 'attr'); ?>" name="nama" required
                                 value="<?= $nama; ?>">
-                            <label>Nama Lengkap</label>
+                            <label><?= lang('Store.fullName'); ?></label>
                         </div>
                         <div class="form-floating mb-2">
-                            <input type="number" class="form-control" placeholder="Nomor Handphone" name="nohp" required
+                            <input type="number" class="form-control" placeholder="<?= esc(lang('Store.addressPhonePlaceholder'), 'attr'); ?>" name="nohp" required
                                 value="<?= $nohp; ?>">
-                            <label>No. HP (WA)</label>
+                            <label><?= lang('Store.mobileNumber'); ?></label>
                         </div>
 
                         <div class="d-flex gap-2 mb-2">
                             <div class="form-floating w-50">
                                 <select class="form-select" name="provinsi" required>
-                                    <option value="">-- Pilih provinsi --</option>
+                                    <option value=""><?= lang('Store.chooseProvince'); ?></option>
                                     <?php foreach ($provinsi as $p) { ?>
                                     <option value="<?= $p['id']; ?>-<?= $p['label']; ?>"><?= $p['label']; ?></option>
                                     <?php } ?>
                                 </select>
-                                <label>Provinsi</label>
+                                <label><?= lang('Store.province'); ?></label>
                             </div>
                             <div class="form-floating w-50">
                                 <select class="form-select" name="kota" required>
-                                    <option value="">-- Pilih kota --</option>
+                                    <option value=""><?= lang('Store.chooseCity'); ?></option>
                                 </select>
-                                <label>Kabupaten/Kota</label>
+                                <label><?= lang('Store.city'); ?></label>
                             </div>
                         </div>
 
                         <div class="d-flex gap-2 mb-2">
                             <div class="form-floating w-50">
                                 <select class="form-select" name="kecamatan" required>
-                                    <option value="">-- Pilih kecamatan --</option>
+                                    <option value=""><?= lang('Store.chooseDistrict'); ?></option>
                                 </select>
-                                <label>Kecamatan</label>
+                                <label><?= lang('Store.district'); ?></label>
                             </div>
                             <div class="form-floating w-50">
                                 <select class="form-select" name="kodepos" required>
-                                    <option value="">-- Pilih Desa --</option>
+                                    <option value=""><?= lang('Store.chooseVillage'); ?></option>
                                 </select>
-                                <label>Desa/Kelurahan</label>
+                                <label><?= lang('Store.village'); ?></label>
                             </div>
                         </div>
 
                         <div class="form-floating">
-                            <input type="text" class="form-control" placeholder="Alamat" name="alamat_add" required
+                            <input type="text" class="form-control" placeholder="<?= esc(lang('Store.addressStreetPlaceholder'), 'attr'); ?>" name="alamat_add" required
                                 id="alamatAddInput">
-                            <label>Jalan, Nomor Rumah, RT-RW</label>
-                            <div class="invalid-feedback">Tidak boleh mengandung karakter /</div>
-                            <div class="small-hint mt-1">Contoh: Jl. Melati No. 12 RT 03 RW 05</div>
+                            <label><?= lang('Store.streetAddress'); ?></label>
+                            <div class="invalid-feedback"><?= lang('Store.invalidAddressSlash'); ?></div>
+                            <div class="small-hint mt-1"><?= lang('Store.addressExample'); ?></div>
                         </div>
                     </div>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-teks-aja" onclick="closeAllModal()">Batal</button>
-                    <button type="submit" class="btn btn-lonjong">Tambah</button>
+                    <button type="button" class="btn btn-teks-aja" onclick="closeAllModal()"><?= lang('Store.cancel'); ?></button>
+                    <button type="submit" class="btn btn-lonjong"><?= lang('Store.add'); ?></button>
                 </div>
             </div>
         </form>
@@ -475,13 +475,13 @@ input[type="radio"][name="address"]:checked+.item-address {
     <div class="modal-card">
         <form method="post" id="formEdit">
             <?= csrf_field(); ?>
-            <input type="text" value="<?= $_SERVER['REQUEST_URI']; ?>" class="d-none" name="url">
+            <input type="text" value="<?= esc(service('request')->getUri()->getPath(), 'attr'); ?>" class="d-none" name="url">
             <div class="modal-content">
                 <?php if(!session()->get('isLogin')) { ?>
                 <div class="d-flex align-items-start p-3">
                     <div style="flex: 2" class="d-flex flex-column justify-content-center align-items-center">
-                        <p class="mb-2">Ingin menyimpan alamat?</p>
-                        <a href="/login" class="btn-default-merah">Login member</a>
+                        <p class="mb-2"><?= lang('Store.saveAddress'); ?></p>
+                        <a href="<?= esc(ilena_store_path('/login'), 'attr'); ?>" class="btn-default-merah"><?= lang('Store.memberLogin'); ?></a>
                     </div>
                     <div stype="flex: 1">
                         <button onclick="closeAllModal()" type="button" class="btn-close" aria-label="Close"></button>
@@ -491,7 +491,7 @@ input[type="radio"][name="address"]:checked+.item-address {
                 <?php } ?>
 
                 <div class="modal-header">
-                    <h1 class="modal-title" style="font-size:1.08rem">Edit Alamat</h1>
+                    <h1 class="modal-title" style="font-size:1.08rem"><?= lang('Store.editAddress'); ?></h1>
                     <?php if(session()->get('isLogin')) { ?>
                     <button onclick="closeAllModal()" type="button" class="btn-close" aria-label="Close"></button>
                     <?php } ?>
@@ -499,72 +499,72 @@ input[type="radio"][name="address"]:checked+.item-address {
 
                 <div class="modal-body">
                     <div class="pb-3 border-bottom">
-                        <h5 class="mb-2" style="font-weight:700; letter-spacing:-.01em;">Informasi Pemesan</h5>
+                        <h5 class="mb-2" style="font-weight:700; letter-spacing:-.01em;"><?= lang('Store.ordererInfo'); ?></h5>
                         <div class="form-floating mb-2">
-                            <input type="email" class="form-control" placeholder="Email" name="emailPem" required
+                            <input type="email" class="form-control" placeholder="<?= esc(lang('Store.addressEmailPlaceholder'), 'attr'); ?>" name="emailPem" required
                                 id="inputEmail">
-                            <label>Email</label>
+                            <label><?= lang('Store.email'); ?></label>
                         </div>
                     </div>
 
                     <div class="py-3">
-                        <h5 class="mb-2" style="font-weight:700; letter-spacing:-.01em;">Informasi Penerima</h5>
+                        <h5 class="mb-2" style="font-weight:700; letter-spacing:-.01em;"><?= lang('Store.recipientInfo'); ?></h5>
                         <div class="form-floating mb-2">
-                            <input type="text" class="form-control" placeholder="Nama" name="nama" required
+                            <input type="text" class="form-control" placeholder="<?= esc(lang('Store.addressContactNamePlaceholder'), 'attr'); ?>" name="nama" required
                                 id="inputNama">
-                            <label>Nama Lengkap</label>
+                            <label><?= lang('Store.fullName'); ?></label>
                         </div>
                         <div class="form-floating mb-2">
-                            <input type="number" class="form-control" placeholder="Nomor Handphone" name="nohp" required
+                            <input type="number" class="form-control" placeholder="<?= esc(lang('Store.addressPhonePlaceholder'), 'attr'); ?>" name="nohp" required
                                 id="inputNohp">
-                            <label>No. HP (WA)</label>
+                            <label><?= lang('Store.mobileNumber'); ?></label>
                         </div>
 
                         <div class="d-flex gap-2 mb-2">
                             <div class="form-floating w-50">
                                 <select class="form-select" name="provinsiEdit" required>
-                                    <option value="">-- Pilih provinsi --</option>
+                                    <option value=""><?= lang('Store.chooseProvince'); ?></option>
                                     <?php foreach ($provinsi as $p) { ?>
                                     <option value="<?= $p['id']; ?>-<?= $p['label']; ?>"><?= $p['label']; ?></option>
                                     <?php } ?>
                                 </select>
-                                <label>Provinsi</label>
+                                <label><?= lang('Store.province'); ?></label>
                             </div>
                             <div class="form-floating w-50">
                                 <select class="form-select" name="kotaEdit" required>
-                                    <option value="">-- Pilih kota --</option>
+                                    <option value=""><?= lang('Store.chooseCity'); ?></option>
                                 </select>
-                                <label>Kabupaten/Kota</label>
+                                <label><?= lang('Store.city'); ?></label>
                             </div>
                         </div>
 
                         <div class="d-flex gap-2 mb-2">
                             <div class="form-floating w-50">
                                 <select class="form-select" name="kecamatanEdit" required>
-                                    <option value="">-- Pilih kecamatan --</option>
+                                    <option value=""><?= lang('Store.chooseDistrict'); ?></option>
                                 </select>
-                                <label>Kecamatan</label>
+                                <label><?= lang('Store.district'); ?></label>
                             </div>
                             <div class="form-floating w-50">
                                 <select class="form-select" name="kodeposEdit" required>
-                                    <option value="">-- Pilih Desa --</option>
+                                    <option value=""><?= lang('Store.chooseVillage'); ?></option>
                                 </select>
-                                <label>Desa/Kelurahan</label>
+                                <label><?= lang('Store.village'); ?></label>
                             </div>
                         </div>
 
                         <div class="form-floating">
-                            <input type="text" class="form-control" placeholder="Alamat" name="alamat_add" required
+                            <input type="text" class="form-control" placeholder="<?= esc(lang('Store.addressStreetPlaceholder'), 'attr'); ?>" name="alamat_add" required
                                 id="alamatEditInput">
-                            <label>Jalan, Nomor Rumah, RT-RW</label>
-                            <div class="invalid-feedback">Tidak boleh mengandung karakter /</div>
+                            <label><?= lang('Store.streetAddress'); ?></label>
+                            <div class="invalid-feedback"><?= lang('Store.invalidAddressSlash'); ?></div>
                         </div>
                     </div>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-teks-aja" onclick="closeAllModal()">Batal</button>
-                    <button type="submit" class="btn btn-lonjong">Simpan</button>
+                    <button type="button" class="btn btn-teks-aja" onclick="closeAllModal()"><?= lang('Store.cancel'); ?></button>
+                    <button type="submit" class="btn btn-lonjong"><?= lang('Store.save'); ?></button>
                 </div>
             </div>
         </form>
@@ -577,8 +577,8 @@ input[type="radio"][name="address"]:checked+.item-address {
     <?php } ?>
 
     <h5 class="path" style="letter-spacing:-1px; font-weight:100;">
-        <a class="me-3 text-dark fw-bold">Alamat</a> >
-        <a class="mx-3 text-secondary">Rincian Pembayaran</a>
+        <a class="me-3 text-dark fw-bold"><?= lang('Store.address'); ?></a> >
+        <a class="mx-3 text-secondary"><?= lang('Store.addressDetails'); ?></a>
     </h5>
 
     <div class="baris-ke-kolom ilena-checkout-layout">
@@ -586,11 +586,11 @@ input[type="radio"][name="address"]:checked+.item-address {
         <div>
             <header class="ilena-address-heading">
                 <div>
-                    <p class="ilena-address-heading__eyebrow">LANGKAH 01 <span>/</span> PENGIRIMAN</p>
-                    <h1>Alamat penerima</h1>
-                    <p class="ilena-address-heading__description">Pilih alamat tujuan atau tambahkan alamat baru untuk pesanan ini.</p>
+                    <p class="ilena-address-heading__eyebrow"><?= lang('Store.step'); ?> 01 <span>/</span> <?= lang('Store.shipping'); ?></p>
+                    <h1><?= lang('Store.recipientAddress'); ?></h1>
+                    <p class="ilena-address-heading__description"><?= lang('Store.addressPrompt'); ?></p>
                 </div>
-                <span class="ilena-address-heading__count"><?= count($alamat); ?> alamat tersimpan</span>
+                <span class="ilena-address-heading__count"><?= count($alamat); ?> <?= lang('Store.savedAddresses'); ?></span>
             </header>
             <div class="container-address my-4">
                 <?php foreach ($alamat as $ind_a => $a) { ?>
@@ -604,9 +604,9 @@ input[type="radio"][name="address"]:checked+.item-address {
                     </div>
                     <div style="width:100px" class="d-flex gap-3 justify-content-end align-items-start">
                         <a class="btn-teks-aja text-dark" data-bs-toggle="modal" data-bs-target="#editModal"
-                            type="button" onclick="openEditModal(<?= $ind_a; ?>)">Edit</a>
-                        <form action="/deleteaddress/<?= (int)$ind_a; ?>/address" method="post" class="m-0">
-                            <?= csrf_field(); ?><button type="submit" class="btn-teks-aja">Hapus</button>
+                            type="button" onclick="openEditModal(<?= $ind_a; ?>)"><?= lang('Store.edit'); ?></a>
+                        <form action="<?= esc(ilena_store_path('/deleteaddress/' . (int)$ind_a . '/address'), 'attr'); ?>" method="post" class="m-0">
+                            <?= csrf_field(); ?><button type="submit" class="btn-teks-aja"><?= lang('Store.delete'); ?></button>
                         </form>
                     </div>
                 </label>
@@ -614,30 +614,30 @@ input[type="radio"][name="address"]:checked+.item-address {
             </div>
 
             <button id="btn-add-address" type="button" class="btn-teks-aja">
-                <i class="material-icons">add</i> Tambah Alamat Penerima
+                <i class="material-icons">add</i> <?= lang('Store.addRecipientAddress'); ?>
             </button>
         </div>
 
         <!-- RIGHT -->
         <div class="tigapuluh-ke-seratus">
             <div class="card p-4">
-                <h4 style="letter-spacing:-1px">Pesanan</h4>
+                <h4 style="letter-spacing:-1px"><?= lang('Store.orderSummary'); ?></h4>
 
                 <div class="mt-2 d-flex justify-content-between py-1">
-                    <p class="m-0">harga</p>
+                    <p class="m-0"><?= lang('Store.price'); ?></p>
                     <p class="fw-bold m-0">Rp <?= number_format($hargaTotal, 0, ',', '.'); ?></p>
                 </div>
 
                 <span class="garis my-2"></span>
 
                 <div class="d-flex justify-content-between py-1">
-                    <p class="m-0">TOTAL</p>
+                    <p class="m-0"><?= lang('Store.total'); ?></p>
                     <p class="fw-bold m-0">Rp <?= number_format($hargaKeseluruhan, 0, ',', '.'); ?></p>
                 </div>
 
-                <a id="btn-shipping" <?= count($alamat) > 0 ? 'href="/shipping/0"' : '' ?>
+                <a id="btn-shipping" <?= count($alamat) > 0 ? 'href="' . esc(ilena_store_path('/shipping/0'), 'attr') . '"' : '' ?>
                     class="btn-default-merah <?= count($alamat) > 0 ? '' : 'disabled' ?> w-100 mt-4 text-center">
-                    Pilih Rincian Pembayaran
+                    <?= lang('Store.selectPaymentDetails'); ?>
                 </a>
             </div>
         </div>
@@ -658,6 +658,15 @@ const kotaElmEdit = document.querySelector('select[name="kotaEdit"]');
 const kecElmEdit = document.querySelector('select[name="kecamatanEdit"]');
 const kodeElmEdit = document.querySelector('select[name="kodeposEdit"]');
 
+const addressCopy = <?= json_encode([
+    'chooseCity' => lang('Store.chooseCity'), 'chooseDistrict' => lang('Store.chooseDistrict'), 'chooseVillage' => lang('Store.chooseVillage'),
+    'loadingCity' => lang('Store.addressLoadingCity'), 'loadingDistrict' => lang('Store.addressLoadingDistrict'), 'loadingVillage' => lang('Store.addressLoadingVillage'),
+    'noCity' => lang('Store.addressNoCity'), 'noDistrict' => lang('Store.addressNoDistrict'), 'noVillage' => lang('Store.addressNoVillage'),
+    'loadCityFailed' => lang('Store.addressLoadCityFailed'), 'loadDistrictFailed' => lang('Store.addressLoadDistrictFailed'), 'loadVillageFailed' => lang('Store.addressLoadVillageFailed'),
+    'cityListFailed' => lang('Store.addressCityListFailed'), 'districtListFailed' => lang('Store.addressDistrictListFailed'), 'villageListFailed' => lang('Store.addressVillageListFailed'),
+    'editCityListFailed' => lang('Store.addressEditCityListFailed'), 'editDistrictListFailed' => lang('Store.addressEditDistrictListFailed'), 'editVillageListFailed' => lang('Store.addressEditVillageListFailed'),
+    'success' => lang('Store.addressSuccessTitle'), 'error' => lang('Store.addressErrorTitle'),
+], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
 const radioAddressElm = document.querySelectorAll('input[name="address"]');
 const inputEmailElm = document.getElementById("inputEmail");
 const inputNamaElm = document.getElementById("inputNama");
@@ -668,6 +677,7 @@ const btnShippingElm = document.getElementById("btn-shipping");
 const btnAddAddressElm = document.getElementById("btn-add-address");
 const addModalContainer = document.getElementById("addModalContainer");
 const editModalContainer = document.getElementById("editModalContainer");
+const storeRoutePrefix = <?= json_encode(service('request')->getLocale() === 'en' ? '/en' : ''); ?>;
 
 /* Toast */
 function toast(msg, type = 'success') {
@@ -676,10 +686,10 @@ function toast(msg, type = 'success') {
     el.innerHTML = `
     <div class="ti material-icons">${type==='error'?'error':'check_circle'}</div>
     <div class="tc">
-      <div class="tt">${type==='error'?'Gagal':'Berhasil'}</div>
+      <div class="tt">${type==='error'?addressCopy.error:addressCopy.success}</div>
       <div class="tm">${msg||''}</div>
     </div>
-    <button class="x material-icons" aria-label="Tutup">close</button>
+            <button class="x material-icons" aria-label="<?= esc(lang('Store.close'), 'attr'); ?>">close</button>
   `;
     const stack = document.getElementById('toastStack');
     stack.appendChild(el);
@@ -700,7 +710,7 @@ btnAddAddressElm.addEventListener("click", () => {
 });
 radioAddressElm.forEach((elm, ind_radio) => {
     elm.addEventListener('change', () => {
-        btnShippingElm.href = "/shipping/" + ind_radio;
+        btnShippingElm.href = storeRoutePrefix + "/shipping/" + ind_radio;
     });
 });
 
@@ -711,7 +721,7 @@ function titleCase(str) {
 
 /* ================== ADD (prov -> kota -> kec -> kode) ================== */
 async function getKota(idprov) {
-    kotaElm.innerHTML = '<option value="">Loading kota…</option>';
+    kotaElm.innerHTML = `<option value="">${addressCopy.loadingCity}</option>`;
     try {
         const res = await fetch(`/getkota/${idprov}`);
         if (!res.ok) throw new Error(res.statusText);
@@ -720,9 +730,9 @@ async function getKota(idprov) {
             Array.isArray(payload.label) ? payload.label :
             Array.isArray(payload.results) ? payload.results :
             Array.isArray(payload.data?.results) ? payload.data.results : [];
-        kotaElm.innerHTML = '<option value="">-- Pilih kota --</option>';
+        kotaElm.innerHTML = `<option value="">${addressCopy.chooseCity}</option>`;
         if (list.length === 0) {
-            kotaElm.innerHTML = '<option value="">(Tidak ada kota)</option>';
+            kotaElm.innerHTML = `<option value="">${addressCopy.noCity}</option>`;
             return;
         }
         list.forEach(item => {
@@ -735,13 +745,13 @@ async function getKota(idprov) {
             kotaElm.appendChild(opt);
         });
     } catch (err) {
-        kotaElm.innerHTML = '<option value="">(Gagal memuat kota)</option>';
-        toast('Gagal memuat daftar kota.', 'error');
+        kotaElm.innerHTML = `<option value="">${addressCopy.loadCityFailed}</option>`;
+        toast(addressCopy.cityListFailed, 'error');
     }
 }
 async function getKec(idkota) {
-    kecElm.innerHTML = '<option value="">Loading kecamatan…</option>';
-    kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+    kecElm.innerHTML = `<option value="">${addressCopy.loadingDistrict}</option>`;
+    kodeElm.innerHTML = `<option value="">${addressCopy.chooseVillage}</option>`;
     try {
         const res = await fetch(`/getkec/${idkota}`);
         if (!res.ok) throw new Error(res.statusText);
@@ -750,9 +760,9 @@ async function getKec(idkota) {
             Array.isArray(payload.rajaongkir?.results) ? payload.rajaongkir.results :
             Array.isArray(payload.results) ? payload.results :
             Array.isArray(payload.data?.results) ? payload.data.results : [];
-        kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
+        kecElm.innerHTML = `<option value="">${addressCopy.chooseDistrict}</option>`;
         if (list.length === 0) {
-            kecElm.innerHTML = '<option value="">(Tidak ada kecamatan)</option>';
+            kecElm.innerHTML = `<option value="">${addressCopy.noDistrict}</option>`;
             return;
         }
         list.forEach(el => {
@@ -764,12 +774,12 @@ async function getKec(idkota) {
             kecElm.appendChild(opt);
         });
     } catch (err) {
-        kecElm.innerHTML = '<option value="">(Gagal memuat kecamatan)</option>';
-        toast('Gagal memuat daftar kecamatan.', 'error');
+        kecElm.innerHTML = `<option value="">${addressCopy.loadDistrictFailed}</option>`;
+        toast(addressCopy.districtListFailed, 'error');
     }
 }
 async function getKode(kecId) {
-    kodeElm.innerHTML = '<option value="">Loading desa…</option>';
+    kodeElm.innerHTML = `<option value="">${addressCopy.loadingVillage}</option>`;
     try {
         const res = await fetch(`/getkode/${kecId}`);
         if (!res.ok) throw new Error(res.statusText);
@@ -778,9 +788,9 @@ async function getKode(kecId) {
             Array.isArray(payload.rajaongkir?.results) ? payload.rajaongkir.results :
             Array.isArray(payload.results) ? payload.results :
             Array.isArray(payload.data?.results) ? payload.data.results : [];
-        kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+        kodeElm.innerHTML = `<option value="">${addressCopy.chooseVillage}</option>`;
         if (list.length === 0) {
-            kodeElm.innerHTML = '<option value="">(Tidak ada desa)</option>';
+            kodeElm.innerHTML = `<option value="">${addressCopy.noVillage}</option>`;
             return;
         }
         list.forEach(el => {
@@ -792,31 +802,31 @@ async function getKode(kecId) {
             kodeElm.appendChild(opt);
         });
     } catch (err) {
-        kodeElm.innerHTML = '<option value="">(Gagal memuat desa)</option>';
-        toast('Gagal memuat daftar desa.', 'error');
+        kodeElm.innerHTML = `<option value="">${addressCopy.loadVillageFailed}</option>`;
+        toast(addressCopy.villageListFailed, 'error');
     }
 }
 /* Bind ADD */
 if (provElm) {
     provElm.addEventListener("change", (e) => {
-        kotaElm.innerHTML = '<option value="">Loading..</option>';
-        kecElm.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
-        kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+    kotaElm.innerHTML = `<option value="">${addressCopy.loadingCity}</option>`;
+    kecElm.innerHTML = `<option value="">${addressCopy.chooseDistrict}</option>`;
+    kodeElm.innerHTML = `<option value="">${addressCopy.chooseVillage}</option>`;
         const idprov = Number((e.target.value.split("-")[0]) || 0);
         if (idprov > 0) getKota(idprov);
     });
 }
 if (kotaElm) {
     kotaElm.addEventListener("change", (e) => {
-        kecElm.innerHTML = '<option value="">Loading..</option>';
-        kodeElm.innerHTML = '<option value="">-- Pilih Desa --</option>';
+    kecElm.innerHTML = `<option value="">${addressCopy.loadingDistrict}</option>`;
+    kodeElm.innerHTML = `<option value="">${addressCopy.chooseVillage}</option>`;
         const idkota = Number((e.target.value.split("-")[0]) || 0);
         if (idkota > 0) getKec(idkota);
     });
 }
 if (kecElm) {
     kecElm.addEventListener("change", (e) => {
-        kodeElm.innerHTML = '<option value="">Loading..</option>';
+    kodeElm.innerHTML = `<option value="">${addressCopy.loadingVillage}</option>`;
         const idkec = (e.target.value.split("-")[0]) || '';
         if (idkec) getKode(idkec);
     });
@@ -830,7 +840,7 @@ async function getKotaEdit(idprov) {
         if (!response.ok) throw new Error(response.statusText);
         const kota = await response.json();
         const hasil = kota.rajaongkir?.results || kota.results || kota.data?.results || kota.label || kota || [];
-        kotaElmEdit.innerHTML = '<option value="">-- Pilih kota --</option>';
+    kotaElmEdit.innerHTML = `<option value="">${addressCopy.chooseCity}</option>`;
         hasil.forEach(element => {
             const id = element.city_id ?? element.id;
             const nama = (element.city_name || element.label).split("/")[0].trim();
@@ -840,8 +850,8 @@ async function getKotaEdit(idprov) {
             kotaElmEdit.appendChild(optElm);
         });
     } catch (err) {
-        kotaElmEdit.innerHTML = '<option value="">(Gagal memuat kota)</option>';
-        toast('Gagal memuat daftar kota (Edit).', 'error');
+        kotaElmEdit.innerHTML = `<option value="">${addressCopy.loadCityFailed}</option>`;
+        toast(addressCopy.editCityListFailed, 'error');
     }
 }
 async function getKecEdit(idkota) {
@@ -851,8 +861,8 @@ async function getKecEdit(idkota) {
         const kecamatan = await response.json();
         const hasil = kecamatan.rajaongkir?.results || kecamatan.results || kecamatan.data?.results || kecamatan ||
             [];
-        kecElmEdit.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
-        kodeElmEdit.innerHTML = '<option value="">-- Pilih Desa --</option>';
+    kecElmEdit.innerHTML = `<option value="">${addressCopy.chooseDistrict}</option>`;
+    kodeElmEdit.innerHTML = `<option value="">${addressCopy.chooseVillage}</option>`;
         hasil.forEach(element => {
             const id = element.subdistrict_id ?? element.id;
             const nama = (element.subdistrict_name || element.label).split("/")[0].trim();
@@ -862,8 +872,8 @@ async function getKecEdit(idkota) {
             kecElmEdit.appendChild(optElm);
         });
     } catch (err) {
-        kecElmEdit.innerHTML = '<option value="">(Gagal memuat kecamatan)</option>';
-        toast('Gagal memuat daftar kecamatan (Edit).', 'error');
+        kecElmEdit.innerHTML = `<option value="">${addressCopy.loadDistrictFailed}</option>`;
+        toast(addressCopy.editDistrictListFailed, 'error');
     }
 }
 async function getKodeEdit(kecId) {
@@ -872,7 +882,7 @@ async function getKodeEdit(kecId) {
         if (!response.ok) throw new Error(response.statusText);
         const kode = await response.json();
         const hasil = Array.isArray(kode) ? kode : (kode.results || kode.data?.results || kode || []);
-        kodeElmEdit.innerHTML = '<option value="">-- Pilih Desa --</option>';
+    kodeElmEdit.innerHTML = `<option value="">${addressCopy.chooseVillage}</option>`;
         hasil.forEach(element => {
             const nama = titleCase((element.DesaKelurahan || element.label)).split("/")[0].trim();
             const pos = element.KodePos || element.kodepos || '';
@@ -882,31 +892,31 @@ async function getKodeEdit(kecId) {
             kodeElmEdit.appendChild(optElm);
         });
     } catch (err) {
-        kodeElmEdit.innerHTML = '<option value="">(Gagal memuat desa)</option>';
-        toast('Gagal memuat daftar desa (Edit).', 'error');
+        kodeElmEdit.innerHTML = `<option value="">${addressCopy.loadVillageFailed}</option>`;
+        toast(addressCopy.editVillageListFailed, 'error');
     }
 }
 /* Bind EDIT */
 if (provElmEdit) {
     provElmEdit.addEventListener("change", (e) => {
-        kotaElmEdit.innerHTML = '<option value="">Loading..</option>';
-        kecElmEdit.innerHTML = '<option value="">-- Pilih kecamatan --</option>';
-        kodeElmEdit.innerHTML = '<option value="">-- Pilih Desa --</option>';
+    kotaElmEdit.innerHTML = `<option value="">${addressCopy.loadingCity}</option>`;
+    kecElmEdit.innerHTML = `<option value="">${addressCopy.chooseDistrict}</option>`;
+    kodeElmEdit.innerHTML = `<option value="">${addressCopy.chooseVillage}</option>`;
         const idprov = Number((e.target.value.split("-")[0]) || 0);
         if (idprov > 0) getKotaEdit(idprov);
     });
 }
 if (kotaElmEdit) {
     kotaElmEdit.addEventListener("change", (e) => {
-        kecElmEdit.innerHTML = '<option value="">Loading..</option>';
-        kodeElmEdit.innerHTML = '<option value="">-- Pilih Desa --</option>';
+    kecElmEdit.innerHTML = `<option value="">${addressCopy.loadingDistrict}</option>`;
+    kodeElmEdit.innerHTML = `<option value="">${addressCopy.chooseVillage}</option>`;
         const idkota = Number((e.target.value.split("-")[0]) || 0);
         if (idkota > 0) getKecEdit(idkota);
     });
 }
 if (kecElmEdit) {
     kecElmEdit.addEventListener("change", (e) => {
-        kodeElmEdit.innerHTML = '<option value="">Loading..</option>';
+    kodeElmEdit.innerHTML = `<option value="">${addressCopy.loadingVillage}</option>`;
         /* FIX: kirim ID kecamatan (bagian sebelum '-') ke /getkode/  */
         const idkec = (e.target.value.split("-")[0]) || '';
         if (idkec) getKodeEdit(idkec);
@@ -919,7 +929,7 @@ function openEditModal(ind_add) {
     inputEmailElm.value = alamatSelected.email_pemesan || '';
     inputNamaElm.value = alamatSelected.nama_penerima || '';
     inputNohpElm.value = alamatSelected.nohp_penerima || '';
-    formEditElm.action = "/editaddress/" + ind_add;
+    formEditElm.action = storeRoutePrefix + "/editaddress/" + ind_add;
     editModalContainer.classList.remove("d-none");
     editModalContainer.classList.add("d-flex");
 }

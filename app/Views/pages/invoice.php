@@ -1,12 +1,14 @@
 <?php
 $invoiceMid = is_array($transaksi['data_mid'] ?? null) ? $transaksi['data_mid'] : [];
+$isEnglish = service('request')->getLocale() === 'en';
+$invoiceMonths = $isEnglish ? ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] : $bulan;
 $invoiceItems = is_array($transaksi['items'] ?? null) ? $transaksi['items'] : [];
 $invoiceCourier = is_array($transaksi['kurir'] ?? null) ? $transaksi['kurir'] : [];
 $transactionTimestamp = strtotime((string)($invoiceMid['transaction_time'] ?? '')) ?: 0;
 $courierName = trim((string)($invoiceCourier['nama'] ?? ''));
 $courierService = trim((string)($invoiceCourier['deskripsi'] ?? ''));
 $courierPending = $courierName === '' || strcasecmp($courierName, 'Menunggu pengiriman') === 0;
-$courierDisplay = $courierPending ? 'Menunggu pengiriman' : $courierName;
+$courierDisplay = $courierPending ? ($isEnglish ? 'Awaiting shipment' : 'Menunggu pengiriman') : $courierName;
 if (!$courierPending && $courierService !== '') {
     $namePrefix = preg_quote($courierName, '/');
     $serviceAlreadyIncludesName = preg_match('/^' . $namePrefix . '(?:\b|$)/iu', $courierService) === 1;
@@ -22,22 +24,22 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
 <head>
     <meta charset="UTF-8" />
     <meta content="width=device-width, initial-scale=1" name="viewport" />
-    <title><?= esc($title); ?> | Ilena Furniture</title>
+    <title><?= esc($isEnglish ? 'Invoice' : $title); ?> | Ilena Furniture</title>
     <link href="/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="/css/style_pdf.css" />
 </head>
 
 <body>
-    <a class="invoice-download no-print" href="<?= esc(site_url('invoice/' . rawurlencode((string)($transaksi['id_midtrans'] ?? '')) . '/pdf')); ?>">Unduh PDF</a>
+    <a class="invoice-download no-print" href="<?= esc(ilena_store_path('/invoice/' . rawurlencode((string)($transaksi['id_midtrans'] ?? '')) . '/pdf')); ?>"><?= $isEnglish ? 'Download PDF' : 'Unduh PDF'; ?></a>
     <main class="print ilena-invoice">
         <?php if ($transaksi['status'] == 'Proses' || $transaksi['status'] == 'Dikirim' || $transaksi['status'] == 'Selesai') { ?>
         <div class="print-lunas">
-            <p>L U N A S</p>
+            <p><?= $isEnglish ? 'P A I D' : 'L U N A S'; ?></p>
         </div>
         <?php } else if ($transaksi['status'] == 'Menunggu Pembayaran') {
         } else { ?>
         <div class="print-lunas">
-            <p>G A G A L</p>
+            <p><?= $isEnglish ? 'F A I L E D' : 'G A G A L'; ?></p>
         </div>
         <?php } ?>
         <div class="d-flex justify-content-between mb-2 invoice-head">
@@ -49,15 +51,15 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
         </div>
         <div class="d-flex justify-content-between mb-2 invoice-parties">
             <div class="w-100">
-                <p class="fw-bold mb-0">DITERBITKAN ATAS NAMA</p>
-                <p class="mb-0">Penjual : <b>Ilena Furniture</b></p>
+                <p class="fw-bold mb-0"><?= $isEnglish ? 'ISSUED BY' : 'DITERBITKAN ATAS NAMA'; ?></p>
+                <p class="mb-0"><?= $isEnglish ? 'Seller' : 'Penjual'; ?> : <b>Ilena Furniture</b></p>
             </div>
             <div class="w-100">
-                <p class="fw-bold mb-0">PENERIMA</p>
+                <p class="fw-bold mb-0"><?= $isEnglish ? 'BILL TO' : 'PENERIMA'; ?></p>
                 <div class="w-100">
                     <div class="w-100 d-flex">
                         <div style="flex: 2.7">
-                            <p class="mb-0">Pembeli</p>
+                            <p class="mb-0"><?= $isEnglish ? 'Buyer' : 'Pembeli'; ?></p>
                         </div>
                         <div style="flex: 0.4">
                             <p class="text-center mb-0">:</p>
@@ -67,21 +69,21 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
                         </div>
                     </div>
                     <?php if (!empty($transaksi['email'])): ?><div class="w-100 d-flex"><div style="flex:2.7"><p class="mb-0">Email</p></div><div style="flex:.4"><p class="text-center mb-0">:</p></div><div style="flex:5"><p class="mb-0"><?= esc($transaksi['email']); ?></p></div></div><?php endif; ?>
-                    <?php if (!empty($transaksi['nohp'])): ?><div class="w-100 d-flex"><div style="flex:2.7"><p class="mb-0">Telepon</p></div><div style="flex:.4"><p class="text-center mb-0">:</p></div><div style="flex:5"><p class="mb-0"><?= esc($transaksi['nohp']); ?></p></div></div><?php endif; ?>
+                    <?php if (!empty($transaksi['nohp'])): ?><div class="w-100 d-flex"><div style="flex:2.7"><p class="mb-0"><?= $isEnglish ? 'Phone' : 'Telepon'; ?></p></div><div style="flex:.4"><p class="text-center mb-0">:</p></div><div style="flex:5"><p class="mb-0"><?= esc($transaksi['nohp']); ?></p></div></div><?php endif; ?>
                     <div class="w-100 d-flex">
                         <div style="flex: 2.7">
-                            <p class="mb-0">Tanggal Pembelian</p>
+                            <p class="mb-0"><?= $isEnglish ? 'Purchase date' : 'Tanggal Pembelian'; ?></p>
                         </div>
                         <div style="flex: 0.4">
                             <p class="text-center mb-0">:</p>
                         </div>
                         <div style="flex: 5">
-                            <p class="mb-0"><?= $transactionTimestamp ? date('d', $transactionTimestamp) . ' ' . esc($bulan[(int)date('m', $transactionTimestamp) - 1]) . ' ' . date('Y', $transactionTimestamp) : 'Tanggal tidak tersedia' ?></p>
+                            <p class="mb-0"><?= $transactionTimestamp ? date('d', $transactionTimestamp) . ' ' . esc($invoiceMonths[(int)date('m', $transactionTimestamp) - 1]) . ' ' . date('Y', $transactionTimestamp) : ($isEnglish ? 'Date unavailable' : 'Tanggal tidak tersedia') ?></p>
                         </div>
                     </div>
                     <div class="w-100 d-flex">
                         <div style="flex: 2.7">
-                            <p class="mb-0">Alamat Pengiriman</p>
+                            <p class="mb-0"><?= $isEnglish ? 'Shipping address' : 'Alamat Pengiriman'; ?></p>
                         </div>
                         <div style="flex: 0.4">
                             <p class="text-center mb-0">:</p>
@@ -100,16 +102,16 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
         <div class="w-100 border-bottom pb-2 invoice-items">
             <div class="w-100 d-flex border-bottom border-top border-dark py-2 invoice-items__head">
                 <div style="flex: 2.9">
-                    <p class="mb-0 fw-bold">INFO PRODUK</p>
+                    <p class="mb-0 fw-bold"><?= $isEnglish ? 'PRODUCT DETAILS' : 'INFO PRODUK'; ?></p>
                 </div>
                 <div style="flex: 1">
-                    <p class="text-center mb-0 fw-bold">KUANTITAS</p>
+                    <p class="text-center mb-0 fw-bold"><?= $isEnglish ? 'QUANTITY' : 'KUANTITAS'; ?></p>
                 </div>
                 <div style="flex: 1">
-                    <p class="text-center mb-0 fw-bold">HARGA SATUAN</p>
+                    <p class="text-center mb-0 fw-bold"><?= $isEnglish ? 'UNIT PRICE' : 'HARGA SATUAN'; ?></p>
                 </div>
                 <div style="flex: 1">
-                    <p class="text-center mb-0 fw-bold">JUMLAH</p>
+                    <p class="text-center mb-0 fw-bold"><?= $isEnglish ? 'AMOUNT' : 'JUMLAH'; ?></p>
                 </div>
             </div>
             <?php
@@ -161,9 +163,9 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
             <div class="w-100 d-flex invoice-items__row">
                 <div style="flex: 3">
                     <p class="product-title"><?= esc($item['product_name'] ?? $item['name'] ?? $item['id'] ?? 'Produk'); ?></p>
-                    <p class="product-meta">Kode: <?= esc($item['id'] ?? '—'); ?><?= !empty($item['collection']) ? ' · Koleksi: ' . esc($item['collection']) : '' ?></p>
-                    <?php if ($variantLabel !== ''): ?><p class="product-meta">Varian: <?= esc($variantLabel); ?></p><?php endif; ?>
-                    <?php if ($dimensionParts || ($weightLabel !== '' && $weightLabel !== '-')): ?><p class="product-meta">Dimensi: <?= $dimensionParts ? esc(implode(' × ', $dimensionParts)) : '—' ?><?= $weightLabel !== '' && $weightLabel !== '-' ? ' · Berat: ' . esc($weightLabel) . ' kg' : '' ?></p><?php endif; ?>
+                    <p class="product-meta"><?= $isEnglish ? 'Code' : 'Kode'; ?>: <?= esc($item['id'] ?? '—'); ?><?= !empty($item['collection']) ? ' · ' . ($isEnglish ? 'Collection: ' : 'Koleksi: ') . esc($item['collection']) : '' ?></p>
+                    <?php if ($variantLabel !== ''): ?><p class="product-meta"><?= $isEnglish ? 'Variant' : 'Varian'; ?>: <?= esc($variantLabel); ?></p><?php endif; ?>
+                    <?php if ($dimensionParts || ($weightLabel !== '' && $weightLabel !== '-')): ?><p class="product-meta"><?= $isEnglish ? 'Dimensions' : 'Dimensi'; ?>: <?= $dimensionParts ? esc(implode(' × ', $dimensionParts)) : '—' ?><?= $weightLabel !== '' && $weightLabel !== '-' ? ' · ' . ($isEnglish ? 'Weight: ' : 'Berat: ') . esc($weightLabel) . ' kg' : '' ?></p><?php endif; ?>
                 </div>
                 <div style="flex: 1">
                     <p class="text-center mb-0"><?= number_format($quantity); ?></p>
@@ -180,7 +182,7 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
                 </div>
             </div>
             <?php } ?>
-            <?php if (!$invoiceItems): ?><div class="invoice-items__row"><p class="mb-0">Rincian produk tidak tersedia.</p></div><?php endif; ?>
+            <?php if (!$invoiceItems): ?><div class="invoice-items__row"><p class="mb-0"><?= $isEnglish ? 'Product details are unavailable.' : 'Rincian produk tidak tersedia.'; ?></p></div><?php endif; ?>
         </div>
 
         <!-- Container perhitungan -->
@@ -190,7 +192,7 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
                 <div class="w-100 py-2">
                     <div class="w-100 d-flex">
                         <div style="flex: 2">
-                            <p class="mb-0 fw-bold">SUBTOTAL PRODUK</p>
+                            <p class="mb-0 fw-bold"><?= $isEnglish ? 'PRODUCT SUBTOTAL' : 'SUBTOTAL PRODUK'; ?></p>
                         </div>
                         <div style="flex: 1">
                             <p class="text-end mb-0 fw-bold">
@@ -200,14 +202,14 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
                     </div>
                     <?php if ($diskonProduk > 0) { ?>
                     <div class="w-100 d-flex">
-                        <div style="flex: 2"><p class="mb-0">Diskon Produk</p></div>
+                        <div style="flex: 2"><p class="mb-0"><?= $isEnglish ? 'Product discount' : 'Diskon Produk'; ?></p></div>
                         <div style="flex: 1"><p class="text-end mb-0">- Rp <?= number_format($diskonProduk, 0, ',', '.'); ?></p></div>
                     </div>
                     <?php } ?>
                     <?php if ($diskonVoucher > 0) { ?>
                     <div class="w-100 d-flex">
                         <div style="flex: 2">
-                            <p class="mb-0">Diskon Voucher<?= $voucherCodes ? ' (' . esc(implode(', ', array_unique($voucherCodes))) . ')' : '' ?></p>
+                            <p class="mb-0"><?= $isEnglish ? 'Voucher discount' : 'Diskon Voucher'; ?><?= $voucherCodes ? ' (' . esc(implode(', ', array_unique($voucherCodes))) . ')' : '' ?></p>
                         </div>
                         <div style="flex: 1">
                             <p class="text-end mb-0">- Rp <?= number_format($diskonVoucher, 0, ",", "."); ?></p>
@@ -227,17 +229,17 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
                     <?php if ($hasBiayaOngkir) { ?>
                     <div class="w-100 d-flex">
                         <div style="flex: 2">
-                            <p class="mb-0">Ongkos Kirim</p>
+                            <p class="mb-0"><?= $isEnglish ? 'Shipping' : 'Ongkos Kirim'; ?></p>
                         </div>
                         <div style="flex: 1">
-                            <p class="text-end mb-0"><?= $biayaOngkir > 0 ? 'Rp ' . number_format($biayaOngkir, 0, ',', '.') : 'Gratis' ?></p>
+                            <p class="text-end mb-0"><?= $biayaOngkir > 0 ? 'Rp ' . number_format($biayaOngkir, 0, ',', '.') : ($isEnglish ? 'Free' : 'Gratis') ?></p>
                         </div>
                     </div>
                     <?php } ?>
                     <?php if ($biayaAdmin > 0) { ?>
                     <div class="w-100 d-flex">
                         <div style="flex: 2">
-                            <p class="mb-0">Biaya Admin Pembayaran</p>
+                            <p class="mb-0"><?= $isEnglish ? 'Payment administration fee' : 'Biaya Admin Pembayaran'; ?></p>
                         </div>
                         <div style="flex: 1">
                             <p class="text-end mb-0">Rp <?= number_format($biayaAdmin, 0, ',', '.'); ?></p>
@@ -246,7 +248,7 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
                     <?php } ?>
                     <div class="w-100 d-flex">
                         <div style="flex: 2">
-                            <p class="mb-0 fw-bold">TOTAL TAGIHAN</p>
+                            <p class="mb-0 fw-bold"><?= $isEnglish ? 'TOTAL DUE' : 'TOTAL TAGIHAN'; ?></p>
                         </div>
                         <div style="flex: 1">
                             <p class="text-end mb-0 fw-bold">
@@ -261,13 +263,13 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
         <!-- Container footer -->
         <div class="w-100 d-flex py-2 invoice-fulfillment">
             <div class="w-100">
-                <p class="mb-0 text-black-50">Ekspedisi</p>
+                <p class="mb-0 text-black-50"><?= $isEnglish ? 'Expedition' : 'Ekspedisi'; ?></p>
                 <p class="mb-0 fw-bold"><?= esc($courierDisplay); ?></p>
                 <?php $trackingNumber = trim((string)($transaksi['resi'] ?? '')); ?>
-                <?php if (!$courierPending && $trackingNumber !== '' && strcasecmp($trackingNumber, 'Menunggu pengiriman') !== 0): ?><p class="mb-0">No. resi: <strong><?= esc($trackingNumber); ?></strong></p><?php endif; ?>
+                <?php if (!$courierPending && $trackingNumber !== '' && strcasecmp($trackingNumber, 'Menunggu pengiriman') !== 0): ?><p class="mb-0"><?= $isEnglish ? 'Tracking number' : 'No. resi'; ?>: <strong><?= esc($trackingNumber); ?></strong></p><?php endif; ?>
             </div>
             <div class="w-100">
-                <p class="mb-0 text-black-50">Metode Pembayaran</p>
+                <p class="mb-0 text-black-50"><?= $isEnglish ? 'Payment method' : 'Metode Pembayaran'; ?></p>
                 <p class="mb-0">
                     <?php
                     switch ($paymentType) {
@@ -309,14 +311,14 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
                             echo 'ShopeePay';
                             break;
                         case 'admin':
-                            echo 'Pembayaran manual';
+                            echo $isEnglish ? 'Manual payment' : 'Pembayaran manual';
                             break;
                         case 'market':
                         case 'toko':
-                            echo 'Pembayaran marketplace';
+                            echo $isEnglish ? 'Marketplace payment' : 'Pembayaran marketplace';
                             break;
                         default:
-                            echo esc($invoiceMid['payment_type'] ?? 'Metode tidak tersedia');
+                            echo esc($invoiceMid['payment_type'] ?? ($isEnglish ? 'Method unavailable' : 'Metode tidak tersedia'));
                             break;
                     }
                     ?></p>
@@ -325,19 +327,17 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
         <div class="w-100 d-flex py-2 justify-content-between align-items-end invoice-note">
             <div style="width: 50%">
                 <p class="mb-0">
-                    Invoice ini sah dan diproses oleh sistem<br />
-                    Silakan hubungi
+                    <?= $isEnglish ? 'This invoice is valid and system-generated.' : 'Invoice ini sah dan diproses oleh sistem'; ?><br />
+                    <?= $isEnglish ? 'Please contact' : 'Silakan hubungi'; ?>
                     <a style="color: var(--merahLogo)"
-                        class="link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">Ilena
-                        Furniture
-                        CS</a>
-                    apabila kamu membutuhkan bantuan.
+                        class="link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">Ilena Furniture <?= $isEnglish ? 'Support' : 'CS'; ?></a>
+                    <?= $isEnglish ? 'if you need assistance.' : 'apabila kamu membutuhkan bantuan.'; ?>
                 </p>
             </div>
             <div>
                 <p class="mb-0 text-black-50">
-                    Terakhir diupdate: <?php
-                                        echo $transactionTimestamp ? date("d", $transactionTimestamp) . " " . esc($bulan[(int)date("m", $transactionTimestamp) - 1]) . " " . date("Y", $transactionTimestamp) . " " . date("H:i:s", $transactionTimestamp) : 'Waktu tidak tersedia'
+                    <?= $isEnglish ? 'Last updated:' : 'Terakhir diupdate:'; ?> <?php
+                                        echo $transactionTimestamp ? date("d", $transactionTimestamp) . " " . esc($invoiceMonths[(int)date("m", $transactionTimestamp) - 1]) . " " . date("Y", $transactionTimestamp) . " " . date("H:i:s", $transactionTimestamp) : ($isEnglish ? 'Time unavailable' : 'Waktu tidak tersedia')
                                         ?> WIB
                 </p>
             </div>

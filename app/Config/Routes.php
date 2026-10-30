@@ -9,6 +9,7 @@ use CodeIgniter\Router\RouteCollection;
 // ==================== Frontend ====================
 $routes->get('/sitemap.xml', 'Pages::sitemap');
 $routes->get('/faq', 'Pages::faq', ['filter' => 'customerFilter']);
+$routes->get('/contact', 'Pages::contact', ['filter' => 'customerFilter']);
 
 // Artikel (frontend)
 $routes->get('/article', 'Pages::article', ['filter' => 'customerFilter']);
@@ -245,6 +246,79 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
 
 
 // ==================== Fixing ====================
+
+// English storefront routes. Indonesian keeps its established unprefixed URLs;
+// the locale placeholder lets CodeIgniter set the request locale for /en/... .
+$routes->useSupportedLocalesOnly(true);
+$routes->group('{locale}', ['filter' => 'customerFilter'], static function ($routes) {
+    $routes->get('', 'Pages::index');
+    $routes->get('faq', 'Pages::faq');
+    $routes->get('contact', 'Pages::contact');
+    $routes->get('article', 'Pages::article');
+    $routes->post('actionsearcharticle', 'Pages::actionSearchArticle');
+    $routes->get('article/find/(:any)', 'Pages::findArticle/$1');
+    $routes->get('article/category/(:any)', 'Pages::articleCategory/$1');
+    $routes->get('article/(:any)', 'Pages::article/$1');
+    $routes->post('addlikearticle/(:any)', 'Pages::addLikeArticle/$1', ['filter' => ['csrf']]);
+    $routes->post('addsharearticle/(:any)', 'Pages::addShareArticle/$1', ['filter' => ['csrf']]);
+    $routes->get('tentang', 'Pages::tentang');
+    $routes->get('partner', 'Pages::partner');
+    $routes->get('syarat', 'Pages::syarat');
+    $routes->get('kebijakan', 'Pages::kebijakan');
+    $routes->get('visimisi', 'Pages::visiMisi');
+    $routes->get('iklan', 'Pages::iklan');
+    $routes->get('product', 'Pages::product');
+    $routes->get('product/category/(:any)', 'Pages::productCategory/$1');
+    $routes->get('product/(:any)', 'Pages::product/$1');
+    $routes->get('product/(:any)/(:any)', 'Pages::product/$1/$2');
+    $routes->get('find', 'Pages::findSmart');
+    $routes->get('find/(:any)', 'Pages::find/$1');
+    $routes->get('search/suggest', 'Pages::searchSuggestions');
+    $routes->post('actionfind', 'Pages::actionFind');
+    $routes->get('cart', 'Pages::cart');
+    $routes->post('deletecart/(:any)', 'Pages::deleteCart/$1', ['filter' => ['csrf']]);
+    $routes->post('reducecart/(:any)', 'Pages::reduceCart/$1', ['filter' => ['csrf']]);
+    $routes->get('order', 'Pages::order');
+    $routes->get('order/(:any)', 'Pages::order/$1');
+    $routes->post('order/cancel/(:any)', 'Pages::cancelCustomerOrder/$1', ['filter' => ['csrf']]);
+    $routes->get('orderdetail/(:any)', 'Pages::orderDetail/$1');
+    $routes->get('invoice/(:any)/pdf', 'Pages::invoicePdf/$1');
+    $routes->get('invoice/(:any)', 'Pages::invoice/$1');
+    $routes->get('wishlist', 'Pages::wishlist');
+    $routes->post('addwishlist/(:any)', 'Pages::addWishlist/$1', ['filter' => ['csrf']]);
+    $routes->post('delwishlist/(:any)', 'Pages::delWishlist/$1', ['filter' => ['csrf']]);
+    $routes->post('wishlisttocart', 'Pages::wishlistToCart', ['filter' => ['csrf']]);
+    $routes->post('addcart/(:any)/(:any)/(:any)', 'Pages::addCart/$1/$2/$3', ['filter' => ['csrf']]);
+    $routes->get('address', 'Pages::address');
+    $routes->get('getkota/(:any)', 'Pages::getKota/$1');
+    $routes->get('getkec/(:any)', 'Pages::getKec/$1');
+    $routes->get('getkode/(:any)', 'Pages::getKode/$1');
+    $routes->post('actionregister', 'Pages::actionRegister', ['filter' => ['csrf']]);
+    $routes->get('verify', 'Pages::verify');
+    $routes->post('actionverify', 'Pages::actionVerify', ['filter' => ['csrf']]);
+    $routes->post('kirimotp', 'Pages::kirimOTP', ['filter' => ['csrf']]);
+    $routes->post('actionlogin', 'Pages::actionLogin', ['filter' => ['csrf']]);
+    $routes->post('logout', 'Pages::actionLogout', ['filter' => ['csrf']]);
+    $routes->post('editsandi/(:any)', 'Pages::editSandi/$1', ['filter' => ['csrf']]);
+    $routes->post('addaddress', 'Pages::addAddress', ['filter' => ['csrf']]);
+    $routes->post('deleteaddress/(:any)/(:any)', 'Pages::deleteAddress/$1/$2', ['filter' => ['csrf']]);
+    $routes->post('editaddress/(:any)', 'Pages::editAddress/$1', ['filter' => ['csrf']]);
+    $routes->get('shipping/(:any)', 'Pages::shipping/$1', ['filter' => 'customerShippingFilter']);
+    $routes->post('redeemvoucher/(:num)', 'Pages::redeemVoucher/$1', ['filter' => ['customerShippingFilter', 'csrf']]);
+    $routes->post('usevoucher/(:any)', 'Pages::useVoucher/$1', ['filter' => ['customerShippingFilter', 'csrf']]);
+    $routes->post('cancelvoucher/(:any)', 'Pages::cancelVoucher/$1', ['filter' => ['customerShippingFilter', 'csrf']]);
+    $routes->post('removevoucher/(:num)', 'Pages::removeVoucher/$1', ['filter' => ['customerShippingFilter', 'csrf']]);
+    $routes->get('payment/method/(:any)/(:any)', 'Pages::paymentMethod/$1/$2', ['filter' => 'customerShippingFilter']);
+    $routes->get('payment/finish', 'Pages::paymentFinishRedirect');
+    $routes->get('payment/unfinish', 'Pages::paymentUnfinishRedirect');
+    $routes->get('payment/error', 'Pages::paymentErrorRedirect');
+    $routes->get('payment/status/(:any)', 'Pages::paymentStatus/$1');
+    $routes->get('payment/(:any)', 'Pages::payment/$1', ['filter' => ['customerShippingFilter', 'csrf']]);
+    $routes->post('actionpaycore/(:any)', 'Pages::actionPayCore/$1', ['filter' => ['customerShippingFilter', 'csrf']]);
+});
+$routes->get('{locale}/login', 'Pages::login', ['filter' => 'customerLogoutFilter']);
+$routes->get('{locale}/register', 'Pages::register', ['filter' => 'customerLogoutFilter']);
+$routes->get('{locale}/account', 'Pages::account', ['filter' => 'customerLoginFilter']);
 
 
 // ==================== Marketplace ====================

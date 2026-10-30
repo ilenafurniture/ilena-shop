@@ -57,8 +57,8 @@
 
 <div class="container ilena-auth-page ilena-auth-page--register ilena-auth-page--compact">
         <div class="ilena-auth-page__form">
-            <p class="ilena-auth-page__eyebrow">Mulai perjalanan Anda</p>
-            <h1 class="ilena-auth-page__title">Buat akun Ilena</h1>
+            <p class="ilena-auth-page__eyebrow"><?= lang('Store.startJourney'); ?></p>
+            <h1 class="ilena-auth-page__title"><?= lang('Store.createIlenaAccount'); ?></h1>
 
             <?php if ($val['msg']) { ?>
             <div class="pemberitahuan my-1" role="alert">
@@ -66,7 +66,7 @@
             </div>
             <?php } ?>
 
-            <form id="registerForm" action="/actionregister" method="post">
+            <form id="registerForm" action="<?= esc(ilena_store_path('/actionregister'), 'attr'); ?>" method="post">
                 <?= csrf_field(); ?>
                 <input type="hidden" name="auth_form_nonce" value="<?= esc($authFormNonce ?? '', 'attr'); ?>">
                 <!-- Honeypot (TANPA mengganggu backend). Jika bot isi ini, submit akan diblok di JS -->
@@ -83,48 +83,48 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="fullname" class="form-label">Nama lengkap</label>
+                    <label for="fullname" class="form-label"><?= lang('Store.fullNameLabel'); ?></label>
                     <input id="fullname" name="nama" type="text" autocomplete="name" required maxlength="100" aria-describedby="fullname-feedback" class="form-control <?= ($val['val_nama']) ? "is-invalid" : ""; ?>"
-                        placeholder="Masukkan nama lengkap" value="<?= old('nama'); ?>">
-                    <div class="invalid-feedback" id="fullname-feedback"><?= esc($val['val_nama'] ?: 'Mohon masukkan nama lengkap.'); ?></div>
+                        placeholder="<?= esc(lang('Store.enterFullName'), 'attr'); ?>" value="<?= old('nama'); ?>">
+                    <div class="invalid-feedback" id="fullname-feedback"><?= esc($val['val_nama'] ?: lang('Store.enterFullName')); ?></div>
                 </div>
 
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
                     <input id="email" name="email" type="email" autocomplete="email" required maxlength="191" autocapitalize="none" spellcheck="false" aria-describedby="email-feedback"
                         class="form-control <?= ($val['val_email']) ? "is-invalid" : ""; ?>"
-                        placeholder="Masukkan email" value="<?= old('email'); ?>">
-                    <div class="invalid-feedback" id="email-feedback"><?= esc($val['val_email'] ?: 'Gunakan email pribadi yang aktif.'); ?></div>
+                        placeholder="<?= esc(lang('Store.enterEmail'), 'attr'); ?>" value="<?= old('email'); ?>">
+                    <div class="invalid-feedback" id="email-feedback"><?= esc($val['val_email'] ?: lang('Store.activeEmailHint')); ?></div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="nohp" class="form-label">Nomor telepon</label>
-                    <input id="nohp" name="nohp" type="tel" autocomplete="tel" inputmode="numeric" pattern="[0-9]{10,15}" required aria-describedby="nohp-help nohp-feedback" title="Gunakan 10–15 digit angka tanpa spasi atau tanda baca." class="form-control <?= ($val['val_nohp']) ? "is-invalid" : ""; ?>"
-                        placeholder="Masukkan nomor telepon" value="<?= old('nohp'); ?>">
-                    <div class="invalid-feedback" id="nohp-feedback"><?= esc($val['val_nohp'] ?: 'Nomor HP harus berupa 10–15 digit angka.'); ?></div>
-                    <div class="form-text" id="nohp-help">10–15 digit angka. Contoh: 081234567890 atau 6281234567890.</div>
+                    <label for="nohp" class="form-label"><?= lang('Store.phoneNumber'); ?></label>
+                    <input id="nohp" name="nohp" type="tel" autocomplete="tel" inputmode="numeric" pattern="[0-9]{10,15}" required aria-describedby="nohp-help nohp-feedback" title="<?= esc(lang('Store.phoneDigitsTitle'), 'attr'); ?>" class="form-control <?= ($val['val_nohp']) ? "is-invalid" : ""; ?>"
+                        placeholder="<?= esc(lang('Store.enterPhoneNumber'), 'attr'); ?>" value="<?= old('nohp'); ?>">
+                    <div class="invalid-feedback" id="nohp-feedback"><?= esc($val['val_nohp'] ?: lang('Store.phoneDigitsError')); ?></div>
+                    <div class="form-text" id="nohp-help"><?= lang('Store.phoneDigitsHint'); ?></div>
                 </div>
 
                 <label for="password" class="form-label">Kata sandi</label>
                 <div class="input-group mb-3 has-validation">
                     <input id="password" name="sandi" type="password" autocomplete="new-password" required minlength="12" maxlength="72" aria-describedby="password-help password-feedback"
                         class="form-control <?= ($val['val_sandi']) ? "is-invalid" : ""; ?>"
-                        placeholder="Buat kata sandi">
+                        placeholder="<?= esc(lang('Store.createPassword'), 'attr'); ?>">
                     <button type="button" class="input-group-text ilena-auth-page__password-toggle"
                         aria-label="Tampilkan kata sandi" aria-controls="password" aria-pressed="false" onclick="togglePassword(event)">
                         <i class="material-icons" aria-hidden="true">visibility</i>
                     </button>
                     <div class="invalid-feedback" id="password-feedback"><?= esc($val['val_sandi'] ?: 'Kata sandi minimal 12 karakter.'); ?></div>
                 </div>
-                <div class="form-text mb-3" id="password-help">Minimal 12 karakter, maksimal 72 byte.</div>
+                <div class="form-text mb-3" id="password-help"><?= lang('Store.passwordLengthHint'); ?></div>
 
                 <div class="mb-3">
                     <div class="agreement-box <?= ($val['val_syarat'] ?? false) ? "is-invalid" : ""; ?>">
                         <input type="checkbox" id="validation-syarat" name="validasi-syarat" value="1" required
                             <?= old('validasi-syarat') ? 'checked' : ''; ?>>
                         <label for="validation-syarat" class="m-0">
-                            Dengan ini Anda menyetujui
-                            <a href="/syarat" target="_blank" rel="noopener">syarat dan ketentuan pendaftaran</a>.
+                            <?= lang('Store.acceptTermsLead'); ?>
+                            <a href="<?= esc(ilena_store_path('/syarat'), 'attr'); ?>" target="_blank" rel="noopener"><?= lang('Store.registrationTerms'); ?></a>.
                         </label>
                     </div>
                     <div class="invalid-feedback d-block" id="syarat-feedback">
@@ -134,13 +134,13 @@
 
                 <?= view('partials/auth_recaptcha', ['error' => $captchaError ?? null], ['saveData' => false]); ?>
                 <div class="mb-3 d-flex w-100 justify-content-center">
-                    <button id="btnSubmit" type="submit" class="btn btn-default btn-block" disabled>Daftar</button>
+                    <button id="btnSubmit" type="submit" class="btn btn-default btn-block" disabled><?= lang('Store.registerSubmit'); ?></button>
                 </div>
                 <div id="ab-msg" aria-live="polite"></div>
 
                 <div>
-                    <p class="ilena-auth-page__switch">Sudah punya akun?
-                        <a href="/login">Masuk sekarang</a>
+                    <p class="ilena-auth-page__switch"><?= lang('Store.alreadyHaveAccount'); ?>
+                        <a href="<?= esc(ilena_store_path('/login'), 'attr'); ?>"><?= lang('Store.signInNow'); ?></a>
                     </p>
                 </div>
             </form>
@@ -153,7 +153,7 @@ function togglePassword(e) {
     var show = passwordField.type === 'password';
     passwordField.type = show ? 'text' : 'password';
     e.currentTarget.setAttribute('aria-pressed', String(show));
-    e.currentTarget.setAttribute('aria-label', show ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi');
+    e.currentTarget.setAttribute('aria-label', show ? <?= json_encode(lang('Store.hidePassword')); ?> : <?= json_encode(lang('Store.showPassword')); ?>);
     e.currentTarget.querySelector('i').textContent = show ? 'visibility_off' : 'visibility';
 }
 (function() {
@@ -230,7 +230,7 @@ function togglePassword(e) {
     try {
         const last = Number(localStorage.getItem(throttleKey) || '0');
         if (Date.now() - last < 5000) {
-            showMsg('Tunggu sebentar sebelum mencoba lagi.');
+            showMsg(<?= json_encode(lang('Store.waitToRetry')); ?>);
         }
     } catch (e) {}
 
@@ -243,33 +243,33 @@ function togglePassword(e) {
         elps.value = String(Date.now() - start);
         if (!agreement.checked) {
             e.preventDefault();
-            if (syaratFeedback) syaratFeedback.textContent = 'Centang persetujuan syarat dan ketentuan terlebih dahulu.';
-            showMsg('Centang persetujuan syarat dan ketentuan terlebih dahulu.');
+            if (syaratFeedback) syaratFeedback.textContent = <?= json_encode(lang('Store.acceptTermsError')); ?>;
+            showMsg(<?= json_encode(lang('Store.acceptTermsError')); ?>);
             return;
         }
         if (hp1.value.trim() !== '' || hp2.value.trim() !== '') {
             e.preventDefault();
-            showMsg('Pendaftaran diblokir. (indikasi bot)');
+            showMsg(<?= json_encode(lang('Store.blockedBot')); ?>);
             return;
         }
         if (Date.now() - start < minWaitMs) {
             e.preventDefault();
-            showMsg('Terlalu cepat. Mohon tunggu beberapa detik sebelum mengirim.');
+            showMsg(<?= json_encode(lang('Store.tooFast')); ?>);
             return;
         }
         if (!interacted) {
             e.preventDefault();
-            showMsg('Mohon berinteraksi dengan form sebelum mengirim.');
+            showMsg(<?= json_encode(lang('Store.interactBeforeSubmit')); ?>);
             return;
         }
         if (btn.dataset.submitted === '1') {
             e.preventDefault();
-            showMsg('Permintaan sedang diproses…');
+            showMsg(<?= json_encode(lang('Store.requestProcessing')); ?>);
             return;
         }
         btn.dataset.submitted = '1';
         btn.setAttribute('disabled', 'disabled');
-        btn.textContent = 'Memproses…';
+        btn.textContent = <?= json_encode(lang('Store.processing')); ?>;
 
         try {
             localStorage.setItem(throttleKey, String(Date.now()));
