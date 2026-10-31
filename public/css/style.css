@@ -276,20 +276,70 @@ body {
 }
 
 .pemberitahuan {
-    display: block;
-    /* width: fit-content; */
-    text-align: center;
-    color: #e84a49;
-    background-color: #e8494911;
-    letter-spacing: -1px;
-    font-size: 15px;
-    padding: 0.5em 1em;
-    border-radius: 10px;
-    /* margin-inline: auto; */
+    --notice-ink: #352b29;
+    --notice-accent: #8f2430;
+    --notice-icon-bg: #f8eeec;
+    --notice-border: #e9dedb;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: min(100%, 680px);
+    margin: 12px auto;
+    padding: 12px 15px;
+    border: 1px solid var(--notice-border);
+    border-left: 3px solid var(--notice-accent);
+    border-radius: 7px;
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(54, 34, 30, .06);
+    color: var(--notice-ink);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.55;
+    letter-spacing: 0;
+    text-align: left;
+    overflow-wrap: anywhere;
+    animation: ilena-notice-in .18s ease-out both;
+}
+.pemberitahuan::before {
+    content: "!";
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+    margin: 0;
+    border-radius: 50%;
+    background: var(--notice-icon-bg);
+    color: var(--notice-accent);
+    font: 700 13px/1 Arial, sans-serif;
 }
 .pemberitahuan.hijau {
-    color: #0a961d;
-    background-color: #1ece3623;
+    --notice-ink: #294436;
+    --notice-accent: #47745a;
+    --notice-icon-bg: #edf5ef;
+    --notice-border: #dce9de;
+}
+.pemberitahuan.hijau::before {
+    content: "✓";
+    font-size: 12px;
+}
+@keyframes ilena-notice-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 600px) {
+    .pemberitahuan {
+        width: 100%;
+        margin-block: 10px;
+        padding: 11px 13px;
+        border-radius: 8px;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .pemberitahuan { animation: none; }
 }
 .list-nav {
     cursor: default;
