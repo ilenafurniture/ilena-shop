@@ -21,14 +21,29 @@
 
         <h2><?= lang('Store.productInfoTitle'); ?></h2>
         <p><?= lang('Store.productInfoBody'); ?></p>
+
+        <h2><?= lang('Store.termsOrdersTitle'); ?></h2>
+        <p><?= lang('Store.termsOrdersBody'); ?></p>
+
+        <h2><?= lang('Store.termsAccountsTitle'); ?></h2>
+        <p><?= lang('Store.termsAccountsBody'); ?></p>
+
+        <h2><?= lang('Store.termsChatTitle'); ?></h2>
+        <p><?= lang('Store.termsChatBody'); ?></p>
+
+        <h2><?= lang('Store.contentUseTitle'); ?></h2>
         <p><?= lang('Store.contentUseTerms'); ?></p>
-        <p><?= lang('Store.serviceHoursTerms'); ?></p>
+        <p><?= lang('Store.prohibitedUseTerms'); ?></p>
 
         <h2><?= lang('Store.promotionInfoTitle'); ?></h2>
         <p><?= lang('Store.promotionInfoBody'); ?></p>
 
         <h2><?= lang('Store.serviceInfoTitle'); ?></h2>
         <p><?= lang('Store.serviceInfoBody'); ?></p>
+        <p><?= lang('Store.serviceHoursTerms'); ?></p>
+
+        <h2><?= lang('Store.termsChangesTitle'); ?></h2>
+        <p><?= lang('Store.termsChangesBody'); ?></p>
     </div>
 </div>
 <?= $this->endSection(); ?>

@@ -26,7 +26,12 @@
 
         <h3 style="letter-spacing: -1px;"><?= lang('Store.privacyPurposeTitle'); ?></h3>
         <p><?= lang('Store.privacyPurposeBody'); ?></p>
+        <p><?= lang('Store.privacyGoogleBody'); ?></p>
+        <p><?= lang('Store.privacyAiBody'); ?></p>
         <p><?= lang('Store.privacyCookiesBody'); ?></p>
+
+        <h3 style="letter-spacing: -1px;"><?= lang('Store.privacyRightsTitle'); ?></h3>
+        <p><?= lang('Store.privacyRightsBody'); ?></p>
 
         <h3 style="letter-spacing: -1px;"><?= lang('Store.privacyRetentionTitle'); ?></h3>
         <p><?= lang('Store.privacyRetentionBody'); ?></p>
