@@ -40,7 +40,6 @@
             ['show' => $can('content'), 'label' => 'Artikel', 'icon' => 'article', 'href' => '/admin/article', 'active' => $isActivePrefix(['admin/article']) || str_contains($lowerTitle, 'artikel')],
             ['show' => $can('content'), 'label' => 'Tampilan Beranda', 'icon' => 'dashboard_customize', 'href' => '/admin/homelayout', 'active' => $isActivePrefix(['admin/homelayout']) || ($title ?? '') === 'Home Layout'],
             ['show' => $can('content'), 'label' => 'Partner', 'icon' => 'storefront', 'href' => '/admin/partners', 'active' => $isActivePrefix(['admin/partners']) || ($title ?? '') === 'Partner Ilena'],
-            ['show' => $can('marketplace'), 'label' => 'Produk Marketplace', 'icon' => 'storefront', 'href' => '/market/product', 'active' => $isActivePrefix(['market'])],
         ],
         'Analitik & akses' => [
             ['show' => $can('analytics'), 'label' => 'Analytics', 'icon' => 'insights', 'href' => '/analytics', 'active' => $isActivePrefix(['analytics']) || ($title ?? '') === 'Insights Analytics'],
