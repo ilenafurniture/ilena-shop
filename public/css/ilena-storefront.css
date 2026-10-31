@@ -10365,17 +10365,39 @@ body.ilena-storefront .ilena-search-dialog :focus-visible { outline:2px solid #8
 }
 @media (prefers-reduced-motion:reduce) { body.ilena-storefront .ilena-search-dialog { animation:none; } body.ilena-storefront .ilena-search-close { transition:none; } }
 @media (min-width:901px) and (max-width:1150px) {
- body.ilena-storefront .ilena-topbar__inner--full { gap:18px; }
- body.ilena-storefront .ilena-topbar__main-nav { gap:clamp(10px,1.5vw,18px); }
- body.ilena-storefront .ilena-topbar__main-nav a { font-size:11px; }
- body.ilena-storefront .navbar-brand-ilena img { max-width:128px; }
+ body.ilena-storefront .ilena-topbar__container { padding-inline:clamp(14px,2vw,24px)!important; }
+ body.ilena-storefront .ilena-topbar__inner--full { grid-template-columns:auto minmax(0,1fr) auto; gap:clamp(10px,1.4vw,16px); }
+ body.ilena-storefront .ilena-topbar__main-nav { gap:clamp(8px,1vw,13px); }
+ body.ilena-storefront .ilena-topbar__main-nav a { font-size:11px; letter-spacing:0; }
+ body.ilena-storefront .navbar-brand-ilena img { max-width:120px; }
+ body.ilena-storefront .ilena-topbar__actions { gap:2px; }
  body.ilena-storefront .ilena-topbar__actions .ilena-header-action { min-width:36px; min-height:36px; }
 }
 @media (min-width:601px) and (max-width:900px) {
- body.ilena-storefront .ilena-topbar__inner--full { grid-template-columns:minmax(0,1fr) auto; gap:4px 18px; }
- body.ilena-storefront .ilena-topbar__main-nav { grid-column:1/-1; grid-row:2; justify-content:center; gap:clamp(10px,2.2vw,22px); }
- body.ilena-storefront .ilena-topbar__main-nav a { font-size:11px; }
- body.ilena-storefront .navbar-brand-ilena img { max-width:130px; }
+ body.ilena-storefront .ilena-topbar__container { padding:8px clamp(14px,2.6vw,24px)!important; }
+ body.ilena-storefront .ilena-topbar__inner--full {
+  grid-template-columns:minmax(0,1fr) auto;
+  grid-template-rows:minmax(44px,auto) auto;
+  gap:4px 12px;
+  min-height:0;
+ }
+ body.ilena-storefront .ilena-topbar__main-nav {
+  grid-column:1/-1;
+  grid-row:2;
+  justify-content:center;
+  flex-wrap:wrap;
+  column-gap:clamp(8px,1.8vw,16px);
+  row-gap:0;
+ }
+ body.ilena-storefront .ilena-topbar__main-nav a { min-height:44px; display:inline-flex; align-items:center; font-size:11px; }
+ body.ilena-storefront .navbar-brand-ilena img { max-width:126px; }
+ body.ilena-storefront .ilena-topbar__actions { gap:3px; }
+ body.ilena-storefront .ilena-topbar__actions .ilena-header-action { min-width:40px; min-height:40px; }
+}
+@media (min-width:1151px) and (max-width:1365px) {
+ body.ilena-storefront .ilena-topbar__container { padding-inline:clamp(20px,2.6vw,34px)!important; }
+ body.ilena-storefront .ilena-topbar__inner--full { gap:clamp(18px,2.2vw,28px); }
+ body.ilena-storefront .ilena-topbar__main-nav { gap:clamp(14px,1.6vw,22px); }
 }
 @media (max-width:600px) {
  body.ilena-storefront .ilena-topbar__main-nav { display:none; }
@@ -10567,10 +10589,43 @@ body.ilena-storefront .ilena-mobile-interior-link img {
     body.ilena-storefront .navbar-hp-atas .ilena-mobile-sister-brands { gap: 0; }
 }
 @media (max-width: 380px) {
-    body.ilena-storefront .ilena-mobile-sister-brands { gap: 5px; }
-    body.ilena-storefront .ilena-mobile-lunarea-link img { width: 68px; }
-    body.ilena-storefront .ilena-mobile-interior-link img { width: 58px; height: 15px; }
-    body.ilena-storefront .navbar-hp-atas { gap: 5px !important; }
+    body.ilena-storefront .navbar-hp-atas {
+        display: grid !important;
+        grid-template-columns: 44px 68px minmax(0, 1fr) 44px;
+        align-items: center;
+        gap: 5px !important;
+        padding-left: max(8px, env(safe-area-inset-left)) !important;
+        padding-right: max(8px, env(safe-area-inset-right)) !important;
+    }
+    body.ilena-storefront .navbar-hp-atas > a:first-child {
+        grid-column: 1;
+        width: 44px !important;
+        min-width: 44px !important;
+    }
+    body.ilena-storefront .ilena-mobile-sister-brands {
+        grid-column: 2;
+        width: 68px;
+        min-width: 0;
+        overflow: hidden;
+    }
+    body.ilena-storefront .ilena-mobile-lunarea-link { min-width: 0; }
+    body.ilena-storefront .ilena-mobile-lunarea-link img { width: 68px; max-width: 100%; }
+    body.ilena-storefront .navbar-hp-atas .ilena-mobile-search-slot {
+        grid-column: 3;
+        width: 100%;
+        min-width: 0;
+    }
+    body.ilena-storefront .navbar-hp-atas > div:last-of-type {
+        grid-column: 4;
+        width: 44px !important;
+        min-width: 44px !important;
+    }
+    body.ilena-storefront .navbar-hp-atas .ilena-mobile-menu-button {
+        width: 44px !important;
+        min-width: 44px !important;
+        height: 44px !important;
+        min-height: 44px !important;
+    }
 }
 body.ilena-storefront.ilena-page--payment .ilena-compact-header__interior { display: none !important; }
 
