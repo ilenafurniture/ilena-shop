@@ -10347,17 +10347,18 @@ body.ilena-storefront .navbar-brand-ilena img { display:block; width:150px; heig
 body.ilena-storefront .ilena-brand-motion { display:none; }
 @media (min-width:901px) and (hover:hover) and (pointer:fine) {
  body.ilena-storefront .ilena-brand-motion {
-  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-  color:#fff; font-family:Georgia,'Times New Roman',serif; font-size:23px; font-weight:700; letter-spacing:.08em;
+  position:absolute; inset:0; display:block;
   opacity:0; pointer-events:none;
  }
- body.ilena-storefront .ilena-brand-motion__ile { opacity:0; transform:translateX(-46px); }
- body.ilena-storefront .ilena-brand-motion__n {
-  position:absolute; left:58px; display:grid; width:25px; height:25px; place-items:center;
-  border:2px solid #b92831; border-radius:50%; background:#b92831; color:#111; font-family:Arial,sans-serif;
-  font-size:17px; letter-spacing:0; opacity:0; transform:translateX(-76px);
+ body.ilena-storefront .ilena-brand-motion__glyph {
+  position:absolute; top:0; height:31px; background-image:url('/img/Logo%20Putih%20Ilena%201.png');
+  background-repeat:no-repeat; background-size:150px auto; opacity:0;
  }
- body.ilena-storefront .ilena-brand-motion__a { position:absolute; left:99px; opacity:0; transform:translateY(25px); }
+ body.ilena-storefront .ilena-brand-motion__i { left:1px; width:5px; background-position:-1px center; transform:translateX(-30px); }
+ body.ilena-storefront .ilena-brand-motion__l { left:31px; width:10px; background-position:-31px center; transform:translateX(-30px); }
+ body.ilena-storefront .ilena-brand-motion__e { left:65px; width:12px; background-position:-65px center; transform:translateX(-30px); }
+ body.ilena-storefront .ilena-brand-motion__n { left:95px; width:24px; background-position:-95px center; transform:translateX(-76px); }
+ body.ilena-storefront .ilena-brand-motion__a { left:137px; width:13px; background-position:-137px center; transform:translateY(25px); }
  body.ilena-storefront .navbar-brand-ilena:hover img,
  body.ilena-storefront .navbar-brand-ilena:focus-visible img { animation:ilena-brand-logo-out 3.5s ease both; }
  body.ilena-storefront .navbar-brand-ilena:hover .ilena-brand-motion,
@@ -10366,8 +10367,12 @@ body.ilena-storefront .ilena-brand-motion { display:none; }
  body.ilena-storefront .navbar-brand-ilena:focus-visible .ilena-brand-motion__n { animation:ilena-brand-n-glide 3.5s ease both; }
  body.ilena-storefront .navbar-brand-ilena:hover .ilena-brand-motion__a,
  body.ilena-storefront .navbar-brand-ilena:focus-visible .ilena-brand-motion__a { animation:ilena-brand-a-rise 3.5s ease both; }
- body.ilena-storefront .navbar-brand-ilena:hover .ilena-brand-motion__ile,
- body.ilena-storefront .navbar-brand-ilena:focus-visible .ilena-brand-motion__ile { animation:ilena-brand-ile-arrive 3.5s ease both; }
+ body.ilena-storefront .navbar-brand-ilena:hover .ilena-brand-motion__i,
+ body.ilena-storefront .navbar-brand-ilena:focus-visible .ilena-brand-motion__i { animation:ilena-brand-letter-arrive 3.5s ease both; }
+ body.ilena-storefront .navbar-brand-ilena:hover .ilena-brand-motion__l,
+ body.ilena-storefront .navbar-brand-ilena:focus-visible .ilena-brand-motion__l { animation:ilena-brand-letter-arrive 3.5s .12s ease both; }
+ body.ilena-storefront .navbar-brand-ilena:hover .ilena-brand-motion__e,
+ body.ilena-storefront .navbar-brand-ilena:focus-visible .ilena-brand-motion__e { animation:ilena-brand-letter-arrive 3.5s .24s ease both; }
 }
 @keyframes ilena-brand-logo-out { 0%,8% { opacity:1; } 18%,82% { opacity:0; } 96%,100% { opacity:1; } }
 @keyframes ilena-brand-motion-window { 0%,10% { opacity:0; } 18%,78% { opacity:1; } 94%,100% { opacity:0; } }
@@ -10386,8 +10391,8 @@ body.ilena-storefront .ilena-brand-motion { display:none; }
   54%,76% { opacity:1; transform:translateY(0); }
   90%,100% { opacity:0; transform:translateY(0); }
 }
-@keyframes ilena-brand-ile-arrive {
-  0%,46% { opacity:0; transform:translateX(-46px); }
+@keyframes ilena-brand-letter-arrive {
+  0%,46% { opacity:0; transform:translateX(-30px); }
   62%,76% { opacity:1; transform:translateX(0); }
   90%,100% { opacity:0; transform:translateX(0); }
 }

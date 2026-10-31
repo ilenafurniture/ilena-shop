@@ -36,7 +36,7 @@ $enLanguageUrl = '/language/en?' . http_build_query(['return' => $languageReturn
             <div class="navbar-brand-pair">
                 <a class="navbar-brand-ilena" href="<?= esc($activeLocale === 'en' ? '/en' : '/', 'attr'); ?>" aria-label="Ilena Furniture — <?= esc(lang('Store.home'), 'attr'); ?>">
                     <img src="<?= base_url('/img/Logo Putih Ilena 1.png'); ?>" alt="Ilena Furniture" width="150" height="30" decoding="async">
-                    <span class="ilena-brand-motion" aria-hidden="true"><span class="ilena-brand-motion__ile">ILE</span><span class="ilena-brand-motion__n">N</span><span class="ilena-brand-motion__a">A</span></span>
+                    <span class="ilena-brand-motion" aria-hidden="true"><span class="ilena-brand-motion__glyph ilena-brand-motion__i"></span><span class="ilena-brand-motion__glyph ilena-brand-motion__l"></span><span class="ilena-brand-motion__glyph ilena-brand-motion__e"></span><span class="ilena-brand-motion__glyph ilena-brand-motion__n"></span><span class="ilena-brand-motion__glyph ilena-brand-motion__a"></span></span>
                 </a>
             </div>
             <?php if ($headerMode === 'full'): ?>
