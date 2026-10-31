@@ -280,7 +280,8 @@
     <div class="toolbar">
         <div class="searchbox">
             <i class="material-icons">search</i>
-            <input id="filterInput" type="text" placeholder="Cari judul, penulis, atau kategori…">
+            <label class="visually-hidden" for="filterInput">Cari artikel di halaman ini</label>
+            <input id="filterInput" type="text" placeholder="Cari artikel di halaman ini…" autocomplete="off">
         </div>
     </div>
 
@@ -298,7 +299,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($artikel as $ind_a => $a) { ?>
+                    <?php if (empty($artikel)): ?>
+                    <tr><td colspan="6" class="article-empty-state">Belum ada artikel pada halaman ini.</td></tr>
+                    <?php else: foreach ($artikel as $ind_a => $a) { ?>
                     <tr>
                         <td class="col-no"><?= (int) $ind_a + 1; ?></td>
                         <td class="col-judul">
@@ -342,7 +345,7 @@
                             </div>
                         </td>
                     </tr>
-                    <?php } ?>
+                    <?php } endif; ?>
                 </tbody>
             </table>
         </div>

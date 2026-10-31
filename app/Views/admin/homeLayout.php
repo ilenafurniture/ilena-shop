@@ -35,9 +35,12 @@ h5 {
 }
 </style>
 
-<div style="padding: 2em;">
-    <h1 class="teks-sedang m-0">Home Layout</h1>
-    <p class="mb-3">Pengaturan layout pada home page</p>
+<div class="home-layout-page admin-extra-page">
+    <header class="home-layout-heading">
+        <div><h1 class="teks-sedang m-0">Tampilan Beranda</h1>
+        <p class="mb-0">Kelola banner desktop, banner mobile, dan gambar pada halaman utama.</p></div>
+        <span class="home-layout-count">4 banner · desktop & mobile</span>
+    </header>
     <?php if ($msg) { ?>
     <div class="alert alert-success" role="alert">
         <?= $msg; ?>
@@ -47,7 +50,7 @@ h5 {
 
     <form method="post" action="/admin/homelayout" enctype="multipart/form-data">
         <?= csrf_field(); ?>
-        <div class="card">
+        <section class="home-layout-section">
             <div class="card-header text-center">
                 <h5>Header Slider Atas</h5>
             </div>
@@ -150,9 +153,9 @@ h5 {
                 </div>
 
             </div>
-        </div>
+        </section>
 
-        <div class="card mt-4">
+        <section class="home-layout-section mt-4">
             <div class="card-header text-center">
                 <h5>Foto & Latar Home</h5>
             </div>
@@ -164,7 +167,7 @@ h5 {
                     <?php $assetStorage = $homeAssetRecords[$filename]['storage'] ?? 'API lama (belum dimigrasikan)'; ?>
                     <?php $inputId = 'home-asset-' . pathinfo($filename, PATHINFO_FILENAME); ?>
                     <div class="col-12 col-md-6 col-xl-4">
-                        <div class="border rounded p-3 h-100">
+                        <div class="home-asset-row h-100">
                             <label class="form-label fw-bold" for="<?= esc($inputId, 'attr') ?>"><?= esc($label) ?></label>
                             <img src="<?= esc($previewUrl, 'attr') ?>" id="<?= esc($inputId . '-preview', 'attr') ?>" alt="<?= esc($label, 'attr') ?>" class="img-preview d-block w-100 mb-2" loading="lazy" decoding="async">
                             <small class="d-block text-muted mb-2"><?= esc($filename) ?></small>
@@ -178,9 +181,9 @@ h5 {
                     <?php endforeach; ?>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div class="d-flex justify-content-center mt-2">
+        <div class="home-layout-save">
             <button type="submit" class="btn btn-submit">Simpan</button>
         </div>
     </form>

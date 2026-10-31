@@ -77,13 +77,18 @@
         </table>
     </div>
 
-    <?php if ($pages > 1): ?>
-        <?php $query = ['q' => $search]; ?>
-        <nav class="admin-records-pagination admin-customer-pagination" aria-label="Halaman pelanggan">
+    <?php
+        $rangeStart = $total > 0 ? (($page - 1) * 50) + 1 : 0;
+        $rangeEnd = min($page * 50, $total);
+        $query = ['q' => $search];
+    ?>
+    <nav class="admin-records-pagination admin-customer-pagination" aria-label="Halaman pelanggan">
+        <span class="admin-customer-range">Menampilkan <?= (int) $rangeStart; ?>–<?= (int) $rangeEnd; ?> dari <?= number_format((int) $total, 0, ',', '.'); ?> akun</span>
+        <div class="admin-customer-page-controls">
             <a class="btn btn-sm btn-outline-secondary <?= $page <= 1 ? 'disabled' : ''; ?>" href="<?= esc('/admin/customers?' . http_build_query($query + ['page' => max(1, $page - 1)])); ?>" <?= $page <= 1 ? 'aria-disabled="true" tabindex="-1"' : ''; ?>>Sebelumnya</a>
             <span>Halaman <?= (int) $page; ?> dari <?= (int) $pages; ?></span>
             <a class="btn btn-sm btn-outline-secondary <?= $page >= $pages ? 'disabled' : ''; ?>" href="<?= esc('/admin/customers?' . http_build_query($query + ['page' => min($pages, $page + 1)])); ?>" <?= $page >= $pages ? 'aria-disabled="true" tabindex="-1"' : ''; ?>>Berikutnya</a>
-        </nav>
-    <?php endif; ?>
+        </div>
+    </nav>
 </section>
 <?= $this->endSection(); ?>

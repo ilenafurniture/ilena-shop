@@ -65,11 +65,11 @@ $val = static function (string $key, $default = '') use ($editPartner) {
 }
 </style>
 
-<div class="partner-admin-wrap">
+<div class="partner-admin-wrap admin-extra-page">
     <div class="partner-admin-hero">
         <div>
             <h1>Partner Ilena</h1>
-            <p>Kelola daftar toko/mitra yang tampil di halaman <b>/partner</b>. Simple: isi nama, kota, alamat, link Maps, foto, titik koordinat.</p>
+            <p>Kelola lokasi toko dan mitra yang tampil di halaman Partner.</p>
         </div>
         <a class="btn-soft" href="/partner" target="_blank">Lihat halaman partner</a>
     </div>
@@ -141,7 +141,7 @@ $val = static function (string $key, $default = '') use ($editPartner) {
             <h2>Daftar Partner (<?= count($partners ?? []); ?>)</h2>
             <div class="partner-list">
                 <?php if (empty($partners)): ?>
-                    <p class="text-muted mb-0">Belum ada partner dari admin. Tambahkan data pertama lewat form kiri.</p>
+                    <div class="partner-empty-state"><i class="material-icons" aria-hidden="true">storefront</i><p>Belum ada lokasi partner.</p><span>Tambahkan toko atau mitra menggunakan formulir ini.</span></div>
                 <?php endif; ?>
                 <?php foreach (($partners ?? []) as $partner): ?>
                     <div class="partner-row">

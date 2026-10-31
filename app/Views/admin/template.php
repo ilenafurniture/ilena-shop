@@ -215,7 +215,7 @@ $this->setVar('websiteOrderTodoCount', $websiteOrderTodoCount);
         }
     }
     </style>
-    <link rel="stylesheet" href="<?= base_url('css/ilena-admin-redesign.css?v=20261031c'); ?>">
+    <link rel="stylesheet" href="<?= base_url('css/ilena-admin-redesign.css?v=20261031d'); ?>">
     <link rel="stylesheet" href="<?= base_url('css/ilena-dialog.css?v=20261027'); ?>">
 </head>
 

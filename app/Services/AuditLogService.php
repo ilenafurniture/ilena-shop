@@ -91,8 +91,6 @@ class AuditLogService
     public function makeHumanActivity(string $method, string $path): string
     {
         $path = trim($path, '/');
-        $parts = array_values(array_filter(explode('/', $path)));
-        $last = strtolower((string)end($parts));
         $area = $this->humanizeArea($path);
 
         if (str_contains($path, 'free-shipping')) {
@@ -128,7 +126,7 @@ class AuditLogService
             return 'Mengubah tampilan halaman utama';
         }
 
-        return 'Melakukan perubahan pada ' . $area . ($last ? ' (' . $last . ')' : '');
+        return 'Mengubah informasi di ' . $area;
     }
 
     public function makeHumanDescription(string $activity, string $method, string $path, array $requestData = []): string
@@ -148,11 +146,10 @@ class AuditLogService
             }
         }
 
-        $desc = $activity . '.';
-        $desc .= ' Halaman/fitur: ' . $this->humanizeArea($path) . '.';
-        $desc .= ' Cara perubahan: ' . strtoupper($method) . '.';
+        $desc = rtrim($activity, '. ') . '. Bagian: ' . $this->humanizeArea($path) . '.';
+        $desc .= ' Perubahan dicatat saat admin menyimpan tindakan.';
         if (!empty($items)) {
-            $desc .= ' Data yang dikirim: ' . implode('; ', $items) . '.';
+            $desc .= ' Rincian yang tercatat: ' . implode('; ', $items) . '.';
         }
 
         return $desc;
@@ -218,15 +215,54 @@ class AuditLogService
 
     private function humanizeArea(string $path): string
     {
-        $path = trim(str_replace(['admin/', '-', '_'], ['', ' ', ' '], strtolower($path)));
-        $path = preg_replace('/\d+/', '', $path) ?? $path;
+        $path = strtolower(trim($path, '/'));
+        $labels = [
+            'free-shipping' => 'Pengaturan gratis ongkir',
+            'account-deletion-requests' => 'Permintaan penghapusan akun',
+            'project-interior' => 'Proyek interior',
+            'support-chat' => 'Percakapan pelanggan',
+            'activity-log' => 'Log aktivitas',
+            'homelayout' => 'Tampilan beranda',
+            'partners' => 'Data partner',
+            'customer' => 'Akun pelanggan',
+            'product' => 'Produk',
+            'article' => 'Artikel',
+            'voucher' => 'Voucher',
+            'order' => 'Pesanan',
+            'mutasi' => 'Stok dan mutasi',
+            'resi' => 'Pengiriman',
+            'shipment' => 'Pengiriman',
+        ];
+        foreach ($labels as $needle => $label) {
+            if (str_contains($path, $needle)) {
+                return $label;
+            }
+        }
+
+        $path = preg_replace('~^admin/?|/\d+(?=/|$)|\d+$~', '', $path) ?? $path;
+        $path = trim(str_replace(['-', '_', '/'], ' ', $path));
         $path = trim(preg_replace('/\s+/', ' ', $path) ?? $path);
-        return $path ? ucwords($path) : 'Admin';
+        return $path !== '' ? ucwords($path) : 'Pengelolaan admin';
     }
 
     private function humanizeKey(string $key): string
     {
-        return ucwords(str_replace(['_', '-'], ' ', $key));
+        return match (strtolower($key)) {
+            'id' => 'ID data',
+            'product_id' => 'ID produk',
+            'order_id' => 'ID pesanan',
+            'status' => 'Status',
+            'aktif' => 'Status aktif',
+            'stok' => 'Stok',
+            'quantity', 'qty' => 'Jumlah',
+            'kategori' => 'Kategori',
+            'type', 'jenis' => 'Jenis',
+            'role' => 'Peran',
+            'role_id' => 'ID peran',
+            'permission', 'permissions' => 'Hak akses',
+            'action' => 'Tindakan',
+            default => ucwords(str_replace(['_', '-'], ' ', $key)),
+        };
     }
 
     private function roleLabel($role): string
