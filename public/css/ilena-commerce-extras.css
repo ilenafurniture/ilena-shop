@@ -23,6 +23,107 @@ body.ilena-extra-open{overflow:hidden}
 @media(max-width:700px){.ilena-extra-modal{grid-template-columns:1fr;gap:12px;padding:18px;max-height:88dvh;overflow:auto}.ilena-extra-modal img{max-height:38dvh}.ilena-card-compare{opacity:1;right:7px;bottom:7px}.ilena-mini-cart,.ilena-compare-drawer{padding:18px}.ilena-filter-sheet .container-filter{width:100%}}
 @media(prefers-reduced-motion:reduce){.ilena-mini-cart,.ilena-compare-drawer,.ilena-extra-modal,.ilena-card-compare,.ilena-filter-sheet{transition:none}}
 
+/* Mobile comparison is a bottom sheet; keep the comparison grid readable and swipeable. */
+@media (max-width: 700px) {
+    .ilena-compare-drawer {
+        inset: auto 0 0;
+        box-sizing: border-box;
+        width: 100%;
+        height: min(78dvh, 680px);
+        max-height: calc(100dvh - env(safe-area-inset-top) - 12px);
+        padding: 18px 16px max(10px, env(safe-area-inset-bottom));
+        border: 1px solid rgba(55, 43, 34, .10);
+        border-bottom: 0;
+        border-radius: 18px 18px 0 0;
+        box-shadow: 0 -18px 48px rgba(20, 15, 10, .20);
+        transform: translateY(105%);
+        overscroll-behavior: contain;
+    }
+    .ilena-compare-drawer.is-open { transform: translateY(0); }
+    .ilena-compare-drawer > header {
+        flex: 0 0 auto;
+        align-items: center;
+        gap: 12px;
+        padding-bottom: 12px;
+    }
+    .ilena-compare-drawer > header h2 { font-size: 19px; }
+    .ilena-compare-drawer [data-compare-content] {
+        min-height: 0;
+        padding: 6px 0 12px;
+        overflow: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+    .ilena-compare-table {
+        width: max-content;
+        min-width: 100%;
+        overflow: visible;
+    }
+    .ilena-compare-table__row {
+        width: max-content;
+        min-width: 100%;
+        grid-template-columns: 76px repeat(var(--compare-count, 3), 112px);
+        gap: 8px;
+        padding: 11px 0;
+        font-size: 12px;
+    }
+    .ilena-compare-table__row > :first-child {
+        position: sticky;
+        left: 0;
+        z-index: 1;
+        align-self: stretch;
+        display: flex;
+        align-items: center;
+        padding-right: 4px;
+        background: #fff;
+        color: #6d6259;
+        font-size: 11px;
+        line-height: 1.35;
+    }
+    .ilena-compare-table__labels > :first-child { align-items: flex-start; padding-top: 5px; }
+    .ilena-compare-table__product { gap: 7px; }
+    .ilena-compare-table__product img { width: 64px; height: 64px; border-radius: 3px; }
+    .ilena-compare-table__product a {
+        display: -webkit-box;
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        font-size: 12px;
+        line-height: 1.4;
+    }
+    .ilena-compare-table__product button {
+        min-height: 44px;
+        padding: 5px 0;
+        font-size: 11px;
+    }
+    .ilena-compare-table__row strong { font-weight: 650; }
+    .ilena-compare-table__row [role="cell"] { overflow-wrap: anywhere; line-height: 1.45; }
+    .ilena-compare-table__row:nth-child(3) [role="cell"] { color: #8d2e2b; font-weight: 700; }
+    .ilena-compare-drawer .ilena-extra-clear {
+        flex: 0 0 auto;
+        align-self: stretch;
+        min-height: 44px;
+        border-top: 1px solid #eee9e4;
+        color: #8d2e2b;
+        text-align: center;
+        text-decoration: none;
+    }
+    .ilena-card-compare {
+        min-height: 44px;
+        padding: 8px 11px;
+        border: 1px solid rgba(141, 46, 43, .22);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, .96);
+        color: #702622;
+        font-size: 11px;
+        font-weight: 650;
+        box-shadow: 0 3px 10px rgba(25, 18, 14, .10);
+        -webkit-tap-highlight-color: transparent;
+    }
+    .ilena-card-compare[aria-pressed="true"] { background: #8d2e2b; color: #fff; }
+}
+
 /* Small, interaction-led motion; no continuous animation loops or layout-heavy effects. */
 @media(min-width:701px){body.ilena-storefront .ilena-topbar{position:sticky;top:0;transition:box-shadow .2s ease}body.ilena-storefront .ilena-topbar .container{transition:padding .2s ease}body.ilena-storefront .ilena-topbar.is-scroll-compact{box-shadow:0 8px 24px rgba(20,15,10,.2)}body.ilena-storefront .ilena-topbar.is-scroll-compact .container{padding-top:5px!important;padding-bottom:5px!important}body.ilena-storefront .ilena-topbar.is-scroll-compact .ilena-topbar__inner{min-height:44px}}
 body.ilena-storefront .navbar-hp-atas{transition:height .18s ease,padding .18s ease}
