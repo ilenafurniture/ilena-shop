@@ -475,37 +475,19 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                                     $diagramWidth = trim((string) ($diagramDimensions['lebar'] ?? '-'));
                                     $diagramHeight = trim((string) ($diagramDimensions['tinggi'] ?? '-'));
                                 ?>
-                                <div class="ilena-dimension-diagram" role="img" aria-label="<?= esc(lang('Store.dimensionDiagramLabel'), 'attr'); ?>">
-                                    <svg viewBox="0 0 260 150" aria-hidden="true" focusable="false">
-                                        <path d="M48 54 133 25l78 29-84 31-79-31Zm0 0v61l79 29V85m0 59V85l84-31v61l-84 29" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                                        <path d="M48 126 126 148m8-64 77-29m8 4v61" fill="none" stroke="#8d2e2b" stroke-width="1.5" stroke-dasharray="3 3"/>
-                                        <text x="54" y="143"><?= esc(lang('Store.lengthLabel')); ?> <?= esc($diagramLength); ?> mm</text>
-                                        <text x="147" y="47"><?= esc(lang('Store.widthLabel')); ?> <?= esc($diagramWidth); ?> mm</text>
-                                        <text x="216" y="92" transform="rotate(90 216 92)"><?= esc(lang('Store.heightLabel')); ?> <?= esc($diagramHeight); ?> mm</text>
+                                <div class="ilena-dimension-diagram" role="group" aria-label="<?= esc(lang('Store.dimensionDiagramLabel'), 'attr'); ?>">
+                                    <svg viewBox="0 0 300 184" aria-hidden="true" focusable="false">
+                                        <defs><marker id="ilena-dimension-arrow" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto-start-reverse"><path d="M0 0 7 3.5 0 7z"/></marker></defs>
+                                        <path class="ilena-dimension-diagram__outline" d="M48 54 133 25l78 29-84 31-79-31Zm0 0v61l79 29V85m0 59V85l84-31v61l-84 29"/>
+                                        <path class="ilena-dimension-diagram__measure" d="m47 128 78 29m13-73 75-28m11 1v62" marker-start="url(#ilena-dimension-arrow)" marker-end="url(#ilena-dimension-arrow)"/>
                                     </svg>
+                                    <dl class="ilena-dimension-values">
+                                        <div><dt><?= esc(lang('Store.lengthLabel')); ?></dt><dd><?= esc($diagramLength); ?> <span>mm</span></dd></div>
+                                        <div><dt><?= esc(lang('Store.widthLabel')); ?></dt><dd><?= esc($diagramWidth); ?> <span>mm</span></dd></div>
+                                        <div><dt><?= esc(lang('Store.heightLabel')); ?></dt><dd><?= esc($diagramHeight); ?> <span>mm</span></dd></div>
+                                        <div><dt><?= esc(lang('Store.weightLabel')); ?></dt><dd><?= esc((string) ($diagramDimensions['berat'] ?? '-')); ?> <span>kg</span></dd></div>
+                                    </dl>
                                 </div>
-                                <ul>
-                                    <li>
-                                        <p class="mb-0">
-                                            <?= esc(lang('Store.lengthLabel')); ?> : <?= esc((string) ($produk['deskripsi']['dimensi']['asli']['panjang'] ?? '-')) ?> mm
-                                        </p>
-                                    </li>
-                                    <li>
-                                        <p class="mb-0">
-                                            <?= esc(lang('Store.widthLabel')); ?> : <?= esc((string) ($produk['deskripsi']['dimensi']['asli']['lebar'] ?? '-')) ?> mm
-                                        </p>
-                                    </li>
-                                    <li>
-                                        <p class="mb-0">
-                                            <?= esc(lang('Store.heightLabel')); ?> : <?= esc((string) ($produk['deskripsi']['dimensi']['asli']['tinggi'] ?? '-')) ?> mm
-                                        </p>
-                                    </li>
-                                    <li>
-                                        <p class="mb-0">
-                                            <?= esc(lang('Store.weightLabel')); ?> : <?= esc((string) ($produk['deskripsi']['dimensi']['asli']['berat'] ?? '-')) ?> kg
-                                        </p>
-                                    </li>
-                                </ul>
                                 <p class="mb-0 mt-1 fw-bold"><?= esc(lang('Store.packageDimensions')); ?></p>
                                 <ul>
                                     <li>
