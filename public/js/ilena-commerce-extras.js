@@ -137,12 +137,14 @@
         const category = card.querySelector('.related-card-category, a.text-dark p');
         const price = card.querySelector('.related-card-prices .harga, .harga');
         if (!image || !link || !title || !price) return null;
+        const variantInputs = [...card.querySelectorAll('.container-varian input[type="radio"], .related-card-info input[type="radio"]')];
         return {
             id: card.dataset.productId || link.href,
             image: safeUrl(image.currentSrc || image.src),
             title: title.textContent.trim(), category: category?.textContent.trim() || '',
             price: price.textContent.trim().replace(/\s+/g, ' '), url: link.href,
-            options: card.querySelectorAll('.container-varian input[type="radio"], .related-card-info input[type="radio"]').length,
+            options: variantInputs.length,
+            availableOptions: variantInputs.filter((input) => Number(input.dataset.stok) > 0).length,
         };
     }
 
