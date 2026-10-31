@@ -8543,7 +8543,7 @@ body.ilena-storefront .ilena-mobile-lightbox { display: none; }
     }
 }
 
-/* Slightly smaller header controls on phones; retain the current full-bleed bar. */
+/* Keep touch targets comfortable while letting the search field flex on narrow phones. */
 @media (max-width: 600px) {
     body.ilena-storefront .navbar-hp-atas {
         gap: 6px !important;
@@ -8551,13 +8551,14 @@ body.ilena-storefront .ilena-mobile-lightbox { display: none; }
         padding-right: max(8px, env(safe-area-inset-right)) !important;
     }
     body.ilena-storefront .navbar-hp-atas > a:first-child {
-        flex-basis: 29px !important;
-        width: 29px;
-        min-width: 29px !important;
+        flex: 0 0 44px !important;
+        width: 44px !important;
+        min-width: 44px !important;
+        min-height: 44px;
     }
     body.ilena-storefront .navbar-hp-atas > a:first-child img {
-        width: 26px !important;
-        height: 26px !important;
+        width: 30px !important;
+        height: 30px !important;
     }
     body.ilena-storefront .navbar-hp-atas .input {
         min-height: 36px !important;
@@ -8565,11 +8566,11 @@ body.ilena-storefront .ilena-mobile-lightbox { display: none; }
     }
     body.ilena-storefront .navbar-hp-atas > div:last-of-type,
     body.ilena-storefront .navbar-hp-atas .ilena-mobile-menu-button {
-        flex-basis: 36px !important;
-        width: 36px !important;
-        min-width: 36px !important;
-        height: 36px !important;
-        min-height: 36px !important;
+        flex-basis: 44px !important;
+        width: 44px !important;
+        min-width: 44px !important;
+        height: 44px !important;
+        min-height: 44px !important;
     }
     body.ilena-storefront .navbar-hp-atas .ilena-mobile-menu-button i { font-size: 18px !important; }
 }
