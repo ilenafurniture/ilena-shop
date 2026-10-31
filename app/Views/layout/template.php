@@ -447,6 +447,9 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
                 <p class="ilena-chat-notice" data-chat-notice role="status" hidden></p>
             </div>
         </section>
+        <button type="button" class="ilena-back-to-top" data-back-to-top aria-label="<?= esc(lang('Store.backToTop'), 'attr'); ?>" aria-hidden="true" tabindex="-1">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 19V5m-7 7 7-7 7 7"/></svg>
+        </button>
         <div class="ilena-chat-dock d-flex flex-column gap-2">
             <div class="ilena-chat-greeting-teaser" data-chat-greeting role="group" aria-label="<?= esc(lang('Store.chatGreetingAria'), 'attr'); ?>" aria-live="polite" hidden>
                 <div class="ilena-chat-greeting-teaser__bubble">

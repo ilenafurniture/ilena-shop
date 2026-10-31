@@ -724,4 +724,5 @@ return [
     'authCaptchaVerified' => 'Verifikasi berhasil. Anda dapat melanjutkan.',
     'authCaptchaExpired' => 'Verifikasi kedaluwarsa. Centang kembali untuk melanjutkan.',
     'authCaptchaConnectionFailed' => 'Verifikasi tidak tersambung. Periksa koneksi lalu coba lagi.',
+    'backToTop' => 'Kembali ke atas',
 ];

@@ -2,6 +2,27 @@
   'use strict';
   const widget = document.querySelector('[data-ilena-chat-widget]');
   if (!widget) return;
+  const backToTop = widget.querySelector('[data-back-to-top]');
+  const desktopViewport = window.matchMedia('(min-width: 992px)');
+  let backToTopVisible = false;
+  const syncBackToTop = () => {
+    if (!backToTop) return;
+    const shouldShow = desktopViewport.matches && window.scrollY > 420;
+    if (shouldShow === backToTopVisible) return;
+    backToTopVisible = shouldShow;
+    backToTop.classList.toggle('is-visible', shouldShow);
+    backToTop.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+    backToTop.tabIndex = shouldShow ? 0 : -1;
+  };
+  if (backToTop) {
+    backToTop.addEventListener('click', () => {
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
+    });
+    window.addEventListener('scroll', syncBackToTop, { passive: true });
+    window.addEventListener('resize', syncBackToTop, { passive: true });
+    syncBackToTop();
+  }
 
   const panel = widget.querySelector('#container-greeting-card');
   const toggle = widget.querySelector('[data-open-ilena-chat]');

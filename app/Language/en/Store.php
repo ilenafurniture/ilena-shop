@@ -725,4 +725,5 @@ return [
     'authCaptchaVerified' => 'Verification complete. You can continue.',
     'authCaptchaExpired' => 'Verification expired. Please complete it again.',
     'authCaptchaConnectionFailed' => 'Could not connect to verification. Check your connection and try again.',
+    'backToTop' => 'Back to top',
 ];
