@@ -140,7 +140,7 @@ return [
     'filter' => 'Filter',
     'dismiss' => 'Tutup',
     'statusInStock' => 'Tersedia',
-    'stockUnitsAvailable' => 'Tersedia · %s unit',
+    'stockUnitsAvailable' => '%s unit',
     'fitGuideTitle' => 'Cek kecocokan pintu',
     'dimensionDiagramLabel' => 'Ilustrasi dimensi panjang, lebar, dan tinggi produk',
     'fitGuideIntro' => 'Masukkan ukuran bukaan bersih pintu. Perkiraan ini hanya membandingkan sisi produk; ruang untuk berbelok, tangga, dan kemasan tetap perlu diperhitungkan.',

@@ -360,10 +360,14 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                     </div></section>
                 </div>
                 <?php $stockQuantity = max(0, (int) ($defaultVariant['stok'] ?? 0)); ?>
-                <p class="ilena-product-stock <?= $stockQuantity > 0 ? 'is-available' : 'is-unavailable'; ?>" id="ilena-product-stock" role="status" aria-live="polite" data-stock-available="<?= esc(sprintf(lang('Store.stockUnitsAvailable'), '__COUNT__'), 'attr'); ?>" data-stock-unavailable="<?= esc(lang('Store.unavailable'), 'attr'); ?>">
-                    <span aria-hidden="true" class="ilena-product-stock__dot"></span>
-                    <span data-stock-label><?= esc($stockQuantity > 0 ? sprintf(lang('Store.stockUnitsAvailable'), number_format($stockQuantity, 0, ',', '.')) : lang('Store.unavailable')); ?></span>
-                </p>
+                <div class="ilena-product-stock <?= $stockQuantity > 0 ? 'is-available' : 'is-unavailable'; ?>" id="ilena-product-stock" role="status" aria-live="polite"
+                    data-stock-available="<?= esc(lang('Store.statusInStock'), 'attr'); ?>"
+                    data-stock-unavailable="<?= esc(lang('Store.unavailable'), 'attr'); ?>"
+                    data-stock-quantity="<?= esc(lang('Store.stockUnitsAvailable'), 'attr'); ?>">
+                    <span class="ilena-product-stock__icon" aria-hidden="true"><?= $stockQuantity > 0 ? '✓' : '–'; ?></span>
+                    <span class="ilena-product-stock__label" data-stock-label><?= esc($stockQuantity > 0 ? lang('Store.statusInStock') : lang('Store.unavailable')); ?></span>
+                    <span class="ilena-product-stock__quantity" data-stock-count <?= $stockQuantity < 1 ? 'hidden' : ''; ?>><?= esc(sprintf(lang('Store.stockUnitsAvailable'), number_format($stockQuantity, 0, ',', '.'))); ?></span>
+                </div>
                 <?php if (session()->get('role') == '1') { ?>
                 <div class="d-flex gap-2">
                     <a class="btn-default d-flex justify-content-center align-items-center"
@@ -601,6 +605,9 @@ alt="<?= esc($displayProductName, 'attr') ?>" width="300" height="300" loading="
                     $feedbackEnglish = $isEnglish;
                     $feedbackRows = is_array($publicProductFeedback ?? null) ? $publicProductFeedback : [];
                     $initialVariantName = (string) ($defaultVariant['nama'] ?? '');
+                    $feedbackMember = session()->get('isLogin') && (string) session()->get('active') === '1'
+                        && in_array((string) session()->get('role'), ['0', '4'], true)
+                        && filter_var((string) session()->get('email'), FILTER_VALIDATE_EMAIL);
                 ?>
                 <section class="ilena-commerce-panel" aria-labelledby="ilena-product-feedback-title">
                     <?php if ($notice = session()->getFlashdata('commerce_notice')): ?><p class="ilena-commerce-notice" role="status"><?= esc($notice); ?></p><?php endif; ?>
@@ -617,20 +624,25 @@ alt="<?= esc($displayProductName, 'attr') ?>" width="300" height="300" loading="
                         </div><p><?= esc((string) ($feedback['body'] ?? '')); ?></p>
                     </article>
                     <?php endforeach; ?>
-                    <details class="ilena-commerce-panel__details"><summary><?= $feedbackEnglish ? 'Write a review or ask a question' : 'Tulis ulasan atau ajukan pertanyaan'; ?></summary>
+                    <?php if (!$feedbackMember): ?>
+                    <p class="ilena-commerce-panel__muted"><?= $feedbackEnglish ? 'Sign in to ask a product question. Ratings are reserved for members who completed a purchase.' : 'Masuk untuk mengajukan pertanyaan produk. Penilaian hanya tersedia bagi member yang telah menyelesaikan pembelian.'; ?> <a href="<?= esc(ilena_store_path('/login'), 'attr'); ?>"><?= $feedbackEnglish ? 'Sign in to continue' : 'Masuk untuk melanjutkan'; ?></a></p>
+                    <?php else: ?>
+                    <details class="ilena-commerce-panel__details"><summary><?= $feedbackEnglish ? 'Ask a question or review this product' : 'Ajukan pertanyaan atau ulas produk'; ?></summary>
                         <form action="<?= esc(ilena_store_path('/commerce/feedback'), 'attr'); ?>" method="post" class="ilena-commerce-form">
                             <?= csrf_field(); ?><input type="hidden" name="product_id" value="<?= esc((string) $produk['id'], 'attr'); ?>">
-                            <label><?= $feedbackEnglish ? 'Submission type' : 'Jenis kiriman'; ?><select name="feedback_type"><option value="review"><?= $feedbackEnglish ? 'Product review' : 'Ulasan produk'; ?></option><option value="question"><?= $feedbackEnglish ? 'Product question' : 'Pertanyaan produk'; ?></option></select></label>
-                            <label><?= $feedbackEnglish ? 'Name' : 'Nama'; ?><input name="name" maxlength="120" value="<?= esc((string) (session()->get('nama') ?? ''), 'attr'); ?>" required></label>
-                            <label><?= $feedbackEnglish ? 'Email' : 'Email'; ?><input type="email" name="email" maxlength="191" value="<?= esc((string) (session()->get('email') ?? ''), 'attr'); ?>" required></label>
-                            <label><?= $feedbackEnglish ? 'Order ID (for verified buyer badge)' : 'Nomor pesanan (untuk tanda pembeli terverifikasi)'; ?><input name="order_id" maxlength="191"></label>
-                            <label><?= $feedbackEnglish ? 'Rating' : 'Penilaian'; ?><select name="rating"><option value="5">5 — <?= $feedbackEnglish ? 'Excellent' : 'Sangat baik'; ?></option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></label>
+                            <label><?= $feedbackEnglish ? 'What would you like to do?' : 'Apa yang ingin Anda lakukan?'; ?><select name="feedback_type" data-feedback-type><option value="question"><?= $feedbackEnglish ? 'Ask a product question' : 'Ajukan pertanyaan produk'; ?></option><option value="review"><?= $feedbackEnglish ? 'Write a product review' : 'Tulis ulasan produk'; ?></option></select></label>
+                            <div class="ilena-commerce-form__review-fields" data-feedback-review-fields hidden>
+                                <label><?= $feedbackEnglish ? 'Order number' : 'Nomor pesanan'; ?><input name="order_id" maxlength="191" data-feedback-order disabled required></label>
+                                <label><?= $feedbackEnglish ? 'Your rating' : 'Penilaian Anda'; ?><select name="rating" data-feedback-rating disabled required><option value="5">5 — <?= $feedbackEnglish ? 'Excellent' : 'Sangat baik'; ?></option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></label>
+                                <small><?= $feedbackEnglish ? 'A rating is accepted only when this account owns a completed order containing this product.' : 'Penilaian hanya diterima jika akun ini memiliki pesanan selesai yang mencakup produk ini.'; ?></small>
+                            </div>
                             <label><?= $feedbackEnglish ? 'Your note' : 'Pesan Anda'; ?><textarea name="body" minlength="8" maxlength="2000" rows="3" required></textarea></label>
                             <label class="ilena-commerce-consent"><input type="checkbox" name="publication_consent" value="1" required> <?= $feedbackEnglish ? 'I agree that my name and submission may be published after moderation.' : 'Saya setuju nama dan kiriman saya dapat ditampilkan setelah ditinjau.'; ?></label>
                             <button type="submit" class="ilena-commerce-panel__submit"><?= $feedbackEnglish ? 'Send for review' : 'Kirim untuk ditinjau'; ?></button>
                             <small><?= $feedbackEnglish ? 'Submissions are moderated and only approved content is published.' : 'Kiriman ditinjau terlebih dahulu; hanya konten yang disetujui akan ditampilkan.'; ?></small>
                         </form>
                     </details>
+                    <?php endif; ?>
                     <details class="ilena-commerce-panel__details" data-back-stock-alert <?= (int) ($defaultVariant['stok'] ?? 0) > 0 ? 'hidden' : ''; ?>><summary><?= $feedbackEnglish ? 'Notify me when available' : 'Beri tahu saat tersedia'; ?></summary>
                         <?php if (!session()->get('isLogin') || (string) session()->get('active') !== '1'): ?><p class="ilena-commerce-panel__muted"><?= $feedbackEnglish ? 'Sign in to save a stock alert.' : 'Masuk ke akun untuk menyimpan pemberitahuan stok.'; ?> <a href="<?= esc(ilena_store_path('/login'), 'attr'); ?>"><?= $feedbackEnglish ? 'Sign in' : 'Masuk'; ?></a></p><?php else: ?>
                         <form action="<?= esc(ilena_store_path('/commerce/alert'), 'attr'); ?>" method="post" class="ilena-commerce-form">
@@ -822,9 +834,10 @@ function updateStockState(stock) {
     const available = Math.max(0, Number(stock) || 0);
     stockState.classList.toggle('is-available', available > 0);
     stockState.classList.toggle('is-unavailable', available <= 0);
-    stockState.querySelector('[data-stock-label]').textContent = available > 0
-        ? stockState.dataset.stockAvailable.replace('__COUNT__', new Intl.NumberFormat(<?= json_encode($isEnglish ? 'en' : 'id'); ?>).format(available))
-        : stockState.dataset.stockUnavailable;
+    stockState.querySelector('[data-stock-label]').textContent = available > 0 ? stockState.dataset.stockAvailable : stockState.dataset.stockUnavailable;
+    stockState.querySelector('[data-stock-count]').textContent = stockState.dataset.stockQuantity.replace('%s', new Intl.NumberFormat(<?= json_encode($isEnglish ? 'en' : 'id'); ?>).format(available));
+    stockState.querySelector('[data-stock-count]').hidden = available < 1;
+    stockState.querySelector('.ilena-product-stock__icon').textContent = available > 0 ? '✓' : '–';
 }
 const detailVersion = "<?= $detailVersion ?>";
 const detailImageVersions = <?= json_encode($detailImageVersions, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
@@ -1227,6 +1240,21 @@ document.querySelectorAll('.gambar').forEach((card) => {
     };
     card.addEventListener('mouseenter', loadHover, { once: true });
     card.addEventListener('touchstart', loadHover, { once: true, passive: true });
+});
+
+document.querySelectorAll('[data-feedback-type]').forEach((selector) => {
+    const form = selector.closest('form');
+    const reviewFields = form?.querySelector('[data-feedback-review-fields]');
+    const orderField = form?.querySelector('[data-feedback-order]');
+    const ratingField = form?.querySelector('[data-feedback-rating]');
+    const syncReviewFields = () => {
+        const isReview = selector.value === 'review';
+        if (reviewFields) reviewFields.hidden = !isReview;
+        if (orderField) { orderField.disabled = !isReview; orderField.required = isReview; }
+        if (ratingField) { ratingField.disabled = !isReview; ratingField.required = isReview; }
+    };
+    selector.addEventListener('change', syncReviewFields);
+    syncReviewFields();
 });
 </script>
 

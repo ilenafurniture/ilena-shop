@@ -140,7 +140,7 @@ return [
     'filter' => 'Filters',
     'dismiss' => 'Close',
     'statusInStock' => 'In stock',
-    'stockUnitsAvailable' => 'In stock · %s available',
+    'stockUnitsAvailable' => '%s units available',
     'fitGuideTitle' => 'Check doorway fit',
     'dimensionDiagramLabel' => 'Illustration of product length, width, and height dimensions',
     'fitGuideIntro' => 'Enter the clear doorway opening. This estimate compares product faces only; turning space, stairs, and packaging still need to be considered.',

@@ -71,25 +71,55 @@ class StoreEngagementController extends BaseController
         $id = trim((string) $this->request->getPost('product_id'));
         $type = (string) $this->request->getPost('feedback_type');
         $body = trim((string) $this->request->getPost('body'));
-        $email = strtolower(trim((string) (session()->get('email') ?: $this->request->getPost('email'))));
-        $name = trim((string) (session()->get('nama') ?: $this->request->getPost('name')));
+        $memberEmail = strtolower(trim((string) session()->get('email')));
+        $isCustomerMember = session()->get('isLogin') && (string) session()->get('active') === '1'
+            && in_array((string) session()->get('role'), ['0', '4'], true)
+            && filter_var($memberEmail, FILTER_VALIDATE_EMAIL);
+        if (! $isCustomerMember) {
+            $message = $this->request->getLocale() === 'en'
+                ? 'Please sign in to ask a product question or submit a review.'
+                : 'Silakan masuk ke akun member untuk bertanya atau mengirim ulasan produk.';
+            return redirect()->to($this->localePath('/login'))->with('msg', $message);
+        }
+
+        $identity = new CustomerEmailIdentity();
+        $email = $identity->canonical($memberEmail) ?? $memberEmail;
+        $name = trim((string) session()->get('nama')) ?: 'Pelanggan Ilena';
         $rating = filter_var($this->request->getPost('rating'), FILTER_VALIDATE_INT);
         if (! $db->tableExists('product_feedback')) return $this->bounce('Fitur ulasan sedang disiapkan.');
         if (! (new \App\Services\Auth\AuthAttemptLimiter())->allow('product_feedback', (string) $this->request->getIPAddress(), $id, 8, 5, 900)) return $this->bounce('Terlalu banyak kiriman. Silakan coba kembali nanti.');
         if (! in_array($type, ['review', 'question'], true) || ! (new BarangModel())->where('id', $id)->where('active', '1')->first()
-            || ! filter_var($email, FILTER_VALIDATE_EMAIL) || $name === '' || mb_strlen($body) < 8 || mb_strlen($body) > 2000
+            || ! filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($body) < 8 || mb_strlen($body) > 2000
             || ! $this->request->getPost('publication_consent')
             || ($type === 'review' && ($rating === false || $rating < 1 || $rating > 5))) {
             return $this->bounce('Mohon lengkapi data dengan benar. Pesan harus 8–2.000 karakter.');
         }
         $verified = false;
-        $orderId = trim((string) $this->request->getPost('order_id'));
-        if ($type === 'review' && $orderId !== '' && session()->get('isLogin') && (string) session()->get('active') === '1') {
-            $verifiedEmails = $this->ownerEmails();
-            $order = (new PemesananModel())->where('id_midtrans', $orderId)->whereIn('email', $verifiedEmails)->first();
-            if ($order && ($order['status'] ?? '') === 'Selesai') {
+        $orderId = null;
+        if ($type === 'review') {
+            $orderId = trim((string) $this->request->getPost('order_id'));
+            $verifiedEmails = $identity->allFor($memberEmail);
+            $order = $orderId !== '' && $verifiedEmails !== []
+                ? (new PemesananModel())->where('id_midtrans', $orderId)->whereIn('email', $verifiedEmails)->where('status', 'Selesai')->first()
+                : null;
+            if ($order) {
                 $items = json_decode((string) ($order['items'] ?? '[]'), true) ?: [];
-                foreach ($items as $item) if (is_array($item) && (string) ($item['id'] ?? '') === $id) $verified = true;
+                foreach ($items as $item) {
+                    if (is_array($item) && (string) ($item['id'] ?? '') === $id) { $verified = true; break; }
+                }
+            }
+            if (! $verified) {
+                return $this->bounce($this->request->getLocale() === 'en'
+                    ? 'Ratings are available only to signed-in members with a completed order containing this product. Check the order number and try again.'
+                    : 'Penilaian hanya tersedia bagi member yang masuk dan memiliki pesanan selesai berisi produk ini. Periksa nomor pesanan lalu coba kembali.');
+            }
+
+            $duplicate = $db->table('product_feedback')->where('product_id', $id)->where('author_email', $email)
+                ->where('order_id', $orderId)->where('feedback_type', 'review')->where('status !=', 'rejected')->countAllResults();
+            if ($duplicate > 0) {
+                return $this->bounce($this->request->getLocale() === 'en'
+                    ? 'A review for this product and order has already been submitted.'
+                    : 'Ulasan untuk produk dan pesanan ini sudah pernah dikirim.');
             }
         }
         $db->table('product_feedback')->insert([
