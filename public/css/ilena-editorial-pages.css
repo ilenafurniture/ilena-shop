@@ -219,6 +219,66 @@ body.ilena-storefront .ilena-about__contact address strong {
     color: var(--editorial-ink);
 }
 
+/* About page proof, navigation and customer voice: editorial rows, not a stack of cards. */
+body.ilena-storefront .ilena-about__hero-actions { display:flex; align-items:center; flex-wrap:wrap; gap:10px 18px; margin-top:24px; }
+body.ilena-storefront .ilena-about__hero-actions a,
+body.ilena-storefront .ilena-about__partner-cta > a {
+    display:inline-flex; min-height:46px; align-items:center; justify-content:center; gap:10px;
+    padding:0 17px; font-size:13px; font-weight:650; text-decoration:none;
+    transition:background-color .18s ease,color .18s ease,transform .18s ease;
+}
+body.ilena-storefront .ilena-about__hero-actions .ilena-about__action-primary { background:#8e3935; color:#fff; }
+body.ilena-storefront .ilena-about__hero-actions .ilena-about__action-primary:hover,
+body.ilena-storefront .ilena-about__partner-cta > a:hover { background:#702c29; color:#fff; transform:translateY(-1px); text-decoration:none; }
+body.ilena-storefront .ilena-about__hero-actions .ilena-about__action-secondary { padding-inline:0; color:#8e3935; text-decoration:underline; text-underline-offset:4px; }
+body.ilena-storefront .ilena-about__hero-actions a:focus-visible,
+body.ilena-storefront .ilena-about__guide-list a:focus-visible,
+body.ilena-storefront .ilena-about__partner-cta > a:focus-visible { outline:3px solid #c9a187; outline-offset:3px; }
+body.ilena-storefront .ilena-about__timeline { max-width:500px; padding:20px 0 12px; }
+body.ilena-storefront .ilena-about__timeline h2 { max-width:450px; margin:0 0 22px; font-family:var(--ilena-font-display,Georgia,serif); font-size:clamp(25px,3vw,36px); font-weight:450; line-height:1.12; text-wrap:balance; }
+body.ilena-storefront .ilena-about__timeline ol { display:grid; gap:0; margin:0; padding:0; list-style:none; }
+body.ilena-storefront .ilena-about__timeline li { display:grid; grid-template-columns:86px 1fr; gap:16px; padding:17px 0; border-top:1px solid var(--editorial-rule); }
+body.ilena-storefront .ilena-about__timeline-value { color:#8e3935; font-family:var(--ilena-font-display,Georgia,serif); font-size:clamp(30px,4vw,42px); line-height:1; font-variant-numeric:tabular-nums; }
+body.ilena-storefront .ilena-about__timeline h3,
+body.ilena-storefront .ilena-about__guide-list h3 { margin:0 0 6px; color:var(--editorial-ink); font-size:14px; font-weight:650; line-height:1.4; }
+body.ilena-storefront .ilena-about__timeline li p,
+body.ilena-storefront .ilena-about__guide-list p,
+body.ilena-storefront .ilena-about__partner-cta p { margin:0; color:var(--editorial-muted); font-size:13px; line-height:1.7; }
+body.ilena-storefront .ilena-about__guides,
+body.ilena-storefront .ilena-about__reviews { padding:clamp(38px,6vw,70px) 0; border-top:1px solid var(--editorial-rule); }
+body.ilena-storefront .ilena-about__guide-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border-top:1px solid var(--editorial-rule); }
+body.ilena-storefront .ilena-about__guide-list article { min-width:0; padding:20px 22px 12px 0; }
+body.ilena-storefront .ilena-about__guide-list article + article { padding-left:22px; border-left:1px solid var(--editorial-rule); }
+body.ilena-storefront .ilena-about__guide-list a { display:inline-flex; min-height:44px; align-items:center; gap:9px; margin-top:10px; color:#8e3935; font-size:12px; font-weight:700; text-decoration:underline; text-underline-offset:4px; }
+body.ilena-storefront .ilena-about__reviews .ilena-editorial__section-heading { margin-bottom:24px; }
+body.ilena-storefront .ilena-about__review-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); border-top:1px solid var(--editorial-rule); }
+body.ilena-storefront .ilena-about__review-list blockquote { min-width:0; max-width:520px; margin:0; padding:20px 22px 12px 0; }
+body.ilena-storefront .ilena-about__review-list blockquote + blockquote { padding-left:22px; border-left:1px solid var(--editorial-rule); }
+body.ilena-storefront .ilena-about__review-rating { display:block; margin-bottom:12px; color:#8e3935; font-size:13px; letter-spacing:.12em; }
+body.ilena-storefront .ilena-about__review-list blockquote p { margin:0 0 14px; color:#443c36; font-family:var(--ilena-font-display,Georgia,serif); font-size:18px; line-height:1.55; overflow-wrap:anywhere; }
+body.ilena-storefront .ilena-about__review-list cite { color:var(--editorial-muted); font-size:11px; font-style:normal; }
+body.ilena-storefront .ilena-about__partner-cta { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:clamp(24px,4vw,42px); background:#f3eee7; }
+body.ilena-storefront .ilena-about__partner-cta h2 { max-width:620px; margin:0 0 8px; color:var(--editorial-ink); font-family:var(--ilena-font-display,Georgia,serif); font-size:clamp(28px,4vw,44px); font-weight:450; line-height:1.08; text-wrap:balance; }
+body.ilena-storefront .ilena-about__partner-cta > a { flex:0 0 auto; background:#8e3935; color:#fff; }
+body.ilena-storefront .ilena-about__contact address strong { font-weight:700; }
+
+@media (max-width: 768px) {
+    body.ilena-storefront .ilena-about__hero-actions { gap:8px 14px; margin-top:20px; }
+    body.ilena-storefront .ilena-about__timeline { max-width:none; padding-top:10px; }
+    body.ilena-storefront .ilena-about__timeline li { grid-template-columns:72px 1fr; gap:12px; }
+    body.ilena-storefront .ilena-about__guide-list,
+    body.ilena-storefront .ilena-about__review-list { grid-template-columns:1fr; }
+    body.ilena-storefront .ilena-about__guide-list article,
+    body.ilena-storefront .ilena-about__guide-list article + article,
+    body.ilena-storefront .ilena-about__review-list blockquote,
+    body.ilena-storefront .ilena-about__review-list blockquote + blockquote { padding:18px 0; border-left:0; border-bottom:1px solid var(--editorial-rule); }
+    body.ilena-storefront .ilena-about__partner-cta { align-items:flex-start; flex-direction:column; gap:16px; padding:24px 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront .ilena-about__hero-actions a,
+    body.ilena-storefront .ilena-about__partner-cta > a { transition:none; }
+}
+
 /* About page: editorial imagery and quiet, typographic client proof. */
 @media (min-width: 769px) {
     body.ilena-storefront .ilena-about {

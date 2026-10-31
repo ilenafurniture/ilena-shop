@@ -10,7 +10,7 @@
             <p class="ilena-editorial__eyebrow"><?= lang('Store.storyOfIlena'); ?></p>
             <h1 id="about-title"><?= lang('Store.aboutHeroTitle'); ?></h1>
             <p class="ilena-editorial__intro"><?= lang('Store.aboutHeroIntro'); ?></p>
-            <div class="ilena-about__vision" aria-label="Visi Ilena: Mulai dari rumah, tercipta senyum ramah.">
+            <div class="ilena-about__vision">
                 <svg class="ilena-about__vision-mark" viewBox="0 0 96 56" aria-hidden="true" focusable="false">
                     <path class="vision-mark-stroke" pathLength="1" d="M5 27 23 10l18 17M10 23v25h26V23M19 48V34h9v14" />
                     <path class="vision-mark-stroke vision-mark-connect" pathLength="1" d="M42 31h13" />
@@ -18,11 +18,15 @@
                     <path class="vision-mark-stroke vision-mark-smile" pathLength="1" d="M65 32q8 9 16 0" />
                     <circle class="vision-mark-dot" cx="49" cy="31" r="2.2" />
                 </svg>
-                <p>Mulai dari rumah,<br><em>tercipta senyum ramah.</em></p>
+                <p lang="id">Mulai dari rumah,<br><em>tercipta senyum ramah.</em></p>
+            </div>
+            <div class="ilena-about__hero-actions">
+                <a class="ilena-about__action-primary" href="<?= esc(ilena_store_path('/product'), 'attr'); ?>"><?= lang('Store.aboutHeroShopCta'); ?></a>
+                <a class="ilena-about__action-secondary" href="<?= esc(ilena_store_path('/visimisi'), 'attr'); ?>"><?= lang('Store.aboutVisionValuesCta'); ?></a>
             </div>
         </div>
         <figure class="ilena-about__hero-visual ilena-about__image">
-            <img src="https://img.ilenafurniture.com/image/1742450062282.webp/?apikey=<?= esc($apikey_img_ilena, 'attr'); ?>" alt="Furniture Ilena dalam ruang bergaya urban" width="960" height="640" fetchpriority="high">
+            <img src="https://img.ilenafurniture.com/image/1742450062282.webp/?apikey=<?= esc($apikey_img_ilena, 'attr'); ?>" alt="<?= esc(lang('Store.aboutHeroImageAlt'), 'attr'); ?>" width="960" height="640" fetchpriority="high" decoding="async">
             <svg class="ilena-about-motion-art" viewBox="0 0 520 320" aria-hidden="true" focusable="false">
                 <circle class="about-motion-orbit-line" cx="260" cy="164" r="148" />
                 <path class="about-motion-path" pathLength="1" d="M91 190v-48c0-19 15-34 34-34h270c19 0 34 15 34 34v48M70 183h380v53H70zM91 236l-9 28m347-28 9 28" />
@@ -41,10 +45,14 @@
             <p><?= lang('Store.aboutHistoryOne'); ?></p>
             <p><?= lang('Store.aboutHistoryTwo'); ?></p>
         </div>
-        <aside class="ilena-about__experience" aria-label="<?= esc(lang('Store.manufacturingExperience'), 'attr'); ?>">
-            <span aria-hidden="true">30</span>
-            <p><strong><?= lang('Store.yearsExperience'); ?></strong><br><?= lang('Store.experienceFoundation'); ?></p>
-        </aside>
+        <div class="ilena-about__timeline" aria-labelledby="about-timeline-title">
+            <p class="ilena-editorial__eyebrow"><?= lang('Store.aboutTimelineEyebrow'); ?></p>
+            <h2 id="about-timeline-title"><?= lang('Store.aboutTimelineTitle'); ?></h2>
+            <ol>
+                <li><span class="ilena-about__timeline-value"><?= lang('Store.aboutManufacturingValue'); ?></span><div><h3><?= lang('Store.aboutManufacturingMilestoneTitle'); ?></h3><p><?= lang('Store.aboutManufacturingMilestoneBody'); ?></p></div></li>
+                <li><span class="ilena-about__timeline-value"><?= lang('Store.aboutBrandYear'); ?></span><div><h3><?= lang('Store.aboutBrandMilestoneTitle'); ?></h3><p><?= lang('Store.aboutBrandMilestoneBody'); ?></p></div></li>
+            </ol>
+        </div>
     </section>
 
     <section class="ilena-about__profile" aria-labelledby="about-profile-title">
@@ -55,21 +63,47 @@
             <a class="ilena-editorial__text-link" href="<?= esc(ilena_store_path('/product'), 'attr'); ?>"><?= lang('Store.exploreCollection'); ?> <span aria-hidden="true">→</span></a>
         </div>
         <figure class="ilena-about__profile-image">
-            <img src="https://img.ilenafurniture.com/image/1742450090380.webp/?apikey=<?= esc($apikey_img_ilena, 'attr'); ?>" alt="Proses dan produk furniture Ilena" width="960" height="640" loading="lazy" decoding="async">
+            <img src="https://img.ilenafurniture.com/image/1742450090380.webp/?apikey=<?= esc($apikey_img_ilena, 'attr'); ?>" alt="<?= esc(lang('Store.aboutProfileImageAlt'), 'attr'); ?>" width="960" height="640" loading="lazy" decoding="async">
         </figure>
     </section>
 
-    <section class="ilena-about__clients" aria-labelledby="about-clients-title">
+    <section class="ilena-about__guides" aria-labelledby="about-guides-title">
         <div class="ilena-editorial__section-heading">
-            <p class="ilena-editorial__eyebrow"><?= lang('Store.selectedPartnerships'); ?></p>
-            <h2 id="about-clients-title"><?= lang('Store.trustedBy'); ?></h2>
+            <p class="ilena-editorial__eyebrow"><?= lang('Store.aboutGuidesEyebrow'); ?></p>
+            <h2 id="about-guides-title"><?= lang('Store.aboutGuidesTitle'); ?></h2>
         </div>
-        <ul class="ilena-about__client-logos" aria-label="<?= esc(lang('Store.clientList'), 'attr'); ?>">
-            <li>The Land of Nod</li>
-            <li>Crate &amp; Barrel</li>
-            <li>West Elm</li>
-            <li>Williams Sonoma</li>
-        </ul>
+        <div class="ilena-about__guide-list">
+            <article><h3><?= lang('Store.aboutProductGuideTitle'); ?></h3><p><?= lang('Store.aboutProductGuideBody'); ?></p><a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>"><?= lang('Store.exploreCollection'); ?> <span aria-hidden="true">↗</span></a></article>
+            <article><h3><?= lang('Store.aboutDeliveryGuideTitle'); ?></h3><p><?= lang('Store.aboutDeliveryGuideBody'); ?></p><a href="<?= esc(ilena_store_path('/faq'), 'attr'); ?>"><?= lang('Store.readFaq'); ?> <span aria-hidden="true">↗</span></a></article>
+            <article><h3><?= lang('Store.aboutPartnerGuideTitle'); ?></h3><p><?= lang('Store.aboutPartnerGuideBody'); ?></p><a href="<?= esc(ilena_store_path('/partner'), 'attr'); ?>"><?= lang('Store.aboutPartnerCta'); ?> <span aria-hidden="true">↗</span></a></article>
+        </div>
+    </section>
+
+    <?php $aboutTestimonials = is_array($aboutTestimonials ?? null) ? $aboutTestimonials : []; if ($aboutTestimonials !== []): ?>
+    <section class="ilena-about__reviews" aria-labelledby="about-reviews-title">
+        <div class="ilena-editorial__section-heading">
+            <p class="ilena-editorial__eyebrow"><?= lang('Store.aboutReviewsEyebrow'); ?></p>
+            <h2 id="about-reviews-title"><?= lang('Store.aboutReviewsTitle'); ?></h2>
+        </div>
+        <div class="ilena-about__review-list">
+            <?php foreach ($aboutTestimonials as $testimonial): ?>
+            <blockquote>
+                <?php if (!empty($testimonial['rating'])): $testimonialRating = min(5, max(1, (int) $testimonial['rating'])); ?><span class="ilena-about__review-rating" role="img" aria-label="<?= esc(sprintf(lang('Store.starsOutOfFive'), $testimonialRating), 'attr'); ?>"><?= str_repeat('★', $testimonialRating); ?></span><?php endif; ?>
+                <p><?= esc((string) ($testimonial['body'] ?? '')); ?></p>
+                <cite><?= lang('Store.aboutVerifiedBuyer'); ?></cite>
+            </blockquote>
+            <?php endforeach; ?>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <section class="ilena-about__partner-cta" aria-labelledby="about-partner-title">
+        <div>
+            <p class="ilena-editorial__eyebrow"><?= lang('Store.partnerStore'); ?></p>
+            <h2 id="about-partner-title"><?= lang('Store.aboutPartnerTitle'); ?></h2>
+            <p><?= lang('Store.aboutPartnerBody'); ?></p>
+        </div>
+        <a href="<?= esc(ilena_store_path('/partner'), 'attr'); ?>"><?= lang('Store.aboutPartnerCta'); ?> <span aria-hidden="true">↗</span></a>
     </section>
 
     <section class="ilena-about__contact" aria-labelledby="about-contact-title">
@@ -83,7 +117,8 @@
             </div>
         </div>
         <address>
-            <strong>Ilena Furniture</strong>
+            <strong><?= lang('Store.aboutAddressTitle'); ?></strong>
+            <span>CV Catur Bhakti Mandiri</span>
             <span>Jalan Lingkar Taman Industri, Jatibarang, Mijen, Kota Semarang, Jawa Tengah</span>
             <a href="https://www.google.com/maps/search/?api=1&query=CV+Catur+Bhakti+Mandiri+Semarang" target="_blank" rel="noopener noreferrer"><?= lang('Store.openGoogleMaps'); ?> <span aria-hidden="true">↗</span></a>
         </address>

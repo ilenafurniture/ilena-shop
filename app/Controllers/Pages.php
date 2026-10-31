@@ -6420,12 +6420,25 @@ class Pages extends BaseController
     public function tentang()
     {
         $isEnglish = $this->request->getLocale() === 'en';
+        $aboutTestimonials = [];
+        $aboutDb = db_connect();
+        if ($aboutDb->tableExists('product_feedback')) {
+            $aboutTestimonials = $aboutDb->table('product_feedback')
+                ->select('body, rating')
+                ->where('feedback_type', 'review')
+                ->where('verified_purchase', 1)
+                ->where('status', 'approved')
+                ->orderBy('created_at', 'DESC')
+                ->limit(3)
+                ->get()->getResultArray();
+        }
         $data = [
             'title' => $isEnglish ? 'About Us' : 'Tentang Kami',
             'metaTitle' => $isEnglish ? 'About Ilena Furniture: Our Story & Values' : 'Tentang Ilena Furniture: Cerita & Nilai Kami',
             'metaDeskripsi' => $isEnglish ? 'Discover Ilena Furniture, our journey in creating modern furniture, and the values behind every collection for your home.' : 'Kenali Ilena Furniture, perjalanan kami menghadirkan furniture modern, dan nilai yang menginspirasi setiap koleksi untuk rumah Anda.',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
+            'aboutTestimonials' => $aboutTestimonials,
         ];
         return view('pages/tentang-clean', $data);
     }
