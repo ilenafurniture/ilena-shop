@@ -277,24 +277,25 @@ body {
 
 .pemberitahuan {
     --notice-ink: #352b29;
-    --notice-accent: #8f2430;
-    --notice-icon-bg: #f8eeec;
-    --notice-border: #e9dedb;
+    --notice-accent: #913631;
+    --notice-icon-ink: #fff;
+    --notice-surface: #f7f5f1;
+    --notice-border: #e7e0d7;
     box-sizing: border-box;
     display: flex;
-    align-items: center;
-    gap: 10px;
+    align-items: flex-start;
+    gap: 11px;
     width: min(100%, 680px);
     margin: 12px auto;
-    padding: 12px 15px;
+    padding: 12px 14px;
     border: 1px solid var(--notice-border);
-    border-left: 3px solid var(--notice-accent);
-    border-radius: 7px;
-    background: #fff;
-    box-shadow: 0 4px 14px rgba(54, 34, 30, .06);
+    border-left: 4px solid var(--notice-accent);
+    border-radius: 4px;
+    background: var(--notice-surface);
+    box-shadow: none;
     color: var(--notice-ink);
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 450;
     line-height: 1.55;
     letter-spacing: 0;
     text-align: left;
@@ -305,20 +306,20 @@ body {
     content: "!";
     display: grid;
     place-items: center;
-    width: 22px;
-    height: 22px;
-    flex: 0 0 22px;
-    margin: 0;
-    border-radius: 50%;
-    background: var(--notice-icon-bg);
-    color: var(--notice-accent);
-    font: 700 13px/1 Arial, sans-serif;
+    width: 23px;
+    height: 23px;
+    flex: 0 0 23px;
+    margin-top: 1px;
+    border-radius: 3px;
+    background: var(--notice-accent);
+    color: var(--notice-icon-ink);
+    font: 700 14px/1 Arial, sans-serif;
 }
 .pemberitahuan.hijau {
     --notice-ink: #294436;
-    --notice-accent: #47745a;
-    --notice-icon-bg: #edf5ef;
-    --notice-border: #dce9de;
+    --notice-accent: #4d7057;
+    --notice-surface: #f2f6f1;
+    --notice-border: #dce6dc;
 }
 .pemberitahuan.hijau::before {
     content: "✓";
@@ -333,7 +334,7 @@ body {
         width: 100%;
         margin-block: 10px;
         padding: 11px 13px;
-        border-radius: 8px;
+        border-radius: 4px;
         font-size: 13px;
         line-height: 1.5;
     }
