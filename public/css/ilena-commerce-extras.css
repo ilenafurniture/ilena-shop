@@ -333,6 +333,11 @@ body.ilena-storefront .ilena-commerce-feedback { padding:12px 0; border-bottom:1
 body.ilena-storefront .ilena-commerce-feedback p { margin:6px 0 0; font-size:14px; line-height:1.55; white-space:pre-wrap; }
 body.ilena-storefront .ilena-commerce-feedback__meta { display:flex; align-items:center; flex-wrap:wrap; gap:10px; font-size:13px; }
 body.ilena-storefront .ilena-commerce-feedback__meta span { color:#78675c; font-size:12px; }
+body.ilena-storefront .ilena-commerce-feedback__purchase-hint { grid-column:1/-1; color:#756e68; font-size:12px; line-height:1.45; }
+body.ilena-storefront .ilena-commerce-feedback__privacy { grid-column:1/-1; display:flex; flex-wrap:wrap; gap:10px 18px; margin:0; padding:10px 12px; border:1px solid #e7dfd6; border-radius:6px; }
+body.ilena-storefront .ilena-commerce-feedback__privacy legend { float:none; width:auto; margin:0; padding:0 5px; color:#554d46; font-size:12px; font-weight:600; }
+body.ilena-storefront .ilena-commerce-feedback__privacy label { display:flex; grid-template-columns:none; align-items:center; gap:7px; min-height:32px; margin:0; font-weight:500; }
+body.ilena-storefront .ilena-commerce-feedback__privacy input[type=radio] { width:16px; height:16px; margin:0; accent-color:#8d2e2b; }
 body.ilena-storefront .ilena-commerce-panel__details { margin-top:10px; border-bottom:1px solid #eee8e0; }
 body.ilena-storefront .ilena-commerce-panel__details summary { min-height:46px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; color:#71312d; font-weight:650; font-size:14px; }
 body.ilena-storefront .ilena-commerce-form { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; padding:4px 0 16px; }
@@ -434,4 +439,82 @@ body.ilena-storefront .ilena-cart-feedback.is-error::before { content:'!'; backg
     body.ilena-storefront .ilena-commerce-panel { padding:16px 0; }
     body.ilena-storefront .ilena-commerce-panel__heading { align-items:flex-start; flex-direction:column; gap:8px; }
     body.ilena-storefront .ilena-commerce-form { grid-template-columns:1fr; }
+}
+
+/* Compact top-corner flash notices for storefront feedback. */
+body.ilena-storefront #main-content .pemberitahuan.is-floating-notice {
+    position: fixed !important;
+    z-index: 5000;
+    top: calc(18px + env(safe-area-inset-top));
+    right: max(18px, env(safe-area-inset-right));
+    left: auto;
+    width: min(420px, calc(100vw - 32px));
+    max-height: min(32vh, 220px);
+    overflow: auto;
+    margin: 0 !important;
+    padding: 14px 46px 14px 16px;
+    border: 1px solid #e7dfd7;
+    border-left: 4px solid #a42b32;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 14px 38px rgba(31, 25, 22, .16);
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity .22s ease, transform .22s ease;
+    animation: ilena-notice-enter .24s ease-out both;
+}
+body.ilena-storefront #main-content .pemberitahuan.is-floating-notice::before {
+    content: "!";
+    width: 22px;
+    height: 22px;
+    flex-basis: 22px;
+    border-radius: 50%;
+    background: #f8eeee;
+    color: #a42b32;
+}
+body.ilena-storefront #main-content .pemberitahuan.is-floating-notice.hijau {
+    border-left-color: #47745a;
+}
+body.ilena-storefront #main-content .pemberitahuan.is-floating-notice.hijau::before {
+    content: "✓";
+    background: #edf5ef;
+    color: #356247;
+}
+body.ilena-storefront #main-content .pemberitahuan.is-floating-notice .ilena-notice-dismiss {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    display: grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #5e5751;
+    font: 24px/1 Arial, sans-serif;
+    cursor: pointer;
+}
+body.ilena-storefront #main-content .pemberitahuan.is-floating-notice .ilena-notice-dismiss:hover { background: #f4f0ec; }
+body.ilena-storefront #main-content .pemberitahuan.is-floating-notice.is-notice-leaving {
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+}
+@keyframes ilena-notice-enter {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 700px) {
+    body.ilena-storefront #main-content .pemberitahuan.is-floating-notice {
+        top: calc(10px + env(safe-area-inset-top));
+        right: max(12px, env(safe-area-inset-right));
+        width: min(420px, calc(100vw - 24px));
+        max-height: min(28vh, 190px);
+        padding: 12px 44px 12px 13px;
+        font-size: 14px;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront #main-content .pemberitahuan.is-floating-notice { animation: none; transition: none; }
 }

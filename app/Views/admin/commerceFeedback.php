@@ -12,7 +12,7 @@
             <td data-label="Produk"><span class="admin-records-code"><?= esc($row['product_id']); ?></span></td>
             <td data-label="Jenis"><?= esc(ucfirst((string) $row['feedback_type'])); ?><?php if (!empty($row['rating'])): ?><br><span class="admin-records-muted">Nilai <?= (int) $row['rating']; ?>/5</span><?php endif; ?><?php if ((int) $row['verified_purchase'] === 1): ?><br><span class="admin-records-muted">Pembeli terverifikasi</span><?php endif; ?></td>
             <td data-label="Kiriman" class="admin-records-message"><?= esc($row['body']); ?></td>
-            <td data-label="Pelanggan"><?= esc($row['author_name']); ?><br><small><?= esc($row['author_email']); ?></small></td>
+            <td data-label="Pelanggan"><?= esc($row['author_name']); ?><?php if (!empty($row['author_is_anonymous'])): ?><br><small>Nama disamarkan di halaman produk</small><?php endif; ?><br><small><?= esc($row['author_email']); ?></small></td>
             <td data-label="Status"><span class="admin-status-pill admin-status-pill--<?= esc($feedbackStatus, 'attr'); ?>"><?= esc(ucfirst($feedbackStatus)); ?></span></td>
             <td data-label="Tindakan">
                 <?php if ($feedbackStatus === 'pending'): ?>

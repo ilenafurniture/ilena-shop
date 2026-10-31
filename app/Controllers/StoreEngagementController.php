@@ -85,6 +85,7 @@ class StoreEngagementController extends BaseController
         $identity = new CustomerEmailIdentity();
         $email = $identity->canonical($memberEmail) ?? $memberEmail;
         $name = trim((string) session()->get('nama')) ?: 'Pelanggan Ilena';
+        $anonymous = (string) $this->request->getPost('anonymous') === '1';
         $rating = filter_var($this->request->getPost('rating'), FILTER_VALIDATE_INT);
         if (! $db->tableExists('product_feedback')) return $this->bounce('Fitur ulasan sedang disiapkan.');
         if (! (new \App\Services\Auth\AuthAttemptLimiter())->allow('product_feedback', (string) $this->request->getIPAddress(), $id, 8, 5, 900)) return $this->bounce('Terlalu banyak kiriman. Silakan coba kembali nanti.');
@@ -94,26 +95,25 @@ class StoreEngagementController extends BaseController
             || ($type === 'review' && ($rating === false || $rating < 1 || $rating > 5))) {
             return $this->bounce('Mohon lengkapi data dengan benar. Pesan harus 8–2.000 karakter.');
         }
+        $orderId = trim((string) $this->request->getPost('order_id'));
+        $verifiedEmails = $identity->allFor($memberEmail);
+        $order = $orderId !== '' && $verifiedEmails !== []
+            ? (new PemesananModel())->where('id_midtrans', $orderId)->whereIn('email', $verifiedEmails)->where('status', 'Selesai')->first()
+            : null;
         $verified = false;
-        $orderId = null;
-        if ($type === 'review') {
-            $orderId = trim((string) $this->request->getPost('order_id'));
-            $verifiedEmails = $identity->allFor($memberEmail);
-            $order = $orderId !== '' && $verifiedEmails !== []
-                ? (new PemesananModel())->where('id_midtrans', $orderId)->whereIn('email', $verifiedEmails)->where('status', 'Selesai')->first()
-                : null;
-            if ($order) {
-                $items = json_decode((string) ($order['items'] ?? '[]'), true) ?: [];
-                foreach ($items as $item) {
-                    if (is_array($item) && (string) ($item['id'] ?? '') === $id) { $verified = true; break; }
-                }
+        if ($order) {
+            $items = json_decode((string) ($order['items'] ?? '[]'), true) ?: [];
+            foreach ($items as $item) {
+                if (is_array($item) && (string) ($item['id'] ?? '') === $id) { $verified = true; break; }
             }
-            if (! $verified) {
-                return $this->bounce($this->request->getLocale() === 'en'
-                    ? 'Ratings are available only to signed-in members with a completed order containing this product. Check the order number and try again.'
-                    : 'Penilaian hanya tersedia bagi member yang masuk dan memiliki pesanan selesai berisi produk ini. Periksa nomor pesanan lalu coba kembali.');
-            }
+        }
+        if (! $verified) {
+            return $this->bounce($this->request->getLocale() === 'en'
+                ? 'Questions and reviews are available only to signed-in members with a completed order containing this product. Check the order number and try again.'
+                : 'Pertanyaan dan ulasan hanya dapat dikirim oleh member yang memiliki pesanan selesai berisi produk ini. Periksa nomor pesanan lalu coba kembali.');
+        }
 
+        if ($type === 'review') {
             $duplicate = $db->table('product_feedback')->where('product_id', $id)->where('author_email', $email)
                 ->where('order_id', $orderId)->where('feedback_type', 'review')->where('status !=', 'rejected')->countAllResults();
             if ($duplicate > 0) {
@@ -124,7 +124,8 @@ class StoreEngagementController extends BaseController
         }
         $db->table('product_feedback')->insert([
             'product_id' => $id, 'author_email' => $email, 'author_name' => mb_substr($name, 0, 120),
-            'order_id' => $verified ? $orderId : null, 'feedback_type' => $type,
+            'author_is_anonymous' => $anonymous ? 1 : 0,
+            'order_id' => $orderId, 'feedback_type' => $type,
             'rating' => $type === 'review' ? $rating : null,
             'title' => mb_substr(trim((string) $this->request->getPost('title')), 0, 160) ?: null,
             'body' => $body, 'verified_purchase' => $verified ? 1 : 0,

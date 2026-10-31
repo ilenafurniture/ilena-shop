@@ -600,33 +600,38 @@ alt="<?= esc($displayProductName, 'attr') ?>" width="300" height="300" loading="
                     <?php if ($feedbackRows === []): ?><p class="ilena-commerce-panel__muted"><?= $feedbackEnglish ? 'Be the first to share a helpful product note.' : 'Jadilah yang pertama berbagi pengalaman tentang produk ini.'; ?></p><?php endif; ?>
                     <?php foreach ($feedbackRows as $feedback): ?>
                     <article class="ilena-commerce-feedback">
-                        <div class="ilena-commerce-feedback__meta"><strong><?= esc((string) ($feedback['author_name'] ?? 'Pelanggan')); ?></strong>
+                        <div class="ilena-commerce-feedback__meta"><strong><?= esc(!empty($feedback['author_is_anonymous']) ? lang('Store.anonymousFeedbackName') : (string) ($feedback['author_name'] ?? 'Pelanggan')); ?></strong>
                             <?php if ((int) ($feedback['verified_purchase'] ?? 0) === 1): ?><span><?= $feedbackEnglish ? 'Verified buyer' : 'Pembeli terverifikasi'; ?></span><?php endif; ?>
                             <?php if (($feedback['feedback_type'] ?? '') === 'review' && !empty($feedback['rating'])): ?><span aria-label="<?= esc((string) $feedback['rating']); ?> out of 5 stars">★ <?= (int) $feedback['rating']; ?>/5</span><?php endif; ?>
                         </div><p><?= esc((string) ($feedback['body'] ?? '')); ?></p>
                     </article>
                     <?php endforeach; ?>
                     <?php if (!$feedbackMember): ?>
-                    <p class="ilena-commerce-panel__muted"><?= $feedbackEnglish ? 'Sign in to ask a product question. Ratings are reserved for members who completed a purchase.' : 'Masuk untuk mengajukan pertanyaan produk. Penilaian hanya tersedia bagi member yang telah menyelesaikan pembelian.'; ?> <a href="<?= esc(ilena_store_path('/login'), 'attr'); ?>"><?= $feedbackEnglish ? 'Sign in to continue' : 'Masuk untuk melanjutkan'; ?></a></p>
+                    <p class="ilena-commerce-panel__muted"><?= $feedbackEnglish ? 'Questions and reviews are for signed-in members who have completed an order containing this product.' : 'Pertanyaan dan ulasan tersedia bagi member yang sudah menyelesaikan pesanan berisi produk ini.'; ?> <a class="ilena-commerce-panel__login" href="<?= esc(ilena_store_path('/login'), 'attr'); ?>"><?= $feedbackEnglish ? 'Sign in to continue' : 'Masuk untuk melanjutkan'; ?></a></p>
                     <?php else: ?>
                     <details class="ilena-commerce-panel__details"><summary><?= $feedbackEnglish ? 'Ask a question or review this product' : 'Ajukan pertanyaan atau ulas produk'; ?></summary>
                         <form action="<?= esc(ilena_store_path('/commerce/feedback'), 'attr'); ?>" method="post" class="ilena-commerce-form">
                             <?= csrf_field(); ?><input type="hidden" name="product_id" value="<?= esc((string) $produk['id'], 'attr'); ?>">
                             <label><?= $feedbackEnglish ? 'What would you like to do?' : 'Apa yang ingin Anda lakukan?'; ?><select name="feedback_type" data-feedback-type><option value="question"><?= $feedbackEnglish ? 'Ask a product question' : 'Ajukan pertanyaan produk'; ?></option><option value="review"><?= $feedbackEnglish ? 'Write a product review' : 'Tulis ulasan produk'; ?></option></select></label>
+                            <label><?= $feedbackEnglish ? 'Order number' : 'Nomor pesanan'; ?><input name="order_id" maxlength="191" autocomplete="off" required></label>
+                            <small class="ilena-commerce-feedback__purchase-hint"><?= $feedbackEnglish ? 'We will verify that this completed order includes the product.' : 'Kami akan memeriksa bahwa pesanan selesai tersebut mencakup produk ini.'; ?></small>
+                            <fieldset class="ilena-commerce-feedback__privacy">
+                                <legend><?= $feedbackEnglish ? 'Name shown publicly' : 'Nama yang ditampilkan'; ?></legend>
+                                <label><input type="radio" name="anonymous" value="1" checked> <?= $feedbackEnglish ? 'Hide my name' : 'Samarkan nama saya'; ?></label>
+                                <label><input type="radio" name="anonymous" value="0"> <?= $feedbackEnglish ? 'Show my name' : 'Tampilkan nama saya'; ?></label>
+                            </fieldset>
                             <div class="ilena-commerce-form__review-fields" data-feedback-review-fields hidden>
-                                <label><?= $feedbackEnglish ? 'Order number' : 'Nomor pesanan'; ?><input name="order_id" maxlength="191" data-feedback-order disabled required></label>
                                 <label><?= $feedbackEnglish ? 'Your rating' : 'Penilaian Anda'; ?><select name="rating" data-feedback-rating disabled required><option value="5">5 — <?= $feedbackEnglish ? 'Excellent' : 'Sangat baik'; ?></option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></label>
-                                <small><?= $feedbackEnglish ? 'A rating is accepted only when this account owns a completed order containing this product.' : 'Penilaian hanya diterima jika akun ini memiliki pesanan selesai yang mencakup produk ini.'; ?></small>
                             </div>
                             <label><?= $feedbackEnglish ? 'Your note' : 'Pesan Anda'; ?><textarea name="body" minlength="8" maxlength="2000" rows="3" required></textarea></label>
-                            <label class="ilena-commerce-consent"><input type="checkbox" name="publication_consent" value="1" required> <?= $feedbackEnglish ? 'I agree that my name and submission may be published after moderation.' : 'Saya setuju nama dan kiriman saya dapat ditampilkan setelah ditinjau.'; ?></label>
+                            <label class="ilena-commerce-consent"><input type="checkbox" name="publication_consent" value="1" required> <?= $feedbackEnglish ? 'I agree that my submission may be published after moderation, using my name-display choice above.' : 'Saya setuju kiriman dapat ditampilkan setelah ditinjau sesuai pilihan nama di atas.'; ?></label>
                             <button type="submit" class="ilena-commerce-panel__submit"><?= $feedbackEnglish ? 'Send for review' : 'Kirim untuk ditinjau'; ?></button>
                             <small><?= $feedbackEnglish ? 'Submissions are moderated and only approved content is published.' : 'Kiriman ditinjau terlebih dahulu; hanya konten yang disetujui akan ditampilkan.'; ?></small>
                         </form>
                     </details>
                     <?php endif; ?>
                     <details class="ilena-commerce-panel__details" data-back-stock-alert <?= (int) ($defaultVariant['stok'] ?? 0) > 0 ? 'hidden' : ''; ?>><summary><?= $feedbackEnglish ? 'Notify me when available' : 'Beri tahu saat tersedia'; ?></summary>
-                        <?php if (!session()->get('isLogin') || (string) session()->get('active') !== '1'): ?><p class="ilena-commerce-panel__muted"><?= $feedbackEnglish ? 'Sign in to save a stock alert.' : 'Masuk ke akun untuk menyimpan pemberitahuan stok.'; ?> <a href="<?= esc(ilena_store_path('/login'), 'attr'); ?>"><?= $feedbackEnglish ? 'Sign in' : 'Masuk'; ?></a></p><?php else: ?>
+                        <?php if (!session()->get('isLogin') || (string) session()->get('active') !== '1'): ?><p class="ilena-commerce-panel__muted"><?= $feedbackEnglish ? 'Sign in to save a stock alert.' : 'Masuk ke akun untuk menyimpan pemberitahuan stok.'; ?> <a class="ilena-commerce-panel__login" href="<?= esc(ilena_store_path('/login'), 'attr'); ?>"><?= $feedbackEnglish ? 'Sign in' : 'Masuk'; ?></a></p><?php else: ?>
                         <form action="<?= esc(ilena_store_path('/commerce/alert'), 'attr'); ?>" method="post" class="ilena-commerce-form">
                             <?= csrf_field(); ?><input type="hidden" name="product_id" value="<?= esc((string) $produk['id'], 'attr'); ?>"><input type="hidden" name="alert_type" value="back_in_stock"><input type="hidden" name="variant_name" value="<?= esc($initialVariantName, 'attr'); ?>" data-commerce-variant>
                             <label><?= $feedbackEnglish ? 'Account email' : 'Email akun'; ?><input type="email" value="<?= esc((string) (session()->get('email') ?? ''), 'attr'); ?>" readonly required></label>
@@ -636,7 +641,7 @@ alt="<?= esc($displayProductName, 'attr') ?>" width="300" height="300" loading="
                         <?php endif; ?>
                     </details>
                     <details class="ilena-commerce-panel__details"><summary><?= $feedbackEnglish ? 'Notify me if the price drops' : 'Beri tahu jika harga turun'; ?></summary>
-                        <?php if (!session()->get('isLogin') || (string) session()->get('active') !== '1'): ?><p class="ilena-commerce-panel__muted"><?= $feedbackEnglish ? 'Sign in to save a price alert.' : 'Masuk ke akun untuk menyimpan pemberitahuan harga.'; ?> <a href="<?= esc(ilena_store_path('/login'), 'attr'); ?>"><?= $feedbackEnglish ? 'Sign in' : 'Masuk'; ?></a></p><?php else: ?>
+                        <?php if (!session()->get('isLogin') || (string) session()->get('active') !== '1'): ?><p class="ilena-commerce-panel__muted"><?= $feedbackEnglish ? 'Sign in to save a price alert.' : 'Masuk ke akun untuk menyimpan pemberitahuan harga.'; ?> <a class="ilena-commerce-panel__login" href="<?= esc(ilena_store_path('/login'), 'attr'); ?>"><?= $feedbackEnglish ? 'Sign in' : 'Masuk'; ?></a></p><?php else: ?>
                         <form action="<?= esc(ilena_store_path('/commerce/alert'), 'attr'); ?>" method="post" class="ilena-commerce-form">
                             <?= csrf_field(); ?><input type="hidden" name="product_id" value="<?= esc((string) $produk['id'], 'attr'); ?>"><input type="hidden" name="alert_type" value="price_drop"><input type="hidden" name="variant_name" value="<?= esc($initialVariantName, 'attr'); ?>" data-commerce-variant>
                             <label><?= $feedbackEnglish ? 'Account email' : 'Email akun'; ?><input type="email" value="<?= esc((string) (session()->get('email') ?? ''), 'attr'); ?>" readonly required></label>
@@ -1227,12 +1232,10 @@ document.querySelectorAll('.gambar').forEach((card) => {
 document.querySelectorAll('[data-feedback-type]').forEach((selector) => {
     const form = selector.closest('form');
     const reviewFields = form?.querySelector('[data-feedback-review-fields]');
-    const orderField = form?.querySelector('[data-feedback-order]');
     const ratingField = form?.querySelector('[data-feedback-rating]');
     const syncReviewFields = () => {
         const isReview = selector.value === 'review';
         if (reviewFields) reviewFields.hidden = !isReview;
-        if (orderField) { orderField.disabled = !isReview; orderField.required = isReview; }
         if (ratingField) { ratingField.disabled = !isReview; ratingField.required = isReview; }
     };
     selector.addEventListener('change', syncReviewFields);
