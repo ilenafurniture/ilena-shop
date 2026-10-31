@@ -15,9 +15,11 @@ $headerIsStaff = $headerLoggedIn && in_array($headerRole, ['1', '5'], true);
         <span class="ilena-compact-header__brand-divider" aria-hidden="true"></span>
         <a class="ilena-compact-header__lunarea" href="https://lunareafurniture.com" target="_blank" rel="noopener noreferrer" aria-label="<?= esc(lang('Store.visitLunarea'), 'attr'); ?>">
             <img src="<?= base_url('img/logolunareanavbar.webp'); ?>" width="120" height="26" alt="Lunarea Furniture">
+            <span class="ilena-brand-popover" aria-hidden="true"><strong>Lunarea Furniture</strong><small><?= esc(lang('Store.lunareaPopover')); ?></small></span>
         </a>
         <a class="ilena-compact-header__interior" href="https://ilenafurniture.net/" target="_blank" rel="noopener noreferrer" aria-label="<?= esc(lang('Store.customInterior'), 'attr'); ?>">
             <img src="<?= base_url('img/logo/logoilenainterior-v2.png'); ?>" width="92" height="24" alt="Ilena Interior">
+            <span class="ilena-brand-popover" aria-hidden="true"><strong>Ilena Interior</strong><small><?= esc(lang('Store.interiorPopover')); ?></small></span>
         </a>
     </div>
     <nav class="ilena-compact-header__actions" aria-label="Navigasi halaman">

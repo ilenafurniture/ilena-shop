@@ -10563,3 +10563,71 @@ body.ilena-storefront .ilena-mobile-interior-link img {
     body.ilena-storefront .navbar-hp-atas { gap: 5px !important; }
 }
 body.ilena-storefront.ilena-page--payment .ilena-compact-header__interior { display: none !important; }
+
+/* Small CSS-only sister-brand popovers: hover on desktop, keyboard focus accessible. */
+@media (min-width: 701px) and (hover: hover) and (pointer: fine) {
+    body.ilena-storefront .ilena-utility-bar { position: relative; z-index: 1200; overflow: visible; }
+    body.ilena-storefront .ilena-utility-bar__brands,
+    body.ilena-storefront .ilena-compact-header__brands { overflow: visible; }
+    body.ilena-storefront .ilena-utility-bar__brands > a,
+    body.ilena-storefront .ilena-compact-header__lunarea,
+    body.ilena-storefront .ilena-compact-header__interior { position: relative; }
+    body.ilena-storefront .ilena-compact-header { position: relative; z-index: 1200; overflow: visible; }
+    body.ilena-storefront .ilena-brand-popover {
+        position: absolute;
+        z-index: 1400;
+        top: calc(100% + 11px);
+        left: 50%;
+        display: flex;
+        width: 226px;
+        flex-direction: column;
+        gap: 4px;
+        padding: 13px 15px 14px;
+        border: 1px solid rgba(139,104,76,.28);
+        background: #fbf8f3;
+        color: #302a25;
+        box-shadow: 0 14px 34px rgba(20,16,13,.2);
+        line-height: 1.35;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translate(-50%,-5px);
+        transition: opacity .18s ease, transform .18s ease, visibility .18s;
+    }
+    body.ilena-storefront .ilena-brand-popover::before {
+        position: absolute;
+        top: -6px;
+        left: calc(50% - 5px);
+        width: 10px;
+        height: 10px;
+        border-top: 1px solid rgba(139,104,76,.28);
+        border-left: 1px solid rgba(139,104,76,.28);
+        background: #fbf8f3;
+        content: "";
+        transform: rotate(45deg);
+    }
+    body.ilena-storefront .ilena-brand-popover strong {
+        color: #812d2a;
+        font-family: var(--ilena-font-display, inherit);
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: .01em;
+    }
+    body.ilena-storefront .ilena-brand-popover small {
+        color: #665d55;
+        font-size: 11px;
+        line-height: 1.5;
+        white-space: normal;
+    }
+    body.ilena-storefront .ilena-utility-bar__brands > a:hover .ilena-brand-popover,
+    body.ilena-storefront .ilena-utility-bar__brands > a:focus-visible .ilena-brand-popover,
+    body.ilena-storefront .ilena-compact-header__brands > a:hover .ilena-brand-popover,
+    body.ilena-storefront .ilena-compact-header__brands > a:focus-visible .ilena-brand-popover {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%,0);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront .ilena-brand-popover { transition: none !important; }
+}

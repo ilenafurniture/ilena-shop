@@ -336,6 +336,8 @@ return [
     'termsTitle' => 'Terms & Conditions',
     'privacyTitle' => 'Privacy Policy',
     'shippingPromoBar' => 'Free-shipping offers apply to selected areas and products. See terms.',
+    'lunareaPopover' => 'Explore the Lunarea furniture collection.',
+    'interiorPopover' => 'Interior design for spaces that feel personal.',
     'termsIntroTitle' => 'Introduction',
     'termsIntroBody' => 'These terms govern use of the Ilena Furniture website and shopping services. By browsing the website or placing an order, you agree to the terms in effect at the time of use. Our Privacy Policy explains personal-data processing and forms part of our service information.',
     'websiteUseTitle' => 'Website Use',
