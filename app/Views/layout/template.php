@@ -333,6 +333,7 @@
     <link rel="stylesheet" href="<?= base_url('css/ilena-dialog.css?v=20261027'); ?>">
     <link rel="stylesheet"
         href="<?= base_url('css/ilena-storefront.css?v=' . filemtime(FCPATH . 'css/ilena-storefront.css')); ?>">
+    <link rel="stylesheet" href="<?= base_url('css/ilena-commerce-extras.css?v=' . filemtime(FCPATH . 'css/ilena-commerce-extras.css')); ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <?php
@@ -492,6 +493,7 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
     <?php if (!$isInternalArea): ?>
     <div class="ilena-cart-feedback" data-ilena-cart-feedback data-network-message="<?= esc(lang('Store.cartAddNetworkFeedback'), 'attr'); ?>" role="status" aria-live="polite" aria-atomic="true" hidden></div>
     <script defer src="<?= base_url('js/ilena-cart-feedback.js?v=' . (is_file(FCPATH . 'js/ilena-cart-feedback.js') ? filemtime(FCPATH . 'js/ilena-cart-feedback.js') : '1')); ?>"></script>
+    <script defer src="<?= base_url('js/ilena-commerce-extras.js?v=' . filemtime(FCPATH . 'js/ilena-commerce-extras.js')); ?>"></script>
     <?php endif; ?>
     <script>
     const toastElm = document.querySelector(".toast")

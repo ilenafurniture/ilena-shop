@@ -201,6 +201,7 @@ $catalogPageUrl = static function (int $page) use ($catalogRoute, $isSmartSearch
     foreach (['koleksi', 'jenis', 'harga', 'ruang', 'varian'] as $key) {
         if (isset($_GET[$key]) && $_GET[$key] !== '') $params[$key] = $_GET[$key];
     }
+    if (isset($_GET['sort']) && in_array((string) $_GET['sort'], ['price-asc', 'price-desc', 'newest'], true)) $params['sort'] = (string) $_GET['sort'];
     if ($page > 1) $params['pag'] = $page;
     return $catalogRoute . ($params ? '?' . http_build_query($params) : '');
 };
@@ -226,6 +227,16 @@ foreach ($produkLama as $p) {
 }
 
 $catalogTotalResults = count($produk);
+$catalogSort = (string) ($_GET['sort'] ?? 'recommended');
+if (in_array($catalogSort, ['price-asc', 'price-desc', 'newest'], true)) {
+    usort($produk, static function (array $left, array $right) use ($catalogSort): int {
+        if ($catalogSort === 'newest') {
+            return strcmp((string) ($right['tgl_update'] ?? ''), (string) ($left['tgl_update'] ?? ''));
+        }
+        $comparison = \App\Services\CatalogPricing::unitPrice($left) <=> \App\Services\CatalogPricing::unitPrice($right);
+        return $catalogSort === 'price-desc' ? -$comparison : $comparison;
+    });
+}
 $hitungPag = ceil(count($produk) / 10);
 $pag = 1;
 if (isset($_GET['pag'])) $pag = (int)$_GET['pag'];
@@ -1804,6 +1815,9 @@ btnFilterElm.forEach(elm => {
         if (jenisParam != '') paramArr.push('jenis=' + encodeURIComponent(jenisParam))
         if (hargaParam != '') paramArr.push('harga=' + encodeURIComponent(hargaParam))
         if (ruangParam != '') paramArr.push('ruang=' + encodeURIComponent(ruangParam))
+        const selectedSort = document.querySelector('[data-catalog-sort]')?.value || '';
+        const currentSort = selectedSort || new URLSearchParams(window.location.search).get('sort') || '';
+        if (['price-asc', 'price-desc', 'newest'].includes(currentSort)) paramArr.push('sort=' + encodeURIComponent(currentSort));
         window.location.href = urlCur + (paramArr.length ? '?' + paramArr.join('&') : '')
     })
 })

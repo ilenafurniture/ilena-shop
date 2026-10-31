@@ -699,6 +699,12 @@ alt="<?= esc($displayProductName, 'attr') ?>" width="300" height="300" loading="
         <?php } ?>
     </div>
 </div>
+<?php if (session()->get('role') != '1'): ?>
+<div class="ilena-sticky-purchase" data-sticky-purchase aria-live="polite">
+    <span class="ilena-sticky-purchase__name" data-sticky-product-name></span>
+    <button type="button" aria-label="<?= esc(lang('Store.cart'), 'attr'); ?>"><?= esc(lang('Store.cart')); ?></button>
+</div>
+<?php endif; ?>
 <script>
 const btnKeranjangElm = document.getElementById('btn-keranjang');
 const radioVarianElm = document.querySelectorAll('input[name="varian"], input[name="varian-mobile"]');

@@ -39,6 +39,7 @@ $routes->get('/find', 'Pages::findSmart', ['filter' => 'customerFilter']);
 $routes->get('/find/(:any)', 'Pages::find/$1', ['filter' => 'customerFilter']);
 
 $routes->get('/cart', 'Pages::cart', ['filter' => 'customerFilter']);
+$routes->get('/cart/summary', 'Pages::cartSummary', ['filter' => 'customerFilter']);
 $routes->post('/addcart/(:any)/(:any)/(:any)', 'Pages::addCart/$1/$2/$3', ['filter' => ['customerFilter', 'csrf']]);
 $routes->post('/deletecart/(:any)', 'Pages::deleteCart/$1', ['filter' => ['customerFilter', 'csrf']]);
 $routes->post('/reducecart/(:any)', 'Pages::reduceCart/$1', ['filter' => ['customerFilter', 'csrf']]);
@@ -295,6 +296,7 @@ $routes->group('{locale}', ['filter' => 'customerFilter'], static function ($rou
     $routes->get('search/suggest', 'Pages::searchSuggestions');
     $routes->post('actionfind', 'Pages::actionFind');
     $routes->get('cart', 'Pages::cart');
+    $routes->get('cart/summary', 'Pages::cartSummary');
     $routes->post('deletecart/(:any)', 'Pages::deleteCart/$1', ['filter' => ['csrf']]);
     $routes->post('reducecart/(:any)', 'Pages::reduceCart/$1', ['filter' => ['csrf']]);
     $routes->get('order', 'Pages::order');

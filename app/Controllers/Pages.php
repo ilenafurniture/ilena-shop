@@ -1235,6 +1235,56 @@ class Pages extends BaseController
         ]);
     }
 
+    /** Lightweight, session-scoped summary for the storefront mini-cart drawer. */
+    public function cartSummary()
+    {
+        $cart = session()->get('keranjang');
+        $cart = is_array($cart) ? $cart : [];
+        $items = [];
+        $subtotal = 0;
+
+        foreach ($cart as $item) {
+            if (! is_array($item) || empty($item['id_barang'])) {
+                continue;
+            }
+            $product = $this->barangModel->getBarang($item['id_barang']);
+            if (! $product) {
+                continue;
+            }
+
+            $variantName = trim((string) ($item['varian'] ?? ''));
+            $quantity = max(1, (int) ($item['jumlah'] ?? 1));
+            $variants = json_decode((string) ($product['varian'] ?? '[]'), true);
+            $slot = '1';
+            foreach (is_array($variants) ? $variants : [] as $variant) {
+                if (is_array($variant) && strcasecmp(trim((string) ($variant['nama'] ?? '')), $variantName) === 0) {
+                    $slot = preg_replace('/[^0-9]/', '', (string) (explode(',', (string) ($variant['urutan_gambar'] ?? '1'))[0] ?? '1')) ?: '1';
+                    break;
+                }
+            }
+
+            $unitPrice = \App\Services\CatalogPricing::unitPrice($product);
+            $lineTotal = $unitPrice * $quantity;
+            $subtotal += $lineTotal;
+            $version = ! empty($product['tgl_update']) ? (int) strtotime((string) $product['tgl_update']) : time();
+            $items[] = [
+                'name' => ilena_product_display_name($product),
+                'variant' => ilena_product_variant_display_name($product, $variantName),
+                'quantity' => $quantity,
+                'unitPrice' => 'Rp ' . number_format($unitPrice, 0, ',', '.'),
+                'total' => 'Rp ' . number_format($lineTotal, 0, ',', '.'),
+                'image' => base_url('viewvar/' . rawurlencode((string) $product['id']) . '/' . rawurlencode($slot) . '?v=' . $version),
+            ];
+        }
+
+        return $this->response->setHeader('Cache-Control', 'private, no-store, max-age=0')->setJSON([
+            'success' => true,
+            'items' => $items,
+            'quantity' => array_sum(array_map(static fn ($item): int => (int) ($item['quantity'] ?? 0), $items)),
+            'subtotal' => 'Rp ' . number_format($subtotal, 0, ',', '.'),
+        ]);
+    }
+
     public function addCart($idbarang, $varian, $jumlah)
     {
         $varian = rawurldecode((string)$varian);

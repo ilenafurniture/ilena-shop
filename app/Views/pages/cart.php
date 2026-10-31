@@ -12,6 +12,7 @@
             </div>
             <?php if (empty($keranjang)): ?>
                 <div class="ilena-cart-empty">
+                    <svg class="ilena-cart-empty__illustration" viewBox="0 0 144 96" role="img" aria-label="<?= esc(lang('Store.emptyCartTitle'), 'attr'); ?>" focusable="false"><path d="M24 55V42a12 12 0 0 1 24 0v13m48 0V42a12 12 0 0 1 24 0v13M20 55h104v19H20zM29 74v9m86-9v9M48 55V42a24 24 0 0 1 48 0v13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M49 24h46" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity=".45"/></svg>
                     <p class="ilena-cart-empty__eyebrow"><?= esc(lang('Store.emptyCartEyebrow')); ?></p>
                     <h2><?= esc(lang('Store.emptyCartTitle')); ?></h2>
                     <p><?= esc(lang('Store.emptyCartBody')); ?></p>
