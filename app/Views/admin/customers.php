@@ -1,6 +1,6 @@
 <?= $this->extend('admin/template'); ?>
 <?= $this->section('content'); ?>
-<main class="container-fluid py-4">
+<section class="container-fluid py-4">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div><h1 class="h3 mb-1">Akun Pelanggan</h1><p class="text-muted mb-0">Kelola status dan penangguhan akun pelanggan.</p></div>
         <form method="get" action="/admin/customers" class="d-flex gap-2">
@@ -55,5 +55,5 @@
             <?php endfor; ?>
         </ul></nav>
     <?php endif; ?>
-</main>
+</section>
 <?= $this->endSection(); ?>

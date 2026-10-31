@@ -15,40 +15,43 @@ $isActivePrefix = static function (array $prefixes) use ($currentPath): bool {
 $websiteOrderTodoCount = (int) ($websiteOrderTodoCount ?? 0);
 
 $mobileItems = [
-    ['show' => $can('dashboard'), 'label' => 'Home', 'icon' => 'space_dashboard', 'href' => '/admin', 'active' => $currentPath === 'admin' || $currentPath === 'admin/'],
+    ['show' => $can('dashboard'), 'label' => 'Dashboard', 'icon' => 'space_dashboard', 'href' => '/admin', 'active' => $currentPath === 'admin' || $currentPath === 'admin/'],
     ['show' => $can('products'), 'label' => 'Produk', 'icon' => 'inventory_2', 'href' => '/admin/product', 'active' => $isActivePrefix(['admin/product']) || ($title ?? '') === 'Produk Kami'],
-    ['show' => $can('products'), 'label' => 'Foto Preview', 'icon' => 'collections', 'href' => '/admin/menu-previews', 'active' => $isActivePrefix(['admin/menu-previews'])],
     ['show' => $can('orders_online'), 'label' => 'Pesanan', 'icon' => 'shopping_bag', 'href' => '/admin/order/online', 'active' => $isActivePrefix(['admin/order/online']), 'badge' => $websiteOrderTodoCount],
-    ['show' => $can('vouchers'), 'label' => 'Voucher', 'icon' => 'confirmation_number', 'href' => '/admin/voucher', 'active' => $isActivePrefix(['admin/voucher']) || str_contains($lowerTitle, 'voucher')],
-    ['show' => $can('content'), 'label' => 'Konten', 'icon' => 'dashboard_customize', 'href' => '/admin/homelayout', 'active' => $isActivePrefix(['admin/homelayout', 'admin/article', 'admin/partners'])],
+    ['show' => $can('support_chat'), 'label' => 'Live Chat', 'icon' => 'forum', 'href' => '/admin/support-chat', 'active' => $isActivePrefix(['admin/support-chat'])],
 ];
-$mobileItems = array_slice(array_values(array_filter($mobileItems, static fn($item) => $item['show'])), 0, 5);
-$mobileQuickItems = array_slice($mobileItems, 0, 4);
+$mobileQuickItems = array_values(array_filter($mobileItems, static fn($item) => $item['show']));
 $mobileMenuGroups = [
-    'Utama' => [['show' => $can('dashboard'), 'label' => 'Dashboard', 'icon' => 'space_dashboard', 'href' => '/admin', 'active' => $currentPath === 'admin']],
-    'Produk' => [
+    'Beranda' => [['show' => $can('dashboard'), 'label' => 'Dashboard', 'icon' => 'space_dashboard', 'href' => '/admin', 'active' => $currentPath === 'admin']],
+    'Katalog' => [
         ['show' => $can('products'), 'label' => 'Produk', 'icon' => 'inventory_2', 'href' => '/admin/product', 'active' => $isActivePrefix(['admin/product']) || ($title ?? '') === 'Produk Kami'],
-        ['show' => $can('products'), 'label' => 'Foto Preview Menu', 'icon' => 'collections', 'href' => '/admin/menu-previews', 'active' => $isActivePrefix(['admin/menu-previews'])],
-        ['show' => $can('products'), 'label' => 'Perbaikan File Gambar', 'icon' => 'image_search', 'href' => '/admin/changepic', 'active' => $isActivePrefix(['admin/changepic'])],
-        ['show' => $can('vouchers'), 'label' => 'Voucher', 'icon' => 'confirmation_number', 'href' => '/admin/voucher', 'active' => $isActivePrefix(['admin/voucher']) || str_contains($lowerTitle, 'voucher')],
+        ['show' => $can('products'), 'label' => 'Foto Menu Koleksi', 'icon' => 'collections', 'href' => '/admin/menu-previews', 'active' => $isActivePrefix(['admin/menu-previews'])],
+        ['show' => $can('products'), 'label' => 'Perbaikan Foto Produk', 'icon' => 'image_search', 'href' => '/admin/changepic', 'active' => $isActivePrefix(['admin/changepic'])],
     ],
-    'Pesanan' => [
+    'Penjualan & stok' => [
         ['show' => $can('orders_online'), 'label' => 'Pesanan Online', 'icon' => 'shopping_bag', 'href' => '/admin/order/online', 'active' => $isActivePrefix(['admin/order/online']), 'badge' => $websiteOrderTodoCount],
         ['show' => $can('mutasi'), 'label' => 'Mutasi Stok', 'icon' => 'swap_horiz', 'href' => '/admin/mutasi', 'active' => $isActivePrefix(['admin/mutasi', 'admin/mutasiconfirm', 'admin/labelbarang'])],
-    ],
-    'Konten & toko' => [
-        ['show' => $can('content'), 'label' => 'Artikel', 'icon' => 'article', 'href' => '/admin/article', 'active' => $isActivePrefix(['admin/article'])],
-        ['show' => $can('content'), 'label' => 'Home Layout', 'icon' => 'dashboard_customize', 'href' => '/admin/homelayout', 'active' => $isActivePrefix(['admin/homelayout'])],
-        ['show' => $can('content'), 'label' => 'Partner', 'icon' => 'storefront', 'href' => '/admin/partners', 'active' => $isActivePrefix(['admin/partners'])],
+        ['show' => $can('vouchers'), 'label' => 'Voucher', 'icon' => 'confirmation_number', 'href' => '/admin/voucher', 'active' => $isActivePrefix(['admin/voucher']) || str_contains($lowerTitle, 'voucher')],
         ['show' => $can('shipping'), 'label' => 'Gratis Ongkir', 'icon' => 'local_shipping', 'href' => '/admin/free-shipping', 'active' => $isActivePrefix(['admin/free-shipping'])],
-        ['show' => $can('marketplace'), 'label' => 'Workspace Marketplace', 'icon' => 'storefront', 'href' => '/market/product', 'active' => $isActivePrefix(['market'])],
     ],
-    'Tools' => [
+    'Layanan pelanggan' => [
+        ['show' => $can('support_chat'), 'label' => 'Live Chat', 'icon' => 'forum', 'href' => '/admin/support-chat', 'active' => $isActivePrefix(['admin/support-chat'])],
+        ['show' => $can('orders_online'), 'label' => 'Ulasan & Pertanyaan', 'icon' => 'reviews', 'href' => '/admin/commerce-feedback', 'active' => $isActivePrefix(['admin/commerce-feedback'])],
+        ['show' => $can('orders_online'), 'label' => 'Retur & Refund', 'icon' => 'assignment_return', 'href' => '/admin/commerce-service-cases', 'active' => $isActivePrefix(['admin/commerce-service-cases'])],
+        ['show' => $can('customers'), 'label' => 'Akun Pelanggan', 'icon' => 'manage_accounts', 'href' => '/admin/customers', 'active' => $isActivePrefix(['admin/customers'])],
+    ],
+    'Konten & mitra' => [
+        ['show' => $can('content'), 'label' => 'Artikel', 'icon' => 'article', 'href' => '/admin/article', 'active' => $isActivePrefix(['admin/article'])],
+        ['show' => $can('content'), 'label' => 'Tampilan Beranda', 'icon' => 'dashboard_customize', 'href' => '/admin/homelayout', 'active' => $isActivePrefix(['admin/homelayout'])],
+        ['show' => $can('content'), 'label' => 'Partner', 'icon' => 'storefront', 'href' => '/admin/partners', 'active' => $isActivePrefix(['admin/partners'])],
+        ['show' => $can('marketplace'), 'label' => 'Produk Marketplace', 'icon' => 'storefront', 'href' => '/market/product', 'active' => $isActivePrefix(['market'])],
+    ],
+    'Analitik & akses' => [
         ['show' => $can('analytics'), 'label' => 'Analytics', 'icon' => 'insights', 'href' => '/analytics', 'active' => $isActivePrefix(['analytics'])],
         ['show' => $can('activity_log'), 'label' => 'Log Aktivitas', 'icon' => 'history', 'href' => '/admin/activity-log', 'active' => $isActivePrefix(['admin/activity-log'])],
-        ['show' => $can('customers'), 'label' => 'Akun Pelanggan', 'icon' => 'manage_accounts', 'href' => '/admin/customers', 'active' => $isActivePrefix(['admin/customers'])],
         ['show' => $can('meta_capi'), 'label' => 'Meta CAPI', 'icon' => 'track_changes', 'href' => '/admin/meta-capi', 'active' => $isActivePrefix(['admin/meta-capi'])],
         ['show' => $can('spam_cleanup'), 'label' => 'Cleanup Spam Akun', 'icon' => 'person_remove', 'href' => '/admin/spam-cleanup', 'active' => $isActivePrefix(['admin/spam-cleanup'])],
+        ['show' => (string) session()->get('role') === '1', 'label' => 'Permintaan Hapus Akun', 'icon' => 'person_off', 'href' => '/admin/account-deletion-requests', 'active' => $isActivePrefix(['admin/account-deletion-requests'])],
         ['show' => (string) session()->get('role') === '1', 'label' => 'Role & Akses', 'icon' => 'admin_panel_settings', 'href' => '/admin/rbac', 'active' => $isActivePrefix(['admin/rbac'])],
     ],
 ];

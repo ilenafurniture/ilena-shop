@@ -58,7 +58,7 @@ $targetLabels = ['semua' => 'Semua pengguna', 'baru' => 'Member baru', 'lama' =>
 @media(prefers-reduced-motion:reduce){.voucher-page *{animation:none!important;transition:none!important}}
 </style>
 
-<main class="voucher-page container-fluid px-0 mt-2">
+<section class="voucher-page container-fluid px-0 mt-2">
   <header class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
     <div><div class="eyebrow">Promosi · Administrasi</div><h1>Kelola voucher</h1><p class="intro">Atur diskon, masa berlaku, batas pemakaian, dan siapa yang dapat menggunakannya.</p></div>
     <nav class="toolbar" aria-label="Aksi voucher"><a class="btn btn-quiet" href="/admin/voucher/usage">Riwayat pemakaian</a><a class="btn btn-primary-ilena" href="#voucher-create">Buat voucher</a></nav>
@@ -112,7 +112,7 @@ $targetLabels = ['semua' => 'Semua pengguna', 'baru' => 'Member baru', 'lama' =>
       <?php endforeach; else: ?><tr><td colspan="6" class="empty"><?= $q !== '' ? 'Tidak ada voucher yang cocok dengan pencarian.' : 'Belum ada voucher. Buat voucher pertama melalui formulir di atas.' ?></td></tr><?php endif; ?>
     </tbody></table></div>
   </section>
-</main>
+</section>
 
 <div class="modal fade" id="editVoucherModal" tabindex="-1" aria-labelledby="editVoucherTitle" aria-hidden="true"><div class="modal-dialog modal-lg modal-dialog-scrollable"><div class="modal-content voucher-page">
   <div class="modal-header"><div><div class="eyebrow">Pengaturan promosi</div><h2 class="modal-title fs-5" id="editVoucherTitle">Edit voucher</h2></div><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button></div>

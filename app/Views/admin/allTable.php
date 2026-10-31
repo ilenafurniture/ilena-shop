@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8" />
@@ -251,6 +251,39 @@
         .right {
             text-align: left
         }
+    }
+
+    /* Feed Produk follows the cardless ILENA admin workspace. */
+    :root {
+        --bg: #f7f6f4;
+        --panel: #fff;
+        --ring: #e8e4e1;
+        --ring-2: #e8e4e1;
+        --txt: #211f1e;
+        --muted: #6e6865;
+        --brand: #1c1b1a;
+        --brand2: #8d2e2b;
+        --accent: #8d2e2b;
+    }
+    body { font-family: "Plus Jakarta Sans", system-ui, sans-serif; color: var(--txt); background: var(--bg); }
+    .wrap { max-width: 1680px; }
+    .toolbar { padding: 0 0 16px; background: transparent; border: 0; border-bottom: 1px solid var(--ring); border-radius: 0; box-shadow: none; }
+    .ttl h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(24px, 2.4vw, 32px); font-weight: 500; }
+    .ttl .chip { border: 0; border-radius: 0; background: transparent; color: var(--muted); }
+    .search { border-radius: 6px; box-shadow: none; }
+    .search:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(141,46,43,.16); }
+    .btn { border-radius: 6px; color: #fff; background: var(--accent); border-color: var(--accent); box-shadow: none; }
+    .btn:hover { transform: none; color: #fff; background: #742320; border-color: #742320; }
+    .btn-excel .dot { background: #fff; box-shadow: none; }
+    .table-card { overflow: auto; background: transparent; border: 0; border-radius: 0; box-shadow: none; }
+    thead th { color: var(--txt); background: #f0eeec; border-bottom-color: var(--ring); }
+    tbody td { border-bottom-color: var(--ring); }
+    tbody tr:hover { background: #fbf4f3; }
+    .linkcell a { color: var(--accent); }
+    @media (max-width:760px) {
+        tbody tr { margin: 0; border: 0; border-bottom: 1px solid var(--ring); border-radius: 0; background: transparent; }
+        tbody td { border-bottom: 1px solid #efedeb; }
+        tbody td::before { color: var(--txt); }
     }
     </style>
 </head>

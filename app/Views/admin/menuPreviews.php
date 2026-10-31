@@ -24,7 +24,7 @@
 }
 </style>
 
-<main class="menu-preview-page">
+<section class="menu-preview-page">
     <header class="menu-preview-head">
         <div>
             <h1>Foto Preview Menu</h1>
@@ -68,7 +68,7 @@
         <p class="text-secondary">Belum ada produk aktif untuk ditampilkan.</p>
         <?php endif; ?>
     </form>
-</main>
+</section>
 
 <script>
 document.querySelectorAll('[data-preview-select]').forEach((select) => {

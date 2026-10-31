@@ -40,7 +40,7 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter): st
 @media(prefers-reduced-motion:reduce){.online-orders *,.order-dialog *,.resi-dialog *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 </style>
 
-<main class="online-orders">
+<section class="online-orders">
   <header class="page-head">
     <div><div class="eyebrow">Operasional · Toko online</div><h1>Pesanan online</h1><p class="intro">Cari pesanan, tinjau detail, dan lanjutkan pemrosesan.</p></div>
     <div class="head-actions"><a class="action" href="/admin/order/add"><span class="material-icons" aria-hidden="true">add</span>Tambah pesanan</a></div>
@@ -103,7 +103,7 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter): st
     </div>
     <?php if (($totalPages ?? 1) > 1): ?><nav class="orders-pagination" aria-label="Halaman daftar pesanan"><span>Halaman <?= (int) $currentPage ?> dari <?= (int) $totalPages ?></span><div><?php if ($currentPage > 1): ?><a class="action" href="<?= esc($pageUrl($currentPage - 1), 'attr') ?>" rel="prev">Sebelumnya</a><?php endif; ?><?php if ($currentPage < $totalPages): ?><a class="action" href="<?= esc($pageUrl($currentPage + 1), 'attr') ?>" rel="next">Berikutnya</a><?php endif; ?></div></nav><?php endif; ?>
   </section>
-</main>
+</section>
 
 <div class="order-dialog" id="orderDialog" role="dialog" aria-modal="true" aria-labelledby="detailTitle" aria-hidden="true">
   <div class="order-dialog__panel"><header class="order-dialog__head"><div><div class="eyebrow">Rincian pesanan</div><h2 id="detailTitle">—</h2></div><button class="order-dialog__close" type="button" data-close-order aria-label="Tutup"><span class="material-icons" aria-hidden="true">close</span></button></header>

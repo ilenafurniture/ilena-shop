@@ -135,6 +135,56 @@
 .ilena-admin-redesign .admin-content-inner .menu-preview-label span { color: var(--ia-muted); }
 .ilena-admin-redesign .admin-content-inner .menu-preview-submit button { border-radius: 6px !important; }
 
+/* Cardless admin: organize work with whitespace and rules, not boxed tiles. */
+.ilena-admin-redesign .admin-content-inner :is(
+    .card, .card-soft, .page-wrap, .container-table, .container-list-product, .admin-product-hero, .bulk-hero,
+    .page-card, .table-card, .seo-card, .bulk-card, .dash-card,
+    .quick-card, .partner-admin-card, .audit-card, .free-ship-card, .meta-capi-card,
+    .rbac-card, .spam-card, .summary-card, .preview-card, .chart-card
+) {
+    color: var(--ia-ink) !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+.ilena-admin-redesign .admin-content-inner :is(.card, .card-soft, .page-wrap, .container-table, .container-list-product, .admin-product-hero, .bulk-hero, .page-card, .seo-card, .bulk-card, .dash-card, .partner-admin-card, .audit-card, .free-ship-card, .meta-capi-card, .rbac-card, .spam-card, .summary-card, .preview-card, .chart-card) {
+    padding-inline: 0 !important;
+}
+.ilena-admin-redesign .admin-content-inner :is(.card, .card-soft, .page-card, .seo-card, .bulk-card, .dash-card, .partner-admin-card, .audit-card, .free-ship-card, .meta-capi-card, .rbac-card, .spam-card, .summary-card, .preview-card, .chart-card) {
+    border-bottom: 1px solid var(--ia-line) !important;
+}
+.ilena-admin-redesign .admin-content-inner :is(.card-header, .card-head) {
+    padding: 0 0 12px !important;
+    color: var(--ia-ink) !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-bottom: 1px solid var(--ia-line) !important;
+    text-align: left !important;
+}
+.ilena-admin-redesign .admin-content-inner :is(.card-body, .card-content) { padding: 14px 0 20px !important; }
+.ilena-admin-redesign .admin-content-inner .dash-grid { gap: 0 clamp(16px, 2.2vw, 32px); }
+.ilena-admin-redesign .admin-content-inner .dash-stat { min-height: 0; padding: 16px 0; border-bottom: 1px solid var(--ia-line); }
+.ilena-admin-redesign .admin-content-inner :is(.dash-row, .quick-card) {
+    color: var(--ia-ink) !important; background: transparent !important; border: 0 !important;
+    border-bottom: 1px solid var(--ia-line) !important; border-radius: 0 !important; box-shadow: none !important;
+}
+.ilena-admin-redesign .admin-content-inner .quick-card { min-height: 60px; padding: 12px 0; flex-direction: row; align-items: center; justify-content: flex-start; gap: 12px; }
+.ilena-admin-redesign .admin-content-inner .quick-card:hover { color: var(--ia-red) !important; transform: none; }
+.ilena-admin-redesign .admin-content-inner .quick-card i { color: var(--ia-red) !important; }
+.ilena-admin-redesign .admin-content-inner .dash-value,
+.ilena-admin-redesign .admin-content-inner .dash-row-title { color: var(--ia-ink) !important; font-variant-numeric: tabular-nums; }
+.ilena-admin-redesign .admin-content-inner .dash-label { color: var(--ia-muted) !important; }
+.ilena-admin-redesign .admin-content-inner .table-card,
+.ilena-admin-redesign .admin-content-inner .table-responsive { border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
+.ilena-admin-redesign .admin-content-inner .partner-admin-grid { gap: clamp(22px, 3vw, 42px); }
+.ilena-admin-redesign .admin-content-inner .partner-admin-card h2 { padding-bottom: 10px; border-bottom: 1px solid var(--ia-line); color: var(--ia-ink) !important; }
+.ilena-admin-redesign .admin-content-inner .partner-row { border-bottom: 1px solid var(--ia-line); border-radius: 0; background: transparent; }
+.ilena-admin-redesign .admin-content-inner .form-grid > .card + .card { border-left-color: var(--ia-line) !important; }
+.ilena-admin-redesign .admin-content-inner .empty-state { border: 0 !important; border-bottom: 1px dashed var(--ia-line) !important; border-radius: 0 !important; background: transparent !important; }
+.ilena-admin-redesign .admin-content-inner .permission-grid { gap: 0 18px; }
+.ilena-admin-redesign .admin-content-inner .admin-section-title { padding-bottom: 10px; border-bottom: 1px solid var(--ia-line); }
+
 @media (max-width: 992px) {
     .ilena-admin-redesign .admin-content-inner { padding: 18px 14px 104px; }
     .ilena-admin-redesign .admin-sidebar { display: none !important; }

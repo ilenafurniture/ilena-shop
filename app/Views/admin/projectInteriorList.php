@@ -133,6 +133,8 @@ h1.teks-sedang::after {
 
 /* ===== Filter Chip ===== */
 .filter-chip {
+    min-height: 36px;
+    font: inherit;
     font-size: 11.5px;
     border-radius: 999px;
     border: 1px solid #e5e7eb;
@@ -197,11 +199,11 @@ $countAll = is_array($projects??null) ? count($projects) : 0;
                 <input id="search-input" class="form-control" placeholder="Cari kode / nama / SJ / NF (Ctrl+K)">
             </div>
             <div class="col-md-8 d-flex justify-content-end gap-2 flex-wrap">
-                <span class="filter-chip active" data-status="all">Semua</span>
-                <span class="filter-chip" data-status="draft">Draft</span>
-                <span class="filter-chip" data-status="dp">DP</span>
-                <span class="filter-chip" data-status="termin">Termin</span>
-                <span class="filter-chip" data-status="lunas">Lunas</span>
+                <button type="button" class="filter-chip active" data-status="all" aria-pressed="true">Semua</button>
+                <button type="button" class="filter-chip" data-status="draft" aria-pressed="false">Draft</button>
+                <button type="button" class="filter-chip" data-status="dp" aria-pressed="false">DP</button>
+                <button type="button" class="filter-chip" data-status="termin" aria-pressed="false">Termin</button>
+                <button type="button" class="filter-chip" data-status="lunas" aria-pressed="false">Lunas</button>
             </div>
         </div>
     </div>
@@ -289,8 +291,9 @@ $countAll = is_array($projects??null) ? count($projects) : 0;
     }
 
     chips.forEach(c => c.onclick = () => {
-        chips.forEach(x => x.classList.remove('active'));
+        chips.forEach(x => { x.classList.remove('active'); x.setAttribute('aria-pressed', 'false'); });
         c.classList.add('active');
+        c.setAttribute('aria-pressed', 'true');
         status = c.dataset.status;
         apply();
     });
