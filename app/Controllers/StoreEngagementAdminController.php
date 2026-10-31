@@ -16,7 +16,7 @@ class StoreEngagementAdminController extends BaseController
         $db = db_connect();
         if (! $db->tableExists('product_feedback')) return redirect()->to('/admin')->with('msg', 'Jalankan migrasi fitur commerce terlebih dahulu.');
         $rows = $db->table('product_feedback')->orderBy('created_at', 'DESC')->limit(200)->get()->getResultArray();
-        return view('admin/commerceFeedback', ['rows' => $rows]);
+        return view('admin/commerceFeedback', ['title' => 'Ulasan & Pertanyaan Produk', 'rows' => $rows]);
     }
 
     public function moderate(int $id)
@@ -38,7 +38,10 @@ class StoreEngagementAdminController extends BaseController
         if (! $this->canManageCommerceCases()) return $this->response->setStatusCode(403)->setBody('Akses ditolak.');
         $db = db_connect();
         if (! $db->tableExists('customer_order_service_cases')) return redirect()->to('/admin')->with('msg', 'Jalankan migrasi fitur commerce terlebih dahulu.');
-        return view('admin/commerceServiceCases', ['rows' => $db->table('customer_order_service_cases')->orderBy('created_at', 'DESC')->limit(200)->get()->getResultArray()]);
+        return view('admin/commerceServiceCases', [
+            'title' => 'Permintaan Pembatalan, Retur & Refund',
+            'rows' => $db->table('customer_order_service_cases')->orderBy('created_at', 'DESC')->limit(200)->get()->getResultArray(),
+        ]);
     }
 
     public function updateCase(int $id)

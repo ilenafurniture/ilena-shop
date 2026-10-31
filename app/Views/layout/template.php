@@ -319,12 +319,12 @@
     <link href="<?= base_url('css/bootstrap.min.css'); ?>" rel="stylesheet">
     <link rel="preload" as="style" href="https://fonts.googleapis.com/icon?family=Material+Icons" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"></noscript>
-    <?php if ($title == 'Pembayaran') { ?>
+    <?php if (($title ?? '') === 'Pembayaran') { ?>
     <!-- <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
         data-client-key="SB-Mid-client-aGWfdxs2btRH4xSd" async></script> -->
     <script rel="preconnect" id="midtrans-script" src="https://api.midtrans.com/v2/assets/js/midtrans-new-3ds.min.js"
-        data-environment="<?= $emailUji ? 'sandbox' : 'production'; ?>"
-        data-client-key="<?= $emailUji ? 'SB-Mid-client-aGWfdxs2btRH4xSd' : 'Mid-client-9sUvUz3XTM_xqGOp'; ?>"
+        data-environment="<?= !empty($emailUji) ? 'sandbox' : 'production'; ?>"
+        data-client-key="<?= !empty($emailUji) ? 'SB-Mid-client-aGWfdxs2btRH4xSd' : 'Mid-client-9sUvUz3XTM_xqGOp'; ?>"
         type="text/javascript" async>
     </script>
     <?php } ?>
