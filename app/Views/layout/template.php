@@ -474,16 +474,25 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
     <?php endif; ?>
 
 
+    <?php
+    $storeCartItems = session()->get('keranjang');
+    $storeCartItems = is_array($storeCartItems) ? $storeCartItems : [];
+    $storeCartQuantity = array_sum(array_map(static fn ($item): int => is_array($item) ? max(0, (int) ($item['jumlah'] ?? 0)) : 0, $storeCartItems));
+    ?>
     <?php if (!$isInternalArea && in_array($layoutHeaderMode, ['full', 'auth', 'account'], true)): ?>
-    <?= $this->include('layout/navbar', ['headerMode' => $layoutHeaderMode]); ?>
-    <?= $this->include('layout/navbarHp'); ?>
+    <?= $this->include('layout/navbar', ['headerMode' => $layoutHeaderMode, 'cartQuantity' => $storeCartQuantity]); ?>
+    <?= $this->include('layout/navbarHp', ['cartQuantity' => $storeCartQuantity]); ?>
     <?php elseif (!$isInternalArea): ?>
-    <?= $this->include('layout/navbarCompact', ['headerMode' => $layoutHeaderMode]); ?>
+    <?= $this->include('layout/navbarCompact', ['headerMode' => $layoutHeaderMode, 'cartQuantity' => $storeCartQuantity]); ?>
     <?php endif; ?>
     <<?= $contentProvidesMain ? 'div' : 'main'; ?> id="main-content" tabindex="-1" style="flex: 1; position: relative; min-height: 500px;">
         <?= $this->renderSection('content'); ?>
     </<?= $contentProvidesMain ? 'div' : 'main'; ?>>
     <?= $this->include('layout/footer'); ?>
+    <?php if (!$isInternalArea): ?>
+    <div class="ilena-cart-feedback" data-ilena-cart-feedback data-network-message="<?= esc(lang('Store.cartAddNetworkFeedback'), 'attr'); ?>" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+    <script defer src="<?= base_url('js/ilena-cart-feedback.js?v=' . (is_file(FCPATH . 'js/ilena-cart-feedback.js') ? filemtime(FCPATH . 'js/ilena-cart-feedback.js') : '1')); ?>"></script>
+    <?php endif; ?>
     <script>
     const toastElm = document.querySelector(".toast")
     const toastTeksElm = document.querySelector(".toast p")

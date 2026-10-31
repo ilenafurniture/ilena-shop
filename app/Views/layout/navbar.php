@@ -1,5 +1,6 @@
 <?php
 $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $headerMode : 'full';
+$cartQuantity = max(0, (int) ($cartQuantity ?? 0));
 $activeLocale = ilena_current_store_locale();
 $currentPath = trim(service('uri')->getPath(), '/');
 $pathWithoutLocale = preg_replace('#^(?:id|en)(?:/|$)#', '', $currentPath);
@@ -65,7 +66,7 @@ $enLanguageUrl = '/language/en?' . http_build_query(['return' => $languageReturn
                     <?php } ?>
                 <?php } else { ?>
                     <a href="<?= esc(ilena_store_path('/wishlist'), 'attr'); ?>" class="ilena-header-action" aria-label="<?= esc(lang('Store.favorites'), 'attr'); ?>"><i class="material-icons" aria-hidden="true">favorite_border</i><span class="ilena-sr-only"><?= esc(lang('Store.favorites')); ?></span><span class="ilena-action-popover" aria-hidden="true"><strong><?= esc(lang('Store.favorites')); ?></strong><small><?= esc(lang('Store.favoritesPopover')); ?></small></span></a>
-                    <a href="<?= esc(ilena_store_path('/cart'), 'attr'); ?>" class="ilena-header-action" aria-label="<?= esc(lang('Store.cartTitle'), 'attr'); ?>"><i class="material-icons" aria-hidden="true">shopping_bag</i><span class="ilena-sr-only"><?= esc(lang('Store.cartTitle')); ?></span><span class="ilena-action-popover" aria-hidden="true"><strong><?= esc(lang('Store.cartTitle')); ?></strong><small><?= esc(lang('Store.cartPopover')); ?></small></span></a>
+                    <a href="<?= esc(ilena_store_path('/cart'), 'attr'); ?>" class="ilena-header-action ilena-cart-link" aria-label="<?= esc(lang('Store.cartTitle') . ' (' . $cartQuantity . ')', 'attr'); ?>" data-ilena-cart-link data-cart-label="<?= esc(lang('Store.cartTitle'), 'attr'); ?>"><i class="material-icons" aria-hidden="true">shopping_bag</i><span class="ilena-sr-only"><?= esc(lang('Store.cartTitle')); ?></span><span class="ilena-cart-badge" data-ilena-cart-badge data-count="<?= $cartQuantity; ?>"<?= $cartQuantity > 0 ? '' : ' hidden'; ?> aria-hidden="true"><?= $cartQuantity > 99 ? '99+' : $cartQuantity; ?></span><span class="ilena-action-popover" aria-hidden="true"><strong><?= esc(lang('Store.cartTitle')); ?></strong><small><?= esc(lang('Store.cartPopover')); ?></small></span></a>
                     <a href="<?= esc(ilena_store_path(session()->get('isLogin') ? '/account' : '/login'), 'attr'); ?>" class="ilena-header-action" aria-label="<?= esc(session()->get('isLogin') ? lang('Store.myAccount') : lang('Store.signIn'), 'attr'); ?>"><i class="material-icons" aria-hidden="true">person_outline</i><span class="ilena-sr-only"><?= esc(session()->get('isLogin') ? lang('Store.myAccount') : lang('Store.signIn')); ?></span><span class="ilena-action-popover" aria-hidden="true"><strong><?= esc(session()->get('isLogin') ? lang('Store.myAccount') : lang('Store.signIn')); ?></strong><small><?= esc(lang(session()->get('isLogin') ? 'Store.accountMemberPopover' : 'Store.accountGuestPopover')); ?></small></span></a>
                 <?php } ?>
             </div>

@@ -10566,7 +10566,8 @@ body.ilena-storefront.ilena-page--payment .ilena-compact-header__interior { disp
 
 /* Small CSS-only sister-brand popovers: hover on desktop, keyboard focus accessible. */
 @media (min-width: 701px) and (hover: hover) and (pointer: fine) {
-    body.ilena-storefront .ilena-utility-bar { position: relative; z-index: 1200; overflow: visible; }
+    /* Keep the logo popover's stacking context above the following main nav. */
+    body.ilena-storefront .ilena-utility-bar { position: relative; z-index: 1301; overflow: visible; }
     body.ilena-storefront .ilena-topbar { position: relative; z-index: 1200; overflow: visible; }
     body.ilena-storefront .ilena-topbar__actions { overflow: visible; }
     body.ilena-storefront .ilena-utility-bar__brands,
@@ -10644,4 +10645,73 @@ body.ilena-storefront.ilena-page--payment .ilena-compact-header__interior { disp
 @media (prefers-reduced-motion: reduce) {
     body.ilena-storefront .ilena-brand-popover,
     body.ilena-storefront .ilena-action-popover { transition: none !important; }
+}
+
+/* Cart response: server-owned quantity, with a restrained, short interaction cue. */
+body.ilena-storefront .ilena-cart-link { position: relative; }
+body.ilena-storefront .ilena-cart-badge {
+    position: absolute;
+    z-index: 3;
+    top: 1px;
+    right: -5px;
+    display: inline-grid;
+    min-width: 17px;
+    height: 17px;
+    place-items: center;
+    padding: 0 4px;
+    border: 1.5px solid #282521;
+    border-radius: 999px;
+    background: #a93732;
+    color: #fff;
+    font: 600 9px/1 Arial, sans-serif;
+    pointer-events: none;
+}
+body.ilena-storefront .navbar-hp .ilena-cart-badge {
+    top: 2px;
+    right: calc(50% - 19px);
+    border-color: #f8f6f2;
+}
+body.ilena-storefront .ilena-cart-badge[hidden],
+body.ilena-storefront .ilena-cart-feedback[hidden] { display: none !important; }
+body.ilena-storefront .ilena-cart-feedback {
+    position: fixed;
+    z-index: 2600;
+    left: 24px;
+    bottom: 28px;
+    max-width: min(360px, calc(100vw - 32px));
+    padding: 12px 16px;
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: 3px;
+    background: #302b25;
+    color: #fbf8f3;
+    box-shadow: 0 10px 28px rgba(25,21,17,.2);
+    font-size: 13px;
+    line-height: 1.45;
+    opacity: 0;
+    transform: translateY(7px);
+    transition: opacity .18s ease, transform .18s ease;
+    pointer-events: none;
+}
+body.ilena-storefront .ilena-cart-feedback.is-visible { opacity: 1; transform: translateY(0); }
+body.ilena-storefront .ilena-cart-feedback.is-error { border-left: 3px solid #a93732; }
+body.ilena-storefront .ilena-cart-link.is-bouncing .material-icons { animation: ilena-cart-bounce .38s ease-out; }
+body.ilena-storefront .ilena-cart-badge.is-pulsing { animation: ilena-cart-pulse .42s ease-out; }
+@keyframes ilena-cart-bounce {
+    0%, 100% { transform: translateY(0) scale(1); }
+    38% { transform: translateY(-5px) scale(1.08); }
+    68% { transform: translateY(1px) scale(.96); }
+}
+@keyframes ilena-cart-pulse {
+    0% { transform: scale(1); }
+    45% { transform: scale(1.28); }
+    100% { transform: scale(1); }
+}
+@media (max-width: 700px) {
+    body.ilena-storefront .ilena-cart-feedback { right: auto; left: 50%; bottom: 82px; transform: translate(-50%,7px); }
+    body.ilena-storefront .ilena-cart-feedback.is-visible { transform: translate(-50%,0); }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront .ilena-cart-feedback { transition: none !important; }
+    body.ilena-storefront .ilena-cart-link.is-bouncing .material-icons,
+    body.ilena-storefront .ilena-cart-badge.is-pulsing { animation: none !important; }
 }

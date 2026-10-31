@@ -1241,6 +1241,9 @@ class Pages extends BaseController
         $jumlah = max(1, (int)$jumlah);
         $product = $this->barangModel->getBarang($idbarang);
         if (!$product) {
+            if ($this->request->isAJAX()) {
+                return $this->cartJsonResponse(false, lang('Store.cartAddFailedFeedback'), 404);
+            }
             return redirect()->to(ilena_store_path('/cart'))->with('msg', 'Produk sudah tidak tersedia. Keranjang tidak berubah.');
         }
 
@@ -1253,6 +1256,9 @@ class Pages extends BaseController
             }
         }
         if ($availableStock === null || $availableStock < 1) {
+            if ($this->request->isAJAX()) {
+                return $this->cartJsonResponse(false, lang('Store.cartAddFailedFeedback'), 409);
+            }
             return redirect()->to(ilena_store_path('/cart'))->with('msg', 'Varian tidak tersedia atau stoknya habis. Keranjang tidak berubah.');
         }
 
@@ -1281,10 +1287,31 @@ class Pages extends BaseController
         }
         session()->set('keranjang', $keranjang);
         $this->syncCartToUser($keranjang);
+        $cartMessage = $requestedTotal > $availableStock
+            ? lang('Store.cartQuantityAdjustedFeedback')
+            : lang('Store.cartAddedFeedback');
+        if ($this->request->isAJAX()) {
+            return $this->cartJsonResponse(true, $cartMessage);
+        }
         if ($requestedTotal > $availableStock) {
-            session()->setFlashdata('msg', 'Jumlah disesuaikan dengan stok tersedia (' . $availableStock . ').');
+            session()->setFlashdata('msg', $cartMessage);
         }
         return redirect()->to(ilena_store_path('/cart'));
+    }
+
+    private function cartJsonResponse(bool $success, string $message, int $status = 200)
+    {
+        $cart = session()->get('keranjang');
+        $cart = is_array($cart) ? $cart : [];
+        $quantity = array_sum(array_map(static fn ($item): int => is_array($item) ? max(0, (int) ($item['jumlah'] ?? 0)) : 0, $cart));
+
+        return $this->response->setStatusCode($status)->setJSON([
+            'success' => $success,
+            'message' => $message,
+            'quantity' => $quantity,
+            'csrfName' => csrf_token(),
+            'csrfHash' => csrf_hash(),
+        ]);
     }
 
     public function reduceCart($idx)

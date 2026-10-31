@@ -4,6 +4,7 @@ $headerPathValue = trim((string) service('uri')->getPath(), '/');
 $headerPathValue = (string) preg_replace('#^(?:en|id)(?:/|$)#i', '', $headerPathValue, 1);
 $headerPath = '/' . trim(strtolower($headerPathValue), '/');
 $headerLoggedIn = (bool) session()->get('isLogin');
+$cartQuantity = max(0, (int) ($cartQuantity ?? 0));
 $headerRole = (string) session()->get('role');
 $headerIsStaff = $headerLoggedIn && in_array($headerRole, ['1', '5'], true);
 ?>
@@ -32,7 +33,7 @@ $headerIsStaff = $headerLoggedIn && in_array($headerRole, ['1', '5'], true);
             <form class="ilena-compact-header__logout" action="<?= esc(ilena_store_path('/logout'), 'attr'); ?>" method="post"><?= csrf_field(); ?><button class="ilena-compact-header__link" type="submit"><?= esc(lang('Store.logout')); ?></button></form>
         <?php else: ?>
             <a class="ilena-compact-header__icon-link" href="<?= esc(ilena_store_path('/wishlist'), 'attr'); ?>" aria-label="<?= esc(lang('Store.favorites'), 'attr'); ?>"><i class="material-icons" aria-hidden="true">favorite_border</i><span class="ilena-sr-only"><?= esc(lang('Store.favorites')); ?></span></a>
-            <a class="ilena-compact-header__icon-link" href="<?= esc(ilena_store_path('/cart'), 'attr'); ?>" aria-label="<?= esc(lang('Store.cartTitle'), 'attr'); ?>"><i class="material-icons" aria-hidden="true">shopping_bag</i><span class="ilena-sr-only"><?= esc(lang('Store.cartTitle')); ?></span></a>
+            <a class="ilena-compact-header__icon-link ilena-cart-link" href="<?= esc(ilena_store_path('/cart'), 'attr'); ?>" aria-label="<?= esc(lang('Store.cartTitle') . ' (' . $cartQuantity . ')', 'attr'); ?>" data-ilena-cart-link data-cart-label="<?= esc(lang('Store.cartTitle'), 'attr'); ?>"><i class="material-icons" aria-hidden="true">shopping_bag</i><span class="ilena-sr-only"><?= esc(lang('Store.cartTitle')); ?></span><span class="ilena-cart-badge" data-ilena-cart-badge data-count="<?= $cartQuantity; ?>"<?= $cartQuantity > 0 ? '' : ' hidden'; ?> aria-hidden="true"><?= $cartQuantity > 99 ? '99+' : $cartQuantity; ?></span></a>
             <a class="ilena-compact-header__icon-link" href="<?= esc(ilena_store_path($headerLoggedIn ? '/account' : '/login'), 'attr'); ?>" aria-label="<?= esc($headerLoggedIn ? lang('Store.myAccount') : lang('Store.signIn'), 'attr'); ?>"><i class="material-icons" aria-hidden="true">person_outline</i><span class="ilena-sr-only"><?= esc($headerLoggedIn ? lang('Store.myAccount') : lang('Store.signIn')); ?></span></a>
             <?php if (!$headerLoggedIn): ?><a class="ilena-compact-header__link" href="<?= esc(ilena_store_path('/register'), 'attr'); ?>"><?= esc(lang('Store.registerNow')); ?></a><?php endif; ?>
         <?php endif; ?>

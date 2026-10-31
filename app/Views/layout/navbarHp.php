@@ -1,5 +1,6 @@
 <?php
 $activeLocale = ilena_current_store_locale();
+$cartQuantity = max(0, (int) ($cartQuantity ?? 0));
 $currentPath = trim(service('uri')->getPath(), '/');
 $pathWithoutLocale = preg_replace('#^(?:id|en)(?:/|$)#', '', $currentPath);
 $pathWithoutLocale = trim((string) $pathWithoutLocale, '/');
@@ -392,8 +393,8 @@ $enLanguageUrl = '/language/en?' . http_build_query(['return' => $languageReturn
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
-        <a class="item-navhp <?= $pathWithoutLocale === 'cart' ? 'active' : ''; ?>" href="<?= esc(ilena_store_path('/cart'), 'attr'); ?>" aria-label="<?= esc(lang('Store.cartTitle'), 'attr'); ?>" title="<?= esc(lang('Store.cartTitle'), 'attr'); ?>" <?= $pathWithoutLocale === 'cart' ? 'aria-current="page"' : ''; ?>>
-            <i class="material-icons" aria-hidden="true">shopping_bag</i><span><?= esc(lang('Store.cartTitle')); ?></span>
+        <a class="item-navhp ilena-cart-link <?= $pathWithoutLocale === 'cart' ? 'active' : ''; ?>" href="<?= esc(ilena_store_path('/cart'), 'attr'); ?>" aria-label="<?= esc(lang('Store.cartTitle') . ' (' . $cartQuantity . ')', 'attr'); ?>" title="<?= esc(lang('Store.cartTitle'), 'attr'); ?>" data-ilena-cart-link data-cart-label="<?= esc(lang('Store.cartTitle'), 'attr'); ?>" <?= $pathWithoutLocale === 'cart' ? 'aria-current="page"' : ''; ?>>
+            <i class="material-icons" aria-hidden="true">shopping_bag</i><span><?= esc(lang('Store.cartTitle')); ?></span><span class="ilena-cart-badge" data-ilena-cart-badge data-count="<?= $cartQuantity; ?>"<?= $cartQuantity > 0 ? '' : ' hidden'; ?> aria-hidden="true"><?= $cartQuantity > 99 ? '99+' : $cartQuantity; ?></span>
         </a>
     </div>
     <div style="flex:1;" class="d-flex justify-content-center align-content-center">
