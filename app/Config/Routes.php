@@ -26,6 +26,7 @@ $routes->get('/visimisi', 'Pages::visiMisi', ['filter' => 'customerFilter']);
 $routes->get('/iklan', 'Pages::iklan', ['filter' => 'customerFilter']);
 
 $routes->get('/', 'Pages::index', ['filter' => 'customerFilter']);
+$routes->get('/language/(:segment)', 'LocaleController::switch/$1', ['filter' => 'customerFilter']);
 $routes->get('/indexgalih', 'Pages::indexGalih', ['filter' => 'customerFilter']);
 $routes->get('/product', 'Pages::product', ['filter' => 'customerFilter']);
 $routes->get('/product/category/(:any)', 'Pages::productCategory/$1', ['filter' => 'customerFilter']);

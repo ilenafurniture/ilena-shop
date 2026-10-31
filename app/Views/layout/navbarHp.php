@@ -1,12 +1,12 @@
 <?php
-$activeLocale = service('request')->getLocale() === 'en' ? 'en' : 'id';
+$activeLocale = ilena_current_store_locale();
 $currentPath = trim(service('uri')->getPath(), '/');
 $pathWithoutLocale = preg_replace('#^(?:id|en)(?:/|$)#', '', $currentPath);
 $pathWithoutLocale = trim((string) $pathWithoutLocale, '/');
 $queryString = service('request')->getUri()->getQuery();
-$languageQuery = $queryString !== '' ? '?' . $queryString : '';
-$idLanguageUrl = '/' . $pathWithoutLocale . $languageQuery;
-$enLanguageUrl = '/en' . ($pathWithoutLocale !== '' ? '/' . $pathWithoutLocale : '') . $languageQuery;
+$languageReturnUrl = '/' . $pathWithoutLocale . ($queryString !== '' ? '?' . $queryString : '');
+$idLanguageUrl = '/language/id?' . http_build_query(['return' => $languageReturnUrl]);
+$enLanguageUrl = '/language/en?' . http_build_query(['return' => $languageReturnUrl]);
 ?>
 <div class="navbar-hp-atas hide-ke-show-flex">
     <a href="<?= esc($activeLocale === 'en' ? '/en' : '/', 'attr'); ?>" aria-label="Ilena Furniture — <?= esc(lang('Store.home'), 'attr'); ?>">

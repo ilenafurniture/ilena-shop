@@ -10,7 +10,7 @@ if (! function_exists('ilena_store_path')) {
 
         [$pathname, $query] = array_pad(explode('?', $path, 2), 2, null);
         $pathname = '/' . ltrim((string) $pathname, '/');
-        $locale ??= service('request')->getLocale();
+        $locale ??= ilena_current_store_locale();
         $isEnglish = $locale === 'en';
 
         if ($isEnglish && ! preg_match('#^/en(?:/|$)#', $pathname)) {
@@ -24,11 +24,20 @@ if (! function_exists('ilena_store_path')) {
     }
 }
 
+if (! function_exists('ilena_current_store_locale')) {
+    /** Use the explicit storefront URL prefix as the source of truth for navigation. */
+    function ilena_current_store_locale(): string
+    {
+        $path = trim((string) service('uri')->getPath(), '/');
+        return preg_match('#^en(?:/|$)#i', $path) === 1 ? 'en' : 'id';
+    }
+}
+
 if (! function_exists('ilena_product_display_name')) {
     /** Return an editor-authored English name when available, without changing stored names or URLs. */
     function ilena_product_display_name(array $product, ?string $locale = null): string
     {
-        $locale ??= service('request')->getLocale();
+        $locale ??= ilena_current_store_locale();
         $name = trim((string) ($product['nama'] ?? ''));
         if ($locale !== 'en') return $name;
         $description = $product['deskripsi'] ?? [];
@@ -42,7 +51,7 @@ if (! function_exists('ilena_catalog_type_label')) {
     /** Translate common fixed catalog labels while preserving database filter values. */
     function ilena_catalog_type_label(string $name, ?string $locale = null): string
     {
-        $locale ??= service('request')->getLocale();
+        $locale ??= ilena_current_store_locale();
         if ($locale !== 'en') return ucfirst($name);
         $normalized = strtolower(trim(preg_replace('/\s+/', ' ', $name)));
         $labels = [
@@ -63,7 +72,7 @@ if (! function_exists('ilena_variant_display_name')) {
     /** Translate common color/finish labels for display only; submitted variant values remain unchanged. */
     function ilena_variant_display_name(string $name, ?string $locale = null, ?string $englishName = null): string
     {
-        $locale ??= service('request')->getLocale();
+        $locale ??= ilena_current_store_locale();
         if ($locale !== 'en') return $name;
         $englishName = trim((string) $englishName);
         if ($englishName !== '') return $englishName;
@@ -90,7 +99,7 @@ if (! function_exists('ilena_product_variant_display_name')) {
     /** Resolve an authored English variant label while keeping the stored inventory name unchanged. */
     function ilena_product_variant_display_name(array $product, string $variantName, ?string $locale = null): string
     {
-        $locale ??= service('request')->getLocale();
+        $locale ??= ilena_current_store_locale();
         $variants = $product['varian'] ?? [];
         if (is_string($variants)) $variants = json_decode($variants, true) ?: [];
         if ($locale === 'en' && is_array($variants)) {
@@ -111,7 +120,7 @@ if (! function_exists('ilena_localize_article_record')) {
     /** Use editor-authored English article fields when present; otherwise preserve the original Indonesian content. */
     function ilena_localize_article_record(array $article, ?string $locale = null): array
     {
-        $locale ??= service('request')->getLocale();
+        $locale ??= ilena_current_store_locale();
         if ($locale !== 'en') return $article;
 
         foreach (['judul', 'deskripsi', 'keywords', 'isi'] as $field) {
@@ -130,7 +139,7 @@ if (! function_exists('ilena_localize_article_record')) {
 if (! function_exists('ilena_article_category_label')) {
     function ilena_article_category_label(string $category, ?string $locale = null): string
     {
-        $locale ??= service('request')->getLocale();
+        $locale ??= ilena_current_store_locale();
         $category = trim($category);
         if ($locale !== 'en') return ucwords($category);
 

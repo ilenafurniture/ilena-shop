@@ -1,13 +1,13 @@
 <?php
 $headerMode = in_array($headerMode ?? '', ['auth', 'account', 'full'], true) ? $headerMode : 'full';
-$activeLocale = service('request')->getLocale() === 'en' ? 'en' : 'id';
+$activeLocale = ilena_current_store_locale();
 $currentPath = trim(service('uri')->getPath(), '/');
 $pathWithoutLocale = preg_replace('#^(?:id|en)(?:/|$)#', '', $currentPath);
 $pathWithoutLocale = trim((string) $pathWithoutLocale, '/');
 $queryString = service('request')->getUri()->getQuery();
-$languageQuery = $queryString !== '' ? '?' . $queryString : '';
-$idLanguageUrl = '/' . $pathWithoutLocale . $languageQuery;
-$enLanguageUrl = '/en' . ($pathWithoutLocale !== '' ? '/' . $pathWithoutLocale : '') . $languageQuery;
+$languageReturnUrl = '/' . $pathWithoutLocale . ($queryString !== '' ? '?' . $queryString : '');
+$idLanguageUrl = '/language/id?' . http_build_query(['return' => $languageReturnUrl]);
+$enLanguageUrl = '/language/en?' . http_build_query(['return' => $languageReturnUrl]);
 ?>
 <div class="ilena-utility-bar" aria-label="Lunarea Furniture">
     <div class="ilena-utility-bar__inner">
