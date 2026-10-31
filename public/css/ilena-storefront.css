@@ -10342,6 +10342,61 @@ body.ilena-storefront .ilena-topbar__inner--full { grid-template-columns:auto mi
 body.ilena-storefront .ilena-topbar__inner:not(.ilena-topbar__inner--full) { grid-template-columns:minmax(0,1fr) auto; gap:22px; }
 body.ilena-storefront .navbar-brand-pair { justify-self:start; }
 body.ilena-storefront .navbar-brand-ilena img { max-width:150px; height:31px; }
+body.ilena-storefront .navbar-brand-ilena { position:relative; display:inline-flex; width:150px; height:31px; align-items:center; }
+body.ilena-storefront .navbar-brand-ilena img { display:block; width:150px; height:30px; object-fit:contain; }
+body.ilena-storefront .ilena-brand-motion { display:none; }
+@media (min-width:901px) and (hover:hover) and (pointer:fine) {
+ body.ilena-storefront .ilena-brand-motion {
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  color:#fff; font-family:Georgia,'Times New Roman',serif; font-size:23px; font-weight:700; letter-spacing:.08em;
+  opacity:0; pointer-events:none;
+ }
+ body.ilena-storefront .ilena-brand-motion__ile { opacity:0; transform:translateX(-46px); }
+ body.ilena-storefront .ilena-brand-motion__n {
+  position:absolute; left:58px; display:grid; width:25px; height:25px; place-items:center;
+  border:2px solid #b92831; border-radius:50%; background:#b92831; color:#111; font-family:Arial,sans-serif;
+  font-size:17px; letter-spacing:0; opacity:0; transform:translateX(-76px);
+ }
+ body.ilena-storefront .ilena-brand-motion__a { position:absolute; left:99px; opacity:0; transform:translateY(25px); }
+ body.ilena-storefront .navbar-brand-ilena:hover img,
+ body.ilena-storefront .navbar-brand-ilena:focus-visible img { animation:ilena-brand-logo-out 3.5s ease both; }
+ body.ilena-storefront .navbar-brand-ilena:hover .ilena-brand-motion,
+ body.ilena-storefront .navbar-brand-ilena:focus-visible .ilena-brand-motion { animation:ilena-brand-motion-window 3.5s ease both; }
+ body.ilena-storefront .navbar-brand-ilena:hover .ilena-brand-motion__n,
+ body.ilena-storefront .navbar-brand-ilena:focus-visible .ilena-brand-motion__n { animation:ilena-brand-n-glide 3.5s ease both; }
+ body.ilena-storefront .navbar-brand-ilena:hover .ilena-brand-motion__a,
+ body.ilena-storefront .navbar-brand-ilena:focus-visible .ilena-brand-motion__a { animation:ilena-brand-a-rise 3.5s ease both; }
+ body.ilena-storefront .navbar-brand-ilena:hover .ilena-brand-motion__ile,
+ body.ilena-storefront .navbar-brand-ilena:focus-visible .ilena-brand-motion__ile { animation:ilena-brand-ile-arrive 3.5s ease both; }
+}
+@keyframes ilena-brand-logo-out { 0%,8% { opacity:1; } 18%,82% { opacity:0; } 96%,100% { opacity:1; } }
+@keyframes ilena-brand-motion-window { 0%,10% { opacity:0; } 18%,78% { opacity:1; } 94%,100% { opacity:0; } }
+@keyframes ilena-brand-n-glide {
+  0%,12% { opacity:0; transform:translateX(-76px); }
+  28% { opacity:1; transform:translateX(0); }
+  39% { transform:translateX(9px); }
+  46% { transform:translateX(-3px); }
+  54%,76% { opacity:1; transform:translateX(0); }
+  90%,100% { opacity:0; transform:translateX(0); }
+}
+@keyframes ilena-brand-a-rise {
+  0%,28% { opacity:0; transform:translateY(25px); }
+  40% { opacity:1; transform:translateY(0); }
+  47% { transform:translateY(-2px); }
+  54%,76% { opacity:1; transform:translateY(0); }
+  90%,100% { opacity:0; transform:translateY(0); }
+}
+@keyframes ilena-brand-ile-arrive {
+  0%,46% { opacity:0; transform:translateX(-46px); }
+  62%,76% { opacity:1; transform:translateX(0); }
+  90%,100% { opacity:0; transform:translateX(0); }
+}
+@media (prefers-reduced-motion:reduce) {
+ body.ilena-storefront .navbar-brand-ilena:hover img,
+ body.ilena-storefront .navbar-brand-ilena:focus-visible img { animation:none; }
+ body.ilena-storefront .navbar-brand-ilena:hover .ilena-brand-motion,
+ body.ilena-storefront .navbar-brand-ilena:focus-visible .ilena-brand-motion { display:none; }
+}
 body.ilena-storefront .ilena-topbar__main-nav { display:flex; align-items:center; justify-content:center; gap:clamp(16px,2.2vw,34px); min-width:0; white-space:nowrap; }
 body.ilena-storefront .ilena-topbar__main-nav a { position:relative; padding:10px 0; color:rgba(255,255,255,.86); font-size:12px; font-weight:600; letter-spacing:.015em; text-decoration:none; transition:color .18s ease; }
 body.ilena-storefront .ilena-topbar__main-nav a::after { position:absolute; right:0; bottom:4px; left:0; height:1px; content:""; background:#d6b99d; transform:scaleX(0); transform-origin:left; transition:transform .2s ease; }
