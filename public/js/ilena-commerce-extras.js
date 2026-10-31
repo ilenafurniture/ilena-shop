@@ -359,27 +359,6 @@
         backdrop.addEventListener('click', () => { if (active === 'filter') closeSheet(); });
     }
 
-    // The persistent product CTA mirrors the existing stock-aware purchase form.
-    const sticky = document.querySelector('[data-sticky-purchase]');
-    const purchaseForm = document.querySelector('#btn-keranjang');
-    if (sticky && purchaseForm) {
-        const stickyButton = sticky.querySelector('button');
-        const productName = document.querySelector('.ilena-product-detail h1, .product-detail-soft h1');
-        sticky.querySelector('[data-sticky-product-name]').textContent = productName?.textContent.trim() || '';
-        const sync = () => {
-            const sourceButton = purchaseForm.querySelector('button[type="submit"]');
-            stickyButton.disabled = !sourceButton || sourceButton.disabled;
-            stickyButton.textContent = sourceButton?.textContent.trim() || (en ? 'Unavailable' : 'Stok habis');
-        };
-        sync();
-        document.querySelectorAll('input[name="varian"], input[name="varian-mobile"]').forEach((input) => input.addEventListener('change', sync));
-        if ('IntersectionObserver' in window) {
-            const observer = new IntersectionObserver(([entry]) => { sticky.classList.toggle('is-visible', !entry.isIntersecting); });
-            observer.observe(purchaseForm);
-        } else sticky.classList.add('is-visible');
-        stickyButton.addEventListener('click', () => purchaseForm.requestSubmit());
-    }
-
     document.querySelectorAll('[data-commerce-variant]').forEach((field) => {
         const form = field.closest('form');
         const productInfo = document.querySelector('.ilena-product-info');

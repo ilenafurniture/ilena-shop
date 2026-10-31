@@ -549,6 +549,46 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                         </div>
                     </div>
                 </div>
+
+            </div>
+            <div class="limapuluh-ke-seratus ilena-product-gallery">
+                <div class="ilena-product-gallery__stage">
+                    <figure class="img-detail-prev ilena-product-zoom d-none" aria-hidden="true"
+                        data-zoom-src="<?= esc(base_url('viewvar3000/' . rawurlencode((string) $produk['id']) . '/' . rawurlencode($gambarAwalDetail) . '?v=' . ($detailImageVersions[$gambarAwalDetail] ?? $detailVersion)), 'attr') ?>"
+                        style="background-size: cover;">
+                    </figure>
+                    <img class="img-detail-prev"
+                        <?= $defaultVariant['stok'] <= 0 ? 'style="filter: grayscale(90%)"' : ''; ?>
+                        src="<?= esc($barangImgUrl('1000', $gambarAwalDetail), 'attr') ?>"
+                        data-image-fallback="<?= esc(base_url('product-cover/' . rawurlencode((string) $produk['id'])) . '?slot=' . rawurlencode($gambarAwalDetail) . '&v=' . ($detailImageVersions[$gambarAwalDetail] ?? $detailVersion), 'attr') ?>"
+                        onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"
+onmousemove="zoom(event)" onmouseleave="mouseoff(event)" alt="<?= esc($displayProductName, 'attr') ?>" width="1000" height="1000" decoding="async" fetchpriority="high">
+                </div>
+                <div class="mb-3 mt-3" style="overflow: auto">
+                    <div class="container-img-detail-select"
+                        <?= $defaultVariant['stok'] <= 0 ? 'style="filter: grayscale(90%)"' : ''; ?>>
+                        <?php foreach ($filterExistingSlots($defaultVariant['urutan_gambar']) as $indx => $p_v) { ?>
+                        <input <?= $indx == 0 ? 'checked' : '' ?> id="gambar<?= $indx ?>" type="radio" name="gambar"
+                            aria-label="<?= esc(sprintf(lang('Store.productPhotoNumber'), $indx + 1), 'attr'); ?>" value="<?= $p_v ?>">
+                        <label class="img-detail-select" for="gambar<?= $indx ?>" title="<?= esc(sprintf(lang('Store.productPhotoNumber'), $indx + 1), 'attr'); ?>"><img
+                                src="<?= esc($barangImgUrl('300', $p_v), 'attr') ?>"
+                                data-image-fallback="<?= esc(base_url('product-cover/' . rawurlencode((string) $produk['id'])) . '?slot=' . rawurlencode((string) $p_v) . '&v=' . ($detailImageVersions[(string) $p_v] ?? $detailVersion), 'attr') ?>"
+                                onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"
+alt="<?= esc($displayProductName, 'attr') ?>" width="300" height="300" loading="lazy" decoding="async"></label>
+                        <?php } ?>
+                        <?php if ($punyaGambarHoverDetail) { ?>
+                        <input id="gambar-hover" type="radio" name="gambar" aria-label="<?= esc(lang('Store.surfaceDetail'), 'attr'); ?>" value="hover">
+                        <label class="img-detail-select" for="gambar-hover" title="<?= esc(lang('Store.surfaceDetail'), 'attr'); ?>"><img
+                                src="<?= esc($hoverImgUrl(), 'attr') ?>"
+                                data-image-fallback="<?= esc(base_url('viewpichover/' . rawurlencode((string) $produk['id'])) . '?v=' . $detailVersion, 'attr') ?>"
+                                onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"
+alt="<?= esc($displayProductName, 'attr') ?>" width="300" height="300" loading="lazy" decoding="async"></label>
+                        <?php } ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ilena-product-aftercare">
                 <nav class="ilena-product-help" aria-label="<?= esc(lang('Store.productHelpTitle'), 'attr'); ?>">
                     <h3><?= esc(lang('Store.productHelpTitle')); ?></h3>
                     <a href="<?= esc(ilena_store_path('/faq#garansi-produk'), 'attr'); ?>"><?= esc(lang('Store.productWarrantyLink')); ?><span aria-hidden="true">↗</span></a>
@@ -612,43 +652,6 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                         <?php endif; ?>
                     </details>
                 </section>
-            </div>
-            <div class="limapuluh-ke-seratus ilena-product-gallery">
-                <div class="ilena-product-gallery__stage">
-                    <figure class="img-detail-prev ilena-product-zoom d-none" aria-hidden="true"
-                        data-zoom-src="<?= esc(base_url('viewvar3000/' . rawurlencode((string) $produk['id']) . '/' . rawurlencode($gambarAwalDetail) . '?v=' . ($detailImageVersions[$gambarAwalDetail] ?? $detailVersion)), 'attr') ?>"
-                        style="background-size: cover;">
-                    </figure>
-                    <img class="img-detail-prev"
-                        <?= $defaultVariant['stok'] <= 0 ? 'style="filter: grayscale(90%)"' : ''; ?>
-                        src="<?= esc($barangImgUrl('1000', $gambarAwalDetail), 'attr') ?>"
-                        data-image-fallback="<?= esc(base_url('product-cover/' . rawurlencode((string) $produk['id'])) . '?slot=' . rawurlencode($gambarAwalDetail) . '&v=' . ($detailImageVersions[$gambarAwalDetail] ?? $detailVersion), 'attr') ?>"
-                        onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"
-onmousemove="zoom(event)" onmouseleave="mouseoff(event)" alt="<?= esc($displayProductName, 'attr') ?>" width="1000" height="1000" decoding="async" fetchpriority="high">
-                </div>
-                <div class="mb-3 mt-3" style="overflow: auto">
-                    <div class="container-img-detail-select"
-                        <?= $defaultVariant['stok'] <= 0 ? 'style="filter: grayscale(90%)"' : ''; ?>>
-                        <?php foreach ($filterExistingSlots($defaultVariant['urutan_gambar']) as $indx => $p_v) { ?>
-                        <input <?= $indx == 0 ? 'checked' : '' ?> id="gambar<?= $indx ?>" type="radio" name="gambar"
-                            aria-label="<?= esc(sprintf(lang('Store.productPhotoNumber'), $indx + 1), 'attr'); ?>" value="<?= $p_v ?>">
-                        <label class="img-detail-select" for="gambar<?= $indx ?>" title="<?= esc(sprintf(lang('Store.productPhotoNumber'), $indx + 1), 'attr'); ?>"><img
-                                src="<?= esc($barangImgUrl('300', $p_v), 'attr') ?>"
-                                data-image-fallback="<?= esc(base_url('product-cover/' . rawurlencode((string) $produk['id'])) . '?slot=' . rawurlencode((string) $p_v) . '&v=' . ($detailImageVersions[(string) $p_v] ?? $detailVersion), 'attr') ?>"
-                                onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"
-alt="<?= esc($displayProductName, 'attr') ?>" width="300" height="300" loading="lazy" decoding="async"></label>
-                        <?php } ?>
-                        <?php if ($punyaGambarHoverDetail) { ?>
-                        <input id="gambar-hover" type="radio" name="gambar" aria-label="<?= esc(lang('Store.surfaceDetail'), 'attr'); ?>" value="hover">
-                        <label class="img-detail-select" for="gambar-hover" title="<?= esc(lang('Store.surfaceDetail'), 'attr'); ?>"><img
-                                src="<?= esc($hoverImgUrl(), 'attr') ?>"
-                                data-image-fallback="<?= esc(base_url('viewpichover/' . rawurlencode((string) $produk['id'])) . '?v=' . $detailVersion, 'attr') ?>"
-                                onerror="if(this.dataset.imageFallback){this.onerror=null;this.src=this.dataset.imageFallback;}"
-alt="<?= esc($displayProductName, 'attr') ?>" width="300" height="300" loading="lazy" decoding="async"></label>
-                        <?php } ?>
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="ilena-mobile-lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="<?= esc(lang('Store.productGalleryLabel'), 'attr'); ?>">
             <button class="ilena-mobile-lightbox__close" type="button" aria-label="<?= esc(lang('Store.closeGallery'), 'attr'); ?>">&times;</button>
@@ -803,12 +806,6 @@ alt="<?= esc($displayProductName, 'attr') ?>" width="300" height="300" loading="
         <?php } ?>
     </div>
 </div>
-<?php if (session()->get('role') != '1'): ?>
-<div class="ilena-sticky-purchase" data-sticky-purchase aria-live="polite">
-    <span class="ilena-sticky-purchase__name" data-sticky-product-name></span>
-    <button type="button" aria-label="<?= esc(lang('Store.cart'), 'attr'); ?>"><?= esc(lang('Store.cart')); ?></button>
-</div>
-<?php endif; ?>
 <script>
 const btnKeranjangElm = document.getElementById('btn-keranjang');
 const radioVarianElm = document.querySelectorAll('input[name="varian"], input[name="varian-mobile"]');
