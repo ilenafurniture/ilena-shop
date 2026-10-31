@@ -10512,7 +10512,7 @@ body.ilena-storefront .ilena-chat-compose button svg { width: 19px; height: 19px
 body.ilena-storefront .ilena-utility-bar__brands {
     display: inline-flex;
     align-items: center;
-    gap: 13px;
+    gap: 20px;
     min-width: 0;
 }
 body.ilena-storefront .ilena-utility-bar__brand-divider {
@@ -10567,13 +10567,17 @@ body.ilena-storefront.ilena-page--payment .ilena-compact-header__interior { disp
 /* Small CSS-only sister-brand popovers: hover on desktop, keyboard focus accessible. */
 @media (min-width: 701px) and (hover: hover) and (pointer: fine) {
     body.ilena-storefront .ilena-utility-bar { position: relative; z-index: 1200; overflow: visible; }
+    body.ilena-storefront .ilena-topbar { position: relative; z-index: 1200; overflow: visible; }
+    body.ilena-storefront .ilena-topbar__actions { overflow: visible; }
     body.ilena-storefront .ilena-utility-bar__brands,
     body.ilena-storefront .ilena-compact-header__brands { overflow: visible; }
     body.ilena-storefront .ilena-utility-bar__brands > a,
     body.ilena-storefront .ilena-compact-header__lunarea,
-    body.ilena-storefront .ilena-compact-header__interior { position: relative; }
+    body.ilena-storefront .ilena-compact-header__interior,
+    body.ilena-storefront .ilena-topbar__actions .ilena-header-action { position: relative; overflow: visible; }
     body.ilena-storefront .ilena-compact-header { position: relative; z-index: 1200; overflow: visible; }
-    body.ilena-storefront .ilena-brand-popover {
+    body.ilena-storefront .ilena-brand-popover,
+    body.ilena-storefront .ilena-action-popover {
         position: absolute;
         z-index: 1400;
         top: calc(100% + 11px);
@@ -10594,7 +10598,8 @@ body.ilena-storefront.ilena-page--payment .ilena-compact-header__interior { disp
         transform: translate(-50%,-5px);
         transition: opacity .18s ease, transform .18s ease, visibility .18s;
     }
-    body.ilena-storefront .ilena-brand-popover::before {
+    body.ilena-storefront .ilena-brand-popover::before,
+    body.ilena-storefront .ilena-action-popover::before {
         position: absolute;
         top: -6px;
         left: calc(50% - 5px);
@@ -10606,14 +10611,16 @@ body.ilena-storefront.ilena-page--payment .ilena-compact-header__interior { disp
         content: "";
         transform: rotate(45deg);
     }
-    body.ilena-storefront .ilena-brand-popover strong {
+    body.ilena-storefront .ilena-brand-popover strong,
+    body.ilena-storefront .ilena-action-popover strong {
         color: #812d2a;
         font-family: var(--ilena-font-display, inherit);
         font-size: 14px;
         font-weight: 600;
         letter-spacing: .01em;
     }
-    body.ilena-storefront .ilena-brand-popover small {
+    body.ilena-storefront .ilena-brand-popover small,
+    body.ilena-storefront .ilena-action-popover small {
         color: #665d55;
         font-size: 11px;
         line-height: 1.5;
@@ -10627,7 +10634,14 @@ body.ilena-storefront.ilena-page--payment .ilena-compact-header__interior { disp
         visibility: visible;
         transform: translate(-50%,0);
     }
+    body.ilena-storefront .ilena-topbar__actions .ilena-header-action:hover .ilena-action-popover,
+    body.ilena-storefront .ilena-topbar__actions .ilena-header-action:focus-visible .ilena-action-popover {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%,0);
+    }
 }
 @media (prefers-reduced-motion: reduce) {
-    body.ilena-storefront .ilena-brand-popover { transition: none !important; }
+    body.ilena-storefront .ilena-brand-popover,
+    body.ilena-storefront .ilena-action-popover { transition: none !important; }
 }
