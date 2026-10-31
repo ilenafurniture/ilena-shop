@@ -8497,12 +8497,12 @@ body.ilena-storefront .ilena-mobile-lightbox { display: none; }
         top: 0;
         left: 0;
         z-index: 1045;
-        width: 100vw !important;
-        max-width: none !important;
-        min-height: 54px !important;
-        height: 54px !important;
-        margin-inline: calc(50% - 50vw) !important;
-        padding: 5px 9px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 64px !important;
+        height: 64px !important;
+        margin-inline: 0 !important;
+        padding: 5px max(8px, env(safe-area-inset-right)) 5px max(8px, env(safe-area-inset-left)) !important;
         gap: 7px !important;
         border: 0;
         border-bottom: 1px solid rgba(255,255,255,.09);
@@ -8545,7 +8545,11 @@ body.ilena-storefront .ilena-mobile-lightbox { display: none; }
 
 /* Slightly smaller header controls on phones; retain the current full-bleed bar. */
 @media (max-width: 600px) {
-    body.ilena-storefront .navbar-hp-atas { gap: 6px !important; padding-inline: 8px !important; }
+    body.ilena-storefront .navbar-hp-atas {
+        gap: 6px !important;
+        padding-left: max(8px, env(safe-area-inset-left)) !important;
+        padding-right: max(8px, env(safe-area-inset-right)) !important;
+    }
     body.ilena-storefront .navbar-hp-atas > a:first-child {
         flex-basis: 29px !important;
         width: 29px;
@@ -10555,6 +10559,11 @@ body.ilena-storefront .ilena-mobile-interior-link img {
     width: 72px;
     height: 19px;
     object-fit: contain;
+}
+@media (max-width: 700px) {
+    body.ilena-storefront .navbar-hp-atas .ilena-mobile-interior-link,
+    body.ilena-storefront .ilena-compact-header__interior { display: none !important; }
+    body.ilena-storefront .navbar-hp-atas .ilena-mobile-sister-brands { gap: 0; }
 }
 @media (max-width: 380px) {
     body.ilena-storefront .ilena-mobile-sister-brands { gap: 5px; }
