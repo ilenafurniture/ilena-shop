@@ -1643,6 +1643,7 @@ body.ilena-storefront .ilena-auth-captcha.is-verified .ilena-auth-captcha__messa
 
 
 
+
 @media (max-width: 360px) {
     body.ilena-storefront .navbar-hp-atas {
         min-height: 50px !important;
@@ -10506,3 +10507,59 @@ body.ilena-storefront .ilena-chat-compose button svg { width: 19px; height: 19px
         font-size: 11px;
     }
 }
+
+/* Sister-brand marks align by optical height instead of competing with the main navigation. */
+body.ilena-storefront .ilena-utility-bar__brands {
+    display: inline-flex;
+    align-items: center;
+    gap: 13px;
+    min-width: 0;
+}
+body.ilena-storefront .ilena-utility-bar__brand-divider {
+    width: 1px;
+    height: 18px;
+    flex: 0 0 1px;
+    background: rgba(255,255,255,.24);
+}
+body.ilena-storefront .ilena-utility-bar__brands .ilena-utility-bar__interior img {
+    width: 88px;
+    height: 22px;
+}
+body.ilena-storefront .ilena-compact-header__interior {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    min-height: 44px;
+}
+body.ilena-storefront .ilena-compact-header__interior img {
+    display: block;
+    width: 88px;
+    height: 23px;
+    object-fit: contain;
+}
+body.ilena-storefront .ilena-mobile-sister-brands {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+}
+body.ilena-storefront .ilena-mobile-interior-link {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    min-height: 44px;
+}
+body.ilena-storefront .ilena-mobile-interior-link img {
+    display: block;
+    width: 68px;
+    height: 20px;
+    object-fit: contain;
+}
+@media (max-width: 380px) {
+    body.ilena-storefront .ilena-mobile-sister-brands { gap: 5px; }
+    body.ilena-storefront .ilena-mobile-lunarea-link img { width: 68px; }
+    body.ilena-storefront .ilena-mobile-interior-link img { width: 58px; }
+    body.ilena-storefront .navbar-hp-atas { gap: 5px !important; }
+}
+body.ilena-storefront.ilena-page--payment .ilena-compact-header__interior { display: none !important; }

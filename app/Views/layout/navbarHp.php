@@ -12,9 +12,14 @@ $enLanguageUrl = '/language/en?' . http_build_query(['return' => $languageReturn
     <a href="<?= esc($activeLocale === 'en' ? '/en' : '/', 'attr'); ?>" aria-label="Ilena Furniture — <?= esc(lang('Store.home'), 'attr'); ?>">
         <img src="<?= base_url('/img/logo/N.png'); ?>" alt="Ilena Furniture" width="36" height="36" decoding="async">
     </a>
-    <a class="ilena-mobile-lunarea-link" href="https://lunareafurniture.com" target="_blank" rel="noopener noreferrer" aria-label="<?= esc(lang('Store.visitLunarea'), 'attr'); ?>">
-        <img src="<?= base_url('img/logolunareanavbar.webp'); ?>" width="112" height="24" alt="Lunarea Furniture">
-    </a>
+    <div class="ilena-mobile-sister-brands" aria-label="Ilena group brands">
+        <a class="ilena-mobile-lunarea-link" href="https://lunareafurniture.com" target="_blank" rel="noopener noreferrer" aria-label="<?= esc(lang('Store.visitLunarea'), 'attr'); ?>">
+            <img src="<?= base_url('img/logolunareanavbar.webp'); ?>" width="112" height="24" alt="Lunarea Furniture">
+        </a>
+        <a class="ilena-mobile-interior-link" href="https://ilenafurniture.net/" target="_blank" rel="noopener noreferrer" aria-label="<?= esc(lang('Store.customInterior'), 'attr'); ?>">
+            <img src="<?= base_url('img/logo/logoilenainterior.webp'); ?>" width="88" height="24" alt="Ilena Interior">
+        </a>
+    </div>
     <div class="ilena-mobile-search-slot">
         <form action="<?= esc($activeLocale === 'en' ? '/en/find' : '/find', 'attr'); ?>" method="get" class="w-100 ilena-global-search" data-global-search role="search">
             <label class="ilena-sr-only" for="global-search-mobile"><?= esc(lang('Store.searchLabel')); ?></label>
@@ -36,7 +41,6 @@ $enLanguageUrl = '/language/en?' . http_build_query(['return' => $languageReturn
         <div class="expend-hp" id="mobile-menu-drawer" role="navigation" aria-label="<?= esc(lang('Store.collectionMenu'), 'attr'); ?>">
             <nav class="ilena-mobile-primary-links" aria-label="<?= esc(lang('Store.primaryNavigation'), 'attr'); ?>">
                 <a href="<?= esc($activeLocale === 'en' ? '/en/product' : '/product', 'attr'); ?>"><?= esc(lang('Store.collection')); ?></a>
-                <a href="https://ilenafurniture.net/" target="_blank" rel="noopener noreferrer"><?= esc(lang('Store.customInterior')); ?></a>
                 <a href="<?= esc($activeLocale === 'en' ? '/en/partner' : '/partner', 'attr'); ?>"><?= esc(lang('Store.partnerStore')); ?></a>
                 <a href="<?= esc($activeLocale === 'en' ? '/en/article' : '/article', 'attr'); ?>"><?= esc(lang('Store.article')); ?></a>
                 <a href="https://wa.me/628112938158?text=<?= rawurlencode(lang('Store.whatsAppContactMessage')); ?>" target="_blank" rel="noopener noreferrer"><?= esc(lang('Store.contactUs')); ?></a>
