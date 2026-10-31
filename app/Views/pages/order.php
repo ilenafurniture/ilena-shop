@@ -273,6 +273,16 @@
             </div>
             <span class="ilena-order-heading__count"><?= count($pesanan); ?> <?= lang('Store.orderCount'); ?></span>
         </header>
+        <?php if ($notice = session()->getFlashdata('commerce_notice')): ?><div class="alert alert-info" role="status"><?= esc($notice); ?></div><?php endif; ?>
+
+        <?php if (!empty($customerServiceCases)): ?>
+        <section class="ilena-service-case-tracker" aria-labelledby="service-case-tracker-title">
+            <h2 id="service-case-tracker-title"><?= service('request')->getLocale() === 'en' ? 'Service request updates' : 'Pembaruan permintaan layanan'; ?></h2>
+            <div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th><?= service('request')->getLocale() === 'en' ? 'Order' : 'Pesanan'; ?></th><th><?= service('request')->getLocale() === 'en' ? 'Request' : 'Permintaan'; ?></th><th><?= service('request')->getLocale() === 'en' ? 'Status' : 'Status'; ?></th><th><?= service('request')->getLocale() === 'en' ? 'Last update' : 'Pembaruan'; ?></th></tr></thead><tbody>
+            <?php foreach ($customerServiceCases as $serviceCase): ?><tr><td><?= esc($serviceCase['order_id']); ?></td><td><?= esc(ucfirst((string) $serviceCase['case_type'])); ?> · <?= esc($serviceCase['reason']); ?></td><td><?= esc(match ($serviceCase['status']) { 'received' => service('request')->getLocale() === 'en' ? 'Received' : 'Diterima', 'reviewing' => service('request')->getLocale() === 'en' ? 'Under review' : 'Sedang ditinjau', 'resolved' => service('request')->getLocale() === 'en' ? 'Handled' : 'Ditangani', 'rejected' => service('request')->getLocale() === 'en' ? 'Closed' : 'Ditutup', default => $serviceCase['status'] }); ?></td><td><?= esc($serviceCase['updated_at'] ?: $serviceCase['created_at']); ?></td></tr><?php endforeach; ?>
+            </tbody></table></div>
+        </section>
+        <?php endif; ?>
 
         <?php if (empty($pesanan)) : ?>
         <section class="ilena-order-empty" aria-live="polite">
@@ -415,6 +425,18 @@
         <a href="" class="btn-default" id="btn-detail"><?= lang('Store.orderDetails'); ?></a>
     </div>
 
+    <details class="ilena-order-service-request mt-4">
+        <summary><?= service('request')->getLocale() === 'en' ? 'Need help with this order?' : 'Perlu bantuan untuk pesanan ini?'; ?></summary>
+        <p><?= service('request')->getLocale() === 'en' ? 'Send a cancellation, return, or refund request. The team will review it; this form does not itself cancel an order or issue a refund.' : 'Kirim permintaan pembatalan, retur, atau refund. Tim akan meninjaunya; formulir ini tidak otomatis membatalkan pesanan atau menerbitkan refund.'; ?></p>
+        <form method="post" id="order-service-form" action="<?= esc(ilena_store_path('/commerce/order-case/cancellation'), 'attr'); ?>">
+            <?= csrf_field(); ?><input type="hidden" name="order_id" id="service-case-order-id">
+            <label><?= service('request')->getLocale() === 'en' ? 'Request type' : 'Jenis permintaan'; ?><select id="service-case-type"><option value="cancellation"><?= service('request')->getLocale() === 'en' ? 'Cancellation request' : 'Permintaan pembatalan'; ?></option><option value="return"><?= service('request')->getLocale() === 'en' ? 'Return' : 'Retur'; ?></option><option value="refund">Refund</option></select></label>
+            <label><?= service('request')->getLocale() === 'en' ? 'Reason' : 'Alasan'; ?><input name="reason" maxlength="80" minlength="3" required></label>
+            <label><?= service('request')->getLocale() === 'en' ? 'Additional details (optional)' : 'Keterangan tambahan (opsional)'; ?><textarea name="message" maxlength="2000" rows="3"></textarea></label>
+            <button type="submit" class="btn-default"><?= service('request')->getLocale() === 'en' ? 'Submit request' : 'Kirim permintaan'; ?></button>
+        </form>
+    </details>
+
     <div class="my-3 text-center" style="color:var(--muted); font-size:.85rem;">
         <?= lang('Store.closeHint'); ?>
     </div>
@@ -434,6 +456,9 @@ const itemElm = document.getElementById("item");
 const containerOffcanvasElm = document.querySelector(".container-offcanvas");
 const btnInvoiceElm = document.getElementById('btn-invoice');
 const btnDetailElm = document.getElementById('btn-detail');
+const serviceCaseOrderElm = document.getElementById('service-case-order-id');
+const serviceCaseTypeElm = document.getElementById('service-case-type');
+const serviceCaseFormElm = document.getElementById('order-service-form');
 const storeRoutePrefix = <?= json_encode(service('request')->getLocale() === 'en' ? '/en' : ''); ?>;
 
 const sandiElm = document.querySelector('input[name="sandi"]');
@@ -507,9 +532,15 @@ function openDetail(indP) {
 
     btnInvoiceElm.href = storeRoutePrefix + '/invoice/' + p.id_midtrans;
     btnDetailElm.href = storeRoutePrefix + '/orderdetail/' + (String(p.status || '').toLowerCase()) + '?idorder=' + p.id_midtrans;
+    serviceCaseOrderElm.value = p.id_midtrans || '';
+    serviceCaseFormElm.action = storeRoutePrefix + '/commerce/order-case/' + encodeURIComponent(serviceCaseTypeElm.value);
 
     containerOffcanvasElm.classList.add("show");
 }
+
+serviceCaseTypeElm.addEventListener('change', () => {
+    serviceCaseFormElm.action = storeRoutePrefix + '/commerce/order-case/' + encodeURIComponent(serviceCaseTypeElm.value);
+});
 
 function closeDetail() {
     containerOffcanvasElm.classList.remove("show");

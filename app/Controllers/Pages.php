@@ -981,6 +981,15 @@ class Pages extends BaseController
                 }
             }
 
+            $publicProductFeedback = [];
+            $commerceDb = db_connect();
+            if ($commerceDb->tableExists('product_feedback')) {
+                $publicProductFeedback = $commerceDb->table('product_feedback')
+                    ->where('product_id', (string) $product['id'])
+                    ->where('status', 'approved')
+                    ->orderBy('created_at', 'DESC')->limit(8)->get()->getResultArray();
+            }
+
             $data = [
                 'title'         => ucwords($productDisplayName),
                 'navbar'        => $this->getNavbarData(),
@@ -988,6 +997,7 @@ class Pages extends BaseController
                 'produk'        => $product,
                 'wishlist'      => $wishlist,
                 'produkSejenis' => $seluruhBarangFilter,
+                'publicProductFeedback' => $publicProductFeedback,
                 'produkSemua'   => $productsemua,
                 'indexNama'     => $ind_nama,
                 'metaTitle'     => ucwords($productDisplayName) . ' | Ilena Furniture',
@@ -3950,11 +3960,19 @@ class Pages extends BaseController
                 $pesanan[$ind_p]['items'] = json_decode($p['items'], true);
                 $pesanan[$ind_p]['kurir'] = json_decode($p['kurir'], true);
             }
+            $customerServiceCases = [];
+            $customerEmails = (new \App\Services\Auth\CustomerEmailIdentity())->allFor((string) $email);
+            if ($customerEmails === []) $customerEmails = [(string) $email];
+            if (db_connect()->tableExists('customer_order_service_cases')) {
+                $customerServiceCases = db_connect()->table('customer_order_service_cases')->whereIn('customer_email', $customerEmails)
+                    ->orderBy('created_at', 'DESC')->limit(30)->get()->getResultArray();
+            }
             $data = [
                 'title' => 'Pesanan',
                 'navbar' => $this->getNavbarData(),
                 'apikey_img_ilena' => $this->apikey_img_ilena,
                 'pesanan' => $pesanan,
+                'customerServiceCases' => $customerServiceCases,
                 'email' => session()->get('email'),
                 'nama' => session()->get('nama'),
                 'nohp' => session()->get('nohp'),

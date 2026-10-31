@@ -134,3 +134,89 @@ body.ilena-storefront .toast .toast-body { padding: 16px; font-size: 14px; line-
 @media (prefers-reduced-motion: reduce) {
     body.ilena-storefront .pemberitahuan { animation: none; }
 }
+
+body.ilena-storefront .ilena-product-stock {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 14px;
+    padding: 8px 12px;
+    border: 1px solid #dce8df;
+    border-radius: 999px;
+    background: #f7fbf7;
+    color: #315b3c;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+body.ilena-storefront .ilena-product-stock.is-unavailable { border-color: #ead7d4; background: #fff8f7; color: #8d302b; }
+body.ilena-storefront .ilena-product-stock__dot { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; background: #4e875c; }
+body.ilena-storefront .ilena-product-stock.is-unavailable .ilena-product-stock__dot { background: #a33430; }
+body.ilena-storefront .ilena-dimension-diagram { width: min(100%, 390px); margin: 12px 0 16px; padding: 10px; border: 1px solid #eee7df; border-radius: 8px; background: #fff; color: #5b5148; }
+body.ilena-storefront .ilena-dimension-diagram svg { display: block; width: 100%; height: auto; overflow: visible; }
+body.ilena-storefront .ilena-dimension-diagram text { fill: #584d43; font: 8px Arial, sans-serif; }
+body.ilena-storefront .ilena-fit-guide {
+    margin-top: 20px;
+    padding: 18px;
+    border: 1px solid #e8e1d8;
+    border-radius: 10px;
+    background: #faf8f5;
+}
+body.ilena-storefront .ilena-fit-guide h3,
+body.ilena-storefront .ilena-product-help h3 { margin: 0 0 8px; color: #292522; font-size: 16px; font-weight: 650; line-height: 1.35; }
+body.ilena-storefront .ilena-fit-guide > p { margin: 0 0 14px; color: #625b54; font-size: 14px; line-height: 1.55; }
+body.ilena-storefront .ilena-fit-guide__fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+body.ilena-storefront .ilena-fit-guide__fields label { display: grid; gap: 6px; color: #49433e; font-size: 13px; font-weight: 600; }
+body.ilena-storefront .ilena-fit-guide__fields input { box-sizing: border-box; width: 100%; min-height: 44px; padding: 9px 11px; border: 1px solid #cfc6bc; border-radius: 6px; background: #fff; color: #292522; font: inherit; }
+body.ilena-storefront .ilena-fit-guide__fields input:focus-visible { outline: 3px solid rgba(141, 46, 43, .2); border-color: #8d2e2b; }
+body.ilena-storefront .ilena-fit-guide__button { min-height: 44px; margin-top: 12px; padding: 9px 16px; border: 0; border-radius: 5px; background: #8d2e2b; color: #fff; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+body.ilena-storefront .ilena-fit-guide__result { margin: 12px 0 0; font-size: 14px; line-height: 1.5; }
+body.ilena-storefront .ilena-fit-guide__result:empty { display: none; }
+body.ilena-storefront .ilena-fit-guide__result.is-pass { color: #315b3c; }
+body.ilena-storefront .ilena-fit-guide__result.is-fail,
+body.ilena-storefront .ilena-fit-guide__result.is-invalid { color: #8d302b; }
+body.ilena-storefront .ilena-product-help { display: grid; grid-template-columns: 1fr repeat(4, auto); align-items: center; gap: 12px; margin-top: 16px; padding: 14px 0; border-top: 1px solid #e9e3dc; }
+body.ilena-storefront .ilena-product-help h3 { margin: 0; font-size: 14px; }
+body.ilena-storefront .ilena-product-help a { display: inline-flex; align-items: center; gap: 5px; min-height: 44px; color: #71312d; font-size: 13px; font-weight: 600; text-decoration: none; }
+body.ilena-storefront .ilena-product-help a:hover { text-decoration: underline; }
+body.ilena-storefront .ilena-product-policy-note,
+body.ilena-storefront .ilena-preorder-note { margin: 10px 0 14px; padding: 12px 14px; border: 1px solid #eadfd6; border-left: 3px solid #8d2e2b; border-radius: 7px; background: #fffaf7; color: #423833; font-size: 14px; line-height: 1.55; }
+body.ilena-storefront .ilena-preorder-note a { color: #7c2825; font-weight: 700; text-underline-offset: 2px; }
+body.ilena-storefront .ilena-commerce-panel { margin: 22px 0 12px; padding: 18px 0; border-top: 1px solid #e9e3dc; color: #292522; }
+body.ilena-storefront .ilena-commerce-notice { margin:0 0 12px; padding:11px 14px; border:1px solid #d9e4d9; border-radius:6px; background:#f5faf5; color:#35523a; font-size:14px; line-height:1.5; }
+body.ilena-storefront .ilena-commerce-panel__heading { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+body.ilena-storefront .ilena-commerce-panel__heading span { color:#826f61; font-size:10px; letter-spacing:.14em; font-weight:700; }
+body.ilena-storefront .ilena-commerce-panel__heading h2 { margin:4px 0 0; font-size:clamp(18px,2vw,24px); font-weight:650; }
+body.ilena-storefront .ilena-commerce-panel__designer { color:#71312d; font-size:13px; font-weight:650; text-decoration:none; }
+body.ilena-storefront .ilena-commerce-panel__muted { margin:12px 0; color:#716b66; font-size:14px; }
+body.ilena-storefront .ilena-commerce-feedback { padding:12px 0; border-bottom:1px solid #eee8e0; }
+body.ilena-storefront .ilena-commerce-feedback p { margin:6px 0 0; font-size:14px; line-height:1.55; white-space:pre-wrap; }
+body.ilena-storefront .ilena-commerce-feedback__meta { display:flex; align-items:center; flex-wrap:wrap; gap:10px; font-size:13px; }
+body.ilena-storefront .ilena-commerce-feedback__meta span { color:#78675c; font-size:12px; }
+body.ilena-storefront .ilena-commerce-panel__details { margin-top:10px; border-bottom:1px solid #eee8e0; }
+body.ilena-storefront .ilena-commerce-panel__details summary { min-height:46px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; color:#71312d; font-weight:650; font-size:14px; }
+body.ilena-storefront .ilena-commerce-form { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; padding:4px 0 16px; }
+body.ilena-storefront .ilena-commerce-form label { display:grid; gap:5px; color:#554d46; font-size:12px; font-weight:600; }
+body.ilena-storefront .ilena-commerce-form input:not([type=checkbox]), body.ilena-storefront .ilena-commerce-form select, body.ilena-storefront .ilena-commerce-form textarea { box-sizing:border-box; width:100%; min-height:42px; padding:9px 10px; border:1px solid #d9d1c8; border-radius:5px; background:#fff; color:#292522; font:inherit; font-size:14px; }
+body.ilena-storefront .ilena-commerce-form textarea { resize:vertical; }
+body.ilena-storefront .ilena-commerce-form input:focus-visible, body.ilena-storefront .ilena-commerce-form select:focus-visible, body.ilena-storefront .ilena-commerce-form textarea:focus-visible { outline:3px solid rgba(141,46,43,.17); border-color:#8d2e2b; }
+body.ilena-storefront .ilena-commerce-form .ilena-commerce-consent { grid-column:1/-1; display:flex; align-items:flex-start; font-weight:400; font-size:13px; }
+body.ilena-storefront .ilena-commerce-panel__submit { justify-self:start; min-height:44px; padding:9px 16px; border:0; border-radius:5px; background:#8d2e2b; color:#fff; font:inherit; font-size:13px; font-weight:650; cursor:pointer; }
+body.ilena-storefront .ilena-commerce-form small { align-self:center; color:#756e68; font-size:11px; }
+body.ilena-storefront .ilena-order-service-request { margin-bottom:16px; padding:14px; border:1px solid #e8e1d8; border-radius:8px; background:#faf8f5; }
+body.ilena-storefront .ilena-order-service-request summary { min-height:42px; cursor:pointer; color:#71312d; font-weight:650; }
+body.ilena-storefront .ilena-order-service-request p { color:#655d56; font-size:13px; line-height:1.5; }
+body.ilena-storefront .ilena-order-service-request form { display:grid; gap:10px; }
+body.ilena-storefront .ilena-order-service-request label { display:grid; gap:5px; font-size:13px; font-weight:600; }
+body.ilena-storefront .ilena-order-service-request input, body.ilena-storefront .ilena-order-service-request select, body.ilena-storefront .ilena-order-service-request textarea { box-sizing:border-box; width:100%; min-height:42px; padding:9px; border:1px solid #d9d1c8; border-radius:5px; background:#fff; font:inherit; }
+body.ilena-storefront .ilena-service-case-tracker { margin:0 0 22px; padding:16px; border:1px solid #e8e1d8; border-radius:9px; background:#fff; }
+body.ilena-storefront .ilena-service-case-tracker h2 { margin:0 0 10px; font-size:17px; font-weight:650; }
+@media (max-width: 700px) {
+    body.ilena-storefront .ilena-fit-guide { padding: 14px; }
+    body.ilena-storefront .ilena-product-help { grid-template-columns: 1fr; gap: 2px; }
+    body.ilena-storefront .ilena-product-help h3 { margin-bottom: 4px; }
+    body.ilena-storefront .ilena-product-help a { justify-content: space-between; border-top: 1px solid #eee8e0; }
+    body.ilena-storefront .ilena-commerce-panel { padding:16px 0; }
+    body.ilena-storefront .ilena-commerce-panel__heading { align-items:flex-start; flex-direction:column; gap:8px; }
+    body.ilena-storefront .ilena-commerce-form { grid-template-columns:1fr; }
+}

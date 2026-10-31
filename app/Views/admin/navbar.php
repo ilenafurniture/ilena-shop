@@ -29,6 +29,8 @@
             ['show' => $can('orders_online'), 'label' => 'Pesanan Online', 'icon' => 'shopping_bag', 'href' => '/admin/order/online', 'active' => $isActivePrefix(['admin/order/online']), 'badge' => $websiteOrderTodoCount],
             ['show' => $can('mutasi'), 'label' => 'Mutasi Stok', 'icon' => 'swap_horiz', 'href' => '/admin/mutasi', 'active' => $isActivePrefix(['admin/mutasi', 'admin/mutasiconfirm', 'admin/labelbarang'])],
             ['show' => $can('support_chat'), 'label' => 'Live Chat', 'icon' => 'forum', 'href' => '/admin/support-chat', 'active' => $isActivePrefix(['admin/support-chat'])],
+            ['show' => $can('orders_online'), 'label' => 'Ulasan & Pertanyaan', 'icon' => 'reviews', 'href' => '/admin/commerce-feedback', 'active' => $isActivePrefix(['admin/commerce-feedback'])],
+            ['show' => $can('orders_online'), 'label' => 'Retur & Refund', 'icon' => 'assignment_return', 'href' => '/admin/commerce-service-cases', 'active' => $isActivePrefix(['admin/commerce-service-cases'])],
         ],
         'Konten & Toko' => [
             ['show' => $can('content'), 'label' => 'Artikel', 'icon' => 'article', 'href' => '/admin/article', 'active' => $isActivePrefix(['admin/article']) || str_contains($lowerTitle, 'artikel')],

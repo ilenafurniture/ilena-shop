@@ -78,6 +78,11 @@ $routes->post('/addwishlist/(:any)', 'Pages::addWishlist/$1', ['filter' => ['cus
 $routes->post('/delwishlist/(:any)', 'Pages::delWishlist/$1', ['filter' => ['customerFilter', 'csrf']]);
 $routes->post('/wishlisttocart', 'Pages::wishlistToCart', ['filter' => ['customerFilter', 'csrf']]);
 
+// Customer product feedback, opt-in stock/price alerts, and after-sales service requests.
+$routes->post('/commerce/alert', 'StoreEngagementController::subscribeAlert', ['filter' => ['customerFilter', 'csrf']]);
+$routes->post('/commerce/feedback', 'StoreEngagementController::submitFeedback', ['filter' => ['customerFilter', 'csrf']]);
+$routes->post('/commerce/order-case/(:segment)', 'StoreEngagementController::createOrderCase/$1', ['filter' => ['customerLoginFilter', 'csrf']]);
+
 $routes->get('/order', 'Pages::order', ['filter' => 'customerFilter']);
 $routes->get('/order/(:any)', 'Pages::order/$1', ['filter' => 'customerFilter']);
 $routes->post('/order/cancel/(:any)', 'Pages::cancelCustomerOrder/$1', ['filter' => ['customerFilter', 'csrf']]);
@@ -254,6 +259,12 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
     $routes->post('support-chat/product-spec/save', 'SupportChatController::saveProductSpec');
     $routes->post('support-chat/provider/save', 'SupportChatController::saveProviderSettings');
 
+    // Store reviews, product questions, and after-sales requests.
+    $routes->get('commerce-feedback', 'StoreEngagementAdminController::feedback');
+    $routes->post('commerce-feedback/(:num)', 'StoreEngagementAdminController::moderate/$1');
+    $routes->get('commerce-service-cases', 'StoreEngagementAdminController::cases');
+    $routes->post('commerce-service-cases/(:num)', 'StoreEngagementAdminController::updateCase/$1');
+
 });
 
 
@@ -309,6 +320,9 @@ $routes->group('{locale}', ['filter' => 'customerFilter'], static function ($rou
     $routes->post('addwishlist/(:any)', 'Pages::addWishlist/$1', ['filter' => ['csrf']]);
     $routes->post('delwishlist/(:any)', 'Pages::delWishlist/$1', ['filter' => ['csrf']]);
     $routes->post('wishlisttocart', 'Pages::wishlistToCart', ['filter' => ['csrf']]);
+    $routes->post('commerce/alert', 'StoreEngagementController::subscribeAlert', ['filter' => ['csrf']]);
+    $routes->post('commerce/feedback', 'StoreEngagementController::submitFeedback', ['filter' => ['csrf']]);
+    $routes->post('commerce/order-case/(:segment)', 'StoreEngagementController::createOrderCase/$1', ['filter' => ['customerLoginFilter', 'csrf']]);
     $routes->post('addcart/(:any)/(:any)/(:any)', 'Pages::addCart/$1/$2/$3', ['filter' => ['csrf']]);
     $routes->get('address', 'Pages::address');
     $routes->get('getkota/(:any)', 'Pages::getKota/$1');

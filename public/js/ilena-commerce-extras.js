@@ -224,6 +224,80 @@
     shell.querySelector('[data-compare-clear]').addEventListener('click', () => { compareItems = []; persistCompare(); });
     drawCompare(); addCardTools();
 
+    function enableRecommendationCarousel() {
+        const section = document.querySelector('.ilena-product-related');
+        const track = section?.querySelector('.ilena-product-related-grid');
+        const heading = section?.querySelector('.ilena-product-related-heading');
+        if (!track || !heading || track.children.length < 2 || track.dataset.carouselReady) return;
+        track.dataset.carouselReady = 'true';
+        track.classList.add('is-carousel');
+        track.setAttribute('role', 'region');
+        track.setAttribute('aria-label', en ? 'Recommended products' : 'Rekomendasi produk');
+        track.tabIndex = 0;
+        const controls = document.createElement('div'); controls.className = 'ilena-recommendation-controls';
+        const makeArrow = (direction, label, symbol) => {
+            const button = document.createElement('button'); button.type = 'button'; button.className = 'ilena-recommendation-arrow';
+            button.setAttribute('aria-label', label); button.textContent = symbol;
+            button.addEventListener('click', () => track.scrollBy({ left: direction * Math.max(track.clientWidth * .8, 180), behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }));
+            return button;
+        };
+        controls.append(makeArrow(-1, en ? 'Previous recommendations' : 'Rekomendasi sebelumnya', '‹'), makeArrow(1, en ? 'More recommendations' : 'Rekomendasi berikutnya', '›'));
+        heading.append(controls);
+        const update = () => {
+            const overflowing = track.scrollWidth > track.clientWidth + 2;
+            controls.hidden = !overflowing;
+            controls.querySelectorAll('button')[0].disabled = track.scrollLeft <= 2;
+            controls.querySelectorAll('button')[1].disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
+        };
+        track.addEventListener('scroll', update, { passive: true });
+        window.addEventListener('resize', update, { passive: true });
+        requestAnimationFrame(update);
+    }
+
+    function rememberProduct() {
+        const detail = document.querySelector('.ilena-product-detail');
+        if (!detail) return;
+        const title = detail.querySelector('.ilena-product-title-row h1')?.textContent.trim();
+        const image = detail.querySelector('.ilena-product-gallery__stage img.img-detail-prev');
+        if (!title || !image) return;
+        const current = { id: window.location.pathname, title: title.slice(0, 180), image: safeUrl(image.currentSrc || image.src), url: safeUrl(window.location.pathname, true), viewedAt: Date.now() };
+        if (!current.image || !current.url) return;
+        const key = 'ilena-recently-viewed-v1';
+        let records = [];
+        try { const parsed = JSON.parse(localStorage.getItem(key) || '[]'); if (Array.isArray(parsed)) records = parsed; } catch (_) {}
+        records = [current, ...records.filter((item) => item && item.id !== current.id)].slice(0, 8);
+        try { localStorage.setItem(key, JSON.stringify(records)); } catch (_) {}
+        const previous = records.filter((item) => item.id !== current.id && typeof item.title === 'string' && safeUrl(item.url, true) && safeUrl(item.image)).slice(0, 4);
+        if (!previous.length || document.querySelector('.ilena-recently-viewed')) return;
+        const section = document.createElement('section'); section.className = 'ilena-recently-viewed';
+        section.setAttribute('aria-labelledby', 'ilena-recently-viewed-title');
+        const heading = document.createElement('h2'); heading.id = 'ilena-recently-viewed-title'; heading.textContent = en ? 'Recently viewed' : 'Terakhir dilihat';
+        const rail = document.createElement('div'); rail.className = 'ilena-recently-viewed__rail';
+        previous.forEach((item) => {
+            const card = document.createElement('a'); card.className = 'ilena-recently-viewed__item'; card.href = safeUrl(item.url, true);
+            const img = document.createElement('img'); img.src = safeUrl(item.image); img.alt = ''; img.width = 160; img.height = 160; img.loading = 'lazy'; img.decoding = 'async';
+            const name = document.createElement('span'); name.textContent = item.title.slice(0, 180); card.append(img, name); rail.append(card);
+        });
+        section.append(heading, rail);
+        document.querySelector('.ilena-product-related')?.after(section);
+    }
+
+    enableRecommendationCarousel();
+    rememberProduct();
+
+    let headerFrame = false;
+    const updateHeaderDensity = () => {
+        headerFrame = false;
+        const compact = window.scrollY > 52;
+        document.querySelectorAll('.ilena-topbar, .navbar-hp-atas').forEach((header) => header.classList.toggle('is-scroll-compact', compact));
+    };
+    window.addEventListener('scroll', () => {
+        if (headerFrame) return;
+        headerFrame = true;
+        requestAnimationFrame(updateHeaderDensity);
+    }, { passive: true });
+    updateHeaderDensity();
+
     // Feedback is tied to deliberate actions and remains motion-safe.
     document.addEventListener('click', (event) => {
         const heart = event.target.closest('form[action*="wishlist/"] button, form[action*="wishlist"] button');
@@ -236,6 +310,19 @@
                 icon.addEventListener('animationend', () => icon.classList.remove('ilena-heart-pop'), { once: true });
             }
         }
+    }, true);
+
+    document.addEventListener('click', (event) => {
+        const button = event.target.closest('.btn-default-merah, .ilena-extra-primary, .btn-lonjong');
+        if (!button || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        const bounds = button.getBoundingClientRect();
+        const ripple = document.createElement('span'); ripple.className = 'ilena-button-ripple'; ripple.setAttribute('aria-hidden', 'true');
+        const size = Math.max(bounds.width, bounds.height) * 1.25;
+        ripple.style.width = `${size}px`; ripple.style.height = `${size}px`;
+        ripple.style.left = `${event.clientX - bounds.left - size / 2}px`;
+        ripple.style.top = `${event.clientY - bounds.top - size / 2}px`;
+        button.classList.add('has-ilena-ripple'); button.append(ripple);
+        ripple.addEventListener('animationend', () => ripple.remove(), { once: true });
     }, true);
 
     document.addEventListener('change', (event) => {
@@ -292,4 +379,22 @@
         } else sticky.classList.add('is-visible');
         stickyButton.addEventListener('click', () => purchaseForm.requestSubmit());
     }
+
+    document.querySelectorAll('[data-commerce-variant]').forEach((field) => {
+        const form = field.closest('form');
+        const productInfo = document.querySelector('.ilena-product-info');
+        const syncVariant = (event) => {
+            const selected = event.target;
+            if (selected?.matches('input[name="varian"], input[name="varian-mobile"]')) {
+                field.value = selected.dataset.name || selected.value || '';
+                const stockAlert = document.querySelector('[data-back-stock-alert]');
+                if (stockAlert && selected.dataset.stok !== undefined) stockAlert.hidden = Number(selected.dataset.stok) > 0;
+            }
+        };
+        productInfo?.addEventListener('change', syncVariant);
+        if (form) form.addEventListener('submit', (event) => {
+            if (!field.value.trim()) { event.preventDefault(); field.setCustomValidity(en ? 'Choose a product variant first.' : 'Pilih varian produk terlebih dahulu.'); field.reportValidity(); }
+            else field.setCustomValidity('');
+        });
+    });
 })();

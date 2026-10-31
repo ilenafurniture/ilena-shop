@@ -359,6 +359,11 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                         <?php } ?>
                     </div></section>
                 </div>
+                <?php $stockQuantity = max(0, (int) ($defaultVariant['stok'] ?? 0)); ?>
+                <p class="ilena-product-stock <?= $stockQuantity > 0 ? 'is-available' : 'is-unavailable'; ?>" id="ilena-product-stock" role="status" aria-live="polite" data-stock-available="<?= esc(sprintf(lang('Store.stockUnitsAvailable'), '__COUNT__'), 'attr'); ?>" data-stock-unavailable="<?= esc(lang('Store.unavailable'), 'attr'); ?>">
+                    <span aria-hidden="true" class="ilena-product-stock__dot"></span>
+                    <span data-stock-label><?= esc($stockQuantity > 0 ? sprintf(lang('Store.stockUnitsAvailable'), number_format($stockQuantity, 0, ',', '.')) : lang('Store.unavailable')); ?></span>
+                </p>
                 <?php if (session()->get('role') == '1') { ?>
                 <div class="d-flex gap-2">
                     <a class="btn-default d-flex justify-content-center align-items-center"
@@ -396,9 +401,10 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
 
                 </div>
                 <?php } ?>
-                <p id="info-habis" class="mt-2 <?= $defaultVariant['stok'] <= 0 ? '' : 'd-none'; ?>"
-                    style="font-size: 10px;">*<?= esc(lang('Store.preorderLead')); ?> <a
-                        href="https://wa.me/+628112938158" class="btn-teks-aja" style="display: inline;"><?= esc(lang('Store.customerService')); ?></a> <?= esc(lang('Store.ours')); ?></p>
+                <p id="info-habis" class="ilena-preorder-note mt-2 <?= $defaultVariant['stok'] <= 0 ? '' : 'd-none'; ?>" role="status" aria-live="polite">
+                    <?= esc(lang('Store.preorderLead')); ?>
+                    <a href="https://wa.me/+628112938158" class="btn-teks-aja" style="display: inline;"><?= esc(lang('Store.customerService')); ?></a>.
+                </p>
                 <?php if ($produk['tokped'] || $produk['shopee'] || $produk['tiktok']) { ?>
                 <div class="mt-4 <?= $defaultVariant['stok'] <= 0 ? 'd-none' : ''; ?>" id="container-market">
                     <p class="mb-2"><?= esc(lang('Store.alsoAvailableOn')); ?></p>
@@ -459,6 +465,21 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                             data-bs-parent="#accordionFlushExample">
                             <div class="accordion-body">
                                 <p class="mb-0 fw-bold"><?= esc(lang('Store.productDimensions')); ?></p>
+                                <?php
+                                    $diagramDimensions = $produk['deskripsi']['dimensi']['asli'] ?? [];
+                                    $diagramLength = trim((string) ($diagramDimensions['panjang'] ?? '-'));
+                                    $diagramWidth = trim((string) ($diagramDimensions['lebar'] ?? '-'));
+                                    $diagramHeight = trim((string) ($diagramDimensions['tinggi'] ?? '-'));
+                                ?>
+                                <div class="ilena-dimension-diagram" role="img" aria-label="<?= esc(lang('Store.dimensionDiagramLabel'), 'attr'); ?>">
+                                    <svg viewBox="0 0 260 150" aria-hidden="true" focusable="false">
+                                        <path d="M48 54 133 25l78 29-84 31-79-31Zm0 0v61l79 29V85m0 59V85l84-31v61l-84 29" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                                        <path d="M48 126 126 148m8-64 77-29m8 4v61" fill="none" stroke="#8d2e2b" stroke-width="1.5" stroke-dasharray="3 3"/>
+                                        <text x="54" y="143"><?= esc(lang('Store.lengthLabel')); ?> <?= esc($diagramLength); ?> mm</text>
+                                        <text x="147" y="47"><?= esc(lang('Store.widthLabel')); ?> <?= esc($diagramWidth); ?> mm</text>
+                                        <text x="216" y="92" transform="rotate(90 216 92)"><?= esc(lang('Store.heightLabel')); ?> <?= esc($diagramHeight); ?> mm</text>
+                                    </svg>
+                                </div>
                                 <ul>
                                     <li>
                                         <p class="mb-0">
@@ -504,10 +525,93 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                                         </p>
                                     </li>
                                 </ul>
+                                <?php
+                                    $fitDimensions = $produk['deskripsi']['dimensi']['asli'] ?? [];
+                                    $fitLength = is_numeric($fitDimensions['panjang'] ?? null) ? (float) $fitDimensions['panjang'] : 0;
+                                    $fitWidth = is_numeric($fitDimensions['lebar'] ?? null) ? (float) $fitDimensions['lebar'] : 0;
+                                    $fitHeight = is_numeric($fitDimensions['tinggi'] ?? null) ? (float) $fitDimensions['tinggi'] : 0;
+                                    $fitReady = $fitLength > 0 && $fitWidth > 0 && $fitHeight > 0;
+                                ?>
+                                <section class="ilena-fit-guide" data-fit-guide data-fit-dimensions="<?= esc(json_encode([$fitLength, $fitWidth, $fitHeight]), 'attr'); ?>" aria-labelledby="ilena-fit-guide-title">
+                                    <h3 id="ilena-fit-guide-title"><?= esc(lang('Store.fitGuideTitle')); ?></h3>
+                                    <p><?= esc($fitReady ? lang('Store.fitGuideIntro') : lang('Store.fitDimensionsMissing')); ?></p>
+                                    <?php if ($fitReady): ?>
+                                    <div class="ilena-fit-guide__fields">
+                                        <label><?= esc(lang('Store.doorWidth')); ?><input type="number" inputmode="decimal" min="1" step="1" data-fit-width required></label>
+                                        <label><?= esc(lang('Store.doorHeight')); ?><input type="number" inputmode="decimal" min="1" step="1" data-fit-height required></label>
+                                    </div>
+                                    <button type="button" class="ilena-fit-guide__button" data-fit-check><?= esc(lang('Store.checkFit')); ?></button>
+                                    <p class="ilena-fit-guide__result" data-fit-result aria-live="polite"></p>
+                                    <span class="ilena-fit-guide__messages" hidden data-pass="<?= esc(lang('Store.fitResultPass'), 'attr'); ?>" data-fail="<?= esc(lang('Store.fitResultFail'), 'attr'); ?>" data-invalid="<?= esc(lang('Store.fitResultInvalid'), 'attr'); ?>"></span>
+                                    <?php endif; ?>
+                                </section>
                             </div>
                         </div>
                     </div>
                 </div>
+                <nav class="ilena-product-help" aria-label="<?= esc(lang('Store.productHelpTitle'), 'attr'); ?>">
+                    <h3><?= esc(lang('Store.productHelpTitle')); ?></h3>
+                    <a href="<?= esc(ilena_store_path('/faq#garansi-produk'), 'attr'); ?>"><?= esc(lang('Store.productWarrantyLink')); ?><span aria-hidden="true">↗</span></a>
+                    <a href="<?= esc(ilena_store_path('/faq#perawatan'), 'attr'); ?>"><?= esc(lang('Store.productCareLink')); ?><span aria-hidden="true">↗</span></a>
+                    <a href="<?= esc(ilena_store_path('/faq#pengiriman'), 'attr'); ?>"><?= esc(lang('Store.productDeliveryLink')); ?><span aria-hidden="true">↗</span></a>
+                    <a href="<?= esc(ilena_store_path('/faq#perakitan'), 'attr'); ?>"><?= esc(lang('Store.productAssemblyLink')); ?><span aria-hidden="true">↗</span></a>
+                </nav>
+                <p class="ilena-product-policy-note"><?= esc(lang('Store.productDamageNotice')); ?></p>
+                <?php
+                    $feedbackEnglish = $isEnglish;
+                    $feedbackRows = is_array($publicProductFeedback ?? null) ? $publicProductFeedback : [];
+                    $initialVariantName = (string) ($defaultVariant['nama'] ?? '');
+                ?>
+                <section class="ilena-commerce-panel" aria-labelledby="ilena-product-feedback-title">
+                    <?php if ($notice = session()->getFlashdata('commerce_notice')): ?><p class="ilena-commerce-notice" role="status"><?= esc($notice); ?></p><?php endif; ?>
+                    <div class="ilena-commerce-panel__heading">
+                        <div><span><?= $feedbackEnglish ? 'CUSTOMER VOICE' : 'SUARA PELANGGAN'; ?></span><h2 id="ilena-product-feedback-title"><?= $feedbackEnglish ? 'Reviews & questions' : 'Ulasan & pertanyaan'; ?></h2></div>
+                        <a href="https://ilenafurniture.net/" class="ilena-commerce-panel__designer" target="_blank" rel="noopener noreferrer"><?= $feedbackEnglish ? 'Custom interior consultation' : 'Konsultasi interior custom'; ?> ↗</a>
+                    </div>
+                    <?php if ($feedbackRows === []): ?><p class="ilena-commerce-panel__muted"><?= $feedbackEnglish ? 'Be the first to share a helpful product note.' : 'Jadilah yang pertama berbagi pengalaman tentang produk ini.'; ?></p><?php endif; ?>
+                    <?php foreach ($feedbackRows as $feedback): ?>
+                    <article class="ilena-commerce-feedback">
+                        <div class="ilena-commerce-feedback__meta"><strong><?= esc((string) ($feedback['author_name'] ?? 'Pelanggan')); ?></strong>
+                            <?php if ((int) ($feedback['verified_purchase'] ?? 0) === 1): ?><span><?= $feedbackEnglish ? 'Verified buyer' : 'Pembeli terverifikasi'; ?></span><?php endif; ?>
+                            <?php if (($feedback['feedback_type'] ?? '') === 'review' && !empty($feedback['rating'])): ?><span aria-label="<?= esc((string) $feedback['rating']); ?> out of 5 stars">★ <?= (int) $feedback['rating']; ?>/5</span><?php endif; ?>
+                        </div><p><?= esc((string) ($feedback['body'] ?? '')); ?></p>
+                    </article>
+                    <?php endforeach; ?>
+                    <details class="ilena-commerce-panel__details"><summary><?= $feedbackEnglish ? 'Write a review or ask a question' : 'Tulis ulasan atau ajukan pertanyaan'; ?></summary>
+                        <form action="<?= esc(ilena_store_path('/commerce/feedback'), 'attr'); ?>" method="post" class="ilena-commerce-form">
+                            <?= csrf_field(); ?><input type="hidden" name="product_id" value="<?= esc((string) $produk['id'], 'attr'); ?>">
+                            <label><?= $feedbackEnglish ? 'Submission type' : 'Jenis kiriman'; ?><select name="feedback_type"><option value="review"><?= $feedbackEnglish ? 'Product review' : 'Ulasan produk'; ?></option><option value="question"><?= $feedbackEnglish ? 'Product question' : 'Pertanyaan produk'; ?></option></select></label>
+                            <label><?= $feedbackEnglish ? 'Name' : 'Nama'; ?><input name="name" maxlength="120" value="<?= esc((string) (session()->get('nama') ?? ''), 'attr'); ?>" required></label>
+                            <label><?= $feedbackEnglish ? 'Email' : 'Email'; ?><input type="email" name="email" maxlength="191" value="<?= esc((string) (session()->get('email') ?? ''), 'attr'); ?>" required></label>
+                            <label><?= $feedbackEnglish ? 'Order ID (for verified buyer badge)' : 'Nomor pesanan (untuk tanda pembeli terverifikasi)'; ?><input name="order_id" maxlength="191"></label>
+                            <label><?= $feedbackEnglish ? 'Rating' : 'Penilaian'; ?><select name="rating"><option value="5">5 — <?= $feedbackEnglish ? 'Excellent' : 'Sangat baik'; ?></option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></label>
+                            <label><?= $feedbackEnglish ? 'Your note' : 'Pesan Anda'; ?><textarea name="body" minlength="8" maxlength="2000" rows="3" required></textarea></label>
+                            <label class="ilena-commerce-consent"><input type="checkbox" name="publication_consent" value="1" required> <?= $feedbackEnglish ? 'I agree that my name and submission may be published after moderation.' : 'Saya setuju nama dan kiriman saya dapat ditampilkan setelah ditinjau.'; ?></label>
+                            <button type="submit" class="ilena-commerce-panel__submit"><?= $feedbackEnglish ? 'Send for review' : 'Kirim untuk ditinjau'; ?></button>
+                            <small><?= $feedbackEnglish ? 'Submissions are moderated and only approved content is published.' : 'Kiriman ditinjau terlebih dahulu; hanya konten yang disetujui akan ditampilkan.'; ?></small>
+                        </form>
+                    </details>
+                    <details class="ilena-commerce-panel__details" data-back-stock-alert <?= (int) ($defaultVariant['stok'] ?? 0) > 0 ? 'hidden' : ''; ?>><summary><?= $feedbackEnglish ? 'Notify me when available' : 'Beri tahu saat tersedia'; ?></summary>
+                        <?php if (!session()->get('isLogin') || (string) session()->get('active') !== '1'): ?><p class="ilena-commerce-panel__muted"><?= $feedbackEnglish ? 'Sign in to save a stock alert.' : 'Masuk ke akun untuk menyimpan pemberitahuan stok.'; ?> <a href="<?= esc(ilena_store_path('/login'), 'attr'); ?>"><?= $feedbackEnglish ? 'Sign in' : 'Masuk'; ?></a></p><?php else: ?>
+                        <form action="<?= esc(ilena_store_path('/commerce/alert'), 'attr'); ?>" method="post" class="ilena-commerce-form">
+                            <?= csrf_field(); ?><input type="hidden" name="product_id" value="<?= esc((string) $produk['id'], 'attr'); ?>"><input type="hidden" name="alert_type" value="back_in_stock"><input type="hidden" name="variant_name" value="<?= esc($initialVariantName, 'attr'); ?>" data-commerce-variant>
+                            <label><?= $feedbackEnglish ? 'Account email' : 'Email akun'; ?><input type="email" value="<?= esc((string) (session()->get('email') ?? ''), 'attr'); ?>" readonly required></label>
+                            <label class="ilena-commerce-consent"><input type="checkbox" name="consent" value="1" required> <?= $feedbackEnglish ? 'I agree to receive one availability update for this product.' : 'Saya setuju menerima satu pemberitahuan ketersediaan produk ini.'; ?></label>
+                            <button type="submit" class="ilena-commerce-panel__submit"><?= $feedbackEnglish ? 'Save alert' : 'Simpan pemberitahuan'; ?></button>
+                        </form>
+                        <?php endif; ?>
+                    </details>
+                    <details class="ilena-commerce-panel__details"><summary><?= $feedbackEnglish ? 'Notify me if the price drops' : 'Beri tahu jika harga turun'; ?></summary>
+                        <?php if (!session()->get('isLogin') || (string) session()->get('active') !== '1'): ?><p class="ilena-commerce-panel__muted"><?= $feedbackEnglish ? 'Sign in to save a price alert.' : 'Masuk ke akun untuk menyimpan pemberitahuan harga.'; ?> <a href="<?= esc(ilena_store_path('/login'), 'attr'); ?>"><?= $feedbackEnglish ? 'Sign in' : 'Masuk'; ?></a></p><?php else: ?>
+                        <form action="<?= esc(ilena_store_path('/commerce/alert'), 'attr'); ?>" method="post" class="ilena-commerce-form">
+                            <?= csrf_field(); ?><input type="hidden" name="product_id" value="<?= esc((string) $produk['id'], 'attr'); ?>"><input type="hidden" name="alert_type" value="price_drop"><input type="hidden" name="variant_name" value="<?= esc($initialVariantName, 'attr'); ?>" data-commerce-variant>
+                            <label><?= $feedbackEnglish ? 'Account email' : 'Email akun'; ?><input type="email" value="<?= esc((string) (session()->get('email') ?? ''), 'attr'); ?>" readonly required></label>
+                            <label class="ilena-commerce-consent"><input type="checkbox" name="consent" value="1" required> <?= $feedbackEnglish ? 'I agree to receive one price-drop email for this product.' : 'Saya setuju menerima satu email saat harga produk ini turun.'; ?></label>
+                            <button type="submit" class="ilena-commerce-panel__submit"><?= $feedbackEnglish ? 'Save price alert' : 'Simpan pemberitahuan harga'; ?></button>
+                        </form>
+                        <?php endif; ?>
+                    </details>
+                </section>
             </div>
             <div class="limapuluh-ke-seratus ilena-product-gallery">
                 <div class="ilena-product-gallery__stage">
@@ -715,6 +819,16 @@ let varianSelected = <?= json_encode($defaultVariant['nama'] ?? 'default', JSON_
 let jumlahSelected = "1";
 let isStokHabis = <?= $defaultVariant['stok'] == '0' ? 'true' : 'false' ?>;
 const stokByVarianName = <?= json_encode(array_column($produk['varian'], 'stok', 'nama'), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+const stockState = document.getElementById('ilena-product-stock');
+function updateStockState(stock) {
+    if (!stockState) return;
+    const available = Math.max(0, Number(stock) || 0);
+    stockState.classList.toggle('is-available', available > 0);
+    stockState.classList.toggle('is-unavailable', available <= 0);
+    stockState.querySelector('[data-stock-label]').textContent = available > 0
+        ? stockState.dataset.stockAvailable.replace('__COUNT__', new Intl.NumberFormat(<?= json_encode($isEnglish ? 'en' : 'id'); ?>).format(available))
+        : stockState.dataset.stockUnavailable;
+}
 const detailVersion = "<?= $detailVersion ?>";
 const detailImageVersions = <?= json_encode($detailImageVersions, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 function detailSlotVersion(slot) { return String(detailImageVersions[String(slot)] || detailVersion); }
@@ -940,6 +1054,7 @@ radioVarianElm.forEach(elm => {
         const slotValue = (detailSlotsByVariant[variantIndex] || [e.target.dataset.slot || e.target.value.split("-")[0]]).join(",");
         const varianName = e.target.dataset.name || e.target.value.split("-").slice(1, -1).join("-") || e.target.value.split("-")[1] || '';
         const varianFullSelected = varian[variantIndex] || { stok: e.target.dataset.stok || 0, urutan_gambar: slotValue, nama: varianName };
+        updateStockState(varianFullSelected.stok);
         const imgElm = document.querySelector("figure.img-detail-prev");
         const imgFixElm = document.querySelector("img.img-detail-prev");
         window.isHoverDetailSelected = false;
@@ -1020,6 +1135,29 @@ radioVarianElm.forEach(elm => {
         syncQuantitySelection();
 
     })
+});
+
+document.querySelectorAll('[data-fit-guide]').forEach((guide) => {
+    const button = guide.querySelector('[data-fit-check]');
+    const widthInput = guide.querySelector('[data-fit-width]');
+    const heightInput = guide.querySelector('[data-fit-height]');
+    const result = guide.querySelector('[data-fit-result]');
+    const messages = guide.querySelector('.ilena-fit-guide__messages');
+    if (!button || !widthInput || !heightInput || !result || !messages) return;
+    button.addEventListener('click', () => {
+        const openingWidth = Number(widthInput.value);
+        const openingHeight = Number(heightInput.value);
+        if (!Number.isFinite(openingWidth) || !Number.isFinite(openingHeight) || openingWidth <= 0 || openingHeight <= 0) {
+            result.textContent = messages.dataset.invalid;
+            result.className = 'ilena-fit-guide__result is-invalid';
+            return;
+        }
+        const dimensions = JSON.parse(guide.dataset.fitDimensions || '[]').map(Number);
+        const fits = [[dimensions[0], dimensions[1]], [dimensions[0], dimensions[2]], [dimensions[1], dimensions[2]]]
+            .some(([faceWidth, faceHeight]) => faceWidth > 0 && faceHeight > 0 && faceWidth <= openingWidth && faceHeight <= openingHeight);
+        result.textContent = fits ? messages.dataset.pass : messages.dataset.fail;
+        result.className = 'ilena-fit-guide__result ' + (fits ? 'is-pass' : 'is-fail');
+    });
 });
 const jumlahBarangElm = document.querySelector('input[name="jumlah"]');
 function syncQuantitySelection() {
