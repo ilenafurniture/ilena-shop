@@ -269,9 +269,12 @@ body.ilena-storefront .ilena-product-stock__quantity { margin-left:2px; padding:
 body.ilena-storefront .ilena-product-stock.is-unavailable { color:#8d302b; }
 body.ilena-storefront .ilena-product-stock.is-unavailable .ilena-product-stock__icon { background:#f8eeec; color:#8d302b; }
 body.ilena-storefront .ilena-product-stock__quantity[hidden] { display:none; }
-body.ilena-storefront .ilena-dimension-diagram { width: min(100%, 390px); margin: 12px 0 16px; padding: 10px; border: 1px solid #eee7df; border-radius: 8px; background: #fff; color: #5b5148; }
-body.ilena-storefront .ilena-dimension-diagram svg { display: block; width: 100%; height: auto; overflow: visible; }
-body.ilena-storefront .ilena-dimension-diagram text { fill: #584d43; font: 8px Arial, sans-serif; }
+body.ilena-storefront .ilena-dimension-diagram { box-sizing:border-box; width:100%; max-width:390px; min-width:0; margin:14px 0 16px; padding:clamp(8px,3vw,12px); border:1px solid #e5dbd0; border-radius:7px; background:#faf8f5; color:#342c27; }
+body.ilena-storefront .ilena-dimension-diagram svg { display:block; width:100%; max-width:330px; height:auto; margin-inline:auto; overflow:visible; }
+body.ilena-storefront .ilena-dimension-diagram__outline { fill:none; stroke:#463b34; stroke-width:2.2; stroke-linejoin:round; stroke-linecap:round; }
+body.ilena-storefront .ilena-dimension-diagram__measure { fill:none; stroke:#963a35; stroke-width:1.5; stroke-dasharray:3 2; }
+body.ilena-storefront .ilena-dimension-diagram marker path { fill:#963a35; }
+body.ilena-storefront .ilena-dimension-diagram__label { fill:#7d302c; font:600 clamp(7px,2.5vw,9px)/1.2 Arial,sans-serif; letter-spacing:.01em; }
 body.ilena-storefront .ilena-fit-guide {
     margin-top: 20px;
     padding: 18px;
@@ -370,6 +373,39 @@ body.ilena-storefront .ilena-order-service-request label { display:grid; gap:5px
 body.ilena-storefront .ilena-order-service-request input, body.ilena-storefront .ilena-order-service-request select, body.ilena-storefront .ilena-order-service-request textarea { box-sizing:border-box; width:100%; min-height:42px; padding:9px; border:1px solid #d9d1c8; border-radius:5px; background:#fff; font:inherit; }
 body.ilena-storefront .ilena-service-case-tracker { margin:0 0 22px; padding:16px; border:1px solid #e8e1d8; border-radius:9px; background:#fff; }
 body.ilena-storefront .ilena-service-case-tracker h2 { margin:0 0 10px; font-size:17px; font-weight:650; }
+
+/* Refined cart confirmation: light, compact and consistent with Ilena's warm storefront palette. */
+body.ilena-storefront .ilena-cart-feedback {
+    right:24px; bottom:24px; left:auto; width:min(390px,calc(100vw - 32px)); max-width:390px;
+    display:flex; align-items:center; gap:12px; padding:14px 17px;
+    border:1px solid #e8dfd5; border-radius:7px; border-left:1px solid #e8dfd5;
+    background:#fffdfa; color:#302923; box-shadow:0 14px 36px rgba(42,32,24,.16);
+    font-size:13px; font-weight:550; line-height:1.5;
+}
+body.ilena-storefront .ilena-cart-feedback.is-success { padding-left:17px; }
+body.ilena-storefront .ilena-cart-feedback::before {
+    position:static; top:auto; left:auto; width:25px; height:25px; flex:0 0 25px;
+    display:grid; place-items:center; border-radius:50%; transform:none;
+    background:#edf3eb; color:#496b49; font:700 13px/1 Arial,sans-serif; animation:none;
+}
+body.ilena-storefront .ilena-cart-feedback.is-success::before { content:'✓'; }
+body.ilena-storefront .ilena-cart-feedback.is-error {
+    border:1px solid #eadbd6; background:#fffaf8; color:#49302b;
+}
+body.ilena-storefront .ilena-cart-feedback.is-error::before { content:'!'; background:#f7e9e6; color:#8d302b; }
+@media (max-width:700px) {
+    body.ilena-storefront .ilena-cart-feedback,
+    body.ilena-storefront .ilena-cart-feedback.is-visible {
+        position:fixed; z-index:5000;
+        right:12px; bottom:calc(88px + env(safe-area-inset-bottom)); left:12px;
+        box-sizing:border-box; width:auto; max-width:480px; margin-inline:auto;
+        transform:translateY(8px); padding:12px 14px;
+    }
+    body.ilena-storefront .ilena-cart-feedback.is-visible { transform:translateY(0); }
+}
+@media (prefers-reduced-motion:reduce) {
+    body.ilena-storefront .ilena-cart-feedback { transition:none !important; }
+}
 @media (max-width: 700px) {
     body.ilena-storefront .ilena-fit-guide { padding: 14px; }
     body.ilena-storefront .ilena-product-help { grid-template-columns: 1fr; gap: 2px; }
