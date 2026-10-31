@@ -1,6 +1,6 @@
-<?= $this->extend('layout/template'); ?>
+<?= $this->extend('admin/template'); ?>
 <?= $this->section('content'); ?>
-<main class="container py-4" style="max-width:1200px">
+<section class="container py-4" style="max-width:1200px">
     <header class="d-flex justify-content-between align-items-end gap-3 flex-wrap mb-4">
         <div><p class="text-uppercase small text-secondary mb-1">DEVELOPER</p><h1 class="h3 mb-0"><?= esc($title); ?></h1></div>
         <a class="btn btn-outline-secondary" href="/admin/customers">Kembali ke pelanggan</a>
@@ -47,5 +47,5 @@
             </table>
         </div>
     <?php endif; ?>
-</main>
+</section>
 <?= $this->endSection(); ?>

@@ -43,15 +43,15 @@ $this->setVar('websiteOrderTodoCount', $websiteOrderTodoCount);
     :root {
         --adminSidebarW: 264px;
         --adminPad: clamp(16px, 2vw, 28px);
-        --adminSurface: #fffdfa;
-        --adminBg: #f6f4f0;
-        --adminBorder: #e9e3da;
-        --adminInk: #28231f;
-        --adminMuted: #756b62;
-        --adminAccent: #8b5e3c;
-        --adminAccentSoft: #f4ece4;
-        --adminRadius: 12px;
-        --adminShadow: 0 8px 24px rgba(47, 37, 27, .045);
+        --adminSurface: #fff;
+        --adminBg: #f7f6f4;
+        --adminBorder: #e8e4e1;
+        --adminInk: #211f1e;
+        --adminMuted: #6e6865;
+        --adminAccent: #8d2e2b;
+        --adminAccentSoft: #f8eceb;
+        --adminRadius: 7px;
+        --adminShadow: 0 8px 24px rgba(28, 27, 26, .04);
     }
 
     html,
@@ -87,7 +87,7 @@ $this->setVar('websiteOrderTodoCount', $websiteOrderTodoCount);
         display: flex;
         min-height: 100svh;
         width: 100%;
-        background: linear-gradient(180deg, #faf8f4 0%, var(--adminBg) 100%);
+        background: var(--adminBg);
     }
 
     .admin-sidebar {
@@ -136,8 +136,8 @@ $this->setVar('websiteOrderTodoCount', $websiteOrderTodoCount);
     }
 
     .admin-content-inner :is(input, select, textarea, button, a):focus-visible {
-        outline: 2px solid var(--adminAccent);
-        outline-offset: 2px;
+        outline: 0;
+        box-shadow: 0 0 0 3px rgba(141, 46, 43, .2);
     }
 
     .admin-content-inner :is(.btn-default-merah, .btn-bulk-primary) {
@@ -215,7 +215,7 @@ $this->setVar('websiteOrderTodoCount', $websiteOrderTodoCount);
         }
     }
     </style>
-    <link rel="stylesheet" href="<?= base_url('css/ilena-admin-redesign.css?v=20261027'); ?>">
+    <link rel="stylesheet" href="<?= base_url('css/ilena-admin-redesign.css?v=20261031'); ?>">
     <link rel="stylesheet" href="<?= base_url('css/ilena-dialog.css?v=20261027'); ?>">
 </head>
 
@@ -244,6 +244,7 @@ $this->setVar('websiteOrderTodoCount', $websiteOrderTodoCount);
     <script defer crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <?php endif; ?>
 
+    <a class="admin-skip-link" href="#admin-main">Lewati ke konten utama</a>
     <div class="admin-shell">
         <!-- Sidebar (Desktop) -->
         <aside class="admin-sidebar show-block-ke-hide">
@@ -256,7 +257,7 @@ $this->setVar('websiteOrderTodoCount', $websiteOrderTodoCount);
         </div>
 
         <!-- Konten -->
-        <main class="admin-content">
+        <main class="admin-content" id="admin-main" tabindex="-1">
             <div class="admin-content-inner">
                 <?php if ($moduleNotice = session()->getFlashdata('website_module_notice')): ?>
                     <div class="alert alert-info" role="status"><?= esc($moduleNotice); ?></div>

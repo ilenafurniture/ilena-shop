@@ -1,16 +1,18 @@
-/* ILENA admin visual system: quiet luxury, readable data, minimal surfaces. */
+/* ILENA admin visual system: black, porcelain and signature red across every admin surface. */
 .ilena-admin-redesign {
-    --ia-ink: #25251f;
-    --ia-muted: #6d6c63;
-    --ia-line: #e4e2d9;
-    --ia-paper: #fbfaf7;
+    --ia-ink: #211f1e;
+    --ia-muted: #6e6865;
+    --ia-line: #e8e4e1;
+    --ia-paper: #f7f6f4;
     --ia-white: #fff;
-    --ia-forest: #263a31;
-    --ia-forest-soft: #e9efeb;
-    --ia-brass: #a47b4f;
-    --ia-danger: #a9473d;
-    --ia-radius: 8px;
-    --ia-focus: 0 0 0 3px rgba(164, 123, 79, .2);
+    --ia-black: #1c1b1a;
+    --ia-red: #8d2e2b;
+    --ia-red-strong: #742320;
+    --ia-red-soft: #f8eceb;
+    --ia-brass: #8d2e2b;
+    --ia-danger: #b42318;
+    --ia-radius: 7px;
+    --ia-focus: 0 0 0 3px rgba(141, 46, 43, .2);
     color: var(--ia-ink) !important;
     background: var(--ia-paper) !important;
     font-family: "Plus Jakarta Sans", system-ui, sans-serif !important;
@@ -19,7 +21,7 @@
 }
 .ilena-admin-redesign *, .ilena-admin-redesign *::before, .ilena-admin-redesign *::after { box-sizing: border-box; }
 .ilena-admin-redesign .admin-shell { background: var(--ia-paper) !important; }
-.ilena-admin-redesign .admin-sidebar { width: 256px; min-width: 256px; background: #202923 !important; border-color: #354139 !important; }
+.ilena-admin-redesign .admin-sidebar { width: 256px; min-width: 256px; background: var(--ia-black) !important; border-color: #353231 !important; }
 .ilena-admin-redesign .admin-content { min-width: 0; background: var(--ia-paper) !important; }
 .ilena-admin-redesign .admin-content-inner { max-width: 1680px; margin-inline: auto; padding: clamp(20px, 3vw, 42px) clamp(16px, 3vw, 48px); }
 
@@ -44,8 +46,8 @@
 .ilena-admin-redesign .admin-content-inner textarea { min-height: 110px; }
 .ilena-admin-redesign .admin-content-inner :is(input, select, textarea, button, a):focus-visible { outline: 0 !important; box-shadow: var(--ia-focus) !important; border-color: var(--ia-brass) !important; }
 .ilena-admin-redesign .admin-content-inner :is(.btn, button, .btn-default-merah, .btn-bulk-primary) { min-height: 40px; border-radius: 6px !important; box-shadow: none !important; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: .01em; transition: background-color .16s ease, color .16s ease, border-color .16s ease; }
-.ilena-admin-redesign .admin-content-inner :is(.btn-primary, .btn-default-merah, .btn-bulk-primary) { color: #fff !important; background: var(--ia-forest) !important; border-color: var(--ia-forest) !important; }
-.ilena-admin-redesign .admin-content-inner :is(.btn-primary, .btn-default-merah, .btn-bulk-primary):hover { background: #344c40 !important; border-color: #344c40 !important; }
+.ilena-admin-redesign .admin-content-inner :is(.btn-primary, .btn-default-merah, .btn-bulk-primary) { color: #fff !important; background: var(--ia-red) !important; border-color: var(--ia-red) !important; }
+.ilena-admin-redesign .admin-content-inner :is(.btn-primary, .btn-default-merah, .btn-bulk-primary):hover { background: var(--ia-red-strong) !important; border-color: var(--ia-red-strong) !important; }
 .ilena-admin-redesign .admin-content-inner .btn-secondary { color: var(--ia-ink) !important; background: #f0efe9 !important; border-color: #e1dfd6 !important; }
 .ilena-admin-redesign .admin-content-inner :is(.btn-danger, .btn-bulk-danger) { background: var(--ia-danger) !important; border-color: var(--ia-danger) !important; }
 .ilena-admin-redesign .admin-content-inner :is(.btn, button):disabled { cursor: not-allowed; opacity: .55; }
@@ -57,21 +59,92 @@
 .ilena-admin-redesign .admin-content-inner :is(table, .table) tbody tr:hover { background: #faf9f4; }
 .ilena-admin-redesign .admin-content-inner .table-responsive { border: 1px solid var(--ia-line); border-radius: 7px; background: #fff; }
 .ilena-admin-redesign .admin-content-inner :is(.badge, .status-badge) { border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: .02em; }
-.ilena-admin-redesign .admin-content-inner a:not(.btn) { color: #355a48; }
+.ilena-admin-redesign .admin-content-inner a:not(.btn) { color: var(--ia-red); }
 
 /* Dark, quiet navigation anchors the shared admin layout. */
-.ilena-admin-redesign .admin-brand-mark { border-radius: 6px !important; background: #2d3b32 !important; color: #ddc59f !important; }
+.ilena-admin-redesign .admin-brand-mark { border-radius: 6px !important; background: var(--ia-red) !important; color: #fff !important; }
 .ilena-admin-redesign .admin-user-chip { border-radius: 6px !important; background: rgba(255,255,255,.035) !important; }
 .ilena-admin-redesign .admin-menu-list { gap: 14px !important; }
 .ilena-admin-redesign .admin-menu-item { min-height: 40px !important; border-radius: 5px !important; }
-.ilena-admin-redesign .admin-menu-item.active { box-shadow: inset 2px 0 #c5a274 !important; }
+.ilena-admin-redesign .admin-menu-item.active { box-shadow: inset 2px 0 var(--ia-red) !important; }
 .ilena-admin-redesign :is(.admin-mobile-header, .admin-mobile-drawer-panel) { font-family: inherit; }
+
+/* Shared finish layer: one quiet ILENA workspace for every admin module. */
+.ilena-admin-redesign { color-scheme: light; }
+.ilena-admin-redesign .admin-content-inner { padding-top: clamp(22px, 3vw, 40px); }
+.ilena-admin-redesign .admin-content-inner > :first-child { margin-top: 0; }
+.ilena-admin-redesign .admin-content-inner :is(h1, h2, h3, h4, h5) { text-wrap: balance; }
+.ilena-admin-redesign .admin-content-inner :is(.card-body, .page-wrap, .container-table, .bulk-card) { padding: clamp(15px, 2vw, 24px); }
+.ilena-admin-redesign .admin-content-inner :is(.alert, .toast, #notif) { border-radius: 7px; }
+.ilena-admin-redesign .admin-content-inner .alert { border-width: 1px; box-shadow: none; }
+.ilena-admin-redesign .admin-content-inner :is(.form-control, .form-select)::placeholder { color: #98918d; opacity: 1; }
+.ilena-admin-redesign .admin-content-inner :is(input[type="checkbox"], input[type="radio"]) { accent-color: var(--ia-red); }
+.ilena-admin-redesign .admin-content-inner :is(.btn, button):not(:disabled):active { transform: translateY(1px); }
+.ilena-admin-redesign .admin-content-inner :is(.btn-outline-primary, .btn-outline-secondary) { color: var(--ia-ink) !important; border-color: #d7d0cc !important; background: #fff !important; }
+.ilena-admin-redesign .admin-content-inner .btn-outline-primary:hover { color: #fff !important; border-color: var(--ia-red) !important; background: var(--ia-red) !important; }
+.ilena-admin-redesign .admin-content-inner :is(.table, table) { margin-bottom: 0; }
+.ilena-admin-redesign .admin-content-inner :is(table, .table) thead th { color: #5b5552; background: #f4f1ef; }
+.ilena-admin-redesign .admin-content-inner :is(table, .table) tbody tr:hover { background: #fcf8f7; }
+.ilena-admin-redesign .admin-content-inner :is(.pagination .page-link, .nav-tabs .nav-link) { color: var(--ia-ink); }
+.ilena-admin-redesign .admin-content-inner .pagination .page-item.active .page-link { color: #fff; border-color: var(--ia-red); background: var(--ia-red); }
+.ilena-admin-redesign .admin-content-inner .nav-tabs .nav-link.active { color: var(--ia-red); border-color: var(--ia-line) var(--ia-line) #fff; }
+.ilena-admin-redesign .admin-content-inner :is(.dropdown-menu, .modal-content, .offcanvas) { border: 1px solid var(--ia-line); border-radius: 8px; box-shadow: 0 16px 40px rgba(28,27,26,.12); }
+.ilena-admin-redesign .admin-content-inner .modal-header { border-bottom-color: var(--ia-line); }
+.ilena-admin-redesign .admin-content-inner .modal-footer { border-top-color: var(--ia-line); }
+.ilena-admin-redesign .admin-skip-link { position: fixed; z-index: 2000; top: 8px; left: 8px; padding: 10px 14px; transform: translateY(-150%); border-radius: 6px; color: #fff; background: var(--ia-red); font-weight: 700; }
+.ilena-admin-redesign .admin-skip-link:focus { transform: translateY(0); color: #fff; }
+.ilena-admin-redesign .admin-brand-heading { color: #f7f5f3; }
+.ilena-admin-redesign .admin-sidebar { scrollbar-color: #625957 #1c1b1a; }
+.ilena-admin-redesign .admin-menu-item.active { background: rgba(141,46,43,.26) !important; }
+.ilena-admin-redesign .admin-mobile-header { background: #1c1b1a !important; border-color: #353130 !important; }
+.ilena-admin-redesign .admin-mobile-mark { border-color: #a84641 !important; background: #8d2e2b !important; color: #fff !important; }
+.ilena-admin-redesign .admin-mobile-brand-title { color: #f7f5f3; }
+.ilena-admin-redesign .admin-mobile-nav { border-color: #353130 !important; }
+.ilena-admin-redesign .admin-content-inner :is(.container, .container-fluid) { max-width: 100%; }
+.ilena-admin-redesign .admin-content-inner :is(.table-responsive, .overflow-auto) { max-width: 100%; }
+
+/* Bring mature, page-specific admin screens onto the same brand tokens. */
+.ilena-admin-redesign .admin-content-inner :is(.online-orders, .order-dialog, .resi-dialog) {
+    --o-ink: #211f1e !important; --o-muted: #6e6865 !important; --o-line: #e8e4e1 !important;
+    --o-paper: #fff !important; --o-bg: #f7f6f4 !important; --o-accent: #8d2e2b !important;
+    --o-red: #b42318 !important;
+}
+.ilena-admin-redesign .admin-content-inner .voucher-page {
+    --v-ink: #211f1e !important; --v-muted: #6e6865 !important; --v-line: #e8e4e1 !important;
+    --v-paper: #fff !important; --v-accent: #8d2e2b !important;
+}
+.ilena-admin-redesign .admin-content-inner .voucher-page .btn-primary-ilena,
+.ilena-admin-redesign .admin-content-inner .menu-preview-submit button {
+    color: #fff !important; border-color: #8d2e2b !important; background: #8d2e2b !important;
+}
+.ilena-admin-redesign .admin-content-inner .voucher-page .btn-primary-ilena:hover,
+.ilena-admin-redesign .admin-content-inner .menu-preview-submit button:hover {
+    border-color: #742320 !important; background: #742320 !important;
+}
+.ilena-admin-redesign .admin-content-inner .dash-wrap {
+    color: #211f1e !important; font-family: "Plus Jakarta Sans", system-ui, sans-serif !important;
+}
+.ilena-admin-redesign .admin-content-inner .dash-kicker { color: #8d2e2b !important; }
+.ilena-admin-redesign .admin-content-inner :is(.dash-btn.primary, .dash-hero .dash-btn.primary) {
+    color: #fff !important; border-color: #8d2e2b !important; background: #8d2e2b !important;
+}
+.ilena-admin-redesign .admin-content-inner .dash-btn.primary:hover {
+    border-color: #742320 !important; background: #742320 !important;
+}
+.ilena-admin-redesign .admin-content-inner :is(.menu-preview-page, .menu-preview-head) { color: var(--ia-ink); }
+.ilena-admin-redesign .admin-content-inner .menu-preview-label span { color: var(--ia-muted); }
+.ilena-admin-redesign .admin-content-inner .menu-preview-submit button { border-radius: 6px !important; }
 
 @media (max-width: 992px) {
     .ilena-admin-redesign .admin-content-inner { padding: 18px 14px 104px; }
     .ilena-admin-redesign .admin-sidebar { display: none !important; }
     .ilena-admin-redesign .admin-content-inner :is(.table-responsive, .overflow-auto) { -webkit-overflow-scrolling: touch; }
     .ilena-admin-redesign .admin-content-inner :is(.card, .page-wrap, .container-table) { border-radius: 6px !important; }
+}
+@media (max-width: 768px) {
+    .ilena-admin-redesign .admin-content-inner :is(.row, [class*="row-cols-"]) { --bs-gutter-x: 1rem; --bs-gutter-y: 1rem; }
+    .ilena-admin-redesign .admin-content-inner :is(.btn-group, .input-group) { flex-wrap: wrap; }
+    .ilena-admin-redesign .admin-content-inner :is(.table-responsive, .overflow-auto) { max-width: calc(100vw - 28px); }
 }
 @media (max-width: 576px) {
     .ilena-admin-redesign .admin-content-inner { padding-inline: 11px; }

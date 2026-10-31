@@ -58,7 +58,7 @@ $mobileMenuGroups = [
     <div class="admin-mobile-brand">
         <div class="admin-mobile-mark">IL</div>
         <div>
-            <h1>Admin Ilena</h1>
+            <strong class="admin-mobile-brand-title">Admin Ilena</strong>
             <p><?= esc(session()->get('nama') ?: session()->get('email')); ?></p>
         </div>
     </div>
@@ -158,7 +158,7 @@ $mobileMenuGroups = [
     justify-content: space-between;
     gap: 12px;
     padding: 14px 16px 10px;
-    background: #211f1b;
+    background: #1c1b1a;
     border-bottom: 1px solid rgba(244,237,226,.12);
 }
 .admin-mobile-brand {
@@ -174,7 +174,7 @@ $mobileMenuGroups = [
     align-items: center;
     justify-content: center;
     background: linear-gradient(145deg,#3c3429,#26231e);
-    border: 1px solid rgba(201,167,121,.55);
+    border: 1px solid rgba(208,90,84,.5);
     color: #e4c99f;
     font-weight: 900;
     letter-spacing: -.04em;
@@ -212,14 +212,14 @@ $mobileMenuGroups = [
     font-weight: 700;
 }
 .admin-mobile-logout:hover,
-.admin-mobile-logout:focus-visible { border-color: #c9a779; background: rgba(201,167,121,.12); }
-.admin-mobile-logout:focus-visible { outline: 2px solid #e0c59d; outline-offset: 2px; }
+.admin-mobile-logout:focus-visible { border-color: #d05a54; background: rgba(141,46,43,.26); }
+.admin-mobile-logout:focus-visible { outline: 2px solid #f09a95; outline-offset: 2px; }
 .admin-mobile-logout .material-icons { font-size: 18px; }
 
 .navbar-hp.admin-mobile-nav {
     height: 72px;
     padding: 8px 10px 10px;
-    background: #211f1b;
+    background: #1c1b1a;
     border-top: 1px solid rgba(244,237,226,.13);
     box-shadow: 0 -8px 25px rgba(18,15,12,.16);
     gap: 6px;
@@ -244,11 +244,11 @@ $mobileMenuGroups = [
     font-weight: 750;
 }
 .admin-mobile-nav .admin-mobile-item.active {
-    color: #e8cfaa;
-    background: rgba(201,167,121,.13);
+    color: #fff;
+    background: rgba(141,46,43,.3);
 }
 .admin-mobile-more { border:0; background:transparent; font:inherit; cursor:pointer; }
-.admin-mobile-more:focus-visible { outline:2px solid #e0c59d; outline-offset:-2px; }
+.admin-mobile-more:focus-visible { outline:2px solid #f09a95; outline-offset:-2px; }
 .order-alert-badge-hp {
     position: absolute;
     top: 2px;
@@ -265,14 +265,14 @@ $mobileMenuGroups = [
     font-size: 10px;
     font-weight: 900;
     line-height: 1;
-    border: 2px solid #211f1b;
+    border: 2px solid #1c1b1a;
 }
 .admin-mobile-drawer[hidden] { display:none!important; }
 .admin-mobile-drawer { position:fixed; inset:0; z-index:1300; display:flex; align-items:flex-end; justify-content:center; }
 .admin-mobile-drawer-scrim { position:absolute; inset:0; width:100%; height:100%; padding:0; border:0; background:rgba(13,11,9,.62); }
-.admin-mobile-drawer-panel { position:relative; z-index:1; width:min(100%,560px); max-height:min(82svh,760px); display:flex; flex-direction:column; padding:20px 18px max(20px,env(safe-area-inset-bottom)); border:1px solid rgba(201,167,121,.22); border-bottom:0; border-radius:20px 20px 0 0; color:#f4efe7; background:#211f1b; box-shadow:0 -20px 60px rgba(0,0,0,.25); outline:none; }
+.admin-mobile-drawer-panel { position:relative; z-index:1; width:min(100%,560px); max-height:min(82svh,760px); display:flex; flex-direction:column; padding:20px 18px max(20px,env(safe-area-inset-bottom)); border:1px solid rgba(208,90,84,.25); border-bottom:0; border-radius:16px 16px 0 0; color:#f7f5f3; background:#1c1b1a; box-shadow:0 -20px 60px rgba(0,0,0,.25); outline:none; }
 .admin-mobile-drawer-head { display:flex; align-items:center; justify-content:space-between; gap:16px; padding-bottom:14px; border-bottom:1px solid rgba(244,237,226,.12); }
-.admin-mobile-drawer-kicker { color:#c9a779; font-size:9px; font-weight:800; letter-spacing:.18em; }
+.admin-mobile-drawer-kicker { color:#e7837e; font-size:9px; font-weight:800; letter-spacing:.18em; }
 .admin-mobile-drawer-head h2 { margin:4px 0 0; color:#f5f0e8; font:500 21px/1.2 Georgia,serif; }
 .admin-mobile-drawer-close { width:44px; height:44px; display:grid; place-items:center; border:1px solid rgba(244,237,226,.14); border-radius:11px; color:#eadcc7; background:rgba(255,255,255,.05); }
 .admin-mobile-drawer-list { overflow-y:auto; overscroll-behavior:contain; padding-top:14px; }
@@ -281,10 +281,11 @@ $mobileMenuGroups = [
 .admin-mobile-drawer-link { min-height:46px; display:flex; align-items:center; gap:12px; padding:7px 10px; border:1px solid transparent; border-radius:9px; color:#d0c6b8; text-decoration:none; font-size:13px; font-weight:600; }
 .admin-mobile-drawer-link > .material-icons:first-child { color:#b9a889; font-size:19px; }
 .admin-mobile-drawer-link span { flex:1; }
-.admin-mobile-drawer-link.active { color:#f0d9b7; background:rgba(201,167,121,.13); border-color:rgba(201,167,121,.2); }
+.admin-mobile-drawer-link.active { color:#fff; background:rgba(141,46,43,.3); border-color:rgba(208,90,84,.3); }
 .admin-mobile-drawer-arrow { color:#80776b; font-size:18px; }
-.admin-mobile-drawer-badge { flex:0 0 auto!important; padding:3px 7px; border-radius:99px; color:#fff3e7; background:#a75442; font-size:10px; }
-.admin-mobile-drawer :is(button,a):focus-visible { outline:2px solid #e0c59d; outline-offset:2px; }
+.admin-mobile-drawer-badge { flex:0 0 auto!important; padding:3px 7px; border-radius:99px; color:#fff; background:#8d2e2b; font-size:10px; }
+.admin-mobile-brand-title { display:block; color:#f7f5f3; font:500 17px/1.15 Georgia,serif; }
+.admin-mobile-drawer :is(button,a):focus-visible { outline:2px solid #f09a95; outline-offset:2px; }
 body.admin-menu-is-open { overflow:hidden; }
 @media(prefers-reduced-motion:reduce) { .admin-mobile-nav *, .admin-mobile-drawer * { transition:none!important; } }
 </style>

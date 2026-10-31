@@ -56,7 +56,7 @@
         <div class="admin-brand-mark" aria-hidden="true">I</div>
         <div class="admin-brand-text">
             <span class="admin-brand-kicker">ILENA FURNITURE</span>
-            <h1>Administration</h1>
+            <strong class="admin-brand-heading">Administration</strong>
         </div>
     </div>
     <div class="admin-user-chip">
@@ -100,24 +100,24 @@
 
 <style>
 .admin-nav-clean {
-    --nav-bg: #211f1b;
-    --nav-panel: #292620;
-    --nav-border: rgba(244, 237, 226, .11);
-    --nav-text: #f4efe7;
-    --nav-muted: #b7aea2;
-    --nav-accent: #c9a779;
+    --nav-bg: #1c1b1a;
+    --nav-panel: #252322;
+    --nav-border: rgba(255, 255, 255, .11);
+    --nav-text: #f7f5f3;
+    --nav-muted: #b9b3b0;
+    --nav-accent: #d05a54;
     width: 264px; min-width: 264px; height: 100%; padding: 20px 14px 14px;
     display: flex; flex-direction: column; overflow-y: auto; color: var(--nav-text);
     background: var(--nav-bg); border-right: 1px solid rgba(0,0,0,.15);
     scrollbar-width: thin; scrollbar-color: #61594d transparent;
 }
 .admin-brand-card { display:flex; align-items:center; gap:11px; padding:4px 7px 18px; border:0; border-bottom:1px solid var(--nav-border); border-radius:0; margin:0 0 13px; background:none; }
-.admin-brand-mark { width:39px; height:39px; display:grid; place-items:center; flex:0 0 auto; border:1px solid rgba(201,167,121,.6); border-radius:11px; background:linear-gradient(145deg,#3c3429,#26231e); color:#e4c99f; font-family:Georgia,serif; font-size:25px; line-height:1; }
+.admin-brand-mark { width:39px; height:39px; display:grid; place-items:center; flex:0 0 auto; border:1px solid rgba(208,90,84,.6); border-radius:8px; background:linear-gradient(145deg,#9c3733,#742320); color:#fff; font-family:Georgia,serif; font-size:25px; line-height:1; }
 .admin-brand-text { min-width:0; }
-.admin-brand-kicker { display:block; margin-bottom:4px; color:#c9a779; font-size:9px; font-weight:800; letter-spacing:.19em; }
-.admin-brand-text h1 { margin:0; color:#f5f0e8; font-family:Georgia,serif; font-size:17px; line-height:1.15; font-weight:500; letter-spacing:.01em; }
+.admin-brand-kicker { display:block; margin-bottom:4px; color:#e7837e; font-size:9px; font-weight:800; letter-spacing:.19em; }
+.admin-brand-text .admin-brand-heading { display:block; margin:0; color:#f7f5f3; font-family:Georgia,serif; font-size:17px; line-height:1.15; font-weight:500; letter-spacing:.01em; }
 .admin-user-chip { display:flex; align-items:center; gap:10px; padding:10px 9px; margin-bottom:17px; border:1px solid var(--nav-border); border-radius:10px; background:rgba(255,255,255,.035); }
-.admin-user-avatar { width:32px; height:32px; display:grid; place-items:center; flex:0 0 auto; border-radius:50%; background:#493f31; color:#e8d4b4; font-size:13px; font-weight:800; }
+.admin-user-avatar { width:32px; height:32px; display:grid; place-items:center; flex:0 0 auto; border-radius:50%; background:#742320; color:#fff; font-size:13px; font-weight:800; }
 .admin-user-details { min-width:0; flex:1; display:grid; gap:2px; }
 .admin-user-details strong { overflow:hidden; color:#f3eee7; font-size:12px; font-weight:700; text-overflow:ellipsis; white-space:nowrap; }
 .admin-user-details small { overflow:hidden; color:#aaa196; font-size:10px; text-overflow:ellipsis; white-space:nowrap; }
@@ -128,17 +128,17 @@
 .admin-menu-rule { height:1px; flex:1; background:var(--nav-border); }
 .admin-nav-clean .item-nav.admin-menu-item { position:relative; display:flex; min-height:43px; align-items:center; gap:10px; padding:6px 9px; border:1px solid transparent; border-radius:8px; color:var(--nav-muted); font-size:12px; font-weight:600; letter-spacing:.005em; text-decoration:none; transition:color .16s ease, background .16s ease, border-color .16s ease; }
 .admin-nav-clean .item-nav.admin-menu-item:hover { color:#fffaf1; background:rgba(255,255,255,.055); border-color:rgba(255,255,255,.06); }
-.admin-nav-clean .item-nav.admin-menu-item.active { color:#f0d9b7; background:rgba(201,167,121,.13); border-color:rgba(201,167,121,.2); box-shadow:inset 2px 0 #c9a779; }
+.admin-nav-clean .item-nav.admin-menu-item.active { color:#fff; background:rgba(141,46,43,.28); border-color:rgba(208,90,84,.3); box-shadow:inset 2px 0 #d05a54; }
 .admin-menu-icon { width:27px; height:27px; display:grid; place-items:center; flex:0 0 auto; border-radius:7px; color:#b9afa2; background:rgba(255,255,255,.045); }
 .admin-menu-icon .material-icons { font-size:17px; }
-.admin-menu-item.active .admin-menu-icon { color:#e0c59d; background:rgba(201,167,121,.12); }
+.admin-menu-item.active .admin-menu-icon { color:#f0aaa6; background:rgba(208,90,84,.18); }
 .admin-menu-label { min-width:0; flex:1; }
 .admin-nav-footer { position:sticky; bottom:0; padding-top:10px; border-top:1px solid var(--nav-border); background:var(--nav-bg); }
 .admin-nav-clean .admin-logout { min-height:42px!important; color:#d5aaa1!important; background:transparent!important; border:1px solid transparent!important; }
 .admin-nav-clean .admin-logout:hover { color:#f5c4b8!important; background:rgba(193,105,86,.12)!important; }
 .admin-nav-clean .admin-logout .admin-menu-icon { color:#d5aaa1; background:rgba(193,105,86,.1); }
-.order-alert-badge { min-width:21px; height:21px; display:inline-flex; align-items:center; justify-content:center; padding:0 6px; border:1px solid rgba(255,255,255,.12); border-radius:999px; color:#fff4e9; background:#a75442; font-size:10px; font-weight:800; line-height:1; }
-.admin-nav-clean :is(a,button):focus-visible { outline:2px solid #e0c59d; outline-offset:2px; }
+.order-alert-badge { min-width:21px; height:21px; display:inline-flex; align-items:center; justify-content:center; padding:0 6px; border:1px solid rgba(255,255,255,.12); border-radius:999px; color:#fff; background:#8d2e2b; font-size:10px; font-weight:800; line-height:1; }
+.admin-nav-clean :is(a,button):focus-visible { outline:2px solid #f09a95; outline-offset:2px; }
 @media(max-width:992px) { .admin-nav-clean { display:none; } }
 @media(prefers-reduced-motion:reduce) { .admin-nav-clean * { transition:none!important; } }
 </style>
