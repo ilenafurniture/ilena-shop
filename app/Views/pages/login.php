@@ -37,12 +37,23 @@
                     <div class="mb-3 d-flex w-100 justify-content-center">
                         <button type="submit" class="btn btn-default btn-block"><?= esc(lang('Store.signIn')); ?></button>
                     </div>
+                    <?php if (!empty($googleLoginEnabled)): ?>
+                    <div class="ilena-auth-divider" aria-hidden="true"><span><?= esc(lang('Store.orContinueWith')); ?></span></div>
+                    <a class="ilena-google-signin" href="<?= esc(ilena_store_path('/auth/google'), 'attr'); ?>" rel="nofollow">
+                        <svg aria-hidden="true" viewBox="0 0 48 48" width="20" height="20"><path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11c-.5 2.5-1.9 4.6-4 6v5h6.5c3.8-3.5 6.1-8.6 6.1-14.7z"/><path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.9l-6.5-5c-1.8 1.2-4.1 2-7 2-5.3 0-9.8-3.6-11.4-8.4H5.9v5.2C9.3 39.6 16.1 44 24 44z"/><path fill="#FBBC05" d="M12.6 27.7a12 12 0 0 1 0-7.4v-5.2H5.9a20 20 0 0 0 0 17.8l6.7-5.2z"/><path fill="#EA4335" d="M24 11.9c3 0 5.7 1 7.8 3.1l5.8-5.8C34.1 5.8 29.5 4 24 4 16.1 4 9.3 8.4 5.9 15.1l6.7 5.2c1.6-4.8 6.1-8.4 11.4-8.4z"/></svg>
+                        <span><?= esc(lang('Store.continueWithGoogle')); ?></span>
+                    </a>
+                    <?php endif; ?>
                     <div>
+                        <p class="ilena-auth-page__switch"><a href="<?= esc(ilena_store_path('/forgot-password'), 'attr'); ?>"><?= esc(lang('Store.forgotPassword')); ?></a></p>
                         <p class="ilena-auth-page__switch"><?= esc(lang('Store.noAccount')); ?> <a href="<?= esc(ilena_store_path('/register'), 'attr'); ?>"><?= esc(lang('Store.registerNow')); ?></a></p>
                     </div>
                 </form>
             </div>
 </div>
+<style>
+.ilena-auth-divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:#777;font-size:.82rem}.ilena-auth-divider:before,.ilena-auth-divider:after{content:"";height:1px;flex:1;background:#e7e4e1}.ilena-google-signin{width:100%;min-height:46px;display:flex;align-items:center;justify-content:center;gap:10px;border:1px solid #dedbd8;border-radius:8px;background:#fff;color:#242424;text-decoration:none;font-weight:600;transition:background .15s ease,border-color .15s ease}.ilena-google-signin:hover{background:#faf9f7;border-color:#c8c3bf;color:#111}
+</style>
 <script>
     function togglePassword(e) {
         var passwordField = document.querySelector('input[name="sandi"]');

@@ -4840,6 +4840,9 @@ class Pages extends BaseController
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'authFormNonce' => $authFormGuard->issue('login'),
+            'googleLoginEnabled' => trim((string) env('GOOGLE_OAUTH_CLIENT_ID')) !== ''
+                && trim((string) env('GOOGLE_OAUTH_CLIENT_SECRET')) !== ''
+                && $this->isValidGoogleRedirectUri(trim((string) env('GOOGLE_OAUTH_REDIRECT_URI'))),
             'captchaError' => session()->getFlashdata('captcha_error'),
             'val' => [
                 'msg' => session()->getFlashdata('msg'),
@@ -5396,6 +5399,13 @@ class Pages extends BaseController
     public function account()
     {
         $provinsi = $this->provinsiModel->findAll();
+        $googleLinked = false;
+        $db = db_connect();
+        if ($db->tableExists('user_google_identities')) {
+            $googleLinked = $db->table('user_google_identities')->where([
+                'user_email' => strtolower(trim((string)session()->get('email'))), 'provider' => 'google',
+            ])->countAllResults() > 0;
+        }
 
         $alamat = $this->session->get('alamat');
         if (!isset($alamat)) {
@@ -5411,11 +5421,163 @@ class Pages extends BaseController
             'email' => session()->get('email'),
             'nama' => session()->get('nama'),
             'nohp' => session()->get('nohp'),
+            'googleLinked' => $googleLinked,
+            'googleOAuthEnabled' => trim((string) env('GOOGLE_OAUTH_CLIENT_ID')) !== ''
+                && trim((string) env('GOOGLE_OAUTH_CLIENT_SECRET')) !== ''
+                && $this->isValidGoogleRedirectUri(trim((string) env('GOOGLE_OAUTH_REDIRECT_URI'))),
             'provinsi' => $provinsi,
             'msgSandi' => session()->get('msg-sandi') ? session()->get('msg-sandi') : false,
             'msg' => session()->getFlashdata('msg')
         ];
         return view('pages/account', $data);
+    }
+
+    public function updateAccountProfile()
+    {
+        $name = trim((string) $this->request->getPost('nama'));
+        $phone = preg_replace('/\D+/', '', (string) $this->request->getPost('nohp')) ?? '';
+        $locale = service('request')->getLocale() === 'en' ? 'en' : 'id';
+        $redirect = ilena_store_path('/account');
+        if ($name === '' || mb_strlen($name) > 100 || preg_match('/[<>\x00-\x1F\x7F]/u', $name)
+            || ($phone !== '' && !preg_match('/^[0-9]{10,15}$/D', $phone))) {
+            session()->setFlashdata('msg', $locale === 'en'
+                ? 'Please check your name and phone number, then try again.'
+                : 'Periksa kembali nama dan nomor telepon, lalu coba lagi.');
+            return redirect()->to($redirect)->withInput();
+        }
+        $email = strtolower(trim((string) session()->get('email')));
+        if ($email === '' || !$this->pembeliModel->where('email', $email)->set(['nama' => $name, 'nohp' => $phone])->update()) {
+            session()->setFlashdata('msg', $locale === 'en'
+                ? 'Your profile could not be updated. Please try again.'
+                : 'Profil belum berhasil diperbarui. Silakan coba kembali.');
+            return redirect()->to($redirect);
+        }
+        session()->set(['nama' => $name, 'nohp' => $phone]);
+        session()->setFlashdata('msg', $locale === 'en' ? 'Profile updated.' : 'Profil berhasil diperbarui.');
+        return redirect()->to($redirect);
+    }
+
+    public function forgotPassword()
+    {
+        return view('pages/forgotPassword', [
+            'title' => service('request')->getLocale() === 'en' ? 'Reset password' : 'Reset kata sandi',
+            'navbar' => $this->getNavbarData(), 'apikey_img_ilena' => $this->apikey_img_ilena,
+            'msg' => session()->getFlashdata('msg'),
+        ]);
+    }
+
+    public function requestPasswordReset()
+    {
+        $email = strtolower(trim((string)$this->request->getPost('email')));
+        $locale = service('request')->getLocale() === 'en' ? 'en' : 'id';
+        $allowed = (new \App\Services\Auth\AuthAttemptLimiter())->allow('password_reset', (string)$this->request->getIPAddress(), $email, 10, 3, 3600);
+        $generic = $locale === 'en'
+            ? 'If the address belongs to an eligible account, we have sent password reset instructions.'
+            : 'Jika email terdaftar pada akun pelanggan, petunjuk reset kata sandi telah dikirim.';
+        if ((string)$this->request->getPost('company_website') !== '' || !filter_var($email, FILTER_VALIDATE_EMAIL)
+            || strlen($email) > 191 || !$allowed) {
+            session()->setFlashdata('msg', $generic);
+            return redirect()->to(ilena_store_path('/forgot-password'));
+        }
+        $user = $this->userModel->findByEmailIdentity($email);
+        if ($user && in_array((string)($user['role'] ?? ''), ['0', '4'], true)) {
+            $token = bin2hex(random_bytes(32));
+            $db = db_connect();
+            $db->table('user_password_resets')->where('email', (string)$user['email'])->where('consumed_at', null)
+                ->update(['consumed_at' => date('Y-m-d H:i:s')]);
+            $db->table('user_password_resets')->insert([
+                'email' => (string)$user['email'], 'token_hash' => hash('sha256', $token),
+                'expires_at' => date('Y-m-d H:i:s', time() + 1800), 'created_at' => date('Y-m-d H:i:s'), 'consumed_at' => null,
+            ]);
+            $emailService = \Config\Services::email();
+            $emailConfig = config('Email');
+            $emailService->setFrom($emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com', 'Ilena Furniture');
+            $emailService->setTo((string)$user['email']);
+            $emailService->setSubject($locale === 'en' ? 'Ilena Furniture password reset' : 'Reset kata sandi Ilena Furniture');
+            $resetUrl = site_url(ilena_store_path('/reset-password/' . $token));
+            $message = $locale === 'en'
+                ? '<p>Use the secure link below to choose a new password. It expires in 30 minutes and can be used once.</p><p><a href="' . esc($resetUrl, 'attr') . '">Reset password</a></p><p>If you did not request this, ignore this email.</p>'
+                : '<p>Gunakan tautan aman berikut untuk membuat kata sandi baru. Tautan berlaku 30 menit dan hanya dapat digunakan sekali.</p><p><a href="' . esc($resetUrl, 'attr') . '">Reset kata sandi</a></p><p>Jika Anda tidak meminta reset, abaikan email ini.</p>';
+            $emailService->setMessage($message);
+            if (!$emailService->send()) log_message('warning', 'Customer password reset email delivery failed.');
+        }
+        session()->setFlashdata('msg', $generic);
+        return redirect()->to(ilena_store_path('/forgot-password'));
+    }
+
+    public function resetPassword(string $token)
+    {
+        $reset = $this->validPasswordReset($token);
+        if (!$reset) {
+            session()->setFlashdata('msg', service('request')->getLocale() === 'en'
+                ? 'This reset link is invalid or has expired. Request a new one.'
+                : 'Tautan reset tidak valid atau sudah kedaluwarsa. Minta tautan baru.');
+            return redirect()->to(ilena_store_path('/forgot-password'));
+        }
+        return view('pages/resetPassword', [
+            'title' => service('request')->getLocale() === 'en' ? 'Choose a new password' : 'Buat kata sandi baru',
+            'navbar' => $this->getNavbarData(), 'apikey_img_ilena' => $this->apikey_img_ilena,
+            'token' => $token, 'msg' => session()->getFlashdata('msg'),
+        ]);
+    }
+
+    public function completePasswordReset(string $token)
+    {
+        $locale = service('request')->getLocale() === 'en' ? 'en' : 'id';
+        $redirect = ilena_store_path('/reset-password/' . rawurlencode($token));
+        $allowed = (new \App\Services\Auth\AuthAttemptLimiter())->allow('password_reset_complete', (string)$this->request->getIPAddress(), $token, 30, 8, 900);
+        $reset = $this->validPasswordReset($token);
+        $password = (string)$this->request->getPost('password');
+        $confirm = (string)$this->request->getPost('password_confirm');
+        if (!$allowed || !$reset || strlen($password) < 12 || strlen($password) > 72 || str_contains($password, "\0") || !hash_equals($password, $confirm)) {
+            session()->setFlashdata('msg', $locale === 'en'
+                ? 'The link or password is invalid. Use a valid link and a matching password of at least 12 characters.'
+                : 'Tautan atau kata sandi tidak valid. Gunakan tautan yang aktif dan kata sandi cocok minimal 12 karakter.');
+            return redirect()->to($redirect);
+        }
+        $db = db_connect();
+        $db->transBegin();
+        $current = $this->validPasswordReset($token);
+        if (!$current) {
+            $db->transRollback();
+            session()->setFlashdata('msg', $locale === 'en' ? 'The reset link has expired. Request another link.' : 'Tautan reset kedaluwarsa. Minta tautan baru.');
+            return redirect()->to(ilena_store_path('/forgot-password'));
+        }
+        $now = date('Y-m-d H:i:s');
+        $db->table('user_password_resets')->where('id', (int)$current['id'])->where('token_hash', hash('sha256', $token))
+            ->where('consumed_at', null)->where('expires_at >', $now)->update(['consumed_at' => $now]);
+        if ($db->affectedRows() !== 1 || !$this->userModel->where('email', (string)$current['email'])->whereIn('role', ['0', '4'])
+            ->set(['sandi' => password_hash($password, PASSWORD_DEFAULT)])->update()) {
+            $db->transRollback();
+            session()->setFlashdata('msg', $locale === 'en' ? 'The reset link has expired. Request another link.' : 'Tautan reset kedaluwarsa. Minta tautan baru.');
+            return redirect()->to(ilena_store_path('/forgot-password'));
+        }
+        $db->table('user_password_resets')->where('email', (string)$current['email'])->where('consumed_at', null)
+            ->update(['consumed_at' => $now]);
+        if (!$db->transStatus()) {
+            $db->transRollback();
+            session()->setFlashdata('msg', $locale === 'en' ? 'Password could not be reset. Please retry.' : 'Kata sandi belum berhasil diubah. Silakan coba lagi.');
+            return redirect()->to($redirect);
+        }
+        $db->transCommit();
+        session()->setFlashdata('msg', $locale === 'en' ? 'Password updated. Please sign in.' : 'Kata sandi berhasil diubah. Silakan masuk.');
+        return redirect()->to(ilena_store_path('/login'));
+    }
+
+    private function validPasswordReset(string $token): ?array
+    {
+        if (!preg_match('/^[a-f0-9]{64}$/D', $token)) return null;
+        $row = db_connect()->table('user_password_resets')->where('token_hash', hash('sha256', $token))
+            ->where('consumed_at', null)->where('expires_at >', date('Y-m-d H:i:s'))->get()->getRowArray();
+        return is_array($row) ? $row : null;
+    }
+
+    private function isValidGoogleRedirectUri(string $redirect): bool
+    {
+        $scheme = strtolower((string) parse_url($redirect, PHP_URL_SCHEME));
+        $host = strtolower((string) parse_url($redirect, PHP_URL_HOST));
+        return filter_var($redirect, FILTER_VALIDATE_URL) !== false
+            && ($scheme === 'https' || ($scheme === 'http' && in_array($host, ['localhost', '127.0.0.1', '[::1]'], true)));
     }
     public function visiMisi()
     {

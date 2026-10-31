@@ -299,6 +299,7 @@
             <span class="garis my-2"></span>
             <a href="<?= esc(ilena_store_path('/account'), 'attr'); ?>" class="mb-1 btn-default-abu"><?= lang('Store.profileNav'); ?></a>
             <a href="<?= esc(ilena_store_path('/order'), 'attr'); ?>" class="mb-1 btn-default-abu"><?= lang('Store.ordersNav'); ?></a>
+            <a href="<?= esc(ilena_store_path('/wishlist'), 'attr'); ?>" class="mb-1 btn-default-abu"><?= esc(lang('Store.wishlist')); ?></a>
             <form action="<?= esc(ilena_store_path('/logout'), 'attr'); ?>" method="post">
                 <?= csrf_field(); ?><button type="submit" class="btn-default-merah"><?= lang('Store.logout'); ?></button>
             </form>
@@ -318,10 +319,22 @@
             <p class="m-0">Email</p>
             <p class="fw-bold m-0"><?= esc($email); ?></p>
         </div>
-        <div class="ilena-account-profile-row d-flex justify-content-between py-1">
-            <p class="m-0">Nama Lengkap</p>
-            <p class="fw-bold m-0"><?= esc($nama); ?></p>
-        </div>
+        <?php if (!empty($msg)): ?><div class="pemberitahuan my-3" role="status"><?= esc($msg); ?></div><?php endif; ?>
+        <form action="<?= esc(ilena_store_path('/account/profile'), 'attr'); ?>" method="post" class="ilena-account-profile-form my-3">
+            <?= csrf_field(); ?>
+            <div class="mb-3"><label for="account-name" class="form-label"><?= esc(lang('Store.fullNameLabel')); ?></label>
+                <input id="account-name" name="nama" class="form-control" type="text" maxlength="100" autocomplete="name" required value="<?= esc(old('nama', (string)$nama), 'attr'); ?>"></div>
+            <div class="mb-3"><label for="account-phone" class="form-label"><?= esc(lang('Store.phoneNumber')); ?></label>
+                <input id="account-phone" name="nohp" class="form-control" type="tel" inputmode="numeric" maxlength="15" autocomplete="tel" value="<?= esc(old('nohp', (string)($nohp ?? '')), 'attr'); ?>" aria-describedby="account-phone-hint">
+                <small id="account-phone-hint" class="text-secondary"><?= esc(lang('Store.phoneDigitsHint')); ?></small></div>
+            <button type="submit" class="btn-default-merah"><?= esc(lang('Store.saveProfile')); ?></button>
+        </form>
+        <?php if (!empty($googleOAuthEnabled)): ?><div class="ilena-account-profile-row d-flex align-items-center justify-content-between gap-3 py-2">
+            <span><?= esc($googleLinked ? lang('Store.googleConnected') : lang('Store.googleNotConnected')); ?></span>
+            <?php if (!$googleLinked): ?><form method="post" action="<?= esc(ilena_store_path('/auth/google/link'), 'attr'); ?>" class="m-0">
+                <?= csrf_field(); ?><button type="submit" class="btn-default-abu"><?= esc(lang('Store.connectGoogle')); ?></button>
+            </form><?php endif; ?>
+        </div><?php endif; ?>
         <div class="ilena-account-profile-row ilena-account-password-row mb-4 d-flex justify-content-between py-1">
             <p class="m-0"><?= lang('Store.password'); ?></p>
             <a class="btn-teks-aja" onclick="openGantiSandi()"><?= lang('Store.changePassword'); ?></a>
@@ -333,12 +346,6 @@
             <h2><?= lang('Store.shippingAddresses'); ?></h2>
             <p><?= count($alamat) <= 0 ? lang('Store.noSavedAddresses') : count($alamat) . ' ' . lang('Store.savedAddresses'); ?></p>
         </div>
-
-        <?php if ($msg) { ?>
-        <div class="pemberitahuan" role="alert">
-            <?= $msg; ?>
-        </div>
-        <?php } ?>
 
         <div class="container-address my-4">
             <?php foreach ($alamat as $ind_a => $a) { ?>

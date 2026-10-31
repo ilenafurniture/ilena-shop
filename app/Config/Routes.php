@@ -85,10 +85,17 @@ $routes->get('/invoice/(:any)', 'Pages::invoice/$1', ['filter' => 'customerFilte
 $routes->get('/account', 'Pages::account', ['filter' => 'customerLoginFilter']);
 
 $routes->get('/register', 'Pages::register', ['filter' => 'customerLogoutFilter']);
+$routes->get('/forgot-password', 'Pages::forgotPassword', ['filter' => 'customerLogoutFilter']);
+$routes->post('/forgot-password', 'Pages::requestPasswordReset', ['filter' => ['customerLogoutFilter', 'csrf']]);
+$routes->get('/reset-password/(:segment)', 'Pages::resetPassword/$1', ['filter' => 'customerLogoutFilter']);
+$routes->post('/reset-password/(:segment)', 'Pages::completePasswordReset/$1', ['filter' => ['customerLogoutFilter', 'csrf']]);
 $routes->post('/actionregister', 'Pages::actionRegister', ['filter' => ['customerFilter', 'csrf']]);
 $routes->get('/verify', 'Pages::verify', ['filter' => 'customerFilter']);
 $routes->post('/actionverify', 'Pages::actionVerify', ['filter' => ['customerFilter', 'csrf']]);
 $routes->get('/login', 'Pages::login', ['filter' => 'customerLogoutFilter']);
+$routes->get('/auth/google', 'GoogleAuthController::start', ['filter' => 'customerLogoutFilter']);
+$routes->post('/auth/google/link', 'GoogleAuthController::link', ['filter' => ['customerLoginFilter', 'csrf']]);
+$routes->get('/auth/google/callback', 'GoogleAuthController::callback', ['filter' => 'customerFilter']);
 $routes->post('/actionlogin', 'Pages::actionLogin', ['filter' => ['customerFilter', 'csrf']]);
 $routes->post('/kirimotp', 'Pages::kirimOTP', ['filter' => ['customerFilter', 'csrf']]);
 $routes->post('/editsandi/(:any)', 'Pages::editSandi/$1', ['filter' => ['customerFilter', 'csrf']]);
@@ -327,6 +334,15 @@ $routes->group('{locale}', ['filter' => 'customerFilter'], static function ($rou
 $routes->get('{locale}/login', 'Pages::login', ['filter' => 'customerLogoutFilter']);
 $routes->get('{locale}/register', 'Pages::register', ['filter' => 'customerLogoutFilter']);
 $routes->get('{locale}/account', 'Pages::account', ['filter' => 'customerLoginFilter']);
+$routes->get('{locale}/forgot-password', 'Pages::forgotPassword', ['filter' => 'customerLogoutFilter']);
+$routes->post('{locale}/forgot-password', 'Pages::requestPasswordReset', ['filter' => ['customerLogoutFilter', 'csrf']]);
+$routes->get('{locale}/reset-password/(:segment)', 'Pages::resetPassword/$1', ['filter' => 'customerLogoutFilter']);
+$routes->post('{locale}/reset-password/(:segment)', 'Pages::completePasswordReset/$1', ['filter' => ['customerLogoutFilter', 'csrf']]);
+$routes->get('{locale}/auth/google', 'GoogleAuthController::start', ['filter' => 'customerLogoutFilter']);
+$routes->post('{locale}/auth/google/link', 'GoogleAuthController::link', ['filter' => ['customerLoginFilter', 'csrf']]);
+$routes->get('{locale}/auth/google/callback', 'GoogleAuthController::callback', ['filter' => 'customerFilter']);
+$routes->post('{locale}/account/profile', 'Pages::updateAccountProfile', ['filter' => ['customerLoginFilter', 'csrf']]);
+$routes->post('/account/profile', 'Pages::updateAccountProfile', ['filter' => ['customerLoginFilter', 'csrf']]);
 
 
 // ==================== Marketplace ====================

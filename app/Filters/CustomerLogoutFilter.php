@@ -22,7 +22,7 @@ class CustomerLogoutFilter implements FilterInterface
             $when = $until->format('d M Y H:i') . ' UTC';
             return redirect()->to(ilena_store_path('/login'))->with('msg', 'Akun Anda ditangguhkan ' . $when . '. Silakan hubungi admin.');
         }
-        if(session()->get('isLogin')) {
+        if (session()->get('isLogin') && in_array((string) session()->get('role'), ['0', '4'], true)) {
             return redirect()->to(ilena_store_path('/account'));
         }
     }
