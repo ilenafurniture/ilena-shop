@@ -1990,11 +1990,10 @@ body.ilena-storefront .ilena-wishlist-page .card1 {
 body.ilena-storefront .ilena-wishlist-page .card1 .gambar img { background: #f1eee9; }
 
 /* Editorial/legal pages currently use legacy markup; normalize type and reading width. */
-body.ilena-storefront.ilena-page--article .container,
-body.ilena-storefront.ilena-page--contact .container,
-body.ilena-storefront.ilena-page--syarat .container,
-body.ilena-storefront.ilena-page--kebijakan .container,
-body.ilena-storefront.ilena-page--visimisi .container {
+body.ilena-storefront.ilena-page--article #main-content > .container,
+body.ilena-storefront.ilena-page--contact #main-content > .container,
+body.ilena-storefront.ilena-page--syarat #main-content > .container,
+body.ilena-storefront.ilena-page--kebijakan #main-content > .container {
     max-width: 1120px;
 }
 body.ilena-storefront:is(.ilena-page--article, .ilena-page--contact, .ilena-page--syarat, .ilena-page--kebijakan, .ilena-page--visimisi) .konten {
@@ -4755,10 +4754,10 @@ body.ilena-storefront.ilena-page--contact .ilena-contact-page__footer p { margin
 }
 
 /* Legal and policy copy: calm editorial reading measure with clear section hierarchy. */
-body.ilena-storefront.ilena-page--kebijakan > .container {
+body.ilena-storefront.ilena-page--kebijakan #main-content > .container {
     display: block !important; width: min(100% - 40px, 1020px); max-width: 1020px; margin-inline: auto;
 }
-body.ilena-storefront.ilena-page--kebijakan > .container > .konten { width: 100%; padding: 32px 0 72px; color: var(--ilena-ink); }
+body.ilena-storefront.ilena-page--kebijakan #main-content > .container > .konten { width: 100%; padding: 32px 0 72px; color: var(--ilena-ink); }
 body.ilena-storefront.ilena-page--kebijakan .breadcrumb { margin: 0 0 38px; font-size: 10px; }
 body.ilena-storefront.ilena-page--kebijakan .breadcrumb a { color: var(--ilena-muted); text-decoration: none; }
 body.ilena-storefront.ilena-page--kebijakan .breadcrumb a:hover { color: #8b684c; }
@@ -4785,8 +4784,8 @@ body.ilena-storefront.ilena-page--kebijakan .konten > .d-flex a { color: #805d42
 body.ilena-storefront.ilena-page--kebijakan .konten > ul { padding-left: 20px; }
 body.ilena-storefront.ilena-page--kebijakan .konten > ul li { padding: 3px 0; }
 @media (max-width: 700px) {
-    body.ilena-storefront.ilena-page--kebijakan > .container { width: calc(100% - 32px); }
-    body.ilena-storefront.ilena-page--kebijakan > .container > .konten { padding: 21px 0 46px; }
+    body.ilena-storefront.ilena-page--kebijakan #main-content > .container { width: calc(100% - 32px); }
+    body.ilena-storefront.ilena-page--kebijakan #main-content > .container > .konten { padding: 21px 0 46px; }
     body.ilena-storefront.ilena-page--kebijakan .breadcrumb { margin-bottom: 28px; }
     body.ilena-storefront.ilena-page--kebijakan .konten > h1 { font-size: 34px; }
     body.ilena-storefront.ilena-page--kebijakan .konten > p,
@@ -4794,8 +4793,8 @@ body.ilena-storefront.ilena-page--kebijakan .konten > ul li { padding: 3px 0; }
     body.ilena-storefront.ilena-page--kebijakan .konten > h3 { margin-top: 28px !important; font-size: 21px; }
 }
 /* Terms page: compact editorial document style aligned with the privacy page. */
-body.ilena-storefront.ilena-page--syarat > .container { width: min(100% - 40px, 1020px); max-width: 1020px; margin-inline: auto; }
-body.ilena-storefront.ilena-page--syarat > .container > .konten { width: 100%; padding: 36px 0 72px; color: var(--ilena-ink); }
+body.ilena-storefront.ilena-page--syarat #main-content > .container { width: min(100% - 40px, 1020px); max-width: 1020px; margin-inline: auto; }
+body.ilena-storefront.ilena-page--syarat #main-content > .container > .konten { width: 100%; padding: 36px 0 72px; color: var(--ilena-ink); }
 body.ilena-storefront.ilena-page--syarat .ilena-terms-title {
     margin: 0 0 12px; color: var(--ilena-ink); font-family: var(--ilena-font-display);
     font-size: clamp(34px, 4vw, 48px); font-weight: 500; letter-spacing: -.04em; line-height: 1.1;
@@ -4812,8 +4811,8 @@ body.ilena-storefront.ilena-page--syarat .konten > p {
 }
 body.ilena-storefront.ilena-page--syarat .konten > p a { color: #805d42; text-underline-offset: 3px; }
 @media (max-width: 700px) {
-    body.ilena-storefront.ilena-page--syarat > .container { width: calc(100% - 32px); }
-    body.ilena-storefront.ilena-page--syarat > .container > .konten { padding: 23px 0 46px; }
+    body.ilena-storefront.ilena-page--syarat #main-content > .container { width: calc(100% - 32px); }
+    body.ilena-storefront.ilena-page--syarat #main-content > .container > .konten { padding: 23px 0 46px; }
     body.ilena-storefront.ilena-page--syarat .ilena-terms-title { font-size: 34px; }
     body.ilena-storefront.ilena-page--syarat .breadcrumb { margin-bottom: 27px; }
     body.ilena-storefront.ilena-page--syarat .konten > h2 { margin-top: 24px; font-size: 19px; }
