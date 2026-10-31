@@ -4499,10 +4499,25 @@ private function interiorShippedQtyMap(string $idPesanan): array
                 ->groupEnd();
         }
         $total = (clone $builder)->countAllResults();
+        $pages = max(1, (int) ceil($total / 50));
+        $page = min($page, $pages);
         $rows = $builder->orderBy('u.email', 'ASC')->get(50, ($page - 1) * 50)->getResultArray();
-        $suspensions = new \App\Services\AccountSuspensionService();
+        $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         foreach ($rows as &$row) {
-            $row['suspension'] = $suspensions->state((string)$row['email']);
+            $row['suspension'] = null;
+            if (!empty($row['suspended_until'])) {
+                try {
+                    $until = new \DateTimeImmutable((string) $row['suspended_until'], new \DateTimeZone('UTC'));
+                    if ($until > $now) {
+                        $row['suspension'] = [
+                            'until' => $until->format('Y-m-d H:i:s'),
+                            'reason' => (string) ($row['suspension_reason'] ?? ''),
+                        ];
+                    }
+                } catch (\Throwable) {
+                    // An invalid legacy timestamp is shown as not suspended; it is not rewritten here.
+                }
+            }
         }
         unset($row);
 
@@ -4511,7 +4526,8 @@ private function interiorShippedQtyMap(string $idPesanan): array
             'customers' => $rows,
             'search' => $search,
             'page' => $page,
-            'pages' => max(1, (int)ceil($total / 50)),
+            'pages' => $pages,
+            'total' => $total,
             'msg' => session()->getFlashdata('msg'),
             'err' => session()->getFlashdata('err'),
         ]);
