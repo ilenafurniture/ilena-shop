@@ -124,7 +124,7 @@ body.ilena-extra-open{overflow:hidden}
         -webkit-tap-highlight-color: transparent;
     }
     .ilena-card-compare::before {
-        content: '?';
+        content: '⇄';
         display: grid;
         width: 30px;
         height: 30px;
