@@ -10522,8 +10522,8 @@ body.ilena-storefront .ilena-utility-bar__brand-divider {
     background: rgba(255,255,255,.24);
 }
 body.ilena-storefront .ilena-utility-bar__brands .ilena-utility-bar__interior img {
-    width: 110px;
-    height: 29px;
+    width: 92px;
+    height: 24px;
 }
 body.ilena-storefront .ilena-compact-header__interior {
     display: inline-flex;
@@ -10533,8 +10533,8 @@ body.ilena-storefront .ilena-compact-header__interior {
 }
 body.ilena-storefront .ilena-compact-header__interior img {
     display: block;
-    width: 110px;
-    height: 29px;
+    width: 92px;
+    height: 24px;
     object-fit: contain;
 }
 body.ilena-storefront .ilena-mobile-sister-brands {
@@ -10552,14 +10552,14 @@ body.ilena-storefront .ilena-mobile-interior-link {
 }
 body.ilena-storefront .ilena-mobile-interior-link img {
     display: block;
-    width: 82px;
-    height: 22px;
+    width: 72px;
+    height: 19px;
     object-fit: contain;
 }
 @media (max-width: 380px) {
     body.ilena-storefront .ilena-mobile-sister-brands { gap: 5px; }
     body.ilena-storefront .ilena-mobile-lunarea-link img { width: 68px; }
-    body.ilena-storefront .ilena-mobile-interior-link img { width: 62px; }
+    body.ilena-storefront .ilena-mobile-interior-link img { width: 58px; height: 15px; }
     body.ilena-storefront .navbar-hp-atas { gap: 5px !important; }
 }
 body.ilena-storefront.ilena-page--payment .ilena-compact-header__interior { display: none !important; }

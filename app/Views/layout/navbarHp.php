@@ -17,7 +17,7 @@ $enLanguageUrl = '/language/en?' . http_build_query(['return' => $languageReturn
             <img src="<?= base_url('img/logolunareanavbar.webp'); ?>" width="112" height="24" alt="Lunarea Furniture">
         </a>
         <a class="ilena-mobile-interior-link" href="https://ilenafurniture.net/" target="_blank" rel="noopener noreferrer" aria-label="<?= esc(lang('Store.customInterior'), 'attr'); ?>">
-            <img src="<?= base_url('img/logo/logoilenainterior-v2.png'); ?>" width="110" height="29" alt="Ilena Interior">
+            <img src="<?= base_url('img/logo/logoilenainterior-v2.png'); ?>" width="92" height="24" alt="Ilena Interior">
         </a>
     </div>
     <div class="ilena-mobile-search-slot">
