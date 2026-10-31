@@ -335,6 +335,7 @@ return [
     'valuesCaption' => 'Values that create comfort, starting at home.',
     'termsTitle' => 'Terms & Conditions',
     'privacyTitle' => 'Privacy Policy',
+    'shippingPromoBar' => 'Free-shipping offers apply to selected areas and products. See terms.',
     'termsIntroTitle' => 'Introduction',
     'termsIntroBody' => 'These terms govern use of the Ilena Furniture website and shopping services. By browsing the website or placing an order, you agree to the terms in effect at the time of use. Our Privacy Policy explains personal-data processing and forms part of our service information.',
     'websiteUseTitle' => 'Website Use',

@@ -447,6 +447,7 @@ return [
     'valuesCaption' => 'Nilai yang menumbuhkan rasa nyaman, mulai dari rumah.',
     'termsTitle' => 'Syarat & Ketentuan',
     'privacyTitle' => 'Kebijakan Privasi',
+    'shippingPromoBar' => 'Promo gratis ongkir berlaku untuk area dan produk tertentu. Cek ketentuannya.',
     'termsIntroTitle' => 'Pendahuluan',
     'termsIntroBody' => 'Syarat ini mengatur penggunaan situs web dan layanan belanja Ilena Furniture. Dengan mengakses situs web atau membuat pesanan, Anda menyetujui ketentuan yang berlaku pada saat penggunaan. Kebijakan Privasi menjelaskan pemrosesan data pribadi Anda.',
     'websiteUseTitle' => 'Penggunaan Website',

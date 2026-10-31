@@ -17,7 +17,7 @@ $enLanguageUrl = '/language/en?' . http_build_query(['return' => $languageReturn
             </a>
             <span class="ilena-utility-bar__brand-divider" aria-hidden="true"></span>
             <a class="ilena-utility-bar__interior" href="https://ilenafurniture.net/" target="_blank" rel="noopener noreferrer" aria-label="<?= esc(lang('Store.customInterior'), 'attr'); ?>">
-                <img src="<?= base_url('img/logo/logoilenainterior.webp'); ?>" alt="Ilena Interior" width="88" height="24" decoding="async">
+                <img src="<?= base_url('img/logo/logoilenainterior-v2.png'); ?>" alt="Ilena Interior" width="110" height="29" decoding="async">
             </a>
         </div>
         <nav class="ilena-language-switch" aria-label="<?= esc(lang('Store.language'), 'attr'); ?>">
@@ -144,10 +144,10 @@ $enLanguageUrl = '/language/en?' . http_build_query(['return' => $languageReturn
 })();
 </script>
 <?php if ($headerMode === 'full'): ?>
-<div class="ilena-shipping-bar show-block-ke-hide" role="note" aria-label="Promo pengiriman">
+<div class="ilena-shipping-bar show-block-ke-hide" role="note" aria-label="<?= esc(lang('Store.shippingPromoBar'), 'attr'); ?>">
     <div class="container ilena-shipping-bar__inner">
         <i class="material-icons" aria-hidden="true">local_shipping</i>
-        <p class="m-0">Lebih hemat dengan <strong>Free Ongkir hingga 100%</strong></p>
+        <p class="m-0"><?= esc(lang('Store.shippingPromoBar')); ?></p>
     </div>
 </div>
 <style>
