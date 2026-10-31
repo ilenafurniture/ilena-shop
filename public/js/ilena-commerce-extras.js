@@ -4,11 +4,13 @@
     const en = (document.documentElement.lang || '').toLowerCase().startsWith('en');
     const copy = en ? {
         quick: 'Quick view', compare: 'Compare', comparison: 'Compare products', close: 'Close',
+        variantAvailability: (available, total) => `${available} of ${total} color options available`,
         details: 'View details', remove: 'Remove', clear: 'Clear comparison',
         emptyCart: 'Your bag is empty.', subtotal: 'Subtotal', viewCart: 'View bag', checkout: 'Checkout',
         filter: 'Filters', apply: 'Apply filters',
     } : {
         quick: 'Lihat cepat', compare: 'Bandingkan', comparison: 'Bandingkan produk', close: 'Tutup',
+        variantAvailability: (available, total) => `${available} dari ${total} pilihan warna tersedia`,
         details: 'Lihat detail', remove: 'Hapus', clear: 'Hapus pilihan',
         emptyCart: 'Keranjang masih kosong.', subtotal: 'Subtotal', viewCart: 'Lihat keranjang', checkout: 'Checkout',
         filter: 'Filter', apply: 'Terapkan filter',
@@ -37,6 +39,7 @@
         <button type="button" class="ilena-extra-dismiss" data-extra-close aria-label="${esc(copy.close)}">×</button>
         <img data-quick-image alt="" width="600" height="600"><div><p class="ilena-extra-eyebrow" data-quick-category></p>
         <h2 id="ilenaQuickTitle" data-quick-title></h2><p class="ilena-extra-price" data-quick-price></p>
+        <p class="ilena-extra-availability" data-quick-availability hidden></p>
         <a class="ilena-extra-primary" data-quick-link href="#">${esc(copy.details)}</a></div>
       </section>
       <aside class="ilena-compare-drawer" data-compare-drawer aria-hidden="true" aria-label="${esc(copy.comparison)}">
@@ -106,6 +109,9 @@
         if (close || event.target === backdrop) { closePanels(); return; }
         const cartLink = event.target.closest('[data-ilena-cart-link]');
         if (cartLink) {
+            // On small screens the cart icon should open the full cart page directly.
+            // Avoid an extra summary request and an overlay that interrupts the mobile flow.
+            if (window.matchMedia('(max-width: 700px)').matches) return;
             event.preventDefault();
             shell.querySelector('[data-mini-cart-link]').href = cartLink.href;
             openPanel('cart', miniCart);
@@ -169,6 +175,9 @@
         shell.querySelector('[data-quick-title]').textContent = data.title;
         shell.querySelector('[data-quick-category]').textContent = data.category;
         shell.querySelector('[data-quick-price]').textContent = data.price;
+        const availability = shell.querySelector('[data-quick-availability]');
+        availability.hidden = data.options < 1;
+        availability.textContent = data.options > 0 ? copy.variantAvailability(data.availableOptions, data.options) : '';
         shell.querySelector('[data-quick-link]').href = data.url;
         returnFocus = document.activeElement;
         active = 'quick'; quickModal.hidden = false; backdrop.hidden = false;
