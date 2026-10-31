@@ -1,4 +1,5 @@
 .ilena-extra-backdrop{position:fixed;inset:0;z-index:4090;background:rgba(22,18,16,.42);backdrop-filter:blur(2px)}
+.ilena-extra-backdrop[hidden],.ilena-extra-modal[hidden]{display:none!important}
 .ilena-mini-cart,.ilena-compare-drawer{position:fixed;z-index:4091;inset:0 0 0 auto;width:min(440px,100vw);padding:24px;background:#fff;color:#211d1a;box-shadow:-18px 0 50px rgba(20,15,10,.16);transform:translateX(105%);transition:transform .24s ease;display:flex;flex-direction:column}
 .ilena-mini-cart.is-open,.ilena-compare-drawer.is-open{transform:translateX(0)}
 .ilena-mini-cart header,.ilena-compare-drawer header,.ilena-filter-sheet>header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e9e5e1;padding-bottom:16px}
@@ -21,6 +22,18 @@
 body.ilena-extra-open{overflow:hidden}
 .ilena-product-gallery__stage>img.img-detail-prev{transition:opacity .2s ease}.ilena-product-gallery__stage>img.img-detail-prev.is-crossfading{opacity:.25}.ilena-heart-pop{animation:ilena-heart-pop .28s ease-out}@keyframes ilena-heart-pop{50%{transform:scale(1.35);color:#8d2e2b}}
 @media(max-width:700px){.ilena-extra-modal{grid-template-columns:1fr;gap:12px;padding:18px;max-height:88dvh;overflow:auto}.ilena-extra-modal img{max-height:38dvh}.ilena-card-compare{opacity:1;right:7px;bottom:7px}.ilena-mini-cart,.ilena-compare-drawer{padding:18px}.ilena-filter-sheet .container-filter{width:100%}}
+@media (min-width:701px) and (max-width:1024px) {
+    .ilena-extra-modal { width:min(720px,calc(100vw - 40px)); max-height:calc(100dvh - 32px); padding:clamp(16px,2.6vw,24px); gap:clamp(14px,2.8vw,24px); overflow:auto; }
+    .ilena-extra-modal img { max-height:calc(100dvh - 100px); }
+}
+@media (min-width:701px) and (max-width:1024px) and (hover:none) and (pointer:coarse) {
+    body.ilena-storefront .ilena-catalog-grid .card1 .card1-content-img-kanan,
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1-content-img-kanan { opacity:1; transform:none; }
+    body.ilena-storefront .ilena-catalog-grid .card1 .card1-btn-img,
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid .card1-btn-img { width:44px; height:44px; }
+    body.ilena-storefront .ilena-catalog-grid .card1 .ilena-card-compare,
+    body.ilena-storefront .product-detail-soft .ilena-product-related-grid .ilena-card-compare { opacity:1; }
+}
 @media(prefers-reduced-motion:reduce){.ilena-mini-cart,.ilena-compare-drawer,.ilena-extra-modal,.ilena-card-compare,.ilena-filter-sheet{transition:none}}
 
 /* Mobile comparison is a bottom sheet; keep the comparison grid readable and swipeable. */
