@@ -19,7 +19,7 @@ $enLanguageUrl = '/language/en?' . http_build_query(['return' => $languageReturn
             </a>
             <span class="ilena-utility-bar__brand-divider" aria-hidden="true"></span>
             <a class="ilena-utility-bar__interior" href="https://ilenafurniture.net/" target="_blank" rel="noopener noreferrer" aria-label="<?= esc(lang('Store.customInterior'), 'attr'); ?>">
-                <img src="<?= base_url('img/logo/logoilenainterior-v2.png'); ?>" alt="Ilena Interior" width="92" height="24" decoding="async">
+                <img src="<?= base_url('img/logo/ilena-interior-stacked.svg'); ?>" alt="Ilena Interior" width="100" height="21" decoding="async">
                 <span class="ilena-brand-popover" aria-hidden="true"><strong>Ilena Interior</strong><small><?= esc(lang('Store.interiorPopover')); ?></small></span>
             </a>
         </div>

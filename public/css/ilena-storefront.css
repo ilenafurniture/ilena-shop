@@ -1295,6 +1295,11 @@ body.ilena-storefront .ilena-store-footer__mobile-clear {
         height: 23px;
     }
 
+    body.ilena-storefront .ilena-compact-header__interior img {
+        width: 108px;
+        height: 23px;
+    }
+
     body.ilena-storefront .ilena-compact-header__link,
     body.ilena-storefront .ilena-compact-header__secure {
         min-height: 40px;
@@ -2864,6 +2869,11 @@ body.ilena-storefront .ilena-mobile-lunarea-link img {
     }
 
     body.ilena-storefront .ilena-compact-header__lunarea img {
+        width: 88px;
+        height: 24px;
+    }
+
+    body.ilena-storefront .ilena-compact-header__interior img {
         width: 88px;
         height: 24px;
     }
@@ -10549,8 +10559,9 @@ body.ilena-storefront .ilena-utility-bar__brand-divider {
     background: rgba(255,255,255,.24);
 }
 body.ilena-storefront .ilena-utility-bar__brands .ilena-utility-bar__interior img {
-    width: 92px;
-    height: 24px;
+    width: 100px;
+    height: 21px;
+    object-fit: contain;
 }
 body.ilena-storefront .ilena-compact-header__interior {
     display: inline-flex;
@@ -10560,8 +10571,8 @@ body.ilena-storefront .ilena-compact-header__interior {
 }
 body.ilena-storefront .ilena-compact-header__interior img {
     display: block;
-    width: 92px;
-    height: 24px;
+    width: 120px;
+    height: 26px;
     object-fit: contain;
 }
 body.ilena-storefront .ilena-mobile-sister-brands {
