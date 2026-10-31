@@ -89,10 +89,10 @@ if (is_file($logoPath ?? '')) {
     <meta charset="UTF-8">
     <title><?= $isEnglish ? 'Invoice' : 'Invoice'; ?> <?= esc($transaksi['id_midtrans'] ?? '') ?> | Ilena Furniture</title>
     <style>
-        @page { size: A4 portrait; margin: 12mm; }
+        @page { size: A4 portrait; margin: 13mm 14mm 15mm; }
         * { box-sizing: border-box; }
-        body { margin: 0; color: #292520; font: 9pt/1.45 Arial, sans-serif; }
-        .topline { height: 3px; background: #806448; margin-bottom: 22px; }
+        body { margin: 0; color: #292520; font: 9pt/1.5 Arial, Helvetica, sans-serif; }
+        .topline { height: 3px; background: #8f2430; margin-bottom: 20px; }
         .head { width: 100%; margin-bottom: 22px; }
         .head td { vertical-align: top; }
         .logo { width: 125px; height: auto; }
@@ -107,7 +107,9 @@ if (is_file($logoPath ?? '')) {
         .parties strong { color: #292520; }
         .section-title { margin: 17px 0 8px; color: #806448; font-size: 8pt; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; }
         table.items { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        .items th { padding: 8px 6px; background: #f4f1ed; border-top: 1px solid #806448; border-bottom: 1px solid #d9d2ca; color: #62584e; text-align: left; font-size: 7.5pt; letter-spacing: .5px; }
+        .items thead { display: table-header-group; }
+        .items tr { page-break-inside: avoid; }
+        .items th { padding: 8px 6px; background: #f4f1ed; border-top: 1px solid #8f2430; border-bottom: 1px solid #d9d2ca; color: #62584e; text-align: left; font-size: 7.5pt; letter-spacing: .5px; }
         .items td { padding: 9px 6px; border-bottom: 1px solid #e9e5e0; vertical-align: top; }
         .items .product { width: 48%; }
         .items .qty { width: 9%; text-align: center; }
@@ -117,14 +119,14 @@ if (is_file($logoPath ?? '')) {
         .meta { color: #746c63; font-size: 7.5pt; }
         .meta div { margin-top: 1px; }
         .strike { color: #8e877f; text-decoration: line-through; font-size: 7.5pt; }
-        .totals { width: 54%; margin: 13px 0 0 auto; border-collapse: collapse; }
+        .totals { width: 54%; margin: 13px 0 0 auto; border-collapse: collapse; page-break-inside: avoid; }
         .totals td { padding: 4px 0; }
         .totals td:last-child { text-align: right; white-space: nowrap; }
         .totals .grand td { padding-top: 8px; border-top: 1px solid #806448; font-size: 11pt; font-weight: bold; }
-        .fulfillment { width: 100%; margin-top: 22px; border-top: 1px solid #e1dcd6; border-bottom: 1px solid #e1dcd6; border-collapse: collapse; }
+        .fulfillment { width: 100%; margin-top: 22px; border-top: 1px solid #e1dcd6; border-bottom: 1px solid #e1dcd6; border-collapse: collapse; page-break-inside: avoid; }
         .fulfillment td { width: 50%; padding: 11px 12px 11px 0; vertical-align: top; }
         .fulfillment p { margin: 0 0 3px; }
-        .note { margin-top: 20px; color: #746c63; font-size: 7.5pt; }
+        .note { margin-top: 20px; color: #746c63; font-size: 7.5pt; page-break-inside: avoid; }
         .note strong { color: #806448; }
         .empty { padding: 12px 6px; color: #746c63; }
     </style>

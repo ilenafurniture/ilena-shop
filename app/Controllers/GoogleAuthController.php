@@ -30,6 +30,42 @@ class GoogleAuthController extends BaseController
         return $this->beginAuthorization(true);
     }
 
+    public function unlink(): RedirectResponse
+    {
+        if (! session()->get('isLogin') || ! in_array((string) session()->get('role'), ['0', '4'], true)) {
+            return redirect()->to(ilena_store_path('/login'));
+        }
+
+        $email = strtolower(trim((string) session()->get('email')));
+        $user = (new UserModel())->findByEmailIdentity($email);
+        $password = (string) $this->request->getPost('current_password');
+        if (! $user || empty($user['sandi']) || ! password_verify($password, (string) $user['sandi'])) {
+            session()->setFlashdata('msg', lang('Store.googleUnlinkReauth'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+
+        $db = db_connect();
+        $db->transBegin();
+        $db->table('user_google_identities')->where([
+            'user_email' => (string) $user['email'], 'provider' => 'google',
+        ])->delete();
+        $db->table('user')->where('email', (string) $user['email'])
+            ->set('auth_version', 'auth_version + 1', false)->update();
+        if (! $db->transStatus()) {
+            $db->transRollback();
+            session()->setFlashdata('msg', lang('Store.googleUnlinkFailed'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+        $db->transCommit();
+
+        // Keep this verified session while invalidating any other customer sessions.
+        $user = (new UserModel())->findByEmailIdentity($email);
+        session()->regenerate(true);
+        session()->set('auth_version', (int) ($user['auth_version'] ?? 1));
+        session()->setFlashdata('msg', lang('Store.googleUnlinked'));
+        return redirect()->to(ilena_store_path('/account'));
+    }
+
     private function beginAuthorization(bool $linkAccount): RedirectResponse
     {
         $config = $this->oauthConfig();
@@ -218,7 +254,8 @@ class GoogleAuthController extends BaseController
             }
             session()->regenerate(true);
             session()->set([
-                'active' => '1', 'email' => (string)$user['email'], 'role' => '0', 'nama' => (string)$existingBuyer['nama'],
+                'active' => '1', 'email' => (string)$user['email'], 'role' => '0',
+                'auth_version' => (int) ($user['auth_version'] ?? 1), 'nama' => (string)$existingBuyer['nama'],
                 'alamat' => $addresses, 'nohp' => (string)($existingBuyer['nohp'] ?? ''), 'wishlist' => $wishlist,
                 'keranjang' => $cart, 'isLogin' => true,
             ]);

@@ -95,6 +95,7 @@ $routes->post('/actionverify', 'Pages::actionVerify', ['filter' => ['customerFil
 $routes->get('/login', 'Pages::login', ['filter' => 'customerLogoutFilter']);
 $routes->get('/auth/google', 'GoogleAuthController::start', ['filter' => 'customerLogoutFilter']);
 $routes->post('/auth/google/link', 'GoogleAuthController::link', ['filter' => ['customerLoginFilter', 'csrf']]);
+$routes->post('/auth/google/unlink', 'GoogleAuthController::unlink', ['filter' => ['customerLoginFilter', 'csrf']]);
 $routes->get('/auth/google/callback', 'GoogleAuthController::callback', ['filter' => 'customerFilter']);
 $routes->post('/actionlogin', 'Pages::actionLogin', ['filter' => ['customerFilter', 'csrf']]);
 $routes->post('/kirimotp', 'Pages::kirimOTP', ['filter' => ['customerFilter', 'csrf']]);
@@ -219,6 +220,8 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
     $routes->get('customers', 'AdminController::customers');
     $routes->post('customers/suspend', 'AdminController::actionSuspendCustomer');
     $routes->post('customers/reinstate', 'AdminController::actionReinstateCustomer');
+    $routes->get('account-deletion-requests', 'AdminController::customerDeletionRequests');
+    $routes->post('account-deletion-requests/(:num)', 'AdminController::actionResolveCustomerDeletionRequest/$1');
 
     // ==================== SEO helper (admin) — optional ====================
     $routes->get('seo-check/(:any)', 'AdminController::seoCheck/$1');
@@ -340,9 +343,28 @@ $routes->get('{locale}/reset-password/(:segment)', 'Pages::resetPassword/$1', ['
 $routes->post('{locale}/reset-password/(:segment)', 'Pages::completePasswordReset/$1', ['filter' => ['customerLogoutFilter', 'csrf']]);
 $routes->get('{locale}/auth/google', 'GoogleAuthController::start', ['filter' => 'customerLogoutFilter']);
 $routes->post('{locale}/auth/google/link', 'GoogleAuthController::link', ['filter' => ['customerLoginFilter', 'csrf']]);
+$routes->post('{locale}/auth/google/unlink', 'GoogleAuthController::unlink', ['filter' => ['customerLoginFilter', 'csrf']]);
 $routes->get('{locale}/auth/google/callback', 'GoogleAuthController::callback', ['filter' => 'customerFilter']);
 $routes->post('{locale}/account/profile', 'Pages::updateAccountProfile', ['filter' => ['customerLoginFilter', 'csrf']]);
 $routes->post('/account/profile', 'Pages::updateAccountProfile', ['filter' => ['customerLoginFilter', 'csrf']]);
+$routes->post('{locale}/account/email/change', 'Pages::requestCustomerEmailChange', ['filter' => ['customerLoginFilter', 'csrf']]);
+$routes->post('/account/email/change', 'Pages::requestCustomerEmailChange', ['filter' => ['customerLoginFilter', 'csrf']]);
+$routes->get('{locale}/account/email/confirm/(:segment)', 'Pages::showCustomerEmailChangeConfirmation/$1', ['filter' => 'customerFilter']);
+$routes->get('/account/email/confirm/(:segment)', 'Pages::showCustomerEmailChangeConfirmation/$1', ['filter' => 'customerFilter']);
+$routes->post('{locale}/account/email/confirm', 'Pages::confirmCustomerEmailChange', ['filter' => ['customerFilter', 'csrf']]);
+$routes->post('/account/email/confirm', 'Pages::confirmCustomerEmailChange', ['filter' => ['customerFilter', 'csrf']]);
+$routes->post('{locale}/account/phone/send', 'Pages::sendCustomerPhoneVerification', ['filter' => ['customerLoginFilter', 'csrf']]);
+$routes->post('/account/phone/send', 'Pages::sendCustomerPhoneVerification', ['filter' => ['customerLoginFilter', 'csrf']]);
+$routes->post('{locale}/account/phone/verify', 'Pages::verifyCustomerPhone', ['filter' => ['customerLoginFilter', 'csrf']]);
+$routes->post('/account/phone/verify', 'Pages::verifyCustomerPhone', ['filter' => ['customerLoginFilter', 'csrf']]);
+$routes->post('{locale}/account/sessions/revoke', 'Pages::revokeCustomerSessions', ['filter' => ['customerLoginFilter', 'csrf']]);
+$routes->post('/account/sessions/revoke', 'Pages::revokeCustomerSessions', ['filter' => ['customerLoginFilter', 'csrf']]);
+$routes->get('{locale}/account/export', 'Pages::exportCustomerData', ['filter' => 'customerLoginFilter']);
+$routes->get('/account/export', 'Pages::exportCustomerData', ['filter' => 'customerLoginFilter']);
+$routes->post('{locale}/account/deletion-request', 'Pages::requestAccountDeletion', ['filter' => ['customerLoginFilter', 'csrf']]);
+$routes->post('/account/deletion-request', 'Pages::requestAccountDeletion', ['filter' => ['customerLoginFilter', 'csrf']]);
+$routes->post('{locale}/account/deletion-request/cancel', 'Pages::cancelAccountDeletionRequest', ['filter' => ['customerLoginFilter', 'csrf']]);
+$routes->post('/account/deletion-request/cancel', 'Pages::cancelAccountDeletionRequest', ['filter' => ['customerLoginFilter', 'csrf']]);
 
 
 // ==================== Marketplace ====================

@@ -319,6 +319,17 @@
             <p class="m-0">Email</p>
             <p class="fw-bold m-0"><?= esc($email); ?></p>
         </div>
+        <section class="ilena-account-profile-row mb-3" aria-labelledby="email-change-heading">
+            <h2 id="email-change-heading" class="h5"><?= esc(lang('Store.changeAccountEmail')); ?></h2>
+            <form action="<?= esc(ilena_store_path('/account/email/change'), 'attr'); ?>" method="post" class="d-flex gap-2 flex-wrap">
+                <?= csrf_field(); ?>
+                <label class="visually-hidden" for="account-new-email"><?= esc(lang('Store.newEmailAddress')); ?></label>
+                <input id="account-new-email" name="new_email" type="email" maxlength="191" autocomplete="email" class="form-control" required placeholder="<?= esc(lang('Store.newEmailAddress'), 'attr'); ?>">
+                <label class="visually-hidden" for="account-email-password"><?= esc(lang('Store.currentPassword')); ?></label>
+                <input id="account-email-password" name="current_password" type="password" maxlength="72" autocomplete="current-password" class="form-control" required placeholder="<?= esc(lang('Store.currentPassword'), 'attr'); ?>">
+                <button type="submit" class="btn-default-abu"><?= esc(lang('Store.sendEmailConfirmation')); ?></button>
+            </form>
+        </section>
         <?php if (!empty($msg)): ?><div class="pemberitahuan my-3" role="status"><?= esc($msg); ?></div><?php endif; ?>
         <form action="<?= esc(ilena_store_path('/account/profile'), 'attr'); ?>" method="post" class="ilena-account-profile-form my-3">
             <?= csrf_field(); ?>
@@ -329,16 +340,61 @@
                 <small id="account-phone-hint" class="text-secondary"><?= esc(lang('Store.phoneDigitsHint')); ?></small></div>
             <button type="submit" class="btn-default-merah"><?= esc(lang('Store.saveProfile')); ?></button>
         </form>
+        <section class="ilena-account-profile-row mb-4" aria-labelledby="phone-verification-heading">
+            <h2 id="phone-verification-heading" class="h5"><?= esc(lang('Store.phoneVerificationStatus')); ?></h2>
+            <p class="mb-2" role="status"><?= esc($phoneVerified ? lang('Store.phoneVerifiedLabel') : lang('Store.phoneNotVerifiedLabel')); ?></p>
+            <?php if (empty($phoneVerified)): ?>
+                <form action="<?= esc(ilena_store_path('/account/phone/send'), 'attr'); ?>" method="post" class="mb-2">
+                    <?= csrf_field(); ?>
+                    <button type="submit" class="btn-default-abu" <?= trim((string)($nohp ?? '')) === '' ? 'disabled' : ''; ?>><?= esc(lang('Store.sendPhoneCode')); ?></button>
+                </form>
+                <form action="<?= esc(ilena_store_path('/account/phone/verify'), 'attr'); ?>" method="post" class="d-flex gap-2 flex-wrap">
+                    <?= csrf_field(); ?>
+                    <label class="visually-hidden" for="account-phone-code"><?= esc(lang('Store.phoneCodePlaceholder')); ?></label>
+                    <input id="account-phone-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" class="form-control" style="max-width:12rem" placeholder="<?= esc(lang('Store.phoneCodePlaceholder'), 'attr'); ?>" required>
+                    <button type="submit" class="btn-default-merah"><?= esc(lang('Store.verifyPhoneCode')); ?></button>
+                </form>
+            <?php endif; ?>
+        </section>
         <?php if (!empty($googleOAuthEnabled)): ?><div class="ilena-account-profile-row d-flex align-items-center justify-content-between gap-3 py-2">
             <span><?= esc($googleLinked ? lang('Store.googleConnected') : lang('Store.googleNotConnected')); ?></span>
             <?php if (!$googleLinked): ?><form method="post" action="<?= esc(ilena_store_path('/auth/google/link'), 'attr'); ?>" class="m-0">
                 <?= csrf_field(); ?><button type="submit" class="btn-default-abu"><?= esc(lang('Store.connectGoogle')); ?></button>
+            </form><?php else: ?><form method="post" action="<?= esc(ilena_store_path('/auth/google/unlink'), 'attr'); ?>" class="m-0 d-flex gap-2 align-items-center">
+                <?= csrf_field(); ?>
+                <input type="password" name="current_password" class="form-control" autocomplete="current-password" maxlength="72" required aria-label="<?= esc(lang('Store.currentPassword'), 'attr'); ?>" placeholder="<?= esc(lang('Store.currentPassword'), 'attr'); ?>">
+                <button type="submit" class="btn-default-abu"><?= esc(lang('Store.disconnectGoogle')); ?></button>
             </form><?php endif; ?>
         </div><?php endif; ?>
         <div class="ilena-account-profile-row ilena-account-password-row mb-4 d-flex justify-content-between py-1">
             <p class="m-0"><?= lang('Store.password'); ?></p>
             <a class="btn-teks-aja" onclick="openGantiSandi()"><?= lang('Store.changePassword'); ?></a>
         </div>
+        <form action="<?= esc(ilena_store_path('/account/sessions/revoke'), 'attr'); ?>" method="post" class="mb-3">
+            <?= csrf_field(); ?>
+            <button type="submit" class="btn-default-abu"><?= esc(lang('Store.signOutOtherDevices')); ?></button>
+        </form>
+        <p class="mb-4"><a href="<?= esc(ilena_store_path('/account/export'), 'attr'); ?>"><?= esc(lang('Store.downloadAccountData')); ?></a></p>
+        <section class="ilena-account-profile-row my-4" aria-labelledby="account-deletion-heading">
+            <h2 id="account-deletion-heading" class="h5"><?= esc(lang('Store.accountDeletionTitle')); ?></h2>
+            <p><?= esc(lang('Store.accountDeletionNotice')); ?></p>
+            <?php if (!empty($deletionRequestPending)): ?>
+                <p role="status"><?= esc(($deletionRequest['status'] ?? '') === 'reviewed' ? lang('Store.accountDeletionInReview') : lang('Store.accountDeletionPending')); ?></p>
+                <form action="<?= esc(ilena_store_path('/account/deletion-request/cancel'), 'attr'); ?>" method="post" class="d-flex gap-2 flex-wrap">
+                    <?= csrf_field(); ?>
+                    <input type="password" name="current_password" class="form-control" autocomplete="current-password" maxlength="72" required aria-label="<?= esc(lang('Store.currentPassword'), 'attr'); ?>" placeholder="<?= esc(lang('Store.currentPassword'), 'attr'); ?>">
+                    <input type="text" name="confirmation" class="form-control" maxlength="6" required autocomplete="off" aria-label="<?= esc(lang('Store.typeCancel'), 'attr'); ?>" placeholder="<?= esc(lang('Store.typeCancel'), 'attr'); ?>">
+                    <button type="submit" class="btn-default-abu"><?= esc(lang('Store.cancelAccountDeletion')); ?></button>
+                </form>
+            <?php else: ?>
+                <form action="<?= esc(ilena_store_path('/account/deletion-request'), 'attr'); ?>" method="post" class="d-flex gap-2 flex-wrap">
+                    <?= csrf_field(); ?>
+                    <input type="password" name="current_password" class="form-control" autocomplete="current-password" maxlength="72" required aria-label="<?= esc(lang('Store.currentPassword'), 'attr'); ?>" placeholder="<?= esc(lang('Store.currentPassword'), 'attr'); ?>">
+                    <input type="text" name="confirmation" class="form-control" maxlength="6" required autocomplete="off" aria-label="<?= esc(lang('Store.typeDelete'), 'attr'); ?>" placeholder="<?= esc(lang('Store.typeDelete'), 'attr'); ?>">
+                    <button type="submit" class="btn-default-abu"><?= esc(lang('Store.requestAccountDeletion')); ?></button>
+                </form>
+            <?php endif; ?>
+        </section>
         <span class="garis"></span>
 
         <?php if (session()->get('active') != '0') { ?>

@@ -1370,7 +1370,6 @@ class Pages extends BaseController
         if (!isset($alamat)) {
             $alamat = [];
         }
-
         $data = [
             'title' => 'Alamat',
             'navbar' => $this->getNavbarData(),
@@ -2065,7 +2064,7 @@ class Pages extends BaseController
             $subtotal += $harga * $jumlah * (100 - $diskon) / 100;
         }
         $subtotal = max(0, $subtotal);
-        log_message('debug', '[REDEEM] subtotal='.$subtotal.' email='.$email);
+        log_message('debug', '[REDEEM] Voucher eligibility check started; subtotal='.$subtotal);
 
         // Ambil voucher by kode (case-insensitive aman di semua collation)
         $row = $this->voucherModel->where('LOWER(kode)', strtolower($code))->first();
@@ -2104,6 +2103,14 @@ class Pages extends BaseController
 
     private function checkVoucherEligibility(array $row, string $email, float $subtotal): array
     {
+        $email = \App\Services\Payments\VoucherIdentity::resolve(
+            $email,
+            (bool) session()->get('isLogin'),
+            (string) session()->get('role'),
+            (string) session()->get('active'),
+            (string) session()->get('email')
+        );
+
         $tipe  = $row['tipe']  ?? ($row['satuan'] ?? 'persen');
         $nilai = (float)($row['nilai'] ?? ($row['nominal'] ?? 0));
         $today = date('Y-m-d');
@@ -4507,9 +4514,9 @@ class Pages extends BaseController
 
     public function invoice($id_mid)
     {
-        $data = $this->invoiceViewData((string)$id_mid);
-        if ($data === null) return $this->response->setStatusCode(404)->setBody('Pesanan tidak ditemukan.');
-        return view('pages/invoice', $data);
+        // The customer-facing invoice entry point should deliver the ready-to-save
+        // document directly instead of opening the browser's HTML print dialog.
+        return $this->invoicePdf($id_mid);
     }
 
     public function invoicePdf($id_mid)
@@ -4897,7 +4904,7 @@ class Pages extends BaseController
 
         $email = $this->request->getVar('email');
         $sandi = $this->request->getVar('sandi');
-        $getUser = $this->userModel->getUser($email);
+        $getUser = $this->userModel->findByEmailIdentity((string) $email);
         if (!$getUser) {
             session()->setFlashdata('msg', 'Email atau kata sandi salah');
             return redirect()->to(ilena_store_path('/login'));
@@ -5006,6 +5013,7 @@ class Pages extends BaseController
                 'active' => '1',
                 'email' => $getUser['email'],
                 'role' => '0',
+                'auth_version' => (int) ($getUser['auth_version'] ?? 1),
                 'nama' => $getPembeli['nama'],
                 'alamat' => json_decode($getPembeli['alamat'], true),
                 'nohp' => $getPembeli['nohp'],
@@ -5073,6 +5081,7 @@ class Pages extends BaseController
         }
         $updated = $this->userModel->where(['email' => $user['email']])->set([
             'sandi' => password_hash($sandi, PASSWORD_DEFAULT),
+            'auth_version' => (int) ($user['auth_version'] ?? 1) + 1,
         ])->update();
         if (!$updated) {
             session()->setFlashdata('msg-sandi', 'Perubahan kata sandi gagal. Silakan coba kembali.');
@@ -5080,6 +5089,7 @@ class Pages extends BaseController
         }
         // Rotate the current session ID after a credential change.
         session()->regenerate(true);
+        session()->set('auth_version', (int) ($user['auth_version'] ?? 1) + 1);
         session()->setFlashdata('msg-sandi', 'Sandi Anda berhasil diubah');
         return redirect()->to(ilena_store_path('/' . $path));
     }
@@ -5160,10 +5170,16 @@ class Pages extends BaseController
 
             $email = \Config\Services::email();
             $emailConfig = config('Email');
-            $email->setFrom($emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com', 'Ilena Furniture');
+            $email->clear(true);
+            $email->setFrom($emailConfig->SMTPUser ?: ($emailConfig->fromEmail ?: 'no-reply@ilenafurniture.com'), 'Ilena Furniture');
+            $email->setReplyTo('info@ilenafurniture.com', 'Ilena Furniture');
             $email->setTo($emailUser);
-            $email->setSubject('ILENA Store - Verifikasi OTP');
-            $email->setMessage("<p>Berikut kode OTP verifikasi</p><h1>" . $otp_number . "</h1><p>Kode ini berlaku hingga " . $waktu_otp_tanggal . "</p>");
+            $email->setSubject('Kode verifikasi akun Ilena');
+            $email->setMessage(\App\Services\Auth\TransactionalEmailTemplate::html(
+                'Verifikasi email Anda', 'Gunakan kode berikut untuk menyelesaikan pendaftaran akun Ilena.',
+                '<p style="font-size:28px;font-weight:700;letter-spacing:.18em;color:#8f2430">' . esc((string) $otp_number) . '</p><p>Kode berlaku selama 5 menit. Jangan bagikan kode ini kepada siapa pun.</p>'
+            ));
+            $email->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain('Verifikasi email Anda', 'Gunakan kode berikut untuk menyelesaikan pendaftaran akun Ilena.', 'Kode verifikasi: ' . $otp_number . "\nBerlaku selama 5 menit. Jangan bagikan kode ini kepada siapa pun."));
             if (!$email->send()) {
                 log_message('error', 'Registration verification email could not be sent.');
                 session()->setFlashdata('msg', 'Email verifikasi belum dapat dikirim. Coba lagi nanti.');
@@ -5283,10 +5299,16 @@ class Pages extends BaseController
 
             $sendemail = \Config\Services::email();
             $emailConfig = config('Email');
-            $sendemail->setFrom($emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com', 'Ilena Furniture');
+            $sendemail->clear(true);
+            $sendemail->setFrom($emailConfig->SMTPUser ?: ($emailConfig->fromEmail ?: 'no-reply@ilenafurniture.com'), 'Ilena Furniture');
+            $sendemail->setReplyTo('info@ilenafurniture.com', 'Ilena Furniture');
             $sendemail->setTo($email);
-            $sendemail->setSubject('ILENA Store - Verifikasi OTP');
-            $sendemail->setMessage("<p>Berikut kode OTP verifikasi</p><h1>" . $otp_number . "</h1><p>Kode ini berlaku hingga " . $waktu_otp_tanggal . "</p>");
+            $sendemail->setSubject('Kode verifikasi akun Ilena');
+            $sendemail->setMessage(\App\Services\Auth\TransactionalEmailTemplate::html(
+                'Verifikasi email Anda', 'Gunakan kode berikut untuk menyelesaikan verifikasi akun Ilena.',
+                '<p style="font-size:28px;font-weight:700;letter-spacing:.18em;color:#8f2430">' . esc((string) $otp_number) . '</p><p>Kode berlaku selama 5 menit. Jangan bagikan kode ini kepada siapa pun.</p>'
+            ));
+            $sendemail->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain('Verifikasi email Anda', 'Gunakan kode berikut untuk menyelesaikan verifikasi akun Ilena.', 'Kode verifikasi: ' . $otp_number . "\nBerlaku selama 5 menit. Jangan bagikan kode ini kepada siapa pun."));
             if (!$sendemail->send()) {
                 log_message('error', 'Expired verification OTP email could not be sent.');
                 session()->setFlashdata('msg', 'Email verifikasi belum dapat dikirim. Coba lagi nanti.');
@@ -5318,6 +5340,7 @@ class Pages extends BaseController
         $ses_data = [
             'active' => '1',
             'role' => $getUser['role'],
+            'auth_version' => (int) ($getUser['auth_version'] ?? 1),
             'nama' => $getPembeli['nama'] ?? '',
             'alamat' => json_decode($getPembeli['alamat'] ?? '[]', true) ?: [],
             'nohp' => $getPembeli['nohp'] ?? '',
@@ -5370,10 +5393,16 @@ class Pages extends BaseController
 
         $email = \Config\Services::email();
         $emailConfig = config('Email');
-        $email->setFrom($emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com', 'Ilena Furniture');
+        $email->clear(true);
+        $email->setFrom($emailConfig->SMTPUser ?: ($emailConfig->fromEmail ?: 'no-reply@ilenafurniture.com'), 'Ilena Furniture');
+        $email->setReplyTo('info@ilenafurniture.com', 'Ilena Furniture');
         $email->setTo($emailUser);
-        $email->setSubject('ILENA Store - Verifikasi OTP');
-        $email->setMessage("<p>Berikut kode OTP verifikasi</p><h1>" . $otp_number . "</h1><p>Kode ini berlaku hingga " . $waktu_otp_tanggal . "</p>");
+        $email->setSubject('Kode verifikasi akun Ilena');
+        $email->setMessage(\App\Services\Auth\TransactionalEmailTemplate::html(
+            'Verifikasi email Anda', 'Gunakan kode berikut untuk menyelesaikan verifikasi akun Ilena.',
+            '<p style="font-size:28px;font-weight:700;letter-spacing:.18em;color:#8f2430">' . esc((string) $otp_number) . '</p><p>Kode berlaku selama 5 menit. Jangan bagikan kode ini kepada siapa pun.</p>'
+        ));
+        $email->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain('Verifikasi email Anda', 'Gunakan kode berikut untuk menyelesaikan verifikasi akun Ilena.', 'Kode verifikasi: ' . $otp_number . "\nBerlaku selama 5 menit. Jangan bagikan kode ini kepada siapa pun."));
         if (!$email->send()) {
             log_message('error', 'Verification OTP resend email could not be sent.');
             session()->setFlashdata('msg', 'Email verifikasi belum dapat dikirim. Coba lagi nanti.');
@@ -5406,6 +5435,16 @@ class Pages extends BaseController
                 'user_email' => strtolower(trim((string)session()->get('email'))), 'provider' => 'google',
             ])->countAllResults() > 0;
         }
+        $phoneIdentity = $db->tableExists('customer_phone_identities')
+            ? $db->table('customer_phone_identities')->where('user_email', strtolower(trim((string) session()->get('email'))))->get()->getRowArray()
+            : null;
+        $phoneVerified = is_array($phoneIdentity)
+            && $this->normalizeCustomerPhone((string) session()->get('nohp')) === (string) $phoneIdentity['phone_e164'];
+        $deletionRequest = $db->tableExists('customer_account_deletion_requests')
+            ? $db->table('customer_account_deletion_requests')->where('user_email', strtolower(trim((string) session()->get('email'))))
+                ->orderBy('requested_at', 'DESC')->get(1)->getRowArray()
+            : null;
+        $deletionRequestPending = is_array($deletionRequest) && in_array((string) $deletionRequest['status'], ['pending', 'reviewed'], true);
 
         $alamat = $this->session->get('alamat');
         if (!isset($alamat)) {
@@ -5422,6 +5461,9 @@ class Pages extends BaseController
             'nama' => session()->get('nama'),
             'nohp' => session()->get('nohp'),
             'googleLinked' => $googleLinked,
+            'phoneVerified' => $phoneVerified,
+            'deletionRequestPending' => $deletionRequestPending,
+            'deletionRequest' => $deletionRequest,
             'googleOAuthEnabled' => trim((string) env('GOOGLE_OAUTH_CLIENT_ID')) !== ''
                 && trim((string) env('GOOGLE_OAUTH_CLIENT_SECRET')) !== ''
                 && $this->isValidGoogleRedirectUri(trim((string) env('GOOGLE_OAUTH_REDIRECT_URI'))),
@@ -5455,6 +5497,465 @@ class Pages extends BaseController
         session()->set(['nama' => $name, 'nohp' => $phone]);
         session()->setFlashdata('msg', $locale === 'en' ? 'Profile updated.' : 'Profil berhasil diperbarui.');
         return redirect()->to($redirect);
+    }
+
+    private function normalizeCustomerPhone(string $phone): ?string
+    {
+        $phone = trim($phone);
+        $digits = preg_replace('/\D+/', '', $phone) ?? '';
+        if ($digits === '') return null;
+        if (str_starts_with($digits, '0')) $digits = '62' . substr($digits, 1);
+        elseif (str_starts_with($digits, '8')) $digits = '62' . $digits;
+        if (! preg_match('/^[1-9][0-9]{7,14}$/D', $digits)) return null;
+        return '+' . $digits;
+    }
+
+    public function requestCustomerEmailChange()
+    {
+        $locale = service('request')->getLocale() === 'en' ? 'en' : 'id';
+        $currentEmail = strtolower(trim((string) session()->get('email')));
+        $newEmail = strtolower(trim((string) $this->request->getPost('new_email')));
+        $user = $currentEmail !== '' ? $this->userModel->findByEmailIdentity($currentEmail) : null;
+        $password = (string) $this->request->getPost('current_password');
+        $limiter = new \App\Services\Auth\AuthAttemptLimiter();
+        if (! $limiter->allow('customer_email_change', (string) $this->request->getIPAddress(), $currentEmail, 5, 3, 900)
+            || ! $user || ! in_array((string) ($user['role'] ?? ''), ['0', '4'], true)
+            || empty($user['sandi']) || ! password_verify($password, (string) $user['sandi'])
+            || ! filter_var($newEmail, FILTER_VALIDATE_EMAIL) || strlen($newEmail) > 191 || $newEmail === $currentEmail
+            || (new \App\Services\SpamAccountCleanupService())->isDisposableEmail($newEmail)) {
+            session()->setFlashdata('msg', lang('Store.emailChangeInvalid'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+
+        $db = db_connect();
+        if (! $db->tableExists('account_contact_verifications') || ! $db->tableExists('customer_email_aliases')) {
+            session()->setFlashdata('msg', lang('Store.emailChangeUnavailable'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+        if ($db->table('user')->where('LOWER(TRIM(email))', $newEmail)->countAllResults() > 0) {
+            session()->setFlashdata('msg', lang('Store.emailAlreadyUsed'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+        $alias = $db->table('customer_email_aliases')->where('alias_email', $newEmail)->get()->getRowArray();
+        if ($alias && strtolower((string) $alias['customer_email']) !== strtolower((string) $user['email'])) {
+            session()->setFlashdata('msg', lang('Store.emailAlreadyUsed'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+        if ($db->tableExists('customer_account_deletion_requests')
+            && $db->table('customer_account_deletion_requests')->where('user_email', (string) $user['email'])->whereIn('status', ['pending', 'reviewed'])->countAllResults() > 0) {
+            session()->setFlashdata('msg', lang('Store.emailChangeUnavailable'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+
+        $token = bin2hex(random_bytes(32));
+        $now = date('Y-m-d H:i:s');
+        $db->transBegin();
+        $db->table('account_contact_verifications')->where('user_email', (string) $user['email'])->where('channel', 'email_change')
+            ->where('consumed_at', null)->update(['consumed_at' => $now]);
+        $inserted = $db->table('account_contact_verifications')->insert([
+            'user_email' => (string) $user['email'], 'channel' => 'email_change', 'target' => $newEmail,
+            'code_hash' => hash('sha256', $token), 'attempts' => 0,
+            'created_at' => $now, 'expires_at' => date('Y-m-d H:i:s', time() + 1800), 'consumed_at' => null,
+        ]);
+        if (! $inserted || ! $db->transStatus()) {
+            $db->transRollback();
+            session()->setFlashdata('msg', lang('Store.emailChangeUnavailable'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+        $db->transCommit();
+
+        $mail = \Config\Services::email();
+        $mail->clear(true);
+        $mailConfig = config('Email');
+        $mail->setFrom($mailConfig->SMTPUser ?: ($mailConfig->fromEmail ?: 'no-reply@ilenafurniture.com'), 'Ilena Furniture');
+        $mail->setReplyTo('info@ilenafurniture.com', 'Ilena Furniture');
+        $mail->setTo($newEmail);
+        $mail->setSubject($locale === 'en' ? 'Confirm your Ilena account email' : 'Konfirmasi email akun Ilena');
+        $confirmUrl = site_url(ilena_store_path('/account/email/confirm/' . $token));
+        $mailTitle = $locale === 'en' ? 'Confirm your account email' : 'Konfirmasi email akun';
+        $mailIntro = $locale === 'en' ? 'Confirm this address to finish updating your Ilena account.' : 'Konfirmasikan alamat ini untuk menyelesaikan perubahan email akun Ilena Anda.';
+        $mailAction = $locale === 'en' ? 'Confirm email address' : 'Konfirmasi alamat email';
+        $mailDetails = $locale === 'en' ? 'This single-use link expires in 30 minutes. Ignore this email if you did not request the change.' : 'Tautan sekali pakai berlaku selama 30 menit. Abaikan email ini jika Anda tidak meminta perubahan.';
+        $mail->setMessage(\App\Services\Auth\TransactionalEmailTemplate::html($mailTitle, $mailIntro, '<p>' . esc($mailDetails) . '</p>', $mailAction, $confirmUrl, $locale === 'en' ? 'This email concerns the security of your Ilena account. If you did not request this action, ignore this email or contact' : 'Email ini terkait keamanan akun Ilena Anda. Jika Anda tidak meminta tindakan ini, abaikan email ini atau hubungi'));
+        $mail->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain($mailTitle, $mailIntro, $mailDetails, $mailAction, $confirmUrl, $locale === 'en' ? 'This email concerns your Ilena account security. If you did not request this action, ignore it or contact' : 'Email terkait keamanan akun Ilena. Jika Anda tidak meminta tindakan ini, abaikan email ini atau hubungi'));
+        if (! $mail->send()) {
+            $db->table('account_contact_verifications')->where('user_email', (string) $user['email'])->where('channel', 'email_change')
+                ->where('target', $newEmail)->where('consumed_at', null)->update(['consumed_at' => $now]);
+            log_message('warning', 'Customer email-change confirmation could not be delivered.');
+            session()->setFlashdata('msg', lang('Store.emailChangeUnavailable'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+        session()->setFlashdata('msg', lang('Store.emailChangeSent'));
+        return redirect()->to(ilena_store_path('/account'));
+    }
+
+    public function showCustomerEmailChangeConfirmation(string $token)
+    {
+        $valid = preg_match('/^[a-f0-9]{64}$/D', $token) === 1;
+        if ($valid) {
+            $valid = db_connect()->table('account_contact_verifications')->where('channel', 'email_change')
+                ->where('code_hash', hash('sha256', $token))->where('consumed_at', null)
+                ->where('expires_at >', date('Y-m-d H:i:s'))->countAllResults() > 0;
+        }
+        return view('pages/confirmEmailChange', [
+            'title' => service('request')->getLocale() === 'en' ? 'Confirm account email' : 'Konfirmasi email akun',
+            'navbar' => $this->getNavbarData(), 'apikey_img_ilena' => $this->apikey_img_ilena,
+            'token' => $valid ? $token : '', 'valid' => $valid,
+        ]);
+    }
+
+    public function confirmCustomerEmailChange()
+    {
+        $locale = service('request')->getLocale() === 'en' ? 'en' : 'id';
+        $token = trim((string) $this->request->getPost('token'));
+        if (! preg_match('/^[a-f0-9]{64}$/D', $token)
+            || ! (new \App\Services\Auth\AuthAttemptLimiter())->allow('customer_email_change_confirm', (string) $this->request->getIPAddress(), $token, 20, 8, 900)) {
+            session()->setFlashdata('msg', lang('Store.emailChangeInvalid'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+        $db = db_connect();
+        $challenge = $db->table('account_contact_verifications')->where('channel', 'email_change')
+            ->where('code_hash', hash('sha256', $token))->where('consumed_at', null)
+            ->where('expires_at >', date('Y-m-d H:i:s'))->get()->getRowArray();
+        if (! $challenge || (int) $challenge['attempts'] >= 5) {
+            session()->setFlashdata('msg', lang('Store.emailChangeInvalid'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+
+        $oldEmail = strtolower(trim((string) $challenge['user_email']));
+        $newEmail = strtolower(trim((string) $challenge['target']));
+        $db->transBegin();
+        $locked = $db->query('SELECT email, role, auth_version FROM user WHERE email = ? FOR UPDATE', [$oldEmail])->getRowArray();
+        $latest = $db->table('account_contact_verifications')->where('id', (int) $challenge['id'])->where('consumed_at', null)
+            ->where('expires_at >', date('Y-m-d H:i:s'))->get()->getRowArray();
+        $direct = $db->table('user')->where('LOWER(TRIM(email))', $newEmail)->get()->getRowArray();
+        $ownerAlias = $db->table('customer_email_aliases')->where('alias_email', $newEmail)->get()->getRowArray();
+        $otherBuyer = $db->query('SELECT email FROM pembeli WHERE LOWER(TRIM(email)) = ? AND LOWER(TRIM(email)) <> ? LIMIT 1', [$newEmail, $oldEmail])->getRowArray();
+        if (! $locked || ! $latest || (int) $latest['attempts'] >= 5 || ! in_array((string) $locked['role'], ['0', '4'], true)
+            || ($direct && strtolower((string) $direct['email']) !== $oldEmail)
+            || ($ownerAlias && strtolower((string) $ownerAlias['customer_email']) !== $oldEmail) || $otherBuyer) {
+            $db->transRollback();
+            session()->setFlashdata('msg', lang('Store.emailAlreadyUsed'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+
+        try {
+            $now = date('Y-m-d H:i:s');
+            $buyer = $db->table('pembeli')->where('email', $oldEmail)->get()->getRowArray();
+            if (! $buyer) throw new \RuntimeException('Customer profile missing.');
+            $addresses = json_decode((string) ($buyer['alamat'] ?? '[]'), true);
+            if (is_array($addresses)) {
+                foreach ($addresses as &$address) {
+                    if (is_array($address) && strtolower((string) ($address['email_pemesan'] ?? '')) === $oldEmail) $address['email_pemesan'] = $newEmail;
+                }
+                unset($address);
+            }
+
+            $db->table('account_contact_verifications')->where('id', (int) $challenge['id'])->where('consumed_at', null)
+                ->update(['consumed_at' => $now]);
+            if ($db->affectedRows() !== 1) throw new \RuntimeException('Email change token was already consumed.');
+            $db->table('customer_email_aliases')->where('alias_email', $newEmail)->delete();
+            $db->table('customer_email_aliases')->where('customer_email', $oldEmail)->update(['customer_email' => $newEmail]);
+            $db->table('customer_email_aliases')->where('alias_email', $oldEmail)->delete();
+            $db->table('customer_email_aliases')->insert(['alias_email' => $oldEmail, 'customer_email' => $newEmail, 'created_at' => $now]);
+            $db->table('user')->where('email', (string) $locked['email'])->set('auth_version', 'auth_version + 1', false)->update(['email' => $newEmail]);
+            $db->table('pembeli')->where('email', $oldEmail)->update([
+                'email' => $newEmail,
+                'alamat' => json_encode($addresses ?: [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            ]);
+            foreach (['user_google_identities', 'customer_phone_identities'] as $identityTable) {
+                if ($db->tableExists($identityTable)) $db->table($identityTable)->where('user_email', $oldEmail)->update(['user_email' => $newEmail]);
+            }
+            $db->table('account_contact_verifications')->where('user_email', $oldEmail)->where('consumed_at', null)->update(['consumed_at' => $now]);
+            if ($db->tableExists('user_password_resets')) $db->table('user_password_resets')->where('email', $oldEmail)->where('consumed_at', null)->update(['consumed_at' => $now]);
+            $db->table('voucher_usage')->where('email', $oldEmail)->update(['email' => $newEmail]);
+            if ($db->tableExists('ilena_voucher_reservations')) $db->table('ilena_voucher_reservations')->where('email', $oldEmail)->update(['email' => $newEmail]);
+            if ($db->tableExists('ilena_chat_conversations')) $db->table('ilena_chat_conversations')->where('customer_email', $oldEmail)->update(['customer_email' => $newEmail]);
+
+            foreach ($this->voucherModel->select('id, list_email')->findAll() as $voucher) {
+                $emails = json_decode((string) ($voucher['list_email'] ?? '[]'), true);
+                if (! is_array($emails)) continue;
+                $changed = false;
+                foreach ($emails as &$listedEmail) {
+                    if (is_string($listedEmail) && strtolower(trim($listedEmail)) === $oldEmail) { $listedEmail = $newEmail; $changed = true; }
+                }
+                unset($listedEmail);
+                if ($changed) $this->voucherModel->update((int) $voucher['id'], ['list_email' => json_encode(array_values(array_unique($emails)), JSON_UNESCAPED_UNICODE)]);
+            }
+            if (! $db->transStatus()) throw new \RuntimeException('Customer email identity migration failed.');
+            $db->transCommit();
+        } catch (\Throwable $error) {
+            $db->transRollback();
+            log_message('warning', 'Customer email change failed: {type}', ['type' => get_class($error)]);
+            session()->setFlashdata('msg', lang('Store.emailChangeUnavailable'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+
+        $securityMail = \Config\Services::email();
+        $securityMail->clear(true);
+        $securityConfig = config('Email');
+        $securityMail->setFrom($securityConfig->SMTPUser ?: ($securityConfig->fromEmail ?: 'no-reply@ilenafurniture.com'), 'Ilena Furniture');
+        $securityMail->setReplyTo('info@ilenafurniture.com', 'Ilena Furniture');
+        $securityMail->setTo($oldEmail);
+        $securityMail->setSubject($locale === 'en' ? 'Your Ilena account email was changed' : 'Email akun Ilena Anda telah diubah');
+        $securityTitle = $locale === 'en' ? 'Your account email was changed' : 'Email akun Anda telah diubah';
+        $securityDetails = $locale === 'en'
+            ? 'The email on your Ilena account is now ' . $newEmail . '. If you did not make this change, contact Ilena support immediately and secure your account.'
+            : 'Email pada akun Ilena Anda sekarang adalah ' . $newEmail . '. Jika bukan Anda yang melakukan perubahan, segera hubungi tim Ilena dan amankan akun Anda.';
+        $securityMail->setMessage(\App\Services\Auth\TransactionalEmailTemplate::html($securityTitle, $locale === 'en' ? 'This is a security notification for your Ilena account.' : 'Ini adalah pemberitahuan keamanan untuk akun Ilena Anda.', '<p>' . esc($securityDetails) . '</p>', null, null, $locale === 'en' ? 'This email concerns your Ilena account security. If you did not request this action, contact' : 'Email ini terkait keamanan akun Ilena Anda. Jika Anda tidak meminta tindakan ini, hubungi'));
+        $securityMail->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain($securityTitle, $locale === 'en' ? 'This is a security notification for your Ilena account.' : 'Ini adalah pemberitahuan keamanan untuk akun Ilena Anda.', $securityDetails, null, null, $locale === 'en' ? 'This email concerns your Ilena account security. Contact' : 'Email terkait keamanan akun Ilena. Hubungi'));
+        if (! $securityMail->send()) log_message('warning', 'Customer email-change security notification could not be delivered.');
+        session()->destroy();
+        session()->setFlashdata('msg', lang('Store.emailChanged'));
+        return redirect()->to(ilena_store_path('/login'));
+    }
+
+    public function sendCustomerPhoneVerification()
+    {
+        $email = strtolower(trim((string) session()->get('email')));
+        $phone = $this->normalizeCustomerPhone((string) session()->get('nohp'));
+        if ($email === '' || ! $phone) {
+            session()->setFlashdata('msg', lang('Store.phoneVerificationNeedsProfile'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+        $limiter = new \App\Services\Auth\AuthAttemptLimiter();
+        if (! $limiter->allow('phone_verify', (string) $this->request->getIPAddress(), $email . ':' . $phone, 5, 3, 900)) {
+            session()->setFlashdata('msg', lang('Store.phoneVerificationRateLimited'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+
+        $db = db_connect();
+        if (! $db->tableExists('account_contact_verifications') || ! $db->tableExists('customer_phone_identities')) {
+            session()->setFlashdata('msg', lang('Store.phoneVerificationUnavailable'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+        $existing = $db->table('customer_phone_identities')->where('user_email', $email)->get()->getRowArray();
+        if ($existing && hash_equals((string) $existing['phone_e164'], $phone)) {
+            session()->setFlashdata('msg', lang('Store.phoneAlreadyVerified'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+        $claimed = $db->table('customer_phone_identities')->where('phone_e164', $phone)->get()->getRowArray();
+        if ($claimed && strtolower((string) $claimed['user_email']) !== $email) {
+            session()->setFlashdata('msg', lang('Store.phoneAlreadyInUse'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+
+        $code = (string) random_int(100000, 999999);
+        $now = date('Y-m-d H:i:s');
+        $db->transBegin();
+        $db->table('account_contact_verifications')->where('user_email', $email)->where('channel', 'phone')
+            ->where('consumed_at', null)->update(['consumed_at' => $now]);
+        $inserted = $db->table('account_contact_verifications')->insert([
+            'user_email' => $email, 'channel' => 'phone', 'target' => $phone,
+            'code_hash' => password_hash($code, PASSWORD_DEFAULT), 'attempts' => 0,
+            'created_at' => $now, 'expires_at' => date('Y-m-d H:i:s', time() + 600), 'consumed_at' => null,
+        ]);
+        if (! $inserted || ! $db->transStatus()) {
+            $db->transRollback();
+            session()->setFlashdata('msg', lang('Store.phoneVerificationUnavailable'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+        $db->transCommit();
+
+        $locale = service('request')->getLocale() === 'en' ? 'en' : 'id';
+        $message = $locale === 'en'
+            ? 'Your Ilena verification code is ' . $code . '. It expires in 10 minutes. Do not share it.'
+            : 'Kode verifikasi Ilena Anda ' . $code . '. Berlaku 10 menit. Jangan bagikan kode ini.';
+        if (! (new \App\Services\Auth\TwilioSmsSender())->send($phone, $message)) {
+            $db->table('account_contact_verifications')->where('user_email', $email)->where('channel', 'phone')
+                ->where('target', $phone)->where('consumed_at', null)->update(['consumed_at' => $now]);
+            session()->setFlashdata('msg', lang('Store.phoneVerificationUnavailable'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+        session()->setFlashdata('msg', lang('Store.phoneCodeSent'));
+        return redirect()->to(ilena_store_path('/account'));
+    }
+
+    public function verifyCustomerPhone()
+    {
+        $email = strtolower(trim((string) session()->get('email')));
+        $phone = $this->normalizeCustomerPhone((string) session()->get('nohp'));
+        $code = trim((string) $this->request->getPost('code'));
+        if ($email === '' || ! $phone || ! preg_match('/^[0-9]{6}$/D', $code)) {
+            session()->setFlashdata('msg', lang('Store.phoneCodeInvalid'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+
+        $db = db_connect();
+        $challenge = $db->table('account_contact_verifications')->where([
+            'user_email' => $email, 'channel' => 'phone', 'target' => $phone, 'consumed_at' => null,
+        ])->orderBy('id', 'DESC')->get()->getRowArray();
+        if (! $challenge || strtotime((string) $challenge['expires_at']) <= time() || (int) $challenge['attempts'] >= 5) {
+            session()->setFlashdata('msg', lang('Store.phoneCodeInvalid'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+        if (! password_verify($code, (string) $challenge['code_hash'])) {
+            $db->table('account_contact_verifications')->where('id', (int) $challenge['id'])
+                ->set('attempts', 'attempts + 1', false)->update();
+            session()->setFlashdata('msg', lang('Store.phoneCodeInvalid'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+
+        $db->transBegin();
+        try {
+            $claimed = $db->table('customer_phone_identities')->where('phone_e164', $phone)->get()->getRowArray();
+            if ($claimed && strtolower((string) $claimed['user_email']) !== $email) {
+                $db->transRollback();
+                session()->setFlashdata('msg', lang('Store.phoneAlreadyInUse'));
+                return redirect()->to(ilena_store_path('/account'));
+            }
+            $db->table('account_contact_verifications')->where('id', (int) $challenge['id'])->where('consumed_at', null)
+                ->update(['consumed_at' => date('Y-m-d H:i:s')]);
+            $db->table('customer_phone_identities')->where('user_email', $email)->delete();
+            $existingIdentity = $db->table('customer_phone_identities')->where('phone_e164', $phone)->get()->getRowArray();
+            if ($existingIdentity && strtolower((string) $existingIdentity['user_email']) === $email) {
+                $db->table('customer_phone_identities')->where('phone_e164', $phone)->update(['verified_at' => date('Y-m-d H:i:s')]);
+            } else {
+                $db->table('customer_phone_identities')->insert([
+                'user_email' => $email, 'phone_e164' => $phone, 'verified_at' => date('Y-m-d H:i:s'),
+                ]);
+            }
+            if (! $db->transStatus()) throw new \RuntimeException('Phone verification persistence failed.');
+            $db->transCommit();
+        } catch (\Throwable $error) {
+            $db->transRollback();
+            log_message('warning', 'Customer phone verification persistence failed: {type}', ['type' => get_class($error)]);
+            session()->setFlashdata('msg', lang('Store.phoneVerificationUnavailable'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+
+        session()->setFlashdata('msg', lang('Store.phoneVerified'));
+        return redirect()->to(ilena_store_path('/account'));
+    }
+
+    public function revokeCustomerSessions()
+    {
+        $email = strtolower(trim((string) session()->get('email')));
+        if ($email === '' || ! in_array((string) session()->get('role'), ['0', '4'], true)) {
+            return redirect()->to(ilena_store_path('/login'));
+        }
+
+        $user = $this->userModel->findByEmailIdentity($email);
+        if (! $user) {
+            session()->destroy();
+            return redirect()->to(ilena_store_path('/login'));
+        }
+
+        $version = (int) ($user['auth_version'] ?? 1) + 1;
+        if (! $this->userModel->where('email', (string) $user['email'])->set('auth_version', $version)->update()) {
+            session()->setFlashdata('msg', lang('Store.sessionsRevokeFailed'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+
+        session()->regenerate(true);
+        session()->set('auth_version', $version);
+        session()->setFlashdata('msg', lang('Store.otherSessionsSignedOut'));
+        return redirect()->to(ilena_store_path('/account'));
+    }
+
+    public function exportCustomerData()
+    {
+        $email = strtolower(trim((string) session()->get('email')));
+        if ($email === '') return redirect()->to(ilena_store_path('/login'));
+
+        $buyer = $this->pembeliModel->getPembeli($email) ?? [];
+        $identityEmails = (new \App\Services\Auth\CustomerEmailIdentity())->allFor($email);
+        $orders = $this->pemesananModel->select('id_midtrans, status, items, kurir, resi')
+            ->whereIn('email', $identityEmails ?: [$email])->orderBy('id', 'DESC')->findAll();
+        $voucherUsage = $this->voucherUsageModel->select('kode_voucher, used_at')
+            ->whereIn('email', $identityEmails ?: [$email])->orderBy('id', 'DESC')->findAll();
+        $payload = [
+            'exported_at' => date(DATE_ATOM),
+            'account' => ['email' => $email, 'name' => (string) ($buyer['nama'] ?? ''), 'phone' => (string) ($buyer['nohp'] ?? '')],
+            'addresses' => json_decode((string) ($buyer['alamat'] ?? '[]'), true) ?: [],
+            'orders' => $orders,
+            'voucher_usage' => $voucherUsage,
+        ];
+
+        return $this->response
+            ->setHeader('Content-Type', 'application/json; charset=UTF-8')
+            ->setHeader('Content-Disposition', 'attachment; filename="ilena-account-data-' . date('Ymd') . '.json"')
+            ->setHeader('Cache-Control', 'private, no-store, max-age=0')
+            ->setBody(json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+    }
+
+    public function requestAccountDeletion()
+    {
+        $email = strtolower(trim((string) session()->get('email')));
+        $user = $email !== '' ? $this->userModel->findByEmailIdentity($email) : null;
+        $password = (string) $this->request->getPost('current_password');
+        $confirmation = (string) $this->request->getPost('confirmation');
+        if (! (new \App\Services\Auth\AuthAttemptLimiter())->allow('account_delete_request', (string) $this->request->getIPAddress(), $email, 8, 5, 900)
+            || ! $user || ! in_array((string) ($user['role'] ?? ''), ['0', '4'], true)
+            || empty($user['sandi']) || ! password_verify($password, (string) $user['sandi'])
+            || ! hash_equals('DELETE', $confirmation)) {
+            session()->setFlashdata('msg', lang('Store.accountDeletionReauth'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+
+        $db = db_connect();
+        if (! $db->tableExists('customer_account_deletion_requests')) {
+            session()->setFlashdata('msg', lang('Store.accountDeletionUnavailable'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+        $db->transBegin();
+        $db->query('SELECT email FROM user WHERE email = ? FOR UPDATE', [(string) $user['email']])->getRowArray();
+        $pending = $db->table('customer_account_deletion_requests')->where('user_email', (string) $user['email'])
+            ->whereIn('status', ['pending', 'reviewed'])->get()->getRowArray();
+        if ($pending) {
+            $db->transCommit();
+            session()->setFlashdata('msg', lang('Store.accountDeletionPending'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+        $inserted = $db->table('customer_account_deletion_requests')->insert([
+            'user_email' => (string) $user['email'], 'status' => 'pending', 'requested_at' => date('Y-m-d H:i:s'),
+            'cancelled_at' => null, 'handled_at' => null,
+        ]);
+        if (! $inserted || ! $db->transStatus()) {
+            $db->transRollback();
+            session()->setFlashdata('msg', lang('Store.accountDeletionUnavailable'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+        $db->transCommit();
+        session()->setFlashdata('msg', lang('Store.accountDeletionRequested'));
+        return redirect()->to(ilena_store_path('/account'));
+    }
+
+    public function cancelAccountDeletionRequest()
+    {
+        $email = strtolower(trim((string) session()->get('email')));
+        $confirmation = (string) $this->request->getPost('confirmation');
+        $user = $email !== '' ? $this->userModel->findByEmailIdentity($email) : null;
+        $password = (string) $this->request->getPost('current_password');
+        if (! (new \App\Services\Auth\AuthAttemptLimiter())->allow('account_delete_cancel', (string) $this->request->getIPAddress(), $email, 8, 5, 900)
+            || ! $user || ! in_array((string) ($user['role'] ?? ''), ['0', '4'], true)
+            || empty($user['sandi']) || ! password_verify($password, (string) $user['sandi'])
+            || ! hash_equals('CANCEL', $confirmation)) {
+            session()->setFlashdata('msg', lang('Store.accountDeletionReauth'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+        $db = db_connect();
+        if (! $db->tableExists('customer_account_deletion_requests')) {
+            session()->setFlashdata('msg', lang('Store.accountDeletionUnavailable'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+        $db->transBegin();
+        $pending = $db->query("SELECT id FROM customer_account_deletion_requests WHERE user_email = ? AND status IN ('pending','reviewed') ORDER BY id DESC LIMIT 1 FOR UPDATE", [(string) $user['email']])->getRowArray();
+        if (! $pending) {
+            $db->transRollback();
+            session()->setFlashdata('msg', lang('Store.accountDeletionNoPending'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+        $db->table('customer_account_deletion_requests')->where('id', (int) $pending['id'])->whereIn('status', ['pending', 'reviewed'])
+            ->update(['status' => 'cancelled', 'cancelled_at' => date('Y-m-d H:i:s')]);
+        if (! $db->transStatus()) {
+            $db->transRollback();
+            session()->setFlashdata('msg', lang('Store.accountDeletionUnavailable'));
+            return redirect()->to(ilena_store_path('/account'));
+        }
+        $db->transCommit();
+        session()->setFlashdata('msg', lang('Store.accountDeletionCancelled'));
+        return redirect()->to(ilena_store_path('/account'));
     }
 
     public function forgotPassword()
@@ -5491,14 +5992,21 @@ class Pages extends BaseController
             ]);
             $emailService = \Config\Services::email();
             $emailConfig = config('Email');
-            $emailService->setFrom($emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com', 'Ilena Furniture');
+            $emailService->clear(true);
+            $emailService->setFrom($emailConfig->SMTPUser ?: ($emailConfig->fromEmail ?: 'no-reply@ilenafurniture.com'), 'Ilena Furniture');
+            $emailService->setReplyTo('info@ilenafurniture.com', 'Ilena Furniture');
             $emailService->setTo((string)$user['email']);
             $emailService->setSubject($locale === 'en' ? 'Ilena Furniture password reset' : 'Reset kata sandi Ilena Furniture');
             $resetUrl = site_url(ilena_store_path('/reset-password/' . $token));
             $message = $locale === 'en'
                 ? '<p>Use the secure link below to choose a new password. It expires in 30 minutes and can be used once.</p><p><a href="' . esc($resetUrl, 'attr') . '">Reset password</a></p><p>If you did not request this, ignore this email.</p>'
                 : '<p>Gunakan tautan aman berikut untuk membuat kata sandi baru. Tautan berlaku 30 menit dan hanya dapat digunakan sekali.</p><p><a href="' . esc($resetUrl, 'attr') . '">Reset kata sandi</a></p><p>Jika Anda tidak meminta reset, abaikan email ini.</p>';
-            $emailService->setMessage($message);
+            $emailTitle = $locale === 'en' ? 'Reset your password' : 'Reset kata sandi Anda';
+            $emailIntro = $locale === 'en' ? 'Use the secure link below to choose a new password for your Ilena account.' : 'Gunakan tautan aman berikut untuk membuat kata sandi baru akun Ilena Anda.';
+            $emailAction = $locale === 'en' ? 'Reset password' : 'Reset kata sandi';
+            $emailDetails = $locale === 'en' ? 'This single-use link expires in 30 minutes. Ignore this email if you did not request a reset.' : 'Tautan sekali pakai berlaku selama 30 menit. Abaikan email ini jika Anda tidak meminta reset.';
+            $emailService->setMessage(\App\Services\Auth\TransactionalEmailTemplate::html($emailTitle, $emailIntro, '<p>' . esc($emailDetails) . '</p>', $emailAction, $resetUrl));
+            $emailService->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain($emailTitle, $emailIntro, $emailDetails, $emailAction, $resetUrl));
             if (!$emailService->send()) log_message('warning', 'Customer password reset email delivery failed.');
         }
         session()->setFlashdata('msg', $generic);
@@ -5547,7 +6055,7 @@ class Pages extends BaseController
         $db->table('user_password_resets')->where('id', (int)$current['id'])->where('token_hash', hash('sha256', $token))
             ->where('consumed_at', null)->where('expires_at >', $now)->update(['consumed_at' => $now]);
         if ($db->affectedRows() !== 1 || !$this->userModel->where('email', (string)$current['email'])->whereIn('role', ['0', '4'])
-            ->set(['sandi' => password_hash($password, PASSWORD_DEFAULT)])->update()) {
+            ->set('auth_version', 'auth_version + 1', false)->set('sandi', password_hash($password, PASSWORD_DEFAULT))->update()) {
             $db->transRollback();
             session()->setFlashdata('msg', $locale === 'en' ? 'The reset link has expired. Request another link.' : 'Tautan reset kedaluwarsa. Minta tautan baru.');
             return redirect()->to(ilena_store_path('/forgot-password'));

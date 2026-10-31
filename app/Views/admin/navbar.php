@@ -43,6 +43,7 @@
             ['show' => $can('customers'), 'label' => 'Akun Pelanggan', 'icon' => 'manage_accounts', 'href' => '/admin/customers', 'active' => $isActivePrefix(['admin/customers']) || ($title ?? '') === 'Akun Pelanggan'],
             ['show' => $can('meta_capi'), 'label' => 'Meta CAPI', 'icon' => 'track_changes', 'href' => '/admin/meta-capi', 'active' => $isActivePrefix(['admin/meta-capi']) || ($title ?? '') === 'Meta CAPI'],
             ['show' => $can('spam_cleanup'), 'label' => 'Cleanup Spam Akun', 'icon' => 'person_remove', 'href' => '/admin/spam-cleanup', 'active' => $isActivePrefix(['admin/spam-cleanup'])],
+            ['show' => (string) session()->get('role') === '1', 'label' => 'Permintaan Hapus Akun', 'icon' => 'person_off', 'href' => '/admin/account-deletion-requests', 'active' => $isActivePrefix(['admin/account-deletion-requests'])],
             ['show' => (string) session()->get('role') === '1', 'label' => 'Role & Akses', 'icon' => 'admin_panel_settings', 'href' => '/admin/rbac', 'active' => $isActivePrefix(['admin/rbac']) || ($title ?? '') === 'Role & Akses Admin'],
         ],
     ];

@@ -4517,6 +4517,80 @@ private function interiorShippedQtyMap(string $idPesanan): array
         ]);
     }
 
+    public function customerDeletionRequests()
+    {
+        if ((string) session()->get('role') !== '1') return redirect()->to('/admin');
+        $db = db_connect();
+        if (! $db->tableExists('customer_account_deletion_requests')) {
+            return view('admin/accountDeletionRequests', [
+                'title' => 'Permintaan Penghapusan Akun', 'requests' => [], 'unavailable' => true,
+            ]);
+        }
+        return view('admin/accountDeletionRequests', [
+            'title' => 'Permintaan Penghapusan Akun',
+            'requests' => $db->table('customer_account_deletion_requests')->orderBy('requested_at', 'DESC')->limit(100)->get()->getResultArray(),
+            'unavailable' => false,
+            'msg' => session()->getFlashdata('msg'),
+            'err' => session()->getFlashdata('err'),
+        ]);
+    }
+
+    public function actionResolveCustomerDeletionRequest(int $id)
+    {
+        if ((string) session()->get('role') !== '1' || $id < 1) return redirect()->to('/admin');
+        $status = (string) $this->request->getPost('status');
+        $confirmation = (string) $this->request->getPost('confirmation');
+        $password = (string) $this->request->getPost('current_password');
+        $note = trim((string) $this->request->getPost('resolution_note'));
+        $expected = ['reviewed' => 'REVIEWED', 'completed' => 'DONE', 'retained' => 'RETAINED'][$status] ?? '';
+        $admin = $this->userModel->findByEmailIdentity((string) session()->get('email'));
+        if ($expected === '' || ! hash_equals($expected, $confirmation) || mb_strlen($note) < 5 || mb_strlen($note) > 500
+            || empty($admin['sandi']) || ! password_verify($password, (string) $admin['sandi'])) {
+            session()->setFlashdata('err', 'Status, konfirmasi, catatan, atau kata sandi admin tidak valid.');
+            return redirect()->to('/admin/account-deletion-requests');
+        }
+
+        $db = db_connect();
+        if (! $db->tableExists('customer_account_deletion_requests')) {
+            session()->setFlashdata('err', 'Tabel permintaan belum tersedia. Jalankan migrasi terlebih dahulu.');
+            return redirect()->to('/admin/account-deletion-requests');
+        }
+        $db->transBegin();
+        $row = $db->query('SELECT id, status FROM customer_account_deletion_requests WHERE id = ? FOR UPDATE', [$id])->getRowArray();
+        if (! $row || ! in_array((string) $row['status'], ['pending', 'reviewed'], true)) {
+            $db->transRollback();
+            session()->setFlashdata('err', 'Permintaan tidak ditemukan atau sudah ditutup.');
+            return redirect()->to('/admin/account-deletion-requests');
+        }
+        $now = date('Y-m-d H:i:s');
+        $data = [
+            'status' => $status,
+            'reviewed_at' => $now,
+            'reviewed_by' => (string) session()->get('email'),
+            'resolution_note' => $note,
+        ];
+        if (in_array($status, ['completed', 'retained'], true)) {
+            $data['handled_at'] = $now;
+            $data['handled_by'] = (string) session()->get('email');
+        }
+        $db->table('customer_account_deletion_requests')->where('id', $id)->update($data);
+        if (! $db->transStatus()) {
+            $db->transRollback();
+            session()->setFlashdata('err', 'Perubahan status belum berhasil disimpan.');
+            return redirect()->to('/admin/account-deletion-requests');
+        }
+        $db->transCommit();
+        (new AuditLogService())->record([
+            'actor_name' => (string) session()->get('nama'), 'actor_email' => (string) session()->get('email'),
+            'role_label' => 'Developer', 'activity' => 'Meninjau permintaan penghapusan akun',
+            'description' => 'Request #' . $id . ' ditandai ' . $status . '. Catatan: ' . $note,
+            'method' => 'POST', 'url' => '/admin/account-deletion-requests/' . $id,
+            'ip_address' => (string) $this->request->getIPAddress(), 'user_agent' => (string) $this->request->getUserAgent(),
+        ]);
+        session()->setFlashdata('msg', 'Status permintaan berhasil diperbarui. Penghapusan data tidak dijalankan otomatis oleh halaman ini.');
+        return redirect()->to('/admin/account-deletion-requests');
+    }
+
     public function actionSuspendCustomer()
     {
         $email = strtolower(trim((string)$this->request->getPost('email')));

@@ -17,6 +17,7 @@ class UserModel extends Model
         'suspended_until',
         'suspension_reason',
         'suspended_by',
+        'auth_version',
     ];
 
     public function getUser($email = false)
@@ -26,6 +27,13 @@ class UserModel extends Model
 
     public function findByEmailIdentity(string $email): ?array
     {
-        return $this->where('LOWER(TRIM(email))', strtolower(trim($email)))->first();
+        $email = strtolower(trim($email));
+        $db = $this->db;
+        $user = $db->table('user')->where('LOWER(TRIM(email))', $email)->get()->getRowArray();
+        if ($user) return $user;
+        if (! $db->tableExists('customer_email_aliases')) return null;
+        $alias = $db->table('customer_email_aliases')->select('customer_email')->where('alias_email', $email)->get()->getRowArray();
+        return empty($alias['customer_email']) ? null : $db->table('user')
+            ->where('LOWER(TRIM(email))', strtolower((string) $alias['customer_email']))->get()->getRowArray();
     }
 }
