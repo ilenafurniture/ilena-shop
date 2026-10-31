@@ -77,6 +77,29 @@ class SupportChatController extends BaseController
             ->where('status', 'closed')->orderBy('closed_at', 'DESC')->orderBy('id', 'DESC')->get(1)->getRowArray() ?: null;
     }
 
+    private function conversationHasRating(int $conversationId): bool
+    {
+        $db = $this->db();
+        return $conversationId > 0 && $db->tableExists('ilena_chat_feedback')
+            && $db->table('ilena_chat_feedback')->where('conversation_id', $conversationId)->countAllResults() > 0;
+    }
+
+    private function closeRatedConversation(array $conversation, string $visitorHash): void
+    {
+        $db = $this->db();
+        $now = date('Y-m-d H:i:s');
+        $update = [
+            'status' => 'closed',
+            'closed_at' => ! empty($conversation['closed_at']) ? $conversation['closed_at'] : $now,
+            'updated_at' => $now,
+        ];
+        if ($db->fieldExists('resolved_at', 'ilena_chat_conversations')) {
+            $update['resolved_at'] = ! empty($conversation['resolved_at']) ? $conversation['resolved_at'] : $now;
+        }
+        $db->table('ilena_chat_conversations')->where('id', (int) $conversation['id'])
+            ->where('visitor_hash', $visitorHash)->where('status <>', 'closed')->update($update);
+    }
+
     private function shouldArchiveResolvedAiConversation(array $conversation): bool
     {
         if (($conversation['status'] ?? '') !== 'ai') return false;
@@ -115,8 +138,17 @@ class SupportChatController extends BaseController
     private function customerConversation(string $visitorHash): ?array
     {
         $conversation = $this->ownedConversation($visitorHash);
+        if ($conversation && $this->conversationHasRating((int) $conversation['id'])) {
+            // Close legacy rated threads that were previously left active.
+            $this->closeRatedConversation($conversation, $visitorHash);
+            return null;
+        }
         if ($conversation && $this->archiveResolvedAiConversation($conversation)) $conversation = null;
-        if (! $conversation) $conversation = $this->latestClosedConversation($visitorHash);
+        if (! $conversation) {
+            $conversation = $this->latestClosedConversation($visitorHash);
+            // Keep rated history in storage for staff, not in the customer widget.
+            if ($conversation && $this->conversationHasRating((int) $conversation['id'])) return null;
+        }
         return $conversation;
     }
 
@@ -420,7 +452,10 @@ class SupportChatController extends BaseController
         }
 
         $existing = $db->table('ilena_chat_feedback')->where('conversation_id', (int)$conversation['id'])->get()->getRowArray();
-        if ($existing) return $this->json(['success' => true, 'alreadyRated' => true, 'rating' => (int)$existing['rating']]);
+        if ($existing) {
+            $this->closeRatedConversation($conversation, $visitor);
+            return $this->json(['success' => true, 'alreadyRated' => true, 'rating' => (int)$existing['rating'], 'status' => 'closed', 'newTopic' => true]);
+        }
 
         $now = date('Y-m-d H:i:s');
         $thankYou = 'Terima kasih, Kak. Penilaian Kakak sudah tersimpan dan membantu kami meningkatkan Kak Wawa.';
@@ -440,14 +475,20 @@ class SupportChatController extends BaseController
                 'created_at' => $now,
             ]);
             $messageId = (int)$db->insertID();
-            $db->table('ilena_chat_conversations')->where('id', (int)$conversation['id'])->update(['last_message_at' => $now, 'updated_at' => $now]);
+            $conversationUpdate = ['status' => 'closed', 'closed_at' => $now, 'last_message_at' => $now, 'updated_at' => $now];
+            if ($db->fieldExists('resolved_at', 'ilena_chat_conversations')) $conversationUpdate['resolved_at'] = $now;
+            $db->table('ilena_chat_conversations')->where('id', (int)$conversation['id'])
+                ->where('visitor_hash', $visitor)->update($conversationUpdate);
             if ($db->transStatus() === false) throw new \RuntimeException('Penyimpanan penilaian gagal.');
             $db->transCommit();
-            return $this->json(['success' => true, 'rating' => $rating, 'message' => ['id' => $messageId, 'sender_type' => 'assistant', 'body' => $thankYou, 'created_at' => $now]]);
+            return $this->json(['success' => true, 'rating' => $rating, 'status' => 'closed', 'newTopic' => true, 'message' => ['id' => $messageId, 'sender_type' => 'assistant', 'body' => $thankYou, 'created_at' => $now]]);
         } catch (\Throwable $e) {
             $db->transRollback();
             $existing = $db->table('ilena_chat_feedback')->where('conversation_id', (int)$conversation['id'])->get()->getRowArray();
-            if ($existing) return $this->json(['success' => true, 'alreadyRated' => true, 'rating' => (int)$existing['rating']]);
+            if ($existing) {
+                $this->closeRatedConversation($conversation, $visitor);
+                return $this->json(['success' => true, 'alreadyRated' => true, 'rating' => (int)$existing['rating'], 'status' => 'closed', 'newTopic' => true]);
+            }
             log_message('error', 'Ilena chat rating save failed: {message}', ['message' => $e->getMessage()]);
             return $this->json(['success' => false, 'message' => 'Penilaian belum tersimpan. Silakan coba kembali.'], 500);
         }

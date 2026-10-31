@@ -44,6 +44,7 @@
   const teaser = widget.querySelector('[data-chat-greeting]');
   const wawaImageBase = widget.dataset.wawaImageBase || '';
   const chatLocale = widget.dataset.chatLocale === 'en' ? 'en' : 'id';
+  const greetingStorageKey = key => `ilenaChatGreeting:${chatLocale}:${key}`;
   const isEnglish = chatLocale === 'en';
   const chatCopy = {
     'offline': 'Customer service is unavailable outside service hours (08:00–16:00 WIB). Kak Wawa can still help you here.',
@@ -54,6 +55,7 @@
     'officialSource': 'Official source: ', 'readMore': 'Read more', 'continueWhatsapp': 'Continue this conversation on WhatsApp',
     'ratingLabel': 'Rate your chat with Kak Wawa', 'starsOfFive': ' out of 5 stars', 'ratingSaved': 'Your rating has been saved. Thank you.',
     'ratingStored': 'Rating of ', 'ratingStoredSuffix': ' out of 5 saved', 'ratingFailed': 'Your rating could not be saved. Please try again.',
+    'ratingNextTopic': 'This topic is complete. Send a new message whenever you want to start another conversation.',
     'resolutionPrompt': 'Did Kak Wawa answer your question, or would you like help from the Ilena team?',
     'resolved': 'The answer was helpful', 'askCustomerService': 'Talk to customer service', 'choiceFailed': 'Your choice was not saved. Please try again.',
     'teamJoining': 'The Ilena team will join shortly', 'csUnavailable': 'Customer service is currently unavailable',
@@ -151,6 +153,7 @@
   let cursor = 0;
   let currentConversationKey = '';
   let currentStatus = 'ai';
+  let ratedConversationClosed = false;
   let humanAvailable = null;
   let waitingForReply = false;
   let waitingSince = 0;
@@ -475,8 +478,12 @@
             const result = await api('/chat/rating', { method: 'POST', body: JSON.stringify({ conversationKey: currentConversationKey, rating: value }) });
             rating.classList.add('is-submitted');
             rating.setAttribute('aria-label', copy('ratingStored', 'Penilaian ') + result.rating + copy('ratingStoredSuffix', ' dari 5 tersimpan'));
+            ratedConversationClosed = true;
+            currentConversationKey = '';
+            resetTranscriptForConversationChange();
             if (result.message) appendMessage({ ...result.message, metadata: { type: 'kak_wawa_rating_thanks' } });
-            else showNotice(copy('ratingSaved', 'Penilaian Kakak sudah tersimpan. Terima kasih.'));
+            updateStatus('closed', humanAvailable);
+            showNotice(copy('ratingNextTopic', 'Penilaian Kakak sudah tersimpan. Topik ini selesai; silakan kirim pesan baru untuk memulai percakapan baru.'));
           } catch (error) {
             rating.querySelectorAll('button').forEach(item => { item.disabled = false; });
             showNotice(error?.message || copy('ratingFailed', 'Penilaian belum tersimpan. Silakan coba kembali.'));
@@ -665,6 +672,10 @@
     polling = true;
     try {
       const data = await api('/chat/poll?after=' + cursor + '&conversationKey=' + encodeURIComponent(currentConversationKey) + '&locale=' + encodeURIComponent(chatLocale));
+      if (ratedConversationClosed && !data.conversationKey) {
+        updateStatus('closed', data.humanAvailable === true);
+        return;
+      }
       const conversationChanged = !!data.conversationKey && !!currentConversationKey && data.conversationKey !== currentConversationKey;
       if (conversationChanged) resetTranscriptForConversationChange();
       currentConversationKey = data.conversationKey || currentConversationKey;
@@ -740,7 +751,7 @@
     greetingOpened = true;
     if (greetingAutoHideTimer) window.clearTimeout(greetingAutoHideTimer);
     greetingAutoHideTimer = null;
-    try { sessionStorage.setItem('ilenaChatGreetingOpened', '1'); } catch (_) {}
+    try { sessionStorage.setItem(greetingStorageKey('Opened'), '1'); } catch (_) {}
     if (greetingAvatarFile) setWawaHeader('greeting', greetingAvatarFile);
     else setWawaHeader('greeting');
     panel.classList.remove('d-none');
@@ -772,8 +783,8 @@
     greetingAutoHideTimer = null;
     teaser.hidden = true;
     try {
-      sessionStorage.setItem('ilenaChatGreetingSeen', '1');
-      sessionStorage.setItem('ilenaChatGreetingDismissed', '1');
+      sessionStorage.setItem(greetingStorageKey('Seen'), '1');
+      sessionStorage.setItem(greetingStorageKey('Dismissed'), '1');
     } catch (_) {}
   });
   widget.querySelectorAll('[data-chat-suggestion]').forEach(button => button.addEventListener('click', () => {
@@ -809,6 +820,7 @@
       pendingRequestIds.delete(message);
       const conversationChanged = !!data.conversationKey && !!currentConversationKey && data.conversationKey !== currentConversationKey;
       if (conversationChanged || data.newConversation) resetTranscriptForConversationChange();
+      ratedConversationClosed = false;
       currentConversationKey = data.conversationKey || currentConversationKey;
       lastWhatsappUrl = data.whatsappUrl || lastWhatsappUrl;
       input.value = ''; ready = true; updateStatus(data.status, data.humanAvailable);
@@ -863,10 +875,14 @@
   document.addEventListener('pointerdown', unlockArrivalSound, { passive: true });
   document.addEventListener('keydown', unlockArrivalSound);
   let greetingSeen = false;
+  let localeChanged = false;
   try {
-    greetingSeen = sessionStorage.getItem('ilenaChatGreetingSeen') === '1';
-    greetingDismissed = sessionStorage.getItem('ilenaChatGreetingDismissed') === '1';
-    greetingOpened = sessionStorage.getItem('ilenaChatGreetingOpened') === '1';
+    const previousLocale = sessionStorage.getItem('ilenaChatLastGreetingLocale');
+    localeChanged = previousLocale !== null && previousLocale !== chatLocale;
+    sessionStorage.setItem('ilenaChatLastGreetingLocale', chatLocale);
+    greetingSeen = !localeChanged && sessionStorage.getItem(greetingStorageKey('Seen')) === '1';
+    greetingDismissed = !localeChanged && sessionStorage.getItem(greetingStorageKey('Dismissed')) === '1';
+    greetingOpened = !localeChanged && sessionStorage.getItem(greetingStorageKey('Opened')) === '1';
   } catch (_) {}
   function showGreetingTeaser(reminder = false) {
     if (!teaser || opened || greetingOpened || greetingDismissed || document.hidden) return false;
@@ -879,8 +895,8 @@
     window.setTimeout(() => teaser.classList.remove('is-arrival'), 2300);
     window.setTimeout(() => toggle.classList.remove('is-arrival'), 1450);
     try {
-      sessionStorage.setItem('ilenaChatGreetingSeen', '1');
-      if (reminder) sessionStorage.setItem('ilenaChatGreetingReminderShown', '1');
+      sessionStorage.setItem(greetingStorageKey('Seen'), '1');
+      if (reminder) sessionStorage.setItem(greetingStorageKey('ReminderShown'), '1');
     } catch (_) {}
     if (navigator.userActivation?.hasBeenActive) playWelcomeTone();
     scheduleGreetingAutoHide(reminder ? 18000 : 22000);
@@ -891,7 +907,7 @@
       if (showGreetingTeaser()) {
         window.setTimeout(() => {
           let reminderShown = false;
-          try { reminderShown = sessionStorage.getItem('ilenaChatGreetingReminderShown') === '1'; } catch (_) {}
+          try { reminderShown = sessionStorage.getItem(greetingStorageKey('ReminderShown')) === '1'; } catch (_) {}
           if (!reminderShown) showGreetingTeaser(true);
         }, 8 * 60 * 1000);
       }
