@@ -59,6 +59,60 @@ final class ChatAssistantEvaluationTest extends CIUnitTestCase
         $this->assertNotEmpty($result['sources']);
     }
 
+    public function testBundledPublicFaqKnowledgeIsAvailableInBothLocales(): void
+    {
+        $indonesian = \App\Services\IlenaFaqKnowledge::documents('id');
+        $english = \App\Services\IlenaFaqKnowledge::documents('en');
+
+        $this->assertCount(23, $indonesian);
+        $this->assertCount(23, $english);
+        $this->assertStringContainsString('Biaya pengiriman bergantung', $indonesian[12]['content']);
+        $this->assertStringContainsString('Delivery costs depend', $english[12]['content']);
+        $this->assertStringContainsString('/faq', $indonesian[12]['source_url']);
+        $this->assertStringContainsString('/en/faq', $english[12]['source_url']);
+    }
+
+    public function testPublicFaqRetrievalUnderstandsNaturalBilingualParaphrases(): void
+    {
+        $assistant = new SmartProductAssistant(new class {
+            public function tableExists(string $table): bool { return false; }
+        });
+        $cases = [
+            ['id', 'Kak, barangnya masih ada?', 'Ketersediaan produk'],
+            ['id', 'Di mana lihat promo yang lagi jalan?', 'Promo dan diskon'],
+            ['id', 'Kalau mau beli tanpa login bisa?', 'Checkout tanpa akun'],
+            ['id', 'Cara cek barang pesanan saya di mana?', 'Riwayat dan pelacakan pesanan'],
+            ['id', 'Bisa bayar COD?', 'Metode pembayaran'],
+            ['id', 'Saya sudah transfer, bagaimana tahu pembayarannya masuk?', 'Konfirmasi pembayaran'],
+            ['id', 'Bisa dikirim ke luar Jawa?', 'Cakupan pengiriman'],
+            ['id', 'Ongkos kirim dihitung bagaimana?', 'Biaya pengiriman'],
+            ['id', 'Kalau barangnya rusak saat sampai bagaimana?', 'Barang rusak atau tidak sesuai'],
+            ['id', 'Mau lihat katalog fisik', 'Katalog fisik'],
+            ['en', 'Can I pay cash on delivery?', 'Payment methods'],
+            ['en', 'How can I see if an item is in stock?', 'Product availability'],
+            ['en', 'How can I check where my parcel is?', 'Shipment tracking'],
+            ['en', 'What if the delivery is late?', 'Delivery estimate'],
+            ['en', 'My item arrived damaged, what should I do?', 'Damaged or incorrect item'],
+            ['en', 'Can you deliver to Bali?', 'Delivery coverage'],
+        ];
+
+        $hits = 0;
+        $reciprocalRanks = [];
+        foreach ($cases as [$locale, $query, $expectedTitle]) {
+            $titles = array_column($assistant->findKnowledge($query, 6, $locale), 'title');
+            $rank = array_search($expectedTitle, $titles, true);
+            if ($rank !== false) {
+                $hits++;
+                $reciprocalRanks[] = 1 / ($rank + 1);
+            } else {
+                $reciprocalRanks[] = 0;
+            }
+        }
+
+        $this->assertSame(1.0, $hits / count($cases), 'Every realistic public FAQ paraphrase should retrieve its gold answer in the first six results.');
+        $this->assertGreaterThanOrEqual(0.88, array_sum($reciprocalRanks) / count($cases), 'Relevant FAQ answers should rank near the top.');
+    }
+
     public function testVisionMissionAnswersUseFactsFromTheProjectPages(): void
     {
         $assistant = new SmartProductAssistant(new \stdClass());
@@ -113,7 +167,9 @@ final class ChatAssistantEvaluationTest extends CIUnitTestCase
             'kamu siapa', 'siapa kamu', 'kamu ini siapa sih', 'nama kamu siapa',
             'saya sedang berbicara dengan siapa', 'halo kak, kamu siapa?',
             'Kak Wawa, kamu ini bot ya?', 'are you a bot?', 'Hi, who are you?',
-            'who am I chatting with',
+            'who am I chatting with', 'mau tanya kamu siapa ya',
+            'aku mau tanya, kamu siapa?', 'saya ingin bertanya nama Kak Wawa siapa',
+            'kamu AI atau manusia?', 'siapa nama Kak Wawa?',
         ] as $question) {
             $result = $assistant->respond($question);
             $this->assertSame('assistant_identity', $result['mode'], $question);
@@ -128,20 +184,58 @@ final class ChatAssistantEvaluationTest extends CIUnitTestCase
         }
     }
 
+    public function testVagueStockQuestionAsksForProductInsteadOfBeingRejectedAsOffTopic(): void
+    {
+        $db = new class {
+            public function tableExists(string $table): bool { return false; }
+        };
+        $result = (new SmartProductAssistant($db))->respond('Kak, barangnya masih ada?');
+
+        $this->assertSame('clarification', $result['mode']);
+        $this->assertStringContainsString('nama produk', $result['answer']);
+        $this->assertNotSame('policy', $result['mode']);
+    }
+
     public function testSearchNormalizationCoversCommonFurnitureSynonymsAndProductFollowUps(): void
     {
         $assistant = new SmartProductAssistant(new \stdClass());
         $class = new \ReflectionClass($assistant);
         $terms = $class->getMethod('terms');
         $followUp = $class->getMethod('isProductContextFollowUp');
+        $recentFollowUp = $class->getMethod('isRecentConversationFollowUp');
         $terms->setAccessible(true);
         $followUp->setAccessible(true);
+        $recentFollowUp->setAccessible(true);
 
         $this->assertContains('dresser', $terms->invoke($assistant, 'I need a chest of drawers'));
         $this->assertContains('nakas', $terms->invoke($assistant, 'bedside table'));
         $this->assertContains('kayu', $terms->invoke($assistant, 'solid wood furniture'));
         $this->assertTrue($followUp->invoke($assistant, 'Apakah bahan ini tahan lama?', 'product-1'));
         $this->assertFalse($followUp->invoke($assistant, 'Siapa juara sepak bola?', 'product-1'));
+        $this->assertTrue($recentFollowUp->invoke($assistant, 'harganya berapa?', ['Saya mencari lemari pakaian Cody'], ['Saya mencari lemari pakaian Cody']));
+        $this->assertTrue($recentFollowUp->invoke($assistant, 'yang warna walnut', ['Carikan dresser minimalis'], ['Carikan dresser minimalis', 'Pilihan produk Ilena untuk Kakak: Dresser Cody']));
+        $this->assertFalse($recentFollowUp->invoke($assistant, 'Bagaimana cuaca besok?', ['Saya mencari lemari pakaian Cody'], ['Saya mencari lemari pakaian Cody']));
+    }
+
+    public function testCommonConversationalFaqPhrasingsNormalizeToTheSameTopics(): void
+    {
+        $assistant = new SmartProductAssistant(new \stdClass());
+        $class = new \ReflectionClass($assistant);
+        $terms = $class->getMethod('terms');
+        $companyQuestion = $class->getMethod('isCompanyQuestion');
+        $terms->setAccessible(true);
+        $companyQuestion->setAccessible(true);
+
+        $this->assertContains('shipping', $terms->invoke($assistant, 'Gratis ongkir ke Bali berapa?'));
+        $this->assertContains('pembayaran', $terms->invoke($assistant, 'Bisa bayar pakai transfer?'));
+        $this->assertContains('status', $terms->invoke($assistant, 'Cara cek status pesanan bagaimana?'));
+        $this->assertContains('promo', $terms->invoke($assistant, 'Ada kode promo atau potongan harga?'));
+        $this->assertContains('pembelian', $terms->invoke($assistant, 'Bagaimana cara order di website?'));
+        $this->assertContains('pembayaran', $terms->invoke($assistant, 'Bisa bayar dengan COD?'));
+        $this->assertContains('pembatalan', $terms->invoke($assistant, 'Saya mau membatalkan pesanan'));
+        $this->assertContains('shipping', $terms->invoke($assistant, 'Ada biaya tambahan kirim?'));
+        $this->assertTrue($companyQuestion->invoke($assistant, 'Ilena Furniture di mana?'));
+        $this->assertTrue($companyQuestion->invoke($assistant, 'Siapa pemilik Ilena?'));
     }
 
     public function testFallbackAnswersUseReadableEvidenceBasedCopyAndPlainTextFormatting(): void
@@ -150,18 +244,23 @@ final class ChatAssistantEvaluationTest extends CIUnitTestCase
         $class = new \ReflectionClass($assistant);
         $clean = $class->getMethod('cleanModelAnswer');
         $fallback = $class->getMethod('fallbackAnswer');
+        $fallbackEnglish = $class->getMethod('fallbackAnswerEnglish');
         $excerpt = $class->getMethod('plainTextExcerpt');
-        foreach ([$clean, $fallback, $excerpt] as $method) $method->setAccessible(true);
+        foreach ([$clean, $fallback, $fallbackEnglish, $excerpt] as $method) $method->setAccessible(true);
 
         $formatted = $clean->invoke($assistant, "## Pilihan\n\n- **Sofa Cody**\n- `Meja Orca`");
         $productAnswer = $fallback->invoke($assistant, [[
             'name' => 'Sofa Cody', 'price' => 2500000, 'colors' => 'Natural', 'materials' => '', 'dimensions' => '',
         ]], [], null);
+        $englishGuide = $fallbackEnglish->invoke($assistant, [], [[
+            'content' => '<p>Delivery costs depend on the destination and products.</p>',
+        ]], null);
         $guide = $excerpt->invoke($assistant, '<p>Pengiriman tersedia.</p><ul><li>Area tertentu</li><li>Hubungi staf</li></ul>', 200);
 
         $this->assertSame("Pilihan\n\n• Sofa Cody\n• Meja Orca", $formatted);
         $this->assertStringContainsString('Sofa Cody', $productAnswer);
         $this->assertStringContainsString('harga Rp2.500.000', $productAnswer);
+        $this->assertStringContainsString('Delivery costs depend on the destination and products.', $englishGuide);
         $this->assertStringContainsString("\n• Area tertentu\n• Hubungi staf", $guide);
     }
 
@@ -224,6 +323,11 @@ final class ChatAssistantEvaluationTest extends CIUnitTestCase
             $sources = (new SmartProductAssistant($db))->findKnowledge('Berapa ongkos kirim?');
 
             $this->assertSame('Informasi pengiriman furniture', $sources[0]['title'] ?? null);
+
+            $englishSources = (new SmartProductAssistant($db))->findKnowledge('How much does delivery cost?', 6, 'en');
+            $this->assertContains('Delivery cost', array_column($englishSources, 'title'));
+            $deliverySource = array_values(array_filter($englishSources, static fn(array $source): bool => $source['title'] === 'Delivery cost'))[0] ?? [];
+            $this->assertStringContainsString('Delivery costs depend on the destination', $deliverySource['content'] ?? '');
         } finally {
             $forge->dropTable('ilena_chat_knowledge', true);
         }

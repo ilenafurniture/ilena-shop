@@ -29,6 +29,7 @@ class SmartProductAssistant
         $priorCustomerText = array_map(static fn(array $turn): string => (string) $turn['content'], array_values(array_filter(
             array_slice($history, -8), static fn(array $turn): bool => ($turn['role'] ?? '') === 'user'
         )));
+        $priorConversationText = array_map(static fn(array $turn): string => (string) $turn['content'], array_slice($history, -8));
         $retrievalQuery = trim($query);
         if ($this->isUnsafeRequest($query)) {
             return [
@@ -151,8 +152,8 @@ class SmartProductAssistant
         }
 
         $contextFollowUp = $this->isProductContextFollowUp($query, $contextProductId)
-            || $this->isRecentConversationFollowUp($query, $priorCustomerText);
-        if ($this->isClearlyOffTopic($query) || (! $this->isIlenaTopic($query) && ! $contextFollowUp)) {
+            || $this->isRecentConversationFollowUp($query, $priorCustomerText, $priorConversationText);
+        if ($this->isClearlyOffTopic($query) || (! $this->isIlenaTopic($query) && ! $contextFollowUp && ! $this->isStockQuestion($query))) {
             return [
                 'answer' => 'Terima kasih sudah bertanya. Kak Wawa khusus membantu seputar furniture, produk, dan layanan Ilena. Untuk hal lain, tim Ilena siap membantu melalui WhatsApp.',
                 'products' => [],
@@ -201,7 +202,7 @@ class SmartProductAssistant
                 'fallbackReason' => null,
             ];
         }
-        $sources = $this->findKnowledge($retrievalQuery);
+        $sources = $this->findKnowledge($retrievalQuery, 4, 'id');
         $fallback = $this->fallbackAnswer($products, $sources, $budget);
         // Never ask a provider to improvise when retrieval found no approved facts.
         if ($products === [] && $sources === []) {
@@ -255,8 +256,10 @@ class SmartProductAssistant
         if ($this->isStaffRequest($query)) return $noProducts + ['answer' => 'Of course. Ilena customer service is available daily from 08:00 to 16:00 WIB. During service hours, choose “Talk to customer service” in this chat to reach the team.', 'mode' => 'staff_handoff_guidance'];
 
         $priorCustomerText = array_map(static fn(array $turn): string => (string) $turn['content'], array_values(array_filter(array_slice($history, -8), static fn(array $turn): bool => ($turn['role'] ?? '') === 'user')));
-        $contextFollowUp = $this->isProductContextFollowUp($query, $contextProductId) || $this->isRecentConversationFollowUp($query, $priorCustomerText);
-        if ($this->isClearlyOffTopic($query) || (! $this->isIlenaTopic($query) && ! $contextFollowUp)) return $noProducts + [
+        $priorConversationText = array_map(static fn(array $turn): string => (string) $turn['content'], array_slice($history, -8));
+        $contextFollowUp = $this->isProductContextFollowUp($query, $contextProductId)
+            || $this->isRecentConversationFollowUp($query, $priorCustomerText, $priorConversationText);
+        if ($this->isClearlyOffTopic($query) || (! $this->isIlenaTopic($query) && ! $contextFollowUp && ! $this->isStockQuestion($query))) return $noProducts + [
             'answer' => 'Thanks for asking. Kak Wawa can help with Ilena furniture, products, and services. For other topics, the Ilena team can assist you on WhatsApp.',
             'mode' => 'policy', 'fallbackReason' => 'off_topic',
         ];
@@ -278,7 +281,7 @@ class SmartProductAssistant
         if ($this->isStockQuestion($query)) return [
             'answer' => $this->stockAnswerEnglish($query, $products), 'products' => $products, 'sources' => [], 'mode' => 'catalog', 'fallbackReason' => null,
         ];
-        $sources = $this->findKnowledge($retrievalQuery);
+        $sources = $this->findKnowledge($retrievalQuery, 4, 'en');
         $fallback = $this->fallbackAnswerEnglish($products, $sources, $budget);
         if ($products === [] && $sources === []) return ['answer' => $fallback, 'products' => [], 'sources' => [], 'mode' => 'fallback', 'fallbackReason' => 'no_retrieval_evidence'];
         $answer = $this->askModel($query, $contextProductId, $products, $sources, $fallback, $history, 'en');
@@ -298,8 +301,8 @@ class SmartProductAssistant
         $values = 'Ilena’s values are summarized as RAMAH: Ragam (embracing diversity), Amanah (trust and accountability), Modern (working efficiently), Adaptif (adapting to changing needs and technology), and Harmonis (building healthy relationships within the team).';
         $location = 'Ilena is based in Semarang. The website lists its contact address as Jalan Lingkar Taman Industri, Jatibarang, Mijen, Semarang City, Central Java, Indonesia.';
         if (preg_match('/\bvision\b/u', $text) === 1 && preg_match('/\bmission\b/u', $text) === 1) return ['text' => $vision . ' ' . $mission, 'sources' => [$visionSource]];
-        if (preg_match('/\b(?:founder|founders)\b/u', $text) === 1) return ['text' => 'Official information identifies Ilena as a business under CV Catur Bhakti Mandiri, but does not name an individual founder.', 'sources' => [$about]];
-        if (preg_match('/\b(?:location|address|office|where\s+from)\b/u', $text) === 1) return ['text' => $location, 'sources' => [$about]];
+        if (preg_match('/\b(?:founder|founders|owner|owned\s+by)\b/u', $text) === 1) return ['text' => 'Official information identifies Ilena as a business under CV Catur Bhakti Mandiri, but does not name an individual founder or owner.', 'sources' => [$about]];
+        if (preg_match('/\b(?:location|address|office|where\s+from|showroom|store|branch)\b/u', $text) === 1) return ['text' => $location, 'sources' => [$about]];
         if (preg_match('/\bmission\b/u', $text) === 1) return ['text' => $mission, 'sources' => [$visionSource]];
         if (preg_match('/\bvision\b/u', $text) === 1) return ['text' => $vision, 'sources' => [$visionSource]];
         if (preg_match('/\b(?:values|culture|ramah)\b/u', $text) === 1) return ['text' => $values, 'sources' => [$visionSource]];
@@ -332,7 +335,11 @@ class SmartProductAssistant
     {
         if ($products && $budget !== null && (int) ($products[0]['price'] ?? 0) > $budget) return 'I could not find an item listed within that budget. The closest options are shown below so you can compare them.';
         if ($products) return $this->productFallbackAnswer($products, true);
-        if ($sources) return 'I found an Ilena guide that may answer your question. You can open the source below for the full details.';
+        if ($sources) {
+            $content = $this->plainTextExcerpt((string) ($sources[0]['content'] ?? ''), 650);
+            if ($content !== '') return "Ilena’s official guide says:\n" . $content;
+            return 'I found an Ilena guide that may answer your question. You can open the source below for the full details.';
+        }
         return 'I could not find enough verified information to answer confidently. I can help connect you with the Ilena team.';
     }
 
@@ -379,7 +386,7 @@ class SmartProductAssistant
     private function isAssistantIdentityQuestion(string $query): bool
     {
         $text = $this->normalizeConversationalIntentText($query);
-        return preg_match('/^(?:(?:kamu|anda)(?:\s+ini)?\s+siapa|siapa\s+(?:kamu|anda)|ini\s+siapa|nama\s+(?:kamu|anda|wawa)\s+siapa|siapa\s+(?:nama|yang\s+(?:membalas|menjawab))|(?:(?:saya|aku)\s+)?(?:sedang\s+)?(?:berbicara|bicara|chat|ngobrol)\s+dengan\s+siapa|(?:kamu|anda)\s+(?:ini\s+)?(?:bot|robot|ai|manusia|asisten\s+virtual)|(?:ini|saya\s+sedang\s+chat\s+dengan)\s+(?:bot|robot|ai|manusia)|who\s+are\s+you|what\s+are\s+you|what(?:\s+is|\x27s)\s+your\s+name|who\s+am\s+i\s+(?:speaking|talking|chatting)\s+(?:to|with)|who\s+is\s+this|are\s+you\s+(?:a\s+)?(?:bot|human|ai))(?:\s+(?:sih|ya|kak|kakak))?[\s?!.,]*$/u', $text) === 1
+        return preg_match('/^(?:(?:kamu|anda)(?:\s+ini)?\s+siapa|siapa\s+(?:kamu|anda)|ini\s+siapa|nama\s+(?:(?:kak|kakak)\s+)?(?:kamu|anda|wawa)\s+siapa|siapa\s+(?:nama\s+(?:(?:kak|kakak)\s+)?(?:kamu|anda|wawa)|yang\s+(?:membalas|menjawab))|(?:(?:saya|aku)\s+)?(?:sedang\s+)?(?:berbicara|bicara|chat|ngobrol)\s+dengan\s+siapa|(?:kamu|anda)\s+(?:ini\s+)?(?:bot|robot|ai|manusia|asisten\s+virtual)|(?:kamu|anda)\s+(?:bot|robot|ai|manusia)\s+atau\s+(?:bot|robot|ai|manusia)|(?:ini|saya\s+sedang\s+chat\s+dengan)\s+(?:bot|robot|ai|manusia)|who\s+are\s+you|what\s+are\s+you|what(?:\s+is|\x27s)\s+your\s+name|who\s+am\s+i\s+(?:speaking|talking|chatting)\s+(?:to|with)|who\s+is\s+this|are\s+you\s+(?:a\s+)?(?:bot|human|ai))(?:\s+(?:sih|ya|kak|kakak))?[\s?!.,]*$/u', $text) === 1
             || preg_match('/\b(?:siapa|who\s+is|what\s+is)\b.{0,40}\b(?:kak\s+)?wawa\b|\b(?:kak\s+)?wawa\b.{0,40}\b(?:itu\s+siapa|siapa|itu\s+apa)\b/u', $text) === 1;
     }
 
@@ -394,6 +401,7 @@ class SmartProductAssistant
     {
         $text = mb_strtolower(trim($query));
         $text = (string) preg_replace('/^(?:(?:halo|hai|hi|hey|hello|permisi|excuse me|good morning|good afternoon|good evening)\b[\s,!.]*)+/u', '', $text);
+        $text = (string) preg_replace('/^(?:(?:(?:saya|aku|gue|gua)\s+)?(?:mau|ingin|pengen|boleh|can\s+i|i\s+want\s+to)\s+(?:tanya(?:kan)?|nanya|bertanya|ask)\b[\s,!.]*)+/u', '', $text);
         $text = (string) preg_replace('/^(?:(?:kak(?:ak)?\s+)?wawa\b[\s,!.]*)+/u', '', $text);
         $text = (string) preg_replace('/^(?:kak(?:ak)?\b[\s,!.]*)+/u', '', $text);
         $text = (string) preg_replace('/[\s,!.?]+$/u', '', $text);
@@ -438,13 +446,16 @@ class SmartProductAssistant
         return preg_match('/\b(?:minta|ingin|mau|boleh|bisa|hubungi|bicara|chat|sambungkan|connect\s+me\s+to|talk\s+to|speak\s+to)\b.{0,50}\b(?:cs|customer\s+service|staf|staff|admin|manusia|human|agent)\b|\b(?:cs|customer\s+service|staf|staff|admin|manusia|human|agent)\b.{0,50}\b(?:tolong|sekarang|bicara|chat|hubungi|sambungkan|please|now)\b/u', $text) === 1;
     }
 
-    private function isRecentConversationFollowUp(string $query, array $priorCustomerText): bool
+    private function isRecentConversationFollowUp(string $query, array $priorCustomerText, array $priorConversationText = []): bool
     {
-        if ($priorCustomerText === [] || $this->isClearlyOffTopic($query)) return false;
+        if (($priorCustomerText === [] && $priorConversationText === []) || $this->isClearlyOffTopic($query)) return false;
         $text = mb_strtolower(trim($query));
-        $isShortFollowUp = preg_match('/^(?:\d+(?:[.,]\d+)?\s*(?:juta|jt|ribu|rb|rupiah|rp)?|rp\s*[\d.,]+|yang\s+(?:ini|itu|lain|mana|lebih\s+\w+)|ada\s+(?:lagi|yang\s+lain|warna\s+lain|ukuran\s+lain|stoknya?)|warna\s+lain|ukuran\s+lain|lebih\s+(?:murah|besar|kecil|mahal)|(?:di\s+bawah|maksimal|budget|anggaran)\s*[:=]?\s*(?:rp\s*)?[\d.,]+(?:\s*(?:juta|jt|ribu|rb))?|berapa\s+(?:harganya|ukurannya|stoknya))\s*[.!?]*$/iu', $text) === 1;
-        if (! $isShortFollowUp) return false;
-        return $this->isIlenaTopic(implode(' ', array_slice($priorCustomerText, -3)));
+        $isShortFollowUp = preg_match('/^(?:\d+(?:[.,]\d+)?\s*(?:juta|jt|ribu|rb|rupiah|rp)?|rp\s*[\d.,]+|yang\s+(?:ini|itu|lain|mana|lebih\s+\w+|kedua|pertama|terakhir|nomor\s+\d+)|(?:opsi|produk)\s+(?:kedua|pertama|terakhir|nomor\s+\d+)|ada\s+(?:lagi|yang\s+lain|warna\s+lain|ukuran\s+lain|stoknya?)|warna\s+lain|ukuran\s+lain|lebih\s+(?:murah|besar|kecil|mahal)|(?:di\s+bawah|maksimal|budget|anggaran)\s*[:=]?\s*(?:rp\s*)?[\d.,]+(?:\s*(?:juta|jt|ribu|rb))?|berapa\s+(?:harganya|ukurannya|stoknya))\s*[.!?]*$/iu', $text) === 1;
+        $isEllipticalProductQuestion = preg_match('/^(?:(?:dan|terus|kalau)\s+)?(?:harganya(?:\s+berapa)?|berapa\s+harganya|stoknya(?:\s+berapa)?|ada\s+stoknya|warnanya|ukurannya|bahannya|variannya|ongkirnya|berapa\s+ongkirnya|biaya\s+kirim(?:nya)?|estimasi\s+(?:sampai|pengiriman)|bisa\s+dirakit|ready(?:\s+stock)?|yang\s+warna\s+[\p{L}\p{N} -]{2,32}|yang\s+varian\s+[\p{L}\p{N} -]{2,32}|yang\s+ukuran\s+[\p{L}\p{N} -]{1,24})[\s?!.,]*$/iu', $text) === 1;
+        if (! $isShortFollowUp && ! $isEllipticalProductQuestion) return false;
+        if ($isShortFollowUp && $this->isIlenaTopic(implode(' ', array_slice($priorCustomerText, -3)))) return true;
+        if (! $isEllipticalProductQuestion) return false;
+        return $this->isIlenaTopic(implode(' ', array_slice(array_merge($priorCustomerText, $priorConversationText), -6)));
     }
 
     private function isClearlyOffTopic(string $query): bool
@@ -454,7 +465,7 @@ class SmartProductAssistant
 
     private function isStockQuestion(string $query): bool
     {
-        if (preg_match('/\b(stok|stock|tersedia|ketersediaan|available|availability|in stock|remaining|left|estoque|disponible|disponível|lagerbestand|verfügbar)\b|how many\b/iu', $query) === 1) return true;
+        if (preg_match('/\b(stok|stock|ready(?:\s+stock)?|tersedia|ketersediaan|available|availability|in stock|remaining|left|masih\s+ada|ada\s+stok|estoque|disponible|disponível|lagerbestand|verfügbar)\b|how many\b/iu', $query) === 1) return true;
         foreach (['库存','在庫','재고','مخزون','متوفر','สต็อก','มีสินค้า','स्टॉक','उपलब्ध'] as $term) {
             if (mb_strpos(mb_strtolower($query), $term) !== false) return true;
         }
@@ -477,10 +488,10 @@ class SmartProductAssistant
     {
         $text = mb_strtolower(trim($query));
         $hasIlena = preg_match('/\b(?:ilena|catur\s+bhakti\s+mandiri)\b/u', $text) === 1;
-        $aboutIntent = preg_match('/\b(?:visi|misi|nilai|budaya|ramah|profil|sejarah|perusahaan|tentang|didirikan|berdiri|lahir|asal\s+usul|dari\s+mana|berasal|pengalaman|lokasi|alamat|kantor|pendiri|founder)\b/u', $text) === 1;
-        $identityQuestion = preg_match('/\b(?:apa\s+itu|siapa|who\s+is|what\s+is|where\s+is|tell\s+me\s+about|describe)\b.{0,60}\b(?:ilena|catur\s+bhakti)\b|\b(?:ilena|catur\s+bhakti)\b.{0,40}\b(?:itu\s+apa|itu\s+siapa|berasal|dari\s+mana|where\s+from)\b/u', $text) === 1;
+        $aboutIntent = preg_match('/\b(?:visi|misi|nilai|budaya|ramah|profil|sejarah|perusahaan|tentang|didirikan|berdiri|lahir|asal\s+usul|dari\s+mana|berasal|pengalaman|lokasi|alamat|kantor|pendiri|pemilik|owner|dimana|showroom|cabang)\b/u', $text) === 1;
+        $identityQuestion = preg_match('/\b(?:apa\s+itu|siapa|who\s+is|what\s+is|where\s+is|tell\s+me\s+about|describe)\b.{0,60}\b(?:ilena|catur\s+bhakti)\b|\b(?:ilena|catur\s+bhakti)\b.{0,40}\b(?:itu\s+apa|itu\s+siapa|berasal|dari\s+mana|where\s+from|dimana|di\s+mana)\b|\b(?:dimana|di\s+mana)\b.{0,50}\b(?:ilena|toko|showroom)\b/u', $text) === 1;
 
-        return $aboutIntent && ($hasIlena || preg_match('/\b(?:visi|misi|nilai|budaya|ramah|alamat|lokasi|kantor|dari\s+mana|pendiri|founder)\b/u', $text) === 1)
+        return $aboutIntent && ($hasIlena || preg_match('/\b(?:visi|misi|nilai|budaya|ramah|alamat|lokasi|kantor|dari\s+mana|pendiri|pemilik|owner|dimana|showroom|cabang)\b/u', $text) === 1)
             || $identityQuestion;
     }
 
@@ -506,13 +517,13 @@ class SmartProductAssistant
         if (preg_match('/\bvisi\b/u', $text) && preg_match('/\bmisi\b/u', $text)) {
             return ['text' => $facts['vision'] . ' ' . $facts['mission'], 'sources' => [$visionSource]];
         }
-        if (preg_match('/\b(?:pendiri|founder)\b/u', $text)) {
+        if (preg_match('/\b(?:pendiri|founder|pemilik|owner)\b/u', $text)) {
             return [
-                'text' => 'Informasi resmi menyebut Ilena berada di bawah CV Catur Bhakti Mandiri, tetapi tidak mencantumkan nama pendiri perorangan.',
+                'text' => 'Informasi resmi menyebut Ilena berada di bawah CV Catur Bhakti Mandiri, tetapi tidak mencantumkan nama pendiri atau pemilik perorangan.',
                 'sources' => [$aboutSource],
             ];
         }
-        if (preg_match('/\b(?:lokasi|alamat|kantor|dari\s+mana|berasal|where\s+from)\b/u', $text)) {
+        if (preg_match('/\b(?:lokasi|alamat|kantor|dari\s+mana|berasal|dimana|di\s+mana|showroom|cabang|where\s+from)\b/u', $text)) {
             return ['text' => $facts['location'], 'sources' => [$aboutSource]];
         }
         if (preg_match('/\b(?:misi)\b/u', $text)) return ['text' => $facts['mission'], 'sources' => [$visionSource]];
@@ -718,21 +729,26 @@ class SmartProductAssistant
     }
 
     /** @return array<int,array<string,string>> */
-    public function findKnowledge(string $query, int $limit = 4): array
+    public function findKnowledge(string $query, int $limit = 4, string $locale = 'id'): array
     {
-        if (! $this->db->tableExists('ilena_chat_knowledge')) return [];
-        $builder = $this->db->table('ilena_chat_knowledge')
-            ->select('id,title,content,source_url')
-            ->where('is_published', 1)
-            ->orderBy('updated_at', 'DESC');
-        $today = date('Y-m-d');
-        if ($this->db->fieldExists('valid_from', 'ilena_chat_knowledge')) {
-            $builder->groupStart()->where('valid_from', null)->orWhere('valid_from <=', $today)->groupEnd();
+        $rows = [];
+        if ($this->db->tableExists('ilena_chat_knowledge')) {
+            $builder = $this->db->table('ilena_chat_knowledge')
+                ->select('id,title,content,source_url')
+                ->where('is_published', 1)
+                ->orderBy('updated_at', 'DESC');
+            $today = date('Y-m-d');
+            if ($this->db->fieldExists('valid_from', 'ilena_chat_knowledge')) {
+                $builder->groupStart()->where('valid_from', null)->orWhere('valid_from <=', $today)->groupEnd();
+            }
+            if ($this->db->fieldExists('expires_at', 'ilena_chat_knowledge')) {
+                $builder->groupStart()->where('expires_at', null)->orWhere('expires_at >=', $today)->groupEnd();
+            }
+            $rows = $builder->limit(250)->get()->getResultArray();
         }
-        if ($this->db->fieldExists('expires_at', 'ilena_chat_knowledge')) {
-            $builder->groupStart()->where('expires_at', null)->orWhere('expires_at >=', $today)->groupEnd();
-        }
-        $rows = $builder->limit(250)->get()->getResultArray();
+        // The public FAQ is a trusted, version-controlled retrieval source even before
+        // an admin has manually populated the editable Knowledge Base.
+        $rows = array_merge($rows, IlenaFaqKnowledge::documents($locale));
         $terms = $this->terms($query);
         if ($terms === []) return [];
         $queryText = $this->normalizeSearchText($query);
@@ -773,7 +789,9 @@ class SmartProductAssistant
         $text = (string) preg_replace('/[^\p{L}\p{N}]+/u', ' ', $text);
         $text = trim((string) preg_replace('/\s+/u', ' ', $text));
         $aliases = [
+            '/\b(?:ready(?:\s+stock)?|available\s+stock|stock\s+availability|product\s+availability|availability|ketersediaan(?:\s+stok)?|stok|stock|tersedia|masih\s+ada|tersisa)\b/u' => ' persediaan ',
             '/\b(?:single|double|queen|king)\s+bed\b/u' => ' ranjang ',
+            '/\bready(?:\s+stock)?\b/u' => ' stok tersedia ',
             '/\b(?:bed|bedframe|bed frame|tempat tidur|kasur|dipan|ranjang)\b/u' => ' ranjang ',
             '/\b(?:wardrobe|closet|lemari pakaian|lemari baju|almari)\b/u' => ' lemari ',
             '/\b(?:dresser|chest of drawers|drawer unit|drawer cabinet|lemari laci|laci)\b/u' => ' dresser ',
@@ -783,10 +801,27 @@ class SmartProductAssistant
             '/\b(?:dining table|meja makan)\b/u' => ' meja makan ',
             '/\b(?:coffee table|meja kopi|meja tamu)\b/u' => ' meja kopi ',
             '/\b(?:tv cabinet|tv stand|meja tv|rak tv)\b/u' => ' tv cabinet ',
-            '/\b(?:ongkos kirim|biaya kirim|ongkir|free shipping|free delivery|delivery fee|shipping fee|dikirim|mengirimkan|pengirimannya)\b/u' => ' pengiriman ',
+            '/\b(?:ongkos kirim|ongkir(?:nya)?|biaya (?:tambahan )?(?:kirim|pengiriman|antar)|delivery costs?|shipping fees?|delivery fees?|cost of delivery|freight cost)\b/u' => ' pengiriman biaya ',
+            '/\b(?:gratis ongkir|free shipping|free delivery)\b/u' => ' pengiriman promo ',
+            '/\b(?:dikirim\s+ke|pengiriman\s+ke|delivery\s+to|deliver\s+to|shipping\s+to)\s+(?:luar\s+)?(?:jawa|java|bali|madura|indonesia|luar\s+jawa)\b/u' => ' cakupan pengiriman tujuan ',
+            '/\b(?:jangkauan pengiriman|wilayah pengiriman|dikirim|mengirimkan|pengirimannya|bisa kirim ke|kapan sampai|estimasi tiba|lama pengiriman)\b/u' => ' pengiriman ',
             '/\b(?:warranty|guarantee|jaminan|bergaransi)\b/u' => ' garansi ',
             '/\b(?:refund|return|exchange|tukar barang|pengembalian barang)\b/u' => ' retur ',
-            '/\b(?:payment method|pay|bayar|pembayaran|metode pembayaran)\b/u' => ' pembayaran ',
+            '/\b(?:cancell?ation|cancell?ations|cancel(?:led)?(?:\s+order)?|(?:mem|di)?batalkan|pembatalan(?:\s+pesanan)?)\b/u' => ' pembatalan pesanan ',
+            '/\b(?:damaged|defective|broken|incorrect item|wrong item|salah(?:\s+kirim)?|cacat|rusak)\b/u' => ' produk bermasalah ',
+            '/\b(?:payment method|payment options|metode bayar|cara bayar|bayar pakai|bisa transfer|cash on delivery|cod|gagal bayar|payment failed|pay|bayar|pembayaran|metode pembayaran)\b/u' => ' pembayaran ',
+            '/\b(?:cara pesan|cara order|bagaimana pesan|how to order|place an order)\b/u' => ' pembelian ',
+            '/\b(?:payment successful|payment succeeded|paid successfully|already paid|i have paid|i\x27ve paid|pembayaran berhasil|pembayaran(?:nya)?\s+(?:sudah\s+)?(?:masuk|diterima|sukses|berhasil)|sudah bayar|sudah transfer|pembayaran sukses)\b/u' => ' konfirmasi pembayaran ',
+            '/\b(?:belum sampai|terlambat|lewat estimasi|delayed delivery|late delivery|delivery is late|delivery delayed)\b/u' => ' pengiriman estimasi ',
+            '/\bhow\s+can\s+i\s+check\s+where\s+my\s+(?:order|parcel|package|shipment)\b|\bwhere\s+can\s+i\s+(?:check|track)\s+(?:my\s+)?(?:order|parcel|package|shipment)\b/u' => ' pengiriman pelacakan ',
+            '/\b(?:melacak|lacak|track|tracking|resi|nomor resi|tracking number|waybill)\s+(?:status\s+)?(?:pesanan|order|paket|barang|kiriman)?\b|\b(?:cek\s+(?:status\s+)?pesanan|order\s+tracking|order\s+status|where\s+(?:is|\x27s)\s+my\s+(?:order|parcel|package|shipment))\b/u' => ' status pelacakan ',
+            '/\b(?:physical|printed)\s+catalog(?:ue)?\b|\bkatalog\s+fisik\b/u' => ' katalog cetak ',
+            '/\b(?:delivery\s+estimates?|estimated\s+delivery|delivery\s+time|lama\s+pengiriman|estimasi\s+(?:pengiriman|sampai|tiba))\b/u' => ' pengiriman estimasi ',
+            '/\b(?:delivery\s+coverage|shipping\s+coverage|cakupan\s+pengiriman)\b/u' => ' cakupan pengiriman ',
+            '/\b(?:delivery\s+to|deliver\s+to|shipping\s+to|dikirim\s+ke|pengiriman\s+ke)\s+(?:outside\s+)?(?:java|jawa|bali|madura|indonesia|luar\s+jawa)\b/u' => ' cakupan pengiriman tujuan ',
+            '/\b(?:outside\s+java|outside\s+of\s+java|luar\s+jawa|seluruh\s+indonesia|across\s+indonesia)\b/u' => ' cakupan pengiriman tujuan ',
+            '/\b(?:harganya berapa|berapa harga|price range|banderol|cost of)\b/u' => ' harga ',
+            '/\b(?:diskon|discount|potongan harga|kode promo|voucher)\b/u' => ' promo ',
             '/\b(?:assembly|installation|install|dirakit|perakitan|pemasangan)\b/u' => ' perakitan ',
             '/\b(?:colour|color)\b/u' => ' warna ',
             '/\b(?:dimensions?|measurements?|size)\b/u' => ' ukuran ',
@@ -1015,8 +1050,10 @@ PROMPT;
             'chair'=>'kursi', 'silla'=>'kursi', 'sillas'=>'kursi', 'chaise'=>'kursi', 'stuhl'=>'kursi', '椅子'=>'kursi', 'كرسي'=>'kursi', 'เก้าอี้'=>'kursi', 'कुर्सी'=>'kursi',
             'table'=>'meja', 'mesa'=>'meja', 'tisch'=>'meja', 'tavolo'=>'meja', '桌子'=>'meja', 'テーブル'=>'meja', 'โต๊ะ'=>'meja', 'मेज'=>'meja',
             'armario'=>'lemari', 'armoire'=>'lemari', 'schrank'=>'lemari', '衣柜'=>'lemari',
-            'estoque'=>'stok', 'lagerbestand'=>'stok', '库存'=>'stok', '在庫'=>'stok', '재고'=>'stok', 'مخزون'=>'stok', 'สต็อก'=>'stok', 'स्टॉक'=>'stok',
+            'estoque'=>'persediaan', 'lagerbestand'=>'persediaan', '库存'=>'persediaan', '在庫'=>'persediaan', '재고'=>'persediaan', 'مخزون'=>'persediaan', 'สต็อก'=>'persediaan', 'स्टॉक'=>'persediaan',
             'disponible'=>'tersedia', 'disponível'=>'tersedia', 'verfügbar'=>'tersedia', 'उपलब्ध'=>'tersedia',
+            'parcel'=>'pengiriman', 'package'=>'pengiriman', 'shipment'=>'pengiriman', 'tracking'=>'pelacakan', 'track'=>'pelacakan', 'resi'=>'pelacakan',
+            'estimate'=>'estimasi', 'estimates'=>'estimasi', 'late'=>'estimasi', 'delay'=>'estimasi',
             'ongkir'=>'shipping', 'pengiriman'=>'shipping', 'delivery'=>'shipping', 'expedition'=>'shipping', 'ekspedisi'=>'shipping', 'kurir'=>'shipping',
             'warranty'=>'garansi', 'guarantee'=>'garansi',
             'discount'=>'promo', 'promotion'=>'promo', 'voucher'=>'promo', 'sale'=>'promo',
@@ -1030,7 +1067,19 @@ PROMPT;
         ];
         foreach ($synonyms as $foreign => $local) $normalized = str_replace($foreign, ' ' . $local . ' ', $normalized);
         $words = preg_split('/[^\p{L}\p{N}]+/u', $normalized, -1, PREG_SPLIT_NO_EMPTY) ?: [];
-        $stop = ['saya','mau','ingin','cari','mencari','carikan','cariin','bantu','bantuan','pilih','produk','product','furniture','furnitur','perabot','mebel','interior','katalog','yang','untuk','dengan','dan','atau','ada','dong','nih','sih','ya','kah','apakah','tolong','kak','kakak','wawa','bisa','dapat','berapa','harga','warna','bahan','ukuran','di','bawah','budget','rp','juta','jt','stok','stock','tersedia','ketersediaan','available','availability','in','remaining','left','how','many','the','is','are','do','does','can','what','where','please','for','with','you','my','we','want','need','have','or','on','of','to','this','that','looking','price','cost','rekomendasi','recommendation','pilihan'];
-        return array_values(array_unique(array_filter($words, static fn($word) => mb_strlen($word) > 1 && ! in_array($word, $stop, true))));
+        $stop = ['saya','aku','mau','ingin','cari','mencari','carikan','cariin','bantu','bantuan','pilih','produk','product','furniture','furnitur','perabot','mebel','interior','barang','mengetahui','caranya','cara','bagaimana','gimana','masih','sudah','tersebut','yang','untuk','dengan','dan','atau','ada','dong','nih','sih','ya','kah','apakah','tolong','kak','kakak','wawa','bisa','dapat','berapa','harga','warna','bahan','ukuran','di','ke','luar','bawah','budget','rp','juta','jt','stok','stock','tersedia','ketersediaan','available','availability','in','remaining','left','how','many','the','is','are','do','does','can','what','where','please','for','with','you','my','we','want','need','have','or','on','of','to','this','that','looking','price','cost','if','already','it','confirm','keluar','melihat','cek','check','menerima','sampai','saat','kalau','fisik','physical','membeli','nya','lah','kah','pun','rekomendasi','recommendation','pilihan'];
+        $meaningful = [];
+        foreach ($words as $word) {
+            // Indonesian possessive/particle suffixes otherwise make ordinary
+            // variants such as "barangnya" miss the canonical FAQ term "barang".
+            foreach (['nya', 'lah', 'kah', 'pun'] as $suffix) {
+                if (mb_strlen($word) > mb_strlen($suffix) + 2 && str_ends_with($word, $suffix)) {
+                    $word = mb_substr($word, 0, -mb_strlen($suffix));
+                    break;
+                }
+            }
+            if (mb_strlen($word) > 1 && ! in_array($word, $stop, true)) $meaningful[] = $word;
+        }
+        return array_values(array_unique($meaningful));
     }
 }
