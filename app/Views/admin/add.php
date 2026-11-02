@@ -1692,7 +1692,7 @@ const App = () => {
                           </div>
                           <div className="image-actions">
                             <label htmlFor={`replace-file-${ind_v}-${ind_g}`} title="Ganti foto" aria-label={`Ganti foto ${ind_g + 1}`}><i className="material-icons" aria-hidden="true">edit</i></label>
-                            <button type="button" className="danger" title="Hapus foto" onClick={() => removeImage(ind_v, ind_g)} aria-label={`Hapus foto ${ind_g + 1}`}><i className="material-icons">delete</i></button>
+                            <button type="button" className="danger" title="Hapus foto" aria-label={`Hapus foto ${ind_g + 1}`} data-ilena-confirm-skip onClick={() => removeImage(ind_v, ind_g)}><i className="material-icons">delete</i></button>
                             {ind_g > 0 && <button type="button" className="make-primary" onClick={() => moveImageToFirst(ind_v, ind_g)} title={ind_v === 0 ? 'Jadikan cover katalog' : 'Jadikan foto utama varian'} aria-label={ind_v === 0 ? 'Jadikan cover katalog' : 'Jadikan foto utama varian'}><i className="material-icons" aria-hidden="true">star</i></button>}
                           </div>
                         </div>

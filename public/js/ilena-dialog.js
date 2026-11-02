@@ -148,6 +148,7 @@
         // Bulk order removal has its own stronger confirmation flow (password
         // and typed DELETE); do not stack a second popup over that dialog.
         if (control.matches('[data-delete-order], [data-delete-selected-orders]') || control.closest('#deleteOrderDialog')) return;
+        if (control.hasAttribute('data-ilena-confirm-skip')) return;
         const form = control.form || control.closest('form');
         if (form && (form.dataset.ilenaConfirm || control.dataset.ilenaConfirm || isDestructiveUrl(control.formAction || form.action))) return;
 

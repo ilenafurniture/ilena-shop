@@ -710,7 +710,7 @@ $variantColorPresets = [
                                     <img src="/product-cover/<?= $produk['id'] ?>?slot=<?= urlencode(trim((string) $u)); ?>&proxy=1&v=<?= $imageVersion; ?>" alt="">
                                     <span class="thumb-index" aria-label="Foto ke-<?= $ind_u + 1; ?>"><?= $ind_u + 1; ?></span>
                                     <span class="thumb-drag" aria-hidden="true"><i class="material-icons">drag_indicator</i></span>
-                                    <button class="x" type="button" onclick="hapusSubvarian('<?= $ind_v + 1; ?>','<?= $ind_u + 1; ?>',event)" title="Hapus foto <?= $ind_u + 1; ?>" aria-label="Hapus foto <?= $ind_u + 1; ?>"><i class="material-icons" aria-hidden="true">delete_outline</i></button>
+                                    <button class="x" type="button" data-ilena-confirm-skip onclick="hapusSubvarian('<?= $ind_v + 1; ?>','<?= $ind_u + 1; ?>',event)" title="Hapus foto <?= $ind_u + 1; ?>" aria-label="Hapus foto <?= $ind_u + 1; ?>"><i class="material-icons" aria-hidden="true">delete_outline</i></button>
                                 </div>
                                 <?php } ?>
                             </div>
@@ -903,7 +903,7 @@ function uploadFile(event) {
       <div class="thumb" draggable="true" ondragstart="startEditImageDrag(event)" ondragend="endEditImageDrag(event)" ondragover="event.preventDefault()" ondrop="dropEditImage(event,'${varianNum}')" data-file-id="${event.target.id}" title="Seret untuk mengubah urutan">
         <span class="thumb-index">${Number(subVarianNum)}</span>
         <span class="thumb-drag" aria-hidden="true"><i class="material-icons">drag_indicator</i></span>
-        <button class="x" type="button" title="Hapus foto" aria-label="Hapus foto"><i class="material-icons" aria-hidden="true">delete_outline</i></button>
+        <button class="x" type="button" data-ilena-confirm-skip title="Hapus foto" aria-label="Hapus foto"><i class="material-icons" aria-hidden="true">delete_outline</i></button>
         <img src="${blobUrl}" alt="">
       </div>`;
     const itemGambarElm = buatElementDariHTML(itemGambar);
