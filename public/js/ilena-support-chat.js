@@ -43,7 +43,8 @@
   const suggestions = widget.querySelector('.ilena-chat-suggestions');
   const teaser = widget.querySelector('[data-chat-greeting]');
   const wawaImageBase = widget.dataset.wawaImageBase || '';
-  const chatLocale = widget.dataset.chatLocale === 'en' ? 'en' : 'id';
+  const localeCandidate = String(widget.dataset.chatLocale || document.documentElement.lang || '').trim();
+  const chatLocale = /^en(?:[-_]|$)/i.test(localeCandidate) || /^\/en(?:\/|$)/i.test(location.pathname) ? 'en' : 'id';
   const greetingStorageKey = key => `ilenaChatGreeting:${chatLocale}:${key}`;
   const isEnglish = chatLocale === 'en';
   const chatCopy = {
