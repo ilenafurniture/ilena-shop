@@ -660,8 +660,8 @@
 }
 @media(min-width:641px) and (max-width:1099px){ .form-grid { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap:22px; } }
 /* Compact photo controls: keep the image prominent and actions on the thumbnail. */
-.page-wrap .image-tile { position:relative; width:104px; padding:0; border:1px solid #e5dfd4; border-radius:8px; background:#f4f1eb; overflow:hidden; }
-.page-wrap .image-tile .item-gambar { width:102px; height:102px; margin:0; border:0; border-radius:0; }
+.page-wrap .image-tile { position:relative; width:116px; padding:0; border:1px solid #e5dfd4; border-radius:8px; background:#f4f1eb; overflow:hidden; }
+.page-wrap .image-tile .item-gambar { width:114px; height:114px; margin:0; border:0; border-radius:0; }
 .page-wrap .image-tile .drag-handle { position:absolute; z-index:4; top:5px; left:5px; width:30px; min-height:30px; border:1px solid rgba(255,255,255,.6); border-radius:7px; background:rgba(35,32,27,.72); color:#fff; }
 .page-wrap .image-tile .img-no { top:7px; right:7px; left:auto; background:rgba(255,255,255,.94); }
 .page-wrap .image-tile .cover-chip { bottom:7px; left:7px; max-width:62px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:9px; }
@@ -674,8 +674,8 @@
 .page-wrap .image-tile .image-actions .material-icons { margin:0; font-size:17px; }
 .page-wrap .image-tile.is-drop-target { border-radius:8px; }
 @media(max-width:640px) {
-    .page-wrap .image-tile { width:100px; }
-    .page-wrap .image-tile .item-gambar { width:98px; height:98px; }
+    .page-wrap .image-tile { width:108px; }
+    .page-wrap .image-tile .item-gambar { width:106px; height:106px; }
     .page-wrap .image-tile .image-actions button,.page-wrap .image-tile .image-actions label { width:28px; min-width:28px; min-height:28px; height:28px; }
 }
 </style>
@@ -1109,8 +1109,9 @@ const App = () => {
           return;
         }
 
-        window.IlenaDialog.alert(`Produk berhasil ${idProduct ? 'diubah' : 'ditambahkan'}.`, { title: 'Berhasil' })
-          .then(() => { window.location.href = `<?= base_url('admin/product'); ?>`; });
+        // Save confirmation is a flash notice on the destination page. Do not
+        // block navigation behind a modal that requires an extra click.
+        window.location.assign(`<?= base_url('admin/product'); ?>`);
       });
       xhr.addEventListener('error', () => {
         setLoading(false);

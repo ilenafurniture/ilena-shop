@@ -355,3 +355,46 @@
 @media (prefers-reduced-motion: reduce) {
     .ilena-admin-redesign *, .ilena-admin-redesign *::before, .ilena-admin-redesign *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* Restyle every remaining in-flow admin alert, including empty states, with
+   Ilena's warm paper palette. Flash feedback is promoted to the custom toast. */
+.ilena-admin-redesign #admin-main .alert {
+    --admin-alert-accent: #8f302f;
+    --admin-alert-tint: #fffdfa;
+    position: relative;
+    box-sizing: border-box;
+    min-height: 48px;
+    margin: 12px 0;
+    padding: 13px 16px 13px 49px !important;
+    border: 1px solid #e8e0d7 !important;
+    border-left: 3px solid var(--admin-alert-accent) !important;
+    border-radius: 11px !important;
+    background: var(--admin-alert-tint) !important;
+    color: #4e4740 !important;
+    box-shadow: 0 5px 18px rgba(47, 37, 29, .055) !important;
+    font: 500 13px/1.55 "Manrope", system-ui, sans-serif;
+}
+.ilena-admin-redesign #admin-main .alert::before {
+    position: absolute;
+    top: 12px;
+    left: 14px;
+    display: grid;
+    width: 23px;
+    height: 23px;
+    place-items: center;
+    border: 1px solid color-mix(in srgb, var(--admin-alert-accent) 18%, transparent);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--admin-alert-accent) 8%, white);
+    color: var(--admin-alert-accent);
+    content: var(--admin-alert-symbol, "i");
+    font: 700 12px/1 "Manrope", system-ui, sans-serif;
+}
+.ilena-admin-redesign #admin-main .alert-success { --admin-alert-accent: #55775d; --admin-alert-tint: #fbfdf9; --admin-alert-symbol: "✓"; }
+.ilena-admin-redesign #admin-main .alert-danger { --admin-alert-accent: #a42b32; --admin-alert-tint: #fffafa; --admin-alert-symbol: "!"; }
+.ilena-admin-redesign #admin-main .alert-warning { --admin-alert-accent: #8b642b; --admin-alert-tint: #fffdf8; --admin-alert-symbol: "!"; }
+.ilena-admin-redesign #admin-main .alert-info,
+.ilena-admin-redesign #admin-main .alert-light { --admin-alert-accent: #806448; --admin-alert-tint: #fffdfa; --admin-alert-symbol: "i"; }
+.ilena-admin-redesign #admin-main .alert-primary,
+.ilena-admin-redesign #admin-main .alert-secondary,
+.ilena-admin-redesign #admin-main .alert-dark { --admin-alert-accent: #65594b; --admin-alert-tint: #fffdfa; --admin-alert-symbol: "i"; }
+.ilena-admin-redesign #admin-main .alert :is(a, .alert-link) { color: #81292e !important; font-weight: 700; text-decoration-thickness: 1px; text-underline-offset: 2px; }

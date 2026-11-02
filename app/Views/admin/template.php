@@ -215,7 +215,7 @@ $this->setVar('websiteOrderTodoCount', $websiteOrderTodoCount);
         }
     }
     </style>
-    <link rel="stylesheet" href="<?= base_url('css/ilena-admin-redesign.css?v=20261031d'); ?>">
+    <link rel="stylesheet" href="<?= base_url('css/ilena-admin-redesign.css?v=' . (is_file(FCPATH . 'css/ilena-admin-redesign.css') ? filemtime(FCPATH . 'css/ilena-admin-redesign.css') : '1')); ?>">
     <link rel="stylesheet" href="<?= base_url('css/ilena-dialog.css?v=' . filemtime(FCPATH . 'css/ilena-dialog.css')); ?>">
 </head>
 

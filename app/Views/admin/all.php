@@ -673,10 +673,10 @@ $barangThumbUrl = function ($product) {
     <?php endif; ?>
 
     <?php if (session()->getFlashdata('success')): ?>
-        <div class="alert alert-success"><?= esc(session()->getFlashdata('success')); ?></div>
+        <div class="pemberitahuan hijau" role="status" data-toast-duration="3200"><?= esc(session()->getFlashdata('success')); ?></div>
     <?php endif; ?>
     <?php if (session()->getFlashdata('error')): ?>
-        <div class="alert alert-danger"><?= esc(session()->getFlashdata('error')); ?></div>
+        <div class="pemberitahuan" role="alert" data-toast-duration="4200"><?= esc(session()->getFlashdata('error')); ?></div>
     <?php endif; ?>
 
     <div id="bulkToolbar" class="bulk-toolbar" aria-live="polite">

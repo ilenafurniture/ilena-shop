@@ -29,87 +29,46 @@
 @media (max-width: 480px) { .ilena-dialog__panel { padding: 22px; } .ilena-dialog__title { font-size: 20px; } }
 @media (prefers-reduced-motion: reduce) { .ilena-dialog { transition: none; } }
 
-/* Shared, non-blocking top-right notice system for storefront and admin. */
+/* Lightweight Ilena notice: warm editorial surface, not a framework alert. */
 .ilena-toast-stack {
-    position: fixed;
-    z-index: 6000;
-    top: max(16px, env(safe-area-inset-top));
-    right: max(16px, env(safe-area-inset-right));
-    display: flex;
-    width: min(420px, calc(100vw - 32px));
-    max-height: calc(100dvh - 32px);
-    flex-direction: column;
-    gap: 10px;
-    overflow: visible;
-    pointer-events: none;
+    position: fixed; z-index: 6000; top: max(18px, env(safe-area-inset-top)); right: max(18px, env(safe-area-inset-right));
+    display: flex; width: min(390px, calc(100vw - 36px)); max-height: calc(100dvh - 36px); flex-direction: column; gap: 10px;
+    overflow: visible; pointer-events: none;
 }
 .ilena-toast {
-    --toast-accent: #a42b32;
-    --toast-mark-bg: #f8eeee;
-    box-sizing: border-box;
-    position: relative;
-    display: grid;
-    grid-template-columns: 24px minmax(0, 1fr) 34px;
-    align-items: start;
-    gap: 11px;
-    width: 100%;
-    max-height: min(30vh, 220px);
-    overflow: auto;
-    padding: 14px 10px 14px 14px;
-    border: 1px solid #e7dfd7;
-    border-left: 4px solid var(--toast-accent);
-    border-radius: 8px;
-    background: #fff;
-    color: #292522;
-    box-shadow: 0 14px 38px rgba(31, 25, 22, .16);
-    pointer-events: auto;
-    animation: ilena-toast-enter .22s ease-out both;
+    --toast-accent: #a42b32; --toast-tint: #f8eeee; --toast-duration: 3200ms;
+    box-sizing: border-box; position: relative; display: grid; grid-template-columns: 38px minmax(0, 1fr) 34px; align-items: start;
+    gap: 11px; width: 100%; max-height: min(30vh, 220px); overflow: auto; padding: 15px 12px 17px 15px;
+    border: 1px solid #e9e1d7; border-radius: 13px; background: rgba(255, 253, 249, .98); color: #292522;
+    box-shadow: 0 12px 34px rgba(37, 29, 24, .13), 0 2px 8px rgba(37, 29, 24, .05);
+    pointer-events: auto; animation: ilena-toast-enter .24s cubic-bezier(.2,.75,.25,1) both;
     transition: opacity .2s ease, transform .2s ease;
 }
-.ilena-toast--success { --toast-accent: #47745a; --toast-mark-bg: #edf5ef; }
-.ilena-toast--warning { --toast-accent: #9a681e; --toast-mark-bg: #fbf4e7; }
-.ilena-toast--error { --toast-accent: #a42b32; --toast-mark-bg: #f8eeee; }
-.ilena-toast__mark {
-    display: grid;
-    width: 23px;
-    height: 23px;
-    place-items: center;
-    border-radius: 50%;
-    background: var(--toast-mark-bg);
-    color: var(--toast-accent);
-    font: 700 14px/1 Arial, sans-serif;
-}
-.ilena-toast__copy {
-    min-width: 0;
-    margin: 1px 0 0;
-    color: #292522;
-    font: 500 14px/1.55 "Manrope", system-ui, sans-serif;
-    overflow-wrap: anywhere;
-    white-space: pre-line;
-}
-.ilena-toast__close {
-    display: grid;
-    width: 34px;
-    height: 34px;
-    place-items: center;
-    margin: -6px -3px 0 0;
-    border: 0;
-    border-radius: 50%;
-    background: transparent;
-    color: #5e5751;
-    font: 24px/1 Arial, sans-serif;
-    cursor: pointer;
-}
-.ilena-toast__close:hover { background: #f4f0ec; }
-.ilena-toast__close:focus-visible { outline: 3px solid rgba(164, 43, 50, .35); outline-offset: 2px; }
-.ilena-toast.is-leaving { opacity: 0; transform: translateY(-7px); pointer-events: none; }
-@keyframes ilena-toast-enter { from { opacity: 0; transform: translateY(-7px); } to { opacity: 1; transform: translateY(0); } }
+.ilena-toast--success { --toast-accent: #55775d; --toast-tint: #edf3ec; }
+.ilena-toast--warning { --toast-accent: #8b642b; --toast-tint: #f7f0e4; }
+.ilena-toast--error { --toast-accent: #a42b32; --toast-tint: #f8eeee; }
+.ilena-toast__mark { display: grid; width: 36px; height: 36px; place-items: center; border: 1px solid color-mix(in srgb, var(--toast-accent) 18%, transparent); border-radius: 11px; background: var(--toast-tint); color: var(--toast-accent); }
+.ilena-toast__mark svg { display: block; width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.ilena-toast__body { min-width: 0; padding-top: 1px; }
+.ilena-toast__title { margin: 0 0 3px; color: #302a25; font: 650 13px/1.35 "Manrope", system-ui, sans-serif; letter-spacing: .01em; }
+.ilena-toast__copy { min-width: 0; margin: 0; color: #655d55; font: 450 13px/1.5 "Manrope", system-ui, sans-serif; overflow-wrap: anywhere; white-space: pre-line; }
+.ilena-toast__close { display: grid; width: 32px; height: 32px; place-items: center; margin: -4px -4px 0 0; border: 0; border-radius: 9px; background: transparent; color: #746b63; font: 22px/1 system-ui, sans-serif; cursor: pointer; }
+.ilena-toast__close:hover { background: #f2eee8; color: #302a25; }
+.ilena-toast__close:focus-visible { outline: 3px solid rgba(164, 43, 50, .3); outline-offset: 1px; }
+.ilena-toast__progress { position: absolute; right: 13px; bottom: 7px; left: 13px; height: 2px; overflow: hidden; border-radius: 2px; background: #eee8df; }
+.ilena-toast__progress::after { display: block; width: 100%; height: 100%; border-radius: inherit; background: var(--toast-accent); content: ""; transform-origin: left; animation: ilena-toast-countdown var(--toast-duration) linear both; }
+.ilena-toast.is-paused .ilena-toast__progress::after { animation-play-state: paused; }
+.ilena-toast.is-leaving { opacity: 0; transform: translateY(-5px); pointer-events: none; }
+@keyframes ilena-toast-enter { from { opacity: 0; transform: translateY(-6px) scale(.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes ilena-toast-countdown { to { transform: scaleX(0); } }
 @media (max-width: 700px) {
-    .ilena-toast-stack { top: max(10px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right)); width: min(420px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); gap: 8px; }
-    .ilena-toast { max-height: min(27vh, 190px); gap: 9px; padding: 12px 8px 12px 12px; }
-    .ilena-toast__copy { font-size: 14px; }
+    .ilena-toast-stack { top: max(11px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right)); width: min(390px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); gap: 8px; }
+    .ilena-toast { max-height: min(27vh, 190px); grid-template-columns: 34px minmax(0,1fr) 32px; gap: 9px; padding: 12px 10px 15px 12px; }
+    .ilena-toast__mark { width: 33px; height: 33px; border-radius: 10px; }
+    .ilena-toast__title { font-size: 13px; }
+    .ilena-toast__copy { font-size: 12.5px; }
 }
-@media (prefers-reduced-motion: reduce) { .ilena-toast, .ilena-toast.is-leaving { animation: none; transition: none; } }
+@media (prefers-reduced-motion: reduce) { .ilena-toast, .ilena-toast.is-leaving { animation: none; transition: none; } .ilena-toast__progress::after { animation: none; transform: scaleX(.35); } }
 
 /* Legacy admin/page notices use the same top-right placement as Ilena toasts. */
 .ilena-admin-redesign .notif,

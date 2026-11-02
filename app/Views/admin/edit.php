@@ -444,7 +444,7 @@ $variantColorPresets = [
 }
 .page .img-preview { max-width: 330px; }
 .page .list-images { gap: 8px; }
-.page .thumb { width: 92px; height: 92px; border: 1px solid #e2ddd3; border-radius: 8px; background: #eeeae1; overflow:hidden; }
+.page .thumb { width: 102px; height: 102px; border: 1px solid #e2ddd3; border-radius: 8px; background: #eeeae1; overflow:hidden; }
 .page .thumb img { display:block; width:100%; height:100%; object-fit:cover; }
 .page .thumb .x { top:auto; right:5px; bottom:5px; z-index:2; display:grid; place-items:center; width:30px; height:30px; padding:0; border:1px solid rgba(255,255,255,.72); border-radius:7px; background:rgba(255,255,255,.95); color:#9e3831; cursor:pointer; }
 .page .thumb .x:hover { background:#fff5f3; }

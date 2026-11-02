@@ -953,6 +953,7 @@ class AdminController extends BaseController
             return $this->response->setStatusCode(500)->setJSON(['pesan' => 'Produk dan saldo awal gagal disimpan; perubahan data dibatalkan.']);
         }
 
+        session()->setFlashdata('success', 'Berhasil menambahkan produk ' . $data['nama']);
         return $this->response
             ->setStatusCode(200)
             ->setJSON([
@@ -1636,6 +1637,7 @@ class AdminController extends BaseController
                 if (!empty($backup['r2Backup'])) @unlink($backup['r2Backup']);
             }
 
+            session()->setFlashdata('success', 'Produk berhasil diperbarui.');
             return $this->response->setStatusCode(200)->setJSON([
                 'pesan'   => 'Berhasil mengubah produk. Saldo stok mengikuti transaksi terbaru; perubahan stok melalui Mutasi.',
                 'payload' => $payload,
