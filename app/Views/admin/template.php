@@ -220,19 +220,6 @@ $this->setVar('websiteOrderTodoCount', $websiteOrderTodoCount);
 </head>
 
 <body class="ilena-admin-redesign">
-    <div class="toast start-50 translate-middle">
-        <div class="toast-body">
-            <p aria-live="polite" aria-atomic="true"></p>
-            <div class="mt-2 pt-2 border-top d-flex gap-1">
-                <form method="post">
-                    <?= csrf_field(); ?>
-                    <button type="submit" class="btn btn-danger btn-sm">Ok</button>
-                </form>
-                <button type="button" class="btn btn-secondary btn-sm" onclick="hapusToast()">Batal</button>
-            </div>
-        </div>
-    </div>
-
     <div id="notif" class="notif">Isi notif</div>
 
     <?php if ($needsBootstrapJs): ?>
@@ -315,27 +302,6 @@ $this->setVar('websiteOrderTodoCount', $websiteOrderTodoCount);
         setTimeout(() => notifElm.classList.remove('show'), 2000);
     }
 
-    const toastElm = document.querySelector(".toast");
-    const toastTeksElm = document.querySelector(".toast p");
-    const toastOkElm = document.querySelector(`.toast form`);
-    const toastCloseElm = document.querySelector(`.toast button[type="button"]`);
-
-    function triggerToast(text, linkAction) {
-        toastElm.classList.add("show");
-        toastTeksElm.innerHTML = text;
-        toastOkElm.action = linkAction || "";
-        if (!linkAction) {
-            toastOkElm.classList.add('d-none');
-            toastCloseElm.innerHTML = 'Ok';
-        } else {
-            toastOkElm.classList.remove('d-none');
-            toastCloseElm.innerHTML = 'Batal';
-        }
-    }
-
-    function hapusToast() {
-        toastElm.classList.remove("show");
-    }
     </script>
     <script defer src="<?= base_url('js/ilena-notices.js?v=' . (is_file(FCPATH . 'js/ilena-notices.js') ? filemtime(FCPATH . 'js/ilena-notices.js') : '1')); ?>"></script>
     <script src="<?= base_url('js/ilena-dialog.js?v=' . filemtime(FCPATH . 'js/ilena-dialog.js')); ?>"></script>

@@ -23,6 +23,21 @@
         return dialog;
     };
 
+    const allowedSubmit = new WeakSet();
+    const allowedDeleteClick = new WeakSet();
+    const isAdminPage = document.body.classList.contains('ilena-admin-redesign');
+    const destructivePath = /(?:^|\/)(?:delete[a-z0-9_-]*|hapus[a-z0-9_-]*|remove[a-z0-9_-]*|destroy[a-z0-9_-]*|purge[a-z0-9_-]*|del)(?:\/|$)/i;
+    const isDestructiveUrl = value => {
+        if (!value) return false;
+        try {
+            const url = new URL(value, window.location.href);
+            return url.origin === window.location.origin
+                && (destructivePath.test(url.pathname) || /^(delete|hapus)$/i.test(url.searchParams.get('action') || ''));
+        } catch (_) {
+            return false;
+        }
+    };
+
     const open = ({ title, message, confirm = false, confirmText, cancelText, tone = 'info' }) => new Promise(resolve => {
         const dialog = ensureDialog();
         const form = dialog.querySelector('form');
@@ -35,6 +50,7 @@
         titleNode.textContent = title || (confirm ? 'Konfirmasi' : 'Informasi');
         messageNode.textContent = String(message ?? '');
         mark.dataset.tone = tone;
+        dialog.dataset.tone = tone;
         ok.textContent = confirmText || (confirm ? 'Lanjutkan' : 'Mengerti');
         cancel.textContent = cancelText || 'Batal';
         cancel.hidden = !confirm;
@@ -85,24 +101,33 @@
     // Existing alert() callers now use the same branded, accessible dialog.
     window.alert = message => { void api.alert(message); };
 
-    const allowedSubmit = new WeakSet();
     document.addEventListener('submit', async event => {
         const form = event.target;
         if (!(form instanceof HTMLFormElement)) return;
+        // This sensitive flow already requires a custom dialog, the Dev
+        // password, a typed DELETE, and an acknowledgement checkbox.
+        if (form.id === 'deleteOrderForm') return;
         const submitter = event.submitter;
-        const message = submitter?.dataset.ilenaConfirm || form.dataset.ilenaConfirm;
-        if (!message) return;
         if (allowedSubmit.has(form)) {
             allowedSubmit.delete(form);
             return;
         }
 
+        const explicitMessage = submitter?.dataset.ilenaConfirm || form.dataset.ilenaConfirm || form.dataset.confirm;
+        const submitterLabel = [submitter?.getAttribute('aria-label') || '', submitter?.title || '', submitter?.textContent || ''].join(' ');
+        const destructive = (isAdminPage && isDestructiveUrl(submitter?.formAction || form.action))
+            || form.hasAttribute('data-ilena-destructive')
+            || (isAdminPage && /\b(hapus|delete|remove|destroy)\b/i.test(submitterLabel));
+        if (!explicitMessage && !destructive) return;
+
         event.preventDefault();
         event.stopImmediatePropagation();
-        const accepted = await api.confirm(message, {
-            title: submitter?.dataset.ilenaConfirmTitle || form.dataset.ilenaConfirmTitle || 'Konfirmasi tindakan',
-            confirmText: submitter?.dataset.ilenaConfirmButton || form.dataset.ilenaConfirmButton || 'Ya, lanjutkan',
-            tone: form.dataset.ilenaConfirmTone || 'warning'
+        const accepted = await api.confirm(explicitMessage || form.dataset.ilenaDeleteMessage || (localeIsEnglish()
+            ? 'This permanently deletes data and cannot be undone. Continue?'
+            : 'Data akan dihapus permanen dan tidak dapat dikembalikan. Lanjutkan?'), {
+            title: submitter?.dataset.ilenaConfirmTitle || form.dataset.ilenaConfirmTitle || (localeIsEnglish() ? 'Confirm deletion' : 'Konfirmasi penghapusan'),
+            confirmText: submitter?.dataset.ilenaConfirmButton || form.dataset.ilenaConfirmButton || (destructive ? (localeIsEnglish() ? 'Yes, delete' : 'Ya, hapus') : (localeIsEnglish() ? 'Continue' : 'Ya, lanjutkan')),
+            tone: form.dataset.ilenaConfirmTone || (destructive ? 'error' : 'warning')
         });
         if (!accepted) return;
 
@@ -110,4 +135,59 @@
         if (typeof form.requestSubmit === 'function') form.requestSubmit(event.submitter || undefined);
         else form.submit();
     }, true);
+
+    document.addEventListener('click', async event => {
+        if (!isAdminPage) return;
+        const control = event.target.closest?.('button, a, input[type="button"], input[type="submit"], [role="button"]');
+        if (!control) return;
+        if (allowedDeleteClick.has(control)) {
+            allowedDeleteClick.delete(control);
+            return;
+        }
+
+        // Bulk order removal has its own stronger confirmation flow (password
+        // and typed DELETE); do not stack a second popup over that dialog.
+        if (control.matches('[data-delete-order], [data-delete-selected-orders]') || control.closest('#deleteOrderDialog')) return;
+        const form = control.form || control.closest('form');
+        if (form && (form.dataset.ilenaConfirm || control.dataset.ilenaConfirm || isDestructiveUrl(control.formAction || form.action))) return;
+
+        const href = control instanceof HTMLAnchorElement ? control.href : '';
+        const hasDeleteLabel = /\b(hapus|delete|remove|destroy)\b/i.test([
+            control.getAttribute('aria-label') || '', control.getAttribute('title') || '',
+            control.dataset.act === 'del' ? 'hapus' : '', control.textContent || ''
+        ].join(' '));
+        const destructiveLink = isDestructiveUrl(href);
+        const draftDeleteButton = control.matches('button, input[type="button"], [role="button"]')
+            && control.type !== 'submit' && hasDeleteLabel;
+        if (!destructiveLink && !draftDeleteButton) return;
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        const english = localeIsEnglish();
+        const controlLabel = [control.getAttribute('aria-label') || '', control.title || '', control.textContent || ''].join(' ').trim();
+        const draftItem = controlLabel.replace(/\b(hapus|delete|remove)\b\s*/i, '').replace(/[?!.:]+$/, '').trim();
+        const accepted = await api.confirm(
+            control.dataset.ilenaDeleteMessage || (destructiveLink
+                ? (english ? 'This permanently deletes data and cannot be undone. Continue?' : 'Data akan dihapus permanen dan tidak dapat dikembalikan. Lanjutkan?')
+                : (english
+                    ? `Remove ${draftItem || 'this item'} from the form? Changes take effect only after you save.`
+                    : `Hapus ${draftItem || 'item ini'} dari formulir? Perubahan berlaku setelah Anda menekan Simpan.`)),
+            {
+                title: control.dataset.ilenaConfirmTitle || (english ? 'Confirm deletion' : 'Konfirmasi penghapusan'),
+                confirmText: english ? 'Yes, delete' : 'Ya, hapus',
+                tone: 'error'
+            }
+        );
+        if (!accepted) return;
+        if (destructiveLink) {
+            window.location.assign(href);
+            return;
+        }
+        allowedDeleteClick.add(control);
+        control.click();
+    }, true);
+
+    function localeIsEnglish() {
+        return document.documentElement.lang.toLowerCase().startsWith('en');
+    }
 })();

@@ -337,11 +337,15 @@
                                     aria-label="Edit artikel">
                                     <i class="material-icons">edit</i>
                                 </a>
-                                <button class="btn-icon danger js-delete-article" type="button" title="Hapus artikel"
-                                    aria-label="Hapus artikel <?= esc($a['judul'] ?? '', 'attr'); ?>?"
-                                    data-title="<?= esc($a['judul'] ?? '', 'attr'); ?>" data-url="/admin/deletearticle/<?= esc($a['id'] ?? '', 'attr'); ?>">
-                                    <i class="material-icons">delete</i>
-                                </button>
+                                <form class="d-inline" method="post" action="/admin/deletearticle/<?= esc($a['id'] ?? '', 'attr'); ?>"
+                                    data-ilena-confirm="<?= esc('Hapus artikel ' . ($a['judul'] ?? '') . '? Tindakan ini tidak dapat dibatalkan.'); ?>"
+                                    data-ilena-confirm-title="Hapus artikel" data-ilena-confirm-tone="error">
+                                    <?= csrf_field(); ?>
+                                    <button class="btn-icon danger" type="submit" title="Hapus artikel"
+                                        aria-label="Hapus artikel <?= esc($a['judul'] ?? '', 'attr'); ?>?">
+                                        <i class="material-icons">delete</i>
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -367,11 +371,6 @@
             const teks = tds.map(td => td.innerText.toLowerCase()).join(' ');
             tr.style.display = q ? (teks.includes(q) ? '' : 'none') : '';
         });
-    });
-    tbody.addEventListener('click', function(event) {
-        const button = event.target.closest('.js-delete-article');
-        if (!button) return;
-        triggerToast('Hapus artikel ' + button.dataset.title + '?', button.dataset.url);
     });
 })();
 </script>
