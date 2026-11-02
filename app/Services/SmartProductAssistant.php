@@ -62,7 +62,7 @@ class SmartProductAssistant
 
         if ($this->isAssistantIdentityQuestion($query)) {
             return [
-                'answer' => 'Kak Wawa adalah pendamping virtual ILENA Furniture. Kak Wawa membantu mencari produk serta menjawab pertanyaan seputar stok dan layanan Ilena.',
+                'answer' => 'Saya Kak Wawa, pendamping virtual ILENA Furniture. Saya bisa membantu mencari produk, mengecek stok yang tercatat, dan menjelaskan layanan resmi Ilena.',
                 'products' => [],
                 'sources' => [],
                 'mode' => 'assistant_identity',
@@ -72,7 +72,7 @@ class SmartProductAssistant
 
         if ($this->isAssistantCapabilityQuestion($query)) {
             return [
-                'answer' => 'Kak Wawa bisa membantu mencari produk, mengecek stok yang tercatat, dan menjawab informasi resmi tentang layanan Ilena. Sebutkan jenis produk, warna, ukuran, atau anggaran yang Kakak inginkan.',
+                'answer' => 'Saya bisa membantu mencari produk, mengecek stok yang tercatat, dan menjelaskan layanan resmi Ilena. Kakak sedang mencari furniture seperti apa?',
                 'products' => [],
                 'sources' => [],
                 'mode' => 'assistant_capabilities',
@@ -244,8 +244,8 @@ class SmartProductAssistant
             'mode' => 'unsupported_generation', 'fallbackReason' => 'media_generation_not_supported',
         ];
         if ($this->isGreeting($query)) return $noProducts + ['answer' => 'Hello! How can Kak Wawa help you today?', 'mode' => 'greeting'];
-        if ($this->isAssistantIdentityQuestion($query)) return $noProducts + ['answer' => 'Kak Wawa is ILENA Furniture’s virtual shopping assistant. I can help you find products and answer questions about stock and Ilena services.', 'mode' => 'assistant_identity'];
-        if ($this->isAssistantCapabilityQuestion($query)) return $noProducts + ['answer' => 'I can help you find furniture, check recorded stock, and answer questions using Ilena’s official service information. Tell me the product type, color, dimensions, or budget you have in mind.', 'mode' => 'assistant_capabilities'];
+        if ($this->isAssistantIdentityQuestion($query)) return $noProducts + ['answer' => 'I’m Kak Wawa, ILENA Furniture’s virtual shopping assistant. I can help you find products, check recorded stock, and explain Ilena’s official services.', 'mode' => 'assistant_identity'];
+        if ($this->isAssistantCapabilityQuestion($query)) return $noProducts + ['answer' => 'I can help you find products, check recorded stock, and explain Ilena’s official services. What kind of furniture are you looking for?', 'mode' => 'assistant_capabilities'];
         if ($this->isLanguageCapabilityQuestion($query)) return $noProducts + ['answer' => 'Yes. You can chat with Kak Wawa in English or Indonesian. I will reply in the language you are using.', 'mode' => 'assistant_language'];
         if ($this->isChatInvitation($query)) return $noProducts + ['answer' => 'Of course. What would you like to know about Ilena products or services?', 'mode' => 'chat_invitation'];
         if ($this->isThankYou($query)) return $noProducts + ['answer' => 'You’re welcome! If you have another question about Ilena products or services, I’m happy to help.', 'mode' => 'acknowledgement'];
@@ -378,15 +378,26 @@ class SmartProductAssistant
 
     private function isAssistantIdentityQuestion(string $query): bool
     {
-        $text = mb_strtolower(trim($query));
-        return preg_match('/^(?:who\s+are\s+you|what\s+are\s+you|who\s+am\s+i\s+speaking\s+with)[\s?!.,]*$/u', $text) === 1
+        $text = $this->normalizeConversationalIntentText($query);
+        return preg_match('/^(?:(?:kamu|anda)(?:\s+ini)?\s+siapa|siapa\s+(?:kamu|anda)|ini\s+siapa|nama\s+(?:kamu|anda|wawa)\s+siapa|siapa\s+(?:nama|yang\s+(?:membalas|menjawab))|(?:(?:saya|aku)\s+)?(?:sedang\s+)?(?:berbicara|bicara|chat|ngobrol)\s+dengan\s+siapa|(?:kamu|anda)\s+(?:ini\s+)?(?:bot|robot|ai|manusia|asisten\s+virtual)|(?:ini|saya\s+sedang\s+chat\s+dengan)\s+(?:bot|robot|ai|manusia)|who\s+are\s+you|what\s+are\s+you|what(?:\s+is|\x27s)\s+your\s+name|who\s+am\s+i\s+(?:speaking|talking|chatting)\s+(?:to|with)|who\s+is\s+this|are\s+you\s+(?:a\s+)?(?:bot|human|ai))(?:\s+(?:sih|ya|kak|kakak))?[\s?!.,]*$/u', $text) === 1
             || preg_match('/\b(?:siapa|who\s+is|what\s+is)\b.{0,40}\b(?:kak\s+)?wawa\b|\b(?:kak\s+)?wawa\b.{0,40}\b(?:itu\s+siapa|siapa|itu\s+apa)\b/u', $text) === 1;
     }
 
     private function isAssistantCapabilityQuestion(string $query): bool
     {
+        $text = $this->normalizeConversationalIntentText($query);
+        return preg_match('/^(?:kamu|anda)\s+(?:bisa|dapat)\s+apa\b|\b(?:bisa|dapat)\s+(?:(?:kak\s+)?(?:bantu|membantu)|(?:kamu|anda)\s+(?:lakukan|bantu))\s+apa\b|\bapa\s+(?:saja\s+)?(?:yang\s+)?(?:bisa|dapat)\s+(?:(?:kak\s+)?wawa|kamu|anda)\b|\bapa\s+(?:kemampuan|tugas)\s+(?:kamu|anda|wawa)\b|\b(?:kak\s+)?wawa\b.{0,35}\b(?:bisa|dapat)\s+(?:bantu|membantu)\b|\b(?:what\s+can|how\s+can)\s+(?:you|wawa)\s+(?:help|do)\b|\bwhat\s+can\s+you\s+do\b|\bwhat\s+do\s+you\s+do\b/u', $text) === 1;
+    }
+
+    /** Remove harmless opening/name fillers before matching short conversational intents. */
+    private function normalizeConversationalIntentText(string $query): string
+    {
         $text = mb_strtolower(trim($query));
-        return preg_match('/\b(?:bisa|dapat)\s+(?:kak\s+)?(?:bantu|membantu)\s+apa\b|\bapa\s+(?:saja\s+)?(?:yang\s+)?(?:bisa|dapat)\s+(?:kak\s+)?wawa\b|\b(?:what\s+can|how\s+can)\s+(?:you|wawa)\s+(?:help|do)\b|\b(?:kak\s+)?wawa\b.{0,35}\b(?:bisa|dapat)\s+(?:bantu|membantu)\b/u', $text) === 1;
+        $text = (string) preg_replace('/^(?:(?:halo|hai|hi|hey|hello|permisi|excuse me|good morning|good afternoon|good evening)\b[\s,!.]*)+/u', '', $text);
+        $text = (string) preg_replace('/^(?:(?:kak(?:ak)?\s+)?wawa\b[\s,!.]*)+/u', '', $text);
+        $text = (string) preg_replace('/^(?:kak(?:ak)?\b[\s,!.]*)+/u', '', $text);
+        $text = (string) preg_replace('/[\s,!.?]+$/u', '', $text);
+        return trim((string) preg_replace('/\s+/u', ' ', $text));
     }
 
     private function isLanguageCapabilityQuestion(string $query): bool

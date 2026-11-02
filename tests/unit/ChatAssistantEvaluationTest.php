@@ -105,6 +105,29 @@ final class ChatAssistantEvaluationTest extends CIUnitTestCase
         $this->assertSame('chat_invitation', $invitation['mode']);
     }
 
+    public function testNaturalIndonesianIdentityAndCapabilityQuestionsGetDirectAnswers(): void
+    {
+        $assistant = new SmartProductAssistant(new \stdClass());
+
+        foreach ([
+            'kamu siapa', 'siapa kamu', 'kamu ini siapa sih', 'nama kamu siapa',
+            'saya sedang berbicara dengan siapa', 'halo kak, kamu siapa?',
+            'Kak Wawa, kamu ini bot ya?', 'are you a bot?', 'Hi, who are you?',
+            'who am I chatting with',
+        ] as $question) {
+            $result = $assistant->respond($question);
+            $this->assertSame('assistant_identity', $result['mode'], $question);
+            $this->assertStringContainsString('Wawa', $result['answer']);
+            $this->assertStringNotContainsString('Pilihan Ilena', $result['answer'], $question);
+        }
+
+        foreach (['kamu bisa apa', 'apa yang bisa kamu bantu', 'apa kemampuan wawa', 'Halo Kak, kamu bisa bantu apa?'] as $question) {
+            $result = $assistant->respond($question);
+            $this->assertSame('assistant_capabilities', $result['mode'], $question);
+            $this->assertStringContainsString('mencari produk', $result['answer']);
+        }
+    }
+
     public function testSearchNormalizationCoversCommonFurnitureSynonymsAndProductFollowUps(): void
     {
         $assistant = new SmartProductAssistant(new \stdClass());
@@ -201,6 +224,62 @@ final class ChatAssistantEvaluationTest extends CIUnitTestCase
             $sources = (new SmartProductAssistant($db))->findKnowledge('Berapa ongkos kirim?');
 
             $this->assertSame('Informasi pengiriman furniture', $sources[0]['title'] ?? null);
+        } finally {
+            $forge->dropTable('ilena_chat_knowledge', true);
+        }
+    }
+
+    public function testCuratedKnowledgeEvaluationKeepsRelevantSourceInTopThree(): void
+    {
+        $db = \Config\Database::connect('tests');
+        $forge = \Config\Database::forge('tests');
+        if ($db->tableExists('ilena_chat_knowledge')) $forge->dropTable('ilena_chat_knowledge', true);
+        $forge->addField([
+            'id' => ['type' => 'BIGINT', 'unsigned' => true, 'auto_increment' => true],
+            'title' => ['type' => 'VARCHAR', 'constraint' => 191],
+            'content' => ['type' => 'TEXT'],
+            'source_url' => ['type' => 'VARCHAR', 'constraint' => 500, 'null' => true],
+            'is_published' => ['type' => 'TINYINT', 'default' => 0],
+            'updated_at' => ['type' => 'DATETIME'],
+        ]);
+        $forge->addKey('id', true);
+        $forge->createTable('ilena_chat_knowledge', true);
+
+        try {
+            $documents = [
+                ['Panduan pengiriman Ilena', 'Informasi cakupan pengiriman dan ongkos kirim bergantung pada alamat tujuan.', '/faq'],
+                ['Panduan garansi Ilena', 'Ketentuan garansi produk mengikuti informasi resmi yang tercantum pada halaman produk.', '/kebijakan'],
+                ['Panduan pembayaran Ilena', 'Pilihan metode pembayaran tersedia pada tahap checkout sebelum pesanan dibuat.', '/faq'],
+                ['Panduan perawatan furniture', 'Bersihkan furniture secara berkala dan hindari paparan matahari langsung.', '/faq'],
+            ];
+            foreach ($documents as [$title, $content, $url]) {
+                $db->table('ilena_chat_knowledge')->insert([
+                    'title' => $title, 'content' => $content, 'source_url' => $url,
+                    'is_published' => 1, 'updated_at' => date('Y-m-d H:i:s'),
+                ]);
+            }
+
+            $dataset = require dirname(__DIR__) . '/fixtures/kak_wawa_retrieval_eval.php';
+            $assistant = new SmartProductAssistant($db);
+            $hits = 0;
+            $reciprocalRanks = [];
+            foreach ($dataset as $case) {
+                $retrieved = $assistant->findKnowledge($case['query'], 3);
+                $titles = array_column($retrieved, 'title');
+                $rank = array_search($case['source'], $titles, true);
+                if ($rank !== false) {
+                    $hits++;
+                    $reciprocalRanks[] = 1 / ($rank + 1);
+                } else {
+                    $reciprocalRanks[] = 0;
+                }
+            }
+
+            // First-pass retrieval is judged by Recall@3; rank quality is also tracked via MRR@3.
+            $recallAtThree = $hits / count($dataset);
+            $mrrAtThree = array_sum($reciprocalRanks) / count($dataset);
+            $this->assertSame(1.0, $recallAtThree, 'Every curated gold source should appear in the first three results.');
+            $this->assertGreaterThanOrEqual(0.8, $mrrAtThree, 'Relevant sources should rank near the top.');
         } finally {
             $forge->dropTable('ilena_chat_knowledge', true);
         }
