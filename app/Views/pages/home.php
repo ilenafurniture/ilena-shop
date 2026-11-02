@@ -278,6 +278,28 @@ function closeSecondAd() {
     }
 
 }
+/* Keep the homepage banner prominent on desktop without changing other sliders or mobile. */
+@media (min-width: 701px) {
+    .ilena-home-banner-slider {
+        height: clamp(360px, 35vw, 520px);
+        aspect-ratio: auto;
+    }
+}
+.ilena-home-banner-slider .slides > a {
+    z-index: 0;
+    opacity: 0;
+    pointer-events: none;
+    transform: none;
+    transition: opacity 900ms cubic-bezier(.22,.61,.36,1);
+}
+.ilena-home-banner-slider .slides > a.active {
+    z-index: 1;
+    opacity: 1;
+    pointer-events: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+    .ilena-home-banner-slider .slides > a { transition: none; }
+}
 </style>
 
 <div class="slider ilena-home-banner-slider">
@@ -1694,7 +1716,7 @@ sliders.forEach((slider) => {
         if (document.visibilityState === 'visible' && !hovered && !focused && !reduceMotion.matches) {
             setActive(activeIndex + 1);
         }
-    }, 7000);
+    }, 9000);
 });
 </script>
 <script>
