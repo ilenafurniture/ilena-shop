@@ -10841,3 +10841,40 @@ body.ilena-storefront .ilena-cart-badge.is-pulsing { animation: ilena-cart-pulse
     body.ilena-storefront .ilena-cart-link.is-bouncing .material-icons,
     body.ilena-storefront .ilena-cart-badge.is-pulsing { animation: none !important; }
 }
+/* A quiet branded divider marks the start of the next Kak Wawa topic. */
+body.ilena-storefront .ilena-chat-topic-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: min(100%, 360px);
+    margin: 14px auto;
+    color: #77645d;
+    font: 600 10px/1.2 var(--ilena-font-body, Arial, sans-serif);
+    letter-spacing: .025em;
+    text-align: center;
+    animation: ilena-topic-divider-in .28s ease-out both;
+}
+body.ilena-storefront .ilena-chat-topic-divider::before,
+body.ilena-storefront .ilena-chat-topic-divider::after {
+    content: "";
+    flex: 1 1 auto;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #d9c7bd 42%, #a93a40 100%);
+}
+body.ilena-storefront .ilena-chat-topic-divider::after {
+    background: linear-gradient(90deg, #a93a40, #d9c7bd 58%, transparent);
+}
+body.ilena-storefront .ilena-chat-topic-divider span {
+    flex: 0 0 auto;
+    padding: 5px 10px;
+    border: 1px solid #eaded6;
+    border-radius: 999px;
+    background: #fffdfa;
+}
+@keyframes ilena-topic-divider-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront .ilena-chat-topic-divider { animation: none; }
+}

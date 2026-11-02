@@ -56,6 +56,7 @@
     'ratingLabel': 'Rate your chat with Kak Wawa', 'starsOfFive': ' out of 5 stars', 'ratingSaved': 'Your rating has been saved. Thank you.',
     'ratingStored': 'Rating of ', 'ratingStoredSuffix': ' out of 5 saved', 'ratingFailed': 'Your rating could not be saved. Please try again.',
     'ratingNextTopic': 'This topic is complete. Send a new message whenever you want to start another conversation.',
+    'newTopicDivider': 'New topic', 'newTopicDividerAria': 'A new conversation topic starts here',
     'resolutionPrompt': 'Did Kak Wawa answer your question, or would you like help from the Ilena team?',
     'resolved': 'The answer was helpful', 'askCustomerService': 'Talk to customer service', 'choiceFailed': 'Your choice was not saved. Please try again.',
     'teamJoining': 'The Ilena team will join shortly', 'csUnavailable': 'Customer service is currently unavailable',
@@ -154,6 +155,7 @@
   let currentConversationKey = '';
   let currentStatus = 'ai';
   let ratedConversationClosed = false;
+  let keepTranscriptForNextTopic = false;
   let humanAvailable = null;
   let waitingForReply = false;
   let waitingSince = 0;
@@ -479,9 +481,10 @@
             rating.classList.add('is-submitted');
             rating.setAttribute('aria-label', copy('ratingStored', 'Penilaian ') + result.rating + copy('ratingStoredSuffix', ' dari 5 tersimpan'));
             ratedConversationClosed = true;
+            keepTranscriptForNextTopic = true;
             currentConversationKey = '';
-            resetTranscriptForConversationChange();
             if (result.message) appendMessage({ ...result.message, metadata: { type: 'kak_wawa_rating_thanks' } });
+            appendTopicDivider();
             updateStatus('closed', humanAvailable);
             showNotice(copy('ratingNextTopic', 'Penilaian Kakak sudah tersimpan. Topik ini selesai; silakan kirim pesan baru untuk memulai percakapan baru.'));
           } catch (error) {
@@ -568,9 +571,20 @@
     if (value) transcript.scrollTop = transcript.scrollHeight;
   }
   function renderMessages(items, notify = false) { (items || []).forEach(item => appendMessage(item, notify)); }
+  function appendTopicDivider() {
+    const divider = document.createElement('div');
+    divider.className = 'ilena-chat-topic-divider';
+    divider.setAttribute('role', 'separator');
+    divider.setAttribute('aria-label', copy('newTopicDividerAria', 'Topik baru dimulai di sini'));
+    const label = document.createElement('span');
+    label.textContent = copy('newTopicDivider', 'Topik baru');
+    divider.append(label);
+    transcript.append(divider);
+    transcript.scrollTop = transcript.scrollHeight;
+  }
   function resetTranscriptForConversationChange() {
     cursor = 0;
-    transcript.querySelectorAll('.ilena-chat-bubble, .ilena-chat-empty, .ilena-chat-welcome').forEach(node => node.remove());
+    transcript.querySelectorAll('.ilena-chat-bubble, .ilena-chat-topic-divider, .ilena-chat-empty, .ilena-chat-welcome').forEach(node => node.remove());
     waitingForReply = false;
     waitingSince = 0;
     slowReplyNoticeShown = false;
@@ -819,12 +833,16 @@
       }
       pendingRequestIds.delete(message);
       const conversationChanged = !!data.conversationKey && !!currentConversationKey && data.conversationKey !== currentConversationKey;
-      if (conversationChanged || data.newConversation) resetTranscriptForConversationChange();
+      const preserveRatedTopic = keepTranscriptForNextTopic && (conversationChanged || data.newConversation);
+      if (conversationChanged || data.newConversation) {
+        if (preserveRatedTopic) keepTranscriptForNextTopic = false;
+        else resetTranscriptForConversationChange();
+      }
       ratedConversationClosed = false;
       currentConversationKey = data.conversationKey || currentConversationKey;
       lastWhatsappUrl = data.whatsappUrl || lastWhatsappUrl;
       input.value = ''; ready = true; updateStatus(data.status, data.humanAvailable);
-      if (data.conversationStartMessage) appendMessage(data.conversationStartMessage);
+      if (data.conversationStartMessage && !preserveRatedTopic) appendMessage(data.conversationStartMessage);
       appendMessage({ id: data.messageId, sender_type: 'visitor', body: message, created_at: data.createdAt || '' });
       waitingForReply = data.status === 'ai';
       waitingSince = waitingForReply ? Date.now() : 0;
