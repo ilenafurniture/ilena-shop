@@ -283,7 +283,7 @@ return [
     'chatCancel' => 'Batal',
     'chatGreetingAria' => 'Sapaan Kak Wawa',
     'chatGreetingTitle' => 'Hai, Kak!',
-    'chatGreetingBody' => 'Mau cari furnitur yang pas untuk ruang Kakak?',
+    'chatGreetingBody' => 'Cari furniture yang pas untuk ruangan?',
     'chatGreetingDismiss' => 'Tutup sapaan',
     'chatGreetingOpen' => 'Mulai chat dengan Kak Wawa',
     'chatGreetingButton' => 'Tanya Wawa',

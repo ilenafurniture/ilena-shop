@@ -688,7 +688,7 @@ return [
     'chatCancel' => 'Cancel',
     'chatGreetingAria' => 'Kak Wawa greeting',
     'chatGreetingTitle' => 'Hello!',
-    'chatGreetingBody' => 'Looking for furniture that feels right for your space?',
+    'chatGreetingBody' => 'Looking for the right furniture for your space?',
     'chatGreetingDismiss' => 'Dismiss greeting',
     'chatGreetingOpen' => 'Start a chat with Kak Wawa',
     'chatGreetingButton' => 'Ask Wawa',
