@@ -176,17 +176,37 @@ class GoogleAuthController extends BaseController
                 return redirect()->to(ilena_store_path('/account'));
             }
 
-            $user = $link ? $userModel->findByEmailIdentity((string)$link['user_email']) : $userModel->findByEmailIdentity($email);
+            // Match an existing account by its current primary address first. A
+            // historical alias may have been reassigned, so it must not grant
+            // access merely because Google now verifies that old address.
+            $primaryEmailUser = !$link
+                ? $db->table('user')->where('LOWER(TRIM(email))', $email)->get()->getRowArray()
+                : null;
+            $user = $link
+                ? $userModel->findByEmailIdentity((string)$link['user_email'])
+                : ($primaryEmailUser ?? $userModel->findByEmailIdentity($email));
             if ($user && !in_array((string)($user['role'] ?? ''), ['0', '4'], true)) {
                 $db->transRollback();
                 return $this->failed();
             }
             if ($user && !$link) {
-                $db->transRollback();
-                session()->setFlashdata('msg', service('request')->getLocale() === 'en'
-                    ? 'This email already has an Ilena account. Sign in with your password, then connect Google from your account.'
-                    : 'Email ini sudah memiliki akun Ilena. Masuk dengan kata sandi, lalu hubungkan Google dari halaman akun.');
-                return redirect()->to(ilena_store_path('/login'));
+                if (!$this->isExactPrimaryEmailMatch($email, $user)) {
+                    $db->transRollback();
+                    session()->setFlashdata('msg', service('request')->getLocale() === 'en'
+                        ? 'This Google email matches a previous address on an Ilena account. Sign in with your password, then connect Google from your account.'
+                        : 'Email Google ini cocok dengan alamat lama pada akun Ilena. Masuk dengan kata sandi, lalu hubungkan Google dari halaman akun.');
+                    return redirect()->to(ilena_store_path('/login'));
+                }
+
+                // The verified Google identity matches the account's current
+                // primary email exactly. Link it transactionally, then continue
+                // through the normal customer login/session initialization.
+                $db->table('user_google_identities')->insert([
+                    'user_email' => (string)$user['email'], 'provider' => 'google', 'subject' => $subject,
+                    'created_at' => date('Y-m-d H:i:s'),
+                ]);
+                if (!$db->transStatus()) throw new \RuntimeException('Google identity auto-link failed.');
+                $link = ['user_email' => (string)$user['email']];
             }
 
             if (!$user) {
@@ -329,6 +349,13 @@ class GoogleAuthController extends BaseController
         $algorithm = hex2bin('300d06092a864886f70d0101010500');
         $spki = "\x30" . self::derLength(strlen($algorithm . $bitString)) . $algorithm . $bitString;
         return "-----BEGIN PUBLIC KEY-----\n" . chunk_split(base64_encode($spki), 64, "\n") . "-----END PUBLIC KEY-----\n";
+    }
+
+    private function isExactPrimaryEmailMatch(string $googleEmail, array $user): bool
+    {
+        $googleEmail = strtolower(trim($googleEmail));
+        $primaryEmail = strtolower(trim((string)($user['email'] ?? '')));
+        return $googleEmail !== '' && $primaryEmail !== '' && hash_equals($primaryEmail, $googleEmail);
     }
 
     private static function derLength(int $length): string

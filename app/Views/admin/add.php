@@ -626,6 +626,58 @@
     color: #374151;
     border-color: rgba(107, 114, 128, .35);
 }
+
+.variant-color-picker { display: grid; gap: 9px; }
+.variant-color-options { display: flex; flex-wrap: wrap; gap: 8px; }
+.variant-color-option {
+    display: inline-grid; justify-items: center; gap: 4px; min-width: 54px; min-height: 56px;
+    padding: 4px 5px; border: 1px solid transparent; border-radius: 8px; background: transparent;
+    color: #625a50; cursor: pointer; font: inherit;
+}
+.variant-color-option:hover { background: #f7f4ef; }
+.variant-color-option.is-selected { border-color: #a8252d; background: #fbf5f4; color: #7e252a; }
+.variant-color-option__dot,.variant-color-custom__dot,.variant-color-current__dot {
+    width: 28px; height: 28px; border: 1px solid rgba(35,31,27,.2); border-radius: 50%;
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,.38);
+}
+.variant-color-option small { font-size: 10px; line-height: 1.1; }
+.variant-color-custom { position: relative; display: inline-grid; justify-items: center; gap: 4px; min-width: 58px; min-height: 56px; padding: 4px; color: #625a50; cursor: pointer; font-size: 10px; }
+.variant-color-custom__dot { display: grid; place-items: center; background: linear-gradient(135deg,#b88d5d,#f3eee6); color: #fff; }
+.variant-color-custom__dot .material-icons { font-size: 17px; }
+.variant-color-custom input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.variant-color-current { display: inline-flex; align-items: center; gap: 7px; min-height: 22px; color: #777067; font-size: 11px; }
+.variant-color-current__dot { width: 16px; height: 16px; box-shadow: none; }
+@media(max-width:600px){.variant-color-options{gap:4px}.variant-color-option{min-width:48px}.variant-color-option__dot,.variant-color-custom__dot{width:26px;height:26px}}
+@media(min-width:1100px){
+    .page-wrap { max-width: 1600px; padding-left: 36px; padding-right: 36px; }
+    .form-grid { grid-template-columns: minmax(0,1.15fr) minmax(420px,.85fr); gap: 34px; }
+    #container-varian > .card { display: grid; grid-template-columns: minmax(180px,.32fr) minmax(0,1fr); align-items: start; gap: 20px; }
+    #container-varian > .card .card-header { min-width: 0; }
+    #container-varian > .card .card-body { min-width: 0; }
+    .table-input { table-layout: fixed; }
+    .table-input td:first-child { width: 190px; padding-right: 24px; }
+    .variant-color-options { align-items: center; gap: 8px; }
+}
+@media(min-width:641px) and (max-width:1099px){ .form-grid { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap:22px; } }
+/* Compact photo controls: keep the image prominent and actions on the thumbnail. */
+.page-wrap .image-tile { position:relative; width:104px; padding:0; border:1px solid #e5dfd4; border-radius:8px; background:#f4f1eb; overflow:hidden; }
+.page-wrap .image-tile .item-gambar { width:102px; height:102px; margin:0; border:0; border-radius:0; }
+.page-wrap .image-tile .drag-handle { position:absolute; z-index:4; top:5px; left:5px; width:30px; min-height:30px; border:1px solid rgba(255,255,255,.6); border-radius:7px; background:rgba(35,32,27,.72); color:#fff; }
+.page-wrap .image-tile .img-no { top:7px; right:7px; left:auto; background:rgba(255,255,255,.94); }
+.page-wrap .image-tile .cover-chip { bottom:7px; left:7px; max-width:62px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:9px; }
+.page-wrap .image-tile .image-actions { position:absolute; z-index:4; right:5px; bottom:5px; display:flex; gap:4px; margin:0; }
+.page-wrap .image-tile .image-actions button,
+.page-wrap .image-tile .image-actions label { width:30px; min-width:30px; min-height:30px; height:30px; padding:0; border:1px solid rgba(255,255,255,.72); border-radius:7px; background:rgba(255,255,255,.94); color:#38342d; box-shadow:0 1px 5px rgba(0,0,0,.16); }
+.page-wrap .image-tile .image-actions button:hover,
+.page-wrap .image-tile .image-actions label:hover { border-color:#a8252d; background:#fff; color:#8f272c; }
+.page-wrap .image-tile .image-actions .make-primary { display:inline-flex; color:#705a37; }
+.page-wrap .image-tile .image-actions .material-icons { margin:0; font-size:17px; }
+.page-wrap .image-tile.is-drop-target { border-radius:8px; }
+@media(max-width:640px) {
+    .page-wrap .image-tile { width:100px; }
+    .page-wrap .image-tile .item-gambar { width:98px; height:98px; }
+    .page-wrap .image-tile .image-actions button,.page-wrap .image-tile .image-actions label { width:28px; min-width:28px; min-height:28px; height:28px; }
+}
 </style>
 
 <div class="page-wrap">
@@ -635,6 +687,42 @@
 
 <script type="text/babel">
     const { useState, useEffect, useRef } = React;
+
+const VARIANT_COLOR_PRESETS = [
+  { name: 'Natural', value: '#C6A477' },
+  { name: 'Oak', value: '#D0B17D' },
+  { name: 'Teak', value: '#A66B45' },
+  { name: 'Walnut', value: '#70513D' },
+  { name: 'Beige', value: '#C9B99A' },
+  { name: 'Putih', value: '#F4F2ED' },
+  { name: 'Abu-abu', value: '#85827D' },
+  { name: 'Hitam', value: '#292929' }
+];
+const normalizeVariantColor = value => /^#[0-9a-f]{6}$/i.test(String(value || '')) ? String(value) : '#C6A477';
+const VariantColorPicker = ({ value, onChange, variantName }) => {
+  const selected = String(value || '').toLowerCase();
+  return <div className="variant-color-picker">
+    <div className="variant-color-options" role="group" aria-label={`Pilih warna ${variantName || 'varian'}`}>
+      {VARIANT_COLOR_PRESETS.map(option => <button key={option.value} type="button"
+        className={`variant-color-option ${selected === option.value.toLowerCase() ? 'is-selected' : ''}`}
+        aria-label={`Pilih warna ${option.name}`} aria-pressed={selected === option.value.toLowerCase()}
+        onClick={() => onChange(option.value)}>
+        <span className="variant-color-option__dot" style={{ backgroundColor: option.value }} />
+        <small>{option.name}</small>
+      </button>)}
+      <label className="variant-color-custom" title="Pilih warna khusus">
+        <span className="variant-color-custom__dot"><i className="material-icons" aria-hidden="true">colorize</i></span>
+        <span>Warna lain</span>
+        <input type="color" aria-label={`Pilih warna khusus ${variantName || 'varian'}`}
+          value={normalizeVariantColor(value)} onChange={event => onChange(event.target.value)} />
+      </label>
+    </div>
+    <span className="variant-color-current">
+      <span className="variant-color-current__dot" style={{ backgroundColor: value || 'transparent' }} />
+      {value ? 'Warna varian dipilih' : 'Pilih warna yang paling mendekati produk'}
+    </span>
+  </div>;
+};
 
 // ==== Data dari PHP (pastikan admin/template sudah load React + Babel UMD) ====
 const koleksi = <?= $koleksiJson ?>;
@@ -911,7 +999,7 @@ const App = () => {
       const variant = formData.varian[i] || {};
       const normalizedName = String(variant.nama || '').trim().toLocaleLowerCase();
       if (!normalizedName || !String(variant.kode || '').trim() || !/^\d+$/.test(String(variant.stok ?? ''))) {
-        setEror(`Varian ke-${i + 1} wajib memiliki nama, kode, dan stok bilangan bulat nol atau lebih.`); return;
+        setEror(`Varian ke-${i + 1} wajib memiliki nama, warna, dan stok bilangan bulat nol atau lebih.`); return;
       }
       if (variantNames.has(normalizedName)) { setEror("Nama setiap varian harus unik."); return; }
       variantNames.add(normalizedName);
@@ -1640,13 +1728,13 @@ const App = () => {
                           </td>
                         </tr>
                         <tr>
-                          <td>Kode Warna</td>
+                          <td>Warna varian</td>
                           <td>
-                            <input className="form-control" value={v.kode}
-                              onChange={e => setFormData({
+                            <VariantColorPicker value={v.kode} variantName={v.nama}
+                              onChange={color => setFormData({
                                 ...formData,
-                                varian: formData.varian.map((vv, i) => i === ind_v ? { ...vv, kode: e.target.value } : vv)
-                              })} required />
+                                varian: formData.varian.map((vv, i) => i === ind_v ? { ...vv, kode: color } : vv)
+                              })} />
                           </td>
                         </tr>
                         <tr>

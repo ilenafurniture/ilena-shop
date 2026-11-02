@@ -47,6 +47,7 @@
         window.clearTimeout(feedbackTimer);
         feedback.textContent = message;
         feedback.classList.toggle('is-error', isError);
+        feedback.classList.toggle('is-success', !isError);
         feedback.hidden = false;
         requestAnimationFrame(() => feedback.classList.add('is-visible'));
         feedbackTimer = window.setTimeout(() => {

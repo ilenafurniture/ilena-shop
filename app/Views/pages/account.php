@@ -288,16 +288,8 @@
     <div class="tigapuluh-ke-seratus">
         <div class="card p-4 ilena-account-nav">
             <h2 style="letter-spacing: -1px"><?= lang('Store.accountTitle'); ?></h2>
-            <div class="mt-2 d-flex justify-content-between py-1">
-                <p class="m-0">Email</p>
-                <p class="fw-bold m-0"><?= esc($email); ?></p>
-            </div>
-            <div class="d-flex justify-content-between py-1">
-                <p class="m-0"><?= lang('Store.password'); ?></p>
-                <a class="btn-teks-aja" onclick="openGantiSandi()"><?= lang('Store.changePassword'); ?></a>
-            </div>
             <span class="garis my-2"></span>
-            <a href="<?= esc(ilena_store_path('/account'), 'attr'); ?>" class="mb-1 btn-default-abu"><?= lang('Store.profileNav'); ?></a>
+            <a href="<?= esc(ilena_store_path('/account'), 'attr'); ?>" class="mb-1 btn-default-abu" aria-current="page"><?= lang('Store.profileNav'); ?></a>
             <a href="<?= esc(ilena_store_path('/order'), 'attr'); ?>" class="mb-1 btn-default-abu"><?= lang('Store.ordersNav'); ?></a>
             <a href="<?= esc(ilena_store_path('/wishlist'), 'attr'); ?>" class="mb-1 btn-default-abu"><?= esc(lang('Store.wishlist')); ?></a>
             <form action="<?= esc(ilena_store_path('/logout'), 'attr'); ?>" method="post">
@@ -613,14 +605,14 @@
         </div>
 
         <!-- Edit Modal -->
-        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editAddressModalLabel" aria-hidden="true">
             <form method="post" id="formEdit">
                 <?= csrf_field(); ?>
                 <input type="text" value="<?= esc(service('request')->getUri()->getPath(), 'attr'); ?>" class="d-none" name="url">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title" id="exampleModalLabel"><?= lang('Store.editAddress'); ?></h1>
+                            <h1 class="modal-title" id="editAddressModalLabel"><?= lang('Store.editAddress'); ?></h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -629,7 +621,7 @@
                                 <div class="form-floating mb-1">
                             <input type="email" class="form-control" placeholder="<?= esc(lang('Store.addressEmailPlaceholder'), 'attr'); ?>" name="emailPem"
                                         required id="inputEmail">
-                                    <label for="floatingInput"><?= lang('Store.email'); ?></label>
+                                    <label for="inputEmail"><?= lang('Store.email'); ?></label>
                                 </div>
                             </div>
 
@@ -638,17 +630,17 @@
                                 <div class="form-floating mb-1">
                             <input type="text" class="form-control" placeholder="<?= esc(lang('Store.addressContactNamePlaceholder'), 'attr'); ?>" name="nama" required
                                         id="inputNama">
-                                    <label for="floatingInput"><?= lang('Store.fullName'); ?></label>
+                                        <label for="inputNama"><?= lang('Store.fullName'); ?></label>
                                 </div>
                                 <div class="form-floating mb-1">
-                            <input type="number" class="form-control" placeholder="<?= esc(lang('Store.addressPhonePlaceholder'), 'attr'); ?>" name="nohp"
+                            <input type="tel" inputmode="tel" autocomplete="tel" class="form-control" placeholder="<?= esc(lang('Store.addressPhonePlaceholder'), 'attr'); ?>" name="nohp"
                                         required id="inputNohp">
-                                    <label for="floatingInput"><?= lang('Store.mobileNumber'); ?></label>
+                                    <label for="inputNohp"><?= lang('Store.mobileNumber'); ?></label>
                                 </div>
 
                                 <div class="form-alamat d-flex mb-1 gap-1">
                                     <div class="form-floating w-50">
-                                        <select class="form-select" aria-label="Default select example"
+                                        <select id="edit-province" class="form-select" aria-label="<?= esc(lang('Store.province'), 'attr'); ?>"
                                             name="provinsiEdit" required>
                                             <option value=""><?= lang('Store.chooseProvince'); ?></option>
                                             <?php if (!empty($provinsi) && is_array($provinsi)): ?>
@@ -663,38 +655,38 @@
                                             <?php endforeach; ?>
                                             <?php endif; ?>
                                         </select>
-                                        <label for="floatingProvinsi"><?= lang('Store.province'); ?></label>
+                                        <label for="edit-province"><?= lang('Store.province'); ?></label>
                                     </div>
                                     <div class="form-floating w-50">
-                                        <select class="form-select" aria-label="Default select example" name="kotaEdit"
+                                        <select id="edit-city" class="form-select" aria-label="<?= esc(lang('Store.city'), 'attr'); ?>" name="kotaEdit"
                                             required>
                                             <option value=""><?= lang('Store.chooseCity'); ?></option>
                                         </select>
-                                        <label for="floatingProvinsi"><?= lang('Store.city'); ?></label>
+                                        <label for="edit-city"><?= lang('Store.city'); ?></label>
                                     </div>
                                 </div>
 
                                 <div class="form-alamat d-flex mb-1 gap-1">
                                     <div class="form-floating w-50">
-                                        <select class="form-select" aria-label="Default select example"
+                                        <select id="edit-district" class="form-select" aria-label="<?= esc(lang('Store.district'), 'attr'); ?>"
                                             name="kecamatanEdit" required>
                                             <option value=""><?= lang('Store.chooseDistrict'); ?></option>
                                         </select>
-                                        <label for="floatingProvinsi"><?= lang('Store.district'); ?></label>
+                                        <label for="edit-district"><?= lang('Store.district'); ?></label>
                                     </div>
                                     <div class="form-floating w-50">
-                                        <select class="form-select" aria-label="Default select example"
+                                        <select id="edit-village" class="form-select" aria-label="<?= esc(lang('Store.village'), 'attr'); ?>"
                                             name="kodeposEdit" required>
                                             <option value=""><?= lang('Store.chooseVillage'); ?></option>
                                         </select>
-                                        <label for="floatingProvinsi"><?= lang('Store.village'); ?></label>
+                                        <label for="edit-village"><?= lang('Store.village'); ?></label>
                                     </div>
                                 </div>
 
                                 <div class="form-alamat form-floating mb-1">
-                            <input type="text" class="form-control" placeholder="<?= esc(lang('Store.addressStreetPlaceholder'), 'attr'); ?>" name="alamat_add"
+                            <input id="edit-address-street" type="text" class="form-control" placeholder="<?= esc(lang('Store.addressStreetPlaceholder'), 'attr'); ?>" name="alamat_add"
                                         required>
-                                    <label for="floatingInput"><?= lang('Store.streetAddress'); ?></label>
+                                    <label for="edit-address-street"><?= lang('Store.streetAddress'); ?></label>
                                     <div class="invalid-feedback"><?= lang('Store.invalidAddressSlash'); ?></div>
                                 </div>
                             </div>
@@ -726,6 +718,7 @@ const kodeElmEdit = document.querySelector('select[name="kodeposEdit"]');
 const inputEmailElm = document.getElementById("inputEmail");
 const inputNamaElm = document.getElementById("inputNama");
 const inputNohpElm = document.getElementById("inputNohp");
+const inputStreetEditElm = document.getElementById("edit-address-street");
 const formEditElm = document.getElementById("formEdit");
 
 const addressCopy = <?= json_encode([
@@ -936,12 +929,66 @@ kecElmEdit?.addEventListener("change", (e) => {
 });
 
 /* ---------- EDIT modal bind ---------- */
-function openEditModal(ind_add) {
-    const a = alamatJson[ind_add] || {};
+let editAddressLoadToken = 0;
+function selectOptionByPrefix(select, prefix, fallbackValue = '') {
+    if (!select) return false;
+    const option = Array.from(select.options).find((item) => item.value.startsWith(`${prefix}-`));
+    if (option) {
+        select.value = option.value;
+        return true;
+    }
+    if (fallbackValue) {
+        const fallback = document.createElement('option');
+        fallback.value = fallbackValue;
+        fallback.textContent = fallbackValue.substring(fallbackValue.indexOf('-') + 1);
+        select.appendChild(fallback);
+        select.value = fallback.value;
+        return true;
+    }
+    return false;
+}
+
+async function openEditModal(ind_add) {
+    const token = ++editAddressLoadToken;
+    const a = Array.isArray(alamatJson) ? (alamatJson[ind_add] || {}) : {};
     inputEmailElm.value = a.email_pemesan || '';
     inputNamaElm.value = a.nama_penerima || '';
     inputNohpElm.value = a.nohp_penerima || '';
+    inputStreetEditElm.value = a.alamat_tambahan || '';
     formEditElm.action = storeRoutePrefix + "/editaddress/" + ind_add;
+
+    const provinceId = String(a.prov_id || '');
+    const cityId = String(a.kab_id || '');
+    const districtId = String(a.kec_id || '');
+    const postalCode = String(a.kodepos || '');
+    selectOptionByPrefix(provElmEdit, provinceId, provinceId ? `${provinceId}-${a.prov || ''}` : '');
+
+    [provElmEdit, kotaElmEdit, kecElmEdit, kodeElmEdit].forEach((field) => {
+        if (field) field.disabled = true;
+    });
+    formEditElm.setAttribute('aria-busy', 'true');
+    try {
+        if (provinceId) await getKotaEdit(Number(provinceId));
+        if (token !== editAddressLoadToken) return;
+        selectOptionByPrefix(kotaElmEdit, cityId, cityId ? `${cityId}-${a.kab || ''}` : '');
+
+        if (cityId) await getKecEdit(Number(cityId));
+        if (token !== editAddressLoadToken) return;
+        selectOptionByPrefix(kecElmEdit, districtId, districtId ? `${districtId}-${a.kec || ''}` : '');
+
+        if (districtId) await getKodeEdit(Number(districtId));
+        if (token !== editAddressLoadToken) return;
+        const villageOption = Array.from(kodeElmEdit.options).find((option) => postalCode && option.value.endsWith(`-${postalCode}`));
+        if (villageOption) kodeElmEdit.value = villageOption.value;
+        else if (a.desa && postalCode) selectOptionByPrefix(kodeElmEdit, String(a.desa), `${a.desa}-${postalCode}`);
+    } finally {
+        if (token === editAddressLoadToken) {
+            [provElmEdit, kotaElmEdit, kecElmEdit, kodeElmEdit].forEach((field) => {
+                if (field) field.disabled = false;
+            });
+            formEditElm.removeAttribute('aria-busy');
+        }
+    }
 }
 </script>
 

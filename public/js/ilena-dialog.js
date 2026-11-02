@@ -68,6 +68,12 @@
 
     const api = {
         alert(message, options = {}) {
+            if (window.IlenaNotice?.show) {
+                return window.IlenaNotice.show(message, {
+                    tone: options.tone || 'info',
+                    duration: options.duration
+                });
+            }
             return open({ message, title: options.title, tone: options.tone || 'info' });
         },
         confirm(message, options = {}) {

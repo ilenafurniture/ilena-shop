@@ -222,7 +222,8 @@ final class ChatAssistantEvaluationTest extends CIUnitTestCase
         $price = $assistant->respond('Harganya berapa?');
         $this->assertSame('clarification', $price['mode']);
         $this->assertSame('clarification', $price['fallbackReason']);
-        $this->assertStringContainsString('nama atau tautan produknya', $price['answer']);
+        $this->assertStringContainsString('nama atau tautannya', $price['answer']);
+        $this->assertStringContainsString('tekan WhatsApp di bawah', $price['answer']);
 
         $paymentClarifier = (new \ReflectionClass($assistant))->getMethod('ambiguousAnswer');
         $paymentClarifier->setAccessible(true);

@@ -35,4 +35,15 @@ final class GoogleAuthControllerCryptoTest extends CIUnitTestCase
         $method->setAccessible(true);
         self::assertNull($method->invoke($controller, '!!!', 'AQAB'));
     }
+
+    public function testAutoLinkRequiresExactCurrentPrimaryEmailNotHistoricalAlias(): void
+    {
+        $controller = (new \ReflectionClass(GoogleAuthController::class))->newInstanceWithoutConstructor();
+        $method = new \ReflectionMethod(GoogleAuthController::class, 'isExactPrimaryEmailMatch');
+        $method->setAccessible(true);
+
+        self::assertTrue($method->invoke($controller, ' CUSTOMER@example.com ', ['email' => 'customer@example.com']));
+        self::assertFalse($method->invoke($controller, 'previous@example.com', ['email' => 'customer@example.com']));
+        self::assertFalse($method->invoke($controller, 'customer@example.com', ['email' => '']));
+    }
 }

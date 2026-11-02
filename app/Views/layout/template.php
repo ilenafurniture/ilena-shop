@@ -330,7 +330,7 @@
     <?php } ?>
 
     <link rel="stylesheet" href="<?= base_url('css/style.css?v=' . filemtime(FCPATH . 'css/style.css')); ?>">
-    <link rel="stylesheet" href="<?= base_url('css/ilena-dialog.css?v=20261027'); ?>">
+    <link rel="stylesheet" href="<?= base_url('css/ilena-dialog.css?v=' . filemtime(FCPATH . 'css/ilena-dialog.css')); ?>">
     <link rel="stylesheet"
         href="<?= base_url('css/ilena-storefront.css?v=' . filemtime(FCPATH . 'css/ilena-storefront.css')); ?>">
     <link rel="stylesheet" href="<?= base_url('css/ilena-commerce-extras.css?v=' . filemtime(FCPATH . 'css/ilena-commerce-extras.css')); ?>">
@@ -492,6 +492,7 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
     <?= $this->include('layout/footer'); ?>
     <?php if (!$isInternalArea): ?>
     <div class="ilena-cart-feedback" data-ilena-cart-feedback data-network-message="<?= esc(lang('Store.cartAddNetworkFeedback'), 'attr'); ?>" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+    <script defer src="<?= base_url('js/ilena-notices.js?v=' . (is_file(FCPATH . 'js/ilena-notices.js') ? filemtime(FCPATH . 'js/ilena-notices.js') : '1')); ?>"></script>
     <script defer src="<?= base_url('js/ilena-cart-feedback.js?v=' . (is_file(FCPATH . 'js/ilena-cart-feedback.js') ? filemtime(FCPATH . 'js/ilena-cart-feedback.js') : '1')); ?>"></script>
     <script defer src="<?= base_url('js/ilena-commerce-extras.js?v=' . filemtime(FCPATH . 'js/ilena-commerce-extras.js')); ?>"></script>
     <?php endif; ?>
@@ -601,7 +602,7 @@ $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? '
     <script
         src="<?= base_url('js/ilena-smart-search.js?v=' . (is_file(FCPATH . 'js/ilena-smart-search.js') ? filemtime(FCPATH . 'js/ilena-smart-search.js') : time())); ?>"
         defer></script>
-    <script src="<?= base_url('js/ilena-dialog.js?v=20261027'); ?>"></script>
+    <script src="<?= base_url('js/ilena-dialog.js?v=' . filemtime(FCPATH . 'js/ilena-dialog.js')); ?>"></script>
     <script src="https://go.kreasibot.com/k.js" data-kreasibot="ilenafurniture" defer></script>
 </body>
 

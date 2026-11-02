@@ -48,12 +48,18 @@
         $faqGroupNumber = 0;
         foreach ($faqGroups as $groupTitle => $items):
             $faqGroupNumber++;
+            $faqAnchor = match ($groupTitle) {
+                'DELIVERY' => 'pengiriman',
+                'CANCELLATIONS & RETURNS' => 'garansi-produk',
+                'FURNITURE CARE' => 'perawatan',
+                default => 'faq-' . $faqGroupNumber,
+            };
         ?>
-        <div class="container-faq">
+        <div class="container-faq" id="<?= esc($faqAnchor, 'attr'); ?>">
             <div class="tigapuluh-ke-seratus"><p class="nomor"><?= sprintf('%02d', $faqGroupNumber); ?></p><p class="sub-faq"><?= esc($groupTitle); ?></p></div>
             <div style="flex: 1" class="isi-faq">
                 <?php foreach ($items as [$question, $answer]): ?>
-                <p class="sub-sub-faq"><?= esc($question); ?></p>
+                <p class="sub-sub-faq" <?= str_contains(strtolower($question), 'assembled') ? 'id="perakitan"' : ''; ?>><?= esc($question); ?></p>
                 <div class="isinya"><p><?= esc($answer); ?></p></div>
                 <?php endforeach; ?>
             </div>
@@ -453,7 +459,7 @@
                 </div>
             </div>
         </div>
-        <div class="container-faq">
+        <div class="container-faq" id="pengiriman">
             <div class="tigapuluh-ke-seratus">
                 <p class="nomor">05</p>
                 <p class="sub-faq">PENGIRIMAN</p>
@@ -498,7 +504,7 @@
                     <p>Kami tidak membebankan biaya tambahan untuk pengiriman kepada customer.
                     </p>
                 </div>
-                <p class="sub-sub-faq">Apakah produk dikirim dalam keadaan sudah dirakit?
+                <p class="sub-sub-faq" id="perakitan">Apakah produk dikirim dalam keadaan sudah dirakit?
                 </p>
                 <div class="isinya">
                     <p>Tentu. Untuk pengiriman produk sudah dalam bentuk rakitan. Namun tidak
@@ -563,7 +569,7 @@
                 </div>
             </div>
         </div>
-        <div class="container-faq">
+        <div class="container-faq" id="garansi-produk">
             <div class="tigapuluh-ke-seratus">
                 <p class="nomor">07</p>
                 <p class="sub-faq">GARANSI PRODUK</p>
@@ -633,7 +639,7 @@
             </div>
         </div>
 
-        <div class="container-faq">
+        <div class="container-faq" id="perawatan">
             <div class="tigapuluh-ke-seratus">
                 <p class="nomor">08</p>
                 <p class="sub-faq">PERAWATAN</p>

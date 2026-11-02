@@ -28,3 +28,130 @@
 .ilena-dialog__button[hidden] { display: none; }
 @media (max-width: 480px) { .ilena-dialog__panel { padding: 22px; } .ilena-dialog__title { font-size: 20px; } }
 @media (prefers-reduced-motion: reduce) { .ilena-dialog { transition: none; } }
+
+/* Shared, non-blocking top-right notice system for storefront and admin. */
+.ilena-toast-stack {
+    position: fixed;
+    z-index: 6000;
+    top: max(16px, env(safe-area-inset-top));
+    right: max(16px, env(safe-area-inset-right));
+    display: flex;
+    width: min(420px, calc(100vw - 32px));
+    max-height: calc(100dvh - 32px);
+    flex-direction: column;
+    gap: 10px;
+    overflow: visible;
+    pointer-events: none;
+}
+.ilena-toast {
+    --toast-accent: #a42b32;
+    --toast-mark-bg: #f8eeee;
+    box-sizing: border-box;
+    position: relative;
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr) 34px;
+    align-items: start;
+    gap: 11px;
+    width: 100%;
+    max-height: min(30vh, 220px);
+    overflow: auto;
+    padding: 14px 10px 14px 14px;
+    border: 1px solid #e7dfd7;
+    border-left: 4px solid var(--toast-accent);
+    border-radius: 8px;
+    background: #fff;
+    color: #292522;
+    box-shadow: 0 14px 38px rgba(31, 25, 22, .16);
+    pointer-events: auto;
+    animation: ilena-toast-enter .22s ease-out both;
+    transition: opacity .2s ease, transform .2s ease;
+}
+.ilena-toast--success { --toast-accent: #47745a; --toast-mark-bg: #edf5ef; }
+.ilena-toast--warning { --toast-accent: #9a681e; --toast-mark-bg: #fbf4e7; }
+.ilena-toast--error { --toast-accent: #a42b32; --toast-mark-bg: #f8eeee; }
+.ilena-toast__mark {
+    display: grid;
+    width: 23px;
+    height: 23px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--toast-mark-bg);
+    color: var(--toast-accent);
+    font: 700 14px/1 Arial, sans-serif;
+}
+.ilena-toast__copy {
+    min-width: 0;
+    margin: 1px 0 0;
+    color: #292522;
+    font: 500 14px/1.55 "Manrope", system-ui, sans-serif;
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+}
+.ilena-toast__close {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    margin: -6px -3px 0 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #5e5751;
+    font: 24px/1 Arial, sans-serif;
+    cursor: pointer;
+}
+.ilena-toast__close:hover { background: #f4f0ec; }
+.ilena-toast__close:focus-visible { outline: 3px solid rgba(164, 43, 50, .35); outline-offset: 2px; }
+.ilena-toast.is-leaving { opacity: 0; transform: translateY(-7px); pointer-events: none; }
+@keyframes ilena-toast-enter { from { opacity: 0; transform: translateY(-7px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 700px) {
+    .ilena-toast-stack { top: max(10px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right)); width: min(420px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); gap: 8px; }
+    .ilena-toast { max-height: min(27vh, 190px); gap: 9px; padding: 12px 8px 12px 12px; }
+    .ilena-toast__copy { font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) { .ilena-toast, .ilena-toast.is-leaving { animation: none; transition: none; } }
+
+/* Legacy admin/page notices use the same top-right placement as Ilena toasts. */
+.ilena-admin-redesign .notif,
+body.ilena-storefront .notif {
+    position: fixed !important;
+    z-index: 6001 !important;
+    top: max(16px, env(safe-area-inset-top)) !important;
+    right: max(16px, env(safe-area-inset-right)) !important;
+    bottom: auto !important;
+    left: auto !important;
+    box-sizing: border-box;
+    width: min(420px, calc(100vw - 32px));
+    max-width: calc(100vw - 32px);
+    padding: 14px 18px;
+    border: 1px solid #e7dfd7;
+    border-left: 4px solid #a42b32;
+    border-radius: 8px;
+    background: #fff;
+    color: #292522;
+    box-shadow: 0 14px 38px rgba(31, 25, 22, .16);
+    font: 500 14px/1.55 "Manrope", system-ui, sans-serif;
+    letter-spacing: 0;
+    text-align: left;
+    transform: translateX(calc(100% + 24px));
+    transition: opacity .2s ease, transform .22s ease;
+    opacity: 0;
+}
+.ilena-admin-redesign .notif.show,
+body.ilena-storefront .notif.show {
+    top: max(16px, env(safe-area-inset-top)) !important;
+    right: max(16px, env(safe-area-inset-right)) !important;
+    transform: translateX(0);
+    opacity: 1;
+}
+@media (max-width: 700px) {
+    .ilena-admin-redesign .notif,
+    body.ilena-storefront .notif,
+    .ilena-admin-redesign .notif.show,
+    body.ilena-storefront .notif.show {
+        top: max(10px, env(safe-area-inset-top)) !important;
+        right: max(12px, env(safe-area-inset-right)) !important;
+        width: min(420px, calc(100vw - 24px));
+        max-width: calc(100vw - 24px);
+    }
+}

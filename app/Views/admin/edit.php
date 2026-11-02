@@ -1,6 +1,12 @@
 <?= $this->extend("admin/template"); ?>
 <?= $this->section("content"); ?>
-<?php $imageVersion = !empty($produk['tgl_update']) ? strtotime((string) $produk['tgl_update']) : time(); ?>
+<?php
+$imageVersion = !empty($produk['tgl_update']) ? strtotime((string) $produk['tgl_update']) : time();
+$variantColorPresets = [
+    'Natural' => '#C6A477', 'Oak' => '#D0B17D', 'Teak' => '#A66B45', 'Walnut' => '#70513D',
+    'Beige' => '#C9B99A', 'Putih' => '#F4F2ED', 'Abu-abu' => '#85827D', 'Hitam' => '#292929',
+];
+?>
 
 <style>
 .page {
@@ -438,7 +444,25 @@
 }
 .page .img-preview { max-width: 330px; }
 .page .list-images { gap: 8px; }
-.page .thumb { width: 76px; height: 76px; border: 0; border-radius: 3px; background: #eeeae1; }
+.page .thumb { width: 92px; height: 92px; border: 1px solid #e2ddd3; border-radius: 8px; background: #eeeae1; overflow:hidden; }
+.page .thumb img { display:block; width:100%; height:100%; object-fit:cover; }
+.page .thumb .x { top:auto; right:5px; bottom:5px; z-index:2; display:grid; place-items:center; width:30px; height:30px; padding:0; border:1px solid rgba(255,255,255,.72); border-radius:7px; background:rgba(255,255,255,.95); color:#9e3831; cursor:pointer; }
+.page .thumb .x:hover { background:#fff5f3; }
+.page .thumb .thumb-index { position:absolute; top:5px; left:5px; z-index:2; display:grid; place-items:center; min-width:24px; height:24px; padding:0 5px; border:1px solid rgba(255,255,255,.72); border-radius:7px; background:rgba(35,32,27,.72); color:#fff; font-size:11px; font-weight:700; }
+.page .thumb .thumb-drag { position:absolute; top:5px; right:5px; z-index:2; display:grid; place-items:center; width:26px; height:26px; border:1px solid rgba(255,255,255,.72); border-radius:7px; background:rgba(35,32,27,.72); color:#fff; pointer-events:none; }
+.page .thumb .thumb-drag .material-icons { font-size:17px; }
+.page .thumb { cursor:grab; transition:opacity .16s ease, transform .16s ease, box-shadow .16s ease; }
+.page .thumb:active { cursor:grabbing; }
+.page .thumb.is-dragging { opacity:.42; }
+.page .thumb.is-drop-target { transform:translateY(-2px); box-shadow:0 0 0 2px rgba(162,142,107,.55); }
+.page .thumb .material-icons { font-size:17px; }
+.page .variant-section .list-images { gap:9px; }
+.page #container-input-gambar .btn { min-height:36px; padding:6px 10px; border-radius:7px; font-size:12px; }
+.page #container-input-gambar > label:not(.image-upload-more) { width:36px; min-width:36px; height:36px; min-height:36px; padding:0; overflow:hidden; justify-content:center; font-size:0; }
+.page #container-input-gambar > label:not(.image-upload-more) .material-icons { font-size:17px; }
+.page #container-input-gambar input[type="file"] { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
+.page #container-input-gambar .image-upload-more { display:inline-flex; align-items:center; justify-content:center; gap:5px; }
+.page #container-input-gambar .image-upload-more .material-icons { font-size:17px; }
 .page .chip { border: 0; border-bottom: 1px solid #e3ded4; border-radius: 0; background: transparent; }
 @media (max-width: 700px) {
     .edit-page-head { align-items: flex-start; }
@@ -463,6 +487,29 @@
 .product-save-progress.is-error { color: #9b3932; }
 @keyframes product-save-indeterminate { from { transform: translateX(-100%); } to { transform: translateX(295%); } }
 @media (prefers-reduced-motion: reduce) { .product-save-progress__bar { transition: none; } .product-save-progress.is-processing .product-save-progress__bar { animation: none; width: 100%; } }
+.variant-color-editor { display:grid; gap:8px; }
+.variant-color-presets { display:flex; flex-wrap:wrap; gap:6px; }
+.variant-color-choice { display:inline-flex; align-items:center; gap:6px; min-height:34px; padding:4px 8px; border:1px solid #e5e1d8; border-radius:18px; background:#fff; color:#454039; font:inherit; font-size:11px; cursor:pointer; }
+.variant-color-choice:hover,.variant-color-choice.is-selected { border-color:#a8252d; background:#fbf5f4; }
+.variant-color-choice__dot,.variant-color-swatch { width:20px; height:20px; flex:none; border:1px solid rgba(35,31,27,.2); border-radius:50%; }
+.variant-color-custom { display:inline-flex; position:relative; align-items:center; gap:7px; min-height:34px; padding:4px 8px; border:1px dashed #c9c2b6; border-radius:18px; color:#625a50; font-size:11px; cursor:pointer; }
+.variant-color-custom input { position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; }
+.variant-color-current { display:flex; align-items:center; gap:7px; color:var(--muted); font-size:11px; }
+@media (min-width:1100px) {
+    .page { max-width: 1480px; }
+    .grid { grid-template-columns: minmax(0,1.15fr) minmax(420px,.85fr); gap: 36px; }
+    .page #container-varian > .variant-section {
+        display: grid; grid-template-columns: 180px minmax(0,1fr); column-gap: 24px; align-items: start;
+    }
+    .page #container-varian > .variant-section > .section-title { grid-column: 1 / -1; margin: 4px 0 0; }
+    .page #container-varian > .variant-section > .list-images,
+    .page #container-varian > .variant-section > #container-input-gambar { grid-column: 1; }
+    .page #container-varian > .variant-section > .two,
+    .page #container-varian > .variant-section > .field,
+    .page #container-varian > .variant-section > .row { grid-column: 2; }
+    .page #container-varian > .variant-section > .two { display:grid; grid-template-columns: minmax(220px,.8fr) minmax(420px,1.2fr); align-items:start; gap:18px; }
+    .variant-color-presets { gap:8px; }
+}
 </style>
 
 <div class="page">
@@ -659,10 +706,11 @@
                             <div class="list-images" id="container-gambar<?= $ind_v + 1; ?>">
                                 <!-- preview lama -->
                                 <?php foreach (explode(",", $v['urutan_gambar']) as $ind_u => $u) { ?>
-                                <div class="thumb"
-                                    onclick="hapusSubvarian('<?= $ind_v + 1; ?>','<?= $ind_u + 1; ?>',event)">
-                                    <div class="x">hapus</div>
+                                <div class="thumb" draggable="true" ondragstart="startEditImageDrag(event)" ondragend="endEditImageDrag(event)" ondragover="event.preventDefault()" ondrop="dropEditImage(event,'<?= $ind_v + 1; ?>')" data-file-id="input-gambar-<?= $ind_v + 1; ?>-<?= $ind_u + 1; ?>" title="Seret untuk mengubah urutan">
                                     <img src="/product-cover/<?= $produk['id'] ?>?slot=<?= urlencode(trim((string) $u)); ?>&proxy=1&v=<?= $imageVersion; ?>" alt="">
+                                    <span class="thumb-index" aria-label="Foto ke-<?= $ind_u + 1; ?>"><?= $ind_u + 1; ?></span>
+                                    <span class="thumb-drag" aria-hidden="true"><i class="material-icons">drag_indicator</i></span>
+                                    <button class="x" type="button" onclick="hapusSubvarian('<?= $ind_v + 1; ?>','<?= $ind_u + 1; ?>',event)" title="Hapus foto <?= $ind_u + 1; ?>" aria-label="Hapus foto <?= $ind_u + 1; ?>"><i class="material-icons" aria-hidden="true">delete_outline</i></button>
                                 </div>
                                 <?php } ?>
                             </div>
@@ -670,8 +718,8 @@
                             <div id="container-input-gambar<?= $ind_v + 1; ?>" class="row"
                                 style="flex-wrap:wrap; margin-top:8px;">
                                 <?php foreach (explode(",", $v['urutan_gambar']) as $ind_urutanGambar => $urutanGambar) { ?>
-                                <label class="btn">
-                                    + Tambah
+                                <label class="btn" title="Pilih foto untuk mengganti foto <?= $ind_urutanGambar + 1; ?>">
+                                    <i class="material-icons" aria-hidden="true">edit</i> Ganti
                                     <input type="file"
                                         id="input-gambar-<?= $ind_v + 1; ?>-<?= $ind_urutanGambar + 1; ?>"
                                         name="gambar-<?= $ind_v + 1; ?>-<?= $ind_urutanGambar + 1; ?>"
@@ -680,8 +728,8 @@
                                         onchange="uploadFile(event)">
                                 </label>
                                 <?php } ?>
-                                <label class="btn">
-                                    + Tambah
+                                <label class="btn image-upload-more" title="Tambah foto">
+                                    <i class="material-icons" aria-hidden="true">add_photo_alternate</i> Tambah foto
                                     <input type="file"
                                         id="input-gambar-<?= $ind_v + 1; ?>-<?= count(explode(",", $v['urutan_gambar'])) + 1; ?>"
                                         name="gambar-<?= $ind_v + 1; ?>-<?= count(explode(",", $v['urutan_gambar'])) + 1; ?>"
@@ -697,9 +745,19 @@
                                         value="<?= esc($v['nama'] ?? '', 'attr'); ?>" required>
                                 </div>
                                 <div class="field">
-                                    <label class="label">Kode Warna</label>
-                                    <input class="inp" type="text" name="kode-var<?= $ind_v + 1; ?>"
-                                        value="<?= $v['kode']; ?>" required>
+                                    <label class="label">Warna varian</label>
+                                    <div class="variant-color-editor">
+                                        <input type="hidden" name="kode-var<?= $ind_v + 1; ?>" value="<?= esc($v['kode'] ?? '', 'attr'); ?>" required>
+                                        <div class="variant-color-presets" role="group" aria-label="Pilih warna varian">
+                                            <?php foreach ($variantColorPresets as $colorName => $colorValue): ?>
+                                            <button type="button" class="variant-color-choice<?= strtolower((string) ($v['kode'] ?? '')) === strtolower($colorValue) ? ' is-selected' : ''; ?>" data-variant-color="<?= esc($colorValue, 'attr'); ?>" aria-pressed="<?= strtolower((string) ($v['kode'] ?? '')) === strtolower($colorValue) ? 'true' : 'false'; ?>">
+                                                <span class="variant-color-choice__dot" style="background-color:<?= esc($colorValue, 'attr'); ?>"></span><?= esc($colorName); ?>
+                                            </button>
+                                            <?php endforeach; ?>
+                                            <label class="variant-color-custom"><span class="variant-color-swatch">＋</span><span>Warna lain</span><input type="color" aria-label="Pilih warna khusus"></label>
+                                        </div>
+                                        <div class="variant-color-current"><span class="variant-color-swatch" data-current-color></span><span data-current-color-label>Warna tersimpan</span></div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="field">
@@ -746,6 +804,36 @@
 <script>
 let counterJmlVarian = <?= count($produk['varian']); ?>;
 const hitungVarianInputElm = document.querySelector('input[name="hitung-varian"]');
+const variantColorPresetMap = <?= json_encode($variantColorPresets, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
+function syncVariantColorEditor(editor, color) {
+    const input = editor.querySelector('input[type="hidden"][name^="kode-var"]');
+    const normalized = String(color || '').trim();
+    if (input) input.value = normalized;
+    editor.querySelectorAll('[data-variant-color]').forEach(button => {
+        const selected = button.dataset.variantColor.toLowerCase() === normalized.toLowerCase();
+        button.classList.toggle('is-selected', selected);
+        button.setAttribute('aria-pressed', selected ? 'true' : 'false');
+    });
+    const dot = editor.querySelector('[data-current-color]');
+    if (dot && normalized) dot.style.backgroundColor = normalized;
+    const label = editor.querySelector('[data-current-color-label]');
+    if (label && normalized) label.textContent = 'Warna varian dipilih';
+}
+document.addEventListener('click', event => {
+    const choice = event.target.closest('[data-variant-color]');
+    if (!choice) return;
+    const editor = choice.closest('.variant-color-editor');
+    if (editor) syncVariantColorEditor(editor, choice.dataset.variantColor);
+});
+document.addEventListener('input', event => {
+    if (!event.target.matches('.variant-color-custom input[type="color"]')) return;
+    const editor = event.target.closest('.variant-color-editor');
+    if (editor) syncVariantColorEditor(editor, event.target.value);
+});
+document.querySelectorAll('.variant-color-editor').forEach(editor => {
+    const value = editor.querySelector('input[type="hidden"][name^="kode-var"]')?.value || '';
+    syncVariantColorEditor(editor, value);
+});
 const MAX_UPLOAD_MB = 4;
 const MAX_PRODUCT_IMAGES = 25;
 const ALLOWED_IMAGE_TYPES = ['image/webp', 'image/avif'];
@@ -786,8 +874,8 @@ function uploadFile(event) {
 
     // tambahkan slot input berikutnya
     const inputBaru = `
-      <label class="btn">
-        + Tambah
+            <label class="btn image-upload-more" title="Tambah foto">
+              <i class="material-icons" aria-hidden="true">add_photo_alternate</i> Tambah foto
         <input type="file" id="input-gambar-${varianNum}-${Number(subVarianNum)+1}"
                name="gambar-${varianNum}-${Number(subVarianNum)+1}" accept="image/webp,image/avif" onchange="uploadFile(event)">
       </label>`;
@@ -804,23 +892,67 @@ function uploadFile(event) {
     const blobUrl = URL.createObjectURL(file);
     const existingSlot = event.target.dataset.slot || '';
     if (existingSlot) {
-        const oldThumb = document.querySelector(`#container-gambar${varianNum} .thumb:nth-child(${Number(subVarianNum)}) img`);
-        if (oldThumb) {
-            oldThumb.src = blobUrl;
+        const oldThumb = Array.from(document.getElementById("container-gambar" + varianNum)?.querySelectorAll('.thumb') || [])
+            .find(thumb => thumb.dataset.fileId === event.target.id);
+        if (oldThumb?.querySelector('img')) {
+            oldThumb.querySelector('img').src = blobUrl;
             return;
         }
     }
     const itemGambar = `
-      <div class="thumb" >
-        <div class="x">hapus</div>
+      <div class="thumb" draggable="true" ondragstart="startEditImageDrag(event)" ondragend="endEditImageDrag(event)" ondragover="event.preventDefault()" ondrop="dropEditImage(event,'${varianNum}')" data-file-id="${event.target.id}" title="Seret untuk mengubah urutan">
+        <span class="thumb-index">${Number(subVarianNum)}</span>
+        <span class="thumb-drag" aria-hidden="true"><i class="material-icons">drag_indicator</i></span>
+        <button class="x" type="button" title="Hapus foto" aria-label="Hapus foto"><i class="material-icons" aria-hidden="true">delete_outline</i></button>
         <img src="${blobUrl}" alt="">
       </div>`;
     const itemGambarElm = buatElementDariHTML(itemGambar);
-    itemGambarElm.querySelector('.x').addEventListener('click', () => {
+    itemGambarElm.querySelector('.x').addEventListener('click', (deleteEvent) => {
         document.getElementById("container-gambar" + varianNum).removeChild(itemGambarElm);
         containerInputGambar.removeChild(event.target.parentNode);
+        refreshEditThumbNumbers(varianNum);
     });
     document.getElementById("container-gambar" + varianNum).append(itemGambarElm);
+}
+
+function startEditImageDrag(event) {
+    const thumb = event.target.closest('.thumb');
+    if (!thumb || !event.dataTransfer) return;
+    thumb.classList.add('is-dragging');
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', thumb.dataset.fileId || '');
+}
+
+function endEditImageDrag(event) {
+    event.target.closest('.thumb')?.classList.remove('is-dragging');
+    document.querySelectorAll('.thumb.is-drop-target').forEach(thumb => thumb.classList.remove('is-drop-target'));
+}
+
+function refreshEditThumbNumbers(varianNum) {
+    document.getElementById('container-gambar' + varianNum)?.querySelectorAll('.thumb-index').forEach((badge, index) => {
+        badge.textContent = String(index + 1);
+    });
+}
+
+function dropEditImage(event, varianNum) {
+    event.preventDefault();
+    const targetThumb = event.target.closest('.thumb');
+    const container = document.getElementById('container-gambar' + varianNum);
+    const inputContainer = document.getElementById('container-input-gambar' + varianNum);
+    const sourceId = event.dataTransfer?.getData('text/plain');
+    const sourceThumb = Array.from(container?.querySelectorAll('.thumb') || []).find(thumb => thumb.dataset.fileId === sourceId);
+    if (!targetThumb || !sourceThumb || sourceThumb === targetThumb) return;
+    const thumbs = Array.from(container.querySelectorAll('.thumb'));
+    const sourceBeforeTarget = thumbs.indexOf(sourceThumb) < thumbs.indexOf(targetThumb);
+    container.insertBefore(sourceThumb, sourceBeforeTarget ? targetThumb.nextSibling : targetThumb);
+
+    const orderedInputs = Array.from(container.querySelectorAll('.thumb'))
+        .map(thumb => document.getElementById(thumb.dataset.fileId)?.parentElement)
+        .filter(Boolean);
+    const inputSet = new Set(orderedInputs);
+    const remaining = Array.from(inputContainer.children).filter(child => !inputSet.has(child));
+    inputContainer.replaceChildren(...orderedInputs, ...remaining);
+    refreshEditThumbNumbers(varianNum);
 }
 
 function addVarian() {
@@ -845,8 +977,15 @@ function addVarian() {
             <input class="inp" type="text" name="nama-var${no}" required>
           </div>
           <div class="field">
-            <label class="label">Kode Warna</label>
-            <input class="inp" type="text" name="kode-var${no}" required>
+            <label class="label">Warna varian</label>
+            <div class="variant-color-editor">
+              <input type="hidden" name="kode-var${no}" required>
+              <div class="variant-color-presets" role="group" aria-label="Pilih warna varian">
+                ${Object.entries(variantColorPresetMap).map(([name, color]) => `<button type="button" class="variant-color-choice" data-variant-color="${color}" aria-pressed="false"><span class="variant-color-choice__dot" style="background-color:${color}"></span>${name}</button>`).join('')}
+                <label class="variant-color-custom"><span class="variant-color-swatch">＋</span><span>Warna lain</span><input type="color" aria-label="Pilih warna khusus"></label>
+              </div>
+              <div class="variant-color-current"><span class="variant-color-swatch" data-current-color></span><span data-current-color-label>Pilih warna untuk varian ini</span></div>
+            </div>
           </div>
         </div>
         <div class="field">
@@ -889,9 +1028,11 @@ function generateId() {
 function hapusSubvarian(varianNum, indexGambar, e) {
     const containerGambar = document.getElementById("container-gambar" + varianNum);
     const containerInputGambar = document.getElementById("container-input-gambar" + varianNum);
-    const parentNode = document.getElementById('input-gambar-' + varianNum + '-' + indexGambar).parentNode;
-    containerGambar.removeChild(e.target.parentNode);
-    containerInputGambar.removeChild(parentNode);
+    const thumb = e.target.closest('.thumb');
+    const input = document.getElementById(thumb?.dataset.fileId || ('input-gambar-' + varianNum + '-' + indexGambar));
+    if (thumb) containerGambar.removeChild(thumb);
+    if (input?.parentNode && containerInputGambar.contains(input.parentNode)) containerInputGambar.removeChild(input.parentNode);
+    refreshEditThumbNumbers(varianNum);
 }
 </script>
 

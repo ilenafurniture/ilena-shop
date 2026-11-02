@@ -216,7 +216,7 @@ $this->setVar('websiteOrderTodoCount', $websiteOrderTodoCount);
     }
     </style>
     <link rel="stylesheet" href="<?= base_url('css/ilena-admin-redesign.css?v=20261031d'); ?>">
-    <link rel="stylesheet" href="<?= base_url('css/ilena-dialog.css?v=20261027'); ?>">
+    <link rel="stylesheet" href="<?= base_url('css/ilena-dialog.css?v=' . filemtime(FCPATH . 'css/ilena-dialog.css')); ?>">
 </head>
 
 <body class="ilena-admin-redesign">
@@ -337,7 +337,8 @@ $this->setVar('websiteOrderTodoCount', $websiteOrderTodoCount);
         toastElm.classList.remove("show");
     }
     </script>
-    <script src="<?= base_url('js/ilena-dialog.js?v=20261027'); ?>"></script>
+    <script defer src="<?= base_url('js/ilena-notices.js?v=' . (is_file(FCPATH . 'js/ilena-notices.js') ? filemtime(FCPATH . 'js/ilena-notices.js') : '1')); ?>"></script>
+    <script src="<?= base_url('js/ilena-dialog.js?v=' . filemtime(FCPATH . 'js/ilena-dialog.js')); ?>"></script>
 </body>
 
 </html>

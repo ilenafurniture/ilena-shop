@@ -192,8 +192,10 @@ class SmartProductAssistant
         $budget = $this->extractBudget($retrievalQuery);
         $products = $this->findProducts($retrievalQuery, $contextProductId);
         if ($this->isStockQuestion($query)) {
+            $stockAnswer = $this->stockAnswer($query, $products);
+            if ($products === []) $stockAnswer = $this->appendHandoffOffer($stockAnswer, 'id');
             return [
-                'answer' => $this->stockAnswer($query, $products),
+                'answer' => $stockAnswer,
                 'products' => $products,
                 'sources' => [],
                 'mode' => 'catalog',
@@ -219,6 +221,7 @@ class SmartProductAssistant
         $answer = $this->askModel($query, $contextProductId, $products, $sources, $fallback, $history);
 
         $usedFallback = $this->providerOutcome !== '' || $answer === $fallback;
+        if ($this->providerOutcome !== '') $answer = $this->appendHandoffOffer($answer, 'id');
         return ['answer' => $answer, 'products' => $products, 'sources' => $sources,
             'mode' => $usedFallback ? 'fallback' : 'assisted', 'fallbackReason' => $usedFallback ? ($this->providerOutcome ?: 'provider_empty') : null];
     }
@@ -286,9 +289,11 @@ class SmartProductAssistant
 
         $budget = $this->extractBudget($retrievalQuery);
         $products = $this->findProducts($retrievalQuery, $contextProductId, 4, 'en');
-        if ($this->isStockQuestion($query)) return [
-            'answer' => $this->stockAnswerEnglish($query, $products), 'products' => $products, 'sources' => [], 'mode' => 'catalog', 'fallbackReason' => $products === [] ? 'clarification' : null,
-        ];
+        if ($this->isStockQuestion($query)) {
+            $stockAnswer = $this->stockAnswerEnglish($query, $products);
+            if ($products === []) $stockAnswer = $this->appendHandoffOffer($stockAnswer, 'en');
+            return ['answer' => $stockAnswer, 'products' => $products, 'sources' => [], 'mode' => 'catalog', 'fallbackReason' => $products === [] ? 'clarification' : null];
+        }
         $sources = $this->findKnowledge($retrievalQuery, 4, 'en');
         $verifiedFaqAnswer = $this->verifiedFaqAnswer($query, $sources);
         if ($verifiedFaqAnswer !== null) return [
@@ -302,6 +307,7 @@ class SmartProductAssistant
         if ($products === [] && $sources === []) return ['answer' => $this->ambiguousAnswer($query, 'en'), 'products' => [], 'sources' => [], 'mode' => 'fallback', 'fallbackReason' => 'no_retrieval_evidence'];
         $answer = $this->askModel($query, $contextProductId, $products, $sources, $fallback, $history, 'en');
         $usedFallback = $this->providerOutcome !== '' || $answer === $fallback;
+        if ($this->providerOutcome !== '') $answer = $this->appendHandoffOffer($answer, 'en');
         return ['answer' => $answer, 'products' => $products, 'sources' => $sources,
             'mode' => $usedFallback ? 'fallback' : 'assisted', 'fallbackReason' => $usedFallback ? ($this->providerOutcome ?: 'provider_empty') : null];
     }
@@ -1025,45 +1031,53 @@ PROMPT;
 
         if (preg_match('/\b(harga|price|biaya|cost|berapa)\b/u', $text) === 1) {
             return $asks(
-                'Kakak sedang menanyakan harga produk yang mana? Kirim nama atau tautan produknya, ya. Jika ingin dibantu staf, pilih “Minta bantuan staf” di chat.',
-                'Which product would you like the price for? Send its name or link. To speak with a team member, choose “Talk to customer service” in the chat.'
+                'Kakak menanyakan harga produk yang mana? Kirim nama atau tautannya, ya. Kalau ingin dibantu langsung, tekan WhatsApp di bawah—pertanyaan Kakak sudah disiapkan.',
+                'Which product would you like the price for? Send its name or link. If you prefer direct help, tap WhatsApp below; your question is ready to send.'
             );
         }
         if (preg_match('/\b(shipping|ongkir|pengiriman|kirim|delivery|ekspedisi|kurir)\b/u', $text) === 1) {
             return $asks(
-                'Untuk mengecek pengiriman, Kakak sedang melihat produk apa dan kota tujuan mana? Cukup sebutkan kota—jangan kirim alamat lengkap. Tim Ilena juga bisa membantu lewat opsi staf di chat.',
-                'To check delivery, which product and destination city are you asking about? The city is enough; please do not send a full address. You can also choose customer service in the chat.'
+                'Untuk mengecek pengiriman, produk apa dan kota tujuannya, Kak? Cukup sebutkan kota, tidak perlu alamat lengkap. Kalau ingin dibantu tim Ilena, tekan WhatsApp di bawah—pesan Kakak sudah disiapkan.',
+                'Which product and destination city should I check for delivery? The city is enough; no full address is needed. To ask the Ilena team, tap WhatsApp below; your message is ready to send.'
             );
         }
         if (preg_match('/\b(pembayaran|bayar|payment|transfer|cicilan|installment|metode)\b/u', $text) === 1) {
             return $asks(
-                'Kakak ingin bertanya tentang metode pembayaran atau status pembayaran pesanan? Sebutkan yang ingin dicek; jangan kirim PIN, OTP, atau detail kartu. Untuk bantuan staf, pilih opsi staf di chat.',
-                'Are you asking about payment methods or the status of an order payment? Tell me which one; never send a PIN, OTP, or card details. Choose customer service in the chat for staff assistance.'
+                'Kakak ingin tahu metode pembayaran atau mengecek pembayaran pesanan? Sebutkan yang dimaksud, ya. Jangan kirim PIN, OTP, atau detail kartu. Untuk bantuan tim, tekan WhatsApp di bawah.',
+                'Are you asking about payment methods or a payment on an order? Tell me which one. Please do not share a PIN, OTP, or card details. Tap WhatsApp below to ask the Ilena team.'
             );
         }
         if (preg_match('/\b(stok|stock|tersedia|availability|available)\b/u', $text) === 1) {
             return $asks(
-                'Produk atau varian mana yang ingin Kakak cek stoknya? Kirim nama produknya agar saya tidak salah melihat. Jika perlu, pilih “Minta bantuan staf” di chat.',
-                'Which product or variant would you like me to check? Send its name so I check the right item. You can choose “Talk to customer service” in the chat if needed.'
+                'Produk atau varian mana yang ingin Kakak cek stoknya? Kirim namanya agar saya memeriksa barang yang tepat. Kalau ingin konfirmasi langsung, tekan WhatsApp di bawah.',
+                'Which product or variant would you like me to check? Send its name so I look up the right item. For direct confirmation, tap WhatsApp below.'
             );
         }
         if (preg_match('/\b(pesanan|order|pelacakan|tracking|resi|refund|pengembalian|retur)\b/u', $text) === 1) {
             return $asks(
-                'Kakak ingin mengecek status pesanan, pengiriman, atau pengembalian barang? Pilih salah satu. Untuk menjaga keamanan, jangan kirim kata sandi atau OTP; staf dapat membantu melalui opsi bantuan di chat.',
-                'Would you like to check an order, delivery, or return? Tell me which one. For your security, do not send passwords or OTPs; choose customer service in the chat for staff help.'
+                'Kakak ingin mengecek pesanan, pengiriman, atau pengembalian barang? Sebutkan yang ingin dibantu. Jangan kirim kata sandi atau OTP; untuk bantuan tim, tekan WhatsApp di bawah.',
+                'Would you like help with an order, delivery, or return? Tell me which one. Do not share passwords or OTPs; tap WhatsApp below to contact the Ilena team.'
             );
         }
         if (preg_match('/\b(garansi|warranty|bahan|material|kayu|warna|color|ukuran|dimensi|dimension|perakitan|assembly)\b/u', $text) === 1) {
             return $asks(
-                'Agar jawabannya tepat, Kakak menanyakan produk yang mana? Kirim nama atau tautannya, lalu sebutkan detail yang ingin diketahui. Jika masih perlu bantuan, pilih “Minta bantuan staf” di chat.',
-                'To give an accurate answer, which product are you asking about? Send its name or link and the detail you want to know. Choose customer service in the chat if you still need help.'
+                'Kakak sedang menanyakan produk yang mana dan detail apa yang ingin diketahui? Kirim nama atau tautannya, ya. Kalau perlu bantuan tim, tekan WhatsApp di bawah.',
+                'Which product and detail are you asking about? Send its name or link. If you need help from the team, tap WhatsApp below.'
             );
         }
 
         return $asks(
-            'Kakak sedang mencari produk, menanyakan pesanan, atau membutuhkan informasi layanan Ilena? Ceritakan sedikit konteksnya agar saya bisa mengarahkan dengan tepat. Jika lebih nyaman, pilih “Minta bantuan staf” di chat.',
-            'Are you looking for a product, asking about an order, or looking for information about Ilena’s services? A little context will help me guide you. You can choose customer service in the chat instead.'
+            'Kakak ingin mencari produk, mengecek pesanan, atau bertanya tentang layanan Ilena? Ceritakan sedikit lagi, ya, supaya saya bisa mengarahkan dengan tepat. Kalau ingin bicara dengan tim, tekan WhatsApp di bawah.',
+            'Are you looking for a product, checking an order, or asking about an Ilena service? A little more context will help me guide you. To speak with the team, tap WhatsApp below.'
         );
+    }
+
+    private function appendHandoffOffer(string $answer, string $locale): string
+    {
+        $line = $locale === 'en'
+            ? 'I could not verify that detail from the information available. Tap WhatsApp below and the Ilena team can help; your question is ready to send.'
+            : 'Saya belum bisa memastikan detail itu dari informasi yang tersedia. Tekan WhatsApp di bawah agar tim Ilena bisa membantu; pertanyaan Kakak sudah disiapkan.';
+        return rtrim($answer) . "\n\n" . $line;
     }
 
     private function fallbackAnswer(array $products, array $sources, ?int $budget): string

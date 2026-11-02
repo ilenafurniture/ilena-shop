@@ -10649,6 +10649,29 @@ body.ilena-storefront .ilena-mobile-interior-link img {
     body.ilena-storefront .ilena-compact-header__interior { display: none !important; }
     body.ilena-storefront .navbar-hp-atas .ilena-mobile-sister-brands { gap: 0; }
 }
+@media (min-width: 381px) and (max-width: 600px) {
+    body.ilena-storefront .navbar-hp-atas {
+        display: grid !important;
+        grid-template-columns: 44px minmax(72px, 88px) minmax(0, 1fr) 44px;
+        align-items: center;
+        gap: 6px !important;
+    }
+    body.ilena-storefront .navbar-hp-atas > a:first-child { grid-column: 1; }
+    body.ilena-storefront .ilena-mobile-sister-brands {
+        grid-column: 2;
+        width: auto;
+        min-width: 0;
+        overflow: hidden;
+    }
+    body.ilena-storefront .ilena-mobile-lunarea-link { min-width: 0; }
+    body.ilena-storefront .ilena-mobile-lunarea-link img {
+        width: clamp(72px, 22vw, 88px);
+        max-width: 100%;
+        height: auto;
+    }
+    body.ilena-storefront .navbar-hp-atas .ilena-mobile-search-slot { grid-column: 3; width: 100%; min-width: 0; }
+    body.ilena-storefront .navbar-hp-atas > div:last-of-type { grid-column: 4; width: 44px !important; min-width: 44px !important; }
+}
 @media (max-width: 380px) {
     body.ilena-storefront .navbar-hp-atas {
         display: grid !important;
@@ -10841,6 +10864,303 @@ body.ilena-storefront .ilena-cart-badge.is-pulsing { animation: ilena-cart-pulse
     body.ilena-storefront .ilena-cart-link.is-bouncing .material-icons,
     body.ilena-storefront .ilena-cart-badge.is-pulsing { animation: none !important; }
 }
+
+/* Profile refresh: clearer hierarchy, larger readable controls, no redundant panels. */
+body.ilena-storefront.ilena-page--account .ilena-account-page {
+    align-items: flex-start;
+    color: var(--ilena-ink, #211f1d);
+}
+body.ilena-storefront.ilena-page--account .ilena-account-nav {
+    position: sticky;
+    top: 24px;
+    padding-bottom: 16px !important;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-nav h2 {
+    font-size: 25px;
+    line-height: 1.2;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-nav > a.btn-default-abu {
+    min-height: 44px;
+    padding: 10px 8px;
+    color: #383431;
+    font-size: 14px;
+    transition: color .18s ease, background-color .18s ease, padding .18s ease;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-nav > a.btn-default-abu[aria-current="page"] {
+    padding-left: 12px;
+    border-left: 2px solid var(--merah, #a8252d);
+    color: var(--merah, #a8252d);
+    font-weight: 650;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-nav form .btn-default-merah {
+    min-height: 44px;
+    font-size: 13px;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-heading {
+    margin-bottom: 26px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--ilena-line, #e8e3dc);
+}
+body.ilena-storefront.ilena-page--account .ilena-account-heading__eyebrow {
+    font-size: 11px;
+    letter-spacing: .14em;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-heading h1 {
+    font-size: clamp(34px, 4vw, 48px);
+    line-height: 1.08;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-heading__description {
+    max-width: 620px;
+    font-size: 15px;
+    line-height: 1.65;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-profile-row {
+    margin-block: 0 22px;
+    padding-block: 18px;
+    border-bottom: 1px solid var(--ilena-line, #e8e3dc);
+    font-size: 15px;
+    line-height: 1.6;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-profile-row h2,
+body.ilena-storefront.ilena-page--account .ilena-account-section-heading h2 {
+    margin-bottom: 12px;
+    color: var(--ilena-ink, #211f1d);
+    font-family: var(--ilena-font-display, inherit);
+    font-size: 21px;
+    font-weight: 550;
+    line-height: 1.25;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-profile-row .fw-bold {
+    font-size: 15px;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-profile-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 20px;
+    max-width: 760px;
+    padding-block: 8px 24px;
+    border-bottom: 1px solid var(--ilena-line, #e8e3dc);
+}
+body.ilena-storefront.ilena-page--account .ilena-account-profile-form > div { margin: 0 !important; }
+body.ilena-storefront.ilena-page--account .ilena-account-profile-form > div:first-child { grid-column: 1 / -1; }
+body.ilena-storefront.ilena-page--account .ilena-account-profile-form label,
+body.ilena-storefront.ilena-page--account .ilena-account-profile-row label {
+    margin-bottom: 7px;
+    color: #35312e;
+    font-size: 14px;
+    font-weight: 600;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-profile-page .form-control,
+body.ilena-storefront.ilena-page--account .ilena-account-profile-form .form-control,
+body.ilena-storefront.ilena-page--account .ilena-account-profile-row .form-control {
+    min-height: 48px;
+    border: 1px solid #d9d3cc;
+    border-radius: 2px;
+    color: #211f1d;
+    font-size: 16px;
+    box-shadow: none;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-profile-form .form-control:focus,
+body.ilena-storefront.ilena-page--account .ilena-account-profile-row .form-control:focus {
+    border-color: var(--merah, #a8252d);
+    box-shadow: 0 0 0 3px rgba(168, 37, 45, .11);
+}
+body.ilena-storefront.ilena-page--account .ilena-account-profile-form .btn-default-merah,
+body.ilena-storefront.ilena-page--account .ilena-account-profile-row .btn-default-merah,
+body.ilena-storefront.ilena-page--account .ilena-account-profile-row .btn-default-abu {
+    min-height: 44px;
+    padding: 10px 16px;
+    font-size: 13px;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-section-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--ilena-line, #e8e3dc);
+}
+body.ilena-storefront.ilena-page--account .ilena-account-section-heading h2 { margin: 0; font-size: 24px; }
+body.ilena-storefront.ilena-page--account .ilena-account-section-heading p { margin: 0; color: var(--ilena-muted, #706a63); font-size: 13px; }
+body.ilena-storefront.ilena-page--account .ilena-account-page .item-address { font-size: 14px; }
+body.ilena-storefront.ilena-page--account .ilena-account-page .item-address p { font-size: 14px; }
+body.ilena-storefront.ilena-page--account .ilena-account-page .vch-body { font-size: 15px; }
+body.ilena-storefront.ilena-page--account .ilena-account-page .vch-meta { font-size: 13px; }
+body.ilena-storefront.ilena-page--account .ilena-account-page .vch-code { font-size: 14px; }
+body.ilena-storefront.ilena-page--account .ilena-account-page .btn-chip { min-height: 40px; font-size: 12px; }
+body.ilena-storefront.ilena-page--account :where(a, button, input, select):focus-visible {
+    outline: 3px solid rgba(168, 37, 45, .45);
+    outline-offset: 3px;
+}
+@media (max-width: 900px) {
+    body.ilena-storefront.ilena-page--account .ilena-account-nav { position: static; }
+    body.ilena-storefront.ilena-page--account .ilena-account-profile-form { max-width: none; }
+}
+@media (max-width: 700px) {
+    body.ilena-storefront.ilena-page--account .ilena-account-page { gap: 26px; }
+    body.ilena-storefront.ilena-page--account .ilena-account-heading { margin-bottom: 18px; padding-bottom: 17px; }
+    body.ilena-storefront.ilena-page--account .ilena-account-heading h1 { font-size: 34px; }
+    body.ilena-storefront.ilena-page--account .ilena-account-heading__description { font-size: 14px; }
+    body.ilena-storefront.ilena-page--account .ilena-account-profile-form { grid-template-columns: 1fr; gap: 14px; }
+    body.ilena-storefront.ilena-page--account .ilena-account-profile-form > div:first-child { grid-column: auto; }
+    body.ilena-storefront.ilena-page--account .ilena-account-profile-row { padding-block: 15px; }
+    body.ilena-storefront.ilena-page--account .ilena-account-section-heading h2 { font-size: 21px; }
+    body.ilena-storefront.ilena-page--account .ilena-account-nav > a.btn-default-abu { font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ilena-storefront.ilena-page--account .ilena-account-nav > a.btn-default-abu { transition: none; }
+}
+
+/* Account area layout refinement: clearer desktop workspace and compact mobile navigation. */
+body.ilena-storefront.ilena-page--account .ilena-account-page {
+    width: min(calc(100% - 48px), 1320px);
+    max-width: 1320px;
+    gap: clamp(42px, 6vw, 88px);
+    padding-block: clamp(30px, 4vw, 56px) 72px;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-page > .tigapuluh-ke-seratus {
+    width: 238px !important;
+    flex: 0 0 238px;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-nav {
+    padding-bottom: 22px !important;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-nav h2 {
+    font-size: 27px;
+    letter-spacing: -.035em !important;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-main {
+    min-width: 0;
+    max-width: 900px;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-heading {
+    margin-bottom: 14px;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-heading h1 {
+    margin: 0;
+    font-size: clamp(38px, 4.4vw, 54px);
+    letter-spacing: -.045em;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-profile-row > p:first-child {
+    color: #746b64;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-password-row {
+    align-items: center;
+    padding-block: 16px !important;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-password-row .btn-teks-aja {
+    min-height: 44px;
+    padding: 10px 0;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-nav a:focus-visible,
+body.ilena-storefront.ilena-page--account .ilena-account-nav button:focus-visible {
+    outline: 3px solid rgba(168, 37, 45, .42);
+    outline-offset: 3px;
+}
+@media (max-width: 900px) {
+    body.ilena-storefront.ilena-page--account .ilena-account-page {
+        width: min(calc(100% - 32px), 760px);
+        gap: 26px;
+        padding-block: 24px 48px;
+    }
+    body.ilena-storefront.ilena-page--account .ilena-account-page > .tigapuluh-ke-seratus {
+        width: 100% !important;
+        flex: 0 0 auto;
+        min-width: 0;
+    }
+    body.ilena-storefront.ilena-page--account .ilena-account-nav {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        margin: 0 !important;
+        padding: 0 0 12px !important;
+        overflow-x: auto;
+        overscroll-behavior-inline: contain;
+        scrollbar-width: none;
+        border-bottom: 1px solid var(--ilena-line, #e8e3dc);
+        -webkit-overflow-scrolling: touch;
+    }
+    body.ilena-storefront.ilena-page--account .ilena-account-nav::-webkit-scrollbar { display: none; }
+    body.ilena-storefront.ilena-page--account .ilena-account-nav h2 {
+        flex: 0 0 auto;
+        margin: 0 14px 0 0;
+        font-size: 20px;
+        white-space: nowrap;
+    }
+    body.ilena-storefront.ilena-page--account .ilena-account-nav > .garis { display: none; }
+    body.ilena-storefront.ilena-page--account .ilena-account-nav > a.btn-default-abu {
+        flex: 0 0 auto;
+        width: auto;
+        min-height: 44px;
+        margin: 0 !important;
+        padding: 9px 13px;
+        border: 1px solid #e7e0d9;
+        border-radius: 999px;
+        background: #fff;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+    body.ilena-storefront.ilena-page--account .ilena-account-nav > a.btn-default-abu[aria-current="page"] {
+        padding-inline: 13px;
+        border-color: #25221f;
+        background: #25221f;
+        color: #fff;
+    }
+    body.ilena-storefront.ilena-page--account .ilena-account-nav form { flex: 0 0 auto; }
+    body.ilena-storefront.ilena-page--account .ilena-account-nav form .btn-default-merah {
+        width: auto;
+        min-height: 44px;
+        padding: 9px 13px;
+        border-radius: 999px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+}
+@media (max-width: 520px) {
+    body.ilena-storefront.ilena-page--account .ilena-account-page { width: calc(100% - 28px); gap: 22px; }
+    body.ilena-storefront.ilena-page--account .ilena-account-nav { gap: 7px; }
+    body.ilena-storefront.ilena-page--account .ilena-account-nav h2 { margin-right: 5px; font-size: 18px; }
+    body.ilena-storefront.ilena-page--account .ilena-account-nav > a.btn-default-abu,
+    body.ilena-storefront.ilena-page--account .ilena-account-nav form .btn-default-merah { padding-inline: 11px; font-size: 12px; }
+    body.ilena-storefront.ilena-page--account .ilena-account-heading h1 { font-size: 36px; }
+    body.ilena-storefront.ilena-page--account .ilena-account-heading__description { max-width: 38ch; }
+}
+
+/* Address editor dialog: readable on phones and scrolls within the viewport. */
+body.ilena-storefront.ilena-page--account #editModal .modal-dialog,
+body.ilena-storefront.ilena-page--account #exampleModal .modal-dialog {
+    width: min(720px, calc(100vw - 32px));
+    max-width: 720px;
+    margin: 24px auto;
+}
+body.ilena-storefront.ilena-page--account #editModal .modal-content,
+body.ilena-storefront.ilena-page--account #exampleModal .modal-content {
+    max-height: calc(100dvh - 48px);
+    display: flex;
+    flex-direction: column;
+}
+body.ilena-storefront.ilena-page--account #editModal .modal-body,
+body.ilena-storefront.ilena-page--account #exampleModal .modal-body {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+body.ilena-storefront.ilena-page--account #editModal .modal-body h5,
+body.ilena-storefront.ilena-page--account #exampleModal .modal-body h5 { margin-bottom: 10px !important; font-size: 13px; }
+body.ilena-storefront.ilena-page--account #editModal .form-floating > label,
+body.ilena-storefront.ilena-page--account #exampleModal .form-floating > label { font-size: 13px; }
+body.ilena-storefront.ilena-page--account #editModal .form-floating > .form-control,
+body.ilena-storefront.ilena-page--account #editModal .form-floating > .form-select,
+body.ilena-storefront.ilena-page--account #exampleModal .form-floating > .form-control,
+body.ilena-storefront.ilena-page--account #exampleModal .form-floating > .form-select {
+    min-height: 52px;
+    font-size: 16px;
+}
+body.ilena-storefront.ilena-page--account #editModal .modal-footer,
+body.ilena-storefront.ilena-page--account #exampleModal .modal-footer { gap: 10px; }
+body.ilena-storefront.ilena-page--account #editModal .modal-footer button,
+body.ilena-storefront.ilena-page--account #exampleModal .modal-footer button { min-height: 44px; }
 /* A quiet branded divider marks the start of the next Kak Wawa topic. */
 body.ilena-storefront .ilena-chat-topic-divider {
     display: flex;
@@ -10877,4 +11197,18 @@ body.ilena-storefront .ilena-chat-topic-divider span {
 }
 @media (prefers-reduced-motion: reduce) {
     body.ilena-storefront .ilena-chat-topic-divider { animation: none; }
+}
+@media (max-width: 700px) {
+    body.ilena-storefront.ilena-page--account #editModal .modal-dialog,
+    body.ilena-storefront.ilena-page--account #exampleModal .modal-dialog { width: calc(100vw - 20px); max-width: none; margin: 10px auto; }
+    body.ilena-storefront.ilena-page--account #editModal .modal-content,
+    body.ilena-storefront.ilena-page--account #exampleModal .modal-content { max-height: calc(100dvh - 20px); }
+    body.ilena-storefront.ilena-page--account #editModal .modal-body .form-alamat,
+    body.ilena-storefront.ilena-page--account #exampleModal .modal-body .form-alamat { gap: 8px !important; }
+    body.ilena-storefront.ilena-page--account #editModal .modal-body .form-alamat > .form-floating,
+    body.ilena-storefront.ilena-page--account #exampleModal .modal-body .form-alamat > .form-floating { min-width: 0; }
+    body.ilena-storefront.ilena-page--account #editModal .modal-header,
+    body.ilena-storefront.ilena-page--account #exampleModal .modal-header,
+    body.ilena-storefront.ilena-page--account #editModal .modal-footer,
+    body.ilena-storefront.ilena-page--account #exampleModal .modal-footer { padding-inline: 14px; }
 }
