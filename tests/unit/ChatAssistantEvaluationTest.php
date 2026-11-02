@@ -94,6 +94,118 @@ final class ChatAssistantEvaluationTest extends CIUnitTestCase
         $this->assertSame('Hello! How can Kak Wawa help you today?', $result['answer']);
     }
 
+    public function testCasualEnglishSmallTalkAndIndonesianChatInvitationAreHandledNaturally(): void
+    {
+        $assistant = new SmartProductAssistant(new \stdClass());
+
+        $english = $assistant->respond('How are you?', null, [], 'id');
+        $invitation = $assistant->respond('Boleh tanya nggak, Kak?', null, [], 'id');
+
+        $this->assertSame('greeting', $english['mode']);
+        $this->assertSame('chat_invitation', $invitation['mode']);
+    }
+
+    public function testSearchNormalizationCoversCommonFurnitureSynonymsAndProductFollowUps(): void
+    {
+        $assistant = new SmartProductAssistant(new \stdClass());
+        $class = new \ReflectionClass($assistant);
+        $terms = $class->getMethod('terms');
+        $followUp = $class->getMethod('isProductContextFollowUp');
+        $terms->setAccessible(true);
+        $followUp->setAccessible(true);
+
+        $this->assertContains('dresser', $terms->invoke($assistant, 'I need a chest of drawers'));
+        $this->assertContains('nakas', $terms->invoke($assistant, 'bedside table'));
+        $this->assertContains('kayu', $terms->invoke($assistant, 'solid wood furniture'));
+        $this->assertTrue($followUp->invoke($assistant, 'Apakah bahan ini tahan lama?', 'product-1'));
+        $this->assertFalse($followUp->invoke($assistant, 'Siapa juara sepak bola?', 'product-1'));
+    }
+
+    public function testFallbackAnswersUseReadableEvidenceBasedCopyAndPlainTextFormatting(): void
+    {
+        $assistant = new SmartProductAssistant(new \stdClass());
+        $class = new \ReflectionClass($assistant);
+        $clean = $class->getMethod('cleanModelAnswer');
+        $fallback = $class->getMethod('fallbackAnswer');
+        $excerpt = $class->getMethod('plainTextExcerpt');
+        foreach ([$clean, $fallback, $excerpt] as $method) $method->setAccessible(true);
+
+        $formatted = $clean->invoke($assistant, "## Pilihan\n\n- **Sofa Cody**\n- `Meja Orca`");
+        $productAnswer = $fallback->invoke($assistant, [[
+            'name' => 'Sofa Cody', 'price' => 2500000, 'colors' => 'Natural', 'materials' => '', 'dimensions' => '',
+        ]], [], null);
+        $guide = $excerpt->invoke($assistant, '<p>Pengiriman tersedia.</p><ul><li>Area tertentu</li><li>Hubungi staf</li></ul>', 200);
+
+        $this->assertSame("Pilihan\n\n• Sofa Cody\n• Meja Orca", $formatted);
+        $this->assertStringContainsString('Sofa Cody', $productAnswer);
+        $this->assertStringContainsString('harga Rp2.500.000', $productAnswer);
+        $this->assertStringContainsString("\n• Area tertentu\n• Hubungi staf", $guide);
+    }
+
+    public function testProductRetrievalUnderstandsCommonIndonesianAndEnglishFurnitureAliases(): void
+    {
+        $db = \Config\Database::connect('tests');
+        $forge = \Config\Database::forge('tests');
+        if ($db->tableExists('barang')) $forge->dropTable('barang', true);
+        $forge->addField([
+            'id' => ['type' => 'VARCHAR', 'constraint' => 64],
+            'nama' => ['type' => 'VARCHAR', 'constraint' => 191],
+            'harga' => ['type' => 'INT'],
+            'deskripsi' => ['type' => 'TEXT', 'null' => true],
+            'kategori' => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
+            'subkategori' => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
+            'varian' => ['type' => 'TEXT', 'null' => true],
+            'diskon' => ['type' => 'INT', 'null' => true],
+            'active' => ['type' => 'VARCHAR', 'constraint' => 1],
+            'pengunjung' => ['type' => 'INT', 'default' => 0],
+        ]);
+        $forge->addKey('id', true);
+        $forge->createTable('barang', true);
+        try {
+            $db->table('barang')->insert([
+                'id' => 'test-bed-1', 'nama' => 'Single Bed Ilena Cody', 'harga' => 1000000,
+                'deskripsi' => 'Tempat tidur minimalis', 'kategori' => 'Bedroom', 'subkategori' => 'Bed',
+                'varian' => '[]', 'diskon' => 0, 'active' => '1', 'pengunjung' => 0,
+            ]);
+
+            $products = (new SmartProductAssistant($db))->findProducts('Saya mencari tempat tidur');
+
+            $this->assertSame('Single Bed Ilena Cody', $products[0]['name'] ?? null);
+        } finally {
+            $forge->dropTable('barang', true);
+        }
+    }
+
+    public function testKnowledgeRetrievalMatchesConversationalShippingSynonyms(): void
+    {
+        $db = \Config\Database::connect('tests');
+        $forge = \Config\Database::forge('tests');
+        if ($db->tableExists('ilena_chat_knowledge')) $forge->dropTable('ilena_chat_knowledge', true);
+        $forge->addField([
+            'id' => ['type' => 'BIGINT', 'unsigned' => true, 'auto_increment' => true],
+            'title' => ['type' => 'VARCHAR', 'constraint' => 191],
+            'content' => ['type' => 'TEXT'],
+            'source_url' => ['type' => 'VARCHAR', 'constraint' => 500, 'null' => true],
+            'is_published' => ['type' => 'TINYINT', 'default' => 0],
+            'updated_at' => ['type' => 'DATETIME'],
+        ]);
+        $forge->addKey('id', true);
+        $forge->createTable('ilena_chat_knowledge', true);
+        try {
+            $db->table('ilena_chat_knowledge')->insert([
+                'title' => 'Informasi pengiriman furniture',
+                'content' => 'Cakupan pengiriman dan informasi ongkir tersedia untuk area layanan Ilena.',
+                'source_url' => '/faq', 'is_published' => 1, 'updated_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            $sources = (new SmartProductAssistant($db))->findKnowledge('Berapa ongkos kirim?');
+
+            $this->assertSame('Informasi pengiriman furniture', $sources[0]['title'] ?? null);
+        } finally {
+            $forge->dropTable('ilena_chat_knowledge', true);
+        }
+    }
+
     public function testEnglishSelectedLocaleUsesEnglishForCasualConversation(): void
     {
         $result = (new SmartProductAssistant(new \stdClass()))->respond('thank you', null, [], 'en');
