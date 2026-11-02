@@ -143,6 +143,7 @@ class ChatWork extends BaseCommand
     private function shouldOfferWhatsApp(array $result): bool
     {
         return in_array((string) ($result['fallbackReason'] ?? ''), [
+            'clarification',
             'no_retrieval_evidence',
             'provider_request_failed',
             'provider_http_error',

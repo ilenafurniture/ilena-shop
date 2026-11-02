@@ -166,13 +166,11 @@ class SmartProductAssistant
         $meaningfulTerms = $this->terms($query);
         if ($meaningfulTerms === [] && $this->extractBudget($query) === null && ! $contextFollowUp) {
             return [
-                'answer' => $this->isStockQuestion($query)
-                    ? 'Boleh sebutkan nama produk atau variannya agar Kak Wawa bisa mengecek stok terbaru?'
-                    : 'Boleh ceritakan furniture yang Kakak cari? Misalnya jenis produk, warna, ukuran, atau kisaran anggaran.',
+                'answer' => $this->ambiguousAnswer($query, 'id'),
                 'products' => [],
                 'sources' => [],
                 'mode' => 'clarification',
-                'fallbackReason' => null,
+                'fallbackReason' => 'clarification',
             ];
         }
 
@@ -199,14 +197,24 @@ class SmartProductAssistant
                 'products' => $products,
                 'sources' => [],
                 'mode' => 'catalog',
-                'fallbackReason' => null,
+                'fallbackReason' => $products === [] ? 'clarification' : null,
             ];
         }
         $sources = $this->findKnowledge($retrievalQuery, 4, 'id');
+        $verifiedFaqAnswer = $this->verifiedFaqAnswer($query, $sources);
+        if ($verifiedFaqAnswer !== null) {
+            return [
+                'answer' => $verifiedFaqAnswer,
+                'products' => $products,
+                'sources' => array_slice($sources, 0, 1),
+                'mode' => 'knowledge_faq',
+                'fallbackReason' => null,
+            ];
+        }
         $fallback = $this->fallbackAnswer($products, $sources, $budget);
         // Never ask a provider to improvise when retrieval found no approved facts.
         if ($products === [] && $sources === []) {
-            return ['answer' => $fallback, 'products' => [], 'sources' => [], 'mode' => 'fallback', 'fallbackReason' => 'no_retrieval_evidence'];
+            return ['answer' => $this->ambiguousAnswer($query, 'id'), 'products' => [], 'sources' => [], 'mode' => 'fallback', 'fallbackReason' => 'no_retrieval_evidence'];
         }
         $answer = $this->askModel($query, $contextProductId, $products, $sources, $fallback, $history);
 
@@ -268,8 +276,8 @@ class SmartProductAssistant
         if ($contextFollowUp) $retrievalQuery = mb_substr(implode(' ', array_merge(array_slice($priorCustomerText, -3), [$query])), 0, 2400);
         $meaningfulTerms = $this->terms($query);
         if ($meaningfulTerms === [] && $this->extractBudget($query) === null && ! $contextFollowUp) return $noProducts + [
-            'answer' => $this->isStockQuestion($query) ? 'Please share the product or variant name so I can check the latest recorded stock.' : 'What kind of furniture are you looking for? You can mention the product type, color, dimensions, or budget.',
-            'mode' => 'clarification',
+            'answer' => $this->ambiguousAnswer($query, 'en'),
+            'mode' => 'clarification', 'fallbackReason' => 'clarification',
         ];
         if ($this->isCompanyQuestion($query)) {
             $company = $this->companyAnswerEnglish($query);
@@ -279,11 +287,19 @@ class SmartProductAssistant
         $budget = $this->extractBudget($retrievalQuery);
         $products = $this->findProducts($retrievalQuery, $contextProductId, 4, 'en');
         if ($this->isStockQuestion($query)) return [
-            'answer' => $this->stockAnswerEnglish($query, $products), 'products' => $products, 'sources' => [], 'mode' => 'catalog', 'fallbackReason' => null,
+            'answer' => $this->stockAnswerEnglish($query, $products), 'products' => $products, 'sources' => [], 'mode' => 'catalog', 'fallbackReason' => $products === [] ? 'clarification' : null,
         ];
         $sources = $this->findKnowledge($retrievalQuery, 4, 'en');
+        $verifiedFaqAnswer = $this->verifiedFaqAnswer($query, $sources);
+        if ($verifiedFaqAnswer !== null) return [
+            'answer' => $verifiedFaqAnswer,
+            'products' => $products,
+            'sources' => array_slice($sources, 0, 1),
+            'mode' => 'knowledge_faq',
+            'fallbackReason' => null,
+        ];
         $fallback = $this->fallbackAnswerEnglish($products, $sources, $budget);
-        if ($products === [] && $sources === []) return ['answer' => $fallback, 'products' => [], 'sources' => [], 'mode' => 'fallback', 'fallbackReason' => 'no_retrieval_evidence'];
+        if ($products === [] && $sources === []) return ['answer' => $this->ambiguousAnswer($query, 'en'), 'products' => [], 'sources' => [], 'mode' => 'fallback', 'fallbackReason' => 'no_retrieval_evidence'];
         $answer = $this->askModel($query, $contextProductId, $products, $sources, $fallback, $history, 'en');
         $usedFallback = $this->providerOutcome !== '' || $answer === $fallback;
         return ['answer' => $answer, 'products' => $products, 'sources' => $sources,
@@ -571,7 +587,7 @@ class SmartProductAssistant
         if ($this->isClearlyOffTopic($text)) return false;
         $text = preg_replace('/^(halo|hai|hi|hey|pagi|siang|sore|malam|assalamualaikum|permisi|terima kasih|makasih)[\s!,.?]*/u', '', $text) ?? $text;
         if (trim($text) === '') return true;
-        if (preg_match('/\b(furniture|furnitur|perabot|mebel|sofa|sofá|couch|kursi|silla|sillas|chaise|canapé|canape|meja|mesa|table|tisch|lemari|armario|armoire|schrank|kabinet|kasur|dipan|ranjang|rak|bufet|credenza|bangku|bed|chair|wardrobe|dresser|stool|ottoman|headboard|dining|interior|ruang|rumah|kamar|kayu|wood|madera|bois|holz|rotan|kain|warna|color|couleur|farbe|bahan|material|ukuran|dimensi|garansi|warranty|garantía|garantie|pengiriman|dikirim|ongkir|ekspedisi|kurir|shipping|delivery|envío|livraison|lieferung|pesanan|pedido|commande|bestellung|pesan|order|beli|checkout|metode|pembayaran|bayar|payment|pago|paiement|zahlung|transfer|promo|voucher|diskon|retur|refund|pengembalian|tukar|toko|alamat|katalog|produk|product|stock|stok|harga|price|cost|precio|prix|preis|budget|available|availability|disponible|verfügbar|ilena|lunarea|rekomendasi|recommend(?:ation|ations)?|pilihan|koleksi|cicilan|installment|perakitan|pemasangan)\b/u', $text) === 1) return true;
+        if (preg_match('/\b(furniture|furnitur|perabot|mebel|sofa|sofá|couch|kursi|silla|sillas|chaise|canapé|canape|meja|mesa|table|tisch|lemari|armario|armoire|schrank|kabinet|kasur|dipan|ranjang|rak|bufet|credenza|bangku|bed|chair|wardrobe|dresser|stool|ottoman|headboard|dining|interior|ruang|rumah|kamar|kayu|wood|madera|bois|holz|rotan|kain|warna|color|couleur|farbe|bahan|material|ukuran|dimensi|garansi|warranty|garantía|garantie|pengiriman|dikirim|ongkir|ekspedisi|kurir|shipping|delivery|envío|livraison|lieferung|pesanan|pedido|commande|bestellung|pesan|order|beli|checkout|akun|account|login|guest|tamu|registrasi|register|metode|pembayaran|bayar|payment|pago|paiement|zahlung|transfer|promo|voucher|diskon|retur|refund|pengembalian|tukar|toko|alamat|katalog|produk|product|stock|stok|harga|price|cost|precio|prix|preis|budget|available|availability|disponible|verfügbar|ilena|lunarea|rekomendasi|recommend(?:ation|ations)?|pilihan|koleksi|cicilan|installment|perakitan|pemasangan)\b/u', $text) === 1) return true;
 
         foreach (['家具','沙发','椅子','桌子','衣柜','库存','价格','配送','保修','ソファ','在庫','価格','가구','소파','재고','가격','배송','أثاث','كنبة','أريكة','كرسي','طاولة','مخزون','سعر','мебель','диван','кресло','стол','шкаф','наличие','цена','เฟอร์นิเจอร์','โซฟา','เก้าอี้','โต๊ะ','ราคา','สต็อก','फर्नीचर','सोफा','कुर्सी','मेज','कीमत','स्टॉक','उपलब्ध'] as $term) {
             if (mb_strpos($text, $term) !== false) return true;
@@ -783,6 +799,36 @@ class SmartProductAssistant
         return array_column(array_slice($ranked, 0, max(1, min(6, $limit))), 'data');
     }
 
+    /**
+     * Return a source-authored answer verbatim only when a single FAQ clearly
+     * matches. This avoids model paraphrase drift for straightforward policy FAQs.
+     */
+    private function verifiedFaqAnswer(string $query, array $sources): ?string
+    {
+        if ($sources === [] || preg_match('/\b(?:and|also|both|plus|dan|serta|juga|sekaligus)\b/iu', $query) === 1) {
+            return null;
+        }
+
+        $source = $sources[0];
+        $content = trim((string) ($source['content'] ?? ''));
+        if (preg_match('/\AFAQ:\s*([^\r\n]+)\RAnswer:\s*(.+)\z/us', $content, $matches) !== 1) {
+            return null;
+        }
+
+        $queryTerms = $this->terms($query);
+        $titleTerms = $this->terms((string) ($source['title'] ?? ''));
+        if ($queryTerms === [] || $titleTerms === []) return null;
+
+        $titleMatches = array_intersect($queryTerms, $titleTerms);
+        $titleCoverage = count($titleMatches) / count($queryTerms);
+        // A lone broad word (e.g. "safe") is too ambiguous for a direct answer.
+        if (count($queryTerms) === 1 && $titleCoverage < 1.0) return null;
+        if (count($queryTerms) > 1 && $titleCoverage < 0.5) return null;
+
+        $answer = trim($matches[2]);
+        return $answer === '' ? null : $this->plainTextExcerpt($answer, 900);
+    }
+
     private function normalizeSearchText(string $text): string
     {
         $text = mb_strtolower(html_entity_decode(strip_tags($text), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
@@ -811,6 +857,7 @@ class SmartProductAssistant
             '/\b(?:damaged|defective|broken|incorrect item|wrong item|salah(?:\s+kirim)?|cacat|rusak)\b/u' => ' produk bermasalah ',
             '/\b(?:payment method|payment options|metode bayar|cara bayar|bayar pakai|bisa transfer|cash on delivery|cod|gagal bayar|payment failed|pay|bayar|pembayaran|metode pembayaran)\b/u' => ' pembayaran ',
             '/\b(?:cara pesan|cara order|bagaimana pesan|how to order|place an order)\b/u' => ' pembelian ',
+            '/\b(?:beli|membeli|memesan|pesan|order|purchase|buy|checkout)\s+(?:tanpa\s+(?:login|akun|account|signing\s+in)|(?:sebagai|as)\s+(?:tamu|guest))\b|\b(?:order|purchase|buy|checkout)\s+without\s+(?:creating\s+)?(?:an?\s+)?account\b|\b(?:guest|tamu)\s+checkout\b/u' => ' pembelian tanpa akun ',
             '/\b(?:payment successful|payment succeeded|paid successfully|already paid|i have paid|i\x27ve paid|pembayaran berhasil|pembayaran(?:nya)?\s+(?:sudah\s+)?(?:masuk|diterima|sukses|berhasil)|sudah bayar|sudah transfer|pembayaran sukses)\b/u' => ' konfirmasi pembayaran ',
             '/\b(?:belum sampai|terlambat|lewat estimasi|delayed delivery|late delivery|delivery is late|delivery delayed)\b/u' => ' pengiriman estimasi ',
             '/\bhow\s+can\s+i\s+check\s+where\s+my\s+(?:order|parcel|package|shipment)\b|\bwhere\s+can\s+i\s+(?:check|track)\s+(?:my\s+)?(?:order|parcel|package|shipment)\b/u' => ' pengiriman pelacakan ',
@@ -967,6 +1014,58 @@ PROMPT;
         return trim((string) preg_replace('/\n{3,}/u', "\n\n", $answer));
     }
 
+    /** Ask one intent-specific question when evidence is insufficient; never invent a fact. */
+    private function ambiguousAnswer(string $query, string $locale): string
+    {
+        $text = $this->normalizeSearchText($query);
+        $english = $locale === 'en';
+        $asks = static function (string $id, string $en) use ($english): string {
+            return $english ? $en : $id;
+        };
+
+        if (preg_match('/\b(harga|price|biaya|cost|berapa)\b/u', $text) === 1) {
+            return $asks(
+                'Kakak sedang menanyakan harga produk yang mana? Kirim nama atau tautan produknya, ya. Jika ingin dibantu staf, pilih “Minta bantuan staf” di chat.',
+                'Which product would you like the price for? Send its name or link. To speak with a team member, choose “Talk to customer service” in the chat.'
+            );
+        }
+        if (preg_match('/\b(shipping|ongkir|pengiriman|kirim|delivery|ekspedisi|kurir)\b/u', $text) === 1) {
+            return $asks(
+                'Untuk mengecek pengiriman, Kakak sedang melihat produk apa dan kota tujuan mana? Cukup sebutkan kota—jangan kirim alamat lengkap. Tim Ilena juga bisa membantu lewat opsi staf di chat.',
+                'To check delivery, which product and destination city are you asking about? The city is enough; please do not send a full address. You can also choose customer service in the chat.'
+            );
+        }
+        if (preg_match('/\b(pembayaran|bayar|payment|transfer|cicilan|installment|metode)\b/u', $text) === 1) {
+            return $asks(
+                'Kakak ingin bertanya tentang metode pembayaran atau status pembayaran pesanan? Sebutkan yang ingin dicek; jangan kirim PIN, OTP, atau detail kartu. Untuk bantuan staf, pilih opsi staf di chat.',
+                'Are you asking about payment methods or the status of an order payment? Tell me which one; never send a PIN, OTP, or card details. Choose customer service in the chat for staff assistance.'
+            );
+        }
+        if (preg_match('/\b(stok|stock|tersedia|availability|available)\b/u', $text) === 1) {
+            return $asks(
+                'Produk atau varian mana yang ingin Kakak cek stoknya? Kirim nama produknya agar saya tidak salah melihat. Jika perlu, pilih “Minta bantuan staf” di chat.',
+                'Which product or variant would you like me to check? Send its name so I check the right item. You can choose “Talk to customer service” in the chat if needed.'
+            );
+        }
+        if (preg_match('/\b(pesanan|order|pelacakan|tracking|resi|refund|pengembalian|retur)\b/u', $text) === 1) {
+            return $asks(
+                'Kakak ingin mengecek status pesanan, pengiriman, atau pengembalian barang? Pilih salah satu. Untuk menjaga keamanan, jangan kirim kata sandi atau OTP; staf dapat membantu melalui opsi bantuan di chat.',
+                'Would you like to check an order, delivery, or return? Tell me which one. For your security, do not send passwords or OTPs; choose customer service in the chat for staff help.'
+            );
+        }
+        if (preg_match('/\b(garansi|warranty|bahan|material|kayu|warna|color|ukuran|dimensi|dimension|perakitan|assembly)\b/u', $text) === 1) {
+            return $asks(
+                'Agar jawabannya tepat, Kakak menanyakan produk yang mana? Kirim nama atau tautannya, lalu sebutkan detail yang ingin diketahui. Jika masih perlu bantuan, pilih “Minta bantuan staf” di chat.',
+                'To give an accurate answer, which product are you asking about? Send its name or link and the detail you want to know. Choose customer service in the chat if you still need help.'
+            );
+        }
+
+        return $asks(
+            'Kakak sedang mencari produk, menanyakan pesanan, atau membutuhkan informasi layanan Ilena? Ceritakan sedikit konteksnya agar saya bisa mengarahkan dengan tepat. Jika lebih nyaman, pilih “Minta bantuan staf” di chat.',
+            'Are you looking for a product, asking about an order, or looking for information about Ilena’s services? A little context will help me guide you. You can choose customer service in the chat instead.'
+        );
+    }
+
     private function fallbackAnswer(array $products, array $sources, ?int $budget): string
     {
         if ($products && $budget !== null && (int)($products[0]['price'] ?? 0) > $budget) {
@@ -1059,6 +1158,7 @@ PROMPT;
             'discount'=>'promo', 'promotion'=>'promo', 'voucher'=>'promo', 'sale'=>'promo',
             'payment'=>'pembayaran', 'pay'=>'pembayaran', 'transfer'=>'pembayaran',
             'purchase'=>'pembelian', 'buy'=>'pembelian', 'order'=>'pembelian', 'checkout'=>'pembelian',
+            'guest'=>'tanpa', 'tamu'=>'tanpa', 'account'=>'akun',
             'refund'=>'pengembalian', 'return'=>'pengembalian', 'exchange'=>'pengembalian', 'retur'=>'pengembalian',
             'location'=>'lokasi', 'showroom'=>'lokasi', 'store'=>'lokasi',
             'material'=>'bahan', 'wood'=>'kayu', 'fabric'=>'kain',
@@ -1067,12 +1167,13 @@ PROMPT;
         ];
         foreach ($synonyms as $foreign => $local) $normalized = str_replace($foreign, ' ' . $local . ' ', $normalized);
         $words = preg_split('/[^\p{L}\p{N}]+/u', $normalized, -1, PREG_SPLIT_NO_EMPTY) ?: [];
-        $stop = ['saya','aku','mau','ingin','cari','mencari','carikan','cariin','bantu','bantuan','pilih','produk','product','furniture','furnitur','perabot','mebel','interior','barang','mengetahui','caranya','cara','bagaimana','gimana','masih','sudah','tersebut','yang','untuk','dengan','dan','atau','ada','dong','nih','sih','ya','kah','apakah','tolong','kak','kakak','wawa','bisa','dapat','berapa','harga','warna','bahan','ukuran','di','ke','luar','bawah','budget','rp','juta','jt','stok','stock','tersedia','ketersediaan','available','availability','in','remaining','left','how','many','the','is','are','do','does','can','what','where','please','for','with','you','my','we','want','need','have','or','on','of','to','this','that','looking','price','cost','if','already','it','confirm','keluar','melihat','cek','check','menerima','sampai','saat','kalau','fisik','physical','membeli','nya','lah','kah','pun','rekomendasi','recommendation','pilihan'];
+        $stop = ['saya','aku','mau','ingin','cari','mencari','carikan','cariin','bantu','bantuan','pilih','produk','product','furniture','furnitur','perabot','mebel','interior','barang','mengetahui','caranya','cara','bagaimana','gimana','masih','sudah','tersebut','yang','untuk','dengan','dan','atau','ada','dong','nih','sih','ya','kah','apakah','tolong','kak','kakak','wawa','bisa','dapat','berapa','harga','warna','bahan','ukuran','di','ke','luar','bawah','budget','rp','juta','jt','stok','stock','tersedia','ketersediaan','available','availability','in','remaining','left','how','many','the','is','are','do','does','can','what','where','please','for','with','you','my','we','want','need','have','or','on','of','to','this','that','looking','price','cost','if','already','it','confirm','an','a','i','see','item','arrived','should','lagi','jalan','mana','lihat','login','membeli','nya','lah','kah','pun','rekomendasi','recommendation','pilihan'];
+        $stop = array_merge($stop, ['kalau', 'saat', 'sampai', 'sebagai', 'as', 'could', 'creating', 'without']);
         $meaningful = [];
         foreach ($words as $word) {
             // Indonesian possessive/particle suffixes otherwise make ordinary
             // variants such as "barangnya" miss the canonical FAQ term "barang".
-            foreach (['nya', 'lah', 'kah', 'pun'] as $suffix) {
+            foreach (['nya'] as $suffix) {
                 if (mb_strlen($word) > mb_strlen($suffix) + 2 && str_ends_with($word, $suffix)) {
                     $word = mb_substr($word, 0, -mb_strlen($suffix));
                     break;

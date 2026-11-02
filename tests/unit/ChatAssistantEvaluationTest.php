@@ -113,6 +113,25 @@ final class ChatAssistantEvaluationTest extends CIUnitTestCase
         $this->assertGreaterThanOrEqual(0.88, array_sum($reciprocalRanks) / count($cases), 'Relevant FAQ answers should rank near the top.');
     }
 
+    public function testHighConfidenceFaqAnswersUseVerifiedCopyInsteadOfFreeformGeneration(): void
+    {
+        $db = new class {
+            public function tableExists(string $table): bool { return false; }
+        };
+        $result = (new SmartProductAssistant($db))->respond('Bisa bayar COD?');
+
+        $this->assertSame('knowledge_faq', $result['mode']);
+        $this->assertSame(
+            'Metode yang tersedia ditampilkan saat checkout dan dapat berbeda. Pilih metode pembayaran di halaman pembayaran untuk melihat instruksinya.',
+            $result['answer']
+        );
+        $this->assertStringContainsString('/faq', $result['sources'][0]['source_url'] ?? '');
+
+        $guestCheckout = (new SmartProductAssistant($db))->respond('Bisa checkout sebagai tamu?');
+        $this->assertSame('knowledge_faq', $guestCheckout['mode']);
+        $this->assertStringContainsString('sebagai tamu', $guestCheckout['answer']);
+    }
+
     public function testVisionMissionAnswersUseFactsFromTheProjectPages(): void
     {
         $assistant = new SmartProductAssistant(new \stdClass());
@@ -194,6 +213,24 @@ final class ChatAssistantEvaluationTest extends CIUnitTestCase
         $this->assertSame('clarification', $result['mode']);
         $this->assertStringContainsString('nama produk', $result['answer']);
         $this->assertNotSame('policy', $result['mode']);
+    }
+
+    public function testAmbiguousQuestionsReceiveIntentSpecificClarificationAndHandoff(): void
+    {
+        $assistant = new SmartProductAssistant(new \stdClass());
+
+        $price = $assistant->respond('Harganya berapa?');
+        $this->assertSame('clarification', $price['mode']);
+        $this->assertSame('clarification', $price['fallbackReason']);
+        $this->assertStringContainsString('nama atau tautan produknya', $price['answer']);
+
+        $paymentClarifier = (new \ReflectionClass($assistant))->getMethod('ambiguousAnswer');
+        $paymentClarifier->setAccessible(true);
+        $this->assertStringContainsString('metode pembayaran atau status pembayaran', $paymentClarifier->invoke($assistant, 'Pembayaran saya gimana?', 'id'));
+
+        $english = $assistant->respond('What is the price?', null, [], 'en');
+        $this->assertSame('clarification', $english['fallbackReason']);
+        $this->assertStringContainsString('Which product', $english['answer']);
     }
 
     public function testSearchNormalizationCoversCommonFurnitureSynonymsAndProductFollowUps(): void
