@@ -138,7 +138,7 @@ input[type="radio"][name="address"]:checked+.item-address {
 .modal-layer {
     position: fixed;
     inset: 0;
-    z-index: 1000;
+    z-index: 2000;
     display: none;
     align-items: center;
     justify-content: center;
@@ -698,6 +698,11 @@ const btnAddAddressElm = document.getElementById("btn-add-address");
 const addModalContainer = document.getElementById("addModalContainer");
 const editModalContainer = document.getElementById("editModalContainer");
 const storeRoutePrefix = <?= json_encode(service('request')->getLocale() === 'en' ? '/en' : ''); ?>;
+
+// Render address dialogs at the document root so sticky headers or page stacking contexts cannot cover them.
+[addModalContainer, editModalContainer].forEach((modal) => {
+    if (modal && modal.parentElement !== document.body) document.body.appendChild(modal);
+});
 
 /* Toast */
 function toast(msg, type = 'success') {
