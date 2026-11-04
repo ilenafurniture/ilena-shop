@@ -36,6 +36,56 @@
 .edit-guide__steps b { color: #9a7955; font-size: 11px; }
 .edit-anchor { scroll-margin-top: 96px; }
 
+.product-form-notice {
+    position: fixed;
+    z-index: 1200;
+    top: max(18px, env(safe-area-inset-top));
+    right: max(22px, env(safe-area-inset-right));
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr) 34px;
+    align-items: start;
+    gap: 12px;
+    width: min(430px, calc(100vw - 44px));
+    margin: 0;
+    padding: 14px 15px;
+    border: 1px solid #e8c6c3;
+    border-left: 3px solid #a3262d;
+    background: #fff8f7;
+    color: #382b2a;
+    box-shadow: 0 5px 18px rgba(80, 28, 27, .055);
+}
+.product-form-notice[hidden] { display: none; }
+.product-form-notice__icon {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f7e8e6;
+    color: #a3262d;
+}
+.product-form-notice__icon .material-icons { font-size: 20px; }
+.product-form-notice__copy { min-width: 0; padding-top: 1px; }
+.product-form-notice__title { display: block; margin: 0 0 3px; color: #672327; font-size: 13px; font-weight: 700; line-height: 1.4; }
+.product-form-notice__message { margin: 0; color: #574746; font-size: 13px; line-height: 1.55; overflow-wrap: anywhere; }
+.product-form-notice__close {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    background: transparent;
+    color: #765b59;
+    cursor: pointer;
+}
+.product-form-notice__close:hover { color: #8e2028; background: #f7e8e6; }
+.product-form-notice__close:focus-visible { outline: 2px solid #a3262d; outline-offset: 2px; }
+@media (max-width: 640px) {
+    .product-form-notice { top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right)); width: calc(100vw - 24px); grid-template-columns: 32px minmax(0, 1fr) 30px; gap: 9px; padding: 12px; }
+    .product-form-notice__icon { width: 32px; height: 32px; }
+    .product-form-notice__message { font-size: 12px; }
+}
+
 @media (max-width: 992px) {
     .form-grid {
         grid-template-columns: 1fr;
@@ -1104,7 +1154,12 @@ const App = () => {
         setLoading(false);
 
         if (xhr.status < 200 || xhr.status >= 300) {
-          setEror(result?.pesan || `Error ${xhr.status}. ${rawText.slice(0, 500)}`);
+          const statusMessage = xhr.status === 403
+            ? 'Server menolak penyimpanan (403). Muat ulang halaman edit produk untuk memperbarui sesi keamanan, lalu coba simpan lagi.'
+            : xhr.status === 413
+              ? 'Ukuran unggahan terlalu besar. Kurangi ukuran atau jumlah foto, lalu coba lagi.'
+              : `Penyimpanan gagal (status ${xhr.status || 'tidak diketahui'}). Periksa koneksi, lalu coba lagi.`;
+          setEror(result?.pesan || statusMessage);
           console.error('Response error:', { status: xhr.status, result });
           return;
         }
@@ -1279,6 +1334,16 @@ const App = () => {
 
   return (
     <>
+      {eror && <aside id="product-form-notice" className="product-form-notice" role="alert" aria-live="assertive" aria-atomic="true">
+        <span className="product-form-notice__icon" aria-hidden="true"><i className="material-icons">error_outline</i></span>
+        <div className="product-form-notice__copy">
+          <strong className="product-form-notice__title">Ada yang perlu diperiksa</strong>
+          <p className="product-form-notice__message">{eror}</p>
+        </div>
+        <button type="button" className="product-form-notice__close" aria-label="Tutup pemberitahuan" onClick={() => setEror('')}>
+          <i className="material-icons" aria-hidden="true">close</i>
+        </button>
+      </aside>}
       {resizeProgress.active && !loading && <aside className="resize-live-toast" role="status" aria-live="polite" aria-atomic="true">
         <div className="resize-live-toast__head">
           <span className="resize-live-toast__icon" aria-hidden="true"><i className="material-icons">auto_awesome</i></span>
@@ -1581,7 +1646,6 @@ const App = () => {
                 </button>
               </div>
             </div>
-            {eror && <p style={{ color: '#ef4444', marginTop: '8px', fontWeight: 600 }}>{eror}</p>}
           </div>
         </div>
 
