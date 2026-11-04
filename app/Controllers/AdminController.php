@@ -2270,17 +2270,24 @@ class AdminController extends BaseController
             return redirect()->to('/admin/order/online')->with('msg', 'Pilih ekspedisi dan layanan, lalu isi nomor resi dengan benar.');
         }
         $db=db_connect(); $db->transBegin();
-        $order=$db->query('SELECT status, data_mid FROM pemesanan WHERE id_midtrans = ? FOR UPDATE',[$idMid])->getRowArray();
-        $mid=json_decode($order['data_mid']??'{}',true)?:[];
-        if (!$order || !in_array($order['status'],['Proses','Dikirim'],true) || ($mid['_app_payment_effects_applied']??null)===false || trim((string)$resi)==='') {
+        $order=$db->query('SELECT status, data_mid, kurir FROM pemesanan WHERE id_midtrans = ? FOR UPDATE',[$idMid])->getRowArray();
+        if (!$order) {
+            $db->transRollback();
+            return redirect()->to('/admin/order/online')->with('msg','Pesanan tidak ditemukan.');
+        }
+        $mid=json_decode((string)($order['data_mid'] ?? '{}'),true)?:[];
+        if (!in_array($order['status'],['Proses','Dikirim'],true) || ($mid['_app_payment_effects_applied']??null)===false || trim((string)$resi)==='') {
             $db->transRollback();
             return redirect()->to('/admin/order/online')->with('msg','Resi hanya dapat diisi setelah pembayaran dan alokasi stok terkonfirmasi.');
         }
+        $previousCourier = json_decode((string)($order['kurir'] ?? '{}'), true);
+        $courierSnapshot = \App\Services\OrderDelivery::courierSnapshot(
+            is_array($previousCourier) ? $previousCourier : [],
+            $nama,
+            $deskripsi
+        );
         $this->pemesananModel->where(['id_midtrans' => $idMid])->set([
-            'kurir' => json_encode([
-                'nama' => $nama,
-                'deskripsi' => $deskripsi,
-            ]),
+            'kurir' => json_encode($courierSnapshot, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
             'resi' => $resi,
             'status' => 'Dikirim'
         ])->update();

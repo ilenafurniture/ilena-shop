@@ -2626,13 +2626,19 @@ class Pages extends BaseController
         $orderId = (string)($order['id_midtrans'] ?? '');
         $nama = (string)($order['nama'] ?? 'Customer');
         $statusText = $status;
-        $subjectStatus = $status === 'Proses' ? 'Pembayaran Berhasil' : 'Status Pembayaran ' . $status;
+        $subjectStatus = match ($status) {
+            'Proses' => 'Pembayaran Berhasil',
+            'Selesai' => 'Pesanan Diterima',
+            default => 'Status Pesanan ' . $status,
+        };
         $accessToken = $this->orderAccessToken($orderId, $order);
 
         if ($status === 'Proses') {
             $pesan = 'Pembayaran kamu sudah berhasil kami terima. Pesanan akan segera kami proses.';
         } elseif ($status === 'Menunggu Pembayaran') {
             $pesan = 'Pesanan kamu sudah dibuat dan sedang menunggu pembayaran.';
+        } elseif ($status === 'Selesai') {
+            $pesan = 'Pesanan kamu telah dikonfirmasi diterima. Terima kasih sudah berbelanja di Ilena Furniture.';
         } elseif (in_array($status, ['Kadaluarsa', 'Ditolak', 'Gagal', 'Dibatalkan'], true)) {
             $pesan = 'Pembayaran pesanan kamu berstatus ' . strtolower($status) . '. Silakan cek halaman pesanan untuk detailnya.';
         } else {
@@ -3384,6 +3390,109 @@ class Pages extends BaseController
             $this->sendOrderPaymentEmail($updatedOrder, 'Dibatalkan');
         }
         return redirect()->to(ilena_store_path('/orderdetail/dibatalkan?idorder=' . rawurlencode($orderId)
+            . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $updatedOrder))));
+    }
+
+    private function canBuyerConfirmOrder(array $order, string $submittedToken): bool
+    {
+        $role = (string) session()->get('role');
+        if (session()->get('isLogin') && !\App\Services\OrderDelivery::isCustomerRole($role)) {
+            return false;
+        }
+
+        $orderEmail = PaymentSafety::normalizeEmail((string) ($order['email'] ?? ''));
+        if ($orderEmail !== '' && (new \App\Services\AccountSuspensionService())->isSuspended($orderEmail)) {
+            return false;
+        }
+
+        $sessionEmail = PaymentSafety::normalizeEmail((string) session()->get('email'));
+        $emailMatches = $sessionEmail !== '' && hash_equals($orderEmail, $sessionEmail);
+        if (!$emailMatches && filter_var($sessionEmail, FILTER_VALIDATE_EMAIL) && filter_var($orderEmail, FILTER_VALIDATE_EMAIL)) {
+            $buyerEmails = array_map(
+                [PaymentSafety::class, 'normalizeEmail'],
+                (new \App\Services\Auth\CustomerEmailIdentity())->allFor($sessionEmail)
+            );
+            $emailMatches = in_array($orderEmail, $buyerEmails, true);
+        }
+        $isActiveBuyer = session()->get('isLogin')
+            && \App\Services\OrderDelivery::isCustomerRole($role)
+            && (string) session()->get('active') === '1'
+            && $sessionEmail !== ''
+            && $sessionEmail !== 'tamu'
+            && $emailMatches;
+        $expectedToken = $this->orderAccessToken((string) ($order['id_midtrans'] ?? ''), $order);
+        $isGuestBuyer = $expectedToken !== ''
+            && preg_match('/^[a-f0-9]{64}$/i', $submittedToken) === 1
+            && hash_equals($expectedToken, strtolower($submittedToken));
+
+        return $isActiveBuyer || $isGuestBuyer;
+    }
+
+    /** Buyer-confirmed delivery; only the order owner or its one-time guest token may perform this transition. */
+    public function confirmOrderReceived(string $orderId)
+    {
+        $isEnglish = $this->request->getLocale() === 'en';
+        $order = $this->pemesananModel->getPemesanan($orderId);
+        if (!$order) {
+            return $this->response->setStatusCode(404)->setBody($isEnglish ? 'Order not found.' : 'Pesanan tidak ditemukan.');
+        }
+
+        $submittedToken = $this->request->getPost('access_token');
+        if (!is_string($submittedToken) || !$this->canBuyerConfirmOrder($order, $submittedToken)) {
+            return $this->response->setStatusCode(404)->setBody($isEnglish ? 'Order not found.' : 'Pesanan tidak ditemukan.');
+        }
+
+        $db = \Config\Database::connect();
+        $db->transBegin();
+        try {
+            $locked = $db->query(
+                'SELECT id, id_midtrans, status, data_mid FROM pemesanan WHERE id_midtrans = ? FOR UPDATE',
+                [$orderId]
+            )->getRowArray();
+            if (!$locked || !\App\Services\OrderDelivery::canBuyerConfirmReceipt((string) ($locked['status'] ?? ''))) {
+                $db->transRollback();
+                session()->setFlashdata('order_action_message', $isEnglish
+                    ? 'Receipt confirmation is available only while the order is marked as shipped.'
+                    : 'Konfirmasi penerimaan hanya tersedia saat pesanan berstatus Dikirim.');
+                return redirect()->back();
+            }
+
+            $dataMid = json_decode((string) ($locked['data_mid'] ?? '{}'), true);
+            $dataMid = is_array($dataMid) ? $dataMid : [];
+            $dataMid['_app_received_at'] = date('Y-m-d H:i:s');
+            $dataMid['_app_received_confirmation_source'] = 'buyer';
+            $updated = $db->table('pemesanan')
+                ->where('id', $locked['id'])
+                ->where('status', 'Dikirim')
+                ->update([
+                    'status' => 'Selesai',
+                    'data_mid' => json_encode($dataMid, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                ]);
+            if (!$updated || !$db->transStatus()) {
+                throw new \RuntimeException('Could not persist buyer receipt confirmation.');
+            }
+            $db->transCommit();
+        } catch (\Throwable $error) {
+            $db->transRollback();
+            log_message('error', 'Buyer receipt confirmation failed for {order}: {error}', [
+                'order' => $orderId,
+                'error' => $error->getMessage(),
+            ]);
+            session()->setFlashdata('order_action_message', $isEnglish
+                ? 'Your confirmation was not saved. Refresh the page and try again.'
+                : 'Konfirmasi belum tersimpan. Silakan muat ulang halaman dan coba lagi.');
+            return redirect()->back();
+        }
+
+        $updatedOrder = $this->pemesananModel->getPemesanan($orderId);
+        if ($updatedOrder) {
+            $this->syncOrderToIlenaSistem($updatedOrder);
+            $this->sendOrderPaymentEmail($updatedOrder, 'Selesai');
+        }
+        session()->setFlashdata('order_action_message', $isEnglish
+            ? 'Thank you. Receipt of your order has been confirmed.'
+            : 'Terima kasih, pesanan telah dikonfirmasi diterima.');
+        return redirect()->to(ilena_store_path('/orderdetail/selesai?idorder=' . rawurlencode($orderId)
             . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $updatedOrder))));
     }
 
@@ -4499,6 +4608,7 @@ class Pages extends BaseController
             'status' => $status,
             'statusSelain' => $statusSelain,
             'orderAccessToken' => $order ? $this->orderAccessToken((string)$order['id_midtrans'], $order) : '',
+            'canConfirmReceipt' => $order ? $this->canBuyerConfirmOrder($order, $this->orderAccessToken((string)$order['id_midtrans'], $order)) : false,
             'orderActionMessage' => session()->getFlashdata('order_action_message'),
         ];
         switch (strtolower($status)) {

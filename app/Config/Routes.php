@@ -86,6 +86,7 @@ $routes->post('/commerce/order-case/(:segment)', 'StoreEngagementController::cre
 $routes->get('/order', 'Pages::order', ['filter' => 'customerFilter']);
 $routes->get('/order/(:any)', 'Pages::order/$1', ['filter' => 'customerFilter']);
 $routes->post('/order/cancel/(:any)', 'Pages::cancelCustomerOrder/$1', ['filter' => ['customerFilter', 'csrf']]);
+$routes->post('/order/received/(:any)', 'Pages::confirmOrderReceived/$1', ['filter' => ['customerFilter', 'csrf']]);
 $routes->get('/orderdetail/(:any)', 'Pages::orderDetail/$1', ['filter' => 'customerFilter']);
 $routes->get('/invoice/(:any)/pdf', 'Pages::invoicePdf/$1', ['filter' => 'customerFilter']);
 $routes->get('/invoice/(:any)', 'Pages::invoice/$1', ['filter' => 'customerFilter']);
@@ -313,6 +314,7 @@ $routes->group('{locale}', ['filter' => 'customerFilter'], static function ($rou
     $routes->get('order', 'Pages::order');
     $routes->get('order/(:any)', 'Pages::order/$1');
     $routes->post('order/cancel/(:any)', 'Pages::cancelCustomerOrder/$1', ['filter' => ['csrf']]);
+    $routes->post('order/received/(:any)', 'Pages::confirmOrderReceived/$1', ['filter' => ['csrf']]);
     $routes->get('orderdetail/(:any)', 'Pages::orderDetail/$1');
     $routes->get('invoice/(:any)/pdf', 'Pages::invoicePdf/$1');
     $routes->get('invoice/(:any)', 'Pages::invoice/$1');

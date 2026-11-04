@@ -38,7 +38,8 @@ final class ShipmentServiceTest extends CIUnitTestCase
         $next=$this->service->createOffline('SJ00000001');
         $this->assertSame(1,(int)$this->db->table('surat_jalan_item')->where('surat_jalan_id',$next)->get()->getRowArray()['qty']);
         $this->service->finalize($next);
-        $this->assertSame(2,(int)$this->db->table('document_sequences')->get()->getRowArray()['counter']);
+        $totalCounters = (int) $this->db->table('document_sequences')->selectSum('counter', 'total')->get()->getRowArray()['total'];
+        $this->assertSame(2, $totalCounters, 'Both monthly sequence numbers should be allocated exactly once.');
     }
 
     public function testForeignItemCannotChangeAnotherShipmentOrDate(): void

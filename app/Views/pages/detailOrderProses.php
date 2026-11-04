@@ -140,6 +140,13 @@ $grossAmount = (int)($dataMid['gross_amount'] ?? 0);
     letter-spacing: -.02em;
     margin: 0 0 6px
 }
+.order-received-confirmation{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:14px 0;padding:14px 16px;border:1px solid #e7e0d6;border-radius:10px;background:#faf8f4;color:#322c26}
+.order-received-confirmation p{font-size:13px;line-height:1.45}
+.order-received-confirmation form{margin:0}
+.order-received-confirmation button{min-height:40px;padding:0 14px;border:1px solid #8b5e3c;border-radius:7px;background:#8b5e3c;color:#fff;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.order-received-confirmation button:hover{background:#70482f}
+.order-received-confirmation [role=status]{flex-basis:100%;color:#5d554c}
+@media(max-width:600px){.order-received-confirmation{align-items:stretch;flex-direction:column}.order-received-confirmation button{width:100%}}
 
 .order-success .muted {
     color: #6b7280
@@ -441,12 +448,12 @@ $grossAmount = (int)($dataMid['gross_amount'] ?? 0);
             <?php if ($pemesananSelected['resi'] != 'Menunggu pengiriman' && !empty($kurir) && !empty($kurir['nama'])) { ?>
             <div class="between" style="gap:10px;margin-top:6px;">
                 <div style="display:flex;align-items:center;gap:10px;">
-                    <img src="/img/kurir/<?= strtolower(explode(" ", $kurir['nama'])[0]); ?>.png" alt=""
+                    <img src="/img/kurir/<?= esc(strtolower(explode(" ", (string) $kurir['nama'])[0]), 'attr'); ?>.png" alt=""
                         style="width:70px;object-fit:contain">
                     <div>
-                        <p class="m-0 fw-bold"><?= strtoupper($kurir['nama']); ?> <?= $kurir['deskripsi'] ?? ''; ?></p>
+                        <p class="m-0 fw-bold"><?= esc(strtoupper((string) $kurir['nama'])); ?> <?= esc((string) ($kurir['deskripsi'] ?? '')); ?></p>
                         <?php if (isset($kurir['estimasi'])) { ?>
-                        <p class="m-0 muted"><?= $isEnglish ? 'Estimated' : 'Estimasi'; ?> <?= $kurir['estimasi']; ?> <?= $isEnglish ? 'days' : 'hari'; ?></p>
+                        <p class="m-0 muted"><?= $isEnglish ? 'Estimated' : 'Estimasi'; ?> <?= esc((string) $kurir['estimasi']); ?> <?= $isEnglish ? 'days' : 'hari'; ?></p>
                         <?php } ?>
                     </div>
                 </div>
@@ -462,9 +469,9 @@ $grossAmount = (int)($dataMid['gross_amount'] ?? 0);
             <div style="margin-top:10px;">
                 <p class="m-0 muted"><?= $isEnglish ? 'Tracking Number' : 'Resi'; ?></p>
                 <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
-                    <span style="font-weight:700;word-break:break-word"><?= $pemesananSelected['resi']; ?></span>
+                    <span style="font-weight:700;word-break:break-word"><?= esc((string) ($pemesananSelected['resi'] ?? '')); ?></span>
                     <?php if ($pemesananSelected['resi'] != 'Menunggu pengiriman') { ?>
-                    <button class="copy-btn" onclick="copytext('<?= $pemesananSelected['resi']; ?>')" title="<?= $isEnglish ? 'Copy tracking number' : 'Salin Resi'; ?>"
+                    <button class="copy-btn" onclick="copytext(<?= esc(json_encode((string) $pemesananSelected['resi'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT), 'attr'); ?>)" title="<?= $isEnglish ? 'Copy tracking number' : 'Salin Resi'; ?>"
                         aria-label="<?= $isEnglish ? 'Copy tracking number' : 'Salin nomor resi'; ?>">
                         <i class="material-icons" style="font-size:16px;">content_copy</i>
                     </button>
@@ -481,6 +488,20 @@ $grossAmount = (int)($dataMid['gross_amount'] ?? 0);
             </div>
         </div>
     </div>
+
+    <?php if (($pemesananSelected['status'] ?? '') === 'Dikirim' && !empty($canConfirmReceipt)): ?>
+    <div class="order-received-confirmation" role="group" aria-label="<?= $isEnglish ? 'Delivery confirmation' : 'Konfirmasi penerimaan'; ?>">
+        <p class="m-0"><?= $isEnglish ? 'Has your order arrived safely?' : 'Pesanan sudah diterima dengan baik?'; ?></p>
+        <form method="post" action="<?= esc(ilena_store_path('/order/received/' . rawurlencode((string) $pemesananSelected['id_midtrans'])), 'attr'); ?>">
+            <?= csrf_field(); ?>
+            <input type="hidden" name="access_token" value="<?= esc($orderAccessToken, 'attr'); ?>">
+            <button type="submit" data-ilena-confirm="<?= esc($isEnglish ? 'Confirm that you have received this order?' : 'Konfirmasi bahwa pesanan sudah diterima?', 'attr'); ?>">
+                <?= $isEnglish ? 'Confirm received' : 'Konfirmasi pesanan diterima'; ?>
+            </button>
+        </form>
+        <?php if (!empty($orderActionMessage)): ?><p class="m-0" role="status"><?= esc($orderActionMessage); ?></p><?php endif; ?>
+    </div>
+    <?php elseif (!empty($orderActionMessage)): ?><p role="status"><?= esc($orderActionMessage); ?></p><?php endif; ?>
 
     <?php if (session()->get('isLogin')) { ?>
     <div class="center">
