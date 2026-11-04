@@ -4314,30 +4314,134 @@ private function interiorShippedQtyMap(string $idPesanan): array
 
         try {
             $provinsi = $this->provinsiModel->orderBy('label', 'asc')->findAll();
+            $kabupaten = $this->kabupatenModel->orderBy('label', 'asc')->findAll();
         } catch (\Throwable $th) {
             $provinsi = [];
+            $kabupaten = [];
+            log_message('error', 'Gagal memuat wilayah gratis ongkir: {error}', ['error' => $th->getMessage()]);
         }
 
         return view('admin/freeShipping', [
             'title' => 'Gratis Ongkir',
             'config' => $service->getConfig(),
             'provinsi' => $provinsi,
+            'kabupaten' => $kabupaten,
             'msg' => session()->getFlashdata('msg'),
+            'error' => session()->getFlashdata('error'),
         ]);
     }
 
     public function actionFreeShipping()
     {
-        $names = preg_split('/[\r\n,]+/', (string)$this->request->getPost('province_names'));
-        $names = array_values(array_filter(array_map('trim', $names ?: [])));
+        $returnWithError = static fn(string $message) => redirect()->back()->withInput()->with('error', $message);
+        $rawLabel = $this->request->getPost('label');
+        $label = is_scalar($rawLabel) ? trim((string)$rawLabel) : '';
+        if ($label === '' || mb_strlen($label, 'UTF-8') > 120) {
+            return $returnWithError('Label promo wajib diisi dan maksimal 120 karakter.');
+        }
+
+        $rawIds = $this->request->getPost('province_ids');
+        if ($rawIds !== null && !is_array($rawIds)) {
+            return $returnWithError('Daftar provinsi tidak valid. Muat ulang halaman lalu pilih kembali.');
+        }
+        $provinceIds = [];
+        foreach ((array)$rawIds as $id) {
+            if (!is_scalar($id) || trim((string)$id) === '' || strlen((string)$id) > 32) {
+                return $returnWithError('Ada ID provinsi yang tidak valid.');
+            }
+            $provinceIds[] = trim((string)$id);
+        }
+        $provinceIds = array_values(array_unique($provinceIds));
+
+        $rawKabupatenIds = $this->request->getPost('kabupaten_ids');
+        if ($rawKabupatenIds !== null && !is_array($rawKabupatenIds)) {
+            return $returnWithError('Daftar kabupaten/kota tidak valid. Muat ulang halaman lalu pilih kembali.');
+        }
+        $kabupatenIds = [];
+        foreach ((array)$rawKabupatenIds as $id) {
+            if (!is_scalar($id) || trim((string)$id) === '' || strlen((string)$id) > 32) {
+                return $returnWithError('Ada ID kabupaten/kota yang tidak valid.');
+            }
+            $kabupatenIds[] = trim((string)$id);
+        }
+        $kabupatenIds = array_values(array_unique($kabupatenIds));
+
+        try {
+            $knownProvinceIds = array_map(static fn(array $row): string => (string)($row['id'] ?? ''), $this->provinsiModel->findAll());
+        } catch (\Throwable $th) {
+            log_message('error', 'Gagal memvalidasi wilayah gratis ongkir: {error}', ['error' => $th->getMessage()]);
+            return $returnWithError('Daftar provinsi belum dapat diverifikasi. Coba lagi setelah data wilayah tersedia.');
+        }
+        if (array_diff($provinceIds, $knownProvinceIds) !== []) {
+            return $returnWithError('Pilihan provinsi sudah berubah atau tidak dikenal. Muat ulang halaman lalu pilih kembali.');
+        }
+
+        try {
+            $knownKabupaten = $this->kabupatenModel->findAll();
+        } catch (\Throwable $th) {
+            log_message('error', 'Gagal memvalidasi kabupaten/kota gratis ongkir: {error}', ['error' => $th->getMessage()]);
+            return $returnWithError('Daftar kabupaten/kota belum dapat diverifikasi. Coba lagi setelah data wilayah tersedia.');
+        }
+        $knownKabupatenIds = array_map(static fn(array $row): string => (string)($row['id'] ?? ''), $knownKabupaten);
+        if (array_diff($kabupatenIds, $knownKabupatenIds) !== []) {
+            return $returnWithError('Pilihan kabupaten/kota sudah berubah atau tidak dikenal. Muat ulang halaman lalu pilih kembali.');
+        }
+
+        $rawNames = $this->request->getPost('province_names');
+        if ($rawNames !== null && !is_scalar($rawNames)) {
+            return $returnWithError('Nama wilayah cadangan tidak valid.');
+        }
+        $names = preg_split('/[\r\n,]+/', (string)$rawNames) ?: [];
+        $names = array_values(array_unique(array_filter(array_map('trim', $names), static fn(string $name): bool => $name !== '')));
+        if (count($names) > 50 || array_filter($names, static fn(string $name): bool => mb_strlen($name, 'UTF-8') > 100) !== []) {
+            return $returnWithError('Nama wilayah cadangan maksimal 50 entri dan 100 karakter per nama.');
+        }
+        if (array_filter($names, static function (string $name): bool {
+            $normalized = preg_replace('/[^a-z0-9]+/i', '', strtolower($name)) ?? '';
+            return $normalized === '';
+        }) !== []) {
+            return $returnWithError('Setiap nama wilayah harus berisi huruf atau angka.');
+        }
+        if ($provinceIds !== [] || $kabupatenIds !== []) {
+            // The fallback is a separate mode, not an OR condition that can
+            // silently re-enable regions removed from the ID checklist.
+            $names = [];
+        }
+
+        $parseAmount = static function ($value): ?int {
+            if (!is_scalar($value)) return null;
+            $value = trim((string)$value);
+            if ($value === '') return 0;
+            if (!preg_match('/^\d{1,10}$/', $value)) return null;
+            return (int)$value;
+        };
+        $minimumOrderAmount = $parseAmount($this->request->getPost('minimum_order_amount'));
+        $maximumShippingRate = $parseAmount($this->request->getPost('maximum_shipping_rate'));
+        if ($minimumOrderAmount === null || $maximumShippingRate === null) {
+            return $returnWithError('Batas nilai harus berupa angka bulat positif atau nol.');
+        }
+
+        $rawActive = $this->request->getPost('active');
+        if ($rawActive !== null && $rawActive !== '1') {
+            return $returnWithError('Status promo tidak valid. Muat ulang halaman lalu coba lagi.');
+        }
+        $active = $rawActive === '1';
+        if ($active && $provinceIds === [] && $kabupatenIds === [] && $names === []) {
+            return $returnWithError('Pilih minimal satu provinsi/kabupaten/kota atau isi wilayah cadangan sebelum mengaktifkan promo.');
+        }
 
         $service = new FreeShippingService();
-        $service->save([
-            'active' => (bool)$this->request->getPost('active'),
-            'label' => $this->request->getPost('label'),
-            'province_ids' => (array)$this->request->getPost('province_ids'),
+        if (!$service->save([
+            'active' => $active,
+            'label' => $label,
+            'province_ids' => $provinceIds,
+            'kabupaten_ids' => $kabupatenIds,
             'province_names' => $names,
-        ]);
+            'minimum_order_amount' => $minimumOrderAmount,
+            'maximum_shipping_rate' => $maximumShippingRate,
+        ])) {
+            return $returnWithError('Pengaturan belum tersimpan. Data lama tetap digunakan; coba simpan lagi.');
+        }
 
         session()->setFlashdata('msg', 'Pengaturan gratis ongkir berhasil disimpan.');
         return redirect()->to('/admin/free-shipping');

@@ -17,51 +17,79 @@ class FreeShippingService
     {
         $dbConfig = $this->readFromDatabase();
         if (is_array($dbConfig)) {
-            return $this->normalizeConfig($dbConfig);
+            return self::normalizeConfig($dbConfig);
         }
 
         $fileConfig = $this->readFromFile();
         if (is_array($fileConfig)) {
             // Migrasi otomatis dari file lama ke database saat database sudah siap.
             $this->saveToDatabase($fileConfig);
-            return $this->normalizeConfig($fileConfig);
+            return self::normalizeConfig($fileConfig);
         }
 
-        return $this->defaultConfig();
+        return self::defaultConfig();
     }
 
     public function save(array $config): bool
     {
-        $payload = $this->normalizeConfig(array_merge($config, [
+        $payload = self::normalizeConfig(array_merge($config, [
             'updated_at' => date('Y-m-d H:i:s'),
         ]));
 
         $savedToDatabase = $this->saveToDatabase($payload);
-        $savedToFile = $this->saveToFile($payload);
+        if ($savedToDatabase) {
+            // The database is authoritative whenever it is reachable. The file
+            // remains a recovery copy and must not make a failed DB update look
+            // successful when an older DB value would still take precedence.
+            $this->saveToFile($payload);
+            return true;
+        }
 
-        return $savedToDatabase || $savedToFile;
+        $databaseConfig = $this->readFromDatabase();
+        if (is_array($databaseConfig)) {
+            return false;
+        }
+
+        // Keep the legacy file fallback only when the DB setting is absent or
+        // unavailable, so getConfig() can continue serving the saved policy.
+        return $this->saveToFile($payload);
     }
 
-    private function defaultConfig(): array
+    private static function defaultConfig(): array
     {
         return [
             'active' => false,
             'label' => 'Gratis ongkir wilayah',
             'province_ids' => [],
+            'kabupaten_ids' => [],
             'province_names' => [],
+            'minimum_order_amount' => 0,
+            'maximum_shipping_rate' => 0,
             'updated_at' => null,
         ];
     }
 
-    private function normalizeConfig(array $config): array
+    private static function normalizeConfig(array $config): array
     {
-        $default = $this->defaultConfig();
+        $default = self::defaultConfig();
 
         return array_merge($default, [
-            'active' => !empty($config['active']),
+            'active' => in_array($config['active'] ?? false, [true, 1, '1'], true),
             'label' => trim((string)($config['label'] ?? $default['label'])) ?: $default['label'],
-            'province_ids' => array_values(array_unique(array_filter(array_map('strval', (array)($config['province_ids'] ?? []))))),
-            'province_names' => array_values(array_unique(array_filter(array_map('trim', (array)($config['province_names'] ?? []))))),
+            'province_ids' => array_values(array_unique(array_filter(array_map(
+                static fn($value): string => is_scalar($value) ? trim((string)$value) : '',
+                (array)($config['province_ids'] ?? [])
+            )))),
+            'kabupaten_ids' => array_values(array_unique(array_filter(array_map(
+                static fn($value): string => is_scalar($value) ? trim((string)$value) : '',
+                (array)($config['kabupaten_ids'] ?? [])
+            )))),
+            'province_names' => array_values(array_unique(array_filter(array_map(
+                static fn($value): string => is_scalar($value) ? trim((string)$value) : '',
+                (array)($config['province_names'] ?? [])
+            )))),
+            'minimum_order_amount' => max(0, (int)($config['minimum_order_amount'] ?? 0)),
+            'maximum_shipping_rate' => max(0, (int)($config['maximum_shipping_rate'] ?? 0)),
             'updated_at' => $config['updated_at'] ?? null,
         ]);
     }
@@ -82,15 +110,33 @@ class FreeShippingService
 
     private function saveToFile(array $payload): bool
     {
-        $dir = dirname($this->path);
-        if (!is_dir($dir)) {
-            mkdir($dir, 0775, true);
-        }
+        $temporaryPath = null;
+        try {
+            $dir = dirname($this->path);
+            if (!is_dir($dir) && !@mkdir($dir, 0775, true) && !is_dir($dir)) {
+                return false;
+            }
 
-        return (bool) file_put_contents(
-            $this->path,
-            json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
-        );
+            $json = json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+            $temporaryPath = @tempnam($dir, '.free-shipping-');
+            if ($temporaryPath === false || file_put_contents($temporaryPath, $json, LOCK_EX) === false) {
+                return false;
+            }
+
+            if (!@rename($temporaryPath, $this->path)) {
+                return false;
+            }
+
+            $temporaryPath = null;
+            return true;
+        } catch (\Throwable $th) {
+            log_message('error', 'Gagal menyimpan cadangan gratis ongkir: ' . $th->getMessage());
+            return false;
+        } finally {
+            if (is_string($temporaryPath) && is_file($temporaryPath)) {
+                @unlink($temporaryPath);
+            }
+        }
     }
 
     private function readFromDatabase(): ?array
@@ -176,21 +222,43 @@ class FreeShippingService
         return (bool)$forge->createTable($this->table, true);
     }
 
-    public function isEligible(array $address): bool
+    public function isEligible(array $address, ?float $orderAmount = null): bool
     {
-        $config = $this->getConfig();
+        return self::addressIsEligible($address, $this->getConfig(), $orderAmount);
+    }
+
+    public static function addressIsEligible(array $address, array $config, ?float $orderAmount = null): bool
+    {
+        $config = self::normalizeConfig($config);
         if (!$config['active']) {
             return false;
         }
 
-        $provId = (string)($address['prov_id'] ?? '');
-        if ($provId !== '' && in_array($provId, $config['province_ids'], true)) {
-            return true;
+        if ($config['minimum_order_amount'] > 0
+            && ($orderAmount === null || $orderAmount < $config['minimum_order_amount'])) {
+            return false;
         }
 
-        $provName = $this->normalize((string)($address['prov'] ?? ''));
+        $provinceIds = $config['province_ids'];
+        $provinceId = trim((string)($address['prov_id'] ?? ''));
+        $kabupatenIds = $config['kabupaten_ids'];
+        $kabupatenId = trim((string)($address['kab_id'] ?? ''));
+        if ($provinceIds !== [] || $kabupatenIds !== []) {
+            // Explicit IDs are the source of truth. Provinces cover every city
+            // inside them; selected cities add narrower coverage elsewhere.
+            return ($provinceId !== '' && in_array($provinceId, $provinceIds, true))
+                || ($kabupatenId !== '' && in_array($kabupatenId, $kabupatenIds, true));
+        }
+
+        // Name matching is a fallback mode, used only when no province IDs are
+        // configured (for legacy addresses or regions absent from the ID list).
+        $provinceName = self::normalize((string)($address['prov'] ?? ''));
+        if ($provinceName === '') {
+            return false;
+        }
+
         foreach ($config['province_names'] as $name) {
-            if ($provName !== '' && $provName === $this->normalize($name)) {
+            if ($provinceName === self::normalize($name)) {
                 return true;
             }
         }
@@ -198,15 +266,41 @@ class FreeShippingService
         return false;
     }
 
-    public function applyToRates(array $address, array $rates): array
+    public function applyToRates(array $address, array $rates, ?float $orderAmount = null): array
     {
-        if (!$this->isEligible($address)) {
+        return self::applyConfigToRates($address, $rates, $orderAmount, $this->getConfig());
+    }
+
+    public static function applyConfigToRates(array $address, array $rates, ?float $orderAmount, array $config): array
+    {
+        $config = self::normalizeConfig($config);
+        foreach ($rates as &$rate) {
+            if (!is_array($rate)) {
+                continue;
+            }
+            if (!empty($rate['gratis_ongkir'])) {
+                $rate['harga'] = max(0, (int)($rate['harga_asli'] ?? $rate['harga'] ?? 0));
+            }
+            unset($rate['harga_asli'], $rate['gratis_ongkir'], $rate['gratis_ongkir_label']);
+        }
+        unset($rate);
+
+        if (!self::addressIsEligible($address, $config, $orderAmount)) {
             return $rates;
         }
 
-        $config = $this->getConfig();
         foreach ($rates as &$rate) {
-            $original = (int)($rate['harga'] ?? 0);
+            if (!is_array($rate)) {
+                continue;
+            }
+            // Payment and order creation re-evaluate rates already transformed
+            // on the shipping step. Preserve the true pre-promo amount.
+            $original = max(0, (int)($rate['harga'] ?? 0));
+
+            if ($config['maximum_shipping_rate'] > 0 && $original > $config['maximum_shipping_rate']) {
+                continue;
+            }
+
             $rate['harga_asli'] = $original;
             $rate['harga'] = 0;
             $rate['gratis_ongkir'] = true;
@@ -217,11 +311,16 @@ class FreeShippingService
         return $rates;
     }
 
-    private function normalize(string $value): string
+    private static function normalize(string $value): string
     {
         $value = strtolower(trim($value));
         $value = str_replace(['provinsi', 'propinsi'], '', $value);
         $value = preg_replace('/[^a-z0-9]+/i', '', $value) ?? '';
-        return $value;
+
+        return match ($value) {
+            'jakarta', 'daerahkhususibukotajakarta' => 'dkijakarta',
+            'yogyakarta', 'daerahistimewayogyakarta' => 'diyogyakarta',
+            default => $value,
+        };
     }
 }
