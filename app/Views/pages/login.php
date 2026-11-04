@@ -6,7 +6,7 @@
                 <h1 class="ilena-auth-page__title"><?= esc(lang('Store.signInTitle')); ?></h1>
                 <?php if ($val['msg']) { ?>
                     <div class="pemberitahuan my-1" role="alert">
-                        <?= $val['msg']; ?>
+                        <?= esc(ilena_localize_notice((string) $val['msg'])); ?>
                     </div>
                 <?php } ?>
                 <form id="loginForm" action="<?= esc(ilena_store_path('/actionlogin'), 'attr'); ?>" method="post">

@@ -383,7 +383,7 @@ hr {
     </header>
 
     <?php if (!empty($msg)) : ?>
-    <div class="pemberitahuan my-1 w-100" style="width:fit-content" role="alert"><?= esc($msg); ?></div>
+    <div class="pemberitahuan my-1 w-100" style="width:fit-content" role="alert"><?= esc(ilena_localize_notice((string) $msg)); ?></div>
     <?php endif; ?>
 
     <div class="grid-two">

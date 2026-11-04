@@ -4,7 +4,7 @@
     <section class="ilena-auth-page__form" aria-labelledby="reset-password-title">
         <p class="ilena-auth-page__eyebrow"><?= esc(lang('Store.ilenaAccountLabel')); ?></p>
         <h1 id="reset-password-title" class="ilena-auth-page__title"><?= esc(lang('Store.resetPasswordTitle')); ?></h1>
-        <?php if (!empty($msg)): ?><div class="pemberitahuan my-3" role="alert"><?= esc($msg); ?></div><?php endif; ?>
+        <?php if (!empty($msg)): ?><div class="pemberitahuan my-3" role="alert"><?= esc(ilena_localize_notice((string) $msg)); ?></div><?php endif; ?>
         <form method="post" action="<?= esc(ilena_store_path('/reset-password/' . $token), 'attr'); ?>">
             <?= csrf_field(); ?>
             <div class="mb-3">

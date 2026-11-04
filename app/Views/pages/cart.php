@@ -2,7 +2,7 @@
 <?= $this->section("content"); ?>
 <div class="container d-flex justify-content-center align-items-center ilena-cart-page <?= empty($keranjang) ? 'is-empty' : ''; ?>">
     <?php if ($cartMessage = session()->getFlashdata('msg')): ?>
-        <p class="pemberitahuan" role="alert"><?= esc($cartMessage); ?></p>
+        <p class="pemberitahuan" role="alert"><?= esc(ilena_localize_notice((string) $cartMessage)); ?></p>
     <?php endif; ?>
     <div class="konten baris-ke-kolom">
         <div style="flex:1;">

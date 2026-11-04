@@ -5,7 +5,7 @@
         <p class="ilena-auth-page__eyebrow"><?= esc(lang('Store.ilenaAccountLabel')); ?></p>
         <h1 id="reset-request-title" class="ilena-auth-page__title"><?= esc(lang('Store.resetPasswordTitle')); ?></h1>
         <p><?= esc(lang('Store.resetPasswordDescription')); ?></p>
-        <?php if (!empty($msg)): ?><div class="pemberitahuan my-3" role="status"><?= esc($msg); ?></div><?php endif; ?>
+        <?php if (!empty($msg)): ?><div class="pemberitahuan my-3" role="status"><?= esc(ilena_localize_notice((string) $msg)); ?></div><?php endif; ?>
         <form method="post" action="<?= esc(ilena_store_path('/forgot-password'), 'attr'); ?>">
             <?= csrf_field(); ?>
             <div aria-hidden="true" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);"><label>Website<input name="company_website" tabindex="-1" autocomplete="off"></label></div>

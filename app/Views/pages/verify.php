@@ -6,7 +6,7 @@
         <h1 class="teks-sedang text-center"><?= lang('Store.verifyEmailTitle'); ?></h1>
         <?php if ($val['msg']) { ?>
             <div class="pemberitahuan my-1 mx-auto" style="width: fit-content;" role="alert">
-                <?= $val['msg']; ?>
+                <?= esc(ilena_localize_notice((string) $val['msg'])); ?>
             </div>
         <?php } ?>
         <p class="text-center"><?= lang('Store.enterOtp'); ?></p>

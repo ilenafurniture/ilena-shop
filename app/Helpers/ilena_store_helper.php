@@ -165,6 +165,133 @@ if (! function_exists('ilena_article_category_from_slug')) {
     }
 }
 
+if (! function_exists('ilena_localize_notice')) {
+    /** Translate common storefront flash/notice copy at render time, including messages emitted by legacy Indonesian handlers. */
+    function ilena_localize_notice(string $message, ?string $locale = null): string
+    {
+        $locale ??= ilena_current_store_locale();
+        if ($locale !== 'en') return $message;
+
+        $message = trim($message);
+        $translations = [
+            'Ada produk/varian yang tidak tersedia dan telah dikeluarkan dari keranjang. Periksa kembali pesanan Anda.' => 'Unavailable products or variants were removed from your cart. Please review your order.',
+            'Jumlah produk disesuaikan dengan stok terbaru. Periksa jumlah dan subtotal sebelum melanjutkan.' => 'Quantities were updated to match current stock. Review the quantities and subtotal before continuing.',
+            'Produk sudah tidak tersedia. Keranjang tidak berubah.' => 'This product is no longer available. Your cart has not changed.',
+            'Varian tidak tersedia atau stoknya habis. Keranjang tidak berubah.' => 'This variant is unavailable or out of stock. Your cart has not changed.',
+            'Keranjangmu kosong.' => 'Your cart is empty.',
+            'Ada produk di keranjang yang sudah tidak tersedia.' => 'A product in your cart is no longer available.',
+            'Data varian produk tidak valid.' => 'The product variant is invalid.',
+            'Jumlah produk di keranjang tidak valid.' => 'A product quantity in your cart is invalid.',
+            'Ada varian produk yang sudah tidak tersedia.' => 'A product variant is no longer available.',
+            'Email tidak valid atau termasuk email sementara. Gunakan email pribadi yang aktif.' => 'This email address is invalid or temporary. Please use an active personal email address.',
+            'Email pemesan tidak valid atau termasuk email sementara. Perbarui alamat dengan email pribadi yang aktif.' => 'The order email is invalid or temporary. Update the address with an active personal email address.',
+            'Email yang dimasukan harus sesuai dengan email akun member Anda' => 'The email must match your member account.',
+            'Alamat tidak ditemukan.' => 'Address not found.',
+            'Pilihan kurir belum tersedia untuk alamat ini. Silakan cek alamat atau hubungi admin.' => 'Shipping options are not available for this address. Check the address or contact Customer Care.',
+            'Keranjang kosong.' => 'Your cart is empty.',
+            'Voucher tidak memenuhi syarat.' => 'This voucher’s requirements have not been met.',
+            'Metode pembayaran tidak valid.' => 'The selected payment method is invalid.',
+            'Kode voucher kosong.' => 'Enter a voucher code.',
+            'Alamat tidak valid.' => 'The address is invalid.',
+            'Keranjang kosong.' => 'Your cart is empty.',
+            'Kode voucher tidak ditemukan.' => 'Voucher code not found.',
+            'Voucher sedang nonaktif.' => 'This voucher is currently inactive.',
+            'Voucher belum mulai berlaku.' => 'This voucher is not active yet.',
+            'Voucher sudah berakhir.' => 'This voucher has expired.',
+            'Belanja belum mencapai minimal voucher.' => 'Your order has not reached the minimum spend for this voucher.',
+            'Voucher sudah mencapai limit pemakaian.' => 'This voucher has reached its usage limit.',
+            'Voucher ini hanya bisa dipakai sekali per pengguna.' => 'This voucher can only be used once per customer.',
+            'Voucher ini hanya dapat digunakan sekali per pengguna.' => 'This voucher can only be used once per customer.',
+            'Voucher khusus member baru.' => 'This voucher is for new members only.',
+            'Voucher khusus member lama.' => 'This voucher is for existing members only.',
+            'Voucher ini khusus pengguna tertentu.' => 'This voucher is available to selected customers only.',
+            'Voucher berhasil diterapkan.' => 'Voucher applied successfully.',
+            'Voucher valid.' => 'Voucher is valid.',
+            'Voucher sedang tidak dapat diverifikasi. Coba kembali sebentar lagi.' => 'The voucher could not be verified right now. Please try again shortly.',
+            'Voucher ini sudah pernah kamu pakai.' => 'You have already used this voucher.',
+            'Token checkout tidak valid.' => 'The checkout token is invalid.',
+            'Token tidak valid' => 'The token is invalid.',
+            'Token kadaluarsa, silakan ulangi pembayaran' => 'The token has expired. Please retry payment.',
+            'Permintaan checkout sudah digunakan atau kedaluwarsa. Periksa status pesanan sebelum mencoba lagi.' => 'This checkout request has already been used or has expired. Check your order status before trying again.',
+            'Alamat tidak ditemukan, silakan ulangi.' => 'Address not found. Please select it again.',
+            'Kurir tidak ditemukan, silakan pilih ulang.' => 'Shipping service not found. Please select it again.',
+            'Data kartu belum lengkap' => 'Card details are incomplete.',
+            'Keranjang atau pilihan pembayaran berubah. Periksa kembali ringkasan sebelum membayar.' => 'Your cart or payment selection has changed. Review the order summary before paying.',
+            'Sesi checkout kedaluwarsa. Muat ulang pembayaran sebelum melanjutkan.' => 'Your checkout session has expired. Reload the payment page before continuing.',
+            'Voucher baru saja mencapai batas pemakaian.' => 'This voucher has just reached its usage limit.',
+            'Voucher sedang tidak dapat diamankan. Coba kembali sebentar lagi.' => 'The voucher could not be reserved right now. Please try again shortly.',
+            'Stok belum dapat diamankan. Coba kembali setelah beberapa saat.' => 'Stock could not be reserved. Please try again shortly.',
+            'Stok berubah. Perbarui keranjang sebelum membayar.' => 'Stock has changed. Update your cart before paying.',
+            'Pesanan belum tersimpan; belum ada permintaan pembayaran dikirim.' => 'Your order was not saved, and no payment request was sent.',
+            'Pembayaran belum mendapat konfirmasi. Pesanan belum ditampilkan sebagai berhasil; muat ulang dan periksa status sebelum mencoba lagi.' => 'Payment has not been confirmed, so the order is not marked as successful. Reload and check its status before trying again.',
+            'Transaksi gagal' => 'The transaction failed.',
+            'Form login kedaluwarsa. Silakan muat ulang halaman dan coba lagi.' => 'Your sign-in form has expired. Reload the page and try again.',
+            'Terlalu banyak percobaan login. Tunggu beberapa saat lalu coba lagi.' => 'Too many sign-in attempts. Please wait a moment and try again.',
+            'Email atau kata sandi salah' => 'The email or password is incorrect.',
+            'Akses admin belum aktif untuk email ini.' => 'Admin access is not enabled for this email address.',
+            'Akses akun ini belum diatur. Hubungi Admin utama.' => 'Access for this account has not been configured. Please contact the primary administrator.',
+            'Form pendaftaran kedaluwarsa atau tidak valid. Silakan muat ulang halaman.' => 'Your registration form has expired or is invalid. Reload the page and try again.',
+            'Terlalu banyak percobaan pendaftaran. Coba lagi nanti.' => 'Too many registration attempts. Please try again later.',
+            'Email verifikasi belum dapat dikirim. Coba lagi nanti.' => 'The verification email could not be sent. Please try again later.',
+            'Pendaftaran belum berhasil disimpan. Silakan coba lagi.' => 'Your registration could not be saved. Please try again.',
+            'Sesi verifikasi sudah berakhir. Silakan daftar/login ulang.' => 'Your verification session has expired. Please register or sign in again.',
+            'Akun Anda ditangguhkan. Silakan hubungi admin.' => 'Your account is suspended. Please contact Customer Care.',
+            'Terlalu banyak permintaan kode verifikasi. Coba lagi nanti.' => 'Too many verification code requests. Please try again later.',
+            'Tunggu sebentar sebelum meminta kode OTP baru.' => 'Please wait before requesting a new verification code.',
+            'Kamu telah keluar' => 'You have signed out.',
+            'Kata sandi saat ini tidak sesuai.' => 'The current password is incorrect.',
+            'Kata sandi baru harus terdiri dari 12–72 byte.' => 'The new password must be 12–72 bytes long.',
+            'Sandi yang terkonfirmasi tidak cocok' => 'The password confirmation does not match.',
+            'Perubahan kata sandi gagal. Silakan coba kembali.' => 'Your password could not be changed. Please try again.',
+            'Sandi Anda berhasil diubah' => 'Your password has been changed.',
+            'Fitur notifikasi produk sedang disiapkan. Silakan hubungi Customer Care.' => 'Product alerts are being set up. Please contact Customer Care.',
+            'Periksa kembali pilihan notifikasi dan persetujuan Anda.' => 'Review your alert selection and consent, then try again.',
+            'Varian ini masih tersedia; notifikasi stok belum diperlukan.' => 'This variant is still in stock, so a stock alert is not needed yet.',
+            'Pemberitahuan tersimpan. Kami akan mengirim email saat kondisi pilihan terpenuhi.' => 'Alert saved. We will email you when your selected condition is met.',
+            'Fitur ulasan sedang disiapkan.' => 'Reviews are being set up.',
+            'Terlalu banyak kiriman. Silakan coba kembali nanti.' => 'Too many submissions. Please try again later.',
+            'Mohon lengkapi data dengan benar. Pesan harus 8–2.000 karakter.' => 'Please complete the form correctly. Your message must be 8–2,000 characters.',
+            'Ulasan untuk produk dan pesanan ini sudah pernah dikirim.' => 'A review for this product and order has already been submitted.',
+            'Silakan masuk ke akun member untuk bertanya atau mengirim ulasan produk.' => 'Please sign in to ask a product question or submit a review.',
+        ];
+
+        if (isset($translations[$message])) return $translations[$message];
+
+        if (preg_match('/^Stok (.+) varian (.+) tidak mencukupi\.$/u', $message, $matches) === 1) {
+            return 'There is not enough stock for ' . $matches[1] . ' (' . $matches[2] . ').';
+        }
+        if (preg_match('/^OTP telah dikirim ke email (.+) dan berlaku hingga (.+)$/u', $message, $matches) === 1) {
+            return 'A verification code was sent to ' . $matches[1] . ' and is valid until ' . $matches[2] . '.';
+        }
+        if (preg_match('/^OTP telah diperbarui dan sudah dikirim kembali ke email (.+)$/u', $message, $matches) === 1) {
+            return 'A new verification code was sent to ' . $matches[1] . '.';
+        }
+        if (preg_match('/^Email (.+) perlu diverifikasi$/u', $message, $matches) === 1) {
+            return 'Please verify the email address ' . $matches[1] . '.';
+        }
+        if (preg_match('/^Akun Anda ditangguhkan (.+)\. Silakan hubungi admin\.$/u', $message, $matches) === 1) {
+            return 'Your account is suspended ' . $matches[1] . '. Please contact Customer Care.';
+        }
+        if (preg_match('/^Voucher belum mulai berlaku \(mulai (.+)\)\.$/u', $message, $matches) === 1) {
+            return 'This voucher is not active yet. It starts ' . $matches[1] . '.';
+        }
+        if (preg_match('/^Voucher sudah berakhir \(berlaku sampai (.+)\)\.$/u', $message, $matches) === 1) {
+            return 'This voucher has expired. It was valid until ' . $matches[1] . '.';
+        }
+        if (preg_match('/^Belanja belum mencapai minimal voucher: Rp (.+)\. Tambahkan belanja hingga minimal Rp (.+)\.$/u', $message, $matches) === 1) {
+            return 'Your order has not reached the voucher minimum of Rp ' . $matches[1] . '. Add items until your subtotal reaches at least Rp ' . $matches[2] . '.';
+        }
+        if (preg_match('/^Belanja belum mencapai minimal voucher: Rp (.+)\. Subtotal kamu: Rp (.+)$/u', $message, $matches) === 1) {
+            return 'Your order has not reached the voucher minimum of Rp ' . $matches[1] . '. Your current subtotal is Rp ' . $matches[2] . '.';
+        }
+        if (preg_match('/^Voucher "(.+)" berhasil diklaim\.$/u', $message, $matches) === 1) {
+            return 'Voucher "' . $matches[1] . '" has been claimed.';
+        }
+
+        return $message;
+    }
+}
+
 if (! function_exists('ilena_localize_payment_guide')) {
     /** Translate built-in Midtrans payment instructions without changing stored payment data. */
     function ilena_localize_payment_guide(array $guide, string $locale): array

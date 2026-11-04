@@ -573,7 +573,7 @@ input[type="radio"][name="address"]:checked+.item-address {
 
 <div class="container konten ilena-address-page">
     <?php if ($msg) { ?>
-    <div class="pemberitahuan mb-2" role="alert"><?= $msg; ?></div>
+    <div class="pemberitahuan mb-2" role="alert"><?= esc(ilena_localize_notice((string) $msg)); ?></div>
     <?php } ?>
 
     <h5 class="path" style="letter-spacing:-1px; font-weight:100;">

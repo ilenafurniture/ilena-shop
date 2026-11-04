@@ -62,7 +62,7 @@
 
             <?php if ($val['msg']) { ?>
             <div class="pemberitahuan my-1" role="alert">
-                <?= $val['msg']; ?>
+                <?= esc(ilena_localize_notice((string) $val['msg'])); ?>
             </div>
             <?php } ?>
 

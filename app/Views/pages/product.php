@@ -592,7 +592,7 @@ alt="<?= esc($displayProductName, 'attr') ?>" width="300" height="300" loading="
                         && filter_var((string) session()->get('email'), FILTER_VALIDATE_EMAIL);
                 ?>
                 <section class="ilena-commerce-panel" aria-labelledby="ilena-product-feedback-title">
-                    <?php if ($notice = session()->getFlashdata('commerce_notice')): ?><p class="ilena-commerce-notice" role="status"><?= esc($notice); ?></p><?php endif; ?>
+                    <?php if ($notice = session()->getFlashdata('commerce_notice')): ?><p class="ilena-commerce-notice" role="status"><?= esc(ilena_localize_notice((string) $notice)); ?></p><?php endif; ?>
                     <div class="ilena-commerce-panel__heading">
                         <div><span><?= $feedbackEnglish ? 'CUSTOMER VOICE' : 'SUARA PELANGGAN'; ?></span><h2 id="ilena-product-feedback-title"><?= $feedbackEnglish ? 'Reviews & questions' : 'Ulasan & pertanyaan'; ?></h2></div>
                         <a href="https://ilenafurniture.net/" class="ilena-commerce-panel__designer" target="_blank" rel="noopener noreferrer"><?= $feedbackEnglish ? 'Custom interior consultation' : 'Konsultasi interior custom'; ?> ↗</a>

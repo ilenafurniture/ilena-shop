@@ -208,7 +208,7 @@
 
         <?php if ($msgSandi) { ?>
         <div class="pemberitahuan my-2 mx-auto" style="width: fit-content;" role="alert">
-            <?= $msgSandi; ?>
+            <?= esc(ilena_localize_notice((string) $msgSandi)); ?>
         </div>
         <?php } ?>
 
@@ -273,7 +273,7 @@
             </div>
             <span class="ilena-order-heading__count"><?= count($pesanan); ?> <?= lang('Store.orderCount'); ?></span>
         </header>
-        <?php if ($notice = session()->getFlashdata('commerce_notice')): ?><div class="alert alert-info" role="status"><?= esc($notice); ?></div><?php endif; ?>
+        <?php if ($notice = session()->getFlashdata('commerce_notice')): ?><div class="alert alert-info" role="status"><?= esc(ilena_localize_notice((string) $notice)); ?></div><?php endif; ?>
 
         <?php if (!empty($customerServiceCases)): ?>
         <section class="ilena-service-case-tracker" aria-labelledby="service-case-tracker-title">

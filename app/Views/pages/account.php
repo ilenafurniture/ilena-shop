@@ -9,7 +9,7 @@
         <h2 style="letter-spacing: -1px"><?= lang('Store.changePassword'); ?></h2>
         <?php if ($msgSandi) { ?>
         <div class="pemberitahuan my-1 mx-auto" style="width: fit-content;" role="alert">
-            <?= $msgSandi; ?>
+            <?= esc(ilena_localize_notice((string) $msgSandi)); ?>
         </div>
         <?php } ?>
         <form action="<?= esc(ilena_store_path('/editsandi/account'), 'attr'); ?>" method="post">
@@ -322,7 +322,7 @@
                 <button type="submit" class="btn-default-abu"><?= esc(lang('Store.sendEmailConfirmation')); ?></button>
             </form>
         </section>
-        <?php if (!empty($msg)): ?><div class="pemberitahuan my-3" role="status"><?= esc($msg); ?></div><?php endif; ?>
+        <?php if (!empty($msg)): ?><div class="pemberitahuan my-3" role="status"><?= esc(ilena_localize_notice((string) $msg)); ?></div><?php endif; ?>
         <form action="<?= esc(ilena_store_path('/account/profile'), 'attr'); ?>" method="post" class="ilena-account-profile-form my-3">
             <?= csrf_field(); ?>
             <div class="mb-3"><label for="account-name" class="form-label"><?= esc(lang('Store.fullNameLabel')); ?></label>
