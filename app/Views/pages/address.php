@@ -144,7 +144,9 @@ input[type="radio"][name="address"]:checked+.item-address {
     justify-content: center;
     background: rgba(0, 0, 0, .4);
     backdrop-filter: blur(2px);
-    padding: 18px
+    padding: 18px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
 }
 
 .modal-layer.d-flex {
@@ -152,14 +154,30 @@ input[type="radio"][name="address"]:checked+.item-address {
 }
 
 .modal-card {
-    width: min(780px, 92vw);
-    max-height: 90svh;
-    overflow: auto;
+    width: min(640px, calc(100vw - 36px));
+    max-height: calc(100vh - 36px);
+    max-height: calc(100dvh - 36px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    margin: auto;
     background: #fff;
     border-radius: 16px;
     border: 1px solid var(--line);
     box-shadow: 0 15px 40px rgba(0, 0, 0, .12);
     animation: pop .18s ease-out
+}
+
+.modal-card > form {
+    width: 100%;
+    margin: 0;
+}
+
+/* Keep Bootstrap's inner modal surface from creating a second framed card. */
+.modal-card .modal-content {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
 }
 
 @keyframes pop {
@@ -316,7 +334,9 @@ input[type="radio"][name="address"]:checked+.item-address {
     }
 
     .modal-card {
-        width: min(820px, 96vw);
+        width: min(600px, calc(100vw - 24px));
+        max-height: calc(100vh - 24px);
+        max-height: calc(100dvh - 24px);
     }
 
     .modal-header,
@@ -381,7 +401,7 @@ input[type="radio"][name="address"]:checked+.item-address {
                         <p class="mb-2"><?= lang('Store.saveAddress'); ?></p>
                         <a href="<?= esc(ilena_store_path('/login'), 'attr'); ?>" class="btn-default-merah"><?= lang('Store.memberLogin'); ?></a>
                     </div>
-                    <div stype="flex: 1">
+                    <div style="flex: 1">
                         <button onclick="closeAllModal()" type="button" class="btn-close" aria-label="Close"></button>
                     </div>
                 </div>
@@ -483,7 +503,7 @@ input[type="radio"][name="address"]:checked+.item-address {
                         <p class="mb-2"><?= lang('Store.saveAddress'); ?></p>
                         <a href="<?= esc(ilena_store_path('/login'), 'attr'); ?>" class="btn-default-merah"><?= lang('Store.memberLogin'); ?></a>
                     </div>
-                    <div stype="flex: 1">
+                    <div style="flex: 1">
                         <button onclick="closeAllModal()" type="button" class="btn-close" aria-label="Close"></button>
                     </div>
                 </div>
