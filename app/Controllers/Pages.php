@@ -974,15 +974,21 @@ class Pages extends BaseController
         $rate = $rates[0];
         $freeShipping = false;
         $freeShippingLabel = '';
-        $freeShippingConfig = (new FreeShippingService())->getConfig();
-        if (!empty($freeShippingConfig['active'])) {
-            $promoAddress = $this->resolveShippingPromoAddress($destination, $rate);
-            if ($promoAddress !== null) {
-                $subtotal = \App\Services\CatalogPricing::unitPrice($product) * (int) $quantity;
-                $promoRate = FreeShippingService::applyConfigToRates($promoAddress, [$rate], (float) $subtotal, $freeShippingConfig)[0] ?? $rate;
-                $freeShipping = !empty($promoRate['gratis_ongkir']);
-                $freeShippingLabel = $freeShipping ? (string) ($promoRate['gratis_ongkir_label'] ?? '') : '';
+        try {
+            $freeShippingConfig = (new FreeShippingService())->getConfig();
+            if (!empty($freeShippingConfig['active'])) {
+                $promoAddress = $this->resolveShippingPromoAddress($destination, $rate);
+                if ($promoAddress !== null) {
+                    $subtotal = \App\Services\CatalogPricing::unitPrice($product) * (int) $quantity;
+                    $promoRate = FreeShippingService::applyConfigToRates($promoAddress, [$rate], (float) $subtotal, $freeShippingConfig)[0] ?? $rate;
+                    $freeShipping = !empty($promoRate['gratis_ongkir']);
+                    $freeShippingLabel = $freeShipping ? (string) ($promoRate['gratis_ongkir_label'] ?? '') : '';
+                }
             }
+        } catch (\Throwable $th) {
+            // Promo eligibility is additional display information; it must not
+            // make a valid APM shipping quote fail.
+            log_message('error', 'Product shipping promo enrichment failed: {error}', ['error' => $th->getMessage()]);
         }
 
         return $this->response
@@ -1005,7 +1011,12 @@ class Pages extends BaseController
     private function resolveShippingPromoAddress(string $destination, array $rate): ?array
     {
         $cacheKey = 'ilena:shipping-promo-geography:v1';
-        $geography = cache()->get($cacheKey);
+        try {
+            $geography = cache()->get($cacheKey);
+        } catch (\Throwable $th) {
+            log_message('debug', 'Shipping promo cache lookup skipped: {error}', ['error' => $th->getMessage()]);
+            $geography = null;
+        }
         if (!is_array($geography) || !is_array($geography['cities'] ?? null) || !is_array($geography['provinces'] ?? null)) {
             try {
                 $provinces = [];
@@ -1036,6 +1047,9 @@ class Pages extends BaseController
         }
 
         $matches = $geography['cities'][$this->normalizeShippingPlace($destination)] ?? [];
+        if (!is_array($matches)) {
+            return null;
+        }
         if (count($matches) > 1) {
             $regionTokens = [];
             foreach (['area', 'regional'] as $field) {
