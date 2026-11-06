@@ -431,6 +431,7 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                         <button type="button" data-shipping-estimate-button><?= esc(lang('Store.productShippingEstimateButton')); ?></button>
                     </div>
                     <p class="ilena-product-shipping-estimate__status" data-shipping-estimate-status role="status" aria-live="polite"></p>
+                    <p class="ilena-product-shipping-estimate__promo" data-shipping-estimate-promo role="status" aria-live="polite" hidden></p>
                     <p class="ilena-product-shipping-estimate__fineprint"><?= esc(lang('Store.productShippingEstimateDisclaimer')); ?></p>
                 </section>
                 <?php } ?>

@@ -8,6 +8,7 @@
     const list = root.querySelector('[role="listbox"]');
     const button = root.querySelector('[data-shipping-estimate-button]');
     const status = root.querySelector('[data-shipping-estimate-status]');
+    const promo = root.querySelector('[data-shipping-estimate-promo]');
     const lang = root.dataset.locale === 'en' ? 'en' : 'id';
     const messages = {
         searching: lang === 'en' ? 'Searching destinations…' : 'Mencari tujuan…',
@@ -21,16 +22,22 @@
         delivery: lang === 'en' ? 'Estimated delivery' : 'Estimasi tiba',
         weight: lang === 'en' ? 'Billable weight' : 'Berat yang dihitung',
         days: lang === 'en' ? 'days' : 'hari',
+        freePromo: lang === 'en' ? 'This destination and selection qualify for a free-shipping offer.' : 'Tujuan dan pilihan ini memenuhi promo gratis ongkir.',
     };
 
     let timer = 0;
     let activeController = null;
     let requestNumber = 0;
+    let quoteRequest = 0;
 
     const clearSelection = () => {
         destinationField.value = '';
         provinceField.value = '';
         status.textContent = '';
+        promo.textContent = '';
+        promo.hidden = true;
+        quoteRequest++;
+        button.disabled = false;
     };
 
     const closeList = () => {
@@ -58,6 +65,8 @@
                 destinationField.value = String(item.destination || '');
                 provinceField.value = String(item.province || '');
                 status.textContent = '';
+                promo.textContent = '';
+                promo.hidden = true;
                 closeList();
             });
             option.append(choice);
@@ -111,6 +120,10 @@
     const clearEstimate = () => {
         if (status.dataset.result === 'true') status.textContent = '';
         delete status.dataset.result;
+        promo.textContent = '';
+        promo.hidden = true;
+        quoteRequest++;
+        button.disabled = false;
     };
     root.querySelectorAll('input[name="varian"], input[name="varian-mobile"], .number-quantity').forEach((control) => {
         control.addEventListener('change', clearEstimate);
@@ -132,6 +145,7 @@
         }
 
         button.disabled = true;
+        const currentQuote = ++quoteRequest;
         status.dataset.result = 'true';
         status.textContent = messages.loading;
         try {
@@ -145,8 +159,9 @@
             }).toString();
             const response = await fetch(url, { headers: { Accept: 'application/json' } });
             const data = await response.json();
+            if (currentQuote !== quoteRequest) return;
             if (!response.ok || !data.ok) {
-            status.textContent = data.code === 'stock_changed' ? messages.stock : (data.message || messages.unavailable);
+                status.textContent = data.code === 'stock_changed' ? messages.stock : (data.message || messages.unavailable);
                 return;
             }
             const currency = new Intl.NumberFormat(lang === 'en' ? 'en-US' : 'id-ID', {
@@ -159,10 +174,14 @@
             status.replaceChildren(document.createTextNode(`${messages.estimate} — `), result, document.createElement('br'));
             status.append(document.createTextNode([delivery, weight].filter(Boolean).join(' · ')));
             status.dataset.result = 'true';
+            if (data.free_shipping === true) {
+                promo.textContent = messages.freePromo;
+                promo.hidden = false;
+            }
         } catch (_) {
-            status.textContent = messages.unavailable;
+            if (currentQuote === quoteRequest) status.textContent = messages.unavailable;
         } finally {
-            button.disabled = false;
+            if (currentQuote === quoteRequest) button.disabled = false;
         }
     });
 })();

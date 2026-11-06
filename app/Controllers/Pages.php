@@ -925,7 +925,7 @@ class Pages extends BaseController
         foreach (['product_id', 'variant', 'destination', 'province', 'qty'] as $key) {
             $raw[$key] = $this->request->getGet($key);
             if (!is_string($raw[$key])) {
-                return $this->response->setStatusCode(400)->setJSON(['ok' => false, 'code' => 'invalid_request', 'message' => lang('Store.shippingEstimateInvalid')]);
+                return $this->response->setStatusCode(400)->setJSON(['ok' => false, 'code' => 'invalid_request', 'message' => lang('Store.productShippingEstimateInvalid')]);
             }
         }
         $id = trim($raw['product_id']);
@@ -939,12 +939,12 @@ class Pages extends BaseController
             || $province === '' || mb_strlen($province, 'UTF-8') > 160
             || $quantity === false || $quantity < 1 || $quantity > 100
         ) {
-            return $this->response->setStatusCode(400)->setJSON(['ok' => false, 'code' => 'invalid_request', 'message' => lang('Store.shippingEstimateInvalid')]);
+            return $this->response->setStatusCode(400)->setJSON(['ok' => false, 'code' => 'invalid_request', 'message' => lang('Store.productShippingEstimateInvalid')]);
         }
 
         $product = $this->barangModel->getBarang($id);
         if (!is_array($product)) {
-            return $this->response->setStatusCode(404)->setJSON(['ok' => false, 'code' => 'unavailable', 'message' => lang('Store.shippingEstimateUnavailable')]);
+            return $this->response->setStatusCode(404)->setJSON(['ok' => false, 'code' => 'unavailable', 'message' => lang('Store.productShippingEstimateUnavailable')]);
         }
 
         $variants = json_decode((string) ($product['varian'] ?? '[]'), true);
@@ -960,7 +960,7 @@ class Pages extends BaseController
             }
         }
         if ($selected === null || (int) ($selected['stok'] ?? 0) < $quantity) {
-            return $this->response->setStatusCode(422)->setJSON(['ok' => false, 'code' => 'stock_changed', 'message' => lang('Store.shippingEstimateStockChanged')]);
+            return $this->response->setStatusCode(422)->setJSON(['ok' => false, 'code' => 'stock_changed', 'message' => lang('Store.productShippingStockChanged')]);
         }
 
         $rates = (new ShippingService())->rates(
@@ -968,10 +968,23 @@ class Pages extends BaseController
             [['jumlah' => $quantity, 'varian' => $variantName, 'detail' => $product]],
         );
         if ($rates === []) {
-            return $this->response->setStatusCode(422)->setJSON(['ok' => false, 'code' => 'unavailable', 'message' => lang('Store.shippingEstimateUnavailable')]);
+            return $this->response->setStatusCode(422)->setJSON(['ok' => false, 'code' => 'unavailable', 'message' => lang('Store.productShippingEstimateUnavailable')]);
         }
 
         $rate = $rates[0];
+        $freeShipping = false;
+        $freeShippingLabel = '';
+        $freeShippingConfig = (new FreeShippingService())->getConfig();
+        if (!empty($freeShippingConfig['active'])) {
+            $promoAddress = $this->resolveShippingPromoAddress($destination, $rate);
+            if ($promoAddress !== null) {
+                $subtotal = \App\Services\CatalogPricing::unitPrice($product) * (int) $quantity;
+                $promoRate = FreeShippingService::applyConfigToRates($promoAddress, [$rate], (float) $subtotal, $freeShippingConfig)[0] ?? $rate;
+                $freeShipping = !empty($promoRate['gratis_ongkir']);
+                $freeShippingLabel = $freeShipping ? (string) ($promoRate['gratis_ongkir_label'] ?? '') : '';
+            }
+        }
+
         return $this->response
             ->setHeader('Cache-Control', 'private, no-store, max-age=0')
             ->setJSON([
@@ -984,7 +997,86 @@ class Pages extends BaseController
                 'billable_weight_kg' => (float) $rate['billable_weight_kg'],
                 'minimum_weight_kg' => (int) $rate['minimum_weight_kg'],
                 'rate_per_kg' => (int) $rate['rate_per_kg'],
+                'free_shipping' => $freeShipping,
+                'free_shipping_label' => $freeShippingLabel,
             ]);
+    }
+
+    private function resolveShippingPromoAddress(string $destination, array $rate): ?array
+    {
+        $cacheKey = 'ilena:shipping-promo-geography:v1';
+        $geography = cache()->get($cacheKey);
+        if (!is_array($geography) || !is_array($geography['cities'] ?? null) || !is_array($geography['provinces'] ?? null)) {
+            try {
+                $provinces = [];
+                foreach ($this->provinsiModel->findAll() as $province) {
+                    $provinces[(string) ($province['id'] ?? '')] = (string) ($province['label'] ?? '');
+                }
+                $cities = [];
+                foreach ($this->kabupatenModel->findAll() as $city) {
+                    $key = $this->normalizeShippingPlace((string) ($city['label'] ?? ''));
+                    $provinceId = (string) ($city['provinsi_id'] ?? '');
+                    if ($key === '' || $provinceId === '' || !isset($provinces[$provinceId])) {
+                        continue;
+                    }
+                    $cities[$key][] = [
+                        'kab_id' => (string) ($city['id'] ?? ''),
+                        'prov_id' => $provinceId,
+                        'prov' => $provinces[$provinceId],
+                    ];
+                }
+                $geography = ['cities' => $cities, 'provinces' => $provinces];
+                if ($cities !== []) {
+                    cache()->save($cacheKey, $geography, 3600);
+                }
+            } catch (\Throwable $th) {
+                log_message('debug', 'Shipping promo location lookup skipped: {error}', ['error' => $th->getMessage()]);
+                return null;
+            }
+        }
+
+        $matches = $geography['cities'][$this->normalizeShippingPlace($destination)] ?? [];
+        if (count($matches) > 1) {
+            $regionTokens = [];
+            foreach (['area', 'regional'] as $field) {
+                foreach (preg_split('~[/,;|]+~u', (string) ($rate[$field] ?? '')) ?: [] as $token) {
+                    $normalized = $this->normalizeShippingPlace($token);
+                    if ($normalized !== '') {
+                        $regionTokens[$normalized] = true;
+                    }
+                }
+            }
+            $matches = array_values(array_filter($matches, function (array $candidate) use ($regionTokens): bool {
+                $province = $this->normalizeShippingPlace((string) ($candidate['prov'] ?? ''));
+                foreach (array_keys($regionTokens) as $token) {
+                    if ($this->shippingRegionsMatch($province, $token)) {
+                        return true;
+                    }
+                }
+                return false;
+            }));
+        }
+
+        return count($matches) === 1 ? $matches[0] : null;
+    }
+
+    private function normalizeShippingPlace(string $value): string
+    {
+        $value = mb_strtolower(trim($value), 'UTF-8');
+        $value = preg_replace('/^(?:kabupaten|kab\.?|kota administrasi|kota|provinsi|propinsi)\s+/u', '', $value) ?? $value;
+        return preg_replace('/[^\pL\pN]+/u', '', $value) ?? '';
+    }
+
+    private function shippingRegionsMatch(string $province, string $region): bool
+    {
+        $aliases = [
+            'dki' => 'dkijakarta',
+            'jakarta' => 'dkijakarta',
+            'daerahkhususibukotajakarta' => 'dkijakarta',
+            'yogyakarta' => 'diyogyakarta',
+            'daerahistimewayogyakarta' => 'diyogyakarta',
+        ];
+        return ($aliases[$province] ?? $province) === ($aliases[$region] ?? $region);
     }
 
     public function product($nama = false, $ind_nama = false)

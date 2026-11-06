@@ -87,6 +87,8 @@ final class ApmShippingRateService
             'rate_per_kg' => (int) $rate['rate_per_kg'],
             'minimum_weight_kg' => (int) $rate['minimum_kg'],
             'schedule' => (string) ($rate['schedule'] ?? ''),
+            'area' => (string) ($rate['area'] ?? ''),
+            'regional' => (string) ($rate['regional'] ?? ''),
             'destination' => (string) $rate['destination'],
             'tariff_id' => (string) $rate['id'],
         ]];

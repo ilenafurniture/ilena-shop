@@ -47,6 +47,8 @@ final class ApmShippingRateServiceTest extends CIUnitTestCase
         $this->assertSame(105000, $rates[0]['harga']);
         $this->assertSame('APM-001', $rates[0]['tariff_id']);
         $this->assertSame('apm', $rates[0]['provider']);
+        $this->assertSame('JAWA BARAT', $rates[0]['area']);
+        $this->assertSame('Jawa Barat / Banten / DKI', $rates[0]['regional']);
     }
 
     public function testImportedWorkbookSnapshotHasOneUniqueIdPerApmRow(): void
