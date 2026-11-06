@@ -273,6 +273,7 @@ return [
     'shippingDescription' => 'Choose a carrier that suits your delivery time and budget.',
     'shippingCoverageUnavailable' => 'Our team needs to confirm the delivery cost for this address.',
     'shippingContactSupport' => 'Ask customer service',
+    'shippingQuoteWhatsAppHint' => 'Your products and delivery address will be prepared in WhatsApp. Review the details before sending.',
     'shippingNeedsReview' => 'Team confirmation needed',
     'shippingTotalPending' => 'Awaiting delivery quote',
     'servicesAvailable' => 'services available',

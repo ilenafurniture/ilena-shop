@@ -24,8 +24,8 @@ final class StorefrontLayoutPolicy
         if (in_array($path, ['/login', '/register', '/verify'], true)) {
             return 'auth';
         }
-        // Cart remains part of the storefront; only active checkout/payment steps use the compact shell.
-        if (preg_match('~^/(shipping|payment|progresspay|successpay|cencelpay|expirepay)(/|$)~', $path) === 1) {
+        // Shipping shares the standard storefront navigation with cart/address; later payment states stay compact.
+        if (preg_match('~^/(payment|progresspay|successpay|cencelpay|expirepay)(/|$)~', $path) === 1) {
             return 'checkout';
         }
         if (preg_match('~^/(account|address|order|orderdetail|invoice|wishlist)(/|$)~', $path) === 1) {

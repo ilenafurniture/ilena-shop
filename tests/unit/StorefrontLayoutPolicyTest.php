@@ -15,9 +15,14 @@ final class StorefrontLayoutPolicyTest extends CIUnitTestCase
         $this->assertSame('store', StorefrontLayoutPolicy::footerMode('/'));
     }
 
-    public function testCheckoutStepsKeepCompactShell(): void
+    public function testShippingUsesStorefrontHeaderWhilePaymentStatesKeepCompactShell(): void
     {
-        foreach (['/shipping', '/shipping/123', '/payment', '/payment/method/123/visa', '/progresspay', '/successpay', '/cencelpay', '/expirepay'] as $path) {
+        foreach (['/shipping', '/shipping/123'] as $path) {
+            $this->assertSame('full', StorefrontLayoutPolicy::headerMode($path));
+            $this->assertSame('checkout', StorefrontLayoutPolicy::footerMode($path));
+        }
+
+        foreach (['/payment', '/payment/method/123/visa', '/progresspay', '/successpay', '/cencelpay', '/expirepay'] as $path) {
             $this->assertSame('checkout', StorefrontLayoutPolicy::headerMode($path));
             $this->assertSame('checkout', StorefrontLayoutPolicy::footerMode($path));
         }
@@ -56,6 +61,11 @@ final class StorefrontLayoutPolicyTest extends CIUnitTestCase
 
     public function testLocalizedPathsUseTheSameShellPolicy(): void
     {
+        foreach (['/en/shipping', '/id/shipping'] as $path) {
+            $this->assertSame('full', StorefrontLayoutPolicy::headerMode($path), $path);
+            $this->assertSame('checkout', StorefrontLayoutPolicy::footerMode($path), $path);
+        }
+
         foreach (['/en/cart', '/id/cart'] as $path) {
             $this->assertSame('full', StorefrontLayoutPolicy::headerMode($path), $path);
             $this->assertSame('checkout', StorefrontLayoutPolicy::footerMode($path), $path);

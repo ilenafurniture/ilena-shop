@@ -13,16 +13,19 @@
                 <h1><?= lang('Store.shippingServices'); ?></h1>
                 <p class="ilena-shipping-heading__description"><?= lang('Store.shippingDescription'); ?></p>
             </div>
-            <span class="ilena-shipping-heading__count"><?= !empty($shippingUnavailable) ? lang('Store.shippingNeedsReview') : count($kurir) . ' ' . lang('Store.servicesAvailable'); ?></span>
+            <?php if (empty($shippingUnavailable)): ?>
+            <span class="ilena-shipping-heading__count"><?= count($kurir); ?> <?= lang('Store.servicesAvailable'); ?></span>
+            <?php endif; ?>
         </header>
         <div class="container-kurir my-4">
             <?php if (!empty($shippingUnavailable)): ?>
             <section class="ilena-shipping-unavailable" role="status">
                 <span class="material-icons" aria-hidden="true">support_agent</span>
                 <h2><?= esc(lang('Store.shippingCoverageUnavailable')); ?></h2>
-                <p><?= service('request')->getLocale() === 'en'
+                <p><?= esc(service('request')->getLocale() === 'en'
                     ? 'The delivery cost for this address needs confirmation. No estimated fee has been added to your order.'
-                    : 'Ongkir untuk alamat ini perlu dikonfirmasi. Tidak ada biaya perkiraan yang ditambahkan ke pesanan kakak.'; ?></p>
+                    : 'Ongkir untuk alamat ini perlu dikonfirmasi. Tidak ada biaya perkiraan yang ditambahkan ke pesanan kakak.'); ?></p>
+                <p class="ilena-shipping-unavailable__hint"><?= esc(lang('Store.shippingQuoteWhatsAppHint')); ?></p>
                 <a class="btn-default-merah" href="<?= esc($shippingContactUrl, 'attr'); ?>" target="_blank" rel="noopener noreferrer"><?= esc(lang('Store.shippingContactSupport')); ?></a>
             </section>
             <?php else: ?>

@@ -39,4 +39,14 @@ final class ChatWhatsappLinkTest extends CIUnitTestCase
 
         $this->assertSame('Hello Ilena, I have a question: Is Cody available?', $params['text'] ?? null);
     }
+
+    public function testPrefilledMessagePreservesReadableOrderDetailsAndBoundsLength(): void
+    {
+        $message = "Halo Ilena, mohon cek ongkir.\nProduk: Cody | Varian: Oak | Berat: 18 kg\nTujuan: Semarang";
+        $url = ChatWhatsappLink::forPrefilledMessage($message);
+        parse_str((string) parse_url($url, PHP_URL_QUERY), $params);
+
+        $this->assertSame($message, $params['text'] ?? null);
+        $this->assertLessThanOrEqual(2400, mb_strlen((string) ($params['text'] ?? ''), 'UTF-8'));
+    }
 }

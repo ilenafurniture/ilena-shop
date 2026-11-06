@@ -18,4 +18,13 @@ final class ChatWhatsappLink
 
         return 'https://wa.me/' . self::PHONE . '?text=' . rawurlencode($message);
     }
+
+    /** Build a user-clicked handoff link with a prefilled, structured order message. */
+    public static function forPrefilledMessage(string $message): string
+    {
+        $message = (string) preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $message);
+        $message = trim(mb_substr($message, 0, 2400, 'UTF-8'));
+
+        return 'https://wa.me/' . self::PHONE . '?text=' . rawurlencode($message);
+    }
 }

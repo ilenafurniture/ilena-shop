@@ -386,6 +386,7 @@ return [
     'shippingDescription' => 'Pilih kurir yang paling sesuai dengan waktu dan biaya pengiriman Anda.',
     'shippingCoverageUnavailable' => 'Ongkir untuk alamat ini perlu dikonfirmasi oleh tim Ilena.',
     'shippingContactSupport' => 'Tanyakan ongkir ke CS',
+    'shippingQuoteWhatsAppHint' => 'Detail produk dan alamat tujuan akan disiapkan di WhatsApp. Periksa kembali sebelum mengirim.',
     'shippingNeedsReview' => 'Perlu konfirmasi tim',
     'shippingTotalPending' => 'Menunggu konfirmasi ongkir',
     'servicesAvailable' => 'layanan tersedia',

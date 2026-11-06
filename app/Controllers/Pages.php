@@ -1640,7 +1640,9 @@ class Pages extends BaseController
             'hargaKeseluruhan' => $hargaTotal + (int) ($kurir[0]['harga'] ?? 0),
             'kurir' => $kurir,
             'shippingUnavailable' => $shippingUnavailable,
-            'shippingContactUrl' => \App\Services\ChatWhatsappLink::forQuestion('', service('request')->getLocale()),
+            'shippingContactUrl' => \App\Services\ChatWhatsappLink::forPrefilledMessage(
+                $this->buildShippingQuoteMessage($keranjang, $alamatselected, (float) $hargaTotal, service('request')->getLocale())
+            ),
         ];
 
         $this->session->set(['alamatTerpilih' => $alamatselected]);
@@ -1731,6 +1733,88 @@ class Pages extends BaseController
         }
 
         return ['ok' => true, 'msg' => '', 'cart' => $cart, 'subtotal' => $subtotal, 'flashSale' => $flashSale];
+    }
+
+    private function buildShippingQuoteMessage(array $cart, array $address, float $subtotal, string $locale): string
+    {
+        $english = strtolower($locale) === 'en';
+        $lines = [$english
+            ? 'Hello Ilena, please confirm the shipping cost for this order:'
+            : 'Halo Ilena, mohon bantu konfirmasi ongkir untuk pesanan ini:'];
+
+        $recipient = trim((string) ($address['nama_penerima'] ?? ''));
+        $phone = trim((string) ($address['nohp_penerima'] ?? ''));
+        if ($recipient !== '' || $phone !== '') {
+            $lines[] = ($english ? 'Recipient: ' : 'Penerima: ')
+                . $this->shippingMessageValue($recipient, 70)
+                . ($phone !== '' ? ' | ' . $this->shippingMessageValue($phone, 32) : '');
+        }
+
+        $destination = trim((string) ($address['alamat_lengkap'] ?? ''));
+        if ($destination === '') {
+            $destination = implode(', ', array_filter([
+                $address['alamat_tambahan'] ?? '', $address['desa'] ?? '', $address['kec'] ?? '',
+                $address['kab'] ?? '', $address['prov'] ?? '', $address['kodepos'] ?? '',
+            ], static fn ($value): bool => trim((string) $value) !== ''));
+        }
+        $lines[] = ($english ? 'Delivery address: ' : 'Alamat tujuan: ')
+            . $this->shippingMessageValue($destination, 260);
+        $lines[] = $english ? 'Order details:' : 'Rincian produk:';
+
+        foreach (array_values($cart) as $index => $item) {
+            $product = (array) ($item['detail'] ?? []);
+            $description = $product['deskripsi'] ?? [];
+            if (is_string($description)) {
+                $description = json_decode($description, true) ?: [];
+            }
+            $description = is_array($description) ? $description : [];
+            $package = (array) ($description['dimensi']['paket'] ?? []);
+            $actual = (array) ($description['dimensi']['asli'] ?? []);
+            $weight = (float) ($package['berat'] ?? 0);
+            if ($weight <= 0) $weight = (float) ($actual['berat'] ?? 0);
+            $quantity = max(1, (int) ($item['jumlah'] ?? 1));
+            $name = function_exists('ilena_product_display_name')
+                ? ilena_product_display_name($product, $locale)
+                : (string) ($product['nama'] ?? ($english ? 'Furniture' : 'Furnitur'));
+            $variant = function_exists('ilena_product_variant_display_name')
+                ? ilena_product_variant_display_name($product, (string) ($item['varian'] ?? ''), $locale)
+                : (string) ($item['varian'] ?? '');
+            $unitPrice = \App\Services\CatalogPricing::unitPrice($product);
+            $dimensions = array_filter([
+                (float) ($package['panjang'] ?? 0),
+                (float) ($package['lebar'] ?? 0),
+                (float) ($package['tinggi'] ?? 0),
+            ], static fn (float $value): bool => $value > 0);
+            $weightText = $weight > 0
+                ? rtrim(rtrim(number_format($weight, 2, ',', '.'), '0'), ',') . ' kg/unit ('
+                    . rtrim(rtrim(number_format($weight * $quantity, 2, ',', '.'), '0'), ',') . ' kg total)'
+                : ($english ? 'weight not listed' : 'berat belum tercatat');
+            $dimensionText = count($dimensions) === 3
+                ? ' | ' . ($english ? 'Package' : 'Kemasan') . ': '
+                    . implode(' × ', array_map(static fn (float $value): string => rtrim(rtrim(number_format($value, 1, ',', '.'), '0'), ','), $dimensions)) . ' cm'
+                : '';
+
+            $lines[] = ($index + 1) . '. ' . $this->shippingMessageValue($name, 72)
+                . ' | ' . ($english ? 'Variant: ' : 'Varian: ') . $this->shippingMessageValue($variant, 48)
+                . ' | ' . ($english ? 'Qty: ' : 'Jumlah: ') . $quantity
+                . ' | ' . ($english ? 'Weight: ' : 'Berat: ') . $weightText . $dimensionText
+                . ' | ' . ($english ? 'Line: ' : 'Nilai: ') . 'Rp ' . number_format($unitPrice * $quantity, 0, ',', '.');
+        }
+
+        $lines[] = ($english ? 'Items subtotal: Rp ' : 'Subtotal barang: Rp ')
+            . number_format($subtotal, 0, ',', '.');
+        $lines[] = $english
+            ? 'Please share the available service, final rate, and delivery estimate. I will review this message before sending.'
+            : 'Mohon informasikan layanan yang tersedia, ongkir final, dan estimasi pengiriman. Pesan ini bisa saya periksa sebelum dikirim.';
+
+        return implode("\n", $lines);
+    }
+
+    private function shippingMessageValue(string $value, int $limit): string
+    {
+        $value = trim((string) preg_replace('/[\r\n\t]+/u', ' ', $value));
+        $value = (string) preg_replace('/\s{2,}/u', ' ', $value);
+        return mb_substr($value, 0, $limit, 'UTF-8');
     }
 
     private function paymentFees(): array
