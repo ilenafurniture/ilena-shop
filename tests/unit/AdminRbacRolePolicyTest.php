@@ -16,6 +16,9 @@ final class AdminRbacRolePolicyTest extends CIUnitTestCase
         $this->assertSame('products', $rbac->routePermission('admin/changepic'));
         $this->assertSame('content', $rbac->routePermission('admin/menu-previews'));
         $this->assertSame('content', $rbac->routePermission('admin/menu-previews/save'));
+        $this->assertSame('shipping', $rbac->routePermission('admin/shipping-rates'));
+        $this->assertSame('shipping', $rbac->routePermission('admin/shipping-rates/import'));
+        $this->assertSame('shipping', $rbac->routePermission('admin/free-shipping'));
         $this->assertSame('orders_online',$rbac->routePermission('cancelorder/1'));
     }
 

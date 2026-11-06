@@ -33,6 +33,7 @@ $mobileMenuGroups = [
         ['show' => $can('mutasi'), 'label' => 'Mutasi Stok', 'icon' => 'swap_horiz', 'href' => '/admin/mutasi', 'active' => $isActivePrefix(['admin/mutasi', 'admin/mutasiconfirm', 'admin/labelbarang'])],
         ['show' => $can('vouchers'), 'label' => 'Voucher', 'icon' => 'confirmation_number', 'href' => '/admin/voucher', 'active' => $isActivePrefix(['admin/voucher']) || str_contains($lowerTitle, 'voucher')],
         ['show' => $can('shipping'), 'label' => 'Gratis Ongkir', 'icon' => 'local_shipping', 'href' => '/admin/free-shipping', 'active' => $isActivePrefix(['admin/free-shipping'])],
+        ['show' => $can('shipping'), 'label' => 'Tarif Pengiriman APM', 'icon' => 'receipt_long', 'href' => '/admin/shipping-rates', 'active' => $isActivePrefix(['admin/shipping-rates'])],
     ],
     'Layanan pelanggan' => [
         ['show' => $can('support_chat'), 'label' => 'Live Chat', 'icon' => 'forum', 'href' => '/admin/support-chat', 'active' => $isActivePrefix(['admin/support-chat'])],

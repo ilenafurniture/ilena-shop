@@ -1623,9 +1623,11 @@ class Pages extends BaseController
         $kurir = $shippingService->rates($alamatselected, $keranjang);
         $kurir = (new FreeShippingService())->applyToRates($alamatselected, $kurir, (float)$hargaTotal);
 
-        if (empty($kurir)) {
-            session()->setFlashdata('msg', 'Pilihan kurir belum tersedia untuk alamat ini. Silakan cek alamat atau hubungi admin.');
-            return redirect()->to(ilena_store_path('/address'));
+        $shippingUnavailable = empty($kurir);
+        if ($shippingUnavailable) {
+            // Remove an earlier selection so an unsupported destination cannot
+            // accidentally continue with a stale session rate.
+            $this->session->remove(['kurir', 'kurirTerpilih']);
         }
 
         $data = [
@@ -1635,12 +1637,16 @@ class Pages extends BaseController
             'alamat' => $alamat[$ind_add],
             'keranjang' => $keranjang,
             'hargaTotal' => $hargaTotal,
-            'hargaKeseluruhan' => $hargaTotal + $kurir[0]['harga'],
+            'hargaKeseluruhan' => $hargaTotal + (int) ($kurir[0]['harga'] ?? 0),
             'kurir' => $kurir,
+            'shippingUnavailable' => $shippingUnavailable,
+            'shippingContactUrl' => \App\Services\ChatWhatsappLink::forQuestion('', service('request')->getLocale()),
         ];
 
-        $this->session->set(['kurir' => $kurir]);
         $this->session->set(['alamatTerpilih' => $alamatselected]);
+        if (!$shippingUnavailable) {
+            $this->session->set(['kurir' => $kurir]);
+        }
         return view('pages/shipping', $data);
     }
 

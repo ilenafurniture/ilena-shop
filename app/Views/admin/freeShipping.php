@@ -164,7 +164,10 @@ $javaBaliNames = [
                 Atur wilayah yang mendapat ongkir Rp 0 saat customer memilih kurir checkout.
             </p>
         </div>
-        <a href="/admin/product" class="btn btn-light border">Kembali</a>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="/admin/shipping-rates" class="btn btn-light border">Kelola Tarif APM</a>
+            <a href="/admin/product" class="btn btn-light border">Kembali</a>
+        </div>
     </div>
 
     <?php if (!empty($error)): ?>

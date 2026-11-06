@@ -103,6 +103,7 @@ class AdminRbacService
             'admin/seo-check' => 'products',
             'admin/surat-koreksi' => 'orders_offline',
             'admin/free-shipping' => 'shipping',
+            'admin/shipping-rates' => 'shipping',
             'admin/meta-capi' => 'meta_capi',
             'admin/activity-log' => 'activity_log',
             'admin/spam-cleanup' => 'spam_cleanup',

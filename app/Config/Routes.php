@@ -213,6 +213,11 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
     // Gratis ongkir per wilayah
     $routes->get('free-shipping', 'AdminController::freeShipping');
     $routes->post('free-shipping', 'AdminController::actionFreeShipping');
+    $routes->get('shipping-rates', 'AdminController::shippingRates');
+    $routes->get('shipping-rates/template', 'AdminController::shippingRatesTemplate');
+    $routes->get('shipping-rates/export', 'AdminController::shippingRatesExport');
+    $routes->post('shipping-rates/import', 'AdminController::importShippingRates');
+    $routes->post('shipping-rates/restore', 'AdminController::restorePreviousShippingRates');
     $routes->get('meta-capi', 'AdminController::metaCapi');
     $routes->post('meta-capi', 'AdminController::actionMetaCapi');
     $routes->get('activity-log', 'AdminController::activityLog');

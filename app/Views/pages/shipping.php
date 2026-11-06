@@ -13,9 +13,19 @@
                 <h1><?= lang('Store.shippingServices'); ?></h1>
                 <p class="ilena-shipping-heading__description"><?= lang('Store.shippingDescription'); ?></p>
             </div>
-            <span class="ilena-shipping-heading__count"><?= count($kurir); ?> <?= lang('Store.servicesAvailable'); ?></span>
+            <span class="ilena-shipping-heading__count"><?= !empty($shippingUnavailable) ? lang('Store.shippingNeedsReview') : count($kurir) . ' ' . lang('Store.servicesAvailable'); ?></span>
         </header>
         <div class="container-kurir my-4">
+            <?php if (!empty($shippingUnavailable)): ?>
+            <section class="ilena-shipping-unavailable" role="status">
+                <span class="material-icons" aria-hidden="true">support_agent</span>
+                <h2><?= esc(lang('Store.shippingCoverageUnavailable')); ?></h2>
+                <p><?= service('request')->getLocale() === 'en'
+                    ? 'The delivery cost for this address needs confirmation. No estimated fee has been added to your order.'
+                    : 'Ongkir untuk alamat ini perlu dikonfirmasi. Tidak ada biaya perkiraan yang ditambahkan ke pesanan kakak.'; ?></p>
+                <a class="btn-default-merah" href="<?= esc($shippingContactUrl, 'attr'); ?>" target="_blank" rel="noopener noreferrer"><?= esc(lang('Store.shippingContactSupport')); ?></a>
+            </section>
+            <?php else: ?>
             <?php foreach ($kurir as $index_k => $k) { ?>
             <input type="radio" name="kurir" id="kurir<?= $index_k ?>" value="<?= $k['harga']?>"
                 <?= $index_k <= 0 ? 'checked' : '' ?>>
@@ -46,6 +56,7 @@
                 </div>
             </label>
             <?php } ?>
+            <?php endif; ?>
         </div>
     </div>
     <div class="tigapuluh-ke-seratus">
@@ -64,7 +75,7 @@
                     <?= lang('Store.shippingCost'); ?>
                 </p>
                 <p id="harga-ongkir" class="fw-bold m-0">
-                    <?= !empty($kurir[0]['gratis_ongkir']) ? lang('Store.free') : 'Rp ' . number_format($kurir[0]['harga'], 0, ',', '.'); ?>
+                    <?= !empty($shippingUnavailable) ? (service('request')->getLocale() === 'en' ? 'To be confirmed' : 'Perlu konfirmasi') : (!empty($kurir[0]['gratis_ongkir']) ? lang('Store.free') : 'Rp ' . number_format($kurir[0]['harga'], 0, ',', '.')); ?>
                 </p>
             </div>
             <div class="d-flex justify-content-between py-1">
@@ -84,11 +95,11 @@
                     <?= lang('Store.total'); ?>
                 </p>
                 <p class="fw-bold m-0" id="harga-keseluruhan">
-                    Rp <?= number_format($hargaKeseluruhan, 0, ',', '.'); ?>
+                    <?= !empty($shippingUnavailable) ? esc(lang('Store.shippingTotalPending')) : 'Rp ' . number_format($hargaKeseluruhan, 0, ',', '.'); ?>
                 </p>
             </div>
-            <a id="btn-payment" <?= count($alamat) > 0 ? 'href="' . esc(ilena_store_path('/payment/0'), 'attr') . '"' : '' ?>
-                class="btn-default-merah <?= count($alamat) > 0 ? '' : 'disabled' ?> w-100 mt-4 text-center"><?= lang('Store.addressDetails'); ?></a>
+            <a id="btn-payment" <?= count($alamat) > 0 && empty($shippingUnavailable) ? 'href="' . esc(ilena_store_path('/payment/0'), 'attr') . '"' : '' ?>
+                class="btn-default-merah <?= count($alamat) > 0 && empty($shippingUnavailable) ? '' : 'disabled' ?> w-100 mt-4 text-center"><?= lang('Store.addressDetails'); ?></a>
         </div>
     </div>
 </div>
@@ -109,6 +120,13 @@ radioKurirElm.forEach((element, ind) => {
     })
 });
 </script>
+
+<style>
+.ilena-shipping-unavailable{max-width:620px;padding:28px 22px;text-align:center;border:1px solid #e8e3df;background:#fffdfb;border-radius:14px}
+.ilena-shipping-unavailable>.material-icons{font-size:34px;color:#8d2e32}
+.ilena-shipping-unavailable h2{font-size:19px;font-weight:700;margin:12px 0 8px}
+.ilena-shipping-unavailable p{color:#646a70;line-height:1.6;margin:0 0 18px}
+</style>
 
 
 <?= $this->endSection(); ?>

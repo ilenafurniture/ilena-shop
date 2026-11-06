@@ -32,6 +32,7 @@ use App\Models\ProjectInteriorItemModel;
 use App\Models\PartnerModel;
 use App\Services\AuditLogService;
 use App\Services\FreeShippingService;
+use App\Services\ApmShippingRateService;
 use App\Services\MetaCapiSettingsService;
 use App\Services\AdminRbacService;
 use App\Services\SpamAccountCleanupService;
@@ -4336,6 +4337,57 @@ private function interiorShippedQtyMap(string $idPesanan): array
             'msg' => session()->getFlashdata('msg'),
             'error' => session()->getFlashdata('error'),
         ]);
+    }
+
+    public function shippingRates()
+    {
+        return view('admin/shippingRates', [
+            'title' => 'Tarif Pengiriman APM',
+            'summary' => (new ApmShippingRateService())->summary(),
+            'msg' => session()->getFlashdata('msg'),
+            'error' => session()->getFlashdata('error'),
+        ]);
+    }
+
+    public function shippingRatesTemplate()
+    {
+        return $this->response
+            ->setHeader('Content-Type', 'text/csv; charset=UTF-8')
+            ->setHeader('Content-Disposition', 'attachment; filename="template-tarif-apm.csv"')
+            ->setBody((new ApmShippingRateService())->csvTemplate());
+    }
+
+    public function shippingRatesExport()
+    {
+        return $this->response
+            ->setHeader('Content-Type', 'text/csv; charset=UTF-8')
+            ->setHeader('Content-Disposition', 'attachment; filename="tarif-apm-aktif.csv"')
+            ->setBody((new ApmShippingRateService())->csvExport());
+    }
+
+    public function importShippingRates()
+    {
+        $file = $this->request->getFile('rates_file');
+        if (!$file || !$file->isValid() || $file->hasMoved() || $file->getSize() > 1_000_000
+            || strtolower($file->getExtension()) !== 'csv'
+        ) {
+            return redirect()->back()->with('error', 'Pilih file CSV valid maksimal 1 MB. Tarif yang sedang digunakan tetap tidak berubah.');
+        }
+
+        $result = (new ApmShippingRateService())->importCsv($file->getTempName());
+        if (empty($result['ok'])) {
+            return redirect()->back()->with('error', (string) ($result['message'] ?? 'Impor gagal. Tarif lama tetap digunakan.'));
+        }
+
+        return redirect()->to('/admin/shipping-rates')->with('msg', 'Tarif APM berhasil diperbarui (' . (int) $result['rows'] . ' tujuan). Tarif Gratis Ongkir tetap mengikuti pengaturan admin yang sudah ada.');
+    }
+
+    public function restorePreviousShippingRates()
+    {
+        if (!(new ApmShippingRateService())->restorePrevious()) {
+            return redirect()->to('/admin/shipping-rates')->with('error', 'Versi tarif sebelumnya tidak tersedia atau tidak valid. Tarif aktif tidak berubah.');
+        }
+        return redirect()->to('/admin/shipping-rates')->with('msg', 'Versi tarif sebelumnya berhasil dipulihkan.');
     }
 
     public function actionFreeShipping()
