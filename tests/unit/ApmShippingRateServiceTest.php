@@ -69,6 +69,22 @@ final class ApmShippingRateServiceTest extends CIUnitTestCase
         $this->assertSame(360000, $rates[0]['harga']);
     }
 
+    public function testDestinationSuggestionsAreMatchedDeduplicatedAndBounded(): void
+    {
+        $service = new ApmShippingRateService($this->defaultPath, $this->overridePath);
+
+        $this->assertSame([], $service->destinationSuggestions('B'));
+        $suggestions = $service->destinationSuggestions('gian', 1);
+
+        $this->assertCount(1, $suggestions);
+        $this->assertSame('Gianyar', $suggestions[0]['destination']);
+        $this->assertSame('MADURA', $suggestions[0]['province']);
+        $this->assertSame('Gianyar — MADURA', $suggestions[0]['label']);
+        $all = $service->destinationSuggestions('gianyar', 12);
+        $this->assertCount(2, $all);
+        $this->assertSame(['MADURA', 'BALI'], array_column($all, 'province'));
+    }
+
     public function testAmbiguousOrFlaggedDestinationReturnsNoQuoteForCsHandoff(): void
     {
         $service = new ApmShippingRateService($this->defaultPath, $this->overridePath);

@@ -92,6 +92,58 @@ final class ApmShippingRateService
         ]];
     }
 
+    /** @return list<array{destination:string,province:string,label:string}> */
+    public function destinationSuggestions(string $query, int $limit = 8): array
+    {
+        $query = self::normalizePlace($query);
+        if (mb_strlen($query, 'UTF-8') < 2) {
+            return [];
+        }
+
+        $limit = max(1, min(12, $limit));
+        $matches = [];
+        $destinationCounts = [];
+        foreach ($this->loadRates() as $row) {
+            $destination = trim((string) ($row['destination'] ?? ''));
+            if ($destination === '' || !str_contains(self::normalizePlace($destination), $query)) {
+                continue;
+            }
+            $matches[] = $row;
+            $destinationKey = self::normalizePlace($destination);
+            $destinationCounts[$destinationKey] = ($destinationCounts[$destinationKey] ?? 0) + 1;
+        }
+
+        $suggestions = [];
+        foreach ($matches as $row) {
+            $destination = trim((string) $row['destination']);
+            $area = trim((string) ($row['area'] ?? ''));
+            $regional = trim((string) ($row['regional'] ?? ''));
+            $destinationKey = self::normalizePlace($destination);
+            $province = $area !== '' ? $area : $regional;
+            $key = self::normalizePlace($destination) . '|' . self::normalizePlace($province);
+            if (isset($suggestions[$key])) {
+                continue;
+            }
+            $label = $destination;
+            if (($destinationCounts[$destinationKey] ?? 0) > 1) {
+                $disambiguator = $area !== '' && self::normalizePlace($area) !== $destinationKey ? $area : $regional;
+                if ($disambiguator !== '') {
+                    $label .= ' — ' . $disambiguator;
+                }
+            }
+            $suggestions[$key] = [
+                'destination' => $destination,
+                'province' => $province,
+                'label' => $label,
+            ];
+            if (count($suggestions) >= $limit) {
+                break;
+            }
+        }
+
+        return array_values($suggestions);
+    }
+
     /** @return array{rows:int,updated_at:?string,source:string} */
     public function summary(): array
     {

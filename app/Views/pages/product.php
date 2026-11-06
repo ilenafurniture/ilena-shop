@@ -405,6 +405,35 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
 
                 </div>
                 <?php } ?>
+                <?php if (session()->get('role') != '1') { ?>
+                <section class="ilena-product-shipping-estimate" data-product-shipping-estimator
+                    data-product-id="<?= esc((string) $produk['id'], 'attr'); ?>"
+                    data-destinations-url="<?= esc(ilena_store_path('/shipping/destinations'), 'attr'); ?>"
+                    data-estimate-url="<?= esc(ilena_store_path('/shipping/estimate'), 'attr'); ?>"
+                    data-locale="<?= $isEnglish ? 'en' : 'id'; ?>">
+                    <div class="ilena-product-shipping-estimate__heading">
+                        <span aria-hidden="true">↗</span>
+                        <div>
+                            <h2><?= esc(lang('Store.productShippingEstimateTitle')); ?></h2>
+                            <p><?= esc(lang('Store.productShippingEstimateHint')); ?></p>
+                        </div>
+                    </div>
+                    <label for="product-shipping-destination"><?= esc(lang('Store.productShippingDestination')); ?></label>
+                    <div class="ilena-product-shipping-estimate__controls">
+                        <div class="ilena-product-shipping-estimate__lookup">
+                            <input id="product-shipping-destination" type="search" autocomplete="off" role="combobox"
+                                aria-autocomplete="list" aria-expanded="false" aria-controls="product-shipping-destinations"
+                                placeholder="<?= esc(lang('Store.productShippingDestinationPlaceholder'), 'attr'); ?>">
+                            <input type="hidden" data-shipping-destination>
+                            <input type="hidden" data-shipping-province>
+                            <ul id="product-shipping-destinations" class="ilena-product-shipping-estimate__suggestions" role="listbox" hidden></ul>
+                        </div>
+                        <button type="button" data-shipping-estimate-button><?= esc(lang('Store.productShippingEstimateButton')); ?></button>
+                    </div>
+                    <p class="ilena-product-shipping-estimate__status" data-shipping-estimate-status role="status" aria-live="polite"></p>
+                    <p class="ilena-product-shipping-estimate__fineprint"><?= esc(lang('Store.productShippingEstimateDisclaimer')); ?></p>
+                </section>
+                <?php } ?>
                 <p id="info-habis" class="ilena-preorder-note mt-2 <?= $defaultVariant['stok'] <= 0 ? '' : 'd-none'; ?>" role="status" aria-live="polite">
                     <?= esc(lang('Store.preorderLead')); ?>
                     <a href="https://wa.me/+628112938158" class="btn-teks-aja" style="display: inline;"><?= esc(lang('Store.customerService')); ?></a>.
@@ -1242,5 +1271,8 @@ document.querySelectorAll('[data-feedback-type]').forEach((selector) => {
     syncReviewFields();
 });
 </script>
+
+<?php $shippingEstimatorScript = FCPATH . 'js/product-shipping-estimator.js'; ?>
+<script defer src="<?= esc(base_url('js/product-shipping-estimator.js') . (is_file($shippingEstimatorScript) ? '?v=' . filemtime($shippingEstimatorScript) : ''), 'attr'); ?>"></script>
 
 <?= $this->endSection(); ?>

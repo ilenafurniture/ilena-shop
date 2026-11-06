@@ -35,6 +35,8 @@ $routes->get('/product/(:any)/(:any)', 'Pages::product/$1/$2', ['filter' => 'cus
 
 $routes->post('/actionfind', 'Pages::actionFind', ['filter' => 'customerFilter']);
 $routes->get('/search/suggest', 'Pages::searchSuggestions', ['filter' => 'customerFilter']);
+$routes->get('/shipping/destinations', 'Pages::shippingDestinations', ['filter' => 'customerFilter']);
+$routes->get('/shipping/estimate', 'Pages::shippingEstimate', ['filter' => 'customerFilter']);
 $routes->get('/find', 'Pages::findSmart', ['filter' => 'customerFilter']);
 $routes->get('/find/(:any)', 'Pages::find/$1', ['filter' => 'customerFilter']);
 
@@ -311,6 +313,8 @@ $routes->group('{locale}', ['filter' => 'customerFilter'], static function ($rou
     $routes->get('find', 'Pages::findSmart');
     $routes->get('find/(:any)', 'Pages::find/$1');
     $routes->get('search/suggest', 'Pages::searchSuggestions');
+    $routes->get('shipping/destinations', 'Pages::shippingDestinations');
+    $routes->get('shipping/estimate', 'Pages::shippingEstimate');
     $routes->post('actionfind', 'Pages::actionFind');
     $routes->get('cart', 'Pages::cart');
     $routes->get('cart/summary', 'Pages::cartSummary');

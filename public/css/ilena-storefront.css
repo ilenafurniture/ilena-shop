@@ -11212,3 +11212,38 @@ body.ilena-storefront .ilena-chat-topic-divider span {
     body.ilena-storefront.ilena-page--account #editModal .modal-footer,
     body.ilena-storefront.ilena-page--account #exampleModal .modal-footer { padding-inline: 14px; }
 }
+body.ilena-storefront .ilena-product-shipping-estimate {
+    position: relative;
+    margin: 22px 0 18px;
+    padding: 16px 0 14px;
+    border-top: 1px solid #e9e4de;
+    border-bottom: 1px solid #e9e4de;
+    color: #302c28;
+}
+body.ilena-storefront .ilena-product-shipping-estimate__heading { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 13px; }
+body.ilena-storefront .ilena-product-shipping-estimate__heading > span { color: #9d302b; font-size: 19px; line-height: 1.1; }
+body.ilena-storefront .ilena-product-shipping-estimate__heading h2 { margin: 0 0 3px; font-size: 14px; font-weight: 700; letter-spacing: .01em; }
+body.ilena-storefront .ilena-product-shipping-estimate__heading p,
+body.ilena-storefront .ilena-product-shipping-estimate__fineprint { margin: 0; color: #716a63; font-size: 11px; line-height: 1.5; }
+body.ilena-storefront .ilena-product-shipping-estimate > label { display: block; margin-bottom: 6px; font-size: 11px; font-weight: 650; }
+body.ilena-storefront .ilena-product-shipping-estimate__controls { display: flex; align-items: stretch; gap: 8px; }
+body.ilena-storefront .ilena-product-shipping-estimate__lookup { position: relative; flex: 1; min-width: 0; }
+body.ilena-storefront .ilena-product-shipping-estimate__lookup > input[type="search"] { width: 100%; min-height: 42px; padding: 9px 12px; border: 1px solid #d8d0c8; border-radius: 5px; background: #fff; color: #302c28; font: inherit; font-size: 12px; }
+body.ilena-storefront .ilena-product-shipping-estimate__lookup > input:focus-visible { outline: 2px solid #9d302b; outline-offset: 2px; }
+body.ilena-storefront .ilena-product-shipping-estimate__controls > button { min-height: 42px; padding: 8px 13px; border: 1px solid #302c28; border-radius: 5px; background: #302c28; color: #fff; font: inherit; font-size: 11px; font-weight: 650; white-space: nowrap; }
+body.ilena-storefront .ilena-product-shipping-estimate__controls > button:hover:not(:disabled) { border-color: #9d302b; background: #9d302b; }
+body.ilena-storefront .ilena-product-shipping-estimate__controls > button:disabled { cursor: wait; opacity: .62; }
+body.ilena-storefront .ilena-product-shipping-estimate__suggestions { position: absolute; z-index: 12; top: calc(100% + 4px); right: 0; left: 0; max-height: 220px; margin: 0; padding: 4px; overflow: auto; border: 1px solid #ded8d1; border-radius: 5px; background: #fff; box-shadow: 0 10px 26px rgb(36 30 25 / 12%); list-style: none; }
+body.ilena-storefront .ilena-product-shipping-estimate__suggestions[hidden] { display: none; }
+body.ilena-storefront .ilena-product-shipping-estimate__suggestions button { width: 100%; padding: 9px 10px; border: 0; border-radius: 3px; background: transparent; color: #302c28; text-align: left; font: inherit; font-size: 12px; }
+body.ilena-storefront .ilena-product-shipping-estimate__suggestions button:hover,
+body.ilena-storefront .ilena-product-shipping-estimate__suggestions button:focus-visible { background: #f5f1ec; outline: 0; }
+body.ilena-storefront .ilena-product-shipping-estimate__status { margin: 10px 0 0; color: #514840; font-size: 12px; line-height: 1.55; }
+body.ilena-storefront .ilena-product-shipping-estimate__status:empty { display: none; }
+body.ilena-storefront .ilena-product-shipping-estimate__status strong { color: #9d302b; font-size: 15px; }
+body.ilena-storefront .ilena-product-shipping-estimate__fineprint { margin-top: 9px; font-size: 10px; }
+@media (max-width: 420px) {
+    body.ilena-storefront .ilena-product-shipping-estimate__controls { flex-wrap: wrap; }
+    body.ilena-storefront .ilena-product-shipping-estimate__lookup,
+    body.ilena-storefront .ilena-product-shipping-estimate__controls > button { flex: 1 1 100%; }
+}

@@ -903,6 +903,90 @@ class Pages extends BaseController
 
     // END BAGIAN VOUCHER
 
+    public function shippingDestinations()
+    {
+        $rawQuery = $this->request->getGet('q');
+        if ($rawQuery !== null && !is_string($rawQuery)) {
+            return $this->response->setStatusCode(400)->setJSON(['results' => []]);
+        }
+        $query = trim((string) $rawQuery);
+        if (mb_strlen($query, 'UTF-8') > 60) {
+            return $this->response->setStatusCode(400)->setJSON(['results' => []]);
+        }
+        $results = (new \App\Services\ApmShippingRateService())->destinationSuggestions($query, 8);
+        return $this->response
+            ->setHeader('Cache-Control', 'public, max-age=300, s-maxage=300')
+            ->setJSON(['results' => $results]);
+    }
+
+    public function shippingEstimate()
+    {
+        $raw = [];
+        foreach (['product_id', 'variant', 'destination', 'province', 'qty'] as $key) {
+            $raw[$key] = $this->request->getGet($key);
+            if (!is_string($raw[$key])) {
+                return $this->response->setStatusCode(400)->setJSON(['ok' => false, 'code' => 'invalid_request', 'message' => lang('Store.shippingEstimateInvalid')]);
+            }
+        }
+        $id = trim($raw['product_id']);
+        $variantName = trim($raw['variant']);
+        $destination = trim($raw['destination']);
+        $province = trim($raw['province']);
+        $quantity = filter_var($raw['qty'], FILTER_VALIDATE_INT);
+
+        if ($id === '' || !ctype_digit($id) || $variantName === '' || mb_strlen($variantName, 'UTF-8') > 100
+            || $destination === '' || mb_strlen($destination, 'UTF-8') > 120
+            || $province === '' || mb_strlen($province, 'UTF-8') > 160
+            || $quantity === false || $quantity < 1 || $quantity > 100
+        ) {
+            return $this->response->setStatusCode(400)->setJSON(['ok' => false, 'code' => 'invalid_request', 'message' => lang('Store.shippingEstimateInvalid')]);
+        }
+
+        $product = $this->barangModel->getBarang($id);
+        if (!is_array($product)) {
+            return $this->response->setStatusCode(404)->setJSON(['ok' => false, 'code' => 'unavailable', 'message' => lang('Store.shippingEstimateUnavailable')]);
+        }
+
+        $variants = json_decode((string) ($product['varian'] ?? '[]'), true);
+        $selected = null;
+        foreach (is_array($variants) ? $variants : [] as $variant) {
+            if (!is_array($variant)) {
+                continue;
+            }
+            $candidateName = trim((string) ($variant['nama'] ?? ''));
+            if ($candidateName !== '' && hash_equals(mb_strtolower($candidateName, 'UTF-8'), mb_strtolower($variantName, 'UTF-8'))) {
+                $selected = $variant;
+                break;
+            }
+        }
+        if ($selected === null || (int) ($selected['stok'] ?? 0) < $quantity) {
+            return $this->response->setStatusCode(422)->setJSON(['ok' => false, 'code' => 'stock_changed', 'message' => lang('Store.shippingEstimateStockChanged')]);
+        }
+
+        $rates = (new ShippingService())->rates(
+            ['kab' => $destination, 'prov' => $province],
+            [['jumlah' => $quantity, 'varian' => $variantName, 'detail' => $product]],
+        );
+        if ($rates === []) {
+            return $this->response->setStatusCode(422)->setJSON(['ok' => false, 'code' => 'unavailable', 'message' => lang('Store.shippingEstimateUnavailable')]);
+        }
+
+        $rate = $rates[0];
+        return $this->response
+            ->setHeader('Cache-Control', 'private, no-store, max-age=0')
+            ->setJSON([
+                'ok' => true,
+                'provider' => 'APM',
+                'destination' => $destination,
+                'price' => (int) $rate['harga'],
+                'currency' => 'IDR',
+                'delivery_days' => (string) ($rate['estimasi'] ?? ''),
+                'billable_weight_kg' => (float) $rate['billable_weight_kg'],
+                'minimum_weight_kg' => (int) $rate['minimum_weight_kg'],
+                'rate_per_kg' => (int) $rate['rate_per_kg'],
+            ]);
+    }
+
     public function product($nama = false, $ind_nama = false)
     {
         $wishlist = $this->session->get('wishlist');
