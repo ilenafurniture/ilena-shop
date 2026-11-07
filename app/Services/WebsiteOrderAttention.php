@@ -20,7 +20,6 @@ final class WebsiteOrderAttention
             ->select("SUM(CASE WHEN status = 'Proses' THEN 1 ELSE 0 END) AS processing", false)
             ->select("SUM(CASE WHEN status = 'Dikirim' AND ({$missingTimestamp}) THEN 1 ELSE 0 END) AS legacy_shipment_date", false)
             ->whereNotIn('email', $excludedEmails)
-            ->like('id_midtrans', 'IL', 'after')
             ->get()->getRowArray() ?? [];
 
         $manualPaymentConfirmation = (int) ($row['manual_payment_confirmation'] ?? 0);
