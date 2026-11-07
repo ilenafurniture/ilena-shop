@@ -4662,7 +4662,30 @@ private function interiorShippedQtyMap(string $idPesanan): array
     {
         $page = max(1, (int)$this->request->getGet('page'));
         $search = trim((string)$this->request->getGet('q'));
-        $builder = db_connect()->table('user u')
+        $db = db_connect();
+        $userColumns = array_map('strtolower', $db->getFieldNames('user'));
+        $recentColumn = in_array('created_at', $userColumns, true) ? 'created_at' : (in_array('id', $userColumns, true) ? 'id' : null);
+        $recentSortAvailable = $recentColumn !== null;
+        $hasSuspensionColumn = in_array('suspended_until', $userColumns, true);
+        $sortOptions = [
+            'name_asc' => 'Nama A–Z',
+            'name_desc' => 'Nama Z–A',
+            'email_asc' => 'Email A–Z',
+            'email_desc' => 'Email Z–A',
+        ];
+        if ($recentSortAvailable) {
+            $sortOptions = ['recent' => 'Pendaftaran terbaru', 'oldest' => 'Pendaftaran terlama'] + $sortOptions;
+        }
+        $sort = strtolower(trim((string)$this->request->getGet('sort')));
+        if (!isset($sortOptions[$sort])) $sort = $recentSortAvailable ? 'recent' : 'name_asc';
+        $statusOptions = ['all' => 'Semua status', 'active' => 'Sudah verifikasi', 'unverified' => 'Belum verifikasi'];
+        if ($hasSuspensionColumn) $statusOptions['suspended'] = 'Ditangguhkan';
+        $status = strtolower(trim((string)$this->request->getGet('status')));
+        if (!isset($statusOptions[$status])) $status = 'all';
+        $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        $nowSql = $now->format('Y-m-d H:i:s');
+
+        $builder = $db->table('user u')
             ->select('u.email, u.role, u.active, u.suspended_until, u.suspension_reason, p.nama')
             ->join('pembeli p', 'p.email = u.email', 'left')
             ->whereIn('u.role', ['0', '4']);
@@ -4672,11 +4695,39 @@ private function interiorShippedQtyMap(string $idPesanan): array
                 ->orLike('p.nama', $search)
                 ->groupEnd();
         }
+        if ($status === 'active') {
+            $builder->where('u.active', '1');
+            if ($hasSuspensionColumn) {
+                $builder->groupStart()
+                    ->where('u.suspended_until IS NULL', null, false)
+                    ->orWhere('u.suspended_until <=', $nowSql)
+                    ->groupEnd();
+            }
+        } elseif ($status === 'unverified') {
+            $builder->groupStart()
+                ->where('u.active !=', '1')
+                ->orWhere('u.active', null)
+                ->groupEnd();
+        } elseif ($status === 'suspended' && $hasSuspensionColumn) {
+            $builder->where('u.suspended_until >', $nowSql);
+        }
         $total = (clone $builder)->countAllResults();
         $pages = max(1, (int) ceil($total / 50));
         $page = min($page, $pages);
-        $rows = $builder->orderBy('u.email', 'ASC')->get(50, ($page - 1) * 50)->getResultArray();
-        $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        if ($sort === 'recent' && $recentColumn !== null) {
+            $builder->orderBy('u.' . $recentColumn, 'DESC')->orderBy('u.email', 'ASC');
+        } elseif ($sort === 'oldest' && $recentColumn !== null) {
+            $builder->orderBy('u.' . $recentColumn, 'ASC')->orderBy('u.email', 'ASC');
+        } elseif ($sort === 'name_desc') {
+            $builder->orderBy('p.nama', 'DESC')->orderBy('u.email', 'ASC');
+        } elseif ($sort === 'email_asc') {
+            $builder->orderBy('u.email', 'ASC');
+        } elseif ($sort === 'email_desc') {
+            $builder->orderBy('u.email', 'DESC');
+        } else {
+            $builder->orderBy('p.nama', 'ASC')->orderBy('u.email', 'ASC');
+        }
+        $rows = $builder->get(50, ($page - 1) * 50)->getResultArray();
         foreach ($rows as &$row) {
             $row['suspension'] = null;
             if (!empty($row['suspended_until'])) {
@@ -4699,6 +4750,11 @@ private function interiorShippedQtyMap(string $idPesanan): array
             'title' => 'Akun Pelanggan',
             'customers' => $rows,
             'search' => $search,
+            'sort' => $sort,
+            'sortOptions' => $sortOptions,
+            'status' => $status,
+            'statusOptions' => $statusOptions,
+            'recentSortAvailable' => $recentSortAvailable,
             'page' => $page,
             'pages' => $pages,
             'total' => $total,

@@ -6,11 +6,31 @@
             <h1>Akun Pelanggan</h1>
             <p><?= number_format((int) ($total ?? count($customers)), 0, ',', '.'); ?> akun · 50 baris per halaman</p>
         </div>
-        <form method="get" action="/admin/customers" class="admin-records-search">
-            <label class="visually-hidden" for="customer-search">Cari nama atau email</label>
-            <input id="customer-search" class="form-control" type="search" name="q" value="<?= esc($search); ?>" placeholder="Cari nama atau email…">
-            <button class="btn btn-primary" type="submit">Cari</button>
-            <?php if ($search !== ''): ?><a class="btn btn-outline-secondary" href="/admin/customers">Hapus filter</a><?php endif; ?>
+        <form method="get" action="/admin/customers" class="admin-customer-filters">
+            <div class="admin-customer-filter-search">
+                <label class="visually-hidden" for="customer-search">Cari nama atau email</label>
+                <input id="customer-search" class="form-control" type="search" name="q" value="<?= esc($search); ?>" placeholder="Cari nama atau email…">
+            </div>
+            <div>
+                <label class="visually-hidden" for="customer-status">Filter status akun</label>
+                <select id="customer-status" class="form-select" name="status">
+                    <?php foreach ($statusOptions as $value => $label): ?>
+                        <option value="<?= esc($value, 'attr'); ?>" <?= $status === $value ? 'selected' : ''; ?>><?= esc($label); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div>
+                <label class="visually-hidden" for="customer-sort">Urutkan pelanggan</label>
+                <select id="customer-sort" class="form-select" name="sort">
+                    <?php foreach ($sortOptions as $value => $label): ?>
+                        <option value="<?= esc($value, 'attr'); ?>" <?= $sort === $value ? 'selected' : ''; ?>><?= esc($label); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <button class="btn btn-primary" type="submit">Terapkan</button>
+            <?php if ($search !== '' || $status !== 'all' || $sort !== ($recentSortAvailable ? 'recent' : 'name_asc')): ?>
+                <a class="btn btn-outline-secondary" href="/admin/customers">Reset</a>
+            <?php endif; ?>
         </form>
     </header>
 
@@ -72,7 +92,7 @@
                     </td>
                 </tr>
             <?php endforeach; ?>
-            <?php if (!$customers): ?><tr><td colspan="4" class="admin-records-empty"><?= $search !== '' ? 'Tidak ada akun yang cocok. Coba kata kunci lain.' : 'Belum ada akun pelanggan.'; ?></td></tr><?php endif; ?>
+            <?php if (!$customers): ?><tr><td colspan="4" class="admin-records-empty"><?= $search !== '' || $status !== 'all' ? 'Tidak ada pelanggan yang cocok dengan pencarian atau filter ini.' : 'Belum ada akun pelanggan.'; ?></td></tr><?php endif; ?>
             </tbody>
         </table>
     </div>
@@ -80,7 +100,8 @@
     <?php
         $rangeStart = $total > 0 ? (($page - 1) * 50) + 1 : 0;
         $rangeEnd = min($page * 50, $total);
-        $query = ['q' => $search];
+        $query = ['sort' => $sort, 'status' => $status];
+        if ($search !== '') $query['q'] = $search;
     ?>
     <nav class="admin-records-pagination admin-customer-pagination" aria-label="Halaman pelanggan">
         <span class="admin-customer-range">Menampilkan <?= (int) $rangeStart; ?>–<?= (int) $rangeEnd; ?> dari <?= number_format((int) $total, 0, ',', '.'); ?> akun</span>

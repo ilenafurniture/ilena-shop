@@ -192,6 +192,11 @@
 .ilena-admin-redesign .admin-records-heading p { margin:8px 0 0; color:var(--ia-muted); font-size:13px; }
 .ilena-admin-redesign .admin-records-search { display:flex; gap:8px; width:min(100%,410px); }
 .ilena-admin-redesign .admin-records-search input { min-width:0; }
+.ilena-admin-redesign .admin-customer-filters { display:grid; grid-template-columns:minmax(180px,1fr) 165px 190px auto auto; align-items:center; gap:8px; width:min(100%,940px); }
+.ilena-admin-redesign .admin-customer-filters > div { min-width:0; }
+.ilena-admin-redesign .admin-customer-filters .form-control,
+.ilena-admin-redesign .admin-customer-filters .form-select { min-height:40px; border-color:var(--ia-line); border-radius:4px; background-color:#fff; color:var(--ia-ink); font-size:12px; }
+.ilena-admin-redesign .admin-customer-filters .btn { min-height:40px; white-space:nowrap; }
 .ilena-admin-redesign .admin-records-note { margin:0 0 17px; padding:10px 0 10px 12px; border-left:2px solid var(--ia-red); color:var(--ia-muted); font-size:12px; line-height:1.55; }
 .ilena-admin-redesign .admin-data-table-wrap { width:100%; overflow:auto; border:0; border-top:1px solid var(--ia-line); border-bottom:1px solid var(--ia-line); background:transparent; }
 .ilena-admin-redesign .admin-content-inner table.admin-data-table { width:100%; min-width:900px; margin:0; border-collapse:collapse; color:var(--ia-ink); font-size:12px; }
@@ -236,6 +241,9 @@
     .ilena-admin-redesign .admin-records-heading { align-items:stretch; flex-direction:column; gap:13px; }
     .ilena-admin-redesign .admin-records-heading > a { align-self:flex-start; }
     .ilena-admin-redesign .admin-records-search { width:100%; }
+    .ilena-admin-redesign .admin-customer-filters { grid-template-columns:minmax(0,1fr) minmax(0,1fr); width:100%; }
+    .ilena-admin-redesign .admin-customer-filter-search { grid-column:1 / -1; }
+    .ilena-admin-redesign .admin-customer-filters > .btn { width:100%; }
     .ilena-admin-redesign .admin-data-table-wrap { overflow:visible; border-top:0; }
     .ilena-admin-redesign .admin-content-inner table.admin-data-table { display:block; min-width:0; }
     .ilena-admin-redesign .admin-data-table thead { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
