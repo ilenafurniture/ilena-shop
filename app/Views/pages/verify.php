@@ -9,28 +9,42 @@
                 <?= esc(ilena_localize_notice((string) $val['msg'])); ?>
             </div>
         <?php } ?>
-        <p class="text-center"><?= esc(lang('Store.verifyEmailDescription')); ?></p>
-        <p class="text-center ilena-verify__destination"><?= esc(lang('Store.otpSentTo')); ?> <strong><?= esc($verificationEmail ?? ''); ?></strong></p>
-        <p class="text-center ilena-verify__hint"><?= esc(lang('Store.otpValidityHint')); ?></p>
-        <form action="<?= esc(ilena_store_path('/actionverify'), 'attr'); ?>" method="post">
-            <?= csrf_field(); ?>
-            <div class="form mb-1">
-                <label for="otp" class="form-label"><?= esc(lang('Store.otpCodeLabel')); ?></label>
-                <input id="otp" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" required autofocus aria-describedby="otp-error" class="text-center form-control ilena-verify__code <?= ($val['val_verify']) ? "is-invalid" : ""; ?>" name="otp" value="<?= esc(old('otp') ?? '', 'attr'); ?>">
-                <div class="invalid-feedback" id="otp-error">
-                    <?= esc($val['val_verify'] ?? ''); ?>
+        <?php if (!empty($verificationRecovery)): ?>
+            <p class="text-center"><?= esc(lang('Store.verificationRecoveryDescription')); ?></p>
+            <form action="<?= esc(ilena_store_path('/kirimotp'), 'attr'); ?>" method="post">
+                <?= csrf_field(); ?>
+                <div class="form mb-3">
+                    <label for="recovery-email" class="form-label"><?= esc(lang('Store.email')); ?></label>
+                    <input id="recovery-email" name="email" type="email" autocomplete="email" maxlength="191" required autofocus class="form-control" placeholder="<?= esc(lang('Store.enterEmail'), 'attr'); ?>" value="<?= esc($recoveryEmail ?? '', 'attr'); ?>">
                 </div>
-            </div>
-            <div class="d-flex justify-content-center mt-2">
-                <button class="btn-default-merah" type="submit"><?= lang('Store.verify'); ?></button>
-            </div>
-        </form>
-        <form action="<?= esc(ilena_store_path('/kirimotp'), 'attr'); ?>" method="post" class="mt-3 text-sm-center">
-            <?= csrf_field(); ?>
-            <span><?= esc(lang('Store.otpNotReceived')); ?></span>
-            <button type="submit" class="btn-teks-aja" style="display:inline; border:0; background:none;"><?= lang('Store.resendOtp'); ?></button>
-            <span id="otp-resend-countdown" data-seconds="<?= (int) ($otpResendRemaining ?? 0); ?>" aria-live="polite"></span>
-        </form>
+                <div class="d-flex justify-content-center">
+                    <button class="btn-default-merah" type="submit"><?= esc(lang('Store.requestVerificationCode')); ?></button>
+                </div>
+            </form>
+        <?php else: ?>
+            <p class="text-center"><?= esc(lang('Store.verifyEmailDescription')); ?></p>
+            <p class="text-center ilena-verify__destination"><?= esc(lang('Store.otpSentTo')); ?> <strong><?= esc($verificationEmail ?? ''); ?></strong></p>
+            <p class="text-center ilena-verify__hint"><?= esc(lang('Store.otpValidityHint')); ?></p>
+            <form action="<?= esc(ilena_store_path('/actionverify'), 'attr'); ?>" method="post">
+                <?= csrf_field(); ?>
+                <div class="form mb-1">
+                    <label for="otp" class="form-label"><?= esc(lang('Store.otpCodeLabel')); ?></label>
+                    <input id="otp" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" required autofocus aria-describedby="otp-error" class="text-center form-control ilena-verify__code <?= ($val['val_verify']) ? "is-invalid" : ""; ?>" name="otp" value="<?= esc(old('otp') ?? '', 'attr'); ?>">
+                    <div class="invalid-feedback" id="otp-error">
+                        <?= esc($val['val_verify'] ?? ''); ?>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center mt-2">
+                    <button class="btn-default-merah" type="submit"><?= lang('Store.verify'); ?></button>
+                </div>
+            </form>
+            <form action="<?= esc(ilena_store_path('/kirimotp'), 'attr'); ?>" method="post" class="mt-3 text-sm-center">
+                <?= csrf_field(); ?>
+                <span><?= esc(lang('Store.otpNotReceived')); ?></span>
+                <button type="submit" class="btn-teks-aja" style="display:inline; border:0; background:none;"><?= lang('Store.resendOtp'); ?></button>
+                <span id="otp-resend-countdown" data-seconds="<?= (int) ($otpResendRemaining ?? 0); ?>" aria-live="polite"></span>
+            </form>
+        <?php endif; ?>
     </div>
 </div>
 <style>

@@ -47,7 +47,7 @@
                     <div>
                         <p class="ilena-auth-page__switch"><a href="<?= esc(ilena_store_path('/forgot-password'), 'attr'); ?>"><?= esc(lang('Store.forgotPassword')); ?></a></p>
                         <p class="ilena-auth-page__switch" role="note"><?= esc(lang('Store.verificationLoginHint')); ?>
-                            <a href="#email"><?= esc(lang('Store.verificationLoginLink')); ?></a>
+                            <a href="<?= esc(ilena_store_path('/verify'), 'attr'); ?>"><?= esc(lang('Store.verificationLoginLink')); ?></a>
                         </p>
                         <p class="ilena-auth-page__switch"><?= esc(lang('Store.noAccount')); ?> <a href="<?= esc(ilena_store_path('/register'), 'attr'); ?>"><?= esc(lang('Store.registerNow')); ?></a></p>
                     </div>

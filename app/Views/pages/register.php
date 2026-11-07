@@ -145,7 +145,7 @@
                         <a href="<?= esc(ilena_store_path('/login'), 'attr'); ?>"><?= lang('Store.signInNow'); ?></a>
                     </p>
                     <p class="ilena-auth-page__switch" role="note"><?= esc(lang('Store.verificationRegisterHint')); ?>
-                        <a href="<?= esc(ilena_store_path('/login'), 'attr'); ?>"><?= esc(lang('Store.verificationLoginLink')); ?></a>
+                        <a href="<?= esc(ilena_store_path('/verify'), 'attr'); ?>"><?= esc(lang('Store.verificationLoginLink')); ?></a>
                     </p>
                 </div>
             </form>

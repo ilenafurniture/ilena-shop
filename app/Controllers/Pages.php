@@ -5877,18 +5877,29 @@ class Pages extends BaseController
     }
     public function verify()
     {
-        $email = session()->get('email');
-        if (!$email || !$this->userModel->getUser($email)) {
-            session()->setFlashdata('msg', 'Sesi verifikasi sudah berakhir. Silakan daftar/login ulang.');
-            return redirect()->to(ilena_store_path('/login'));
+        $isPendingLogin = session()->get('isLogin') && (string) session()->get('active') === '0';
+        if (session()->get('isLogin') && ! $isPendingLogin) {
+            return redirect()->to(ilena_store_path('/account'));
         }
+
+        $email = $isPendingLogin
+            ? (string) session()->get('email')
+            : (string) session()->get('verification_recovery_email');
+        $verificationRecovery = ! $isPendingLogin && $email === '';
+        $lastSentAt = $isPendingLogin
+            ? (int) session()->get('otp_last_sent_at')
+            : ((string) session()->get('otp_recovery_last_sent_email') === $email
+                ? (int) session()->get('otp_recovery_last_sent_at')
+                : 0);
 
         $data = [
             'title' => 'Verifikasi',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
-            'verificationEmail' => $this->maskVerificationEmail((string) $email),
-            'otpResendRemaining' => max(0, 60 - (time() - (int) session()->get('otp_last_sent_at'))),
+            'verificationRecovery' => $verificationRecovery,
+            'verificationEmail' => $email !== '' ? $this->maskVerificationEmail($email) : '',
+            'recoveryEmail' => session()->getFlashdata('verification_recovery_input') ?? '',
+            'otpResendRemaining' => max(0, 60 - (time() - $lastSentAt)),
             'val' => [
                 'msg' => session()->getFlashdata('msg'),
                 'val_verify' => session()->getFlashdata('val_verify')
@@ -5899,14 +5910,31 @@ class Pages extends BaseController
     public function actionVerify()
     {
         $otp = $this->request->getVar("otp");
-        $email = session()->get("email");
-        $getUser = $this->userModel->getUser($email);
+        $isPendingLogin = session()->get('isLogin') && (string) session()->get('active') === '0';
+        $isRecoveryVerification = ! $isPendingLogin && (string) session()->get('verification_recovery_email') !== '';
+        $email = $isPendingLogin
+            ? (string) session()->get('email')
+            : (string) session()->get('verification_recovery_email');
+        $getUser = $email !== '' ? $this->userModel->findByEmailIdentity($email) : null;
         if (!$email || !$getUser) {
+            if ($isRecoveryVerification) {
+                session()->setFlashdata('val_verify', lang('Store.otpInvalid'));
+                return redirect()->to(ilena_store_path('/verify'));
+            }
             session()->setFlashdata('msg', 'Sesi verifikasi sudah berakhir. Silakan daftar/login ulang.');
-            return redirect()->to(ilena_store_path('/login'));
+            return redirect()->to(ilena_store_path('/verify'));
+        }
+        $email = (string) $getUser['email'];
+        if ($isRecoveryVerification && (string) ($getUser['active'] ?? '1') !== '0') {
+            session()->setFlashdata('val_verify', lang('Store.otpInvalid'));
+            return redirect()->to(ilena_store_path('/verify'));
         }
         if (in_array((string)($getUser['role'] ?? ''), ['0', '4'], true)
             && (new \App\Services\AccountSuspensionService())->isSuspended((string)$email)) {
+            if ($isRecoveryVerification) {
+                session()->setFlashdata('val_verify', lang('Store.otpInvalid'));
+                return redirect()->to(ilena_store_path('/verify'));
+            }
             session()->destroy();
             session()->setFlashdata('msg', 'Akun Anda ditangguhkan. Silakan hubungi admin.');
             return redirect()->to(ilena_store_path('/login'));
@@ -5954,6 +5982,11 @@ class Pages extends BaseController
                 'waktu_otp' => $waktu_otp
             ])->update();
             session()->set('otp_last_sent_at', time());
+            if ($isRecoveryVerification) {
+                session()->set('verification_recovery_email', $email);
+                session()->set('otp_recovery_last_sent_email', $email);
+                session()->set('otp_recovery_last_sent_at', time());
+            }
             session()->setFlashdata('msg', lang('Store.otpSentNotice'));
             return redirect()->to(ilena_store_path("/verify"));
         }
@@ -5972,6 +6005,8 @@ class Pages extends BaseController
         }
 
         $ses_data = [
+            'email' => (string) $getUser['email'],
+            'isLogin' => true,
             'active' => '1',
             'role' => $getUser['role'],
             'auth_version' => (int) ($getUser['auth_version'] ?? 1),
@@ -5987,6 +6022,7 @@ class Pages extends BaseController
             'waktu_otp' => '0'
         ])->update();
         session()->regenerate(true);
+        session()->remove(['verification_recovery_email', 'otp_recovery_last_sent_email', 'otp_recovery_last_sent_at']);
         session()->set($ses_data);
         session()->setFlashdata('msg_active', true);
         $this->mergePendingGuestState();
@@ -5994,29 +6030,83 @@ class Pages extends BaseController
     }
     public function kirimOTP()
     {
-        $emailUser = session()->get('email');
-        $getUser = $this->userModel->getUser($emailUser);
-        if (!$emailUser || !$getUser) {
-            session()->setFlashdata('msg', 'Sesi verifikasi sudah berakhir. Silakan daftar/login ulang.');
-            return redirect()->to(ilena_store_path('/login'));
+        $isPendingLogin = session()->get('isLogin') && (string) session()->get('active') === '0';
+        if (session()->get('isLogin') && ! $isPendingLogin) {
+            return redirect()->to(ilena_store_path('/account'));
         }
-        if (in_array((string)($getUser['role'] ?? ''), ['0', '4'], true)
-            && (new \App\Services\AccountSuspensionService())->isSuspended((string)$emailUser)) {
-            session()->destroy();
-            session()->setFlashdata('msg', 'Akun Anda ditangguhkan. Silakan hubungi admin.');
-            return redirect()->to(ilena_store_path('/login'));
+
+        $isRecoveryRequest = ! $isPendingLogin;
+        if ($isRecoveryRequest) {
+            $emailInput = $this->request->getPost('email');
+            $emailUser = is_string($emailInput) && trim($emailInput) !== ''
+                ? strtolower(trim($emailInput))
+                : (string) session()->get('verification_recovery_email');
+            session()->remove('verification_recovery_email');
+            if (filter_var($emailUser, FILTER_VALIDATE_EMAIL) === false || strlen($emailUser) > 191) {
+                session()->setFlashdata('msg', lang('Store.otpRecoveryNotice'));
+                session()->setFlashdata('verification_recovery_input', $emailUser);
+                return redirect()->to(ilena_store_path('/verify'));
+            }
+
+            if (! (new \App\Services\Auth\AuthAttemptLimiter())->allow(
+                'otp_resend', (string) $this->request->getIPAddress(), $emailUser, 10, 5, 3600
+            )) {
+                session()->set('verification_recovery_email', $emailUser);
+                session()->setFlashdata('msg', lang('Store.otpTooManyAttempts'));
+                return redirect()->to(ilena_store_path('/verify'));
+            }
+
+            // Keep the public response and next screen identical for unknown,
+            // active, suspended, and unverified addresses to avoid enumeration.
+            session()->set('verification_recovery_email', $emailUser);
+            $lookupUser = $this->userModel->findByEmailIdentity($emailUser);
+            $getUser = $lookupUser && (string) ($lookupUser['active'] ?? '1') === '0'
+                && in_array((string) ($lookupUser['role'] ?? ''), ['0', '4'], true)
+                ? $lookupUser
+                : null;
+            if ($getUser && (new \App\Services\AccountSuspensionService())->isSuspended((string) $getUser['email'])) {
+                $getUser = null;
+            }
+        } else {
+            $emailUser = (string) session()->get('email');
+            $getUser = $emailUser !== '' ? $this->userModel->findByEmailIdentity($emailUser) : null;
+            if (!$getUser || (string) ($getUser['active'] ?? '1') !== '0'
+                || !in_array((string) ($getUser['role'] ?? ''), ['0', '4'], true)) {
+                session()->setFlashdata('msg', 'Sesi verifikasi sudah berakhir. Silakan mulai lagi dari login atau pendaftaran.');
+                return redirect()->to(ilena_store_path('/verify'));
+            }
+            $emailUser = (string) $getUser['email'];
+            if ((new \App\Services\AccountSuspensionService())->isSuspended($emailUser)) {
+                session()->destroy();
+                session()->setFlashdata('msg', 'Akun Anda ditangguhkan. Silakan hubungi admin.');
+                return redirect()->to(ilena_store_path('/login'));
+            }
+            if (!(new \App\Services\Auth\AuthAttemptLimiter())->allow('otp_resend', (string)$this->request->getIPAddress(), $emailUser, 10, 5, 3600)) {
+                session()->setFlashdata('msg', lang('Store.otpTooManyAttempts'));
+                return redirect()->to(ilena_store_path('/verify'));
+            }
+            $lastSent = (int)session()->get('otp_last_sent_at');
+            if ($lastSent > 0 && time() - $lastSent < 60) {
+                session()->setFlashdata('msg', lang('Store.otpResendTooSoon'));
+                return redirect()->to(ilena_store_path('/verify'));
+            }
         }
-        if ((string)($getUser['active'] ?? '1') !== '0') {
-            return redirect()->to(ilena_store_path('/'));
-        }
-        if (!(new \App\Services\Auth\AuthAttemptLimiter())->allow('otp_resend', (string)$this->request->getIPAddress(), (string)$emailUser, 10, 5, 3600)) {
-            session()->setFlashdata('msg', lang('Store.otpTooManyAttempts'));
+
+        if (! $getUser) {
+            session()->setFlashdata('msg', lang('Store.otpRecoveryNotice'));
             return redirect()->to(ilena_store_path('/verify'));
         }
-        $lastSent = (int)session()->get('otp_last_sent_at');
-        if ($lastSent > 0 && time() - $lastSent < 60) {
-            session()->setFlashdata('msg', lang('Store.otpResendTooSoon'));
-            return redirect()->to(ilena_store_path('/verify'));
+        $emailUser = (string) $getUser['email'];
+
+        if ($isRecoveryRequest) {
+            session()->set('verification_recovery_email', $emailUser);
+            $lastSent = (string) session()->get('otp_recovery_last_sent_email') === $emailUser
+                ? (int) session()->get('otp_recovery_last_sent_at')
+                : 0;
+            if ($lastSent > 0 && time() - $lastSent < 60) {
+                session()->setFlashdata('msg', lang('Store.otpRecoveryNotice'));
+                return redirect()->to(ilena_store_path('/verify'));
+            }
         }
 
         $otp_number = random_int(100000, 999999);
@@ -6040,7 +6130,7 @@ class Pages extends BaseController
         $email->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain($verificationTitle, $verificationIntro, ($isEnglishVerification ? 'Verification code: ' : 'Kode verifikasi: ') . $otp_number . "\n" . $verificationExpiry));
         if (!$email->send()) {
             log_message('error', 'Verification OTP resend email could not be sent.');
-            session()->setFlashdata('msg', lang('Store.otpEmailUnavailable'));
+            session()->setFlashdata('msg', $isRecoveryRequest ? lang('Store.otpRecoveryNotice') : lang('Store.otpEmailUnavailable'));
             return redirect()->to(ilena_store_path('/verify'));
         }
 
@@ -6049,8 +6139,12 @@ class Pages extends BaseController
             'waktu_otp' => $waktu_otp
         ])->update();
         session()->set('otp_last_sent_at', time());
+        if ($isRecoveryRequest) {
+            session()->set('otp_recovery_last_sent_email', $emailUser);
+            session()->set('otp_recovery_last_sent_at', time());
+        }
 
-        session()->setFlashdata('msg', lang('Store.otpSentNotice'));
+        session()->setFlashdata('msg', $isRecoveryRequest ? lang('Store.otpRecoveryNotice') : lang('Store.otpSentNotice'));
         return redirect()->to(ilena_store_path('/verify'));
     }
     public function actionLogout()
