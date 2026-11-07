@@ -11379,3 +11379,35 @@ body.ilena-storefront:is(.ilena-page--account, .ilena-page--order, .ilena-page--
 body.ilena-storefront.ilena-page--account > #exampleModal,
 body.ilena-storefront.ilena-page--account > #editModal { z-index: 30000 !important; }
 body.ilena-storefront.ilena-page--account > .modal-backdrop { z-index: 29990 !important; }
+
+body.ilena-storefront.ilena-page--wishlist .ilena-wishlist-guest-note {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 0 0 22px;
+    padding: 14px 16px;
+    border: 1px solid #e8dfd5;
+    background: #faf8f5;
+}
+body.ilena-storefront.ilena-page--wishlist .ilena-wishlist-guest-note p {
+    margin: 0;
+    color: #5e5750;
+    font-size: 13px;
+    line-height: 1.55;
+}
+body.ilena-storefront.ilena-page--wishlist .ilena-wishlist-guest-note > div {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 14px;
+}
+body.ilena-storefront.ilena-page--wishlist .ilena-wishlist-guest-note a {
+    color: #8e2427;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+@media (max-width: 640px) {
+    body.ilena-storefront.ilena-page--wishlist .ilena-wishlist-guest-note { align-items: flex-start; flex-direction: column; gap: 10px; }
+}

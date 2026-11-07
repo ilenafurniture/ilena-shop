@@ -75,7 +75,7 @@ $routes->post('/actionpaycore/(:any)', 'Pages::actionPayCore/$1', ['filter' => [
 $routes->post('/updatetransaction', 'Pages::updateTransaction');
 $routes->post('/midtrans/notification', 'Pages::midtransNotificationDispatcher');
 
-$routes->get('/wishlist', 'Pages::wishlist', ['filter' => 'customerLoginFilter']);
+$routes->get('/wishlist', 'Pages::wishlist', ['filter' => 'customerFilter']);
 $routes->post('/addwishlist/(:any)', 'Pages::addWishlist/$1', ['filter' => ['customerFilter', 'csrf']]);
 $routes->post('/delwishlist/(:any)', 'Pages::delWishlist/$1', ['filter' => ['customerFilter', 'csrf']]);
 $routes->post('/wishlisttocart', 'Pages::wishlistToCart', ['filter' => ['customerFilter', 'csrf']]);
@@ -327,7 +327,7 @@ $routes->group('{locale}', ['filter' => 'customerFilter'], static function ($rou
     $routes->get('orderdetail/(:any)', 'Pages::orderDetail/$1');
     $routes->get('invoice/(:any)/pdf', 'Pages::invoicePdf/$1');
     $routes->get('invoice/(:any)', 'Pages::invoice/$1');
-    $routes->get('wishlist', 'Pages::wishlist', ['filter' => 'customerLoginFilter']);
+    $routes->get('wishlist', 'Pages::wishlist');
     $routes->post('addwishlist/(:any)', 'Pages::addWishlist/$1', ['filter' => ['csrf']]);
     $routes->post('delwishlist/(:any)', 'Pages::delWishlist/$1', ['filter' => ['csrf']]);
     $routes->post('wishlisttocart', 'Pages::wishlistToCart', ['filter' => ['csrf']]);

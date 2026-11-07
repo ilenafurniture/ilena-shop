@@ -6,6 +6,7 @@
 $wishlist = $wishlist ?? [];
 $produk   = $produk   ?? [];
 $wishlistCount = is_array($wishlist) ? count($wishlist) : 0;
+$isSignedInCustomer = session()->get('isLogin') && in_array((string) session()->get('role'), ['0', '4'], true);
 
 // Helper: cek apakah id ada di wishlist
 $isInWishlist = function($id) use ($wishlist) {
@@ -33,17 +34,31 @@ $productCoverUrl = function (string $id, array $varianList, array $product = [])
 };
 ?>
 
-<div class="container konten baris-ke-kolom ilena-wishlist-page ilena-customer-account-shell">
-    <?= $this->include('partials/account_navigation', ['activeAccountTab' => 'wishlist']); ?>
+<div class="container konten baris-ke-kolom ilena-wishlist-page ilena-customer-account-shell<?= $isSignedInCustomer ? '' : ' ilena-wishlist-page--guest'; ?>">
+    <?php if ($isSignedInCustomer): ?>
+        <?= $this->include('partials/account_navigation', ['activeAccountTab' => 'wishlist']); ?>
+    <?php endif; ?>
     <main class="ilena-customer-account-main">
         <header class="ilena-wishlist-heading">
             <div>
-                <p class="ilena-wishlist-heading__eyebrow"><?= service('request')->getLocale() === 'en' ? 'ACCOUNT' : 'AKUN'; ?> <span>/</span> <?= lang('Store.favorites'); ?></p>
+                <p class="ilena-wishlist-heading__eyebrow"><?= $isSignedInCustomer ? (service('request')->getLocale() === 'en' ? 'ACCOUNT' : 'AKUN') . ' <span>/</span> ' : ''; ?><?= lang('Store.favorites'); ?></p>
                 <h1><?= lang('Store.savedProducts'); ?></h1>
                 <p class="ilena-wishlist-heading__description"><?= lang('Store.savedProductsDescription'); ?></p>
             </div>
             <span class="ilena-wishlist-heading__count"><?= $wishlistCount; ?> <?= lang('Store.productsCount'); ?></span>
         </header>
+
+        <?php if (!$isSignedInCustomer): ?>
+        <aside class="ilena-wishlist-guest-note" aria-label="<?= esc(service('request')->getLocale() === 'en' ? 'Guest favourites' : 'Favorit tamu', 'attr'); ?>">
+            <p><?= service('request')->getLocale() === 'en'
+                ? 'These favourites are saved in this browser. Sign in to keep them with your Ilena account and access them on another device.'
+                : 'Favorit ini tersimpan di browser ini. Masuk agar produk tersimpan di akun Ilena dan bisa dibuka dari perangkat lain.'; ?></p>
+            <div>
+                <a href="<?= esc(ilena_store_path('/login'), 'attr'); ?>"><?= esc(lang('Store.signInNow')); ?></a>
+                <a href="<?= esc(ilena_store_path('/register'), 'attr'); ?>"><?= esc(lang('Store.createIlenaAccount')); ?></a>
+            </div>
+        </aside>
+        <?php endif; ?>
 
         <?php if ($wishlistCount > 0): ?>
         <div class="container-card1 ilena-wishlist-grid">
