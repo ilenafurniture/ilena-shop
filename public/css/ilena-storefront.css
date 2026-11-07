@@ -11345,8 +11345,33 @@ body.ilena-storefront .ilena-apm-wordmark { display: inline-flex; align-items: c
 body.ilena-storefront .ilena-apm-wordmark strong { color: #9d302b; font-size: 16px; font-weight: 800; letter-spacing: -.05em; }
 body.ilena-storefront .ilena-apm-wordmark small { max-width: 32px; font-size: 6px; font-weight: 700; letter-spacing: .07em; line-height: 1.1; }
 body.ilena-storefront .ilena-product-shipping-estimate__heading .ilena-apm-wordmark { flex: 0 0 auto; }
-body.ilena-storefront .ilena-shipping-promo-contact { margin: -7px 8px 14px; color: #625b54; font-size: 11px; line-height: 1.5; }
-body.ilena-storefront .ilena-shipping-promo-contact a { display: inline-block; margin-left: 4px; color: #8f2925; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+body.ilena-storefront .ilena-shipping-promo-contact {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 3px 7px;
+    min-width: 0;
+    box-sizing: border-box;
+    margin: 8px 0 16px;
+    padding: 10px 12px;
+    border: 1px solid #eadbd5;
+    border-left: 3px solid var(--merah, #e84a49);
+    background: #fbf7f4;
+    color: #514943;
+    font-size: 12px;
+    line-height: 1.55;
+}
+body.ilena-storefront .ilena-shipping-promo-contact a {
+    display: inline;
+    margin: 0;
+    color: #8f2925;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+@media (max-width: 575.98px) {
+    body.ilena-storefront .ilena-shipping-promo-contact { gap: 2px 6px; margin: 7px 0 14px; padding: 9px 10px; font-size: 11px; }
+}
 
 /* Final account consistency pass: same shell, navigation, and page-heading rhythm. */
 body.ilena-storefront:is(.ilena-page--account, .ilena-page--order, .ilena-page--wishlist) .ilena-customer-account-shell { gap: clamp(28px, 5vw, 64px); }
