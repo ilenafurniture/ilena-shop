@@ -57,6 +57,7 @@ $routes->post('/addaddress', 'Pages::addAddress', ['filter' => ['customerFilter'
 
 $routes->post('/deleteaddress/(:any)/(:any)', 'Pages::deleteAddress/$1/$2', ['filter' => ['customerFilter', 'csrf']]);
 $routes->post('/editaddress/(:any)', 'Pages::editAddress/$1', ['filter' => ['customerFilter', 'csrf']]);
+$routes->post('/address/primary/(:num)', 'Pages::setPrimaryAddress/$1', ['filter' => ['customerFilter', 'csrf']]);
 
 // Voucher (frontend)
 $routes->post('/redeemvoucher/(:num)', 'Pages::redeemVoucher/$1', ['filter' => ['customerShippingFilter', 'csrf']]);
@@ -349,6 +350,7 @@ $routes->group('{locale}', ['filter' => 'customerFilter'], static function ($rou
     $routes->post('addaddress', 'Pages::addAddress', ['filter' => ['csrf']]);
     $routes->post('deleteaddress/(:any)/(:any)', 'Pages::deleteAddress/$1/$2', ['filter' => ['csrf']]);
     $routes->post('editaddress/(:any)', 'Pages::editAddress/$1', ['filter' => ['csrf']]);
+    $routes->post('address/primary/(:num)', 'Pages::setPrimaryAddress/$1', ['filter' => ['csrf']]);
     $routes->get('shipping/(:any)', 'Pages::shipping/$1', ['filter' => 'customerShippingFilter']);
     $routes->post('redeemvoucher/(:num)', 'Pages::redeemVoucher/$1', ['filter' => ['customerShippingFilter', 'csrf']]);
     $routes->post('usevoucher/(:any)', 'Pages::useVoucher/$1', ['filter' => ['customerShippingFilter', 'csrf']]);

@@ -1649,6 +1649,7 @@ class Pages extends BaseController
         if (!isset($alamat)) {
             $alamat = [];
         }
+        $alamatPrimaryIndex = $this->primaryAddressIndex(is_array($alamat) ? $alamat : []);
         $data = [
             'title' => 'Alamat',
             'navbar' => $this->getNavbarData(),
@@ -1658,6 +1659,7 @@ class Pages extends BaseController
             'hargaTotal' => $hargaTotal,
             'hargaKeseluruhan' => $hargaTotal,
             'alamat' => $alamat,
+            'alamatPrimaryIndex' => $alamatPrimaryIndex,
             'alamatJson' => json_encode($alamat),
             'openAddAddressModal' => session()->getFlashdata('openAddAddressModal'),
             'email' => session()->get('email') ? session()->get('email') : '',
@@ -1697,6 +1699,7 @@ class Pages extends BaseController
                 return redirect()->to($redirectPath)->withInput();
             }
         }
+        $makePrimary = $this->primaryAddressIndex($alamat) === null;
         array_push($alamat, [
             'email_pemesan' => $emailPem,
             'nama_penerima' => $nama,
@@ -1710,7 +1713,8 @@ class Pages extends BaseController
             'desa' => $kodepos[0],
             'kodepos' => $kodepos[1],
             'alamat_tambahan' => $alamatAdd,
-            'alamat_lengkap' => $alamatAdd . " " . $kodepos[0] . ", " . $kecamatan[1] . ", " . $kota[1] . ", " . $provinsi[1] . " " . $kodepos[1]
+            'alamat_lengkap' => $alamatAdd . " " . $kodepos[0] . ", " . $kecamatan[1] . ", " . $kota[1] . ", " . $provinsi[1] . " " . $kodepos[1],
+            'utama' => $makePrimary,
         ]);
         $this->session->set(['alamat' => $alamat]);
 
@@ -1724,14 +1728,66 @@ class Pages extends BaseController
         if (!is_array($alamat) || !array_key_exists($ind_add, $alamat)) {
             return redirect()->to($redirectPath);
         }
+        $deletedPrimaryAddress = $this->primaryAddressIndex($alamat) === (int) $ind_add;
         unset($alamat[$ind_add]);
         $alamatBaru = array_values($alamat);
+        if ($deletedPrimaryAddress && $alamatBaru !== []) {
+            foreach ($alamatBaru as $index => &$address) {
+                if (is_array($address)) {
+                    $address['utama'] = $index === 0;
+                }
+            }
+            unset($address);
+        }
         $this->session->set(['alamat' => $alamatBaru]);
 
         $email = strtolower(trim((string)session()->get('email')));
         if ($email)
             $this->pembeliModel->where('email', $email)->set(['alamat' => json_encode($alamatBaru)])->update();
         return redirect()->to($redirectPath);
+    }
+    public function setPrimaryAddress($ind_add)
+    {
+        $source = $this->request->getPost('source') === 'account' ? 'account' : 'address';
+        $redirectPath = ilena_store_path($source === 'account' ? '/account' : '/address');
+        $addresses = $this->session->get('alamat');
+        if (!is_array($addresses) || !array_key_exists($ind_add, $addresses)) {
+            session()->setFlashdata('msg', lang('Store.addressNotFound'));
+            return redirect()->to($redirectPath);
+        }
+
+        $addresses = array_values($addresses);
+        foreach ($addresses as $index => &$address) {
+            if (is_array($address)) {
+                $address['utama'] = $index === (int) $ind_add;
+            }
+        }
+        unset($address);
+
+        $email = strtolower(trim((string) session()->get('email')));
+        if (session()->get('isLogin') && $email !== '' && $email !== 'tamu') {
+            $saved = $this->pembeliModel->where('email', $email)
+                ->set(['alamat' => json_encode($addresses, JSON_UNESCAPED_UNICODE)])
+                ->update();
+            if (!$saved) {
+                session()->setFlashdata('msg', lang('Store.primaryAddressSaveFailed'));
+                return redirect()->to($redirectPath);
+            }
+        }
+
+        session()->set(['alamat' => $addresses]);
+        session()->setFlashdata('msg', lang('Store.primaryAddressUpdated'));
+        return redirect()->to($redirectPath);
+    }
+
+    private function primaryAddressIndex(array $addresses): ?int
+    {
+        foreach ($addresses as $index => $address) {
+            if (is_array($address) && in_array($address['utama'] ?? false, [true, 1, '1'], true)) {
+                return (int) $index;
+            }
+        }
+        return $addresses === [] ? null : (int) array_key_first($addresses);
     }
     public function editAddress($ind_add)
     {
@@ -1766,6 +1822,7 @@ class Pages extends BaseController
                 return redirect()->to($pathnameUrl);
             }
         }
+        $isPrimaryAddress = !empty($alamat[$ind_add]['utama']);
         $alamat[$ind_add] = [
             'email_pemesan' => $emailPem,
             'nama_penerima' => $nama,
@@ -1779,7 +1836,8 @@ class Pages extends BaseController
             'desa' => $kodepos[0],
             'kodepos' => $kodepos[1],
             'alamat_tambahan' => $alamatAdd,
-            'alamat_lengkap' => $alamatAdd . " " . $kodepos[0] . ", " . $kecamatan[1] . ", " . $kota[1] . ", " . $provinsi[1] . " " . $kodepos[1]
+            'alamat_lengkap' => $alamatAdd . " " . $kodepos[0] . ", " . $kecamatan[1] . ", " . $kota[1] . ", " . $provinsi[1] . " " . $kodepos[1],
+            'utama' => $isPrimaryAddress,
         ];
         $this->session->set(['alamat' => $alamat]);
 
@@ -5964,12 +6022,14 @@ class Pages extends BaseController
         if (!isset($alamat)) {
             $alamat = [];
         }
+        $alamatPrimaryIndex = $this->primaryAddressIndex(is_array($alamat) ? $alamat : []);
 
         $data = [
             'title' => 'Akun Saya',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'alamat' => $alamat,
+            'alamatPrimaryIndex' => $alamatPrimaryIndex,
             'alamatJson' => json_encode($alamat),
             'email' => session()->get('email'),
             'nama' => session()->get('nama'),

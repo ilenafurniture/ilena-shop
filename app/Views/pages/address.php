@@ -79,6 +79,12 @@
     gap: 10px
 }
 
+.ilena-address-choice { min-width: 0; }
+.ilena-address-choice__actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; padding:7px 10px 0; }
+.ilena-address-choice__actions form { margin:0; }
+.ilena-address-primary-badge { display:inline-flex; align-items:center; gap:4px; margin:0 0 7px; padding:4px 8px; background:#fbf2ef; color:#8d2e2b; font-size:11px; font-weight:700; line-height:1.2; }
+.ilena-address-primary-badge .material-icons { font-size:14px; }
+
 .item-address {
     display: flex;
     gap: 12px;
@@ -107,7 +113,7 @@ input[type="radio"][name="address"] {
     pointer-events: none
 }
 
-input[type="radio"][name="address"]:checked+.item-address {
+.ilena-address-choice input[type="radio"][name="address"]:checked+.item-address {
     border-color: var(--brand);
     box-shadow: 0 0 0 3px color-mix(in oklab, var(--brand) 18%, transparent)
 }
@@ -614,22 +620,33 @@ input[type="radio"][name="address"]:checked+.item-address {
             </header>
             <div class="container-address my-4">
                 <?php foreach ($alamat as $ind_a => $a) { ?>
-                <input type="radio" name="address" id="address<?= $ind_a ?>" <?= $ind_a <= 0 ? 'checked' : '' ?>>
-                <label for="address<?= $ind_a ?>" class="item-address radio">
-                    <div style="flex:1;">
-                        <p class="mb-1 nama"><?= $a['nama_penerima'] ?></p>
-                        <p class="mb-1"><?= $a['alamat_lengkap'] ?></p>
-                        <p class="mb-1"><?= $a['nohp_penerima'] ?></p>
-                        <p class="mb-1"><b style="font-weight:600;">Pemesan</b> : <?= $a['email_pemesan'] ?></p>
-                    </div>
-                    <div style="width:100px" class="d-flex gap-3 justify-content-end align-items-start">
+                <div class="ilena-address-choice">
+                    <input type="radio" name="address" id="address<?= (int)$ind_a ?>" data-address-index="<?= (int)$ind_a ?>" <?= (int)$ind_a === (int)$alamatPrimaryIndex ? 'checked' : '' ?>>
+                    <label for="address<?= (int)$ind_a ?>" class="item-address radio">
+                        <div style="flex:1;">
+                            <?php if ((int)$ind_a === (int)$alamatPrimaryIndex): ?>
+                            <span class="ilena-address-primary-badge"><span class="material-icons" aria-hidden="true">star</span><?= lang('Store.primaryAddress'); ?></span>
+                            <?php endif; ?>
+                            <p class="mb-1 nama"><?= esc($a['nama_penerima'] ?? ''); ?></p>
+                            <p class="mb-1"><?= esc($a['alamat_lengkap'] ?? ''); ?></p>
+                            <p class="mb-1"><?= esc($a['nohp_penerima'] ?? ''); ?></p>
+                            <p class="mb-1"><b style="font-weight:600;">Pemesan</b> : <?= esc($a['email_pemesan'] ?? ''); ?></p>
+                        </div>
+                    </label>
+                    <div class="ilena-address-choice__actions">
                         <a class="btn-teks-aja text-dark" data-bs-toggle="modal" data-bs-target="#editModal"
-                            type="button" onclick="openEditModal(<?= $ind_a; ?>)"><?= lang('Store.edit'); ?></a>
-                        <form action="<?= esc(ilena_store_path('/deleteaddress/' . (int)$ind_a . '/address'), 'attr'); ?>" method="post" class="m-0">
+                            role="button" onclick="openEditModal(<?= (int)$ind_a; ?>)"><?= lang('Store.edit'); ?></a>
+                        <form action="<?= esc(ilena_store_path('/deleteaddress/' . (int)$ind_a . '/address'), 'attr'); ?>" method="post">
                             <?= csrf_field(); ?><button type="submit" class="btn-teks-aja"><?= lang('Store.delete'); ?></button>
                         </form>
+                        <?php if ((int)$ind_a !== (int)$alamatPrimaryIndex): ?>
+                        <form action="<?= esc(ilena_store_path('/address/primary/' . (int)$ind_a), 'attr'); ?>" method="post">
+                            <?= csrf_field(); ?><input type="hidden" name="source" value="address">
+                            <button type="submit" class="btn-teks-aja"><?= lang('Store.setAsPrimaryAddress'); ?></button>
+                        </form>
+                        <?php endif; ?>
                     </div>
-                </label>
+                </div>
                 <?php } ?>
             </div>
 
@@ -655,7 +672,7 @@ input[type="radio"][name="address"]:checked+.item-address {
                     <p class="fw-bold m-0">Rp <?= number_format($hargaKeseluruhan, 0, ',', '.'); ?></p>
                 </div>
 
-                <a id="btn-shipping" <?= count($alamat) > 0 ? 'href="' . esc(ilena_store_path('/shipping/0'), 'attr') . '"' : '' ?>
+                <a id="btn-shipping" <?= count($alamat) > 0 ? 'href="' . esc(ilena_store_path('/shipping/' . (int)$alamatPrimaryIndex), 'attr') . '"' : '' ?>
                     class="btn-default-merah <?= count($alamat) > 0 ? '' : 'disabled' ?> w-100 mt-4 text-center">
                     <?= lang('Store.selectPaymentDetails'); ?>
                 </a>
@@ -733,9 +750,9 @@ btnAddAddressElm.addEventListener("click", () => {
     addModalContainer.classList.remove("d-none");
     addModalContainer.classList.add("d-flex");
 });
-radioAddressElm.forEach((elm, ind_radio) => {
+radioAddressElm.forEach((elm) => {
     elm.addEventListener('change', () => {
-        btnShippingElm.href = storeRoutePrefix + "/shipping/" + ind_radio;
+        btnShippingElm.href = storeRoutePrefix + "/shipping/" + elm.dataset.addressIndex;
     });
 });
 

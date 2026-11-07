@@ -128,6 +128,10 @@
     gap: 10px
 }
 
+.ilena-address-primary-badge { display:inline-flex; align-items:center; gap:4px; margin:0 0 7px; padding:4px 8px; background:#fbf2ef; color:#8d2e2b; font-size:11px; font-weight:700; line-height:1.2; }
+.ilena-address-primary-badge .material-icons { font-size:14px; }
+.ilena-account-primary-address-form { margin:0 0 5px; }
+
 .item-address {
     display: flex;
     gap: 12px;
@@ -388,6 +392,14 @@
             <?php foreach ($alamat as $ind_a => $a) { ?>
             <div class="item-address">
                 <div style="flex: 1;">
+                    <?php if ((int)$ind_a === (int)$alamatPrimaryIndex): ?>
+                    <span class="ilena-address-primary-badge"><span class="material-icons" aria-hidden="true">star</span><?= lang('Store.primaryAddress'); ?></span>
+                    <?php else: ?>
+                    <form action="<?= esc(ilena_store_path('/address/primary/' . (int)$ind_a), 'attr'); ?>" method="post" class="ilena-account-primary-address-form">
+                        <?= csrf_field(); ?><input type="hidden" name="source" value="account">
+                        <button type="submit" class="btn-teks-aja"><?= lang('Store.setAsPrimaryAddress'); ?></button>
+                    </form>
+                    <?php endif; ?>
                     <p class="mb-1 nama"><?= esc($a['nama_penerima']) ?></p>
                     <p class="mb-1"><?= esc($a['alamat_lengkap']) ?></p>
                     <p class="mb-1"><?= esc($a['nohp_penerima']) ?></p>
