@@ -188,12 +188,15 @@ class AdminController extends BaseController
             $revenue += (int) round((float)($mid['gross_amount'] ?? 0));
         }
 
+        $orderAttention = \App\Services\WebsiteOrderAttention::counts(db_connect(), $testEmails);
         $stats = [
             'totalProducts' => $this->barangModel->countAllResults(),
             'activeProducts' => $this->barangModel->where('active', '1')->countAllResults(),
             'lowStock' => count($lowStockProducts),
-            'websiteOrdersTodo' => $websiteOrderBase()->whereIn('status', ['Proses', 'Menunggu Pembayaran'])->countAllResults(),
-            'waitingPayment' => $websiteOrderBase()->where('status', 'Menunggu Pembayaran')->countAllResults(),
+            'websiteOrdersTodo' => $orderAttention['total'],
+            'waitingPayment' => $orderAttention['pending_payment'],
+            'processingOrders' => $orderAttention['processing'],
+            'legacyShipmentDates' => $orderAttention['legacy_shipment_date'],
             'paidOrders' => $websiteOrderBase()->whereIn('status', ['Proses', 'Dikirim', 'Selesai'])->countAllResults(),
             'revenue' => $revenue,
             'articles' => $this->artikelModel->countAllResults(),
@@ -2030,7 +2033,7 @@ class AdminController extends BaseController
             }
             if ($status !== '') $builder->where('status', $status);
             if ($missingShipmentDate) {
-                $builder->where("CASE WHEN JSON_VALID(data_mid) = 1 THEN JSON_EXTRACT(data_mid, '$._app_shipped_at') IS NULL ELSE 1 END = 1", null, false);
+                $builder->where(\App\Services\WebsiteOrderAttention::missingShipmentTimestampSql(), null, false);
             }
             return $builder;
         };
@@ -2048,7 +2051,7 @@ class AdminController extends BaseController
         $legacyShipmentDateCount = (int) $db->table('pemesanan')
             ->whereNotIn('email', $excludedEmails)
             ->where('status', 'Dikirim')
-            ->where("CASE WHEN JSON_VALID(data_mid) = 1 THEN JSON_EXTRACT(data_mid, '$._app_shipped_at') IS NULL ELSE 1 END = 1", null, false)
+            ->where(\App\Services\WebsiteOrderAttention::missingShipmentTimestampSql(), null, false)
             ->countAllResults();
         $hasFilters = $query !== '' || $status !== '' || $missingShipmentDate;
         $filteredCount = $hasFilters ? (int) $buildQuery()->countAllResults() : $totalCount;
