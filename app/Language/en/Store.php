@@ -539,6 +539,7 @@ return [
     'otpSentTo' => 'Code sent to',
     'otpResendCountdown' => 'You can request another code in',
     'otpCodeLabel' => '6-digit verification code',
+    'otpDigitPosition' => 'Digit %d of 6',
     'otpSentNotice' => 'Your verification code has been sent. Enter the code from your email to activate your account.',
     'otpRecoveryNotice' => 'If this email belongs to an account that still needs verification, a code will be sent. Enter the code you receive to continue.',
     'verificationRecoveryDescription' => 'Enter the email you used to register. We’ll send a code if the account still needs verification.',

@@ -5681,9 +5681,8 @@ class Pages extends BaseController
         $local = substr($email, 0, $at);
         $domain = substr($email, $at + 1);
         if ($local === '' || $domain === '') return '';
-        $visible = mb_substr($local, 0, 1);
-        $maskLength = min(4, max(2, mb_strlen($local) - 1));
-        return $visible . str_repeat('•', $maskLength) . '@' . $domain;
+        $visible = mb_substr($local, 0, min(2, mb_strlen($local)));
+        return $visible . '***@' . $domain;
     }
 
     public function editSandi($path)
@@ -5909,7 +5908,10 @@ class Pages extends BaseController
     }
     public function actionVerify()
     {
-        $otp = $this->request->getVar("otp");
+        $otpDigits = $this->request->getPost('otp_digits');
+        $otp = is_array($otpDigits)
+            ? implode('', array_map(static fn ($digit): string => is_scalar($digit) && preg_match('/^\d$/D', (string) $digit) === 1 ? (string) $digit : '', array_slice($otpDigits, 0, 6)))
+            : (string) $this->request->getPost('otp');
         $isPendingLogin = session()->get('isLogin') && (string) session()->get('active') === '0';
         $isRecoveryVerification = ! $isPendingLogin && (string) session()->get('verification_recovery_email') !== '';
         $email = $isPendingLogin

@@ -1832,9 +1832,10 @@ body.ilena-storefront .ilena-auth-page--verify .ilena-auth-page__form {
     max-width: 540px;
 }
 
-body.ilena-storefront .ilena-auth-page--verify #otp {
-    min-height: 58px;
+body.ilena-storefront .ilena-auth-page--verify .ilena-verify__digit {
+    min-height: 52px;
     font-size: 22px;
+    padding: 0;
 }
 
 body.ilena-storefront .ilena-faq-page .konten {

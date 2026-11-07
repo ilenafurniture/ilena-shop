@@ -652,6 +652,7 @@ return [
     'otpSentTo' => 'Kode dikirim ke',
     'otpResendCountdown' => 'Kirim ulang tersedia dalam',
     'otpCodeLabel' => 'Kode verifikasi 6 digit',
+    'otpDigitPosition' => 'Digit ke-%d dari 6',
     'otpSentNotice' => 'Kode verifikasi telah dikirim. Masukkan kode dari email untuk mengaktifkan akun.',
     'otpRecoveryNotice' => 'Jika email tersebut terdaftar dan masih perlu diverifikasi, kode akan dikirim. Masukkan kode yang diterima untuk melanjutkan.',
     'verificationRecoveryDescription' => 'Masukkan email yang digunakan saat mendaftar. Kami akan mengirim kode jika akun masih perlu diverifikasi.',
