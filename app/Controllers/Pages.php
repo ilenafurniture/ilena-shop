@@ -1996,8 +1996,8 @@ class Pages extends BaseController
         $lines[] = ($english ? 'Items subtotal: Rp ' : 'Subtotal barang: Rp ')
             . number_format($subtotal, 0, ',', '.');
         $lines[] = $english
-            ? 'Please share the available service, final rate, and delivery estimate. I will review this message before sending.'
-            : 'Mohon informasikan layanan yang tersedia, ongkir final, dan estimasi pengiriman. Pesan ini bisa saya periksa sebelum dikirim.';
+            ? 'Please share the available service, final rate, and delivery estimate, and check whether a free-shipping promo or voucher applies to this destination. I will review this message before sending.'
+            : 'Mohon informasikan layanan yang tersedia, ongkir final, dan estimasi pengiriman, serta cek apakah ada promo atau voucher gratis ongkir untuk tujuan ini. Pesan ini bisa saya periksa sebelum dikirim.';
 
         return implode("\n", $lines);
     }

@@ -66,6 +66,19 @@
                     <?php endif; ?>
                 </div>
             </label>
+            <?php
+                $shippingReferencePrice = max(0, (int) ($k['harga_asli'] ?? $k['harga'] ?? 0));
+                $highShippingCost = empty($k['gratis_ongkir']) && $hargaTotal > 0
+                    && $shippingReferencePrice >= (int) ceil($hargaTotal * 0.25);
+            ?>
+            <?php if ($highShippingCost): ?>
+            <p class="ilena-shipping-promo-contact">
+                <?= esc(lang('Store.shippingHighCostHint')); ?>
+                <a href="<?= esc($shippingContactUrl, 'attr'); ?>" target="_blank" rel="noopener noreferrer">
+                    <?= esc(lang('Store.shippingAskPromo')); ?>
+                </a>
+            </p>
+            <?php endif; ?>
             <?php } ?>
             <?php endif; ?>
         </div>
