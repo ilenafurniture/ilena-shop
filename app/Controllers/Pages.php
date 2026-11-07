@@ -964,7 +964,7 @@ class Pages extends BaseController
         }
 
         // The product-page estimator is deliberately APM-only: it has city and
-        // province selection but no destination postal code for Biteship quotes.
+        // province selection but no destination postal code for carrier fallback quotes.
         $rates = (new \App\Services\ApmShippingRateService())->rates(
             ['kab' => $destination, 'prov' => $province],
             [['jumlah' => $quantity, 'varian' => $variantName, 'detail' => $product]],
@@ -3116,7 +3116,7 @@ class Pages extends BaseController
 
         $subtotal = (float)$cartCheck['subtotal'];
         $flashSale = (float)$cartCheck['flashSale'];
-        if (($kurirTerpilih['provider'] ?? '') === 'biteship') {
+        if (($kurirTerpilih['provider'] ?? '') === 'rajaongkir') {
             $freshRate = (new ShippingService())->revalidateRate($kurirTerpilih, $alamatselected, $cartCheck['cart']);
             if ($freshRate === null) {
                 session()->setFlashdata('msg', lang('Store.shippingRateChanged'));

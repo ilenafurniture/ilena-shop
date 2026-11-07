@@ -281,7 +281,7 @@ return [
     'servicesAvailable' => 'services available',
     'deliveryEstimate' => 'Estimated delivery',
     'productShippingEstimateTitle' => 'Estimate delivery to your area',
-    'productShippingEstimateHint' => 'See APM estimates for your selected variant and quantity. Biteship options appear at checkout when available.',
+    'productShippingEstimateHint' => 'See APM estimates for your selected variant and quantity. Other courier options may appear at checkout.',
     'productShippingDestination' => 'Destination city or regency',
     'productShippingDestinationPlaceholder' => 'Type at least 2 letters',
     'productShippingEstimateButton' => 'Check estimate',

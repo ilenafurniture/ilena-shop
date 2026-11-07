@@ -394,7 +394,7 @@ return [
     'servicesAvailable' => 'layanan tersedia',
     'deliveryEstimate' => 'Estimasi pengiriman',
     'productShippingEstimateTitle' => 'Perkirakan ongkir ke kotamu',
-    'productShippingEstimateHint' => 'Lihat perkiraan APM untuk varian dan jumlah pilihan kakak. Opsi Biteship tersedia saat checkout jika tarifnya tersedia.',
+    'productShippingEstimateHint' => 'Lihat perkiraan APM untuk varian dan jumlah pilihan kakak. Pilihan ekspedisi lain dapat muncul saat checkout.',
     'productShippingDestination' => 'Kota atau kabupaten tujuan',
     'productShippingDestinationPlaceholder' => 'Ketik minimal 2 huruf',
     'productShippingEstimateButton' => 'Cek estimasi',

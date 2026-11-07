@@ -95,49 +95,42 @@ final class FreeShippingServiceTest extends CIUnitTestCase
         $this->assertArrayNotHasKey('harga_asli', $restored[0]);
     }
 
-    public function testBiteshipIsPaidWhenApMOffersRatesButEligibleWhenItIsFallback(): void
+    public function testApMIsPrimaryAndRajaOngkirIsOnlyUsedAsFallback(): void
     {
         $address = ['prov_id' => '31', 'prov' => 'DKI Jakarta'];
         $config = ['active' => true, 'province_ids' => ['31']];
         $rates = \App\Services\ShippingService::combineRates(
             [['provider' => 'apm', 'harga' => 80_000]],
-            [['provider' => 'biteship', 'harga' => 60_000]],
+            [['provider' => 'rajaongkir', 'harga' => 60_000]],
         );
 
-        $this->assertSame(['apm', 'biteship'], array_column($rates, 'provider'));
+        $this->assertSame(['apm'], array_column($rates, 'provider'));
         $this->assertTrue($rates[0]['free_shipping_eligible']);
-        $this->assertFalse($rates[1]['free_shipping_eligible']);
 
         $withApm = FreeShippingService::applyConfigToRates($address, $rates, 1_000_000, $config);
         $this->assertSame(0, $withApm[0]['harga']);
         $this->assertTrue($withApm[0]['gratis_ongkir']);
-        $this->assertSame(60_000, $withApm[1]['harga']);
-        $this->assertArrayNotHasKey('gratis_ongkir', $withApm[1]);
 
-        $fallbackRates = \App\Services\ShippingService::combineRates([], [['provider' => 'biteship', 'harga' => 60_000]]);
+        $fallbackRates = \App\Services\ShippingService::combineRates([], [['provider' => 'rajaongkir', 'harga' => 60_000]]);
         $this->assertTrue($fallbackRates[0]['free_shipping_eligible']);
         $fallback = FreeShippingService::applyConfigToRates($address, $fallbackRates, 1_000_000, $config);
         $this->assertSame(0, $fallback[0]['harga']);
         $this->assertTrue($fallback[0]['gratis_ongkir']);
     }
 
-    public function testOnlyThreeCheapestBiteshipRatesAreIncluded(): void
+    public function testOnlyThreeCheapestRajaOngkirRatesAreIncluded(): void
     {
-        $biteship = [
-            ['provider' => 'biteship', 'nama' => 'Courier E', 'service_code' => 'e:regular', 'harga' => 90_000],
-            ['provider' => 'biteship', 'nama' => 'Courier C', 'service_code' => 'c:regular', 'harga' => 30_000],
-            ['provider' => 'biteship', 'nama' => 'Courier D', 'service_code' => 'd:regular', 'harga' => 60_000],
-            ['provider' => 'biteship', 'nama' => 'Courier A', 'service_code' => 'a:regular', 'harga' => 10_000],
-            ['provider' => 'biteship', 'nama' => 'Courier B', 'service_code' => 'b:regular', 'harga' => 20_000],
+        $rajaRates = [
+            ['provider' => 'rajaongkir', 'nama' => 'Courier E', 'service_code' => 'e:regular', 'harga' => 90_000],
+            ['provider' => 'rajaongkir', 'nama' => 'Courier C', 'service_code' => 'c:regular', 'harga' => 30_000],
+            ['provider' => 'rajaongkir', 'nama' => 'Courier D', 'service_code' => 'd:regular', 'harga' => 60_000],
+            ['provider' => 'rajaongkir', 'nama' => 'Courier A', 'service_code' => 'a:regular', 'harga' => 10_000],
+            ['provider' => 'rajaongkir', 'nama' => 'Courier B', 'service_code' => 'b:regular', 'harga' => 20_000],
         ];
 
-        $rates = \App\Services\ShippingService::combineRates(
-            [['provider' => 'apm', 'nama' => 'APM', 'harga' => 80_000]],
-            $biteship,
-        );
+        $rates = \App\Services\ShippingService::combineRates([], $rajaRates);
 
-        $this->assertSame(['apm', 'biteship', 'biteship', 'biteship'], array_column($rates, 'provider'));
-        $biteshipRates = array_values(array_filter($rates, static fn (array $rate): bool => $rate['provider'] === 'biteship'));
-        $this->assertSame([10_000, 20_000, 30_000], array_column($biteshipRates, 'harga'));
+        $this->assertSame(['rajaongkir', 'rajaongkir', 'rajaongkir'], array_column($rates, 'provider'));
+        $this->assertSame([10_000, 20_000, 30_000], array_column($rates, 'harga'));
     }
 }
