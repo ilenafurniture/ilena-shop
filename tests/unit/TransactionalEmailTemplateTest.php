@@ -24,4 +24,16 @@ final class TransactionalEmailTemplateTest extends CIUnitTestCase
         $this->assertStringNotContainsString('javascript:', $html);
         $this->assertStringNotContainsString('>Buka</a>', $html);
     }
+
+    public function testVerificationEmailUsesSelectableCodeAndEnglishMarkup(): void
+    {
+        $content = TransactionalEmailTemplate::verificationCode('481206', 'en');
+        $html = TransactionalEmailTemplate::html('Verify your account', 'Enter this code.', $content, null, null, null, 'en');
+
+        $this->assertStringContainsString('<html lang="en">', $html);
+        $this->assertStringContainsString('481206', $html);
+        $this->assertStringContainsString('user-select:all', $html);
+        $this->assertStringContainsString('tap and hold the code', $html);
+        $this->assertStringNotContainsString('<script', $html);
+    }
 }

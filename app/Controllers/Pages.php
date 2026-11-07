@@ -5807,9 +5807,10 @@ class Pages extends BaseController
             $email->setSubject($verificationTitle);
             $email->setMessage(\App\Services\Auth\TransactionalEmailTemplate::html(
                 $verificationTitle, $verificationIntro,
-                '<p style="font-size:28px;font-weight:700;letter-spacing:.18em;color:#8f2430">' . esc((string) $otp_number) . '</p><p>' . esc($verificationExpiry) . '</p>'
+                \App\Services\Auth\TransactionalEmailTemplate::verificationCode((string) $otp_number, $isEnglishVerification ? 'en' : 'id') . '<p style="margin:0;text-align:center;font-size:13px;color:#504b47">' . esc($verificationExpiry) . '</p>',
+                null, null, null, $isEnglishVerification ? 'en' : 'id'
             ));
-            $email->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain($verificationTitle, $verificationIntro, ($isEnglishVerification ? 'Verification code: ' : 'Kode verifikasi: ') . $otp_number . "\n" . $verificationExpiry));
+            $email->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain($verificationTitle, $verificationIntro, ($isEnglishVerification ? 'Verification code: ' : 'Kode verifikasi: ') . $otp_number . "\n" . $verificationExpiry, null, null, null, $isEnglishVerification ? 'en' : 'id'));
             if (!$email->send()) {
                 log_message('error', 'Registration verification email could not be sent.');
                 session()->setFlashdata('msg', lang('Store.otpEmailUnavailable'));
@@ -5970,9 +5971,10 @@ class Pages extends BaseController
             $sendemail->setSubject($verificationTitle);
             $sendemail->setMessage(\App\Services\Auth\TransactionalEmailTemplate::html(
                 $verificationTitle, $verificationIntro,
-                '<p style="font-size:28px;font-weight:700;letter-spacing:.18em;color:#8f2430">' . esc((string) $otp_number) . '</p><p>' . esc($verificationExpiry) . '</p>'
+                \App\Services\Auth\TransactionalEmailTemplate::verificationCode((string) $otp_number, $isEnglishVerification ? 'en' : 'id') . '<p style="margin:0;text-align:center;font-size:13px;color:#504b47">' . esc($verificationExpiry) . '</p>',
+                null, null, null, $isEnglishVerification ? 'en' : 'id'
             ));
-            $sendemail->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain($verificationTitle, $verificationIntro, ($isEnglishVerification ? 'Verification code: ' : 'Kode verifikasi: ') . $otp_number . "\n" . $verificationExpiry));
+            $sendemail->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain($verificationTitle, $verificationIntro, ($isEnglishVerification ? 'Verification code: ' : 'Kode verifikasi: ') . $otp_number . "\n" . $verificationExpiry, null, null, null, $isEnglishVerification ? 'en' : 'id'));
             if (!$sendemail->send()) {
                 log_message('error', 'Expired verification OTP email could not be sent.');
                 session()->setFlashdata('msg', lang('Store.otpEmailUnavailable'));
@@ -6127,9 +6129,10 @@ class Pages extends BaseController
         $email->setSubject($verificationTitle);
         $email->setMessage(\App\Services\Auth\TransactionalEmailTemplate::html(
             $verificationTitle, $verificationIntro,
-            '<p style="font-size:28px;font-weight:700;letter-spacing:.18em;color:#8f2430">' . esc((string) $otp_number) . '</p><p>' . esc($verificationExpiry) . '</p>'
+            \App\Services\Auth\TransactionalEmailTemplate::verificationCode((string) $otp_number, $isEnglishVerification ? 'en' : 'id') . '<p style="margin:0;text-align:center;font-size:13px;color:#504b47">' . esc($verificationExpiry) . '</p>',
+            null, null, null, $isEnglishVerification ? 'en' : 'id'
         ));
-        $email->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain($verificationTitle, $verificationIntro, ($isEnglishVerification ? 'Verification code: ' : 'Kode verifikasi: ') . $otp_number . "\n" . $verificationExpiry));
+        $email->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain($verificationTitle, $verificationIntro, ($isEnglishVerification ? 'Verification code: ' : 'Kode verifikasi: ') . $otp_number . "\n" . $verificationExpiry, null, null, null, $isEnglishVerification ? 'en' : 'id'));
         if (!$email->send()) {
             log_message('error', 'Verification OTP resend email could not be sent.');
             session()->setFlashdata('msg', $isRecoveryRequest ? lang('Store.otpRecoveryNotice') : lang('Store.otpEmailUnavailable'));
@@ -6309,8 +6312,8 @@ class Pages extends BaseController
         $mailIntro = $locale === 'en' ? 'Confirm this address to finish updating your Ilena account.' : 'Konfirmasikan alamat ini untuk menyelesaikan perubahan email akun Ilena Anda.';
         $mailAction = $locale === 'en' ? 'Confirm email address' : 'Konfirmasi alamat email';
         $mailDetails = $locale === 'en' ? 'This single-use link expires in 30 minutes. Ignore this email if you did not request the change.' : 'Tautan sekali pakai berlaku selama 30 menit. Abaikan email ini jika Anda tidak meminta perubahan.';
-        $mail->setMessage(\App\Services\Auth\TransactionalEmailTemplate::html($mailTitle, $mailIntro, '<p>' . esc($mailDetails) . '</p>', $mailAction, $confirmUrl, $locale === 'en' ? 'This email concerns the security of your Ilena account. If you did not request this action, ignore this email or contact' : 'Email ini terkait keamanan akun Ilena Anda. Jika Anda tidak meminta tindakan ini, abaikan email ini atau hubungi'));
-        $mail->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain($mailTitle, $mailIntro, $mailDetails, $mailAction, $confirmUrl, $locale === 'en' ? 'This email concerns your Ilena account security. If you did not request this action, ignore it or contact' : 'Email terkait keamanan akun Ilena. Jika Anda tidak meminta tindakan ini, abaikan email ini atau hubungi'));
+        $mail->setMessage(\App\Services\Auth\TransactionalEmailTemplate::html($mailTitle, $mailIntro, '<p>' . esc($mailDetails) . '</p>', $mailAction, $confirmUrl, null, $locale));
+        $mail->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain($mailTitle, $mailIntro, $mailDetails, $mailAction, $confirmUrl, null, $locale));
         if (! $mail->send()) {
             $db->table('account_contact_verifications')->where('user_email', (string) $user['email'])->where('channel', 'email_change')
                 ->where('target', $newEmail)->where('consumed_at', null)->update(['consumed_at' => $now]);
@@ -6435,8 +6438,8 @@ class Pages extends BaseController
         $securityDetails = $locale === 'en'
             ? 'The email on your Ilena account is now ' . $newEmail . '. If you did not make this change, contact Ilena support immediately and secure your account.'
             : 'Email pada akun Ilena Anda sekarang adalah ' . $newEmail . '. Jika bukan Anda yang melakukan perubahan, segera hubungi tim Ilena dan amankan akun Anda.';
-        $securityMail->setMessage(\App\Services\Auth\TransactionalEmailTemplate::html($securityTitle, $locale === 'en' ? 'This is a security notification for your Ilena account.' : 'Ini adalah pemberitahuan keamanan untuk akun Ilena Anda.', '<p>' . esc($securityDetails) . '</p>', null, null, $locale === 'en' ? 'This email concerns your Ilena account security. If you did not request this action, contact' : 'Email ini terkait keamanan akun Ilena Anda. Jika Anda tidak meminta tindakan ini, hubungi'));
-        $securityMail->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain($securityTitle, $locale === 'en' ? 'This is a security notification for your Ilena account.' : 'Ini adalah pemberitahuan keamanan untuk akun Ilena Anda.', $securityDetails, null, null, $locale === 'en' ? 'This email concerns your Ilena account security. Contact' : 'Email terkait keamanan akun Ilena. Hubungi'));
+        $securityMail->setMessage(\App\Services\Auth\TransactionalEmailTemplate::html($securityTitle, $locale === 'en' ? 'This is a security notification for your Ilena account.' : 'Ini adalah pemberitahuan keamanan untuk akun Ilena Anda.', '<p>' . esc($securityDetails) . '</p>', null, null, null, $locale));
+        $securityMail->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain($securityTitle, $locale === 'en' ? 'This is a security notification for your Ilena account.' : 'Ini adalah pemberitahuan keamanan untuk akun Ilena Anda.', $securityDetails, null, null, null, $locale));
         if (! $securityMail->send()) log_message('warning', 'Customer email-change security notification could not be delivered.');
         session()->destroy();
         session()->setFlashdata('msg', lang('Store.emailChanged'));
@@ -6738,8 +6741,8 @@ class Pages extends BaseController
             $emailIntro = $locale === 'en' ? 'Use the secure link below to choose a new password for your Ilena account.' : 'Gunakan tautan aman berikut untuk membuat kata sandi baru akun Ilena Anda.';
             $emailAction = $locale === 'en' ? 'Reset password' : 'Reset kata sandi';
             $emailDetails = $locale === 'en' ? 'This single-use link expires in 30 minutes. Ignore this email if you did not request a reset.' : 'Tautan sekali pakai berlaku selama 30 menit. Abaikan email ini jika Anda tidak meminta reset.';
-            $emailService->setMessage(\App\Services\Auth\TransactionalEmailTemplate::html($emailTitle, $emailIntro, '<p>' . esc($emailDetails) . '</p>', $emailAction, $resetUrl));
-            $emailService->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain($emailTitle, $emailIntro, $emailDetails, $emailAction, $resetUrl));
+            $emailService->setMessage(\App\Services\Auth\TransactionalEmailTemplate::html($emailTitle, $emailIntro, '<p>' . esc($emailDetails) . '</p>', $emailAction, $resetUrl, null, $locale));
+            $emailService->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain($emailTitle, $emailIntro, $emailDetails, $emailAction, $resetUrl, null, $locale));
             if (!$emailService->send()) log_message('warning', 'Customer password reset email delivery failed.');
         }
         session()->setFlashdata('msg', $generic);
