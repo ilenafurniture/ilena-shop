@@ -13,6 +13,10 @@ final class RegistrationInput
         foreach (['nama', 'email', 'nohp', 'sandi', 'validasi-syarat'] as $field) {
             $data[$field] = is_string($post[$field] ?? null) ? $post[$field] : '';
         }
+        // Phone is collected later in checkout; reject malformed array payloads even though it is optional.
+        if (array_key_exists('nohp', $post) && ! is_string($post['nohp'])) {
+            $data['nohp'] = '__invalid_phone_payload__';
+        }
         $data['nama'] = trim($data['nama']);
         $data['email'] = strtolower(trim($data['email']));
         $data['nohp'] = trim($data['nohp']);
@@ -32,8 +36,8 @@ final class RegistrationInput
                 'errors' => ['required' => 'Email harus diisi.', 'valid_email' => 'Format email tidak valid.', 'max_length' => 'Email maksimal 191 karakter.', 'regex_match' => 'Format email tidak valid.'],
             ],
             'nohp' => [
-                'rules' => 'required|regex_match[/^[0-9]{10,15}$/D]',
-                'errors' => ['required' => 'Nomor HP harus diisi.', 'regex_match' => 'Nomor HP harus berupa 10–15 digit angka, tanpa spasi atau tanda baca.'],
+                'rules' => 'permit_empty|regex_match[/^[0-9]{10,15}$/D]',
+                'errors' => ['regex_match' => 'Nomor HP harus berupa 10–15 digit angka, tanpa spasi atau tanda baca.'],
             ],
             'sandi' => [
                 'rules' => 'required|min_length[12]|max_length[72]|regex_match[/^[^\x00]+$/D]',

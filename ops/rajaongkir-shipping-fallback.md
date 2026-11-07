@@ -7,7 +7,7 @@ Configure these values in the VPS application's `.env`; never put the secret in 
 ```dotenv
 RAJAONGKIR_SHIPPING_API_KEY=Shipping-Cost-API-key
 RAJAONGKIR_ORIGIN_LOCATION_ID=RajaOngkir-origin-location-id
-RAJAONGKIR_COURIERS=jne:sicepat:jnt:tiki:pos:anteraja:ninja:wahana:lion
+RAJAONGKIR_COURIERS=jne:sicepat:jnt:tiki:pos:ninja:wahana:lion
 ```
 
 Use the **Shipping Cost API key**, not a key for Shipping Delivery. Obtain the origin location ID from RajaOngkir's Shipping Cost domestic-destination search using the warehouse postcode. Confirm the returned province, city, district, and postcode refer to the actual dispatch point before saving the ID. The destination location is resolved from the saved address postcode plus province, city/regency, district, and village names; the resolved ID is cached for 30 days. Checkout rates are cached for 30 seconds; final checkout revalidates a RajaOngkir option against a fresh rate.

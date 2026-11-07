@@ -2206,66 +2206,37 @@ class Pages extends BaseController
             $voucher = array_values(array_reduce($voucher, function($acc,$v){ $acc[$v['id']]=$v; return $acc; }, []));
         }
 
-        // ====== Rekomendasi voucher eligible (pakai helper yang sama!) ======
         $email    = $alamatselected['email_pemesan'];
         $subtotal = $hargaTotal;
 
-        try {
-            $autoRows = $this->voucherModel->where(['aktif'=>1, 'auto_apply'=>1])->findAll();
-        } catch (\Throwable $th) {
-            $autoRows = [];
+        $voucherResolution = $this->resolveCheckoutVouchers($email, $subtotal);
+        if (empty($voucherResolution['ok'])) {
+            session()->setFlashdata('msg', $voucherResolution['message']);
+            return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
         }
+        $eligibleAutoRows = $voucherResolution['eligible_automatic'];
+        $selectedVoucher = $voucherResolution['selected'];
+        $appliedVouchers = $voucherResolution['applied'];
+        $diskonVoucher = (int) $voucherResolution['discount'];
+        $voucherSelected = $selectedVoucher ? $selectedVoucher + ['rupiah' => $diskonVoucher] : false;
 
-        foreach ($autoRows as $row) {
-            $elig = $this->checkVoucherEligibility($row, $email, $subtotal);
-            if (!$elig['ok']) continue;
-
-            $vRecord = [
-                'id'            => (int)$row['id'],
-                'kode'          => $row['kode'],
-                'nama'          => $row['nama'],
-                'deskripsi'     => $row['deskripsi'] ?? '',
-                'tipe'          => $row['tipe'] ?? ($row['satuan'] ?? 'persen'),
-                'nilai'         => (float)($row['nilai'] ?? ($row['nominal'] ?? 0)),
-                'nominal'       => ($row['nilai'] ?? ($row['nominal'] ?? 0)),
-                'satuan'        => (($row['tipe'] ?? ($row['satuan'] ?? 'persen')) === 'persen') ? 'persen' : 'rupiah',
-                'target'        => $row['target'] ?? 'semua',
-                'auto_apply'    => (int)($row['auto_apply'] ?? 0),
-                'aktif'         => (int)($row['aktif'] ?? 1),
-                'minimal_belanja'=> (int)($row['minimal_belanja'] ?? 0),
-                'mulai'         => $row['mulai'] ?? null,
-                'berakhir'      => $row['berakhir'] ?? null,
-                'recommended'   => true,
-                'estimated_cut' => (int)$elig['cut'],
-            ];
-
-            // hindari duplikat (jika sudah ada dari claimed/legacy)
-            $exists = false;
-            foreach ($voucher as $vx) {
-                if ((int)($vx['id'] ?? 0) === (int)$vRecord['id']) { $exists = true; break; }
-            }
-            if (!$exists) $voucher[] = $vRecord;
-        }
-
-        // ====== Diskon voucher yg DIPILIH user (bukan auto-apply) ======
-        $diskonVoucher = 0; $voucherSelected = false;
-        if (session()->get('voucher')) {
-            $vd = $this->voucherModel->find((int)session()->get('voucher'));
-            if ($vd) {
-                $elig = $this->checkVoucherEligibility($vd, $email, $hargaTotal);
-                if (!empty($elig['ok'])) {
-                    $diskonVoucher = (int)($elig['cut'] ?? 0);
-                    $voucherSelected = $vd + ['rupiah' => $diskonVoucher];
-                } else {
-                    session()->remove('voucher');
-                    session()->setFlashdata('msg', $elig['msg'] ?? 'Voucher tidak memenuhi syarat.');
+        foreach ($eligibleAutoRows as $autoVoucher) {
+            foreach ($appliedVouchers as $appliedVoucher) {
+                if ($appliedVoucher['source'] === 'automatic' && (int) $appliedVoucher['id'] === (int) $autoVoucher['id']) {
+                    $autoVoucher['applied'] = true;
+                    $alreadyListed = false;
+                    foreach ($voucher as &$existingVoucher) {
+                        if ((int) ($existingVoucher['id'] ?? 0) === (int) $autoVoucher['id']) {
+                            $existingVoucher['applied'] = true;
+                            $alreadyListed = true;
+                        }
+                    }
+                    unset($existingVoucher);
+                    if (! $alreadyListed) $voucher[] = $autoVoucher;
+                    break;
                 }
             }
         }
-
-        // ====== (Opsional) auto pilih yg terbesar — TAPI TIDAK auto-apply.
-        //      Kita hanya "merekomendasikan" di UI (kamu sudah punya UI pilih voucher).
-        //      Jadi bagian ini sengaja tidak override pilihan user. ======
 
         $method  = session()->get('payment_method') ?? 'bca';
         session()->set('payment_method', $method);
@@ -2281,7 +2252,7 @@ class Pages extends BaseController
                 session()->set('shop_order_token', $shopOrderToken);
             }
         }
-        $checkoutFingerprint = \App\Services\CheckoutState::fingerprint($keranjang, $alamatselected, $kurirTerpilih, $method, session()->get('voucher'));
+        $checkoutFingerprint = \App\Services\CheckoutState::fingerprint($keranjang, $alamatselected, $kurirTerpilih, $method, array_column($appliedVouchers, 'id'));
         $operationCreated = (int)session()->get('checkout_operation_created_at');
         if (!hash_equals((string)session()->get('checkout_operation_fingerprint'), $checkoutFingerprint)
             || $operationCreated <= 0 || time() - $operationCreated >= 285) {
@@ -2317,10 +2288,10 @@ class Pages extends BaseController
                 'alamat'    => $alamatselected['alamat_lengkap'],
                 'keranjang' => $this->session->get('keranjang'),
                 'kurir'     => $kurirTerpilih,
-                'voucher'   => $voucherSelected ? ['d'=>(int)$diskonVoucher,'id'=>$voucherSelected['id']] : false
+                'voucher'   => $appliedVouchers ?: false
             ])),
             'indexAddress'      => $index_kurir,
-            'voucher'           => ['list'=>$voucher, 'selected'=>$voucherSelected],
+            'voucher'           => ['list'=>$voucher, 'selected'=>$voucherSelected, 'applied'=>$appliedVouchers, 'discount'=>$diskonVoucher],
             'emailUji'          => session()->get('isLogin') && session()->get('email') !== 'tamu' && PaymentSafety::isTestEmail((string)session()->get('email'), $emailUjiCoba),
             'msg'               => session()->getFlashdata('msg'),
             'hargaOngkir'       => $hargaOngkir,
@@ -2356,7 +2327,17 @@ class Pages extends BaseController
     public function useVoucher($data)
     {
         [$ind_voucher, $ind_address] = explode('-', $data);
-        session()->set('voucher', $ind_voucher);
+        $voucherId = (int) $ind_voucher;
+        $claimedIds = array_values(array_unique(array_map('intval', (array) session()->get('voucher_claimed'))));
+        $email = strtolower((string) (session()->get('email') ?? ''));
+        $legacyTestVoucher = $voucherId === 1 && session()->get('isLogin')
+            && in_array($email, array_map('strtolower', $this->midtransTestEmails()), true);
+        if ($voucherId < 1 || (! in_array($voucherId, $claimedIds, true) && ! $legacyTestVoucher)) {
+            session()->remove('voucher');
+            session()->setFlashdata('msg', 'Klaim voucher terlebih dahulu sebelum menggunakannya.');
+            return redirect()->to(ilena_store_path('/payment/' . $ind_address));
+        }
+        session()->set('voucher', $voucherId);
         return redirect()->to(ilena_store_path('/payment/' . $ind_address));
     }
 
@@ -2527,6 +2508,10 @@ class Pages extends BaseController
         $claimed = (array)(session()->get('voucher_claimed') ?? []);
         $id = (int)$row['id'];
         if (!in_array($id, $claimed, true)) {
+            if (count(array_unique(array_map('intval', $claimed))) >= 100) {
+                session()->setFlashdata('msg', 'Daftar klaim voucher sudah mencapai batas. Gunakan atau tinjau klaim yang sudah ada terlebih dahulu.');
+                return redirect()->to(ilena_store_path('/payment/' . $ind_add));
+            }
             $claimed[] = $id;
             session()->set('voucher_claimed', $claimed);
         }
@@ -2646,6 +2631,64 @@ class Pages extends BaseController
         $rupiah = max(0, min($rupiah, (int)$subtotal));
 
         return ['ok'=>true,'msg'=>'Voucher valid.','cut'=>$rupiah];
+    }
+
+    /** Resolve voucher claims server-side; never trust amounts or lists posted by the browser. */
+    private function resolveCheckoutVouchers(string $email, float $subtotal): array
+    {
+        $claimedIds = array_values(array_unique(array_map('intval', (array) session()->get('voucher_claimed'))));
+        $selectedId = (int) session()->get('voucher');
+        $selected = null;
+        $selectedIsClaimed = false;
+        if ($selectedId > 0) {
+            $selected = $this->voucherModel->find($selectedId);
+            if (! $selected) return ['ok' => false, 'message' => 'Voucher terpilih tidak ditemukan.'];
+            $selectedIsClaimed = in_array($selectedId, $claimedIds, true);
+            $isLegacyTestVoucher = $selectedId === 1
+                && session()->get('isLogin')
+                && in_array(strtolower($email), array_map('strtolower', $this->midtransTestEmails()), true);
+            if (! $selectedIsClaimed && ! $isLegacyTestVoucher) {
+                session()->remove('voucher');
+                return ['ok' => false, 'message' => 'Voucher harus diklaim terlebih dahulu sebelum digunakan.'];
+            }
+            $eligibility = $this->checkVoucherEligibility($selected, $email, $subtotal);
+            if (empty($eligibility['ok'])) {
+                session()->remove('voucher');
+                return ['ok' => false, 'message' => $eligibility['msg'] ?? 'Voucher tidak memenuhi syarat.'];
+            }
+        }
+
+        try {
+            $rows = $this->voucherModel->where(['aktif' => 1, 'auto_apply' => 1])->findAll();
+        } catch (\Throwable $error) {
+            log_message('error', 'Automatic voucher lookup failed: {error}', ['error' => $error->getMessage()]);
+            return ['ok' => false, 'message' => 'Promo belum dapat diverifikasi. Coba kembali sebentar lagi.'];
+        }
+        $eligibleAutomatic = [];
+        foreach ($rows as $row) {
+            $eligibility = $this->checkVoucherEligibility($row, $email, $subtotal);
+            if (empty($eligibility['ok'])) continue;
+            $row['tipe'] = $row['tipe'] ?? ($row['satuan'] ?? 'persen');
+            $row['nilai'] = $row['nilai'] ?? ($row['nominal'] ?? 0);
+            $row['estimated_cut'] = (int) ($eligibility['cut'] ?? 0);
+            $row['recommended'] = true;
+            $eligibleAutomatic[] = $row;
+        }
+
+        $calculation = (new \App\Services\Payments\VoucherStackCalculator())->calculate(
+            $eligibleAutomatic,
+            $selected,
+            $selected !== null && $selectedIsClaimed,
+            $subtotal
+        );
+        return [
+            'ok' => true,
+            'eligible_automatic' => $eligibleAutomatic,
+            'selected' => $selected,
+            'applied' => $calculation['applied'],
+            'discount' => (int) $calculation['discount'],
+            'remaining' => (int) $calculation['remaining'],
+        ];
     }
 
 
@@ -3235,25 +3278,19 @@ class Pages extends BaseController
             ];
         }
 
-        $diskonVoucher = 0;
-        $voucher = false;
-        if (session()->get('voucher')) {
-            $vd = $this->voucherModel->find((int)session()->get('voucher'));
-            if ($vd) {
-                $elig = $this->checkVoucherEligibility($vd, $email, $subtotal);
-                if (empty($elig['ok'])) {
-                    session()->setFlashdata('msg', $elig['msg'] ?? 'Voucher tidak memenuhi syarat.');
-                    return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
-                }
-                $diskonVoucher = (int)($elig['cut'] ?? 0);
-                $voucher = ['d' => $diskonVoucher, 'id' => $vd['id'], 'kode' => $vd['kode']];
-            }
+        $voucherResolution = $this->resolveCheckoutVouchers($email, $subtotal);
+        if (empty($voucherResolution['ok'])) {
+            session()->setFlashdata('msg', $voucherResolution['message']);
+            return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
         }
+        $appliedVouchers = $voucherResolution['applied'];
+        $diskonVoucher = (int) $voucherResolution['discount'];
+        $voucher = $appliedVouchers;
 
         $total = $subtotal;
-        if ($voucher) {
-            $itemDetails[] = ['id'=>$voucher['kode'],'price'=>-$voucher['d'],'quantity'=>1,'name'=>'Voucher'];
-            $total -= $voucher['d'];
+        foreach ($appliedVouchers as $appliedVoucher) {
+            $itemDetails[] = ['id'=>$appliedVoucher['kode'],'price'=>-(int)$appliedVoucher['discount'],'quantity'=>1,'name'=>'Voucher'];
+            $total -= (int)$appliedVoucher['discount'];
         }
         if ($flashSale > 0) {
             $itemDetails[] = ['id'=>'Flash Sale','price'=>-$flashSale,'quantity'=>1,'name'=>'Flash Sale'];
@@ -3281,7 +3318,7 @@ class Pages extends BaseController
 
         $idFix = (string)session()->get('checkout_order_id');
         $idempotencyKey = (string)session()->get('checkout_operation_key');
-        $currentFingerprint = \App\Services\CheckoutState::fingerprint($cartCheck['cart'], $alamatselected, $kurirTerpilih, $pembayaran, session()->get('voucher'));
+        $currentFingerprint = \App\Services\CheckoutState::fingerprint($cartCheck['cart'], $alamatselected, $kurirTerpilih, $pembayaran, array_column($appliedVouchers, 'id'));
         if (!hash_equals((string)session()->get('checkout_operation_fingerprint'), $currentFingerprint)) {
             session()->setFlashdata('msg', 'Keranjang atau pilihan pembayaran berubah. Periksa kembali ringkasan sebelum membayar.');
             return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
@@ -3296,16 +3333,21 @@ class Pages extends BaseController
                 . '?idorder=' . rawurlencode($idFix) . '&access_token=' . rawurlencode($this->orderAccessToken($idFix))));
         }
 
-        $voucherReservationCreated = false;
+        $voucherReservationsCreated = [];
         if ($voucher && !$isSandboxCheckout) {
             try {
-                $voucherReservation = (new \App\Services\Payments\VoucherReservationService())->reserve((int) $voucher['id'], $idFix, $email);
-                if (empty($voucherReservation['ok'])) {
-                    session()->setFlashdata('msg', $voucherReservation['message'] ?? 'Voucher baru saja mencapai batas pemakaian.');
-                    return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
+                $voucherReservationService = new \App\Services\Payments\VoucherReservationService();
+                foreach ($voucher as $appliedVoucher) {
+                    $voucherReservation = $voucherReservationService->reserve((int) $appliedVoucher['id'], $idFix, $email);
+                    if (empty($voucherReservation['ok'])) {
+                        foreach ($voucherReservationsCreated as $createdVoucherId) $voucherReservationService->release($idFix, $createdVoucherId);
+                        session()->setFlashdata('msg', $voucherReservation['message'] ?? 'Voucher baru saja mencapai batas pemakaian.');
+                        return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
+                    }
+                    if (empty($voucherReservation['existing'])) $voucherReservationsCreated[] = (int) $appliedVoucher['id'];
                 }
-                $voucherReservationCreated = empty($voucherReservation['existing']);
             } catch (\Throwable $error) {
+                if (isset($voucherReservationService)) foreach ($voucherReservationsCreated as $createdVoucherId) $voucherReservationService->release($idFix, $createdVoucherId);
                 log_message('error', 'Voucher checkout reservation failed for {order}: {error}', ['order' => $idFix, 'error' => $error->getMessage()]);
                 session()->setFlashdata('msg', 'Voucher sedang tidak dapat diamankan. Coba kembali sebentar lagi.');
                 return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
@@ -3371,13 +3413,13 @@ class Pages extends BaseController
             try {
                 $reservation = (new \App\Services\Payments\StockReservationService())->reserve($idFix, $cartCheck['cart']);
             } catch (\Throwable $error) {
-                if ($voucherReservationCreated) (new \App\Services\Payments\VoucherReservationService())->release($idFix);
+                foreach ($voucherReservationsCreated as $createdVoucherId) (new \App\Services\Payments\VoucherReservationService())->release($idFix, $createdVoucherId);
                 log_message('error', 'Could not reserve checkout stock for {order}: {error}', ['order' => $idFix, 'error' => $error->getMessage()]);
                 session()->setFlashdata('msg', 'Stok belum dapat diamankan. Coba kembali setelah beberapa saat.');
                 return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
             }
             if (empty($reservation['ok'])) {
-                if ($voucherReservationCreated) (new \App\Services\Payments\VoucherReservationService())->release($idFix);
+                foreach ($voucherReservationsCreated as $createdVoucherId) (new \App\Services\Payments\VoucherReservationService())->release($idFix, $createdVoucherId);
                 session()->setFlashdata('msg', $reservation['message'] ?? 'Stok berubah. Perbarui keranjang sebelum membayar.');
                 return redirect()->to(ilena_store_path('/cart'));
             }
@@ -3397,7 +3439,7 @@ class Pages extends BaseController
                 'id_marketplace'=>'','status_print'=>'siap','keterangan_suratjalan'=>''])) throw new \RuntimeException('Checkout attempt could not be saved');
         } catch (\Throwable $error) {
             if (!$isSandboxCheckout) (new \App\Services\Payments\StockReservationService())->release($idFix);
-            if ($voucherReservationCreated) (new \App\Services\Payments\VoucherReservationService())->release($idFix);
+            foreach ($voucherReservationsCreated as $createdVoucherId) (new \App\Services\Payments\VoucherReservationService())->release($idFix, $createdVoucherId);
             log_message('error','Checkout persistence failed: {error}',['error'=>$error->getMessage()]);
             return redirect()->to(ilena_store_path('/payment/' . $index_kurir))->with('msg','Pesanan belum tersimpan; belum ada permintaan pembayaran dikirim.');
         }
@@ -5631,6 +5673,18 @@ class Pages extends BaseController
         session()->remove(['pending_guest_cart','pending_guest_wishlist','pending_guest_addresses']);
     }
 
+    private function maskVerificationEmail(string $email): string
+    {
+        $at = strrpos($email, '@');
+        if ($at === false) return '';
+        $local = substr($email, 0, $at);
+        $domain = substr($email, $at + 1);
+        if ($local === '' || $domain === '') return '';
+        $visible = mb_substr($local, 0, 1);
+        $maskLength = min(4, max(2, mb_strlen($local) - 1));
+        return $visible . str_repeat('•', $maskLength) . '@' . $domain;
+    }
+
     public function editSandi($path)
     {
         $sandiLama = (string) $this->request->getPost('sandiLama');
@@ -5673,6 +5727,9 @@ class Pages extends BaseController
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'authFormNonce' => $authFormGuard->issue('register'),
+            'googleLoginEnabled' => trim((string) env('GOOGLE_OAUTH_CLIENT_ID')) !== ''
+                && trim((string) env('GOOGLE_OAUTH_CLIENT_SECRET')) !== ''
+                && $this->isValidGoogleRedirectUri(trim((string) env('GOOGLE_OAUTH_REDIRECT_URI'))),
             'captchaError' => session()->getFlashdata('captcha_error'),
             'val' => [
                 'val_nama' => session()->getFlashdata('val-nama'),
@@ -5695,7 +5752,7 @@ class Pages extends BaseController
             $this->request->getPost('website'),
             $this->request->getPost('ref_code'),
             $this->request->getPost('company_website'),
-        ], 3);
+        ]);
         if (!$validForm) {
             session()->setFlashdata('msg', 'Form pendaftaran kedaluwarsa atau tidak valid. Silakan muat ulang halaman.');
             return redirect()->to(ilena_store_path('/register'));
@@ -5732,10 +5789,7 @@ class Pages extends BaseController
             }
 
             $otp_number = random_int(100000, 999999);
-            $waktu_otp = time() + 300;
-            $d = strtotime("+425 Minutes");
-            $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-            $waktu_otp_tanggal = date("d", $d) . " " . $bulan[date("m", $d) - 1] . " " . date("Y H:i:s", $d);
+            $waktu_otp = time() + 600;
 
             $namaUser = $registration['nama'];
             $nohpUser = $registration['nohp'];
@@ -5746,15 +5800,19 @@ class Pages extends BaseController
             $email->setFrom($emailConfig->SMTPUser ?: ($emailConfig->fromEmail ?: 'no-reply@ilenafurniture.com'), 'Ilena Furniture');
             $email->setReplyTo('info@ilenafurniture.com', 'Ilena Furniture');
             $email->setTo($emailUser);
-            $email->setSubject('Kode verifikasi akun Ilena');
+            $isEnglishVerification = service('request')->getLocale() === 'en';
+            $verificationTitle = $isEnglishVerification ? 'Verify your Ilena account' : 'Verifikasi email akun Ilena';
+            $verificationIntro = $isEnglishVerification ? 'Enter this code to finish creating your Ilena account.' : 'Masukkan kode berikut untuk menyelesaikan pendaftaran akun Ilena.';
+            $verificationExpiry = $isEnglishVerification ? 'This code is valid for 10 minutes. Never share it with anyone.' : 'Kode berlaku selama 10 menit. Jangan bagikan kepada siapa pun.';
+            $email->setSubject($verificationTitle);
             $email->setMessage(\App\Services\Auth\TransactionalEmailTemplate::html(
-                'Verifikasi email Anda', 'Gunakan kode berikut untuk menyelesaikan pendaftaran akun Ilena.',
-                '<p style="font-size:28px;font-weight:700;letter-spacing:.18em;color:#8f2430">' . esc((string) $otp_number) . '</p><p>Kode berlaku selama 5 menit. Jangan bagikan kode ini kepada siapa pun.</p>'
+                $verificationTitle, $verificationIntro,
+                '<p style="font-size:28px;font-weight:700;letter-spacing:.18em;color:#8f2430">' . esc((string) $otp_number) . '</p><p>' . esc($verificationExpiry) . '</p>'
             ));
-            $email->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain('Verifikasi email Anda', 'Gunakan kode berikut untuk menyelesaikan pendaftaran akun Ilena.', 'Kode verifikasi: ' . $otp_number . "\nBerlaku selama 5 menit. Jangan bagikan kode ini kepada siapa pun."));
+            $email->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain($verificationTitle, $verificationIntro, ($isEnglishVerification ? 'Verification code: ' : 'Kode verifikasi: ') . $otp_number . "\n" . $verificationExpiry));
             if (!$email->send()) {
                 log_message('error', 'Registration verification email could not be sent.');
-                session()->setFlashdata('msg', 'Email verifikasi belum dapat dikirim. Coba lagi nanti.');
+                session()->setFlashdata('msg', lang('Store.otpEmailUnavailable'));
                 return redirect()->to(ilena_store_path('/register'))->withInput();
             }
 
@@ -5813,7 +5871,7 @@ class Pages extends BaseController
         session()->regenerate(true);
         session()->set($ses_data);
         session()->set('otp_last_sent_at', time());
-        session()->setFlashdata('msg', "OTP telah dikirim ke email " . $emailUser . " dan berlaku hingga " . $waktu_otp_tanggal);
+        session()->setFlashdata('msg', lang('Store.otpSentNotice'));
         return redirect()->to(ilena_store_path('/verify'));
     }
     public function verify()
@@ -5828,6 +5886,8 @@ class Pages extends BaseController
             'title' => 'Verifikasi',
             'navbar' => $this->getNavbarData(),
             'apikey_img_ilena' => $this->apikey_img_ilena,
+            'verificationEmail' => $this->maskVerificationEmail((string) $email),
+            'otpResendRemaining' => max(0, 60 - (time() - (int) session()->get('otp_last_sent_at'))),
             'val' => [
                 'msg' => session()->getFlashdata('msg'),
                 'val_verify' => session()->getFlashdata('val_verify')
@@ -5855,19 +5915,16 @@ class Pages extends BaseController
         }
 
         if (!(new \App\Services\Auth\AuthAttemptLimiter())->allow('otp_verify', (string)$this->request->getIPAddress(), (string)$email, 30, 8, 300)) {
-            return redirect()->to(ilena_store_path('/verify'))->with('msg', 'Terlalu banyak percobaan OTP. Tunggu beberapa saat sebelum mencoba lagi.');
+            return redirect()->to(ilena_store_path('/verify'))->with('msg', lang('Store.otpTooManyAttempts'));
         }
         if (preg_match('/^\d{6}$/', (string)$otp) !== 1 || !hash_equals((string)$getUser['otp'], (string)$otp)) {
-            session()->setFlashdata('val_verify', "OTP salah");
+            session()->setFlashdata('val_verify', lang('Store.otpInvalid'));
             return redirect()->to(ilena_store_path("/verify"));
         }
         $waktu_otp = time();
         if ($waktu_otp > (int)$getUser['waktu_otp']) {
             $otp_number = random_int(100000, 999999);
-            $waktu_otp = time() + 300;
-            $d = strtotime("+425 Minutes");
-            $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-            $waktu_otp_tanggal = date("d", $d) . " " . $bulan[date("m", $d) - 1] . " " . date("Y H:i:s", $d);
+            $waktu_otp = time() + 600;
 
             $sendemail = \Config\Services::email();
             $emailConfig = config('Email');
@@ -5875,15 +5932,19 @@ class Pages extends BaseController
             $sendemail->setFrom($emailConfig->SMTPUser ?: ($emailConfig->fromEmail ?: 'no-reply@ilenafurniture.com'), 'Ilena Furniture');
             $sendemail->setReplyTo('info@ilenafurniture.com', 'Ilena Furniture');
             $sendemail->setTo($email);
-            $sendemail->setSubject('Kode verifikasi akun Ilena');
+            $isEnglishVerification = service('request')->getLocale() === 'en';
+            $verificationTitle = $isEnglishVerification ? 'Verify your Ilena account' : 'Verifikasi email akun Ilena';
+            $verificationIntro = $isEnglishVerification ? 'Enter this code to finish verifying your Ilena account.' : 'Masukkan kode berikut untuk menyelesaikan verifikasi akun Ilena.';
+            $verificationExpiry = $isEnglishVerification ? 'This code is valid for 10 minutes. Never share it with anyone.' : 'Kode berlaku selama 10 menit. Jangan bagikan kepada siapa pun.';
+            $sendemail->setSubject($verificationTitle);
             $sendemail->setMessage(\App\Services\Auth\TransactionalEmailTemplate::html(
-                'Verifikasi email Anda', 'Gunakan kode berikut untuk menyelesaikan verifikasi akun Ilena.',
-                '<p style="font-size:28px;font-weight:700;letter-spacing:.18em;color:#8f2430">' . esc((string) $otp_number) . '</p><p>Kode berlaku selama 5 menit. Jangan bagikan kode ini kepada siapa pun.</p>'
+                $verificationTitle, $verificationIntro,
+                '<p style="font-size:28px;font-weight:700;letter-spacing:.18em;color:#8f2430">' . esc((string) $otp_number) . '</p><p>' . esc($verificationExpiry) . '</p>'
             ));
-            $sendemail->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain('Verifikasi email Anda', 'Gunakan kode berikut untuk menyelesaikan verifikasi akun Ilena.', 'Kode verifikasi: ' . $otp_number . "\nBerlaku selama 5 menit. Jangan bagikan kode ini kepada siapa pun."));
+            $sendemail->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain($verificationTitle, $verificationIntro, ($isEnglishVerification ? 'Verification code: ' : 'Kode verifikasi: ') . $otp_number . "\n" . $verificationExpiry));
             if (!$sendemail->send()) {
                 log_message('error', 'Expired verification OTP email could not be sent.');
-                session()->setFlashdata('msg', 'Email verifikasi belum dapat dikirim. Coba lagi nanti.');
+                session()->setFlashdata('msg', lang('Store.otpEmailUnavailable'));
                 return redirect()->to(ilena_store_path('/verify'));
             }
 
@@ -5892,7 +5953,7 @@ class Pages extends BaseController
                 'waktu_otp' => $waktu_otp
             ])->update();
             session()->set('otp_last_sent_at', time());
-            session()->setFlashdata('msg', "OTP telah diperbarui dan sudah dikirim kembali ke email " . $email);
+            session()->setFlashdata('msg', lang('Store.otpSentNotice'));
             return redirect()->to(ilena_store_path("/verify"));
         }
 
@@ -5948,20 +6009,17 @@ class Pages extends BaseController
             return redirect()->to(ilena_store_path('/'));
         }
         if (!(new \App\Services\Auth\AuthAttemptLimiter())->allow('otp_resend', (string)$this->request->getIPAddress(), (string)$emailUser, 10, 5, 3600)) {
-            session()->setFlashdata('msg', 'Terlalu banyak permintaan kode verifikasi. Coba lagi nanti.');
+            session()->setFlashdata('msg', lang('Store.otpTooManyAttempts'));
             return redirect()->to(ilena_store_path('/verify'));
         }
         $lastSent = (int)session()->get('otp_last_sent_at');
         if ($lastSent > 0 && time() - $lastSent < 60) {
-            session()->setFlashdata('msg', 'Tunggu sebentar sebelum meminta kode OTP baru.');
+            session()->setFlashdata('msg', lang('Store.otpResendTooSoon'));
             return redirect()->to(ilena_store_path('/verify'));
         }
 
         $otp_number = random_int(100000, 999999);
-        $waktu_otp = time() + 300;
-        $d = strtotime("+425 Minutes");
-        $bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-        $waktu_otp_tanggal = date("d", $d) . " " . $bulan[date("m", $d) - 1] . " " . date("Y H:i:s", $d);
+        $waktu_otp = time() + 600;
 
         $email = \Config\Services::email();
         $emailConfig = config('Email');
@@ -5969,15 +6027,19 @@ class Pages extends BaseController
         $email->setFrom($emailConfig->SMTPUser ?: ($emailConfig->fromEmail ?: 'no-reply@ilenafurniture.com'), 'Ilena Furniture');
         $email->setReplyTo('info@ilenafurniture.com', 'Ilena Furniture');
         $email->setTo($emailUser);
-        $email->setSubject('Kode verifikasi akun Ilena');
+        $isEnglishVerification = service('request')->getLocale() === 'en';
+        $verificationTitle = $isEnglishVerification ? 'Verify your Ilena account' : 'Verifikasi email akun Ilena';
+        $verificationIntro = $isEnglishVerification ? 'Enter this code to finish verifying your Ilena account.' : 'Masukkan kode berikut untuk menyelesaikan verifikasi akun Ilena.';
+        $verificationExpiry = $isEnglishVerification ? 'This code is valid for 10 minutes. Never share it with anyone.' : 'Kode berlaku selama 10 menit. Jangan bagikan kepada siapa pun.';
+        $email->setSubject($verificationTitle);
         $email->setMessage(\App\Services\Auth\TransactionalEmailTemplate::html(
-            'Verifikasi email Anda', 'Gunakan kode berikut untuk menyelesaikan verifikasi akun Ilena.',
-            '<p style="font-size:28px;font-weight:700;letter-spacing:.18em;color:#8f2430">' . esc((string) $otp_number) . '</p><p>Kode berlaku selama 5 menit. Jangan bagikan kode ini kepada siapa pun.</p>'
+            $verificationTitle, $verificationIntro,
+            '<p style="font-size:28px;font-weight:700;letter-spacing:.18em;color:#8f2430">' . esc((string) $otp_number) . '</p><p>' . esc($verificationExpiry) . '</p>'
         ));
-        $email->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain('Verifikasi email Anda', 'Gunakan kode berikut untuk menyelesaikan verifikasi akun Ilena.', 'Kode verifikasi: ' . $otp_number . "\nBerlaku selama 5 menit. Jangan bagikan kode ini kepada siapa pun."));
+        $email->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain($verificationTitle, $verificationIntro, ($isEnglishVerification ? 'Verification code: ' : 'Kode verifikasi: ') . $otp_number . "\n" . $verificationExpiry));
         if (!$email->send()) {
             log_message('error', 'Verification OTP resend email could not be sent.');
-            session()->setFlashdata('msg', 'Email verifikasi belum dapat dikirim. Coba lagi nanti.');
+            session()->setFlashdata('msg', lang('Store.otpEmailUnavailable'));
             return redirect()->to(ilena_store_path('/verify'));
         }
 
@@ -5987,7 +6049,7 @@ class Pages extends BaseController
         ])->update();
         session()->set('otp_last_sent_at', time());
 
-        session()->setFlashdata('msg', "OTP telah dikirim ke email " . $emailUser . " dan berlaku hingga " . $waktu_otp_tanggal);
+        session()->setFlashdata('msg', lang('Store.otpSentNotice'));
         return redirect()->to(ilena_store_path('/verify'));
     }
     public function actionLogout()

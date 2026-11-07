@@ -53,12 +53,17 @@
     font-weight: 700;
     text-decoration: underline;
 }
+.ilena-auth-divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:#777;font-size:.82rem}
+.ilena-auth-divider:before,.ilena-auth-divider:after{content:"";height:1px;flex:1;background:#e7e4e1}
+.ilena-google-signin{width:100%;min-height:46px;display:flex;align-items:center;justify-content:center;gap:10px;border:1px solid #dedbd8;border-radius:8px;background:#fff;color:#242424;text-decoration:none;font-weight:600;transition:background .15s ease,border-color .15s ease}
+.ilena-google-signin:hover{background:#faf9f7;border-color:#c8c3bf;color:#111}
 </style>
 
 <div class="container ilena-auth-page ilena-auth-page--register ilena-auth-page--compact">
         <div class="ilena-auth-page__form">
             <p class="ilena-auth-page__eyebrow"><?= lang('Store.startJourney'); ?></p>
             <h1 class="ilena-auth-page__title"><?= lang('Store.createIlenaAccount'); ?></h1>
+            <p class="ilena-auth-page__intro"><?= esc(lang('Store.registrationEmailNote')); ?></p>
 
             <?php if ($val['msg']) { ?>
             <div class="pemberitahuan my-1" role="alert">
@@ -66,10 +71,18 @@
             </div>
             <?php } ?>
 
+            <?php if (!empty($googleLoginEnabled)): ?>
+                <a class="ilena-google-signin" href="<?= esc(ilena_store_path('/auth/google'), 'attr'); ?>" rel="nofollow">
+                    <svg aria-hidden="true" viewBox="0 0 48 48" width="20" height="20"><path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11c-.5 2.5-1.9 4.6-4 6v5h6.5c3.8-3.5 6.1-8.6 6.1-14.7z"/><path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.9l-6.5-5c-1.8 1.2-4.1 2-7 2-5.3 0-9.8-3.6-11.4-8.4H5.9v5.2C9.3 39.6 16.1 44 24 44z"/><path fill="#FBBC05" d="M12.6 27.7a12 12 0 0 1 0-7.4v-5.2H5.9a20 20 0 0 0 0 17.8l6.7-5.2z"/><path fill="#EA4335" d="M24 11.9c3 0 5.7 1 7.8 3.1l5.8-5.8C34.1 5.8 29.5 4 24 4 16.1 4 9.3 8.4 5.9 15.1l6.7 5.2c1.6-4.8 6.1-8.4 11.4-8.4z"/></svg>
+                    <span><?= esc(lang('Store.continueWithGoogle')); ?></span>
+                </a>
+                <div class="ilena-auth-divider" aria-hidden="true"><span><?= esc(lang('Store.orContinueWith')); ?></span></div>
+            <?php endif; ?>
+
             <form id="registerForm" action="<?= esc(ilena_store_path('/actionregister'), 'attr'); ?>" method="post">
                 <?= csrf_field(); ?>
                 <input type="hidden" name="auth_form_nonce" value="<?= esc($authFormNonce ?? '', 'attr'); ?>">
-                <!-- Honeypot (TANPA mengganggu backend). Jika bot isi ini, submit akan diblok di JS -->
+                <!-- Honeypot fields; the server rejects submissions that fill them. -->
                 <div class="hp-wrap" aria-hidden="true">
                     <label>Website
                         <input type="text" name="website" tabindex="-1" autocomplete="off">
@@ -77,9 +90,6 @@
                     <label>Referral
                         <input type="text" name="ref_code" tabindex="-1" autocomplete="off">
                     </label>
-                    <!-- token & timestamp non-krusial (front-end only) -->
-                    <input type="text" name="abt_token" tabindex="-1" autocomplete="off">
-                    <input type="text" name="abt_elapsed" tabindex="-1" autocomplete="off">
                 </div>
 
                 <div class="mb-3">
@@ -95,14 +105,6 @@
                         class="form-control <?= ($val['val_email']) ? "is-invalid" : ""; ?>"
                         placeholder="<?= esc(lang('Store.enterEmail'), 'attr'); ?>" value="<?= old('email'); ?>">
                     <div class="invalid-feedback" id="email-feedback"><?= esc($val['val_email'] ?: lang('Store.activeEmailHint')); ?></div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="nohp" class="form-label"><?= lang('Store.phoneNumber'); ?></label>
-                    <input id="nohp" name="nohp" type="tel" autocomplete="tel" inputmode="numeric" pattern="[0-9]{10,15}" required aria-describedby="nohp-help nohp-feedback" title="<?= esc(lang('Store.phoneDigitsTitle'), 'attr'); ?>" class="form-control <?= ($val['val_nohp']) ? "is-invalid" : ""; ?>"
-                        placeholder="<?= esc(lang('Store.enterPhoneNumber'), 'attr'); ?>" value="<?= old('nohp'); ?>">
-                    <div class="invalid-feedback" id="nohp-feedback"><?= esc($val['val_nohp'] ?: lang('Store.phoneDigitsError')); ?></div>
-                    <div class="form-text" id="nohp-help"><?= lang('Store.phoneDigitsHint'); ?></div>
                 </div>
 
                 <label for="password" class="form-label">Kata sandi</label>
@@ -134,7 +136,7 @@
 
                 <?= view('partials/auth_recaptcha', ['error' => $captchaError ?? null], ['saveData' => false]); ?>
                 <div class="mb-3 d-flex w-100 justify-content-center">
-                    <button id="btnSubmit" type="submit" class="btn btn-default btn-block" disabled><?= lang('Store.registerSubmit'); ?></button>
+                    <button id="btnSubmit" type="submit" class="btn btn-default btn-block"><?= lang('Store.registerSubmit'); ?></button>
                 </div>
                 <div id="ab-msg" aria-live="polite"></div>
 
@@ -162,60 +164,13 @@ function togglePassword(e) {
     const msg = document.getElementById('ab-msg');
     const hp1 = form.querySelector('input[name="website"]');
     const hp2 = form.querySelector('input[name="ref_code"]');
-    const tkn = form.querySelector('input[name="abt_token"]');
-    const elps = form.querySelector('input[name="abt_elapsed"]');
     const agreement = document.getElementById('validation-syarat');
     const syaratFeedback = document.getElementById('syarat-feedback');
-    const phone = document.getElementById('nohp');
     const email = document.getElementById('email');
 
-    // Covers typing, paste and autofill. The server independently enforces the same policy.
-    phone.addEventListener('input', () => {
-        phone.value = phone.value.replace(/[^0-9]/g, '');
-    });
     email.addEventListener('blur', () => {
         email.value = email.value.trim().toLowerCase();
     });
-
-    const start = Date.now();
-    const minWaitMs = 4000;
-    let interacted = false;
-    let enabled = false;
-    tkn.value = Math.random().toString(36).slice(2) + Date.now().toString(36);
-    const markInteract = () => {
-        interacted = true;
-        maybeEnable();
-    };
-    form.addEventListener('mousemove', markInteract, {
-        once: true
-    });
-    form.addEventListener('touchstart', markInteract, {
-        once: true
-    });
-    form.addEventListener('keydown', markInteract, {
-        once: true
-    });
-    form.addEventListener('scroll', markInteract, {
-        once: true
-    });
-
-    function maybeEnable() {
-        const waited = Date.now() - start;
-        const canSubmit = interacted && waited >= minWaitMs && agreement.checked;
-        if (canSubmit) {
-            btn.removeAttribute('disabled');
-            enabled = true;
-            showMsg('');
-            if (syaratFeedback) syaratFeedback.textContent = '';
-        } else {
-            btn.setAttribute('disabled', 'disabled');
-            enabled = false;
-        }
-    }
-    const iv = setInterval(() => {
-        maybeEnable();
-        if (enabled) clearInterval(iv);
-    }, 250);
 
     function showMsg(text) {
         if (!text) {
@@ -226,21 +181,11 @@ function togglePassword(e) {
         msg.textContent = text;
         msg.classList.add('show');
     }
-    const throttleKey = 'ab-reg-throttle';
-    try {
-        const last = Number(localStorage.getItem(throttleKey) || '0');
-        if (Date.now() - last < 5000) {
-            showMsg(<?= json_encode(lang('Store.waitToRetry')); ?>);
-        }
-    } catch (e) {}
-
     agreement.addEventListener('change', () => {
         if (agreement.checked && syaratFeedback) syaratFeedback.textContent = '';
-        maybeEnable();
     });
 
     form.addEventListener('submit', function(e) {
-        elps.value = String(Date.now() - start);
         if (!agreement.checked) {
             e.preventDefault();
             if (syaratFeedback) syaratFeedback.textContent = <?= json_encode(lang('Store.acceptTermsError')); ?>;
@@ -252,16 +197,6 @@ function togglePassword(e) {
             showMsg(<?= json_encode(lang('Store.blockedBot')); ?>);
             return;
         }
-        if (Date.now() - start < minWaitMs) {
-            e.preventDefault();
-            showMsg(<?= json_encode(lang('Store.tooFast')); ?>);
-            return;
-        }
-        if (!interacted) {
-            e.preventDefault();
-            showMsg(<?= json_encode(lang('Store.interactBeforeSubmit')); ?>);
-            return;
-        }
         if (btn.dataset.submitted === '1') {
             e.preventDefault();
             showMsg(<?= json_encode(lang('Store.requestProcessing')); ?>);
@@ -271,9 +206,6 @@ function togglePassword(e) {
         btn.setAttribute('disabled', 'disabled');
         btn.textContent = <?= json_encode(lang('Store.processing')); ?>;
 
-        try {
-            localStorage.setItem(throttleKey, String(Date.now()));
-        } catch (e) {}
     });
 })();
 </script>

@@ -25,6 +25,10 @@ final class VoucherReservationService
         $this->db->transBegin();
         try {
             if ($this->db->DBDriver === 'MySQLi') {
+                $this->db->query('INSERT IGNORE INTO `ilena_voucher_order_locks` (`order_id`) VALUES (?)', [$orderId]);
+                $this->db->query('SELECT `order_id` FROM `ilena_voucher_order_locks` WHERE `order_id` = ? FOR UPDATE', [$orderId]);
+            }
+            if ($this->db->DBDriver === 'MySQLi') {
                 $this->db->query('INSERT IGNORE INTO `ilena_voucher_quota_locks` (`voucher_id`) VALUES (?)', [$voucherId]);
                 $this->db->query('SELECT `voucher_id` FROM `ilena_voucher_quota_locks` WHERE `voucher_id` = ? FOR UPDATE', [$voucherId]);
             }
@@ -35,13 +39,20 @@ final class VoucherReservationService
             }
 
             $table = $this->db->table('ilena_voucher_reservations');
-            $existing = $table->where('order_id', $orderId)->get()->getRowArray();
+            $existing = $table->where('order_id', $orderId)->where('voucher_id', $voucherId)->get()->getRowArray();
             if ($existing && $existing['status'] === 'reserved' && strtotime($existing['expires_at']) > time()) {
                 $this->db->transCommit();
                 return ['ok' => true, 'existing' => true];
             }
             if ($existing) {
                 throw new \RuntimeException('Reservasi voucher untuk pesanan ini telah berakhir.');
+            }
+
+            $orderReservations = $this->db->table('ilena_voucher_reservations')->where('order_id', $orderId)->get()->getResultArray();
+            $distinctVoucherIds = array_unique(array_map(static fn (array $reservation): int => (int) $reservation['voucher_id'], $orderReservations));
+            if (! in_array($voucherId, $distinctVoucherIds, true) && count($distinctVoucherIds) >= self::MAX_VOUCHERS_PER_ORDER) {
+                $this->db->transRollback();
+                return ['ok' => false, 'message' => 'Maksimal dua voucher dapat digunakan dalam satu pesanan.'];
             }
 
             $code = (string) ($voucher['kode'] ?? '');
@@ -90,33 +101,42 @@ final class VoucherReservationService
         }
     }
 
+    public const MAX_VOUCHERS_PER_ORDER = 2;
+
     public function consume(string $orderId): bool
     {
         $this->db->transBegin();
         try {
-            $row = $this->db->table('ilena_voucher_reservations')->where('order_id', trim($orderId))->get()->getRowArray();
-            if (! $row || $row['status'] !== 'reserved') {
+            $rows = $this->db->table('ilena_voucher_reservations')->where('order_id', trim($orderId))->where('status', 'reserved')->orderBy('voucher_id', 'ASC')->get()->getResultArray();
+            if (! $rows) {
                 $this->db->transCommit();
                 return false;
             }
             if ($this->db->DBDriver === 'MySQLi') {
-                $this->db->query('SELECT `voucher_id` FROM `ilena_voucher_quota_locks` WHERE `voucher_id` = ? FOR UPDATE', [(int) $row['voucher_id']]);
-                // Re-read after acquiring the per-voucher lock so duplicate paid callbacks
-                // observe the first transition and cannot create a second usage row.
-                $row = $this->db->query('SELECT * FROM `ilena_voucher_reservations` WHERE `id` = ? FOR UPDATE', [(int) $row['id']])->getRowArray();
-                if (! $row || $row['status'] !== 'reserved') {
+                $voucherIds = array_values(array_unique(array_map(static fn (array $row): int => (int) $row['voucher_id'], $rows)));
+                if (count($voucherIds) > self::MAX_VOUCHERS_PER_ORDER) {
+                    throw new \RuntimeException('Pesanan memiliki jumlah reservasi voucher di atas batas.');
+                }
+                foreach ($voucherIds as $voucherId) {
+                    $this->db->query('SELECT `voucher_id` FROM `ilena_voucher_quota_locks` WHERE `voucher_id` = ? FOR UPDATE', [$voucherId]);
+                }
+                $rows = $this->db->query('SELECT * FROM `ilena_voucher_reservations` WHERE `order_id` = ? AND `status` = ? ORDER BY `voucher_id` ASC FOR UPDATE', [trim($orderId), 'reserved'])->getResultArray();
+                if (! $rows) {
                     $this->db->transCommit();
                     return false;
                 }
             }
-            $this->db->table('voucher_usage')->insert([
-                'kode_voucher' => $row['voucher_code'],
-                'email' => $row['email'],
-                'used_at' => date('Y-m-d H:i:s'),
-            ]);
-            $this->db->table('ilena_voucher_reservations')->where('id', (int) $row['id'])->where('status', 'reserved')->update([
-                'status' => 'used', 'updated_at' => date('Y-m-d H:i:s'),
-            ]);
+            if (count($rows) > self::MAX_VOUCHERS_PER_ORDER) throw new \RuntimeException('Pesanan memiliki jumlah reservasi voucher di atas batas.');
+            foreach ($rows as $row) {
+                $this->db->table('voucher_usage')->insert([
+                    'kode_voucher' => $row['voucher_code'],
+                    'email' => $row['email'],
+                    'used_at' => date('Y-m-d H:i:s'),
+                ]);
+                $this->db->table('ilena_voucher_reservations')->where('id', (int) $row['id'])->where('status', 'reserved')->update([
+                    'status' => 'used', 'updated_at' => date('Y-m-d H:i:s'),
+                ]);
+            }
             if (! $this->db->transStatus()) {
                 throw new \RuntimeException('Pemakaian voucher tidak berhasil dicatat.');
             }
@@ -128,9 +148,10 @@ final class VoucherReservationService
         }
     }
 
-    public function release(string $orderId): void
+    public function release(string $orderId, ?int $voucherId = null): void
     {
-        $this->db->table('ilena_voucher_reservations')->where('order_id', trim($orderId))
-            ->where('status', 'reserved')->update(['status' => 'released', 'updated_at' => date('Y-m-d H:i:s')]);
+        $builder = $this->db->table('ilena_voucher_reservations')->where('order_id', trim($orderId))->where('status', 'reserved');
+        if ($voucherId !== null) $builder->where('voucher_id', $voucherId);
+        $builder->update(['status' => 'released', 'updated_at' => date('Y-m-d H:i:s')]);
     }
 }

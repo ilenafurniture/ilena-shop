@@ -203,7 +203,7 @@ final class RajaOngkirShippingRateService
             $courier = strtolower(trim((string) ($row['code'] ?? '')));
             $service = trim((string) ($row['service'] ?? ''));
             $price = $this->extractPrice($row['cost'] ?? null);
-            if ($name === '' || $courier === '' || $service === '' || $price < 1) {
+            if ($name === '' || $courier === '' || $courier === 'anteraja' || $service === '' || $price < 1) {
                 continue;
             }
             $identity = $courier . ':' . strtolower($service);
@@ -254,8 +254,8 @@ final class RajaOngkirShippingRateService
 
     private function couriers(): string
     {
-        $raw = trim((string) env('RAJAONGKIR_COURIERS', 'jne:sicepat:jnt:tiki:pos:anteraja:ninja:wahana:lion'));
-        $codes = array_values(array_unique(array_filter(array_map(static fn (string $code): string => strtolower(trim($code)), preg_split('/[:,]+/', $raw) ?: []), static fn (string $code): bool => preg_match('/^[a-z0-9_-]{2,30}$/', $code) === 1)));
+        $raw = trim((string) env('RAJAONGKIR_COURIERS', 'jne:sicepat:jnt:tiki:pos:ninja:wahana:lion'));
+        $codes = array_values(array_unique(array_filter(array_map(static fn (string $code): string => strtolower(trim($code)), preg_split('/[:,]+/', $raw) ?: []), static fn (string $code): bool => $code !== 'anteraja' && preg_match('/^[a-z0-9_-]{2,30}$/', $code) === 1)));
         return implode(':', array_slice($codes, 0, 20));
     }
 

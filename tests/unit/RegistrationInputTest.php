@@ -23,6 +23,16 @@ final class RegistrationInputTest extends CIUnitTestCase
         $this->assertSame([], (new RegistrationInput())->errors($data, static fn()=>false));
     }
 
+    public function testPhoneNumberCanBeAddedLaterButIfProvidedMustBeValid(): void
+    {
+        $validator = new RegistrationInput();
+        $withoutPhone = RegistrationInput::normalize(['nama'=>'Pembeli Ilena','email'=>'buyer@example.com','sandi'=>'TwelveChars!123','validasi-syarat'=>'1']);
+        $this->assertSame([], $validator->errors($withoutPhone, static fn()=>false));
+        $this->assertSame([], $validator->errors($this->valid(['nohp' => '']), static fn()=>false));
+        $this->assertSame([], $validator->errors($this->valid(['nohp' => '081234567890']), static fn()=>false));
+        $this->assertArrayHasKey('nohp', $validator->errors($this->valid(['nohp' => '08 123']), static fn()=>false));
+    }
+
     public function testOnlyAsciiDigitsWithSupportedLengthAreAccepted(): void
     {
         foreach(['abc','0812abc7890','08 1234567890','+628123456789','0812-34567890','081234567','0812345678901234','０８１２３４５６７８９０',"081234567890\n0"] as $phone) {

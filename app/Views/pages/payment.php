@@ -6,6 +6,10 @@
 $voucher           = isset($voucher) && is_array($voucher) ? $voucher : [];
 $selected          = $voucher['selected'] ?? null;
 $list              = isset($voucher['list']) && is_array($voucher['list']) ? $voucher['list'] : [];
+$appliedVouchers   = isset($voucher['applied']) && is_array($voucher['applied']) ? $voucher['applied'] : [];
+$voucherHeading    = is_array($voucher['selected'] ?? null)
+    ? (string) ($voucher['selected']['nama'] ?? lang('Store.chooseVoucher'))
+    : (string) ($appliedVouchers[0]['nama'] ?? lang('Store.chooseVoucher'));
 $user              = isset($user) && is_array($user) ? $user : ['nama'=>'', 'no_hp'=>'', 'email'=>'', 'alamat'=>''];
 $keranjang         = isset($keranjang) && is_array($keranjang) ? $keranjang : [];
 $listPaymentMethod = isset($listPaymentMethod) && is_array($listPaymentMethod) ? $listPaymentMethod : [];
@@ -337,6 +341,40 @@ if (is_array($selected)) {
     text-decoration: none;
 }
 
+.ilena-payment-confirm {
+    width: min(460px, calc(100vw - 32px));
+    max-width: none;
+    max-height: min(90dvh, 620px);
+    padding: 0;
+    border: 1px solid #eadfdd;
+    border-radius: 20px;
+    color: var(--ink);
+    box-shadow: 0 24px 80px rgba(28, 20, 18, .24);
+}
+.ilena-payment-confirm::backdrop { background: rgba(25, 19, 18, .56); backdrop-filter: blur(3px); }
+.ilena-payment-confirm__content { padding: clamp(20px, 5vw, 30px); }
+.ilena-payment-confirm__mark {
+    display: grid; place-items: center; width: 44px; height: 44px; margin-bottom: 18px;
+    border-radius: 14px; background: #fff1ef; color: var(--brand);
+}
+.ilena-payment-confirm__title { margin: 0 0 8px; font-size: clamp(20px, 4vw, 25px); line-height: 1.2; font-weight: 750; }
+.ilena-payment-confirm__message { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+.ilena-payment-confirm__total {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    margin: 20px 0; padding: 15px 0; border-block: 1px solid var(--line);
+}
+.ilena-payment-confirm__total strong { color: var(--brand); font-size: 18px; text-align: right; }
+.ilena-payment-confirm__actions { display: grid; grid-template-columns: 1fr 1.2fr; gap: 10px; }
+.ilena-payment-confirm__actions button { min-height: 46px; cursor: pointer; }
+.ilena-payment-confirm__actions .review { background: #fff; color: var(--ink); border: 1px solid var(--line); border-radius: 10px; font-weight: 650; }
+.ilena-payment-confirm__actions button:focus-visible { outline: 3px solid color-mix(in srgb, var(--brand) 35%, white); outline-offset: 3px; }
+@media (max-width: 520px) {
+    .ilena-payment-confirm { width: 100%; max-width: 100%; margin: auto 0 0; border-radius: 20px 20px 0 0; }
+    .ilena-payment-confirm__content { padding: 22px 18px max(20px, env(safe-area-inset-bottom)); }
+    .ilena-payment-confirm__actions { grid-template-columns: 1fr; }
+    .ilena-payment-confirm__actions button { min-height: 48px; }
+}
+
 /* Alerts */
 .alert-soft {
     background: color-mix(in oklab, var(--brand) 6%, white);
@@ -480,6 +518,7 @@ hr {
                 </form>
                 <div class="small mt-2">
                     <?= lang('Store.voucherHelp'); ?>
+                    <span class="d-block mt-1"><?= lang('Store.voucherStackHelp'); ?></span>
                 </div>
             </div>
 
@@ -488,7 +527,7 @@ hr {
             <?php if (count($list) > 0) : ?>
             <div class="section-toggle mb-2" onclick="toggleVoucherList()">
                 <p class="m-0">
-                    <?= is_array($selected) ? ucwords(esc($selected['nama'] ?? lang('Store.chooseVoucher'))) : lang('Store.chooseVoucher'); ?>
+                    <?= ucwords(esc($voucherHeading)); ?>
                 </p>
                 <i class="material-icons">arrow_forward_ios</i>
             </div>
@@ -504,6 +543,7 @@ hr {
             $isMemberBaru = ($vTarget === 'baru') || str_contains(strtolower($vNama), 'member baru');
             $isActive     = (is_array($selected) && ((int)($selected['id'] ?? 0) === $vId));
             $isRec        = !empty($v['recommended']);
+            $isAutoApplied = !empty($v['applied']);
             $estCut       = isset($v['estimated_cut']) ? (int)$v['estimated_cut'] : null;
           ?>
                 <div class="voucher-item <?= $isActive ? 'active' : ''; ?>">
@@ -519,14 +559,18 @@ hr {
                             <?= number_format($estCut,0,',','.'); ?><?php endif; ?>
                         </div>
                     </div>
-                    <?php if ($isActive): ?>
+                    <?php if ($isAutoApplied): ?>
+                    <span class="badge rec"><?= lang('Store.voucherAutoApplied'); ?></span>
+                    <?php elseif ($isActive): ?>
                     <form action="<?= esc(ilena_store_path('/cancelvoucher/' . $vId . '-' . $indexAddress), 'attr'); ?>" method="post" class="m-0">
                         <?= csrf_field(); ?><button type="submit" class="btn-plain"><?= lang('Store.removeVoucher'); ?></button>
                     </form>
-                    <?php else: ?>
+                    <?php elseif (empty($v['auto_apply'])): ?>
                     <form action="<?= esc(ilena_store_path('/usevoucher/' . $vId . '-' . $indexAddress), 'attr'); ?>" method="post" class="m-0">
                         <?= csrf_field(); ?><button type="submit" class="btn-plain"><?= lang('Store.useVoucher'); ?></button>
                     </form>
+                    <?php else: ?>
+                    <span class="small text-secondary"><?= lang('Store.voucherAutoPromotion'); ?></span>
                     <?php endif; ?>
                 </div>
                 <?php endforeach; ?>
@@ -546,12 +590,12 @@ hr {
                         <div class="v">Rp <?= number_format((int)$hargaTotal, 0, ',', '.'); ?></div>
                     </div>
 
-                    <?php if (is_array($selected)) : ?>
+                    <?php foreach ($appliedVouchers as $appliedVoucher): ?>
                     <div class="sum-row">
-                        <div class="k"><?= lang('Store.voucherDiscount'); ?></div>
-                        <div class="v">- Rp <?= number_format((int)($selected['rupiah'] ?? 0), 0, ',', '.'); ?></div>
+                        <div class="k"><?= lang('Store.voucherDiscount'); ?> · <?= esc($appliedVoucher['nama'] ?: $appliedVoucher['kode']); ?></div>
+                        <div class="v">- Rp <?= number_format((int)($appliedVoucher['discount'] ?? 0), 0, ',', '.'); ?></div>
                     </div>
-                    <?php endif; ?>
+                    <?php endforeach; ?>
 
                     <?php if ($flashSale > 0) : ?>
                     <div class="sum-row">
@@ -602,7 +646,7 @@ hr {
                         <button type="submit" class="btn-default-merah w-100 mt-2"><?= lang('Store.placeOrder'); ?></button>
                     </form>
                     <?php else : ?>
-                    <button onclick="bayar(event)" class="btn-default-merah w-100 mt-2"><?= lang('Store.pay'); ?></button>
+                    <button type="button" onclick="openPaymentConfirmation(event)" aria-haspopup="dialog" aria-controls="payment-confirm-dialog" class="btn-default-merah w-100 mt-2"><?= lang('Store.pay'); ?></button>
                     <?php endif; ?>
                 </div>
             </div>
@@ -610,7 +654,44 @@ hr {
     </div>
 </div>
 
+<?php if (!((string)session()->get('role') === '5' && (new \App\Services\AdminRbacService())->hasPermission((string)session()->get('email'), 'orders_online'))) : ?>
+<dialog class="ilena-payment-confirm" id="payment-confirm-dialog" aria-labelledby="payment-confirm-title" aria-describedby="payment-confirm-message">
+    <div class="ilena-payment-confirm__content">
+        <div class="ilena-payment-confirm__mark" aria-hidden="true"><span class="material-icons">payments</span></div>
+        <h2 class="ilena-payment-confirm__title" id="payment-confirm-title"><?= esc(lang('Store.confirmPaymentTitle')); ?></h2>
+        <p class="ilena-payment-confirm__message" id="payment-confirm-message"><?= esc(lang('Store.confirmPaymentMessage')); ?></p>
+        <div class="ilena-payment-confirm__total">
+            <span><?= esc(lang('Store.confirmPaymentTotal')); ?></span>
+            <strong>Rp <?= number_format((int)$grossAmount, 0, ',', '.'); ?></strong>
+        </div>
+        <div class="ilena-payment-confirm__actions">
+            <button type="button" class="review" onclick="closePaymentConfirmation()"><?= esc(lang('Store.confirmPaymentReview')); ?></button>
+            <button type="button" class="btn-default-merah" id="confirm-payment-submit" onclick="bayar(event)"><?= esc(lang('Store.confirmPaymentContinue')); ?></button>
+        </div>
+    </div>
+</dialog>
+<?php endif; ?>
+
 <script>
+let paymentTrigger = null;
+function openPaymentConfirmation(e) {
+    e.preventDefault();
+    const dialog = document.getElementById('payment-confirm-dialog');
+    if (!dialog || typeof dialog.showModal !== 'function') {
+        // Keep a functional confirmation fallback for older embedded browsers.
+        if (window.confirm(<?= json_encode(lang('Store.confirmPaymentTitle') . ' ' . lang('Store.confirmPaymentMessage')); ?>)) bayar(e);
+        return;
+    }
+    paymentTrigger = e.currentTarget;
+    dialog.showModal();
+    dialog.querySelector('.review')?.focus();
+}
+
+function closePaymentConfirmation() {
+    document.getElementById('payment-confirm-dialog')?.close();
+    paymentTrigger?.focus();
+}
+
 function bayar(e) {
     e.preventDefault();
     const button = e.currentTarget || e.target;

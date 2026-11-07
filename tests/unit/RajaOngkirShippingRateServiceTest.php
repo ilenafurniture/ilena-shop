@@ -35,6 +35,20 @@ final class RajaOngkirShippingRateServiceTest extends CIUnitTestCase
         $this->assertFalse($rates[0]['free_shipping_eligible']);
     }
 
+    public function testAnterajaRatesAreNeverReturned(): void
+    {
+        $service = new RajaOngkirShippingRateService();
+        $method = new ReflectionMethod($service, 'mapRates');
+        $method->setAccessible(true);
+        $rates = $method->invoke($service, [
+            ['name' => 'AnterAja', 'code' => 'anteraja', 'service' => 'REG', 'cost' => 1_000, 'etd' => '1 day'],
+            ['name' => 'JNE', 'code' => 'jne', 'service' => 'REG', 'cost' => 10_000, 'etd' => '2 days'],
+        ], 'Semarang');
+
+        $this->assertCount(1, $rates);
+        $this->assertSame('jne:reg', $rates[0]['service_code']);
+    }
+
     public function testCartWeightUsesPackageKilogramsAndReturnsProviderGrams(): void
     {
         $service = new RajaOngkirShippingRateService();
