@@ -400,7 +400,7 @@ return [
     'productShippingDestinationPlaceholder' => 'Ketik minimal 2 huruf',
     'productShippingEstimateButton' => 'Cek estimasi',
     'productShippingSearching' => 'Mencari tujuan…',
-    'productShippingNoDestination' => 'Tujuan tidak ditemukan di daftar tarif APM.',
+    'productShippingNoDestination' => 'Tujuan tidak ditemukan dalam daftar area pengiriman.',
     'productShippingSelectDestination' => 'Pilih kota atau kabupaten dari daftar.',
     'productShippingEstimateLoading' => 'Menghitung perkiraan ongkir…',
     'productShippingEstimateUnavailable' => 'Tarif untuk tujuan ini belum dapat ditampilkan. Hubungi tim Ilena untuk konfirmasi.',

@@ -18,7 +18,7 @@
         unavailable: lang === 'en' ? 'A tariff is not available for this destination yet. Contact the Ilena team for confirmation.' : 'Tarif untuk tujuan ini belum dapat ditampilkan. Hubungi tim Ilena untuk konfirmasi.',
         invalid: lang === 'en' ? 'Please check the destination, variant, and product quantity.' : 'Periksa kembali pilihan tujuan, varian, dan jumlah produk.',
         stock: lang === 'en' ? 'The selected variant stock has changed. Update the quantity and try again.' : 'Stok varian berubah. Perbarui pilihan jumlah lalu coba lagi.',
-        estimate: lang === 'en' ? 'Estimated APM shipping' : 'Perkiraan ongkir APM',
+        estimate: lang === 'en' ? 'Estimated shipping cost' : 'Perkiraan biaya pengiriman',
         delivery: lang === 'en' ? 'Estimated delivery' : 'Estimasi tiba',
         weight: lang === 'en' ? 'Billable weight' : 'Berat yang dihitung',
         days: lang === 'en' ? 'days' : 'hari',

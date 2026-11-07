@@ -287,7 +287,7 @@ return [
     'productShippingDestinationPlaceholder' => 'Type at least 2 letters',
     'productShippingEstimateButton' => 'Check estimate',
     'productShippingSearching' => 'Searching destinations…',
-    'productShippingNoDestination' => 'This destination was not found in the APM tariff list.',
+    'productShippingNoDestination' => 'This destination was not found in the delivery area list.',
     'productShippingSelectDestination' => 'Choose a city or regency from the suggestions.',
     'productShippingEstimateLoading' => 'Calculating the shipping estimate…',
     'productShippingEstimateUnavailable' => 'A tariff is not available for this destination yet. Contact the Ilena team for confirmation.',
