@@ -24,7 +24,7 @@
                 <h2><?= esc(lang('Store.shippingCoverageUnavailable')); ?></h2>
                 <p><?= esc(service('request')->getLocale() === 'en'
                     ? 'The delivery cost for this address needs confirmation. No estimated fee has been added to your order.'
-                    : 'Ongkir untuk alamat ini perlu dikonfirmasi. Tidak ada biaya perkiraan yang ditambahkan ke pesanan kakak.'); ?></p>
+                    : 'Ongkir untuk alamat ini perlu dikonfirmasi. Biaya pengiriman belum ditambahkan ke pesanan.'); ?></p>
                 <p class="ilena-shipping-unavailable__hint"><?= esc(lang('Store.shippingQuoteWhatsAppHint')); ?></p>
                 <a class="btn-default-merah" href="<?= esc($shippingContactUrl, 'attr'); ?>" target="_blank" rel="noopener noreferrer"><?= esc(lang('Store.shippingContactSupport')); ?></a>
             </section>
@@ -34,11 +34,15 @@
                 data-store-courier="<?= !empty($k['gratis_ongkir']) ? '1' : '0'; ?>"
                 <?= $index_k <= 0 ? 'checked' : '' ?>>
             <label for="kurir<?= $index_k ?>" class="item-kurir">
-                <div style="flex: 1;">
-                    <p class="mb-1 nama"><?= esc(strtoupper($k['nama'])) ?> <?= esc($k['deskripsi']) ?></p>
-                    <?php if($k['estimasi']) { ?>
-                    <p class="mb-1"><?= lang('Store.deliveryEstimate'); ?> <?= esc($k['estimasi']) ?> <?= lang('Store.days'); ?></p>
-                    <?php } ?>
+                <div class="ilena-shipping-option__details">
+                    <span class="visually-hidden"><?= esc(trim((string) ($k['nama'] ?? '') . ' ' . (string) ($k['deskripsi'] ?? ''))); ?></span>
+                    <p class="mb-1"><?= lang('Store.deliveryEstimate'); ?>
+                        <?php if (trim((string) ($k['estimasi'] ?? '')) !== ''): ?>
+                            <?= esc($k['estimasi']); ?> <?= lang('Store.days'); ?>
+                        <?php else: ?>
+                            <?= lang('Store.deliveryEstimateUnavailable'); ?>
+                        <?php endif; ?>
+                    </p>
                     <p class="mb-1" style="font-weight: 600;">
                         <?php if (!empty($k['gratis_ongkir'])): ?>
                             <span class="text-success"><?= lang('Store.storeCourier'); ?></span>
@@ -55,7 +59,7 @@
                         </p>
                     <?php endif; ?>
                 </div>
-                <div style="width:fit-content" class="show-block-ke-hide">
+                <div class="ilena-shipping-option__brand" aria-hidden="true">
                     <?php $logoFile = (string) ($k['logo'] ?? ''); ?>
                     <?php if (($k['provider'] ?? '') === 'apm'): ?>
                     <span class="ilena-apm-wordmark" aria-label="APM Logistics"><strong>APM</strong><small>LOGISTICS</small></span>
@@ -154,6 +158,10 @@ radioKurirElm.forEach((element, ind) => {
 .ilena-shipping-unavailable>.material-icons{font-size:34px;color:#8d2e32}
 .ilena-shipping-unavailable h2{font-size:19px;font-weight:700;margin:12px 0 8px}
 .ilena-shipping-unavailable p{color:#646a70;line-height:1.6;margin:0 0 18px}
+.ilena-shipping-option__details{flex:1;min-width:0}
+.ilena-shipping-option__brand{flex:0 0 92px;display:flex;align-items:center;justify-content:center;min-width:76px}
+.ilena-shipping-option__brand img{display:block;max-width:92px;width:100%;height:40px;object-fit:contain}
+@media(max-width:575.98px){.ilena-shipping-option__brand{flex-basis:68px;min-width:60px}.ilena-shipping-option__brand img{max-width:68px;height:32px}}
 </style>
 
 
