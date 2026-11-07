@@ -31,6 +31,7 @@
             <?php else: ?>
             <?php foreach ($kurir as $index_k => $k) { ?>
             <input type="radio" name="kurir" id="kurir<?= $index_k ?>" value="<?= $k['harga']?>"
+                data-rate-index="<?= esc((string) $index_k, 'attr'); ?>"
                 data-store-courier="<?= !empty($k['gratis_ongkir']) ? '1' : '0'; ?>"
                 <?= $index_k <= 0 ? 'checked' : '' ?>>
             <label for="kurir<?= $index_k ?>" class="item-kurir">
@@ -140,7 +141,7 @@ const storeRoutePrefix = <?= json_encode(service('request')->getLocale() === 'en
 const storeCourierLabel = <?= json_encode(lang('Store.storeCourier')); ?>;
 const freeShippingLabel = <?= json_encode(lang('Store.free')); ?>;
 
-radioKurirElm.forEach((element, ind) => {
+radioKurirElm.forEach((element) => {
     element.addEventListener('change', (e) => {
         hargaOngkirElm.textContent = e.target.dataset.storeCourier === '1'
             ? storeCourierLabel
@@ -148,7 +149,7 @@ radioKurirElm.forEach((element, ind) => {
         hargaKeseluruhan.innerHTML = 'Rp ' + (Number(e.target.value) + <?= $hargaTotal ?>)
             .toString().replace(/\B(?=(\d{3})+(?!\d))/g,
                 ".");
-        btnPaymentElm.href = storeRoutePrefix + '/payment/' + ind;
+        btnPaymentElm.href = storeRoutePrefix + '/payment/' + e.target.dataset.rateIndex;
     })
 });
 </script>

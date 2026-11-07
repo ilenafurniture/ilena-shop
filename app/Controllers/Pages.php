@@ -1813,7 +1813,7 @@ class Pages extends BaseController
 
         $shippingService = new ShippingService();
         $kurir = $shippingService->rates($alamatselected, $keranjang);
-        $kurir = (new FreeShippingService())->applyToRates($alamatselected, $kurir, (float)$hargaTotal);
+        $kurir = array_values((new FreeShippingService())->applyToRates($alamatselected, $kurir, (float)$hargaTotal));
 
         $shippingUnavailable = empty($kurir);
         if ($shippingUnavailable) {
@@ -2076,7 +2076,10 @@ class Pages extends BaseController
             session()->setFlashdata('msg', 'Email pemesan tidak valid atau termasuk email sementara. Perbarui alamat dengan email pribadi yang aktif.');
             return redirect()->to(ilena_store_path('/address'));
         }
-        if (!is_array($kurir) || !array_key_exists($index_kurir, $kurir)) return redirect()->to(ilena_store_path('/address'));
+        if (!is_array($kurir) || !array_key_exists($index_kurir, $kurir)) {
+            session()->setFlashdata('msg', lang('Store.shippingRateChanged'));
+            return redirect()->to(ilena_store_path('/shipping/' . max(0, (int) session()->get('checkout_address_index', 0))));
+        }
         if (!is_array($keranjang) || empty($keranjang)) {
             session()->setFlashdata('msg','Keranjangmu kosong.');
             return redirect()->to(ilena_store_path('/cart'));
