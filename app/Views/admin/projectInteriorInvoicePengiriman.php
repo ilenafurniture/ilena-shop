@@ -3,9 +3,14 @@
 
 <style>
 @media print {
+    @page { size: A4 portrait; margin: 14mm; }
     .no-print { display: none !important; }
     body { margin: 0; padding: 0; }
     .invoice-paper { 
+        box-sizing: border-box;
+        width: 100% !important;
+        max-width: none !important;
+        min-height: 269mm;
         box-shadow: none !important; 
         margin: 0 !important;
         padding: 1.5cm !important;

@@ -13,8 +13,16 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
     <style>
+    @page { size: A4 portrait; margin: 14mm; }
+
     * {
         font-size: 14px;
+    }
+
+    @media print {
+        html, body { width: auto; margin: 0; padding: 0; }
+        .container { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }
+        img, tr { break-inside: avoid; }
     }
 
     .badge-compact {
