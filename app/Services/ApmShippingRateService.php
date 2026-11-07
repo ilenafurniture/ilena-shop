@@ -358,8 +358,11 @@ final class ApmShippingRateService
             $description = json_decode((string) ($product['deskripsi'] ?? '{}'), true);
             $package = is_array($description) ? ($description['dimensi']['paket'] ?? []) : [];
             $actual = is_array($description) ? ($description['dimensi']['asli'] ?? []) : [];
-            $dimension = is_array($package) && $package !== [] ? $package : (is_array($actual) ? $actual : []);
-            $weight = (float) ($dimension['berat'] ?? $actual['berat'] ?? 0);
+            $package = is_array($package) ? $package : [];
+            $actual = is_array($actual) ? $actual : [];
+            $packageWeight = (float) ($package['berat'] ?? 0);
+            $actualWeight = (float) ($actual['berat'] ?? 0);
+            $weight = $packageWeight > 0 ? $packageWeight : $actualWeight;
             if ($weight <= 0) {
                 return 0;
             }

@@ -49,6 +49,8 @@ final class RajaOngkirShippingRateServiceTest extends CIUnitTestCase
         ]];
 
         $this->assertSame(64_000, $method->invoke($service, $cart));
+        $cart[0]['detail']['deskripsi'] = json_encode(['dimensi' => ['asli' => ['berat' => 30], 'paket' => ['berat' => 0]]]);
+        $this->assertSame(60_000, $method->invoke($service, $cart), 'A zero package weight should fall back to a valid actual product weight.');
         $cart[0]['detail']['deskripsi'] = json_encode(['dimensi' => ['asli' => ['berat' => 0], 'paket' => ['berat' => 0]]]);
         $this->assertSame(0, $method->invoke($service, $cart));
     }

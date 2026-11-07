@@ -241,7 +241,9 @@ final class RajaOngkirShippingRateService
             $description = json_decode((string) ($product['deskripsi'] ?? '{}'), true);
             $package = is_array($description['dimensi']['paket'] ?? null) ? $description['dimensi']['paket'] : [];
             $actual = is_array($description['dimensi']['asli'] ?? null) ? $description['dimensi']['asli'] : [];
-            $weight = (float) ($package['berat'] ?? $actual['berat'] ?? 0);
+            $packageWeight = (float) ($package['berat'] ?? 0);
+            $actualWeight = (float) ($actual['berat'] ?? 0);
+            $weight = $packageWeight > 0 ? $packageWeight : $actualWeight;
             if (!is_finite($weight) || $weight <= 0) {
                 return 0;
             }
