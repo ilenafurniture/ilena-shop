@@ -688,6 +688,12 @@
 </div>
 
 <script>
+// Keep Bootstrap dialogs at the document root so account layout/stacking contexts cannot cover them.
+['exampleModal', 'editModal'].forEach((modalId) => {
+    const dialog = document.getElementById(modalId);
+    if (dialog && dialog.parentElement !== document.body) document.body.appendChild(dialog);
+});
+
 const provElm = document.querySelector('select[name="provinsi"]');
 const kotaElm = document.querySelector('select[name="kota"]');
 const kecElm = document.querySelector('select[name="kecamatan"]');

@@ -11374,3 +11374,8 @@ body.ilena-storefront:is(.ilena-page--account, .ilena-page--order, .ilena-page--
     body.ilena-storefront:is(.ilena-page--account, .ilena-page--order, .ilena-page--wishlist) :is(.ilena-account-heading, .ilena-order-heading, .ilena-wishlist-heading) { align-items: flex-start; margin-bottom: 18px; padding-bottom: 13px; }
     body.ilena-storefront:is(.ilena-page--account, .ilena-page--order, .ilena-page--wishlist) :is(.ilena-account-heading h1, .ilena-order-heading h1, .ilena-wishlist-heading h1) { font-size: 29px; }
 }
+
+/* Account address dialogs must sit above the custom sticky header/menu layers. */
+body.ilena-storefront.ilena-page--account > #exampleModal,
+body.ilena-storefront.ilena-page--account > #editModal { z-index: 30000 !important; }
+body.ilena-storefront.ilena-page--account > .modal-backdrop { z-index: 29990 !important; }
