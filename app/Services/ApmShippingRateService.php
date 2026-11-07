@@ -292,7 +292,7 @@ final class ApmShippingRateService
     {
         $stream = fopen('php://temp', 'r+');
         fwrite($stream, "\xEF\xBB\xBF");
-        fputcsv($stream, self::CSV_HEADERS);
+        fputcsv($stream, self::CSV_HEADERS, ';');
         rewind($stream);
         $csv = stream_get_contents($stream);
         fclose($stream);
@@ -303,10 +303,10 @@ final class ApmShippingRateService
     {
         $stream = fopen('php://temp', 'r+');
         fwrite($stream, "\xEF\xBB\xBF");
-        fputcsv($stream, self::CSV_HEADERS);
+        fputcsv($stream, self::CSV_HEADERS, ';');
         $headers = self::CSV_FIELDS;
         foreach ($this->loadRates() as $row) {
-            fputcsv($stream, array_map(static fn (string $key) => (string) ($row[$key] ?? ''), $headers));
+            fputcsv($stream, array_map(static fn (string $key) => (string) ($row[$key] ?? ''), $headers), ';');
         }
         rewind($stream);
         $csv = stream_get_contents($stream);

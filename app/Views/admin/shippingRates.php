@@ -61,7 +61,7 @@
 
     <section class="apm-rates__upload">
         <h2 class="h5 fw-bold">Perbarui tarif dari APM</h2>
-        <p>Setiap baris CSV mewakili satu tujuan tarif. Untuk memperbarui daftar yang sedang dipakai, unduh tarif aktif, ubah data yang diperlukan, lalu unggah kembali seluruh file.</p>
+        <p>Setiap baris CSV mewakili satu tujuan tarif dan setiap kolom punya nama yang jelas. File memakai pemisah titik koma agar kolom langsung terbaca saat dibuka di Excel dengan pengaturan regional Indonesia.</p>
         <div class="apm-rates__actions mb-3">
             <a class="apm-rates__button" href="/admin/shipping-rates/export"><span class="material-icons" aria-hidden="true">download</span>Unduh data aktif untuk diperbarui</a>
             <a class="apm-rates__button" href="/admin/shipping-rates/template"><span class="material-icons" aria-hidden="true">description</span>Unduh template kosong</a>
@@ -83,7 +83,7 @@
                 </tbody>
             </table>
         </div>
-        <p class="apm-rates__tip"><strong>Perhatian:</strong> unggahan mengganti seluruh dataset tarif aktif, bukan hanya baris yang diedit. File harus berformat CSV; pemisah koma maupun titik koma diterima. Dataset lama otomatis disimpan untuk pemulihan. Tarif ambigu atau bertanda anomali tetap dialihkan ke CS, bukan dijumlahkan.</p>
+        <p class="apm-rates__tip"><strong>Perhatian:</strong> unduh tarif aktif untuk mengedit daftar yang sedang dipakai. Unggahan mengganti seluruh dataset, bukan hanya baris yang diedit. Pemisah koma dan titik koma sama-sama diterima, dan dataset lama otomatis disimpan untuk pemulihan. Tarif ambigu atau bertanda anomali tetap dialihkan ke CS, bukan dijumlahkan.</p>
         <ol class="apm-rates__steps">
             <li>Gunakan satu ID unik untuk setiap baris dan jangan mengubah ID tarif yang sudah ada.</li>
             <li>Isi tarif dan berat dengan angka bulat tanpa simbol mata uang atau titik pemisah.</li>

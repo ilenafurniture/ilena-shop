@@ -133,7 +133,7 @@ final class ApmShippingRateServiceTest extends CIUnitTestCase
         $service = new ApmShippingRateService($this->defaultPath, $this->overridePath);
         $template = $service->csvTemplate();
         $this->assertStringStartsWith("\xEF\xBB\xBF", $template);
-        $this->assertStringContainsString('ID Tarif,Regional APM,Area APM', $template);
+        $this->assertStringContainsString('"ID Tarif";"Regional APM";"Area APM"', $template);
 
         $csv = $this->directory . DIRECTORY_SEPARATOR . 'indonesian-semicolon.csv';
         file_put_contents($csv, "\xEF\xBB\xBFID Tarif;Regional APM;Area APM;Tujuan (Kabupaten/Kota);Tarif per kg (Rp);Minimum berat tagih (kg);Estimasi min (hari);Estimasi maks (hari);Jadwal layanan;Status data APM\r\n"
