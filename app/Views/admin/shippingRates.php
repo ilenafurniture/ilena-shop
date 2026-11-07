@@ -18,6 +18,16 @@
 .apm-rates__upload label { display:block; margin:14px 0 7px; font-weight:650; }
 .apm-rates__upload input[type=file] { width:100%; padding:12px; border:1px solid #d7dadd; border-radius:8px; background:#fff; }
 .apm-rates__steps { padding-left:20px; color:#555e65; line-height:1.8; }
+.apm-rates__guide { margin:22px 0; overflow-x:auto; border-top:1px solid #dfe1e2; border-bottom:1px solid #dfe1e2; }
+.apm-rates__guide table { width:100%; min-width:760px; border-collapse:collapse; font-size:13px; }
+.apm-rates__guide caption { padding:12px 0; color:#292c2e; font-size:15px; font-weight:700; text-align:left; }
+.apm-rates__guide th, .apm-rates__guide td { padding:10px 12px; border-top:1px solid #e7e8e9; text-align:left; vertical-align:top; }
+.apm-rates__guide th { color:#383d40; background:#f5f4f1; font-weight:700; }
+.apm-rates__guide td:first-child { min-width:205px; color:#6f2425; font-weight:650; }
+.apm-rates__guide td:nth-child(2) { min-width:285px; }
+.apm-rates__tip { padding:12px 14px; border-left:3px solid #8e2427; background:#f7f4f0; color:#393633 !important; }
+.apm-rates__upload form { max-width:760px; padding-top:16px; border-top:1px solid #e4e6e7; }
+.apm-rates__upload input[type=file]:focus-visible, .apm-rates__button:focus-visible { outline:3px solid #8e2427; outline-offset:3px; }
 @media(max-width:700px) { .apm-rates__head { flex-direction:column; } .apm-rates__summary { grid-template-columns:1fr; gap:12px; } .apm-rates__actions { width:100%; } .apm-rates__button { flex:1; } }
 </style>
 
@@ -51,19 +61,39 @@
 
     <section class="apm-rates__upload">
         <h2 class="h5 fw-bold">Perbarui tarif dari APM</h2>
-        <p>Unduh daftar aktif, perbarui nominal dan ketentuan dari informasi APM terbaru, lalu unggah kembali sebagai satu file CSV lengkap. Dataset lama hanya diganti setelah seluruh file lolos validasi.</p>
+        <p>Setiap baris CSV mewakili satu tujuan tarif. Untuk memperbarui daftar yang sedang dipakai, unduh tarif aktif, ubah data yang diperlukan, lalu unggah kembali seluruh file.</p>
+        <div class="apm-rates__actions mb-3">
+            <a class="apm-rates__button" href="/admin/shipping-rates/export"><span class="material-icons" aria-hidden="true">download</span>Unduh data aktif untuk diperbarui</a>
+            <a class="apm-rates__button" href="/admin/shipping-rates/template"><span class="material-icons" aria-hidden="true">description</span>Unduh template kosong</a>
+        </div>
+        <div class="apm-rates__guide" role="region" aria-label="Panduan kolom CSV tarif APM" tabindex="0">
+            <table>
+                <caption>Arti kolom pada file CSV</caption>
+                <thead><tr><th scope="col">Nama kolom</th><th scope="col">Yang perlu diisi</th><th scope="col">Contoh</th></tr></thead>
+                <tbody>
+                    <tr><td>ID Tarif</td><td>Biarkan ID dari file tetap unik. Jangan mengubah atau menyalin ID yang sama.</td><td>APM-001</td></tr>
+                    <tr><td>Regional APM</td><td>Nama cakupan regional pada daftar APM.</td><td>Jawa Barat / Banten / DKI</td></tr>
+                    <tr><td>Area APM</td><td>Area/cakupan tarif yang tercantum oleh APM.</td><td>JAWA BARAT</td></tr>
+                    <tr><td>Tujuan (Kabupaten/Kota)</td><td>Nama tujuan persis seperti pada data tarif APM.</td><td>Bandung</td></tr>
+                    <tr><td>Tarif per kg (Rp)</td><td>Angka rupiah saja, tanpa “Rp”, titik, atau pemisah ribuan.</td><td>3500</td></tr>
+                    <tr><td>Minimum berat tagih (kg)</td><td>Berat minimum yang dikenai tarif. Isi angka bulat.</td><td>30</td></tr>
+                    <tr><td>Estimasi min (hari) / Estimasi maks (hari)</td><td>Rentang estimasi hari. Nilai minimum tidak boleh melebihi maksimum.</td><td>2 / 3</td></tr>
+                    <tr><td>Jadwal layanan</td><td>Jadwal khusus bila tercantum; boleh dikosongkan jika tidak ada.</td><td>Senin-Jumat</td></tr>
+                    <tr><td>Status data APM</td><td>Catatan sumber/anomali dari data APM. Jangan menghapus tanda anomali yang masih perlu dicek.</td><td>DARI SCAN</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="apm-rates__tip"><strong>Perhatian:</strong> unggahan mengganti seluruh dataset tarif aktif, bukan hanya baris yang diedit. File harus berformat CSV; pemisah koma maupun titik koma diterima. Dataset lama otomatis disimpan untuk pemulihan. Tarif ambigu atau bertanda anomali tetap dialihkan ke CS, bukan dijumlahkan.</p>
         <ol class="apm-rates__steps">
-            <li>Unduh <a href="/admin/shipping-rates/export">tarif aktif</a> untuk mengedit daftar yang sedang dipakai, atau <a href="/admin/shipping-rates/template">template CSV</a> untuk menyiapkan dataset baru.</li>
-            <li>Pertahankan ID unik setiap baris. Jangan menggandakan ID. Nama tujuan yang sama boleh ada jika memang wilayahnya berbeda.</li>
-            <li>Isi biaya per kg, minimum berat, dan estimasi hari. Aplikasi memakai berat aktual produk dan minimum pada tarif; daftar APM ini tidak menetapkan rumus berat volume otomatis.</li>
-            <li>Untuk tujuan ganda yang masih ambigu atau ditandai anomali, checkout meminta pelanggan menghubungi CS—tarifnya tidak dijumlahkan.</li>
-            <li>Unggah CSV lengkap. Jika valid, tarif aktif diperbarui; salinan sebelumnya disimpan sebagai pemulihan.</li>
+            <li>Gunakan satu ID unik untuk setiap baris dan jangan mengubah ID tarif yang sudah ada.</li>
+            <li>Isi tarif dan berat dengan angka bulat tanpa simbol mata uang atau titik pemisah.</li>
+            <li>Aplikasi menghitung tarif memakai berat aktual produk atau minimum berat pada tarif, mana yang lebih besar. Berat volume tidak dihitung otomatis.</li>
         </ol>
         <form action="/admin/shipping-rates/import" method="post" enctype="multipart/form-data">
             <?= csrf_field(); ?>
-            <label for="apm-rates-file">File CSV tarif lengkap (maksimal 1 MB)</label>
+            <label for="apm-rates-file">Pilih file CSV lengkap (maksimal 1 MB)</label>
             <input id="apm-rates-file" name="rates_file" type="file" accept=".csv,text/csv" required>
-            <button class="apm-rates__button apm-rates__button--primary mt-3" type="submit"><span class="material-icons" aria-hidden="true">upload</span>Validasi dan Terapkan Tarif</button>
+            <button class="apm-rates__button apm-rates__button--primary mt-3" type="submit"><span class="material-icons" aria-hidden="true">upload</span>Validasi lalu terapkan semua tarif</button>
         </form>
         <p class="small mt-3 mb-0">Perubahan tarif tidak mengubah pengaturan Gratis Ongkir. Promo tetap menghitung batas wilayah, minimum belanja, serta batas subsidi sesuai konfigurasi admin.</p>
     </section>

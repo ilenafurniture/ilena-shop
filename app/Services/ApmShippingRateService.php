@@ -5,6 +5,9 @@ namespace App\Services;
 /** Local APM tariff lookup with a writable admin-import override. */
 final class ApmShippingRateService
 {
+    private const CSV_FIELDS = ['id', 'regional', 'area', 'destination', 'rate_per_kg', 'minimum_kg', 'lead_min_days', 'lead_max_days', 'schedule', 'source_status'];
+    private const CSV_HEADERS = ['ID Tarif', 'Regional APM', 'Area APM', 'Tujuan (Kabupaten/Kota)', 'Tarif per kg (Rp)', 'Minimum berat tagih (kg)', 'Estimasi min (hari)', 'Estimasi maks (hari)', 'Jadwal layanan', 'Status data APM'];
+
     private string $defaultPath;
     private string $overridePath;
     private string $lastError = '';
@@ -190,20 +193,43 @@ final class ApmShippingRateService
         }
 
         try {
-            $headers = fgetcsv($handle);
+            $headerLine = fgets($handle);
+            if (!is_string($headerLine)) {
+                return ['ok' => false, 'message' => 'CSV kosong atau formatnya tidak valid.'];
+            }
+            $commaColumns = str_getcsv(rtrim($headerLine, "\r\n"), ',');
+            $semicolonColumns = str_getcsv(rtrim($headerLine, "\r\n"), ';');
+            $delimiter = count($semicolonColumns) > count($commaColumns) ? ';' : ',';
+            rewind($handle);
+            $headers = fgetcsv($handle, null, $delimiter);
             if (!is_array($headers)) {
                 return ['ok' => false, 'message' => 'CSV kosong atau formatnya tidak valid.'];
             }
             $headers[0] = preg_replace('/^\xEF\xBB\xBF/', '', (string) $headers[0]);
             $headers = array_map(static fn ($v): string => strtolower(trim((string) $v)), $headers);
-            $required = ['id', 'regional', 'area', 'destination', 'rate_per_kg', 'minimum_kg', 'lead_min_days', 'lead_max_days', 'schedule', 'source_status'];
-            if ($headers !== $required) {
-                return ['ok' => false, 'message' => 'Header CSV tidak cocok. Unduh template dari halaman Tarif Pengiriman APM.'];
+            $required = self::CSV_FIELDS;
+            $aliases = array_combine(
+                array_map(static fn (string $header): string => strtolower($header), self::CSV_HEADERS),
+                $required
+            );
+            $aliases += [
+                'tujuan' => 'destination',
+                'nama tujuan' => 'destination',
+                'minimum berat (kg)' => 'minimum_kg',
+                'minimum berat ditagihkan (kg)' => 'minimum_kg',
+                'estimasi minimum (hari)' => 'lead_min_days',
+                'estimasi maksimum (hari)' => 'lead_max_days',
+                'jadwal' => 'schedule',
+                'status sumber' => 'source_status',
+            ];
+            $mappedHeaders = array_map(static fn (string $header): ?string => in_array($header, $required, true) ? $header : ($aliases[$header] ?? null), $headers);
+            if ($mappedHeaders !== $required) {
+                return ['ok' => false, 'message' => 'Susunan kolom CSV tidak dikenali. Gunakan template Tarif APM terbaru atau file ekspor tarif aktif.'];
             }
 
             $rows = [];
             $seenIds = [];
-            while (($values = fgetcsv($handle)) !== false) {
+            while (($values = fgetcsv($handle, null, $delimiter)) !== false) {
                 if ($values === [null] || (count($values) === 1 && trim((string) $values[0]) === '')) {
                     continue;
                 }
@@ -265,7 +291,8 @@ final class ApmShippingRateService
     public function csvTemplate(): string
     {
         $stream = fopen('php://temp', 'r+');
-        fputcsv($stream, ['id', 'regional', 'area', 'destination', 'rate_per_kg', 'minimum_kg', 'lead_min_days', 'lead_max_days', 'schedule', 'source_status']);
+        fwrite($stream, "\xEF\xBB\xBF");
+        fputcsv($stream, self::CSV_HEADERS);
         rewind($stream);
         $csv = stream_get_contents($stream);
         fclose($stream);
@@ -275,8 +302,9 @@ final class ApmShippingRateService
     public function csvExport(): string
     {
         $stream = fopen('php://temp', 'r+');
-        $headers = ['id', 'regional', 'area', 'destination', 'rate_per_kg', 'minimum_kg', 'lead_min_days', 'lead_max_days', 'schedule', 'source_status'];
-        fputcsv($stream, $headers);
+        fwrite($stream, "\xEF\xBB\xBF");
+        fputcsv($stream, self::CSV_HEADERS);
+        $headers = self::CSV_FIELDS;
         foreach ($this->loadRates() as $row) {
             fputcsv($stream, array_map(static fn (string $key) => (string) ($row[$key] ?? ''), $headers));
         }

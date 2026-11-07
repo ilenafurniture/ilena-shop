@@ -128,6 +128,23 @@ final class ApmShippingRateServiceTest extends CIUnitTestCase
         $this->assertFileExists($this->overridePath . '.previous');
     }
 
+    public function testIndonesianTemplateHeadersAndSemicolonCsvCanBeImported(): void
+    {
+        $service = new ApmShippingRateService($this->defaultPath, $this->overridePath);
+        $template = $service->csvTemplate();
+        $this->assertStringStartsWith("\xEF\xBB\xBF", $template);
+        $this->assertStringContainsString('ID Tarif,Regional APM,Area APM', $template);
+
+        $csv = $this->directory . DIRECTORY_SEPARATOR . 'indonesian-semicolon.csv';
+        file_put_contents($csv, "\xEF\xBB\xBFID Tarif;Regional APM;Area APM;Tujuan (Kabupaten/Kota);Tarif per kg (Rp);Minimum berat tagih (kg);Estimasi min (hari);Estimasi maks (hari);Jadwal layanan;Status data APM\r\n"
+            . 'APM-903;Jawa Barat;JAWA BARAT;Bandung;4000;25;2;3;;DARI SCAN' . "\r\n");
+
+        $import = $service->importCsv($csv);
+        $this->assertTrue($import['ok']);
+        $this->assertSame(1, $service->summary()['rows']);
+        $this->assertSame('APM-903', $service->rates(['kab' => 'Bandung', 'prov' => 'Jawa Barat'], [$this->cartItem(8, 1)])[0]['tariff_id']);
+    }
+
     private function cartItem(float $weight, int $quantity): array
     {
         return [
