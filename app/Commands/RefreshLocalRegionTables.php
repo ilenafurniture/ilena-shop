@@ -12,10 +12,14 @@ class RefreshLocalRegionTables extends BaseCommand
     protected $group = 'Data maintenance';
     protected $name = 'regions:refresh-local';
     protected $description = 'Validasi dry-run atau perbarui tabel wilayah tanpa mengubah struktur tabel.';
-    protected $usage = 'regions:refresh-local [--source=PATH] [--apply]';
+    protected $usage = 'regions:refresh-local [--source=PATH] [--apply] [--confirm-production=ilena] [--backup=PATH] [--confirm-regions-hash=SHA256] [--confirm-postal-hash=SHA256]';
     protected $options = [
         'source' => 'Direktori yang berisi wilayah.sql dan wilayah_kodepos.sql.',
-        'apply' => 'Terapkan hanya di development setelah seluruh validasi lulus. Production selalu dry-run.',
+        'apply' => 'Terapkan setelah seluruh validasi lulus; production wajib konfirmasi database, backup, dan hash sumber.',
+        'confirm-production' => 'Wajib bernilai ilena untuk menerapkan perubahan pada production.',
+        'backup' => 'Path dump gzip sebelum perubahan; wajib memuat enam tabel terkait.',
+        'confirm-regions-hash' => 'SHA-256 wilayah.sql yang telah ditinjau.',
+        'confirm-postal-hash' => 'SHA-256 wilayah_kodepos.sql yang telah ditinjau.',
     ];
 
     private const SOURCE_DIR = ROOTPATH . 'ops/region-data/2025.2.5' . DIRECTORY_SEPARATOR;
@@ -31,11 +35,7 @@ class RefreshLocalRegionTables extends BaseCommand
         ini_set('memory_limit', '512M');
         $apply = CLI::getOption('apply') !== null;
         if (!in_array(ENVIRONMENT, ['development', 'production'], true)) {
-            CLI::error('Perintah hanya mendukung development untuk apply atau production untuk dry-run.');
-            return EXIT_ERROR;
-        }
-        if (ENVIRONMENT === 'production' && $apply) {
-            CLI::error('Apply production dinonaktifkan; jalankan dry-run saja dan tinjau hasilnya.');
+            CLI::error('Perintah hanya mendukung environment development atau production.');
             return EXIT_ERROR;
         }
 
@@ -69,13 +69,22 @@ class RefreshLocalRegionTables extends BaseCommand
             CLI::write('Hash wilayah: ' . $this->canonicalSourceHash($regionsSql));
             CLI::write('Hash kodepos: ' . $this->canonicalSourceHash($postalSql));
 
+            if (ENVIRONMENT === 'production' && $apply) {
+                $this->assertProductionApplyConfirmation(
+                    (string) $database,
+                    $regionsSql,
+                    $postalSql,
+                    (string) (CLI::getOption('backup') ?? '')
+                );
+            }
+
             if (!$apply) {
-                CLI::write('DRY-RUN: database belum diubah. Jalankan ulang dengan --apply setelah meninjau hasil ini.', 'yellow');
+                CLI::write('DRY-RUN: database belum diubah. Untuk apply production wajib sertakan konfirmasi, hash, dan backup terverifikasi.', 'yellow');
                 return EXIT_SUCCESS;
             }
 
             $this->applyCatalog($db, $catalog, $addressUpdates, $freeShippingUpdate);
-            CLI::write('Selesai: isi empat tabel wilayah lokal diperbarui; struktur tabel tetap sama.', 'green');
+            CLI::write('Selesai: isi empat tabel wilayah diperbarui; struktur tabel tetap sama.', 'green');
             return EXIT_SUCCESS;
         } catch (\Throwable $error) {
             log_message('error', 'Local region refresh failed: {type}: {message}', [
@@ -502,6 +511,48 @@ class RefreshLocalRegionTables extends BaseCommand
     private function canonicalSourceHash(string $contents): string
     {
         return hash('sha256', str_replace(["\r\n", "\r"], "\n", $contents));
+    }
+
+    private function assertProductionApplyConfirmation(string $database, string $regionsSql, string $postalSql, string $backupPath): void
+    {
+        if ($database !== 'ilena' || CLI::getOption('confirm-production') !== 'ilena') {
+            throw new \RuntimeException('Apply production ditolak: database dan konfirmasi harus bernilai ilena.');
+        }
+
+        if (!hash_equals($this->canonicalSourceHash($regionsSql), (string) (CLI::getOption('confirm-regions-hash') ?? ''))
+            || !hash_equals($this->canonicalSourceHash($postalSql), (string) (CLI::getOption('confirm-postal-hash') ?? ''))
+        ) {
+            throw new \RuntimeException('Apply production ditolak: hash sumber tidak sama dengan hash yang ditinjau saat dry-run.');
+        }
+
+        if ($backupPath === '' || !is_file($backupPath) || !is_readable($backupPath) || filesize($backupPath) < 1) {
+            throw new \RuntimeException('Apply production ditolak: file backup gzip tidak ditemukan, kosong, atau tidak terbaca.');
+        }
+
+        $handle = @gzopen($backupPath, 'rb');
+        if ($handle === false) {
+            throw new \RuntimeException('Apply production ditolak: backup tidak dapat dibaca sebagai gzip.');
+        }
+
+        $required = array_fill_keys(['provinsi', 'kabupaten', 'kecamatan', 'kelurahan', 'pembeli', 'app_settings'], false);
+        try {
+            while (!gzeof($handle)) {
+                $line = gzgets($handle);
+                if ($line === false) {
+                    break;
+                }
+                if (preg_match('/^CREATE TABLE `?(provinsi|kabupaten|kecamatan|kelurahan|pembeli|app_settings)`?/i', $line, $matches) === 1) {
+                    $required[strtolower($matches[1])] = true;
+                }
+            }
+        } finally {
+            gzclose($handle);
+        }
+
+        $missing = array_keys($required, false, true);
+        if ($missing !== []) {
+            throw new \RuntimeException('Apply production ditolak: backup tidak memuat tabel ' . implode(', ', $missing) . '.');
+        }
     }
 
     private function applyCatalog($db, array $catalog, array $addressUpdates, ?array $freeShippingUpdate): void
