@@ -5,6 +5,23 @@ final class CheckoutState
 {
     public static function fingerprint(array $cart, array $address, array $shipping, string $method, $voucher): string
     {
+        // Checkout may now apply one automatic voucher plus one claimed voucher.
+        // Normalize the IDs into a stable scalar/list before canonical JSON encoding.
+        if (is_array($voucher)) {
+            $voucherIds = [];
+            foreach ($voucher as $voucherId) {
+                if (! is_int($voucherId) && ! is_string($voucherId)) continue;
+                $voucherId = trim((string) $voucherId);
+                if ($voucherId !== '') $voucherIds[] = $voucherId;
+            }
+            $voucherIds = array_values(array_unique($voucherIds));
+            sort($voucherIds, SORT_STRING);
+            $voucher = count($voucherIds) === 1 ? $voucherIds[0] : $voucherIds;
+            if ($voucher === []) $voucher = '';
+        } else {
+            $voucher = is_scalar($voucher) ? (string) $voucher : '';
+        }
+
         $items=[];
         foreach (self::mergeCart([], $cart) as $item) {
             // Inputs at both boundaries must be revalidated/enriched by the server.
@@ -16,7 +33,7 @@ final class CheckoutState
             $items[]=['id'=>$item['id_barang'],'variant'=>mb_strtolower($item['varian']), 'quantity'=>$item['jumlah'],'unit_price'=>CatalogPricing::unitPrice($product)];
         }
         usort($items,static fn($a,$b)=>[$a['id'],$a['variant']]<=>[$b['id'],$b['variant']]);
-        return hash('sha256',json_encode(self::canonical(['items'=>$items,'address'=>$address,'shipping'=>$shipping,'method'=>$method,'voucher'=>(string)$voucher]),JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES));
+        return hash('sha256',json_encode(self::canonical(['items'=>$items,'address'=>$address,'shipping'=>$shipping,'method'=>$method,'voucher'=>$voucher]),JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES));
     }
 
     /** Persist only identifiers and quantities; rendering metadata is never account state. */

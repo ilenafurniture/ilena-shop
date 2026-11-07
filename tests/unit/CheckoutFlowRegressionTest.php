@@ -29,6 +29,26 @@ final class CheckoutFlowRegressionTest extends CIUnitTestCase
         $this->assertNotSame($hash, CheckoutState::fingerprint($decorated, ...$args));
     }
 
+    public function testVoucherStackFingerprintAcceptsAndNormalizesVoucherIdLists(): void
+    {
+        $cart = [['id_barang'=>'P1','varian'=>'Oak','jumlah'=>1,'detail'=>['harga'=>100000,'diskon'=>0]]];
+        $address = ['email_pemesan'=>'fixture@example.test'];
+        $shipping = ['harga'=>10000];
+
+        $this->assertSame(
+            CheckoutState::fingerprint($cart, $address, $shipping, 'bca', [12]),
+            CheckoutState::fingerprint($cart, $address, $shipping, 'bca', 12)
+        );
+        $this->assertSame(
+            CheckoutState::fingerprint($cart, $address, $shipping, 'bca', [12, 7]),
+            CheckoutState::fingerprint($cart, $address, $shipping, 'bca', [7, 12])
+        );
+        $this->assertNotSame(
+            CheckoutState::fingerprint($cart, $address, $shipping, 'bca', [7, 12]),
+            CheckoutState::fingerprint($cart, $address, $shipping, 'bca', [7, 13])
+        );
+    }
+
     public function testExpiredScheduledDiscountDoesNotReduceCharge(): void
     {
         $row=['harga'=>100000,'diskon'=>20,'pakai_jadwal_diskon'=>1,'diskon_mulai'=>'2000-01-01','diskon_selesai'=>'2000-01-02'];
