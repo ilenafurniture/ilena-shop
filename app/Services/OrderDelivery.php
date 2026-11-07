@@ -28,6 +28,16 @@ final class OrderDelivery
         return $status === 'Dikirim';
     }
 
+    public static function isAutoCompletionDue(string $status, mixed $shippedAt, int $now, bool $hasOpenCase): bool
+    {
+        if ($status !== 'Dikirim' || $hasOpenCase || ! is_numeric($shippedAt)) {
+            return false;
+        }
+
+        $shippedAt = (int) $shippedAt;
+        return $shippedAt > 0 && $now >= $shippedAt + (6 * 86400);
+    }
+
     public static function isCustomerRole(string $role): bool
     {
         return in_array($role, ['0', '4'], true);

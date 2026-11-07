@@ -42,4 +42,15 @@ final class OrderDeliveryTest extends CIUnitTestCase
         $this->assertFalse(OrderDelivery::isCustomerRole('1'));
         $this->assertFalse(OrderDelivery::isCustomerRole('3'));
     }
+
+    public function testAutomaticCompletionRequiresSixFullDaysAndNoOpenCase(): void
+    {
+        $shippedAt = 1_800_000_000;
+
+        $this->assertFalse(OrderDelivery::isAutoCompletionDue('Dikirim', $shippedAt, $shippedAt + (6 * 86400) - 1, false));
+        $this->assertTrue(OrderDelivery::isAutoCompletionDue('Dikirim', $shippedAt, $shippedAt + (6 * 86400), false));
+        $this->assertFalse(OrderDelivery::isAutoCompletionDue('Dikirim', $shippedAt, $shippedAt + (7 * 86400), true));
+        $this->assertFalse(OrderDelivery::isAutoCompletionDue('Proses', $shippedAt, $shippedAt + (7 * 86400), false));
+        $this->assertFalse(OrderDelivery::isAutoCompletionDue('Dikirim', null, $shippedAt + (7 * 86400), false));
+    }
 }
