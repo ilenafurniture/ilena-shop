@@ -181,7 +181,7 @@ $decodePermissions = $decodePermissions ?? static fn($v) => [];
                                     <form action="/admin/rbac/assign/delete" method="post" data-ilena-confirm="Hapus akses untuk user ini?" data-ilena-confirm-title="Hapus akses">
                                         <?= csrf_field(); ?>
                                         <input type="hidden" name="email" value="<?= esc($row['email']); ?>">
-                                        <button class="btn btn-sm btn-outline-danger">Hapus Akses</button>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" data-ilena-confirm="Hapus akses <?= esc($row['email'], 'attr'); ?>? Akun tersebut tidak lagi mendapat izin admin dari role ini." data-ilena-confirm-title="Hapus akses user" data-ilena-confirm-button="Hapus akses">Hapus Akses</button>
                                     </form>
                                 </td>
                             </tr>

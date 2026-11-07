@@ -150,7 +150,33 @@
         if (control.matches('[data-delete-order], [data-delete-selected-orders]') || control.closest('#deleteOrderDialog')) return;
         if (control.hasAttribute('data-ilena-confirm-skip')) return;
         const form = control.form || control.closest('form');
-        if (form && (form.dataset.ilenaConfirm || control.dataset.ilenaConfirm || isDestructiveUrl(control.formAction || form.action))) return;
+        const formSubmitter = form && control.matches('button, input[type="submit"]');
+        const formMessage = form && (control.dataset.ilenaConfirm || form.dataset.ilenaConfirm);
+        const formDestructive = form && isAdminPage && isDestructiveUrl(control.formAction || form.action);
+        if (form && formSubmitter && (formMessage || formDestructive)) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            const accepted = await api.confirm(
+                formMessage || (localeIsEnglish()
+                    ? 'This permanently deletes data and cannot be undone. Continue?'
+                    : 'Data akan dihapus permanen dan tidak dapat dikembalikan. Lanjutkan?'),
+                {
+                    title: control.dataset.ilenaConfirmTitle || form.dataset.ilenaConfirmTitle || (localeIsEnglish() ? 'Confirm deletion' : 'Konfirmasi penghapusan'),
+                    confirmText: control.dataset.ilenaConfirmButton || form.dataset.ilenaConfirmButton || (formDestructive ? (localeIsEnglish() ? 'Yes, delete' : 'Ya, hapus') : (localeIsEnglish() ? 'Continue' : 'Lanjutkan')),
+                    tone: control.dataset.ilenaConfirmTone || form.dataset.ilenaConfirmTone || (formDestructive ? 'error' : 'warning')
+                }
+            );
+            if (!accepted) return;
+
+            allowedSubmit.add(form);
+            if (typeof form.requestSubmit === 'function') {
+                if (control.form === form && control.type === 'submit') form.requestSubmit(control);
+                else form.requestSubmit();
+            } else {
+                form.submit();
+            }
+            return;
+        }
 
         const href = control instanceof HTMLAnchorElement ? control.href : '';
         const hasDeleteLabel = /\b(hapus|delete|remove|destroy)\b/i.test([
