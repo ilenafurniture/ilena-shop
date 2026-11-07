@@ -320,8 +320,30 @@ class AdminRbacService
     {
         $this->ensureTables();
         $db = \Config\Database::connect();
-        $db->table($this->userRolesTable)->where('role_id', $id)->delete();
-        return (bool)$db->table($this->rolesTable)->where('id', $id)->delete();
+        $role = $this->role($id);
+        if (!$role) {
+            return false;
+        }
+
+        $db->transBegin();
+        try {
+            $assignments = $db->table($this->userRolesTable)->select('email')->where('role_id', $id)->get()->getResultArray();
+            $db->table($this->userRolesTable)->where('role_id', $id)->delete();
+            $db->table($this->rolesTable)->where('id', $id)->delete();
+            if (!$db->transStatus()) {
+                throw new \RuntimeException('Database menolak penghapusan role.');
+            }
+            $db->transCommit();
+
+            foreach ($assignments as $assignment) {
+                $this->demoteUnassignedStaff((string) ($assignment['email'] ?? ''));
+            }
+            return true;
+        } catch (\Throwable $th) {
+            $db->transRollback();
+            log_message('error', 'RBAC role deletion failed for {id}: {err}', ['id' => $id, 'err' => $th->getMessage()]);
+            return false;
+        }
     }
 
     public function assignments(): array
@@ -447,20 +469,54 @@ class AdminRbacService
     {
         $this->ensureTables();
         $email = strtolower(trim($email));
+        if ($email === '') {
+            return false;
+        }
         $db = \Config\Database::connect();
-        $deleted = (bool)$db
-            ->table($this->userRolesTable)
-            ->where('email', $email)
-            ->delete();
+        $db->transBegin();
+        try {
+            // Older assignments may have been stored with mixed-case email.
+            $db->query(
+                'DELETE FROM ' . $db->protectIdentifiers($this->userRolesTable) . ' WHERE LOWER(email) = ?',
+                [$email]
+            );
+            $deleted = $db->affectedRows() > 0;
+            if (!$db->transStatus()) {
+                throw new \RuntimeException('Database menolak penghapusan assignment.');
+            }
+            $db->transCommit();
 
-        if ($deleted && $db->tableExists('user')) {
-            $user = $this->accountForEmail($email);
-            if ($user && (string)($user['role'] ?? '') === '5') {
-                $db->table('user')->where('email', (string) $user['email'])->update(['role' => '0']);
+            if ($deleted) {
+                $this->demoteUnassignedStaff($email);
+            }
+            return $deleted;
+        } catch (\Throwable $th) {
+            $db->transRollback();
+            log_message('error', 'RBAC assignment deletion failed for {email}: {err}', ['email' => $email, 'err' => $th->getMessage()]);
+            return false;
+        }
+    }
+
+    private function demoteUnassignedStaff(string $email): void
+    {
+        $email = strtolower(trim($email));
+        if ($email === '') {
+            return;
+        }
+        $db = \Config\Database::connect();
+        if ($db->tableExists($this->userRolesTable)) {
+            $remaining = $db->query(
+                'SELECT COUNT(*) AS total FROM ' . $db->protectIdentifiers($this->userRolesTable) . ' WHERE LOWER(email) = ?',
+                [$email]
+            )->getRowArray();
+            if ((int) ($remaining['total'] ?? 0) > 0) {
+                return;
             }
         }
-
-        return $deleted;
+        $user = $this->accountForEmail($email);
+        if ($user && (string) ($user['role'] ?? '') === '5') {
+            $db->table('user')->where('email', (string) $user['email'])->update(['role' => '0']);
+        }
     }
 
     public function userPermissions(string $email): array

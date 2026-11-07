@@ -3406,8 +3406,38 @@ class AdminController extends BaseController
 
     public function deleteVoucher($id)
     {
-        $this->voucherModel->delete((int)$id);
-        return redirect()->to('/admin/voucher')->with('msg', 'Voucher berhasil dihapus!');
+        $id = (int) $id;
+        $voucher = $id > 0 ? $this->voucherModel->find($id) : null;
+        if (!$voucher) {
+            return redirect()->to('/admin/voucher')->with('msg', 'Gagal: voucher tidak ditemukan atau sudah dihapus.');
+        }
+
+        $db = \Config\Database::connect();
+        try {
+            // Keep order/payment reservations intact while checkout is in flight.
+            if ($db->tableExists('ilena_voucher_reservations')) {
+                $activeReservations = $db->table('ilena_voucher_reservations')
+                    ->where('voucher_id', $id)
+                    ->where('status', 'reserved')
+                    ->where('expires_at >', date('Y-m-d H:i:s'))
+                    ->countAllResults();
+                if ($activeReservations > 0) {
+                    return redirect()->to('/admin/voucher')->with('msg', 'Gagal: voucher sedang dipakai pada checkout yang belum selesai. Nonaktifkan dahulu, lalu hapus setelah reservasi berakhir.');
+                }
+            }
+
+            $db->transBegin();
+            $this->voucherModel->delete($id);
+            if ($this->voucherModel->find($id) !== null || !$db->transStatus()) {
+                throw new \RuntimeException('Baris voucher masih tersimpan setelah perintah hapus.');
+            }
+            $db->transCommit();
+            return redirect()->to('/admin/voucher')->with('msg', 'Voucher berhasil dihapus. Riwayat pemakaian sebelumnya tetap disimpan.');
+        } catch (\Throwable $e) {
+            $db->transRollback();
+            log_message('error', 'Voucher delete failed for {id}: {error}', ['id' => $id, 'error' => $e->getMessage()]);
+            return redirect()->to('/admin/voucher')->with('msg', 'Gagal menghapus voucher. Data pemakaian atau transaksi terkait tetap dipertahankan; periksa log server untuk detailnya.');
+        }
     }
 
     // Edit dari modal (POST /admin/voucher/edit/{id})
