@@ -3042,9 +3042,9 @@ class Pages extends BaseController
 
         $email = \Config\Services::email();
         $emailConfig = config('Email');
-        $fromEmail = $emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com';
+        $fromEmail = $emailConfig->fromEmail ?: ($emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com');
         $email->clear(true);
-        $email->setFrom($fromEmail, 'Ilena Furniture');
+        $email->setFrom($fromEmail, $emailConfig->fromName ?: 'Ilena Furniture');
         $email->setReplyTo('info@ilenafurniture.com', 'Customer Care Ilena Furniture');
         $email->setTo($emailCus);
         $email->setSubject('ILENA Store - ' . $subjectStatus . ' #' . $orderId);
@@ -3083,9 +3083,9 @@ class Pages extends BaseController
 
         $email = \Config\Services::email();
         $emailConfig = config('Email');
-        $fromEmail = $emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com';
+        $fromEmail = $emailConfig->fromEmail ?: ($emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com');
         $email->clear(true);
-        $email->setFrom($fromEmail, 'Ilena Furniture');
+        $email->setFrom($fromEmail, $emailConfig->fromName ?: 'Ilena Furniture');
         $email->setReplyTo('info@ilenafurniture.com', 'Customer Care Ilena Furniture');
         $email->setTo($adminEmail);
         $email->setSubject('Admin Ilena - Update Pembayaran #' . $orderId);
@@ -5798,7 +5798,7 @@ class Pages extends BaseController
             $email = \Config\Services::email();
             $emailConfig = config('Email');
             $email->clear(true);
-            $email->setFrom($emailConfig->SMTPUser ?: ($emailConfig->fromEmail ?: 'no-reply@ilenafurniture.com'), 'Ilena Furniture');
+            $email->setFrom($emailConfig->fromEmail ?: ($emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com'), $emailConfig->fromName ?: 'Ilena Furniture');
             $email->setReplyTo('info@ilenafurniture.com', 'Ilena Furniture');
             $email->setTo($emailUser);
             $isEnglishVerification = service('request')->getLocale() === 'en';
@@ -5930,7 +5930,7 @@ class Pages extends BaseController
             $sendemail = \Config\Services::email();
             $emailConfig = config('Email');
             $sendemail->clear(true);
-            $sendemail->setFrom($emailConfig->SMTPUser ?: ($emailConfig->fromEmail ?: 'no-reply@ilenafurniture.com'), 'Ilena Furniture');
+            $sendemail->setFrom($emailConfig->fromEmail ?: ($emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com'), $emailConfig->fromName ?: 'Ilena Furniture');
             $sendemail->setReplyTo('info@ilenafurniture.com', 'Ilena Furniture');
             $sendemail->setTo($email);
             $isEnglishVerification = service('request')->getLocale() === 'en';
@@ -6025,7 +6025,7 @@ class Pages extends BaseController
         $email = \Config\Services::email();
         $emailConfig = config('Email');
         $email->clear(true);
-        $email->setFrom($emailConfig->SMTPUser ?: ($emailConfig->fromEmail ?: 'no-reply@ilenafurniture.com'), 'Ilena Furniture');
+        $email->setFrom($emailConfig->fromEmail ?: ($emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com'), $emailConfig->fromName ?: 'Ilena Furniture');
         $email->setReplyTo('info@ilenafurniture.com', 'Ilena Furniture');
         $email->setTo($emailUser);
         $isEnglishVerification = service('request')->getLocale() === 'en';
@@ -6204,7 +6204,7 @@ class Pages extends BaseController
         $mail = \Config\Services::email();
         $mail->clear(true);
         $mailConfig = config('Email');
-        $mail->setFrom($mailConfig->SMTPUser ?: ($mailConfig->fromEmail ?: 'no-reply@ilenafurniture.com'), 'Ilena Furniture');
+        $mail->setFrom($mailConfig->fromEmail ?: ($mailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com'), $mailConfig->fromName ?: 'Ilena Furniture');
         $mail->setReplyTo('info@ilenafurniture.com', 'Ilena Furniture');
         $mail->setTo($newEmail);
         $mail->setSubject($locale === 'en' ? 'Confirm your Ilena account email' : 'Konfirmasi email akun Ilena');
@@ -6331,7 +6331,7 @@ class Pages extends BaseController
         $securityMail = \Config\Services::email();
         $securityMail->clear(true);
         $securityConfig = config('Email');
-        $securityMail->setFrom($securityConfig->SMTPUser ?: ($securityConfig->fromEmail ?: 'no-reply@ilenafurniture.com'), 'Ilena Furniture');
+        $securityMail->setFrom($securityConfig->fromEmail ?: ($securityConfig->SMTPUser ?: 'no-reply@ilenafurniture.com'), $securityConfig->fromName ?: 'Ilena Furniture');
         $securityMail->setReplyTo('info@ilenafurniture.com', 'Ilena Furniture');
         $securityMail->setTo($oldEmail);
         $securityMail->setSubject($locale === 'en' ? 'Your Ilena account email was changed' : 'Email akun Ilena Anda telah diubah');
@@ -6630,7 +6630,7 @@ class Pages extends BaseController
             $emailService = \Config\Services::email();
             $emailConfig = config('Email');
             $emailService->clear(true);
-            $emailService->setFrom($emailConfig->SMTPUser ?: ($emailConfig->fromEmail ?: 'no-reply@ilenafurniture.com'), 'Ilena Furniture');
+            $emailService->setFrom($emailConfig->fromEmail ?: ($emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com'), $emailConfig->fromName ?: 'Ilena Furniture');
             $emailService->setReplyTo('info@ilenafurniture.com', 'Ilena Furniture');
             $emailService->setTo((string)$user['email']);
             $emailService->setSubject($locale === 'en' ? 'Ilena Furniture password reset' : 'Reset kata sandi Ilena Furniture');
