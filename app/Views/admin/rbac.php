@@ -80,7 +80,7 @@ $decodePermissions = $decodePermissions ?? static fn($v) => [];
         <form action="/admin/rbac/assign" method="post" class="rbac-card p-4">
             <?= csrf_field(); ?>
             <h2 class="h5 fw-bold mb-2">Assign Role ke User</h2>
-            <p class="rbac-muted">User yang sudah punya akun bisa login admin sesuai role yang dipilih.</p>
+            <p class="rbac-muted">Pilih role yang memiliki izin. Email yang sudah terdaftar mendapat akses setelah masuk ulang; email yang belum terdaftar akan berstatus menunggu sampai akun dibuat.</p>
 
             <div class="mb-3">
                 <label class="form-label fw-bold" for="email">Email User</label>
@@ -93,13 +93,14 @@ $decodePermissions = $decodePermissions ?? static fn($v) => [];
                 <select id="role_id" name="role_id" class="form-select" required>
                     <option value="">Pilih role</option>
                     <?php foreach ($roles as $role): ?>
-                        <option value="<?= esc($role['id']); ?>"><?= esc($role['role_name']); ?></option>
+                        <?php $rolePermissionCount = count($decodePermissions($role['permissions'] ?? '[]')); ?>
+                        <option value="<?= esc($role['id']); ?>" <?= $rolePermissionCount === 0 ? 'disabled' : ''; ?>><?= esc($role['role_name']); ?><?= $rolePermissionCount ? ' — ' . $rolePermissionCount . ' izin' : ' — belum memiliki izin'; ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
 
             <div class="d-flex justify-content-end">
-                <button type="submit" class="btn-default-merah px-4">Simpan Akses User</button>
+                <button type="submit" class="btn-default-merah px-4">Simpan dan Terapkan Akses</button>
             </div>
         </form>
     </div>
@@ -149,6 +150,7 @@ $decodePermissions = $decodePermissions ?? static fn($v) => [];
                         <tr>
                             <th>Email</th>
                             <th>Role</th>
+                            <th>Status akun</th>
                             <th>Permission</th>
                             <th class="text-end">Aksi</th>
                         </tr>
@@ -159,6 +161,17 @@ $decodePermissions = $decodePermissions ?? static fn($v) => [];
                             <tr>
                                 <td class="fw-bold"><?= esc($row['email']); ?></td>
                                 <td><?= esc($row['role_name'] ?? '-'); ?></td>
+                                <td>
+                                    <?php if (($row['account_status'] ?? '') === 'active'): ?>
+                                        <span class="chip">Akses aktif</span>
+                                    <?php elseif (($row['account_status'] ?? '') === 'inactive'): ?>
+                                        <span class="chip" style="background:#fef3c7;color:#92400e">Akun nonaktif</span>
+                                    <?php elseif (($row['account_status'] ?? '') === 'restricted'): ?>
+                                        <span class="chip" style="background:#fef3c7;color:#92400e">Role akun dibatasi</span>
+                                    <?php else: ?>
+                                        <span class="chip" style="background:#e5e7eb;color:#374151">Menunggu pendaftaran</span>
+                                    <?php endif; ?>
+                                </td>
                                 <td>
                                     <?php foreach ($rowPerms as $permKey): ?>
                                         <span class="chip"><?= esc($permissions[$permKey]['label'] ?? $permKey); ?></span>

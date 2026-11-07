@@ -4555,6 +4555,12 @@ private function interiorShippedQtyMap(string $idPesanan): array
             return redirect()->to('/admin/rbac');
         }
 
+        $validPermissions = array_intersect(array_keys($service->permissions()), $permissions);
+        if (!in_array(strtolower($name), ['admin', 'admin operasional'], true) && $validPermissions === []) {
+            session()->setFlashdata('err', 'Pilih minimal satu izin untuk role ini. Role tanpa izin tidak bisa membuka halaman admin.');
+            return redirect()->to('/admin/rbac');
+        }
+
         $saved = $service->saveRole($id ? (int)$id : null, $name, $permissions);
         session()->setFlashdata($saved ? 'msg' : 'err', $saved ? 'Role berhasil disimpan.' : 'Role gagal disimpan.');
         return redirect()->to('/admin/rbac');
@@ -4578,17 +4584,38 @@ private function interiorShippedQtyMap(string $idPesanan): array
         }
 
         $emails = preg_split('/[\r\n,;]+/', $emailRaw);
-        $emails = array_values(array_filter(array_map('trim', $emails ?: [])));
+        $emails = array_values(array_unique(array_filter(array_map(
+            static fn($email) => strtolower(trim((string) $email)),
+            $emails ?: []
+        ))));
         $service = new AdminRbacService();
-        $savedCount = 0;
+        $counts = ['active' => 0, 'pending' => 0, 'inactive' => 0, 'restricted' => 0, 'failed' => 0, 'invalid' => 0];
         foreach ($emails as $email) {
-            if (filter_var($email, FILTER_VALIDATE_EMAIL) && $service->assignRole($email, $roleId)) {
-                $savedCount++;
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $counts['invalid']++;
+                continue;
             }
+            $status = $service->assignRoleWithStatus($email, $roleId);
+            $counts[$status] = ($counts[$status] ?? 0) + 1;
         }
 
-        $saved = $savedCount > 0;
-        session()->setFlashdata($saved ? 'msg' : 'err', $saved ? 'Akses user berhasil disimpan.' : 'Akses user gagal disimpan.');
+        if (array_sum($counts) === 0) {
+            session()->setFlashdata('err', 'Masukkan minimal satu alamat email.');
+        } elseif ($counts['active'] + $counts['pending'] + $counts['inactive'] + $counts['restricted'] > 0) {
+            $parts = [];
+            if ($counts['active']) $parts[] = $counts['active'] . ' akun aktif diberi akses sekarang';
+            if ($counts['pending']) $parts[] = $counts['pending'] . ' email belum terdaftar (akses menunggu pendaftaran)';
+            if ($counts['inactive']) $parts[] = $counts['inactive'] . ' akun nonaktif tersimpan, akses belum aktif';
+            if ($counts['restricted']) $parts[] = $counts['restricted'] . ' akun tersimpan tetapi role akunnya tidak dapat dinaikkan';
+            if ($counts['failed']) $parts[] = $counts['failed'] . ' gagal disimpan';
+            if ($counts['invalid']) $parts[] = $counts['invalid'] . ' email tidak valid dilewati';
+            session()->setFlashdata('msg', implode('. ', $parts) . '.');
+        } else {
+            $details = [];
+            if ($counts['failed']) $details[] = $counts['failed'] . ' gagal disimpan';
+            if ($counts['invalid']) $details[] = $counts['invalid'] . ' email tidak valid';
+            session()->setFlashdata('err', 'Tidak ada akses yang tersimpan' . ($details ? ': ' . implode(', ', $details) . '.' : '.'));
+        }
         return redirect()->to('/admin/rbac');
     }
 

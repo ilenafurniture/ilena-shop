@@ -283,10 +283,19 @@ class AdminRbacService
     public function saveRole(?int $id, string $name, array $permissions): bool
     {
         $this->ensureTables();
+        $name = trim($name);
+        if ($name === '') {
+            return false;
+        }
         $valid = array_keys($this->permissions());
         $permissions = array_values(array_intersect(array_unique($permissions), $valid));
         if ($this->isOperationalAdminRoleName($name)) {
             $permissions = $this->operationalAdminPermissions();
+        }
+        // A role without permissions cannot access any admin page; don't save
+        // an assignment that looks successful but has no effective access.
+        if ($permissions === []) {
+            return false;
         }
 
         $data = [
@@ -297,6 +306,9 @@ class AdminRbacService
 
         $db = \Config\Database::connect();
         if ($id) {
+            if (!$this->role($id)) {
+                return false;
+            }
             return (bool)$db->table($this->rolesTable)->where('id', $id)->update($data);
         }
 
@@ -315,13 +327,28 @@ class AdminRbacService
     public function assignments(): array
     {
         $this->ensureTables();
-        return \Config\Database::connect()
+        $rows = \Config\Database::connect()
             ->table($this->userRolesTable . ' ur')
             ->select('ur.email, ur.role_id, ur.updated_at, r.role_name, r.permissions')
             ->join($this->rolesTable . ' r', 'r.id = ur.role_id', 'left')
             ->orderBy('ur.email', 'asc')
             ->get()
             ->getResultArray();
+
+        foreach ($rows as &$row) {
+            $account = $this->accountForEmail((string) ($row['email'] ?? ''));
+            if (!$account) {
+                $row['account_status'] = 'pending';
+            } elseif ((string) ($account['active'] ?? '1') !== '1') {
+                $row['account_status'] = 'inactive';
+            } else {
+                $row['account_status'] = in_array((string) ($account['role'] ?? ''), ['0', '3', '4', '5'], true)
+                    ? 'active'
+                    : 'restricted';
+            }
+        }
+        unset($row);
+        return $rows;
     }
 
     public function syncAssignedUserRoles(): int
@@ -335,9 +362,9 @@ class AdminRbacService
             $email = strtolower(trim((string)($row['email'] ?? '')));
             if ($email === '') continue;
 
-            $user = $db->table('user')->select('role')->where('email', $email)->get()->getRowArray();
+            $user = $this->accountForEmail($email);
             if ($user && in_array((string)($user['role'] ?? ''), ['0', '3', '4', '5'], true)) {
-                $db->table('user')->where('email', $email)->update(['role' => '5']);
+                $db->table('user')->where('email', (string) $user['email'])->update(['role' => '5']);
                 $count++;
             }
         }
@@ -349,7 +376,12 @@ class AdminRbacService
     {
         $this->ensureTables();
         $email = strtolower(trim($email));
-        if ($email === '' || !$this->role($roleId)) {
+        $role = $this->role($roleId);
+        if ($email === '' || !$role) {
+            return false;
+        }
+        $permissions = $this->decodePermissions($role['permissions'] ?? '[]');
+        if (!$this->isOperationalAdminRoleName((string) ($role['role_name'] ?? '')) && $permissions === []) {
             return false;
         }
 
@@ -366,13 +398,49 @@ class AdminRbacService
             : (bool)$db->table($this->userRolesTable)->insert($data);
 
         if ($saved && $db->tableExists('user')) {
-            $user = $db->table('user')->select('role')->where('email', $email)->get()->getRowArray();
+            $user = $this->accountForEmail($email);
             if ($user && in_array((string)($user['role'] ?? ''), ['0', '3', '4', '5'], true)) {
-                $db->table('user')->where('email', $email)->update(['role' => '5']);
+                $db->table('user')->where('email', (string) $user['email'])->update(['role' => '5']);
             }
         }
 
         return $saved;
+    }
+
+    /** Return a matching account without depending on database collation. */
+    private function accountForEmail(string $email): ?array
+    {
+        $email = strtolower(trim($email));
+        if ($email === '') {
+            return null;
+        }
+        $db = \Config\Database::connect();
+        if (!$db->tableExists('user')) {
+            return null;
+        }
+
+        return $db->query('SELECT email, role, active FROM ' . $db->protectIdentifiers('user') . ' WHERE LOWER(email) = ? LIMIT 1', [$email])
+            ->getRowArray() ?: null;
+    }
+
+    /** Assign one email and report whether a registered account will receive access now. */
+    public function assignRoleWithStatus(string $email, int $roleId): string
+    {
+        if (!$this->assignRole($email, $roleId)) {
+            return 'failed';
+        }
+
+        $account = $this->accountForEmail($email);
+        if (!$account) {
+            return 'pending';
+        }
+        if ((string) ($account['active'] ?? '1') !== '1') {
+            return 'inactive';
+        }
+
+        return in_array((string) ($account['role'] ?? ''), ['0', '3', '4', '5'], true)
+            ? 'active'
+            : 'restricted';
     }
 
     public function removeAssignment(string $email): bool
@@ -386,9 +454,9 @@ class AdminRbacService
             ->delete();
 
         if ($deleted && $db->tableExists('user')) {
-            $user = $db->table('user')->select('role')->where('email', $email)->get()->getRowArray();
+            $user = $this->accountForEmail($email);
             if ($user && (string)($user['role'] ?? '') === '5') {
-                $db->table('user')->where('email', $email)->update(['role' => '0']);
+                $db->table('user')->where('email', (string) $user['email'])->update(['role' => '0']);
             }
         }
 
