@@ -1,4 +1,9 @@
 <?php
+service('response')
+    ->setHeader('Cache-Control', 'private, no-store, no-cache, must-revalidate, max-age=0')
+    ->setHeader('Pragma', 'no-cache')
+    ->setHeader('Expires', '0');
+
 $adminPath = trim(strtolower((string) service('uri')->getPath()), '/');
 $needsAdminReact = in_array($adminPath, ['admin/addproduct', 'admin/orderofflineadd', 'admin/order/offline/add'], true)
     || str_starts_with($adminPath, 'admin/editproduct/');
