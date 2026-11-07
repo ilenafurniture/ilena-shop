@@ -66,8 +66,8 @@ class RefreshLocalRegionTables extends BaseCommand
             ));
             CLI::write('Alamat tersimpan yang berhasil dipetakan ulang: ' . count($addressUpdates) . '.');
             CLI::write('Konfigurasi gratis ongkir yang berhasil dipetakan ulang: ' . ($freeShippingUpdate === null ? 'tidak ada' : 'ya') . '.');
-            CLI::write('Hash wilayah: ' . hash('sha256', $regionsSql));
-            CLI::write('Hash kodepos: ' . hash('sha256', $postalSql));
+            CLI::write('Hash wilayah: ' . $this->canonicalSourceHash($regionsSql));
+            CLI::write('Hash kodepos: ' . $this->canonicalSourceHash($postalSql));
 
             if (!$apply) {
                 CLI::write('DRY-RUN: database belum diubah. Jalankan ulang dengan --apply setelah meninjau hasil ini.', 'yellow');
@@ -497,6 +497,11 @@ class RefreshLocalRegionTables extends BaseCommand
         $value = strtoupper($ascii === false ? $value : $ascii);
         $value = preg_replace('/^(KABUPATEN|KAB\.?|KOTA ADMINISTRASI|KOTA|KOTAMADYA|PROVINSI|PROPINSI|DESA|KELURAHAN|KEL\.?|KAMPUNG|GAMPONG)\s+/u', '', $value) ?? $value;
         return trim(preg_replace('/[^A-Z0-9]+/', ' ', $value) ?? $value);
+    }
+
+    private function canonicalSourceHash(string $contents): string
+    {
+        return hash('sha256', str_replace(["\r\n", "\r"], "\n", $contents));
     }
 
     private function applyCatalog($db, array $catalog, array $addressUpdates, ?array $freeShippingUpdate): void

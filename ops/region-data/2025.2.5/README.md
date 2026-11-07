@@ -9,8 +9,9 @@ release and legal basis before replacing it.
 - Upstream package: <https://www.npmjs.com/package/@nusawilayah/data>.
 - Underlying public source: <https://github.com/cahyadsn/wilayah>.
 - License: MIT; see the license and attribution notices in the SQL files.
-- `wilayah.sql` SHA-256: `c4c3396d9380d4edee072af1d9dff83573b574d7cd00a6562cf82e200e954031`.
-- `wilayah_kodepos.sql` SHA-256: `7ddc564b45582ffeaa469eddc756b9c0f09c77371e4756577c4b70e346ab8b2c`.
+- `wilayah.sql` normalized-LF SHA-256: `b90f420bf8f8027170168f33314c4f065ec422120531f16708ea2d833c6c2144`.
+- `wilayah_kodepos.sql` normalized-LF SHA-256: `50fa6661dca14ed52ca604e34922f30b49e9b6b2328f5d3be9f9db31bbecfa4c`.
+- The command normalizes CRLF/CR to LF before hashing so Windows and Linux dry-runs report identical integrity hashes.
 
 The four hierarchy CSVs in that package were compared row-by-row with
 `wilayah.sql`: 91,599 codes and names matched exactly. The package postal-code
