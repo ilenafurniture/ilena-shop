@@ -29,16 +29,27 @@ final class BiteshipShippingRateService
 
         if ($apiKey === '' || preg_match('/^\d{5}$/', $originPostal) !== 1 || $couriers === '') {
             $this->lastError = 'not_configured';
+            log_message('warning', 'Biteship quote skipped: configuration incomplete (key={key}, origin_postcode={origin}, couriers={couriers}).', [
+                'key' => $apiKey !== '' ? 'set' : 'missing',
+                'origin' => preg_match('/^\d{5}$/', $originPostal) === 1 ? 'valid' : 'invalid',
+                'couriers' => $couriers !== '' ? 'valid' : 'missing',
+            ]);
             return [];
         }
         if (preg_match('/^\d{5}$/', $destinationPostal) !== 1) {
             $this->lastError = 'destination_postcode_missing';
+            log_message('warning', 'Biteship quote skipped: destination postcode missing or invalid.');
             return [];
         }
 
-        $items = $this->buildItems($cart);
+        $itemFailure = '';
+        $items = $this->buildItems($cart, $itemFailure);
         if ($items === []) {
-            $this->lastError = 'package_dimensions_or_weight_missing';
+            $this->lastError = $itemFailure !== '' ? $itemFailure : 'invalid_cart_items';
+            log_message('warning', 'Biteship quote skipped: item data validation failed ({reason}; cart_items={count}).', [
+                'reason' => $this->lastError,
+                'count' => count($cart),
+            ]);
             return [];
         }
 
@@ -79,20 +90,44 @@ final class BiteshipShippingRateService
             ]);
             if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
                 $this->lastError = 'provider_http_' . $response->getStatusCode();
-                log_message('warning', 'Biteship rates request returned HTTP {status}.', ['status' => $response->getStatusCode()]);
+                $errorData = json_decode((string) $response->getBody(), true);
+                log_message('warning', 'Biteship rates request returned HTTP {status} (provider_code={provider_code}).', [
+                    'status' => $response->getStatusCode(),
+                    'provider_code' => $this->safeProviderCode($errorData),
+                ]);
                 return [];
             }
             $body = (string) $response->getBody();
             if (strlen($body) > 1_000_000) {
                 $this->lastError = 'provider_response_too_large';
+                log_message('warning', 'Biteship quote rejected: response exceeded size limit.');
                 return [];
             }
             $data = json_decode($body, true);
-            if (!is_array($data) || empty($data['success']) || !is_array($data['pricing'] ?? null)) {
+            if (!is_array($data) || empty($data['success'])) {
+                $this->lastError = is_array($data) ? 'provider_rejected_request' : 'invalid_provider_response';
+                log_message('warning', 'Biteship quote response was rejected or invalid (json_error={json_error}, provider_code={provider_code}, success={success}).', [
+                    'json_error' => json_last_error_msg(),
+                    'provider_code' => $this->safeProviderCode($data),
+                    'success' => is_array($data) && !empty($data['success']) ? 'yes' : 'no',
+                ]);
+                return [];
+            }
+            if (!is_array($data['pricing'] ?? null)) {
                 $this->lastError = 'invalid_provider_response';
+                log_message('warning', 'Biteship quote response omitted the pricing array (provider_code={provider_code}).', [
+                    'provider_code' => $this->safeProviderCode($data),
+                ]);
                 return [];
             }
             $rates = $this->mapPricing($data['pricing'], (string) ($address['kab'] ?? ''));
+            if ($rates === []) {
+                $this->lastError = $data['pricing'] === [] ? 'provider_no_rates' : 'provider_rates_unusable';
+                log_message('warning', 'Biteship returned no usable quote (pricing_rows={rows}, mapped_rates=0).', [
+                    'rows' => count($data['pricing']),
+                ]);
+                return [];
+            }
             if ($rates !== []) {
                 try {
                     cache()->save($cacheKey, $rates, 30);
@@ -117,13 +152,15 @@ final class BiteshipShippingRateService
         return implode(',', array_slice($codes, 0, 20));
     }
 
-    private function buildItems(array $cart): array
+    private function buildItems(array $cart, ?string &$failureReason = null): array
     {
+        $failureReason = '';
         $items = [];
         foreach ($cart as $item) {
             $product = $item['detail'] ?? null;
             $quantity = (int) ($item['jumlah'] ?? 0);
             if (!is_array($product) || $quantity < 1 || $quantity > 100) {
+                $failureReason = 'invalid_cart_item_or_quantity';
                 return [];
             }
             $description = json_decode((string) ($product['deskripsi'] ?? '{}'), true);
@@ -135,6 +172,7 @@ final class BiteshipShippingRateService
             $weightGrams = (int) ceil($weightKg * 1000);
             $name = trim((string) ($product['nama'] ?? 'Furniture Ilena'));
             if ($weightGrams < 1 || $weightGrams > 1_000_000 || $name === '') {
+                $failureReason = $weightGrams < 1 ? 'product_weight_missing_or_zero' : 'product_weight_out_of_range';
                 return [];
             }
 
@@ -153,6 +191,18 @@ final class BiteshipShippingRateService
             $items[] = $apiItem;
         }
         return $items;
+    }
+
+    /** Return only a numeric provider error code; never log response text or credentials. */
+    private function safeProviderCode($data): string
+    {
+        if (!is_array($data)) {
+            return 'none';
+        }
+        $code = $data['code'] ?? null;
+        return (is_int($code) || (is_string($code) && preg_match('/^\d{1,12}$/', $code) === 1))
+            ? (string) $code
+            : 'none';
     }
 
     private function mapPricing(array $pricing, string $destination): array
