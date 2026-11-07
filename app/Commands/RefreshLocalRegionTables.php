@@ -273,6 +273,7 @@ class RefreshLocalRegionTables extends BaseCommand
                 if (!is_array($address)) {
                     continue;
                 }
+                $originalAddress = $address;
                 $hasRegionFields = array_intersect(
                     ['prov', 'kab', 'kec', 'desa', 'kodepos', 'prov_id', 'kab_id', 'kec_id'],
                     array_keys($address)
@@ -381,7 +382,7 @@ class RefreshLocalRegionTables extends BaseCommand
                 $address['kodepos'] = $catalog['postcodes'][$villageCode];
                 $detail = trim((string) ($address['alamat_tambahan'] ?? ''));
                 $address['alamat_lengkap'] = trim($detail . ' ' . $address['desa'] . ', ' . $address['kec'] . ', ' . $address['kab'] . ', ' . $address['prov'] . ' ' . $address['kodepos']);
-                $changed = true;
+                $changed = $changed || $address !== $originalAddress;
             }
             unset($address);
             if ($changed) {
