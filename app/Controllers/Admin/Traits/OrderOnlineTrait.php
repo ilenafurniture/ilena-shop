@@ -4,8 +4,6 @@
  * 
  * Methods:
  * - order(): Display online orders list
- * - orderAdd(): Show add order form
- * - actionOrderAdd(): Process add order
  * - actionEditResi(): Update shipping info
  * - reprint(): Display reprint requests
  * - accReprint($id): Accept reprint request
@@ -43,100 +41,6 @@ trait OrderOnlineTrait
             'pesananJson' => json_encode($pesanan)
         ];
         return view('admin/order', $data);
-    }
-
-    /**
-     * Show add order form
-     */
-    public function orderAdd()
-    {
-        $produk = $this->barangModel->findAll();
-        foreach ($produk as $ind_p => $p) {
-            $produk[$ind_p]['gambar'] = base_url('img/barang/300/' . $p['id'] . '.webp?v=' . strtotime($p['tgl_update']));
-            $produk[$ind_p]['gambar_hover'] = '';
-            $produk[$ind_p]['dimensi'] =  json_decode($p['deskripsi'], true)['dimensi']['asli'];
-            $produk[$ind_p]['deskripsi'] =  '';
-            $produk[$ind_p]['varian'] =  json_decode($p['varian'], true);
-            $produk[$ind_p]['shopee'] = '';
-            $produk[$ind_p]['tokped'] = '';
-            $produk[$ind_p]['tiktok'] = '';
-            $produk[$ind_p]['nama'] = ucwords($p['nama']);
-        }
-        $provinsi = $this->provinsiModel->findAll();
-        $data = [
-            'title' => 'Pesanan',
-            'apikey_img_ilena' => $this->apikey_img_ilena,
-            'produkJson' => json_encode($produk),
-            'provinsi' => $provinsi
-        ];
-        return view('admin/orderAdd', $data);
-    }
-
-    /**
-     * Process add order
-     */
-    public function actionOrderAdd()
-    {
-        $bodyJson = $this->request->getBody();
-        $body = json_decode($bodyJson, true);
-        $keranjang = $body['keranjang'];
-        $items = [];
-        
-        $hargaTotal = $body['hargaTotal'];
-        $waktu = $body['waktu'] ? str_replace("T", " ", $body['waktu']) : date("Y-m-d H:i:s", strtotime(('+7 Hours')));
-        $pesananke = $this->pemesananModel->orderBy('id', 'desc')->first();
-        $idFix = "IL" . (sprintf("%08d", $pesananke ? ((int)$pesananke['id'] + 1) : 1)) . '';
-        $randomId = "IL" . rand();
-        foreach ($keranjang as $k) {
-            array_push($items, [
-                'id' => $k['id'],
-                'name' => $k['name'],
-                'quantity' => $k['quantity'],
-                'price' => $k['price'],
-            ]);
-
-            $varian = $k['detail']['varian'];
-            $saldo = (int)$varian['stok'];
-            $tanggalNoStrip = date("YmdHis", strtotime("+7 hours"));
-            $this->kartuStokModel->insert([
-                'id_barang' => $k['id'],
-                'tanggal' => $waktu,
-                'keterangan' => $tanggalNoStrip . "-" . $k['id'] . "-" . strtoupper($varian['nama']) . "-" . $idFix,
-                'debit' => 0,
-                'kredit' => $k['quantity'],
-                'saldo' => $saldo,
-                'pending' => true,
-                'id_pesanan' => $idFix,
-                'varian' => strtoupper($varian['nama'])
-            ]);
-        }
-        $data = [
-            'data_mid'          => json_encode([
-                'transaction_time' => $waktu,
-                'order_id'         => $idFix,
-                'gross_amount'     => $hargaTotal,
-                'payment_type'     => 'admin'
-            ]),
-            'id_midtrans'       => $idFix,
-            'email'             => $body['email'],
-            'nohp'              => $body['nohp'],
-            'alamat'            => $body['alamatLengkap'],
-            'nama'              => $body['nama'],
-            'kurir'             => json_encode([
-                'nama' => 'Menyesuaikan',
-                'deskripsi' => 'Menyesuaikan',
-                'harga' => 'Menyesuaikan',
-                'estimasi' => 'Menyesuaikan'
-            ]),
-            'resi'              => 'Menunggu pengiriman',
-            'status'            => isset($body['stokTetap']) ? ($body['stokTetap'] ? 'Menunggu Pembayaran' : 'Proses') : 'Proses',
-            'id_marketplace'    => $body['idMarketplace'],
-            'items'             => json_encode($items),
-            'status_print'      => 'siap',
-            'keterangan_suratjalan' => $body['keteranganSJ']
-        ];
-        $this->pemesananModel->insert($data);
-        return $this->response->setStatusCode(200)->setJSON(['success' => true], false);
     }
 
     /**

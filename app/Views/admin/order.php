@@ -47,7 +47,6 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter, $mi
 <section class="online-orders">
   <header class="page-head">
     <div><div class="eyebrow">Operasional · Toko online</div><h1>Pesanan online</h1><p class="intro">Cari pesanan, tinjau detail, dan lanjutkan pemrosesan.</p></div>
-    <div class="head-actions"><a class="action" href="/admin/order/add"><span class="material-icons" aria-hidden="true">add</span>Tambah pesanan</a></div>
   </header>
   <?php if ($deleteError = session()->getFlashdata('order_delete_error')): ?><div class="alert alert-danger" role="alert"><?= esc($deleteError); ?></div><?php endif; ?>
   <?php if ($shipmentError = session()->getFlashdata('shipment_date_error')): ?><div class="alert alert-danger" role="alert"><?= esc($shipmentError); ?></div><?php endif; ?>

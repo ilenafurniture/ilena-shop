@@ -1,6 +1,6 @@
 <?php
 $adminPath = trim(strtolower((string) service('uri')->getPath()), '/');
-$needsAdminReact = in_array($adminPath, ['admin/addproduct', 'admin/order/add', 'admin/orderofflineadd', 'admin/order/offline/add'], true)
+$needsAdminReact = in_array($adminPath, ['admin/addproduct', 'admin/orderofflineadd', 'admin/order/offline/add'], true)
     || str_starts_with($adminPath, 'admin/editproduct/');
 $needsBootstrapJs = in_array($adminPath, ['admin/voucher', 'admin/orderoffline', 'admin/order/offline'], true)
     || str_starts_with($adminPath, 'admin/orderoffline/')

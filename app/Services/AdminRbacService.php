@@ -64,7 +64,6 @@ class AdminRbacService
             'admin/activeproduct' => 'products',
             'admin/voucher' => 'vouchers',
             'admin/order/online' => 'orders_online',
-            'admin/order/add' => 'orders_online',
             'admin/order' => 'orders_online',
             'admin/actioneditresi' => 'orders_online',
             'admin/reprint' => 'orders_online',

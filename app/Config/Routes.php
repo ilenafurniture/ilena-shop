@@ -182,8 +182,6 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
     $routes->get('order/online', 'AdminController::order');
     $routes->post('order/delete/(:any)', 'AdminController::deleteOnlineOrder/$1');
     $routes->post('order/delete-bulk', 'AdminController::deleteSelectedOnlineOrders');
-    $routes->get('order/add', 'AdminController::orderAdd');
-    $routes->post('order/add', 'AdminController::actionOrderAdd');
     $routes->post('actioneditresi', 'AdminController::actionEditResi');
     $routes->post('order/legacy-shipment-date', 'AdminController::setLegacyShipmentDate');
     $routes->get('reprint', 'AdminController::reprint');

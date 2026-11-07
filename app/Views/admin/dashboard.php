@@ -304,7 +304,7 @@ $statusTone = static function ($status) {
             <div>
                 <p class="dash-label">Perlu Diurus</p>
                 <p class="dash-value"><?= number_format($stats['websiteOrdersTodo'], 0, ',', '.'); ?></p>
-                <p class="dash-note"><?= number_format($stats['waitingPayment'], 0, ',', '.'); ?> menunggu pembayaran · <?= number_format($stats['processingOrders'] ?? 0, 0, ',', '.'); ?> diproses · <?= number_format($stats['legacyShipmentDates'] ?? 0, 0, ',', '.'); ?> tanggal kirim belum tercatat</p>
+                <p class="dash-note"><?= number_format($stats['manualPaymentConfirmation'] ?? 0, 0, ',', '.'); ?> konfirmasi pembayaran manual · <?= number_format($stats['processingOrders'] ?? 0, 0, ',', '.'); ?> pesanan diproses · <?= number_format($stats['legacyShipmentDates'] ?? 0, 0, ',', '.'); ?> tanggal kirim lama belum tercatat</p>
             </div>
             <span class="dash-icon"><i class="material-icons">notifications_active</i></span>
         </div>

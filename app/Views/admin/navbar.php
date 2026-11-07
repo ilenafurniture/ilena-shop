@@ -78,7 +78,7 @@
                             <span class="admin-menu-icon"><i class="material-icons"><?= esc($item['icon']); ?></i></span>
                             <span class="admin-menu-label"><?= esc($item['label']); ?></span>
                             <?php if (($item['badge'] ?? 0) > 0): ?>
-                                <span class="order-alert-badge" title="<?= esc($item['badge']); ?> pesanan website perlu diurus">
+                                <span class="order-alert-badge" title="<?= esc($item['badge']); ?> pesanan website perlu tindakan admin">
                                     <?= esc($item['badge'] > 99 ? '99+' : $item['badge']); ?>
                                 </span>
                             <?php endif; ?>

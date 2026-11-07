@@ -194,7 +194,7 @@ class AdminController extends BaseController
             'activeProducts' => $this->barangModel->where('active', '1')->countAllResults(),
             'lowStock' => count($lowStockProducts),
             'websiteOrdersTodo' => $orderAttention['total'],
-            'waitingPayment' => $orderAttention['pending_payment'],
+            'manualPaymentConfirmation' => $orderAttention['manual_payment_confirmation'],
             'processingOrders' => $orderAttention['processing'],
             'legacyShipmentDates' => $orderAttention['legacy_shipment_date'],
             'paidOrders' => $websiteOrderBase()->whereIn('status', ['Proses', 'Dikirim', 'Selesai'])->countAllResults(),
@@ -2147,102 +2147,6 @@ class AdminController extends BaseController
             'order' => $idMid,
         ]);
         return redirect()->to('/admin/order/online?shipment_date=missing')->with('msg', 'Tanggal kirim tersimpan berdasarkan input admin. Jika sudah lewat 6 hari, pesanan dapat diselesaikan oleh proses otomatis berikutnya, kecuali ada laporan kendala yang masih ditangani.');
-    }
-    public function orderAdd()
-    {
-        $produk = $this->barangModel->findAll();
-        // dd($produk);
-        foreach ($produk as $ind_p => $p) {
-            $produk[$ind_p]['gambar'] = base_url('img/barang/300/' . $p['id'] . '.webp?v=' . strtotime($p['tgl_update']));
-            $produk[$ind_p]['gambar_hover'] = '';
-            $produk[$ind_p]['dimensi'] =  json_decode($p['deskripsi'], true)['dimensi']['asli'];
-            $produk[$ind_p]['deskripsi'] =  '';
-            $produk[$ind_p]['varian'] =  json_decode($p['varian'], true);
-            $produk[$ind_p]['shopee'] = '';
-            $produk[$ind_p]['tokped'] = '';
-            $produk[$ind_p]['tiktok'] = '';
-            $produk[$ind_p]['nama'] = ucwords($p['nama']);
-        }
-
-        //Dapatkan data provinsi
-        // $curl = curl_init();
-        // curl_setopt_array($curl, array(
-        //     CURLOPT_URL => "https://pro.rajaongkir.com/api/province",
-        //     CURLOPT_SSL_VERIFYHOST => 0,
-        //     CURLOPT_SSL_VERIFYPEER => 0,
-        //     CURLOPT_RETURNTRANSFER => true,
-        //     CURLOPT_ENCODING => "",
-        //     CURLOPT_MAXREDIRS => 10,
-        //     CURLOPT_TIMEOUT => 30,
-        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        //     CURLOPT_CUSTOMREQUEST => "GET",
-        //     CURLOPT_HTTPHEADER => array(
-        //         "key: 6bc9315fb7a163e74a04f9f54ede3c2c"
-        //     ),
-        // ));
-        // $response = curl_exec($curl);
-        // $err = curl_error($curl);
-        // curl_close($curl);
-        // if ($err) {
-        //     return "cURL Error #:" . $err;
-        // }
-        $provinsi = $this->provinsiModel->findAll();
-        // dd($provinsi);
-
-        $data = [
-            'title' => 'Pesanan',
-            'apikey_img_ilena' => $this->apikey_img_ilena,
-            'produkJson' => json_encode($produk),
-            'provinsi' => $provinsi
-        ];
-        return view('admin/orderAdd', $data);
-    }
-    public function actionOrderAdd()
-    {
-        $db=db_connect();
-        try {
-            $atomic=new \App\Services\AtomicOperation($db);
-            $body=json_decode($this->request->getBody(),true);
-            if (!is_array($body)||empty($body['keranjang'])||!is_array($body['keranjang'])) throw new \RuntimeException('Rincian pesanan tidak valid.');
-            $receipt=\App\Services\SessionOperation::lookup('manual_order',$body['operation_token']??null);
-            if ($receipt!==null) return $this->response->setJSON($receipt);
-            $rows=$body['keranjang']; usort($rows,static fn($a,$b)=>(string)($a['id']??'')<=>(string)($b['id']??''));
-            $items=[]; $total=0;
-            foreach ($rows as $line) {
-                if (!is_array($line)||!is_scalar($line['id']??null)) throw new \RuntimeException('Produk tidak valid.');
-                $product=$this->barangModel->getBarangForUpdate($line['id']);
-                $qty=filter_var($line['quantity']??null,FILTER_VALIDATE_INT);
-                $variant=(string)($line['variant']??$line['detail']['varian']['nama']??'');
-                if ($variant==='' && preg_match('/\(([^()]*)\)\s*$/',(string)($line['name']??''),$m)) $variant=$m[1];
-                $found=false; foreach (json_decode($product['varian']??'[]',true)??[] as $v) if (strcasecmp((string)$v['nama'],$variant)===0) $found=true;
-                if (!$product||!$found||$qty===false||$qty<1||$qty>10000) throw new \RuntimeException('Produk/varian/qty tidak valid.');
-                // Manual sales may use an operator-entered price, but totals and stock
-                // are always calculated/validated on the server.
-                $price=$line['price']??\App\Services\CatalogPricing::unitPrice($product);
-                if (!is_numeric($price)||(float)$price<0||(float)$price>2147483647) throw new \RuntimeException('Harga item tidak valid.');
-                $price=(int)round((float)$price); $total+=$price*$qty;
-                $items[]=['id'=>$product['id'],'variant'=>$variant,'name'=>$product['nama'].' ('.$variant.')','quantity'=>$qty,'price'=>$price];
-            }
-            $id=\App\Services\OrderIdentifiers::web();
-            $timestamp=!empty($body['waktu']) ? str_replace('T',' ',(string)$body['waktu']) : (new \DateTimeImmutable('now',new \DateTimeZone('Asia/Jakarta')))->format('Y-m-d H:i:s');
-            if (strtotime($timestamp)===false) throw new \RuntimeException('Tanggal tidak valid.');
-            $waiting=!empty($body['stokTetap']);
-            $order=['id_midtrans'=>$id,'nama'=>(string)($body['nama']??''),'email'=>(string)($body['email']??''),'nohp'=>(string)($body['nohp']??''),'alamat'=>(string)($body['alamatLengkap']??''),
-                'items'=>json_encode($items),'data_mid'=>json_encode(['transaction_time'=>$timestamp,'order_id'=>$id,'gross_amount'=>$total,'payment_type'=>'admin','_app_inventory_effects_applied'=>false]),
-                'kurir'=>json_encode(['nama'=>'Menyesuaikan','deskripsi'=>'Menyesuaikan','harga'=>0,'estimasi'=>'']),'resi'=>'Menunggu pengiriman','status'=>$waiting?'Menunggu Pembayaran':'Proses',
-                'id_marketplace'=>(string)($body['idMarketplace']??''),'status_print'=>'siap','keterangan_suratjalan'=>(string)($body['keteranganSJ']??'')];
-            if (!$this->pemesananModel->insert($order)) throw new \RuntimeException('Pesanan gagal disimpan.');
-            if (!$waiting) {
-                (new \App\Services\InventoryLedgerService($db))->apply($order);
-                $mid=json_decode($order['data_mid'],true); $mid['_app_inventory_effects_applied']=true;
-                $this->pemesananModel->where('id_midtrans',$id)->set(['data_mid'=>json_encode($mid)])->update();
-                foreach ($items as $item) for($i=0;$i<$item['quantity'];$i++) $this->pemesananGudangModel->insert(['id_pesanan'=>$id,'tanggal'=>$timestamp,'nama'=>$item['name'],'id_barang'=>$item['id'],'packed'=>false,'printed'=>false]);
-            }
-            $atomic->commit();
-            $receipt=['success'=>true,'order_id'=>$id];
-            \App\Services\SessionOperation::complete('manual_order',$body['operation_token'],$receipt);
-            return $this->response->setJSON($receipt);
-        } catch (\Throwable $e) { log_message('error','Manual order failed: {error}',['error'=>$e->getMessage()]); return $this->response->setStatusCode(400)->setJSON(['success'=>false,'message'=>$e->getMessage()]); }
     }
     /** Permanently remove one terminal online order and its local website dependents. */
     public function deleteOnlineOrder(string $orderId)
