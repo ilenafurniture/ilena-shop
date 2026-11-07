@@ -4412,7 +4412,7 @@ body.ilena-storefront.ilena-page--orderdetail :where(.order-success, .order-simp
 
 /* Wishlist: make saved products feel like a small, curated collection. */
 body.ilena-storefront.ilena-page--wishlist .ilena-wishlist-page { max-width: 1360px; padding-block: 34px 58px; }
-body.ilena-storefront.ilena-page--wishlist .ilena-wishlist-page > .konten { width: 100%; }
+body.ilena-storefront.ilena-page--wishlist .ilena-wishlist-page > .ilena-customer-account-main { width: 100%; }
 body.ilena-storefront.ilena-page--wishlist .ilena-wishlist-heading {
     display: flex; align-items: flex-end; justify-content: space-between; gap: 18px;
     margin: 0 0 24px; padding: 0 0 17px; border-bottom: 1px solid var(--ilena-line);
@@ -4532,6 +4532,64 @@ body.ilena-storefront.ilena-page--wishlist .ilena-wishlist-empty a span { color:
     body.ilena-storefront.ilena-page--wishlist .ilena-wishlist-grid .card1 h5 { font-size: 15px; }
     body.ilena-storefront.ilena-page--wishlist .ilena-wishlist-actions .btn-default-merah { font-size: 8px; }
 }
+
+/* Shared customer account shell for profile, orders, and saved products. */
+body.ilena-storefront.ilena-page--account .ilena-customer-account-shell,
+body.ilena-storefront.ilena-page--order .ilena-customer-account-shell,
+body.ilena-storefront.ilena-page--wishlist .ilena-customer-account-shell {
+    display: flex; align-items: flex-start; gap: clamp(28px, 5vw, 64px);
+    width: min(100% - 32px, 1280px); max-width: 1280px; margin-inline: auto; padding-block: 34px 60px;
+}
+body.ilena-storefront.ilena-page--account .ilena-customer-account-sidebar,
+body.ilena-storefront.ilena-page--order .ilena-customer-account-sidebar,
+body.ilena-storefront.ilena-page--wishlist .ilena-customer-account-sidebar {
+    width: 224px !important; flex: 0 0 224px;
+}
+body.ilena-storefront.ilena-page--account .ilena-customer-account-main,
+body.ilena-storefront.ilena-page--order .ilena-customer-account-main,
+body.ilena-storefront.ilena-page--wishlist .ilena-customer-account-main { flex: 1 1 0; min-width: 0; }
+body.ilena-storefront.ilena-page--account .ilena-account-nav,
+body.ilena-storefront.ilena-page--order .ilena-account-nav,
+body.ilena-storefront.ilena-page--wishlist .ilena-account-nav {
+    display: flex; flex-direction: column; gap: 4px; padding: 0 0 18px !important;
+    border: 0; border-bottom: 1px solid var(--ilena-line); border-radius: 0; background: transparent; box-shadow: none;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-nav h2,
+body.ilena-storefront.ilena-page--order .ilena-account-nav h2,
+body.ilena-storefront.ilena-page--wishlist .ilena-account-nav h2 {
+    margin: 0 0 12px; color: var(--ilena-ink); font-family: var(--ilena-font-display); font-size: 23px; font-weight: 500;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-nav > .garis,
+body.ilena-storefront.ilena-page--order .ilena-account-nav > .garis,
+body.ilena-storefront.ilena-page--wishlist .ilena-account-nav > .garis { display: none; }
+body.ilena-storefront.ilena-page--account .ilena-account-nav > a.btn-default-abu,
+body.ilena-storefront.ilena-page--order .ilena-account-nav > a.btn-default-abu,
+body.ilena-storefront.ilena-page--wishlist .ilena-account-nav > a.btn-default-abu {
+    width: 100%; min-height: 42px; display: flex; align-items: center; justify-content: flex-start; gap: 10px;
+    margin: 0; padding: 8px 10px; border: 1px solid transparent; border-radius: 2px; background: transparent;
+    color: var(--ilena-muted); font-size: 12px; text-align: left; text-decoration: none; transition: color .16s ease, background .16s ease, border-color .16s ease;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-nav > a .material-icons,
+body.ilena-storefront.ilena-page--order .ilena-account-nav > a .material-icons,
+body.ilena-storefront.ilena-page--wishlist .ilena-account-nav > a .material-icons { color: #8b684c; font-size: 18px; }
+body.ilena-storefront.ilena-page--account .ilena-account-nav > a:hover,
+body.ilena-storefront.ilena-page--order .ilena-account-nav > a:hover,
+body.ilena-storefront.ilena-page--wishlist .ilena-account-nav > a:hover,
+body.ilena-storefront.ilena-page--account .ilena-account-nav > a.is-active,
+body.ilena-storefront.ilena-page--order .ilena-account-nav > a.is-active,
+body.ilena-storefront.ilena-page--wishlist .ilena-account-nav > a.is-active { border-color: #e8dfd5; background: #f8f5f1; color: var(--ilena-ink); }
+body.ilena-storefront.ilena-page--account .ilena-account-nav > form,
+body.ilena-storefront.ilena-page--order .ilena-account-nav > form,
+body.ilena-storefront.ilena-page--wishlist .ilena-account-nav > form { margin-top: 10px; }
+body.ilena-storefront.ilena-page--account .ilena-account-nav > form button,
+body.ilena-storefront.ilena-page--order .ilena-account-nav > form button,
+body.ilena-storefront.ilena-page--wishlist .ilena-account-nav > form button {
+    width: 100%; min-height: 40px; display: flex; align-items: center; justify-content: center; gap: 8px;
+    border: 1px solid #302c28; border-radius: 2px; background: #302c28; color: #fff; font-size: 11px;
+}
+body.ilena-storefront.ilena-page--account .ilena-account-nav > form .material-icons,
+body.ilena-storefront.ilena-page--order .ilena-account-nav > form .material-icons,
+body.ilena-storefront.ilena-page--wishlist .ilena-account-nav > form .material-icons { font-size: 17px; }
 
 /* Account profile: a quiet control panel for personal details, addresses and vouchers. */
 body.ilena-storefront.ilena-page--account .ilena-account-page {
@@ -4738,6 +4796,24 @@ body.ilena-storefront.ilena-page--contact .ilena-contact-page__footer p { margin
     body.ilena-storefront.ilena-page--contact .ilena-contact-page__footer { align-items: flex-start; flex-direction: column; gap: 8px; padding-top: 17px; }
 }
 @media (max-width: 900px) {
+    body.ilena-storefront.ilena-page--account .ilena-customer-account-shell,
+    body.ilena-storefront.ilena-page--order .ilena-customer-account-shell,
+    body.ilena-storefront.ilena-page--wishlist .ilena-customer-account-shell { width: calc(100% - 28px); flex-direction: column; gap: 22px; padding-block: 22px 40px; }
+    body.ilena-storefront.ilena-page--account .ilena-customer-account-sidebar,
+    body.ilena-storefront.ilena-page--order .ilena-customer-account-sidebar,
+    body.ilena-storefront.ilena-page--wishlist .ilena-customer-account-sidebar { width: 100% !important; flex: 0 0 auto; }
+    body.ilena-storefront.ilena-page--account .ilena-account-nav,
+    body.ilena-storefront.ilena-page--order .ilena-account-nav,
+    body.ilena-storefront.ilena-page--wishlist .ilena-account-nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; gap: 6px; padding-bottom: 12px !important; }
+    body.ilena-storefront.ilena-page--account .ilena-account-nav h2,
+    body.ilena-storefront.ilena-page--order .ilena-account-nav h2,
+    body.ilena-storefront.ilena-page--wishlist .ilena-account-nav h2 { grid-column: 1 / -1; margin-bottom: 4px; }
+    body.ilena-storefront.ilena-page--account .ilena-account-nav > a.btn-default-abu,
+    body.ilena-storefront.ilena-page--order .ilena-account-nav > a.btn-default-abu,
+    body.ilena-storefront.ilena-page--wishlist .ilena-account-nav > a.btn-default-abu { justify-content: center; gap: 6px; min-width: 0; padding-inline: 5px; font-size: 11px; }
+    body.ilena-storefront.ilena-page--account .ilena-account-nav > form,
+    body.ilena-storefront.ilena-page--order .ilena-account-nav > form,
+    body.ilena-storefront.ilena-page--wishlist .ilena-account-nav > form { grid-column: 1 / -1; margin-top: 2px; }
     body.ilena-storefront.ilena-page--account .ilena-account-page { width: calc(100% - 28px); gap: 24px; }
     body.ilena-storefront.ilena-page--account .ilena-account-page > .tigapuluh-ke-seratus { width: 100% !important; flex: 1 1 auto; }
     body.ilena-storefront.ilena-page--account .ilena-account-nav { margin-bottom: 8px; }
@@ -11157,6 +11233,19 @@ body.ilena-storefront.ilena-page--account #exampleModal .form-floating > .form-s
     min-height: 52px;
     font-size: 16px;
 }
+body.ilena-storefront.ilena-page--account #editModal form.modal-dialog,
+body.ilena-storefront.ilena-page--account #exampleModal form.modal-dialog { padding: 0; }
+body.ilena-storefront.ilena-page--account #editModal .modal-body .form-alamat.d-flex,
+body.ilena-storefront.ilena-page--account #exampleModal .modal-body .form-alamat.d-flex {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px !important;
+}
+body.ilena-storefront.ilena-page--account #editModal .modal-body .form-alamat.d-flex > .form-floating,
+body.ilena-storefront.ilena-page--account #exampleModal .modal-body .form-alamat.d-flex > .form-floating {
+    width: 100% !important;
+    min-width: 0;
+}
 body.ilena-storefront.ilena-page--account #editModal .modal-footer,
 body.ilena-storefront.ilena-page--account #exampleModal .modal-footer { gap: 10px; }
 body.ilena-storefront.ilena-page--account #editModal .modal-footer button,
@@ -11207,6 +11296,8 @@ body.ilena-storefront .ilena-chat-topic-divider span {
     body.ilena-storefront.ilena-page--account #exampleModal .modal-body .form-alamat { gap: 8px !important; }
     body.ilena-storefront.ilena-page--account #editModal .modal-body .form-alamat > .form-floating,
     body.ilena-storefront.ilena-page--account #exampleModal .modal-body .form-alamat > .form-floating { min-width: 0; }
+    body.ilena-storefront.ilena-page--account #editModal .modal-body .form-alamat.d-flex,
+    body.ilena-storefront.ilena-page--account #exampleModal .modal-body .form-alamat.d-flex { grid-template-columns: minmax(0, 1fr); }
     body.ilena-storefront.ilena-page--account #editModal .modal-header,
     body.ilena-storefront.ilena-page--account #exampleModal .modal-header,
     body.ilena-storefront.ilena-page--account #editModal .modal-footer,
@@ -11256,3 +11347,30 @@ body.ilena-storefront .ilena-apm-wordmark small { max-width: 32px; font-size: 6p
 body.ilena-storefront .ilena-product-shipping-estimate__heading .ilena-apm-wordmark { flex: 0 0 auto; }
 body.ilena-storefront .ilena-shipping-promo-contact { margin: -7px 8px 14px; color: #625b54; font-size: 11px; line-height: 1.5; }
 body.ilena-storefront .ilena-shipping-promo-contact a { display: inline-block; margin-left: 4px; color: #8f2925; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+
+/* Final account consistency pass: same shell, navigation, and page-heading rhythm. */
+body.ilena-storefront:is(.ilena-page--account, .ilena-page--order, .ilena-page--wishlist) .ilena-customer-account-shell { gap: clamp(28px, 5vw, 64px); }
+body.ilena-storefront:is(.ilena-page--account, .ilena-page--order, .ilena-page--wishlist) .ilena-account-nav > a.is-active,
+body.ilena-storefront:is(.ilena-page--account, .ilena-page--order, .ilena-page--wishlist) .ilena-account-nav > a[aria-current="page"] { border-color: #e8dfd5; background: #f8f5f1; color: var(--ilena-ink); }
+body.ilena-storefront:is(.ilena-page--account, .ilena-page--order, .ilena-page--wishlist) :is(.ilena-account-heading, .ilena-order-heading, .ilena-wishlist-heading) {
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 18px;
+    margin: 0 0 22px; padding: 0 0 16px; border-bottom: 1px solid var(--ilena-line);
+}
+body.ilena-storefront:is(.ilena-page--account, .ilena-page--order, .ilena-page--wishlist) :is(.ilena-account-heading__eyebrow, .ilena-order-heading__eyebrow, .ilena-wishlist-heading__eyebrow) {
+    margin: 0 0 7px; color: #8b684c; font-size: 9px; font-weight: 650; letter-spacing: .16em;
+}
+body.ilena-storefront:is(.ilena-page--account, .ilena-page--order, .ilena-page--wishlist) :is(.ilena-account-heading__eyebrow span, .ilena-order-heading__eyebrow span, .ilena-wishlist-heading__eyebrow span) { padding-inline: 4px; color: #b8aa9b; }
+body.ilena-storefront:is(.ilena-page--account, .ilena-page--order, .ilena-page--wishlist) :is(.ilena-account-heading h1, .ilena-order-heading h1, .ilena-wishlist-heading h1) {
+    margin: 0; color: var(--ilena-ink); font-family: var(--ilena-font-display);
+    font-size: clamp(30px, 3vw, 38px); font-weight: 500; letter-spacing: -.035em;
+}
+body.ilena-storefront:is(.ilena-page--account, .ilena-page--order, .ilena-page--wishlist) :is(.ilena-account-heading__description, .ilena-wishlist-heading__description) {
+    margin: 7px 0 0; color: var(--ilena-muted); font-size: 11px; line-height: 1.55;
+}
+@media (max-width: 900px) {
+    body.ilena-storefront:is(.ilena-page--account, .ilena-page--order, .ilena-page--wishlist) .ilena-customer-account-shell { gap: 22px; }
+}
+@media (max-width: 700px) {
+    body.ilena-storefront:is(.ilena-page--account, .ilena-page--order, .ilena-page--wishlist) :is(.ilena-account-heading, .ilena-order-heading, .ilena-wishlist-heading) { align-items: flex-start; margin-bottom: 18px; padding-bottom: 13px; }
+    body.ilena-storefront:is(.ilena-page--account, .ilena-page--order, .ilena-page--wishlist) :is(.ilena-account-heading h1, .ilena-order-heading h1, .ilena-wishlist-heading h1) { font-size: 29px; }
+}

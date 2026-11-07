@@ -238,34 +238,10 @@
     </div>
 </div>
 
-<div class="container konten baris-ke-kolom ilena-order-page">
-    <!-- Kolom kanan (ringkasan akun) ditaruh duluan di DOM kecil? tetap: tidak ubah sistem -->
-    <div class="tigapuluh-ke-seratus">
-        <div class="card p-4 account-card">
-            <h2><?= lang('Store.accountTitle'); ?></h2>
+<div class="container konten baris-ke-kolom ilena-order-page ilena-customer-account-shell">
+    <?= $this->include('partials/account_navigation', ['activeAccountTab' => 'orders']); ?>
 
-            <div class="account-row mt-2">
-                <p>Email</p>
-                <p class="fw-bold"><?= $email; ?></p>
-            </div>
-
-            <div class="account-row">
-                <p><?= lang('Store.password'); ?></p>
-                <a class="btn-teks-aja" onclick="openGantiSandi()"><?= lang('Store.changePassword'); ?></a>
-            </div>
-
-            <span class="garis my-2"></span>
-
-            <a href="<?= esc(ilena_store_path('/account'), 'attr'); ?>" class="mb-2 btn-default-abu w-100 text-center"><?= lang('Store.profileNav'); ?></a>
-            <a href="<?= esc(ilena_store_path('/order'), 'attr'); ?>" class="mb-2 btn-default-abu w-100 text-center"><?= lang('Store.ordersNav'); ?></a>
-            <form action="<?= esc(ilena_store_path('/logout'), 'attr'); ?>" method="post">
-                <?= csrf_field(); ?><button type="submit" class="btn-default-merah w-100 text-center"><?= lang('Store.logout'); ?></button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Kolom kiri (daftar pesanan) -->
-    <div style="flex:1;">
+    <main class="ilena-customer-account-main">
         <header class="ilena-order-heading">
             <div>
                 <p class="ilena-order-heading__eyebrow"><?= service('request')->getLocale() === 'en' ? 'ACCOUNT' : 'AKUN'; ?> <span>/</span> <?= lang('Store.transactionHistory'); ?></p>
@@ -377,7 +353,7 @@
             </div>
         </div>
         <?php endif; ?>
-    </div>
+    </main>
 </div>
 
 <!-- Offcanvas detail -->

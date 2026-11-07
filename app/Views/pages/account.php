@@ -284,21 +284,10 @@
 }
 </style>
 
-<div class="container konten baris-ke-kolom ilena-account-page">
-    <div class="tigapuluh-ke-seratus">
-        <div class="card p-4 ilena-account-nav">
-            <h2 style="letter-spacing: -1px"><?= lang('Store.accountTitle'); ?></h2>
-            <span class="garis my-2"></span>
-            <a href="<?= esc(ilena_store_path('/account'), 'attr'); ?>" class="mb-1 btn-default-abu" aria-current="page"><?= lang('Store.profileNav'); ?></a>
-            <a href="<?= esc(ilena_store_path('/order'), 'attr'); ?>" class="mb-1 btn-default-abu"><?= lang('Store.ordersNav'); ?></a>
-            <a href="<?= esc(ilena_store_path('/wishlist'), 'attr'); ?>" class="mb-1 btn-default-abu"><?= esc(lang('Store.wishlist')); ?></a>
-            <form action="<?= esc(ilena_store_path('/logout'), 'attr'); ?>" method="post">
-                <?= csrf_field(); ?><button type="submit" class="btn-default-merah"><?= lang('Store.logout'); ?></button>
-            </form>
-        </div>
-    </div>
+<div class="container konten baris-ke-kolom ilena-account-page ilena-customer-account-shell">
+    <?= $this->include('partials/account_navigation', ['activeAccountTab' => 'profile']); ?>
 
-    <div class="ilena-account-main" style="flex:1;">
+    <main class="ilena-account-main ilena-customer-account-main">
         <header class="ilena-account-heading">
             <div>
                 <p class="ilena-account-heading__eyebrow"><?= service('request')->getLocale() === 'en' ? 'ACCOUNT' : 'AKUN'; ?> <span>/</span> <?= lang('Store.profileNav'); ?></p>
@@ -509,10 +498,9 @@
 
         <!-- Add Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <form action="<?= esc(ilena_store_path('/addaddress'), 'attr'); ?>" method="post">
+            <form class="modal-dialog" action="<?= esc(ilena_store_path('/addaddress'), 'attr'); ?>" method="post">
                 <?= csrf_field(); ?>
-                <input type="text" value="account" name="checkpage" style="display: none;">
-                <div class="modal-dialog">
+                <input type="hidden" value="account" name="checkpage">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h1 class="modal-title" id="exampleModalLabel"><?= lang('Store.newAddress'); ?></h1>
@@ -522,28 +510,28 @@
                             <div class="pb-3 border-bottom">
                                 <h5 class="mb-2"><?= lang('Store.ordererInfo'); ?></h5>
                                 <div class="form-floating mb-1">
-                            <input type="email" class="form-control" placeholder="<?= esc(lang('Store.addressEmailPlaceholder'), 'attr'); ?>" name="emailPem"
+                            <input id="add-address-email" type="email" class="form-control" placeholder="<?= esc(lang('Store.addressEmailPlaceholder'), 'attr'); ?>" name="emailPem"
                                         required value="<?= esc($email); ?>">
-                                    <label for="floatingInput"><?= lang('Store.email'); ?></label>
+                                    <label for="add-address-email"><?= lang('Store.email'); ?></label>
                                 </div>
                             </div>
 
                             <div class="py-3">
                                 <h5 class="mb-2"><?= lang('Store.recipientInfo'); ?></h5>
                                 <div class="form-floating mb-1">
-                            <input type="text" class="form-control" placeholder="<?= esc(lang('Store.addressContactNamePlaceholder'), 'attr'); ?>" name="nama" required
+                            <input id="add-address-name" type="text" class="form-control" placeholder="<?= esc(lang('Store.addressContactNamePlaceholder'), 'attr'); ?>" name="nama" required autocomplete="name"
                                         value="<?= esc($nama); ?>">
-                                    <label for="floatingInput"><?= lang('Store.fullName'); ?></label>
+                                    <label for="add-address-name"><?= lang('Store.fullName'); ?></label>
                                 </div>
                                 <div class="form-floating mb-1">
-                            <input type="number" class="form-control" placeholder="<?= esc(lang('Store.addressPhonePlaceholder'), 'attr'); ?>" name="nohp"
+                            <input id="add-address-phone" type="tel" inputmode="tel" autocomplete="tel" class="form-control" placeholder="<?= esc(lang('Store.addressPhonePlaceholder'), 'attr'); ?>" name="nohp"
                                         required value="<?= esc($nohp); ?>">
-                                    <label for="floatingInput"><?= lang('Store.mobileNumber'); ?></label>
+                                    <label for="add-address-phone"><?= lang('Store.mobileNumber'); ?></label>
                                 </div>
 
                                 <div class="form-alamat d-flex mb-1 gap-1">
                                     <div class="form-floating w-50">
-                                        <select class="form-select" aria-label="Default select example" name="provinsi"
+                                        <select id="add-address-province" class="form-select" aria-label="<?= esc(lang('Store.province'), 'attr'); ?>" name="provinsi"
                                             required>
                                             <option value=""><?= lang('Store.chooseProvince'); ?></option>
                                             <?php if (!empty($provinsi) && is_array($provinsi)): ?>
@@ -558,38 +546,38 @@
                                             <?php endforeach; ?>
                                             <?php endif; ?>
                                         </select>
-                                        <label for="floatingProvinsi"><?= lang('Store.province'); ?></label>
+                                        <label for="add-address-province"><?= lang('Store.province'); ?></label>
                                     </div>
                                     <div class="form-floating w-50">
-                                        <select class="form-select" aria-label="Default select example" name="kota"
+                                        <select id="add-address-city" class="form-select" aria-label="<?= esc(lang('Store.city'), 'attr'); ?>" name="kota"
                                             required>
                                             <option value=""><?= lang('Store.chooseCity'); ?></option>
                                         </select>
-                                        <label for="floatingProvinsi"><?= lang('Store.city'); ?></label>
+                                        <label for="add-address-city"><?= lang('Store.city'); ?></label>
                                     </div>
                                 </div>
 
                                 <div class="form-alamat d-flex mb-1 gap-1">
                                     <div class="form-floating w-50">
-                                        <select class="form-select" aria-label="Default select example" name="kecamatan"
+                                        <select id="add-address-district" class="form-select" aria-label="<?= esc(lang('Store.district'), 'attr'); ?>" name="kecamatan"
                                             required>
                                             <option value=""><?= lang('Store.chooseDistrict'); ?></option>
                                         </select>
-                                        <label for="floatingProvinsi"><?= lang('Store.district'); ?></label>
+                                        <label for="add-address-district"><?= lang('Store.district'); ?></label>
                                     </div>
                                     <div class="form-floating w-50">
-                                        <select class="form-select" aria-label="Default select example" name="kodepos"
+                                        <select id="add-address-village" class="form-select" aria-label="<?= esc(lang('Store.village'), 'attr'); ?>" name="kodepos"
                                             required>
                                             <option value=""><?= lang('Store.chooseVillage'); ?></option>
                                         </select>
-                                        <label for="floatingProvinsi"><?= lang('Store.village'); ?></label>
+                                        <label for="add-address-village"><?= lang('Store.village'); ?></label>
                                     </div>
                                 </div>
 
                                 <div class="form-alamat form-floating mb-1">
-                            <input type="text" class="form-control" placeholder="<?= esc(lang('Store.addressStreetPlaceholder'), 'attr'); ?>" name="alamat_add"
+                            <input id="add-address-street" type="text" class="form-control" placeholder="<?= esc(lang('Store.addressStreetPlaceholder'), 'attr'); ?>" name="alamat_add" autocomplete="street-address"
                                         required>
-                                    <label for="floatingInput"><?= lang('Store.streetAddress'); ?></label>
+                                    <label for="add-address-street"><?= lang('Store.streetAddress'); ?></label>
                                     <div class="invalid-feedback"><?= lang('Store.invalidAddressSlash'); ?></div>
                                 </div>
                             </div>
@@ -599,17 +587,14 @@
                             <button type="button" class="btn btn-teks-aja" data-bs-dismiss="modal"><?= lang('Store.cancel'); ?></button>
                             <button type="submit" class="btn btn-lonjong"><?= lang('Store.add'); ?></button>
                         </div>
-                    </div>
-                </div>
             </form>
         </div>
 
         <!-- Edit Modal -->
         <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editAddressModalLabel" aria-hidden="true">
-            <form method="post" id="formEdit">
+            <form class="modal-dialog" method="post" id="formEdit">
                 <?= csrf_field(); ?>
-                <input type="text" value="<?= esc(service('request')->getUri()->getPath(), 'attr'); ?>" class="d-none" name="url">
-                <div class="modal-dialog">
+                <input type="hidden" value="<?= esc(service('request')->getUri()->getPath(), 'attr'); ?>" name="url">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h1 class="modal-title" id="editAddressModalLabel"><?= lang('Store.editAddress'); ?></h1>
@@ -696,12 +681,10 @@
                             <button type="button" class="btn btn-teks-aja" data-bs-dismiss="modal"><?= lang('Store.cancel'); ?></button>
                             <button type="submit" class="btn btn-lonjong"><?= lang('Store.save'); ?></button>
                         </div>
-                    </div>
-                </div>
             </form>
         </div>
         <?php } ?>
-    </div>
+    </main>
 </div>
 
 <script>

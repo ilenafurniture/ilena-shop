@@ -33,8 +33,9 @@ $productCoverUrl = function (string $id, array $varianList, array $product = [])
 };
 ?>
 
-<div class="container ilena-wishlist-page">
-    <div class="konten">
+<div class="container konten baris-ke-kolom ilena-wishlist-page ilena-customer-account-shell">
+    <?= $this->include('partials/account_navigation', ['activeAccountTab' => 'wishlist']); ?>
+    <main class="ilena-customer-account-main">
         <header class="ilena-wishlist-heading">
             <div>
                 <p class="ilena-wishlist-heading__eyebrow"><?= service('request')->getLocale() === 'en' ? 'ACCOUNT' : 'AKUN'; ?> <span>/</span> <?= lang('Store.favorites'); ?></p>
@@ -185,7 +186,7 @@ $productCoverUrl = function (string $id, array $varianList, array $product = [])
             <a href="<?= esc(ilena_store_path('/product'), 'attr'); ?>"><?= lang('Store.exploreCollection'); ?> <span aria-hidden="true">↗</span></a>
         </section>
         <?php endif; ?>
-    </div>
+    </main>
 </div>
 
 <?= $this->endSection(); ?>
