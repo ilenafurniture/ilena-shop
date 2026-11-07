@@ -412,7 +412,7 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                     data-estimate-url="<?= esc(ilena_store_path('/shipping/estimate'), 'attr'); ?>"
                     data-locale="<?= $isEnglish ? 'en' : 'id'; ?>">
                     <div class="ilena-product-shipping-estimate__heading">
-                        <span aria-hidden="true">↗</span>
+                        <span class="ilena-apm-wordmark" aria-label="APM Logistics"><strong>APM</strong><small>LOGISTICS</small></span>
                         <div>
                             <h2><?= esc(lang('Store.productShippingEstimateTitle')); ?></h2>
                             <p><?= esc(lang('Store.productShippingEstimateHint')); ?></p>

@@ -31,6 +31,7 @@
             <?php else: ?>
             <?php foreach ($kurir as $index_k => $k) { ?>
             <input type="radio" name="kurir" id="kurir<?= $index_k ?>" value="<?= $k['harga']?>"
+                data-store-courier="<?= !empty($k['gratis_ongkir']) ? '1' : '0'; ?>"
                 <?= $index_k <= 0 ? 'checked' : '' ?>>
             <label for="kurir<?= $index_k ?>" class="item-kurir">
                 <div style="flex: 1;">
@@ -40,7 +41,7 @@
                     <?php } ?>
                     <p class="mb-1" style="font-weight: 600;">
                         <?php if (!empty($k['gratis_ongkir'])): ?>
-                            <span class="text-success"><?= lang('Store.free'); ?></span>
+                            <span class="text-success"><?= lang('Store.storeCourier'); ?></span>
                             <span class="text-secondary text-decoration-line-through ms-2">
                                 Rp <?= number_format((int)($k['harga_asli'] ?? 0), 0, ',', '.'); ?>
                             </span>
@@ -55,7 +56,14 @@
                     <?php endif; ?>
                 </div>
                 <div style="width:fit-content" class="show-block-ke-hide">
-                    <img src="/img/kurir/<?= esc($k['nama'], 'attr') ?>.png" alt="" width="76" height="34" loading="lazy" onerror="this.style.display='none'">
+                    <?php $logoFile = (string) ($k['logo'] ?? ''); ?>
+                    <?php if (($k['provider'] ?? '') === 'apm'): ?>
+                    <span class="ilena-apm-wordmark" aria-label="APM Logistics"><strong>APM</strong><small>LOGISTICS</small></span>
+                    <?php elseif ($logoFile !== ''): ?>
+                    <img src="<?= esc(base_url('img/kurir/' . $logoFile . '.png'), 'attr'); ?>" alt="Logo <?= esc($k['nama'], 'attr'); ?>" width="76" height="34" loading="lazy" decoding="async" onerror="this.replaceWith(Object.assign(document.createElement('span'), {className: 'material-icons', textContent: 'local_shipping', ariaHidden: 'true'}))">
+                    <?php else: ?>
+                    <span class="material-icons" aria-hidden="true">local_shipping</span>
+                    <?php endif; ?>
                 </div>
             </label>
             <?php } ?>
@@ -78,7 +86,7 @@
                     <?= lang('Store.shippingCost'); ?>
                 </p>
                 <p id="harga-ongkir" class="fw-bold m-0">
-                    <?= !empty($shippingUnavailable) ? (service('request')->getLocale() === 'en' ? 'To be confirmed' : 'Perlu konfirmasi') : (!empty($kurir[0]['gratis_ongkir']) ? lang('Store.free') : 'Rp ' . number_format($kurir[0]['harga'], 0, ',', '.')); ?>
+                    <?= !empty($shippingUnavailable) ? (service('request')->getLocale() === 'en' ? 'To be confirmed' : 'Perlu konfirmasi') : (!empty($kurir[0]['gratis_ongkir']) ? lang('Store.storeCourier') : 'Rp ' . number_format($kurir[0]['harga'], 0, ',', '.')); ?>
                 </p>
             </div>
             <div class="d-flex justify-content-between py-1">
@@ -112,10 +120,14 @@ const hargaOngkirElm = document.getElementById('harga-ongkir');
 const hargaKeseluruhan = document.getElementById('harga-keseluruhan');
 const btnPaymentElm = document.getElementById('btn-payment');
 const storeRoutePrefix = <?= json_encode(service('request')->getLocale() === 'en' ? '/en' : ''); ?>;
+const storeCourierLabel = <?= json_encode(lang('Store.storeCourier')); ?>;
+const freeShippingLabel = <?= json_encode(lang('Store.free')); ?>;
 
 radioKurirElm.forEach((element, ind) => {
     element.addEventListener('change', (e) => {
-        hargaOngkirElm.innerHTML = Number(e.target.value) <= 0 ? <?= json_encode(lang('Store.free')); ?> : 'Rp ' + e.target.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        hargaOngkirElm.textContent = e.target.dataset.storeCourier === '1'
+            ? storeCourierLabel
+            : (Number(e.target.value) <= 0 ? freeShippingLabel : 'Rp ' + e.target.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."));
         hargaKeseluruhan.innerHTML = 'Rp ' + (Number(e.target.value) + <?= $hargaTotal ?>)
             .toString().replace(/\B(?=(\d{3})+(?!\d))/g,
                 ".");

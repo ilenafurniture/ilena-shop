@@ -572,7 +572,7 @@ hr {
                         </div>
                         <div class="v">
                             <?php if (!empty($kurir['gratis_ongkir'])): ?>
-                                <span class="text-success fw-bold"><?= lang('Store.free'); ?></span>
+                                <span class="text-success fw-bold"><?= lang('Store.storeCourier'); ?></span>
                                 <div class="small text-secondary text-decoration-line-through">
                                     Rp <?= number_format((int)($kurir['harga_asli'] ?? 0), 0, ',', '.'); ?>
                                 </div>

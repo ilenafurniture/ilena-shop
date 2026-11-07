@@ -963,7 +963,9 @@ class Pages extends BaseController
             return $this->response->setStatusCode(422)->setJSON(['ok' => false, 'code' => 'stock_changed', 'message' => lang('Store.productShippingStockChanged')]);
         }
 
-        $rates = (new ShippingService())->rates(
+        // The product-page estimator is deliberately APM-only: it has city and
+        // province selection but no destination postal code for Biteship quotes.
+        $rates = (new \App\Services\ApmShippingRateService())->rates(
             ['kab' => $destination, 'prov' => $province],
             [['jumlah' => $quantity, 'varian' => $variantName, 'detail' => $product]],
         );
@@ -1835,7 +1837,7 @@ class Pages extends BaseController
             ),
         ];
 
-        $this->session->set(['alamatTerpilih' => $alamatselected]);
+        $this->session->set(['alamatTerpilih' => $alamatselected, 'checkout_address_index' => (int) $ind_add]);
         if (!$shippingUnavailable) {
             $this->session->set(['kurir' => $kurir]);
         }
@@ -3114,6 +3116,14 @@ class Pages extends BaseController
 
         $subtotal = (float)$cartCheck['subtotal'];
         $flashSale = (float)$cartCheck['flashSale'];
+        if (($kurirTerpilih['provider'] ?? '') === 'biteship') {
+            $freshRate = (new ShippingService())->revalidateRate($kurirTerpilih, $alamatselected, $cartCheck['cart']);
+            if ($freshRate === null) {
+                session()->setFlashdata('msg', lang('Store.shippingRateChanged'));
+                return redirect()->to(ilena_store_path('/shipping/' . max(0, (int) session()->get('checkout_address_index', 0))));
+            }
+            $kurirTerpilih = $freshRate;
+        }
         $kurirTerpilih = (new FreeShippingService())->applyToRates($alamatselected, [$kurirTerpilih], $subtotal)[0] ?? $kurirTerpilih;
         $itemDetails = [];
         foreach ($cartCheck['cart'] as $element) {

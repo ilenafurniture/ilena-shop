@@ -293,6 +293,9 @@ class FreeShippingService
             if (!is_array($rate)) {
                 continue;
             }
+            if (array_key_exists('free_shipping_eligible', $rate) && $rate['free_shipping_eligible'] !== true) {
+                continue;
+            }
             // Payment and order creation re-evaluate rates already transformed
             // on the shipping step. Preserve the true pre-promo amount.
             $original = max(0, (int)($rate['harga'] ?? 0));
