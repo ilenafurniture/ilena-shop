@@ -32,8 +32,19 @@ class CustomerFilter implements FilterInterface
         $guard = (new \App\Services\Auth\CustomerSessionGuard())->enforce();
         if ($guard !== null) return $guard;
 
-        $ses_data = ["kurir", "alamatTerpilih", "hargaKeseluruhan", "kurirTerpilih"];
-        session()->remove($ses_data);
+        // Background requests from the storefront share the customer session.
+        // Clearing checkout state on every filtered request caused chat polling,
+        // cart refreshes, and autocomplete calls to erase the selected address
+        // between the shipping and payment pages.
+        $requestPath = '/' . trim((string) $request->getUri()->getPath(), '/');
+        $requestPath = preg_replace('#^/en(?=/|$)#i', '', $requestPath) ?: '/';
+        $isBackgroundRequest = preg_match(
+            '#^/(?:chat(?:/|$)|cart/summary$|shipping/(?:destinations|estimate)$|search/suggest$)#i',
+            $requestPath
+        ) === 1;
+        if (!$isBackgroundRequest) {
+            session()->remove(['kurir', 'alamatTerpilih', 'hargaKeseluruhan', 'kurirTerpilih']);
+        }
         if(session()->get('role') == '2'){
             session()->destroy();
             return redirect()->to(ilena_store_path('/login'))->with('msg', lang('Store.warehouseAccessDisabled'));
