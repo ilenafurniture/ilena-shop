@@ -302,6 +302,7 @@ return [
     'free' => 'Free',
     'storeCourier' => 'Ilena delivery service',
     'shippingRateChanged' => 'The shipping rate changed or is no longer available. Please select a delivery option again.',
+    'checkoutShippingSessionRefreshed' => 'Your checkout session was refreshed. Please select a delivery option again.',
     'orderSummary' => 'Order summary',
     'shippingCost' => 'Shipping',
     'paymentAdminFee' => 'Payment processing fee',

@@ -415,6 +415,7 @@ return [
     'free' => 'Gratis',
     'storeCourier' => 'Jasa Kirim Toko',
     'shippingRateChanged' => 'Tarif pengiriman berubah atau tidak tersedia lagi. Silakan pilih ulang layanan pengiriman.',
+    'checkoutShippingSessionRefreshed' => 'Sesi checkout diperbarui. Silakan pilih kembali layanan pengiriman.',
     'orderSummary' => 'Ringkasan pesanan',
     'shippingCost' => 'Biaya Ongkir',
     'paymentAdminFee' => 'Biaya Admin Pembayaran',

@@ -17,6 +17,9 @@
             <span class="ilena-shipping-heading__count"><?= count($kurir); ?> <?= lang('Store.servicesAvailable'); ?></span>
             <?php endif; ?>
         </header>
+        <?php if ($checkoutMessage = session()->getFlashdata('msg')): ?>
+        <p class="ilena-shipping-session-notice" role="status"><?= esc($checkoutMessage); ?></p>
+        <?php endif; ?>
         <div class="container-kurir my-4">
             <?php if (!empty($shippingUnavailable)): ?>
             <section class="ilena-shipping-unavailable" role="status">
@@ -156,6 +159,7 @@ radioKurirElm.forEach((element) => {
 
 <style>
 .ilena-shipping-unavailable{max-width:620px;padding:28px 22px;text-align:center;border:1px solid #e8e3df;background:#fffdfb;border-radius:14px}
+.ilena-shipping-session-notice{margin:0 0 14px;padding:11px 14px;border-left:3px solid #e84a49;background:#fbf7f4;color:#514943;font-size:13px;line-height:1.5}
 .ilena-shipping-unavailable>.material-icons{font-size:34px;color:#8d2e32}
 .ilena-shipping-unavailable h2{font-size:19px;font-weight:700;margin:12px 0 8px}
 .ilena-shipping-unavailable p{color:#646a70;line-height:1.6;margin:0 0 18px}

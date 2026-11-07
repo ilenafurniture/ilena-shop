@@ -2067,7 +2067,16 @@ class Pages extends BaseController
         $alamatselected = $this->session->get('alamatTerpilih');
         $kurir = $this->session->get('kurir');
 
-        if (!is_array($alamatselected) || empty($alamatselected)) return redirect()->to(ilena_store_path('/address'));
+        if (!is_array($alamatselected) || empty($alamatselected)) {
+            $addressIndex = max(0, (int) session()->get('checkout_address_index', 0));
+            $savedAddresses = session()->get('alamat');
+            if (is_array($savedAddresses) && array_key_exists($addressIndex, $savedAddresses)) {
+                log_message('warning', 'Checkout payment resumed to shipping: selected address session was missing.');
+                session()->setFlashdata('msg', lang('Store.checkoutShippingSessionRefreshed'));
+                return redirect()->to(ilena_store_path('/shipping/' . $addressIndex));
+            }
+            return redirect()->to(ilena_store_path('/address'));
+        }
         $paymentEmailCandidate = session()->get('isLogin') && (string)session()->get('email') !== '' && (string)session()->get('email') !== 'tamu'
             ? session()->get('email')
             : ($alamatselected['email_pemesan'] ?? null);
@@ -3078,7 +3087,14 @@ class Pages extends BaseController
         $alamatselected = session()->get('alamatTerpilih');
         $kurir = session()->get('kurir');
         if (!is_array($alamatselected) || empty($alamatselected)) {
-            session()->setFlashdata('msg','Alamat tidak ditemukan, silakan ulangi.');
+            $addressIndex = max(0, (int) session()->get('checkout_address_index', 0));
+            $savedAddresses = session()->get('alamat');
+            if (is_array($savedAddresses) && array_key_exists($addressIndex, $savedAddresses)) {
+                log_message('warning', 'Checkout submission resumed to shipping: selected address session was missing.');
+                session()->setFlashdata('msg', lang('Store.checkoutShippingSessionRefreshed'));
+                return redirect()->to(ilena_store_path('/shipping/' . $addressIndex));
+            }
+            session()->setFlashdata('msg', 'Alamat tidak ditemukan, silakan ulangi.');
             return redirect()->to(ilena_store_path('/address'));
         }
         $checkoutContactEmail = CheckoutEmailPolicy::normalize($alamatselected['email_pemesan'] ?? null);
@@ -3087,8 +3103,8 @@ class Pages extends BaseController
             return redirect()->to(ilena_store_path('/address'));
         }
         if (!is_array($kurir) || !array_key_exists($index_kurir, $kurir)) {
-            session()->setFlashdata('msg','Kurir tidak ditemukan, silakan pilih ulang.');
-            return redirect()->to(ilena_store_path('/address'));
+            session()->setFlashdata('msg', lang('Store.shippingRateChanged'));
+            return redirect()->to(ilena_store_path('/shipping/' . max(0, (int) session()->get('checkout_address_index', 0))));
         }
 
         if ($pembayaran === 'card' && !$this->validate(['tokencc'=>'required'])) {
