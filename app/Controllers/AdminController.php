@@ -4641,8 +4641,12 @@ private function interiorShippedQtyMap(string $idPesanan): array
         $search = trim((string)$this->request->getGet('q'));
         $db = db_connect();
         $userColumns = array_map('strtolower', $db->getFieldNames('user'));
-        $recentColumn = in_array('created_at', $userColumns, true) ? 'created_at' : (in_array('id', $userColumns, true) ? 'id' : null);
+        $hasCreatedAt = in_array('created_at', $userColumns, true);
+        $hasUserId = in_array('id', $userColumns, true);
+        $recentColumn = $hasCreatedAt ? 'created_at' : ($hasUserId ? 'id' : null);
         $recentSortAvailable = $recentColumn !== null;
+        $hasRegistrationMethod = in_array('registration_method', $userColumns, true);
+        $hasGoogleIdentityTable = $db->tableExists('user_google_identities');
         $hasSuspensionColumn = in_array('suspended_until', $userColumns, true);
         $sortOptions = [
             'name_asc' => 'Nama A–Z',
@@ -4662,10 +4666,17 @@ private function interiorShippedQtyMap(string $idPesanan): array
         $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $nowSql = $now->format('Y-m-d H:i:s');
 
+        $select = 'u.email, u.role, u.active, u.suspended_until, u.suspension_reason, p.nama';
+        if (in_array('created_at', $userColumns, true)) $select .= ', u.created_at AS registered_at';
+        if ($hasRegistrationMethod) $select .= ', u.registration_method';
+        if ($hasGoogleIdentityTable) $select .= ', g.id AS google_identity_id';
         $builder = $db->table('user u')
-            ->select('u.email, u.role, u.active, u.suspended_until, u.suspension_reason, p.nama')
+            ->select($select)
             ->join('pembeli p', 'p.email = u.email', 'left')
             ->whereIn('u.role', ['0', '4']);
+        if ($hasGoogleIdentityTable) {
+            $builder->join('user_google_identities g', "g.user_email = u.email AND g.provider = 'google'", 'left');
+        }
         if ($search !== '') {
             $builder->groupStart()
                 ->like('u.email', $search)
@@ -4692,9 +4703,23 @@ private function interiorShippedQtyMap(string $idPesanan): array
         $pages = max(1, (int) ceil($total / 50));
         $page = min($page, $pages);
         if ($sort === 'recent' && $recentColumn !== null) {
-            $builder->orderBy('u.' . $recentColumn, 'DESC')->orderBy('u.email', 'ASC');
+            if ($hasCreatedAt) {
+                $builder->orderBy('CASE WHEN u.created_at IS NULL THEN 1 ELSE 0 END', 'ASC', false)
+                    ->orderBy('u.created_at', 'DESC');
+                if ($hasUserId) $builder->orderBy('u.id', 'DESC');
+                $builder->orderBy('u.email', 'ASC');
+            } else {
+                $builder->orderBy('u.' . $recentColumn, 'DESC')->orderBy('u.email', 'ASC');
+            }
         } elseif ($sort === 'oldest' && $recentColumn !== null) {
-            $builder->orderBy('u.' . $recentColumn, 'ASC')->orderBy('u.email', 'ASC');
+            if ($hasCreatedAt) {
+                $builder->orderBy('CASE WHEN u.created_at IS NULL THEN 1 ELSE 0 END', 'ASC', false)
+                    ->orderBy('u.created_at', 'ASC');
+                if ($hasUserId) $builder->orderBy('u.id', 'ASC');
+                $builder->orderBy('u.email', 'ASC');
+            } else {
+                $builder->orderBy('u.' . $recentColumn, 'ASC')->orderBy('u.email', 'ASC');
+            }
         } elseif ($sort === 'name_desc') {
             $builder->orderBy('p.nama', 'DESC')->orderBy('u.email', 'ASC');
         } elseif ($sort === 'email_asc') {
@@ -4706,6 +4731,24 @@ private function interiorShippedQtyMap(string $idPesanan): array
         }
         $rows = $builder->get(50, ($page - 1) * 50)->getResultArray();
         foreach ($rows as &$row) {
+            $registeredVia = strtolower(trim((string) ($row['registration_method'] ?? '')));
+            $isGoogleLinked = !empty($row['google_identity_id']);
+            if (in_array($registeredVia, ['email', 'google'], true)) {
+                $row['registration_method_label'] = $registeredVia === 'google' ? 'Google' : 'Email';
+            } elseif ($isGoogleLinked) {
+                $row['registration_method_label'] = 'Google tertaut';
+            } else {
+                $row['registration_method_label'] = 'Belum tercatat';
+            }
+            $row['registered_at_label'] = 'Belum tercatat';
+            if (!empty($row['registered_at'])) {
+                try {
+                    $registeredAt = new \DateTimeImmutable((string) $row['registered_at'], new \DateTimeZone('UTC'));
+                    $row['registered_at_label'] = $registeredAt->setTimezone(new \DateTimeZone('Asia/Jakarta'))->format('d M Y · H:i WIB');
+                } catch (\Throwable) {
+                    $row['registered_at_label'] = 'Waktu tidak valid';
+                }
+            }
             $row['suspension'] = null;
             if (!empty($row['suspended_until'])) {
                 try {

@@ -38,10 +38,11 @@
     <?php if (!empty($err)): ?><div class="alert alert-danger" role="alert"><?= esc($err); ?></div><?php endif; ?>
 
     <p class="admin-records-note">Pilih “Tangguhkan” pada akun yang perlu dibatasi. Form alasan dan durasi hanya terbuka saat diperlukan.</p>
+    <p class="admin-records-note">Akun lama mungkin belum memiliki catatan metode atau waktu pendaftaran. “Google tertaut” menunjukkan akun saat ini terhubung ke Google.</p>
 
     <div class="admin-data-table-wrap">
         <table class="table admin-data-table align-middle">
-            <thead><tr><th>Pelanggan</th><th>Akun</th><th>Penangguhan</th><th>Tindakan</th></tr></thead>
+            <thead><tr><th>Pelanggan</th><th>Daftar lewat</th><th>Terdaftar</th><th>Akun</th><th>Penangguhan</th><th>Tindakan</th></tr></thead>
             <tbody>
             <?php foreach ($customers as $customer): ?>
                 <?php
@@ -54,6 +55,10 @@
                         <strong><?= esc($customer['nama'] ?: 'Tanpa nama'); ?></strong><br>
                         <span class="admin-records-muted"><?= esc($customer['email']); ?></span>
                     </td>
+                    <td data-label="Daftar lewat">
+                        <span class="admin-status-pill <?= in_array(($customer['registration_method'] ?? ''), ['email', 'google'], true) ? 'admin-status-pill--active' : ''; ?>"><?= esc($customer['registration_method_label'] ?? 'Belum tercatat'); ?></span>
+                    </td>
+                    <td data-label="Terdaftar"><?= esc($customer['registered_at_label'] ?? 'Belum tercatat'); ?></td>
                     <td data-label="Akun">
                         <span class="admin-status-pill admin-status-pill--<?= $isActive ? 'active' : 'unverified'; ?>"><?= $isActive ? 'Aktif' : 'Belum verifikasi'; ?></span>
                     </td>
@@ -92,7 +97,7 @@
                     </td>
                 </tr>
             <?php endforeach; ?>
-            <?php if (!$customers): ?><tr><td colspan="4" class="admin-records-empty"><?= $search !== '' || $status !== 'all' ? 'Tidak ada pelanggan yang cocok dengan pencarian atau filter ini.' : 'Belum ada akun pelanggan.'; ?></td></tr><?php endif; ?>
+            <?php if (!$customers): ?><tr><td colspan="6" class="admin-records-empty"><?= $search !== '' || $status !== 'all' ? 'Tidak ada pelanggan yang cocok dengan pencarian atau filter ini.' : 'Belum ada akun pelanggan.'; ?></td></tr><?php endif; ?>
             </tbody>
         </table>
     </div>

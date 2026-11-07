@@ -5823,7 +5823,9 @@ class Pages extends BaseController
                 'role' => '0',
                 'otp' => $otp_number,
                 'active' => '0',
-                'waktu_otp' => $waktu_otp
+                'waktu_otp' => $waktu_otp,
+                'created_at' => gmdate('Y-m-d H:i:s'),
+                'registration_method' => 'email',
             ]);
             if ($insertedUser === false) throw new \RuntimeException('Registration user insert failed.');
             $pembeliPayload = [

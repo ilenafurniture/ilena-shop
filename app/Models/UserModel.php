@@ -18,6 +18,8 @@ class UserModel extends Model
         'suspension_reason',
         'suspended_by',
         'auth_version',
+        'created_at',
+        'registration_method',
     ];
 
     public function getUser($email = false)

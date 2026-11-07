@@ -220,6 +220,8 @@ class GoogleAuthController extends BaseController
                         'otp' => 0,
                         'active' => '1',
                         'waktu_otp' => 0,
+                        'created_at' => gmdate('Y-m-d H:i:s'),
+                        'registration_method' => 'google',
                     ]);
                     if ($inserted === false) throw new \RuntimeException('Customer identity insert failed.');
                     $user = $userModel->findByEmailIdentity($userEmail);
