@@ -49,6 +49,20 @@ final class AdminRbacRolePolicyTest extends CIUnitTestCase
         $this->assertNotContains('rbac', $rbac->operationalAdminPermissions());
     }
 
+    public function testCommerceAdminModulesHaveDedicatedPermissionGates(): void
+    {
+        $rbac = new AdminRbacService();
+
+        $this->assertSame('commerce_feedback', $rbac->routePermission('admin/commerce-feedback'));
+        $this->assertSame('commerce_feedback', $rbac->routePermission('admin/commerce-feedback/42'));
+        $this->assertSame('commerce_cases', $rbac->routePermission('admin/commerce-service-cases'));
+        $this->assertSame('commerce_cases', $rbac->routePermission('admin/commerce-service-cases/42'));
+        $this->assertArrayHasKey('commerce_feedback', $rbac->permissions());
+        $this->assertArrayHasKey('commerce_cases', $rbac->permissions());
+        $this->assertContains('commerce_feedback', $rbac->operationalAdminPermissions());
+        $this->assertContains('commerce_cases', $rbac->operationalAdminPermissions());
+    }
+
     public function testCustomStaffCannotFallThroughToUnmappedAdminRoutes(): void
     {
         $rbac = new AdminRbacService();

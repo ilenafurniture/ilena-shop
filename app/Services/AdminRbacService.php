@@ -9,7 +9,7 @@ class AdminRbacService
 
     public function permissions(): array
     {
-        return [
+        $permissions = [
             'dashboard' => ['label' => 'Dashboard Admin', 'description' => 'Akses ringkasan operasional admin.'],
             'products' => ['label' => 'Produk', 'description' => 'Lihat, tambah, edit, aktif/nonaktif produk.'],
             'vouchers' => ['label' => 'Voucher', 'description' => 'Kelola voucher dan pemakaian voucher.'],
@@ -25,8 +25,18 @@ class AdminRbacService
             'spam_cleanup' => ['label' => 'Cleanup Spam Akun', 'description' => 'Lihat dan hapus akun register spam/injection.'],
             'customers' => ['label' => 'Akun Pelanggan', 'description' => 'Lihat status akun dan kelola penangguhan pelanggan.'],
             'support_chat' => ['label' => 'Live Chat & Knowledge Base', 'description' => 'Layani antrean chat pelanggan dan kelola sumber jawaban assistant.'],
+            'commerce_feedback' => ['label' => 'Ulasan & Pertanyaan', 'description' => 'Moderasi ulasan pembeli dan pertanyaan produk.'],
+            'commerce_cases' => ['label' => 'Retur & Refund', 'description' => 'Tinjau dan tindak lanjuti permintaan layanan purna jual.'],
             'marketplace' => ['label' => 'Workspace Marketplace', 'description' => 'Kelola katalog dan pesanan melalui workspace marketplace.'],
         ];
+
+        // Website-local offline sales and interior projects are retired unless
+        // explicitly enabled; don't offer dead permissions in the role editor.
+        if (env('ILENA_WEBSITE_LOCAL_SALES_ENABLED', 'false') !== 'true') {
+            unset($permissions['orders_offline'], $permissions['project_interior']);
+        }
+
+        return $permissions;
     }
 
     /** Permissions for the standard operational Admin role; technical controls remain Dev-only. */
@@ -38,6 +48,19 @@ class AdminRbacService
     private function isOperationalAdminRoleName(string $name): bool
     {
         return in_array(strtolower(trim($name)), ['admin', 'admin operasional'], true);
+    }
+
+    private function effectiveRolePermissions(string $roleName, $permissions): array
+    {
+        $decoded = $this->decodePermissions($permissions);
+        if ($this->isOperationalAdminRoleName($roleName)) {
+            $decoded = $this->operationalAdminPermissions();
+        }
+
+        return array_values(array_intersect(
+            array_unique(array_map('strval', $decoded)),
+            array_keys($this->permissions())
+        ));
     }
 
     public function routePermission(string $path): ?string
@@ -108,6 +131,8 @@ class AdminRbacService
             'admin/spam-cleanup' => 'spam_cleanup',
             'admin/customers' => 'customers',
             'admin/support-chat' => 'support_chat',
+            'admin/commerce-feedback' => 'commerce_feedback',
+            'admin/commerce-service-cases' => 'commerce_cases',
             'admin/ordertoko' => 'orders_online',
             'market' => 'marketplace',
             'analytics' => 'analytics',
@@ -246,6 +271,8 @@ class AdminRbacService
             'spam_cleanup' => '/admin/spam-cleanup',
             'customers' => '/admin/customers',
             'support_chat' => '/admin/support-chat',
+            'commerce_feedback' => '/admin/commerce-feedback',
+            'commerce_cases' => '/admin/commerce-service-cases',
             'marketplace' => '/market/product',
         ];
 
@@ -359,14 +386,33 @@ class AdminRbacService
 
         foreach ($rows as &$row) {
             $account = $this->accountForEmail((string) ($row['email'] ?? ''));
+            $effectivePermissions = $this->effectiveRolePermissions(
+                (string) ($row['role_name'] ?? ''),
+                $row['permissions'] ?? '[]'
+            );
+            $row['effective_permission_count'] = count($effectivePermissions);
+            $row['account_role'] = $account ? (string) ($account['role'] ?? '') : null;
+            $row['account_role_reason'] = '';
             if (!$account) {
                 $row['account_status'] = 'pending';
             } elseif ((string) ($account['active'] ?? '1') !== '1') {
                 $row['account_status'] = 'inactive';
             } else {
-                $row['account_status'] = in_array((string) ($account['role'] ?? ''), ['0', '3', '4', '5'], true)
-                    ? 'active'
-                    : 'restricted';
+                $accountRole = (string) ($account['role'] ?? '');
+                if ($accountRole === '1') {
+                    $row['account_status'] = 'restricted';
+                    $row['account_role_reason'] = 'Akun Dev sudah memiliki akses khusus dan tidak memakai assignment staff.';
+                } elseif ($accountRole === '2') {
+                    $row['account_status'] = 'restricted';
+                    $row['account_role_reason'] = 'Akun Gudang saat ini tidak diizinkan masuk ke admin website.';
+                } elseif (!in_array($accountRole, ['0', '3', '4', '5'], true)) {
+                    $row['account_status'] = 'restricted';
+                    $row['account_role_reason'] = 'Kode role akun ini belum didukung untuk akses staff RBAC.';
+                } elseif ($effectivePermissions === []) {
+                    $row['account_status'] = 'role_empty';
+                } else {
+                    $row['account_status'] = 'active';
+                }
             }
         }
         unset($row);
@@ -375,23 +421,46 @@ class AdminRbacService
 
     public function syncAssignedUserRoles(): int
     {
+        return $this->syncAssignedUserRolesDetailed()['synced'];
+    }
+
+    /** Promote only active, eligible accounts whose assignment grants live permissions. */
+    public function syncAssignedUserRolesDetailed(): array
+    {
         $this->ensureTables();
         $db = \Config\Database::connect();
-        $rows = $db->table($this->userRolesTable)->select('email')->get()->getResultArray();
+        $rows = $db->table($this->userRolesTable . ' ur')
+            ->select('ur.email, r.role_name, r.permissions')
+            ->join($this->rolesTable . ' r', 'r.id = ur.role_id', 'inner')
+            ->get()
+            ->getResultArray();
 
-        $count = 0;
+        $synced = 0;
+        $skipped = 0;
         foreach ($rows as $row) {
             $email = strtolower(trim((string)($row['email'] ?? '')));
-            if ($email === '') continue;
+            $permissions = $this->effectiveRolePermissions(
+                (string) ($row['role_name'] ?? ''),
+                $row['permissions'] ?? '[]'
+            );
+            if ($email === '' || $permissions === []) {
+                $skipped++;
+                continue;
+            }
 
             $user = $this->accountForEmail($email);
-            if ($user && in_array((string)($user['role'] ?? ''), ['0', '3', '4', '5'], true)) {
+            if ($user
+                && (string) ($user['active'] ?? '') === '1'
+                && in_array((string)($user['role'] ?? ''), ['0', '3', '4', '5'], true)
+            ) {
                 $db->table('user')->where('email', (string) $user['email'])->update(['role' => '5']);
-                $count++;
+                $synced++;
+            } else {
+                $skipped++;
             }
         }
 
-        return $count;
+        return ['synced' => $synced, 'skipped' => $skipped];
     }
 
     public function assignRole(string $email, int $roleId): bool
@@ -404,6 +473,11 @@ class AdminRbacService
         }
         $permissions = $this->decodePermissions($role['permissions'] ?? '[]');
         if (!$this->isOperationalAdminRoleName((string) ($role['role_name'] ?? '')) && $permissions === []) {
+            return false;
+        }
+
+        $account = $this->accountForEmail($email);
+        if ($account && !in_array((string) ($account['role'] ?? ''), ['0', '3', '4', '5'], true)) {
             return false;
         }
 
@@ -421,7 +495,10 @@ class AdminRbacService
 
         if ($saved && $db->tableExists('user')) {
             $user = $this->accountForEmail($email);
-            if ($user && in_array((string)($user['role'] ?? ''), ['0', '3', '4', '5'], true)) {
+            if ($user
+                && (string) ($user['active'] ?? '') === '1'
+                && in_array((string)($user['role'] ?? ''), ['0', '3', '4', '5'], true)
+            ) {
                 $db->table('user')->where('email', (string) $user['email'])->update(['role' => '5']);
             }
         }
@@ -448,16 +525,23 @@ class AdminRbacService
     /** Assign one email and report whether a registered account will receive access now. */
     public function assignRoleWithStatus(string $email, int $roleId): string
     {
+        $account = $this->accountForEmail($email);
+        if ($account) {
+            $accountRole = (string) ($account['role'] ?? '');
+            if ($accountRole === '1') return 'dev_account';
+            if ($accountRole === '2') return 'warehouse_account';
+            if (!in_array($accountRole, ['0', '3', '4', '5'], true)) return 'unsupported_account';
+            if ((string) ($account['active'] ?? '') !== '1') {
+                return $this->assignRole($email, $roleId) ? 'inactive' : 'failed';
+            }
+        }
+
         if (!$this->assignRole($email, $roleId)) {
             return 'failed';
         }
 
-        $account = $this->accountForEmail($email);
         if (!$account) {
             return 'pending';
-        }
-        if ((string) ($account['active'] ?? '1') !== '1') {
-            return 'inactive';
         }
 
         return in_array((string) ($account['role'] ?? ''), ['0', '3', '4', '5'], true)
@@ -534,19 +618,10 @@ class AdminRbacService
                 ->get()
                 ->getRowArray();
 
-            $permissions = json_decode((string)($row['permissions'] ?? '[]'), true);
-            if ($this->isOperationalAdminRoleName((string)($row['role_name'] ?? ''))) {
-                return $this->operationalAdminPermissions();
-            }
-
-            if (!is_array($permissions)) {
-                return [];
-            }
-
-            return array_values(array_intersect(
-                array_unique(array_map('strval', $permissions)),
-                array_keys($this->permissions()),
-            ));
+            return $this->effectiveRolePermissions(
+                (string) ($row['role_name'] ?? ''),
+                $row['permissions'] ?? '[]'
+            );
         } catch (\Throwable $th) {
             log_message('error', 'RBAC user permission error: {err}', ['err' => $th->getMessage()]);
             return [];

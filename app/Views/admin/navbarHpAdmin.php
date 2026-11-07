@@ -37,8 +37,8 @@ $mobileMenuGroups = [
     ],
     'Layanan pelanggan' => [
         ['show' => $can('support_chat'), 'label' => 'Live Chat', 'icon' => 'forum', 'href' => '/admin/support-chat', 'active' => $isActivePrefix(['admin/support-chat'])],
-        ['show' => $can('orders_online'), 'label' => 'Ulasan & Pertanyaan', 'icon' => 'reviews', 'href' => '/admin/commerce-feedback', 'active' => $isActivePrefix(['admin/commerce-feedback'])],
-        ['show' => $can('orders_online'), 'label' => 'Retur & Refund', 'icon' => 'assignment_return', 'href' => '/admin/commerce-service-cases', 'active' => $isActivePrefix(['admin/commerce-service-cases'])],
+        ['show' => $can('commerce_feedback'), 'label' => 'Ulasan & Pertanyaan', 'icon' => 'reviews', 'href' => '/admin/commerce-feedback', 'active' => $isActivePrefix(['admin/commerce-feedback'])],
+        ['show' => $can('commerce_cases'), 'label' => 'Retur & Refund', 'icon' => 'assignment_return', 'href' => '/admin/commerce-service-cases', 'active' => $isActivePrefix(['admin/commerce-service-cases'])],
         ['show' => $can('customers'), 'label' => 'Akun Pelanggan', 'icon' => 'manage_accounts', 'href' => '/admin/customers', 'active' => $isActivePrefix(['admin/customers'])],
     ],
     'Konten & mitra' => [

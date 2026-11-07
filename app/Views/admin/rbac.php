@@ -32,7 +32,7 @@ $decodePermissions = $decodePermissions ?? static fn($v) => [];
     <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
         <div>
             <h1 class="rbac-title mb-1">Role & Akses Admin</h1>
-            <p class="rbac-muted mb-0">Dev mengelola role dan assignment. Role “Admin” atau “Admin Operasional” mendapat semua izin operasional; akses teknis tetap khusus Dev.</p>
+            <p class="rbac-muted mb-0">Dev mengelola role dan assignment. Role “Admin” atau “Admin Operasional” mendapat izin operasional yang aktif; kontrol teknis dan permintaan hapus akun tetap khusus Dev.</p>
         </div>
         <div class="d-flex flex-wrap gap-2">
             <form action="/admin/rbac/sync-users" method="post">
@@ -163,11 +163,22 @@ $decodePermissions = $decodePermissions ?? static fn($v) => [];
                                 <td><?= esc($row['role_name'] ?? '-'); ?></td>
                                 <td>
                                     <?php if (($row['account_status'] ?? '') === 'active'): ?>
-                                        <span class="chip">Akses aktif</span>
+                                        <span class="chip">Akses aktif · <?= (int) ($row['effective_permission_count'] ?? 0); ?> izin</span>
                                     <?php elseif (($row['account_status'] ?? '') === 'inactive'): ?>
                                         <span class="chip" style="background:#fef3c7;color:#92400e">Akun nonaktif</span>
+                                        <small class="d-block text-muted">Aktifkan/verifikasi akun sebelum akses admin berlaku.</small>
                                     <?php elseif (($row['account_status'] ?? '') === 'restricted'): ?>
-                                        <span class="chip" style="background:#fef3c7;color:#92400e">Role akun dibatasi</span>
+                                        <?php if (($row['account_role'] ?? '') === '1'): ?>
+                                            <span class="chip" style="background:#e5e7eb;color:#374151">Akun Dev</span>
+                                        <?php elseif (($row['account_role'] ?? '') === '2'): ?>
+                                            <span class="chip" style="background:#fef3c7;color:#92400e">Akun Gudang dinonaktifkan</span>
+                                        <?php else: ?>
+                                            <span class="chip" style="background:#fef3c7;color:#92400e">Role akun belum didukung</span>
+                                        <?php endif; ?>
+                                        <small class="d-block text-muted"><?= esc($row['account_role_reason'] ?? ''); ?></small>
+                                    <?php elseif (($row['account_status'] ?? '') === 'role_empty'): ?>
+                                        <span class="chip" style="background:#fef3c7;color:#92400e">Role belum punya izin aktif</span>
+                                        <small class="d-block text-muted">Edit role dan pilih izin yang tersedia; sinkronisasi akan melewati assignment ini.</small>
                                     <?php else: ?>
                                         <span class="chip" style="background:#e5e7eb;color:#374151">Menunggu pendaftaran</span>
                                     <?php endif; ?>

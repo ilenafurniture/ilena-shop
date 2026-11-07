@@ -4619,7 +4619,7 @@ private function interiorShippedQtyMap(string $idPesanan): array
             $emails ?: []
         ))));
         $service = new AdminRbacService();
-        $counts = ['active' => 0, 'pending' => 0, 'inactive' => 0, 'restricted' => 0, 'failed' => 0, 'invalid' => 0];
+        $counts = ['active' => 0, 'pending' => 0, 'inactive' => 0, 'restricted' => 0, 'dev_account' => 0, 'warehouse_account' => 0, 'unsupported_account' => 0, 'failed' => 0, 'invalid' => 0];
         foreach ($emails as $email) {
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $counts['invalid']++;
@@ -4637,6 +4637,9 @@ private function interiorShippedQtyMap(string $idPesanan): array
             if ($counts['pending']) $parts[] = $counts['pending'] . ' email belum terdaftar (akses menunggu pendaftaran)';
             if ($counts['inactive']) $parts[] = $counts['inactive'] . ' akun nonaktif tersimpan, akses belum aktif';
             if ($counts['restricted']) $parts[] = $counts['restricted'] . ' akun tersimpan tetapi role akunnya tidak dapat dinaikkan';
+            if ($counts['dev_account']) $parts[] = $counts['dev_account'] . ' akun Dev dilewati karena sudah memiliki akses Dev';
+            if ($counts['warehouse_account']) $parts[] = $counts['warehouse_account'] . ' akun Gudang dilewati karena akses admin website dinonaktifkan';
+            if ($counts['unsupported_account']) $parts[] = $counts['unsupported_account'] . ' akun memiliki kode role yang belum didukung';
             if ($counts['failed']) $parts[] = $counts['failed'] . ' gagal disimpan';
             if ($counts['invalid']) $parts[] = $counts['invalid'] . ' email tidak valid dilewati';
             session()->setFlashdata('msg', implode('. ', $parts) . '.');
@@ -4644,6 +4647,9 @@ private function interiorShippedQtyMap(string $idPesanan): array
             $details = [];
             if ($counts['failed']) $details[] = $counts['failed'] . ' gagal disimpan';
             if ($counts['invalid']) $details[] = $counts['invalid'] . ' email tidak valid';
+            if ($counts['dev_account']) $details[] = $counts['dev_account'] . ' akun Dev sudah memiliki akses Dev';
+            if ($counts['warehouse_account']) $details[] = $counts['warehouse_account'] . ' akun Gudang tidak diizinkan masuk admin website';
+            if ($counts['unsupported_account']) $details[] = $counts['unsupported_account'] . ' kode role belum didukung';
             session()->setFlashdata('err', 'Tidak ada akses yang tersimpan' . ($details ? ': ' . implode(', ', $details) . '.' : '.'));
         }
         return redirect()->to('/admin/rbac');
@@ -4659,8 +4665,12 @@ private function interiorShippedQtyMap(string $idPesanan): array
 
     public function syncRbacUserRoles()
     {
-        $count = (new AdminRbacService())->syncAssignedUserRoles();
-        session()->setFlashdata('msg', $count . ' akun RBAC disinkronkan ke role staff admin.');
+        $result = (new AdminRbacService())->syncAssignedUserRolesDetailed();
+        session()->setFlashdata(
+            'msg',
+            $result['synced'] . ' akun aktif dengan izin valid disinkronkan. '
+                . $result['skipped'] . ' assignment dilewati karena akun belum aktif, role tidak sesuai, atau izinnya kosong.'
+        );
         return redirect()->to('/admin/rbac');
     }
 
