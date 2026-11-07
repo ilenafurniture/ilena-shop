@@ -535,10 +535,16 @@ hr {
                 <?php foreach ($list as $v):
             $vId     = (int)($v['id'] ?? 0);
             $vNama   = (string)($v['nama'] ?? '');
-            // fallback nominal/nilai + satuan/tipe
-            $vNom    = (string)($v['nominal'] ?? ($v['nilai'] ?? '0'));
-            $vSatRaw = (string)($v['satuan'] ?? ($v['tipe'] ?? 'persen'));
-            $vSat    = ($vSatRaw === 'persen') ? 'persen' : 'rupiah';
+            // `nilai` is the current admin-controlled source; `nominal` is only
+            // a legacy mirror and can be stale (for example, zero percent).
+            $vTypeRaw = strtolower(trim((string)($v['tipe'] ?? '')));
+            if ($vTypeRaw === '') $vTypeRaw = strtolower(trim((string)($v['satuan'] ?? 'persen')));
+            $vIsPercent = $vTypeRaw === 'persen';
+            $vAmountRaw = $v['nilai'] ?? $v['nominal'] ?? 0;
+            $vAmount = is_numeric($vAmountRaw) ? max(0, (float)$vAmountRaw) : 0;
+            $vDisplay = $vIsPercent
+                ? rtrim(rtrim(number_format($vAmount, 2, ',', '.'), '0'), ',') . '%'
+                : 'Rp ' . number_format($vAmount, 0, ',', '.');
             $vTarget = strtolower($v['target'] ?? '');
             $isMemberBaru = ($vTarget === 'baru') || str_contains(strtolower($vNama), 'member baru');
             $isActive     = (is_array($selected) && ((int)($selected['id'] ?? 0) === $vId));
@@ -554,7 +560,7 @@ hr {
                             <?php if ($isRec): ?><span class="badge rec"><?= lang('Store.recommended'); ?></span><?php endif; ?>
                         </div>
                         <div class="meta">
-                            <?= lang('Store.discount'); ?> <?= esc($vNom).' '.esc($vSat); ?>
+                            <?= lang('Store.discount'); ?> <?= esc($vDisplay); ?>
                             <?php if ($estCut !== null): ?> · <?= lang('Store.potentialSavings'); ?>: Rp
                             <?= number_format($estCut,0,',','.'); ?><?php endif; ?>
                         </div>
