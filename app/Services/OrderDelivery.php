@@ -38,6 +38,24 @@ final class OrderDelivery
         return $shippedAt > 0 && $now >= $shippedAt + (6 * 86400);
     }
 
+    /** Convert a manually verified legacy shipment date into a conservative timestamp. */
+    public static function legacyShipmentTimestamp(string $date, int $now): ?int
+    {
+        $timezone = new \DateTimeZone('Asia/Jakarta');
+        $parsed = \DateTimeImmutable::createFromFormat('!Y-m-d', $date, $timezone);
+        $errors = \DateTimeImmutable::getLastErrors();
+        if (! $parsed || ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0))
+            || $parsed->format('Y-m-d') !== $date
+            || $parsed > (new \DateTimeImmutable('@' . $now))->setTimezone($timezone)->setTime(0, 0)
+        ) {
+            return null;
+        }
+
+        // The exact dispatch time is unknown; count from the end of that date
+        // so an imported date can never complete the order prematurely.
+        return $parsed->setTime(23, 59, 59)->getTimestamp();
+    }
+
     public static function isCustomerRole(string $role): bool
     {
         return in_array($role, ['0', '4'], true);

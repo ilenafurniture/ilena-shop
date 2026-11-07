@@ -2011,12 +2011,14 @@ class AdminController extends BaseController
         $request = service('request');
         $query = mb_substr(trim((string) $request->getGet('q')), 0, 100, 'UTF-8');
         $status = trim((string) $request->getGet('status'));
+        $missingShipmentDate = (string) $request->getGet('shipment_date') === 'missing';
         $allowedStatuses = ['Menunggu Pembayaran', 'Proses', 'Dikirim', 'Selesai', 'Dibatalkan', 'Gagal'];
         if (!in_array($status, $allowedStatuses, true)) $status = '';
+        if ($missingShipmentDate) $status = 'Dikirim';
         $perPage = 30;
         $page = max(1, (int) $request->getGet('page'));
         $db = db_connect();
-        $buildQuery = static function () use ($db, $excludedEmails, $query, $status) {
+        $buildQuery = static function () use ($db, $excludedEmails, $query, $status, $missingShipmentDate) {
             $builder = $db->table('pemesanan')->whereNotIn('email', $excludedEmails);
             if ($query !== '') {
                 $builder->groupStart()
@@ -2027,6 +2029,9 @@ class AdminController extends BaseController
                     ->groupEnd();
             }
             if ($status !== '') $builder->where('status', $status);
+            if ($missingShipmentDate) {
+                $builder->where("CASE WHEN JSON_VALID(data_mid) = 1 THEN JSON_EXTRACT(data_mid, '$._app_shipped_at') IS NULL ELSE 1 END = 1", null, false);
+            }
             return $builder;
         };
         $totalCount = (int) $db->table('pemesanan')->whereNotIn('email', $excludedEmails)->countAllResults();
@@ -2040,14 +2045,25 @@ class AdminController extends BaseController
             $statusKey = (string) ($statusCount['status'] ?? '');
             if (array_key_exists($statusKey, $statusCounts)) $statusCounts[$statusKey] = (int) $statusCount['total'];
         }
-        $hasFilters = $query !== '' || $status !== '';
+        $legacyShipmentDateCount = (int) $db->table('pemesanan')
+            ->whereNotIn('email', $excludedEmails)
+            ->where('status', 'Dikirim')
+            ->where("CASE WHEN JSON_VALID(data_mid) = 1 THEN JSON_EXTRACT(data_mid, '$._app_shipped_at') IS NULL ELSE 1 END = 1", null, false)
+            ->countAllResults();
+        $hasFilters = $query !== '' || $status !== '' || $missingShipmentDate;
         $filteredCount = $hasFilters ? (int) $buildQuery()->countAllResults() : $totalCount;
         $totalPages = max(1, (int) ceil($filteredCount / $perPage));
         $page = min($page, $totalPages);
         $offset = ($page - 1) * $perPage;
         $pesanan = $buildQuery()->orderBy('id', 'desc')->get($perPage, $offset)->getResultArray();
         foreach ($pesanan as $ind_p => $p) {
-            $pesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
+            $decodedMid = json_decode((string) ($p['data_mid'] ?? ''), true);
+            $midIsValid = json_last_error() === JSON_ERROR_NONE && is_array($decodedMid);
+            $pesanan[$ind_p]['data_mid'] = $midIsValid ? $decodedMid : [];
+            $shippedAt = $pesanan[$ind_p]['data_mid']['_app_shipped_at'] ?? null;
+            $pesanan[$ind_p]['legacyShipmentDateMissing'] = (string) ($p['status'] ?? '') === 'Dikirim'
+                && $midIsValid && (! is_numeric($shippedAt) || (int) $shippedAt < 1);
+            $pesanan[$ind_p]['legacyShipmentDataInvalid'] = (string) ($p['status'] ?? '') === 'Dikirim' && ! $midIsValid;
             if (isset($pesanan[$ind_p]['data_mid']['custom_field1']))
                 $pesanan[$ind_p]['data_mid']['custom_field1'] = base64_encode($pesanan[$ind_p]['data_mid']['custom_field1']);
             if (isset($pesanan[$ind_p]['data_mid']['custom_field2']))
@@ -2064,6 +2080,8 @@ class AdminController extends BaseController
             'pesananJson' => json_encode($pesanan),
             'orderQuery' => $query,
             'orderStatusFilter' => $status,
+            'missingShipmentDateFilter' => $missingShipmentDate,
+            'legacyShipmentDateCount' => $legacyShipmentDateCount,
             'totalOrders' => $totalCount,
             'filteredOrders' => $filteredCount,
             'statusCounts' => $statusCounts,
@@ -2074,6 +2092,58 @@ class AdminController extends BaseController
             'lastOrderNumber' => min($offset + count($pesanan), $filteredCount),
         ];
         return view('admin/order', $data);
+    }
+
+    public function setLegacyShipmentDate()
+    {
+        $idMid = trim((string) $this->request->getPost('idMid'));
+        $date = trim((string) $this->request->getPost('shipped_date'));
+        $shippedAt = \App\Services\OrderDelivery::legacyShipmentTimestamp($date, time());
+        if ($idMid === '' || strlen($idMid) > 100 || $shippedAt === null) {
+            return redirect()->to('/admin/order/online?shipment_date=missing')->with('shipment_date_error', 'Tanggal kirim tidak valid. Pilih tanggal hari ini atau sebelumnya sesuai bukti pengiriman.');
+        }
+
+        $db = db_connect();
+        $db->transBegin();
+        try {
+            $order = $db->query('SELECT id, id_midtrans, status, data_mid FROM pemesanan WHERE id_midtrans = ? FOR UPDATE', [$idMid])->getRowArray();
+            if (! $order || (string) ($order['status'] ?? '') !== 'Dikirim') {
+                throw new \RuntimeException('Pesanan tidak ditemukan atau statusnya bukan Dikirim.');
+            }
+            $mid = json_decode((string) ($order['data_mid'] ?? ''), true);
+            if (json_last_error() !== JSON_ERROR_NONE || ! is_array($mid)) {
+                throw new \RuntimeException('Data pesanan tidak dapat dibaca. Tanggal kirim belum disimpan agar data transaksi tidak tertimpa.');
+            }
+            $existing = $mid['_app_shipped_at'] ?? null;
+            if (is_numeric($existing) && (int) $existing > 0) {
+                throw new \RuntimeException('Tanggal kirim sudah tercatat dan tidak dapat ditimpa lewat alur pesanan lama.');
+            }
+
+            $mid['_app_shipped_at'] = $shippedAt;
+            $mid['_app_shipment_date_source'] = 'admin_legacy_backfill';
+            $mid['_app_shipment_date_recorded_at'] = gmdate('Y-m-d H:i:s');
+            $mid['_app_shipment_date_recorded_by'] = mb_substr((string) session()->get('email'), 0, 190);
+            $updated = $db->table('pemesanan')->where('id', (int) $order['id'])->where('status', 'Dikirim')->update([
+                'data_mid' => json_encode($mid, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR),
+            ]);
+            if (! $updated || ! $db->transStatus()) {
+                throw new \RuntimeException('Tanggal kirim gagal disimpan.');
+            }
+            $db->transCommit();
+        } catch (\Throwable $error) {
+            $db->transRollback();
+            log_message('warning', 'Legacy shipment date update rejected for order {order}: {reason}', [
+                'order' => $idMid,
+                'reason' => $error->getMessage(),
+            ]);
+            return redirect()->to('/admin/order/online?shipment_date=missing')->with('shipment_date_error', $error->getMessage());
+        }
+
+        log_message('info', 'Admin {actor} recorded verified shipment date for legacy order {order}.', [
+            'actor' => (string) session()->get('email'),
+            'order' => $idMid,
+        ]);
+        return redirect()->to('/admin/order/online?shipment_date=missing')->with('msg', 'Tanggal kirim tersimpan berdasarkan input admin. Jika sudah lewat 6 hari, pesanan dapat diselesaikan oleh proses otomatis berikutnya, kecuali ada laporan kendala yang masih ditangani.');
     }
     public function orderAdd()
     {

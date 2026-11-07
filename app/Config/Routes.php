@@ -185,6 +185,7 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
     $routes->get('order/add', 'AdminController::orderAdd');
     $routes->post('order/add', 'AdminController::actionOrderAdd');
     $routes->post('actioneditresi', 'AdminController::actionEditResi');
+    $routes->post('order/legacy-shipment-date', 'AdminController::setLegacyShipmentDate');
     $routes->get('reprint', 'AdminController::reprint');
     $routes->get('suratjalan/(:any)', 'AdminController::suratJalan/$1');
     $routes->get('marketplace', 'AdminController::marketplace');

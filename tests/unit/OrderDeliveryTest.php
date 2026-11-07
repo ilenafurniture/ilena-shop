@@ -53,4 +53,19 @@ final class OrderDeliveryTest extends CIUnitTestCase
         $this->assertFalse(OrderDelivery::isAutoCompletionDue('Proses', $shippedAt, $shippedAt + (7 * 86400), false));
         $this->assertFalse(OrderDelivery::isAutoCompletionDue('Dikirim', null, $shippedAt + (7 * 86400), false));
     }
+
+    public function testLegacyShipmentDateIsValidatedAndStartsAfterTheSelectedDay(): void
+    {
+        $timezone = new DateTimeZone('Asia/Jakarta');
+        $now = (new DateTimeImmutable('2026-11-08 12:00:00', $timezone))->getTimestamp();
+        $shippedAt = OrderDelivery::legacyShipmentTimestamp('2026-11-01', $now);
+
+        $this->assertNotNull($shippedAt);
+        $this->assertSame('2026-11-01 23:59:59', (new DateTimeImmutable('@' . $shippedAt))->setTimezone($timezone)->format('Y-m-d H:i:s'));
+        $this->assertFalse(OrderDelivery::isAutoCompletionDue('Dikirim', $shippedAt, $shippedAt + (6 * 86400) - 1, false));
+        $this->assertTrue(OrderDelivery::isAutoCompletionDue('Dikirim', $shippedAt, $shippedAt + (6 * 86400), false));
+        $this->assertNull(OrderDelivery::legacyShipmentTimestamp('2026-02-30', $now));
+        $this->assertNull(OrderDelivery::legacyShipmentTimestamp('2026-11-09', $now));
+        $this->assertNull(OrderDelivery::legacyShipmentTimestamp('not-a-date', $now));
+    }
 }
