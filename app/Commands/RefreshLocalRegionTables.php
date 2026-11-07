@@ -212,8 +212,9 @@ class RefreshLocalRegionTables extends BaseCommand
 
     private function mapSavedAddresses($db, array $catalog): array
     {
-        $provinceIndex = $cityIndex = $districtIndex = $districtGlobalIndex = [];
-        $villageNameByCity = [];
+        $provinceIndex = $cityIndex = $districtIndex = [];
+        $villageNameByCity = $villageNameByCityCompact = [];
+        $villageNameGlobal = $villageNameGlobalCompact = $villageNameAndPostcode = [];
         foreach ($catalog['levels'][2] as $code => $name) {
             $provinceIndex[$this->normaliseName($name)] = $code;
         }
@@ -237,13 +238,16 @@ class RefreshLocalRegionTables extends BaseCommand
         foreach ($catalog['levels'][8] as $code => $name) {
             $city = substr($code, 0, 5);
             $districtIndex[$city][$this->normaliseName($name)][] = $code;
-            $districtGlobalIndex[$this->normaliseName($name)][] = $code;
         }
         foreach ($catalog['levels'][13] as $code => $name) {
-            $district = substr($code, 0, 8);
             $city = substr($code, 0, 5);
             $villageName = $this->normaliseName($name);
+            $compactName = str_replace(' ', '', $villageName);
             $villageNameByCity[$city][$villageName][] = $code;
+            $villageNameByCityCompact[$city][$compactName][] = $code;
+            $villageNameGlobal[$villageName][] = $code;
+            $villageNameGlobalCompact[$compactName][] = $code;
+            $villageNameAndPostcode[$villageName][$catalog['postcodes'][$code]][] = $code;
         }
 
         $query = $db->table('pembeli')->select('email, alamat')->where('alamat !=', '')->get();
@@ -274,48 +278,88 @@ class RefreshLocalRegionTables extends BaseCommand
                 }
                 $provinceName = $this->normaliseName((string) ($address['prov'] ?? ''));
                 $provinceCode = $provinceIndex[$provinceName] ?? null;
-                if ($provinceCode === null) {
-                    $mappingIssues[] = '#' . $addressNumber . ': provinsi';
-                    continue;
-                }
                 $cityName = $this->normaliseName((string) ($address['kab'] ?? ''));
-                $cityCandidates = $cityIndex[$provinceCode][$cityName] ?? [];
                 $districtName = $this->normaliseName((string) ($address['kec'] ?? ''));
-                if (count($cityCandidates) > 1) {
-                    $cityCandidates = array_values(array_filter($cityCandidates, fn(string $city): bool => isset($districtIndex[$city][$districtName])));
-                }
-                if (count($cityCandidates) !== 1) {
-                    $mappingIssues[] = '#' . $addressNumber . ': kabupaten/kota';
-                    continue;
-                }
-                $cityCode = $cityCandidates[0];
-                $districtCandidates = $districtIndex[$cityCode][$districtName] ?? [];
-                if (count($districtCandidates) !== 1) {
-                    $globalDistrictCount = count($districtGlobalIndex[$districtName] ?? []);
-                    $provinceDistrictCount = count(array_filter($districtGlobalIndex[$districtName] ?? [], static fn(string $code): bool => substr($code, 0, 2) === $provinceCode));
-                    $mappingIssues[] = '#' . $addressNumber . ': kecamatan (nama=' . $globalDistrictCount . ', provinsi=' . $provinceDistrictCount . ')';
-                    continue;
-                }
                 $villageName = $this->normaliseName((string) ($address['desa'] ?? ''));
                 $postcode = preg_replace('/\D+/', '', (string) ($address['kodepos'] ?? '')) ?? '';
-                $villageCandidates = $villageNameByCity[$cityCode][$villageName] ?? [];
-                if ($postcode !== '') {
-                    $villageCandidates = array_values(array_filter(
-                        $villageCandidates,
-                        static fn(string $code): bool => $catalog['postcodes'][$code] === $postcode
-                    ));
+                $compactVillageName = str_replace(' ', '', $villageName);
+
+                // First trust an exact village+postcode pair only when it uniquely
+                // identifies one canonical region nationwide. This repairs legacy
+                // addresses whose stored parent hierarchy is demonstrably corrupt.
+                $villageCode = null;
+                $postalCandidates = $postcode === '' ? [] : ($villageNameAndPostcode[$villageName][$postcode] ?? []);
+                if (count($postalCandidates) === 1) {
+                    $villageCode = $postalCandidates[0];
                 }
-                if (count($villageCandidates) !== 1) {
-                    $mappingIssues[] = '#' . $addressNumber . ': desa/kelurahan tidak cocok unik pada kabupaten/kota tersimpan';
+
+                // Otherwise resolve against a valid province/city. An exact unique
+                // village in that city outranks a stale postal code; spacing-only
+                // spelling variants are accepted only when unique in the same city.
+                $cityCode = null;
+                if ($provinceCode !== null) {
+                    $cityCandidates = $cityIndex[$provinceCode][$cityName] ?? [];
+                    if (count($cityCandidates) > 1) {
+                        $cityCandidates = array_values(array_filter(
+                            $cityCandidates,
+                            fn(string $city): bool => isset($districtIndex[$city][$districtName])
+                        ));
+                    }
+                    if (count($cityCandidates) === 1) {
+                        $cityCode = $cityCandidates[0];
+                        if ($villageCode === null) {
+                            $cityVillageCandidates = $villageNameByCity[$cityCode][$villageName] ?? [];
+                            if (count($cityVillageCandidates) === 1) {
+                                $villageCode = $cityVillageCandidates[0];
+                            } elseif (count($cityVillageCandidates) > 1 && $postcode !== '') {
+                                $postalCityCandidates = array_values(array_filter(
+                                    $cityVillageCandidates,
+                                    static fn(string $code): bool => $catalog['postcodes'][$code] === $postcode
+                                ));
+                                if (count($postalCityCandidates) === 1) {
+                                    $villageCode = $postalCityCandidates[0];
+                                }
+                            }
+                            if ($villageCode === null) {
+                                $compactCandidates = $villageNameByCityCompact[$cityCode][$compactVillageName] ?? [];
+                                if (count($compactCandidates) === 1) {
+                                    $villageCode = $compactCandidates[0];
+                                } elseif (count($compactCandidates) > 1 && $postcode !== '') {
+                                    $postalCompactCandidates = array_values(array_filter(
+                                        $compactCandidates,
+                                        static fn(string $code): bool => $catalog['postcodes'][$code] === $postcode
+                                    ));
+                                    if (count($postalCompactCandidates) === 1) {
+                                        $villageCode = $postalCompactCandidates[0];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if ($villageCode === null) {
+                    $globalCandidates = $villageNameGlobal[$villageName] ?? [];
+                    if (count($globalCandidates) === 1) {
+                        $villageCode = $globalCandidates[0];
+                    } else {
+                        $compactGlobalCandidates = $villageNameGlobalCompact[$compactVillageName] ?? [];
+                        if (count($compactGlobalCandidates) === 1) {
+                            $villageCode = $compactGlobalCandidates[0];
+                        }
+                    }
+                }
+                if ($villageCode === null) {
+                    $mappingIssues[] = '#' . $addressNumber . ': wilayah alamat tidak cocok secara unik';
                     continue;
                 }
-                $villageCode = $villageCandidates[0];
-                // The village code is authoritative for its district. This also
-                // repairs legacy address entries whose saved district label/ID
-                // drifted, but only when village + postal code resolve uniquely.
+
+                // The canonical village code determines the complete hierarchy.
+                $provinceCode = substr($villageCode, 0, 2);
+                $cityCode = substr($villageCode, 0, 5);
                 $districtCode = substr($villageCode, 0, 8);
-                if (substr($districtCode, 0, 5) !== $cityCode) {
-                    $mappingIssues[] = '#' . $addressNumber . ': hierarki desa tidak cocok dengan kabupaten/kota';
+                if (!isset($catalog['provinceByCode'][$provinceCode], $catalog['cityByCode'][$cityCode], $catalog['districtByCode'][$districtCode])) {
+                    $mappingIssues[] = '#' . $addressNumber . ': induk wilayah kanonis tidak lengkap';
                     continue;
                 }
                 $address['prov_id'] = (string) $catalog['provinceByCode'][$provinceCode]['id'];
