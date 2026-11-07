@@ -5076,6 +5076,7 @@ class Pages extends BaseController
             'alamat' => $transaksi['alamat'],
             'resi' => $transaksi['resi'],
             'id_midtrans' => $transaksi['id_midtrans'],
+            'invoice_number' => \App\Services\OrderInvoiceNumber::fromPrimaryKey($transaksi['id'] ?? null),
             'items' => $items,
             'status' => $transaksi['status'],
             'kurir' => $kurir,

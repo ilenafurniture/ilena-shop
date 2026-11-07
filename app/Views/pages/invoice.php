@@ -46,7 +46,7 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
             <img src="<?= esc(base_url('img/LogoIlena.png')); ?>" class="logo" alt="Ilena Furniture" />
             <div class="d-flex flex-column align-items-end">
                 <p class="mb-0">INVOICE</p>
-                <p class="mb-0"><?= $transactionTimestamp ? date('dmY', $transactionTimestamp) : '—' ?>/CBM/<?= esc($transaksi['id_midtrans'] ?? ''); ?></p>
+                <p class="mb-0"><?= $transactionTimestamp ? date('dmY', $transactionTimestamp) : '—' ?>/CBM/<?= esc($transaksi['invoice_number'] ?? '—'); ?></p>
             </div>
         </div>
         <div class="d-flex justify-content-between mb-2 invoice-parties">

@@ -87,7 +87,7 @@ if (is_file($logoPath ?? '')) {
 <html lang="<?= $isEnglish ? 'en' : 'id'; ?>">
 <head>
     <meta charset="UTF-8">
-    <title><?= $isEnglish ? 'Invoice' : 'Invoice'; ?> <?= esc($transaksi['id_midtrans'] ?? '') ?> | Ilena Furniture</title>
+    <title><?= $isEnglish ? 'Invoice' : 'Invoice'; ?> <?= esc($transaksi['invoice_number'] ?? '—') ?> | Ilena Furniture</title>
     <style>
         @page { size: A4 portrait; margin: 13mm 14mm 15mm; }
         * { box-sizing: border-box; }
@@ -135,7 +135,7 @@ if (is_file($logoPath ?? '')) {
 <div class="topline"></div>
 <table class="head"><tr>
     <td><?= $logoData !== '' ? '<img class="logo" src="' . $logoData . '" alt="Ilena Furniture">' : '<strong>ILENA FURNITURE</strong>' ?></td>
-    <td class="invoice-title">INVOICE<div class="number muted"><?= esc($transaksi['id_midtrans'] ?? '—') ?></div>
+    <td class="invoice-title">INVOICE<div class="number muted"><?= esc($transaksi['invoice_number'] ?? '—') ?></div>
         <?php if ($timestamp): ?><div class="number muted"><?= esc(date('d/m/Y H:i', $timestamp)) ?> WIB</div><?php endif; ?>
         <div class="status"><?= $paid ? ($isEnglish ? 'PAID' : 'LUNAS') : esc(strtoupper($statusDisplay ?: ($isEnglish ? 'ORDER STATUS' : 'STATUS PESANAN'))) ?></div>
     </td>
