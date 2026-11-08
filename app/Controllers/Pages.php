@@ -3428,16 +3428,34 @@ class Pages extends BaseController
         // Persist the order BEFORE contacting the provider so early callbacks and
         // ambiguous network failures have a stable local reconciliation target.
         $environment=$isSandboxCheckout?'sandbox':'production';
+        // Card tokens are request-scoped and remain synchronous. Other payment
+        // methods can be charged by the durable commerce worker when enabled.
+        $asyncCheckout = strtolower(trim((string) env('CHECKOUT_ASYNC_ENABLED', 'false'))) === 'true'
+            && $pembayaran !== 'card';
         $accessToken=bin2hex(random_bytes(32));
         $attemptMid=['order_id'=>$idFix,'gross_amount'=>(int)$total,'payment_type'=>$arrPostField['payment_type'],
             'transaction_time'=>gmdate('Y-m-d H:i:s'),'_app_payment_environment'=>$environment,
             '_app_order_access_token'=>$accessToken,'_app_payment_effects_applied'=>false];
         try {
+            $db = db_connect();
+            $db->transBegin();
             if (!$this->pemesananModel->insert(['nama'=>$nama,'email'=>$email,'nohp'=>$nohp,'alamat'=>$alamat,
                 'resi'=>'Menunggu pengiriman','items'=>json_encode($itemDetails),'kurir'=>json_encode($kurirTerpilih),
                 'id_midtrans'=>$idFix,'status'=>'Menunggu Pembayaran','data_mid'=>json_encode($attemptMid),
                 'id_marketplace'=>'','status_print'=>'siap','keterangan_suratjalan'=>''])) throw new \RuntimeException('Checkout attempt could not be saved');
+            if ($asyncCheckout) {
+                (new \App\Services\CommerceJobQueue($db))->enqueue('checkout-charge:' . $idFix, 'midtrans.charge', $idFix, [
+                    'environment' => $environment,
+                    'idempotency_key' => in_array($pembayaran, ['permata', 'cimb'], true) ? null : $idempotencyKey,
+                    'charge' => $arrPostField,
+                ]);
+                $attemptMid['_app_checkout_queue_status'] = 'queued';
+                $db->table('pemesanan')->where('id_midtrans', $idFix)->update(['data_mid' => json_encode($attemptMid)]);
+            }
+            if (!$db->transStatus()) throw new \RuntimeException('Checkout order/job transaction failed');
+            $db->transCommit();
         } catch (\Throwable $error) {
+            if (isset($db) && $db->transStatus() !== false) $db->transRollback();
             if (!$isSandboxCheckout) (new \App\Services\Payments\StockReservationService())->release($idFix);
             foreach ($voucherReservationsCreated as $createdVoucherId) (new \App\Services\Payments\VoucherReservationService())->release($idFix, $createdVoucherId);
             log_message('error','Checkout persistence failed: {error}',['error'=>$error->getMessage()]);
@@ -3448,6 +3466,11 @@ class Pages extends BaseController
         session()->set('checkout_pending_order_id',$idFix);
         // One-time token prevents repeated form submissions; gateway key protects network retries.
         session()->remove('checkout_nonce');
+        if ($asyncCheckout) {
+            session()->remove(['voucher', 'voucher_claimed', 'keranjang', 'kurir', 'kurirTerpilih', 'alamatTerpilih', 'hargaKeseluruhan', 'checkout_nonce', 'checkout_operation_fingerprint', 'checkout_operation_created_at', 'checkout_operation_key', 'checkout_order_id', 'checkout_pending_order_id']);
+            $this->syncCartToUser([]);
+            return redirect()->to(ilena_store_path('/orderdetail/menunggu%20pembayaran?idorder=' . rawurlencode($idFix) . '&access_token=' . rawurlencode($accessToken)));
+        }
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_URL => $isSandboxCheckout ? "https://api.sandbox.midtrans.com/v2/charge" : "https://api.midtrans.com/v2/charge",
@@ -3527,8 +3550,10 @@ class Pages extends BaseController
                 if ($environment!=='sandbox' && $status==='Proses') { $this->markVoucherUsed($updated); $this->sendMetaCapiPurchase($updated); }
                 if ($environment!=='sandbox' && in_array($status, ['Kadaluarsa', 'Ditolak', 'Gagal', 'Dibatalkan'], true)) (new \App\Services\Payments\VoucherReservationService())->release((string) $updated['id_midtrans']);
                 if (in_array($status,['Kadaluarsa','Ditolak','Gagal','Dibatalkan'],true)) $this->deleteOrderFromIlenaSistem($updated);
-                $this->sendOrderPaymentEmail($updated,$status);
-                if ($environment!=='sandbox') $this->sendAdminOrderPaymentEmail($updated,$status);
+                if (strtolower(trim((string) env('CHECKOUT_ASYNC_ENABLED', 'false'))) !== 'true') {
+                    $this->sendOrderPaymentEmail($updated,$status);
+                    if ($environment!=='sandbox') $this->sendAdminOrderPaymentEmail($updated,$status);
+                }
             }
             if (in_array($status,['Proses','Menunggu Pembayaran'],true)) $this->syncOrderToIlenaSistem($updated);
             return $this->response->setJSON(['success'=>true,'ignored'=>!$result['applied']]);
@@ -3650,7 +3675,9 @@ class Pages extends BaseController
         $mid=json_decode((string)($order['data_mid']??'{}'),true)?:[];
         $environment=PaymentSafety::environment($order,$this->midtransTestEmails(),'email');
         $pollKey='payment-reconcile-'.hash('sha256',$orderId);
-        if (in_array($mid['payment_type']??'',['bank_transfer','permata','echannel','qris','gopay','shopeepay','credit_card'],true)
+        $checkoutQueued = ($mid['_app_checkout_queue_status'] ?? '') === 'queued';
+        $checkoutNeedsReconciliation = in_array(($mid['_app_checkout_queue_status'] ?? ''), ['uncertain', 'failed'], true);
+        if (!$checkoutQueued && !$checkoutNeedsReconciliation && in_array($mid['payment_type']??'',['bank_transfer','permata','echannel','qris','gopay','shopeepay','credit_card'],true)
             && (($order['status']??'')==='Menunggu Pembayaran' || PaymentSafety::needsFirstPaidEffects($order,'Proses'))
             && !cache()->get($pollKey)) {
             cache()->save($pollKey,1,15);
@@ -3670,6 +3697,7 @@ class Pages extends BaseController
             'order_id' => $orderId,
             'status' => $status,
             'paid' => in_array($status, ['Proses', 'Dikirim', 'Selesai'], true),
+            'checkout_queued' => $checkoutQueued,
             'detail_url' => site_url(ilena_store_path('/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId) . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $order)))),
         ]);
     }
@@ -3726,6 +3754,14 @@ class Pages extends BaseController
             session()->setFlashdata('order_action_message', 'Pesanan ini sudah tidak dapat dibatalkan dari halaman ini.');
             return redirect()->to(ilena_store_path('/orderdetail/' . rawurlencode(strtolower((string)$order['status']))
                 . '?idorder=' . rawurlencode($orderId) . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $order))));
+        }
+
+        $currentMid = json_decode((string) ($order['data_mid'] ?? '{}'), true) ?: [];
+        if (in_array(($currentMid['_app_checkout_queue_status'] ?? ''), ['queued', 'uncertain', 'failed'], true)
+            || !empty($currentMid['_app_charge_in_flight'])) {
+            session()->setFlashdata('order_action_message', 'Permintaan pembayaran sedang diproses atau diverifikasi. Tunggu pembaruan status sebelum membatalkan agar tidak terjadi pembayaran ganda.');
+            return redirect()->to(ilena_store_path('/orderdetail/menunggu%20pembayaran?idorder=' . rawurlencode($orderId)
+                . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $order))));
         }
 
         $environment = PaymentSafety::environment($order, $this->midtransTestEmails(), 'email');

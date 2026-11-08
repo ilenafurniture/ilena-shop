@@ -366,6 +366,22 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
 </style>
 
 <div class="order-simple">
+    <?php if (($dataMid['_app_checkout_queue_status'] ?? '') === 'queued'): ?>
+        <div role="status" aria-live="polite" class="alert alert-light border mb-3">
+            <strong><?= $isEnglish ? 'Your order is being processed' : 'Pesanan kakak sedang diproses'; ?></strong>
+            <div><?= $isEnglish ? 'Payment instructions will appear here shortly. This page refreshes automatically.' : 'Instruksi pembayaran akan muncul di halaman ini sebentar lagi. Halaman diperbarui otomatis.'; ?></div>
+        </div>
+    <?php elseif (($dataMid['_app_checkout_queue_status'] ?? '') === 'rejected'): ?>
+        <div role="alert" class="alert alert-light border mb-3">
+            <strong><?= $isEnglish ? 'Payment could not be started' : 'Pembayaran belum dapat dimulai'; ?></strong>
+            <div><?= $isEnglish ? 'Please contact Ilena support and share your order number.' : 'Silakan hubungi tim Ilena dan sertakan nomor pesanan kakak.'; ?></div>
+        </div>
+    <?php elseif (in_array(($dataMid['_app_checkout_queue_status'] ?? ''), ['uncertain', 'failed'], true)): ?>
+        <div role="alert" aria-live="polite" class="alert alert-light border mb-3">
+            <strong><?= $isEnglish ? 'We are checking your payment request' : 'Kami sedang memastikan permintaan pembayaran kakak'; ?></strong>
+            <div><?= $isEnglish ? 'Please do not submit payment again. Contact Ilena support with your order number if this status does not update.' : 'Mohon jangan mengirim pembayaran kembali. Hubungi tim Ilena dengan nomor pesanan ini bila status belum berubah.'; ?></div>
+        </div>
+    <?php endif; ?>
     <header class="ilena-order-detail-heading">
         <p class="ilena-order-detail-heading__eyebrow"><?= $isEnglish ? 'ORDER DETAILS <span>/</span> PAYMENT' : 'DETAIL PESANAN <span>/</span> PEMBAYARAN'; ?></p>
         <h1><?= $isEnglish ? 'Awaiting payment' : 'Menunggu pembayaran'; ?></h1>
@@ -417,6 +433,10 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
         <div class="grid pad" style="padding-top:0;">
             <!-- <?= $isEnglish ? 'Payment Method' : 'Metode Pembayaran'; ?> -->
             <div class="card pad">
+                <?php if (in_array(($dataMid['_app_checkout_queue_status'] ?? ''), ['queued', 'uncertain', 'failed'], true)): ?>
+                    <p class="title"><?= $isEnglish ? 'Payment method' : 'Metode pembayaran'; ?></p>
+                    <p class="muted m-0"><?= $isEnglish ? 'Payment instructions will be shown here after the request is verified. Please do not make another payment.' : 'Instruksi pembayaran akan tampil di sini setelah permintaan terverifikasi. Mohon jangan melakukan pembayaran lain.'; ?></p>
+                <?php else: ?>
                 <div class="between" style="align-items:flex-start;">
                     <div>
                         <p class="title"><?= $isEnglish ? 'Payment Method' : 'Metode Pembayaran'; ?></p>
@@ -468,6 +488,7 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
                     <?php endif; ?>
                 </div>
                 <p class="muted m-0" style="margin-top:6px;"><?= $isEnglish ? 'Transfer using the selected bank payment method.' : 'Transfer sesuai metode bank yang dipilih.'; ?></p>
+                <?php endif; ?>
                 <?php endif; ?>
             </div>
 
@@ -576,12 +597,16 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
 
         <!-- CTA -->
         <div class="pad cta-sticky" style="padding-top:0; display:grid; gap:8px;">
+            <?php if (!in_array(($dataMid['_app_checkout_queue_status'] ?? ''), ['queued', 'uncertain', 'failed'], true)): ?>
             <a href="#" id="btnCekPembayaran" class="btn-default-merah"><?= $isEnglish ? 'I have paid' : 'Saya sudah membayar'; ?></a>
+            <?php endif; ?>
+            <?php if (!in_array(($dataMid['_app_checkout_queue_status'] ?? ''), ['queued', 'uncertain', 'failed'], true) && empty($dataMid['_app_charge_in_flight'])): ?>
             <form method="post" action="<?= ilena_store_path('/order/cancel/' . rawurlencode($id_order)); ?>?access_token=<?= rawurlencode($orderAccessToken ?? ''); ?>"
                 data-ilena-confirm="<?= $isEnglish ? 'Cancel this order? If payment has succeeded, it cannot be cancelled here.' : 'Batalkan pesanan ini? Jika pembayaran sudah berhasil, status tidak dapat dibatalkan dari sini.'; ?>" data-ilena-confirm-title="<?= $isEnglish ? 'Cancel order' : 'Batalkan pesanan'; ?>">
                 <?= function_exists('csrf_field') ? csrf_field() : '' ?>
                 <button type="submit" class="btn btn-outline-secondary w-100" style="min-height:48px;"><?= $isEnglish ? 'Cancel order' : 'Batalkan pesanan'; ?></button>
             </form>
+            <?php endif; ?>
             <?php if (!empty($orderActionMessage)): ?><p class="muted m-0" role="status"><?= esc($orderActionMessage); ?></p><?php endif; ?>
         </div>
     </div>
@@ -594,6 +619,22 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
 // Countdown stabil pakai epoch server → tidak reload loop
 const els = document.querySelectorAll(".waktu");
 const expire = <?= (int)$waktuExpire ?> * 1000; // ms
+<?php if (($dataMid['_app_checkout_queue_status'] ?? '') === 'queued'): ?>
+// Poll only the small authenticated order-status endpoint; reload once when
+// the worker records payment instructions. Stop after one minute.
+const queueStatusUrl = <?= json_encode(site_url(ilena_store_path('/payment/status/' . rawurlencode($id_order)) . '?access_token=' . rawurlencode($orderAccessToken ?? '')), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
+let queuePollCount = 0;
+const pollCheckoutQueue = async () => {
+    if (queuePollCount++ >= 12) return;
+    try {
+        const response = await fetch(queueStatusUrl, {headers: {'Accept': 'application/json'}, cache: 'no-store'});
+        const state = await response.json();
+        if (response.ok && state.success && !state.checkout_queued) { window.location.assign(state.detail_url || window.location.href); return; }
+    } catch (_) { /* The order remains safely queued; the customer can refresh manually. */ }
+    window.setTimeout(pollCheckoutQueue, 5000);
+};
+window.setTimeout(pollCheckoutQueue, 5000);
+<?php endif; ?>
 const t = setInterval(() => {
     const now = Date.now();
     let s = expire - now;

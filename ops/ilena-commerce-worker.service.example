@@ -1,0 +1,22 @@
+[Unit]
+Description=Ilena durable commerce queue worker
+After=network-online.target mysql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=deploy-ilena
+WorkingDirectory=/mine/ilenafurniture.com
+ExecStart=/usr/local/lsws/lsphp83/bin/lsphp /mine/ilenafurniture.com/ops/spark-cli.php commerce:work
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/mine/ilenafurniture.com/writable
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

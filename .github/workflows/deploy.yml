@@ -102,6 +102,14 @@ jobs:
           sudo -n /usr/bin/systemctl restart ilena-chat-worker.service
           sudo -n /usr/bin/systemctl is-active --quiet ilena-chat-worker.service
           echo "[deploy] chat worker active"
+          if /usr/bin/systemctl is-enabled --quiet ilena-commerce-worker.service; then
+            echo "[deploy] restart commerce worker to load deployed code"
+            sudo -n /usr/bin/systemctl restart ilena-commerce-worker.service
+            sudo -n /usr/bin/systemctl is-active --quiet ilena-commerce-worker.service
+            echo "[deploy] commerce worker active"
+          else
+            echo "[deploy] commerce worker is not installed/enabled; synchronous checkout remains active"
+          fi
           echo "[deploy] run local-origin smoke checks"
           for path in / /product /login; do
             curl --fail --silent --show-error --insecure --resolve ilenafurniture.com:443:127.0.0.1 \

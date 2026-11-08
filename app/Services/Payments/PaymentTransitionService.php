@@ -33,6 +33,14 @@ final class PaymentTransitionService
             }
             if (in_array($new,['Kadaluarsa','Ditolak','Gagal','Dibatalkan'],true)) (new StockReservationService($this->db))->release((string)$order['id_midtrans']);
             if (!$this->db->table('pemesanan')->where('id_midtrans',$order['id_midtrans'])->update(['status'=>$order['status'],'data_mid'=>json_encode($mid)]) || !$this->db->transStatus()) throw new \RuntimeException('Payment effects failed');
+            if (($transition || $recover) && strtolower(trim((string) env('CHECKOUT_ASYNC_ENABLED', 'false'))) === 'true') {
+                (new \App\Services\CommerceJobQueue($this->db))->enqueue(
+                    'order-payment-notice:' . (string) $order['id_midtrans'] . ':' . rawurlencode((string) $order['status']),
+                    'order.payment_notification',
+                    (string) $order['id_midtrans'],
+                    ['status' => (string) $order['status'], 'include_admin' => $environment !== 'sandbox']
+                );
+            }
             $this->db->transCommit(); $order['data_mid']=json_encode($mid);
             return ['order'=>$order,'applied'=>$transition||$recover];
         } catch (\Throwable $e) { $this->db->transRollback(); throw $e; }
