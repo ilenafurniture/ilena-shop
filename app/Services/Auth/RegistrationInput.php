@@ -40,8 +40,8 @@ final class RegistrationInput
                 'errors' => ['regex_match' => 'Nomor HP harus berupa 10–15 digit angka, tanpa spasi atau tanda baca.'],
             ],
             'sandi' => [
-                'rules' => 'required|min_length[12]|max_length[72]|regex_match[/^[^\x00]+$/D]',
-                'errors' => ['required' => 'Kata sandi harus diisi.', 'min_length' => 'Kata sandi minimal 12 karakter.', 'max_length' => 'Kata sandi maksimal 72 byte.', 'regex_match' => 'Kata sandi mengandung karakter yang tidak valid.'],
+                'rules' => 'required|min_length[8]|max_length[72]|regex_match[/^[^\x00]+$/D]',
+                'errors' => ['required' => 'Kata sandi harus diisi.', 'min_length' => 'Kata sandi minimal 8 karakter.', 'max_length' => 'Kata sandi maksimal 72 byte.', 'regex_match' => 'Kata sandi mengandung karakter yang tidak valid.'],
             ],
             'validasi-syarat' => [
                 'rules' => 'required|in_list[1]',
@@ -52,6 +52,7 @@ final class RegistrationInput
         $errors = $validation->getErrors();
         // PASSWORD_DEFAULT currently uses bcrypt: do not silently truncate UTF-8 passwords.
         if (strlen($data['sandi']) > 72) $errors['sandi'] = 'Kata sandi maksimal 72 byte; kurangi panjangnya jika memakai simbol atau emoji.';
+        elseif ($data['sandi'] !== '' && ! PasswordPolicy::isStrong($data['sandi'])) $errors['sandi'] = 'Kata sandi minimal 8 karakter dan harus kuat: gunakan setidaknya 3 jenis karakter, atau frasa 16+ karakter dengan 2 jenis.';
         if (!isset($errors['email'])) {
             $isDisposable ??= static fn(string $email): bool => (new SpamAccountCleanupService())->isDisposableEmail($email);
             if ($isDisposable($data['email'])) $errors['email'] = 'Email sementara/tempmail tidak dapat digunakan. Gunakan email pribadi yang aktif.';

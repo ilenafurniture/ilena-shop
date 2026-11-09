@@ -10,16 +10,17 @@
             <div class="mb-3">
                 <label for="new-password" class="form-label"><?= esc(lang('Store.newPasswordLabel')); ?></label>
                 <div class="input-group">
-                    <input id="new-password" class="form-control" type="password" name="password" autocomplete="new-password" minlength="12" maxlength="72" required>
+                    <input id="new-password" class="form-control" type="password" name="password" autocomplete="new-password" minlength="8" maxlength="72" required>
                     <button type="button" class="input-group-text ilena-auth-page__password-toggle" data-password-toggle aria-label="<?= esc(lang('Store.showPassword'), 'attr'); ?>" aria-controls="new-password" aria-pressed="false">
                         <span class="material-icons" aria-hidden="true">visibility</span>
                     </button>
                 </div>
             </div>
+            <p class="form-text"><?= esc(lang('Store.passwordPolicyError')); ?></p>
             <div class="mb-3">
                 <label for="confirm-password" class="form-label"><?= esc(lang('Store.confirmNewPasswordLabel')); ?></label>
                 <div class="input-group">
-                    <input id="confirm-password" class="form-control" type="password" name="password_confirm" autocomplete="new-password" minlength="12" maxlength="72" required>
+                    <input id="confirm-password" class="form-control" type="password" name="password_confirm" autocomplete="new-password" minlength="8" maxlength="72" required>
                     <button type="button" class="input-group-text ilena-auth-page__password-toggle" data-password-toggle aria-label="<?= esc(lang('Store.showPassword'), 'attr'); ?>" aria-controls="confirm-password" aria-pressed="false">
                         <span class="material-icons" aria-hidden="true">visibility</span>
                     </button>

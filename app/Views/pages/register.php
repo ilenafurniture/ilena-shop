@@ -109,14 +109,14 @@
 
                 <label for="password" class="form-label">Kata sandi</label>
                 <div class="input-group mb-3 has-validation">
-                    <input id="password" name="sandi" type="password" autocomplete="new-password" required minlength="12" maxlength="72" aria-describedby="password-help password-feedback"
+                    <input id="password" name="sandi" type="password" autocomplete="new-password" required minlength="8" maxlength="72" aria-describedby="password-help password-feedback"
                         class="form-control <?= ($val['val_sandi']) ? "is-invalid" : ""; ?>"
                         placeholder="<?= esc(lang('Store.createPassword'), 'attr'); ?>">
                     <button type="button" class="input-group-text ilena-auth-page__password-toggle"
                         aria-label="Tampilkan kata sandi" aria-controls="password" aria-pressed="false" onclick="togglePassword(event)">
                         <i class="material-icons" aria-hidden="true">visibility</i>
                     </button>
-                    <div class="invalid-feedback" id="password-feedback"><?= esc($val['val_sandi'] ?: 'Kata sandi minimal 12 karakter.'); ?></div>
+                    <div class="invalid-feedback" id="password-feedback"><?= esc($val['val_sandi'] ?: lang('Store.passwordPolicyError')); ?></div>
                 </div>
                 <div class="form-text mb-3" id="password-help"><?= lang('Store.passwordLengthHint'); ?></div>
 

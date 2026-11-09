@@ -61,7 +61,8 @@ final class RegistrationInputTest extends CIUnitTestCase
         }
         $this->assertArrayHasKey('validasi-syarat', $validator->errors($this->valid(['validasi-syarat'=>'0']), static fn()=>false));
         foreach(['<script>',str_repeat('a',101),"A\nB"] as $name) $this->assertArrayHasKey('nama', $validator->errors($this->valid(['nama'=>$name]), static fn()=>false));
-        $this->assertSame([], $validator->errors($this->valid(['nama'=>"D'Angelo",'sandi'=>str_repeat('a',72)]), static fn()=>false));
+        $this->assertSame([], $validator->errors($this->valid(['nama'=>"D'Angelo",'sandi'=>'Ab1!' . str_repeat('x',68)]), static fn()=>false));
+        $this->assertSame([], $validator->errors($this->valid(['sandi'=>'Wood123!']), static fn()=>false));
     }
 
     public function testBundledListWorksWithoutNetworkAndMatchesSubdomains(): void

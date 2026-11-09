@@ -5838,8 +5838,8 @@ class Pages extends BaseController
             session()->setFlashdata('msg-sandi', 'Kata sandi saat ini tidak sesuai.');
             return redirect()->to(ilena_store_path('/' . $path));
         }
-        if (strlen($sandi) < 12 || strlen($sandi) > 72 || str_contains($sandi, "\0")) {
-            session()->setFlashdata('msg-sandi', 'Kata sandi baru harus terdiri dari 12–72 byte.');
+        if (! \App\Services\Auth\PasswordPolicy::isStrong($sandi)) {
+            session()->setFlashdata('msg-sandi', lang('Store.passwordPolicyError'));
             return redirect()->to(ilena_store_path('/' . $path));
         }
         if (!hash_equals($sandi, $sandiKonfirm)) {
@@ -6912,10 +6912,10 @@ class Pages extends BaseController
         $reset = $this->validPasswordReset($token);
         $password = (string)$this->request->getPost('password');
         $confirm = (string)$this->request->getPost('password_confirm');
-        if (!$allowed || !$reset || strlen($password) < 12 || strlen($password) > 72 || str_contains($password, "\0") || !hash_equals($password, $confirm)) {
+        if (!$allowed || !$reset || !\App\Services\Auth\PasswordPolicy::isStrong($password) || !hash_equals($password, $confirm)) {
             session()->setFlashdata('msg', $locale === 'en'
-                ? 'The link or password is invalid. Use a valid link and a matching password of at least 12 characters.'
-                : 'Tautan atau kata sandi tidak valid. Gunakan tautan yang aktif dan kata sandi cocok minimal 12 karakter.');
+                ? 'The link or password is invalid. Use a valid link and a strong password that meets the password requirements.'
+                : 'Tautan atau kata sandi tidak valid. Gunakan tautan aktif dan kata sandi kuat sesuai petunjuk.' );
             return redirect()->to($redirect);
         }
         $db = db_connect();

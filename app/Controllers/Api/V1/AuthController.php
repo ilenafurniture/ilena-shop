@@ -258,8 +258,8 @@ final class AuthController extends BaseController
         }
         $token = strtolower(trim($body['token']));
         $password = $body['password'];
-        if (preg_match('/\A[a-f0-9]{64}\z/D', $token) !== 1 || strlen($password) < 12 || strlen($password) > 72 || str_contains($password, "\0")) {
-            return $this->error('invalid_reset', 'The reset token or password is invalid.', 422);
+        if (preg_match('/\A[a-f0-9]{64}\z/D', $token) !== 1 || ! \App\Services\Auth\PasswordPolicy::isStrong($password)) {
+            return $this->error('invalid_reset', 'The reset token is invalid or expired, or the password does not meet the strength requirements.', 422);
         }
         if (!(new AuthAttemptLimiter())->allow('api_password_reset_complete', (string) $this->request->getIPAddress(), $token, 30, 8, 900)) {
             return $this->error('rate_limited', 'Too many reset attempts. Please try again later.', 429);

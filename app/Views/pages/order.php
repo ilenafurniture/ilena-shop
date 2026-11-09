@@ -220,7 +220,8 @@
             </div>
             <div class="mb-2">
                 <label class="mb-1"><?= lang('Store.newPassword'); ?></label>
-                <input type="password" name="sandi" class="form-control" autocomplete="new-password" minlength="12" maxlength="72" required>
+                <input type="password" name="sandi" class="form-control" autocomplete="new-password" minlength="8" maxlength="72" required>
+                <small class="form-text"><?= esc(lang('Store.passwordPolicyError')); ?></small>
             </div>
             <div class="mb-3">
                 <label class="mb-1"><?= lang('Store.confirmPassword'); ?></label>
