@@ -29,6 +29,9 @@ final class InvoicePdfA4Test extends CIUnitTestCase
         $this->assertStringContainsString('size: A4 portrait', $html);
         $this->assertStringContainsString('Diskon voucher', $html);
         $this->assertStringContainsString('JNE Trucking', $html);
+        $this->assertStringContainsString('font: 9pt/1.5 "DejaVu Sans"', $html);
+        $this->assertStringNotContainsString('−', $html);
+        $this->assertStringContainsString('P 800 mm × L 500 mm × T 1800 mm', $html);
 
         $pdf = new Dompdf(['chroot' => FCPATH, 'isRemoteEnabled' => false]);
         $pdf->loadHtml($html, 'UTF-8');
@@ -39,5 +42,6 @@ final class InvoicePdfA4Test extends CIUnitTestCase
         $this->assertStringStartsWith('%PDF-', $output);
         $this->assertGreaterThan(1000, strlen($output));
         $this->assertStringContainsString('/MediaBox [0.000 0.000 595.280 841.890]', $output);
+        $this->assertStringContainsString('DejaVuSans', $output);
     }
 }

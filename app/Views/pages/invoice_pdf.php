@@ -91,7 +91,7 @@ if (is_file($logoPath ?? '')) {
     <style>
         @page { size: A4 portrait; margin: 13mm 14mm 15mm; }
         * { box-sizing: border-box; }
-        body { margin: 0; color: #292520; font: 9pt/1.5 Arial, Helvetica, sans-serif; }
+        body { margin: 0; color: #292520; font: 9pt/1.5 "DejaVu Sans", Arial, sans-serif; }
         .topline { height: 3px; background: #8f2430; margin-bottom: 20px; }
         .head { width: 100%; margin-bottom: 22px; }
         .head td { vertical-align: top; }
@@ -168,9 +168,9 @@ if (is_file($logoPath ?? '')) {
 
 <table class="totals">
     <tr><td><?= $isEnglish ? 'Product subtotal' : 'Subtotal harga produk'; ?></td><td><?= esc($rupiah($productSubtotal)) ?></td></tr>
-    <?php if ($productDiscount > 0): ?><tr><td><?= $isEnglish ? 'Product discount' : 'Diskon produk'; ?></td><td>− <?= esc($rupiah($productDiscount)) ?></td></tr><?php endif; ?>
-    <?php if ($voucherDiscount > 0): ?><tr><td><?= $isEnglish ? 'Voucher discount' : 'Diskon voucher'; ?><?= $voucherCodes ? ' (' . esc(implode(', ', array_unique($voucherCodes))) . ')' : '' ?></td><td>− <?= esc($rupiah($voucherDiscount)) ?></td></tr><?php endif; ?>
-    <?php if ($flashDiscount > 0): ?><tr><td><?= $isEnglish ? 'Flash Sale discount' : 'Diskon Flash Sale'; ?></td><td>− <?= esc($rupiah($flashDiscount)) ?></td></tr><?php endif; ?>
+    <?php if ($productDiscount > 0): ?><tr><td><?= $isEnglish ? 'Product discount' : 'Diskon produk'; ?></td><td>- <?= esc($rupiah($productDiscount)) ?></td></tr><?php endif; ?>
+    <?php if ($voucherDiscount > 0): ?><tr><td><?= $isEnglish ? 'Voucher discount' : 'Diskon voucher'; ?><?= $voucherCodes ? ' (' . esc(implode(', ', array_unique($voucherCodes))) . ')' : '' ?></td><td>- <?= esc($rupiah($voucherDiscount)) ?></td></tr><?php endif; ?>
+    <?php if ($flashDiscount > 0): ?><tr><td><?= $isEnglish ? 'Flash Sale discount' : 'Diskon Flash Sale'; ?></td><td>- <?= esc($rupiah($flashDiscount)) ?></td></tr><?php endif; ?>
     <?php if ($hasShipping): ?><tr><td><?= $isEnglish ? 'Shipping' : 'Ongkos kirim'; ?></td><td><?= $shipping > 0 ? esc($rupiah($shipping)) : ($isEnglish ? 'Free' : 'Gratis') ?></td></tr><?php endif; ?>
     <?php if ($adminFee > 0): ?><tr><td><?= $isEnglish ? 'Payment administration fee' : 'Biaya admin pembayaran'; ?></td><td><?= esc($rupiah($adminFee)) ?></td></tr><?php endif; ?>
     <tr class="grand"><td><?= $isEnglish ? 'Total due' : 'Total tagihan'; ?></td><td><?= esc($rupiah($gross)) ?></td></tr>
