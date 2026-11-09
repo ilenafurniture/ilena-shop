@@ -40,6 +40,42 @@ $routes->get('/shipping/estimate', 'Pages::shippingEstimate', ['filter' => 'cust
 $routes->get('/find', 'Pages::findSmart', ['filter' => 'customerFilter']);
 $routes->get('/find/(:any)', 'Pages::find/$1', ['filter' => 'customerFilter']);
 
+// Public, customer-facing mobile API. Keep administration exclusively in the website routes below.
+$routes->group('api/v1', static function ($routes) {
+    $routes->get('products', 'Api\\V1\\CatalogController::index');
+    $routes->get('products/(:segment)', 'Api\\V1\\CatalogController::show/$1');
+    $routes->get('categories', 'Api\\V1\\CatalogController::categories');
+    $routes->get('regions/provinces', 'Api\\V1\\RegionsController::provinces');
+    $routes->get('regions/cities', 'Api\\V1\\RegionsController::cities');
+    $routes->get('regions/districts', 'Api\\V1\\RegionsController::districts');
+    $routes->get('regions/villages', 'Api\\V1\\RegionsController::villages');
+    $routes->post('auth/login', 'Api\\V1\\AuthController::login');
+    $routes->post('auth/register', 'Api\\V1\\AuthController::register');
+    $routes->post('auth/verify-email', 'Api\\V1\\AuthController::verifyEmail');
+    $routes->post('auth/resend-verification', 'Api\\V1\\AuthController::resendVerification');
+    $routes->post('auth/password-reset', 'Api\\V1\\AuthController::requestPasswordReset');
+    $routes->post('auth/password-reset/complete', 'Api\\V1\\AuthController::completePasswordReset');
+    $routes->get('auth/google/nonce', 'Api\\V1\\AuthController::googleNonce');
+    $routes->post('auth/google', 'Api\\V1\\AuthController::googleLogin');
+    $routes->get('account/me', 'Api\\V1\\AuthController::me');
+    $routes->put('account/me', 'Api\\V1\\AuthController::updateMe');
+    $routes->post('auth/logout', 'Api\\V1\\AuthController::logout');
+    $routes->get('account/addresses', 'Api\\V1\\AccountController::addresses');
+    $routes->post('account/addresses', 'Api\\V1\\AccountController::createAddress');
+    $routes->put('account/addresses/(:num)', 'Api\\V1\\AccountController::updateAddress/$1');
+    $routes->delete('account/addresses/(:num)', 'Api\\V1\\AccountController::deleteAddress/$1');
+    $routes->post('account/addresses/(:num)/default', 'Api\\V1\\AccountController::setDefaultAddress/$1');
+    $routes->get('account/cart', 'Api\\V1\\CartController::show');
+    $routes->put('account/cart', 'Api\\V1\\CartController::replace');
+    $routes->get('account/wishlist', 'Api\\V1\\WishlistController::show');
+    $routes->put('account/wishlist', 'Api\\V1\\WishlistController::replace');
+    $routes->get('account/orders', 'Api\\V1\\OrdersController::index');
+    $routes->get('account/orders/(:segment)', 'Api\\V1\\OrdersController::show/$1');
+    $routes->post('account/shipping/estimate', 'Api\\V1\\ShippingController::estimate');
+    $routes->post('account/checkout/quote', 'Api\\V1\\CheckoutController::quote');
+    $routes->post('account/checkout/orders', 'Api\\V1\\CheckoutController::create');
+});
+
 $routes->get('/cart', 'Pages::cart', ['filter' => 'customerFilter']);
 $routes->get('/cart/summary', 'Pages::cartSummary', ['filter' => 'customerFilter']);
 $routes->post('/addcart/(:any)/(:any)/(:any)', 'Pages::addCart/$1/$2/$3', ['filter' => ['customerFilter', 'csrf']]);

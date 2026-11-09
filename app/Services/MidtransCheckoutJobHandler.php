@@ -61,6 +61,16 @@ final class MidtransCheckoutJobHandler
         }
 
         $charge = $payload['charge'];
+        if (!empty($charge['_encrypted_card_token'])) {
+            try {
+                $encrypted = base64_decode((string) ($charge['credit_card']['token_id'] ?? ''), true);
+                if ($encrypted === false || $encrypted === '') throw new RuntimeException('Encrypted card token is malformed.');
+                $charge['credit_card']['token_id'] = service('encrypter')->decrypt($encrypted);
+                unset($charge['_encrypted_card_token']);
+            } catch (\Throwable $e) {
+                return ['done' => false, 'retrySafe' => false, 'message' => 'Card token could not be decrypted for processing.'];
+            }
+        }
         $headers = ['Accept: application/json', 'Content-Type: application/json', 'Authorization: Basic ' . base64_encode($key . ':')];
         $supportsIdempotency = !empty($payload['idempotency_key']);
         if ($supportsIdempotency) $headers[] = 'Idempotency-Key: ' . (string) $payload['idempotency_key'];

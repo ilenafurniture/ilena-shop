@@ -1,0 +1,758 @@
+openapi: 3.1.0
+info:
+  title: ILENA Customer API
+  version: 1.0.0
+  description: Customer API for native ILENA Android/iOS clients. Admin and staff operations remain website-only.
+servers:
+  - url: https://ilenafurniture.com/api/v1
+paths:
+  /regions/provinces:
+    get:
+      summary: List Indonesian provinces
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/PerPage' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { description: Paginated province list }
+        '400': { $ref: '#/components/responses/BadRequest' }
+  /regions/cities:
+    get:
+      summary: List cities under a province
+      parameters:
+        - name: province_id
+          in: query
+          required: true
+          schema: { type: integer, minimum: 1 }
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/PerPage' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { description: Paginated city list }
+        '400': { $ref: '#/components/responses/BadRequest' }
+  /regions/districts:
+    get:
+      summary: List districts under a city
+      parameters:
+        - name: province_id
+          in: query
+          required: true
+          schema: { type: integer, minimum: 1 }
+        - name: city_id
+          in: query
+          required: true
+          schema: { type: integer, minimum: 1 }
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/PerPage' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { description: Paginated district list }
+        '400': { $ref: '#/components/responses/BadRequest' }
+  /regions/villages:
+    get:
+      summary: List villages under a district
+      parameters:
+        - name: province_id
+          in: query
+          required: true
+          schema: { type: integer, minimum: 1 }
+        - name: city_id
+          in: query
+          required: true
+          schema: { type: integer, minimum: 1 }
+        - name: district_id
+          in: query
+          required: true
+          schema: { type: integer, minimum: 1 }
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/PerPage' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { description: Paginated village list including postal codes }
+        '400': { $ref: '#/components/responses/BadRequest' }
+  /products:
+    get:
+      summary: List active products
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 10000, default: 1 }
+        - name: per_page
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 50, default: 20 }
+        - name: q
+          in: query
+          schema: { type: string, maxLength: 100 }
+        - name: category
+          in: query
+          schema: { type: string, maxLength: 100 }
+        - name: locale
+          in: query
+          schema: { type: string, enum: [id, en], default: id }
+      responses:
+        '200':
+          description: Paginated product list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Product' }
+                  meta: { $ref: '#/components/schemas/Pagination' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+  /products/{id}:
+    get:
+      summary: Get one active product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, maxLength: 64, pattern: '^[A-Za-z0-9_-]+$' }
+        - name: locale
+          in: query
+          schema: { type: string, enum: [id, en], default: id }
+      responses:
+        '200':
+          description: Product details
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data: { $ref: '#/components/schemas/Product' }
+                  meta: { $ref: '#/components/schemas/Meta' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /categories:
+    get:
+      summary: List categories that have active products
+      parameters:
+        - name: locale
+          in: query
+          schema: { type: string, enum: [id, en], default: id }
+      responses:
+        '200':
+          description: Product categories
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data: { type: array, items: { type: string } }
+                  meta: { $ref: '#/components/schemas/Meta' }
+  /auth/login:
+    post:
+      summary: Sign in a verified customer account
+      description: Admin, staff, warehouse, and suspended accounts are not accepted by the customer API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email, maxLength: 191 }
+                password: { type: string, format: password, maxLength: 4096 }
+      responses:
+        '200':
+          description: Opaque bearer token; store it in native secure storage and send it only over HTTPS.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      access_token: { type: string }
+                      token_type: { type: string, const: Bearer }
+                      expires_at: { type: string, format: date-time }
+                      expires_in: { type: integer }
+                  meta: { $ref: '#/components/schemas/Meta' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /auth/register:
+    post:
+      summary: Register a customer account and send an email verification code
+      description: Requires accept_terms=true. If server-side CAPTCHA is enabled, captcha_token must contain a valid provider token. Email responses avoid confirming whether an account already exists.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, accept_terms]
+              properties:
+                name: { type: string, minLength: 1, maxLength: 100 }
+                email: { type: string, format: email, maxLength: 191 }
+                phone: { type: string, maxLength: 20 }
+                password: { type: string, minLength: 12, maxLength: 72 }
+                accept_terms: { type: boolean, const: true }
+                captcha_token: { type: string, maxLength: 8192 }
+                locale: { type: string, enum: [id, en], default: id }
+      responses:
+        '202': { description: Verification is required or the address already belongs to an account; response does not enumerate account state }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '422': { $ref: '#/components/responses/BadRequest' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '503': { description: Verification email or account service is temporarily unavailable }
+  /auth/verify-email:
+    post:
+      summary: Verify a customer's email with the six-digit code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, code]
+              properties:
+                email: { type: string, format: email, maxLength: 191 }
+                code: { type: string, pattern: '^[0-9]{6}$' }
+      responses:
+        '200': { description: Email verified; issues an opaque customer bearer token }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '422': { description: Code is invalid, expired, or already used }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '503': { description: Verification service is temporarily unavailable }
+  /auth/resend-verification:
+    post:
+      summary: Resend a customer email verification code
+      description: Returns a generic response to avoid account enumeration. A code is sent only for a pending customer account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email, maxLength: 191 }
+                locale: { type: string, enum: [id, en], default: id }
+      responses:
+        '202': { description: Generic verification-resend response }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '503': { description: Verification service is temporarily unavailable }
+  /auth/password-reset:
+    post:
+      summary: Request customer password reset instructions
+      description: Response is generic and does not reveal whether an account exists. Eligible customers receive the existing secure ILENA reset link by email.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email, maxLength: 191 }
+                locale: { type: string, enum: [id, en], default: id }
+      responses:
+        '202': { description: Generic reset request response }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '503': { description: Reset service is temporarily unavailable }
+  /auth/password-reset/complete:
+    post:
+      summary: Complete a customer password reset
+      description: Consumes a one-time 30-minute reset token and increments auth_version, invalidating existing mobile bearer tokens.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, password]
+              properties:
+                token: { type: string, pattern: '^[a-f0-9]{64}$' }
+                password: { type: string, minLength: 12, maxLength: 72 }
+      responses:
+        '200': { description: Password updated; sign-in is required again }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '422': { description: Reset token is invalid, expired, or already used }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '503': { description: Reset service is temporarily unavailable }
+  /auth/google/nonce:
+    get:
+      summary: Issue a short-lived, single-use nonce for Google customer sign-in
+      description: Send the returned nonce in the native Google Sign-In request so it is included in the signed ID token. Challenges expire after five minutes and are consumed once.
+      responses:
+        '200':
+          description: One-time challenge
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      nonce: { type: string, pattern: '^[a-f0-9]{64}$' }
+                      expires_in: { type: integer, const: 300 }
+                  meta: { $ref: '#/components/schemas/Meta' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '503': { description: Google sign-in is temporarily unavailable }
+  /auth/google:
+    post:
+      summary: Sign in or create a customer account with a verified Google ID token
+      description: Requires a server-issued, unused nonce. Auto-linking is limited to an exact primary email; alias-only matches are not linked. Admin and staff accounts are rejected.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id_token, nonce]
+              properties:
+                id_token: { type: string, maxLength: 12000 }
+                nonce: { type: string, pattern: '^[a-f0-9]{64}$' }
+      responses:
+        '200': { description: Verified customer bearer token }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { description: Existing identity must sign in and link Google from account settings }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '503': { description: Google verification or customer session service is temporarily unavailable }
+  /account/me:
+    get:
+      summary: Read the signed-in customer's basic profile
+      security: [{ customerBearer: [] }]
+      responses:
+        '200':
+          description: Customer-owned profile fields only
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      email: { type: string, format: email }
+                      name: { type: string }
+                      phone: { type: string }
+                  meta: { $ref: '#/components/schemas/Meta' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    put:
+      summary: Update the signed-in customer's name and phone
+      security: [{ customerBearer: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, phone]
+              properties:
+                name: { type: string, minLength: 1, maxLength: 100 }
+                phone: { type: string, maxLength: 20 }
+      responses:
+        '200': { description: Updated customer profile }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/BadRequest' }
+  /auth/logout:
+    post:
+      summary: Revoke the current device token
+      security: [{ customerBearer: [] }]
+      responses:
+        '200': { description: Current token revoked }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /account/addresses:
+    get:
+      summary: List addresses owned by the signed-in customer
+      security: [{ customerBearer: [] }]
+      responses:
+        '200':
+          description: Customer's saved delivery addresses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: array, items: { $ref: '#/components/schemas/Address' } }
+                  meta: { $ref: '#/components/schemas/Meta' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      summary: Add a delivery address to the signed-in customer's profile
+      security: [{ customerBearer: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AddressInput' }
+      responses:
+        '200': { description: Updated address collection and address index }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/BadRequest' }
+  /account/addresses/{address_id}:
+    parameters:
+      - name: address_id
+        in: path
+        required: true
+        description: Current zero-based index within this customer's address list; refetch after deletion.
+        schema: { type: integer, minimum: 0, maximum: 49 }
+    put:
+      summary: Replace one of the signed-in customer's addresses
+      security: [{ customerBearer: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AddressInput' }
+      responses:
+        '200': { description: Updated address collection }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/BadRequest' }
+    delete:
+      summary: Delete one of the signed-in customer's addresses
+      security: [{ customerBearer: [] }]
+      responses:
+        '200': { description: Updated address collection }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /account/addresses/{address_id}/default:
+    post:
+      summary: Set one of the signed-in customer's addresses as default
+      parameters:
+        - name: address_id
+          in: path
+          required: true
+          schema: { type: integer, minimum: 0, maximum: 49 }
+      security: [{ customerBearer: [] }]
+      responses:
+        '200': { description: Updated address collection }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /account/cart:
+    get:
+      summary: Read the signed-in customer's persistent cart
+      security: [{ customerBearer: [] }]
+      responses:
+        '200':
+          description: Cart with server-calculated current prices
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/Cart' }
+                  meta: { $ref: '#/components/schemas/Meta' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    put:
+      summary: Replace the signed-in customer's cart
+      description: Replacement is idempotent for safe client retries. Client-supplied prices are ignored; stock and prices are revalidated server-side.
+      security: [{ customerBearer: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [items]
+              properties:
+                items: { type: array, maxItems: 100, items: { $ref: '#/components/schemas/CartItemInput' } }
+      responses:
+        '200': { description: Saved cart and server-calculated totals }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/BadRequest' }
+  /account/wishlist:
+    get:
+      summary: Read the signed-in customer's saved products
+      security: [{ customerBearer: [] }]
+      responses:
+        '200': { description: Saved active product cards }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    put:
+      summary: Replace the signed-in customer's saved product list
+      security: [{ customerBearer: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [product_ids]
+              properties:
+                product_ids: { type: array, maxItems: 500, uniqueItems: true, items: { type: string, maxLength: 64 } }
+      responses:
+        '200': { description: Saved active product cards }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/BadRequest' }
+  /account/orders:
+    get:
+      summary: List orders belonging to the signed-in customer
+      security: [{ customerBearer: [] }]
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 10000, default: 1 }
+        - name: per_page
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 50, default: 20 }
+      responses:
+        '200': { description: Paginated order history, filtered by canonical account and email aliases }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /account/orders/{order_id}:
+    get:
+      summary: Read one order belonging to the signed-in customer
+      security: [{ customerBearer: [] }]
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema: { type: string, maxLength: 64, pattern: '^[A-Za-z0-9_-]+$' }
+      responses:
+        '200': { description: Order status, items, shipping and payment summary }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /account/shipping/estimate:
+    post:
+      summary: Estimate delivery options for the signed-in customer's saved cart and address
+      description: This is a non-binding estimate. The server loads cart, product prices, stock reservations, shipping tariff configuration, and free-shipping eligibility. Checkout must recalculate the quote.
+      security: [{ customerBearer: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [address_id]
+              properties:
+                address_id: { type: integer, minimum: 0, maximum: 49 }
+      responses:
+        '200':
+          description: Current non-binding delivery estimate
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      is_estimate: { type: boolean, const: true }
+                      rates:
+                        type: array
+                        items:
+                          type: object
+                          required: [service, price, currency, delivery_days, free_shipping]
+                          properties:
+                            service: { type: string }
+                            price: { type: integer, minimum: 0 }
+                            currency: { type: string, const: IDR }
+                            delivery_days: { type: string }
+                            free_shipping: { type: boolean }
+                            free_shipping_label: { type: [string, 'null'] }
+                  meta: { $ref: '#/components/schemas/Meta' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/BadRequest' }
+        '503': { description: Shipping providers are temporarily unavailable }
+  /account/checkout/quote:
+    post:
+      summary: Recalculate a native checkout quote
+      description: All prices, active variants, stock reservations, automatic promotions, shipping and payment fees are recomputed from server data. Quote expires quickly and is not a stock reservation.
+      security: [{ customerBearer: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [address_id, shipping_option_id]
+              properties:
+                address_id: { type: integer, minimum: 0, maximum: 49 }
+                shipping_option_id: { type: string, pattern: '^[a-f0-9]{64}$' }
+      responses:
+        '200': { description: Current cart summary, selected shipping, server-applied automatic voucher discount and available payment-method totals }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/BadRequest' }
+        '503': { description: Quote dependencies are temporarily unavailable }
+  /account/checkout/orders:
+    post:
+      summary: Create one native checkout and queue the payment request
+      description: Requires a unique Idempotency-Key UUID per checkout attempt; reuse the same key and identical body when retrying a timed-out request. Returns 202 while the durable worker creates the payment instruction. Poll GET /account/orders/{order_id}; never treat a client-provided amount, voucher discount, stock count or shipping price as authoritative.
+      security: [{ customerBearer: [] }]
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema: { type: string, minLength: 16, maxLength: 128, pattern: '^[A-Za-z0-9._:-]+$' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [address_id, shipping_option_id, payment_method]
+              properties:
+                address_id: { type: integer, minimum: 0, maximum: 49 }
+                shipping_option_id: { type: string, pattern: '^[a-f0-9]{64}$' }
+                payment_method: { type: string, enum: [bca, bri, bni, mandiri, permata, cimb, qris, gopay, shopeepay, card] }
+                card_token: { type: string, maxLength: 4096, description: Required only for card payments; send only a provider-generated token, never PAN/CVV. }
+      responses:
+        '202': { description: Order persisted and payment creation queued; response includes order_id, payment_state and polling interval }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/BadRequest' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '503': { description: Checkout could not be safely persisted; check order history before retrying with a new key }
+components:
+  parameters:
+    Page:
+      name: page
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 10000, default: 1 }
+    PerPage:
+      name: per_page
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 100 }
+    Search:
+      name: q
+      in: query
+      schema: { type: string, maxLength: 80 }
+  securitySchemes:
+    customerBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: Opaque token
+  schemas:
+    Meta:
+      type: object
+      properties:
+        api_version: { type: string, const: v1 }
+        locale: { type: string, enum: [id, en] }
+    Pagination:
+      allOf:
+        - $ref: '#/components/schemas/Meta'
+        - type: object
+          properties:
+            page: { type: integer }
+            per_page: { type: integer, maximum: 50 }
+            total: { type: integer }
+            total_pages: { type: integer }
+    Product:
+      type: object
+      required: [id, name, slug, description, category, collection, price, url, image_url]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        slug: { type: string }
+        description: { type: string }
+        category: { type: string }
+        collection: { type: string }
+        price:
+          type: object
+          required: [currency, original, current, discount_percent]
+          properties:
+            currency: { type: string, const: IDR }
+            original: { type: integer, minimum: 0 }
+            current: { type: integer, minimum: 0 }
+            discount_percent: { type: number, minimum: 0, maximum: 100 }
+        url: { type: string, format: uri }
+        image_url: { type: string, format: uri }
+        variants:
+          type: array
+          items:
+            type: object
+            required: [name]
+            properties:
+              name: { type: string }
+              available_quantity: { type: integer, minimum: 0 }
+              in_stock: { type: boolean }
+    AddressInput:
+      type: object
+      required: [recipient_name, phone, province_id, city_id, district_id, village_id, address_line]
+      properties:
+        recipient_name: { type: string, minLength: 1, maxLength: 100 }
+        phone: { type: string, minLength: 10, maxLength: 20 }
+        province_id: { type: integer, minimum: 1 }
+        city_id: { type: integer, minimum: 1 }
+        district_id: { type: integer, minimum: 1 }
+        village_id: { type: integer, minimum: 1 }
+        address_line: { type: string, minLength: 1, maxLength: 250 }
+        is_default: { type: boolean }
+    Address:
+      allOf:
+        - $ref: '#/components/schemas/AddressInput'
+        - type: object
+          required: [address_id, province, city, district, village, postal_code, full_address]
+          properties:
+            address_id: { type: integer, minimum: 0 }
+            province: { type: string }
+            city: { type: string }
+            district: { type: string }
+            village: { type: string }
+            postal_code: { type: string }
+            full_address: { type: string }
+    CartItemInput:
+      type: object
+      required: [product_id, variant, quantity]
+      properties:
+        product_id: { type: string, maxLength: 64 }
+        variant: { type: string, minLength: 1, maxLength: 100 }
+        quantity: { type: integer, minimum: 1, maximum: 100 }
+    Cart:
+      type: object
+      properties:
+        items: { type: array, items: { type: object } }
+        item_count: { type: integer }
+        quantity: { type: integer }
+        subtotal: { type: integer }
+        currency: { type: string, const: IDR }
+    Error:
+      type: object
+      required: [error, meta]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: { type: string }
+            message: { type: string }
+        meta: { $ref: '#/components/schemas/Meta' }
+  responses:
+    BadRequest:
+      description: Invalid query
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: Product does not exist or is inactive
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: Missing, invalid, expired, revoked, or outdated customer token
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: Customer verification or customer-account eligibility is required
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    RateLimited:
+      description: Login attempts exceeded the configured limit
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Conflict:
+      description: Product, variant, or available stock changed
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
