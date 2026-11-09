@@ -84,16 +84,16 @@ class Pages extends BaseController
         $this->kecamatanModel = new KecamatanModel();
         $this->kelurahanModel = new KelurahanModel();
     }
-    public function getNavbarData()
+    public function getNavbarData(bool $forceRefresh = false): array
     {
-        // This data is shared by public pages and only changes when catalog
-        // metadata changes. Cache it briefly to avoid repeating a full
-        // representative-product aggregation on every PHP request.
-        $navbarCacheKey = 'ilena_public_navbar_data_v4';
-        $cachedNavbar = cache()->get($navbarCacheKey);
-        if (is_array($cachedNavbar)) {
-            return $cachedNavbar;
-        }
+        return (new \App\Services\CoordinatedPublicCache())->remember(
+            'ilena_public_navbar_data_v4', 'navbar', 60, 900,
+            fn (): array => $this->buildNavbarData(), $forceRefresh
+        );
+    }
+
+    private function buildNavbarData(): array
+    {
 
         // Ambil satu produk representatif per pasangan subkategori/kategori
         // dalam satu query, bukan query tambahan untuk setiap pasangan menu.
@@ -218,7 +218,6 @@ class Pages extends BaseController
                 $hasil[$jenis][] = $itemKoleksi;
             }
         }
-        cache()->save($navbarCacheKey, $hasil, 60);
         return $hasil;
     }
 
@@ -281,11 +280,31 @@ class Pages extends BaseController
     }
 
     /** Serve a fresh sitemap containing only public canonical content URLs. */
-    public function sitemap()
+    public function sitemap(bool $forceRefresh = false)
     {
         $cacheKey = 'ilena_public_sitemap_v3';
-        $xml = cache()->get($cacheKey);
-        if (!is_string($xml) || $xml === '') {
+        $xml = (new \App\Services\CoordinatedPublicCache())->remember(
+            $cacheKey, 'sitemap', 3600, 3600,
+            fn (): string => $this->buildPublicSitemapXml(), $forceRefresh
+        );
+
+        return $this->response
+            ->setContentType('application/xml', 'UTF-8')
+            ->setHeader('Cache-Control', 'public, max-age=3600')
+            ->setBody($xml);
+    }
+
+    /** Internal worker/warmer entry point that does not require an HTTP response. */
+    public function refreshPublicSitemapCache(): void
+    {
+        (new \App\Services\CoordinatedPublicCache())->remember(
+            'ilena_public_sitemap_v3', 'sitemap', 3600, 3600,
+            fn (): string => $this->buildPublicSitemapXml(), true
+        );
+    }
+
+    private function buildPublicSitemapXml(): string
+    {
             $base = rtrim(base_url(), '/') . '/';
             $entries = [];
             $addEntry = static function (string $path, ?string $lastmod = null, bool $hasEnglish = true) use (&$entries, $base): void {
@@ -370,13 +389,7 @@ class Pages extends BaseController
                 }
             }
             $xml .= "</urlset>\n";
-            cache()->save($cacheKey, $xml, 3600);
-        }
-
-        return $this->response
-            ->setContentType('application/xml', 'UTF-8')
-            ->setHeader('Cache-Control', 'public, max-age=3600')
-            ->setBody($xml);
+            return $xml;
     }
     public function indexGalih()
     {
@@ -502,11 +515,23 @@ class Pages extends BaseController
      */
     private function getSmartCatalogSearchIndex(): array
     {
-        $cache = cache();
-        $cacheKey = 'ilena_smart_catalog_search_index_v1';
-        $cached = $cache->get($cacheKey);
-        if (is_array($cached)) return $cached;
+        return (new \App\Services\CoordinatedPublicCache())->remember(
+            'ilena_smart_catalog_search_index_v2', 'catalog_search', 30, 300,
+            fn (): array => $this->buildSmartCatalogSearchIndex()
+        );
+    }
 
+    /** Internal worker/warmer entry point for the public product search index. */
+    public function refreshSmartCatalogSearchCache(): void
+    {
+        (new \App\Services\CoordinatedPublicCache())->remember(
+            'ilena_smart_catalog_search_index_v2', 'catalog_search', 30, 300,
+            fn (): array => $this->buildSmartCatalogSearchIndex(), true
+        );
+    }
+
+    private function buildSmartCatalogSearchIndex(): array
+    {
         $rows = $this->barangModel
             ->select('id,nama,pencarian,kategori,subkategori,varian,deskripsi,pengunjung')
             ->where('active', '1')
@@ -516,7 +541,6 @@ class Pages extends BaseController
             return $product;
         }, $rows);
 
-        $cache->save($cacheKey, $index, 30);
         return $index;
     }
 
@@ -1040,7 +1064,7 @@ class Pages extends BaseController
                 }
                 $geography = ['cities' => $cities, 'provinces' => $provinces];
                 if ($cities !== []) {
-                    cache()->save($cacheKey, $geography, 3600);
+                    cache()->save($cacheKey, $geography, \App\Services\CacheTtl::jitter(3600));
                 }
             } catch (\Throwable $th) {
                 log_message('debug', 'Shipping promo location lookup skipped: {error}', ['error' => $th->getMessage()]);
@@ -1361,8 +1385,12 @@ class Pages extends BaseController
         // Validasi dan sinkronisasi stok
         $invalidIndex = [];
         $insufficientIndex = [];
+        $productsById = $this->barangModel->getActiveProductsByIds(array_map(
+            static fn ($item): mixed => is_array($item) ? ($item['id_barang'] ?? null) : null,
+            is_array($keranjang) ? $keranjang : []
+        ));
         foreach ($keranjang as $i => $item) {
-            $produk = $this->barangModel->getBarang($item['id_barang']);
+            $produk = $productsById[(string) ($item['id_barang'] ?? '')] ?? null;
             if (! $produk) {
                 $invalidIndex[] = $i;
                 continue;
@@ -1413,7 +1441,10 @@ class Pages extends BaseController
         // Hitung total harga dan pasang detail gambar
         $hargaTotal = 0;
         foreach ($keranjang as $i => $item) {
-            $produk = $this->barangModel->getBarang($item['id_barang']);
+            $produk = $productsById[(string) ($item['id_barang'] ?? '')] ?? null;
+            if (! $produk) {
+                continue;
+            }
             $varians = json_decode($produk['varian'], true);
             foreach ($varians as $v) {
                 if (strcasecmp((string)$v['nama'], (string)$item['varian']) === 0) {
@@ -1444,12 +1475,16 @@ class Pages extends BaseController
         $cart = is_array($cart) ? $cart : [];
         $items = [];
         $subtotal = 0;
+        $productsById = $this->barangModel->getActiveProductsByIds(array_map(
+            static fn ($item): mixed => is_array($item) ? ($item['id_barang'] ?? null) : null,
+            $cart
+        ));
 
         foreach ($cart as $item) {
             if (! is_array($item) || empty($item['id_barang'])) {
                 continue;
             }
-            $product = $this->barangModel->getBarang($item['id_barang']);
+            $product = $productsById[(string) $item['id_barang']] ?? null;
             if (! $product) {
                 continue;
             }
@@ -5015,31 +5050,46 @@ class Pages extends BaseController
         $statusSelain = array_filter($statusAll, function ($s) use ($status) {
             return strtolower($s) != strtolower($status);
         });
+        $orderProductIds = [];
+        foreach ([$pemesanan, $pemesananAll] as $orderGroup) {
+            foreach ($orderGroup as $orderRow) {
+                $orderItems = json_decode((string) ($orderRow['items'] ?? '[]'), true);
+                foreach (is_array($orderItems) ? $orderItems : [] as $orderItem) {
+                    if (is_array($orderItem) && isset($orderItem['id'])) {
+                        $orderProductIds[] = $orderItem['id'];
+                    }
+                }
+            }
+        }
+        $productsById = $this->barangModel->getActiveProductsByIds($orderProductIds);
+
         foreach ($pemesanan as $ind_p => $p) {
             $pemesanan[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
             unset($pemesanan[$ind_p]['data_mid']['_app_order_access_token']);
             $pemesanan[$ind_p]['kurir'] = json_decode($p['kurir'], true);
-            $pemesanan[$ind_p]['items'] = json_decode($p['items'], true);
-            $items = $pemesanan[$ind_p]['items'];
+            $items = json_decode((string) ($p['items'] ?? '[]'), true);
+            $items = is_array($items) ? $items : [];
             foreach ($items as $ind_i => $i) {
-                $produknya = $this->barangModel->getBarang($i['id']);
+                $produknya = is_array($i) ? ($productsById[(string) ($i['id'] ?? '')] ?? null) : null;
                 if ($produknya) {
                     $items[$ind_i]['name'] = $produknya['nama'];
                 }
             }
+            $pemesanan[$ind_p]['items'] = $items;
         }
         foreach ($pemesananAll as $ind_p => $p) {
             $pemesananAll[$ind_p]['data_mid'] = json_decode($p['data_mid'], true);
             unset($pemesananAll[$ind_p]['data_mid']['_app_order_access_token']);
             $pemesananAll[$ind_p]['kurir'] = json_decode($p['kurir'], true);
-            $pemesananAll[$ind_p]['items'] = json_decode($p['items'], true);
-            $items = $pemesananAll[$ind_p]['items'];
+            $items = json_decode((string) ($p['items'] ?? '[]'), true);
+            $items = is_array($items) ? $items : [];
             foreach ($items as $ind_i => $i) {
-                $produknya = $this->barangModel->getBarang($i['id']);
+                $produknya = is_array($i) ? ($productsById[(string) ($i['id'] ?? '')] ?? null) : null;
                 if ($produknya) {
                     $items[$ind_i]['name'] = $produknya['nama'];
                 }
             }
+            $pemesananAll[$ind_p]['items'] = $items;
         }
         $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
         $data = [
@@ -5199,10 +5249,12 @@ class Pages extends BaseController
             $wishlist = [];
         }
 
+        $productsById = $this->barangModel->getActiveProductsByIds($wishlist);
+
         // Bersihkan ID wishlist yg tidak ditemukan
         $ketemuProdukNull = [];
         foreach ($wishlist as $index => $w) {
-            $produkCek = $this->barangModel->getBarang($w);
+            $produkCek = $productsById[(string) $w] ?? null;
             if (!$produkCek) {
                 $ketemuProdukNull[] = $index;
             }
@@ -5227,7 +5279,7 @@ class Pages extends BaseController
         }
 
         foreach ($wishlist as $w) {
-            $barang = $this->barangModel->getBarang($w);
+            $barang = $productsById[(string) $w] ?? null;
             if ($barang) {
                 $produk[] = $barang;
             }

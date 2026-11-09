@@ -47,6 +47,33 @@ class BarangModel extends Model
         return $row ? \App\Services\CatalogPricing::forSale($row) : null;
     }
 
+    /** Fetch active catalog products in one query and index them by product ID. */
+    public function getActiveProductsByIds(array $ids): array
+    {
+        $ids = array_values(array_unique(array_filter(array_map(
+            static fn ($id): string => is_scalar($id) ? trim((string) $id) : '',
+            $ids
+        ), static fn (string $id): bool => $id !== '')));
+
+        if ($ids === []) {
+            return [];
+        }
+
+        $products = [];
+        foreach (array_chunk($ids, 500) as $idBatch) {
+            $rows = $this->whereIn('id', $idBatch)
+                ->where('active', '1')
+                ->findAll();
+
+            foreach ($rows as $row) {
+                $product = \App\Services\CatalogPricing::forSale($row);
+                $products[(string) $product['id']] = $product;
+            }
+        }
+
+        return $products;
+    }
+
     public function getBarangNama($nama = false)
     {
         if ($nama == false) {

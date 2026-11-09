@@ -52,6 +52,18 @@ use App\Controllers\Admin\Traits\ProjectInteriorTrait;
 
 class AdminController extends BaseController
 {
+    private function invalidatePublicCatalogCaches(): void
+    {
+        (new \App\Services\CoordinatedPublicCache())->invalidate('ilena_public_navbar_data_v4', 'navbar');
+        (new \App\Services\CoordinatedPublicCache())->invalidate('ilena_smart_catalog_search_index_v2', 'catalog_search');
+        $this->invalidatePublicSitemapCache();
+    }
+
+    private function invalidatePublicSitemapCache(): void
+    {
+        (new \App\Services\CoordinatedPublicCache())->invalidate('ilena_public_sitemap_v3', 'sitemap');
+    }
+
     private const PRODUCT_IMAGE_MAX_BYTES = 4 * 1024 * 1024;
     private const PRODUCT_IMAGE_MAX_MB = 4;
     private const PRODUCT_IMAGE_MAX_FILES = 25;
@@ -550,7 +562,7 @@ class AdminController extends BaseController
             return redirect()->back()->with('error', 'Perubahan preview menu gagal disimpan.');
         }
 
-        cache()->delete('ilena_public_navbar_data_v2');
+        (new \App\Services\CoordinatedPublicCache())->invalidate('ilena_public_navbar_data_v4', 'navbar');
         return redirect()->to('/admin/menu-previews')->with('success', 'Preview menu koleksi berhasil diperbarui.');
     }
 
@@ -667,6 +679,7 @@ class AdminController extends BaseController
             return redirect()->to('/admin/product')->with('error', $e->getMessage());
         }
 
+        $this->invalidatePublicCatalogCaches();
         return redirect()->to('/admin/product')->with('success', count($products) . ' produk berhasil diperbarui.');
     }
     public function listProductTable()
@@ -957,6 +970,7 @@ class AdminController extends BaseController
             return $this->response->setStatusCode(500)->setJSON(['pesan' => 'Produk dan saldo awal gagal disimpan; perubahan data dibatalkan.']);
         }
 
+        $this->invalidatePublicCatalogCaches();
         session()->setFlashdata('success', 'Berhasil menambahkan produk ' . $data['nama']);
         return $this->response
             ->setStatusCode(200)
@@ -1641,6 +1655,7 @@ class AdminController extends BaseController
                 if (!empty($backup['r2Backup'])) @unlink($backup['r2Backup']);
             }
 
+            $this->invalidatePublicCatalogCaches();
             session()->setFlashdata('success', 'Produk berhasil diperbarui.');
             return $this->response->setStatusCode(200)->setJSON([
                 'pesan'   => 'Berhasil mengubah produk. Saldo stok mengikuti transaksi terbaru; perubahan stok melalui Mutasi.',
@@ -1967,6 +1982,7 @@ class AdminController extends BaseController
             return $this->response->setStatusCode(500)->setJSON(['pesan' => 'Status produk gagal disimpan.']);
         }
 
+        $this->invalidatePublicCatalogCaches();
         return $this->response->setJSON([
             'pesan' => 'Ok',
             'active' => $newStatus,
@@ -2004,6 +2020,7 @@ class AdminController extends BaseController
         }
         $this->r2ProductImages->deleteProductImagesForSlots((string) $id_product, $imageSlots);
         $this->deleteLocalProductImages((string) $id_product);
+        $this->invalidatePublicCatalogCaches();
         return redirect()->to('/admin/product')->with('success', 'Produk berhasil dihapus.');
     }
     public function order()
@@ -2703,6 +2720,7 @@ class AdminController extends BaseController
                 'suka' => 0, 'bagikan' => 0, 'komen' => json_encode([]),
             ];
             if (!$this->artikelModel->insert($data)) throw new \RuntimeException('Artikel gagal disimpan.');
+            $this->invalidatePublicSitemapCache();
             session()->setFlashdata('msg', 'Artikel berhasil ditambahkan');
         } catch (\Throwable $e) {
             log_message('error', 'Article create rejected: {message}', ['message' => $e->getMessage()]);
@@ -2714,6 +2732,7 @@ class AdminController extends BaseController
     public function deleteArticle($id)
     {
         $this->artikelModel->where(['id' => $id])->delete();
+        $this->invalidatePublicSitemapCache();
         session()->setFlashdata('msg', 'Artikel berhasil dihapus');
         return redirect()->to('/admin/article');
     }
@@ -2737,6 +2756,7 @@ class AdminController extends BaseController
         if (!$this->artikelModel->where('id', $id)->first()) return redirect()->to('/admin/article')->with('msg', 'Artikel tidak ditemukan.');
         try {
             if (!$this->artikelModel->where('id', $id)->set($this->articleInput((string) $id))->update()) throw new \RuntimeException('Update artikel gagal.');
+            $this->invalidatePublicSitemapCache();
             session()->setFlashdata('msg', 'Artikel berhasil diedit');
         } catch (\Throwable $e) {
             log_message('error', 'Article update rejected: {message}', ['message' => $e->getMessage()]);
@@ -2887,7 +2907,7 @@ class AdminController extends BaseController
             }
         }
 
-        cache()->delete('ilena_home_slider_metadata_v1');
+        (new \App\Services\CoordinatedPublicCache())->invalidate('ilena_home_slider_metadata_v1', 'home_slider');
         if ($this->sliderUploadStorageUnavailable) {
             array_unshift($assetMessages, 'Foto slider tidak tersimpan karena folder upload belum dapat ditulis. Foto lama tetap aktif.');
         }

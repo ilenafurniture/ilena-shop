@@ -307,7 +307,7 @@ class GoogleAuthController extends BaseController
                 $jwks = json_decode((string)$response->getBody(), true);
                 if (!is_array($jwks) || !is_array($jwks['keys'] ?? null)) return null;
                 $jwks['_cached_at'] = time();
-                cache()->save('ilena_google_oidc_jwks', $jwks, 3600);
+                cache()->save('ilena_google_oidc_jwks', $jwks, \App\Services\CacheTtl::jitter(3600));
             }
         } catch (\Throwable $error) { return null; }
         $jwk = null;
@@ -318,7 +318,7 @@ class GoogleAuthController extends BaseController
                 $fresh = json_decode((string)$response->getBody(), true);
                 if (is_array($fresh) && is_array($fresh['keys'] ?? null)) {
                     $jwks = $fresh;
-                    cache()->save('ilena_google_oidc_jwks', $jwks + ['_cached_at' => time()], 3600);
+                    cache()->save('ilena_google_oidc_jwks', $jwks + ['_cached_at' => time()], \App\Services\CacheTtl::jitter(3600));
                     foreach ($jwks['keys'] as $key) if (($key['kid'] ?? '') === $header['kid'] && ($key['kty'] ?? '') === 'RSA') { $jwk = $key; break; }
                 }
             } catch (\Throwable $error) { return null; }

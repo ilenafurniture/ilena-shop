@@ -18,12 +18,21 @@ class CommerceWork extends BaseCommand
     {
         $once = in_array('--once', $params, true);
         $queue = new CommerceJobQueue();
+        $nextCachePoll = 0.0;
         do {
             try {
                 $job = $queue->claim();
                 if (!$job) {
                     if ($once) break;
-                    usleep(500000);
+                    $cacheProcessed = false;
+                    $now = microtime(true);
+                    if ($now >= $nextCachePoll) {
+                        $cacheProcessed = (new \App\Services\CacheRefreshWorker())->runOne();
+                        // The commerce queue keeps its existing 500ms responsiveness;
+                        // cache refresh polling adds at most one small DB poll per 5s.
+                        $nextCachePoll = microtime(true) + 5.0;
+                    }
+                    if (!$cacheProcessed) usleep(500000);
                     continue;
                 }
                 if (($job['job_type'] ?? '') === 'order.payment_notification') {

@@ -74,7 +74,7 @@ class R2ProductImageService
 
         $ok = $result['status'] >= 200 && $result['status'] < 300;
         if ($ok) {
-            cache()->save('r2_product_exists_' . md5($key), '1', 3600);
+            cache()->save('r2_product_exists_' . md5($key), '1', CacheTtl::jitter(3600));
         }
         return $ok;
     }
@@ -92,7 +92,7 @@ class R2ProductImageService
 
         $result = $this->request('HEAD', $key);
         $exists = $result['status'] >= 200 && $result['status'] < 300;
-        cache()->save('r2_product_exists_' . md5($key), $exists ? '1' : '0', $exists ? 3600 : 120);
+        cache()->save('r2_product_exists_' . md5($key), $exists ? '1' : '0', CacheTtl::jitter($exists ? 3600 : 120));
         return $exists;
     }
 
@@ -226,7 +226,7 @@ class R2ProductImageService
             return null;
         }
 
-        cache()->save('r2_product_exists_' . md5($key), '1', 3600);
+        cache()->save('r2_product_exists_' . md5($key), '1', CacheTtl::jitter(3600));
         return [
             'body' => (string) $result['body'],
             'contentType' => 'image/webp',

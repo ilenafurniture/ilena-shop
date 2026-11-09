@@ -101,7 +101,7 @@ final class RajaOngkirShippingRateService
                 return [];
             }
             try {
-                cache()->save($cacheKey, $rates, 30);
+                cache()->save($cacheKey, $rates, CacheTtl::jitter(30));
             } catch (\Throwable $error) {
                 // A successful live quote remains usable if cache storage is down.
             }
@@ -179,7 +179,7 @@ final class RajaOngkirShippingRateService
                 return null;
             }
             try {
-                cache()->save($cacheKey, $ids[0], 2_592_000);
+                cache()->save($cacheKey, $ids[0], CacheTtl::jitter(2_592_000));
             } catch (\Throwable $error) {
                 // Live lookup is still usable without cache.
             }
