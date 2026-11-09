@@ -21,8 +21,11 @@ class CacheWarm extends BaseCommand
             CLI::write('Warmed ' . $count . ' shared public caches.');
             return EXIT_SUCCESS;
         } catch (\Throwable $error) {
-            CLI::error('Cache warming failed: ' . get_class($error));
-            log_message('error', 'Cache warming failed: {type}', ['type' => get_class($error)]);
+            CLI::error('Cache warming failed: ' . $error->getMessage());
+            log_message('error', 'Cache warming failed: {type}: {message}', [
+                'type' => get_class($error),
+                'message' => $error->getMessage(),
+            ]);
             return EXIT_ERROR;
         }
     }

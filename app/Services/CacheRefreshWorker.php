@@ -27,7 +27,15 @@ final class CacheRefreshWorker
         $registry = new PublicCacheRefreshRegistry();
         $warmed = 0;
         foreach (PublicCacheRefreshRegistry::NAMES as $name) {
-            $registry->refresh($name);
+            try {
+                $registry->refresh($name);
+            } catch (\Throwable $error) {
+                throw new \RuntimeException(
+                    'Cache warming failed for [' . $name . ']: ' . $error->getMessage(),
+                    0,
+                    $error
+                );
+            }
             $warmed++;
         }
         return $warmed;
