@@ -57,6 +57,56 @@ final class CheckoutFlowRegressionTest extends CIUnitTestCase
         $this->assertSame(80000, CatalogPricing::unitPrice($row));
     }
 
+    public function testScheduledDiscountUsesJakartaWallClockIndependentOfHostTimezone(): void
+    {
+        $row = [
+            'harga' => 100000,
+            'diskon' => 20,
+            'pakai_jadwal_diskon' => 1,
+            'diskon_mulai' => '2026-11-09 10:00:00',
+            'diskon_selesai' => '2026-11-09 11:00:00',
+        ];
+        $nowUtc = new DateTimeImmutable('2026-11-09 03:30:00', new DateTimeZone('UTC'));
+        $this->assertSame(20.0, CatalogPricing::discount($row, $nowUtc));
+        $this->assertSame(80000, CatalogPricing::unitPrice($row, $nowUtc));
+
+        $beforeWindow = new DateTimeImmutable('2026-11-09 02:59:59', new DateTimeZone('UTC'));
+        $afterWindow = new DateTimeImmutable('2026-11-09 04:00:01', new DateTimeZone('UTC'));
+        $this->assertSame(0.0, CatalogPricing::discount($row, $beforeWindow));
+        $this->assertSame(0.0, CatalogPricing::discount($row, $afterWindow));
+    }
+
+    public function testFlashSaleScheduleStatusIsExplicitAtEveryBoundary(): void
+    {
+        $row = ['diskon' => 15, 'pakai_jadwal_diskon' => 1, 'diskon_mulai' => '2026-11-09 10:00:00', 'diskon_selesai' => '2026-11-09 11:00:00'];
+        $atStart = new DateTimeImmutable('2026-11-09 10:00:00', new DateTimeZone('Asia/Jakarta'));
+        $atEnd = new DateTimeImmutable('2026-11-09 11:00:00', new DateTimeZone('Asia/Jakarta'));
+        $before = new DateTimeImmutable('2026-11-09 09:59:59', new DateTimeZone('Asia/Jakarta'));
+        $after = new DateTimeImmutable('2026-11-09 11:00:01', new DateTimeZone('Asia/Jakarta'));
+
+        $this->assertSame('upcoming', CatalogPricing::scheduleStatus($row, $before));
+        $this->assertSame('active', CatalogPricing::scheduleStatus($row, $atStart));
+        $this->assertSame('active', CatalogPricing::scheduleStatus($row, $atEnd));
+        $this->assertSame('ended', CatalogPricing::scheduleStatus($row, $after));
+        $this->assertSame('invalid', CatalogPricing::scheduleStatus(array_merge($row, ['diskon_selesai' => 'bad']), $atStart));
+        $this->assertSame('none', CatalogPricing::scheduleStatus(['diskon' => 0, 'pakai_jadwal_diskon' => 1], $atStart));
+    }
+
+    public function testLegacyBundleFlashSaleCannotChangeWebOrApiCheckoutTotals(): void
+    {
+        $pages = file_get_contents(APPPATH . 'Controllers/Pages.php');
+        $api = file_get_contents(APPPATH . 'Controllers/Api/V1/CheckoutController.php');
+        $this->assertIsString($pages);
+        $this->assertIsString($api);
+
+        $this->assertStringNotContainsString('03:00@07:00', $pages);
+        $this->assertStringNotContainsString('$hargaTotalBundling * 15 / 100', $pages);
+        $this->assertStringNotContainsString('$flashSaleBase * 0.15', $api);
+        $this->assertStringNotContainsString("- \$prepared['flash_sale']", $api);
+        $this->assertStringContainsString("'flashSale' => 0", $pages);
+        $this->assertStringContainsString("'flash_sale' => 0", $api);
+    }
+
     public function testVariantIsNotLostWhenGatewayLabelIsTruncated(): void
     {
         $r=new ReflectionClass(Pages::class);

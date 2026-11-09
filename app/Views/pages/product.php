@@ -700,6 +700,7 @@ alt="<?= esc($displayProductName, 'attr') ?>" width="300" height="300" loading="
             <?php foreach ($produkSejenis as $ind_p => $p) { ?>
             <?php
                 $relatedVersion = !empty($p['tgl_update']) ? (int) strtotime((string) $p['tgl_update']) : time();
+                $relatedIsFlashSale = \App\Services\CatalogPricing::scheduleStatus($p) === 'active';
                 $relatedVariants = json_decode($p['varian'] ?? '[]', true);
                 $relatedVariants = is_array($relatedVariants) ? $relatedVariants : [];
                 $relatedVariantsByName = [];
@@ -742,7 +743,7 @@ alt="<?= esc($displayProductName, 'attr') ?>" width="300" height="300" loading="
             <div class="card1" data-product-card>
                 <div style="position: relative;">
                     <span class="card1-content-img-kiri"
-                        <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
+                        <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>><?= $p['diskon'] > 0 ? ($relatedIsFlashSale ? esc(lang('Store.flashSaleLabel')) . ' · ' : '') . $p['diskon'] . "%" : '' ?></span>
                     <div class="d-flex flex-column gap-2 card1-content-img-kanan">
                         <?php if (session()->get('role') == '1') { ?>
                         <a class="card1-btn-img" href="/admin/editproduct/<?= esc((string) $p['id'], 'attr') ?>" title="<?= esc(lang('Store.editProductTitle'), 'attr') ?>" aria-label="<?= esc(sprintf(lang('Store.productEdit') . ' %s', $p['nama']), 'attr') ?>"><i class="material-icons">edit</i></a>

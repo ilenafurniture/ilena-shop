@@ -1240,7 +1240,7 @@ class Pages extends BaseController
 
             return view('pages/product', $data);
         } else {
-            // ====== TAMBAHAN KECIL: dukung /product?jenis=diskon (atau bundling) ======
+            // Catalog sale filters use the same schedule and price rules as checkout.
             $jenisParam = strtolower(trim($this->request->getGet('jenis') ?? ''));
 
             // ambil data default seperti sistem lama
@@ -1264,6 +1264,12 @@ class Pages extends BaseController
                     return (float)($row['diskon'] ?? 0) > 0;
                 }));
                 $titlePage = $this->request->getLocale() === 'en' ? 'Discounted Products' : 'Produk Diskon';
+            } elseif ($jenisParam === 'flash-sale') {
+                $product = array_values(array_filter($product, static function (array $row): bool {
+                    return \App\Services\CatalogPricing::scheduleStatus($row) === 'active'
+                        && \App\Services\CatalogPricing::discount($row) > 0;
+                }));
+                $titlePage = 'Flash Sale Furniture';
             } elseif ($jenisParam === 'bundling') {
                 // (opsional) produk yang namanya mengandung "bundling" dan sedang diskon
                 $product = array_values(array_filter($product, function ($row) {
@@ -1289,11 +1295,15 @@ class Pages extends BaseController
             $data = [
                 'title' => $titlePage,
                 'metaTitle' => ($this->request->getLocale() === 'en'
-                    ? ($jenisParam === 'diskon' ? 'Furniture on Sale' : ($jenisParam === 'bundling' ? 'Furniture Bundles' : ($singleCollectionName !== null && $titlePage === $singleCollectionName . ' Furniture' ? $singleCollectionName . ' Furniture Collection' : 'Furniture Collection')))
-                    : ($jenisParam === 'diskon' ? 'Furniture Diskon' : ($jenisParam === 'bundling' ? 'Furniture Bundling' : ($singleCollectionName !== null && $titlePage === 'Furniture ' . $singleCollectionName ? 'Furniture ' . $singleCollectionName : 'Koleksi Furniture')))) . ' | Ilena Furniture',
-                'metaDeskripsi' => $this->request->getLocale() === 'en'
-                    ? 'Explore Ilena furniture for different rooms and home styles. Compare product details, prices, colors, and availability.'
-                    : 'Jelajahi furniture Ilena untuk berbagai ruang dan gaya hunian. Lihat detail produk, harga, pilihan warna, dan ketersediaannya.',
+                    ? ($jenisParam === 'diskon' ? 'Furniture on Sale' : ($jenisParam === 'flash-sale' ? 'Flash Sale Furniture' : ($jenisParam === 'bundling' ? 'Furniture Bundles' : ($singleCollectionName !== null && $titlePage === $singleCollectionName . ' Furniture' ? $singleCollectionName . ' Furniture Collection' : 'Furniture Collection'))))
+                    : ($jenisParam === 'diskon' ? 'Furniture Diskon' : ($jenisParam === 'flash-sale' ? 'Flash Sale Furniture' : ($jenisParam === 'bundling' ? 'Furniture Bundling' : ($singleCollectionName !== null && $titlePage === 'Furniture ' . $singleCollectionName ? 'Furniture ' . $singleCollectionName : 'Koleksi Furniture'))))) . ' | Ilena Furniture',
+                'metaDeskripsi' => $jenisParam === 'flash-sale'
+                    ? ($this->request->getLocale() === 'en'
+                        ? 'Shop Ilena Furniture flash sale offers with scheduled discounts on selected furniture.'
+                        : 'Lihat penawaran Flash Sale Ilena Furniture dengan diskon terjadwal untuk produk pilihan.')
+                    : ($this->request->getLocale() === 'en'
+                        ? 'Explore Ilena furniture for different rooms and home styles. Compare product details, prices, colors, and availability.'
+                        : 'Jelajahi furniture Ilena untuk berbagai ruang dan gaya hunian. Lihat detail produk, harga, pilihan warna, dan ketersediaannya.'),
                 'navbar' => $this->getNavbarData(),
                 'apikey_img_ilena' => $this->apikey_img_ilena,
                 'produk' => $product,
@@ -1384,6 +1394,16 @@ class Pages extends BaseController
 
         // Ambil keranjang dari session (fallback ke array kosong)
         $keranjang = session()->get('keranjang') ?? [];
+        $bundleCheck = (new \App\Services\BundleCartService())->validate(is_array($keranjang) ? $keranjang : []);
+        if (!$bundleCheck['ok']) {
+            $keranjang = array_values(array_filter((array) $keranjang, static fn ($item): bool => is_array($item)
+                && empty($item['bundle_id']) && empty($item['bundle_slug']) && empty($item['bundle_token'])));
+            session()->set('keranjang', $keranjang);
+            $this->syncCartToUser($keranjang);
+            session()->setFlashdata('msg', $bundleCheck['message']);
+            return redirect()->to(ilena_store_path('/cart'));
+        }
+        $keranjang = $bundleCheck['cart'];
 
         // Validasi dan sinkronisasi stok
         $invalidIndex = [];
@@ -1458,6 +1478,15 @@ class Pages extends BaseController
                 }
             }
             $keranjang[$i]['detail'] = $produk;
+            if (!empty($item['bundle_token'])) {
+                $trusted = (array) ($item['detail'] ?? []);
+                $produk['harga'] = $trusted['harga'] ?? $produk['harga'];
+                $produk['diskon'] = $trusted['diskon'] ?? $produk['diskon'];
+                $produk['_validated_bundle_unit_price'] = $trusted['_validated_bundle_unit_price'] ?? null;
+                $keranjang[$i]['detail'] = $produk;
+                $keranjang[$i]['_bundle_name'] = (string) ($item['_bundle_name'] ?? '');
+                $keranjang[$i]['_bundle_discount'] = (int) ($item['_bundle_discount'] ?? 0);
+            }
             $linePrice = \App\Services\CatalogPricing::unitPrice($produk) * $item['jumlah'];
             $hargaTotal += $linePrice;
         }
@@ -1557,7 +1586,8 @@ class Pages extends BaseController
         $existingQuantity = 0;
         foreach ($keranjang as $index => $item) {
             if ((string) ($item['id_barang'] ?? '') === (string) $idbarang
-                && strcasecmp((string) ($item['varian'] ?? ''), $varian) === 0) {
+                && strcasecmp((string) ($item['varian'] ?? ''), $varian) === 0
+                && empty($item['bundle_token'])) {
                 $existingIndex = $index;
                 $existingQuantity = max(0, (int) ($item['jumlah'] ?? 0));
                 break;
@@ -1608,9 +1638,15 @@ class Pages extends BaseController
     {
         $keranjang = session()->get('keranjang') ?? [];
         if (isset($keranjang[$idx])) {
+            if (!empty($keranjang[$idx]['bundle_token'])) {
+                $token = (string) $keranjang[$idx]['bundle_token'];
+                $keranjang = array_values(array_filter($keranjang, static fn ($item): bool => !is_array($item) || !hash_equals($token, (string) ($item['bundle_token'] ?? ''))));
+                session()->setFlashdata('msg', lang('Store.bundleRemoved'));
+            } else {
             $keranjang[$idx]['jumlah']--;
             if ($keranjang[$idx]['jumlah'] <= 0) {
                 unset($keranjang[$idx]);
+            }
             }
         }
         $keranjang = array_values($keranjang);
@@ -1623,7 +1659,12 @@ class Pages extends BaseController
     {
         $keranjang = session()->get('keranjang') ?? [];
         if (isset($keranjang[$idx])) {
-            unset($keranjang[$idx]);
+            if (!empty($keranjang[$idx]['bundle_token'])) {
+                $token = (string) $keranjang[$idx]['bundle_token'];
+                $keranjang = array_values(array_filter($keranjang, static fn ($item): bool => !is_array($item) || !hash_equals($token, (string) ($item['bundle_token'] ?? ''))));
+            } else {
+                unset($keranjang[$idx]);
+            }
         }
         $keranjang = array_values($keranjang);
         session()->set('keranjang', $keranjang);
@@ -1940,14 +1981,55 @@ class Pages extends BaseController
         return view('pages/shipping', $data);
     }
 
-    public function isTimeInRange($startTime, $endTime)
+    public function bundles()
     {
-        $currentTime = date("H:i", strtotime(("+7 hours")));
-        if ($currentTime >= $startTime && $currentTime <= $endTime) {
-            return true;
-        } else {
-            return false;
+        $english = $this->request->getLocale() === 'en';
+        $offers = (new \App\Services\ProductBundleService())->liveOffers();
+        return view('pages/bundles', [
+            'title' => $english ? 'Furniture Sets' : 'Paket Furniture',
+            'metaTitle' => ($english ? 'Furniture Sets' : 'Paket Furniture') . ' | Ilena Furniture',
+            'metaDeskripsi' => $english
+                ? 'Explore coordinated Ilena furniture sets with clear component prices and live availability.'
+                : 'Pilih paket furniture Ilena dengan rincian komponen, harga, dan ketersediaan yang diperbarui.',
+            'navbar' => $this->getNavbarData(),
+            'apikey_img_ilena' => $this->apikey_img_ilena,
+            'offers' => $offers,
+            'isEnglish' => $english,
+        ]);
+    }
+
+    public function addBundle(string $slug)
+    {
+        $offer = (new \App\Services\ProductBundleService())->liveOffer($slug);
+        if (!$offer || (int) ($offer['available_sets'] ?? 0) < 1) {
+            return redirect()->to(ilena_store_path('/bundles'))->with('msg', lang('Store.bundleUnavailable'));
         }
+
+        $cart = session()->get('keranjang');
+        $cart = is_array($cart) ? array_values($cart) : [];
+        $existingBundleCheck = (new \App\Services\BundleCartService())->validate($cart);
+        if (!$existingBundleCheck['ok']) {
+            return redirect()->to(ilena_store_path('/cart'))->with('msg', $existingBundleCheck['message']);
+        }
+        $cart = $existingBundleCheck['cart'];
+        if (count($cart) + count($offer['components']) > 50) {
+            return redirect()->to(ilena_store_path('/bundles'))->with('msg', lang('Store.cartTooManyItems'));
+        }
+
+        $bundleToken = bin2hex(random_bytes(16));
+        foreach ($offer['components'] as $component) {
+            $cart[] = [
+                'id_barang' => (string) $component['product_id'],
+                'varian' => (string) $component['variant_name'],
+                'jumlah' => (int) $component['quantity'],
+                'bundle_id' => (int) $offer['id'],
+                'bundle_slug' => (string) $offer['slug'],
+                'bundle_token' => $bundleToken,
+            ];
+        }
+        session()->set('keranjang', $cart);
+        $this->syncCartToUser($cart);
+        return redirect()->to(ilena_store_path('/cart'))->with('msg', lang('Store.bundleAdded'));
     }
 
     private function validateCheckoutCart(array $keranjang): array
@@ -1956,13 +2038,20 @@ class Pages extends BaseController
             return ['ok' => false, 'msg' => 'Keranjangmu kosong.', 'cart' => [], 'subtotal' => 0, 'flashSale' => 0];
         }
 
+        $bundleValidation = (new \App\Services\BundleCartService())->validate($keranjang);
+        if (!$bundleValidation['ok']) {
+            return ['ok' => false, 'msg' => $bundleValidation['message'], 'cart' => [], 'subtotal' => 0, 'flashSale' => 0, 'hasBundles' => true];
+        }
+        $keranjang = $bundleValidation['cart'];
+        $productsById = $this->barangModel->getActiveProductsByIds(array_map(
+            static fn ($item): mixed => is_array($item) ? ($item['id_barang'] ?? null) : null,
+            $keranjang
+        ));
         $cart = [];
         $subtotal = 0;
-        $hargaTotalBundling = 0;
-        $flashSale = 0;
 
         foreach ($keranjang as $item) {
-            $produk = $this->barangModel->getBarang($item['id_barang'] ?? null);
+            $produk = $productsById[(string) ($item['id_barang'] ?? '')] ?? null;
             if (!$produk) {
                 return ['ok' => false, 'msg' => 'Ada produk di keranjang yang sudah tidak tersedia.', 'cart' => [], 'subtotal' => 0, 'flashSale' => 0];
             }
@@ -2001,6 +2090,17 @@ class Pages extends BaseController
 
             $urutan = explode(',', $varianTerpilih['urutan_gambar'] ?? '');
             $item['src_gambar'] = "/img/barang/1000/{$item['id_barang']}-" . trim($urutan[0] ?? '1') . '.webp';
+            if (!empty($item['bundle_token'])) {
+                $trustedBundleDetail = (array) ($item['detail'] ?? []);
+                if (!isset($trustedBundleDetail['_validated_bundle_unit_price'])) {
+                    return ['ok' => false, 'msg' => 'Paket di keranjang tidak valid. Pilih kembali paket tersebut.', 'cart' => [], 'subtotal' => 0, 'flashSale' => 0, 'hasBundles' => true];
+                }
+                $produk['harga'] = $trustedBundleDetail['harga'];
+                $produk['diskon'] = $trustedBundleDetail['diskon'];
+                $produk['_validated_bundle_unit_price'] = $trustedBundleDetail['_validated_bundle_unit_price'];
+                $item['_bundle_name'] = (string) ($item['_bundle_name'] ?? '');
+                $item['_bundle_discount'] = (int) ($item['_bundle_discount'] ?? 0);
+            }
             $item['detail'] = $produk;
             $cart[] = $item;
 
@@ -2008,19 +2108,9 @@ class Pages extends BaseController
             $diskon = (float)($produk['diskon'] ?? 0);
             $lineTotal = \App\Services\CatalogPricing::unitPrice($produk) * $jumlah;
             $subtotal += $lineTotal;
-
-            if (str_contains(strtolower($produk['nama'] ?? ''), 'bundling')) {
-                $hargaTotalBundling += $lineTotal;
-                foreach (["03:00@07:00"] as $range) {
-                    [$start, $end] = explode("@", $range);
-                    if ($this->isTimeInRange($start, $end)) {
-                        $flashSale = $hargaTotalBundling * 15 / 100;
-                    }
-                }
-            }
         }
 
-        return ['ok' => true, 'msg' => '', 'cart' => $cart, 'subtotal' => $subtotal, 'flashSale' => $flashSale];
+        return ['ok' => true, 'msg' => '', 'cart' => $cart, 'subtotal' => $subtotal, 'flashSale' => 0, 'hasBundles' => $bundleValidation['has_bundles']];
     }
 
     private function buildShippingQuoteMessage(array $cart, array $address, float $subtotal, string $locale): string
@@ -2197,7 +2287,6 @@ class Pages extends BaseController
         }
         $keranjang = $cartCheck['cart'];
         $hargaTotal = (float)$cartCheck['subtotal'];
-        $flashSale = (float)$cartCheck['flashSale'];
         $kurirTerpilih = $kurir[$index_kurir];
         $kurirTerpilih = (new FreeShippingService())->applyToRates($alamatselected, [$kurirTerpilih], (float)$hargaTotal)[0] ?? $kurirTerpilih;
         $hargaOngkir = (float)($kurirTerpilih['harga'] ?? 0);
@@ -2247,7 +2336,9 @@ class Pages extends BaseController
         $email    = $alamatselected['email_pemesan'];
         $subtotal = $hargaTotal;
 
-        $voucherResolution = $this->resolveCheckoutVouchers($email, $subtotal);
+        $voucherResolution = !empty($cartCheck['hasBundles'])
+            ? ['ok' => true, 'eligible_automatic' => [], 'selected' => null, 'applied' => [], 'discount' => 0, 'remaining' => (int) $subtotal]
+            : $this->resolveCheckoutVouchers($email, $subtotal);
         if (empty($voucherResolution['ok'])) {
             session()->setFlashdata('msg', $voucherResolution['message']);
             return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
@@ -2257,6 +2348,10 @@ class Pages extends BaseController
         $appliedVouchers = $voucherResolution['applied'];
         $diskonVoucher = (int) $voucherResolution['discount'];
         $voucherSelected = $selectedVoucher ? $selectedVoucher + ['rupiah' => $diskonVoucher] : false;
+        if (!empty($cartCheck['hasBundles'])) {
+            $voucher = [];
+            $voucherSelected = false;
+        }
 
         foreach ($eligibleAutoRows as $autoVoucher) {
             foreach ($appliedVouchers as $appliedVoucher) {
@@ -2302,7 +2397,7 @@ class Pages extends BaseController
             ]);
         }
 
-        $baseForFee = max(0, $hargaTotal - $diskonVoucher - $flashSale + $hargaOngkir);
+        $baseForFee = max(0, $hargaTotal - $diskonVoucher + $hargaOngkir);
         $biayaAdmin  = $this->calculateAdminFee($method, $baseForFee);
         $grossAmount = max(0, (int) round($baseForFee + $biayaAdmin));
 
@@ -2330,11 +2425,12 @@ class Pages extends BaseController
             ])),
             'indexAddress'      => $index_kurir,
             'voucher'           => ['list'=>$voucher, 'selected'=>$voucherSelected, 'applied'=>$appliedVouchers, 'discount'=>$diskonVoucher],
+            'bundleVoucherNote' => !empty($cartCheck['hasBundles']),
             'emailUji'          => session()->get('isLogin') && session()->get('email') !== 'tamu' && PaymentSafety::isTestEmail((string)session()->get('email'), $emailUjiCoba),
             'msg'               => session()->getFlashdata('msg'),
             'hargaOngkir'       => $hargaOngkir,
             'kurir'             => $kurirTerpilih,
-            'flashSale'         => $flashSale,
+            'flashSale'         => 0,
             'biayaAdmin'        => $biayaAdmin,
             'paymentMethod'     => $method,
             'listPaymentMethod' => ['bca','bri','bni','mandiri','permata','cimb','gopay','shopeepay','qris'],
@@ -3276,7 +3372,6 @@ class Pages extends BaseController
         }
 
         $subtotal = (float)$cartCheck['subtotal'];
-        $flashSale = (float)$cartCheck['flashSale'];
         if (($kurirTerpilih['provider'] ?? '') === 'rajaongkir') {
             $freshRate = (new ShippingService())->revalidateRate($kurirTerpilih, $alamatselected, $cartCheck['cart']);
             if ($freshRate === null) {
@@ -3314,12 +3409,14 @@ class Pages extends BaseController
                 ],
                 'weight_kg' => (string)($dimensi['berat'] ?? ''),
                 'quantity' => $jumlah,
-                'name' => $produk['nama'] . " " . $dim . " (" . $varLbl . ")",
+                'name' => $produk['nama'] . " " . $dim . " (" . $varLbl . ")" . (!empty($element['_bundle_name']) ? ' · Paket' : ''),
                 'variant' => (string)$element['varian'],
             ];
         }
 
-        $voucherResolution = $this->resolveCheckoutVouchers($email, $subtotal);
+        $voucherResolution = !empty($cartCheck['hasBundles'])
+            ? ['ok' => true, 'eligible_automatic' => [], 'selected' => null, 'applied' => [], 'discount' => 0, 'remaining' => (int) $subtotal]
+            : $this->resolveCheckoutVouchers($email, $subtotal);
         if (empty($voucherResolution['ok'])) {
             session()->setFlashdata('msg', $voucherResolution['message']);
             return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
@@ -3333,11 +3430,6 @@ class Pages extends BaseController
             $itemDetails[] = ['id'=>$appliedVoucher['kode'],'price'=>-(int)$appliedVoucher['discount'],'quantity'=>1,'name'=>'Voucher'];
             $total -= (int)$appliedVoucher['discount'];
         }
-        if ($flashSale > 0) {
-            $itemDetails[] = ['id'=>'Flash Sale','price'=>-$flashSale,'quantity'=>1,'name'=>'Flash Sale'];
-            $total -= $flashSale;
-        }
-
         $hargaOngkir = (int)($kurirTerpilih['harga'] ?? 0);
         $itemDetails[] = ['id'=>'Biaya Ongkir','price'=>$hargaOngkir,'quantity'=>1,'name'=>'Biaya Ongkir'];
         $total += $hargaOngkir;

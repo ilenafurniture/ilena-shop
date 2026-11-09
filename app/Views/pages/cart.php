@@ -20,7 +20,7 @@
                 </div>
             <?php endif; ?>
             <div class="container-keranjang show-block-ke-hide">
-                <?php foreach ($keranjang as $index => $k) { $cartProduct = (array) ($k['detail'] ?? []); $cartProductName = ilena_product_display_name($cartProduct); $cartProductName = $cartProductName !== '' ? $cartProductName : lang('Store.productFallback'); $cartCategory = ilena_catalog_type_label((string) ($cartProduct['kategori'] ?? '')); $cartVariant = ilena_product_variant_display_name($cartProduct, (string) ($k['varian'] ?? '')); ?>
+                <?php foreach ($keranjang as $index => $k) { $cartProduct = (array) ($k['detail'] ?? []); $cartProductName = ilena_product_display_name($cartProduct); $cartProductName = $cartProductName !== '' ? $cartProductName : lang('Store.productFallback'); $cartCategory = ilena_catalog_type_label((string) ($cartProduct['kategori'] ?? '')); $cartVariant = ilena_product_variant_display_name($cartProduct, (string) ($k['varian'] ?? '')); $isBundleLine = !empty($k['bundle_token']); ?>
                 <div class="item-keranjang">
                     <a href="<?= esc(ilena_store_path('/product/' . str_replace(' ', '-', (string) $k['detail']['nama'])), 'attr'); ?>" style="display:block;">
                         <img src="<?= esc($k['src_gambar'] ?? '', 'attr'); ?>" alt="<?= esc($cartProductName, 'attr'); ?>">
@@ -31,10 +31,11 @@
                             <p class="m-0"><?= esc($cartCategory); ?></p>
                             <h1 class="nama-barang"><?= esc($cartProductName); ?></h1>
                             <p class="my-2"><?= esc(lang('Store.variantLabel')); ?>: <?= esc($cartVariant); ?></p>
+                            <?php if ($isBundleLine): ?><p class="my-1" style="color:#96232a;font-size:.82rem;font-weight:700;"><?= esc($k['_bundle_name'] ?? lang('Store.bundlePageTitle')); ?></p><?php endif; ?>
                         </a>
                         <div class="d-flex align-items-end flex-grow-1">
                             <div class="d-flex align-items-center gap-4">
-                                <div class="number-control">
+                                <?php if ($isBundleLine): ?><span class="cart-bundle-quantity"><?= (int) $k['jumlah']; ?>× · <?= esc(lang('Store.bundleIncluded')); ?></span><?php else: ?><div class="number-control">
                                     <!-- <a style="text-decoration: none; color: black;" href="/reducecart/<?= $index ?>">
                                         <div class="number-left"></div>
                                     </a> -->
@@ -52,7 +53,7 @@
                                             <div class="number-right"></div>
                                         </button>
                                     </form>
-                                </div>
+                                </div><?php endif; ?>
                                 <form action="<?= esc(ilena_store_path('/deletecart/' . $index), 'attr'); ?>" method="post" class="m-0">
                                     <?= csrf_field(); ?>
                                     <button type="submit" class="btn-teks-aja m-0"><?= esc(lang('Store.delete')); ?></button>
@@ -71,13 +72,14 @@
                             Rp <?= number_format($k['detail']['harga'], 0, ',', '.'); ?>
                         </p>
                         <?php } ?>
+                        <?php if ($isBundleLine && (int) ($k['_bundle_discount'] ?? 0) > 0): ?><p class="text-end m-0" style="color:#8f1d22;font-size:.78rem;font-weight:650;"><?= esc(lang('Store.bundleSavings')); ?> Rp <?= number_format((int) $k['_bundle_discount'], 0, ',', '.'); ?></p><?php endif; ?>
                     </div>
                 </div>
                 <?php } ?>
             </div>
 
             <div class="hide-ke-show-block">
-                <?php foreach ($keranjang as $index => $k) { $cartProduct = (array) ($k['detail'] ?? []); $cartProductName = ilena_product_display_name($cartProduct); $cartProductName = $cartProductName !== '' ? $cartProductName : lang('Store.productFallback'); $cartCategory = ilena_catalog_type_label((string) ($cartProduct['kategori'] ?? '')); $cartVariant = ilena_product_variant_display_name($cartProduct, (string) ($k['varian'] ?? '')); ?>
+                <?php foreach ($keranjang as $index => $k) { $cartProduct = (array) ($k['detail'] ?? []); $cartProductName = ilena_product_display_name($cartProduct); $cartProductName = $cartProductName !== '' ? $cartProductName : lang('Store.productFallback'); $cartCategory = ilena_catalog_type_label((string) ($cartProduct['kategori'] ?? '')); $cartVariant = ilena_product_variant_display_name($cartProduct, (string) ($k['varian'] ?? '')); $isBundleLine = !empty($k['bundle_token']); ?>
                 <div class="item-keranjang-hp">
                     <a href="<?= esc(ilena_store_path('/product/' . str_replace(' ', '-', (string) $k['detail']['nama'])), 'attr'); ?>" style="display:block;">
                         <img src="<?= esc($k['src_gambar'] ?? '', 'attr'); ?>" alt="<?= esc($cartProductName, 'attr'); ?>">
@@ -95,6 +97,7 @@
                                 <?= number_format($k['detail']['harga'] * (100 - $k['detail']['diskon']) / 100, 0, ',', '.'); ?>
                             </p>
                             <p class="m-0" style="font-size: 10px;"><?= esc(lang('Store.variantLabel')); ?>: <?= esc($cartVariant); ?></p>
+                            <?php if ($isBundleLine): ?><p class="m-0 mt-1" style="color:#96232a;font-size:10px;font-weight:700;"><?= esc($k['_bundle_name'] ?? lang('Store.bundlePageTitle')); ?></p><?php endif; ?>
                         </a>
                     </div>
 
@@ -103,7 +106,7 @@
                             <?= csrf_field(); ?>
                     <button type="submit" class="btn-teks-aja m-0"><?= esc(lang('Store.delete')); ?></button>
                         </form>
-                        <div class="number-control-hp">
+                        <?php if ($isBundleLine): ?><span class="cart-bundle-quantity"><?= (int) $k['jumlah']; ?>×</span><?php else: ?><div class="number-control-hp">
                             <form action="<?= esc(ilena_store_path('/reducecart/' . $index), 'attr'); ?>" method="post">
                                 <?= csrf_field(); ?>
                                 <button type="submit">
@@ -119,7 +122,7 @@
                                     <div class="number-right"></div>
                                 </button>
                             </form>
-                        </div>
+                        </div><?php endif; ?>
                     </div>
                 </div>
                 <?php } ?>

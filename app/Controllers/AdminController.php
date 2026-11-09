@@ -386,10 +386,12 @@ class AdminController extends BaseController
         $collection = trim((string) $this->request->getGet('koleksi'));
         $collectionName = str_replace('-', ' ', $collection);
         $query = trim((string) $this->request->getGet('q'));
+        $promoFilter = trim((string) $this->request->getGet('promo')) === 'flash-sale' ? 'flash-sale' : '';
+        $jakartaNow = (new \DateTimeImmutable('now', new \DateTimeZone('Asia/Jakarta')))->format('Y-m-d H:i:s');
         $page = max(1, (int) $this->request->getGet('pag'));
         $pageSize = 10;
 
-        $applyFilters = static function ($builder) use ($collectionName, $query): void {
+        $applyFilters = static function ($builder) use ($collectionName, $query, $promoFilter, $jakartaNow): void {
             if ($collectionName !== '') {
                 $builder->where('kategori', $collectionName);
             }
@@ -401,6 +403,12 @@ class AdminController extends BaseController
                     ->orLike('id', $query)
                     ->groupEnd();
             }
+            if ($promoFilter === 'flash-sale') {
+                $builder->where('pakai_jadwal_diskon', 1)
+                    ->where('diskon >', 0)
+                    ->where('diskon_mulai <=', $jakartaNow)
+                    ->where('diskon_selesai >=', $jakartaNow);
+            }
         };
 
         $filteredBuilder = $db->table('barang');
@@ -410,7 +418,7 @@ class AdminController extends BaseController
         $page = $pageCount > 0 ? min($page, $pageCount) : 1;
 
         $productBuilder = $db->table('barang')
-            ->select('id, nama, kategori, subkategori, harga, varian, deskripsi, active, tgl_update');
+            ->select('id, nama, kategori, subkategori, harga, diskon, pakai_jadwal_diskon, diskon_mulai, diskon_selesai, varian, deskripsi, active, tgl_update');
         $applyFilters($productBuilder);
         $product = $productBuilder
             ->orderBy('nama', 'ASC')
@@ -430,6 +438,7 @@ class AdminController extends BaseController
             $product[$index_p]['allstok'] = '';
             $product[$index_p]['stok_total'] = 0;
             $product[$index_p]['jumlah_varian'] = count($product[$index_p]['varian']);
+            $product[$index_p]['promo_status'] = \App\Services\CatalogPricing::scheduleStatus($p);
             foreach ($product[$index_p]['varian'] as $ind_v => $v) {
                 if (!is_array($v)) continue;
                 $namaVarian = $v['nama'] ?? 'Varian';
@@ -458,6 +467,7 @@ class AdminController extends BaseController
             'paginationFilters' => array_filter([
                 'koleksi' => $collection,
                 'q' => $query,
+                'promo' => $promoFilter,
             ], static fn ($value) => $value !== ''),
         ];
         return view('admin/all', $data);
@@ -825,6 +835,15 @@ class AdminController extends BaseController
             return $this->response->setStatusCode(422)->setJSON(['pesan' => $error]);
         }
 
+        $saleSchedule = $this->validatedSaleSchedule(
+            !empty($data['pakai_jadwal_diskon']),
+            (string) ($data['diskon_mulai'] ?? ''),
+            (string) ($data['diskon_selesai'] ?? '')
+        );
+        if ($saleSchedule === null) {
+            return $this->response->setStatusCode(422)->setJSON(['pesan' => 'Jadwal Flash Sale harus berisi waktu mulai dan selesai yang valid; waktu selesai harus setelah waktu mulai.']);
+        }
+
         $koleksi = $this->koleksiModel->getKoleksi();
         $jenis   = $this->jenisModel->getJenis();
         $categoryRow = $this->koleksiModel->where('id', $data['kategori'] ?? '')->first();
@@ -838,8 +857,6 @@ class AdminController extends BaseController
         }
 
         $this->ensureProductStorageReady();
-        $this->ensureBarangScheduleColumns();
-
         $variants = json_decode($data['varian'] ?? '[]', true);
         if (!is_array($variants)) {
             return $this->response->setStatusCode(400)->setJSON([
@@ -916,10 +933,6 @@ class AdminController extends BaseController
         }
 
         // ===== Jadwal diskon (baru, minimal patch) =====
-        $pakaiSchedule = !empty($this->request->getPost('pakai_jadwal_diskon')) ? 1 : 0;
-        $mulaiRaw      = (string) $this->request->getPost('diskon_mulai');
-        $selesaiRaw    = (string) $this->request->getPost('diskon_selesai');
-
         $insertDataBarang = [
             'id'            => $data['id'],
             'nama'          => $data['nama'],
@@ -941,11 +954,9 @@ class AdminController extends BaseController
             'ruang_tidur'   => $data['ruang_tidur'],
 
             // simpan jadwal
-            'pakai_jadwal_diskon' => $pakaiSchedule,
-            'diskon_mulai'        => $pakaiSchedule && $mulaiRaw
-                                        ? date('Y-m-d H:i:s', strtotime(str_replace('T',' ', $mulaiRaw))) : null,
-            'diskon_selesai'      => $pakaiSchedule && $selesaiRaw
-                                        ? date('Y-m-d H:i:s', strtotime(str_replace('T',' ', $selesaiRaw))) : null,
+            'pakai_jadwal_diskon' => $saleSchedule['enabled'],
+            'diskon_mulai'        => $saleSchedule['start'],
+            'diskon_selesai'      => $saleSchedule['end'],
         ];
 
         try {
@@ -1071,45 +1082,28 @@ class AdminController extends BaseController
         }
     }
 
-    private function ensureBarangScheduleColumns(): void
+    /** Validate admin datetime-local values as Jakarta wall-clock timestamps. */
+    private function validatedSaleSchedule(bool $enabled, string $startRaw, string $endRaw): ?array
     {
-        try {
-            $db = \Config\Database::connect();
-            if (!$db->tableExists('barang')) {
-                return;
-            }
+        if (!$enabled) return ['enabled' => 0, 'start' => null, 'end' => null];
+        $timezone = new \DateTimeZone('Asia/Jakarta');
+        $parse = static function (string $value) use ($timezone): ?\DateTimeImmutable {
+            if (!preg_match('/\A\d{4}-\d{2}-\d{2}T\d{2}:\d{2}\z/', $value)) return null;
+            $date = \DateTimeImmutable::createFromFormat('!Y-m-d\TH:i', $value, $timezone);
+            $errors = \DateTimeImmutable::getLastErrors();
+            if (!$date || ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0))) return null;
+            return $date->format('Y-m-d\TH:i') === $value ? $date : null;
+        };
 
-            $forge = \Config\Database::forge();
-            $fields = [];
-            if (!$db->fieldExists('pakai_jadwal_diskon', 'barang')) {
-                $fields['pakai_jadwal_diskon'] = [
-                    'type' => 'TINYINT',
-                    'constraint' => 1,
-                    'default' => 0,
-                    'null' => false,
-                ];
-            }
-            if (!$db->fieldExists('diskon_mulai', 'barang')) {
-                $fields['diskon_mulai'] = [
-                    'type' => 'DATETIME',
-                    'null' => true,
-                ];
-            }
-            if (!$db->fieldExists('diskon_selesai', 'barang')) {
-                $fields['diskon_selesai'] = [
-                    'type' => 'DATETIME',
-                    'null' => true,
-                ];
-            }
+        $start = $parse(trim($startRaw));
+        $end = $parse(trim($endRaw));
+        if (!$start || !$end || $end <= $start) return null;
 
-            if (!empty($fields)) {
-                $forge->addColumn('barang', $fields);
-            }
-        } catch (\Throwable $th) {
-            log_message('error', 'Gagal memastikan kolom jadwal diskon barang: {err}', [
-                'err' => $th->getMessage(),
-            ]);
-        }
+        return [
+            'enabled' => 1,
+            'start' => $start->format('Y-m-d H:i:s'),
+            'end' => $end->format('Y-m-d H:i:s'),
+        ];
     }
 
 
@@ -1245,6 +1239,17 @@ class AdminController extends BaseController
 
             if ($error = \App\Services\ProductInputPolicy::validate($data)) {
                 return $this->response->setStatusCode(422)->setJSON(['pesan' => $error]);
+            }
+            $saleSchedule = null;
+            if (array_key_exists('pakai_jadwal_diskon', $data)) {
+                $saleSchedule = $this->validatedSaleSchedule(
+                    !empty($data['pakai_jadwal_diskon']),
+                    (string) ($data['diskon_mulai'] ?? ''),
+                    (string) ($data['diskon_selesai'] ?? '')
+                );
+                if ($saleSchedule === null) {
+                    return $this->response->setStatusCode(422)->setJSON(['pesan' => 'Jadwal Flash Sale harus berisi waktu mulai dan selesai yang valid; waktu selesai harus setelah waktu mulai.']);
+                }
             }
             if (isset($data['id']) && (string) $data['id'] !== (string) $id_product) {
                 return $this->response->setStatusCode(422)->setJSON(['pesan' => 'ID produk tidak boleh diubah dari formulir edit.']);
@@ -1591,16 +1596,10 @@ class AdminController extends BaseController
             ];
 
             // ===== PATCH PENTING: simpan jadwal diskon =====
-            if ($this->request->getPost('pakai_jadwal_diskon') !== null) {
-                $pakaiSchedule = !empty($this->request->getPost('pakai_jadwal_diskon')) ? 1 : 0;
-                $mulaiRaw      = (string) $this->request->getPost('diskon_mulai');
-                $selesaiRaw    = (string) $this->request->getPost('diskon_selesai');
-
-                $payload['pakai_jadwal_diskon'] = $pakaiSchedule;
-                $payload['diskon_mulai']   = $pakaiSchedule && $mulaiRaw
-                    ? date('Y-m-d H:i:s', strtotime(str_replace('T',' ', $mulaiRaw))) : null;
-                $payload['diskon_selesai'] = $pakaiSchedule && $selesaiRaw
-                    ? date('Y-m-d H:i:s', strtotime(str_replace('T',' ', $selesaiRaw))) : null;
+            if ($saleSchedule !== null) {
+                $payload['pakai_jadwal_diskon'] = $saleSchedule['enabled'];
+                $payload['diskon_mulai'] = $saleSchedule['start'];
+                $payload['diskon_selesai'] = $saleSchedule['end'];
             }
             // ===== END PATCH =====
 
@@ -3317,6 +3316,164 @@ class AdminController extends BaseController
     }
 
     // ========== VOUCHER ==========
+    public function bundles()
+    {
+        if (!(new \App\Services\AdminRbacService())->hasPermission(session()->get('email'), 'products')) {
+            return $this->response->setStatusCode(403)->setBody('Akses ditolak.');
+        }
+        $db = db_connect();
+        if (!$db->tableExists('product_bundles') || !$db->tableExists('product_bundle_items')) {
+            return redirect()->to('/admin/product')->with('error', 'Jalankan migrasi paket furniture terlebih dahulu.');
+        }
+
+        $bundles = $db->table('product_bundles')->orderBy('id', 'DESC')->get()->getResultArray();
+        $itemsByBundle = [];
+        if ($bundles !== []) {
+            foreach ($db->table('product_bundle_items')->whereIn('bundle_id', array_column($bundles, 'id'))->orderBy('id')->get()->getResultArray() as $item) {
+                $itemsByBundle[(int) $item['bundle_id']][] = $item;
+            }
+        }
+        $products = $this->barangModel->where('active', '1')->orderBy('nama', 'ASC')->findAll();
+        foreach ($products as &$product) {
+            $variants = json_decode((string) ($product['varian'] ?? '[]'), true);
+            $product['varian'] = is_array($variants) ? $variants : [];
+        }
+        unset($product);
+
+        return view('admin/bundles', [
+            'title' => 'Paket Furniture',
+            'bundles' => $bundles,
+            'itemsByBundle' => $itemsByBundle,
+            'products' => $products,
+        ]);
+    }
+
+    public function saveBundle($bundleId = null)
+    {
+        if (!(new \App\Services\AdminRbacService())->hasPermission(session()->get('email'), 'products')) {
+            return $this->response->setStatusCode(403)->setBody('Akses ditolak.');
+        }
+        $db = db_connect();
+        if (!$db->tableExists('product_bundles') || !$db->tableExists('product_bundle_items')) {
+            return redirect()->to('/admin/bundles')->with('error', 'Jalankan migrasi paket furniture terlebih dahulu.');
+        }
+
+        $post = $this->request->getPost();
+        $name = trim((string) ($post['name'] ?? ''));
+        $slug = strtolower(trim((string) ($post['slug'] ?? '')));
+        if ($slug === '') $slug = url_title($name, '-', true);
+        $nameEn = trim((string) ($post['name_en'] ?? ''));
+        $description = trim((string) ($post['description'] ?? ''));
+        $descriptionEn = trim((string) ($post['description_en'] ?? ''));
+        $discountRaw = $post['discount_percent'] ?? null;
+        $discountText = is_scalar($discountRaw) ? trim((string) $discountRaw) : '';
+        $discountValid = preg_match('/\A\d{1,2}(?:\.\d{1,2})?\z/', $discountText) === 1
+            && is_numeric($discountText) && (float) $discountText < 100;
+        $itemsInput = $post['items'] ?? [];
+        $window = $this->validateBundleWindow((string) ($post['starts_at'] ?? ''), (string) ($post['ends_at'] ?? ''));
+
+        if ($name === '' || mb_strlen($name) > 180 || mb_strlen($nameEn) > 180
+            || !preg_match('/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/', $slug) || strlen($slug) > 100
+            || !$discountValid || !is_finite((float) $discountText) || (float) $discountText < 0
+            || !is_array($itemsInput) || count($itemsInput) < 2 || count($itemsInput) > 20 || $window === null
+        ) {
+            return redirect()->to('/admin/bundles')->withInput()->with('error', 'Periksa nama, slug, diskon di bawah 100%, jadwal, dan isi paket (2–20 komponen).');
+        }
+
+        $normalized = [];
+        foreach ($itemsInput as $raw) {
+            if (!is_array($raw)) continue;
+            $pair = explode('|', (string) ($raw['product_variant'] ?? ''), 2);
+            $productId = trim((string) ($pair[0] ?? ''));
+            $variantName = trim((string) ($pair[1] ?? ''));
+            $quantity = filter_var($raw['quantity'] ?? null, FILTER_VALIDATE_INT);
+            if (!preg_match('/\A[A-Za-z0-9_-]{1,64}\z/', $productId) || $variantName === '' || mb_strlen($variantName) > 100
+                || $quantity === false || $quantity < 1 || $quantity > 100
+            ) {
+                return redirect()->to('/admin/bundles')->withInput()->with('error', 'Satu atau lebih komponen paket tidak valid.');
+            }
+            $key = $productId . "\0" . mb_strtolower($variantName);
+            if (isset($normalized[$key])) return redirect()->to('/admin/bundles')->withInput()->with('error', 'Produk dan varian yang sama tidak boleh dimasukkan dua kali.');
+            $normalized[$key] = ['product_id' => $productId, 'variant_name' => $variantName, 'quantity' => (int) $quantity];
+        }
+        $normalized = array_values($normalized);
+        if (count($normalized) < 2) return redirect()->to('/admin/bundles')->withInput()->with('error', 'Paket harus berisi minimal dua komponen berbeda.');
+
+        $products = $this->barangModel->getActiveProductsByIds(array_column($normalized, 'product_id'));
+        foreach ($normalized as $component) {
+            $product = $products[$component['product_id']] ?? null;
+            if (!$product) return redirect()->to('/admin/bundles')->withInput()->with('error', 'Semua komponen harus merupakan produk aktif.');
+            $variants = json_decode((string) ($product['varian'] ?? '[]'), true) ?: [];
+            $found = false;
+            foreach ($variants as $variant) {
+                if (is_array($variant) && strcasecmp(trim((string) ($variant['nama'] ?? '')), $component['variant_name']) === 0) {
+                    $found = (int) ($variant['stok'] ?? 0) > 0;
+                    break;
+                }
+            }
+            if (!$found) return redirect()->to('/admin/bundles')->withInput()->with('error', 'Varian paket tidak ditemukan atau stok awalnya nol.');
+        }
+
+        $id = $bundleId === null ? 0 : (int) $bundleId;
+        $existing = $id > 0 ? $db->table('product_bundles')->where('id', $id)->get()->getRowArray() : null;
+        if ($id > 0 && !$existing) return redirect()->to('/admin/bundles')->with('error', 'Paket tidak ditemukan.');
+        $duplicateSlug = $db->table('product_bundles')->where('slug', $slug)->where('id !=', $id)->countAllResults();
+        if ($duplicateSlug > 0) return redirect()->to('/admin/bundles')->withInput()->with('error', 'Slug paket sudah digunakan.');
+
+        $now = (new \DateTimeImmutable('now', new \DateTimeZone('Asia/Jakarta')))->format('Y-m-d H:i:s');
+        $payload = [
+            'slug' => $slug, 'name' => $name, 'name_en' => $nameEn ?: null,
+            'description' => $description ?: null, 'description_en' => $descriptionEn ?: null,
+            'discount_percent' => (float) $discountText, 'active' => !empty($post['active']) ? 1 : 0,
+            'starts_at' => $window['start'], 'ends_at' => $window['end'], 'updated_at' => $now,
+        ];
+
+        $db->transBegin();
+        try {
+            if ($existing) {
+                $db->table('product_bundles')->where('id', $id)->update($payload);
+            } else {
+                $payload['created_at'] = $now;
+                $db->table('product_bundles')->insert($payload);
+                $id = (int) $db->insertID();
+            }
+            $db->table('product_bundle_items')->where('bundle_id', $id)->delete();
+            foreach ($normalized as $component) {
+                $component['bundle_id'] = $id;
+                $db->table('product_bundle_items')->insert($component);
+            }
+            if (!$db->transStatus()) throw new \RuntimeException('Bundle transaction failed.');
+            $db->transCommit();
+        } catch (\Throwable $error) {
+            $db->transRollback();
+            log_message('error', 'Bundle save failed: {type}', ['type' => get_class($error)]);
+            return redirect()->to('/admin/bundles')->withInput()->with('error', 'Paket tidak tersimpan. Perubahan dibatalkan.');
+        }
+
+        return redirect()->to('/admin/bundles')->with('success', 'Paket furniture berhasil disimpan.');
+    }
+
+    private function validateBundleWindow(string $startRaw, string $endRaw): ?array
+    {
+        $parse = static function (string $value): \DateTimeImmutable|false|null {
+            if (trim($value) === '') return null;
+            $value = trim($value);
+            if (!preg_match('/\A\d{4}-\d{2}-\d{2}T\d{2}:\d{2}\z/', $value)) return false;
+            $date = \DateTimeImmutable::createFromFormat('!Y-m-d\TH:i', $value, new \DateTimeZone('Asia/Jakarta'));
+            $errors = \DateTimeImmutable::getLastErrors();
+            if (!$date || ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0))) return false;
+            return $date->format('Y-m-d\TH:i') === $value ? $date : false;
+        };
+        $start = $parse($startRaw);
+        $end = $parse($endRaw);
+        if ($startRaw !== '' && !$start || $endRaw !== '' && !$end) return null;
+        if ($start && $end && $end <= $start) return null;
+        return [
+            'start' => $start?->format('Y-m-d H:i:s'),
+            'end' => $end?->format('Y-m-d H:i:s'),
+        ];
+    }
+
     public function voucher()
     {
         $q = mb_substr(trim((string) $this->request->getGet('q')), 0, 100);

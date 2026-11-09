@@ -5,7 +5,7 @@ use CodeIgniter\Test\CIUnitTestCase;
 
 final class CommerceJobQueueTest extends CIUnitTestCase
 {
-    private $db;
+    protected $db;
 
     protected function setUp(): void
     {
@@ -17,6 +17,7 @@ final class CommerceJobQueueTest extends CIUnitTestCase
             available_at TEXT NOT NULL, locked_at TEXT NULL, completed_at TEXT NULL, last_error TEXT NULL,
             created_at TEXT NOT NULL, updated_at TEXT NOT NULL
         )");
+        $this->db->query('CREATE TABLE pemesanan (id_midtrans TEXT PRIMARY KEY, data_mid TEXT NULL)');
     }
 
     protected function tearDown(): void

@@ -130,33 +130,11 @@ class BarangModel extends Model
     // Opsional helper
     public function isDiskonAktif(array $row): bool
     {
-        $diskon = (float)($row['diskon'] ?? 0);
-        if ($diskon <= 0) return false;
-
-        $pakaiJadwal = !empty($row['pakai_jadwal_diskon']);
-        if (!$pakaiJadwal) return true;
-
-        if (empty($row['diskon_mulai']) || empty($row['diskon_selesai'])) return false;
-
-        try {
-            $now     = new \DateTime('now');
-            $mulai   = new \DateTime($row['diskon_mulai']);
-            $selesai = new \DateTime($row['diskon_selesai']);
-            return $now >= $mulai && $now <= $selesai;
-        } catch (\Throwable $e) {
-            return false;
-        }
+        return \App\Services\CatalogPricing::discount($row) > 0;
     }
 
     public function applyScheduleToPrice(array $row): array
     {
-        $harga = (float)($row['harga'] ?? 0);
-        $row['harga_akhir'] = $harga;
-
-        if ($this->isDiskonAktif($row)) {
-            $diskon = (float)$row['diskon'];
-            $row['harga_akhir'] = round($harga * (100 - $diskon) / 100);
-        }
-        return $row;
+        return \App\Services\CatalogPricing::forSale($row);
     }
 }

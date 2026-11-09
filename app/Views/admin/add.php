@@ -1415,9 +1415,9 @@ const App = () => {
                   </td>
                 </tr>
 
-                {/* Jadwal Diskon */}
+                {/* Flash Sale schedule */}
                 <tr>
-                  <td>Jadwalkan Diskon</td>
+                  <td>Flash Sale terjadwal</td>
                   <td>
                     <label className="chk">
                       <input
@@ -1425,7 +1425,7 @@ const App = () => {
                         checked={formData.pakai_jadwal_diskon}
                         onChange={(e) => setFormData({ ...formData, pakai_jadwal_diskon: e.target.checked })}
                       />
-                      Aktifkan jadwal
+                      Aktifkan jadwal promo
                     </label>
                     {formData.pakai_jadwal_diskon && (
                       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px', marginTop:'8px' }}>

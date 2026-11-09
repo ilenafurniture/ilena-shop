@@ -112,7 +112,7 @@ function closeModalVoucher() {
                 </div>
                 <div class="d-flex flex-column align-items-center position-relative w-100" style="height: 100%;">
 
-                    <a href="<?= esc(ilena_store_path('/product?jenis=bundling'), 'attr'); ?>" class="btn-popup text-center mt-2">
+                    <a href="<?= esc(ilena_store_path('/bundles'), 'attr'); ?>" class="btn-popup text-center mt-2">
                         <?= esc(lang('Store.homeViewProducts')); ?>
                     </a>
                 </div>

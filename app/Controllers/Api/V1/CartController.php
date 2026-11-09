@@ -19,7 +19,7 @@ final class CartController extends BaseController
         if ($profile instanceof ResponseInterface) return $profile;
         $cart = $this->decodeCart($profile['keranjang'] ?? null);
         if ($cart === null) return $this->error('cart_data_invalid', 'Saved cart data needs support review.', 500);
-        return $this->json(['data' => $this->presentCart($cart)]);
+        return $this->cartResponse($cart);
     }
 
     /** Replace the full cart; repeating the same request is safe after a network retry. */
@@ -32,6 +32,14 @@ final class CartController extends BaseController
             return $this->error('invalid_cart', 'Send an items array.', 400);
         }
         if (count($body['items']) > 100) return $this->error('cart_limit', 'A cart can contain up to 100 product variants.', 422);
+
+        $currentProfile = $this->profile((string) $auth['user']['email']);
+        if ($currentProfile instanceof ResponseInterface) return $currentProfile;
+        $currentCart = $this->decodeCart($currentProfile['keranjang'] ?? null);
+        if ($currentCart === null) return $this->error('cart_data_invalid', 'Saved cart data needs support review.', 500);
+        foreach ($currentCart as $currentLine) {
+            if (!empty($currentLine['bundle_token'])) return $this->error('bundle_removal_required', 'Remove or retain furniture sets through their dedicated cart action before replacing the cart.', 409);
+        }
 
         $items = [];
         $keys = [];
@@ -69,7 +77,7 @@ final class CartController extends BaseController
         $db = db_connect();
         $db->transBegin();
         try {
-            $profile = $db->query('SELECT email FROM pembeli WHERE LOWER(TRIM(email)) = ? LIMIT 1 FOR UPDATE', [$email])->getRowArray();
+            $profile = $db->query('SELECT email, keranjang FROM pembeli WHERE LOWER(TRIM(email)) = ? LIMIT 1 FOR UPDATE', [$email])->getRowArray();
         } catch (\Throwable) {
             $db->transRollback();
             return $this->error('service_unavailable', 'The cart is temporarily unavailable.', 503);
@@ -77,6 +85,17 @@ final class CartController extends BaseController
         if (!$profile) {
             $db->transRollback();
             return $this->error('profile_not_found', 'Customer profile is unavailable.', 404);
+        }
+        $lockedCart = $this->decodeCart($profile['keranjang'] ?? null);
+        if ($lockedCart === null) {
+            $db->transRollback();
+            return $this->error('cart_data_invalid', 'Saved cart data needs support review.', 500);
+        }
+        foreach ($lockedCart as $lockedLine) {
+            if (!empty($lockedLine['bundle_token'])) {
+                $db->transRollback();
+                return $this->error('bundle_removal_required', 'Remove or retain furniture sets through their dedicated cart action before replacing the cart.', 409);
+            }
         }
         $updated = $db->table('pembeli')->where('LOWER(TRIM(email))', $email)->update([
             'keranjang' => json_encode($items, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR),
@@ -87,7 +106,7 @@ final class CartController extends BaseController
         }
         $db->transCommit();
 
-        return $this->json(['data' => $this->presentCart($items)]);
+        return $this->cartResponse($items);
     }
 
     private function presentCart(array $cart): array
@@ -103,6 +122,7 @@ final class CartController extends BaseController
             $quantity = max(1, min(100, (int) ($item['jumlah'] ?? 1)));
             $quantityTotal += $quantity;
             $product = $products[$id] ?? null;
+            if ($product && !empty($item['bundle_token'])) $product = (array) ($item['detail'] ?? $product);
             $variantExists = false;
             if ($product) {
                 foreach (json_decode((string) ($product['varian'] ?? '[]'), true) ?: [] as $variant) {
@@ -123,9 +143,82 @@ final class CartController extends BaseController
                 'line_total' => $lineTotal,
                 'currency' => 'IDR',
                 'image_url' => $available ? site_url('product-cover/' . rawurlencode($id) . '?size=300') : null,
-            ];
+            ] + (!empty($item['bundle_token']) ? [
+                'bundle' => ['id' => (int) $item['bundle_id'], 'slug' => (string) $item['bundle_slug'], 'token' => (string) $item['bundle_token'], 'name' => (string) ($item['_bundle_name'] ?? ''), 'savings' => (int) ($item['_bundle_discount'] ?? 0)],
+            ] : []);
         }
         return ['items' => $items, 'item_count' => count($items), 'quantity' => $quantityTotal, 'subtotal' => $subtotal, 'currency' => 'IDR'];
+    }
+
+    private function cartResponse(array $cart): ResponseInterface
+    {
+        $bundleCheck = (new \App\Services\BundleCartService())->validate($cart);
+        if (!$bundleCheck['ok']) return $this->error('bundle_changed', $bundleCheck['message'], 409);
+        return $this->json(['data' => $this->presentCart($bundleCheck['cart'])]);
+    }
+
+    public function addBundle(string $slug): ResponseInterface
+    {
+        $auth = $this->authenticated();
+        if ($auth instanceof ResponseInterface) return $auth;
+        if (!preg_match('/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/', $slug)) return $this->error('bundle_not_found', 'Furniture set not found.', 404);
+        $offer = (new \App\Services\ProductBundleService())->liveOffer($slug);
+        if (!$offer || (int) ($offer['available_sets'] ?? 0) < 1) return $this->error('bundle_unavailable', 'This furniture set is unavailable.', 409);
+
+        $db = db_connect();
+        $email = strtolower(trim((string) $auth['user']['email']));
+        $db->transBegin();
+        try {
+            $profile = $db->query('SELECT email, keranjang FROM pembeli WHERE LOWER(TRIM(email)) = ? LIMIT 1 FOR UPDATE', [$email])->getRowArray();
+            if (!$profile) { $db->transRollback(); return $this->error('profile_not_found', 'Customer profile is unavailable.', 404); }
+            $cart = $this->decodeCart($profile['keranjang'] ?? null);
+            if ($cart === null) { $db->transRollback(); return $this->error('cart_data_invalid', 'Saved cart data needs support review.', 500); }
+            $valid = (new \App\Services\BundleCartService())->validate($cart);
+            if (!$valid['ok']) { $db->transRollback(); return $this->error('bundle_changed', $valid['message'], 409); }
+            $cart = $valid['cart'];
+            if (count($cart) + count($offer['components']) > 100) { $db->transRollback(); return $this->error('cart_limit', 'The cart can contain up to 100 product variants.', 422); }
+            $token = bin2hex(random_bytes(16));
+            foreach ($offer['components'] as $component) $cart[] = [
+                'id_barang' => (string) $component['product_id'], 'varian' => (string) $component['variant_name'],
+                'jumlah' => (int) $component['quantity'], 'bundle_id' => (int) $offer['id'],
+                'bundle_slug' => (string) $offer['slug'], 'bundle_token' => $token,
+            ];
+            $saved = $db->table('pembeli')->where('LOWER(TRIM(email))', $email)->update(['keranjang' => json_encode($cart, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)]);
+            if (!$saved || !$db->transStatus()) throw new \RuntimeException('Cart write failed.');
+            $db->transCommit();
+            return $this->cartResponse($cart);
+        } catch (\Throwable $error) {
+            $db->transRollback();
+            log_message('error', 'API bundle cart update failed ({type}).', ['type' => get_class($error)]);
+            return $this->error('cart_save_failed', 'The furniture set was not added. Please retry.', 500);
+        }
+    }
+
+    public function removeBundle(string $token): ResponseInterface
+    {
+        $auth = $this->authenticated();
+        if ($auth instanceof ResponseInterface) return $auth;
+        if (!preg_match('/\A[a-f0-9]{32}\z/', $token)) return $this->error('bundle_not_found', 'Furniture set not found in the cart.', 404);
+        $db = db_connect();
+        $email = strtolower(trim((string) $auth['user']['email']));
+        $db->transBegin();
+        try {
+            $profile = $db->query('SELECT email, keranjang FROM pembeli WHERE LOWER(TRIM(email)) = ? LIMIT 1 FOR UPDATE', [$email])->getRowArray();
+            if (!$profile) { $db->transRollback(); return $this->error('profile_not_found', 'Customer profile is unavailable.', 404); }
+            $cart = $this->decodeCart($profile['keranjang'] ?? null);
+            if ($cart === null) { $db->transRollback(); return $this->error('cart_data_invalid', 'Saved cart data needs support review.', 500); }
+            $before = count($cart);
+            $cart = array_values(array_filter($cart, static fn (array $line): bool => !hash_equals($token, (string) ($line['bundle_token'] ?? ''))));
+            if (count($cart) === $before) { $db->transRollback(); return $this->error('bundle_not_found', 'Furniture set not found in the cart.', 404); }
+            $saved = $db->table('pembeli')->where('LOWER(TRIM(email))', $email)->update(['keranjang' => json_encode($cart, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)]);
+            if (!$saved || !$db->transStatus()) throw new \RuntimeException('Cart write failed.');
+            $db->transCommit();
+            return $this->cartResponse($cart);
+        } catch (\Throwable $error) {
+            $db->transRollback();
+            log_message('error', 'API bundle removal failed ({type}).', ['type' => get_class($error)]);
+            return $this->error('cart_save_failed', 'The furniture set was not removed. Please retry.', 500);
+        }
     }
 
     private function profile(string $email): array|ResponseInterface

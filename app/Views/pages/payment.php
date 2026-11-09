@@ -457,12 +457,15 @@ hr {
               $diskon  = (float)($k['detail']['diskon'] ?? 0);
               $src     = $k['src_gambar']        ?? '';
               $hargaSatuan = (int)round($harga * (100 - $diskon) / 100);
+              $bundleName = (string) ($k['_bundle_name'] ?? '');
+              $bundleSavings = (int) ($k['_bundle_discount'] ?? 0);
             ?>
                     <div class="item-row">
                         <img src="<?= esc($src); ?>" alt="produk">
                         <div style="flex:1">
                             <div style="font-weight:700;color:var(--ink);letter-spacing:-.02em;"><?= esc($nama); ?>
                             </div>
+                            <?php if ($bundleName !== ''): ?><div class="small mt-1" style="color:#96232a;font-weight:650;"><?= esc($bundleName); ?> · <?= esc(lang('Store.bundleIncluded')); ?></div><?php endif; ?>
                             <div class="item-info mt-1">
                                 <div class="k"><?= lang('Store.variantLabel'); ?></div>
                                 <div class="v"><?= esc($varian); ?></div>
@@ -475,6 +478,7 @@ hr {
                                 <div class="k"><?= lang('Store.price'); ?></div>
                                 <div class="v">Rp <?= number_format($hargaSatuan, 0, ',', '.'); ?></div>
                             </div>
+                            <?php if ($bundleSavings > 0): ?><div class="item-info"><div class="k"><?= esc(lang('Store.bundleSavings')); ?></div><div class="v" style="color:#96232a;">Rp <?= number_format($bundleSavings, 0, ',', '.'); ?></div></div><?php endif; ?>
                         </div>
                     </div>
                     <?php endforeach; ?>
@@ -503,6 +507,7 @@ hr {
 
         <!-- =================== RIGHT =================== -->
         <div>
+            <?php if (!empty($bundleVoucherNote)): ?><p class="alert-soft mb-2"><?= esc(lang('Store.bundleVoucherNote')); ?></p><?php else: ?>
             <!-- Redeem Voucher -->
             <div class="section-toggle mb-2" onclick="toggleRedeem()">
                 <p class="m-0"><?= lang('Store.redeemVoucher'); ?></p>
@@ -582,11 +587,13 @@ hr {
                 <?php endforeach; ?>
             </div>
             <?php endif; ?>
+            <?php endif; ?>
 
             <!-- Ringkasan -->
             <div class="card-soft mt-2">
                 <div class="hd"><?= lang('Store.orderSummary'); ?></div>
                 <div class="bd">
+                    <?php if (!empty($bundleVoucherNote)): ?><div class="alert-soft mb-2"><?= esc(lang('Store.bundleVoucherNote')); ?></div><?php endif; ?>
                     <?php if ($isMemberBaruSelected): ?>
                     <div class="alert-soft mb-2"><?= lang('Store.congratulations'); ?></div>
                     <?php endif; ?>

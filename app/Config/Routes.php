@@ -29,6 +29,8 @@ $routes->get('/', 'Pages::index', ['filter' => 'customerFilter']);
 $routes->get('/language/(:segment)', 'LocaleController::switch/$1', ['filter' => 'customerFilter']);
 $routes->get('/indexgalih', 'Pages::indexGalih', ['filter' => 'customerFilter']);
 $routes->get('/product', 'Pages::product', ['filter' => 'customerFilter']);
+$routes->get('/bundles', 'Pages::bundles', ['filter' => 'customerFilter']);
+$routes->post('/bundle/add/(:segment)', 'Pages::addBundle/$1', ['filter' => ['customerFilter', 'csrf']]);
 $routes->get('/product/category/(:any)', 'Pages::productCategory/$1', ['filter' => 'customerFilter']);
 $routes->get('/product/(:any)', 'Pages::product/$1', ['filter' => 'customerFilter']);
 $routes->get('/product/(:any)/(:any)', 'Pages::product/$1/$2', ['filter' => 'customerFilter']);
@@ -44,6 +46,7 @@ $routes->get('/find/(:any)', 'Pages::find/$1', ['filter' => 'customerFilter']);
 $routes->group('api/v1', static function ($routes) {
     $routes->get('products', 'Api\\V1\\CatalogController::index');
     $routes->get('products/(:segment)', 'Api\\V1\\CatalogController::show/$1');
+    $routes->get('bundles', 'Api\\V1\\BundlesController::index');
     $routes->get('categories', 'Api\\V1\\CatalogController::categories');
     $routes->get('regions/provinces', 'Api\\V1\\RegionsController::provinces');
     $routes->get('regions/cities', 'Api\\V1\\RegionsController::cities');
@@ -67,6 +70,8 @@ $routes->group('api/v1', static function ($routes) {
     $routes->post('account/addresses/(:num)/default', 'Api\\V1\\AccountController::setDefaultAddress/$1');
     $routes->get('account/cart', 'Api\\V1\\CartController::show');
     $routes->put('account/cart', 'Api\\V1\\CartController::replace');
+    $routes->post('account/cart/bundles/(:segment)', 'Api\\V1\\CartController::addBundle/$1');
+    $routes->delete('account/cart/bundles/(:segment)', 'Api\\V1\\CartController::removeBundle/$1');
     $routes->get('account/wishlist', 'Api\\V1\\WishlistController::show');
     $routes->put('account/wishlist', 'Api\\V1\\WishlistController::replace');
     $routes->get('account/orders', 'Api\\V1\\OrdersController::index');
@@ -213,6 +218,9 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
     $routes->post('product', 'AdminController::actionAddProduct');
     $routes->post('deleteproduct/(:any)', 'AdminController::deleteProduct/$1');
     $routes->post('activeproduct/(:any)', 'AdminController::activeProduct/$1');
+    $routes->get('bundles', 'AdminController::bundles');
+    $routes->post('bundles', 'AdminController::saveBundle');
+    $routes->post('bundles/(:num)', 'AdminController::saveBundle/$1');
 
     // legacy (kalau masih dipakai)
     $routes->post('product/(:any)', 'AdminController::actionEditProduct/$1');
@@ -330,6 +338,8 @@ $routes->post('/analytics/blacklist/del/(:any)', 'Analytics::delBlacklist/$1', [
 
 $routes->useSupportedLocalesOnly(true);
 $routes->group('{locale}', ['filter' => 'customerFilter'], static function ($routes) {
+    $routes->get('bundles', 'Pages::bundles');
+    $routes->post('bundle/add/(:segment)', 'Pages::addBundle/$1', ['filter' => 'csrf']);
     $routes->get('', 'Pages::index');
     $routes->get('faq', 'Pages::faq');
     $routes->get('contact', 'Pages::contact');

@@ -108,7 +108,7 @@ if (isset($_GET['koleksi'])) {
         }
     }
 }
-if (isset($_GET['jenis']) && !in_array(strtolower($_GET['jenis']), ['diskon','bundling'])) {
+if (isset($_GET['jenis']) && !in_array(strtolower($_GET['jenis']), ['diskon','bundling','flash-sale'], true)) {
     if ($_GET['jenis'] != '') {
         $jenis = explode(" ", $_GET['jenis']);
         $produkLama = $produk;
@@ -435,6 +435,7 @@ if (isset($_GET['ruang'])) {
                     <?php if (session()->get('role') == '1') { ?>
                     <a href="/admin/addproduct" class="ilena-catalog-add">Tambah Produk <span aria-hidden="true">↗</span></a>
                     <?php } ?>
+                    <?php if (!$isSmartSearch && !isset($_GET['jenis'])): ?><a href="<?= esc(ilena_store_path('/bundles'), 'attr'); ?>" style="color:#96232a;font-size:.84rem;font-weight:700;text-decoration:underline;text-underline-offset:4px;"><?= esc(lang('Store.bundleExploreLink')); ?></a><?php endif; ?>
                     <p><strong><?= number_format($catalogTotalResults, 0, ',', '.'); ?></strong><span><?= esc(lang('Store.designs')); ?></span></p>
                 </div>
             </header>
@@ -686,11 +687,11 @@ if (isset($_GET['ruang'])) {
             <?php } ?>
             <div class="container-card1 ilena-catalog-grid">
                 <?php foreach ($produk as $ind_p => $p) { ?>
-                <?php $cardVersion = !empty($p['tgl_update']) ? (int) strtotime((string) $p['tgl_update']) : time(); $displayProductName = ilena_product_display_name($p); $displayProductCategory = ilena_catalog_type_label((string) ($p['kategori'] ?? '')); ?>
+                <?php $cardVersion = !empty($p['tgl_update']) ? (int) strtotime((string) $p['tgl_update']) : time(); $displayProductName = ilena_product_display_name($p); $displayProductCategory = ilena_catalog_type_label((string) ($p['kategori'] ?? '')); $isFlashSale = \App\Services\CatalogPricing::scheduleStatus($p) === 'active'; ?>
                 <div class="card1" data-product-card>
                     <div style="position: relative;">
                         <span class="card1-content-img-kiri"
-                            <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>><?= $p['diskon'] > 0 ? $p['diskon'] . "%" : '' ?></span>
+                            <?= $p['diskon'] > 0 ? '' : 'style="background-color: rgba(0,0,0,0);"'; ?>><?= $p['diskon'] > 0 ? ($isFlashSale ? esc(lang('Store.flashSaleLabel')) . ' · ' : '') . $p['diskon'] . "%" : '' ?></span>
                         <div class="d-flex flex-column gap-2 card1-content-img-kanan">
                             <?php if (session()->get('role') == '1') { ?>
                             <a class="card1-btn-img" href="/admin/editproduct/<?= $p['id'] ?>" title="Edit produk"><i class="material-icons">edit</i></a>

@@ -18,6 +18,7 @@ $supportChatWaitingCount = (int) ($supportChatWaitingCount ?? 0);
 $mobileItems = [
     ['show' => $can('dashboard'), 'label' => 'Dashboard', 'icon' => 'space_dashboard', 'href' => '/admin', 'active' => $currentPath === 'admin' || $currentPath === 'admin/'],
     ['show' => $can('products'), 'label' => 'Produk', 'icon' => 'inventory_2', 'href' => '/admin/product', 'active' => $isActivePrefix(['admin/product']) || ($title ?? '') === 'Produk Kami'],
+    ['show' => $can('products'), 'label' => 'Paket Furniture', 'icon' => 'chair', 'href' => '/admin/bundles', 'active' => $isActivePrefix(['admin/bundles'])],
     ['show' => $can('orders_online'), 'label' => 'Pesanan', 'icon' => 'shopping_bag', 'href' => '/admin/order/online', 'active' => $isActivePrefix(['admin/order/online']), 'badge' => $websiteOrderTodoCount, 'badgeTitle' => 'pesanan yang masih memerlukan tindakan'],
     ['show' => $can('support_chat'), 'label' => 'Live Chat', 'icon' => 'forum', 'href' => '/admin/support-chat?bucket=waiting', 'active' => $isActivePrefix(['admin/support-chat']), 'badge' => $supportChatWaitingCount, 'badgeTitle' => 'percakapan menunggu staf'],
 ];
@@ -26,6 +27,7 @@ $mobileMenuGroups = [
     'Beranda' => [['show' => $can('dashboard'), 'label' => 'Dashboard', 'icon' => 'space_dashboard', 'href' => '/admin', 'active' => $currentPath === 'admin']],
     'Katalog' => [
         ['show' => $can('products'), 'label' => 'Produk', 'icon' => 'inventory_2', 'href' => '/admin/product', 'active' => $isActivePrefix(['admin/product']) || ($title ?? '') === 'Produk Kami'],
+        ['show' => $can('products'), 'label' => 'Paket Furniture', 'icon' => 'chair', 'href' => '/admin/bundles', 'active' => $isActivePrefix(['admin/bundles'])],
         ['show' => $can('products'), 'label' => 'Foto Menu Koleksi', 'icon' => 'collections', 'href' => '/admin/menu-previews', 'active' => $isActivePrefix(['admin/menu-previews'])],
         ['show' => $can('products'), 'label' => 'Perbaikan Foto Produk', 'icon' => 'image_search', 'href' => '/admin/changepic', 'active' => $isActivePrefix(['admin/changepic'])],
     ],

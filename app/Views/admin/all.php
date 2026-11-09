@@ -4,6 +4,7 @@
 <?php
 $koleksiterpilih = trim((string) ($_GET['koleksi'] ?? ''));
 $queryProduk = trim((string) ($_GET['q'] ?? ''));
+$promoFilter = (string) ($paginationFilters['promo'] ?? $_GET['promo'] ?? '');
 $totalProdukFiltered = (int) ($totalProdukFiltered ?? count($produk));
 $pag = (int) ($currentPage ?? max(1, (int) ($_GET['pag'] ?? 1)));
 $hitungPag = (int) ($totalPages ?? (int) ceil($totalProdukFiltered / 10));
@@ -165,6 +166,9 @@ $barangThumbUrl = function ($product) {
 }
 .translation-status.is-ready { color: #166534; border-color: #bbf7d0; background: #f0fdf4; }
 .translation-status.is-incomplete { color: #92400e; border-color: #fde68a; background: #fffbeb; }
+.flash-sale-status { display:inline-flex; align-items:center; gap:5px; margin-top:5px; padding:3px 8px; border:1px solid #f2c5c5; color:#8f1d22; background:#fff5f5; font-size:10px; line-height:1.3; font-weight:700; }
+.flash-sale-status.is-upcoming { color:#5d5147; border-color:#e5ded6; background:#f8f5f1; }
+.flash-sale-status.is-ended,.flash-sale-status.is-invalid { color:#5f6368; border-color:#dedede; background:#f5f5f5; }
 
 .bulk-toolbar {
     display: none;
@@ -657,12 +661,18 @@ $barangThumbUrl = function ($product) {
                     <?php } ?>
                 </select>
             </div>
+            <div class="filter-select">
+                <select class="form-select" name="promo" aria-label="Filter promo" onchange="this.form.submit()">
+                    <option value="" <?= $promoFilter === '' ? 'selected' : ''; ?>>Semua promo</option>
+                    <option value="flash-sale" <?= $promoFilter === 'flash-sale' ? 'selected' : ''; ?>>Flash Sale aktif</option>
+                </select>
+            </div>
             <div class="searchbox">
                 <i class="material-icons">search</i>
                 <input id="filterInput" name="q" type="search" value="<?= esc($queryProduk, 'attr') ?>" placeholder="Cari produk…" aria-label="Cari semua produk">
             </div>
             <button class="btn-default-merah" type="submit">Cari</button>
-            <?php if ($queryProduk !== '' || $koleksiterpilih !== ''): ?>
+            <?php if ($queryProduk !== '' || $koleksiterpilih !== '' || $promoFilter !== ''): ?>
                 <a class="btn btn-outline-secondary" href="/admin/product">Reset</a>
             <?php endif; ?>
         </form>
@@ -739,6 +749,10 @@ $barangThumbUrl = function ($product) {
                 <span class="translation-status <?= $englishProductReady ? 'is-ready' : 'is-incomplete'; ?>" title="<?= $englishProductReady ? 'Nama, deskripsi, dan label varian Inggris tersedia' : 'Lengkapi konten atau nama varian Inggris di Edit Produk'; ?>">
                     <?= $englishProductReady ? 'EN siap' : 'EN perlu dilengkapi'; ?>
                 </span>
+                <?php if (($p['promo_status'] ?? 'none') !== 'none'): ?>
+                    <?php $promoLabel = ['active' => 'Flash Sale aktif', 'upcoming' => 'Flash Sale terjadwal', 'ended' => 'Jadwal berakhir', 'invalid' => 'Jadwal perlu diperiksa'][$p['promo_status']] ?? 'Promo terjadwal'; ?>
+                    <span class="flash-sale-status <?= esc((string) $p['promo_status'], 'attr'); ?>"><?= esc($promoLabel); ?></span>
+                <?php endif; ?>
             </div>
 
             <div style="flex: 1;" class="price">Rp <?= number_format((int)$p['harga'], 0, ',', '.'); ?></div>

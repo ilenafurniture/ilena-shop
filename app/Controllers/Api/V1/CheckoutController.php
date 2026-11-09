@@ -33,8 +33,8 @@ final class CheckoutController extends BaseController
 
         $methods = [];
         foreach (self::PAYMENT_METHODS as $method) {
-            $fee = $this->paymentFee($method, max(0, $prepared['subtotal'] - $prepared['discount'] - $prepared['flash_sale'] + $prepared['shipping']['harga']));
-            $methods[] = ['id' => $method, 'fee' => $fee, 'total' => max(0, $prepared['subtotal'] - $prepared['discount'] - $prepared['flash_sale'] + $prepared['shipping']['harga'] + $fee), 'currency' => 'IDR'];
+            $fee = $this->paymentFee($method, max(0, $prepared['subtotal'] - $prepared['discount'] + $prepared['shipping']['harga']));
+            $methods[] = ['id' => $method, 'fee' => $fee, 'total' => max(0, $prepared['subtotal'] - $prepared['discount'] + $prepared['shipping']['harga'] + $fee), 'currency' => 'IDR'];
         }
         return $this->json(['data' => [
             'items' => $prepared['item_summary'], 'subtotal' => $prepared['subtotal'],
@@ -96,7 +96,7 @@ final class CheckoutController extends BaseController
                 return $prepared;
             }
             $selectedRate = $prepared['shipping'];
-            $base = max(0, $prepared['subtotal'] - $prepared['discount'] - $prepared['flash_sale'] + (int) $selectedRate['harga']);
+            $base = max(0, $prepared['subtotal'] - $prepared['discount'] + (int) $selectedRate['harga']);
             $fee = $this->paymentFee($method, $base);
             $gross = max(0, $base + $fee);
             if ($gross < 1 || $gross > 2000000000) {
@@ -118,7 +118,6 @@ final class CheckoutController extends BaseController
 
             $items = $prepared['item_details'];
             foreach ($prepared['vouchers'] as $voucher) $items[] = ['id' => (string) $voucher['kode'], 'price' => -(int) $voucher['discount'], 'quantity' => 1, 'name' => 'Voucher'];
-            if ($prepared['flash_sale'] > 0) $items[] = ['id' => 'Flash Sale', 'price' => -(int) $prepared['flash_sale'], 'quantity' => 1, 'name' => 'Flash Sale'];
             $items[] = ['id' => 'Biaya Ongkir', 'price' => (int) $selectedRate['harga'], 'quantity' => 1, 'name' => 'Biaya Ongkir'];
             $items[] = ['id' => 'Biaya Admin', 'price' => $fee, 'quantity' => 1, 'name' => 'Biaya Admin'];
             foreach ($items as &$item) { $item['id'] = mb_substr((string) $item['id'], 0, 64); $item['name'] = mb_substr((string) $item['name'], 0, 50); }
@@ -200,6 +199,9 @@ final class CheckoutController extends BaseController
         if (empty($address['prov_id']) || empty($address['kab_id']) || empty($address['alamat_lengkap']) || empty($address['nama_penerima']) || empty($address['nohp_penerima'])) return $this->error('address_incomplete', 'Update the selected address before checkout.', 422);
         $cartRaw = json_decode((string) ($profile['keranjang'] ?? ''), true);
         if (!is_array($cartRaw) || !array_is_list($cartRaw) || $cartRaw === [] || count($cartRaw) > 50) return $this->error('cart_empty', 'Add products to your cart before checkout.', 422);
+        $bundleCheck = (new \App\Services\BundleCartService())->validate($cartRaw);
+        if (!$bundleCheck['ok']) return $this->error('bundle_changed', $bundleCheck['message'], 409);
+        $cartRaw = $bundleCheck['cart'];
         $ids = [];
         foreach ($cartRaw as $line) {
             if (!is_array($line) || !is_scalar($line['id_barang'] ?? null) || !is_string($line['varian'] ?? null) || filter_var($line['jumlah'] ?? null, FILTER_VALIDATE_INT) === false || (int) $line['jumlah'] < 1 || (int) $line['jumlah'] > 100) return $this->error('cart_invalid', 'Review product quantities in your cart.', 422);
@@ -214,20 +216,26 @@ final class CheckoutController extends BaseController
                 }
             }
         } catch (\Throwable) { return $this->error('checkout_unavailable', 'Stock is temporarily unavailable. Try again shortly.', 503); }
-        $cart = []; $items = []; $summary = []; $subtotal = 0; $flashSaleBase = 0; $quantityByVariant = [];
+        $cart = []; $items = []; $summary = []; $subtotal = 0; $quantityByVariant = [];
         foreach ($cartRaw as $line) {
             $id = trim((string) $line['id_barang']); $variantName = trim($line['varian']); $qty = (int) $line['jumlah'];
             if ($id === '' || strlen($id) > 64 || preg_match('/\A[A-Za-z0-9_-]+\z/', $id) !== 1 || $variantName === '' || mb_strlen($variantName) > 100) return $this->error('cart_invalid', 'A cart item is invalid.', 422);
             $product = $products[$id] ?? null;
             if (!$product) return $this->error('product_unavailable', 'A cart product is no longer available.', 409);
+            if (!empty($line['bundle_token'])) {
+                $trusted = (array) ($line['detail'] ?? []);
+                if (!isset($trusted['_validated_bundle_unit_price'])) return $this->error('bundle_changed', 'A furniture set changed. Refresh the cart and try again.', 409);
+                $product['harga'] = $trusted['harga'] ?? $product['harga'];
+                $product['diskon'] = $trusted['diskon'] ?? $product['diskon'];
+                $product['_validated_bundle_unit_price'] = $trusted['_validated_bundle_unit_price'];
+            }
             $variant = null;
             foreach (json_decode((string) ($product['varian'] ?? '[]'), true) ?: [] as $candidate) if (is_array($candidate) && strcasecmp(trim((string) ($candidate['nama'] ?? '')), $variantName) === 0) { $variant = $candidate; break; }
             if (!$variant) return $this->error('variant_unavailable', 'A selected product variant is no longer available.', 409);
             $key = $id . "\0" . mb_strtolower($variantName); $quantityByVariant[$key] = ($quantityByVariant[$key] ?? 0) + $qty;
             if ((int) ($variant['stok'] ?? 0) - (int) ($reservations[$key] ?? 0) < $quantityByVariant[$key]) return $this->error('insufficient_stock', 'A cart quantity exceeds available stock.', 409);
             $price = CatalogPricing::unitPrice($product); $lineTotal = $price * $qty; $subtotal += $lineTotal;
-            if (str_contains(mb_strtolower((string) ($product['nama'] ?? '')), 'bundling')) $flashSaleBase += $lineTotal;
-            $cart[] = ['id_barang' => $id, 'varian' => $variantName, 'jumlah' => $qty, 'detail' => $product];
+            $cart[] = ['id_barang' => $id, 'varian' => $variantName, 'jumlah' => $qty, 'detail' => $product] + array_intersect_key($line, array_flip(['bundle_id', 'bundle_slug', 'bundle_token', '_bundle_name', '_bundle_discount']));
             $description = json_decode((string) ($product['deskripsi'] ?? '[]'), true) ?: [];
             $actual = is_array($description['dimensi']['asli'] ?? null) ? $description['dimensi']['asli'] : [];
             $items[] = [
@@ -237,10 +245,8 @@ final class CheckoutController extends BaseController
                 'weight_kg' => (string) ($actual['berat'] ?? ''), 'quantity' => $qty,
                 'name' => mb_substr((string) ($product['nama'] ?? 'Furniture') . ' (' . $variantName . ')', 0, 50), 'variant' => $variantName,
             ];
-            $summary[] = ['product_id' => $id, 'name' => (string) ($product['nama'] ?? ''), 'variant' => $variantName, 'quantity' => $qty, 'unit_price' => $price, 'line_total' => $lineTotal];
+            $summary[] = ['product_id' => $id, 'name' => (string) ($product['nama'] ?? ''), 'variant' => $variantName, 'quantity' => $qty, 'unit_price' => $price, 'line_total' => $lineTotal, 'bundle' => !empty($line['bundle_token']) ? (string) ($line['_bundle_name'] ?? '') : null];
         }
-        $flash = (new \DateTimeImmutable('now', new \DateTimeZone('Asia/Jakarta')))->format('H:i');
-        $flashSale = $flashSaleBase > 0 && $flash >= '03:00' && $flash <= '07:00' ? (int) floor($flashSaleBase * 0.15) : 0;
         $rateService = new ShippingService();
         $rates = $rateService->rates($address, $cart);
         $rates = array_values((new FreeShippingService())->applyToRates($address, $rates, (float) $subtotal));
@@ -256,12 +262,12 @@ final class CheckoutController extends BaseController
             if ($fresh === null) return $this->error('shipping_rate_changed', 'Delivery price changed. Refresh the quote and choose again.', 409);
             $selected = $fresh + ['rate_id' => $shippingOption];
         }
-        $vouchers = $this->automaticVouchers($email, (float) $subtotal);
+        $vouchers = $bundleCheck['has_bundles'] ? [] : $this->automaticVouchers($email, (float) $subtotal);
         if ($vouchers instanceof ResponseInterface) return $vouchers;
         $voucherResult = (new VoucherStackCalculator())->calculate($vouchers, null, false, (float) $subtotal);
         return [
             'address' => $address, 'cart' => $cart, 'item_details' => $items, 'item_summary' => $summary,
-            'subtotal' => (int) $subtotal, 'flash_sale' => $flashSale,
+            'subtotal' => (int) $subtotal, 'flash_sale' => 0,
             'vouchers' => $voucherResult['applied'], 'discount' => (int) $voucherResult['discount'],
             'shipping' => $selected,
             'shipping_summary' => ['option_id' => $shippingOption, 'service' => ($selected['provider'] ?? '') === 'apm' ? 'Jasa Kirim Toko' : (string) ($selected['nama'] ?? 'Pengiriman'), 'price' => max(0, (int) ($selected['harga'] ?? 0)), 'delivery_days' => (string) ($selected['estimasi'] ?? ''), 'free_shipping' => !empty($selected['gratis_ongkir'])],
