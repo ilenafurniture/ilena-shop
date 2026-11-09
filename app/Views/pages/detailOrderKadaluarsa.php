@@ -464,6 +464,8 @@ foreach ($items as $it) {
 
         <hr class="hr">
 
+        <?= $this->include('partials/order_detail_tools', ['pemesananSelected' => $pemesananSelected, 'id_order' => $id_order]); ?>
+
         <div class="actions">
             <a href="<?= ilena_store_path('/order'); ?>" class="btn-order"><?= $isEnglish ? 'Back to My Orders' : 'Kembali ke Pesanan Saya'; ?></a>
             <a href="<?= ilena_store_path('/'); ?>" class="btn-ghost"><?= $isEnglish ? 'Continue Shopping' : 'Belanja Lagi'; ?></a>

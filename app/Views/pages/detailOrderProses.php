@@ -502,6 +502,8 @@ $grossAmount = (int)($dataMid['gross_amount'] ?? 0);
     </div>
     <?php elseif (!empty($orderActionMessage)): ?><p role="status"><?= esc($orderActionMessage); ?></p><?php endif; ?>
 
+    <?= $this->include('partials/order_detail_tools', ['pemesananSelected' => $pemesananSelected, 'id_order' => $id_order]); ?>
+
     <?php if (session()->get('isLogin')) { ?>
     <div class="center">
         <a href="<?= ilena_store_path('/order'); ?>" class="btn-order"

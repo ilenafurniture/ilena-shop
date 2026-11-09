@@ -56,78 +56,43 @@
     margin: 0;
 }
 
-/* Table pesanan */
-.container-table {
-    width: 100%;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    overflow: hidden;
-    background: #fff;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, .05);
+/* Pesanan dibuka sebagai halaman detail, bukan drawer agar seluruh alur berada di satu tempat. */
+.ilena-order-list {
+    border-top: 1px solid var(--line);
 }
 
-.header-table,
-.isi-table {
-    display: grid;
-    grid-template-columns: 1.6fr 1.2fr 1.2fr 1fr 1fr;
-    gap: .5rem;
-    padding: .9rem 1rem;
-}
-
-.header-table {
-    background: linear-gradient(180deg, #fafafa, #f3f4f6);
-    font-weight: 700;
-    color: #374151;
-    text-transform: uppercase;
-    font-size: .78rem;
-    letter-spacing: .06em;
+.ilena-order-item {
     border-bottom: 1px solid var(--line);
 }
 
-.isi-table {
-    cursor: pointer;
-    border-bottom: 1px solid #f1f5f9;
-    transition: background .15s ease;
+.ilena-order-link {
+    display: grid;
+    grid-template-columns: minmax(150px, 1.15fr) minmax(150px, 1fr) minmax(120px, .9fr) minmax(130px, .8fr) auto;
+    align-items: center;
+    gap: 18px;
+    padding: 18px 10px;
+    color: inherit;
+    text-decoration: none;
+    transition: background-color .16s ease, padding .16s ease;
 }
 
-.isi-table:last-child {
-    border-bottom: 0;
+.ilena-order-link:hover,
+.ilena-order-link:focus-visible {
+    background: #faf8f5;
+    color: inherit;
 }
 
-.isi-table:hover {
-    background: #f9fafb;
+.ilena-order-link:focus-visible {
+    outline: 2px solid #a62c2b;
+    outline-offset: -2px;
 }
 
-/* Offcanvas (detail pesanan) */
-.container-offcanvas {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: min(720px, 92vw);
-    background: #fff;
-    transform: translateX(100%);
-    transition: transform .25s ease-out;
-    border-left: 1px solid var(--line);
-    padding: 16px;
-    overflow-y: auto;
-    box-shadow: -16px 0 40px rgba(0, 0, 0, .08);
-}
-
-.container-offcanvas.show {
-    transform: translateX(0);
-}
-
-.container-offcanvas h3 {
-    font-weight: 800;
-    letter-spacing: -.02em;
-}
-
-.container-offcanvas .garis {
-    display: block;
-    height: 1px;
-    background: var(--line);
-}
+.ilena-order-id { font-weight: 700; overflow-wrap: anywhere; }
+.ilena-order-meta { display: grid; gap: 4px; min-width: 0; }
+.ilena-order-label { color: var(--muted); font-size: .78rem; }
+.ilena-order-recipient { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ilena-order-total { font-weight: 700; white-space: nowrap; }
+.ilena-order-open { color: #a62c2b; font-size: .88rem; font-weight: 700; white-space: nowrap; }
 
 /* Grid ringkas kanan */
 .tigapuluh-ke-seratus .card {
@@ -176,22 +141,16 @@
     color: #166534;
 }
 
-/* Responsif */
-@media (max-width: 768px) {
-
-    .header-table,
-    .isi-table {
-        grid-template-columns: 1.6fr 1.2fr .9fr .9fr 1fr;
-        font-size: .95rem;
-    }
+@media (max-width: 760px) {
+    .ilena-order-link { grid-template-columns: minmax(0, 1fr) auto; gap: 8px 14px; padding: 15px 4px; }
+    .ilena-order-link > .ilena-order-meta:nth-child(2), .ilena-order-link > .ilena-order-meta:nth-child(3) { grid-column: 1; }
+    .ilena-order-link > .ilena-order-meta:nth-child(3) { grid-row: 3; }
+    .ilena-order-link > .ilena-order-total { grid-column: 1; grid-row: 4; }
+    .ilena-order-link > .ilena-order-open { grid-column: 2; grid-row: 1 / span 4; align-self: center; }
 }
 
-/* Tombol kecil offcanvas */
-.btn-close-ghost {
-    border: 1px solid var(--line);
-    background: #fff;
-    border-radius: 10px;
-    padding: .35rem .6rem;
+@media (prefers-reduced-motion: reduce) {
+    .ilena-order-link { transition: none; }
 }
 </style>
 
@@ -270,185 +229,54 @@
         </section>
         <?php else : ?>
 
-        <!-- Desktop -->
-        <div style="overflow-x: auto;" class="show-block-ke-hide">
-            <div class="container-table">
-                <div class="header-table">
-                    <div><?= lang('Store.orderId'); ?></div>
-                    <div><?= lang('Store.date'); ?></div>
-                    <div><?= lang('Store.recipient'); ?></div>
-                    <div><?= lang('Store.price'); ?></div>
-                    <div><?= lang('Store.status'); ?></div>
-                </div>
-
-                <?php foreach ($pesanan as $ind_p => $p) { ?>
-                <div class="isi-table" onclick="openDetail(<?= $ind_p; ?>)" title="<?= esc(lang('Store.viewOrderDetails'), 'attr'); ?>">
-                    <div class="text-truncate"><?= $p['id_midtrans']; ?></div>
-                    <?php
-                        $transactionTime = strtotime($p['data_mid']['transaction_time']);
-                        $bulan = service('request')->getLocale() === 'en' ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] : ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
-                        $tgl = date("d", $transactionTime) . " " . $bulan[(int)date("m", $transactionTime) - 1] . " " . date("Y H:i:s", $transactionTime);
-                        ?>
-                    <div><?= $tgl; ?></div>
-                    <div class="text-truncate"><?= $p['nama']; ?></div>
-                    <div>Rp <?= number_format((int)$p['data_mid']['gross_amount'], 0, ',', '.'); ?></div>
-                    <div>
-                        <?php
-                          $s = strtolower($p['status']);
-                          $cls = 'badge-status ';
-                          if(in_array($s, ['proses','capture','settlement'])) $cls.='proses';
-                          elseif($s==='menunggu pembayaran' || $s==='pending') $cls.='menunggu';
-                          elseif($s==='kadaluarsa' || $s==='expire') $cls.='kadaluarsa';
-                          elseif($s==='ditolak' || $s==='deny' || $s==='gagal' || $s==='failure') $cls.='gagal';
-                          elseif($s==='dibatalkan' || $s==='cancel') $cls.='dibatalkan';
-                          elseif(strpos($s,'refund')!==false) $cls.='refund';
-                          else $cls.='kadaluarsa';
-                        ?>
-                        <?php $statusLabel = in_array($s, ['proses','capture','settlement'], true) ? lang('Store.statusProcessing') : (in_array($s, ['menunggu pembayaran','pending'], true) ? lang('Store.statusPending') : (in_array($s, ['kadaluarsa','expire'], true) ? lang('Store.statusExpired') : (in_array($s, ['ditolak','deny','gagal','failure'], true) ? lang('Store.statusRejected') : (in_array($s, ['dibatalkan','cancel'], true) ? lang('Store.statusCancelled') : $p['status'])))); ?>
-                        <span class="<?= $cls; ?>"><?= esc($statusLabel); ?></span>
+        <section class="ilena-order-list" aria-label="<?= esc(lang('Store.transactionHistory'), 'attr'); ?>">
+            <?php foreach ($pesanan as $p):
+                $orderId = (string) ($p['id_midtrans'] ?? '');
+                $rawStatus = (string) ($p['status'] ?? '');
+                $statusKey = strtolower($rawStatus);
+                $detailHref = ilena_store_path('/orderdetail/' . rawurlencode($statusKey) . '?idorder=' . rawurlencode($orderId));
+                $transactionTime = strtotime((string) ($p['data_mid']['transaction_time'] ?? '')) ?: 0;
+                $monthNames = service('request')->getLocale() === 'en' ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] : ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+                $orderDate = $transactionTime ? date('d', $transactionTime) . ' ' . $monthNames[(int) date('m', $transactionTime) - 1] . ' ' . date('Y, H:i', $transactionTime) : '—';
+                $statusClass = 'badge-status ';
+                if (in_array($statusKey, ['proses', 'capture', 'settlement'], true)) $statusClass .= 'proses';
+                elseif (in_array($statusKey, ['menunggu pembayaran', 'pending'], true)) $statusClass .= 'menunggu';
+                elseif (in_array($statusKey, ['kadaluarsa', 'expire'], true)) $statusClass .= 'kadaluarsa';
+                elseif (in_array($statusKey, ['ditolak', 'deny', 'gagal', 'failure'], true)) $statusClass .= 'gagal';
+                elseif (in_array($statusKey, ['dibatalkan', 'cancel'], true)) $statusClass .= 'dibatalkan';
+                elseif (str_contains($statusKey, 'refund')) $statusClass .= 'refund';
+                else $statusClass .= 'kadaluarsa';
+                $statusLabel = in_array($statusKey, ['proses', 'capture', 'settlement'], true) ? lang('Store.statusProcessing') : (in_array($statusKey, ['menunggu pembayaran', 'pending'], true) ? lang('Store.statusPending') : (in_array($statusKey, ['kadaluarsa', 'expire'], true) ? lang('Store.statusExpired') : (in_array($statusKey, ['ditolak', 'deny', 'gagal', 'failure'], true) ? lang('Store.statusRejected') : (in_array($statusKey, ['dibatalkan', 'cancel'], true) ? lang('Store.statusCancelled') : $rawStatus))));
+                $isEnglish = service('request')->getLocale() === 'en';
+            ?>
+            <article class="ilena-order-item">
+                <a class="ilena-order-link" href="<?= esc($detailHref, 'attr'); ?>" aria-label="<?= esc(($isEnglish ? 'View order ' : 'Lihat pesanan ') . $orderId, 'attr'); ?>">
+                    <div class="ilena-order-meta">
+                        <span class="ilena-order-label"><?= lang('Store.orderId'); ?></span>
+                        <span class="ilena-order-id"><?= esc($orderId); ?></span>
+                        <span class="<?= esc($statusClass, 'attr'); ?>"><?= esc($statusLabel); ?></span>
                     </div>
-                </div>
-                <?php } ?>
-            </div>
-        </div>
-
-        <!-- Mobile -->
-        <div style="overflow-x: auto;" class="hide-ke-show-block">
-            <div class="container-table" style="width: 660px;">
-                <div class="header-table">
-                    <div><?= lang('Store.orderId'); ?></div>
-                    <div><?= lang('Store.date'); ?></div>
-                    <div><?= lang('Store.recipient'); ?></div>
-                    <div><?= lang('Store.price'); ?></div>
-                    <div><?= lang('Store.status'); ?></div>
-                </div>
-
-                <?php foreach ($pesanan as $ind_p => $p) { ?>
-                <div class="isi-table" onclick="openDetail(<?= $ind_p; ?>)">
-                    <div class="text-truncate"><?= $p['id_midtrans']; ?></div>
-                    <?php
-                        $transactionTime = strtotime($p['data_mid']['transaction_time']);
-                        $bulan = service('request')->getLocale() === 'en' ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] : ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
-                        $tgl = date("d", $transactionTime) . " " . $bulan[(int)date("m", $transactionTime) - 1] . " " . date("Y H:i:s", $transactionTime);
-                        ?>
-                    <div><?= $tgl; ?></div>
-                    <div class="text-truncate"><?= $p['nama']; ?></div>
-                    <div>Rp <?= number_format((int)$p['data_mid']['gross_amount'], 0, ',', '.'); ?></div>
-                    <div>
-                        <?php
-                          $s = strtolower($p['status']);
-                          $cls = 'badge-status ';
-                          if(in_array($s, ['proses','capture','settlement'])) $cls.='proses';
-                          elseif($s==='menunggu pembayaran' || $s==='pending') $cls.='menunggu';
-                          elseif($s==='kadaluarsa' || $s==='expire') $cls.='kadaluarsa';
-                          elseif($s==='ditolak' || $s==='deny' || $s==='gagal' || $s==='failure') $cls.='gagal';
-                          elseif($s==='dibatalkan' || $s==='cancel') $cls.='dibatalkan';
-                          elseif(strpos($s,'refund')!==false) $cls.='refund';
-                          else $cls.='kadaluarsa';
-                        ?>
-                        <?php $statusLabel = in_array($s, ['proses','capture','settlement'], true) ? lang('Store.statusProcessing') : (in_array($s, ['menunggu pembayaran','pending'], true) ? lang('Store.statusPending') : (in_array($s, ['kadaluarsa','expire'], true) ? lang('Store.statusExpired') : (in_array($s, ['ditolak','deny','gagal','failure'], true) ? lang('Store.statusRejected') : (in_array($s, ['dibatalkan','cancel'], true) ? lang('Store.statusCancelled') : $p['status'])))); ?>
-                        <span class="<?= $cls; ?>"><?= esc($statusLabel); ?></span>
+                    <div class="ilena-order-meta">
+                        <span class="ilena-order-label"><?= lang('Store.date'); ?></span>
+                        <time datetime="<?= $transactionTime ? esc(date(DATE_ATOM, $transactionTime), 'attr') : ''; ?>"><?= esc($orderDate); ?></time>
                     </div>
-                </div>
-                <?php } ?>
-            </div>
-        </div>
+                    <div class="ilena-order-meta">
+                        <span class="ilena-order-label"><?= lang('Store.recipient'); ?></span>
+                        <span class="ilena-order-recipient"><?= esc((string) ($p['nama'] ?? '—')); ?></span>
+                    </div>
+                    <div class="ilena-order-total">Rp <?= number_format((int) ($p['data_mid']['gross_amount'] ?? 0), 0, ',', '.'); ?></div>
+                    <span class="ilena-order-open"><?= $isEnglish ? 'View details' : 'Lihat detail'; ?> <span aria-hidden="true">›</span></span>
+                </a>
+            </article>
+            <?php endforeach; ?>
+        </section>
         <?php endif; ?>
     </main>
 </div>
 
-<!-- Offcanvas detail -->
-<div class="container-offcanvas" style="z-index: 100;">
-    <div class="d-flex justify-content-end">
-        <button class="btn btn-light btn-close-ghost" onclick="closeDetail()" title="<?= esc(lang('Store.close'), 'attr'); ?>">
-            <i class="material-icons">close</i>
-        </button>
-    </div>
-
-    <div class="mt-2 d-flex justify-content-between pb-1">
-        <p class="m-0 w-50" style="letter-spacing: -1px;"><?= lang('Store.orderId'); ?></p>
-        <p class="w-50 fw-bold m-0 text-end" style="letter-spacing: -1px;" id="id">#ILENA00001</p>
-    </div>
-    <div class="mt-2 d-flex justify-content-between pb-1">
-        <p class="w-50 m-0" style="letter-spacing: -1px;"><?= lang('Store.recipientName'); ?></p>
-        <p class="w-50 fw-bold m-0 text-end" style="letter-spacing: -1px;" id="nama">—</p>
-    </div>
-    <div class="mt-2 d-flex justify-content-between pb-1">
-        <p class="w-50 m-0" style="letter-spacing: -1px;"><?= lang('Store.recipientPhone'); ?></p>
-        <p class="w-50 fw-bold m-0 text-end" style="letter-spacing: -1px;" id="nohp">—</p>
-    </div>
-    <div class="mt-2 d-flex justify-content-between pb-1">
-        <p class="w-50 m-0" style="letter-spacing: -1px;"><?= lang('Store.recipientAddress'); ?></p>
-        <p class="w-50 fw-bold m-0 text-end" style="letter-spacing: -1px;" id="alamat">—</p>
-    </div>
-    <div class="mt-2 d-flex justify-content-between pb-1">
-        <p class="w-50 m-0" style="letter-spacing: -1px;"><?= lang('Store.orderEmail'); ?></p>
-        <p class="w-50 fw-bold m-0 text-end" style="letter-spacing: -1px;" id="email">—</p>
-    </div>
-
-    <h3 class="my-3"><?= lang('Store.products'); ?></h3>
-    <div id="item">
-        <div class="d-flex mb-1 border-bottom pb-1">
-            <p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;"><?= lang('Store.name'); ?></p>
-            <p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;"><?= lang('Store.quantity'); ?></p>
-            <p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;"><?= lang('Store.price'); ?></p>
-        </div>
-    </div>
-
-    <span class="garis my-4"></span>
-
-    <div class="d-flex justify-content-center gap-2">
-        <a href="" class="btn-default" id="btn-invoice"><?= lang('Store.invoice'); ?></a>
-        <a href="" class="btn-default" id="btn-detail"><?= lang('Store.orderDetails'); ?></a>
-    </div>
-
-    <details class="ilena-order-service-request mt-4">
-        <summary><?= service('request')->getLocale() === 'en' ? 'Need help with this order?' : 'Perlu bantuan untuk pesanan ini?'; ?></summary>
-        <p><?= service('request')->getLocale() === 'en' ? 'Send a cancellation, return, or refund request. The team will review it; this form does not itself cancel an order or issue a refund.' : 'Kirim permintaan pembatalan, retur, atau refund. Tim akan meninjaunya; formulir ini tidak otomatis membatalkan pesanan atau menerbitkan refund.'; ?></p>
-        <form method="post" id="order-service-form" action="<?= esc(ilena_store_path('/commerce/order-case/cancellation'), 'attr'); ?>">
-            <?= csrf_field(); ?><input type="hidden" name="order_id" id="service-case-order-id">
-            <label><?= service('request')->getLocale() === 'en' ? 'Request type' : 'Jenis permintaan'; ?><select id="service-case-type"><option value="cancellation"><?= service('request')->getLocale() === 'en' ? 'Cancellation request' : 'Permintaan pembatalan'; ?></option><option value="return"><?= service('request')->getLocale() === 'en' ? 'Return' : 'Retur'; ?></option><option value="refund">Refund</option></select></label>
-            <label><?= service('request')->getLocale() === 'en' ? 'Reason' : 'Alasan'; ?><input name="reason" maxlength="80" minlength="3" required></label>
-            <label><?= service('request')->getLocale() === 'en' ? 'Additional details (optional)' : 'Keterangan tambahan (opsional)'; ?><textarea name="message" maxlength="2000" rows="3"></textarea></label>
-            <button type="submit" class="btn-default"><?= service('request')->getLocale() === 'en' ? 'Submit request' : 'Kirim permintaan'; ?></button>
-        </form>
-    </details>
-
-    <div class="my-3 text-center" style="color:var(--muted); font-size:.85rem;">
-        <?= lang('Store.closeHint'); ?>
-    </div>
-</div>
-
 <script>
-/* Data asli dari controller (tetap) */
-const pesanan = JSON.parse('<?= $pesananJson; ?>');
-
-/* DOM refs */
-const idElm = document.getElementById("id");
-const namaElm = document.getElementById("nama");
-const nohpElm = document.getElementById("nohp");
-const alamatElm = document.getElementById("alamat");
-const emailElm = document.getElementById("email");
-const itemElm = document.getElementById("item");
-const containerOffcanvasElm = document.querySelector(".container-offcanvas");
-const btnInvoiceElm = document.getElementById('btn-invoice');
-const btnDetailElm = document.getElementById('btn-detail');
-const serviceCaseOrderElm = document.getElementById('service-case-order-id');
-const serviceCaseTypeElm = document.getElementById('service-case-type');
-const serviceCaseFormElm = document.getElementById('order-service-form');
-const storeRoutePrefix = <?= json_encode(service('request')->getLocale() === 'en' ? '/en' : ''); ?>;
-
 const sandiElm = document.querySelector('input[name="sandi"]');
 const editSandiElm = document.getElementById('edit-sandi');
-
-/* Helpers */
-function rupiah(n) {
-    try {
-        return new Intl.NumberFormat('id-ID').format(Number(n || 0));
-    } catch (e) {
-        return n;
-    }
-}
 
 /* Edit sandi overlay */
 function openGantiSandi() {
@@ -473,59 +301,6 @@ editSandiElm.addEventListener('click', (ev) => {
     if (ev.target === editSandiElm) closeEditSandi();
 });
 
-/* Offcanvas detail pesanan */
-function openDetail(indP) {
-    const p = pesanan[indP];
-    if (!p) return;
-
-    idElm.textContent = p.id_midtrans || '-';
-    namaElm.textContent = p.nama || '-';
-    nohpElm.textContent = p.nohp || '-';
-    alamatElm.textContent = p.alamat || '-';
-    emailElm.textContent = p.email || '-';
-
-    // header
-    itemElm.innerHTML =
-        '<div class="d-flex mb-1 border-bottom pb-1">' +
-        '<p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;"><?= esc(lang('Store.name'), 'js'); ?></p>' +
-        '<p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;"><?= esc(lang('Store.quantity'), 'js'); ?></p>' +
-        '<p class="d-block fw-bold m-0 text-center text-secondary" style="flex: 1; letter-spacing: -1px;"><?= esc(lang('Store.price'), 'js'); ?></p>' +
-        '</div>';
-
-    (p.items || []).forEach(el => {
-        const lineName = String(el.name || '').toLowerCase();
-        if (!['biaya ongkir', 'biaya admin', 'voucher', 'flash sale'].includes(lineName)) {
-            itemElm.innerHTML +=
-                '<div class="d-flex py-1">' +
-                '<p class="d-block fw-bold m-0 text-center" style="flex: 1; letter-spacing: -1px;">' + (el
-                    .name || '-') + '</p>' +
-                '<p class="d-block fw-bold m-0 text-center" style="flex: 1; letter-spacing: -1px;">' + (el
-                    .quantity || 0) + '</p>' +
-                '<p class="d-block fw-bold m-0 text-center" style="flex: 1; letter-spacing: -1px;">Rp ' +
-                rupiah(el.price) + '</p>' +
-                '</div>';
-        }
-    });
-
-    btnInvoiceElm.href = storeRoutePrefix + '/invoice/' + p.id_midtrans;
-    btnDetailElm.href = storeRoutePrefix + '/orderdetail/' + (String(p.status || '').toLowerCase()) + '?idorder=' + p.id_midtrans;
-    serviceCaseOrderElm.value = p.id_midtrans || '';
-    serviceCaseFormElm.action = storeRoutePrefix + '/commerce/order-case/' + encodeURIComponent(serviceCaseTypeElm.value);
-
-    containerOffcanvasElm.classList.add("show");
-}
-
-serviceCaseTypeElm.addEventListener('change', () => {
-    serviceCaseFormElm.action = storeRoutePrefix + '/commerce/order-case/' + encodeURIComponent(serviceCaseTypeElm.value);
-});
-
-function closeDetail() {
-    containerOffcanvasElm.classList.remove("show");
-}
-/* Tutup offcanvas saat tekan ESC */
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeDetail();
-});
 </script>
 
 <?= $this->endSection(); ?>

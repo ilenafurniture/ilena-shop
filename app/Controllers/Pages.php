@@ -4587,12 +4587,11 @@ class Pages extends BaseController
             $email = session()->get('email');
             $pesanan = $this->pemesananModel->getPemesananCus($email);
             foreach ($pesanan as $ind_p => $p) {
+                $midtransData = json_decode((string) ($p['data_mid'] ?? ''), true) ?: [];
                 $pesanan[$ind_p]['data_mid'] = [
-                    'transaction_time' => json_decode($p['data_mid'], true)['transaction_time'],
-                    'gross_amount' => json_decode($p['data_mid'], true)['gross_amount'],
+                    'transaction_time' => $midtransData['transaction_time'] ?? null,
+                    'gross_amount' => $midtransData['gross_amount'] ?? 0,
                 ];
-                $pesanan[$ind_p]['items'] = json_decode($p['items'], true);
-                $pesanan[$ind_p]['kurir'] = json_decode($p['kurir'], true);
             }
             $customerServiceCases = [];
             $customerEmails = (new \App\Services\Auth\CustomerEmailIdentity())->allFor((string) $email);
@@ -4610,7 +4609,6 @@ class Pages extends BaseController
                 'email' => session()->get('email'),
                 'nama' => session()->get('nama'),
                 'nohp' => session()->get('nohp'),
-                'pesananJson' => json_encode($pesanan),
                 'msgSandi' => session()->get('msg-sandi') ? session()->get('msg-sandi') : false,
             ];
             return view('pages/order', $data);
@@ -4838,7 +4836,6 @@ class Pages extends BaseController
             'email' => session()->get('email'),
             'nama' => session()->get('nama'),
             'nohp' => session()->get('nohp'),
-            'pesananJson' => json_encode($pesanan),
             'msgSandi' => session()->get('msg-sandi') ? session()->get('msg-sandi') : false,
         ];
         return view('pages/order', $data);

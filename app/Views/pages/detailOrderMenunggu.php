@@ -609,6 +609,7 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
             <?php endif; ?>
             <?php if (!empty($orderActionMessage)): ?><p class="muted m-0" role="status"><?= esc($orderActionMessage); ?></p><?php endif; ?>
         </div>
+        <?= $this->include('partials/order_detail_tools', ['pemesananSelected' => $pemesananSelected, 'id_order' => $id_order]); ?>
     </div>
 </div>
 
