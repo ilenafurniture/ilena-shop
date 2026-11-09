@@ -201,6 +201,11 @@ class AdminController extends BaseController
         }
 
         $orderAttention = \App\Services\WebsiteOrderAttention::counts(db_connect(), $testEmails);
+        $supportChatWaitingCount = 0;
+        $canSeeSupportChat = (new AdminRbacService())->hasPermission((string) session()->get('email'), 'support_chat');
+        if ($canSeeSupportChat) {
+            $supportChatWaitingCount = \App\Services\AdminOperationalNotifications::waitingHumanChats(db_connect());
+        }
         $stats = [
             'totalProducts' => $this->barangModel->countAllResults(),
             'activeProducts' => $this->barangModel->where('active', '1')->countAllResults(),
@@ -209,6 +214,7 @@ class AdminController extends BaseController
             'manualPaymentConfirmation' => $orderAttention['manual_payment_confirmation'],
             'processingOrders' => $orderAttention['processing'],
             'legacyShipmentDates' => $orderAttention['legacy_shipment_date'],
+            'waitingHumanChats' => $supportChatWaitingCount,
             'paidOrders' => $websiteOrderBase()->whereIn('status', ['Proses', 'Dikirim', 'Selesai'])->countAllResults(),
             'revenue' => $revenue,
             'articles' => $this->artikelModel->countAllResults(),
@@ -220,6 +226,9 @@ class AdminController extends BaseController
             'stats' => $stats,
             'recentOrders' => $recentOrders,
             'lowStockProducts' => array_slice($lowStockProducts, 0, 6),
+            'websiteOrderTodoCount' => $orderAttention['total'],
+            'supportChatWaitingCount' => $supportChatWaitingCount,
+            'canSeeSupportChat' => $canSeeSupportChat,
         ]);
     }
 

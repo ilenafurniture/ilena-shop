@@ -14,13 +14,20 @@ $adminRole = (string) session()->get('role');
 $adminRbac = new \App\Services\AdminRbacService();
 $adminPermissions = $adminRole === '1' ? [] : $adminRbac->userPermissions((string) session()->get('email'));
 $canAdminPermission = static fn(string $permission): bool => $adminRole === '1' || in_array($permission, $adminPermissions, true);
-$websiteOrderTodoCount = 0;
-if ($canAdminPermission('orders_online')) {
+$hasWebsiteOrderTodoCount = isset($websiteOrderTodoCount);
+$websiteOrderTodoCount = $hasWebsiteOrderTodoCount ? max(0, (int) $websiteOrderTodoCount) : 0;
+if (! $hasWebsiteOrderTodoCount && $canAdminPermission('orders_online')) {
     $testOrderEmails = ['galihsuks123@gmail.com','ilenafurniture@gmail.com','galih8.4.2001@gmail.com','adityaanugrah494@gmail.com','tipaun0605@gmail.com','uuua5021@gmail.com'];
     $websiteOrderTodoCount = \App\Services\WebsiteOrderAttention::counts(db_connect(), $testOrderEmails)['total'];
 }
+$hasSupportChatWaitingCount = isset($supportChatWaitingCount);
+$supportChatWaitingCount = $hasSupportChatWaitingCount ? max(0, (int) $supportChatWaitingCount) : 0;
+if (! $hasSupportChatWaitingCount && $canAdminPermission('support_chat')) {
+    $supportChatWaitingCount = \App\Services\AdminOperationalNotifications::waitingHumanChats(db_connect());
+}
 $this->setVar('canPermission', $canAdminPermission);
 $this->setVar('websiteOrderTodoCount', $websiteOrderTodoCount);
+$this->setVar('supportChatWaitingCount', $supportChatWaitingCount);
 ?>
 <!DOCTYPE html>
 <html lang="id">

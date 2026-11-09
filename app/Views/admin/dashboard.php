@@ -134,6 +134,28 @@ $statusTone = static function ($status) {
     grid-template-columns: minmax(0, 1.45fr) minmax(320px, .75fr);
     gap: 14px;
 }
+.dash-attention {
+    display:grid;
+    gap:12px;
+    padding:18px 20px;
+    border:1px solid #eee8e4;
+    border-left:4px solid #a33a36;
+    border-radius:16px;
+    background:#fff;
+}
+.dash-attention-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+.dash-attention-head h2 { margin:0; color:#24201e; font-size:17px; font-weight:850; }
+.dash-attention-head p { margin:0; color:#77716d; font-size:12px; }
+.dash-attention-list { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; }
+.dash-attention-item { display:flex; align-items:center; gap:10px; min-width:0; padding:11px 12px; border:1px solid #f0ece9; border-radius:12px; color:#302b28; text-decoration:none; background:#fff; transition:background .18s ease,border-color .18s ease; }
+.dash-attention-item:hover { border-color:#d9b9b5; background:#fff9f8; }
+.dash-attention-item:focus-visible { outline:2px solid #8f302d; outline-offset:2px; }
+.dash-attention-count { display:grid; flex:none; width:34px; height:34px; place-items:center; border-radius:10px; background:#fff0ee; color:#9c302c; font-size:14px; font-weight:900; font-variant-numeric:tabular-nums; }
+.dash-attention-item.is-clear .dash-attention-count { background:#edf4ed; color:#456a4e; }
+.dash-attention-text { min-width:0; }
+.dash-attention-text strong,.dash-attention-text small { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.dash-attention-text strong { font-size:12px; }
+.dash-attention-text small { margin-top:2px; color:#817a75; font-size:10px; }
 .dash-section-head {
     display: flex;
     align-items: center;
@@ -231,11 +253,14 @@ $statusTone = static function ($status) {
 @media (max-width: 1100px) {
     .dash-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .dash-two-col { grid-template-columns: 1fr; }
+    .dash-attention-list { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
 @media (max-width: 760px) {
     .dash-hero { flex-direction: column; padding: 20px; border-radius: 22px; }
     .dash-actions { justify-content: flex-start; }
     .dash-grid { grid-template-columns: 1fr; }
+    .dash-attention-head { align-items:flex-start; flex-direction:column; }
+    .dash-attention-list { grid-template-columns:1fr; }
     .quick-grid { grid-template-columns: 1fr; }
 }
 /* Ilena editorial dashboard: compact metrics and separators instead of oversized cards. */
@@ -283,7 +308,7 @@ $statusTone = static function ($status) {
 .dash-wrap > .dash-card > .dash-section-head { margin-bottom:0; }
 @media(max-width:1100px){ .dash-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dash-grid .dash-card:nth-child(3){border-left:0;padding-left:0}.dash-grid .dash-card:nth-child(n+3){border-top:1px solid #eae5db} }
 @media(max-width:760px){ .dash-wrap{padding:8px 14px 28px;gap:19px}.dash-hero{padding:7px 0 16px}.dash-actions{gap:7px}.dash-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dash-grid .dash-card{padding:12px 10px;min-height:96px}.dash-grid .dash-card:nth-child(odd){border-left:0;padding-left:0}.dash-grid .dash-card:nth-child(even){border-left:1px solid #eae5db;padding-right:0}.dash-grid .dash-card:nth-child(n+3){border-top:1px solid #eae5db}.dash-stat{gap:6px}.dash-value{font-size:22px}.dash-note{font-size:10.5px}.dash-two-col{gap:22px}.dash-row{gap:8px}.quick-card{padding:10px 0} }
-@media(prefers-reduced-motion:reduce){ .dash-btn,.quick-card{transition:none} }
+@media(prefers-reduced-motion:reduce){ .dash-btn,.quick-card,.dash-attention-item{transition:none} }
 </style>
 
 <div class="dash-wrap">
@@ -331,6 +356,38 @@ $statusTone = static function ($status) {
                 <p class="dash-note"><?= number_format($stats['articles'], 0, ',', '.'); ?> artikel · <?= number_format($stats['activeVouchers'], 0, ',', '.'); ?> voucher aktif</p>
             </div>
             <span class="dash-icon"><i class="material-icons">campaign</i></span>
+        </div>
+    </section>
+
+    <section class="dash-attention" aria-labelledby="dashAttentionTitle">
+        <div class="dash-attention-head">
+            <h2 id="dashAttentionTitle">Yang perlu ditangani</h2>
+            <p>Jumlah hanya menampilkan antrean aktif yang memerlukan tindak lanjut.</p>
+        </div>
+        <div class="dash-attention-list">
+            <?php if (! empty($canSeeSupportChat) && ($stats['waitingHumanChats'] ?? 0) > 0): ?>
+                <a class="dash-attention-item" href="/admin/support-chat?bucket=waiting">
+            <?php elseif (! empty($canSeeSupportChat)): ?>
+                <div class="dash-attention-item is-clear">
+            <?php else: ?>
+                <div class="dash-attention-item is-clear" aria-label="Live Chat tidak termasuk izin akun ini">
+            <?php endif; ?>
+                    <span class="dash-attention-count"><?= ! empty($canSeeSupportChat) ? number_format((int) ($stats['waitingHumanChats'] ?? 0), 0, ',', '.') : '—'; ?></span>
+                    <span class="dash-attention-text"><strong>Chat menunggu staf</strong><small><?= ! empty($canSeeSupportChat) ? 'Permintaan bantuan pelanggan' : 'Tidak tersedia untuk izin akun ini'; ?></small></span>
+            <?php if (! empty($canSeeSupportChat) && ($stats['waitingHumanChats'] ?? 0) > 0): ?></a><?php else: ?></div><?php endif; ?>
+
+            <a class="dash-attention-item" href="/admin/order/online?status=Menunggu%20Pembayaran">
+                <span class="dash-attention-count"><?= number_format((int) ($stats['manualPaymentConfirmation'] ?? 0), 0, ',', '.'); ?></span>
+                <span class="dash-attention-text"><strong>Konfirmasi pembayaran</strong><small>Pembayaran manual menunggu pemeriksaan</small></span>
+            </a>
+            <a class="dash-attention-item" href="/admin/order/online?status=Proses">
+                <span class="dash-attention-count"><?= number_format((int) ($stats['processingOrders'] ?? 0), 0, ',', '.'); ?></span>
+                <span class="dash-attention-text"><strong>Pesanan diproses</strong><small>Perlu tindak lanjut operasional</small></span>
+            </a>
+            <a class="dash-attention-item" href="/admin/order/online?shipment_date=missing">
+                <span class="dash-attention-count"><?= number_format((int) ($stats['legacyShipmentDates'] ?? 0), 0, ',', '.'); ?></span>
+                <span class="dash-attention-text"><strong>Tanggal kirim belum tercatat</strong><small>Data pengiriman lama perlu dilengkapi</small></span>
+            </a>
         </div>
     </section>
 

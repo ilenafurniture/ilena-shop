@@ -14,6 +14,7 @@
     };
 
     $websiteOrderTodoCount = (int) ($websiteOrderTodoCount ?? 0);
+    $supportChatWaitingCount = (int) ($supportChatWaitingCount ?? 0);
 
     $navGroups = [
         'Beranda' => [
@@ -25,14 +26,14 @@
             ['show' => $can('products'), 'label' => 'Perbaikan Foto Produk', 'icon' => 'image_search', 'href' => '/admin/changepic', 'active' => $isActivePrefix(['admin/changepic'])],
         ],
         'Penjualan & stok' => [
-            ['show' => $can('orders_online'), 'label' => 'Pesanan Online', 'icon' => 'shopping_bag', 'href' => '/admin/order/online', 'active' => $isActivePrefix(['admin/order/online']), 'badge' => $websiteOrderTodoCount],
+            ['show' => $can('orders_online'), 'label' => 'Pesanan Online', 'icon' => 'shopping_bag', 'href' => '/admin/order/online', 'active' => $isActivePrefix(['admin/order/online']), 'badge' => $websiteOrderTodoCount, 'badgeTitle' => 'pesanan yang masih memerlukan tindakan'],
             ['show' => $can('mutasi'), 'label' => 'Mutasi Stok', 'icon' => 'swap_horiz', 'href' => '/admin/mutasi', 'active' => $isActivePrefix(['admin/mutasi', 'admin/mutasiconfirm', 'admin/labelbarang'])],
             ['show' => $can('vouchers'), 'label' => 'Voucher', 'icon' => 'confirmation_number', 'href' => '/admin/voucher', 'active' => $isActivePrefix(['admin/voucher']) || str_contains($lowerTitle, 'voucher')],
             ['show' => $can('shipping'), 'label' => 'Gratis Ongkir', 'icon' => 'local_shipping', 'href' => '/admin/free-shipping', 'active' => $isActivePrefix(['admin/free-shipping']) || ($title ?? '') === 'Gratis Ongkir'],
             ['show' => $can('shipping'), 'label' => 'Tarif Pengiriman APM', 'icon' => 'receipt_long', 'href' => '/admin/shipping-rates', 'active' => $isActivePrefix(['admin/shipping-rates'])],
         ],
         'Layanan pelanggan' => [
-            ['show' => $can('support_chat'), 'label' => 'Live Chat', 'icon' => 'forum', 'href' => '/admin/support-chat', 'active' => $isActivePrefix(['admin/support-chat'])],
+            ['show' => $can('support_chat'), 'label' => 'Live Chat', 'icon' => 'forum', 'href' => '/admin/support-chat?bucket=waiting', 'active' => $isActivePrefix(['admin/support-chat']), 'badge' => $supportChatWaitingCount, 'badgeTitle' => 'percakapan menunggu staf'],
             ['show' => $can('commerce_feedback'), 'label' => 'Ulasan & Pertanyaan', 'icon' => 'reviews', 'href' => '/admin/commerce-feedback', 'active' => $isActivePrefix(['admin/commerce-feedback'])],
             ['show' => $can('commerce_cases'), 'label' => 'Retur & Refund', 'icon' => 'assignment_return', 'href' => '/admin/commerce-service-cases', 'active' => $isActivePrefix(['admin/commerce-service-cases'])],
             ['show' => $can('customers'), 'label' => 'Akun Pelanggan', 'icon' => 'manage_accounts', 'href' => '/admin/customers', 'active' => $isActivePrefix(['admin/customers']) || ($title ?? '') === 'Akun Pelanggan'],
@@ -78,7 +79,7 @@
                             <span class="admin-menu-icon"><i class="material-icons"><?= esc($item['icon']); ?></i></span>
                             <span class="admin-menu-label"><?= esc($item['label']); ?></span>
                             <?php if (($item['badge'] ?? 0) > 0): ?>
-                                <span class="order-alert-badge" title="<?= esc($item['badge']); ?> pesanan website perlu tindakan admin">
+                                <span class="order-alert-badge" title="<?= esc($item['badge']); ?> <?= esc($item['badgeTitle'] ?? 'item perlu ditangani'); ?>" aria-label="<?= esc($item['badge']); ?> <?= esc($item['badgeTitle'] ?? 'item perlu ditangani'); ?>">
                                     <?= esc($item['badge'] > 99 ? '99+' : $item['badge']); ?>
                                 </span>
                             <?php endif; ?>
