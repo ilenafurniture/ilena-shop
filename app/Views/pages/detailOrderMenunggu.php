@@ -10,7 +10,7 @@ if (count($pemesananSelectedArr) <= 0) {
 }
 $pemesananSelected = array_values($pemesananSelectedArr)[0];
 if (in_array($pemesananSelected['status'], $statusSelain)) {
-    header('Location: ' . ilena_store_path('/orderdetail/' . strtolower($pemesananSelected['status'])) . '?idorder=' . rawurlencode($id_order) . '&access_token=' . rawurlencode((string)($_GET['access_token'] ?? '')));
+    header('Location: ' . ilena_store_path('/orderdetail/' . strtolower($pemesananSelected['status'])) . '?idorder=' . rawurlencode($id_order));
     die();
 }
 
@@ -601,7 +601,7 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
             <a href="#" id="btnCekPembayaran" class="btn-default-merah"><?= $isEnglish ? 'I have paid' : 'Saya sudah membayar'; ?></a>
             <?php endif; ?>
             <?php if (!in_array(($dataMid['_app_checkout_queue_status'] ?? ''), ['queued', 'uncertain', 'failed'], true) && empty($dataMid['_app_charge_in_flight'])): ?>
-            <form method="post" action="<?= ilena_store_path('/order/cancel/' . rawurlencode($id_order)); ?>?access_token=<?= rawurlencode($orderAccessToken ?? ''); ?>"
+            <form method="post" action="<?= ilena_store_path('/order/cancel/' . rawurlencode($id_order)); ?>"
                 data-ilena-confirm="<?= $isEnglish ? 'Cancel this order? If payment has succeeded, it cannot be cancelled here.' : 'Batalkan pesanan ini? Jika pembayaran sudah berhasil, status tidak dapat dibatalkan dari sini.'; ?>" data-ilena-confirm-title="<?= $isEnglish ? 'Cancel order' : 'Batalkan pesanan'; ?>">
                 <?= function_exists('csrf_field') ? csrf_field() : '' ?>
                 <button type="submit" class="btn btn-outline-secondary w-100" style="min-height:48px;"><?= $isEnglish ? 'Cancel order' : 'Batalkan pesanan'; ?></button>
@@ -622,7 +622,7 @@ const expire = <?= (int)$waktuExpire ?> * 1000; // ms
 <?php if (($dataMid['_app_checkout_queue_status'] ?? '') === 'queued'): ?>
 // Poll only the small authenticated order-status endpoint; reload once when
 // the worker records payment instructions. Stop after one minute.
-const queueStatusUrl = <?= json_encode(site_url(ilena_store_path('/payment/status/' . rawurlencode($id_order)) . '?access_token=' . rawurlencode($orderAccessToken ?? '')), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
+const queueStatusUrl = <?= json_encode(site_url(ilena_store_path('/payment/status/' . rawurlencode($id_order))), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
 let queuePollCount = 0;
 const pollCheckoutQueue = async () => {
     if (queuePollCount++ >= 12) return;
@@ -679,7 +679,6 @@ function copytext(text) {
 }
 
 const orderId = <?= json_encode($id_order) ?>;
-const orderAccessToken = <?= json_encode($orderAccessToken ?? '') ?>;
 const btnCekPembayaran = document.getElementById('btnCekPembayaran');
 
 function showOrderToast(text) {
@@ -693,7 +692,7 @@ function showOrderToast(text) {
 async function cekStatusPembayaran(manual = false) {
     if (!orderId) return;
     try {
-        const res = await fetch('/payment/status/' + encodeURIComponent(orderId) + '?access_token=' + encodeURIComponent(orderAccessToken), {
+        const res = await fetch('/payment/status/' + encodeURIComponent(orderId), {
             headers: { 'Accept': 'application/json' },
             cache: 'no-store'
         });

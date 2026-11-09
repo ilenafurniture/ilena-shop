@@ -138,8 +138,8 @@ class DispatchProductAlerts extends BaseCommand
                 $email->setReplyTo('info@ilenafurniture.com', 'Customer Care Ilena Furniture');
                 $email->setTo($emailAddress);
                 $email->setSubject('ILENA Store - Pesanan Diterima #' . $orderId);
-                $detailUrl = 'https://ilenafurniture.com/orderdetail/selesai?idorder=' . rawurlencode($orderId)
-                    . '&access_token=' . rawurlencode($token);
+                $detailUrl = 'https://ilenafurniture.com/order-access?idorder=' . rawurlencode($orderId)
+                    . '&locale=id#access_token=' . rawurlencode($token);
                 $name = (string) ($order['nama'] ?? 'Customer');
                 $email->setMessage('<div style="font-family:Arial,sans-serif;color:#222;line-height:1.6"><h2>Halo ' . esc($name) . ',</h2>'
                     . '<p>Pesanan Anda telah otomatis ditandai selesai karena sudah 6 hari sejak dikirim. Jika pesanan belum diterima atau ada kendala, silakan hubungi Customer Care Ilena.</p>'

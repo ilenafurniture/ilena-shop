@@ -2154,7 +2154,7 @@ class Pages extends BaseController
             $pendingOrder=$this->pemesananModel->getPemesanan($pendingId);
             if ($pendingOrder && $this->canAccessOrder($pendingOrder) && in_array($pendingOrder['status'],['Menunggu Pembayaran','Proses','Dikirim','Selesai'],true)) {
                 if ($pendingOrder['status']!=='Menunggu Pembayaran') session()->remove(['checkout_pending_order_id','checkout_operation_fingerprint','checkout_operation_key','checkout_order_id']);
-                return redirect()->to(ilena_store_path('/orderdetail/'.rawurlencode(strtolower($pendingOrder['status'])).'?idorder='.rawurlencode($pendingId).'&access_token='.rawurlencode($this->orderAccessToken($pendingId,$pendingOrder))));
+                return redirect()->to(ilena_store_path('/orderdetail/'.rawurlencode(strtolower($pendingOrder['status'])).'?idorder='.rawurlencode($pendingId)));
             }
             session()->remove(['checkout_pending_order_id','checkout_operation_fingerprint','checkout_operation_key','checkout_order_id']);
         }
@@ -3065,6 +3065,9 @@ class Pages extends BaseController
             default => 'Status Pesanan ' . $status,
         };
         $accessToken = $this->orderAccessToken($orderId, $order);
+        $locale = $this->request->getLocale() === 'en' ? 'en' : 'id';
+        $accessUrl = 'https://ilenafurniture.com/order-access?idorder=' . rawurlencode($orderId)
+            . '&locale=' . $locale . '#access_token=' . rawurlencode($accessToken);
 
         if ($status === 'Proses') {
             $pesan = 'Pembayaran kamu sudah berhasil kami terima. Pesanan akan segera kami proses.';
@@ -3092,11 +3095,11 @@ class Pages extends BaseController
                 <p>' . esc($pesan) . '</p>
                 <p><b>Kode Pesanan:</b> ' . esc($orderId) . '</p>
                 <p><b>Status:</b> ' . esc($statusText) . '</p>
-                <p><a href="https://ilenafurniture.com/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId) . '&amp;access_token=' . rawurlencode($accessToken) . '">Lihat detail pesanan</a></p>
+                <p><a href="' . esc($accessUrl, 'attr') . '">Lihat detail pesanan</a></p>
                 <p>Terima kasih sudah berbelanja di Ilena Furniture.</p>
             </div>
         ');
-        $email->setAltMessage("Halo {$nama}, {$pesan}\nKode Pesanan: {$orderId}\nStatus: {$statusText}\nhttps://ilenafurniture.com/orderdetail/" . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId) . '&access_token=' . rawurlencode($accessToken));
+        $email->setAltMessage("Halo {$nama}, {$pesan}\nKode Pesanan: {$orderId}\nStatus: {$statusText}\n{$accessUrl}");
 
         if (!$email->send(false)) {
             log_message('error', 'Gagal mengirim email status pembayaran Ilena ke {email}: {debug}', [
@@ -3368,7 +3371,7 @@ class Pages extends BaseController
         $existingOrder = $this->pemesananModel->getPemesanan($idFix);
         if ($existingOrder) {
             return redirect()->to(ilena_store_path('/orderdetail/' . rawurlencode(strtolower((string)$existingOrder['status']))
-                . '?idorder=' . rawurlencode($idFix) . '&access_token=' . rawurlencode($this->orderAccessToken($idFix))));
+                . '?idorder=' . rawurlencode($idFix)));
         }
 
         $voucherReservationsCreated = [];
@@ -3499,15 +3502,14 @@ class Pages extends BaseController
             log_message('error','Checkout persistence failed: {error}',['error'=>$error->getMessage()]);
             return redirect()->to(ilena_store_path('/payment/' . $index_kurir))->with('msg','Pesanan belum tersimpan; belum ada permintaan pembayaran dikirim.');
         }
-        $orderTokens=(array)session()->get('checkout_order_tokens'); $orderTokens[$idFix]=$accessToken;
-        session()->set('checkout_order_tokens',array_slice($orderTokens,-20,null,true));
+        $this->rememberOrderAccessToken($idFix, $accessToken);
         session()->set('checkout_pending_order_id',$idFix);
         // One-time token prevents repeated form submissions; gateway key protects network retries.
         session()->remove('checkout_nonce');
         if ($asyncCheckout) {
             session()->remove(['voucher', 'voucher_claimed', 'keranjang', 'kurir', 'kurirTerpilih', 'alamatTerpilih', 'hargaKeseluruhan', 'checkout_nonce', 'checkout_operation_fingerprint', 'checkout_operation_created_at', 'checkout_operation_key', 'checkout_order_id', 'checkout_pending_order_id']);
             $this->syncCartToUser([]);
-            return redirect()->to(ilena_store_path('/orderdetail/menunggu%20pembayaran?idorder=' . rawurlencode($idFix) . '&access_token=' . rawurlencode($accessToken)));
+            return redirect()->to(ilena_store_path('/orderdetail/menunggu%20pembayaran?idorder=' . rawurlencode($idFix)));
         }
         $curl = curl_init();
         curl_setopt_array($curl, [
@@ -3536,13 +3538,13 @@ class Pages extends BaseController
                 'error' => $err,
             ]);
             session()->setFlashdata('msg', 'Pembayaran belum mendapat konfirmasi. Pesanan belum ditampilkan sebagai berhasil; muat ulang dan periksa status sebelum mencoba lagi.');
-            return redirect()->to(ilena_store_path('/orderdetail/menunggu%20pembayaran?idorder='.rawurlencode($idFix).'&access_token='.rawurlencode($accessToken)));
+            return redirect()->to(ilena_store_path('/orderdetail/menunggu%20pembayaran?idorder='.rawurlencode($idFix)));
         }
         $hasilMidtrans = json_decode((string)$response, true);
         if (substr($hasilMidtrans['status_code'] ?? '', 0, 1) !== '2') {
             // Unknown/duplicate/provider failures must not start a second payment.
             if ($httpCode >= 500 || $httpCode === 409 || in_array((string)($hasilMidtrans['status_code']??''),['406','409','500','502','503','504'],true) || !is_array($hasilMidtrans)) {
-                return redirect()->to(ilena_store_path('/orderdetail/menunggu%20pembayaran?idorder='.rawurlencode($idFix).'&access_token='.rawurlencode($accessToken)));
+                return redirect()->to(ilena_store_path('/orderdetail/menunggu%20pembayaran?idorder='.rawurlencode($idFix)));
             }
             $this->pemesananModel->where('id_midtrans',$idFix)->where('status','Menunggu Pembayaran')->set(['status'=>'Gagal'])->update();
             if (db_connect()->affectedRows()===1 && !$isSandboxCheckout) (new \App\Services\Payments\StockReservationService())->release($idFix);
@@ -3561,12 +3563,12 @@ class Pages extends BaseController
             if (in_array($status,['Proses','Menunggu Pembayaran'],true)) $this->syncOrderToIlenaSistem($trx);
         } catch (\Throwable $e) {
             log_message('error','Charge response reconciliation pending for {order}: {error}',['order'=>$idFix,'error'=>$e->getMessage()]);
-            return redirect()->to(ilena_store_path('/orderdetail/menunggu%20pembayaran?idorder='.rawurlencode($idFix).'&access_token='.rawurlencode($this->orderAccessToken($idFix))));
+            return redirect()->to(ilena_store_path('/orderdetail/menunggu%20pembayaran?idorder='.rawurlencode($idFix)));
         }
         session()->remove(['voucher', 'voucher_claimed', 'keranjang', 'kurir', 'kurirTerpilih', 'alamatTerpilih', 'hargaKeseluruhan', 'checkout_nonce', 'checkout_operation_fingerprint', 'checkout_operation_created_at', 'checkout_operation_key', 'checkout_order_id', 'checkout_pending_order_id']);
         $this->syncCartToUser([]);
 
-        return redirect()->to(ilena_store_path('/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($idFix) . '&access_token=' . rawurlencode($this->orderAccessToken($idFix))));
+        return redirect()->to(ilena_store_path('/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($idFix)));
     }
 
     public function updateTransaction()
@@ -3675,6 +3677,40 @@ class Pages extends BaseController
         return preg_match('/^[a-f0-9]{64}$/i', $token) === 1 ? strtolower($token) : '';
     }
 
+    private function rememberOrderAccessToken(string $orderId, string $token): void
+    {
+        $tokens = (array) session()->get('checkout_order_tokens');
+        $tokens[$orderId] = strtolower($token);
+        session()->set('checkout_order_tokens', array_slice($tokens, -20, null, true));
+
+        $expiries = (array) session()->get('checkout_order_token_expiries');
+        $expiries[$orderId] = time() + 7 * 24 * 60 * 60;
+        session()->set('checkout_order_token_expiries', array_slice($expiries, -20, null, true));
+    }
+
+    private function sessionOrderAccessToken(string $orderId): string
+    {
+        $tokens = (array) session()->get('checkout_order_tokens');
+        $token = $tokens[$orderId] ?? '';
+        if (! is_string($token) || preg_match('/^[a-f0-9]{64}$/i', $token) !== 1) {
+            return '';
+        }
+
+        $expiries = (array) session()->get('checkout_order_token_expiries');
+        if (! isset($expiries[$orderId])) {
+            // Grace existing sessions once; all subsequently remembered tokens have an expiry.
+            $expiries[$orderId] = time() + 24 * 60 * 60;
+            session()->set('checkout_order_token_expiries', $expiries);
+        } elseif ((int) $expiries[$orderId] < time()) {
+            unset($tokens[$orderId], $expiries[$orderId]);
+            session()->set('checkout_order_tokens', $tokens);
+            session()->set('checkout_order_token_expiries', $expiries);
+            return '';
+        }
+
+        return strtolower($token);
+    }
+
     private function canAccessOrder(array $order): bool
     {
         $orderId = (string)($order['id_midtrans'] ?? '');
@@ -3692,11 +3728,20 @@ class Pages extends BaseController
         }
         $allowed = $verified && $sessionEmail !== '' && $sessionEmail !== 'tamu' && hash_equals($orderEmail, $sessionEmail);
         $expected = $this->orderAccessToken($orderId, $order);
-        $rawToken = $this->request->getGet('access_token') ?? ((array)session()->get('checkout_order_tokens'))[$orderId] ?? '';
-        $provided = is_string($rawToken) ? $rawToken : '';
-        $allowed = $allowed || ($expected !== '' && preg_match('/^[a-f0-9]{64}$/i', $provided) === 1 && hash_equals($expected, strtolower($provided)));
-        if (!$allowed) return false;
-        return $orderEmail === '' || !(new \App\Services\AccountSuspensionService())->isSuspended($orderEmail);
+        $queryToken = $this->request->getGet('access_token');
+        $sessionToken = $this->sessionOrderAccessToken($orderId);
+        $provided = is_string($queryToken) && $queryToken !== '' ? $queryToken : $sessionToken;
+        $hasCapability = $expected !== ''
+            && preg_match('/^[a-f0-9]{64}$/i', $provided) === 1
+            && hash_equals($expected, strtolower($provided));
+        $allowed = $allowed || $hasCapability;
+        if (!$allowed || ($orderEmail !== '' && (new \App\Services\AccountSuspensionService())->isSuspended($orderEmail))) {
+            return false;
+        }
+        if ($hasCapability && is_string($queryToken) && $queryToken !== '') {
+            $this->rememberOrderAccessToken($orderId, $expected);
+        }
+        return true;
     }
 
     public function paymentStatus($orderId)
@@ -3736,7 +3781,7 @@ class Pages extends BaseController
             'status' => $status,
             'paid' => in_array($status, ['Proses', 'Dikirim', 'Selesai'], true),
             'checkout_queued' => $checkoutQueued,
-            'detail_url' => site_url(ilena_store_path('/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId) . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $order)))),
+            'detail_url' => site_url(ilena_store_path('/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId))),
         ]);
     }
 
@@ -3778,7 +3823,7 @@ class Pages extends BaseController
             return redirect()->to('https://lunareafurniture.com/order/' . rawurlencode($orderId));
         }
 
-        $detailPath = '/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId) . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $order));
+        $detailPath = '/orderdetail/' . rawurlencode(strtolower($status)) . '?idorder=' . rawurlencode($orderId);
         return redirect()->to(ilena_store_path($detailPath, $redirectLocale));
     }
 
@@ -3791,15 +3836,14 @@ class Pages extends BaseController
         if (($order['status'] ?? '') !== 'Menunggu Pembayaran') {
             session()->setFlashdata('order_action_message', 'Pesanan ini sudah tidak dapat dibatalkan dari halaman ini.');
             return redirect()->to(ilena_store_path('/orderdetail/' . rawurlencode(strtolower((string)$order['status']))
-                . '?idorder=' . rawurlencode($orderId) . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $order))));
+                . '?idorder=' . rawurlencode($orderId)));
         }
 
         $currentMid = json_decode((string) ($order['data_mid'] ?? '{}'), true) ?: [];
         if (in_array(($currentMid['_app_checkout_queue_status'] ?? ''), ['queued', 'uncertain', 'failed'], true)
             || !empty($currentMid['_app_charge_in_flight'])) {
             session()->setFlashdata('order_action_message', 'Permintaan pembayaran sedang diproses atau diverifikasi. Tunggu pembaruan status sebelum membatalkan agar tidak terjadi pembayaran ganda.');
-            return redirect()->to(ilena_store_path('/orderdetail/menunggu%20pembayaran?idorder=' . rawurlencode($orderId)
-                . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $order))));
+            return redirect()->to(ilena_store_path('/orderdetail/menunggu%20pembayaran?idorder=' . rawurlencode($orderId)));
         }
 
         $environment = PaymentSafety::environment($order, $this->midtransTestEmails(), 'email');
@@ -3872,8 +3916,7 @@ class Pages extends BaseController
             $this->deleteOrderFromIlenaSistem($updatedOrder);
             $this->sendOrderPaymentEmail($updatedOrder, 'Dibatalkan');
         }
-        return redirect()->to(ilena_store_path('/orderdetail/dibatalkan?idorder=' . rawurlencode($orderId)
-            . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $updatedOrder))));
+        return redirect()->to(ilena_store_path('/orderdetail/dibatalkan?idorder=' . rawurlencode($orderId)));
     }
 
     private function canBuyerConfirmOrder(array $order, string $submittedToken): bool
@@ -3920,8 +3963,8 @@ class Pages extends BaseController
             return $this->response->setStatusCode(404)->setBody($isEnglish ? 'Order not found.' : 'Pesanan tidak ditemukan.');
         }
 
-        $submittedToken = $this->request->getPost('access_token');
-        if (!is_string($submittedToken) || !$this->canBuyerConfirmOrder($order, $submittedToken)) {
+        $submittedToken = $this->sessionOrderAccessToken($orderId);
+        if (!$this->canAccessOrder($order) || !$this->canBuyerConfirmOrder($order, $submittedToken)) {
             return $this->response->setStatusCode(404)->setBody($isEnglish ? 'Order not found.' : 'Pesanan tidak ditemukan.');
         }
 
@@ -3975,8 +4018,7 @@ class Pages extends BaseController
         session()->setFlashdata('order_action_message', $isEnglish
             ? 'Thank you. Receipt of your order has been confirmed.'
             : 'Terima kasih, pesanan telah dikonfirmasi diterima.');
-        return redirect()->to(ilena_store_path('/orderdetail/selesai?idorder=' . rawurlencode($orderId)
-            . '&access_token=' . rawurlencode($this->orderAccessToken($orderId, $updatedOrder))));
+        return redirect()->to(ilena_store_path('/orderdetail/selesai?idorder=' . rawurlencode($orderId)));
     }
 
     public function cancelOrder($id_midtrans)
@@ -4803,6 +4845,8 @@ class Pages extends BaseController
     }
     public function orderDetail($status)
     {
+        $this->response->setHeader('Referrer-Policy', 'no-referrer')
+            ->setHeader('Cache-Control', 'private, no-store');
         $status = rawurldecode($status);
         $idOrder = (string)($this->request->getGet('idorder') ?? '');
         $order = null;
@@ -4810,6 +4854,13 @@ class Pages extends BaseController
             $order = $this->pemesananModel->getPemesanan($idOrder);
             if ($order && !$this->canAccessOrder($order)) {
                 return $this->response->setStatusCode(404)->setBody('Pesanan tidak ditemukan.');
+            }
+            if ($order && $this->request->getGet('access_token') !== null) {
+                $cleanPath = '/orderdetail/' . rawurlencode(strtolower((string) $order['status']))
+                    . '?idorder=' . rawurlencode($idOrder);
+                return redirect()->to(ilena_store_path($cleanPath))
+                    ->setHeader('Referrer-Policy', 'no-referrer')
+                    ->setHeader('Cache-Control', 'private, no-store');
             }
             $pemesanan = $order ? [$order] : [];
             $pemesananAll = $pemesanan;
@@ -5105,8 +5156,7 @@ class Pages extends BaseController
             'carapembayaran' => $carapembayaran,
             'status' => $status,
             'statusSelain' => $statusSelain,
-            'orderAccessToken' => $order ? $this->orderAccessToken((string)$order['id_midtrans'], $order) : '',
-            'canConfirmReceipt' => $order ? $this->canBuyerConfirmOrder($order, $this->orderAccessToken((string)$order['id_midtrans'], $order)) : false,
+            'canConfirmReceipt' => $order ? $this->canBuyerConfirmOrder($order, $this->sessionOrderAccessToken((string) $order['id_midtrans'])) : false,
             'orderActionMessage' => session()->getFlashdata('order_action_message'),
         ];
         switch (strtolower($status)) {

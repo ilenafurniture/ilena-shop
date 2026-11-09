@@ -10,7 +10,7 @@ if (count($pemesananSelectedArr) <= 0) {
 }
 $pemesananSelected = array_values($pemesananSelectedArr)[0];
 if(in_array($pemesananSelected['status'], $statusSelain)){
-    header('Location: '.'/orderdetail/'.strtolower($pemesananSelected['status']).'?idorder='.$id_order.'&access_token='.rawurlencode((string)($_GET['access_token'] ?? '')));
+    header('Location: '.'/orderdetail/'.strtolower($pemesananSelected['status']).'?idorder='.rawurlencode($id_order));
     die();
 }
 
@@ -494,7 +494,6 @@ $grossAmount = (int)($dataMid['gross_amount'] ?? 0);
         <p class="m-0"><?= $isEnglish ? 'Has your order arrived safely?' : 'Pesanan sudah diterima dengan baik?'; ?></p>
         <form method="post" action="<?= esc(ilena_store_path('/order/received/' . rawurlencode((string) $pemesananSelected['id_midtrans'])), 'attr'); ?>">
             <?= csrf_field(); ?>
-            <input type="hidden" name="access_token" value="<?= esc($orderAccessToken, 'attr'); ?>">
             <button type="submit" data-ilena-confirm="<?= esc($isEnglish ? 'Confirm that you have received this order?' : 'Konfirmasi bahwa pesanan sudah diterima?', 'attr'); ?>">
                 <?= $isEnglish ? 'Confirm received' : 'Konfirmasi pesanan diterima'; ?>
             </button>

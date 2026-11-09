@@ -12,7 +12,7 @@ if (count($pemesananSelectedArr) <= 0) {
 
 $pemesananSelected = array_values($pemesananSelectedArr)[0];
 if (in_array($pemesananSelected['status'], $statusSelain)) {
-    header('Location: '.'/orderdetail/'.strtolower($pemesananSelected['status']).'?idorder='.$id_order.'&access_token='.rawurlencode((string)($_GET['access_token'] ?? '')));
+    header('Location: '.'/orderdetail/'.strtolower($pemesananSelected['status']).'?idorder='.rawurlencode($id_order));
     die();
 }
 

@@ -9,7 +9,7 @@ final class CheckoutFlowRegressionTest extends CIUnitTestCase
 {
     protected function tearDown(): void
     {
-        session()->remove(['email','isLogin','active','role','checkout_order_tokens']);
+        session()->remove(['email','isLogin','active','role','checkout_order_tokens','checkout_order_token_expiries']);
         parent::tearDown();
     }
 
@@ -68,7 +68,7 @@ final class CheckoutFlowRegressionTest extends CIUnitTestCase
 
     public function testPublicReturnDoesNotIssueAnotherOrdersToken(): void
     {
-        session()->remove(['email','isLogin','active','role','checkout_order_tokens']);
+        session()->remove(['email','isLogin','active','role','checkout_order_tokens','checkout_order_token_expiries']);
         $r=new ReflectionClass(Pages::class);
         $pages=$r->newInstanceWithoutConstructor();
         $model=new class {
@@ -81,6 +81,25 @@ final class CheckoutFlowRegressionTest extends CIUnitTestCase
         $response=$r->getMethod('redirectFromMidtrans')->invoke($pages);
         $this->assertStringNotContainsString('access_token=', $response->getHeaderLine('Location'));
         $this->assertStringNotContainsString(str_repeat('a',64), $response->getHeaderLine('Location'));
+    }
+
+    public function testGuestOrderCapabilityIsStoredInSessionWithAnExpiry(): void
+    {
+        $reflection = new ReflectionClass(Pages::class);
+        $pages = $reflection->newInstanceWithoutConstructor();
+        $token = str_repeat('b', 64);
+
+        $reflection->getMethod('rememberOrderAccessToken')->invoke($pages, 'ORDER-FIXTURE', $token);
+
+        $this->assertSame($token, $reflection->getMethod('sessionOrderAccessToken')->invoke($pages, 'ORDER-FIXTURE'));
+        $this->assertGreaterThan(time(), session()->get('checkout_order_token_expiries')['ORDER-FIXTURE']);
+
+        $expiries = (array) session()->get('checkout_order_token_expiries');
+        $expiries['ORDER-FIXTURE'] = time() - 1;
+        session()->set('checkout_order_token_expiries', $expiries);
+
+        $this->assertSame('', $reflection->getMethod('sessionOrderAccessToken')->invoke($pages, 'ORDER-FIXTURE'));
+        $this->assertArrayNotHasKey('ORDER-FIXTURE', (array) session()->get('checkout_order_tokens'));
     }
 
     public function testCartMergeCombinesWithoutPersistingRenderingDetails(): void

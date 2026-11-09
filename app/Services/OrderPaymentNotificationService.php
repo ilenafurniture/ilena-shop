@@ -27,8 +27,8 @@ final class OrderPaymentNotificationService
             'Dibatalkan' => 'Pesanan kamu telah dibatalkan. Silakan cek halaman pesanan untuk detailnya.',
         ];
         $message = $messages[$status] ?? ('Status pembayaran pesanan kamu telah berubah menjadi ' . $status . '.');
-        $statusSlug = rawurlencode(strtolower($status));
-        $url = 'https://ilenafurniture.com/orderdetail/' . $statusSlug . '?idorder=' . rawurlencode($orderId) . '&access_token=' . rawurlencode($token);
+        $url = 'https://ilenafurniture.com/order-access?idorder=' . rawurlencode($orderId)
+            . '&locale=id#access_token=' . rawurlencode($token);
         $emailConfig = config('Email');
         $fromEmail = $emailConfig->fromEmail ?: ($emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com');
         $mail = Services::email();

@@ -112,6 +112,10 @@ $routes->post('/actionpaycore/(:any)', 'Pages::actionPayCore/$1', ['filter' => [
 $routes->post('/updatetransaction', 'Pages::updateTransaction');
 $routes->post('/midtrans/notification', 'Pages::midtransNotificationDispatcher');
 
+// Guest order capabilities arrive in the URL fragment (never sent in the HTTP request).
+$routes->get('/order-access', 'GuestOrderAccessController::bridge');
+$routes->post('/order-access/exchange', 'GuestOrderAccessController::exchange', ['filter' => 'csrf']);
+
 $routes->get('/wishlist', 'Pages::wishlist', ['filter' => 'customerFilter']);
 $routes->post('/addwishlist/(:any)', 'Pages::addWishlist/$1', ['filter' => ['customerFilter', 'csrf']]);
 $routes->post('/delwishlist/(:any)', 'Pages::delWishlist/$1', ['filter' => ['customerFilter', 'csrf']]);
