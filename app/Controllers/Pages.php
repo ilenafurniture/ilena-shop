@@ -5876,6 +5876,7 @@ class Pages extends BaseController
                 'val_nama' => session()->getFlashdata('val-nama'),
                 'val_email' => session()->getFlashdata('val-email'),
                 'val_sandi' => session()->getFlashdata('val-sandi'),
+                'val_sandi_konfirmasi' => session()->getFlashdata('val-sandi_konfirmasi'),
                 'val_nohp' => session()->getFlashdata('val-nohp'),
                 'val_syarat' => session()->getFlashdata('val-syarat'),
                 'msg' => session()->getFlashdata('msg'),
@@ -5884,6 +5885,17 @@ class Pages extends BaseController
         ];
         return view('pages/register', $data);
     }
+    private function redirectRegisterWithSafeInput()
+    {
+        $safeInput = [];
+        foreach (['nama', 'email', 'nohp', 'validasi-syarat'] as $field) {
+            $value = $this->request->getPost($field);
+            if (is_string($value)) $safeInput[$field] = $value;
+        }
+        session()->setFlashdata('_ci_old_input', ['get' => [], 'post' => $safeInput]);
+        return redirect()->to(ilena_store_path('/register'));
+    }
+
     public function actionRegister()
     {
         $registration = \App\Services\Auth\RegistrationInput::normalize((array) $this->request->getPost());
@@ -5900,23 +5912,23 @@ class Pages extends BaseController
         }
         if (!(new \App\Services\Auth\AuthAttemptLimiter())->allow('register', (string)$this->request->getIPAddress(), $emailIdentity, 8, 3, 3600)) {
             session()->setFlashdata('msg', 'Terlalu banyak percobaan pendaftaran. Coba lagi nanti.');
-            return redirect()->to(ilena_store_path('/register'))->withInput();
+            return $this->redirectRegisterWithSafeInput();
         }
         $captchaError = (new \App\Services\Auth\RecaptchaVerifier())->error($this->request->getPost('g-recaptcha-response'));
         if ($captchaError !== null) {
             session()->setFlashdata('captcha_error', $captchaError);
-            return redirect()->to(ilena_store_path('/register'))->withInput();
+            return $this->redirectRegisterWithSafeInput();
         }
 
-        $errors = (new \App\Services\Auth\RegistrationInput())->errors($registration);
+        $errors = (new \App\Services\Auth\RegistrationInput())->errors($registration, null, true);
         if (!isset($errors['email']) && $this->userModel->findByEmailIdentity($emailIdentity)) {
             $errors['email'] = 'Email sudah terdaftar. Silakan masuk dengan akun Anda.';
         }
         if ($errors !== []) {
-            foreach (['nama', 'email', 'sandi', 'nohp', 'validasi-syarat'] as $field) {
+            foreach (['nama', 'email', 'sandi', 'sandi_konfirmasi', 'nohp', 'validasi-syarat'] as $field) {
                 session()->setFlashdata('val-' . ($field === 'validasi-syarat' ? 'syarat' : $field), $errors[$field] ?? '');
             }
-            return redirect()->to(ilena_store_path('/register'))->withInput();
+            return $this->redirectRegisterWithSafeInput();
         }
 
         $emailUser = $registration['email'];
@@ -5926,7 +5938,7 @@ class Pages extends BaseController
             // Recheck under a per-email lock: two concurrent signups must not create two identities.
             if ($this->userModel->findByEmailIdentity($emailUser)) {
                 session()->setFlashdata('val-email', 'Email sudah terdaftar. Silakan masuk dengan akun Anda.');
-                return redirect()->to(ilena_store_path('/register'))->withInput();
+                return $this->redirectRegisterWithSafeInput();
             }
 
             $otp_number = random_int(100000, 999999);
@@ -5955,7 +5967,7 @@ class Pages extends BaseController
             if (!$email->send()) {
                 log_message('error', 'Registration verification email could not be sent.');
                 session()->setFlashdata('msg', lang('Store.otpEmailUnavailable'));
-                return redirect()->to(ilena_store_path('/register'))->withInput();
+                return $this->redirectRegisterWithSafeInput();
             }
 
             $insertedUser = $this->userModel->insert([
@@ -5996,7 +6008,7 @@ class Pages extends BaseController
             unset($atomic); // Roll back account/profile together before returning an error.
             log_message('error', 'Registration persistence failed: {type}', ['type' => get_class($error)]);
             session()->setFlashdata('msg', 'Pendaftaran belum berhasil disimpan. Silakan coba lagi.');
-            return redirect()->to(ilena_store_path('/register'))->withInput();
+            return $this->redirectRegisterWithSafeInput();
         }
 
         if (!session()->get('isLogin')) session()->set([

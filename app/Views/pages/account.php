@@ -25,7 +25,7 @@
             </div>
             <div class="mb-2">
                 <label for=""><?= lang('Store.confirmPassword'); ?></label>
-                <input type="password" class="form-control" oninput="konfirmasiSandi(event)" required
+                <input type="password" class="form-control" oninput="konfirmasiSandi(event)" minlength="8" maxlength="72" required
                     name="sandiKonfirm">
                 <div class="invalid-feedback"><?= lang('Store.passwordMismatch'); ?></div>
             </div>

@@ -107,18 +107,30 @@
                     <div class="invalid-feedback" id="email-feedback"><?= esc($val['val_email'] ?: lang('Store.activeEmailHint')); ?></div>
                 </div>
 
-                <label for="password" class="form-label">Kata sandi</label>
+                <label for="password" class="form-label"><?= esc(lang('Store.password')); ?></label>
                 <div class="input-group mb-3 has-validation">
                     <input id="password" name="sandi" type="password" autocomplete="new-password" required minlength="8" maxlength="72" aria-describedby="password-help password-feedback"
                         class="form-control <?= ($val['val_sandi']) ? "is-invalid" : ""; ?>"
                         placeholder="<?= esc(lang('Store.createPassword'), 'attr'); ?>">
                     <button type="button" class="input-group-text ilena-auth-page__password-toggle"
-                        aria-label="Tampilkan kata sandi" aria-controls="password" aria-pressed="false" onclick="togglePassword(event)">
+                        aria-label="<?= esc(lang('Store.showPassword'), 'attr'); ?>" aria-controls="password" aria-pressed="false" onclick="togglePassword(event)">
                         <i class="material-icons" aria-hidden="true">visibility</i>
                     </button>
                     <div class="invalid-feedback" id="password-feedback"><?= esc($val['val_sandi'] ?: lang('Store.passwordPolicyError')); ?></div>
                 </div>
                 <div class="form-text mb-3" id="password-help"><?= lang('Store.passwordLengthHint'); ?></div>
+
+                <label for="password-confirm" class="form-label"><?= esc(lang('Store.confirmPassword')); ?></label>
+                <div class="input-group mb-3 has-validation">
+                    <input id="password-confirm" name="sandi_konfirmasi" type="password" autocomplete="new-password" required minlength="8" maxlength="72" aria-describedby="password-confirm-feedback"
+                        class="form-control <?= ($val['val_sandi_konfirmasi'] ?? '') ? 'is-invalid' : ''; ?>"
+                        placeholder="<?= esc(lang('Store.confirmPassword'), 'attr'); ?>">
+                    <button type="button" class="input-group-text ilena-auth-page__password-toggle"
+                        aria-label="<?= esc(lang('Store.showPassword'), 'attr'); ?>" aria-controls="password-confirm" aria-pressed="false" onclick="togglePassword(event)">
+                        <i class="material-icons" aria-hidden="true">visibility</i>
+                    </button>
+                    <div class="invalid-feedback" id="password-confirm-feedback"><?= esc(ilena_localize_notice((string) ($val['val_sandi_konfirmasi'] ?? '')) ?: lang('Store.passwordMismatch')); ?></div>
+                </div>
 
                 <div class="mb-3">
                     <div class="agreement-box <?= ($val['val_syarat'] ?? false) ? "is-invalid" : ""; ?>">
@@ -154,7 +166,8 @@
 
 <script>
 function togglePassword(e) {
-    var passwordField = document.querySelector('input[name="sandi"]');
+    var passwordField = document.getElementById(e.currentTarget.getAttribute('aria-controls'));
+    if (!passwordField) return;
     var show = passwordField.type === 'password';
     passwordField.type = show ? 'text' : 'password';
     e.currentTarget.setAttribute('aria-pressed', String(show));
@@ -170,10 +183,22 @@ function togglePassword(e) {
     const agreement = document.getElementById('validation-syarat');
     const syaratFeedback = document.getElementById('syarat-feedback');
     const email = document.getElementById('email');
+    const password = document.getElementById('password');
+    const passwordConfirm = document.getElementById('password-confirm');
+    const passwordConfirmFeedback = document.getElementById('password-confirm-feedback');
 
     email.addEventListener('blur', () => {
         email.value = email.value.trim().toLowerCase();
     });
+
+    function validatePasswordConfirmation() {
+        const mismatch = passwordConfirm.value !== '' && passwordConfirm.value !== password.value;
+        passwordConfirm.setCustomValidity(mismatch ? <?= json_encode(lang('Store.passwordMismatch')); ?> : '');
+        passwordConfirm.classList.toggle('is-invalid', mismatch);
+        if (mismatch && passwordConfirmFeedback) passwordConfirmFeedback.textContent = <?= json_encode(lang('Store.passwordMismatch')); ?>;
+    }
+    password.addEventListener('input', validatePasswordConfirmation);
+    passwordConfirm.addEventListener('input', validatePasswordConfirmation);
 
     function showMsg(text) {
         if (!text) {

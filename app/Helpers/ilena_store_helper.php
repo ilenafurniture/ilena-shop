@@ -241,7 +241,7 @@ if (! function_exists('ilena_localize_notice')) {
             'Kamu telah keluar' => 'You have signed out.',
             'Kata sandi saat ini tidak sesuai.' => 'The current password is incorrect.',
             'Minimal 8 karakter. Kombinasikan setidaknya 3 jenis karakter (huruf besar, huruf kecil, angka, simbol); frasa 16+ karakter cukup memakai 2 jenis. Maksimal 72 byte.' => 'At least 8 characters. Combine 3 character types (uppercase, lowercase, numbers, symbols); a 16+ character passphrase may use 2 types. Maximum 72 bytes.',
-            'Kata sandi minimal 8 karakter dan harus kuat: gunakan setidaknya 3 jenis karakter, atau frasa 16+ karakter dengan 2 jenis.' => 'Use at least 8 characters and combine 3 character types, or use a 16+ character passphrase with 2 types.',
+            'Kata sandi belum cukup kuat. Gunakan minimal 8 karakter dan gabungkan huruf, angka, atau simbol.' => 'This password is not strong enough. Use at least 8 characters and combine letters, numbers, or symbols.',
             'Sandi yang terkonfirmasi tidak cocok' => 'The password confirmation does not match.',
             'Perubahan kata sandi gagal. Silakan coba kembali.' => 'Your password could not be changed. Please try again.',
             'Sandi Anda berhasil diubah' => 'Your password has been changed.',

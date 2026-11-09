@@ -11,7 +11,7 @@ final class RegistrationInputTest extends CIUnitTestCase
 {
     private function valid(array $changes = []): array
     {
-        return RegistrationInput::normalize(array_replace(['nama'=>'Pembeli Ilena','email'=>'buyer@example.com','nohp'=>'081234567890','sandi'=>'TwelveChars!123','validasi-syarat'=>'1'], $changes));
+        return RegistrationInput::normalize(array_replace(['nama'=>'Pembeli Ilena','email'=>'buyer@example.com','nohp'=>'081234567890','sandi'=>'TwelveChars!123','sandi_konfirmasi'=>'TwelveChars!123','validasi-syarat'=>'1'], $changes));
     }
 
     public function testNormalizedIdentityAndPhoneRetainLeadingZero(): void
@@ -63,6 +63,17 @@ final class RegistrationInputTest extends CIUnitTestCase
         foreach(['<script>',str_repeat('a',101),"A\nB"] as $name) $this->assertArrayHasKey('nama', $validator->errors($this->valid(['nama'=>$name]), static fn()=>false));
         $this->assertSame([], $validator->errors($this->valid(['nama'=>"D'Angelo",'sandi'=>'Ab1!' . str_repeat('x',68)]), static fn()=>false));
         $this->assertSame([], $validator->errors($this->valid(['sandi'=>'Wood123!']), static fn()=>false));
+    }
+
+    public function testWebsiteRegistrationRequiresMatchingPasswordConfirmation(): void
+    {
+        $validator = new RegistrationInput();
+        $matching = $this->valid(['sandi' => 'Wood123!', 'sandi_konfirmasi' => 'Wood123!']);
+        $mismatching = $this->valid(['sandi' => 'Wood123!', 'sandi_konfirmasi' => 'Wood124!']);
+
+        $this->assertArrayNotHasKey('sandi_konfirmasi', $validator->errors($matching, static fn () => false, true));
+        $this->assertSame('Kata sandi tidak cocok', $validator->errors($mismatching, static fn () => false, true)['sandi_konfirmasi']);
+        $this->assertArrayNotHasKey('sandi_konfirmasi', $validator->errors($mismatching, static fn () => false));
     }
 
     public function testBundledListWorksWithoutNetworkAndMatchesSubdomains(): void

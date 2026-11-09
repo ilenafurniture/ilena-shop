@@ -10,7 +10,7 @@ final class RegistrationInput
     public static function normalize(array $post): array
     {
         $data = [];
-        foreach (['nama', 'email', 'nohp', 'sandi', 'validasi-syarat'] as $field) {
+        foreach (['nama', 'email', 'nohp', 'sandi', 'sandi_konfirmasi', 'validasi-syarat'] as $field) {
             $data[$field] = is_string($post[$field] ?? null) ? $post[$field] : '';
         }
         // Phone is collected later in checkout; reject malformed array payloads even though it is optional.
@@ -23,7 +23,7 @@ final class RegistrationInput
         return $data;
     }
 
-    public function errors(array $data, ?callable $isDisposable = null): array
+    public function errors(array $data, ?callable $isDisposable = null, bool $requirePasswordConfirmation = false): array
     {
         $validation = \Config\Services::validation(null, false);
         $validation->setRules([
@@ -50,9 +50,12 @@ final class RegistrationInput
         ]);
         $validation->run($data);
         $errors = $validation->getErrors();
+        if ($requirePasswordConfirmation && ! hash_equals($data['sandi'], $data['sandi_konfirmasi'])) {
+            $errors['sandi_konfirmasi'] = 'Kata sandi tidak cocok';
+        }
         // PASSWORD_DEFAULT currently uses bcrypt: do not silently truncate UTF-8 passwords.
         if (strlen($data['sandi']) > 72) $errors['sandi'] = 'Kata sandi maksimal 72 byte; kurangi panjangnya jika memakai simbol atau emoji.';
-        elseif ($data['sandi'] !== '' && ! PasswordPolicy::isStrong($data['sandi'])) $errors['sandi'] = 'Kata sandi minimal 8 karakter dan harus kuat: gunakan setidaknya 3 jenis karakter, atau frasa 16+ karakter dengan 2 jenis.';
+        elseif ($data['sandi'] !== '' && ! PasswordPolicy::isStrong($data['sandi'])) $errors['sandi'] = 'Kata sandi belum cukup kuat. Gunakan minimal 8 karakter dan gabungkan huruf, angka, atau simbol.';
         if (!isset($errors['email'])) {
             $isDisposable ??= static fn(string $email): bool => (new SpamAccountCleanupService())->isDisposableEmail($email);
             if ($isDisposable($data['email'])) $errors['email'] = 'Email sementara/tempmail tidak dapat digunakan. Gunakan email pribadi yang aktif.';

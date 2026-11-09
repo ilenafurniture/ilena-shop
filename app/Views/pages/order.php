@@ -225,7 +225,7 @@
             </div>
             <div class="mb-3">
                 <label class="mb-1"><?= lang('Store.confirmPassword'); ?></label>
-                <input type="password" class="form-control" oninput="konfirmasiSandi(event)" required
+                <input type="password" class="form-control" oninput="konfirmasiSandi(event)" minlength="8" maxlength="72" required
                     name="sandiKonfirm">
                 <div class="invalid-feedback">
                     <?= lang('Store.passwordMismatch'); ?>
