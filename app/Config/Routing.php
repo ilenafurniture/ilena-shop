@@ -77,7 +77,7 @@ class Routing extends BaseRouting
      * Example:
      *  public $override404 = 'App\Errors::show404';
      */
-    public ?string $override404 = null;
+    public ?string $override404 = 'App\\Controllers\\Errors::show404';
 
     /**
      * If TRUE, the system will attempt to match the URI against

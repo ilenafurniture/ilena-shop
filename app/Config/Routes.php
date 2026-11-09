@@ -450,7 +450,3 @@ $routes->post('/maket/submitorder', 'MarketplaceController::submitOrder', ['filt
 
 // Tracking
 $routes->post('/track/hit', 'Track::hit');
-
-
-// ==================== 404 fallback ====================
-$routes->get('/(:any)', 'Pages::notFound');

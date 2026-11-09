@@ -7875,13 +7875,4 @@ class Pages extends BaseController
             ->setBody(file_get_contents($serveFile));
     }
 
-    public function notFound()
-    {
-        $data = [
-            'title' => 'Halaman Tidak Ditemukan',
-            'navbar' => $this->getNavbarData(),
-            'apikey_img_ilena' => $this->apikey_img_ilena,
-        ];
-        return view('layout/notFound', $data);
-    }
 }
