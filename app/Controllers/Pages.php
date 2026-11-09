@@ -6861,32 +6861,28 @@ class Pages extends BaseController
         }
         $user = $this->userModel->findByEmailIdentity($email);
         if ($user && in_array((string)($user['role'] ?? ''), ['0', '4'], true)) {
-            $token = bin2hex(random_bytes(32));
-            $db = db_connect();
-            $db->table('user_password_resets')->where('email', (string)$user['email'])->where('consumed_at', null)
-                ->update(['consumed_at' => date('Y-m-d H:i:s')]);
-            $db->table('user_password_resets')->insert([
-                'email' => (string)$user['email'], 'token_hash' => hash('sha256', $token),
-                'expires_at' => date('Y-m-d H:i:s', time() + 1800), 'created_at' => date('Y-m-d H:i:s'), 'consumed_at' => null,
-            ]);
-            $emailService = \Config\Services::email();
-            $emailConfig = config('Email');
-            $emailService->clear(true);
-            $emailService->setFrom($emailConfig->fromEmail ?: ($emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com'), $emailConfig->fromName ?: 'Ilena Furniture');
-            $emailService->setReplyTo('info@ilenafurniture.com', 'Ilena Furniture');
-            $emailService->setTo((string)$user['email']);
-            $emailService->setSubject($locale === 'en' ? 'Ilena Furniture password reset' : 'Reset kata sandi Ilena Furniture');
-            $resetUrl = site_url(ilena_store_path('/reset-password/' . $token));
-            $message = $locale === 'en'
-                ? '<p>Use the secure link below to choose a new password. It expires in 30 minutes and can be used once.</p><p><a href="' . esc($resetUrl, 'attr') . '">Reset password</a></p><p>If you did not request this, ignore this email.</p>'
-                : '<p>Gunakan tautan aman berikut untuk membuat kata sandi baru. Tautan berlaku 30 menit dan hanya dapat digunakan sekali.</p><p><a href="' . esc($resetUrl, 'attr') . '">Reset kata sandi</a></p><p>Jika Anda tidak meminta reset, abaikan email ini.</p>';
-            $emailTitle = $locale === 'en' ? 'Reset your password' : 'Reset kata sandi Anda';
-            $emailIntro = $locale === 'en' ? 'Use the secure link below to choose a new password for your Ilena account.' : 'Gunakan tautan aman berikut untuk membuat kata sandi baru akun Ilena Anda.';
-            $emailAction = $locale === 'en' ? 'Reset password' : 'Reset kata sandi';
-            $emailDetails = $locale === 'en' ? 'This single-use link expires in 30 minutes. Ignore this email if you did not request a reset.' : 'Tautan sekali pakai berlaku selama 30 menit. Abaikan email ini jika Anda tidak meminta reset.';
-            $emailService->setMessage(\App\Services\Auth\TransactionalEmailTemplate::html($emailTitle, $emailIntro, '<p>' . esc($emailDetails) . '</p>', $emailAction, $resetUrl, null, $locale));
-            $emailService->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain($emailTitle, $emailIntro, $emailDetails, $emailAction, $resetUrl, null, $locale));
-            if (!$emailService->send()) log_message('warning', 'Customer password reset email delivery failed.');
+            (new \App\Services\Auth\PasswordResetIssuer())->issue((string) $user['email'], function (string $token) use ($user, $locale): bool {
+                $emailService = \Config\Services::email();
+                $emailConfig = config('Email');
+                $emailService->clear(true);
+                $emailService->setFrom($emailConfig->fromEmail ?: ($emailConfig->SMTPUser ?: 'no-reply@ilenafurniture.com'), $emailConfig->fromName ?: 'Ilena Furniture');
+                $emailService->setReplyTo('info@ilenafurniture.com', 'Ilena Furniture');
+                $emailService->setTo((string) $user['email']);
+                $emailService->setSubject($locale === 'en' ? 'Ilena Furniture password reset' : 'Reset kata sandi Ilena Furniture');
+                $resetUrl = site_url(ilena_store_path('/reset-password/' . $token));
+                $emailTitle = $locale === 'en' ? 'Reset your password' : 'Reset kata sandi Anda';
+                $emailIntro = $locale === 'en' ? 'Use the secure link below to choose a new password for your Ilena account.' : 'Gunakan tautan aman berikut untuk membuat kata sandi baru akun Ilena Anda.';
+                $emailAction = $locale === 'en' ? 'Reset password' : 'Reset kata sandi';
+                $emailDetails = $locale === 'en' ? 'This single-use link expires in 30 minutes. Ignore this email if you did not request a reset.' : 'Tautan sekali pakai berlaku selama 30 menit. Abaikan email ini jika Anda tidak meminta reset.';
+                $emailService->setMessage(\App\Services\Auth\TransactionalEmailTemplate::html($emailTitle, $emailIntro, '<p>' . esc($emailDetails) . '</p>', $emailAction, $resetUrl, null, $locale));
+                $emailService->setAltMessage(\App\Services\Auth\TransactionalEmailTemplate::plain($emailTitle, $emailIntro, $emailDetails, $emailAction, $resetUrl, null, $locale));
+                if ($emailService->send()) return true;
+
+                log_message('error', 'Customer password reset email delivery failed: {transport}', [
+                    'transport' => \App\Services\Auth\PasswordResetIssuer::safeTransportDiagnostic($emailService),
+                ]);
+                return false;
+            });
         }
         session()->setFlashdata('msg', $generic);
         return redirect()->to(ilena_store_path('/forgot-password'));
