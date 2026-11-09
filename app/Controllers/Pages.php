@@ -76,7 +76,10 @@ class Pages extends BaseController
         $this->jenisModel = new JenisModel();
         $this->voucherModel = new VoucherModel();
         $this->voucherUsageModel = new VoucherUsageModel();
-        $this->session = \Config\Services::session();
+        // CLI cache warmers instantiate this controller only to reuse its public
+        // data builders. Starting a browser session in Spark would change session
+        // ini settings after Spark has printed its CLI banner.
+        $this->session = is_cli() ? null : \Config\Services::session();
         $this->apikey_img_ilena = env('APIKEY_IMG_ILENA', 'DefaultValue');
         $this->r2ProductImages = new R2ProductImageService();
         $this->provinsiModel = new ProvinsiModel();
