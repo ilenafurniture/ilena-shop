@@ -29,6 +29,8 @@ final class InvoicePdfA4Test extends CIUnitTestCase
         $this->assertStringContainsString('size: A4 portrait', $html);
         $this->assertStringContainsString('Diskon voucher', $html);
         $this->assertStringContainsString('JNE Trucking', $html);
+        $this->assertStringContainsString('Status pesanan: Sedang diproses', $html);
+        $this->assertStringNotContainsString('<p class="muted">Status: Proses</p>', $html);
         $this->assertStringContainsString('font: 9pt/1.5 "DejaVu Sans"', $html);
         $this->assertStringNotContainsString('−', $html);
         $this->assertStringContainsString('P 800 mm × L 500 mm × T 1800 mm', $html);

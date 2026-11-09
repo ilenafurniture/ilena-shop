@@ -5,7 +5,9 @@ $items = is_array($transaksi['items'] ?? null) ? $transaksi['items'] : [];
 $courier = is_array($transaksi['kurir'] ?? null) ? $transaksi['kurir'] : [];
 $timestamp = strtotime((string)($mid['transaction_time'] ?? '')) ?: 0;
 $status = (string)($transaksi['status'] ?? '');
-$statusDisplay = $isEnglish ? (['Proses' => 'Processing', 'Dikirim' => 'Shipped', 'Selesai' => 'Completed', 'Menunggu Pembayaran' => 'Awaiting payment', 'Dibatalkan' => 'Cancelled', 'Kedaluwarsa' => 'Expired', 'Gagal' => 'Failed'][$status] ?? $status) : $status;
+$statusDisplay = $isEnglish
+    ? (['Proses' => 'Processing', 'Dikirim' => 'Shipped', 'Selesai' => 'Completed', 'Menunggu Pembayaran' => 'Awaiting payment', 'Dibatalkan' => 'Cancelled', 'Kedaluwarsa' => 'Expired', 'Gagal' => 'Failed'][$status] ?? $status)
+    : (['Proses' => 'Sedang diproses', 'Dikirim' => 'Dalam pengiriman', 'Selesai' => 'Selesai', 'Menunggu Pembayaran' => 'Menunggu pembayaran', 'Dibatalkan' => 'Dibatalkan', 'Kedaluwarsa' => 'Kedaluwarsa', 'Gagal' => 'Gagal'][$status] ?? $status);
 $courierName = trim((string)($courier['nama'] ?? ''));
 $courierService = trim((string)($courier['deskripsi'] ?? ''));
 $courierLabel = $courierName !== '' && strcasecmp($courierName, 'Menunggu pengiriman') !== 0
@@ -178,11 +180,11 @@ if (is_file($logoPath ?? '')) {
 
 <table class="fulfillment"><tr>
     <td><p class="eyebrow"><?= $isEnglish ? 'Shipping' : 'Pengiriman'; ?></p><p><strong><?= esc($courierLabel) ?></strong></p>
+        <p class="muted"><?= $isEnglish ? 'Order status' : 'Status pesanan'; ?>: <?= esc($statusDisplay ?: ($isEnglish ? 'Unavailable' : 'Tidak tersedia')) ?></p>
         <?php $tracking = trim((string)($transaksi['resi'] ?? '')); if ($tracking !== '' && strcasecmp($tracking, 'Menunggu pengiriman') !== 0): ?><p class="muted"><?= $isEnglish ? 'Tracking number' : 'Nomor resi'; ?>: <?= esc($tracking) ?></p><?php endif; ?>
     </td>
     <td><p class="eyebrow"><?= $isEnglish ? 'Payment' : 'Pembayaran'; ?></p><p><strong><?= esc($paymentLabel) ?></strong></p>
         <?php if ($paymentReference !== ''): ?><p class="muted"><?= $isEnglish ? 'Virtual account number' : 'Nomor VA'; ?>: <?= esc($paymentReference) ?></p><?php endif; ?>
-        <p class="muted"><?= $isEnglish ? 'Status' : 'Status'; ?>: <?= esc($statusDisplay ?: ($isEnglish ? 'Unavailable' : 'Tidak tersedia')) ?></p>
     </td>
 </tr></table>
 <p class="note"><?= $isEnglish ? 'This invoice was issued electronically by' : 'Invoice ini diterbitkan secara elektronik oleh'; ?> <strong>Ilena Furniture</strong>. <?= $isEnglish ? 'Keep this document as proof of purchase. For assistance, contact Ilena Furniture customer service.' : 'Simpan dokumen ini sebagai bukti transaksi. Jika membutuhkan bantuan, hubungi layanan pelanggan Ilena Furniture.'; ?></p>
