@@ -587,7 +587,7 @@ class AdminController extends BaseController
 
     public function menuDescriptions()
     {
-        if (!(new AdminRbacService())->hasPermission(session()->get('email'), 'products')) {
+        if (!(new AdminRbacService())->hasPermission(session()->get('email'), 'menu_descriptions')) {
             return $this->response->setStatusCode(403)->setBody('Akses ditolak.');
         }
 
@@ -626,7 +626,7 @@ class AdminController extends BaseController
 
     public function saveMenuDescriptions()
     {
-        if (!(new AdminRbacService())->hasPermission(session()->get('email'), 'products')) {
+        if (!(new AdminRbacService())->hasPermission(session()->get('email'), 'menu_descriptions')) {
             return $this->response->setStatusCode(403)->setBody('Akses ditolak.');
         }
 

@@ -12,6 +12,7 @@ class AdminRbacService
         $permissions = [
             'dashboard' => ['label' => 'Dashboard Admin', 'description' => 'Akses ringkasan operasional admin.'],
             'products' => ['label' => 'Produk', 'description' => 'Lihat, tambah, edit, aktif/nonaktif produk.'],
+            'menu_descriptions' => ['label' => 'Deskripsi Menu', 'description' => 'Kelola ringkasan koleksi pada child-list-nav dalam Bahasa Indonesia dan English.'],
             'vouchers' => ['label' => 'Voucher', 'description' => 'Kelola voucher dan pemakaian voucher.'],
             'orders_online' => ['label' => 'Pesanan Online', 'description' => 'Lihat pesanan online, input resi, surat jalan, reprint.'],
             'orders_offline' => ['label' => 'Pesanan Offline', 'description' => 'Kelola order offline, invoice, DP, surat jalan offline.'],
@@ -78,7 +79,8 @@ class AdminRbacService
             'cancelorder' => 'orders_online',
             'admin/rbac' => 'rbac',
             'admin/product-bulk-edit' => 'products',
-            'admin/menu-previews' => 'content',
+            'admin/menu-previews' => 'products',
+            'admin/menu-descriptions' => 'menu_descriptions',
             'admin/producttable' => 'products',
             'admin/product' => 'products',
             'admin/addproduct' => 'products',
@@ -258,6 +260,7 @@ class AdminRbacService
         $map = [
             'dashboard' => '/admin',
             'products' => '/admin/product',
+            'menu_descriptions' => '/admin/menu-descriptions',
             'vouchers' => '/admin/voucher',
             'orders_online' => '/admin/order/online',
             'orders_offline' => '/admin/order/offline/sale',
