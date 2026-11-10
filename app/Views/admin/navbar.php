@@ -24,6 +24,7 @@
             ['show' => $can('products'), 'label' => 'Produk', 'icon' => 'inventory_2', 'href' => '/admin/product', 'active' => $isActivePrefix(['admin/product']) || ($title ?? '') === 'Produk Kami'],
             ['show' => $can('products'), 'label' => 'Paket Furniture', 'icon' => 'chair', 'href' => '/admin/bundles', 'active' => $isActivePrefix(['admin/bundles'])],
             ['show' => $can('products'), 'label' => 'Foto Menu Koleksi', 'icon' => 'collections', 'href' => '/admin/menu-previews', 'active' => $isActivePrefix(['admin/menu-previews'])],
+            ['show' => $can('products'), 'label' => 'Deskripsi Menu', 'icon' => 'edit_note', 'href' => '/admin/menu-descriptions', 'active' => $isActivePrefix(['admin/menu-descriptions'])],
             ['show' => $can('products'), 'label' => 'Perbaikan Foto Produk', 'icon' => 'image_search', 'href' => '/admin/changepic', 'active' => $isActivePrefix(['admin/changepic'])],
         ],
         'Penjualan & stok' => [

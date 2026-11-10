@@ -585,6 +585,113 @@ class AdminController extends BaseController
         return redirect()->to('/admin/menu-previews')->with('success', 'Preview menu koleksi berhasil diperbarui.');
     }
 
+    public function menuDescriptions()
+    {
+        if (!(new AdminRbacService())->hasPermission(session()->get('email'), 'products')) {
+            return $this->response->setStatusCode(403)->setBody('Akses ditolak.');
+        }
+
+        $rows = db_connect()->query(
+            "SELECT kategori AS collection_name, subkategori AS type_name
+             FROM barang WHERE active = '1'
+             AND kategori IS NOT NULL AND kategori <> ''
+             AND subkategori IS NOT NULL AND subkategori <> ''
+             GROUP BY kategori, subkategori
+             ORDER BY subkategori, kategori"
+        )->getResultArray();
+        $descriptions = (new \App\Services\MenuDescriptionService())->entries();
+        $groups = [];
+        foreach ($rows as $row) {
+            $type = trim((string) $row['type_name']);
+            $collection = trim((string) $row['collection_name']);
+            $typeKey = \App\Services\MenuDescriptionService::key($type);
+            $collectionKey = \App\Services\MenuDescriptionService::key($collection);
+            if ($typeKey === '' || $collectionKey === '') continue;
+            $groupKey = $typeKey . '|' . $collectionKey;
+            $groups[$type][] = [
+                'type' => $type,
+                'collection' => $collection,
+                'key' => $groupKey,
+                'id' => (string) ($descriptions[$groupKey]['id'] ?? ''),
+                'en' => (string) ($descriptions[$groupKey]['en'] ?? ''),
+            ];
+        }
+
+        return view('admin/menuDescriptions', [
+            'title' => 'Deskripsi Menu',
+            'groups' => $groups,
+            'descriptionCount' => count($descriptions),
+        ]);
+    }
+
+    public function saveMenuDescriptions()
+    {
+        if (!(new AdminRbacService())->hasPermission(session()->get('email'), 'products')) {
+            return $this->response->setStatusCode(403)->setBody('Akses ditolak.');
+        }
+
+        $submitted = $this->request->getPost('descriptions');
+        if (!is_array($submitted) || count($submitted) > 500) {
+            return redirect()->back()->with('error', 'Daftar deskripsi menu tidak valid.');
+        }
+
+        $allowed = [];
+        $pairs = db_connect()->query(
+            "SELECT kategori AS collection_name, subkategori AS type_name
+             FROM barang WHERE active = '1'
+             AND kategori IS NOT NULL AND kategori <> ''
+             AND subkategori IS NOT NULL AND subkategori <> ''
+             GROUP BY kategori, subkategori"
+        )->getResultArray();
+        foreach ($pairs as $pair) {
+            $rawPair = trim((string) $pair['type_name']) . "\0" . trim((string) $pair['collection_name']);
+            $allowed[$rawPair] = true;
+        }
+
+        $service = new \App\Services\MenuDescriptionService();
+        $entries = $service->entries();
+        $seen = [];
+        foreach ($submitted as $row) {
+            if (!is_array($row) || !is_string($row['type'] ?? null) || !is_string($row['collection'] ?? null)) {
+                return redirect()->back()->with('error', 'Ada baris deskripsi yang formatnya tidak valid.');
+            }
+            $type = trim($row['type']);
+            $collection = trim($row['collection']);
+            if (!isset($allowed[$type . "\0" . $collection])) {
+                return redirect()->back()->with('error', 'Jenis produk atau koleksi sudah tidak aktif. Muat ulang halaman.');
+            }
+            $key = \App\Services\MenuDescriptionService::key($type) . '|' . \App\Services\MenuDescriptionService::key($collection);
+            if (isset($seen[$key])) return redirect()->back()->with('error', 'Ada pasangan menu yang memiliki kunci sama.');
+            $seen[$key] = true;
+
+            foreach (['id', 'en'] as $locale) {
+                $value = $row[$locale] ?? '';
+                if (!is_string($value) || (function_exists('mb_strlen') ? mb_strlen(strip_tags($value), 'UTF-8') : strlen(strip_tags($value))) > 2000) {
+                    return redirect()->back()->with('error', 'Deskripsi harus berupa teks dan maksimal 2.000 karakter sebelum dirapikan.');
+                }
+                $value = trim((string) preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags($value), ENT_QUOTES | ENT_HTML5, 'UTF-8')));
+                $entries[$key][$locale] = function_exists('mb_substr') ? mb_substr($value, 0, 320, 'UTF-8') : substr($value, 0, 320);
+            }
+            if (($entries[$key]['id'] ?? '') === '' && ($entries[$key]['en'] ?? '') === '') unset($entries[$key]);
+        }
+
+        $db = db_connect();
+        $db->transBegin();
+        try {
+            if (!$service->save($entries) || $db->transStatus() === false) {
+                throw new \RuntimeException('Penyimpanan pengaturan deskripsi menu gagal.');
+            }
+            if (!$db->transCommit()) throw new \RuntimeException('Perubahan tidak dapat disimpan.');
+        } catch (\Throwable $e) {
+            $db->transRollback();
+            log_message('error', 'Simpan deskripsi menu gagal: {type}', ['type' => get_class($e)]);
+            return redirect()->back()->with('error', 'Deskripsi menu gagal disimpan. Silakan coba lagi.');
+        }
+
+        (new \App\Services\CoordinatedPublicCache())->invalidate('ilena_public_navbar_data_v4', 'navbar');
+        return redirect()->to('/admin/menu-descriptions')->with('success', 'Deskripsi menu berhasil diperbarui.');
+    }
+
     private function normalizeBulkProductIds($rawIds): array
     {
         if (is_string($rawIds)) {
