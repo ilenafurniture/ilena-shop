@@ -4,38 +4,7 @@
 <?php
 $displayProductName = ilena_product_display_name($produk, $isEnglish ? 'en' : 'id');
 $defaultVariant = $produk['varian'][0] ?? ['nama' => 'default', 'stok' => 0, 'urutan_gambar' => '1'];
-$sanitizeProductHtml = static function (string $html): string {
-    if (!class_exists(\DOMDocument::class)) return nl2br(esc(strip_tags($html)));
-    $dom = new \DOMDocument('1.0', 'UTF-8');
-    $previous = libxml_use_internal_errors(true);
-    $dom->loadHTML('<?xml encoding="utf-8" ?><div id="ilena-description-root">' . $html . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-    libxml_clear_errors();
-    libxml_use_internal_errors($previous);
-    $root = $dom->getElementById('ilena-description-root');
-    if (!$root) return esc(strip_tags($html));
-    $allowed = ['p', 'br', 'ul', 'ol', 'li', 'strong', 'b', 'em', 'i', 'u', 'h2', 'h3', 'h4', 'blockquote', 'a', 'div', 'span'];
-    $render = static function ($node) use (&$render, $allowed): string {
-        if ($node instanceof \DOMText) return esc($node->nodeValue ?? '');
-        if (!$node instanceof \DOMElement) return '';
-        $tag = strtolower($node->tagName);
-        if (in_array($tag, ['script', 'style', 'iframe', 'object', 'embed', 'svg', 'math'], true)) return '';
-        $children = '';
-        foreach ($node->childNodes as $child) $children .= $render($child);
-        if (!in_array($tag, $allowed, true)) return $children;
-        if ($tag === 'br') return '<br>';
-        $attributes = '';
-        if ($tag === 'a') {
-            $href = trim($node->getAttribute('href'));
-            if ($href !== '' && preg_match('/^(https?:\/\/|mailto:|tel:|\/|#)/i', $href)) {
-                $attributes = ' href="' . esc($href, 'attr') . '" rel="noopener noreferrer"';
-            }
-        }
-        return '<' . $tag . $attributes . '>' . $children . '</' . $tag . '>';
-    };
-    $clean = '';
-    foreach ($root->childNodes as $child) $clean .= $render($child);
-    return $clean;
-};
+$productDescriptionSanitizer = new \App\Services\ProductDescriptionSanitizer();
 $punyaGambarHoverDetail = is_file(FCPATH . 'uploads/product-images/hover/' . $produk['id'] . '.webp')
     || is_file(FCPATH . 'img/barang/hover/' . $produk['id'] . '.webp')
     || !empty($produk['gambar_hover']);
@@ -330,7 +299,7 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                         <?php } ?>
                     </div></section>
                 </div>
-                <div class="ilena-product-description"><?= $sanitizeProductHtml((string) (($isEnglish && trim((string) ($produk['deskripsi']['deskripsi_en'] ?? '')) !== '') ? $produk['deskripsi']['deskripsi_en'] : ($produk['deskripsi']['deskripsi'] ?? ''))); ?></div>
+                <div class="ilena-product-description"><?= $productDescriptionSanitizer->sanitizeHtml((string) (($isEnglish && trim((string) ($produk['deskripsi']['deskripsi_en'] ?? '')) !== '') ? $produk['deskripsi']['deskripsi_en'] : ($produk['deskripsi']['deskripsi'] ?? ''))); ?></div>
                 <div class="ilena-product-options gap-2 show-flex-ke-hide">
                     <section class="ilena-option-group" aria-labelledby="desktop-variant-label">
                     <div class="ilena-option-heading"><p class="detail-mini-label" id="desktop-variant-label"><?= esc(lang('Store.colorVariant')); ?></p></div>
@@ -482,7 +451,7 @@ $productCoverUrl = function (array $product) use ($productImageCdn): string {
                             data-bs-parent="#accordionFlushExample">
                             <div class="accordion-body">
                                 <p class="mb-0">
-                                    <?= esc((string) (($isEnglish && trim((string) ($produk['deskripsi']['perawatan_en'] ?? '')) !== '') ? $produk['deskripsi']['perawatan_en'] : ($produk['deskripsi']['perawatan'] ?? lang('Store.maintenanceInfoMissing')))) ?>
+                                    <?= esc($productDescriptionSanitizer->plainText((string) (($isEnglish && trim((string) ($produk['deskripsi']['perawatan_en'] ?? '')) !== '') ? $produk['deskripsi']['perawatan_en'] : ($produk['deskripsi']['perawatan'] ?? lang('Store.maintenanceInfoMissing'))))) ?>
                                 </p>
                             </div>
                         </div>

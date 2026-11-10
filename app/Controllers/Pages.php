@@ -149,6 +149,23 @@ class Pages extends BaseController
                 'plint-base' => 'Lemari laci 6 tingkat series Plint Base dengan desain minimalis, handle ergonomis, dan material premium untuk penyimpanan multifungsi.',
                 'water-case' => 'Lemari laci 6 tingkat series Water Case dengan desain minimalis, handle frameless, dan material premium untuk penyimpanan multifungsi.',
             ],
+            'side-table' => [
+                'cabana' => 'Nakas multifungsi dengan desain modern minimalis yang stylish. Cocok mengisi sisi samping kasur atau sudut ruangan sebagai tempat buku, hp, hingga lampu tidur.',
+                'cody' => 'Meja nakas minimalis yang cocok digunakan sebagai tambahan di berbagai sudut ruangan. Model simpel, menyatu dan melengkapi interior jadi terlihat lebih menawan.',
+                'industrial' => 'Hadir dengan desain modern yang unik dan cantik. Menampilkan style edgy perpaduan wiremesh logam dan kayu. Melengkapi interior ruangan jadi sempurna.',
+                'cutout' => 'Furniture tambahan untuk ruang tamu, kamar tidur, dan kantor yang akan melengkapi interior rumah jadi lebih aesthetic.',
+                'metal-frame' => 'Dibuat dengan menggunakan finishing kayu jati dengan corak khasnya yang unik serta rangka kaki besi finishing satin yang kokoh & awet lama.',
+                'orca' => 'Side table minimalis perpaduan corak hitam/putih dan coklat kayu yang kontras memberikan sentuhan cantik & unik. Meja ini menyempurnakan interior Anda.',
+                'socoplate' => 'Meja samping ini cocok digunakan sebagai furniture tambahan untuk berbagai ruangan. Dibuat dengan desain modern minimalis dari kayu dan logam yang kuat dan kokoh.',
+                'plint-base' => 'Nakas multifungsi untuk pelengkap furniture di kamar tidur maupun sudut ruangan lainnya dengan desain stylish dan minimalis.',
+                'water-case' => 'Desain modern dan minimalis yang praktis, dilengkapi sebuah laci handle frameless. Side table ini cocok di samping kasur atau sudut ruangan sebagai tempat buku, hp, hingga lampu tidur tanpa memakan banyak ruang.',
+            ],
+            'wardrobe' => [
+                'cody' => 'Tampil dengan gaya modern klasik khas tekstur kayu yang cocok untuk mengisi kamar tidur dengan memunculkan kesan elegan dan mewah.',
+                'industrial' => 'Pilihan tepat untuk mewujudkan ruangan dengan konsep industrial kekinian. Terbuat dari kayu dan wire mesh logam yang kokoh hingga waktu yang lama.',
+                'sorely' => 'Dirancang dengan menyatukan 2 elemen material kayu solid dan besi. Hadir dengan desain unik sebagai tempat menyimpan pakaian serta keperluan lainnya.',
+                'socoplate' => 'Desain minimalis yang didukung dengan penggunaan material yang berkualitas menjadikan lemari ini tetap tampil artistik dan fungsional walau sudah berdekade lamanya.',
+            ],
         ];
         $menuDescriptionOverridesEn = [
             'dresser-3-drawer' => [
@@ -171,6 +188,23 @@ class Pages extends BaseController
                 'orca' => 'A sturdy six-drawer dresser with modern minimalist styling, warm wood tones, and white accents.',
                 'plint-base' => 'A six-drawer Plint Base dresser with minimalist styling, ergonomic handles, and premium materials for versatile storage.',
                 'water-case' => 'A six-drawer Water Case dresser with minimalist styling, frameless handles, and premium materials for versatile storage.',
+            ],
+            'side-table' => [
+                'cabana' => 'A versatile, stylish nightstand with a modern minimalist design. Place it beside the bed or in a corner for books, a phone, or a bedside lamp.',
+                'cody' => 'A minimalist bedside table that fits neatly into different corners of the home and blends easily with your interior.',
+                'industrial' => 'An industrial-style side table that pairs wire mesh metal with wood for a distinctive interior accent.',
+                'cutout' => 'An accent piece for a living room, bedroom, or office that helps complete your interior.',
+                'metal-frame' => 'A side table with distinctive teak-grain finishing and sturdy legs in a satin-finished metal frame.',
+                'orca' => 'A minimalist side table combining contrasting black-and-white details with warm wood tones.',
+                'socoplate' => 'A modern minimalist side table made with sturdy wood and metal materials for use in various rooms.',
+                'plint-base' => 'A versatile minimalist nightstand for a bedroom or another corner of your home.',
+                'water-case' => 'A modern minimalist nightstand with a frameless-handle drawer. Its space-saving design fits beside a bed or in a corner for books, a phone, or a lamp.',
+            ],
+            'wardrobe' => [
+                'cody' => 'The Cody wardrobe pairs classic-modern styling with distinctive wood grain for an elegant bedroom look.',
+                'industrial' => 'An industrial-style wardrobe combining wood and metal wire mesh for a sturdy, distinctive look.',
+                'sorely' => 'A wardrobe combining solid wood and metal, designed to store clothing and everyday essentials.',
+                'socoplate' => 'A minimalist wardrobe made with quality materials, balancing an artistic look with lasting storage function.',
             ],
         ];
         $hasil = [];
