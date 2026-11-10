@@ -166,6 +166,9 @@ class Pages extends BaseController
                 'sorely' => 'Dirancang dengan menyatukan 2 elemen material kayu solid dan besi. Hadir dengan desain unik sebagai tempat menyimpan pakaian serta keperluan lainnya.',
                 'socoplate' => 'Desain minimalis yang didukung dengan penggunaan material yang berkualitas menjadikan lemari ini tetap tampil artistik dan fungsional walau sudah berdekade lamanya.',
             ],
+            'credenza' => [
+                'industrial' => 'Mengusung desain modern edgy. Dari material kayu dan jaring kawat logam finishing satin yang kokoh serta unik. Cocok melengkapi ruang tamu, keluarga, hingga lobi kantor.',
+            ],
         ];
         $menuDescriptionOverridesEn = [
             'dresser-3-drawer' => [
@@ -205,6 +208,9 @@ class Pages extends BaseController
                 'industrial' => 'An industrial-style wardrobe combining wood and metal wire mesh for a sturdy, distinctive look.',
                 'sorely' => 'A wardrobe combining solid wood and metal, designed to store clothing and everyday essentials.',
                 'socoplate' => 'A minimalist wardrobe made with quality materials, balancing an artistic look with lasting storage function.',
+            ],
+            'credenza' => [
+                'industrial' => 'A credenza with an edgy modern design, combining wood and sturdy satin-finished wire mesh. Its distinctive look suits living rooms, family spaces, and office lobbies.',
             ],
         ];
         $hasil = [];
