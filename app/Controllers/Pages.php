@@ -169,6 +169,18 @@ class Pages extends BaseController
             'credenza' => [
                 'industrial' => 'Mengusung desain modern edgy. Dari material kayu dan jaring kawat logam finishing satin yang kokoh serta unik. Cocok melengkapi ruang tamu, keluarga, hingga lobi kantor.',
             ],
+            'console-table' => [
+                'cabana' => 'Difungsikan untuk memaksimalkan tampilan ruang kosong di belakang sofa atau dinding agar lebih menarik sesuai preferensi pribadi.',
+                'cutout' => 'Meja konsol sebagai furniture tambahan untuk berbagai sudut ruang yang melengkapi interior rumah. Menonjolkan ciri khas kayu bercorak whitewash yang menawan.',
+                'metal-frame' => 'Dirancang dengan desain modern klasik, memadukan kayu bercorak cantik dengan rangka kaki besi yang kuat dan kokoh.',
+                'plint-base' => 'Meja modern minimalis yang praktis untuk melengkapi interior rumah. Warna natural kayu jati memberi kesan sederhana namun tegas.',
+                'sorely' => 'Meja konsol modern minimalis dengan perpaduan kayu dan besi yang unik, stylish, dan menarik sebagai dekorasi ruangan.',
+                'cody' => 'Meja tambahan bergaya modern minimalis dengan dua laci, cocok untuk berbagai ruangan. Perpaduan kayu dan logamnya kokoh dan tahan lama.',
+                'industrial' => 'Meja konsol bergaya modern dengan sentuhan edgy, memadukan kayu dan wire mesh logam berfinishing satin untuk tampilan ruangan yang lebih berkarakter.',
+                'orca' => 'Furniture tambahan untuk melengkapi interior ruang. Meja konsol ini terbuat dari material kayu dengan gaya sederhana dan unik.',
+                'socoplate' => 'Meja konsol modern minimalis yang menonjolkan keunikan serat kayu dan logam sebagai ciri khas series Socoplate, cocok untuk berbagai sisi ruangan.',
+                'water-case' => 'Meja tambahan modern minimalis dengan desain praktis. Warna natural kayu jati membuat interior terasa lebih lengkap dengan kesan sederhana namun tegas.',
+            ],
         ];
         $menuDescriptionOverridesEn = [
             'dresser-3-drawer' => [
@@ -211,6 +223,18 @@ class Pages extends BaseController
             ],
             'credenza' => [
                 'industrial' => 'A credenza with an edgy modern design, combining wood and sturdy satin-finished wire mesh. Its distinctive look suits living rooms, family spaces, and office lobbies.',
+            ],
+            'console-table' => [
+                'cabana' => 'Designed to make the empty space behind a sofa or along a wall more inviting, styled to suit your personal preference.',
+                'cutout' => 'An accent table for different corners of the home, featuring the collection’s distinctive, charming whitewash wood grain.',
+                'metal-frame' => 'A modern-classic design pairing beautifully grained wood with a strong, sturdy metal frame.',
+                'plint-base' => 'A practical modern minimalist console table that completes your interior. Natural teak tones add a simple yet confident look.',
+                'sorely' => 'A stylish modern minimalist console table combining wood and metal for a distinctive decorative accent.',
+                'cody' => 'A modern minimalist accent table with two drawers for any room, built from durable wood and metal.',
+                'industrial' => 'A modern console table with an edgy character, combining wood and satin-finished wire mesh for a distinctive interior accent.',
+                'orca' => 'A simple, distinctive wooden console table designed as an accent piece to complement your interior.',
+                'socoplate' => 'A modern minimalist console table highlighting the collection’s distinctive wood grain and metal details, suited to different areas of the home.',
+                'water-case' => 'A practical modern minimalist accent table in natural teak tones, adding a simple yet confident finish to your interior.',
             ],
         ];
         $hasil = [];
