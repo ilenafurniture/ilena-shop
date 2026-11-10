@@ -181,6 +181,18 @@ class Pages extends BaseController
                 'socoplate' => 'Meja konsol modern minimalis yang menonjolkan keunikan serat kayu dan logam sebagai ciri khas series Socoplate, cocok untuk berbagai sisi ruangan.',
                 'water-case' => 'Meja tambahan modern minimalis dengan desain praktis. Warna natural kayu jati membuat interior terasa lebih lengkap dengan kesan sederhana namun tegas.',
             ],
+            'coffee-table' => [
+                'cabana' => 'Perpaduan warna cokelat dan hitam yang harmonis memberi tampilan tegas dan elegan pada meja kopi ini. Cocok untuk ruang tamu maupun ruang keluarga.',
+                'cutout' => 'Coffee table modern minimalis bergaya Japanese yang mengutamakan fungsi dan kepraktisan, dengan aksen sederhana sebagai daya tarik.',
+                'metal-frame' => 'Coffee table dengan perpaduan material kayu dan logam yang menghadirkan tampilan simpel dan elegan.',
+                'plint-base' => 'Meja kopi yang cocok untuk ruang tamu atau kantor, memberi sentuhan pelengkap pada interior.',
+                'sorely' => 'Perpaduan kayu dan logam menghasilkan coffee table unik yang menarik, dengan material kokoh untuk penggunaan jangka panjang.',
+                'cody' => 'Meja kopi bergaya modern dan trendy yang menonjolkan corak serat kayu yang khas.',
+                'industrial' => 'Coffee table bergaya industrial dengan perpaduan kayu dan besi wire mesh, cocok untuk ruang tamu hingga lobi kantor.',
+                'orca' => 'Meja kopi elegan dengan perpaduan dua warna yang unik, cocok untuk area berkumpul di dalam ruangan.',
+                'socoplate' => 'Coffee table bergaya modern klasik yang fleksibel untuk berbagai suasana dan membantu ruang terasa lebih nyaman.',
+                'water-case' => 'Coffee table bergaya modern minimalis yang stylish untuk melengkapi keindahan interior ruang.',
+            ],
         ];
         $menuDescriptionOverridesEn = [
             'dresser-3-drawer' => [
@@ -235,6 +247,18 @@ class Pages extends BaseController
                 'orca' => 'A simple, distinctive wooden console table designed as an accent piece to complement your interior.',
                 'socoplate' => 'A modern minimalist console table highlighting the collection’s distinctive wood grain and metal details, suited to different areas of the home.',
                 'water-case' => 'A practical modern minimalist accent table in natural teak tones, adding a simple yet confident finish to your interior.',
+            ],
+            'coffee-table' => [
+                'cabana' => 'A harmonious blend of brown and black gives this coffee table a refined, elegant look for living and family rooms.',
+                'cutout' => 'A modern minimalist Japanese-inspired coffee table focused on functionality and practicality, with a subtle accent.',
+                'metal-frame' => 'A coffee table combining wood and metal for a simple, elegant look.',
+                'plint-base' => 'A coffee table suited to a living room or office, adding a finishing touch to the interior.',
+                'sorely' => 'A distinctive coffee table pairing wood and metal, built with sturdy materials for lasting use.',
+                'cody' => 'A modern, trendy coffee table that highlights distinctive wood grain.',
+                'industrial' => 'An industrial-style coffee table combining wood with wire-mesh metal, suited to living rooms and office lobbies.',
+                'orca' => 'An elegant coffee table with a distinctive two-tone design for indoor gathering spaces.',
+                'socoplate' => 'A modern-classic coffee table that adapts to different interiors and helps create a comfortable room.',
+                'water-case' => 'A stylish modern minimalist coffee table that complements your interior.',
             ],
         ];
         $hasil = [];
