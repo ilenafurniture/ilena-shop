@@ -274,7 +274,7 @@ class Pages extends BaseController
                 ];
             };
 
-            foreach (['', 'product', 'tentang', 'partner', 'syarat', 'kebijakan', 'visimisi', 'iklan', 'faq', 'contact', 'article'] as $path) {
+            foreach (['', 'product', 'tentang', 'partner', 'portfolio', 'syarat', 'kebijakan', 'visimisi', 'iklan', 'faq', 'contact', 'article'] as $path) {
                 $addEntry($path);
             }
 
@@ -7277,6 +7277,29 @@ class Pages extends BaseController
         ];
         return view('pages/tentang-clean', $data);
     }
+    public function portfolio()
+    {
+        $isEnglish = $this->request->getLocale() === 'en';
+        $portfolioData = (new \App\Services\PortfolioService())->pageData();
+        $projects = is_array($portfolioData['projects'] ?? null) ? $portfolioData['projects'] : [];
+        foreach ($projects as &$project) {
+            $gallery = json_decode((string) ($project['gallery_json'] ?? '[]'), true);
+            $project['gallery'] = is_array($gallery) ? array_values(array_filter($gallery, 'is_string')) : [];
+        }
+        unset($project);
+
+        return view('pages/portfolio', [
+            'title' => $isEnglish ? 'Ilena Portfolio' : 'Portofolio Ilena',
+            'metaTitle' => ($isEnglish ? 'Furniture & Interior Portfolio' : 'Portofolio Furniture & Interior') . ' | Ilena Furniture',
+            'metaDeskripsi' => $isEnglish
+                ? 'Explore selected furniture and interior projects by Ilena Furniture, with project details, photography, and video.'
+                : 'Jelajahi pilihan proyek furniture dan interior Ilena, lengkap dengan detail proyek, foto, dan video.',
+            'portfolioProjects' => $projects,
+            'portfolioPageEnabled' => !empty($portfolioData['enabled']),
+            'isEnglish' => $isEnglish,
+        ]);
+    }
+
     public function partner()
     {
         $isEnglish = $this->request->getLocale() === 'en';

@@ -41,6 +41,7 @@ $enLanguageUrl = '/language/en?' . http_build_query(['return' => $languageReturn
                 <a href="<?= esc($activeLocale === 'en' ? '/en/product' : '/product', 'attr'); ?>"><?= esc(lang('Store.collection')); ?></a>
                 <a href="<?= esc($activeLocale === 'en' ? '/en/partner' : '/partner', 'attr'); ?>"><?= esc(lang('Store.partnerStore')); ?></a>
                 <a href="<?= esc($activeLocale === 'en' ? '/en/article' : '/article', 'attr'); ?>"><?= esc(lang('Store.article')); ?></a>
+                <a href="<?= esc($activeLocale === 'en' ? '/en/portfolio' : '/portfolio', 'attr'); ?>"><?= esc(lang('Store.portfolio')); ?></a>
                 <a href="https://wa.me/628112938158?text=<?= rawurlencode(lang('Store.whatsAppContactMessage')); ?>" target="_blank" rel="noopener noreferrer"><?= esc(lang('Store.contactUs')); ?></a>
             </nav>
             <nav class="ilena-mobile-language-switch" aria-label="<?= esc(lang('Store.language'), 'attr'); ?>">

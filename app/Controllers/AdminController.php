@@ -379,6 +379,137 @@ class AdminController extends BaseController
         $this->partnerModel->delete($id);
         return redirect()->to('/admin/partners')->with('success', 'Partner berhasil dihapus.');
     }
+
+    public function portfolio()
+    {
+        $db = db_connect();
+        if (!$db->tableExists('portfolio_projects')) {
+            return redirect()->to('/admin')->with('error', 'Data portofolio belum siap. Jalankan migrasi terbaru terlebih dahulu.');
+        }
+
+        $model = new \App\Models\PortfolioProjectModel();
+        $editId = max(0, (int) $this->request->getGet('edit'));
+        return view('admin/portfolio', [
+            'title' => 'Portofolio Ilena',
+            'projects' => $model->orderBy('sort_order', 'ASC')->orderBy('id', 'DESC')->paginate(20, 'portfolio'),
+            'pager' => $model->pager,
+            'editProject' => $editId > 0 ? $model->find($editId) : null,
+            'portfolioPageEnabled' => !empty((new \App\Services\PortfolioService())->pageData()['enabled']),
+        ]);
+    }
+
+    public function togglePortfolioVisibility()
+    {
+        $enabled = $this->request->getPost('page_enabled') === '1';
+        if (!(new \App\Services\PortfolioService())->setPageEnabled($enabled)) {
+            return redirect()->to('/admin/portfolio')->with('error', 'Status halaman belum tersimpan. Pastikan migrasi portofolio sudah dijalankan.');
+        }
+        return redirect()->to('/admin/portfolio')->with('success', $enabled
+            ? 'Halaman Portofolio aktif dan dapat dilihat pengunjung.'
+            : 'Halaman Portofolio disembunyikan; pengunjung akan melihat tampilan segera hadir.');
+    }
+
+    public function savePortfolioProject()
+    {
+        $model = new \App\Models\PortfolioProjectModel();
+        if (!db_connect()->tableExists('portfolio_projects')) {
+            return redirect()->to('/admin/portfolio')->with('error', 'Tabel portofolio belum tersedia. Jalankan migrasi terbaru.');
+        }
+
+        $data = $this->request->getPost();
+        $id = max(0, (int) ($data['id'] ?? 0));
+        $plain = static fn ($value, int $limit): string => mb_substr(trim(strip_tags((string) $value)), 0, $limit);
+        $titleId = $plain($data['title_id'] ?? '', 180);
+        if ($titleId === '') return redirect()->back()->withInput()->with('error', 'Judul Bahasa Indonesia wajib diisi.');
+
+        $slugSource = trim((string) ($data['slug'] ?? '')) ?: $titleId;
+        $asciiSlugSource = function_exists('iconv') ? iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $slugSource) : false;
+        $slug = strtolower((string) ($asciiSlugSource ?: $slugSource));
+        $slug = trim((string) preg_replace('/[^a-z0-9]+/', '-', $slug), '-');
+        if ($slug === '') return redirect()->back()->withInput()->with('error', 'Slug portofolio tidak valid.');
+        $baseSlug = mb_substr($slug, 0, 160);
+        $slug = $baseSlug;
+        $suffix = 2;
+        while ($model->where('slug', $slug)->where('id !=', $id ?: 0)->first()) {
+            $slug = mb_substr($baseSlug, 0, 168) . '-' . $suffix++;
+        }
+
+        $safeMedia = static function ($value, bool $video = false): string {
+            $url = trim((string) $value);
+            if ($url === '') return '';
+            if (str_starts_with($url, '/uploads/portfolio/')) {
+                $path = parse_url($url, PHP_URL_PATH) ?: '';
+                return preg_match($video ? '/\.(mp4|webm)$/i' : '/\.(webp|avif|jpe?g|png)$/i', $path) ? $url : '';
+            }
+            if (!filter_var($url, FILTER_VALIDATE_URL)) return '';
+            $parts = parse_url($url);
+            if (strtolower((string) ($parts['scheme'] ?? '')) !== 'https' || empty($parts['host'])) return '';
+            $path = (string) ($parts['path'] ?? '');
+            return preg_match($video ? '/\.(mp4|webm)$/i' : '/\.(webp|avif|jpe?g|png)$/i', $path) ? $url : '';
+        };
+
+        $gallery = preg_split('/\R/u', (string) ($data['gallery_urls'] ?? ''), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $gallery = array_values(array_unique(array_filter(array_map(static fn ($url) => $safeMedia($url), array_slice($gallery, 0, 12)))));
+        $cover = $safeMedia($data['cover_image'] ?? '');
+        $video = $safeMedia($data['video_url'] ?? '', true);
+        if (trim((string) ($data['cover_image'] ?? '')) !== '' && $cover === '') {
+            return redirect()->back()->withInput()->with('error', 'URL foto utama harus HTTPS dan berformat WebP, AVIF, JPG, JPEG, atau PNG.');
+        }
+        if (trim((string) ($data['video_url'] ?? '')) !== '' && $video === '') {
+            return redirect()->back()->withInput()->with('error', 'Video harus berupa URL HTTPS MP4/WebM atau file lokal di uploads/portfolio.');
+        }
+
+        $year = (int) ($data['completed_year'] ?? 0);
+        $year = $year >= 1900 && $year <= ((int) date('Y') + 5) ? $year : null;
+        $now = date('Y-m-d H:i:s');
+        $payload = [
+            'slug' => $slug,
+            'title_id' => $titleId,
+            'title_en' => $plain($data['title_en'] ?? '', 180),
+            'category_id' => $plain($data['category_id'] ?? '', 100),
+            'category_en' => $plain($data['category_en'] ?? '', 100),
+            'summary_id' => $plain($data['summary_id'] ?? '', 500),
+            'summary_en' => $plain($data['summary_en'] ?? '', 500),
+            'description_id' => $plain($data['description_id'] ?? '', 10000),
+            'description_en' => $plain($data['description_en'] ?? '', 10000),
+            'location' => $plain($data['location'] ?? '', 180),
+            'completed_year' => $year,
+            'cover_image' => $cover,
+            'gallery_json' => json_encode($gallery, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+            'video_url' => $video,
+            'featured' => !empty($data['featured']) ? 1 : 0,
+            'active' => !empty($data['active']) ? 1 : 0,
+            'sort_order' => max(0, (int) ($data['sort_order'] ?? 0)),
+            'updated_at' => $now,
+        ];
+
+        try {
+            if ($id > 0) {
+                if (!$model->find($id)) return redirect()->to('/admin/portfolio')->with('error', 'Proyek tidak ditemukan.');
+                $model->update($id, $payload);
+            } else {
+                $payload['created_at'] = $now;
+                $model->insert($payload);
+            }
+        } catch (\Throwable $error) {
+            log_message('error', 'Portfolio project save failed: {type}', ['type' => get_class($error)]);
+            return redirect()->back()->withInput()->with('error', 'Perubahan portofolio belum tersimpan. Periksa data lalu coba lagi.');
+        }
+
+        (new \App\Services\PortfolioService())->invalidate();
+        return redirect()->to('/admin/portfolio')->with('success', $id > 0 ? 'Proyek portofolio diperbarui.' : 'Proyek portofolio ditambahkan.');
+    }
+
+    public function deletePortfolioProject($id)
+    {
+        if (!db_connect()->tableExists('portfolio_projects')) return redirect()->to('/admin/portfolio')->with('error', 'Tabel portofolio belum tersedia.');
+        $model = new \App\Models\PortfolioProjectModel();
+        $project = $model->find((int) $id);
+        if (!$project) return redirect()->to('/admin/portfolio')->with('error', 'Proyek tidak ditemukan.');
+        $model->delete((int) $id);
+        (new \App\Services\PortfolioService())->invalidate();
+        return redirect()->to('/admin/portfolio')->with('success', 'Proyek portofolio dihapus.');
+    }
     
     public function listProduct()
     {

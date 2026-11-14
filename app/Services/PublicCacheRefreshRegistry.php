@@ -8,7 +8,7 @@ use App\Models\GambarHeaderModel;
 /** Explicit allow-list for cache refresh jobs; requests cannot select arbitrary callables. */
 final class PublicCacheRefreshRegistry
 {
-    public const NAMES = ['navbar', 'sitemap', 'home_slider', 'catalog_search'];
+    public const NAMES = ['navbar', 'sitemap', 'home_slider', 'catalog_search', 'portfolio'];
 
     public function refresh(string $name): void
     {
@@ -24,6 +24,9 @@ final class PublicCacheRefreshRegistry
                 return;
             case 'catalog_search':
                 (new Pages())->refreshSmartCatalogSearchCache();
+                return;
+            case 'portfolio':
+                (new \App\Services\PortfolioService())->pageData(true);
                 return;
             default:
                 throw new \InvalidArgumentException('Unknown public cache refresh name.');

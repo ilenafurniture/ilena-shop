@@ -8,6 +8,7 @@ return [
     'customInterior' => 'Custom Interior',
     'partnerStore' => 'Partner Store',
     'article' => 'Artikel',
+    'portfolio' => 'Portofolio',
     'contactUs' => 'Hubungi Kami',
     'navExplorePrefix' => 'Jelajahi',
     'navViewDetails' => 'Lihat selengkapnya',

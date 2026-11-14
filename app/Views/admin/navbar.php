@@ -42,6 +42,7 @@
         ],
         'Konten & mitra' => [
             ['show' => $can('content'), 'label' => 'Artikel', 'icon' => 'article', 'href' => '/admin/article', 'active' => $isActivePrefix(['admin/article']) || str_contains($lowerTitle, 'artikel')],
+            ['show' => $can('content'), 'label' => 'Portofolio', 'icon' => 'photo_library', 'href' => '/admin/portfolio', 'active' => $isActivePrefix(['admin/portfolio'])],
             ['show' => $can('content'), 'label' => 'Tampilan Beranda', 'icon' => 'dashboard_customize', 'href' => '/admin/homelayout', 'active' => $isActivePrefix(['admin/homelayout']) || ($title ?? '') === 'Home Layout'],
             ['show' => $can('content'), 'label' => 'Partner', 'icon' => 'storefront', 'href' => '/admin/partners', 'active' => $isActivePrefix(['admin/partners']) || ($title ?? '') === 'Partner Ilena'],
         ],

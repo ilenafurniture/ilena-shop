@@ -344,7 +344,7 @@
     ?>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
-    <?php if (in_array($editorialPagePath, ['/', '/tentang', '/partner', '/article', '/iklan'], true)) : ?>
+    <?php if (in_array($editorialPagePath, ['/', '/tentang', '/partner', '/portfolio', '/article', '/iklan'], true)) : ?>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
     <?php endif; ?>
@@ -376,7 +376,7 @@
 $isInternalArea = App\Services\StorefrontLayoutPolicy::isInternal($layoutPath);
 $layoutHeaderMode = App\Services\StorefrontLayoutPolicy::headerMode($layoutPath);
 $needsReactRuntime = in_array($layoutHeaderMode, ['full', 'auth', 'account'], true) || $layoutPath === '/article';
-$contentProvidesMain = in_array($layoutPath, ['/contact', '/iklan', '/partner', '/visimisi', '/tentang'], true)
+$contentProvidesMain = in_array($layoutPath, ['/contact', '/iklan', '/partner', '/portfolio', '/visimisi', '/tentang'], true)
     || str_starts_with($layoutPath, '/invoice/');
 $layoutPageSegments = array_values(array_filter(explode('/', trim($layoutPath, '/'))));
 $layoutPageSlug = preg_replace('/[^a-z0-9-]+/', '-', $layoutPageSegments[0] ?? 'home') ?: 'home';

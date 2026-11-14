@@ -8,6 +8,7 @@ return [
     'customInterior' => 'Custom Interior',
     'partnerStore' => 'Partner Store',
     'article' => 'Journal',
+    'portfolio' => 'Portfolio',
     'contactUs' => 'Contact Us',
     'navExplorePrefix' => 'Explore',
     'navViewDetails' => 'View details',

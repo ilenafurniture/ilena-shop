@@ -20,6 +20,7 @@ $routes->get('/article/(:any)', 'Pages::article/$1', ['filter' => 'customerFilte
 
 $routes->get('/tentang', 'Pages::tentang', ['filter' => 'customerFilter']);
 $routes->get('/partner', 'Pages::partner', ['filter' => 'customerFilter']);
+$routes->get('/portfolio', 'Pages::portfolio', ['filter' => 'customerFilter']);
 $routes->get('/syarat', 'Pages::syarat', ['filter' => 'customerFilter']);
 $routes->get('/kebijakan', 'Pages::kebijakan', ['filter' => 'customerFilter']);
 $routes->get('/visimisi', 'Pages::visiMisi', ['filter' => 'customerFilter']);
@@ -261,6 +262,10 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
     $routes->post('partners', 'AdminController::actionPartner');
     $routes->post('partners/(:num)', 'AdminController::actionPartner/$1');
     $routes->post('partners/delete/(:num)', 'AdminController::deletePartner/$1');
+    $routes->get('portfolio', 'AdminController::portfolio');
+    $routes->post('portfolio/visibility', 'AdminController::togglePortfolioVisibility');
+    $routes->post('portfolio', 'AdminController::savePortfolioProject');
+    $routes->post('portfolio/delete/(:num)', 'AdminController::deletePortfolioProject/$1');
 
     // Gratis ongkir per wilayah
     $routes->get('free-shipping', 'AdminController::freeShipping');
@@ -354,6 +359,7 @@ $routes->group('{locale}', ['filter' => 'customerFilter'], static function ($rou
     $routes->post('addsharearticle/(:any)', 'Pages::addShareArticle/$1', ['filter' => ['csrf']]);
     $routes->get('tentang', 'Pages::tentang');
     $routes->get('partner', 'Pages::partner');
+    $routes->get('portfolio', 'Pages::portfolio');
     $routes->get('syarat', 'Pages::syarat');
     $routes->get('kebijakan', 'Pages::kebijakan');
     $routes->get('visimisi', 'Pages::visiMisi');
