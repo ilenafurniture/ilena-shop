@@ -35,4 +35,29 @@ final class PortfolioFeatureWiringTest extends TestCase
         $this->assertStringContainsString("'/en/portfolio' : '/portfolio'", $desktop);
         $this->assertStringContainsString("'/en/portfolio' : '/portfolio'", $mobile);
     }
+
+    public function testEnabledEmptyPortfolioShowsBilingualLayoutPreviewInsteadOfBlankState(): void
+    {
+        $view = file_get_contents(APPPATH . 'Views/pages/portfolio.php');
+        $this->assertStringContainsString('ilena-portfolio__preview', $view);
+        $this->assertStringContainsString('PRATINJAU LAYOUT', $view);
+        $this->assertStringContainsString('LAYOUT PREVIEW', $view);
+        $this->assertStringContainsString('KONTEN PROYEK AKAN TAMPIL DI SINI', $view);
+        $this->assertStringContainsString('PROJECT CONTENT WILL APPEAR HERE', $view);
+        $this->assertStringContainsString('@media(max-width:760px){.ilena-portfolio__preview', $view);
+        $this->assertStringContainsString('@media(prefers-reduced-motion:reduce){.ilena-portfolio__preview', $view);
+    }
+
+    public function testAdminPortfolioEditorHasLocalLivePreviewAndLanguageSwitcher(): void
+    {
+        $view = file_get_contents(APPPATH . 'Views/admin/portfolio.php');
+        $this->assertStringContainsString('data-portfolio-editor', $view);
+        $this->assertStringContainsString('portfolio-admin__preview-frame', $view);
+        $this->assertStringContainsString('data-preview-locale="id"', $view);
+        $this->assertStringContainsString('data-preview-locale="en"', $view);
+        $this->assertStringContainsString('data-preview-cover', $view);
+        $this->assertStringContainsString('data-preview-gallery-grid', $view);
+        $this->assertStringContainsString("form.addEventListener('input', update)", $view);
+        $this->assertStringContainsString('new URL(value)', $view);
+    }
 }
