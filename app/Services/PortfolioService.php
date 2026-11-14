@@ -7,7 +7,7 @@ use App\Models\PortfolioProjectModel;
 /** One cached, ordered public read for the portfolio; edits invalidate it. */
 final class PortfolioService
 {
-    public const CACHE_KEY = 'ilena_public_portfolio_v1';
+    public const CACHE_KEY = 'ilena_public_portfolio_v2';
     public const REFRESH_NAME = 'portfolio';
     public const PAGE_SETTING_KEY = 'portfolio_page_enabled';
 
@@ -63,6 +63,6 @@ final class PortfolioService
 
     public function invalidate(): void
     {
-        (new CoordinatedPublicCache())->invalidate(self::CACHE_KEY, self::REFRESH_NAME);
+        (new CoordinatedPublicCache())->invalidateImmediately(self::CACHE_KEY);
     }
 }

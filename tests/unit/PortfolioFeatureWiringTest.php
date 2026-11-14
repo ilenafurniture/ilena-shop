@@ -19,7 +19,7 @@ final class PortfolioFeatureWiringTest extends TestCase
 
     public function testPortfolioUsesAStableSharedCacheIdentity(): void
     {
-        $this->assertSame('ilena_public_portfolio_v1', PortfolioService::CACHE_KEY);
+        $this->assertSame('ilena_public_portfolio_v2', PortfolioService::CACHE_KEY);
         $this->assertSame('portfolio', PortfolioService::REFRESH_NAME);
         $this->assertSame('portfolio_page_enabled', PortfolioService::PAGE_SETTING_KEY);
         $this->assertContains(PortfolioService::REFRESH_NAME, \App\Services\PublicCacheRefreshRegistry::NAMES);

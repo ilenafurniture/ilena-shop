@@ -20,7 +20,7 @@ final class CoordinatedPublicCache
         }
 
         $db = Database::connect();
-        $lockName = 'ilena:cache:' . substr(hash('sha256', $cacheKey), 0, 48);
+        $lockName = $this->lockName($cacheKey);
         $locked = false;
         try {
             if ($db->DBDriver === 'MySQLi') {
@@ -75,6 +75,36 @@ final class CoordinatedPublicCache
         }
 
         (new CacheRefreshQueue())->enqueue($refreshName);
+    }
+
+    /** Drop a cache entry when an editor action must be visible on the next request. */
+    public function invalidateImmediately(string $cacheKey): void
+    {
+        $db = Database::connect();
+        $locked = false;
+        $lockName = $this->lockName($cacheKey);
+        try {
+            if ($db->DBDriver === 'MySQLi') {
+                try {
+                    $lock = $db->query('SELECT GET_LOCK(?, 5) AS acquired', [$lockName])->getRowArray();
+                    $locked = (int) ($lock['acquired'] ?? 0) === 1;
+                } catch (\Throwable $lockError) {
+                    log_message('warning', 'Immediate public cache invalidation lock unavailable for {key}: {type}', [
+                        'key' => $cacheKey, 'type' => get_class($lockError),
+                    ]);
+                }
+            }
+            cache()->delete($cacheKey);
+        } finally {
+            if ($locked && $db->DBDriver === 'MySQLi') {
+                try { $db->query('SELECT RELEASE_LOCK(?)', [$lockName]); } catch (\Throwable $ignored) {}
+            }
+        }
+    }
+
+    private function lockName(string $cacheKey): string
+    {
+        return 'ilena:cache:' . substr(hash('sha256', $cacheKey), 0, 48);
     }
 
     private function valid($entry): bool
