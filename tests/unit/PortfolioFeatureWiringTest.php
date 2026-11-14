@@ -39,9 +39,12 @@ final class PortfolioFeatureWiringTest extends TestCase
     public function testEmptyPortfolioShowsBilingualAnimatedComingSoonDesign(): void
     {
         $view = file_get_contents(APPPATH . 'Views/pages/portfolio.php');
-        $this->assertStringContainsString('if (!$pageEnabled || !$projects)', $view);
+        $this->assertStringContainsString('if (!$pageEnabled)', $view);
+        $this->assertStringContainsString('if (!$projects)', $view);
         $this->assertStringContainsString('COMING SOON', $view);
         $this->assertStringContainsString('SEGERA HADIR', $view);
+        $this->assertStringContainsString('portfolio-empty-title', $view);
+        $this->assertStringContainsString('Halaman Portofolio sudah aktif.', $view);
         $this->assertStringContainsString('class="portfolio-art-furniture"', $view);
         $this->assertStringContainsString('portfolio-art-furniture{stroke:', $view);
         $this->assertStringContainsString('@media(prefers-reduced-motion:reduce){.ilena-portfolio__coming', $view);
