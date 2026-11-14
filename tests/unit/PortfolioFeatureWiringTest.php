@@ -36,16 +36,27 @@ final class PortfolioFeatureWiringTest extends TestCase
         $this->assertStringContainsString("'/en/portfolio' : '/portfolio'", $mobile);
     }
 
-    public function testEnabledEmptyPortfolioShowsBilingualLayoutPreviewInsteadOfBlankState(): void
+    public function testEmptyPortfolioShowsBilingualAnimatedComingSoonDesign(): void
     {
         $view = file_get_contents(APPPATH . 'Views/pages/portfolio.php');
-        $this->assertStringContainsString('ilena-portfolio__preview', $view);
-        $this->assertStringContainsString('PRATINJAU LAYOUT', $view);
-        $this->assertStringContainsString('LAYOUT PREVIEW', $view);
-        $this->assertStringContainsString('KONTEN PROYEK AKAN TAMPIL DI SINI', $view);
-        $this->assertStringContainsString('PROJECT CONTENT WILL APPEAR HERE', $view);
-        $this->assertStringContainsString('@media(max-width:760px){.ilena-portfolio__preview', $view);
-        $this->assertStringContainsString('@media(prefers-reduced-motion:reduce){.ilena-portfolio__preview', $view);
+        $this->assertStringContainsString('if (!$pageEnabled || !$projects)', $view);
+        $this->assertStringContainsString('COMING SOON', $view);
+        $this->assertStringContainsString('SEGERA HADIR', $view);
+        $this->assertStringContainsString('class="portfolio-art-furniture"', $view);
+        $this->assertStringContainsString('portfolio-art-furniture{stroke:', $view);
+        $this->assertStringContainsString('@media(prefers-reduced-motion:reduce){.ilena-portfolio__coming', $view);
+        $this->assertStringNotContainsString('ilena-portfolio__preview-grid', $view);
+    }
+
+    public function testPortfolioMotionUsesNativeBrowserFeaturesAndHonorsReducedMotion(): void
+    {
+        $view = file_get_contents(APPPATH . 'Views/pages/portfolio.php');
+        $this->assertStringContainsString('new IntersectionObserver', $view);
+        $this->assertStringContainsString('prefers-reduced-motion: reduce', $view);
+        $this->assertStringContainsString('data-portfolio-reveal="media"', $view);
+        $this->assertStringContainsString('portfolio-motion-ready', $view);
+        $this->assertStringContainsString('transition:transform .75s', $view);
+        $this->assertStringNotContainsString('<script src="https://', $view);
     }
 
     public function testAdminPortfolioEditorHasLocalLivePreviewAndLanguageSwitcher(): void
@@ -59,5 +70,6 @@ final class PortfolioFeatureWiringTest extends TestCase
         $this->assertStringContainsString('data-preview-gallery-grid', $view);
         $this->assertStringContainsString("form.addEventListener('input', update)", $view);
         $this->assertStringContainsString('new URL(value)', $view);
+        $this->assertStringContainsString('Jika belum ada proyek aktif', $view);
     }
 }

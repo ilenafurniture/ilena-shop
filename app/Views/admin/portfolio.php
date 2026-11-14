@@ -16,7 +16,7 @@ $value = static fn (string $key, $fallback = '') => old($key) ?? ($project[$key]
     <header class="portfolio-admin__head"><div><h1>Portofolio Ilena</h1><p>Atur proyek yang tampil di header menu Portofolio. Konten publik dibaca dari satu cache dan diperbarui setelah disimpan.</p></div><a class="portfolio-admin__public" href="/portfolio" target="_blank" rel="noopener">Lihat halaman publik</a></header>
     <form class="portfolio-admin__visibility" action="/admin/portfolio/visibility" method="post">
         <?= csrf_field(); ?>
-        <div class="portfolio-admin__visibility-copy"><strong>Status halaman Portofolio</strong><span><?= !empty($portfolioPageEnabled) ? 'Halaman proyek sedang tampil untuk pengunjung.' : 'Pengunjung melihat desain “Segera Hadir” sampai halaman siap dipublikasikan.'; ?></span></div>
+        <div class="portfolio-admin__visibility-copy"><strong>Status halaman Portofolio</strong><span><?= !empty($portfolioPageEnabled) ? 'Halaman aktif. Jika belum ada proyek aktif, pengunjung melihat desain “Segera Hadir”.' : 'Pengunjung melihat desain “Segera Hadir” sampai halaman diaktifkan.'; ?></span></div>
         <div class="portfolio-admin__visibility-control"><label><input type="checkbox" name="page_enabled" value="1" <?= !empty($portfolioPageEnabled) ? 'checked' : ''; ?>>Aktifkan halaman</label><button type="submit">Simpan status</button></div>
     </form>
     <?php if ($message = session()->getFlashdata('success')): ?><div class="portfolio-admin__notice" role="status"><?= esc($message); ?></div><?php endif; ?>

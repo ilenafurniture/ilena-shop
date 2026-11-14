@@ -18,16 +18,16 @@ $mediaAlt = static fn (array $project, string $fallback): string => trim((string
         <span aria-hidden="true">/</span><span aria-current="page"><?= $isEnglish ? 'Portfolio' : 'Portofolio'; ?></span>
     </nav>
 
-    <?php if (!$pageEnabled): ?>
+    <?php if (!$pageEnabled || !$projects): ?>
         <section class="ilena-portfolio__coming" aria-labelledby="portfolio-title">
-            <div class="ilena-portfolio__coming-copy">
+            <div class="ilena-portfolio__coming-copy" data-portfolio-reveal>
                 <p class="ilena-portfolio__eyebrow"><?= $isEnglish ? 'A NEW PERSPECTIVE IS TAKING SHAPE' : 'SEBUAH PERSPEKTIF BARU SEDANG DISIAPKAN'; ?></p>
-                <h1 id="portfolio-title"><?= $isEnglish ? 'Spaces made to feel like yours.' : 'Ruang yang terasa benar-benar milik Anda.'; ?></h1>
+                <h1 id="portfolio-title" data-portfolio-text-reveal><?= $isEnglish ? 'Spaces made to feel like yours.' : 'Ruang yang terasa benar-benar milik Anda.'; ?></h1>
                 <p><?= $isEnglish ? 'We are carefully curating Ilena’s furniture and interior stories. The portfolio will be here soon.' : 'Kami sedang menyiapkan cerita furniture dan interior Ilena dengan saksama. Portofolio pilihan akan segera hadir di sini.'; ?></p>
                 <span class="ilena-portfolio__coming-label"><i aria-hidden="true"></i><?= $isEnglish ? 'COMING SOON' : 'SEGERA HADIR'; ?></span>
                 <a class="ilena-portfolio__coming-link" href="<?= esc(ilena_store_path('/contact'), 'attr'); ?>"><?= $isEnglish ? 'Talk with Ilena' : 'Hubungi Ilena'; ?></a>
             </div>
-            <div class="ilena-portfolio__coming-art" aria-hidden="true">
+            <div class="ilena-portfolio__coming-art" aria-hidden="true" data-portfolio-reveal="media">
                 <span class="ilena-portfolio__art-caption">ILENA / PORTFOLIO</span>
                 <svg viewBox="0 0 560 390" role="presentation" focusable="false">
                     <path class="portfolio-art-room" d="M74 326V93l164-58 247 78v213" />
@@ -43,13 +43,13 @@ $mediaAlt = static fn (array $project, string $fallback): string => trim((string
     <?php else: ?>
 
     <header class="ilena-portfolio__intro">
-        <div class="ilena-portfolio__intro-copy">
+        <div class="ilena-portfolio__intro-copy" data-portfolio-reveal>
             <p class="ilena-portfolio__eyebrow"><?= $isEnglish ? 'ILENA FURNITURE · SELECTED WORKS' : 'ILENA FURNITURE · PILIHAN KARYA'; ?></p>
-            <h1 id="portfolio-title"><?= $isEnglish ? 'Spaces made to feel like yours.' : 'Ruang yang terasa benar-benar milik Anda.'; ?></h1>
+            <h1 id="portfolio-title" data-portfolio-text-reveal><?= $isEnglish ? 'Spaces made to feel like yours.' : 'Ruang yang terasa benar-benar milik Anda.'; ?></h1>
             <p><?= $isEnglish ? 'A considered collection of furniture and interior projects, shaped around the way people live.' : 'Pilihan proyek furniture dan interior yang dirancang dengan perhatian pada cara setiap orang menjalani ruangnya.'; ?></p>
             <?php if ($projects): ?><a class="ilena-portfolio__jump" href="#portfolio-projects"><?= $isEnglish ? 'Explore selected projects' : 'Jelajahi proyek pilihan'; ?><span aria-hidden="true">↓</span></a><?php endif; ?>
         </div>
-        <div class="ilena-portfolio__intro-mark" aria-hidden="true">
+        <div class="ilena-portfolio__intro-mark" aria-hidden="true" data-portfolio-reveal>
             <span class="ilena-portfolio__mark-letter">I</span>
             <span class="ilena-portfolio__mark-caption">FURNITURE<br>& INTERIOR</span>
             <span class="ilena-portfolio__mark-rule"></span>
@@ -63,14 +63,14 @@ $mediaAlt = static fn (array $project, string $fallback): string => trim((string
         $featuredSummary = $isEnglish ? ((string) ($featured['summary_en'] ?? '') ?: $featured['summary_id']) : $featured['summary_id'];
         ?>
         <section class="ilena-portfolio__featured" id="portfolio-projects" aria-label="<?= $isEnglish ? 'Featured project' : 'Proyek unggulan'; ?>">
-            <figure class="ilena-portfolio__featured-image">
+            <figure class="ilena-portfolio__featured-image" data-portfolio-reveal="media">
                 <?php if (!empty($featured['cover_image'])): ?>
                     <img src="<?= esc($featured['cover_image'], 'attr'); ?>" alt="<?= esc($featuredTitle ?: $mediaAlt($featured, $isEnglish ? 'Featured Ilena project' : 'Proyek pilihan Ilena'), 'attr'); ?>" width="1600" height="1000" fetchpriority="high" decoding="async">
                 <?php else: ?><div class="ilena-portfolio__media-empty" aria-hidden="true"><span>ILENA</span><small><?= $isEnglish ? 'Project photography will appear here' : 'Foto proyek akan ditampilkan di sini'; ?></small></div><?php endif; ?>
                 <?php if (!empty($featured['video_url'])): ?><video class="ilena-portfolio__video" controls preload="none" playsinline poster="<?= esc($featured['cover_image'] ?? '', 'attr'); ?>"><source src="<?= esc($featured['video_url'], 'attr'); ?>"><span><?= $isEnglish ? 'Your browser does not support video.' : 'Browser Anda tidak mendukung video.'; ?></span></video><?php endif; ?>
                 <figcaption><?= $isEnglish ? 'SELECTED PROJECT' : 'PROYEK PILIHAN'; ?></figcaption>
             </figure>
-            <div class="ilena-portfolio__featured-copy">
+            <div class="ilena-portfolio__featured-copy" data-portfolio-reveal>
                 <p class="ilena-portfolio__eyebrow"><?= esc($featuredCategory ?: ($isEnglish ? 'Furniture & Interior' : 'Furniture & Interior')); ?></p>
                 <h2><?= esc($featuredTitle); ?></h2>
                 <?php if ($featuredSummary !== ''): ?><p class="ilena-portfolio__summary"><?= esc($featuredSummary); ?></p><?php endif; ?>
@@ -82,68 +82,19 @@ $mediaAlt = static fn (array $project, string $fallback): string => trim((string
                 <?php if (!empty($featured['gallery'])): ?><details class="ilena-portfolio__gallery"><summary><?= $isEnglish ? 'View project photos' : 'Lihat foto proyek'; ?> (<?= count($featured['gallery']); ?>)</summary><div><?php foreach ($featured['gallery'] as $photo): ?><img src="<?= esc($photo, 'attr'); ?>" alt="<?= esc($featuredTitle . ' — ' . ($isEnglish ? 'project detail' : 'detail proyek'), 'attr'); ?>" loading="lazy" decoding="async"><?php endforeach; ?></div></details><?php endif; ?>
             </div>
         </section>
-    <?php elseif (!$projects): ?>
-        <section class="ilena-portfolio__preview" aria-labelledby="portfolio-preview-title">
-            <div class="ilena-portfolio__preview-note">
-                <span class="ilena-portfolio__preview-dot" aria-hidden="true"></span>
-                <p><?= $isEnglish ? 'LAYOUT PREVIEW · PROJECT CONTENT WILL APPEAR HERE' : 'PRATINJAU LAYOUT · KONTEN PROYEK AKAN TAMPIL DI SINI'; ?></p>
-            </div>
-            <article class="ilena-portfolio__preview-feature">
-                <div class="ilena-portfolio__preview-scene" aria-hidden="true">
-                    <span class="ilena-portfolio__scene-label"><?= $isEnglish ? 'COVER IMAGE / VIDEO' : 'FOTO / VIDEO UTAMA'; ?></span>
-                    <svg viewBox="0 0 720 440" role="presentation" focusable="false">
-                        <path class="pf-scene-room" d="M72 352V105l232-66 342 82v231M72 105l342 102 232-86M414 207v145M48 352h632" />
-                        <path class="pf-scene-window" d="M126 132v132l107 32V99zM143 145l76 22m-76 25 76 22m-76 25 76 22m-40-125v132" />
-                        <path class="pf-scene-sofa" d="M245 304v-66a24 24 0 0 1 24-24h165a24 24 0 0 1 24 24v66m-213-30h213m-189 30v35m165-35v35m-174-69v-42m192 42v-42m-153-14v49m75-49v49" />
-                        <path class="pf-scene-table" d="M489 305h78l-8 22h-63zM500 327l-6 25m54-25 7 25m-47-75v-32h31v32m-16-32v-22" />
-                        <path class="pf-scene-plant" d="M601 352h48l-5-31h-38zM625 320v-70m0 22c-25-2-33-17-31-35 18 2 30 13 31 35m0-9c1-24 13-37 34-39 1 20-10 35-34 39m-1-22c-3-19-13-29-28-31" />
-                        <path class="pf-scene-accent" d="M91 374c126 23 274 24 421 1 68-11 120-29 158-52" />
-                    </svg>
-                    <span class="ilena-portfolio__scene-foot"><?= $isEnglish ? 'PROJECT PHOTOGRAPHY' : 'FOTO PROYEK'; ?><i></i></span>
-                </div>
-                <div class="ilena-portfolio__preview-copy">
-                    <p class="ilena-portfolio__eyebrow"><?= $isEnglish ? 'PROJECT CATEGORY' : 'KATEGORI PROYEK'; ?></p>
-                    <h2 id="portfolio-preview-title"><?= $isEnglish ? 'Project title will appear here' : 'Judul proyek akan tampil di sini'; ?></h2>
-                    <p><?= $isEnglish ? 'A short introduction will describe the space, its needs, and the Ilena pieces chosen for it.' : 'Pengantar singkat akan menceritakan ruang, kebutuhannya, dan pilihan produk Ilena yang melengkapinya.'; ?></p>
-                    <dl class="ilena-portfolio__preview-facts">
-                        <div><dt><?= $isEnglish ? 'LOCATION' : 'LOKASI'; ?></dt><dd><?= $isEnglish ? 'City / area' : 'Kota / area'; ?></dd></div>
-                        <div><dt><?= $isEnglish ? 'YEAR' : 'TAHUN'; ?></dt><dd>20XX</dd></div>
-                    </dl>
-                    <span class="ilena-portfolio__preview-story"><?= $isEnglish ? 'PROJECT STORY / DETAILS' : 'CERITA / DETAIL PROYEK'; ?></span>
-                </div>
-            </article>
-            <div class="ilena-portfolio__preview-list-head">
-                <div><p class="ilena-portfolio__eyebrow"><?= $isEnglish ? 'MORE ILENA SPACES' : 'RUANG LAIN BERSAMA ILENA'; ?></p><h2><?= $isEnglish ? 'A closer look at each project' : 'Melihat lebih dekat setiap proyek'; ?></h2></div>
-                <span><?= $isEnglish ? 'PROJECT GALLERY' : 'GALERI PROYEK'; ?></span>
-            </div>
-            <div class="ilena-portfolio__preview-grid" aria-label="<?= $isEnglish ? 'Preview of project layouts' : 'Pratinjau tata letak proyek'; ?>">
-                <?php foreach ([['sofa', $isEnglish ? 'LIVING SPACE' : 'RUANG KELUARGA'], ['bed', $isEnglish ? 'BEDROOM' : 'KAMAR TIDUR']] as [$scene, $label]): ?>
-                    <article class="ilena-portfolio__preview-card">
-                        <div class="ilena-portfolio__preview-thumb ilena-portfolio__preview-thumb--<?= esc($scene, 'attr'); ?>" aria-hidden="true">
-                            <span><?= esc($isEnglish ? 'PROJECT PHOTO' : 'FOTO PROYEK'); ?></span>
-                            <i></i><b></b><em></em>
-                        </div>
-                        <p class="ilena-portfolio__eyebrow"><?= esc($label); ?></p>
-                        <h3><?= $isEnglish ? 'Project title' : 'Judul proyek'; ?></h3>
-                        <p class="ilena-portfolio__preview-placeholder"><?= $isEnglish ? 'Short project description' : 'Deskripsi singkat proyek'; ?></p>
-                    </article>
-                <?php endforeach; ?>
-            </div>
-            <div class="ilena-portfolio__preview-end"><span></span><?= $isEnglish ? 'YOUR PROJECT STORIES WILL FILL THIS SPACE' : 'CERITA PROYEK ANDA AKAN MENGISI RUANG INI'; ?><span></span></div>
-        </section>
     <?php endif; ?>
 
     <?php if (count($projects) > ($featuredIndex !== null ? 1 : 0)): ?>
         <section class="ilena-portfolio__work" aria-labelledby="portfolio-work-title">
-            <div class="ilena-portfolio__section-head"><div><p class="ilena-portfolio__eyebrow"><?= $isEnglish ? 'MORE FROM ILENA' : 'KARYA LAINNYA'; ?></p><h2 id="portfolio-work-title"><?= $isEnglish ? 'Made for the way you live.' : 'Dirancang untuk keseharian Anda.'; ?></h2></div><span><?= sprintf('%02d', count($projects)); ?> <?= $isEnglish ? 'PROJECTS' : 'PROYEK'; ?></span></div>
+            <div class="ilena-portfolio__section-head" data-portfolio-reveal><div><p class="ilena-portfolio__eyebrow"><?= $isEnglish ? 'MORE FROM ILENA' : 'KARYA LAINNYA'; ?></p><h2 id="portfolio-work-title"><?= $isEnglish ? 'Made for the way you live.' : 'Dirancang untuk keseharian Anda.'; ?></h2></div><span><?= sprintf('%02d', count($projects)); ?> <?= $isEnglish ? 'PROJECTS' : 'PROYEK'; ?></span></div>
             <div class="ilena-portfolio__grid">
                 <?php foreach ($projects as $index => $project): if ($index === $featuredIndex) continue;
                     $cardTitle = $isEnglish ? ((string) ($project['title_en'] ?? '') ?: $project['title_id']) : $project['title_id'];
                     $cardCategory = $isEnglish ? ((string) ($project['category_en'] ?? '') ?: $project['category_id']) : $project['category_id'];
                     $cardSummary = $isEnglish ? ((string) ($project['summary_en'] ?? '') ?: $project['summary_id']) : $project['summary_id'];
                 ?>
-                    <article class="ilena-portfolio__project">
-                        <figure class="ilena-portfolio__project-media">
+                    <article class="ilena-portfolio__project" data-portfolio-reveal>
+                        <figure class="ilena-portfolio__project-media" data-portfolio-reveal="media">
                             <?php if (!empty($project['cover_image'])): ?><img src="<?= esc($project['cover_image'], 'attr'); ?>" alt="<?= esc($mediaAlt($project, $isEnglish ? 'Ilena furniture and interior project' : 'Proyek furniture dan interior Ilena'), 'attr'); ?>" width="900" height="700" loading="lazy" decoding="async">
                             <?php else: ?><div class="ilena-portfolio__media-empty" aria-hidden="true"><span>ILENA</span><small><?= $isEnglish ? 'Photography coming soon' : 'Foto akan ditambahkan'; ?></small></div><?php endif; ?>
                             <?php if (!empty($project['video_url'])): ?><video controls preload="none" playsinline poster="<?= esc($project['cover_image'] ?? '', 'attr'); ?>"><source src="<?= esc($project['video_url'], 'attr'); ?>"></video><?php endif; ?>
@@ -156,7 +107,7 @@ $mediaAlt = static fn (array $project, string $fallback): string => trim((string
     <?php endif; ?>
 
     <?php if ($projects): ?>
-        <aside class="ilena-portfolio__closing"><p class="ilena-portfolio__eyebrow"><?= $isEnglish ? 'YOUR NEXT SPACE' : 'RUANG BERIKUTNYA'; ?></p><h2><?= $isEnglish ? 'Every room has a story still to shape.' : 'Setiap ruang punya cerita yang bisa diwujudkan.'; ?></h2><a href="<?= esc(ilena_store_path('/contact'), 'attr'); ?>"><?= $isEnglish ? 'Talk with Ilena' : 'Diskusikan bersama Ilena'; ?></a></aside>
+        <aside class="ilena-portfolio__closing" data-portfolio-reveal><p class="ilena-portfolio__eyebrow"><?= $isEnglish ? 'YOUR NEXT SPACE' : 'RUANG BERIKUTNYA'; ?></p><h2><?= $isEnglish ? 'Every room has a story still to shape.' : 'Setiap ruang punya cerita yang bisa diwujudkan.'; ?></h2><a href="<?= esc(ilena_store_path('/contact'), 'attr'); ?>"><?= $isEnglish ? 'Talk with Ilena' : 'Diskusikan bersama Ilena'; ?></a></aside>
     <?php endif; ?>
     <?php endif; ?>
 </main>
@@ -169,8 +120,37 @@ $mediaAlt = static fn (array $project, string $fallback): string => trim((string
 .ilena-portfolio__coming{min-height:min(690px,calc(100svh - 210px));display:grid;grid-template-columns:minmax(0,.92fr) minmax(400px,1.08fr);align-items:center;gap:clamp(24px,5vw,76px);padding:clamp(26px,5vw,64px) 0 36px}.ilena-portfolio__coming-copy{max-width:560px}.ilena-portfolio__coming-copy h1{font-size:clamp(38px,5.4vw,70px);line-height:1.03;font-weight:500}.ilena-portfolio__coming-copy>p:not(.ilena-portfolio__eyebrow){font-size:15px;line-height:1.8;color:var(--pf-muted);max-width:470px;margin:22px 0}.ilena-portfolio__coming-label{display:flex;align-items:center;gap:10px;margin:28px 0 26px;font-size:10px;letter-spacing:.16em;font-weight:750;color:var(--pf-red)}.ilena-portfolio__coming-label i{width:7px;height:7px;border-radius:50%;background:var(--pf-red);animation:portfolio-status 2.4s ease-in-out infinite}.ilena-portfolio__coming-link{display:inline-flex;color:var(--pf-ink);font-weight:700;font-size:13px;text-decoration:none;border-bottom:1px solid var(--pf-red);padding-bottom:8px}.ilena-portfolio__coming-art{position:relative;min-width:0;background:#f3f0ec;overflow:hidden;aspect-ratio:1.4;display:grid;place-items:center}.ilena-portfolio__coming-art:before{content:"";position:absolute;inset:9% 8%;border:1px solid rgba(86,72,62,.13)}.ilena-portfolio__coming-art svg{width:94%;height:auto;overflow:visible}.ilena-portfolio__art-caption,.ilena-portfolio__art-index{position:absolute;z-index:1;font-size:9px;letter-spacing:.15em;color:#746b64}.ilena-portfolio__art-caption{top:7%;left:8%}.ilena-portfolio__art-index{right:8%;bottom:7%;display:flex;align-items:center;gap:10px}.ilena-portfolio__art-index i{width:36px;height:1px;background:var(--pf-red)}.portfolio-art-room,.portfolio-art-floor,.portfolio-art-furniture,.portfolio-art-detail,.portfolio-art-sweep{fill:none;stroke:#332d29;stroke-width:1.35;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}.portfolio-art-room{stroke:#857a72;stroke-width:1}.portfolio-art-furniture{stroke:#292522;stroke-width:1.7;stroke-dasharray:1;stroke-dashoffset:1;animation:portfolio-draw 2.8s .25s ease forwards}.portfolio-art-detail{stroke:#8f302b;stroke-width:1.5;stroke-dasharray:1;stroke-dashoffset:1;animation:portfolio-draw 2s 1.3s ease forwards}.portfolio-art-sweep{stroke:#a7443e;stroke-width:1.4;stroke-dasharray:1;stroke-dashoffset:1;animation:portfolio-draw 1.7s 2.1s ease forwards}.portfolio-art-marker{fill:#a33a34;animation:portfolio-marker 6s 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}.ilena-portfolio__coming :focus-visible{outline:2px solid var(--pf-red);outline-offset:4px}@keyframes portfolio-draw{to{stroke-dashoffset:0}}@keyframes portfolio-marker{0%{transform:translate(88px,343px);opacity:0}10%{opacity:1}45%{transform:translate(324px,356px);opacity:1}82%{transform:translate(494px,313px);opacity:1}100%{transform:translate(494px,313px);opacity:0}}@keyframes portfolio-status{0%,100%{box-shadow:0 0 0 0 rgba(146,46,42,.24)}50%{box-shadow:0 0 0 5px rgba(146,46,42,0)}}
 @media(max-width:760px){.ilena-portfolio__coming{grid-template-columns:1fr;min-height:0;padding:24px 0 10px;gap:30px}.ilena-portfolio__coming-copy h1{font-size:clamp(37px,10vw,58px)}.ilena-portfolio__coming-art{aspect-ratio:1.12}.ilena-portfolio__art-caption,.ilena-portfolio__art-index{font-size:8px}}
 @media(prefers-reduced-motion:reduce){.ilena-portfolio__coming *{animation:none!important;transition:none!important}}
-.ilena-portfolio__preview{padding:8px 0 18px}.ilena-portfolio__preview-note{display:flex;align-items:center;gap:10px;padding:12px 15px;margin:0 0 20px;background:#f4f1ee;color:#625a54}.ilena-portfolio__preview-note p{margin:0;font-size:9px;font-weight:750;letter-spacing:.12em}.ilena-portfolio__preview-dot{width:7px;height:7px;flex:none;border-radius:50%;background:var(--pf-red)}.ilena-portfolio__preview-feature{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.72fr);gap:clamp(28px,5vw,72px);align-items:center;padding:0 0 clamp(52px,7vw,90px);border-bottom:1px solid var(--pf-line)}.ilena-portfolio__preview-scene{position:relative;aspect-ratio:1.48;overflow:hidden;background:#eeeae6;display:grid;place-items:center}.ilena-portfolio__preview-scene:after{content:"";position:absolute;inset:7%;border:1px solid rgba(67,56,49,.13);pointer-events:none}.ilena-portfolio__preview-scene svg{width:96%;height:auto}.ilena-portfolio__preview-scene path{fill:none;stroke:#847a72;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}.ilena-portfolio__preview-scene .pf-scene-sofa,.ilena-portfolio__preview-scene .pf-scene-table{stroke:#332d29;stroke-width:1.7}.ilena-portfolio__preview-scene .pf-scene-window,.ilena-portfolio__preview-scene .pf-scene-plant{stroke:#9b8c7f}.ilena-portfolio__preview-scene .pf-scene-accent{stroke:#a53b35;stroke-width:1.5;stroke-dasharray:1;stroke-dashoffset:1;animation:portfolio-wire-draw 2.6s .4s ease forwards}.ilena-portfolio__scene-label,.ilena-portfolio__scene-foot{position:absolute;z-index:1;color:#6f655d;font-size:8px;font-weight:700;letter-spacing:.13em}.ilena-portfolio__scene-label{top:10%;left:10%}.ilena-portfolio__scene-foot{bottom:10%;right:10%;display:flex;align-items:center;gap:9px}.ilena-portfolio__scene-foot i{display:block;width:28px;height:1px;background:var(--pf-red)}.ilena-portfolio__preview-copy h2{font-size:clamp(29px,3.6vw,46px);line-height:1.08;font-weight:500;margin:0 0 16px}.ilena-portfolio__preview-copy>p:not(.ilena-portfolio__eyebrow){font-size:14px;line-height:1.75;color:var(--pf-muted);margin:0}.ilena-portfolio__preview-facts{display:flex;gap:28px;margin:24px 0}.ilena-portfolio__preview-facts div{display:grid;gap:6px}.ilena-portfolio__preview-facts dt{font-size:8px;letter-spacing:.13em;color:var(--pf-muted)}.ilena-portfolio__preview-facts dd{font-size:12px;margin:0;color:#817873}.ilena-portfolio__preview-story{display:inline-flex;border-bottom:1px solid var(--pf-red);padding:0 0 8px;font-size:9px;font-weight:750;letter-spacing:.11em}.ilena-portfolio__preview-list-head{display:flex;justify-content:space-between;align-items:end;gap:24px;padding:clamp(48px,7vw,78px) 0 24px}.ilena-portfolio__preview-list-head h2{font-size:clamp(25px,3.3vw,39px);line-height:1.12;font-weight:500;margin:0}.ilena-portfolio__preview-list-head>span{font-size:8px;letter-spacing:.12em;color:var(--pf-muted)}.ilena-portfolio__preview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(22px,4vw,52px)}.ilena-portfolio__preview-card:nth-child(2){margin-top:48px}.ilena-portfolio__preview-thumb{height:auto;aspect-ratio:1.4;background:#f1eeea;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}.ilena-portfolio__preview-thumb:before{content:"";position:absolute;width:70%;height:70%;border:1px solid rgba(82,70,61,.25);transform:perspective(500px) rotateY(-12deg) rotateX(4deg)}.ilena-portfolio__preview-thumb>span{position:absolute;top:10%;left:9%;font-size:8px;letter-spacing:.12em;color:#756c65}.ilena-portfolio__preview-thumb i,.ilena-portfolio__preview-thumb b,.ilena-portfolio__preview-thumb em{position:absolute;display:block;font-style:normal}.ilena-portfolio__preview-thumb--sofa i{width:44%;height:26%;left:27%;top:43%;border:1.5px solid #514842;border-radius:16px 16px 4px 4px}.ilena-portfolio__preview-thumb--sofa b{width:50%;height:9%;left:25%;top:61%;border:1.5px solid #514842;border-radius:3px}.ilena-portfolio__preview-thumb--sofa em{width:1px;height:17%;left:50%;top:45%;background:#9d3934}.ilena-portfolio__preview-thumb--bed i{width:48%;height:27%;left:25%;top:43%;border:1.5px solid #514842}.ilena-portfolio__preview-thumb--bed b{width:44%;height:9%;left:27%;top:46%;border:1px solid #8a7f76}.ilena-portfolio__preview-thumb--bed em{width:1px;height:24%;left:50%;top:69%;background:#9d3934}.ilena-portfolio__preview-card>.ilena-portfolio__eyebrow{margin:18px 0 7px}.ilena-portfolio__preview-card h3{font-size:clamp(20px,2.4vw,28px);font-weight:500;margin:0 0 7px}.ilena-portfolio__preview-placeholder{font-size:12px;color:var(--pf-muted);margin:0}.ilena-portfolio__preview-end{display:flex;align-items:center;justify-content:center;gap:14px;margin:clamp(46px,7vw,78px) 0 20px;font-size:8px;font-weight:700;letter-spacing:.12em;color:var(--pf-muted);text-align:center}.ilena-portfolio__preview-end span{width:36px;height:1px;background:#c9c0b9}.ilena-portfolio__preview :focus-visible{outline:2px solid var(--pf-red);outline-offset:4px}@keyframes portfolio-wire-draw{to{stroke-dashoffset:0}}
-@media(max-width:760px){.ilena-portfolio__preview{padding-top:0}.ilena-portfolio__preview-note{align-items:flex-start}.ilena-portfolio__preview-note p{font-size:8px;line-height:1.5}.ilena-portfolio__preview-feature{grid-template-columns:1fr;gap:24px;padding-bottom:42px}.ilena-portfolio__preview-scene{aspect-ratio:1.2}.ilena-portfolio__preview-copy h2{font-size:clamp(28px,8vw,40px)}.ilena-portfolio__preview-list-head{align-items:flex-start;flex-direction:column;gap:10px;padding-top:44px}.ilena-portfolio__preview-grid{grid-template-columns:1fr;gap:30px}.ilena-portfolio__preview-card:nth-child(2){margin-top:0}.ilena-portfolio__preview-thumb{aspect-ratio:1.35}.ilena-portfolio__preview-end{font-size:7px;gap:8px}.ilena-portfolio__preview-end span{width:18px}}
-@media(prefers-reduced-motion:reduce){.ilena-portfolio__preview *{animation:none!important;transition:none!important}}
 </style>
+<style>
+.ilena-portfolio .ilena-portfolio__jump,.ilena-portfolio .ilena-portfolio__coming-link,.ilena-portfolio .ilena-portfolio__closing>a{transition:color .22s ease,transform .22s ease,border-color .22s ease}.ilena-portfolio .ilena-portfolio__jump:hover,.ilena-portfolio .ilena-portfolio__coming-link:hover,.ilena-portfolio .ilena-portfolio__closing>a:hover{color:var(--pf-red);transform:translateY(-2px);border-color:var(--pf-red)}.ilena-portfolio__featured-image>img,.ilena-portfolio__project-media>img{transition:transform .75s cubic-bezier(.2,.7,.2,1)}.ilena-portfolio__project{transition:transform .35s cubic-bezier(.2,.7,.2,1)}.ilena-portfolio__featured-image,.ilena-portfolio__project-media{overflow:hidden}.ilena-portfolio__details[open]>p,.ilena-portfolio__gallery[open]>div{animation:portfolio-details-in .28s ease both}
+@media(hover:hover) and (pointer:fine){.ilena-portfolio__featured-image:hover>img,.ilena-portfolio__project-media:hover>img{transform:scale(1.035)}.ilena-portfolio__project:hover,.ilena-portfolio__project:focus-within{transform:translateY(-4px)}}
+.portfolio-motion-ready [data-portfolio-reveal],.portfolio-motion-ready [data-portfolio-text-reveal]{opacity:0;transform:translate3d(0,14px,0);transition:opacity .62s ease var(--pf-reveal-delay,0ms),transform .62s cubic-bezier(.2,.7,.2,1) var(--pf-reveal-delay,0ms)}.portfolio-motion-ready [data-portfolio-reveal].is-visible,.portfolio-motion-ready [data-portfolio-text-reveal].is-visible{opacity:1;transform:none}.portfolio-motion-ready [data-portfolio-reveal="media"]{clip-path:inset(0 4% 0 4%);transition:opacity .65s ease var(--pf-reveal-delay,0ms),transform .65s ease var(--pf-reveal-delay,0ms),clip-path .8s cubic-bezier(.2,.7,.2,1) var(--pf-reveal-delay,0ms)}.portfolio-motion-ready [data-portfolio-reveal="media"].is-visible{clip-path:inset(0)}.portfolio-motion-ready [data-portfolio-text-reveal]{clip-path:inset(0 0 100%);transition:opacity .55s ease var(--pf-reveal-delay,0ms),transform .55s ease var(--pf-reveal-delay,0ms),clip-path .72s cubic-bezier(.2,.7,.2,1) calc(var(--pf-reveal-delay,0ms) + 100ms)}.portfolio-motion-ready [data-portfolio-text-reveal].is-visible{clip-path:inset(0)}
+@media(hover:hover) and (pointer:fine){.portfolio-motion-ready .ilena-portfolio__project.is-visible:hover,.portfolio-motion-ready .ilena-portfolio__project.is-visible:focus-within{transform:translateY(-4px)}}
+.portfolio-motion-ready .ilena-portfolio__coming-art:not(.is-visible) .portfolio-art-furniture,.portfolio-motion-ready .ilena-portfolio__coming-art:not(.is-visible) .portfolio-art-detail,.portfolio-motion-ready .ilena-portfolio__coming-art:not(.is-visible) .portfolio-art-sweep,.portfolio-motion-ready .ilena-portfolio__coming-art:not(.is-visible) .portfolio-art-marker{animation-play-state:paused}
+@keyframes portfolio-details-in{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.ilena-portfolio *{scroll-behavior:auto!important;animation:none!important;transition:none!important;transform:none!important;clip-path:none!important}}
+</style>
+<script>
+(function () {
+    var page = document.querySelector('.ilena-portfolio');
+    if (!page) return;
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) return;
+    document.documentElement.style.scrollBehavior = 'smooth';
+    var items = Array.prototype.slice.call(page.querySelectorAll('[data-portfolio-reveal], [data-portfolio-text-reveal]'));
+    if (!items.length || !('IntersectionObserver' in window)) return;
+    items.forEach(function (item, index) {
+        item.style.setProperty('--pf-reveal-delay', Math.min((index % 4) * 65, 195) + 'ms');
+    });
+    page.classList.add('portfolio-motion-ready');
+    var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+        });
+    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+    items.forEach(function (item) { observer.observe(item); });
+})();
+</script>
 <?= $this->endSection(); ?>
