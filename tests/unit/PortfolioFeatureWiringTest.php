@@ -25,15 +25,15 @@ final class PortfolioFeatureWiringTest extends TestCase
         $this->assertContains(PortfolioService::REFRESH_NAME, \App\Services\PublicCacheRefreshRegistry::NAMES);
     }
 
-    public function testPortfolioIsLinkedInBothStorefrontHeadersAndLocales(): void
+    public function testPortfolioRouteRemainsAvailableButIsHiddenFromStorefrontHeaders(): void
     {
         $routes = file_get_contents(APPPATH . 'Config/Routes.php');
         $desktop = file_get_contents(APPPATH . 'Views/layout/navbar.php');
         $mobile = file_get_contents(APPPATH . 'Views/layout/navbarHp.php');
         $this->assertStringContainsString('$routes->get(\'/portfolio\', \'Pages::portfolio\'', $routes);
         $this->assertStringContainsString('$routes->get(\'portfolio\', \'Pages::portfolio\'', $routes);
-        $this->assertStringContainsString("'/en/portfolio' : '/portfolio'", $desktop);
-        $this->assertStringContainsString("'/en/portfolio' : '/portfolio'", $mobile);
+        $this->assertStringNotContainsString("lang('Store.portfolio')", $desktop);
+        $this->assertStringNotContainsString("lang('Store.portfolio')", $mobile);
     }
 
     public function testEmptyPortfolioShowsBilingualAnimatedComingSoonDesign(): void
