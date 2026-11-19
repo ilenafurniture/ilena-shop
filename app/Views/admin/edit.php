@@ -699,6 +699,7 @@ $variantColorPresets = [
 
                 <div class="edit-section">
                     <div class="section-title">Varian</div>
+                    <p class="hint">Untuk menghapus varian, klik <strong>Hapus Varian</strong> lalu <strong>Simpan perubahan</strong>. Penghapusan hanya berhasil jika stok varian 0 dan tidak ada checkout aktif yang sedang memakai varian tersebut.</p>
                     <div id="container-varian" class="stack">
                         <?php foreach ($produk['varian'] as $ind_v => $v) { ?>
                         <div class="variant-section">
@@ -775,6 +776,9 @@ $variantColorPresets = [
                                 <button type="button" class="btn danger" onclick="deleteVarian(event)">Hapus
                                     Varian</button>
                             </div>
+                            <?php if ((int) ($v['stok'] ?? 0) > 0): ?>
+                            <small class="muted">Stok tersisa: <?= number_format((int) $v['stok'], 0, ',', '.'); ?>. Kosongkan stok melalui menu Mutasi sebelum menghapus varian.</small>
+                            <?php endif; ?>
                         </div>
                         <?php } ?>
                     </div>
@@ -1106,13 +1110,13 @@ function hapusSubvarian(varianNum, indexGambar, e) {
 
         const varianArr = varianElems.map((card, idx) => {
             const no = idx + 1;
-            const nama = card.querySelector(`input[name="nama-var${no}"]`)?.value || '';
-            const namaEn = card.querySelector(`input[name="nama-en-var${no}"]`)?.value || '';
-            const kode = card.querySelector(`input[name="kode-var${no}"]`)?.value || '';
-            const stok = card.querySelector(`input[name="stok-var${no}"]`)?.value || '0';
+            const nama = card.querySelector('input[name^="nama-var"]')?.value || '';
+            const namaEn = card.querySelector('input[name^="nama-en-var"]')?.value || '';
+            const kode = card.querySelector('input[name^="kode-var"]')?.value || '';
+            const stok = card.querySelector('input[name^="stok-var"]')?.value || '0';
 
-            const inputs = Array.from(card.querySelectorAll(
-                `#container-input-gambar${no} input[type="file"]`));
+            const imageInputContainer = card.querySelector('[id^="container-input-gambar"]');
+            const inputs = Array.from(imageInputContainer?.querySelectorAll('input[type="file"]') || []);
             const urutan = [];
             inputs.forEach(inp => {
                 let slot = Number(inp.dataset.slot || 0);

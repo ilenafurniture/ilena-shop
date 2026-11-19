@@ -16,6 +16,18 @@ final class ProductStockPolicyTest extends CIUnitTestCase
         ProductStockPolicy::rebase([['nama'=>'Oak','stok'=>1]],[['nama'=>'Renamed','stok'=>1]]);
     }
 
+    public function testZeroStockVariantCanBeDeleted(): void
+    {
+        $result = ProductStockPolicy::rebase(
+            [['nama' => 'Oak', 'stok' => 0], ['nama' => 'Walnut', 'stok' => 4]],
+            [['nama' => 'Walnut', 'stok' => 0, 'kode' => '#442200']]
+        );
+
+        $this->assertCount(1, $result);
+        $this->assertSame('Walnut', $result[0]['nama']);
+        $this->assertSame(4, $result[0]['stok']);
+    }
+
     public function testMalformedPersistedVariantFailsClosed(): void
     {
         $this->expectException(\RuntimeException::class);

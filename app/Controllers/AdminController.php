@@ -1808,7 +1808,7 @@ class AdminController extends BaseController
                         [$id_product, $oldName]
                     )->getRowArray();
                     if ($reservation) {
-                        throw new \RuntimeException('Varian sedang digunakan checkout berjalan dan belum dapat dihapus.');
+                        throw new \RuntimeException('Varian sedang digunakan checkout berjalan dan belum dapat dihapus. Tunggu checkout selesai atau kedaluwarsa, lalu simpan perubahan kembali.');
                     }
                 }
             }
