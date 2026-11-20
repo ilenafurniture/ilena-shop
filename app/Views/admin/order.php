@@ -6,11 +6,13 @@ $isDev = (string) session()->get('role') === '1';
 $countByStatus = $statusCounts ?? ['Menunggu Pembayaran' => 0, 'Proses' => 0, 'Dikirim' => 0];
 $missingShipmentDateFilter = (bool) ($missingShipmentDateFilter ?? false);
 $orderYearFilter = (string) ($orderYearFilter ?? '');
-$pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter, $orderYearFilter, $missingShipmentDateFilter): string {
+$orderSort = (string) ($orderSort ?? 'newest');
+$pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter, $orderYearFilter, $missingShipmentDateFilter, $orderSort): string {
     $params = ['page' => $page];
     if ($orderQuery !== '') $params['q'] = $orderQuery;
     if ($orderStatusFilter !== '') $params['status'] = $orderStatusFilter;
     if ($orderYearFilter !== '') $params['year'] = $orderYearFilter;
+    if ($orderSort === 'oldest') $params['sort'] = 'oldest';
     if ($missingShipmentDateFilter) $params['shipment_date'] = 'missing';
     return '/admin/order/online?' . http_build_query($params);
 };
@@ -23,6 +25,7 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter, $or
 .online-orders .action{display:inline-flex;min-height:42px;align-items:center;justify-content:center;gap:8px;padding:0 15px;border:1px solid var(--o-line);border-radius:8px;background:transparent;color:var(--o-ink);font:600 13px/1.2 "Plus Jakarta Sans",sans-serif;text-decoration:none;cursor:pointer}
 .online-orders .action:hover{background:#f1ede6;border-color:#d4c9bb;color:var(--o-ink)}.online-orders .action-primary{background:var(--o-accent);border-color:var(--o-accent);color:#fff}.online-orders .action-primary:hover{background:#70482f;color:#fff}
 .online-orders .metrics{display:flex;gap:0;border-block:1px solid var(--o-line);margin-bottom:20px}.online-orders .metric{min-width:150px;padding:13px 22px 13px 0;margin-right:22px;border-right:1px solid var(--o-line)}.online-orders .metric:last-child{border:0}.online-orders .metric strong{display:block;font-size:21px;font-variant-numeric:tabular-nums;font-weight:650;line-height:1.2}.online-orders .metric span{font-size:12px;color:var(--o-muted)}
+.invoice-gap-register{margin:0 0 20px;border-bottom:1px solid var(--o-line);color:var(--o-ink)}.invoice-gap-register summary{display:flex;align-items:center;gap:8px;padding:12px 0;cursor:pointer;font-size:13px;font-weight:650;list-style:none}.invoice-gap-register summary::-webkit-details-marker{display:none}.invoice-gap-register summary::before{content:'+';display:grid;place-items:center;width:22px;height:22px;border:1px solid var(--o-line);border-radius:50%;color:var(--o-red);font-size:16px;line-height:1}.invoice-gap-register[open] summary::before{content:'−'}.invoice-gap-register__hint{margin:0 0 11px;color:var(--o-muted);font-size:12px;line-height:1.55}.invoice-gap-register__list{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 14px;padding:0;list-style:none}.invoice-gap-register__list li{padding:5px 9px;border:1px solid var(--o-line);border-radius:5px;color:#6b503a;font:600 12px ui-monospace,SFMono-Regular,Consolas,monospace}.invoice-gap-register__list li.is-found{border-color:#b9c9b2;color:#42613d;background:#f5f8f3}.invoice-gap-register__status{margin-left:auto;color:var(--o-muted);font-size:11px;font-weight:500}
 .legacy-shipment-shortcut{display:flex;align-items:center;gap:12px;padding:13px 15px;margin:-5px 0 18px;border:1px solid #decbbb;border-radius:8px;background:#fbf6ef;color:var(--o-ink);text-decoration:none}.legacy-shipment-shortcut>.material-icons{font-size:21px;color:var(--o-accent)}.legacy-shipment-shortcut strong,.legacy-shipment-shortcut small{display:block}.legacy-shipment-shortcut strong{font-size:13px}.legacy-shipment-shortcut small{margin-top:2px;color:var(--o-muted);font-size:12px}.legacy-shipment-shortcut__action{margin-left:auto;color:var(--o-accent);font-size:12px;font-weight:650;white-space:nowrap}.legacy-shipment-shortcut:hover{border-color:#b99b80;background:#f8f0e7;color:var(--o-ink)}
 .online-orders .order-controls{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.online-orders .filters{display:flex;gap:8px;flex:1;justify-content:flex-end}
 .online-orders .control{min-height:42px;border:1px solid #ded7ce;border-radius:8px;background:#fff;color:var(--o-ink);padding:0 12px;font:400 14px/1.3 "Plus Jakarta Sans",sans-serif}.online-orders .search-control{width:min(340px,100%);padding-left:38px}.online-orders .search-box{position:relative;flex:1;max-width:370px}.online-orders .search-box .material-icons{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:19px;color:#8e857b;pointer-events:none}
@@ -61,6 +64,13 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter, $or
     <div class="metric"><strong><?= (int) $countByStatus['Proses'] ?></strong><span>Diproses</span></div>
     <div class="metric"><strong><?= (int) $countByStatus['Dikirim'] ?></strong><span>Dikirim</span></div>
   </section>
+  <?php if (!empty($invoiceNumberGaps)): ?><details class="invoice-gap-register">
+    <summary>Nomor invoice yang perlu direkonsiliasi <span class="invoice-gap-register__status"><?= count($invoiceNumberGaps) ?> nomor</span></summary>
+    <p class="invoice-gap-register__hint">Nomor berikut tidak memiliki data pesanan yang cocok. Daftar ini bukan pesanan atau transaksi, tidak masuk hitungan penjualan, dan belum menyatakan nomor tersebut pernah diterbitkan atau dibatalkan.</p>
+    <ul class="invoice-gap-register__list" aria-label="Nomor invoice yang perlu direkonsiliasi">
+      <?php foreach ($invoiceNumberGaps as $gap): ?><li class="<?= !empty($gap['matching_order_found']) ? 'is-found' : '' ?>"><?= esc($gap['invoice_number']) ?><?= !empty($gap['matching_order_found']) ? ' · data cocok, tinjau' : '' ?></li><?php endforeach; ?>
+    </ul>
+  </details><?php endif; ?>
   <?php if ((int) ($legacyShipmentDateCount ?? 0) > 0): ?><a class="legacy-shipment-shortcut" href="/admin/order/online?shipment_date=missing"><span class="material-icons" aria-hidden="true">event_busy</span><span><strong><?= number_format((int) $legacyShipmentDateCount) ?> pesanan Dikirim</strong><small>belum memiliki tanggal kirim yang tercatat</small></span><span class="legacy-shipment-shortcut__action">Periksa daftar <span aria-hidden="true">→</span></span></a><?php endif; ?>
 
   <section aria-label="Daftar pesanan">
@@ -69,9 +79,10 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter, $or
       <form class="filters" method="get" action="/admin/order/online">
         <label class="search-box"><span class="material-icons" aria-hidden="true">search</span><span class="visually-hidden">Cari pesanan</span><input class="control search-control" name="q" type="search" value="<?= esc($orderQuery ?? '') ?>" placeholder="Cari ID, nama, email, telepon…" autocomplete="off"></label>
         <label><span class="visually-hidden">Filter tahun transaksi</span><input class="control year-control" name="year" type="number" min="2000" max="<?= esc((string) date('Y'), 'attr') ?>" step="1" value="<?= esc($orderYearFilter, 'attr') ?>" placeholder="Tahun" aria-label="Filter tahun transaksi"></label>
+        <label><span class="visually-hidden">Urutan tanggal pesanan</span><select class="control sort-control" name="sort" aria-label="Urutan tanggal pesanan"><option value="newest" <?= $orderSort === 'newest' ? 'selected' : '' ?>>Tanggal terbaru dulu</option><option value="oldest" <?= $orderSort === 'oldest' ? 'selected' : '' ?>>Tanggal terlama dulu</option></select></label>
         <label><span class="visually-hidden">Filter status</span><select class="control" name="status"><option value="">Semua status</option><?php foreach (['Menunggu Pembayaran'=>'Menunggu pembayaran','Proses'=>'Diproses','Dikirim'=>'Dikirim','Selesai'=>'Selesai','Dibatalkan'=>'Dibatalkan','Gagal'=>'Gagal'] as $key=>$label): ?><option value="<?= esc($key, 'attr') ?>" <?= ($orderStatusFilter ?? '') === $key ? 'selected' : '' ?>><?= esc($label) ?></option><?php endforeach; ?></select></label>
         <label><span class="visually-hidden">Filter tanggal pengiriman</span><select class="control" name="shipment_date"><option value="">Semua tanggal kirim</option><option value="missing" <?= $missingShipmentDateFilter ? 'selected' : '' ?>>Tanggal kirim belum tercatat</option></select></label>
-        <button class="action action-primary" type="submit">Terapkan</button><?php if (($orderQuery ?? '') !== '' || ($orderStatusFilter ?? '') !== '' || $orderYearFilter !== '' || $missingShipmentDateFilter): ?><a class="action" href="/admin/order/online">Reset</a><?php endif; ?>
+        <button class="action action-primary" type="submit">Terapkan</button><?php if (($orderQuery ?? '') !== '' || ($orderStatusFilter ?? '') !== '' || $orderYearFilter !== '' || $missingShipmentDateFilter || $orderSort !== 'newest'): ?><a class="action" href="/admin/order/online">Reset</a><?php endif; ?>
       </form>
     </div>
     <?php if ($isDev): ?><section class="bulk-order-tools" aria-label="Penghapusan pesanan khusus Dev">
@@ -93,7 +104,7 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter, $or
       ?>
       <article class="order-row <?= $isDev ? 'order-row--dev' : '' ?>" data-order-row data-index="<?= (int) $index ?>" data-status="<?= esc($statusKey, 'attr') ?>">
         <?php if ($isDev): ?><div class="order-row__select"><?php if ($isDeletable): ?><input class="delete-order-select" type="checkbox" data-order-delete-select value="<?= esc((string) ($p['id_midtrans'] ?? ''), 'attr') ?>" aria-label="Pilih pesanan <?= esc($p['id_midtrans'] ?? '', 'attr') ?> untuk dihapus"><?php else: ?><span class="order-row__select-empty" aria-hidden="true"></span><?php endif; ?></div><?php endif; ?>
-        <div class="order-row__id"><div class="order-id"><?= esc($p['id_midtrans'] ?? '—') ?></div><div class="order-date"><?= esc($formattedDate) ?></div></div>
+        <div class="order-row__id"><div class="order-id"><?= esc($p['display_order_number'] ?? $p['id_midtrans'] ?? '—') ?></div><div class="order-date"><?= esc($formattedDate) ?></div></div>
         <div class="order-row__customer"><div class="customer-name"><?= esc($p['nama'] ?? 'Nama tidak tersedia') ?></div><div class="customer-email"><?= esc($p['email'] ?? '') ?></div></div>
         <div class="order-row__amount amount">Rp <?= number_format($amount, 0, ',', '.') ?></div>
         <div class="order-row__status"><span class="status" data-status="<?= esc($statusKey, 'attr') ?>"><?= esc($statusText) ?></span></div>
@@ -179,7 +190,7 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter, $or
     const order = orders[index]; if (!order) return;
     const mid = order.data_mid || {}; let address = order.alamat || '';
     if (typeof address === 'string') { try { const parsed = JSON.parse(address); if (parsed && typeof parsed === 'object') address = parsed.alamat_lengkap || Object.values(parsed).filter(value => typeof value === 'string' && value.trim() !== '').join(', '); } catch (_) {} }
-    setText('#detailTitle', order.id_midtrans); setText('[data-detail="name"]', order.nama); setText('[data-detail="email"]', order.email); setText('[data-detail="phone"]', order.nohp); setText('[data-detail="status"]', order.status); setText('[data-detail="address"]', typeof address === 'object' && address !== null ? (address.alamat_lengkap || JSON.stringify(address)) : address);
+    setText('#detailTitle', order.display_order_number || order.id_midtrans); setText('[data-detail="name"]', order.nama); setText('[data-detail="email"]', order.email); setText('[data-detail="phone"]', order.nohp); setText('[data-detail="status"]', order.status); setText('[data-detail="address"]', typeof address === 'object' && address !== null ? (address.alamat_lengkap || JSON.stringify(address)) : address);
     const tbody = document.getElementById('detailItems'); tbody.replaceChildren();
     const lineItems = Array.isArray(order.items) ? order.items : [];
     lineItems.forEach(item => {

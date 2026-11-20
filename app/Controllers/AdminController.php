@@ -2284,21 +2284,36 @@ class AdminController extends BaseController
                 ? $requestedYear
                 : '';
         $missingShipmentDate = (string) $request->getGet('shipment_date') === 'missing';
+        $requestedOrderSort = (string) $request->getGet('sort');
+        $orderSort = in_array($requestedOrderSort, ['oldest', 'newest'], true)
+            ? $requestedOrderSort
+            : 'newest';
+        $orderSortDirection = $orderSort === 'oldest' ? 'asc' : 'desc';
+        $displayOrderSearchNumber = null;
+        if ($query !== '' && preg_match('/^IL0*(\d{1,8})$/iD', $query, $displayNumberMatch) === 1) {
+            $displayOrderSearchNumber = (int) $displayNumberMatch[1];
+        }
         $allowedStatuses = ['Menunggu Pembayaran', 'Proses', 'Dikirim', 'Selesai', 'Dibatalkan', 'Gagal'];
         if (!in_array($status, $allowedStatuses, true)) $status = '';
         if ($missingShipmentDate) $status = 'Dikirim';
         $perPage = 30;
         $page = max(1, (int) $request->getGet('page'));
         $db = db_connect();
-        $buildQuery = static function () use ($db, $excludedEmails, $query, $status, $year, $missingShipmentDate) {
+        $buildQuery = static function () use ($db, $excludedEmails, $query, $displayOrderSearchNumber, $status, $year, $missingShipmentDate) {
             $builder = $db->table('pemesanan')->whereNotIn('email', $excludedEmails);
             if ($query !== '') {
                 $builder->groupStart()
                     ->like('id_midtrans', $query)
                     ->orLike('nama', $query)
                     ->orLike('email', $query)
-                    ->orLike('nohp', $query)
-                    ->groupEnd();
+                    ->orLike('nohp', $query);
+                if ($displayOrderSearchNumber !== null) {
+                    $builder->orGroupStart()
+                        ->where('id', $displayOrderSearchNumber)
+                        ->where("id_midtrans LIKE 'IL%' AND id_midtrans NOT LIKE '%MP'", null, false)
+                        ->groupEnd();
+                }
+                $builder->groupEnd();
             }
             if ($status !== '') $builder->where('status', $status);
             if ($year !== '') {
@@ -2334,8 +2349,22 @@ class AdminController extends BaseController
         $totalPages = max(1, (int) ceil($filteredCount / $perPage));
         $page = min($page, $totalPages);
         $offset = ($page - 1) * $perPage;
-        $pesanan = $buildQuery()->orderBy('id', 'desc')->get($perPage, $offset)->getResultArray();
+        $transactionTimeSort = "CASE WHEN JSON_VALID(data_mid) = 1 THEN JSON_UNQUOTE(JSON_EXTRACT(data_mid, '$.transaction_time')) ELSE '' END";
+        $pesanan = $buildQuery()
+            ->orderBy($transactionTimeSort, $orderSortDirection, false)
+            ->orderBy('id', $orderSortDirection)
+            ->get($perPage, $offset)
+            ->getResultArray();
         foreach ($pesanan as $ind_p => $p) {
+            $rawOrderId = (string) ($p['id_midtrans'] ?? '');
+            $displayOrderId = $rawOrderId;
+            if (str_starts_with($rawOrderId, 'IL')
+                && ! str_ends_with($rawOrderId, 'MP')
+                && (int) ($p['id'] ?? 0) > 0
+            ) {
+                $displayOrderId = \App\Services\OrderInvoiceNumber::fromPrimaryKey($p['id']);
+            }
+            $pesanan[$ind_p]['display_order_number'] = $displayOrderId;
             $decodedMid = json_decode((string) ($p['data_mid'] ?? ''), true);
             $midIsValid = json_last_error() === JSON_ERROR_NONE && is_array($decodedMid);
             $pesanan[$ind_p]['data_mid'] = $midIsValid ? $decodedMid : [];
@@ -2352,14 +2381,37 @@ class AdminController extends BaseController
             $pesanan[$ind_p]['items'] = json_decode($p['items'], true);
             $pesanan[$ind_p]['kurir'] = json_decode($p['kurir'], true);
         }
+        $invoiceNumberGaps = [];
+        if ($db->tableExists('order_number_reconciliation')) {
+            $invoiceNumberGaps = $db->table('order_number_reconciliation gap')
+                ->select('gap.invoice_number, gap.status, gap.note')
+                ->orderBy('gap.invoice_number', 'ASC')
+                ->get()
+                ->getResultArray();
+            $gapNumbers = array_column($invoiceNumberGaps, 'invoice_number');
+            if ($gapNumbers !== []) {
+                $matchingOrderNumbers = $db->table('pemesanan')
+                    ->select('id_midtrans')
+                    ->whereIn('id_midtrans', $gapNumbers)
+                    ->get()
+                    ->getResultArray();
+                $matchingNumberSet = array_fill_keys(array_column($matchingOrderNumbers, 'id_midtrans'), true);
+                foreach ($invoiceNumberGaps as &$invoiceGap) {
+                    $invoiceGap['matching_order_found'] = isset($matchingNumberSet[$invoiceGap['invoice_number']]);
+                }
+                unset($invoiceGap);
+            }
+        }
         $data = [
             'title' => 'Pesanan',
             'apikey_img_ilena' => $this->apikey_img_ilena,
             'pesanan' => $pesanan,
+            'invoiceNumberGaps' => $invoiceNumberGaps,
             'pesananJson' => json_encode($pesanan),
             'orderQuery' => $query,
             'orderStatusFilter' => $status,
             'orderYearFilter' => $year,
+            'orderSort' => $orderSort,
             'missingShipmentDateFilter' => $missingShipmentDate,
             'legacyShipmentDateCount' => $legacyShipmentDateCount,
             'totalOrders' => $totalCount,
