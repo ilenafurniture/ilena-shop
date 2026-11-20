@@ -2277,6 +2277,12 @@ class AdminController extends BaseController
         $request = service('request');
         $query = mb_substr(trim((string) $request->getGet('q')), 0, 100, 'UTF-8');
         $status = trim((string) $request->getGet('status'));
+        $requestedYear = trim((string) $request->getGet('year'));
+        $year = preg_match('/^\d{4}$/D', $requestedYear) === 1
+            && (int) $requestedYear >= 2000
+            && (int) $requestedYear <= (int) date('Y')
+                ? $requestedYear
+                : '';
         $missingShipmentDate = (string) $request->getGet('shipment_date') === 'missing';
         $allowedStatuses = ['Menunggu Pembayaran', 'Proses', 'Dikirim', 'Selesai', 'Dibatalkan', 'Gagal'];
         if (!in_array($status, $allowedStatuses, true)) $status = '';
@@ -2284,7 +2290,7 @@ class AdminController extends BaseController
         $perPage = 30;
         $page = max(1, (int) $request->getGet('page'));
         $db = db_connect();
-        $buildQuery = static function () use ($db, $excludedEmails, $query, $status, $missingShipmentDate) {
+        $buildQuery = static function () use ($db, $excludedEmails, $query, $status, $year, $missingShipmentDate) {
             $builder = $db->table('pemesanan')->whereNotIn('email', $excludedEmails);
             if ($query !== '') {
                 $builder->groupStart()
@@ -2295,6 +2301,13 @@ class AdminController extends BaseController
                     ->groupEnd();
             }
             if ($status !== '') $builder->where('status', $status);
+            if ($year !== '') {
+                $builder->where(
+                    "CASE WHEN JSON_VALID(data_mid) = 1 THEN JSON_UNQUOTE(JSON_EXTRACT(data_mid, '$.transaction_time')) ELSE '' END LIKE " . $db->escape($year . '-%'),
+                    null,
+                    false
+                );
+            }
             if ($missingShipmentDate) {
                 $builder->where(\App\Services\WebsiteOrderAttention::missingShipmentTimestampSql(), null, false);
             }
@@ -2316,7 +2329,7 @@ class AdminController extends BaseController
             ->where('status', 'Dikirim')
             ->where(\App\Services\WebsiteOrderAttention::missingShipmentTimestampSql(), null, false)
             ->countAllResults();
-        $hasFilters = $query !== '' || $status !== '' || $missingShipmentDate;
+        $hasFilters = $query !== '' || $status !== '' || $year !== '' || $missingShipmentDate;
         $filteredCount = $hasFilters ? (int) $buildQuery()->countAllResults() : $totalCount;
         $totalPages = max(1, (int) ceil($filteredCount / $perPage));
         $page = min($page, $totalPages);
@@ -2346,6 +2359,7 @@ class AdminController extends BaseController
             'pesananJson' => json_encode($pesanan),
             'orderQuery' => $query,
             'orderStatusFilter' => $status,
+            'orderYearFilter' => $year,
             'missingShipmentDateFilter' => $missingShipmentDate,
             'legacyShipmentDateCount' => $legacyShipmentDateCount,
             'totalOrders' => $totalCount,
