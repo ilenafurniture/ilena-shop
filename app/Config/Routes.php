@@ -231,6 +231,9 @@ $routes->group('admin', ['filter' => ['adminFilter', 'csrf']], static function($
     // Order Online (admin)
     $routes->get('order', 'AdminController::order');
     $routes->get('order/online', 'AdminController::order');
+    $routes->get('order/number-gap/(:segment)', 'AdminController::orderNumberGapDetail/$1');
+    $routes->get('order/number-gap/(:segment)/pdf', 'AdminController::orderNumberGapPdf/$1');
+    $routes->post('order/number-gap/(:segment)', 'AdminController::updateOrderNumberGap/$1');
     $routes->post('order/delete/(:any)', 'AdminController::deleteOnlineOrder/$1');
     $routes->post('order/delete-bulk', 'AdminController::deleteSelectedOnlineOrders');
     $routes->post('actioneditresi', 'AdminController::actionEditResi');

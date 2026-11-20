@@ -2426,6 +2426,125 @@ class AdminController extends BaseController
         return view('admin/order', $data);
     }
 
+    public function orderNumberGapDetail(string $invoiceNumber)
+    {
+        $gap = $this->getOrderNumberGap($invoiceNumber);
+        if ($gap === null) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
+        return view('admin/orderNumberGapDetail', [
+            'title' => 'Detail rekonsiliasi nomor',
+            'gap' => $gap,
+        ]);
+    }
+
+    public function orderNumberGapPdf(string $invoiceNumber)
+    {
+        $gap = $this->getOrderNumberGap($invoiceNumber);
+        if ($gap === null) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
+        $html = view('admin/orderNumberGapPdf', ['gap' => $gap]);
+        $pdf = new \Dompdf\Dompdf(['chroot' => FCPATH, 'isRemoteEnabled' => false]);
+        $pdf->loadHtml($html, 'UTF-8');
+        $pdf->setPaper('A4', 'portrait');
+        $pdf->render();
+
+        return $this->response
+            ->setHeader('Content-Type', 'application/pdf')
+            ->setHeader('Content-Disposition', 'attachment; filename="rekonsiliasi-' . $gap['invoice_number'] . '.pdf"')
+            ->setBody($pdf->output());
+    }
+
+    public function updateOrderNumberGap(string $invoiceNumber)
+    {
+        if ((string) session()->get('role') !== '1') {
+            return redirect()->to('/admin/order/online')->with('order_gap_error', 'Perubahan register rekonsiliasi hanya dapat dilakukan oleh Dev.');
+        }
+
+        $gap = $this->getOrderNumberGap($invoiceNumber);
+        if ($gap === null) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
+        $status = trim((string) $this->request->getPost('status'));
+        $note = trim(strip_tags((string) $this->request->getPost('note')));
+        $evidenceType = trim((string) $this->request->getPost('evidence_type'));
+        $evidenceReference = trim(strip_tags((string) $this->request->getPost('evidence_reference')));
+        $allowedStatuses = ['unverified_gap', 'evidence_found', 'not_issued'];
+        $allowedEvidenceTypes = ['backup', 'payment_gateway', 'invoice_archive', 'accounting_record', 'other'];
+
+        if (! in_array($status, $allowedStatuses, true)
+            || ! in_array($evidenceType, $allowedEvidenceTypes, true)
+            || mb_strlen($note, 'UTF-8') > 255
+            || mb_strlen($evidenceReference, 'UTF-8') > 200
+            || ($status !== 'unverified_gap' && $evidenceReference === '')
+        ) {
+            return redirect()->to('/admin/order/number-gap/' . rawurlencode($gap['invoice_number']))
+                ->with('order_gap_error', 'Lengkapi status, catatan, dan referensi bukti dengan format yang valid.');
+        }
+
+        $now = date('Y-m-d H:i:s');
+        $updated = db_connect()->table('order_number_reconciliation')
+            ->where('invoice_number', $gap['invoice_number'])
+            ->update([
+                'status' => $status,
+                'note' => $note,
+                'evidence_type' => $evidenceReference === '' ? null : $evidenceType,
+                'evidence_reference' => $evidenceReference === '' ? null : $evidenceReference,
+                'reviewed_by' => (string) session()->get('email'),
+                'reviewed_at' => $now,
+                'updated_at' => $now,
+            ]);
+
+        if (! $updated) {
+            return redirect()->to('/admin/order/number-gap/' . rawurlencode($gap['invoice_number']))
+                ->with('order_gap_error', 'Register belum berhasil disimpan. Silakan coba kembali.');
+        }
+
+        (new AuditLogService())->record([
+            'actor_name' => (string) session()->get('nama'),
+            'actor_email' => (string) session()->get('email'),
+            'role_label' => 'Developer',
+            'activity' => 'Memperbarui register rekonsiliasi nomor pesanan',
+            'description' => 'Memperbarui catatan bukti untuk nomor ' . $gap['invoice_number'] . '. Tidak ada data pesanan atau transaksi yang diubah.',
+            'method' => 'POST',
+            'url' => (string) current_url(),
+            'ip_address' => (string) $this->request->getIPAddress(),
+            'user_agent' => (string) $this->request->getUserAgent(),
+            'request_data' => ['invoice_number' => $gap['invoice_number'], 'status' => $status, 'evidence_type' => $evidenceType],
+        ]);
+
+        return redirect()->to('/admin/order/number-gap/' . rawurlencode($gap['invoice_number']))
+            ->with('order_gap_success', 'Catatan rekonsiliasi berhasil diperbarui. Data pesanan tetap tidak berubah.');
+    }
+
+    private function getOrderNumberGap(string $invoiceNumber): ?array
+    {
+        $invoiceNumber = strtoupper(trim($invoiceNumber));
+        if (preg_match('/^IL[0-9]{8}$/D', $invoiceNumber) !== 1
+            || ! db_connect()->tableExists('order_number_reconciliation')
+        ) {
+            return null;
+        }
+
+        $db = db_connect();
+        $gap = $db->table('order_number_reconciliation')
+            ->where('invoice_number', $invoiceNumber)
+            ->get(1)
+            ->getRowArray();
+        if ($gap === null) {
+            return null;
+        }
+
+        $gap['matching_order_found'] = $db->table('pemesanan')
+            ->where('id_midtrans', $invoiceNumber)
+            ->countAllResults() > 0;
+        return $gap;
+    }
+
     public function setLegacyShipmentDate()
     {
         $idMid = trim((string) $this->request->getPost('idMid'));
