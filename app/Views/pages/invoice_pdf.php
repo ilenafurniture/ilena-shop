@@ -130,7 +130,7 @@ if (is_file($logoPath ?? '')) {
         .totals { width: 54%; margin: 13px 0 0 auto; border-collapse: collapse; page-break-inside: avoid; }
         .totals td { padding: 4px 0; }
         .totals td:last-child { text-align: right; white-space: nowrap; }
-        .totals .discount td:last-child { color: #292520; font-size: inherit; font-weight: 400; }
+        .totals .discount td:last-child { color: #a42331; font-size: inherit; font-weight: 400; }
         .totals .discount-sign { color: #a42331; font: inherit; font-size: inherit; }
         .totals .grand td { padding-top: 8px; border-top: 1px solid #806448; font-size: 11pt; font-weight: bold; }
         .fulfillment { width: 100%; margin-top: 22px; border-top: 1px solid #e1dcd6; border-bottom: 1px solid #e1dcd6; border-collapse: collapse; page-break-inside: avoid; }

@@ -69,7 +69,7 @@ body {
 .invoice-totals > div:last-child { flex: 1 1 50% !important; }
 .invoice-totals > div:last-child > div { padding-block: 2px !important; }
 .invoice-totals p { margin: 0 !important; color: #5c554e; font-size: 9px; }
-.invoice-discount { color: var(--invoice-ink) !important; font-weight: 400; font-size: inherit; }
+.invoice-discount { color: #a42331 !important; font-weight: 400; font-size: inherit; }
 .invoice-discount-sign { color: #a42331; font: inherit; font-size: inherit; }
 .invoice-totals > div:last-child > div:first-child p,
 .invoice-totals > div:last-child > div:last-child p { color: var(--invoice-ink); font-weight: 700; }
