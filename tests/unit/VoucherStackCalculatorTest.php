@@ -28,7 +28,7 @@ final class VoucherStackCalculatorTest extends CIUnitTestCase
             ['id'=>2,'kode'=>'LEGACY','tipe'=>'rupiah','nilai'=>15000], false, 100000
         );
 
-        self::assertSame([['id'=>2,'kode'=>'LEGACY','nama'=>'','target'=>'semua','discount'=>15000,'source'=>'redeemed']], $result['applied']);
+        self::assertSame([['id'=>2,'kode'=>'LEGACY','nama'=>'','target'=>'semua','cakupan'=>'produk','discount'=>15000,'source'=>'redeemed']], $result['applied']);
         self::assertSame(15000, $result['discount']);
     }
 
@@ -42,5 +42,36 @@ final class VoucherStackCalculatorTest extends CIUnitTestCase
         self::assertCount(1, $result['applied']);
         self::assertSame(8000, $result['discount']);
         self::assertSame(2000, $result['remaining']);
+    }
+
+    public function testShippingVoucherIsCappedAtShippingAndDoesNotReduceProductSubtotal(): void
+    {
+        $result = (new VoucherStackCalculator())->calculate(
+            [['id'=>8,'kode'=>'SHIP80','cakupan'=>'pengiriman','tipe'=>'persen','nilai'=>80]],
+            null,
+            false,
+            100000,
+            12000
+        );
+
+        self::assertSame(0, $result['product_discount']);
+        self::assertSame(9600, $result['shipping_discount']);
+        self::assertSame(9600, $result['discount']);
+    }
+
+    public function testClaimedShippingVoucherCanStackWithAutomaticProductVoucher(): void
+    {
+        $result = (new VoucherStackCalculator())->calculate(
+            [['id'=>10,'kode'=>'AUTO10','cakupan'=>'produk','tipe'=>'persen','nilai'=>10]],
+            ['id'=>11,'kode'=>'SHIP5','cakupan'=>'pengiriman','tipe'=>'nominal','nilai'=>50000],
+            true,
+            100000,
+            15000
+        );
+
+        self::assertSame([10, 11], array_column($result['applied'], 'id'));
+        self::assertSame([10000, 15000], array_column($result['applied'], 'discount'));
+        self::assertSame(10000, $result['product_discount']);
+        self::assertSame(15000, $result['shipping_discount']);
     }
 }

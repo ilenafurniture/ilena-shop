@@ -6,14 +6,16 @@
 // ---- Optional: breakdown ringan untuk tampilan (tidak mengubah sistem) ----
 $subtotal = 0;
 $diskonVoucher = 0;
+$diskonVoucherOngkir = 0;
 $diskonFlash = 0;
 $biayaOngkir = 0;
 $biayaAdmin = 0;
 
 foreach ($items as $it) {
     $name = strtolower(trim($it['name']));
-    if ($name === 'voucher') {
-        $diskonVoucher += abs((int)$it['price']);
+    if ($name === 'voucher' || $name === 'voucher ongkir') {
+        if ($name === 'voucher ongkir') $diskonVoucherOngkir += abs((int)$it['price']);
+        else $diskonVoucher += abs((int)$it['price']);
     } elseif ($name === 'flash sale') {
         $diskonFlash += abs((int)$it['price']);
     } elseif ($name === 'biaya admin') {
@@ -365,7 +367,7 @@ $totalBayar = (int)$dataMid['gross_amount'];
                     <div class="scroll">
                         <?php foreach ($items as $i) {
                 $nm = strtolower(trim($i['name']));
-                if (in_array($nm, ['voucher', 'flash sale', 'biaya ongkir', 'biaya admin'])) continue;
+                if (in_array($nm, ['voucher', 'voucher ongkir', 'flash sale', 'biaya ongkir', 'biaya admin'])) continue;
             ?>
                         <div class="row">
                             <p class="m-0 center fw-bold"><?= $i['name']; ?></p>
@@ -387,6 +389,7 @@ $totalBayar = (int)$dataMid['gross_amount'];
                     <div class="list-line"><span class="muted"><?= $isEnglish ? 'Voucher discount' : 'Diskon Voucher'; ?></span><span>- Rp
                             <?= number_format($diskonVoucher, 0, ',', '.'); ?></span></div>
                     <?php endif; ?>
+                    <?php if ($diskonVoucherOngkir > 0): ?><div class="list-line"><span class="muted"><?= $isEnglish ? 'Shipping voucher discount' : 'Potongan voucher ongkir'; ?></span><span>- Rp <?= number_format($diskonVoucherOngkir, 0, ',', '.'); ?></span></div><?php endif; ?>
                     <?php if ($diskonFlash > 0): ?>
                     <div class="list-line"><span class="muted">Flash Sale</span><span>- Rp
                             <?= number_format($diskonFlash, 0, ',', '.'); ?></span></div>

@@ -270,7 +270,7 @@ $waktuExpireFix = date("d", $waktuExpireEpoch) . " " . $bulan[(int)date("m", $wa
                 <div class="scroll">
                     <?php foreach ($items as $i):
               $nm = strtolower(trim($i['name']));
-              if (in_array($nm, ['voucher','flash sale','biaya ongkir','biaya admin'])) continue;
+              if (in_array($nm, ['voucher','voucher ongkir','flash sale','biaya ongkir','biaya admin'])) continue;
           ?>
                     <div class="row">
                         <p class="m-0 center fw-bold"><?= $i['name']; ?></p>

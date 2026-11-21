@@ -2,7 +2,7 @@
 $orderItems = is_array($pemesanan['items'] ?? null) ? $pemesanan['items'] : [];
 $shippingItems = array_values(array_filter($orderItems, static function ($item): bool {
     if (! is_array($item)) return false;
-    $excluded = ['voucher', 'biaya admin', 'biaya ongkir', 'flash sale'];
+    $excluded = ['voucher', 'voucher ongkir', 'biaya admin', 'biaya ongkir', 'flash sale'];
     foreach ([$item['name'] ?? '', $item['id'] ?? ''] as $value) {
         if (in_array(mb_strtolower(trim((string) $value)), $excluded, true)) return false;
     }

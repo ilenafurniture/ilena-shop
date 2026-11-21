@@ -3981,6 +3981,9 @@ class AdminController extends BaseController
 
         $type = (string) $this->request->getPost('tipe');
         if (!in_array($type, ['persen', 'nominal'], true)) throw new \InvalidArgumentException('Jenis potongan tidak valid.');
+        $scope = trim((string) $this->request->getPost('cakupan'));
+        if ($scope === '') $scope = 'produk';
+        if (!in_array($scope, ['produk', 'pengiriman'], true)) throw new \InvalidArgumentException('Berlaku untuk harus produk atau ongkir.');
         $valueRaw = $this->request->getPost('nilai');
         if ($valueRaw === null || !is_numeric($valueRaw)) throw new \InvalidArgumentException('Nilai voucher harus berupa angka.');
         $value = (int) $valueRaw;
@@ -4033,6 +4036,7 @@ class AdminController extends BaseController
             'kode' => $code,
             'nama' => $name,
             'deskripsi' => trim((string) $this->request->getPost('deskripsi')),
+            'cakupan' => $scope,
             'tipe' => $type,
             'nilai' => $value,
             'satuan' => $type === 'persen' ? 'persen' : 'rupiah',

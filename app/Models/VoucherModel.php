@@ -15,7 +15,7 @@ class VoucherModel extends Model
 
     // PENTING: sertakan list_email agar update tidak dibuang
     protected $allowedFields = [
-        'kode','nama','deskripsi',
+        'kode','nama','deskripsi','cakupan',
         'tipe','nilai',                 // skema baru
         'satuan','nominal',             // fallback skema lama (optional, kalau masih ada di DB)
         'minimal_belanja',

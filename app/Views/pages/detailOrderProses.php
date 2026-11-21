@@ -77,7 +77,7 @@ if (!is_array($kurir)) {
 }
 
 // filter hanya produk
-$excludeNames = ['voucher','flash sale','biaya admin','biaya ongkir'];
+$excludeNames = ['voucher','voucher ongkir','flash sale','biaya admin','biaya ongkir'];
 $showItems = array_values(array_filter($items, function($it) use ($excludeNames){
     $nm = strtolower($it['name']);
     if (in_array($nm, $excludeNames)) return false;
@@ -86,13 +86,15 @@ $showItems = array_values(array_filter($items, function($it) use ($excludeNames)
 }));
 $subtotal = 0;
 $diskonVoucher = 0;
+$diskonVoucherOngkir = 0;
 $diskonFlash = 0;
 $biayaOngkir = 0;
 $biayaAdmin = 0;
 foreach ($items as $it) {
     $name = strtolower(trim($it['name']));
-    if ($name === 'voucher') {
-        $diskonVoucher += abs((int)$it['price']);
+    if ($name === 'voucher' || $name === 'voucher ongkir') {
+        if ($name === 'voucher ongkir') $diskonVoucherOngkir += abs((int)$it['price']);
+        else $diskonVoucher += abs((int)$it['price']);
     } elseif ($name === 'flash sale') {
         $diskonFlash += abs((int)$it['price']);
     } elseif ($name === 'biaya ongkir') {
@@ -424,6 +426,7 @@ $grossAmount = (int)($dataMid['gross_amount'] ?? 0);
         <div class="list-line"><span class="muted"><?= $isEnglish ? 'Voucher Discount' : 'Diskon Voucher'; ?></span><span>- Rp
                 <?= number_format($diskonVoucher, 0, ',', '.'); ?></span></div>
         <?php endif; ?>
+        <?php if ($diskonVoucherOngkir > 0): ?><div class="list-line"><span class="muted"><?= $isEnglish ? 'Shipping voucher discount' : 'Potongan voucher ongkir'; ?></span><span>- Rp <?= number_format($diskonVoucherOngkir, 0, ',', '.'); ?></span></div><?php endif; ?>
         <?php if ($diskonFlash > 0): ?>
         <div class="list-line"><span class="muted">Flash Sale</span><span>- Rp
                 <?= number_format($diskonFlash, 0, ',', '.'); ?></span></div>

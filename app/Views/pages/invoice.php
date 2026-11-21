@@ -120,8 +120,10 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
             $biayaOngkir = 0;
             $biayaAdmin = 0;
             $diskonVoucher = 0;
+            $diskonVoucherOngkir = 0;
             $diskonFlash = 0;
             $voucherCodes = [];
+            $voucherShippingCodes = [];
             $hasBiayaOngkir = false;
             foreach ($invoiceItems as $item) {
                 $itemName = strtolower((string)($item['name'] ?? $item['id'] ?? ''));
@@ -134,10 +136,14 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
                     $biayaAdmin += (int)$item['price'];
                     continue;
                 }
-                if ($itemName == 'voucher') {
-                    $diskonVoucher += abs((int)$item['price']);
+                if ($itemName == 'voucher' || $itemName == 'voucher ongkir') {
+                    if ($itemName === 'voucher ongkir') $diskonVoucherOngkir += abs((int)$item['price']);
+                    else $diskonVoucher += abs((int)$item['price']);
                     $voucherCode = trim((string)($item['id'] ?? ''));
-                    if ($voucherCode !== '' && strcasecmp($voucherCode, 'voucher') !== 0) $voucherCodes[] = $voucherCode;
+                    if ($voucherCode !== '' && strcasecmp($voucherCode, 'voucher') !== 0) {
+                        if ($itemName === 'voucher ongkir') $voucherShippingCodes[] = $voucherCode;
+                        else $voucherCodes[] = $voucherCode;
+                    }
                     continue;
                 }
                 if ($itemName == 'flash sale') {
@@ -203,7 +209,7 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
                     <?php if ($diskonProduk > 0) { ?>
                     <div class="w-100 d-flex">
                         <div style="flex: 2"><p class="mb-0"><?= $isEnglish ? 'Product discount' : 'Diskon Produk'; ?></p></div>
-                        <div style="flex: 1"><p class="text-end mb-0">- Rp <?= number_format($diskonProduk, 0, ',', '.'); ?></p></div>
+                        <div style="flex: 1"><p class="text-end mb-0 invoice-discount">- Rp <?= number_format($diskonProduk, 0, ',', '.'); ?></p></div>
                     </div>
                     <?php } ?>
                     <?php if ($diskonVoucher > 0) { ?>
@@ -212,7 +218,7 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
                             <p class="mb-0"><?= $isEnglish ? 'Voucher discount' : 'Diskon Voucher'; ?><?= $voucherCodes ? ' (' . esc(implode(', ', array_unique($voucherCodes))) . ')' : '' ?></p>
                         </div>
                         <div style="flex: 1">
-                            <p class="text-end mb-0">- Rp <?= number_format($diskonVoucher, 0, ",", "."); ?></p>
+                            <p class="text-end mb-0 invoice-discount">- Rp <?= number_format($diskonVoucher, 0, ",", "."); ?></p>
                         </div>
                     </div>
                     <?php } ?>
@@ -222,9 +228,12 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
                             <p class="mb-0">Flash Sale</p>
                         </div>
                         <div style="flex: 1">
-                            <p class="text-end mb-0">- Rp <?= number_format($diskonFlash, 0, ",", "."); ?></p>
+                            <p class="text-end mb-0 invoice-discount">- Rp <?= number_format($diskonFlash, 0, ",", "."); ?></p>
                         </div>
                     </div>
+                    <?php } ?>
+                    <?php if ($diskonVoucherOngkir > 0) { ?>
+                    <div class="w-100 d-flex"><div style="flex: 2"><p class="mb-0"><?= $isEnglish ? 'Shipping voucher discount' : 'Potongan voucher ongkir'; ?><?= $voucherShippingCodes ? ' (' . esc(implode(', ', array_unique($voucherShippingCodes))) . ')' : '' ?></p></div><div style="flex: 1"><p class="text-end mb-0 invoice-discount">- Rp <?= number_format($diskonVoucherOngkir, 0, ',', '.'); ?></p></div></div>
                     <?php } ?>
                     <?php if ($hasBiayaOngkir) { ?>
                     <div class="w-100 d-flex">
@@ -239,7 +248,7 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
                     <?php if ($biayaAdmin > 0) { ?>
                     <div class="w-100 d-flex">
                         <div style="flex: 2">
-                            <p class="mb-0"><?= $isEnglish ? 'Payment administration fee' : 'Biaya Admin Pembayaran'; ?></p>
+                            <p class="mb-0"><?= $isEnglish ? 'Service fee' : 'Biaya layanan'; ?></p>
                         </div>
                         <div style="flex: 1">
                             <p class="text-end mb-0">Rp <?= number_format($biayaAdmin, 0, ',', '.'); ?></p>
@@ -248,11 +257,11 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
                     <?php } ?>
                     <div class="w-100 d-flex">
                         <div style="flex: 2">
-                            <p class="mb-0 fw-bold"><?= $isEnglish ? 'TOTAL DUE' : 'TOTAL TAGIHAN'; ?></p>
+                            <p class="mb-0 fw-bold"><?= $isEnglish ? 'ORDER TOTAL' : 'TOTAL PESANAN'; ?></p>
                         </div>
                         <div style="flex: 1">
                             <p class="text-end mb-0 fw-bold">
-                                Rp <?= number_format($grossAmount ?? ($totalHarga - $diskonProduk - $diskonVoucher - $diskonFlash + $biayaOngkir + $biayaAdmin), 0, ',', '.'); ?>
+                                Rp <?= number_format($grossAmount ?? ($totalHarga - $diskonProduk - $diskonVoucher - $diskonVoucherOngkir - $diskonFlash + $biayaOngkir + $biayaAdmin), 0, ',', '.'); ?>
                             </p>
                         </div>
                     </div>

@@ -67,13 +67,15 @@ $waktu = date("H:i:s", $waktuSelisih);
 $waktuExpireFix = date("d", $waktuExpire) . " " . $bulan[(int)date("m", $waktuExpire) - 1] . " " . date("Y H:i:s", $waktuExpire);
 $subtotal = 0;
 $diskonVoucher = 0;
+$diskonVoucherOngkir = 0;
 $diskonFlash = 0;
 $biayaOngkir = 0;
 $biayaAdmin = 0;
 foreach ($items as $it) {
     $name = strtolower(trim($it['name'] ?? $it['id'] ?? ''));
-    if ($name === 'voucher') {
-        $diskonVoucher += abs((int)$it['price']);
+    if ($name === 'voucher' || $name === 'voucher ongkir') {
+        if ($name === 'voucher ongkir') $diskonVoucherOngkir += abs((int)$it['price']);
+        else $diskonVoucher += abs((int)$it['price']);
     } elseif ($name === 'flash sale') {
         $diskonFlash += abs((int)$it['price']);
     } elseif ($name === 'biaya ongkir') {
@@ -369,6 +371,7 @@ foreach ($items as $it) {
             <div class="list-line"><span class="muted"><?= $isEnglish ? 'Voucher Discount' : 'Diskon Voucher'; ?></span><span>- Rp
                     <?= number_format($diskonVoucher, 0, ',', '.'); ?></span></div>
             <?php endif; ?>
+            <?php if ($diskonVoucherOngkir > 0): ?><div class="list-line"><span class="muted"><?= $isEnglish ? 'Shipping voucher discount' : 'Potongan voucher ongkir'; ?></span><span>- Rp <?= number_format($diskonVoucherOngkir, 0, ',', '.'); ?></span></div><?php endif; ?>
             <?php if ($diskonFlash > 0): ?>
             <div class="list-line"><span class="muted">Flash Sale</span><span>- Rp
                     <?= number_format($diskonFlash, 0, ',', '.'); ?></span></div>

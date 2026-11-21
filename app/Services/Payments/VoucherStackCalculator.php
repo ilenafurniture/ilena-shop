@@ -7,9 +7,10 @@ final class VoucherStackCalculator
 {
     public const MAX_VOUCHERS_PER_ORDER = 2;
 
-    public function calculate(array $eligibleAutomatic, ?array $redeemed, bool $redeemedWasClaimed, float $subtotal): array
+    public function calculate(array $eligibleAutomatic, ?array $redeemed, bool $redeemedWasClaimed, float $subtotal, int $shippingAmount = 0): array
     {
         $subtotal = max(0, (int) floor($subtotal));
+        $shippingAmount = max(0, $shippingAmount);
         $bestAutomatic = null;
 
         // A typed-in legacy/manual voucher must not stack. Only a redeemed claim
@@ -19,7 +20,7 @@ final class VoucherStackCalculator
             if ($redeemed !== null && ! $redeemedWasClaimed) continue;
             if ($redeemed !== null && (int) ($candidate['id'] ?? 0) === (int) ($redeemed['id'] ?? -1)) continue;
 
-            $candidateCut = $this->discount($candidate, $subtotal);
+            $candidateCut = $this->discount($candidate, $this->basis($candidate, $subtotal, $shippingAmount));
             if ($candidateCut <= 0) continue;
             if ($bestAutomatic === null || $candidateCut > $bestAutomatic['discount']) {
                 $bestAutomatic = ['voucher' => $candidate, 'discount' => $candidateCut];
@@ -27,17 +28,35 @@ final class VoucherStackCalculator
         }
 
         $applied = [];
-        $remaining = $subtotal;
+        $productRemaining = $subtotal;
+        $shippingRemaining = $shippingAmount;
+        $productDiscount = 0;
+        $shippingDiscount = 0;
         if ($bestAutomatic !== null) {
+            $scope = $this->scope($bestAutomatic['voucher']);
             $applied[] = $this->line($bestAutomatic['voucher'], $bestAutomatic['discount'], 'automatic');
-            $remaining -= $bestAutomatic['discount'];
+            if ($scope === 'pengiriman') {
+                $shippingRemaining -= $bestAutomatic['discount'];
+                $shippingDiscount += $bestAutomatic['discount'];
+            } else {
+                $productRemaining -= $bestAutomatic['discount'];
+                $productDiscount += $bestAutomatic['discount'];
+            }
         }
 
         if ($redeemed !== null) {
-            $redeemedCut = $this->discount($redeemed, $remaining);
+            $scope = $this->scope($redeemed);
+            $basis = $scope === 'pengiriman' ? $shippingRemaining : $productRemaining;
+            $redeemedCut = $this->discount($redeemed, $basis);
             if ($redeemedCut > 0) {
                 $applied[] = $this->line($redeemed, $redeemedCut, 'redeemed');
-                $remaining -= $redeemedCut;
+                if ($scope === 'pengiriman') {
+                    $shippingRemaining -= $redeemedCut;
+                    $shippingDiscount += $redeemedCut;
+                } else {
+                    $productRemaining -= $redeemedCut;
+                    $productDiscount += $redeemedCut;
+                }
             }
         }
 
@@ -46,9 +65,21 @@ final class VoucherStackCalculator
         $applied = array_slice($applied, 0, self::MAX_VOUCHERS_PER_ORDER);
         return [
             'applied' => $applied,
-            'discount' => max(0, $subtotal - max(0, $remaining)),
-            'remaining' => max(0, $remaining),
+            'discount' => $productDiscount + $shippingDiscount,
+            'product_discount' => $productDiscount,
+            'shipping_discount' => $shippingDiscount,
+            'remaining' => max(0, $productRemaining),
         ];
+    }
+
+    private function scope(array $voucher): string
+    {
+        return strtolower((string) ($voucher['cakupan'] ?? 'produk')) === 'pengiriman' ? 'pengiriman' : 'produk';
+    }
+
+    private function basis(array $voucher, int $subtotal, int $shippingAmount): int
+    {
+        return $this->scope($voucher) === 'pengiriman' ? $shippingAmount : $subtotal;
     }
 
     private function discount(array $voucher, int $basis): int
@@ -69,6 +100,7 @@ final class VoucherStackCalculator
             'kode' => strtoupper(trim((string) ($voucher['kode'] ?? ''))),
             'nama' => (string) ($voucher['nama'] ?? ''),
             'target' => (string) ($voucher['target'] ?? 'semua'),
+            'cakupan' => $this->scope($voucher),
             'discount' => max(0, $discount),
             'source' => $source,
         ];

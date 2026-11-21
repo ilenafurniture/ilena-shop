@@ -280,7 +280,7 @@ $waktuStart = sprintf('%02d:%02d:%02d', floor($selisihDetik/3600), floor(($selis
                 <div class="scroll">
                     <?php foreach ($items as $i):
               $nm = strtolower(trim($i['name']));
-              if (in_array($nm, ['voucher','flash sale','biaya ongkir','biaya admin'])) continue;
+              if (in_array($nm, ['voucher','voucher ongkir','flash sale','biaya ongkir','biaya admin'])) continue;
           ?>
                     <div class="row">
                         <p class="m-0 center fw-bold"><?= $i['name']; ?></p>

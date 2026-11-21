@@ -441,6 +441,8 @@
                 $nama = $v['nama'] ?? 'Voucher';
                 $tipe = ($v['tipe'] ?? ($v['satuan'] ?? 'persen')) === 'persen' ? 'persen' : 'nominal';
                 $nilai= (float)($v['nilai'] ?? ($v['nominal'] ?? 0));
+                $isEnglish = service('request')->getLocale() === 'en';
+                $cakupan = ($v['cakupan'] ?? 'produk') === 'pengiriman' ? ($isEnglish ? 'Shipping' : 'Ongkir') : ($isEnglish ? 'Products' : 'Produk');
                 $target = strtolower($v['target'] ?? 'semua');
                 $aktif = !empty($v['aktif']);
                 $mulai = !empty($v['mulai']) ? substr($v['mulai'],0,10) : '';
@@ -453,6 +455,7 @@
                     </div>
                     <div class="vch-body"><b><?= esc($nama) ?></b></div>
                     <div class="vch-meta">
+                        <?= $isEnglish ? 'Applies to' : 'Berlaku untuk'; ?>: <?= esc($cakupan) ?> ·
                         <?= lang('Store.voucherType'); ?>:
                         <?= $tipe==='persen' ? (number_format($nilai,0).'%') : ('Rp '.number_format($nilai,0,',','.')) ?>
                         <?php if($mulai || $akhir): ?> · <?= lang('Store.period'); ?>: <?= esc($mulai) ?> – <?= esc($akhir) ?><?php endif; ?>
@@ -472,6 +475,8 @@
                 $nama = $v['nama'] ?? 'Voucher';
                 $tipe = ($v['tipe'] ?? ($v['satuan'] ?? 'persen')) === 'persen' ? 'persen' : 'nominal';
                 $nilai= (float)($v['nilai'] ?? ($v['nominal'] ?? 0));
+                $isEnglish = service('request')->getLocale() === 'en';
+                $cakupan = ($v['cakupan'] ?? 'produk') === 'pengiriman' ? ($isEnglish ? 'Shipping' : 'Ongkir') : ($isEnglish ? 'Products' : 'Produk');
                 $mulai = !empty($v['mulai']) ? substr($v['mulai'],0,10) : '';
                 $akhir = !empty($v['berakhir']) ? substr($v['berakhir'],0,10) : '';
               ?>
@@ -482,6 +487,7 @@
                     </div>
                     <div class="vch-body"><b><?= esc($nama) ?></b></div>
                     <div class="vch-meta">
+                        <?= $isEnglish ? 'Applies to' : 'Berlaku untuk'; ?>: <?= esc($cakupan) ?> ·
                         <?= lang('Store.voucherType'); ?>:
                         <?= $tipe==='persen' ? (number_format($nilai,0).'%') : ('Rp '.number_format($nilai,0,',','.')) ?>
                         <?php if($mulai || $akhir): ?> · <?= lang('Store.period'); ?>: <?= esc($mulai) ?> – <?= esc($akhir) ?><?php endif; ?>

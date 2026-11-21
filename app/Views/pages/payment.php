@@ -21,6 +21,7 @@ $flashSale         = (float)($flashSale ?? 0);
 $biayaAdmin        = (int)($biayaAdmin ?? 0);
 $grossAmount       = (int)($grossAmount ?? 0);
 $msg               = $msg ?? '';
+$isEnglish         = service('request')->getLocale() === 'en';
 
 // badge “member baru” hanya untuk informasi (tidak auto-apply)
 $isMemberBaruSelected = false;
@@ -551,6 +552,7 @@ hr {
                 ? rtrim(rtrim(number_format($vAmount, 2, ',', '.'), '0'), ',') . '%'
                 : 'Rp ' . number_format($vAmount, 0, ',', '.');
             $vTarget = strtolower($v['target'] ?? '');
+            $vShippingScope = ($v['cakupan'] ?? 'produk') === 'pengiriman';
             $isMemberBaru = ($vTarget === 'baru') || str_contains(strtolower($vNama), 'member baru');
             $isActive     = (is_array($selected) && ((int)($selected['id'] ?? 0) === $vId));
             $isRec        = !empty($v['recommended']);
@@ -565,7 +567,7 @@ hr {
                             <?php if ($isRec): ?><span class="badge rec"><?= lang('Store.recommended'); ?></span><?php endif; ?>
                         </div>
                         <div class="meta">
-                            <?= lang('Store.discount'); ?> <?= esc($vDisplay); ?>
+                            <?= $isEnglish ? 'Applies to' : 'Berlaku untuk'; ?> <?= $vShippingScope ? ($isEnglish ? 'shipping' : 'ongkir') : ($isEnglish ? 'products' : 'produk'); ?> · <?= lang('Store.discount'); ?> <?= esc($vDisplay); ?>
                             <?php if ($estCut !== null): ?> · <?= lang('Store.potentialSavings'); ?>: Rp
                             <?= number_format($estCut,0,',','.'); ?><?php endif; ?>
                         </div>
@@ -605,7 +607,7 @@ hr {
 
                     <?php foreach ($appliedVouchers as $appliedVoucher): ?>
                     <div class="sum-row">
-                        <div class="k"><?= lang('Store.voucherDiscount'); ?> · <?= esc($appliedVoucher['nama'] ?: $appliedVoucher['kode']); ?></div>
+                        <div class="k"><?= ($appliedVoucher['cakupan'] ?? 'produk') === 'pengiriman' ? ($isEnglish ? 'Shipping voucher' : 'Voucher ongkir') : lang('Store.voucherDiscount'); ?> · <?= esc($appliedVoucher['nama'] ?: $appliedVoucher['kode']); ?></div>
                         <div class="v">- Rp <?= number_format((int)($appliedVoucher['discount'] ?? 0), 0, ',', '.'); ?></div>
                     </div>
                     <?php endforeach; ?>

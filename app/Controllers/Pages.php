@@ -2271,6 +2271,7 @@ class Pages extends BaseController
                     'kode'        => $cr['kode'],
                     'nama'        => $cr['nama'],
                     'deskripsi'   => $cr['deskripsi'] ?? '',
+                    'cakupan'     => $cr['cakupan'] ?? 'produk',
                     'tipe'        => $tipe,
                     'nilai'       => (float)$nilai,
                     'nominal'     => $nilai,
@@ -2291,8 +2292,8 @@ class Pages extends BaseController
         $subtotal = $hargaTotal;
 
         $voucherResolution = !empty($cartCheck['hasBundles'])
-            ? ['ok' => true, 'eligible_automatic' => [], 'selected' => null, 'applied' => [], 'discount' => 0, 'remaining' => (int) $subtotal]
-            : $this->resolveCheckoutVouchers($email, $subtotal);
+            ? ['ok' => true, 'eligible_automatic' => [], 'selected' => null, 'applied' => [], 'discount' => 0, 'product_discount' => 0, 'shipping_discount' => 0, 'remaining' => (int) $subtotal]
+            : $this->resolveCheckoutVouchers($email, $subtotal, (int) ($kurirTerpilih['harga'] ?? 0));
         if (empty($voucherResolution['ok'])) {
             session()->setFlashdata('msg', $voucherResolution['message']);
             return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
@@ -2301,6 +2302,8 @@ class Pages extends BaseController
         $selectedVoucher = $voucherResolution['selected'];
         $appliedVouchers = $voucherResolution['applied'];
         $diskonVoucher = (int) $voucherResolution['discount'];
+        $diskonProdukVoucher = (int) ($voucherResolution['product_discount'] ?? $diskonVoucher);
+        $diskonOngkirVoucher = (int) ($voucherResolution['shipping_discount'] ?? 0);
         $voucherSelected = $selectedVoucher ? $selectedVoucher + ['rupiah' => $diskonVoucher] : false;
         if (!empty($cartCheck['hasBundles'])) {
             $voucher = [];
@@ -2351,7 +2354,7 @@ class Pages extends BaseController
             ]);
         }
 
-        $baseForFee = max(0, $hargaTotal - $diskonVoucher + $hargaOngkir);
+        $baseForFee = max(0, $hargaTotal - $diskonProdukVoucher + $hargaOngkir - $diskonOngkirVoucher);
         $biayaAdmin  = $this->calculateAdminFee($method, $baseForFee);
         $grossAmount = max(0, (int) round($baseForFee + $biayaAdmin));
 
@@ -2379,6 +2382,8 @@ class Pages extends BaseController
             ])),
             'indexAddress'      => $index_kurir,
             'voucher'           => ['list'=>$voucher, 'selected'=>$voucherSelected, 'applied'=>$appliedVouchers, 'discount'=>$diskonVoucher],
+            'voucherProductDiscount' => $diskonProdukVoucher,
+            'voucherShippingDiscount' => $diskonOngkirVoucher,
             'bundleVoucherNote' => !empty($cartCheck['hasBundles']),
             'emailUji'          => session()->get('isLogin') && session()->get('email') !== 'tamu' && PaymentSafety::isTestEmail((string)session()->get('email'), $emailUjiCoba),
             'msg'               => session()->getFlashdata('msg'),
@@ -2613,7 +2618,7 @@ class Pages extends BaseController
     }
 
 
-    private function checkVoucherEligibility(array $row, string $email, float $subtotal): array
+    private function checkVoucherEligibility(array $row, string $email, float $subtotal, int $shippingAmount = 0): array
     {
         $email = \App\Services\Payments\VoucherIdentity::resolve(
             $email,
@@ -2713,16 +2718,19 @@ class Pages extends BaseController
         }
 
         // 7) Estimasi potongan
+        $basis = strtolower((string) ($row['cakupan'] ?? 'produk')) === 'pengiriman'
+            ? max(0, $shippingAmount)
+            : max(0, (int) floor($subtotal));
         $rupiah = ($tipe === 'persen')
-            ? (int) floor(($nilai / 100.0) * $subtotal)
+            ? (int) floor(($nilai / 100.0) * $basis)
             : (int) $nilai;
-        $rupiah = max(0, min($rupiah, (int)$subtotal));
+        $rupiah = max(0, min($rupiah, $basis));
 
         return ['ok'=>true,'msg'=>'Voucher valid.','cut'=>$rupiah];
     }
 
     /** Resolve voucher claims server-side; never trust amounts or lists posted by the browser. */
-    private function resolveCheckoutVouchers(string $email, float $subtotal): array
+    private function resolveCheckoutVouchers(string $email, float $subtotal, int $shippingAmount = 0): array
     {
         $claimedIds = array_values(array_unique(array_map('intval', (array) session()->get('voucher_claimed'))));
         $selectedId = (int) session()->get('voucher');
@@ -2739,7 +2747,7 @@ class Pages extends BaseController
                 session()->remove('voucher');
                 return ['ok' => false, 'message' => 'Voucher harus diklaim terlebih dahulu sebelum digunakan.'];
             }
-            $eligibility = $this->checkVoucherEligibility($selected, $email, $subtotal);
+            $eligibility = $this->checkVoucherEligibility($selected, $email, $subtotal, $shippingAmount);
             if (empty($eligibility['ok'])) {
                 session()->remove('voucher');
                 return ['ok' => false, 'message' => $eligibility['msg'] ?? 'Voucher tidak memenuhi syarat.'];
@@ -2754,7 +2762,7 @@ class Pages extends BaseController
         }
         $eligibleAutomatic = [];
         foreach ($rows as $row) {
-            $eligibility = $this->checkVoucherEligibility($row, $email, $subtotal);
+            $eligibility = $this->checkVoucherEligibility($row, $email, $subtotal, $shippingAmount);
             if (empty($eligibility['ok'])) continue;
             $row['tipe'] = $row['tipe'] ?? ($row['satuan'] ?? 'persen');
             $row['nilai'] = $row['nilai'] ?? ($row['nominal'] ?? 0);
@@ -2767,7 +2775,8 @@ class Pages extends BaseController
             $eligibleAutomatic,
             $selected,
             $selected !== null && $selectedIsClaimed,
-            $subtotal
+            $subtotal,
+            $shippingAmount
         );
         return [
             'ok' => true,
@@ -2775,6 +2784,8 @@ class Pages extends BaseController
             'selected' => $selected,
             'applied' => $calculation['applied'],
             'discount' => (int) $calculation['discount'],
+            'product_discount' => (int) ($calculation['product_discount'] ?? $calculation['discount']),
+            'shipping_discount' => (int) ($calculation['shipping_discount'] ?? 0),
             'remaining' => (int) $calculation['remaining'],
         ];
     }
@@ -2827,8 +2838,8 @@ class Pages extends BaseController
     {
         $name = strtolower((string)($item['name'] ?? ''));
         $id = strtolower((string)($item['id'] ?? ''));
-        return !in_array($name, ['voucher', 'flash sale', 'biaya admin', 'biaya ongkir'], true)
-            && !in_array($id, ['voucher', 'flash sale', 'biaya admin', 'biaya ongkir'], true);
+        return !in_array($name, ['voucher', 'voucher ongkir', 'flash sale', 'biaya admin', 'biaya ongkir'], true)
+            && !in_array($id, ['voucher', 'voucher ongkir', 'flash sale', 'biaya admin', 'biaya ongkir'], true);
     }
 
     private function itemVariantName(array $item): string
@@ -2849,7 +2860,7 @@ class Pages extends BaseController
 
         $email = (string)($order['email'] ?? '');
         foreach ($items as $item) {
-            if (strtolower((string)($item['name'] ?? '')) !== 'voucher') continue;
+            if (!in_array(strtolower((string)($item['name'] ?? '')), ['voucher', 'voucher ongkir'], true)) continue;
 
             $kode = (string)($item['id'] ?? '');
             if ($kode === '' || $kode === 'Voucher') continue;
@@ -3369,19 +3380,22 @@ class Pages extends BaseController
         }
 
         $voucherResolution = !empty($cartCheck['hasBundles'])
-            ? ['ok' => true, 'eligible_automatic' => [], 'selected' => null, 'applied' => [], 'discount' => 0, 'remaining' => (int) $subtotal]
-            : $this->resolveCheckoutVouchers($email, $subtotal);
+            ? ['ok' => true, 'eligible_automatic' => [], 'selected' => null, 'applied' => [], 'discount' => 0, 'product_discount' => 0, 'shipping_discount' => 0, 'remaining' => (int) $subtotal]
+            : $this->resolveCheckoutVouchers($email, $subtotal, (int) ($kurirTerpilih['harga'] ?? 0));
         if (empty($voucherResolution['ok'])) {
             session()->setFlashdata('msg', $voucherResolution['message']);
             return redirect()->to(ilena_store_path('/payment/' . $index_kurir));
         }
         $appliedVouchers = $voucherResolution['applied'];
         $diskonVoucher = (int) $voucherResolution['discount'];
+        $diskonProdukVoucher = (int) ($voucherResolution['product_discount'] ?? $diskonVoucher);
+        $diskonOngkirVoucher = (int) ($voucherResolution['shipping_discount'] ?? 0);
         $voucher = $appliedVouchers;
 
         $total = $subtotal;
         foreach ($appliedVouchers as $appliedVoucher) {
-            $itemDetails[] = ['id'=>$appliedVoucher['kode'],'price'=>-(int)$appliedVoucher['discount'],'quantity'=>1,'name'=>'Voucher'];
+            $shippingVoucher = ($appliedVoucher['cakupan'] ?? 'produk') === 'pengiriman';
+            $itemDetails[] = ['id'=>$appliedVoucher['kode'],'price'=>-(int)$appliedVoucher['discount'],'quantity'=>1,'name'=>$shippingVoucher ? 'Voucher Ongkir' : 'Voucher'];
             $total -= (int)$appliedVoucher['discount'];
         }
         $hargaOngkir = (int)($kurirTerpilih['harga'] ?? 0);
@@ -5271,7 +5285,7 @@ class Pages extends BaseController
             }
             $itemId = $i['id'] ?? null;
             $itemName = strtolower(trim((string)($i['name'] ?? '')));
-            if (!in_array($itemName, ['voucher', 'biaya admin', 'biaya ongkir', 'flash sale'], true)) {
+            if (!in_array($itemName, ['voucher', 'voucher ongkir', 'biaya admin', 'biaya ongkir', 'flash sale'], true)) {
                 $barangCur = $this->barangModel->getBarang($itemId);
 
                 // Jika produk sudah nonaktif / terhapus, getBarang() bisa mengembalikan null.

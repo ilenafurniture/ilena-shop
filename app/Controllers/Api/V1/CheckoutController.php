@@ -39,6 +39,7 @@ final class CheckoutController extends BaseController
         return $this->json(['data' => [
             'items' => $prepared['item_summary'], 'subtotal' => $prepared['subtotal'],
             'automatic_vouchers' => $prepared['vouchers'], 'discount' => $prepared['discount'],
+            'product_voucher_discount' => $prepared['product_discount'], 'shipping_voucher_discount' => $prepared['shipping_discount'],
             'flash_sale_discount' => $prepared['flash_sale'], 'shipping' => $prepared['shipping_summary'],
             'payment_methods' => $methods, 'expires_in' => 60, 'currency' => 'IDR',
         ]]);
@@ -117,7 +118,7 @@ final class CheckoutController extends BaseController
             if (empty($reservation['ok'])) throw new \DomainException((string) ($reservation['message'] ?? 'Stock changed. Refresh the cart and retry.'));
 
             $items = $prepared['item_details'];
-            foreach ($prepared['vouchers'] as $voucher) $items[] = ['id' => (string) $voucher['kode'], 'price' => -(int) $voucher['discount'], 'quantity' => 1, 'name' => 'Voucher'];
+            foreach ($prepared['vouchers'] as $voucher) $items[] = ['id' => (string) $voucher['kode'], 'price' => -(int) $voucher['discount'], 'quantity' => 1, 'name' => ($voucher['cakupan'] ?? 'produk') === 'pengiriman' ? 'Voucher Ongkir' : 'Voucher'];
             $items[] = ['id' => 'Biaya Ongkir', 'price' => (int) $selectedRate['harga'], 'quantity' => 1, 'name' => 'Biaya Ongkir'];
             $items[] = ['id' => 'Biaya Admin', 'price' => $fee, 'quantity' => 1, 'name' => 'Biaya Admin'];
             foreach ($items as &$item) { $item['id'] = mb_substr((string) $item['id'], 0, 64); $item['name'] = mb_substr((string) $item['name'], 0, 50); }
@@ -264,11 +265,12 @@ final class CheckoutController extends BaseController
         }
         $vouchers = $bundleCheck['has_bundles'] ? [] : $this->automaticVouchers($email, (float) $subtotal);
         if ($vouchers instanceof ResponseInterface) return $vouchers;
-        $voucherResult = (new VoucherStackCalculator())->calculate($vouchers, null, false, (float) $subtotal);
+        $voucherResult = (new VoucherStackCalculator())->calculate($vouchers, null, false, (float) $subtotal, (int) ($selected['harga'] ?? 0));
         return [
             'address' => $address, 'cart' => $cart, 'item_details' => $items, 'item_summary' => $summary,
             'subtotal' => (int) $subtotal, 'flash_sale' => 0,
             'vouchers' => $voucherResult['applied'], 'discount' => (int) $voucherResult['discount'],
+            'product_discount' => (int) $voucherResult['product_discount'], 'shipping_discount' => (int) $voucherResult['shipping_discount'],
             'shipping' => $selected,
             'shipping_summary' => ['option_id' => $shippingOption, 'service' => ($selected['provider'] ?? '') === 'apm' ? 'Jasa Kirim Toko' : (string) ($selected['nama'] ?? 'Pengiriman'), 'price' => max(0, (int) ($selected['harga'] ?? 0)), 'delivery_days' => (string) ($selected['estimasi'] ?? ''), 'free_shipping' => !empty($selected['gratis_ongkir'])],
         ];
