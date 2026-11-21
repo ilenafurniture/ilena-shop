@@ -238,7 +238,7 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
                     <?php if ($hasBiayaOngkir) { ?>
                     <div class="w-100 d-flex">
                         <div style="flex: 2">
-                            <p class="mb-0"><?= $isEnglish ? 'Shipping' : 'Ongkos Kirim'; ?></p>
+                            <p class="mb-0"><?= $isEnglish ? 'Shipping' : 'Biaya Pengiriman'; ?></p>
                         </div>
                         <div style="flex: 1">
                             <p class="text-end mb-0"><?= $biayaOngkir > 0 ? 'Rp ' . number_format($biayaOngkir, 0, ',', '.') : ($isEnglish ? 'Free' : 'Gratis') ?></p>

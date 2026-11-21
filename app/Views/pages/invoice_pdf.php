@@ -123,7 +123,7 @@ if (is_file($logoPath ?? '')) {
         .items .qty { width: 9%; text-align: center; }
         .items .unit { width: 21%; text-align: right; }
         .items .total { width: 22%; text-align: right; }
-        .product-name { margin-bottom: 3px; font-size: 9.5pt; font-weight: bold; }
+        .product-name { margin-bottom: 3px; font-size: 9.5pt; font-weight: bold; text-transform: uppercase; }
         .meta { color: #746c63; font-size: 7.5pt; }
         .meta div { margin-top: 1px; }
         .strike { color: #8e877f; text-decoration: line-through; font-size: 7.5pt; }
@@ -181,7 +181,7 @@ if (is_file($logoPath ?? '')) {
     <?php if ($voucherDiscount > 0): ?><tr class="discount"><td><?= $isEnglish ? 'Voucher discount' : 'Diskon voucher'; ?><?= $voucherCodes ? ' (' . esc(implode(', ', array_unique($voucherCodes))) . ')' : '' ?></td><td>- <?= esc($rupiah($voucherDiscount)) ?></td></tr><?php endif; ?>
     <?php if ($flashDiscount > 0): ?><tr class="discount"><td><?= $isEnglish ? 'Flash Sale discount' : 'Diskon Flash Sale'; ?></td><td>- <?= esc($rupiah($flashDiscount)) ?></td></tr><?php endif; ?>
     <?php if ($shippingVoucherDiscount > 0): ?><tr class="discount"><td><?= $isEnglish ? 'Shipping voucher discount' : 'Potongan voucher ongkir'; ?><?= $shippingVoucherCodes ? ' (' . esc(implode(', ', array_unique($shippingVoucherCodes))) . ')' : '' ?></td><td>- <?= esc($rupiah($shippingVoucherDiscount)) ?></td></tr><?php endif; ?>
-    <?php if ($hasShipping): ?><tr><td><?= $isEnglish ? 'Shipping' : 'Ongkos kirim'; ?></td><td><?= $shipping > 0 ? esc($rupiah($shipping)) : ($isEnglish ? 'Free' : 'Gratis') ?></td></tr><?php endif; ?>
+    <?php if ($hasShipping): ?><tr><td><?= $isEnglish ? 'Shipping' : 'Biaya Pengiriman'; ?></td><td><?= $shipping > 0 ? esc($rupiah($shipping)) : ($isEnglish ? 'Free' : 'Gratis') ?></td></tr><?php endif; ?>
     <?php if ($adminFee > 0): ?><tr><td><?= $isEnglish ? 'Service fee' : 'Biaya layanan'; ?></td><td><?= esc($rupiah($adminFee)) ?></td></tr><?php endif; ?>
     <tr class="grand"><td><?= $isEnglish ? 'Order total' : 'Total pesanan'; ?></td><td><?= esc($rupiah($gross)) ?></td></tr>
 </table>

@@ -132,7 +132,7 @@ body {
 }
 .invoice-download:hover,
 .invoice-download:focus-visible { background: #806448; color: #fff; }
-.product-title { margin: 0 0 3px !important; color: var(--invoice-ink) !important; font-size: 10px !important; font-weight: 700; }
+.product-title { margin: 0 0 3px !important; color: var(--invoice-ink) !important; font-size: 10px !important; font-weight: 700; text-transform: uppercase; }
 .product-meta { margin: 1px 0 0 !important; color: var(--invoice-muted) !important; font-size: 8px !important; line-height: 1.4 !important; }
 
 @media (max-width: 720px) {
