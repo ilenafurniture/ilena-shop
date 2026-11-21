@@ -130,7 +130,8 @@ if (is_file($logoPath ?? '')) {
         .totals { width: 54%; margin: 13px 0 0 auto; border-collapse: collapse; page-break-inside: avoid; }
         .totals td { padding: 4px 0; }
         .totals td:last-child { text-align: right; white-space: nowrap; }
-        .totals .discount td:last-child { color: #a42331; font-weight: 600; }
+        .totals .discount td:last-child { color: #292520; font-weight: 600; }
+        .totals .discount-sign { color: #a42331; font: inherit; font-size: inherit; }
         .totals .grand td { padding-top: 8px; border-top: 1px solid #806448; font-size: 11pt; font-weight: bold; }
         .fulfillment { width: 100%; margin-top: 22px; border-top: 1px solid #e1dcd6; border-bottom: 1px solid #e1dcd6; border-collapse: collapse; page-break-inside: avoid; }
         .fulfillment td { width: 50%; padding: 11px 12px 11px 0; vertical-align: top; }
@@ -177,10 +178,10 @@ if (is_file($logoPath ?? '')) {
 
 <table class="totals">
     <tr><td><?= $isEnglish ? 'Product subtotal' : 'Subtotal harga produk'; ?></td><td><?= esc($rupiah($productSubtotal)) ?></td></tr>
-    <?php if ($productDiscount > 0): ?><tr class="discount"><td><?= $isEnglish ? 'Product discount' : 'Diskon produk'; ?></td><td>- <?= esc($rupiah($productDiscount)) ?></td></tr><?php endif; ?>
-    <?php if ($voucherDiscount > 0): ?><tr class="discount"><td><?= $isEnglish ? 'Voucher discount' : 'Diskon voucher'; ?><?= $voucherCodes ? ' (' . esc(implode(', ', array_unique($voucherCodes))) . ')' : '' ?></td><td>- <?= esc($rupiah($voucherDiscount)) ?></td></tr><?php endif; ?>
-    <?php if ($flashDiscount > 0): ?><tr class="discount"><td><?= $isEnglish ? 'Flash Sale discount' : 'Diskon Flash Sale'; ?></td><td>- <?= esc($rupiah($flashDiscount)) ?></td></tr><?php endif; ?>
-    <?php if ($shippingVoucherDiscount > 0): ?><tr class="discount"><td><?= $isEnglish ? 'Shipping voucher discount' : 'Potongan voucher ongkir'; ?><?= $shippingVoucherCodes ? ' (' . esc(implode(', ', array_unique($shippingVoucherCodes))) . ')' : '' ?></td><td>- <?= esc($rupiah($shippingVoucherDiscount)) ?></td></tr><?php endif; ?>
+    <?php if ($productDiscount > 0): ?><tr class="discount"><td><?= $isEnglish ? 'Product discount' : 'Diskon produk'; ?></td><td><span class="discount-sign">-</span> <?= esc($rupiah($productDiscount)) ?></td></tr><?php endif; ?>
+    <?php if ($voucherDiscount > 0): ?><tr class="discount"><td><?= $isEnglish ? 'Voucher discount' : 'Diskon voucher'; ?><?= $voucherCodes ? ' (' . esc(implode(', ', array_unique($voucherCodes))) . ')' : '' ?></td><td><span class="discount-sign">-</span> <?= esc($rupiah($voucherDiscount)) ?></td></tr><?php endif; ?>
+    <?php if ($flashDiscount > 0): ?><tr class="discount"><td><?= $isEnglish ? 'Flash Sale discount' : 'Diskon Flash Sale'; ?></td><td><span class="discount-sign">-</span> <?= esc($rupiah($flashDiscount)) ?></td></tr><?php endif; ?>
+    <?php if ($shippingVoucherDiscount > 0): ?><tr class="discount"><td><?= $isEnglish ? 'Shipping voucher discount' : 'Potongan voucher ongkir'; ?><?= $shippingVoucherCodes ? ' (' . esc(implode(', ', array_unique($shippingVoucherCodes))) . ')' : '' ?></td><td><span class="discount-sign">-</span> <?= esc($rupiah($shippingVoucherDiscount)) ?></td></tr><?php endif; ?>
     <?php if ($hasShipping): ?><tr><td><?= $isEnglish ? 'Shipping' : 'Biaya Pengiriman'; ?></td><td><?= $shipping > 0 ? esc($rupiah($shipping)) : ($isEnglish ? 'Free' : 'Gratis') ?></td></tr><?php endif; ?>
     <?php if ($adminFee > 0): ?><tr><td><?= $isEnglish ? 'Service fee' : 'Biaya layanan'; ?></td><td><?= esc($rupiah($adminFee)) ?></td></tr><?php endif; ?>
     <tr class="grand"><td><?= $isEnglish ? 'Order total' : 'Total pesanan'; ?></td><td><?= esc($rupiah($gross)) ?></td></tr>
