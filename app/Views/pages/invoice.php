@@ -163,13 +163,16 @@ $paymentType = strtolower((string)($invoiceMid['payment_type'] ?? ''));
                 $dimensionValue = trim((string)($dimensions[$dimensionKey] ?? ''));
                 if ($dimensionValue !== '' && $dimensionValue !== '-') $dimensionParts[] = $dimensionLabel . ' ' . $dimensionValue . ' mm';
             }
+            $collectionLabel = trim((string)($item['collection'] ?? ''));
+            $collectionLabel = $collectionLabel !== '' ? mb_convert_case($collectionLabel, MB_CASE_TITLE, 'UTF-8') : '';
             $variantLabel = trim((string)($item['variant'] ?? ''));
+            $variantLabel = $variantLabel !== '' ? mb_convert_case($variantLabel, MB_CASE_TITLE, 'UTF-8') : '';
             $weightLabel = trim((string)($item['weight_kg'] ?? ''));
             ?>
             <div class="w-100 d-flex invoice-items__row">
                 <div style="flex: 3">
                     <p class="product-title"><?= esc($item['product_name'] ?? $item['name'] ?? $item['id'] ?? 'Produk'); ?></p>
-                    <p class="product-meta"><?= $isEnglish ? 'Code' : 'Kode'; ?>: <?= esc($item['id'] ?? '—'); ?><?= !empty($item['collection']) ? ' · ' . ($isEnglish ? 'Collection: ' : 'Koleksi: ') . esc($item['collection']) : '' ?></p>
+                    <p class="product-meta"><?= $isEnglish ? 'Code' : 'Kode'; ?>: <?= esc($item['id'] ?? '—'); ?><?= $collectionLabel !== '' ? ' · ' . ($isEnglish ? 'Collection: ' : 'Koleksi: ') . esc($collectionLabel) : '' ?></p>
                     <?php if ($variantLabel !== ''): ?><p class="product-meta"><?= $isEnglish ? 'Variant' : 'Varian'; ?>: <?= esc($variantLabel); ?></p><?php endif; ?>
                     <?php if ($dimensionParts || ($weightLabel !== '' && $weightLabel !== '-')): ?><p class="product-meta"><?= $isEnglish ? 'Dimensions' : 'Dimensi'; ?>: <?= $dimensionParts ? esc(implode(' × ', $dimensionParts)) : '—' ?><?= $weightLabel !== '' && $weightLabel !== '-' ? ' · ' . ($isEnglish ? 'Weight: ' : 'Berat: ') . esc($weightLabel) . ' kg' : '' ?></p><?php endif; ?>
                 </div>

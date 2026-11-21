@@ -56,8 +56,8 @@ foreach ($items as $item) {
     $products[] = [
         'name' => trim((string)($item['product_name'] ?? $item['name'] ?? $item['id'] ?? 'Produk')) ?: 'Produk',
         'sku' => trim((string)($item['id'] ?? '')),
-        'collection' => trim((string)($item['collection'] ?? '')),
-        'variant' => trim((string)($item['variant'] ?? $item['varian'] ?? '')),
+        'collection' => mb_convert_case(trim((string)($item['collection'] ?? '')), MB_CASE_TITLE, 'UTF-8'),
+        'variant' => mb_convert_case(trim((string)($item['variant'] ?? $item['varian'] ?? '')), MB_CASE_TITLE, 'UTF-8'),
         'dimensions' => implode(' × ', $dimensionParts),
         'weight' => trim((string)($item['weight_kg'] ?? '')),
         'qty' => $qty,
@@ -124,13 +124,13 @@ if (is_file($logoPath ?? '')) {
         .items .unit { width: 21%; text-align: right; }
         .items .total { width: 22%; text-align: right; }
         .product-name { margin-bottom: 3px; font-size: 9.5pt; font-weight: bold; text-transform: uppercase; }
-        .meta { color: #746c63; font-size: 7.5pt; }
+        .meta { color: #746c63; font-size: 8.5pt; }
         .meta div { margin-top: 1px; }
         .strike { color: #8e877f; text-decoration: line-through; font-size: 7.5pt; }
         .totals { width: 54%; margin: 13px 0 0 auto; border-collapse: collapse; page-break-inside: avoid; }
         .totals td { padding: 4px 0; }
         .totals td:last-child { text-align: right; white-space: nowrap; }
-        .totals .discount td:last-child { color: #292520; font-weight: 600; }
+        .totals .discount td:last-child { color: #292520; font-size: inherit; font-weight: 400; }
         .totals .discount-sign { color: #a42331; font: inherit; font-size: inherit; }
         .totals .grand td { padding-top: 8px; border-top: 1px solid #806448; font-size: 11pt; font-weight: bold; }
         .fulfillment { width: 100%; margin-top: 22px; border-top: 1px solid #e1dcd6; border-bottom: 1px solid #e1dcd6; border-collapse: collapse; page-break-inside: avoid; }

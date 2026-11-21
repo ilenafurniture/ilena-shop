@@ -69,7 +69,7 @@ body {
 .invoice-totals > div:last-child { flex: 1 1 50% !important; }
 .invoice-totals > div:last-child > div { padding-block: 2px !important; }
 .invoice-totals p { margin: 0 !important; color: #5c554e; font-size: 9px; }
-.invoice-discount { color: var(--invoice-ink) !important; font-weight: 650; font-size: inherit; }
+.invoice-discount { color: var(--invoice-ink) !important; font-weight: 400; font-size: inherit; }
 .invoice-discount-sign { color: #a42331; font: inherit; font-size: inherit; }
 .invoice-totals > div:last-child > div:first-child p,
 .invoice-totals > div:last-child > div:last-child p { color: var(--invoice-ink); font-weight: 700; }
@@ -134,7 +134,7 @@ body {
 .invoice-download:hover,
 .invoice-download:focus-visible { background: #806448; color: #fff; }
 .product-title { margin: 0 0 3px !important; color: var(--invoice-ink) !important; font-size: 10px !important; font-weight: 700; text-transform: uppercase; }
-.product-meta { margin: 1px 0 0 !important; color: var(--invoice-muted) !important; font-size: 8px !important; line-height: 1.4 !important; }
+.product-meta { margin: 1px 0 0 !important; color: var(--invoice-muted) !important; font-size: 9px !important; line-height: 1.4 !important; }
 
 @media (max-width: 720px) {
     .invoice-download { position: sticky; top: 8px; display: block; width: max-content; margin: 10px 10px 10px auto; }
