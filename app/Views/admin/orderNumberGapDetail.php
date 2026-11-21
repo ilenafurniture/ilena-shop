@@ -20,22 +20,49 @@
     <div class="invoice-gap-detail__field"><dt>Dicatat pada</dt><dd><?= esc((string) ($gap['created_at'] ?? 'Tidak tersedia')) ?></dd></div>
     <div class="invoice-gap-detail__field"><dt>Terakhir diperbarui</dt><dd><?= esc((string) ($gap['updated_at'] ?? 'Tidak tersedia')) ?></dd></div>
   </dl>
+  <?php if (!empty($gap['reported_details'])): $reported = $gap['reported_details']; ?>
+    <section class="invoice-gap-detail__reported" aria-labelledby="reportedDetailsHeading">
+      <h2 id="reportedDetailsHeading">Rincian yang dilaporkan</h2>
+      <p><?= esc($reported['source_label'] ?? 'Informasi sumber belum diverifikasi.') ?> Data ini hanya snapshot rekonsiliasi, bukan data transaksi.</p>
+      <dl class="invoice-gap-detail__fields">
+        <div class="invoice-gap-detail__field"><dt>Penerima</dt><dd><?= esc((string) ($reported['recipient_name'] ?? '—')) ?></dd></div>
+        <div class="invoice-gap-detail__field"><dt>Email</dt><dd><?= esc((string) ($reported['email'] ?? '—')) ?></dd></div>
+        <div class="invoice-gap-detail__field"><dt>Alamat penerima</dt><dd><?= esc((string) ($reported['recipient_address'] ?? '—')) ?></dd></div>
+        <div class="invoice-gap-detail__field"><dt>Produk</dt><dd><?= esc((string) ($reported['product_name'] ?? '—')) ?></dd></div>
+        <div class="invoice-gap-detail__field"><dt>Varian</dt><dd><?= esc((string) ($reported['variant'] ?? '—')) ?></dd></div>
+        <div class="invoice-gap-detail__field"><dt>Jumlah</dt><dd><?= esc((string) ($reported['quantity'] ?? '—')) ?></dd></div>
+        <div class="invoice-gap-detail__field"><dt>Harga satuan</dt><dd>Rp <?= number_format((int) ($reported['unit_price'] ?? 0), 0, ',', '.') ?></dd></div>
+        <div class="invoice-gap-detail__field"><dt>Total item</dt><dd>Rp <?= number_format((int) ($reported['line_total'] ?? 0), 0, ',', '.') ?></dd></div>
+        <div class="invoice-gap-detail__field"><dt>Status yang dilaporkan</dt><dd><?= esc((string) ($reported['reported_order_status'] ?? '—')) ?></dd></div>
+      </dl>
+    </section>
+  <?php endif; ?>
   <?php if ((string) session()->get('role') === '1'): ?>
     <section class="invoice-gap-detail__review" aria-labelledby="reviewHeading">
       <h2 id="reviewHeading">Pembaruan Dev</h2>
-      <p>Catat referensi sumber yang benar-benar diperiksa, misalnya ID arsip backup atau nomor referensi pembayaran. Jangan masukkan data perkiraan.</p>
+      <p>Dev dapat memperbarui rincian sumber dan referensi setelah mencocokkan arsip. Rincian ini tetap terpisah dari data transaksi.</p>
       <form method="post" action="/admin/order/number-gap/<?= rawurlencode((string) $gap['invoice_number']) ?>">
         <?= csrf_field() ?>
         <label>Status tinjauan<select name="status" required><option value="unverified_gap" <?= ($gap['status'] ?? '') === 'unverified_gap' ? 'selected' : '' ?>>Belum direkonsiliasi</option><option value="evidence_found" <?= ($gap['status'] ?? '') === 'evidence_found' ? 'selected' : '' ?>>Bukti ditemukan · perlu rekonsiliasi</option><option value="not_issued" <?= ($gap['status'] ?? '') === 'not_issued' ? 'selected' : '' ?>>Diverifikasi tidak diterbitkan</option></select></label>
         <label>Jenis bukti<select name="evidence_type" required><option value="backup" <?= ($gap['evidence_type'] ?? '') === 'backup' ? 'selected' : '' ?>>Backup database</option><option value="payment_gateway" <?= ($gap['evidence_type'] ?? '') === 'payment_gateway' ? 'selected' : '' ?>>Catatan payment gateway</option><option value="invoice_archive" <?= ($gap['evidence_type'] ?? '') === 'invoice_archive' ? 'selected' : '' ?>>Arsip invoice</option><option value="accounting_record" <?= ($gap['evidence_type'] ?? '') === 'accounting_record' ? 'selected' : '' ?>>Catatan pembukuan</option><option value="other" <?= ($gap['evidence_type'] ?? '') === 'other' ? 'selected' : '' ?>>Lainnya</option></select></label>
         <label>Referensi bukti<input name="evidence_reference" maxlength="200" value="<?= esc((string) ($gap['evidence_reference'] ?? ''), 'attr') ?>" placeholder="Contoh: nama arsip / ID referensi" autocomplete="off"></label>
         <label>Catatan pemeriksaan<textarea name="note" maxlength="255" required><?= esc((string) ($gap['note'] ?? '')) ?></textarea></label>
+        <?php $reported = $gap['reported_details'] ?? []; ?>
+        <label>Nama penerima<input name="reported_recipient_name" maxlength="150" required value="<?= esc((string) ($reported['recipient_name'] ?? ''), 'attr') ?>"></label>
+        <label>Email<input name="reported_email" maxlength="190" value="<?= esc((string) ($reported['email'] ?? '-'), 'attr') ?>"></label>
+        <label>Alamat penerima<textarea name="reported_recipient_address" maxlength="500" required><?= esc((string) ($reported['recipient_address'] ?? '')) ?></textarea></label>
+        <label>Produk<input name="reported_product_name" maxlength="180" required value="<?= esc((string) ($reported['product_name'] ?? ''), 'attr') ?>"></label>
+        <label>Varian<input name="reported_variant" maxlength="120" value="<?= esc((string) ($reported['variant'] ?? ''), 'attr') ?>"></label>
+        <label>Jumlah<input name="reported_quantity" type="number" min="1" max="999" step="1" required value="<?= esc((string) ($reported['quantity'] ?? 1), 'attr') ?>"></label>
+        <label>Harga satuan (Rp)<input name="reported_unit_price" type="number" min="0" max="1000000000000" step="1" required value="<?= esc((string) ($reported['unit_price'] ?? 0), 'attr') ?>"></label>
+        <label>Total item (Rp)<input name="reported_line_total" type="number" min="0" max="1000000000000" step="1" required value="<?= esc((string) ($reported['line_total'] ?? 0), 'attr') ?>"></label>
+        <label>Status pesanan yang dilaporkan<input name="reported_order_status" maxlength="40" required value="<?= esc((string) ($reported['reported_order_status'] ?? 'Dibatalkan'), 'attr') ?>"></label>
         <button class="invoice-gap-detail__button invoice-gap-detail__button--primary" type="submit">Simpan tinjauan</button>
       </form>
     </section>
   <?php endif; ?>
   <style>
-    .invoice-gap-detail__review{margin-top:26px;padding-top:18px;border-top:1px solid #e9e3da}.invoice-gap-detail__review h2{margin:0 0 5px;font-size:18px}.invoice-gap-detail__review>p{margin:0 0 15px;font-size:13px}.invoice-gap-detail__review form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px 16px}.invoice-gap-detail__review label{display:grid;gap:5px;color:#62594f;font-size:12px;font-weight:650}.invoice-gap-detail__review input,.invoice-gap-detail__review select,.invoice-gap-detail__review textarea{width:100%;min-height:42px;padding:9px 10px;border:1px solid #ded7ce;border-radius:7px;background:#fff;color:#28231f;font:inherit;font-size:13px}.invoice-gap-detail__review textarea{min-height:82px;resize:vertical}.invoice-gap-detail__review button{align-self:end;width:max-content}.invoice-gap-detail__review label:last-of-type{grid-column:1/-1}@media(max-width:620px){.invoice-gap-detail__review form{grid-template-columns:1fr}.invoice-gap-detail__review label:last-of-type{grid-column:auto}.invoice-gap-detail__review button{width:100%}}
+    .invoice-gap-detail__reported{margin-top:24px;padding-top:18px;border-top:1px solid #e9e3da}.invoice-gap-detail__reported h2{margin:0 0 5px;font-size:18px}.invoice-gap-detail__reported>p{margin:0 0 12px;font-size:12px}.invoice-gap-detail__review{margin-top:26px;padding-top:18px;border-top:1px solid #e9e3da}.invoice-gap-detail__review h2{margin:0 0 5px;font-size:18px}.invoice-gap-detail__review>p{margin:0 0 15px;font-size:13px}.invoice-gap-detail__review form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px 16px}.invoice-gap-detail__review label{display:grid;gap:5px;color:#62594f;font-size:12px;font-weight:650}.invoice-gap-detail__review input,.invoice-gap-detail__review select,.invoice-gap-detail__review textarea{width:100%;min-height:42px;padding:9px 10px;border:1px solid #ded7ce;border-radius:7px;background:#fff;color:#28231f;font:inherit;font-size:13px}.invoice-gap-detail__review textarea{min-height:82px;resize:vertical}.invoice-gap-detail__review button{align-self:end;width:max-content}.invoice-gap-detail__review label:last-of-type{grid-column:1/-1}@media(max-width:620px){.invoice-gap-detail__review form{grid-template-columns:1fr}.invoice-gap-detail__review label:last-of-type{grid-column:auto}.invoice-gap-detail__review button{width:100%}}
   </style>
 </main>
 <?= $this->endSection(); ?>

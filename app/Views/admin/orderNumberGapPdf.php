@@ -24,6 +24,21 @@
     <tr><th>Dicatat pada</th><td><?= esc((string) ($gap['created_at'] ?? 'Tidak tersedia')) ?></td></tr>
     <tr><th>Terakhir diperbarui</th><td><?= esc((string) ($gap['updated_at'] ?? 'Tidak tersedia')) ?></td></tr>
   </tbody></table>
+  <?php if (!empty($gap['reported_details'])): $reported = $gap['reported_details']; ?>
+    <h2>Rincian yang dilaporkan</h2>
+    <p><?= esc($reported['source_label'] ?? 'Informasi sumber belum diverifikasi.') ?> Rincian berikut adalah snapshot rekonsiliasi, bukan bukti transaksi.</p>
+    <table class="rows"><tbody>
+      <tr><th>Penerima</th><td><?= esc((string) ($reported['recipient_name'] ?? '—')) ?></td></tr>
+      <tr><th>Alamat penerima</th><td><?= esc((string) ($reported['recipient_address'] ?? '—')) ?></td></tr>
+      <tr><th>Email</th><td><?= esc((string) ($reported['email'] ?? '—')) ?></td></tr>
+      <tr><th>Produk</th><td><?= esc((string) ($reported['product_name'] ?? '—')) ?></td></tr>
+      <tr><th>Varian</th><td><?= esc((string) ($reported['variant'] ?? '—')) ?></td></tr>
+      <tr><th>Jumlah</th><td><?= esc((string) ($reported['quantity'] ?? '—')) ?></td></tr>
+      <tr><th>Harga satuan</th><td>Rp <?= number_format((int) ($reported['unit_price'] ?? 0), 0, ',', '.') ?></td></tr>
+      <tr><th>Total item</th><td>Rp <?= number_format((int) ($reported['line_total'] ?? 0), 0, ',', '.') ?></td></tr>
+      <tr><th>Status yang dilaporkan</th><td><?= esc((string) ($reported['reported_order_status'] ?? '—')) ?></td></tr>
+    </tbody></table>
+  <?php endif; ?>
   <div class="notice">Laporan ini hanya memuat data register rekonsiliasi. Dokumen ini tidak menyatakan bahwa pesanan pernah terjadi, invoice pernah diterbitkan, atau nomor telah dibatalkan.</div>
   <div class="footer">Ilena Furniture · Laporan rekonsiliasi internal · <?= esc(date('d-m-Y H:i')) ?></div>
 </body>

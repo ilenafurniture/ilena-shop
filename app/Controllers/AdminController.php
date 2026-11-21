@@ -2473,11 +2473,37 @@ class AdminController extends BaseController
         $note = trim(strip_tags((string) $this->request->getPost('note')));
         $evidenceType = trim((string) $this->request->getPost('evidence_type'));
         $evidenceReference = trim(strip_tags((string) $this->request->getPost('evidence_reference')));
+        $reportedDetails = [
+            'source_label' => 'Data yang disampaikan pengguna; perlu dicocokkan dengan arsip sumber.',
+            'recipient_name' => trim(strip_tags((string) $this->request->getPost('reported_recipient_name'))),
+            'recipient_address' => trim(strip_tags((string) $this->request->getPost('reported_recipient_address'))),
+            'email' => trim(strip_tags((string) $this->request->getPost('reported_email'))),
+            'product_name' => trim(strip_tags((string) $this->request->getPost('reported_product_name'))),
+            'variant' => trim(strip_tags((string) $this->request->getPost('reported_variant'))),
+            'quantity' => filter_var($this->request->getPost('reported_quantity'), FILTER_VALIDATE_INT),
+            'unit_price' => filter_var($this->request->getPost('reported_unit_price'), FILTER_VALIDATE_INT),
+            'line_total' => filter_var($this->request->getPost('reported_line_total'), FILTER_VALIDATE_INT),
+            'reported_order_status' => trim(strip_tags((string) $this->request->getPost('reported_order_status'))),
+        ];
         $allowedStatuses = ['unverified_gap', 'evidence_found', 'not_issued'];
         $allowedEvidenceTypes = ['backup', 'payment_gateway', 'invoice_archive', 'accounting_record', 'other'];
+        $reportedDetailsValid = $reportedDetails['recipient_name'] !== ''
+            && mb_strlen($reportedDetails['recipient_name'], 'UTF-8') <= 150
+            && $reportedDetails['recipient_address'] !== ''
+            && mb_strlen($reportedDetails['recipient_address'], 'UTF-8') <= 500
+            && mb_strlen($reportedDetails['email'], 'UTF-8') <= 190
+            && $reportedDetails['product_name'] !== ''
+            && mb_strlen($reportedDetails['product_name'], 'UTF-8') <= 180
+            && mb_strlen($reportedDetails['variant'], 'UTF-8') <= 120
+            && is_int($reportedDetails['quantity']) && $reportedDetails['quantity'] > 0 && $reportedDetails['quantity'] <= 999
+            && is_int($reportedDetails['unit_price']) && $reportedDetails['unit_price'] >= 0 && $reportedDetails['unit_price'] <= 1000000000000
+            && is_int($reportedDetails['line_total']) && $reportedDetails['line_total'] >= 0 && $reportedDetails['line_total'] <= 1000000000000
+            && $reportedDetails['reported_order_status'] !== ''
+            && mb_strlen($reportedDetails['reported_order_status'], 'UTF-8') <= 40;
 
         if (! in_array($status, $allowedStatuses, true)
             || ! in_array($evidenceType, $allowedEvidenceTypes, true)
+            || ! $reportedDetailsValid
             || mb_strlen($note, 'UTF-8') > 255
             || mb_strlen($evidenceReference, 'UTF-8') > 200
             || ($status !== 'unverified_gap' && $evidenceReference === '')
@@ -2494,6 +2520,7 @@ class AdminController extends BaseController
                 'note' => $note,
                 'evidence_type' => $evidenceReference === '' ? null : $evidenceType,
                 'evidence_reference' => $evidenceReference === '' ? null : $evidenceReference,
+                'reported_details_json' => json_encode($reportedDetails, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR),
                 'reviewed_by' => (string) session()->get('email'),
                 'reviewed_at' => $now,
                 'updated_at' => $now,
@@ -2509,7 +2536,7 @@ class AdminController extends BaseController
             'actor_email' => (string) session()->get('email'),
             'role_label' => 'Developer',
             'activity' => 'Memperbarui register rekonsiliasi nomor pesanan',
-            'description' => 'Memperbarui catatan bukti untuk nomor ' . $gap['invoice_number'] . '. Tidak ada data pesanan atau transaksi yang diubah.',
+            'description' => 'Memperbarui catatan dan rincian sumber untuk nomor ' . $gap['invoice_number'] . '. Tidak ada data pesanan atau transaksi yang diubah.',
             'method' => 'POST',
             'url' => (string) current_url(),
             'ip_address' => (string) $this->request->getIPAddress(),
@@ -2542,6 +2569,8 @@ class AdminController extends BaseController
         $gap['matching_order_found'] = $db->table('pemesanan')
             ->where('id_midtrans', $invoiceNumber)
             ->countAllResults() > 0;
+        $reportedDetails = json_decode((string) ($gap['reported_details_json'] ?? ''), true);
+        $gap['reported_details'] = json_last_error() === JSON_ERROR_NONE && is_array($reportedDetails) ? $reportedDetails : [];
         return $gap;
     }
 
