@@ -2273,7 +2273,7 @@ class AdminController extends BaseController
     {
         // Keep this operational view bounded: loading every historical order also
         // serialized every customer's address and contact details into one response.
-        $excludedEmails = ['galihsuks123@gmail.com','ilenafurniture@gmail.com','galih8.4.2001@gmail.com','adityaanugrah494@gmail.com','tipaun0605@gmail.com','uuua5021@gmail.com'];
+        $excludedEmails = \App\Services\TestOrderAccess::emails();
         $request = service('request');
         $query = mb_substr(trim((string) $request->getGet('q')), 0, 100, 'UTF-8');
         $status = trim((string) $request->getGet('status'));
@@ -2285,7 +2285,8 @@ class AdminController extends BaseController
                 : '';
         $missingShipmentDate = (string) $request->getGet('shipment_date') === 'missing';
         $isDev = (string) session()->get('role') === '1';
-        $includeTestOrders = $isDev && (string) $request->getGet('include_test') === '1';
+        // AdminFilter already restricts this page to accounts with order access.
+        $includeTestOrders = (string) $request->getGet('include_test') === '1';
         $requestedOrderSort = (string) $request->getGet('sort');
         $orderSort = in_array($requestedOrderSort, ['oldest', 'newest'], true)
             ? $requestedOrderSort
@@ -2362,6 +2363,7 @@ class AdminController extends BaseController
             ->get($perPage, $offset)
             ->getResultArray();
         foreach ($pesanan as $ind_p => $p) {
+            $pesanan[$ind_p]['is_test_order'] = \App\Services\TestOrderAccess::isTestOrder($p);
             $rawOrderId = (string) ($p['id_midtrans'] ?? '');
             $displayOrderId = $rawOrderId;
             if (str_starts_with($rawOrderId, 'IL')
@@ -2593,9 +2595,12 @@ class AdminController extends BaseController
         $db = db_connect();
         $db->transBegin();
         try {
-            $order = $db->query('SELECT id, id_midtrans, status, data_mid FROM pemesanan WHERE id_midtrans = ? FOR UPDATE', [$idMid])->getRowArray();
+            $order = $db->query('SELECT id, id_midtrans, email, status, data_mid FROM pemesanan WHERE id_midtrans = ? FOR UPDATE', [$idMid])->getRowArray();
             if (! $order || (string) ($order['status'] ?? '') !== 'Dikirim') {
                 throw new \RuntimeException('Pesanan tidak ditemukan atau statusnya bukan Dikirim.');
+            }
+            if (\App\Services\TestOrderAccess::isReadOnlyForRole($order, (string) session()->get('role'))) {
+                throw new \RuntimeException('Pesanan akun uji hanya dapat dilihat oleh admin.');
             }
             $mid = json_decode((string) ($order['data_mid'] ?? ''), true);
             if (json_last_error() !== JSON_ERROR_NONE || ! is_array($mid)) {
@@ -2732,10 +2737,14 @@ class AdminController extends BaseController
             return redirect()->to('/admin/order/online')->with('msg', 'Pilih ekspedisi dan layanan, lalu isi nomor resi dengan benar.');
         }
         $db=db_connect(); $db->transBegin();
-        $order=$db->query('SELECT status, data_mid, kurir, resi FROM pemesanan WHERE id_midtrans = ? FOR UPDATE',[$idMid])->getRowArray();
+        $order=$db->query('SELECT email, status, data_mid, kurir, resi FROM pemesanan WHERE id_midtrans = ? FOR UPDATE',[$idMid])->getRowArray();
         if (!$order) {
             $db->transRollback();
             return redirect()->to('/admin/order/online')->with('msg','Pesanan tidak ditemukan.');
+        }
+        if (\App\Services\TestOrderAccess::isReadOnlyForRole($order, (string) session()->get('role'))) {
+            $db->transRollback();
+            return redirect()->to('/admin/order/online')->with('msg','Pesanan akun uji hanya dapat dilihat oleh admin.');
         }
         $mid=json_decode((string)($order['data_mid'] ?? '{}'),true)?:[];
         if (!in_array($order['status'],['Proses','Dikirim'],true) || ($mid['_app_payment_effects_applied']??null)===false || trim((string)$resi)==='') {
@@ -2848,6 +2857,11 @@ class AdminController extends BaseController
         if (!$pemesanan) {
             $db->transRollback();
             return redirect()->to('/admin/marketplace')->with('msg', 'Pesanan tidak ditemukan.');
+        }
+
+        if (\App\Services\TestOrderAccess::isReadOnlyForRole($pemesanan, (string) session()->get('role'))) {
+            $db->transRollback();
+            return redirect()->to('/admin/marketplace')->with('msg', 'Pesanan akun uji hanya dapat dilihat oleh admin.');
         }
 
         $existingQueueRows = $this->pemesananGudangModel

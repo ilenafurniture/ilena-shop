@@ -38,7 +38,8 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter, $or
 .online-orders .order-row{display:grid;grid-template-columns:minmax(190px,1.2fr) minmax(160px,1fr) minmax(140px,.8fr) minmax(135px,.75fr) minmax(190px,auto);align-items:center;gap:18px;padding:17px 8px;border-bottom:1px solid var(--o-line);background:transparent;transition:background .15s ease}
 .online-orders .order-row:hover{background:rgba(255,253,250,.75)}.online-orders .order-id{font:650 13px ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.015em;color:#6b503a;overflow-wrap:anywhere}.online-orders .order-date{font-size:12px;color:var(--o-muted);margin-top:5px}
 .online-orders .order-row__legacy-shipment{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:12px 14px;border:1px solid #e7d8c6;border-radius:8px;background:#fbf7f1}.order-row__legacy-shipment strong{font-size:12px;color:#543d2a}.order-row__legacy-shipment p{margin:3px 0 0;color:#6e6257;font-size:11px;line-height:1.5}.order-row__legacy-shipment form{display:flex;align-items:flex-end;gap:9px;flex-wrap:wrap}.order-row__legacy-shipment label span{display:block;margin-bottom:4px;font-size:11px;font-weight:650;color:var(--o-muted)}.order-row__legacy-shipment input[type=date]{height:40px;padding:0 9px;border:1px solid #cfc4b7;border-radius:7px;background:#fff;color:var(--o-ink);font:inherit;font-size:13px}.order-row__legacy-shipment .action{min-height:40px}.order-row__legacy-shipment.is-review{border-color:#dbc8a3;background:#faf7ef}
-.online-orders .customer-name{font-size:14px;font-weight:650}.online-orders .customer-email{font-size:12px;color:var(--o-muted);margin-top:4px;overflow-wrap:anywhere}.online-orders .amount{font-size:14px;font-weight:650;font-variant-numeric:tabular-nums;white-space:nowrap}.online-orders .status{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:650;white-space:nowrap}.online-orders .status::before{content:"";width:7px;height:7px;border-radius:50%;background:#8e857b}.online-orders .status[data-status="menunggu pembayaran"]::before{background:#bd8d48}.online-orders .status[data-status="proses"]::before{background:#8b684c}.online-orders .status[data-status="dikirim"]::before{background:#6d8b9b}.online-orders .status[data-status="selesai"]::before{background:#6d8c65}.online-orders .status[data-status="dibatalkan"]::before,.online-orders .status[data-status="gagal"]::before{background:#b45c50}
+.online-orders .customer-name{font-size:14px;font-weight:650}.online-orders .customer-email{font-size:12px;color:var(--o-muted);margin-top:4px;overflow-wrap:anywhere}.online-orders .amount{font-size:14px;font-weight:650;font-variant-numeric:tabular-nums;white-space:nowrap}.online-orders .status{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:650;white-space:nowrap}.online-orders .status::before{content:"";width:7px;height:7px;border-radius:50%;background:#8e857b}.online-orders .status[data-status="menunggu pembayaran"]::before{background:#bd8d48}.online-orders .status[data-status="proses"]::before{background:#8b684c}.online-orders .status[data-status="dikirim"]::before{background:#6d8b9b}.online-orders .status[data-status="selesai"]::before{background:#6d8c65}.online-orders .status[data-status="dibatalkan"]::before,.online-orders .status[data-status="gagal"]::before{background:#b45c50}.test-order-readonly{display:block;margin-top:4px;color:var(--o-muted);font-size:10px;line-height:1.3}
+.order-dialog__footer [hidden]{display:none!important}
 .online-orders .row-actions{display:flex;justify-content:flex-end;align-items:center;gap:6px;flex-wrap:wrap}.online-orders .icon-action{display:inline-flex;align-items:center;justify-content:center;min-width:40px;min-height:40px;padding:0 9px;border:1px solid transparent;border-radius:7px;background:transparent;color:#64594f;text-decoration:none;cursor:pointer}.online-orders .icon-action:hover{background:#f1ede6;color:#302a24}.online-orders .icon-action .material-icons{font-size:19px}.online-orders .icon-action-label{font-size:12px;font-weight:600}.online-orders .icon-action-danger{color:var(--o-red)}
 .online-orders .empty-state{padding:52px 16px;text-align:center;color:var(--o-muted);border-bottom:1px solid var(--o-line)}.online-orders .empty-state strong{display:block;color:var(--o-ink);font-size:16px;margin-bottom:4px}
 .online-orders [data-order-row][hidden]{display:none!important}
@@ -85,7 +86,7 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter, $or
         <label><span class="visually-hidden">Urutan tanggal pesanan</span><select class="control sort-control" name="sort" aria-label="Urutan tanggal pesanan"><option value="newest" <?= $orderSort === 'newest' ? 'selected' : '' ?>>Tanggal terbaru dulu</option><option value="oldest" <?= $orderSort === 'oldest' ? 'selected' : '' ?>>Tanggal terlama dulu</option></select></label>
         <label><span class="visually-hidden">Filter status</span><select class="control" name="status"><option value="">Semua status</option><?php foreach (['Menunggu Pembayaran'=>'Menunggu pembayaran','Proses'=>'Diproses','Dikirim'=>'Dikirim','Selesai'=>'Selesai','Dibatalkan'=>'Dibatalkan','Gagal'=>'Gagal'] as $key=>$label): ?><option value="<?= esc($key, 'attr') ?>" <?= ($orderStatusFilter ?? '') === $key ? 'selected' : '' ?>><?= esc($label) ?></option><?php endforeach; ?></select></label>
         <label><span class="visually-hidden">Filter tanggal pengiriman</span><select class="control" name="shipment_date"><option value="">Semua tanggal kirim</option><option value="missing" <?= $missingShipmentDateFilter ? 'selected' : '' ?>>Tanggal kirim belum tercatat</option></select></label>
-        <?php if ($isDev): ?><label class="test-order-filter"><input type="checkbox" name="include_test" value="1" <?= $includeTestOrders ? 'checked' : '' ?>>Tampilkan pesanan akun uji</label><?php endif; ?>
+        <label class="test-order-filter"><input type="checkbox" name="include_test" value="1" <?= $includeTestOrders ? 'checked' : '' ?>>Tampilkan pesanan akun uji<?= $isDev ? '' : ' · hanya lihat detail' ?></label>
         <button class="action action-primary" type="submit">Terapkan</button><?php if (($orderQuery ?? '') !== '' || ($orderStatusFilter ?? '') !== '' || $orderYearFilter !== '' || $missingShipmentDateFilter || $orderSort !== 'newest' || $includeTestOrders): ?><a class="action" href="/admin/order/online">Reset</a><?php endif; ?>
       </form>
     </div>
@@ -100,6 +101,7 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter, $or
         $formattedDate = $transactionTime ? date('d M Y · H:i', $transactionTime) : 'Tanggal tidak tersedia';
         $statusText = trim((string) ($p['status'] ?? 'Status tidak diketahui'));
         $statusKey = strtolower($statusText);
+        $readOnlyTestOrder = !$isDev && !empty($p['is_test_order']);
         $amount = (int) ($mid['gross_amount'] ?? 0);
         $isActive = in_array($statusText, ['Proses', 'Dikirim'], true);
         $isPending = $statusText === 'Menunggu Pembayaran';
@@ -111,9 +113,10 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter, $or
         <div class="order-row__id"><div class="order-id"><?= esc($p['display_order_number'] ?? $p['id_midtrans'] ?? '—') ?></div><div class="order-date"><?= esc($formattedDate) ?></div></div>
         <div class="order-row__customer"><div class="customer-name"><?= esc($p['nama'] ?? 'Nama tidak tersedia') ?></div><div class="customer-email"><?= esc($p['email'] ?? '') ?></div></div>
         <div class="order-row__amount amount">Rp <?= number_format($amount, 0, ',', '.') ?></div>
-        <div class="order-row__status"><span class="status" data-status="<?= esc($statusKey, 'attr') ?>"><?= esc($statusText) ?></span></div>
+        <div class="order-row__status"><span class="status" data-status="<?= esc($statusKey, 'attr') ?>"><?= esc($statusText) ?></span><?php if ($readOnlyTestOrder): ?><small class="test-order-readonly">Akun uji · hanya lihat detail</small><?php endif; ?></div>
         <div class="order-row__actions row-actions">
           <button class="icon-action" type="button" data-order-details="<?= (int) $index ?>" aria-label="Lihat detail pesanan <?= esc($p['id_midtrans'] ?? '', 'attr') ?>" title="Detail"><span class="material-icons" aria-hidden="true">visibility</span></button>
+          <?php if (!$readOnlyTestOrder): ?>
           <a class="icon-action" href="/invoice/<?= rawurlencode((string) ($p['id_midtrans'] ?? '')) ?>" aria-label="Invoice" title="Invoice"><span class="material-icons" aria-hidden="true">description</span></a>
           <?php if ($isActive): ?>
             <a class="icon-action" href="/admin/labelbarang/<?= rawurlencode((string) ($p['id_midtrans'] ?? '')) ?>" target="_blank" rel="noopener" aria-label="Label barang" title="Label barang"><span class="material-icons" aria-hidden="true">label_outline</span></a>
@@ -124,8 +127,9 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter, $or
             <button class="icon-action icon-action-danger" type="button" data-cancel-order="<?= esc((string) ($p['id_midtrans'] ?? ''), 'attr') ?>" aria-label="Batalkan pesanan" title="Batalkan pesanan"><span class="material-icons" aria-hidden="true">close</span></button>
           <?php endif; ?>
           <?php if ($isDev && $isDeletable): ?><button class="icon-action icon-action-danger" type="button" data-delete-order="<?= esc((string) ($p['id_midtrans'] ?? ''), 'attr') ?>" aria-label="Hapus pesanan lokal <?= esc($p['id_midtrans'] ?? '', 'attr') ?>" title="Hapus data pesanan terminal dari Ilena"><span class="material-icons" aria-hidden="true">delete_forever</span></button><?php endif; ?>
+          <?php endif; ?>
         </div>
-        <?php if (!empty($p['legacyShipmentDateMissing'])): ?>
+        <?php if (!$readOnlyTestOrder && !empty($p['legacyShipmentDateMissing'])): ?>
           <div class="order-row__legacy-shipment">
             <div><strong>Tanggal kirim belum tercatat</strong><p>Isi sesuai bukti pengiriman. Tanggal yang sudah lewat 6 hari dapat membuat pesanan selesai pada proses otomatis berikutnya.</p></div>
             <form method="post" action="/admin/order/legacy-shipment-date" data-ilena-confirm="Pastikan tanggal ini sesuai bukti pengiriman. Jika sudah lewat 6 hari, pesanan dapat otomatis selesai pada proses berikutnya." data-ilena-confirm-title="Konfirmasi tanggal kirim" data-ilena-confirm-button="Simpan tanggal" data-ilena-confirm-tone="warning">
@@ -134,7 +138,7 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter, $or
               <button class="action action-primary" type="submit">Simpan tanggal</button>
             </form>
           </div>
-        <?php elseif (!empty($p['legacyShipmentDataInvalid'])): ?>
+        <?php elseif (!$readOnlyTestOrder && !empty($p['legacyShipmentDataInvalid'])): ?>
           <div class="order-row__legacy-shipment is-review"><div><strong>Data pengiriman perlu ditinjau</strong><p>Data transaksi tidak terbaca, jadi tanggal kirim tidak dapat ditambahkan otomatis dari halaman ini.</p></div></div>
         <?php endif; ?>
       </article>
@@ -183,6 +187,7 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter, $or
 <script>
 (() => {
   const orders = JSON.parse(<?= json_encode($pesananJson, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>) || [];
+  const isDev = <?= json_encode($isDev) ?>;
   const detail = document.getElementById('orderDialog');
   const resi = document.getElementById('resiDialog');
   const deleteDialog = document.getElementById('deleteOrderDialog');
@@ -209,7 +214,9 @@ $pageUrl = static function (int $page) use ($orderQuery, $orderStatusFilter, $or
     const totalRow=document.createElement('tr'), totalLabel=document.createElement('td'), totalAmount=document.createElement('td');
     totalLabel.colSpan=3; totalLabel.textContent='Total pesanan'; totalLabel.style.fontWeight='700'; totalLabel.style.textAlign='right';
     totalAmount.textContent='Rp '+Number(mid.gross_amount ?? fallbackTotal).toLocaleString('id-ID'); totalAmount.style.fontWeight='700'; totalRow.append(totalLabel,totalAmount); tbody.append(totalRow);
-    detail.querySelector('[data-detail-invoice]').href = '/invoice/' + encodeURIComponent(order.id_midtrans || '');
+    const invoiceLink = detail.querySelector('[data-detail-invoice]');
+    invoiceLink.href = '/invoice/' + encodeURIComponent(order.id_midtrans || '');
+    invoiceLink.hidden = Boolean(order.is_test_order) && !isDev;
     openLayer(detail);
   }
   document.querySelectorAll('[data-order-details]').forEach(button => button.addEventListener('click', () => showOrder(Number(button.dataset.orderDetails))));

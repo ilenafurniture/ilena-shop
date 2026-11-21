@@ -4085,6 +4085,9 @@ class Pages extends BaseController
     {
         $order=$this->pemesananModel->getPemesanan($id_midtrans);
         if (!$order || !$this->canAccessOrder($order)) return $this->response->setStatusCode(404)->setBody('Pesanan tidak ditemukan.');
+        if (\App\Services\TestOrderAccess::isReadOnlyForRole($order, (string) session()->get('role'))) {
+            return $this->response->setStatusCode(403)->setBody('Pesanan akun uji hanya dapat dilihat oleh admin.');
+        }
         $mid=json_decode($order['data_mid']??'{}',true)?:[];
         if (in_array($mid['payment_type']??'',['admin','market','toko'],true)) {
             $db=db_connect(); $db->transBegin();
