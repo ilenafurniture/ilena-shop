@@ -2284,6 +2284,8 @@ class AdminController extends BaseController
                 ? $requestedYear
                 : '';
         $missingShipmentDate = (string) $request->getGet('shipment_date') === 'missing';
+        $isDev = (string) session()->get('role') === '1';
+        $includeTestOrders = $isDev && (string) $request->getGet('include_test') === '1';
         $requestedOrderSort = (string) $request->getGet('sort');
         $orderSort = in_array($requestedOrderSort, ['oldest', 'newest'], true)
             ? $requestedOrderSort
@@ -2299,8 +2301,14 @@ class AdminController extends BaseController
         $perPage = 30;
         $page = max(1, (int) $request->getGet('page'));
         $db = db_connect();
-        $buildQuery = static function () use ($db, $excludedEmails, $query, $displayOrderSearchNumber, $status, $year, $missingShipmentDate) {
-            $builder = $db->table('pemesanan')->whereNotIn('email', $excludedEmails);
+        $applyEmailVisibility = static function ($builder) use ($excludedEmails, $includeTestOrders) {
+            if (! $includeTestOrders) {
+                $builder->whereNotIn('email', $excludedEmails);
+            }
+            return $builder;
+        };
+        $buildQuery = static function () use ($db, $applyEmailVisibility, $query, $displayOrderSearchNumber, $status, $year, $missingShipmentDate) {
+            $builder = $applyEmailVisibility($db->table('pemesanan'));
             if ($query !== '') {
                 $builder->groupStart()
                     ->like('id_midtrans', $query)
@@ -2328,19 +2336,17 @@ class AdminController extends BaseController
             }
             return $builder;
         };
-        $totalCount = (int) $db->table('pemesanan')->whereNotIn('email', $excludedEmails)->countAllResults();
+        $totalCount = (int) $applyEmailVisibility($db->table('pemesanan'))->countAllResults();
         $statusCounts = array_fill_keys($allowedStatuses, 0);
-        $groupedStatusCounts = $db->table('pemesanan')
+        $groupedStatusCounts = $applyEmailVisibility($db->table('pemesanan'))
             ->select('status, COUNT(*) AS total', false)
-            ->whereNotIn('email', $excludedEmails)
             ->groupBy('status')
             ->get()->getResultArray();
         foreach ($groupedStatusCounts as $statusCount) {
             $statusKey = (string) ($statusCount['status'] ?? '');
             if (array_key_exists($statusKey, $statusCounts)) $statusCounts[$statusKey] = (int) $statusCount['total'];
         }
-        $legacyShipmentDateCount = (int) $db->table('pemesanan')
-            ->whereNotIn('email', $excludedEmails)
+        $legacyShipmentDateCount = (int) $applyEmailVisibility($db->table('pemesanan'))
             ->where('status', 'Dikirim')
             ->where(\App\Services\WebsiteOrderAttention::missingShipmentTimestampSql(), null, false)
             ->countAllResults();
@@ -2411,6 +2417,7 @@ class AdminController extends BaseController
             'orderQuery' => $query,
             'orderStatusFilter' => $status,
             'orderYearFilter' => $year,
+            'includeTestOrders' => $includeTestOrders,
             'orderSort' => $orderSort,
             'missingShipmentDateFilter' => $missingShipmentDate,
             'legacyShipmentDateCount' => $legacyShipmentDateCount,
